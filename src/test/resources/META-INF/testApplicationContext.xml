@@ -18,7 +18,7 @@
 	</util:map>
 
 	<!-- wrapper around the export -->
-	<bean id="tableExportService" class="nl.ocs.ui.composite.table.export.TableExportService" />
+	<bean id="tableExportService" class="com.ocs.dynamo.ui.composite.table.export.TableExportService" />
 
 	<!-- Entity Manager, the use of packagesToScan, jpaPropertyMap and jpaVendorAdapter 
 		prevent the need for an persistence.xml -->
@@ -29,7 +29,7 @@
 	<bean id="entityManagerFactory"
 		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
 		<property name="dataSource" ref="datasource" />
-		<property name="packagesToScan" value="nl.ocs.domain" />
+		<property name="packagesToScan" value="com.ocs.dynamo.domain" />
 		<property name="jpaPropertyMap" ref="jpaPropertyMap" />
 		<property name="jpaVendorAdapter" ref="jpaVendorAdapter" />
 	</bean>
@@ -40,17 +40,17 @@
 	</bean>
 
 	<!-- Scan all classes for JSR330 and Spring annotations -->
-	<context:component-scan base-package="nl.ocs.dao,nl.ocs.service" />
+	<context:component-scan base-package="com.ocs.dynamo.dao,com.ocs.dynamo.service" />
 
 	<!-- Initialize JSR303 validation factory -->
 	<bean id="validatorFactory"
 		class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean" />
 
 	<!-- The entity model factory -->
-	<bean id="entityModelFactory" class="nl.ocs.domain.model.impl.EntityModelFactoryImpl" />
+	<bean id="entityModelFactory" class="com.ocs.dynamo.domain.model.impl.EntityModelFactoryImpl" />
 
 	<!-- The entity model factory -->
-	<bean id="messageService" class="nl.ocs.service.impl.MessageServiceImpl" />
+	<bean id="messageService" class="com.ocs.dynamo.service.impl.MessageServiceImpl" />
 
 	<bean id="messageSource"
 		class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
@@ -65,12 +65,12 @@
 		<property name="fallbackToSystemLocale" value="false" />
 	</bean>
 
-	<bean id="menuService" class="nl.ocs.ui.menu.MenuService" />
+	<bean id="menuService" class="com.ocs.dynamo.ui.menu.MenuService" />
 
-	<bean id="permissionChecker" class="nl.ocs.ui.auth.PermissionChecker">
-		<constructor-arg value="nl.ocs" />
+	<bean id="permissionChecker" class="com.ocs.dynamo.ui.auth.PermissionChecker">
+		<constructor-arg value="com.ocs.dynamo" />
 	</bean>
 
-	<bean id="userDetailsService" class="nl.ocs.service.impl.UserDetailsServiceMockImpl"></bean>
+	<bean id="userDetailsService" class="com.ocs.dynamo.service.impl.UserDetailsServiceMockImpl"></bean>
 
 </beans>
