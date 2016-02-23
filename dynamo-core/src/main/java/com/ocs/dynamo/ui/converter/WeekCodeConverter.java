@@ -3,7 +3,7 @@ package com.ocs.dynamo.ui.converter;
 import java.util.Date;
 import java.util.Locale;
 
-import org.springframework.util.StringUtils;
+import org.apache.commons.lang.StringUtils;
 
 import com.ocs.dynamo.utils.DateUtils;
 import com.vaadin.data.util.converter.Converter;

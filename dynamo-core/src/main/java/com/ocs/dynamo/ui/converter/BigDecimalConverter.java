@@ -6,7 +6,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Locale;
 
-import org.springframework.util.StringUtils;
+import org.apache.commons.lang.StringUtils;
 
 import com.vaadin.data.util.converter.StringToBigDecimalConverter;
 import com.vaadin.server.VaadinSession;

@@ -9,7 +9,6 @@ import java.lang.annotation.Target;
  * Annotation used to indicate how a field should be imported from an Excel file
  * 
  * @author bas.rutten
- * 
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.FIELD, ElementType.METHOD })

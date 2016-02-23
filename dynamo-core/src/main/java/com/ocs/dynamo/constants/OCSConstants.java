@@ -3,7 +3,7 @@ package com.ocs.dynamo.constants;
 import java.util.Locale;
 
 /**
- * Various constants that are used by the OCS framework
+ * Various constants that are used by the framework.
  * 
  * @author bas.rutten
  *
@@ -101,6 +101,5 @@ public final class OCSConstants {
 	 */
 	public static final String UTF_8 = "UTF-8";
 
-	private OCSConstants() {
-	}
+	private OCSConstants() {}
 }
