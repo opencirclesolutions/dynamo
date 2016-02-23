@@ -26,6 +26,13 @@
         <developerConnection>scm:https:https://github.com/opencirclesolutions/dynamo.git</developerConnection>
         <url>https://github.com/opencirclesolutions/dynamo</url>
     </scm>
+	
+	<modules>
+		<module>dynamo-core</module>
+		<module>dynamo-spring</module>
+		<module>dynamo-jee</module>
+		<module>dynamo-camel</module>
+	</modules>
     
 	<properties>
 		<!-- Build settings. -->
@@ -360,6 +367,19 @@
 				<groupId>com.mysema.maven</groupId>
 				<artifactId>apt-maven-plugin</artifactId>
 				<version>${com.mysema.maven.plugins.apt.version}</version>
+				<executions>
+					<execution>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>process</goal>
+						</goals>
+						<configuration>
+							<testOutputDirectory>target/generated-sources/query</testOutputDirectory>
+							<outputDirectory>target/generated-sources/query</outputDirectory>
+							<processor>com.mysema.query.apt.jpa.JPAAnnotationProcessor</processor>
+						</configuration>
+					</execution>
+				</executions>				
 			</plugin>
 			<plugin>
 				<groupId>org.jacoco</groupId>

@@ -6,10 +6,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.dom4j.Document;
+/*import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.XPath;
-import org.dom4j.io.DOMReader;
+import org.dom4j.io.DOMReader;*/
 
 /**
  * 
@@ -33,12 +33,12 @@ public class XMLUtil {
 	 *            the W3C document to convert
 	 * @return
 	 */
-	public static org.dom4j.Document toJDOM(org.w3c.dom.Document input) {
+/*	public static org.dom4j.Document toJDOM(org.w3c.dom.Document input) {
 		DOMReader reader = new DOMReader();
 		return reader.read(input);
 	}
 
-	/**
+	*//**
 	 * Returns the (first) value of a SAML attribute with a certain name
 	 * 
 	 * @param document
@@ -46,7 +46,7 @@ public class XMLUtil {
 	 * @param attributeName
 	 *            the name of the attribute (must be a fully qualified name)
 	 * @return
-	 */
+	 *//*
 	public static String getSamlAttributeValue(org.dom4j.Document document, String attributeName) {
 
 		// first, try without namespaces
@@ -60,7 +60,7 @@ public class XMLUtil {
 		return value;
 	}
 
-	/**
+	*//**
 	 * Returns the values of all SAML attributes with the specified name
 	 * 
 	 * @param document
@@ -68,7 +68,7 @@ public class XMLUtil {
 	 * @param attributeName
 	 *            the name of the attribute
 	 * @return
-	 */
+	 *//*
 	public static Set<String> getSamlAttributeValues(org.dom4j.Document document,
 			String attributeName) {
 
@@ -83,11 +83,11 @@ public class XMLUtil {
 		return values;
 	}
 
-	/**
+	*//**
 	 * 
 	 * @param document
 	 * @param xpathString
-	 */
+	 *//*
 	private static String getFirstValue(Document document, String xpathString) {
 		XPath xpath = document.createXPath(xpathString);
 		xpath.setNamespaceURIs(NAMESPACES);
@@ -99,7 +99,7 @@ public class XMLUtil {
 		return null;
 	}
 
-	/**
+	*//**
 	 * Extracts all values that match a certain xpath expression from a document
 	 * 
 	 * @param document
@@ -107,7 +107,7 @@ public class XMLUtil {
 	 * @param xpathString
 	 *            the xpath expression
 	 * @return
-	 */
+	 *//*
 	private static Set<String> getValues(Document document, String xpathString) {
 		Set<String> result = new HashSet<String>();
 
@@ -121,6 +121,6 @@ public class XMLUtil {
 		}
 
 		return result;
-	}
+	}*/
 
 }

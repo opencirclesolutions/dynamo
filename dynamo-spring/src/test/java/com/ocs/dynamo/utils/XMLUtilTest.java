@@ -15,7 +15,7 @@ import org.xml.sax.SAXException;
 
 public class XMLUtilTest {
 
-	@Test
+/*	@Test
 	public void testGetAttributeValue() throws SAXException, IOException,
 			ParserConfigurationException {
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -58,6 +58,6 @@ public class XMLUtilTest {
 		Assert.assertTrue(values.contains("b7beb37e-1aca-4a66-aead-b056c582bced"));
 		Assert.assertTrue(values.contains("c670fc9b-90ee-4f49-aada-7f400769295f"));
 
-	}
+	}*/
 
 }
