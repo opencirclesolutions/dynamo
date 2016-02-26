@@ -32,19 +32,6 @@
 			<artifactId>javax.servlet-api</artifactId>
 		</dependency>
 
-		<dependency>
-			<groupId>com.vaadin</groupId>
-			<artifactId>vaadin-server</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.vaadin.addons.lazyquerycontainer</groupId>
-			<artifactId>vaadin-lazyquerycontainer</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.vaadin.addon</groupId>
-			<artifactId>tableexport-for-vaadin</artifactId>
-		</dependency>
-
 		<!-- logging -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
@@ -132,10 +119,6 @@
 		<dependency>
 			<groupId>net.sf.opencsv</groupId>
 			<artifactId>opencsv</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.vaadin.addon</groupId>
-			<artifactId>confirmdialog</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.monitorjbl</groupId>
