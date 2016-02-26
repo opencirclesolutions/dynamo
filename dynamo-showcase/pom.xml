@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	
+	<groupId>com.ocs</groupId>
+	<artifactId>dynamo-showcase</artifactId>
+	<packaging>pom</packaging>
+	<version>1.0.0-SNAPSHOT</version>
+	<name>Dynamo Framework Showcases</name>
+    <url>https://github.com/opencirclesolutions/dynamo</url>
+	
+	<organization>
+        <name>Open Circle Solutions</name>
+        <url>http://www.opencirclesolutions.nl</url>
+    </organization>
+
+	<licenses>
+        <license>
+            <name>Apache License Version 2.0</name>
+            <distribution>repo</distribution>
+            <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+        </license>
+    </licenses>
+    <scm>
+        <connection>scm:https:https://github.com/opencirclesolutions/dynamo.git</connection>
+        <developerConnection>scm:https:https://github.com/opencirclesolutions/dynamo.git</developerConnection>
+        <url>https://github.com/opencirclesolutions/dynamo</url>
+    </scm>
+	
+	<modules>
+		<module>dynamo-showcase-spring</module>
+		<module>dynamo-showcase-jee</module>
+	</modules>
+    
+	<properties>
+		<!-- Build settings. -->
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.build.compiler.version>1.7</project.build.compiler.version>
+		
+		<!-- Dependency versions. -->
+		<javax.servlet.api.version>3.0.1</javax.servlet.api.version>
+		<dynamo.version>1.0.0-SNAPSHOT</dynamo.version>
+		
+		<!-- Maven plugin versions. -->
+		<org.apache.maven.plugins.compiler.version>3.3</org.apache.maven.plugins.compiler.version>
+		<org.eclipse.maven.plugins.jetty.version>9.3.7.v20160115</org.eclipse.maven.plugins.jetty.version>
+		<org.apache.maven.plugins.release.version>2.5.3</org.apache.maven.plugins.release.version>
+		
+	</properties>
+	<repositories>
+		<repository>
+			<id>vaadin-addons</id>
+			<url>http://maven.vaadin.com/vaadin-addons</url>
+		</repository>
+		<repository>
+			<id>central</id>
+			<name>Maven Central Repository</name>
+			<layout>default</layout>
+			<url>https://repo1.maven.org/maven2</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+		</repository>
+		<repository>
+			<id>apache</id>
+			<name>Apache Maven Repository</name>
+			<layout>default</layout>
+			<url>https://repo.maven.apache.org/maven/</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+		</repository>
+		<repository>
+			<id>jboss</id>
+			<name>JBoss Maven Repository</name>
+			<layout>default</layout>
+			<url>https://repository.jboss.org/</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+		</repository>
+	</repositories>
+	
+	<dependencyManagement>
+	<dependencies>
+		<dependency>
+			<groupId>com.ocs</groupId>
+			<artifactId>dynamo-spring</artifactId>
+			<version>${dynamo.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.ocs</groupId>
+			<artifactId>dynamo-jee</artifactId>
+			<version>${dynamo.version}</version>
+		</dependency>
+	</dependencies>
+	</dependencyManagement>
+	
+	<build>
+		<pluginManagement>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>${org.apache.maven.plugins.compiler.version}</version>
+				<configuration>
+					<source>${project.build.compiler.version}</source>
+					<target>${project.build.compiler.version}</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-release-plugin</artifactId>
+				<version>${org.apache.maven.plugins.release.version}</version>
+			</plugin>			
+			<plugin>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-maven-plugin</artifactId>
+				<version>${org.eclipse.maven.plugins.jetty.version}</version>
+			</plugin>
+		</plugins>
+		</pluginManagement>
+	</build>
+</project>

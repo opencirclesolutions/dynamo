@@ -29,9 +29,10 @@
 	
 	<modules>
 		<module>dynamo-core</module>
-		<module>dynamo-spring</module>
-		<module>dynamo-jee</module>
+		<module>dynamo-vaadin</module>
+		<module>dynamo-jpa</module>
 		<module>dynamo-camel</module>
+		<module>dynamo-spring</module>
 	</modules>
     
 	<properties>
