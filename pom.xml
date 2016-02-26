@@ -31,7 +31,6 @@
 		<module>dynamo-core</module>
 		<module>dynamo-vaadin</module>
 		<module>dynamo-jpa</module>
-		<module>dynamo-camel</module>
 		<module>dynamo-spring</module>
 	</modules>
     
