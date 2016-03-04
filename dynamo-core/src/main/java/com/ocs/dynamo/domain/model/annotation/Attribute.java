@@ -33,8 +33,7 @@ public @interface Attribute {
 	// date type
 	public AttributeDateType dateType() default AttributeDateType.INHERIT;
 
-	// the default value (represented as a string - use "." as the decimal
-	// separator)
+	// the default value (represented as a string - use "." as the decimal separator)
 	public String defaultValue() default "";
 
 	// textual description

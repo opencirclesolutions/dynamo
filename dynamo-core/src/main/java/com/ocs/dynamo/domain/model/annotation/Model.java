@@ -6,8 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * An annotation that can be placed on an entity - allows you to override meta
- * data defaults
+ * An annotation that can be placed on an entity - allows you to override metadata defaults
  * 
  * @author bas.rutten
  */
@@ -24,8 +23,7 @@ public @interface Model {
 	// the description
 	public String description() default "";
 
-	// the property to use when displaying this item in a select component (like
-	// a combobox)
+	// the property to use when displaying this item in a select component (like a combobox)
 	public String displayProperty() default "";
 
 	// the default sort order for this entity
