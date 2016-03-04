@@ -14,14 +14,14 @@ import com.vaadin.data.sort.SortOrder;
  * collection being edited
  * 
  * @author bas.rutten
- *
  * @param <ID>
  * @param <T>
  * @param <ID2>
- * @param <Q>
+ * @param
+ *            <Q>
  */
 public abstract class TabularDetailEditLayout<ID extends Serializable, T extends AbstractEntity<ID>, ID2 extends Serializable, Q extends AbstractEntity<ID2>>
-		extends TabularEditLayout<ID, T> {
+        extends TabularEditLayout<ID, T> {
 
 	private static final long serialVersionUID = -3432301286152665223L;
 
@@ -41,8 +41,8 @@ public abstract class TabularDetailEditLayout<ID extends Serializable, T extends
 	 * @param joins
 	 */
 	public TabularDetailEditLayout(BaseService<ID, T> service, Q parentEntity,
-			BaseService<ID2, Q> parentService, EntityModel<T> entityModel, FormOptions formOptions,
-			SortOrder sortOrder, FetchJoinInformation... joins) {
+	        BaseService<ID2, Q> parentService, EntityModel<T> entityModel, FormOptions formOptions,
+	        SortOrder sortOrder, FetchJoinInformation... joins) {
 		super(service, entityModel, formOptions, sortOrder, joins);
 		this.parentService = parentService;
 		this.parentEntity = parentEntity;

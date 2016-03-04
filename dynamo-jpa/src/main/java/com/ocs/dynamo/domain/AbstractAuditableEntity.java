@@ -14,7 +14,6 @@ import com.ocs.dynamo.domain.model.annotation.Attribute;
  * Base class for entities that store auditing information
  * 
  * @author bas.rutten
- * 
  * @param <ID>
  *            type of the primary key
  */

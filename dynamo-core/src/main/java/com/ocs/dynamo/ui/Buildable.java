@@ -4,9 +4,8 @@ package com.ocs.dynamo.ui;
  * Interface for components that HAVE to be build AFTER class instantiation
  * by calling the build method. This is to support bean like creation of
  * components without the need to build them directly from the constructor.
- *  
+ * 
  * @author Patrick Deenen (patrick.deenen@opencirclesolutions.nl)
- *
  */
 public interface Buildable {
 

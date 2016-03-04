@@ -21,15 +21,14 @@ import com.vaadin.ui.VerticalLayout;
  * A layout for editing a single object
  * 
  * @author bas.rutten
- * 
  * @param <ID>
  *            type of the primary key
  * @param <T>
  *            type of the entity
  */
 @SuppressWarnings("serial")
-public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<ID>> extends
-		BaseServiceCustomComponent<ID, T> implements Reloadable {
+public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<ID>>
+        extends BaseServiceCustomComponent<ID, T> implements Reloadable {
 
 	private static final long serialVersionUID = -7935358582100755140L;
 
@@ -50,7 +49,7 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 	 * @param formOptions
 	 */
 	public SimpleEditLayout(T entity, BaseService<ID, T> service, EntityModel<T> entityModel,
-			FormOptions formOptions) {
+	        FormOptions formOptions) {
 		super(service, entityModel, formOptions);
 		this.entity = entity;
 	}
@@ -78,7 +77,7 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 		getFormOptions().setScreenMode(ScreenMode.VERTICAL);
 
 		editForm = new ModelBasedEditForm<ID, T>(entity, getService(), getEntityModel(),
-				getFormOptions(), fieldFilters) {
+		        getFormOptions(), fieldFilters) {
 			@Override
 			protected void afterEditDone(boolean cancel, boolean newObject, T entity) {
 				setEntity(entity);
@@ -87,9 +86,9 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 
 			@Override
 			protected Field<?> constructCustomField(EntityModel<T> entityModel,
-					AttributeModel attributeModel, boolean viewMode) {
+		            AttributeModel attributeModel, boolean viewMode) {
 				return SimpleEditLayout.this.constructCustomField(entityModel, attributeModel,
-						viewMode, false);
+		                viewMode, false);
 			}
 
 			@Override
@@ -135,7 +134,6 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 	}
 
 	/**
-	 * 
 	 * @param editForm
 	 */
 	protected void postProcessEditFields(ModelBasedEditForm<ID, T> editForm) {

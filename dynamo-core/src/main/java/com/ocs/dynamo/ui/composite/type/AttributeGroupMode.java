@@ -5,7 +5,6 @@ package com.ocs.dynamo.ui.composite.type;
  * using tab sheets
  * 
  * @author bas.rutten
- * 
  */
 public enum AttributeGroupMode {
 	PANEL, TABSHEET;

@@ -18,7 +18,6 @@ import com.vaadin.ui.UI;
  * taking place
  * 
  * @author bas.rutten
- * 
  * @param <T>
  *            the type of the object that is being processed. This can usually
  *            be "Object" but can e.g. be more specific in case of a file upload
@@ -282,8 +281,7 @@ public abstract class ProgressForm<T> extends BaseCustomComponent implements Pro
 	protected OCSRuntimeException extractRuntimeException(Throwable t) {
 		if (t instanceof OCSRuntimeException) {
 			return (OCSRuntimeException) t;
-		}
-		else if (t.getCause() != null) {
+		} else if (t.getCause() != null) {
 			return extractRuntimeException(t.getCause());
 		}
 		return null;

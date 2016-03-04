@@ -18,7 +18,7 @@ public final class ConverterFactory {
 	 * @return
 	 */
 	public static BigDecimalConverter createBigDecimalConverter(boolean currency,
-			boolean percentage, boolean useGrouping, int precision, String currencySymbol) {
+	        boolean percentage, boolean useGrouping, int precision, String currencySymbol) {
 		if (currency) {
 			return new CurrencyBigDecimalConverter(precision, useGrouping, currencySymbol);
 		}

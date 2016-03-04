@@ -43,7 +43,7 @@ public class PasteUtilsTest {
 		Assert.assertEquals("", result[4]);
 		Assert.assertEquals("", result[5]);
 		Assert.assertEquals("4", result[6]);
-		
+
 		result = PasteUtils.split("   3   4");
 		Assert.assertEquals("", result[0]);
 		Assert.assertEquals("", result[1]);

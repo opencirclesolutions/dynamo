@@ -62,8 +62,8 @@ public class SimpleSearchLayoutTest extends BaseIntegrationTest {
 		Assert.assertEquals(3, table.size());
 
 		Object id = table.getItemIds().iterator().next();
-		TestEntity t = (TestEntity) VaadinUtils.getEntityFromContainer(
-				table.getContainerDataSource(), id);
+		TestEntity t = (TestEntity) VaadinUtils
+		        .getEntityFromContainer(table.getContainerDataSource(), id);
 
 		layout.detailsMode(t);
 	}
@@ -126,7 +126,7 @@ public class SimpleSearchLayoutTest extends BaseIntegrationTest {
 
 		Assert.assertEquals(e1, layout.getSelectedItem());
 	}
-	
+
 	@Test
 	public void testSimpleSearchLayout_SelectCollection() {
 		SimpleSearchLayout<Integer, TestEntity> layout = createLayout(new FormOptions());
@@ -162,8 +162,8 @@ public class SimpleSearchLayoutTest extends BaseIntegrationTest {
 
 	private SimpleSearchLayout<Integer, TestEntity> createLayout(FormOptions fo) {
 		return new SimpleSearchLayout<>(testEntityService,
-				entityModelFactory.getModel(TestEntity.class), QueryType.ID_BASED, fo,
-				new SortOrder("name", SortDirection.ASCENDING));
+		        entityModelFactory.getModel(TestEntity.class), QueryType.ID_BASED, fo,
+		        new SortOrder("name", SortDirection.ASCENDING));
 
 	}
 }

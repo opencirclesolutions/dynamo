@@ -20,14 +20,12 @@ import com.ocs.dynamo.ui.composite.table.TableUtils;
 import com.ocs.dynamo.utils.ClassUtils;
 
 /**
- * 
  * @author bas.rutten
- * 
  */
 public class EntityModelUtil {
 
 	private static final Set<String> ALWAYS_IGNORE = Sets.newHashSet("createdOn", "createdBy",
-			"changedBy", "changedOn");
+	        "changedBy", "changedOn");
 
 	private EntityModelUtil() {
 		// private constructor
@@ -70,7 +68,7 @@ public class EntityModelUtil {
 	 * @param model
 	 */
 	public static <T> void copySimpleAttributes(T source, T target, EntityModel<T> model,
-			String... ignore) {
+	        String... ignore) {
 		Set<String> toIgnore = new HashSet<>();
 		if (ignore != null) {
 			toIgnore = Sets.newHashSet(ignore);
@@ -78,8 +76,9 @@ public class EntityModelUtil {
 		toIgnore.addAll(ALWAYS_IGNORE);
 
 		for (AttributeModel am : model.getAttributeModels()) {
-			if ((AttributeType.BASIC.equals(am.getAttributeType()) || AttributeType.LOB.equals(am
-					.getAttributeType())) && !toIgnore.contains(am.getName())) {
+			if ((AttributeType.BASIC.equals(am.getAttributeType())
+			        || AttributeType.LOB.equals(am.getAttributeType()))
+			        && !toIgnore.contains(am.getName())) {
 				if (!OCSConstants.ID.equals(am.getName())) {
 					Object value = ClassUtils.getFieldValue(source, am.getName());
 					if (ClassUtils.canSetProperty(target, am.getName())) {
@@ -107,7 +106,8 @@ public class EntityModelUtil {
 	 * @param ignore
 	 */
 	public static List<String> compare(Object oldEntity, Object newEntity, EntityModel<?> model,
-			EntityModelFactory entityModelFactory, MessageService messageService, String... ignore) {
+	        EntityModelFactory entityModelFactory, MessageService messageService,
+	        String... ignore) {
 		List<String> results = new ArrayList<>();
 
 		Set<String> toIgnore = new HashSet<>();
@@ -119,38 +119,39 @@ public class EntityModelUtil {
 		String noValue = messageService.getMessage("ocs.no.value");
 
 		for (AttributeModel am : model.getAttributeModels()) {
-			if ((AttributeType.BASIC.equals(am.getAttributeType()) || AttributeType.MASTER
-					.equals(am.getAttributeType())) && !toIgnore.contains(am.getName())) {
+			if ((AttributeType.BASIC.equals(am.getAttributeType())
+			        || AttributeType.MASTER.equals(am.getAttributeType()))
+			        && !toIgnore.contains(am.getName())) {
 
 				Object oldValue = ClassUtils.getFieldValue(oldEntity, am.getName());
 				Object newValue = ClassUtils.getFieldValue(newEntity, am.getName());
 
 				if (!ObjectUtils.equals(oldValue, newValue)) {
 					String oldValueStr = TableUtils.formatPropertyValue(entityModelFactory, model,
-							messageService, am.getName(), oldValue);
+					        messageService, am.getName(), oldValue);
 					String newValueStr = TableUtils.formatPropertyValue(entityModelFactory, model,
-							messageService, am.getName(), newValue);
+					        messageService, am.getName(), newValue);
 					results.add(messageService.getMessage("ocs.value.changed", am.getDisplayName(),
-							oldValue == null ? noValue : oldValueStr, newValue == null ? noValue
-									: newValueStr));
+					        oldValue == null ? noValue : oldValueStr,
+					        newValue == null ? noValue : newValueStr));
 				}
 			} else if (AttributeType.DETAIL.equals(am.getAttributeType())) {
 				Collection<?> ocol = (Collection<?>) ClassUtils.getFieldValue(oldEntity,
-						am.getName());
+				        am.getName());
 				Collection<?> ncol = (Collection<?>) ClassUtils.getFieldValue(newEntity,
-						am.getName());
+				        am.getName());
 
 				for (Object o : ncol) {
 					if (!ocol.contains(o)) {
 						results.add(messageService.getMessage("ocs.value.added",
-								getDescription(o, am.getNestedEntityModel()), am.getDisplayName()));
+						        getDescription(o, am.getNestedEntityModel()), am.getDisplayName()));
 					}
 				}
 
 				for (Object o : ocol) {
 					if (!ncol.contains(o)) {
 						results.add(messageService.getMessage("ocs.value.removed",
-								getDescription(o, am.getNestedEntityModel()), am.getDisplayName()));
+						        getDescription(o, am.getNestedEntityModel()), am.getDisplayName()));
 					}
 				}
 
@@ -158,7 +159,7 @@ public class EntityModelUtil {
 					for (Object o2 : ncol) {
 						if (o.equals(o2)) {
 							List<String> nested = compare(o, o2, am.getNestedEntityModel(),
-									entityModelFactory, messageService, ignore);
+							        entityModelFactory, messageService, ignore);
 							results.addAll(nested);
 						}
 					}

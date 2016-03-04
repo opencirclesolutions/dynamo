@@ -8,43 +8,43 @@ public class FilterConverterTest {
 	private FilterConverter converter = new FilterConverter();
 
 	private com.vaadin.data.util.filter.Compare.Equal f1 = new com.vaadin.data.util.filter.Compare.Equal(
-			"test", "test");
+	        "test", "test");
 
 	private com.vaadin.data.util.filter.Compare.Equal f2 = new com.vaadin.data.util.filter.Compare.Equal(
-			"test", "test");
+	        "test", "test");
 
 	@Test
 	public void testCompareEqual() {
-		Filter result = converter.convert(new com.vaadin.data.util.filter.Compare.Equal("test",
-				"test"));
+		Filter result = converter
+		        .convert(new com.vaadin.data.util.filter.Compare.Equal("test", "test"));
 		Assert.assertTrue(result instanceof Compare.Equal);
 	}
 
 	@Test
 	public void testCompareLess() {
-		Filter result = converter.convert(new com.vaadin.data.util.filter.Compare.Less("test",
-				"test"));
+		Filter result = converter
+		        .convert(new com.vaadin.data.util.filter.Compare.Less("test", "test"));
 		Assert.assertTrue(result instanceof Compare.Less);
 	}
 
 	@Test
 	public void testCompareLessOrEqual() {
-		Filter result = converter.convert(new com.vaadin.data.util.filter.Compare.LessOrEqual(
-				"test", "test"));
+		Filter result = converter
+		        .convert(new com.vaadin.data.util.filter.Compare.LessOrEqual("test", "test"));
 		Assert.assertTrue(result instanceof Compare.LessOrEqual);
 	}
 
 	@Test
 	public void testCompareGreater() {
-		Filter result = converter.convert(new com.vaadin.data.util.filter.Compare.Greater("test",
-				"test"));
+		Filter result = converter
+		        .convert(new com.vaadin.data.util.filter.Compare.Greater("test", "test"));
 		Assert.assertTrue(result instanceof Compare.Greater);
 	}
 
 	@Test
 	public void testCompareGreaterOrEqual() {
-		Filter result = converter.convert(new com.vaadin.data.util.filter.Compare.GreaterOrEqual(
-				"test", "test"));
+		Filter result = converter
+		        .convert(new com.vaadin.data.util.filter.Compare.GreaterOrEqual("test", "test"));
 		Assert.assertTrue(result instanceof Compare.GreaterOrEqual);
 	}
 
@@ -83,8 +83,8 @@ public class FilterConverterTest {
 	 */
 	@Test
 	public void testSimpleStringFilter1() {
-		Filter result = converter.convert(new com.vaadin.data.util.filter.SimpleStringFilter(
-				"test", "test", false, true));
+		Filter result = converter.convert(
+		        new com.vaadin.data.util.filter.SimpleStringFilter("test", "test", false, true));
 		Assert.assertTrue(result instanceof Like);
 		Like like = (Like) result;
 		Assert.assertTrue(like.isCaseSensitive());
@@ -96,8 +96,8 @@ public class FilterConverterTest {
 	 */
 	@Test
 	public void testSimpleStringFilter2() {
-		Filter result = converter.convert(new com.vaadin.data.util.filter.SimpleStringFilter(
-				"test", "test", true, false));
+		Filter result = converter.convert(
+		        new com.vaadin.data.util.filter.SimpleStringFilter("test", "test", true, false));
 		Assert.assertTrue(result instanceof Like);
 		Like like = (Like) result;
 		Assert.assertFalse(like.isCaseSensitive());

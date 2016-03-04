@@ -18,8 +18,8 @@ import com.ocs.dynamo.utils.ClassUtils;
  * An implementation of an entity model - holds metadata about an entity
  * 
  * @author bas.rutten
- * 
- * @param <T> the class of the entity 
+ * @param <T>
+ *            the class of the entity
  */
 public class EntityModelImpl<T> implements EntityModel<T> {
 
@@ -51,7 +51,7 @@ public class EntityModelImpl<T> implements EntityModel<T> {
 	 * @param description
 	 */
 	public EntityModelImpl(Class<T> entityClass, String reference, String displayName,
-			String displayNamePlural, String description, String displayProperty) {
+	        String displayNamePlural, String description, String displayProperty) {
 		this.entityClass = entityClass;
 		this.displayName = displayName;
 		this.displayNamePlural = displayNamePlural;
@@ -72,7 +72,7 @@ public class EntityModelImpl<T> implements EntityModel<T> {
 
 	@Override
 	public void addAttributeModel(String attributeGroup, AttributeModel model,
-			AttributeModel existingModel) {
+	        AttributeModel existingModel) {
 		List<AttributeModel> group = attributeModels.get(attributeGroup);
 		if (group.contains(existingModel)) {
 			group.add(group.indexOf(existingModel), model);
@@ -112,7 +112,7 @@ public class EntityModelImpl<T> implements EntityModel<T> {
 					EntityModel<?> nem = am.getNestedEntityModel();
 					if (nem != null) {
 						return nem
-								.getAttributeModel(attributeName.substring(names[0].length() + 1));
+						        .getAttributeModel(attributeName.substring(names[0].length() + 1));
 					}
 				}
 			}
@@ -135,15 +135,16 @@ public class EntityModelImpl<T> implements EntityModel<T> {
 	}
 
 	@Override
-	public List<AttributeModel> getAttributeModelsForType(AttributeType attributeType, Class<?> type) {
+	public List<AttributeModel> getAttributeModelsForType(AttributeType attributeType,
+	        Class<?> type) {
 		List<AttributeModel> result = new ArrayList<>();
 		if (attributeType != null || type != null) {
 			for (List<AttributeModel> list : attributeModels.values()) {
 				for (AttributeModel model : list) {
 					Class<?> rt = ClassUtils.getResolvedType(getEntityClass(), model.getName(), 0);
 					if ((attributeType == null || attributeType.equals(model.getAttributeType()))
-							&& (type == null || type.isAssignableFrom(model.getType()) || (rt != null && type
-									.isAssignableFrom(rt)))) {
+					        && (type == null || type.isAssignableFrom(model.getType())
+					                || (rt != null && type.isAssignableFrom(rt)))) {
 						result.add(model);
 					}
 				}
@@ -209,8 +210,8 @@ public class EntityModelImpl<T> implements EntityModel<T> {
 		List<AttributeModel> attributes = attributeModels.get(group);
 		for (AttributeModel model : attributes) {
 			if (AttributeType.BASIC.equals(model.getAttributeType())
-					|| AttributeType.LOB.equals(model.getAttributeType())
-					|| model.isComplexEditable()) {
+			        || AttributeType.LOB.equals(model.getAttributeType())
+			        || model.isComplexEditable()) {
 				// attribute must be visible and not read-only (when in edit
 				// mode)
 				if (model.isVisible() && (readOnly || !model.isReadOnly())) {
@@ -239,6 +240,6 @@ public class EntityModelImpl<T> implements EntityModel<T> {
 	@Override
 	public boolean usesDefaultGroupOnly() {
 		return attributeModels.keySet().size() == 1
-				&& attributeModels.keySet().iterator().next().equals(EntityModel.DEFAULT_GROUP);
+		        && attributeModels.keySet().iterator().next().equals(EntityModel.DEFAULT_GROUP);
 	}
 }

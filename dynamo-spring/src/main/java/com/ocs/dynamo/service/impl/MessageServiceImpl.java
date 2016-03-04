@@ -16,7 +16,6 @@ import com.vaadin.server.VaadinSession;
  * Implementation of the simple message service
  * 
  * @author bas.rutten
- * 
  */
 public class MessageServiceImpl implements MessageService {
 
@@ -29,11 +28,11 @@ public class MessageServiceImpl implements MessageService {
 
 	@Override
 	public String getAttributeMessage(String reference, AttributeModel attributeModel,
-			String propertyName) {
+	        String propertyName) {
 		if (source != null) {
 			try {
 				String messageName = reference + "." + attributeModel.getName() + "."
-						+ propertyName;
+				        + propertyName;
 				return source.getMessage(messageName, null, getLocale());
 			} catch (NoSuchMessageException ex) {
 				// do nothing

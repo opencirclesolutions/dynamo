@@ -35,7 +35,6 @@ import com.vaadin.ui.VerticalLayout;
  * other or below each other
  * 
  * @author bas.rutten
- *
  * @param <ID>
  *            type of the primary key
  * @param <T>
@@ -43,7 +42,7 @@ import com.vaadin.ui.VerticalLayout;
  */
 @SuppressWarnings("serial")
 public abstract class BaseSplitLayout<ID extends Serializable, T extends AbstractEntity<ID>>
-		extends BaseCollectionLayout<ID, T> implements Reloadable {
+        extends BaseCollectionLayout<ID, T> implements Reloadable {
 
 	private static final long serialVersionUID = 4606800218149558500L;
 
@@ -82,7 +81,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	 *            the joins used to query the database
 	 */
 	public BaseSplitLayout(BaseService<ID, T> service, EntityModel<T> entityModel,
-			FormOptions formOptions, SortOrder sortOrder, FetchJoinInformation... joins) {
+	        FormOptions formOptions, SortOrder sortOrder, FetchJoinInformation... joins) {
 		super(service, entityModel, formOptions, sortOrder, joins);
 	}
 
@@ -278,12 +277,12 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 			getFormOptions().setHideCancelButton(true);
 
 			editForm = new ModelBasedEditForm<ID, T>(entity, getService(), getEntityModel(),
-					getFormOptions(), fieldFilters) {
+			        getFormOptions(), fieldFilters) {
 
 				@Override
 				protected void afterEditDone(boolean cancel, boolean newObject, T entity) {
 					// update the selected item so master and detail are in sync
-					// again
+			        // again
 					setSelectedItem(entity);
 					reload();
 					afterReload(entity);
@@ -291,9 +290,9 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 
 				@Override
 				protected Field<?> constructCustomField(EntityModel<T> entityModel,
-						AttributeModel attributeModel, boolean viewMode) {
+			            AttributeModel attributeModel, boolean viewMode) {
 					return BaseSplitLayout.this.constructCustomField(entityModel, attributeModel,
-							viewMode, false);
+			                viewMode, false);
 				}
 
 				@Override

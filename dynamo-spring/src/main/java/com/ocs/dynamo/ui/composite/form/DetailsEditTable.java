@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.vaadin.data.Container.Filter;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
@@ -20,6 +19,7 @@ import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.composite.dialog.ModelBasedSearchDialog;
 import com.ocs.dynamo.ui.composite.table.ModelBasedTable;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
+import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Property;
 import com.vaadin.data.sort.SortOrder;
 import com.vaadin.data.util.BeanItemContainer;
@@ -38,17 +38,14 @@ import com.vaadin.ui.VerticalLayout;
  * "tableReadOnly" must be set to true. You can then use the setSearchXXX
  * methods to configure the behaviour of the search dialog that can be used to
  * modify the values
- * 
  * If you need a component like this, you should override the
  * constructCustomField method and use it to construct a subclass of this
  * component
- * 
  * Note that a separate instance of this component is generated for both the
  * view mode and the edit mode of the form it appears in, so this component does
  * not contain logic for switching between the modes
  * 
  * @author bas.rutten
- * 
  * @param <ID>
  *            the type of the primary key
  * @param <T>
@@ -56,7 +53,7 @@ import com.vaadin.ui.VerticalLayout;
  */
 @SuppressWarnings("serial")
 public abstract class DetailsEditTable<ID extends Serializable, T extends AbstractEntity<ID>>
-		extends CustomField<Collection<T>> implements SignalsParent {
+        extends CustomField<Collection<T>> implements SignalsParent {
 
 	private static final long serialVersionUID = -1203245694503350276L;
 
@@ -171,7 +168,7 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 	 *            the form options that determine how the table
 	 */
 	public DetailsEditTable(Collection<T> items, EntityModel<T> entityModel, boolean viewMode,
-			FormOptions formOptions) {
+	        FormOptions formOptions) {
 		this.entityModel = entityModel;
 		this.entityModelFactory = ServiceLocator.getEntityModelFactory();
 		this.messageService = ServiceLocator.getMessageService();
@@ -204,7 +201,7 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 				T t = createEntity();
 				container.addBean(t);
 				parentForm.signalDetailsTableValid(DetailsEditTable.this,
-						VaadinUtils.allFixedTableFieldsValid(table));
+		                VaadinUtils.allFixedTableFieldsValid(table));
 			}
 		});
 		addButton.setVisible(isTableEditEnabled() && !formOptions.isHideAddButton());
@@ -242,7 +239,7 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 	 * @return
 	 */
 	protected Field<?> constructCustomField(EntityModel<T> entityModel,
-			AttributeModel attributeModel, boolean viewMode) {
+	        AttributeModel attributeModel, boolean viewMode) {
 		return null;
 	}
 
@@ -261,10 +258,10 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 				container.removeItem(getSelectedItem());
 				items.remove(getSelectedItem());
 				// callback method so the entity can be removed from its
-				// parent
+		        // parent
 				removeEntity(getSelectedItem());
 				parentForm.signalDetailsTableValid(DetailsEditTable.this,
-						VaadinUtils.allFixedTableFieldsValid(table));
+		                VaadinUtils.allFixedTableFieldsValid(table));
 				setSelectedItem(null);
 				onSelect(null);
 			}
@@ -288,8 +285,8 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 			@Override
 			public void buttonClick(ClickEvent event) {
 				ModelBasedSearchDialog<ID, T> dialog = new ModelBasedSearchDialog<ID, T>(service,
-						searchDialogEntityModel != null ? searchDialogEntityModel : entityModel,
-						searchDialogFilters, searchDialogSortOrder, true) {
+		                searchDialogEntityModel != null ? searchDialogEntityModel : entityModel,
+		                searchDialogFilters, searchDialogSortOrder, true) {
 					@Override
 					protected boolean doClose() {
 
@@ -386,56 +383,59 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 		container.addAll(items);
 
 		table = new ModelBasedTable<ID, T>(container, entityModel, entityModelFactory,
-				messageService);
+		        messageService);
 
 		// overwrite the field factory to deal with validation
-		table.setTableFieldFactory(new ModelBasedFieldFactory<T>(entityModel, messageService, true,
-				false) {
+		table.setTableFieldFactory(
+		        new ModelBasedFieldFactory<T>(entityModel, messageService, true, false) {
 
-			@Override
-			public Field<?> createField(String propertyId) {
-				AttributeModel attributeModel = entityModel.getAttributeModel(propertyId);
+			        @Override
+			        public Field<?> createField(String propertyId) {
+				        AttributeModel attributeModel = entityModel.getAttributeModel(propertyId);
 
-				Field<?> field = constructCustomField(entityModel, attributeModel,
-						isTableEditEnabled());
-				if (field == null) {
+				        Field<?> field = constructCustomField(entityModel, attributeModel,
+		                        isTableEditEnabled());
+				        if (field == null) {
 
-					Filter filter = fieldFilters == null ? null : fieldFilters.get(attributeModel
-							.getName());
-					if (filter != null) {
-						// create a filtered combo box
-						field = (Field<?>) constructComboBox(attributeModel.getNestedEntityModel(),
-								attributeModel, filter);
-					} else {
-						// delegate to the field factory
-						field = super.createField(propertyId);
-					}
-				}
+					        Filter filter = fieldFilters == null ? null
+		                            : fieldFilters.get(attributeModel.getName());
+					        if (filter != null) {
+						        // create a filtered combo box
+						        field = (Field<?>) constructComboBox(
+		                                attributeModel.getNestedEntityModel(), attributeModel,
+		                                filter);
+					        } else {
+						        // delegate to the field factory
+						        field = super.createField(propertyId);
+					        }
+				        }
 
-				if (field != null) {
-					// add a bean validator
-					field.setEnabled(isTableEditEnabled());
-					field.setSizeFull();
+				        if (field != null) {
+					        // add a bean validator
+					        field.setEnabled(isTableEditEnabled());
+					        field.setSizeFull();
 
-					// adds a value change listener (for updating the save
-					// button)
-					if (!viewMode) {
-						field.addValueChangeListener(new Property.ValueChangeListener() {
+					        // adds a value change listener (for updating the save
+		                    // button)
+					        if (!viewMode) {
+						        field.addValueChangeListener(new Property.ValueChangeListener() {
 
-							@Override
-							public void valueChange(com.vaadin.data.Property.ValueChangeEvent event) {
-								if (parentForm != null) {
-									parentForm.signalDetailsTableValid(DetailsEditTable.this,
-											VaadinUtils.allFixedTableFieldsValid(table));
-								}
-							}
+							        @Override
+							        public void valueChange(
+		                                    com.vaadin.data.Property.ValueChangeEvent event) {
+								        if (parentForm != null) {
+									        parentForm.signalDetailsTableValid(
+		                                            DetailsEditTable.this,
+		                                            VaadinUtils.allFixedTableFieldsValid(table));
+								        }
+							        }
 
-						});
-					}
-				}
-				return field;
-			}
-		});
+						        });
+					        }
+				        }
+				        return field;
+			        }
+		        });
 
 		table.setEditable(isTableEditEnabled());
 		table.setMultiSelect(false);
@@ -464,7 +464,7 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 		// set the reference to the parent so the status of the save button can
 		// be set correctly
 		ModelBasedEditForm<?, ?> parent = VaadinUtils.getParentOfClass(this,
-				ModelBasedEditForm.class);
+		        ModelBasedEditForm.class);
 		setParentForm(parent);
 
 		return layout;

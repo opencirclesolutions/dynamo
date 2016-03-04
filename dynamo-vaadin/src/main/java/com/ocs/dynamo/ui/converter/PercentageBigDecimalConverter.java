@@ -7,7 +7,6 @@ import java.util.Locale;
  * A BigDecimal converter that adds or removes a percentage sign
  * 
  * @author bas.rutten
- * 
  */
 public class PercentageBigDecimalConverter extends BigDecimalConverter {
 
@@ -15,6 +14,7 @@ public class PercentageBigDecimalConverter extends BigDecimalConverter {
 
 	/**
 	 * Constructor
+	 * 
 	 * @param precision
 	 * @param useGrouping
 	 */
@@ -24,14 +24,14 @@ public class PercentageBigDecimalConverter extends BigDecimalConverter {
 
 	@Override
 	public String convertToPresentation(BigDecimal value, Class<? extends String> targetType,
-			Locale locale) {
+	        Locale locale) {
 		String result = super.convertToPresentation(value, targetType, locale);
 		return result == null ? null : result + "%";
 	}
 
 	@Override
 	public BigDecimal convertToModel(String value, Class<? extends BigDecimal> targetType,
-			Locale locale) {
+	        Locale locale) {
 		value = value == null ? null : value.replaceAll("%", "");
 		return super.convertToModel(value, targetType, locale);
 	}

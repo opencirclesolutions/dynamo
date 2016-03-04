@@ -33,7 +33,6 @@ import com.ocs.dynamo.filter.Filter;
  * Base class for all DAO implementations
  * 
  * @author bas.rutten
- * 
  * @param <ID>
  *            type parameter, the type of the primary key of the domain object
  * @param <T>
@@ -46,8 +45,8 @@ public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements B
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void addSorting(JPAQuery query, SortDefinition... sorts) {
-		PathBuilder<T> builder = new PathBuilder<T>(getDslRoot().getType(), getDslRoot()
-				.getMetadata());
+		PathBuilder<T> builder = new PathBuilder<T>(getDslRoot().getType(),
+		        getDslRoot().getMetadata());
 
 		for (SortDefinition s : sorts) {
 			Expression<Object> property = builder.get(s.getProperty());
@@ -63,7 +62,7 @@ public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements B
 	@Override
 	public long count(Filter filter, boolean distinct) {
 		CriteriaQuery<Long> cq = JpaQueryBuilder.createCountQuery(entityManager, getEntityClass(),
-				filter, distinct);
+		        filter, distinct);
 		TypedQuery<Long> query = entityManager.createQuery(cq);
 		return query.getSingleResult();
 	}
@@ -104,17 +103,17 @@ public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements B
 
 	@Override
 	public T fetchById(ID id, FetchJoinInformation... joins) {
-		CriteriaQuery<T> cq = JpaQueryBuilder
-				.createFetchSingleObjectQuery(entityManager, getEntityClass(), id,
-						(joins != null && joins.length > 0) ? joins : getFetchJoins());
+		CriteriaQuery<T> cq = JpaQueryBuilder.createFetchSingleObjectQuery(entityManager,
+		        getEntityClass(), id,
+		        (joins != null && joins.length > 0) ? joins : getFetchJoins());
 		TypedQuery<T> query = entityManager.createQuery(cq);
 		return getFirstValue(query.getResultList());
 	}
 
 	@Override
 	public List<T> fetchByIds(List<ID> ids, Sort sort, FetchJoinInformation... joins) {
-		CriteriaQuery<T> cq = JpaQueryBuilder.createFetchQuery(entityManager, getEntityClass(),
-				ids, sort, (joins != null && joins.length > 0) ? joins : getFetchJoins());
+		CriteriaQuery<T> cq = JpaQueryBuilder.createFetchQuery(entityManager, getEntityClass(), ids,
+		        sort, (joins != null && joins.length > 0) ? joins : getFetchJoins());
 		TypedQuery<T> query = entityManager.createQuery(cq);
 		return query.getResultList();
 	}
@@ -127,7 +126,7 @@ public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements B
 	@Override
 	public List<T> find(Filter filter, Sort sort, FetchJoinInformation... fetchJoins) {
 		CriteriaQuery<T> cq = JpaQueryBuilder.createSelectQuery(filter, entityManager,
-				getEntityClass(), fetchJoins, sort);
+		        getEntityClass(), fetchJoins, sort);
 
 		TypedQuery<T> query = entityManager.createQuery(cq);
 		return query.getResultList();
@@ -137,7 +136,7 @@ public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements B
 	public List<T> find(Filter filter, Pageable pageable, FetchJoinInformation... fetchJoins) {
 		// Create select and where clauses
 		CriteriaQuery<T> cq = JpaQueryBuilder.createSelectQuery(filter, entityManager,
-				getEntityClass(), fetchJoins, pageable != null ? pageable.getSort() : null);
+		        getEntityClass(), fetchJoins, pageable != null ? pageable.getSort() : null);
 
 		TypedQuery<T> query = entityManager.createQuery(cq);
 
@@ -161,7 +160,7 @@ public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements B
 
 	@Override
 	public List<T> find(Predicate predicate, int firstIndex, int maxResults,
-			SortDefinition... sorts) {
+	        SortDefinition... sorts) {
 		JPAQuery query = createQuery();
 		if (predicate != null) {
 			query.where(predicate);
@@ -186,30 +185,32 @@ public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements B
 	@Override
 	public T findByUniqueProperty(String propertyName, Object value, boolean caseSensitive) {
 		CriteriaQuery<T> cq = JpaQueryBuilder.createUniquePropertyQuery(entityManager,
-				getEntityClass(), propertyName, value, caseSensitive);
+		        getEntityClass(), propertyName, value, caseSensitive);
 		TypedQuery<T> query = entityManager.createQuery(cq);
 		try {
 			return query.getSingleResult();
 		} catch (NoResultException ex) {
 			return null;
 		} catch (NonUniqueResultException ex) {
-			throw new OCSRuntimeException("Query for unique property returned multiple results", ex);
+			throw new OCSRuntimeException("Query for unique property returned multiple results",
+			        ex);
 		}
 	}
 
 	@Override
 	public T fetchByUniqueProperty(String propertyName, Object value, boolean caseSensitive,
-			FetchJoinInformation... joins) {
+	        FetchJoinInformation... joins) {
 		CriteriaQuery<T> cq = JpaQueryBuilder.createUniquePropertyFetchQuery(entityManager,
-				getEntityClass(), (joins == null || joins.length == 0) ? getFetchJoins() : joins,
-				propertyName, value, caseSensitive);
+		        getEntityClass(), (joins == null || joins.length == 0) ? getFetchJoins() : joins,
+		        propertyName, value, caseSensitive);
 		TypedQuery<T> query = entityManager.createQuery(cq);
 		try {
 			return query.getSingleResult();
 		} catch (NoResultException ex) {
 			return null;
 		} catch (NonUniqueResultException ex) {
-			throw new OCSRuntimeException("Query for unique property returned multiple results", ex);
+			throw new OCSRuntimeException("Query for unique property returned multiple results",
+			        ex);
 		}
 	}
 
@@ -217,7 +218,7 @@ public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements B
 	@SuppressWarnings("unchecked")
 	public List<ID> findIds(Filter filter, Sort sort) {
 		CriteriaQuery<Tuple> cq = JpaQueryBuilder.createIdQuery(entityManager, getEntityClass(),
-				filter, sort);
+		        filter, sort);
 
 		TypedQuery<Tuple> query = entityManager.createQuery(cq);
 		List<Tuple> temp = query.getResultList();

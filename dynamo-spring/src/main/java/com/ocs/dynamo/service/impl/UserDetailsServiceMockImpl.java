@@ -7,7 +7,6 @@ import com.ocs.dynamo.service.UserDetailsService;
  * actually have a currently logged in user, e.g. in integration tests
  * 
  * @author bas.rutten
- * 
  */
 public class UserDetailsServiceMockImpl implements UserDetailsService {
 

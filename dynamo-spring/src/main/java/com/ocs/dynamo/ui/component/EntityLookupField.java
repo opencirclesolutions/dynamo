@@ -27,14 +27,13 @@ import com.vaadin.ui.UI;
  * dialog to search for another one
  * 
  * @author bas.rutten
- * 
  * @param <ID>
  *            the type of the primary key
  * @param <T>
  *            the type of the entity
  */
-public class EntityLookupField<ID extends Serializable, T extends AbstractEntity<ID>> extends
-		CustomField<T> {
+public class EntityLookupField<ID extends Serializable, T extends AbstractEntity<ID>>
+        extends CustomField<T> {
 
 	private static final long serialVersionUID = 5377765863515463622L;
 
@@ -101,8 +100,8 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 	 * @param joins
 	 */
 	public EntityLookupField(BaseService<ID, T> service, EntityModel<T> entityModel,
-			AttributeModel attributeModel, List<Filter> filters, SortOrder sortOrder,
-			FetchJoinInformation... joins) {
+	        AttributeModel attributeModel, List<Filter> filters, SortOrder sortOrder,
+	        FetchJoinInformation... joins) {
 		this.service = service;
 		this.entityModel = entityModel;
 		this.messageService = ServiceLocator.getMessageService();
@@ -158,7 +157,7 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 			@Override
 			public void buttonClick(ClickEvent event) {
 				ModelBasedSearchDialog<ID, T> dialog = new ModelBasedSearchDialog<ID, T>(service,
-						entityModel, filters, sortOrder, false, joins) {
+		                entityModel, filters, sortOrder, false, joins) {
 
 					private static final long serialVersionUID = -3432107069929941520L;
 
@@ -229,7 +228,7 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 	private void updateLabel(T newValue) {
 		if (label != null) {
 			label.setValue(newValue == null ? messageService.getMessage("ocs.no.item.selected")
-					: EntityModelUtil.getDisplayPropertyValue(newValue, entityModel));
+			        : EntityModelUtil.getDisplayPropertyValue(newValue, entityModel));
 		}
 	}
 

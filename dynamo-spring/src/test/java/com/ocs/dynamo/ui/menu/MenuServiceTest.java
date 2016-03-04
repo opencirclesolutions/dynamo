@@ -49,7 +49,6 @@ public class MenuServiceTest extends BaseIntegrationTest {
 	 * Test that an item is disabled if the user does not have the correct role
 	 * (the "destination" in the menu has to match a view name in a view
 	 * annotated with
-	 * 
 	 * @SpringView)
 	 */
 	@Test
@@ -59,7 +58,7 @@ public class MenuServiceTest extends BaseIntegrationTest {
 		MenuItem first = bar.getItems().get(0);
 		MenuItem firstSub = first.getChildren().get(0);
 		Assert.assertFalse(firstSub.isVisible());
-		
+
 		// the other items are unprotected and therefore shown
 		Assert.assertTrue(first.isVisible());
 	}

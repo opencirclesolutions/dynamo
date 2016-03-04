@@ -28,7 +28,6 @@ import com.ocs.dynamo.domain.model.annotation.Model;
  * because otherwise QueryDSL code generation fails
  * 
  * @author bas.rutten
- * 
  */
 @Entity
 @Table(name = "test_entity")

@@ -34,7 +34,7 @@ public class EntityListSelectTest extends BaseMockitoTest {
 	public void testAll() {
 
 		EntityListSelect<Integer, TestEntity> select = new EntityListSelect<>(
-				factory.getModel(TestEntity.class), null, service);
+		        factory.getModel(TestEntity.class), null, service);
 		Assert.assertEquals(EntityListSelect.SelectMode.ALL, select.getSelectMode());
 
 		Mockito.verify(service).findAll((SortOrder[]) null);
@@ -44,7 +44,7 @@ public class EntityListSelectTest extends BaseMockitoTest {
 	public void testFixed() {
 
 		EntityListSelect<Integer, TestEntity> select = new EntityListSelect<>(
-				factory.getModel(TestEntity.class), null, Lists.newArrayList(new TestEntity()));
+		        factory.getModel(TestEntity.class), null, Lists.newArrayList(new TestEntity()));
 		Assert.assertEquals(EntityListSelect.SelectMode.FIXED, select.getSelectMode());
 
 		Mockito.verifyZeroInteractions(service);
@@ -54,10 +54,11 @@ public class EntityListSelectTest extends BaseMockitoTest {
 	public void testFilter() {
 
 		EntityListSelect<Integer, TestEntity> select = new EntityListSelect<>(
-				factory.getModel(TestEntity.class), null, service, new Compare.Equal("name", "Bob"));
+		        factory.getModel(TestEntity.class), null, service,
+		        new Compare.Equal("name", "Bob"));
 		Assert.assertEquals(EntityListSelect.SelectMode.FILTERED, select.getSelectMode());
 
 		Mockito.verify(service).find(Matchers.any(com.ocs.dynamo.filter.Filter.class),
-				Matchers.any(com.ocs.dynamo.dao.SortOrder[].class));
+		        Matchers.any(com.ocs.dynamo.dao.SortOrder[].class));
 	}
 }

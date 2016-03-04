@@ -12,7 +12,6 @@ import com.vaadin.data.util.converter.StringToDateConverter;
  * format
  * 
  * @author bas.rutten
- * 
  */
 public class FormattedStringToDateConverter extends StringToDateConverter {
 
@@ -43,8 +42,8 @@ public class FormattedStringToDateConverter extends StringToDateConverter {
 
 	@Override
 	protected DateFormat getFormat(Locale locale) {
-		SimpleDateFormat df = locale == null ? new SimpleDateFormat(format) : new SimpleDateFormat(
-				format, locale);
+		SimpleDateFormat df = locale == null ? new SimpleDateFormat(format)
+		        : new SimpleDateFormat(format, locale);
 		if (timeZone != null) {
 			df.setTimeZone(timeZone);
 		}

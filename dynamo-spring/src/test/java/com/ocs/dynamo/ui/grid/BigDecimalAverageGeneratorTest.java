@@ -22,7 +22,7 @@ public class BigDecimalAverageGeneratorTest {
 		test.setSkip(new BigDecimal(20));
 
 		BeanItemContainer<TestZ> container = new BeanItemContainer<TestZ>(TestZ.class,
-				Lists.newArrayList(test));
+		        Lists.newArrayList(test));
 		Table table = new Table("", container);
 
 		BigDecimalAverageGenerator generator = new BigDecimalAverageGenerator("prop");

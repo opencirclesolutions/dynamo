@@ -10,7 +10,6 @@ import com.ocs.dynamo.utils.ClassUtils;
  * (using reflection)
  * 
  * @author bas.rutten
- * 
  */
 public class AttributeComparator implements Comparator<AbstractEntity<?>> {
 
@@ -18,6 +17,7 @@ public class AttributeComparator implements Comparator<AbstractEntity<?>> {
 
 	/**
 	 * Constructor
+	 * 
 	 * @param attribute
 	 */
 	public AttributeComparator(String attribute) {

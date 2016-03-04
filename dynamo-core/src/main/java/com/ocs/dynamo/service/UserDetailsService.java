@@ -4,7 +4,6 @@ package com.ocs.dynamo.service;
  * Service for retrieving the details of the logged in user
  * 
  * @author bas.rutten
- * 
  */
 public interface UserDetailsService {
 

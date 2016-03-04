@@ -15,7 +15,6 @@ import com.ocs.dynamo.domain.model.VisibilityType;
  * this will override any defaults
  * 
  * @author bas.rutten
- * 
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.FIELD, ElementType.METHOD })
@@ -65,7 +64,7 @@ public @interface Attribute {
 	// is the numeric field a percentage
 	public boolean percentage() default false;
 
-	// decimal precision 
+	// decimal precision
 	public int precision() default -1;
 
 	// prompt value to use in input fields

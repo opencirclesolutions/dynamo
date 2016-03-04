@@ -28,14 +28,15 @@ public class PivotContainerTest {
 	public void setup() {
 		// Define source container
 		usage = Lists.newArrayList(new EnergyUsage("ABC", 1, 1), new EnergyUsage("ABC", 2, 2),
-				new EnergyUsage("ABC", 3, 3), new EnergyUsage("ABC", 4, 4), new EnergyUsage("DEF",
-						1, 1), new EnergyUsage("DEF", 2, 2), new EnergyUsage("DEF", 3, 3),
-				new EnergyUsage("DEF", 4, 4), new EnergyUsage("GHI", 2, 2), new EnergyUsage("GHI",
-						3, 3), new EnergyUsage("JKL", 4, 4));
+		        new EnergyUsage("ABC", 3, 3), new EnergyUsage("ABC", 4, 4),
+		        new EnergyUsage("DEF", 1, 1), new EnergyUsage("DEF", 2, 2),
+		        new EnergyUsage("DEF", 3, 3), new EnergyUsage("DEF", 4, 4),
+		        new EnergyUsage("GHI", 2, 2), new EnergyUsage("GHI", 3, 3),
+		        new EnergyUsage("JKL", 4, 4));
 		BeanItemContainer<EnergyUsage> sourceContainer = new BeanItemContainer<EnergyUsage>(
-				EnergyUsage.class, usage);
-		pivotContainer = new PivotContainer(sourceContainer, "week", "ean", Lists.newArrayList(1,
-				2, 3, 4), Lists.newArrayList("test"), 4);
+		        EnergyUsage.class, usage);
+		pivotContainer = new PivotContainer(sourceContainer, "week", "ean",
+		        Lists.newArrayList(1, 2, 3, 4), Lists.newArrayList("test"), 4);
 	}
 
 	@Test

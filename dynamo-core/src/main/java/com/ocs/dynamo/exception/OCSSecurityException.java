@@ -2,8 +2,8 @@ package com.ocs.dynamo.exception;
 
 /**
  * An exception that indicates that a security-related issues has occurrred
+ * 
  * @author bas.rutten
- *
  */
 public class OCSSecurityException extends OCSRuntimeException {
 

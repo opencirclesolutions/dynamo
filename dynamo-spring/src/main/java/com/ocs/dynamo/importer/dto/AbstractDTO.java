@@ -6,7 +6,6 @@ import java.io.Serializable;
  * Abstract class for DTOs that are used during the import process
  * 
  * @author bas.rutten
- * 
  */
 public class AbstractDTO implements Serializable {
 

@@ -10,19 +10,16 @@ import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.service.BaseService;
 
 /**
- * 
  * @author bas.rutten
- * 
  *         Base class for a query definition that uses a service for data
  *         retrieval
- * 
  * @param <ID>
  *            the class of the primary key
  * @param <T>
  *            the class of the entity
  */
-public class ServiceQueryDefinition<ID extends Serializable, T extends AbstractEntity<ID>> extends
-		LazyQueryDefinition {
+public class ServiceQueryDefinition<ID extends Serializable, T extends AbstractEntity<ID>>
+        extends LazyQueryDefinition {
 
 	private static final long serialVersionUID = 2780009981072027606L;
 
@@ -46,8 +43,8 @@ public class ServiceQueryDefinition<ID extends Serializable, T extends AbstractE
 	 * @param batchSize
 	 *            the default batch size
 	 */
-	public ServiceQueryDefinition(BaseService<ID, T> service, boolean compositeItems,
-			int batchSize, QueryType queryType, FetchJoinInformation[] joins) {
+	public ServiceQueryDefinition(BaseService<ID, T> service, boolean compositeItems, int batchSize,
+	        QueryType queryType, FetchJoinInformation[] joins) {
 		super(compositeItems, batchSize, OCSConstants.ID);
 		this.service = service;
 		this.queryType = queryType;
@@ -73,9 +70,9 @@ public class ServiceQueryDefinition<ID extends Serializable, T extends AbstractE
 	 * @param joins
 	 *            the joins to include in the query
 	 */
-	public ServiceQueryDefinition(BaseService<ID, T> service, boolean compositeItems,
-			int batchSize, Object idPropertyId, int maxNestedPropertyDepth, QueryType queryType,
-			FetchJoinInformation[] joins) {
+	public ServiceQueryDefinition(BaseService<ID, T> service, boolean compositeItems, int batchSize,
+	        Object idPropertyId, int maxNestedPropertyDepth, QueryType queryType,
+	        FetchJoinInformation[] joins) {
 		super(compositeItems, batchSize, idPropertyId);
 		this.service = service;
 		this.queryType = queryType;
@@ -96,7 +93,6 @@ public class ServiceQueryDefinition<ID extends Serializable, T extends AbstractE
 	}
 
 	/**
-	 * 
 	 * @return the predetermined number of records that will be returned by the
 	 *         query
 	 */

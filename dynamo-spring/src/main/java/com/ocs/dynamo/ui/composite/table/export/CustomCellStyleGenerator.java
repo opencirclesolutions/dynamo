@@ -6,9 +6,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import com.ocs.dynamo.domain.model.AttributeModel;
 
 /**
- * 
  * @author bas.rutten
- *
  */
 public interface CustomCellStyleGenerator {
 
@@ -20,5 +18,5 @@ public interface CustomCellStyleGenerator {
 	 * @return
 	 */
 	public CellStyle getCustomCellStyle(Workbook workbook, Object propId, Object value,
-			AttributeModel attributeModel);
+	        AttributeModel attributeModel);
 }

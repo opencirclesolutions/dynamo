@@ -14,7 +14,6 @@ import com.vaadin.ui.UI;
  * the navigator
  * 
  * @author bas.rutten
- * 
  */
 public abstract class BaseView extends CustomComponent implements View {
 

@@ -14,9 +14,7 @@ import com.ocs.dynamo.filter.Compare.Less;
 import com.ocs.dynamo.filter.Compare.LessOrEqual;
 
 /**
- * 
  * @author bas.rutten
- * 
  */
 public abstract class AbstractFilter implements Filter {
 
@@ -115,7 +113,7 @@ public abstract class AbstractFilter implements Filter {
 	 * @return
 	 */
 	public AbstractJunctionFilter between(String propertyId, Comparable<?> startValue,
-			Comparable<?> endValue) {
+	        Comparable<?> endValue) {
 		return newJunction(new Between(propertyId, startValue, endValue));
 	}
 

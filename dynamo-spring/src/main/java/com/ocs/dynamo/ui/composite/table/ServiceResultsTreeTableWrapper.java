@@ -11,9 +11,9 @@ import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.Searchable;
 import com.ocs.dynamo.ui.container.QueryType;
 import com.ocs.dynamo.ui.container.ServiceContainer;
+import com.ocs.dynamo.ui.container.hierarchical.HierarchicalContainer.HierarchicalDefinition;
 import com.ocs.dynamo.ui.container.hierarchical.HierarchicalFetchJoinInformation;
 import com.ocs.dynamo.ui.container.hierarchical.ModelBasedHierarchicalContainer;
-import com.ocs.dynamo.ui.container.hierarchical.HierarchicalContainer.HierarchicalDefinition;
 import com.ocs.dynamo.ui.container.hierarchical.ModelBasedHierarchicalContainer.ModelBasedHierarchicalDefinition;
 import com.vaadin.data.Container;
 import com.vaadin.data.Container.Filter;
@@ -28,10 +28,9 @@ import com.vaadin.shared.data.sort.SortDirection;
  * that is on the lowest level of the hierarchy.
  * 
  * @author Patrick Deenen (patrick.deenen@opencirclesolutions.nl)
- *
  */
 public class ServiceResultsTreeTableWrapper<ID extends Serializable, T extends AbstractEntity<ID>>
-		extends ServiceResultsTableWrapper<ID, T> {
+        extends ServiceResultsTableWrapper<ID, T> {
 
 	private static final long serialVersionUID = -9054619694421055983L;
 
@@ -48,8 +47,8 @@ public class ServiceResultsTreeTableWrapper<ID extends Serializable, T extends A
 	 */
 	@SuppressWarnings("unchecked")
 	public ServiceResultsTreeTableWrapper(EntityModel<T> rootEntityModel, QueryType queryType,
-			SortOrder order, HierarchicalFetchJoinInformation[] joins,
-			BaseService<?, ?>... services) {
+	        SortOrder order, HierarchicalFetchJoinInformation[] joins,
+	        BaseService<?, ?>... services) {
 		super((BaseService<ID, T>) services[0], rootEntityModel, queryType, null, order, joins);
 		this.services = new ArrayList<>();
 		this.services.addAll(Arrays.asList(services));
@@ -66,8 +65,8 @@ public class ServiceResultsTreeTableWrapper<ID extends Serializable, T extends A
 	 */
 	@SuppressWarnings("unchecked")
 	public ServiceResultsTreeTableWrapper(List<BaseService<?, ?>> services,
-			EntityModel<T> rootEntityModel, QueryType queryType, SortOrder order,
-			HierarchicalFetchJoinInformation[] joins) {
+	        EntityModel<T> rootEntityModel, QueryType queryType, SortOrder order,
+	        HierarchicalFetchJoinInformation[] joins) {
 		super((BaseService<ID, T>) services.get(0), rootEntityModel, queryType, null, order, joins);
 		this.services = services;
 	}
@@ -78,8 +77,8 @@ public class ServiceResultsTreeTableWrapper<ID extends Serializable, T extends A
 	@Override
 	protected Container constructContainer() {
 		return new ModelBasedHierarchicalContainer<T>(getMessageService(), getEntityModelFactory(),
-				getEntityModel(), services, (HierarchicalFetchJoinInformation[]) getJoins(),
-				getQueryType());
+		        getEntityModel(), services, (HierarchicalFetchJoinInformation[]) getJoins(),
+		        getQueryType());
 	}
 
 	/**
@@ -107,15 +106,15 @@ public class ServiceResultsTreeTableWrapper<ID extends Serializable, T extends A
 	protected void initSortingAndFiltering() {
 		if (!getContainer().getHierarchy().isEmpty()) {
 			// get the definition on the lowest level
-			HierarchicalDefinition def = getContainer().getHierarchy().get(
-					getContainer().getHierarchy().size() - 1);
+			HierarchicalDefinition def = getContainer().getHierarchy()
+			        .get(getContainer().getHierarchy().size() - 1);
 			if (filter != null && def.getContainer() instanceof ServiceContainer<?, ?>) {
 				((ServiceContainer<?, ?>) def.getContainer()).getQueryView().addFilter(filter);
 			}
 		}
 		if (getSortOrder() != null) {
 			table.sort(new Object[] { getSortOrder().getPropertyId() },
-					new boolean[] { SortDirection.ASCENDING == getSortOrder().getDirection() });
+			        new boolean[] { SortDirection.ASCENDING == getSortOrder().getDirection() });
 		}
 	}
 
@@ -130,7 +129,7 @@ public class ServiceResultsTreeTableWrapper<ID extends Serializable, T extends A
 	public void search(Filter filter) {
 		if (getContainer() != null && !getContainer().getHierarchy().isEmpty()) {
 			ModelBasedHierarchicalDefinition def = (ModelBasedHierarchicalDefinition) getContainer()
-					.getHierarchicalDefinition(0);
+			        .getHierarchicalDefinition(0);
 			if (def.getContainer() instanceof Searchable) {
 				((Searchable) def.getContainer()).search(filter);
 			}

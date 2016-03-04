@@ -8,7 +8,6 @@ import com.vaadin.ui.ProgressBar;
  * interface is used to be passed to an instance of ProgressBarUpdate
  * 
  * @author bas.rutten
- * 
  */
 public interface Progressable {
 

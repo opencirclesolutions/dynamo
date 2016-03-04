@@ -7,7 +7,6 @@ import com.vaadin.ui.VerticalLayout;
  * margin and the spacing
  * 
  * @author bas.rutten
- * 
  */
 public class DefaultVerticalLayout extends VerticalLayout {
 

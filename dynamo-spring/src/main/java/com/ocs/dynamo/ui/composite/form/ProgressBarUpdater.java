@@ -11,7 +11,6 @@ import com.vaadin.ui.UI;
  * process
  * 
  * @author bas.rutten
- * 
  */
 public class ProgressBarUpdater implements Runnable {
 
@@ -59,7 +58,8 @@ public class ProgressBarUpdater implements Runnable {
 				@Override
 				public void run() {
 					if (estimatedSize > 0) {
-						progress = (float) ((1. * progressable.estimateCurrentProgress()) / (1. * estimatedSize));
+						progress = (float) ((1. * progressable.estimateCurrentProgress())
+			                    / (1. * estimatedSize));
 					} else {
 						progress = 1.0f;
 					}
@@ -68,8 +68,9 @@ public class ProgressBarUpdater implements Runnable {
 					}
 					progressable.getProgressBar().setValue(progress);
 
-					String progressString = VaadinUtils.bigDecimalToString(true, false, BigDecimal
-							.valueOf(progress * 100), VaadinSession.getCurrent().getLocale());
+					String progressString = VaadinUtils.bigDecimalToString(true, false,
+			                BigDecimal.valueOf(progress * 100),
+			                VaadinSession.getCurrent().getLocale());
 					progressable.getStatusLabel().setValue(progressString + " done");
 				}
 			});

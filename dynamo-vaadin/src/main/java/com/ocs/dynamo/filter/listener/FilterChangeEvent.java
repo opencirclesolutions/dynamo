@@ -9,7 +9,6 @@ import com.vaadin.data.Container.Filter;
  * changed
  * 
  * @author bas.rutten
- *
  */
 public class FilterChangeEvent implements Serializable {
 

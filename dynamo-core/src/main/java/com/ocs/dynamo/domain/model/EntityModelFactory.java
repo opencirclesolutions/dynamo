@@ -6,7 +6,6 @@ import com.ocs.dynamo.service.MessageService;
  * Factory for entity models
  * 
  * @author bas.rutten
- * 
  */
 public interface EntityModelFactory {
 

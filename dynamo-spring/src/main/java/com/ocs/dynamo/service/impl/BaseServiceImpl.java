@@ -31,15 +31,14 @@ import com.ocs.dynamo.utils.ClassUtils;
  * Base service implementation
  * 
  * @author bas.rutten
- * 
  * @param <ID>
  *            type of the primary key
  * @param <T>
  *            type of the entity
  */
 
-public abstract class BaseServiceImpl<ID, T extends AbstractEntity<ID>> implements
-		BaseService<ID, T> {
+public abstract class BaseServiceImpl<ID, T extends AbstractEntity<ID>>
+        implements BaseService<ID, T> {
 
 	private static final Logger LOGGER = Logger.getLogger(BaseServiceImpl.class);
 
@@ -65,9 +64,10 @@ public abstract class BaseServiceImpl<ID, T extends AbstractEntity<ID>> implemen
 			for (SortOrder o : orders) {
 				if (o != null) {
 					list.add(new org.springframework.data.domain.Sort.Order(
-							o.getDirection() == SortOrder.Direction.ASC ? org.springframework.data.domain.Sort.Direction.ASC
-									: org.springframework.data.domain.Sort.Direction.DESC, o
-									.getProperty()));
+					        o.getDirection() == SortOrder.Direction.ASC
+					                ? org.springframework.data.domain.Sort.Direction.ASC
+					                : org.springframework.data.domain.Sort.Direction.DESC,
+					        o.getProperty()));
 				}
 			}
 			if (list.isEmpty()) {
@@ -93,9 +93,10 @@ public abstract class BaseServiceImpl<ID, T extends AbstractEntity<ID>> implemen
 			for (SortOrder o : orders) {
 				if (o != null) {
 					list.add(new org.springframework.data.domain.Sort.Order(
-							o.getDirection() == SortOrder.Direction.ASC ? org.springframework.data.domain.Sort.Direction.ASC
-									: org.springframework.data.domain.Sort.Direction.DESC, o
-									.getProperty()));
+					        o.getDirection() == SortOrder.Direction.ASC
+					                ? org.springframework.data.domain.Sort.Direction.ASC
+					                : org.springframework.data.domain.Sort.Direction.DESC,
+					        o.getProperty()));
 				}
 			}
 
@@ -145,13 +146,13 @@ public abstract class BaseServiceImpl<ID, T extends AbstractEntity<ID>> implemen
 
 	@Override
 	public T fetchByUniqueProperty(String propertyName, Object value, boolean caseSensitive,
-			FetchJoinInformation... joins) {
+	        FetchJoinInformation... joins) {
 		return getDao().fetchByUniqueProperty(propertyName, value, caseSensitive, joins);
 	}
 
 	@Override
 	public List<T> fetch(Filter filter, int pageNumber, int pageSize, FetchJoinInformation[] joins,
-			SortOrder... orders) {
+	        SortOrder... orders) {
 		return getDao().find(filter, constructPageRequest(pageNumber, pageSize, orders), joins);
 	}
 
@@ -181,7 +182,8 @@ public abstract class BaseServiceImpl<ID, T extends AbstractEntity<ID>> implemen
 	}
 
 	/**
-	 * Looks for an identical entity (which has a different primary key but 
+	 * Looks for an identical entity (which has a different primary key but
+	 * 
 	 * @param t
 	 * @return
 	 */
@@ -207,7 +209,6 @@ public abstract class BaseServiceImpl<ID, T extends AbstractEntity<ID>> implemen
 
 	/**
 	 * Checks if there is an entity that is identical to this one
-	 * 
 	 * Subclasses must override the findIdenticalEntity method to perform the
 	 * actual calculation
 	 * 
@@ -253,9 +254,9 @@ public abstract class BaseServiceImpl<ID, T extends AbstractEntity<ID>> implemen
 			List<String> errors = new ArrayList<>();
 			for (ConstraintViolation<T> c : constraintViolations) {
 				Class<?> annotationType = c.getConstraintDescriptor().getAnnotation()
-						.annotationType();
+				        .annotationType();
 				if (annotationType.equals(AssertTrue.class)
-						|| annotationType.equals(AssertFalse.class)) {
+				        || annotationType.equals(AssertFalse.class)) {
 					// in case of assert true or assert false, don't mention
 					// the property name
 					errors.add(c.getMessage());
@@ -272,8 +273,8 @@ public abstract class BaseServiceImpl<ID, T extends AbstractEntity<ID>> implemen
 		}
 
 		if (identicalEntityExists(t)) {
-			throw new OCSNonUniqueException(messageService.getMessage(getEntityClass()
-					.getSimpleName() + ".not.unique"));
+			throw new OCSNonUniqueException(
+			        messageService.getMessage(getEntityClass().getSimpleName() + ".not.unique"));
 		}
 	}
 }

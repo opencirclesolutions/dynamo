@@ -24,7 +24,7 @@ public class IntegerSumGeneratorTest {
 		test.setSkip(15);
 
 		BeanItemContainer<TestY> container = new BeanItemContainer<TestY>(TestY.class,
-				Lists.newArrayList(test));
+		        Lists.newArrayList(test));
 		Table table = new Table("", container);
 
 		IntegerSumGenerator generator = new IntegerSumGenerator("prop");

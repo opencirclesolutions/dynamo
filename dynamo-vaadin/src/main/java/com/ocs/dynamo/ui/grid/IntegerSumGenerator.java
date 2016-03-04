@@ -10,7 +10,6 @@ import com.vaadin.data.util.PropertyValueGenerator;
  * A property value generator for summing up a collection of Integers
  * 
  * @author bas.rutten
- *
  */
 public class IntegerSumGenerator extends PropertyValueGenerator<Integer> {
 

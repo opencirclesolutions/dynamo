@@ -57,7 +57,7 @@ public class ModelBasedFieldFactoryTest extends BaseMockitoTest {
 		PrivateAccessor.setField(factory, "defaultPrecision", 2);
 
 		fieldFactory = new ModelBasedFieldFactory<>(factory.getModel(TestEntity.class),
-				messageService, false, false);
+		        messageService, false, false);
 
 	}
 
@@ -124,8 +124,8 @@ public class ModelBasedFieldFactoryTest extends BaseMockitoTest {
 	 */
 	@Test
 	public void testTextFieldValidating() {
-		fieldFactory = ModelBasedFieldFactory.getValidatingInstance(
-				factory.getModel(TestEntity.class), messageService);
+		fieldFactory = ModelBasedFieldFactory
+		        .getValidatingInstance(factory.getModel(TestEntity.class), messageService);
 		Object obj = fieldFactory.createField("name");
 
 		Assert.assertTrue(obj instanceof TextField);
@@ -167,7 +167,7 @@ public class ModelBasedFieldFactoryTest extends BaseMockitoTest {
 		Assert.assertEquals(new BigDecimal("3.43"), dec);
 
 		Assert.assertEquals("3,14%",
-				tf.getConverter().convertToPresentation(new BigDecimal(3.14), null, null));
+		        tf.getConverter().convertToPresentation(new BigDecimal(3.14), null, null));
 	}
 
 	/**
@@ -237,7 +237,7 @@ public class ModelBasedFieldFactoryTest extends BaseMockitoTest {
 	@Test
 	public void testSearchBooleanField() {
 		fieldFactory = ModelBasedFieldFactory.getSearchInstance(factory.getModel(TestEntity.class),
-				messageService);
+		        messageService);
 
 		Field<?> field = fieldFactory.createField("someBoolean");
 		Assert.assertTrue(field instanceof ComboBox);
@@ -249,7 +249,7 @@ public class ModelBasedFieldFactoryTest extends BaseMockitoTest {
 	@Test
 	public void testNormalBooleanField() {
 		fieldFactory = ModelBasedFieldFactory.getInstance(factory.getModel(TestEntity.class),
-				messageService);
+		        messageService);
 
 		Field<?> field = fieldFactory.createField("someBoolean");
 		Assert.assertTrue(field instanceof CheckBox);
@@ -257,8 +257,8 @@ public class ModelBasedFieldFactoryTest extends BaseMockitoTest {
 
 	@Test
 	public void testDoNotCreateReadonlyField() {
-		ModelBasedFieldFactory<TestX> f = ModelBasedFieldFactory.getInstance(
-				factory.getModel(TestX.class), messageService);
+		ModelBasedFieldFactory<TestX> f = ModelBasedFieldFactory
+		        .getInstance(factory.getModel(TestX.class), messageService);
 		Assert.assertNull(f.createField("readOnlyField"));
 
 		// in search mode, it does not matter if the field is readonly
@@ -271,7 +271,7 @@ public class ModelBasedFieldFactoryTest extends BaseMockitoTest {
 	public void testConstructField() {
 		EntityModel<TestEntity2> model = factory.getModel(TestEntity2.class);
 		ModelBasedFieldFactory<TestEntity2> ff = ModelBasedFieldFactory.getInstance(model,
-				messageService);
+		        messageService);
 
 		// simple case - simply create the normal field
 		Field<?> f = ff.constructField(model.getAttributeModel("name"), null);

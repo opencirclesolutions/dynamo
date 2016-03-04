@@ -14,6 +14,7 @@ import com.ocs.dynamo.domain.model.impl.ModelBasedFieldFactory;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.ui.composite.table.export.TableExportActionHandler;
 import com.vaadin.data.Container;
+import com.vaadin.data.Container.ItemSetChangeEvent;
 import com.vaadin.data.Property;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.UI;
@@ -22,7 +23,6 @@ import com.vaadin.ui.UI;
  * A Table that bases its columns on the meta model of an entity
  * 
  * @author bas.rutten
- * 
  * @param <ID>
  *            type of the primary key
  * @param <T>
@@ -49,7 +49,7 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
 	 * @param messageService
 	 */
 	public ModelBasedTable(Container container, EntityModel<T> model,
-			EntityModelFactory entityModelFactory, MessageService messageService) {
+	        EntityModelFactory entityModelFactory, MessageService messageService) {
 		super("", container);
 		this.container = container;
 		this.entityModel = model;
@@ -68,7 +68,7 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
 		List<EntityModel<?>> list = new ArrayList<>();
 		list.add(model);
 		addActionHandler(new TableExportActionHandler(UI.getCurrent(), entityModelFactory, list,
-				messageService, model.getDisplayNamePlural(), null, false, null));
+		        messageService, model.getDisplayNamePlural(), null, false, null));
 
 		addItemSetChangeListener(new ItemSetChangeListener() {
 
@@ -87,7 +87,7 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
 	@Override
 	protected String formatPropertyValue(Object rowId, Object colId, Property<?> property) {
 		String result = TableUtils.formatPropertyValue(this, entityModelFactory, entityModel,
-				messageService, rowId, colId, property);
+		        messageService, rowId, colId, property);
 		if (result != null) {
 			return result;
 		}
@@ -117,7 +117,7 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
 	 * @param attributeModels
 	 */
 	protected void generateColumns(Table table, Container container,
-			List<AttributeModel> attributeModels) {
+	        List<AttributeModel> attributeModels) {
 		List<Object> propertyNames = new ArrayList<>();
 		List<String> headerNames = new ArrayList<>();
 
@@ -131,10 +131,11 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
 				// needed
 				if (container instanceof LazyQueryContainer) {
 					LazyQueryContainer lazyContainer = (LazyQueryContainer) container;
-					if (!lazyContainer.getContainerPropertyIds().contains(attributeModel.getName())) {
+					if (!lazyContainer.getContainerPropertyIds()
+					        .contains(attributeModel.getName())) {
 						lazyContainer.addContainerProperty(attributeModel.getName(),
-								attributeModel.getType(), attributeModel.getDefaultValue(),
-								attributeModel.isReadOnly(), attributeModel.isSortable());
+						        attributeModel.getType(), attributeModel.getDefaultValue(),
+						        attributeModel.isReadOnly(), attributeModel.isSortable());
 					}
 				}
 
@@ -153,8 +154,8 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
 	}
 
 	public void updateTableCaption() {
-		setCaption(entityModel.getDisplayNamePlural() + " "
-				+ messageService.getMessage("ocs.showing.results", getContainerDataSource().size()));
+		setCaption(entityModel.getDisplayNamePlural() + " " + messageService
+		        .getMessage("ocs.showing.results", getContainerDataSource().size()));
 	}
 
 }

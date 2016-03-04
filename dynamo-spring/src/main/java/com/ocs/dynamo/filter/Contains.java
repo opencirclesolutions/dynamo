@@ -8,7 +8,6 @@ import org.apache.commons.lang.ObjectUtils;
  * A filter that checks if a value is contained in a collection
  * 
  * @author bas.rutten
- * 
  */
 public class Contains extends AbstractFilter implements PropertyFilter {
 
@@ -17,7 +16,6 @@ public class Contains extends AbstractFilter implements PropertyFilter {
 	private final String propertyId;
 
 	/**
-	 * 
 	 * @param propertyId
 	 *            the property that represents the collection
 	 * @param value
@@ -64,7 +62,7 @@ public class Contains extends AbstractFilter implements PropertyFilter {
 		Contains c = (Contains) obj;
 
 		return ObjectUtils.equals(propertyId, c.getPropertyId())
-				&& ObjectUtils.equals(value, c.getValue());
+		        && ObjectUtils.equals(value, c.getValue());
 	}
 
 	@Override

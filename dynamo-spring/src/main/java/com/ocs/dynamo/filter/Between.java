@@ -7,7 +7,6 @@ import org.apache.commons.lang.ObjectUtils;
  * range. This range is inclusive (i.e. boundary values count)
  * 
  * @author bas.rutten
- * 
  */
 public class Between extends AbstractFilter implements PropertyFilter {
 
@@ -68,14 +67,14 @@ public class Between extends AbstractFilter implements PropertyFilter {
 		final Between o = (Between) obj;
 
 		return ObjectUtils.equals(propertyId, o.getPropertyId())
-				&& ObjectUtils.equals(startValue, o.getStartValue())
-				&& ObjectUtils.equals(endValue, o.getEndValue());
+		        && ObjectUtils.equals(startValue, o.getStartValue())
+		        && ObjectUtils.equals(endValue, o.getEndValue());
 	}
 
 	@Override
 	public String toString() {
 		return getPropertyId() + " " + super.toString() + " " + getStartValue() + " and "
-				+ getEndValue();
+		        + getEndValue();
 	}
 
 }

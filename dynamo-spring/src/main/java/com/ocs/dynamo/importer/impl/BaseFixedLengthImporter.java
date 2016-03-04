@@ -16,7 +16,6 @@ import com.ocs.dynamo.exception.OCSImportException;
  * Base class for Importers that can be used to import fixed length files
  * 
  * @author bas.rutten
- *
  */
 public class BaseFixedLengthImporter extends BaseTextImporter {
 
@@ -32,8 +31,8 @@ public class BaseFixedLengthImporter extends BaseTextImporter {
 	 */
 	@Override
 	public int countRows(byte[] bytes, int row, int column) {
-		try (BufferedReader reader = new BufferedReader(new InputStreamReader(
-				new ByteArrayInputStream(bytes)))) {
+		try (BufferedReader reader = new BufferedReader(
+		        new InputStreamReader(new ByteArrayInputStream(bytes)))) {
 			int count = 0;
 
 			String line = reader.readLine();
@@ -77,8 +76,8 @@ public class BaseFixedLengthImporter extends BaseTextImporter {
 	 * @throws IOException
 	 */
 	protected List<String[]> readFixedLengthFile(byte[] bytes, List<Integer> fieldLengths) {
-		try (BufferedReader reader = new BufferedReader(new CharSequenceReader(new String(bytes,
-				OCSConstants.UTF_8)))) {
+		try (BufferedReader reader = new BufferedReader(
+		        new CharSequenceReader(new String(bytes, OCSConstants.UTF_8)))) {
 			List<String[]> result = new ArrayList<String[]>();
 
 			String line = reader.readLine();

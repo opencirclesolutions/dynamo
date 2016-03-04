@@ -9,7 +9,6 @@ import org.junit.Test;
  * Test cases for the PlainStringToIntegerConverter
  * 
  * @author bas.rutten
- * 
  */
 public class GroupingStringToIntegerConverterTest {
 
@@ -36,14 +35,14 @@ public class GroupingStringToIntegerConverterTest {
 	@Test
 	public void testToPresentationWithGrouping() {
 		String value = new GroupingStringToIntegerConverter(true).convertToPresentation(3000,
-				String.class, new Locale("nl"));
+		        String.class, new Locale("nl"));
 		Assert.assertEquals("3.000", value);
 	}
 
 	@Test
 	public void testToModelWithGrouping() {
 		Integer value = new GroupingStringToIntegerConverter(true).convertToModel("3.000",
-				Integer.class, new Locale("nl"));
+		        Integer.class, new Locale("nl"));
 		Assert.assertEquals(3000, value.intValue());
 	}
 }

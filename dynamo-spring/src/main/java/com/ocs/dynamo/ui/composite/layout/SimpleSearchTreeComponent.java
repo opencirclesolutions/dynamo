@@ -7,7 +7,6 @@ import java.util.Map;
 
 import org.vaadin.addons.lazyquerycontainer.CompositeItem;
 
-import com.vaadin.data.Container.Filter;
 import com.ocs.dynamo.dao.query.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
@@ -20,6 +19,7 @@ import com.ocs.dynamo.ui.container.QueryType;
 import com.ocs.dynamo.ui.container.hierarchical.HierarchicalFetchJoinInformation;
 import com.ocs.dynamo.ui.container.hierarchical.ModelBasedHierarchicalContainer;
 import com.ocs.dynamo.ui.container.hierarchical.ModelBasedHierarchicalContainer.ModelBasedHierarchicalDefinition;
+import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.ui.Component;
@@ -28,11 +28,10 @@ import com.vaadin.ui.Component;
  * Extends simple search with the support of hierarchy in a tree table.
  * 
  * @author Patrick Deenen (patrick.deenen@opencirclesolutions.nl)
- *
  */
 @SuppressWarnings("serial")
 public class SimpleSearchTreeComponent<ID extends Serializable, T extends AbstractEntity<ID>>
-		extends SimpleSearchLayout<ID, T> {
+        extends SimpleSearchLayout<ID, T> {
 
 	protected List<BaseService<?, ?>> services;
 	private Object selectedItem;
@@ -45,9 +44,9 @@ public class SimpleSearchTreeComponent<ID extends Serializable, T extends Abstra
 	 */
 	@SuppressWarnings("unchecked")
 	public SimpleSearchTreeComponent(List<BaseService<?, ?>> services, EntityModel<T> entityModel,
-			QueryType queryType, FormOptions formOptions, FetchJoinInformation... joins) {
+	        QueryType queryType, FormOptions formOptions, FetchJoinInformation... joins) {
 		super((BaseService<ID, T>) services.get(0), entityModel, queryType, formOptions, null,
-				joins);
+		        joins);
 		this.services = services;
 	}
 
@@ -62,23 +61,22 @@ public class SimpleSearchTreeComponent<ID extends Serializable, T extends Abstra
 	 */
 	@SuppressWarnings("unchecked")
 	public SimpleSearchTreeComponent(List<BaseService<?, ?>> services, EntityModel<T> entityModel,
-			QueryType queryType, FormOptions formOptions, Map<String, Filter> fieldFilters,
-			List<Filter> additionalFilters, FetchJoinInformation[] joins) {
+	        QueryType queryType, FormOptions formOptions, Map<String, Filter> fieldFilters,
+	        List<Filter> additionalFilters, FetchJoinInformation[] joins) {
 		super((BaseService<ID, T>) services.get(0), entityModel, queryType, formOptions,
-				fieldFilters, additionalFilters, null, joins);
+		        fieldFilters, additionalFilters, null, joins);
 		this.services = services;
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see com.ocs.dynamo.ui.page.SimpleSearchPanel#getTableWrapper()
 	 */
 	@Override
 	public ServiceResultsTableWrapper<ID, T> getTableWrapper() {
 		if (tableWrapper == null) {
 			tableWrapper = new ServiceResultsTreeTableWrapper<ID, T>(services, getEntityModel(),
-					getQueryType(), null, getJoins());
+			        getQueryType(), null, getJoins());
 			tableWrapper.build();
 		}
 		return tableWrapper;
@@ -88,11 +86,11 @@ public class SimpleSearchTreeComponent<ID extends Serializable, T extends Abstra
 	@Override
 	protected Component getSearchForm() {
 		ModelBasedHierarchicalContainer<T> c = (ModelBasedHierarchicalContainer<T>) getTableWrapper()
-				.getContainer();
+		        .getContainer();
 		if (searchForm == null && !c.getHierarchy().isEmpty()) {
 			ModelBasedHierarchicalDefinition def = c.getHierarchicalDefinition(0);
 			searchForm = new ModelBasedSearchForm(getTableWrapper(), def.getEntityModel(),
-					getFormOptions(), getAdditionalFilters(), getFieldFilters());
+			        getFormOptions(), getAdditionalFilters(), getFieldFilters());
 			searchForm.build();
 		}
 		return searchForm;
@@ -121,13 +119,13 @@ public class SimpleSearchTreeComponent<ID extends Serializable, T extends Abstra
 					Object id = col.iterator().next();
 					if (id != null) {
 						ModelBasedHierarchicalContainer<T> c = (ModelBasedHierarchicalContainer<T>) getTableWrapper()
-								.getContainer();
+						        .getContainer();
 						Item item = c.getItem(id);
 						if (item instanceof BeanItem) {
 							setSelectedHierarchicalItem(((BeanItem<?>) item).getBean());
 						} else if (item instanceof CompositeItem) {
-							setSelectedHierarchicalItem(((CompositeItem) item)
-									.getItem(CompositeItem.DEFAULT_ITEM_KEY));
+							setSelectedHierarchicalItem(
+							        ((CompositeItem) item).getItem(CompositeItem.DEFAULT_ITEM_KEY));
 						} else {
 							setSelectedHierarchicalItem(item);
 						}

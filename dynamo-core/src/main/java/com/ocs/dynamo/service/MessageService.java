@@ -10,7 +10,6 @@ import com.ocs.dynamo.domain.model.AttributeModel;
  * message can be found
  * 
  * @author bas.rutten
- * 
  */
 public interface MessageService {
 
@@ -26,7 +25,7 @@ public interface MessageService {
 	 * @return
 	 */
 	public String getAttributeMessage(String reference, AttributeModel attributeModel,
-			String propertyName);
+	        String propertyName);
 
 	/**
 	 * Retrieves a message that is used to override an entity model setting
@@ -93,7 +92,6 @@ public interface MessageService {
 	 * 
 	 * @param key
 	 *            the key of the message
-	 * 
 	 * @return the message specified by the key, or <code>null</code> if no such
 	 *         message can be found
 	 */
@@ -106,7 +104,6 @@ public interface MessageService {
 	 * @param key
 	 *            the key of the message
 	 * @param args
-	 * 
 	 * @return the message specified by the key, or <code>null</code> if no such
 	 *         message can be found
 	 */

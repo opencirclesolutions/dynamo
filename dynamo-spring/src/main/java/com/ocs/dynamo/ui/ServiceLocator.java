@@ -20,7 +20,6 @@ import com.vaadin.spring.server.SpringVaadinServlet;
  * Static class for accessing the Spring container
  * 
  * @author bas.rutten
- * 
  */
 public final class ServiceLocator {
 
@@ -31,7 +30,6 @@ public final class ServiceLocator {
 	}
 
 	/**
-	 * 
 	 * @return
 	 */
 	private static ApplicationContext getContext() {
@@ -51,7 +49,7 @@ public final class ServiceLocator {
 				ctx = WebApplicationContextUtils.getWebApplicationContext(sc);
 			} else {
 				ctx = new ClassPathXmlApplicationContext(
-						"classpath:META-INF/testApplicationContext.xml");
+				        "classpath:META-INF/testApplicationContext.xml");
 			}
 		}
 	}
@@ -99,10 +97,10 @@ public final class ServiceLocator {
 	@SuppressWarnings("rawtypes")
 	public static <T> BaseService<?, ?> getServiceForEntity(Class<T> entityClass) {
 		Map<String, BaseService> services = getContext().getBeansOfType(BaseService.class, false,
-				true);
+		        true);
 		for (Entry<String, BaseService> e : services.entrySet()) {
 			if (e.getValue().getEntityClass() != null
-					&& e.getValue().getEntityClass().equals(entityClass)) {
+			        && e.getValue().getEntityClass().equals(entityClass)) {
 				return (BaseService<?, ?>) e.getValue();
 			}
 		}

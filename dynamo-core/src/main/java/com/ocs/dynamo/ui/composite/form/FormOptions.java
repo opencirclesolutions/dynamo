@@ -11,7 +11,6 @@ import com.ocs.dynamo.ui.composite.type.ScreenMode;
  * properties individually
  * 
  * @author bas.rutten
- * 
  */
 public class FormOptions implements Serializable {
 

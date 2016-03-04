@@ -12,12 +12,10 @@ import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.MenuBar.MenuItem;
 
 /**
- * 
  * Service for creating a menu based on property files. Use the
  * "menu.properties" file to configure this menu.
  * 
  * @author bas.rutten
- * 
  */
 public class MenuService {
 
@@ -75,14 +73,14 @@ public class MenuService {
 
 			// add the child items
 			int index = 1;
-			String childKey = messageService.getMessageNoDefault(key + "." + index + "."
-					+ DISPLAY_NAME);
+			String childKey = messageService
+			        .getMessageNoDefault(key + "." + index + "." + DISPLAY_NAME);
 
 			while (childKey != null) {
 				constructMenu(menuItem, key + "." + index, navigator);
 				index++;
-				childKey = messageService.getMessageNoDefault(key + "." + index + "."
-						+ DISPLAY_NAME);
+				childKey = messageService
+				        .getMessageNoDefault(key + "." + index + "." + DISPLAY_NAME);
 			}
 
 			if (!checker.isAccessAllowed(destination)) {

@@ -36,7 +36,6 @@ import com.ocs.dynamo.filter.Or;
 /**
  * @author patrick.deenen
  * @author bas.rutten
- * 
  *         Class for constructing JPA queries built on the criteria API
  */
 public final class JpaQueryBuilder {
@@ -56,7 +55,7 @@ public final class JpaQueryBuilder {
 	 *         <code>false</code> otherwise
 	 */
 	private static <T> boolean addFetchJoinInformation(FetchParent<T, ?> root,
-			FetchJoinInformation... fetchJoins) {
+	        FetchJoinInformation... fetchJoins) {
 		boolean collection = false;
 
 		if (root != null && fetchJoins != null) {
@@ -92,7 +91,7 @@ public final class JpaQueryBuilder {
 	 * @return
 	 */
 	private static <T, R> CriteriaQuery<R> addSortInformation(CriteriaBuilder builder,
-			CriteriaQuery<R> cq, Root<T> root, Sort sortOrder) {
+	        CriteriaQuery<R> cq, Root<T> root, Sort sortOrder) {
 		if (sortOrder != null) {
 			Iterator<Order> it = sortOrder.iterator();
 			List<javax.persistence.criteria.Order> orders = new ArrayList<>();
@@ -117,7 +116,8 @@ public final class JpaQueryBuilder {
 	 *            the "And" filter
 	 * @return
 	 */
-	private static Predicate createAndPredicate(CriteriaBuilder builder, Root<?> root, Filter filter) {
+	private static Predicate createAndPredicate(CriteriaBuilder builder, Root<?> root,
+	        Filter filter) {
 		And and = (And) filter;
 		List<Filter> filters = new ArrayList<>(and.getFilters());
 		Predicate predicate = createPredicate(filters.remove(0), builder, root);
@@ -138,10 +138,10 @@ public final class JpaQueryBuilder {
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private static Predicate createComparePredicate(CriteriaBuilder builder, Root<?> root,
-			Filter filter) {
+	        Filter filter) {
 		Compare compare = (Compare) filter;
 		Expression<Comparable> property = (Expression) getPropertyPath(root,
-				compare.getPropertyId());
+		        compare.getPropertyId());
 		Object value = compare.getValue();
 
 		// number representation may contain locale specific separators.
@@ -153,9 +153,8 @@ public final class JpaQueryBuilder {
 			value = ((String) value).replace('%', ' ').trim();
 
 			String str = (String) value;
-			if (str != null
-					&& org.apache.commons.lang.StringUtils.isNumeric(str.replaceAll("\\.", "")
-							.replaceAll(",", ""))) {
+			if (str != null && org.apache.commons.lang.StringUtils
+			        .isNumeric(str.replaceAll("\\.", "").replaceAll(",", ""))) {
 				// first remove all periods (which may be used as
 				// thousand
 				// separators), then replace comma by period
@@ -195,7 +194,7 @@ public final class JpaQueryBuilder {
 	 * @return
 	 */
 	public static <T> CriteriaQuery<Long> createCountQuery(EntityManager entityManager,
-			Class<T> entityClass, Filter filter, boolean distinct) {
+	        Class<T> entityClass, Filter filter, boolean distinct) {
 		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = builder.createQuery(Long.class);
 		Root<T> root = cq.from(entityClass);
@@ -225,7 +224,7 @@ public final class JpaQueryBuilder {
 	 * @return
 	 */
 	public static <ID, T> CriteriaQuery<T> createFetchQuery(EntityManager entityManager,
-			Class<T> entityClass, List<ID> ids, Sort sortOrder, FetchJoinInformation[] fetchJoins) {
+	        Class<T> entityClass, List<ID> ids, Sort sortOrder, FetchJoinInformation[] fetchJoins) {
 		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
 		CriteriaQuery<T> cq = builder.createQuery(entityClass);
 		Root<T> root = cq.from(entityClass);
@@ -252,9 +251,8 @@ public final class JpaQueryBuilder {
 	 *            fetch joins to include
 	 * @return
 	 */
-	public static <ID, T> CriteriaQuery<T> createFetchSingleObjectQuery(
-			EntityManager entityManager, Class<T> entityClass, ID id,
-			FetchJoinInformation[] fetchJoins) {
+	public static <ID, T> CriteriaQuery<T> createFetchSingleObjectQuery(EntityManager entityManager,
+	        Class<T> entityClass, ID id, FetchJoinInformation[] fetchJoins) {
 		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
 		CriteriaQuery<T> cq = builder.createQuery(entityClass);
 		Root<T> root = cq.from(entityClass);
@@ -280,7 +278,7 @@ public final class JpaQueryBuilder {
 	 * @return
 	 */
 	public static <T> CriteriaQuery<Tuple> createIdQuery(EntityManager entityManager,
-			Class<T> entityClass, Filter filter, Sort sortOrder) {
+	        Class<T> entityClass, Filter filter, Sort sortOrder) {
 		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
 		CriteriaQuery<Tuple> cq = builder.createTupleQuery();
 		Root<T> root = cq.from(entityClass);
@@ -301,14 +299,15 @@ public final class JpaQueryBuilder {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private static Predicate createLikePredicate(CriteriaBuilder builder, Root<?> root,
-			Filter filter) {
+	        Filter filter) {
 		Like like = (Like) filter;
 		if (like.isCaseSensitive()) {
 			return builder.like((Expression) getPropertyPath(root, like.getPropertyId()),
-					like.getValue());
+			        like.getValue());
 		} else {
-			return builder.like(builder.lower((Expression) getPropertyPath(root,
-					like.getPropertyId())), like.getValue().toLowerCase());
+			return builder.like(
+			        builder.lower((Expression) getPropertyPath(root, like.getPropertyId())),
+			        like.getValue().toLowerCase());
 		}
 	}
 
@@ -321,23 +320,24 @@ public final class JpaQueryBuilder {
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private static Predicate createModuloPredicate(CriteriaBuilder builder, Root<?> root,
-			Filter filter) {
+	        Filter filter) {
 		Modulo modulo = (Modulo) filter;
 		if (modulo.getModExpression() != null) {
 			// compare to a literal expression
-			return builder.equal(builder.mod(
-					(Expression) getPropertyPath(root, modulo.getPropertyId()),
-					(Expression) getPropertyPath(root, modulo.getModExpression())), modulo
-					.getResult());
+			return builder.equal(
+			        builder.mod((Expression) getPropertyPath(root, modulo.getPropertyId()),
+			                (Expression) getPropertyPath(root, modulo.getModExpression())),
+			        modulo.getResult());
 		} else {
 			// compare to a property
-			return builder.equal(builder.mod(
-					(Expression) getPropertyPath(root, modulo.getPropertyId()), modulo
-							.getModValue().intValue()), modulo.getResult());
+			return builder
+			        .equal(builder.mod((Expression) getPropertyPath(root, modulo.getPropertyId()),
+			                modulo.getModValue().intValue()), modulo.getResult());
 		}
 	}
 
-	private static Predicate createOrPredicate(CriteriaBuilder builder, Root<?> root, Filter filter) {
+	private static Predicate createOrPredicate(CriteriaBuilder builder, Root<?> root,
+	        Filter filter) {
 		Or or = (Or) filter;
 		List<Filter> filters = new ArrayList<>(or.getFilters());
 
@@ -378,7 +378,7 @@ public final class JpaQueryBuilder {
 			Between between = (Between) filter;
 			Expression property = getPropertyPath(root, between.getPropertyId());
 			return builder.between(property, (Comparable) between.getStartValue(),
-					(Comparable) between.getEndValue());
+			        (Comparable) between.getEndValue());
 		} else if (filter instanceof Compare) {
 			return createComparePredicate(builder, root, filter);
 		} else if (filter instanceof IsNull) {
@@ -389,7 +389,7 @@ public final class JpaQueryBuilder {
 		} else if (filter instanceof Contains) {
 			Contains contains = (Contains) filter;
 			return builder.isMember(contains.getValue(),
-					(Expression) getPropertyPath(root, contains.getPropertyId()));
+			        (Expression) getPropertyPath(root, contains.getPropertyId()));
 		} else if (filter instanceof In) {
 			In in = (In) filter;
 			if (in.getValues() != null && !in.getValues().isEmpty()) {
@@ -403,8 +403,8 @@ public final class JpaQueryBuilder {
 			return createModuloPredicate(builder, root, filter);
 		}
 
-		throw new UnsupportedOperationException("Filter: " + filter.getClass().getName()
-				+ " not recognized");
+		throw new UnsupportedOperationException(
+		        "Filter: " + filter.getClass().getName() + " not recognized");
 	}
 
 	/**
@@ -420,9 +420,8 @@ public final class JpaQueryBuilder {
 	 *            the sorting information
 	 * @return
 	 */
-	public static <T> CriteriaQuery<T> createSelectQuery(Filter filter,
-			EntityManager entityManager, Class<T> entityClass, FetchJoinInformation[] fetchJoins,
-			Sort sortOrder) {
+	public static <T> CriteriaQuery<T> createSelectQuery(Filter filter, EntityManager entityManager,
+	        Class<T> entityClass, FetchJoinInformation[] fetchJoins, Sort sortOrder) {
 		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
 		CriteriaQuery<T> cq = builder.createQuery(entityClass);
 		Root<T> root = cq.from(entityClass);
@@ -454,8 +453,8 @@ public final class JpaQueryBuilder {
 	 * @return
 	 */
 	public static <T> CriteriaQuery<T> createUniquePropertyFetchQuery(EntityManager entityManager,
-			Class<T> entityClass, FetchJoinInformation[] fetchJoins, String propertyName,
-			Object value, boolean caseSensitive) {
+	        Class<T> entityClass, FetchJoinInformation[] fetchJoins, String propertyName,
+	        Object value, boolean caseSensitive) {
 		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
 		CriteriaQuery<T> cq = builder.createQuery(entityClass);
 		Root<T> root = cq.from(entityClass);
@@ -465,7 +464,7 @@ public final class JpaQueryBuilder {
 		Predicate equals = null;
 		if (value instanceof String && !caseSensitive) {
 			equals = builder.equal(builder.upper(root.get(propertyName).as(String.class)),
-					((String) value).toUpperCase());
+			        ((String) value).toUpperCase());
 		} else {
 			equals = builder.equal(root.get(propertyName), value);
 		}
@@ -486,7 +485,7 @@ public final class JpaQueryBuilder {
 	 * @return
 	 */
 	public static <T> CriteriaQuery<T> createUniquePropertyQuery(EntityManager entityManager,
-			Class<T> entityClass, String propertyName, Object value, boolean caseSensitive) {
+	        Class<T> entityClass, String propertyName, Object value, boolean caseSensitive) {
 		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
 		CriteriaQuery<T> cq = builder.createQuery(entityClass);
 		Root<T> root = cq.from(entityClass);
@@ -494,7 +493,7 @@ public final class JpaQueryBuilder {
 		Predicate equals = null;
 		if (value instanceof String && !caseSensitive) {
 			equals = builder.equal(builder.upper(root.get(propertyName).as(String.class)),
-					((String) value).toUpperCase());
+			        ((String) value).toUpperCase());
 		} else {
 			equals = builder.equal(root.get(propertyName), value);
 		}

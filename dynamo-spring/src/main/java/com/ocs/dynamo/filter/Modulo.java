@@ -5,7 +5,6 @@ package com.ocs.dynamo.filter;
  * calculation
  * 
  * @author bas.rutten
- *
  */
 public class Modulo extends AbstractFilter implements PropertyFilter {
 
@@ -72,7 +71,7 @@ public class Modulo extends AbstractFilter implements PropertyFilter {
 
 		if (modVal == 0L) {
 			throw new IllegalArgumentException(
-					"Modulo operator cannot be used with '0' as its second argument");
+			        "Modulo operator cannot be used with '0' as its second argument");
 		}
 
 		return temp % modVal == result.longValue();
@@ -93,6 +92,6 @@ public class Modulo extends AbstractFilter implements PropertyFilter {
 	@Override
 	public String toString() {
 		return getPropertyId() + " " + super.toString() + " " + getModExpression() + " = "
-				+ getResult();
+		        + getResult();
 	}
 }

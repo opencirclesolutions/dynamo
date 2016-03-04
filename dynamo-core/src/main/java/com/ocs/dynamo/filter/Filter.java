@@ -7,7 +7,6 @@ import java.util.List;
  * Interface for objects that
  * 
  * @author bas.rutten
- * 
  */
 public interface Filter {
 

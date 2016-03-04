@@ -15,7 +15,6 @@ import com.ocs.dynamo.exception.OCSRuntimeException;
  * Date utility class
  * 
  * @author bas.rutten
- * 
  */
 public final class DateUtils {
 
@@ -101,7 +100,6 @@ public final class DateUtils {
 	}
 
 	/**
-	 * 
 	 * @param weekCode
 	 * @return
 	 */

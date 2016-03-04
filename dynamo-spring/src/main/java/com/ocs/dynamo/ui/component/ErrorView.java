@@ -12,7 +12,6 @@ import com.vaadin.ui.VerticalLayout;
  * view for which the user is not authorized
  * 
  * @author bas.rutten
- * 
  */
 public class ErrorView extends BaseCustomComponent implements View {
 

@@ -38,17 +38,17 @@ public class PercentageBigDecimalConverterTest {
 	public void testConvertToPresentation() {
 		BigDecimalConverter converter = new PercentageBigDecimalConverter(2, false);
 		String result = converter.convertToPresentation(new BigDecimal(3.143), String.class,
-				new Locale("nl"));
+		        new Locale("nl"));
 		Assert.assertEquals("3,14%", result);
 
 		result = converter.convertToPresentation(new BigDecimal(3000.1434), String.class,
-				new Locale("nl"));
+		        new Locale("nl"));
 		Assert.assertEquals("3000,14%", result);
 
 		// test thousands grouping
 		converter = new PercentageBigDecimalConverter(2, true);
-		result = converter.convertToPresentation(new BigDecimal(3000.14), String.class, new Locale(
-				"nl"));
+		result = converter.convertToPresentation(new BigDecimal(3000.14), String.class,
+		        new Locale("nl"));
 		Assert.assertEquals("3.000,14%", result);
 
 		converter = new PercentageBigDecimalConverter(2, false);

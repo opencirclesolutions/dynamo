@@ -12,7 +12,6 @@ import com.vaadin.ui.Embedded;
  * used to display an image
  * 
  * @author bas.rutten
- * 
  */
 @SuppressWarnings("serial")
 public class DefaultEmbedded extends Embedded {
@@ -37,7 +36,7 @@ public class DefaultEmbedded extends Embedded {
 					return new ByteArrayInputStream(bytes);
 				}
 
-			}, System.nanoTime() +  ".png"));
+			}, System.nanoTime() + ".png"));
 		}
 	}
 

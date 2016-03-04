@@ -10,7 +10,6 @@ import com.vaadin.data.util.ObjectProperty;
 
 /**
  * @author Patrick Deenen
- * 
  */
 public class PivotItem implements Item {
 
@@ -92,7 +91,6 @@ public class PivotItem implements Item {
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see com.vaadin.data.Item#getItemPropertyIds()
 	 */
 	@Override
@@ -102,7 +100,6 @@ public class PivotItem implements Item {
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see com.vaadin.data.Item#addItemProperty(java.lang.Object,
 	 * com.vaadin.data.Property)
 	 */
@@ -136,8 +133,8 @@ public class PivotItem implements Item {
 		if (nid != null) {
 			Item ni = sc.getItem(nid);
 			Item c = columns.values().iterator().next();
-			ni.getItemProperty(pivotContainer.getRowPropertyId()).setValue(
-					c.getItemProperty(pivotContainer.getRowPropertyId()).getValue());
+			ni.getItemProperty(pivotContainer.getRowPropertyId())
+			        .setValue(c.getItemProperty(pivotContainer.getRowPropertyId()).getValue());
 			ni.getItemProperty(pivotContainer.getColumnPropertyId()).setValue(columnId);
 			ni.getItemProperty(propertyId).setValue(columnValue);
 			columns.put(columnId, ni);
@@ -148,7 +145,6 @@ public class PivotItem implements Item {
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see com.vaadin.data.Item#removeItemProperty(java.lang.Object)
 	 */
 	@Override

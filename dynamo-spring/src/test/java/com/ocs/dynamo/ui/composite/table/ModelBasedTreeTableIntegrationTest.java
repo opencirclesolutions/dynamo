@@ -61,16 +61,16 @@ public class ModelBasedTreeTableIntegrationTest extends BaseIntegrationTest {
 		services.add(testEntity2Service);
 
 		ModelBasedHierarchicalContainer<TestEntity> container = new ModelBasedHierarchicalContainer<TestEntity>(
-				messageService, model, services, null);
+		        messageService, model, services, null);
 
 		ModelBasedTreeTable<Integer, TestEntity> table = new ModelBasedTreeTable<Integer, TestEntity>(
-				container, entityModelFactory);
+		        container, entityModelFactory);
 
 		Assert.assertEquals(1, table.getContainerDataSource().size());
 
 		// check that properties are properly created
 		String name = (String) table.getItem(table.getItemIds().iterator().next())
-				.getItemProperty("name").getValue();
+		        .getItemProperty("name").getValue();
 		Assert.assertEquals("Bob", name);
 		Assert.assertEquals(3, table.getVisibleColumns().length);
 	}
@@ -84,7 +84,7 @@ public class ModelBasedTreeTableIntegrationTest extends BaseIntegrationTest {
 		services.add(testEntity2Service);
 
 		ServiceResultsTreeTableWrapper<Integer, TestEntity> wrapper = new ServiceResultsTreeTableWrapper<>(
-				services, model, QueryType.PAGING, null, new HierarchicalFetchJoinInformation[0]);
+		        services, model, QueryType.PAGING, null, new HierarchicalFetchJoinInformation[0]);
 		wrapper.build();
 
 		Assert.assertNotNull(wrapper.getContainer());
@@ -103,8 +103,8 @@ public class ModelBasedTreeTableIntegrationTest extends BaseIntegrationTest {
 		services.add(testEntity2Service);
 
 		ServiceResultsTreeTableWrapper<Integer, TestEntity> wrapper = new ServiceResultsTreeTableWrapper<>(
-				services, model, QueryType.PAGING, new SortOrder("name", SortDirection.ASCENDING),
-				new HierarchicalFetchJoinInformation[0]);
+		        services, model, QueryType.PAGING, new SortOrder("name", SortDirection.ASCENDING),
+		        new HierarchicalFetchJoinInformation[0]);
 		wrapper.build();
 
 		Assert.assertNotNull(wrapper.getContainer());

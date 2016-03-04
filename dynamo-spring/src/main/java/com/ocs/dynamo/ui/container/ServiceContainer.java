@@ -22,21 +22,20 @@ import com.vaadin.shared.data.sort.SortDirection;
  * calling a service
  * 
  * @author bas.rutten
- * 
  * @param <T>
  *            type of the entity
  * @param <ID>
  *            type of the primary key of the entity
  */
-public class ServiceContainer<ID extends Serializable, T extends AbstractEntity<ID>> extends
-		LazyQueryContainer implements Searchable {
+public class ServiceContainer<ID extends Serializable, T extends AbstractEntity<ID>>
+        extends LazyQueryContainer implements Searchable {
 
 	private static final long serialVersionUID = 2605988307857731787L;
 
 	public static final List<String> DEFAULT_EXCLUDE_COLUMNS = Arrays.asList(new String[] {
-			LazyQueryView.PROPERTY_ID_ITEM_STATUS, LazyQueryView.DEBUG_PROPERTY_ID_BATCH_INDEX,
-			LazyQueryView.DEBUG_PROPERTY_ID_BATCH_QUERY_TIME,
-			LazyQueryView.DEBUG_PROPERTY_ID_QUERY_INDEX });
+	        LazyQueryView.PROPERTY_ID_ITEM_STATUS, LazyQueryView.DEBUG_PROPERTY_ID_BATCH_INDEX,
+	        LazyQueryView.DEBUG_PROPERTY_ID_BATCH_QUERY_TIME,
+	        LazyQueryView.DEBUG_PROPERTY_ID_QUERY_INDEX });
 
 	/**
 	 * Constructs a service container based on a query definition
@@ -60,9 +59,9 @@ public class ServiceContainer<ID extends Serializable, T extends AbstractEntity<
 	 * @param properties
 	 */
 	public ServiceContainer(BaseService<ID, T> service, boolean compositeItems, int batchSize,
-			QueryType queryType, FetchJoinInformation[] joins) {
+	        QueryType queryType, FetchJoinInformation[] joins) {
 		super(new ServiceQueryDefinition<ID, T>(service, compositeItems, batchSize, queryType,
-				joins), new ServiceQueryFactory<ID, T>());
+		        joins), new ServiceQueryFactory<ID, T>());
 	}
 
 	/**
@@ -74,9 +73,10 @@ public class ServiceContainer<ID extends Serializable, T extends AbstractEntity<
 	 * @param batchSize
 	 */
 	public ServiceContainer(BaseService<ID, T> service, EntityModelFactory emf,
-			boolean compositeItems, int batchSize, QueryType queryType, FetchJoinInformation[] joins) {
+	        boolean compositeItems, int batchSize, QueryType queryType,
+	        FetchJoinInformation[] joins) {
 		super(new ServiceQueryDefinition<ID, T>(service, compositeItems, batchSize, queryType,
-				joins), new ServiceQueryFactory<ID, T>());
+		        joins), new ServiceQueryFactory<ID, T>());
 		addContainerProperties(emf.getModel(service.getEntityClass()));
 	}
 
@@ -89,9 +89,10 @@ public class ServiceContainer<ID extends Serializable, T extends AbstractEntity<
 	 * @param batchSize
 	 */
 	public ServiceContainer(BaseService<ID, T> service, EntityModel<T> model,
-			boolean compositeItems, int batchSize, QueryType queryType, FetchJoinInformation[] joins) {
+	        boolean compositeItems, int batchSize, QueryType queryType,
+	        FetchJoinInformation[] joins) {
 		super(new ServiceQueryDefinition<ID, T>(service, compositeItems, batchSize, queryType,
-				joins), new ServiceQueryFactory<ID, T>());
+		        joins), new ServiceQueryFactory<ID, T>());
 		addContainerProperties(model);
 	}
 
@@ -104,8 +105,8 @@ public class ServiceContainer<ID extends Serializable, T extends AbstractEntity<
 		for (AttributeModel attributeModel : model.getAttributeModels()) {
 			if (attributeModel.isVisibleInTable()) {
 				addContainerProperty(attributeModel.getName(), attributeModel.getType(),
-						attributeModel.getDefaultValue(), attributeModel.isReadOnly(),
-						attributeModel.isSortable());
+				        attributeModel.getDefaultValue(), attributeModel.isReadOnly(),
+				        attributeModel.isSortable());
 			}
 		}
 	}
@@ -117,8 +118,8 @@ public class ServiceContainer<ID extends Serializable, T extends AbstractEntity<
 	 */
 	public void addContainerProperty(AttributeModel attributeModel) {
 		addContainerProperty(attributeModel.getPath(), attributeModel.getType(),
-				attributeModel.getDefaultValue(), attributeModel.isReadOnly(),
-				attributeModel.isSortable());
+		        attributeModel.getDefaultValue(), attributeModel.isReadOnly(),
+		        attributeModel.isSortable());
 	}
 
 	@Override
@@ -138,9 +139,9 @@ public class ServiceContainer<ID extends Serializable, T extends AbstractEntity<
 	@SuppressWarnings("unchecked")
 	public BaseService<ID, T> getService() {
 		if (getQueryView() != null
-				&& getQueryView().getQueryDefinition() instanceof ServiceQueryDefinition<?, ?>) {
+		        && getQueryView().getQueryDefinition() instanceof ServiceQueryDefinition<?, ?>) {
 			return ((ServiceQueryDefinition<ID, T>) getQueryView().getQueryDefinition())
-					.getService();
+			        .getService();
 		}
 		return null;
 	}

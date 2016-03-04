@@ -72,13 +72,13 @@ public class VaadinUtilsTest extends BaseMockitoTest {
 	@Test
 	public void testBigDecimalToString() {
 		Assert.assertEquals("1.234,56%",
-				VaadinUtils.bigDecimalToString(true, true, BigDecimal.valueOf(1234.56), LOCALE));
+		        VaadinUtils.bigDecimalToString(true, true, BigDecimal.valueOf(1234.56), LOCALE));
 		Assert.assertEquals("1.234,56",
-				VaadinUtils.bigDecimalToString(false, true, BigDecimal.valueOf(1234.56), LOCALE));
+		        VaadinUtils.bigDecimalToString(false, true, BigDecimal.valueOf(1234.56), LOCALE));
 		Assert.assertEquals("1234,56",
-				VaadinUtils.bigDecimalToString(false, false, BigDecimal.valueOf(1234.56), LOCALE));
+		        VaadinUtils.bigDecimalToString(false, false, BigDecimal.valueOf(1234.56), LOCALE));
 		Assert.assertEquals("1,234.56%",
-				VaadinUtils.bigDecimalToString(true, true, BigDecimal.valueOf(1234.56), Locale.US));
+		        VaadinUtils.bigDecimalToString(true, true, BigDecimal.valueOf(1234.56), Locale.US));
 	}
 
 	@Test
@@ -110,7 +110,7 @@ public class VaadinUtilsTest extends BaseMockitoTest {
 	@Test
 	public void testGetItemFromContainer2() {
 		ServiceContainer<Integer, TestEntity> container = new ServiceContainer<>(
-				new ServiceQueryDefinition<>(service, false, 20, QueryType.ID_BASED, null));
+		        new ServiceQueryDefinition<>(service, false, 20, QueryType.ID_BASED, null));
 
 		Integer i = (Integer) container.addItem();
 		TestEntity t2 = VaadinUtils.getEntityFromContainer(container, i);
@@ -151,12 +151,12 @@ public class VaadinUtilsTest extends BaseMockitoTest {
 
 	@Test
 	public void testStringToBigDecimal() {
-		Assert.assertEquals(1234, VaadinUtils.stringToBigDecimal(false, false, "1234", LOCALE)
-				.intValue());
-		Assert.assertEquals(1234, VaadinUtils.stringToBigDecimal(false, true, "1.234", LOCALE)
-				.intValue());
-		Assert.assertEquals(1234, VaadinUtils.stringToBigDecimal(true, true, "1.234%", LOCALE)
-				.intValue());
+		Assert.assertEquals(1234,
+		        VaadinUtils.stringToBigDecimal(false, false, "1234", LOCALE).intValue());
+		Assert.assertEquals(1234,
+		        VaadinUtils.stringToBigDecimal(false, true, "1.234", LOCALE).intValue());
+		Assert.assertEquals(1234,
+		        VaadinUtils.stringToBigDecimal(true, true, "1.234%", LOCALE).intValue());
 	}
 
 	@Test

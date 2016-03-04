@@ -31,7 +31,6 @@ import com.vaadin.ui.UI;
  * Utility class for Vaadin-related functionality
  * 
  * @author bas.rutten
- * 
  */
 public final class VaadinUtils {
 
@@ -44,7 +43,6 @@ public final class VaadinUtils {
 	/**
 	 * Check if all editable fields that are contained in a (fixed, non-lazy)
 	 * table are valid.
-	 * 
 	 * This method is needed because simply calling table.isValid() will not
 	 * take into account any editable components within the table
 	 * 
@@ -74,7 +72,7 @@ public final class VaadinUtils {
 	 * @return
 	 */
 	public static String bigDecimalToString(boolean percentage, boolean useGrouping,
-			BigDecimal value, Locale locale) {
+	        BigDecimal value, Locale locale) {
 		return bigDecimalToString(false, percentage, useGrouping, DEFAULT_PRECISION, value, locale);
 	}
 
@@ -91,9 +89,9 @@ public final class VaadinUtils {
 	 * @return
 	 */
 	public static String bigDecimalToString(boolean currency, boolean percentage,
-			boolean useGrouping, int precision, BigDecimal value, Locale locale) {
+	        boolean useGrouping, int precision, BigDecimal value, Locale locale) {
 		BigDecimalConverter converter = ConverterFactory.createBigDecimalConverter(currency,
-				percentage, useGrouping, precision, getCurrencySymbol());
+		        percentage, useGrouping, precision, getCurrencySymbol());
 		return converter.convertToPresentation(value, String.class, locale);
 	}
 
@@ -102,12 +100,12 @@ public final class VaadinUtils {
 	 */
 	public static void enableCopyPaste() {
 		String js = "$(document).ready(function() {" + "  $('input').off('paste'); "
-				+ "  $('input').on('paste', function(e) { " + "    if (clipboardData) { "
-				+ "      setTimeout(function() {"
-				+ "        var pasted = clipboardData.getData('text');"
-				+ "        pasted = pasted.replace(/(\\r\\n|\\r|\\n)/g,'\t');"
-				+ "	       clipboardData.setData('text', pasted); $(e.target).val(pasted);} "
-				+ "      , 100);  " + "    }" + "  }) " + "});";
+		        + "  $('input').on('paste', function(e) { " + "    if (clipboardData) { "
+		        + "      setTimeout(function() {"
+		        + "        var pasted = clipboardData.getData('text');"
+		        + "        pasted = pasted.replace(/(\\r\\n|\\r|\\n)/g,'\t');"
+		        + "	       clipboardData.setData('text', pasted); $(e.target).val(pasted);} "
+		        + "      , 100);  " + "    }" + "  }) " + "});";
 		Page.getCurrent().getJavaScript().execute(js);
 	}
 
@@ -179,7 +177,7 @@ public final class VaadinUtils {
 	@SuppressWarnings("unchecked")
 	public static String getSessionAttributeValueFromMap(String attributeName, String key) {
 		Map<String, Object> map = (Map<String, Object>) VaadinSession.getCurrent().getSession()
-				.getAttribute(attributeName);
+		        .getAttribute(attributeName);
 		return getSessionAttributeValueFromMap(map, key);
 	}
 
@@ -289,23 +287,22 @@ public final class VaadinUtils {
 	 *            the code to execute when the user confirms the dialog
 	 */
 	public static void showConfirmDialog(MessageService messageService, String question,
-			final Runnable whenConfirmed) {
+	        final Runnable whenConfirmed) {
 		if (UI.getCurrent() != null) {
 			ConfirmDialog.show(UI.getCurrent(), messageService.getMessage("ocs.confirm"), question,
-					messageService.getMessage("ocs.yes"), messageService.getMessage("ocs.no"),
-					new ConfirmDialog.Listener() {
+			        messageService.getMessage("ocs.yes"), messageService.getMessage("ocs.no"),
+			        new ConfirmDialog.Listener() {
 
-						private static final long serialVersionUID = 7993938332012882422L;
+				        private static final long serialVersionUID = 7993938332012882422L;
 
-						@Override
-						public void onClose(ConfirmDialog dialog) {
-							if (dialog.isConfirmed()) {
-								whenConfirmed.run();
-							}
-						}
-					});
-		}
-		else {
+				        @Override
+				        public void onClose(ConfirmDialog dialog) {
+					        if (dialog.isConfirmed()) {
+						        whenConfirmed.run();
+					        }
+				        }
+			        });
+		} else {
 			whenConfirmed.run();
 		}
 	}
@@ -320,20 +317,19 @@ public final class VaadinUtils {
 	 * @return
 	 */
 	public static BigDecimal stringToBigDecimal(boolean percentage, boolean useGrouping,
-			String value) {
-		return stringToBigDecimal(percentage, useGrouping, value, VaadinSession.getCurrent()
-				.getLocale());
+	        String value) {
+		return stringToBigDecimal(percentage, useGrouping, value,
+		        VaadinSession.getCurrent().getLocale());
 	}
 
 	public static BigDecimal stringToBigDecimal(boolean percentage, boolean useGrouping,
-			String value, Locale locale) {
+	        String value, Locale locale) {
 		BigDecimalConverter converter = ConverterFactory.createBigDecimalConverter(false,
-				percentage, useGrouping, DEFAULT_PRECISION, null);
+		        percentage, useGrouping, DEFAULT_PRECISION, null);
 		return converter.convertToModel(value, BigDecimal.class, locale);
 	}
 
 	/**
-	 * 
 	 * @param grouping
 	 * @param value
 	 * @return

@@ -10,7 +10,6 @@ import java.lang.annotation.Target;
  * data defaults
  * 
  * @author bas.rutten
- * 
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)

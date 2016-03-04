@@ -10,7 +10,6 @@ import com.ocs.dynamo.domain.AbstractEntity;
  * implementation is given.
  * 
  * @author Patrick Deenen
- *
  */
 public class DefaultServiceImpl<ID, T extends AbstractEntity<ID>> extends BaseServiceImpl<ID, T> {
 

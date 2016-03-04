@@ -22,10 +22,9 @@ import com.vaadin.data.util.filter.And;
  * A lazy container query that retrieves data using a service
  * 
  * @author patrick.deenen
- * 
  */
 public abstract class BaseServiceQuery<ID extends Serializable, T extends AbstractEntity<ID>>
-		extends AbstractBeanQuery<T> {
+        extends AbstractBeanQuery<T> {
 
 	private static final long serialVersionUID = 4128040933505878355L;
 
@@ -39,7 +38,7 @@ public abstract class BaseServiceQuery<ID extends Serializable, T extends Abstra
 	 * @param queryConfiguration
 	 */
 	public BaseServiceQuery(ServiceQueryDefinition<ID, T> queryDefinition,
-			Map<String, Object> queryConfiguration) {
+	        Map<String, Object> queryConfiguration) {
 		super(queryDefinition, queryConfiguration, null, null);
 	}
 
@@ -108,7 +107,7 @@ public abstract class BaseServiceQuery<ID extends Serializable, T extends Abstra
 		if (sortPropertyIds.length > 0) {
 			for (int i = 0; i < sortPropertyIds.length; i++) {
 				orders[i] = new SortOrder(sortPropertyAscendingStates[i] ? SortOrder.Direction.ASC
-						: SortOrder.Direction.DESC, sortPropertyIds[i].toString());
+				        : SortOrder.Direction.DESC, sortPropertyIds[i].toString());
 			}
 		}
 		return orders;

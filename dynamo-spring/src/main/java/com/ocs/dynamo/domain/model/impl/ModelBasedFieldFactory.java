@@ -57,12 +57,11 @@ import com.vaadin.ui.TextField;
  * Extension of the standard Vaadin field factory for creating custom fields
  * 
  * @author bas.rutten
- * 
  * @param <T>
  *            the type of the entity for which to create a field
  */
-public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory implements
-		TableFieldFactory {
+public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory
+        implements TableFieldFactory {
 
 	private static final int LIST_SELECT_ROWS = 5;
 
@@ -98,10 +97,10 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 	 */
 	@SuppressWarnings("unchecked")
 	public static <T> ModelBasedFieldFactory<T> getInstance(EntityModel<T> model,
-			MessageService messageService) {
+	        MessageService messageService) {
 		if (!nonValidatingInstances.containsKey(model.getReference())) {
-			nonValidatingInstances.put(model.getReference(), new ModelBasedFieldFactory<>(model,
-					messageService, false, false));
+			nonValidatingInstances.put(model.getReference(),
+			        new ModelBasedFieldFactory<>(model, messageService, false, false));
 		}
 		return (ModelBasedFieldFactory<T>) nonValidatingInstances.get(model.getReference());
 	}
@@ -115,10 +114,10 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 	 */
 	@SuppressWarnings("unchecked")
 	public static <T> ModelBasedFieldFactory<T> getSearchInstance(EntityModel<T> model,
-			MessageService messageService) {
+	        MessageService messageService) {
 		if (!searchInstances.containsKey(model.getReference())) {
-			searchInstances.put(model.getReference(), new ModelBasedFieldFactory<>(model,
-					messageService, false, true));
+			searchInstances.put(model.getReference(),
+			        new ModelBasedFieldFactory<>(model, messageService, false, true));
 		}
 		return (ModelBasedFieldFactory<T>) searchInstances.get(model.getReference());
 	}
@@ -132,10 +131,10 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 	 */
 	@SuppressWarnings("unchecked")
 	public static <T> ModelBasedFieldFactory<T> getValidatingInstance(EntityModel<T> model,
-			MessageService messageService) {
+	        MessageService messageService) {
 		if (!validatingInstances.containsKey(model.getReference())) {
-			validatingInstances.put(model.getReference(), new ModelBasedFieldFactory<>(model,
-					messageService, true, false));
+			validatingInstances.put(model.getReference(),
+			        new ModelBasedFieldFactory<>(model, messageService, true, false));
 		}
 		return (ModelBasedFieldFactory<T>) validatingInstances.get(model.getReference());
 	}
@@ -155,7 +154,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 	 *            has an effect on the construction of some fields)
 	 */
 	public ModelBasedFieldFactory(EntityModel<T> model, MessageService messageService,
-			boolean validate, boolean search) {
+	        boolean validate, boolean search) {
 		this.model = model;
 		this.messageService = messageService;
 		this.validate = validate;
@@ -177,13 +176,13 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 	 */
 	@SuppressWarnings("unchecked")
 	public <ID extends Serializable, S extends AbstractEntity<ID>> EntityComboBox<ID, S> constructComboBox(
-			EntityModel<?> entityModel, AttributeModel attributeModel, Filter filter) {
+	        EntityModel<?> entityModel, AttributeModel attributeModel, Filter filter) {
 		entityModel = resolveEntityModel(entityModel, attributeModel);
 		BaseService<ID, S> service = (BaseService<ID, S>) ServiceLocator
-				.getServiceForEntity(entityModel.getEntityClass());
+		        .getServiceForEntity(entityModel.getEntityClass());
 		SortOrder[] sos = constructSortOrder(entityModel);
 		return new EntityComboBox<ID, S>((EntityModel<S>) entityModel, attributeModel, service,
-				filter, sos);
+		        filter, sos);
 	}
 
 	/**
@@ -196,10 +195,11 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 	 *            the list of field filters
 	 * @return
 	 */
-	public Field<?> constructField(AttributeModel attributeModel, Map<String, Filter> fieldFilters) {
+	public Field<?> constructField(AttributeModel attributeModel,
+	        Map<String, Filter> fieldFilters) {
 
-		Filter fieldFilter = fieldFilters == null ? null : fieldFilters.get(attributeModel
-				.getPath());
+		Filter fieldFilter = fieldFilters == null ? null
+		        : fieldFilters.get(attributeModel.getPath());
 		Field<?> field = null;
 		if (fieldFilter != null) {
 			if (AttributeType.MASTER.equals(attributeModel.getAttributeType())) {
@@ -207,18 +207,18 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 				AttributeSelectMode sm = attributeModel.getSelectMode();
 				if (AttributeSelectMode.COMBO.equals(sm)) {
 					field = this.constructComboBox(attributeModel.getNestedEntityModel(),
-							attributeModel, fieldFilter);
+					        attributeModel, fieldFilter);
 				} else if (AttributeSelectMode.LOOKUP.equals(sm)) {
 					field = this.constructLookupField(attributeModel.getNestedEntityModel(),
-							attributeModel, fieldFilter);
+					        attributeModel, fieldFilter);
 				} else {
 					field = this.constructListSelect(attributeModel.getNestedEntityModel(),
-							attributeModel, fieldFilter, false);
+					        attributeModel, fieldFilter, false);
 				}
 			} else {
 				// detail relationship, render a multiple select
 				field = this.constructListSelect(attributeModel.getNestedEntityModel(),
-						attributeModel, fieldFilter, true);
+				        attributeModel, fieldFilter, true);
 			}
 		} else {
 			// no field filter present - delegate to default construction
@@ -253,15 +253,15 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 	 */
 	@SuppressWarnings("unchecked")
 	public <ID extends Serializable, S extends AbstractEntity<ID>> EntityListSelect<ID, S> constructListSelect(
-			EntityModel<?> entityModel, AttributeModel attributeModel, Filter fieldFilter,
-			boolean multipleSelect) {
+	        EntityModel<?> entityModel, AttributeModel attributeModel, Filter fieldFilter,
+	        boolean multipleSelect) {
 		entityModel = resolveEntityModel(entityModel, attributeModel);
 
 		BaseService<ID, S> service = (BaseService<ID, S>) ServiceLocator
-				.getServiceForEntity(entityModel.getEntityClass());
+		        .getServiceForEntity(entityModel.getEntityClass());
 		SortOrder[] sos = constructSortOrder(entityModel);
 		EntityListSelect<ID, S> listSelect = new EntityListSelect<ID, S>(
-				(EntityModel<S>) entityModel, attributeModel, service, fieldFilter, sos);
+		        (EntityModel<S>) entityModel, attributeModel, service, fieldFilter, sos);
 		listSelect.setMultiSelect(multipleSelect);
 		listSelect.setRows(LIST_SELECT_ROWS);
 		return listSelect;
@@ -280,17 +280,17 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 	 */
 	@SuppressWarnings("unchecked")
 	public <ID extends Serializable, S extends AbstractEntity<ID>> EntityLookupField<ID, S> constructLookupField(
-			EntityModel<?> entityModel, AttributeModel attributeModel, Filter fieldFilter) {
+	        EntityModel<?> entityModel, AttributeModel attributeModel, Filter fieldFilter) {
 		// for a lookup field, don't use the nested model but the base model -
 		// otherwise the searching goes totally wrong
-		entityModel = ServiceLocator.getEntityModelFactory().getModel(
-				attributeModel.getType().asSubclass(AbstractEntity.class));
+		entityModel = ServiceLocator.getEntityModelFactory()
+		        .getModel(attributeModel.getType().asSubclass(AbstractEntity.class));
 		BaseService<ID, S> service = (BaseService<ID, S>) ServiceLocator
-				.getServiceForEntity(entityModel.getEntityClass());
+		        .getServiceForEntity(entityModel.getEntityClass());
 		SortOrder[] sos = constructSortOrder(entityModel);
 		return new EntityLookupField<ID, S>(service, (EntityModel<S>) entityModel, attributeModel,
-				fieldFilter == null ? null : Lists.newArrayList(fieldFilter),
-				sos.length == 0 ? null : sos[0]);
+		        fieldFilter == null ? null : Lists.newArrayList(fieldFilter),
+		        sos.length == 0 ? null : sos[0]);
 	}
 
 	/**
@@ -319,9 +319,8 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 		SortOrder[] sos = new SortOrder[entityModel.getSortOrder().size()];
 		int i = 0;
 		for (AttributeModel am : entityModel.getSortOrder().keySet()) {
-			sos[i++] = new SortOrder(am.getName(),
-					entityModel.getSortOrder().get(am) ? SortDirection.ASCENDING
-							: SortDirection.DESCENDING);
+			sos[i++] = new SortOrder(am.getName(), entityModel.getSortOrder().get(am)
+			        ? SortDirection.ASCENDING : SortDirection.DESCENDING);
 		}
 		return sos;
 	}
@@ -380,7 +379,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 	 */
 	@Override
 	public Field<?> createField(Container container, Object itemId, Object propertyId,
-			Component uiContext) {
+	        Component uiContext) {
 		return createField(propertyId.toString());
 	}
 
@@ -397,7 +396,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 		// render a label instead
 		AttributeModel attributeModel = model.getAttributeModel(propertyId);
 		if (attributeModel.isReadOnly()
-				&& (!AttributeType.DETAIL.equals(attributeModel.getAttributeType())) && !search) {
+		        && (!AttributeType.DETAIL.equals(attributeModel.getAttributeType())) && !search) {
 			return null;
 		}
 
@@ -427,13 +426,13 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 			field = table;
 		} else if (Collection.class.isAssignableFrom(attributeModel.getType())) {
 			// render a multiple select component for a collection
-			field = constructListSelect(attributeModel.getNestedEntityModel(), attributeModel,
-					null, true);
+			field = constructListSelect(attributeModel.getNestedEntityModel(), attributeModel, null,
+			        true);
 		} else if (AttributeDateType.TIME.equals(attributeModel.getDateType())) {
 			TimeField tf = new TimeField();
 			tf.setResolution(Resolution.MINUTE);
 			tf.setLocale(VaadinSession.getCurrent() == null ? OCSConstants.DEFAULT_LOCALE
-					: VaadinSession.getCurrent().getLocale());
+			        : VaadinSession.getCurrent().getLocale());
 			field = tf;
 		} else {
 			// just a regular field
@@ -455,8 +454,8 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 
 			// add email validator
 			if (attributeModel.isEmail()) {
-				field.addValidator(new EmailValidator(messageService
-						.getMessage("ocs.no.valid.email")));
+				field.addValidator(
+				        new EmailValidator(messageService.getMessage("ocs.no.valid.email")));
 			}
 		} else if (field instanceof DateField) {
 			// set a separate format for a date field
@@ -494,13 +493,13 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 		Field<?> field = null;
 		if (AttributeSelectMode.COMBO.equals(attributeModel.getSelectMode())) {
 			field = (Field<?>) constructComboBox(attributeModel.getNestedEntityModel(),
-					attributeModel, null);
+			        attributeModel, null);
 		} else if (AttributeSelectMode.LOOKUP.equals(attributeModel.getSelectMode())) {
 			field = (Field<?>) constructLookupField(attributeModel.getNestedEntityModel(),
-					attributeModel, null);
+			        attributeModel, null);
 		} else {
 			field = this.constructListSelect(attributeModel.getNestedEntityModel(), attributeModel,
-					null, false);
+			        null, false);
 		}
 		return field;
 	}
@@ -526,8 +525,8 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 			if (msg != null) {
 				newItem.getItemProperty(CAPTION_PROPERTY_ID).setValue(msg);
 			} else {
-				newItem.getItemProperty(CAPTION_PROPERTY_ID).setValue(
-						DefaultFieldFactory.createCaptionByPropertyId(e.name()));
+				newItem.getItemProperty(CAPTION_PROPERTY_ID)
+				        .setValue(DefaultFieldFactory.createCaptionByPropertyId(e.name()));
 			}
 		}
 	}
@@ -537,16 +536,15 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 	}
 
 	/**
-	 * 
 	 * @param entityModel
 	 * @param attributeModel
 	 * @return
 	 */
 	private EntityModel<?> resolveEntityModel(EntityModel<?> entityModel,
-			AttributeModel attributeModel) {
+	        AttributeModel attributeModel) {
 		if (entityModel == null) {
-			entityModel = ServiceLocator.getEntityModelFactory().getModel(
-					attributeModel.getType().asSubclass(AbstractEntity.class));
+			entityModel = ServiceLocator.getEntityModelFactory()
+			        .getModel(attributeModel.getType().asSubclass(AbstractEntity.class));
 		}
 		return entityModel;
 	}
@@ -562,14 +560,14 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 	protected void setConverters(AbstractTextField textField, AttributeModel attributeModel) {
 		if (attributeModel.getType().equals(BigDecimal.class)) {
 			textField.setConverter(ConverterFactory.createBigDecimalConverter(
-					attributeModel.isCurrency(), attributeModel.isPercentage(), false,
-					attributeModel.getPrecision(), VaadinUtils.getCurrencySymbol()));
+			        attributeModel.isCurrency(), attributeModel.isPercentage(), false,
+			        attributeModel.getPrecision(), VaadinUtils.getCurrencySymbol()));
 		} else if (attributeModel.getType().equals(Integer.class)) {
-			textField.setConverter(ConverterFactory
-					.createIntegerConverter(useThousandsGroupingInEditMode()));
+			textField.setConverter(
+			        ConverterFactory.createIntegerConverter(useThousandsGroupingInEditMode()));
 		} else if (attributeModel.getType().equals(Long.class)) {
-			textField.setConverter(ConverterFactory
-					.createLongConverter(useThousandsGroupingInEditMode()));
+			textField.setConverter(
+			        ConverterFactory.createLongConverter(useThousandsGroupingInEditMode()));
 		}
 	}
 

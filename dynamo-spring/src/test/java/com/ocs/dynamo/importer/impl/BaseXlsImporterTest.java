@@ -71,8 +71,6 @@ public class BaseXlsImporterTest {
 	}
 
 	/**
-	 *
-	 * 
 	 * @throws IOException
 	 */
 	@Test
@@ -91,7 +89,6 @@ public class BaseXlsImporterTest {
 	}
 
 	/**
-	 *
 	 * Test that an exception is raised if a row doesn't have enough columns
 	 * 
 	 * @throws IOException

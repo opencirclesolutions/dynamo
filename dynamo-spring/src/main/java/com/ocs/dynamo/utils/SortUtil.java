@@ -20,8 +20,9 @@ public class SortUtil {
 			final com.ocs.dynamo.dao.SortOrder[] orders = new com.ocs.dynamo.dao.SortOrder[originalOrders.length];
 			for (int i = 0; i < originalOrders.length; i++) {
 				orders[i] = new com.ocs.dynamo.dao.SortOrder(
-						SortDirection.ASCENDING.equals(originalOrders[i].getDirection()) ? Direction.ASC
-								: Direction.DESC, originalOrders[i].getPropertyId().toString());
+				        SortDirection.ASCENDING.equals(originalOrders[i].getDirection())
+				                ? Direction.ASC : Direction.DESC,
+				        originalOrders[i].getPropertyId().toString());
 			}
 			return orders;
 		}

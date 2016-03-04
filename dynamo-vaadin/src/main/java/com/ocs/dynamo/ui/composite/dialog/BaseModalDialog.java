@@ -15,7 +15,6 @@ import com.vaadin.ui.Window;
  * appropriate buttons and "doBuild" to add the appropriate content
  * 
  * @author bas.rutten
- * 
  */
 public abstract class BaseModalDialog extends Window implements Buildable {
 

@@ -6,7 +6,6 @@ import org.apache.commons.lang.ObjectUtils;
  * A filter for checking if a property is null
  * 
  * @author bas.rutten
- * 
  */
 public final class IsNull extends AbstractFilter implements PropertyFilter {
 

@@ -15,7 +15,6 @@ import com.ocs.dynamo.utils.ClassUtils;
  * Base class for smart upload functionality
  * 
  * @author bas.rutten
- * 
  * @param <R>
  *            the type of a single row
  * @param <U>
@@ -51,10 +50,11 @@ public abstract class BaseImporter<R, U> {
 				value = value.trim();
 				try {
 					obj = Enum.valueOf(d.getPropertyType().asSubclass(Enum.class),
-							value.toUpperCase());
+					        value.toUpperCase());
 				} catch (IllegalArgumentException ex) {
-					throw new OCSImportException("Value " + value
-							+ " cannot be translated to a valid enumeration value", ex);
+					throw new OCSImportException(
+					        "Value " + value + " cannot be translated to a valid enumeration value",
+					        ex);
 				}
 			}
 
@@ -75,8 +75,8 @@ public abstract class BaseImporter<R, U> {
 
 				// illegal negative value
 				if (field.cannotBeNegative() && value < 0.0) {
-					throw new OCSImportException("Negative value " + value + " found for field '"
-							+ d.getName() + "'");
+					throw new OCSImportException(
+					        "Negative value " + value + " found for field '" + d.getName() + "'");
 				}
 
 				if (Integer.class.equals(d.getPropertyType())) {
@@ -162,8 +162,8 @@ public abstract class BaseImporter<R, U> {
 						ClassUtils.setFieldValue(t, d.getName(), obj);
 					} else if (field.required()) {
 						// a required value is missing!
-						throw new OCSImportException("Required value for field '" + d.getName()
-								+ "' is missing");
+						throw new OCSImportException(
+						        "Required value for field '" + d.getName() + "' is missing");
 					}
 				} else {
 					throw new OCSImportException("Row doesn't have enough columns");

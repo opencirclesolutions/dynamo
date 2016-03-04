@@ -13,14 +13,13 @@ import com.ocs.dynamo.domain.AbstractEntity;
  * relevant entities
  * 
  * @author bas.rutten
- * 
  * @param <ID>
  *            type of the primary key
  * @param <T>
  *            type of the entity
  */
-public class IdBasedServiceQuery<ID extends Serializable, T extends AbstractEntity<ID>> extends
-		BaseServiceQuery<ID, T> {
+public class IdBasedServiceQuery<ID extends Serializable, T extends AbstractEntity<ID>>
+        extends BaseServiceQuery<ID, T> {
 
 	private static final long serialVersionUID = -1910477652022230437L;
 
@@ -36,7 +35,7 @@ public class IdBasedServiceQuery<ID extends Serializable, T extends AbstractEnti
 	 * @param queryConfiguration
 	 */
 	public IdBasedServiceQuery(ServiceQueryDefinition<ID, T> queryDefinition,
-			Map<String, Object> queryConfiguration) {
+	        Map<String, Object> queryConfiguration) {
 		super(queryDefinition, queryConfiguration);
 	}
 
@@ -61,7 +60,7 @@ public class IdBasedServiceQuery<ID extends Serializable, T extends AbstractEnti
 			}
 		}
 		return getCustomQueryDefinition().getService().fetchByIds(results,
-				getCustomQueryDefinition().getJoins(), constructOrder());
+		        getCustomQueryDefinition().getJoins(), constructOrder());
 	}
 
 	/**

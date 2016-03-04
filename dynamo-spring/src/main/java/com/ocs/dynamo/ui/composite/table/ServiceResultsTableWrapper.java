@@ -18,21 +18,19 @@ import com.vaadin.data.sort.SortOrder;
  * A wrapper for a table that retrieves its data directly from the database
  * 
  * @author bas.rutten
- * 
  * @param <ID>
  *            type of the primary key of the entity
  * @param <T>
  *            type of the entity
  */
 public class ServiceResultsTableWrapper<ID extends Serializable, T extends AbstractEntity<ID>>
-		extends BaseTableWrapper<ID, T> implements Searchable {
+        extends BaseTableWrapper<ID, T> implements Searchable {
 
 	private static final long serialVersionUID = -4691108261565306844L;
 
 	protected Filter filter;
 
 	/**
-	 * 
 	 * @param service
 	 *            the service object
 	 * @param entityModel
@@ -45,7 +43,7 @@ public class ServiceResultsTableWrapper<ID extends Serializable, T extends Abstr
 	 *            options list of fetch joins to include in the query
 	 */
 	public ServiceResultsTableWrapper(BaseService<ID, T> service, EntityModel<T> entityModel,
-			QueryType queryType, Filter filter, SortOrder order, FetchJoinInformation[] joins) {
+	        QueryType queryType, Filter filter, SortOrder order, FetchJoinInformation[] joins) {
 		super(service, entityModel, queryType, order, joins);
 		this.filter = filter;
 	}
@@ -53,7 +51,7 @@ public class ServiceResultsTableWrapper<ID extends Serializable, T extends Abstr
 	@Override
 	protected Container constructContainer() {
 		return new ServiceContainer<ID, T>(getService(), true, OCSConstants.PAGE_SIZE,
-				getQueryType(), getJoins());
+		        getQueryType(), getJoins());
 	}
 
 	@Override

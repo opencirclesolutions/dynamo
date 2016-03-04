@@ -42,11 +42,10 @@ import com.vaadin.data.Property;
  * </ul>
  * 
  * @author Patrick Deenen (patrick.deenen@opencirclesolutions.nl)
- *
  */
 @SuppressWarnings("serial")
-public class HierarchicalContainer implements Hierarchical, Ordered, ItemSetChangeNotifier,
-		ItemSetChangeListener, Sortable {
+public class HierarchicalContainer
+        implements Hierarchical, Ordered, ItemSetChangeNotifier, ItemSetChangeListener, Sortable {
 
 	public class HierarchicalDefinition {
 		private Indexed container;
@@ -57,7 +56,7 @@ public class HierarchicalContainer implements Hierarchical, Ordered, ItemSetChan
 		private Object itemPropertyIdHasChildren;
 
 		public HierarchicalDefinition(Indexed container, int level, Object itemPropertyId,
-				Object itemPropertyIdParent, List<?> propertyIds) {
+		        Object itemPropertyIdParent, List<?> propertyIds) {
 			if (container == null) {
 				throw new AssertionError("container is mandatory");
 			}
@@ -201,7 +200,6 @@ public class HierarchicalContainer implements Hierarchical, Ordered, ItemSetChan
 
 		/*
 		 * (non-Javadoc)
-		 * 
 		 * @see java.lang.Object#hashCode()
 		 */
 		@Override
@@ -216,7 +214,6 @@ public class HierarchicalContainer implements Hierarchical, Ordered, ItemSetChan
 
 		/*
 		 * (non-Javadoc)
-		 * 
 		 * @see java.lang.Object#equals(java.lang.Object)
 		 */
 		@Override
@@ -267,7 +264,6 @@ public class HierarchicalContainer implements Hierarchical, Ordered, ItemSetChan
 
 			/*
 			 * (non-Javadoc)
-			 * 
 			 * @see com.ocs.dynamo.utils.SubList.ListIteratorImpl#next()
 			 */
 			@Override
@@ -280,7 +276,7 @@ public class HierarchicalContainer implements Hierarchical, Ordered, ItemSetChan
 		HierarchicalId parentId;
 
 		public HierarchicalSubList(int level, HierarchicalId parentId, List<Object> list,
-				int fromIndex, int toIndex) {
+		        int fromIndex, int toIndex) {
 			super(list, fromIndex, toIndex);
 			this.level = level;
 			this.parentId = parentId;
@@ -288,7 +284,6 @@ public class HierarchicalContainer implements Hierarchical, Ordered, ItemSetChan
 
 		/*
 		 * (non-Javadoc)
-		 * 
 		 * @see com.ocs.dynamo.utils.SubList#get(int)
 		 */
 		@Override
@@ -298,7 +293,6 @@ public class HierarchicalContainer implements Hierarchical, Ordered, ItemSetChan
 
 		/*
 		 * (non-Javadoc)
-		 * 
 		 * @see com.ocs.dynamo.utils.SubList#listIterator(int)
 		 */
 		@Override
@@ -309,7 +303,6 @@ public class HierarchicalContainer implements Hierarchical, Ordered, ItemSetChan
 
 		/*
 		 * (non-Javadoc)
-		 * 
 		 * @see com.ocs.dynamo.utils.SubList#subList(int, int)
 		 */
 		@Override
@@ -393,11 +386,9 @@ public class HierarchicalContainer implements Hierarchical, Ordered, ItemSetChan
 	 * @param propertyIds
 	 */
 	public void addDefinition(Indexed container, int level, Object itemPropertyId,
-			Object itemPropertyIdParent, Object... propertyIds) {
-		getHierarchy().put(
-				level,
-				new HierarchicalDefinition(container, level, itemPropertyId, itemPropertyIdParent,
-						Arrays.asList(propertyIds)));
+	        Object itemPropertyIdParent, Object... propertyIds) {
+		getHierarchy().put(level, new HierarchicalDefinition(container, level, itemPropertyId,
+		        itemPropertyIdParent, Arrays.asList(propertyIds)));
 		if (container instanceof ItemSetChangeNotifier) {
 			((ItemSetChangeNotifier) container).addItemSetChangeListener(this);
 		}
@@ -431,7 +422,7 @@ public class HierarchicalContainer implements Hierarchical, Ordered, ItemSetChan
 	}
 
 	protected Collection<Item> mapItemProperties(HierarchicalDefinition definition,
-			Collection<Item> items) {
+	        Collection<Item> items) {
 		if (items != null) {
 			for (Item item : items) {
 				mapItemProperties(definition, item);
@@ -442,7 +433,6 @@ public class HierarchicalContainer implements Hierarchical, Ordered, ItemSetChan
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see com.vaadin.data.Container#getItem(java.lang.Object)
 	 */
 	@Override
@@ -453,7 +443,6 @@ public class HierarchicalContainer implements Hierarchical, Ordered, ItemSetChan
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see com.vaadin.data.Container#getContainerPropertyIds()
 	 */
 	@Override
@@ -467,7 +456,6 @@ public class HierarchicalContainer implements Hierarchical, Ordered, ItemSetChan
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see com.vaadin.data.Container#getItemIds()
 	 */
 	@Override
@@ -488,7 +476,6 @@ public class HierarchicalContainer implements Hierarchical, Ordered, ItemSetChan
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see com.vaadin.data.Container#getContainerProperty(java.lang.Object,
 	 * java.lang.Object)
 	 */
@@ -502,7 +489,6 @@ public class HierarchicalContainer implements Hierarchical, Ordered, ItemSetChan
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see com.vaadin.data.Container#getType(java.lang.Object)
 	 */
 	@Override
@@ -519,7 +505,6 @@ public class HierarchicalContainer implements Hierarchical, Ordered, ItemSetChan
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see com.vaadin.data.Container#size()
 	 */
 	@Override
@@ -529,7 +514,6 @@ public class HierarchicalContainer implements Hierarchical, Ordered, ItemSetChan
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see com.vaadin.data.Container#containsId(java.lang.Object)
 	 */
 	@Override
@@ -541,7 +525,6 @@ public class HierarchicalContainer implements Hierarchical, Ordered, ItemSetChan
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see com.vaadin.data.Container#addItem(java.lang.Object)
 	 */
 	@Override
@@ -551,7 +534,6 @@ public class HierarchicalContainer implements Hierarchical, Ordered, ItemSetChan
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see com.vaadin.data.Container#addItem()
 	 */
 	@Override
@@ -561,7 +543,6 @@ public class HierarchicalContainer implements Hierarchical, Ordered, ItemSetChan
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see com.vaadin.data.Container#addContainerProperty(java.lang.Object,
 	 * java.lang.Class, java.lang.Object)
 	 */
@@ -572,7 +553,6 @@ public class HierarchicalContainer implements Hierarchical, Ordered, ItemSetChan
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see com.vaadin.data.Container#removeContainerProperty(java.lang.Object)
 	 */
 	@Override
@@ -582,7 +562,6 @@ public class HierarchicalContainer implements Hierarchical, Ordered, ItemSetChan
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see com.vaadin.data.Container#removeAllItems()
 	 */
 	@Override
@@ -592,7 +571,7 @@ public class HierarchicalContainer implements Hierarchical, Ordered, ItemSetChan
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	protected int searchIndexByPropertyValue(Indexed container, Object propertyId,
-			Object parentIdValue, int startIndex, boolean first) {
+	        Object parentIdValue, int startIndex, boolean first) {
 		// Binary search
 		int ll = startIndex;
 		int ul = container.size() - 1;
@@ -600,7 +579,7 @@ public class HierarchicalContainer implements Hierarchical, Ordered, ItemSetChan
 		int maxsteps = 16;
 		while (true) {
 			Object currentpv = container.getItem(container.getIdByIndex(i))
-					.getItemProperty(propertyId).getValue();
+			        .getItemProperty(propertyId).getValue();
 			if (AbstractEntity.class.isInstance(currentpv)) {
 				currentpv = ((AbstractEntity) currentpv).getId();
 			}
@@ -611,7 +590,7 @@ public class HierarchicalContainer implements Hierarchical, Ordered, ItemSetChan
 				} else {
 					int io = first ? i - 1 : i + 1;
 					Object otherpv = container.getItem(container.getIdByIndex(io))
-							.getItemProperty(propertyId).getValue();
+					        .getItemProperty(propertyId).getValue();
 					if (AbstractEntity.class.isInstance(otherpv)) {
 						otherpv = ((AbstractEntity) otherpv).getId();
 					}
@@ -643,7 +622,6 @@ public class HierarchicalContainer implements Hierarchical, Ordered, ItemSetChan
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see com.vaadin.data.Container.Hierarchical#getChildren(java.lang.Object)
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -654,11 +632,11 @@ public class HierarchicalContainer implements Hierarchical, Ordered, ItemSetChan
 			HierarchicalDefinition cdef = getHierarchy().get(hId.getLevel() + 1);
 			Indexes childIndex = getChildIndexes(hId, cdef);
 			if (childIndex.getIndexFirstChild() >= 0 && childIndex.getIndexLastChild() >= 0
-					&& childIndex.getIndexFirstChild() <= childIndex.getIndexLastChild()) {
+			        && childIndex.getIndexFirstChild() <= childIndex.getIndexLastChild()) {
 				// Return subset of container
 				return new HierarchicalSubList(cdef.getLevel(), hId,
-						(List) cdef.container.getItemIds(), childIndex.getIndexFirstChild(),
-						childIndex.getIndexLastChild() + 1);
+				        (List) cdef.container.getItemIds(), childIndex.getIndexFirstChild(),
+				        childIndex.getIndexLastChild() + 1);
 			}
 		}
 		// TODO what to return when there are NO children?
@@ -666,7 +644,7 @@ public class HierarchicalContainer implements Hierarchical, Ordered, ItemSetChan
 	}
 
 	protected Indexes getChildIndexes(HierarchicalId parentItemId,
-			HierarchicalDefinition childDefinition) {
+	        HierarchicalDefinition childDefinition) {
 		Indexes childIndex = null;
 		// Get child indexes from cache
 		if (childIndexes.containsKey(parentItemId)) {
@@ -675,11 +653,11 @@ public class HierarchicalContainer implements Hierarchical, Ordered, ItemSetChan
 			// Search first child
 			// TODO may be optimized by using startindex
 			int fi = searchIndexByPropertyValue(childDefinition.getContainer(),
-					childDefinition.getItemPropertyIdParent(), parentItemId.getItemId(), 0, true);
+			        childDefinition.getItemPropertyIdParent(), parentItemId.getItemId(), 0, true);
 			// Search last child
 			// TODO may be optimized by using startindex
 			int li = searchIndexByPropertyValue(childDefinition.getContainer(),
-					childDefinition.getItemPropertyIdParent(), parentItemId.getItemId(), 0, false);
+			        childDefinition.getItemPropertyIdParent(), parentItemId.getItemId(), 0, false);
 			childIndex = new Indexes(parentItemId.getLevel(), fi, li);
 			childIndexes.put(parentItemId, childIndex);
 		}
@@ -688,7 +666,6 @@ public class HierarchicalContainer implements Hierarchical, Ordered, ItemSetChan
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see com.vaadin.data.Container.Hierarchical#getParent(java.lang.Object)
 	 */
 	@Override
@@ -699,7 +676,6 @@ public class HierarchicalContainer implements Hierarchical, Ordered, ItemSetChan
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see com.vaadin.data.Container.Hierarchical#rootItemIds()
 	 */
 	@SuppressWarnings("unchecked")
@@ -707,12 +683,11 @@ public class HierarchicalContainer implements Hierarchical, Ordered, ItemSetChan
 	public List<?> rootItemIds() {
 		HierarchicalDefinition def = getHierarchy().get(0);
 		return new HierarchicalSubList(def.getLevel(), null,
-				(List<Object>) def.container.getItemIds(), 0, def.container.size());
+		        (List<Object>) def.container.getItemIds(), 0, def.container.size());
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see com.vaadin.data.Container.Hierarchical#setParent(java.lang.Object,
 	 * java.lang.Object)
 	 */
@@ -723,7 +698,6 @@ public class HierarchicalContainer implements Hierarchical, Ordered, ItemSetChan
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see
 	 * com.vaadin.data.Container.Hierarchical#areChildrenAllowed(java.lang.Object
 	 * )
@@ -736,7 +710,6 @@ public class HierarchicalContainer implements Hierarchical, Ordered, ItemSetChan
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see
 	 * com.vaadin.data.Container.Hierarchical#setChildrenAllowed(java.lang.Object
 	 * , boolean)
@@ -748,7 +721,6 @@ public class HierarchicalContainer implements Hierarchical, Ordered, ItemSetChan
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see com.vaadin.data.Container.Hierarchical#isRoot(java.lang.Object)
 	 */
 	@Override
@@ -759,7 +731,6 @@ public class HierarchicalContainer implements Hierarchical, Ordered, ItemSetChan
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see com.vaadin.data.Container.Hierarchical#hasChildren(java.lang.Object)
 	 */
 	@Override
@@ -771,7 +742,7 @@ public class HierarchicalContainer implements Hierarchical, Ordered, ItemSetChan
 			if (def.itemPropertyIdHasChildren != null) {
 				// Use property
 				Property<?> p = def.getContainer().getContainerProperty(hId.getItemId(),
-						def.getItemPropertyIdHasChildren());
+				        def.getItemPropertyIdHasChildren());
 				return p != null && Boolean.TRUE.equals(p.getValue());
 			} else {
 				// Search child
@@ -785,7 +756,6 @@ public class HierarchicalContainer implements Hierarchical, Ordered, ItemSetChan
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see com.vaadin.data.Container.Hierarchical#removeItem(java.lang.Object)
 	 */
 	@Override
@@ -807,8 +777,8 @@ public class HierarchicalContainer implements Hierarchical, Ordered, ItemSetChan
 				// Check if the next has the same parent
 				if (pi.getIndexLastChild() < i) {
 					// Not the same parent -> search next parent
-					pId = new HierarchicalId(hId.getLevel(), def.getContainer().nextItemId(
-							hId.getItemId()), pId);
+					pId = new HierarchicalId(hId.getLevel(),
+					        def.getContainer().nextItemId(hId.getItemId()), pId);
 				}
 			}
 			// Create item id
@@ -837,8 +807,8 @@ public class HierarchicalContainer implements Hierarchical, Ordered, ItemSetChan
 				// Check if the previous has the same parent
 				if (i < pi.getIndexFirstChild()) {
 					// Not the same parent -> search next parent
-					pId = new HierarchicalId(hId.getLevel(), def.getContainer().nextItemId(
-							hId.getItemId()), pId);
+					pId = new HierarchicalId(hId.getLevel(),
+					        def.getContainer().nextItemId(hId.getItemId()), pId);
 				}
 			}
 			return new HierarchicalId(hId.getLevel(), def.container.getIdByIndex(i), pId);
@@ -993,7 +963,7 @@ public class HierarchicalContainer implements Hierarchical, Ordered, ItemSetChan
 				Indexed c = def.getContainer();
 				Object mpid = unmapProperty(def, pid);
 				if (c instanceof Sortable && mpid != null
-						&& ((Sortable) c).getSortableContainerPropertyIds().contains(mpid)) {
+				        && ((Sortable) c).getSortableContainerPropertyIds().contains(mpid)) {
 					sortablePids.add(pid);
 				}
 			}

@@ -1,11 +1,11 @@
 package com.ocs.dynamo.ui.container;
 
 public class EnergyUsage {
-	
+
 	private String ean;
 
 	private Integer week;
-	
+
 	private Integer usage;
 
 	public EnergyUsage(String ean, Integer week, Integer usage) {

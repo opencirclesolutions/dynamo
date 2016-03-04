@@ -4,7 +4,6 @@ package com.ocs.dynamo.exception;
  * Base class for OCS checked exceptions
  * 
  * @author bas.rutten
- * 
  */
 public class OCSException extends Exception {
 

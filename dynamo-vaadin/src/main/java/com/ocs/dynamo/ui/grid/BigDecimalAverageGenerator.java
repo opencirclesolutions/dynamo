@@ -13,7 +13,6 @@ import com.vaadin.data.util.PropertyValueGenerator;
  * BigDecimals
  * 
  * @author bas.rutten
- *
  */
 public class BigDecimalAverageGenerator extends PropertyValueGenerator<BigDecimal> {
 

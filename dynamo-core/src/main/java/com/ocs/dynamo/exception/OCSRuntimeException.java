@@ -1,10 +1,11 @@
 package com.ocs.dynamo.exception;
 
 /**
- * Base class for any runtime exceptions. Must always be used instead of a plain java.lang.RuntimeException.
+ * Base class for any runtime exceptions. Must always be used instead of a plain
+ * java.lang.RuntimeException.
  * Subclass when appropriate
+ * 
  * @author bas.rutten
- *
  */
 public class OCSRuntimeException extends RuntimeException {
 
@@ -12,11 +13,11 @@ public class OCSRuntimeException extends RuntimeException {
 
 	public OCSRuntimeException() {
 	}
-	
+
 	public OCSRuntimeException(String message) {
 		super(message);
 	}
-	
+
 	public OCSRuntimeException(String message, Throwable cause) {
 		super(message, cause);
 	}

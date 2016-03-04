@@ -14,7 +14,6 @@ import junitx.util.PrivateAccessor;
  * Basic test class for the ServiceLocator
  * 
  * @author bas.rutten
- * 
  */
 public class ServiceLocatorTest extends BaseIntegrationTest {
 

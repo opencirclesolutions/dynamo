@@ -9,9 +9,9 @@ public class TestY {
 	private Integer week2_prop;
 
 	private Integer week3_prop;
-	
+
 	private BigDecimal week4_prop;
-	
+
 	private Integer skip;
 
 	public Integer getWeek1_prop() {
@@ -54,6 +54,4 @@ public class TestY {
 		this.skip = skip;
 	}
 
-	
-	
 }

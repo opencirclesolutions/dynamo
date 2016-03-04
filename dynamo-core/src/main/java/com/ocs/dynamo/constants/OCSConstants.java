@@ -6,7 +6,6 @@ import java.util.Locale;
  * Various constants that are used by the framework.
  * 
  * @author bas.rutten
- *
  */
 public final class OCSConstants {
 
@@ -84,7 +83,6 @@ public final class OCSConstants {
 
 	public static final String SP_DECIMAL_PRECISION = "ocs.default.decimal.precision";
 
-	
 	/**
 	 * The name of the variable that is used to store the user
 	 */
@@ -101,5 +99,6 @@ public final class OCSConstants {
 	 */
 	public static final String UTF_8 = "UTF-8";
 
-	private OCSConstants() {}
+	private OCSConstants() {
+	}
 }

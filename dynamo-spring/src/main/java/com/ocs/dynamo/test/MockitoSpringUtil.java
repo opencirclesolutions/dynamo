@@ -24,7 +24,6 @@ import com.ocs.dynamo.service.MessageService;
  * context
  * 
  * @author bas.rutten
- * 
  */
 public final class MockitoSpringUtil {
 
@@ -44,7 +43,7 @@ public final class MockitoSpringUtil {
 	 * @param clazz
 	 */
 	public static void registerMocks(ConfigurableListableBeanFactory factory, Object subject,
-			Class<?> clazz) {
+	        Class<?> clazz) {
 		try {
 			Field[] fields = clazz.getDeclaredFields();
 			for (Field field : fields) {
@@ -71,7 +70,7 @@ public final class MockitoSpringUtil {
 	 */
 	@SuppressWarnings("unchecked")
 	public static <ID, X extends AbstractEntity<ID>> void mockSave(BaseDao<ID, X> dao,
-			Class<X> clazz) {
+	        Class<X> clazz) {
 		// mock the save behaviour
 		Mockito.when(dao.save(Matchers.any(clazz))).thenAnswer(new Answer<X>() {
 
@@ -92,7 +91,7 @@ public final class MockitoSpringUtil {
 	 */
 	@SuppressWarnings("unchecked")
 	public static <ID, U extends AbstractEntity<ID>> void mockServiceSave(
-			BaseService<ID, U> service, Class<U> clazz) {
+	        BaseService<ID, U> service, Class<U> clazz) {
 		// mock the save behaviour
 		Mockito.when(service.save(Matchers.any(clazz))).thenAnswer(new Answer<U>() {
 
@@ -114,47 +113,47 @@ public final class MockitoSpringUtil {
 	@SuppressWarnings("unchecked")
 	public static void mockMessageService(MessageService messageService) {
 		// method without any arguments
-		Mockito.when(messageService.getMessage(Matchers.anyString())).thenAnswer(
-				new Answer<String>() {
+		Mockito.when(messageService.getMessage(Matchers.anyString()))
+		        .thenAnswer(new Answer<String>() {
 
-					@Override
-					public String answer(InvocationOnMock invocation) throws Throwable {
-						return (String) invocation.getArguments()[0];
-					}
+			        @Override
+			        public String answer(InvocationOnMock invocation) throws Throwable {
+				        return (String) invocation.getArguments()[0];
+			        }
 
-				});
+		        });
 		// method with varargs
 		Mockito.when(messageService.getMessage(Matchers.anyString(), Matchers.anyVararg()))
-				.thenAnswer(new Answer<String>() {
+		        .thenAnswer(new Answer<String>() {
 
-					@Override
-					public String answer(InvocationOnMock invocation) throws Throwable {
-						return (String) invocation.getArguments()[0];
-					}
+			        @Override
+			        public String answer(InvocationOnMock invocation) throws Throwable {
+				        return (String) invocation.getArguments()[0];
+			        }
 
-				});
+		        });
 
 		// method with locale
 		Mockito.when(messageService.getMessage(Matchers.anyString(), Matchers.any(Locale.class)))
-				.thenAnswer(new Answer<String>() {
+		        .thenAnswer(new Answer<String>() {
 
-					@Override
-					public String answer(InvocationOnMock invocation) throws Throwable {
-						return (String) invocation.getArguments()[0];
-					}
+			        @Override
+			        public String answer(InvocationOnMock invocation) throws Throwable {
+				        return (String) invocation.getArguments()[0];
+			        }
 
-				});
+		        });
 
 		Mockito.when(
-				messageService.getEnumMessage(Matchers.any(Class.class), Matchers.any(Enum.class)))
-				.thenAnswer(new Answer<String>() {
+		        messageService.getEnumMessage(Matchers.any(Class.class), Matchers.any(Enum.class)))
+		        .thenAnswer(new Answer<String>() {
 
-					@Override
-					public String answer(InvocationOnMock invocation) throws Throwable {
-						return invocation.getArguments()[1].toString();
-					}
+			        @Override
+			        public String answer(InvocationOnMock invocation) throws Throwable {
+				        return invocation.getArguments()[1].toString();
+			        }
 
-				});
+		        });
 	}
 
 	/**
@@ -165,7 +164,7 @@ public final class MockitoSpringUtil {
 	 * @return
 	 */
 	public static <ID, X extends AbstractEntity<ID>> X captureServiceSave(
-			BaseService<ID, X> service, Class<X> clazz) {
+	        BaseService<ID, X> service, Class<X> clazz) {
 		ArgumentCaptor<X> captor = ArgumentCaptor.forClass(clazz);
 		Mockito.verify(service).save(captor.capture());
 		return captor.getValue();
@@ -182,7 +181,7 @@ public final class MockitoSpringUtil {
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static <ID, X extends AbstractEntity<ID>> List<X> captureServiceSaveList(
-			BaseService<ID, X> service) {
+	        BaseService<ID, X> service) {
 		ArgumentCaptor<List> captor = ArgumentCaptor.forClass(List.class);
 		Mockito.verify(service).save(captor.capture());
 		return (List<X>) captor.getValue();
@@ -213,7 +212,7 @@ public final class MockitoSpringUtil {
 	 * @return
 	 */
 	public static <ID, X extends AbstractEntity<ID>> List<X> captureServiceSaves(
-			BaseService<ID, X> service, Class<X> clazz, int times) {
+	        BaseService<ID, X> service, Class<X> clazz, int times) {
 		ArgumentCaptor<X> captor = ArgumentCaptor.forClass(clazz);
 		Mockito.verify(service, Mockito.times(times)).save(captor.capture());
 		return captor.getAllValues();
@@ -227,7 +226,7 @@ public final class MockitoSpringUtil {
 	 * @param times
 	 */
 	public static <ID, X extends AbstractEntity<ID>> List<X> captureSaves(BaseDao<ID, X> dao,
-			Class<X> clazz, int times) {
+	        Class<X> clazz, int times) {
 		ArgumentCaptor<X> captor = ArgumentCaptor.forClass(clazz);
 		Mockito.verify(dao, Mockito.times(times)).save(captor.capture());
 		return captor.getAllValues();
@@ -241,7 +240,7 @@ public final class MockitoSpringUtil {
 	 * @return
 	 */
 	public static <ID, X extends AbstractEntity<ID>> X captureSave(BaseDao<ID, X> dao,
-			Class<X> clazz) {
+	        Class<X> clazz) {
 		ArgumentCaptor<X> captor = ArgumentCaptor.forClass(clazz);
 		Mockito.verify(dao).save(captor.capture());
 		return captor.getValue();

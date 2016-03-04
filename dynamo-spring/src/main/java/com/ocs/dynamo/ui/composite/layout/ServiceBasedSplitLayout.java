@@ -25,7 +25,6 @@ import com.vaadin.ui.TextField;
  * service to fetch data
  * 
  * @author bas.rutten
- * 
  * @param <ID>
  *            type of the primary key
  * @param <T>
@@ -33,7 +32,7 @@ import com.vaadin.ui.TextField;
  */
 @SuppressWarnings("serial")
 public abstract class ServiceBasedSplitLayout<ID extends Serializable, T extends AbstractEntity<ID>>
-		extends BaseSplitLayout<ID, T> {
+        extends BaseSplitLayout<ID, T> {
 
 	private static final long serialVersionUID = 1068860513192819804L;
 
@@ -50,7 +49,7 @@ public abstract class ServiceBasedSplitLayout<ID extends Serializable, T extends
 	 * @param joins
 	 */
 	public ServiceBasedSplitLayout(BaseService<ID, T> service, EntityModel<T> entityModel,
-			FormOptions formOptions, SortOrder sortOrder, FetchJoinInformation... joins) {
+	        FormOptions formOptions, SortOrder sortOrder, FetchJoinInformation... joins) {
 		super(service, entityModel, formOptions, sortOrder, joins);
 	}
 
@@ -75,7 +74,7 @@ public abstract class ServiceBasedSplitLayout<ID extends Serializable, T extends
 	@Override
 	protected void constructTable() {
 		ServiceResultsTableWrapper<ID, T> tw = new ServiceResultsTableWrapper<ID, T>(getService(),
-				getEntityModel(), QueryType.ID_BASED, filter, getSortOrder(), getJoins()) {
+		        getEntityModel(), QueryType.ID_BASED, filter, getSortOrder(), getJoins()) {
 
 			@Override
 			protected void onSelect(Object selected) {

@@ -15,7 +15,6 @@ import com.vaadin.server.VaadinSession;
  * A converter for converting between Strings and BigDecimals
  * 
  * @author bas.rutten
- * 
  */
 public class BigDecimalConverter extends StringToBigDecimalConverter {
 
@@ -49,13 +48,14 @@ public class BigDecimalConverter extends StringToBigDecimalConverter {
 
 	@Override
 	public BigDecimal convertToModel(String value, Class<? extends BigDecimal> targetType,
-			Locale locale) {
+	        Locale locale) {
 		// the original Vaadin code curiously returns a Double here and casts
 		// that to a BigDecimal.
 		// That is not correct, so we use this additional step here
 		Number number = convertToNumber(value, BigDecimal.class, locale);
-		return number == null ? null : BigDecimal.valueOf(number.doubleValue()).setScale(precision,
-				RoundingMode.HALF_UP);
+		return number == null ? null
+		        : BigDecimal.valueOf(number.doubleValue()).setScale(precision,
+		                RoundingMode.HALF_UP);
 	}
 
 	@Override
@@ -68,7 +68,6 @@ public class BigDecimalConverter extends StringToBigDecimalConverter {
 	}
 
 	/**
-	 * 
 	 * @param locale
 	 * @return
 	 */

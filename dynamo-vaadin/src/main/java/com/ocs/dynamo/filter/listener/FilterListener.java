@@ -6,7 +6,6 @@ import java.io.Serializable;
  * Interface for components that have to respond to a filter change
  * 
  * @author bas.rutten
- * 
  */
 public interface FilterListener extends Serializable {
 

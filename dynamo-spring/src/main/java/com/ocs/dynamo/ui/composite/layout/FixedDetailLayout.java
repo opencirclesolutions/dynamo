@@ -14,18 +14,18 @@ import com.vaadin.data.sort.SortOrder;
  * those). Use this only when the data set is sufficiently small
  * 
  * @author bas.rutten
- * 
  * @param <ID>
  *            the type of the primary key
  * @param <T>
  *            the type of the entity
  * @param <ID2>
  *            the type of the primary key of the parent entity
- * @param <Q>
+ * @param
+ *            <Q>
  *            the type of the parent entity
  */
 public abstract class FixedDetailLayout<ID extends Serializable, T extends AbstractEntity<ID>, ID2 extends Serializable, Q extends AbstractEntity<ID2>>
-		extends FixedSplitLayout<ID, T> {
+        extends FixedSplitLayout<ID, T> {
 
 	private static final long serialVersionUID = 4606800218149558500L;
 
@@ -51,8 +51,8 @@ public abstract class FixedDetailLayout<ID extends Serializable, T extends Abstr
 	 * @param sortOrder
 	 */
 	public FixedDetailLayout(BaseService<ID, T> service, Q parentEntity,
-			BaseService<ID2, Q> parentService, EntityModel<T> entityModel, FormOptions formOptions,
-			SortOrder sortOrder) {
+	        BaseService<ID2, Q> parentService, EntityModel<T> entityModel, FormOptions formOptions,
+	        SortOrder sortOrder) {
 		super(service, entityModel, formOptions, sortOrder);
 		this.parentEntity = parentEntity;
 		this.parentService = parentService;

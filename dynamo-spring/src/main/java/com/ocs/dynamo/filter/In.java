@@ -9,7 +9,6 @@ import org.apache.commons.lang.ObjectUtils;
  * collection of values
  * 
  * @author bas.rutten
- *
  */
 public class In extends AbstractFilter implements PropertyFilter {
 
@@ -18,7 +17,6 @@ public class In extends AbstractFilter implements PropertyFilter {
 	private final String propertyId;
 
 	/**
-	 * 
 	 * @param propertyId
 	 *            the property that represents the collection
 	 * @param value
@@ -65,7 +63,7 @@ public class In extends AbstractFilter implements PropertyFilter {
 		In c = (In) obj;
 
 		return ObjectUtils.equals(propertyId, c.getPropertyId())
-				&& ObjectUtils.equals(values, c.getValues());
+		        && ObjectUtils.equals(values, c.getValues());
 	}
 
 	@Override

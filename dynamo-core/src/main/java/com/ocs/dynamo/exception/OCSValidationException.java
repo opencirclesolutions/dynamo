@@ -7,7 +7,6 @@ import java.util.List;
  * An exception indicating that one or more validation errors have occurred
  * 
  * @author bas.rutten
- * 
  */
 public class OCSValidationException extends OCSRuntimeException {
 

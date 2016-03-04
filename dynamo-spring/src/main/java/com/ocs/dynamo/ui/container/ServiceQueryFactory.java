@@ -12,10 +12,9 @@ import com.ocs.dynamo.domain.AbstractEntity;
  * A factory for creating ServiceQuery objects
  * 
  * @author patrick.deenen
- * 
  */
-public class ServiceQueryFactory<ID extends Serializable, T extends AbstractEntity<ID>> implements
-		QueryFactory {
+public class ServiceQueryFactory<ID extends Serializable, T extends AbstractEntity<ID>>
+        implements QueryFactory {
 
 	/**
 	 * Constructs a new query based on its definition
@@ -28,10 +27,10 @@ public class ServiceQueryFactory<ID extends Serializable, T extends AbstractEnti
 		switch (def.getQueryType()) {
 		case PAGING:
 			return new PagingServiceQuery<ID, T>((ServiceQueryDefinition<ID, T>) queryDefinition,
-					null);
+			        null);
 		case ID_BASED:
 			return new IdBasedServiceQuery<ID, T>((ServiceQueryDefinition<ID, T>) queryDefinition,
-					null);
+			        null);
 		default:
 			return null;
 		}

@@ -7,7 +7,6 @@ import java.util.List;
  * http://dev.vaadin.com/ticket/10544
  * 
  * @author Patrick Deenen (patrick.deenen@opencirclesolutions.nl)
- *
  */
 public class ComboBox extends com.vaadin.ui.ComboBox {
 

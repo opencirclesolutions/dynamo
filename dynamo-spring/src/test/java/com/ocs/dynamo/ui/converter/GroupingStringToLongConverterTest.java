@@ -30,7 +30,7 @@ public class GroupingStringToLongConverterTest {
 	@Test
 	public void testToPresentationWithGrouping_ToPresentation() {
 		String value = new GroupingStringToLongConverter(true).convertToPresentation(3000L,
-				String.class, new Locale("nl"));
+		        String.class, new Locale("nl"));
 		Assert.assertEquals("3.000", value);
 	}
 
@@ -40,7 +40,7 @@ public class GroupingStringToLongConverterTest {
 	@Test
 	public void testToPresentationWithGrouping_ToModel() {
 		Long value = new GroupingStringToLongConverter(true).convertToModel("3.000", Long.class,
-				new Locale("nl"));
+		        new Locale("nl"));
 		Assert.assertEquals(3000L, value.longValue());
 	}
 

@@ -22,7 +22,6 @@ import com.vaadin.ui.VerticalLayout;
  * model
  * 
  * @author bas.rutten
- * 
  * @param <ID>
  *            type of the primary key
  * @param <T>
@@ -30,7 +29,7 @@ import com.vaadin.ui.VerticalLayout;
  */
 @SuppressWarnings("serial")
 public abstract class BaseTableWrapper<ID extends Serializable, T extends AbstractEntity<ID>>
-		extends BaseCustomComponent {
+        extends BaseCustomComponent {
 
 	private static final long serialVersionUID = -4691108261565306844L;
 
@@ -58,7 +57,7 @@ public abstract class BaseTableWrapper<ID extends Serializable, T extends Abstra
 	 * @param joins
 	 */
 	public BaseTableWrapper(BaseService<ID, T> service, EntityModel<T> entityModel,
-			QueryType queryType, SortOrder sortOrder, FetchJoinInformation[] joins) {
+	        QueryType queryType, SortOrder sortOrder, FetchJoinInformation[] joins) {
 		this.service = service;
 		this.entityModel = entityModel;
 		this.queryType = queryType;
@@ -131,7 +130,7 @@ public abstract class BaseTableWrapper<ID extends Serializable, T extends Abstra
 	public Table getTable() {
 		if (table == null) {
 			table = new ModelBasedTable<>(this.container, entityModel, getEntityModelFactory(),
-					getMessageService());
+			        getMessageService());
 		}
 		return table;
 	}
@@ -142,7 +141,7 @@ public abstract class BaseTableWrapper<ID extends Serializable, T extends Abstra
 	protected void initSortingAndFiltering() {
 		if (getSortOrder() != null) {
 			table.sort(new Object[] { getSortOrder().getPropertyId() },
-					new boolean[] { SortDirection.ASCENDING == getSortOrder().getDirection() });
+			        new boolean[] { SortDirection.ASCENDING == getSortOrder().getDirection() });
 		}
 	}
 

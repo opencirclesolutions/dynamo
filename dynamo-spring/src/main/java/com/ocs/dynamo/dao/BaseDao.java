@@ -15,7 +15,6 @@ import com.ocs.dynamo.filter.Filter;
  * Interface that all DAO objects must implement
  * 
  * @author bas.rutten
- * 
  * @param <ID>
  *            type parameter, the type of the primary key
  * @param <T>
@@ -131,14 +130,13 @@ public interface BaseDao<ID, T extends AbstractEntity<ID>> {
 	 * @return
 	 */
 	public List<T> find(Predicate predicate, int firstIndex, int maxResults,
-			SortDefinition... sorts);
+	        SortDefinition... sorts);
 
 	/**
 	 * Returns a list of all domain objects of a certain type. Use with caution
 	 * 
 	 * @param sort
 	 *            the desired sorting information
-	 * 
 	 * @return
 	 */
 	public List<T> findAll(Sort sort);
@@ -174,7 +172,7 @@ public interface BaseDao<ID, T extends AbstractEntity<ID>> {
 	 * @return
 	 */
 	public T fetchByUniqueProperty(String propertyName, Object value, boolean caseSensitive,
-			FetchJoinInformation... joins);
+	        FetchJoinInformation... joins);
 
 	/**
 	 * Finds entity IDs based on a filter

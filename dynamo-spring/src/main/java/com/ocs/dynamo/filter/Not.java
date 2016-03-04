@@ -4,7 +4,6 @@ package com.ocs.dynamo.filter;
  * A filter that negates the value of another filter
  * 
  * @author bas.rutten
- * 
  */
 public final class Not extends AbstractFilter {
 

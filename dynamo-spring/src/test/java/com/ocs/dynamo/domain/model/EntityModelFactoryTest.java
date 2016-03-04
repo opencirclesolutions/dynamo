@@ -292,7 +292,7 @@ public class EntityModelFactoryTest extends BaseMockitoTest {
 		AttributeModel attributeModel = child.getAttributeModel("parent");
 		Assert.assertNotNull(attributeModel);
 		EntityModel<EntityParent> parent = (EntityModel<EntityParent>) attributeModel
-				.getNestedEntityModel();
+		        .getNestedEntityModel();
 		Assert.assertNotNull(parent);
 		Assert.assertEquals("EntityChild.parent", parent.getReference());
 		// Check DETAIL
@@ -309,7 +309,7 @@ public class EntityModelFactoryTest extends BaseMockitoTest {
 
 		// check that the nested model attribute is not searchable...
 		EntityModel<EntityChild> childModel = factory.getModel("EntityChild.parent",
-				EntityChild.class);
+		        EntityChild.class);
 		Assert.assertNotNull(childModel);
 		Assert.assertFalse(childModel.getAttributeModel("name").isSearchable());
 
@@ -334,7 +334,7 @@ public class EntityModelFactoryTest extends BaseMockitoTest {
 		// Find by both
 		EntityModel<EntityChild> model = factory.getModel(EntityChild.class);
 		List<AttributeModel> models = model.getAttributeModelsForType(AttributeType.MASTER,
-				EntityParent.class);
+		        EntityParent.class);
 		Assert.assertNotNull(models);
 		Assert.assertEquals(2, models.size());
 		Assert.assertEquals("parent", models.get(0).getName());
@@ -383,7 +383,8 @@ public class EntityModelFactoryTest extends BaseMockitoTest {
 	public void testEmbedded() {
 		EntityModel<EmbeddedParent> model = factory.getModel(EmbeddedParent.class);
 		Assert.assertNotNull(model.getAttributeModel("name"));
-		Assert.assertEquals(AttributeType.BASIC, model.getAttributeModel("name").getAttributeType());
+		Assert.assertEquals(AttributeType.BASIC,
+		        model.getAttributeModel("name").getAttributeType());
 
 		// there must not be a separate model for the embedded object
 		Assert.assertNull(model.getAttributeModel("child"));
@@ -548,8 +549,8 @@ public class EntityModelFactoryTest extends BaseMockitoTest {
 
 	@Model(description = "desc", displayName = "dis", displayNamePlural = "diss", displayProperty = "prop")
 	@AttributeGroups(attributeGroups = {
-			@AttributeGroup(displayName = "group 1", attributeNames = { "name" }),
-			@AttributeGroup(displayName = "group 2", attributeNames = { "age" }) })
+	        @AttributeGroup(displayName = "group 1", attributeNames = { "name" }),
+	        @AttributeGroup(displayName = "group 2", attributeNames = { "age" }) })
 	private class Entity3 {
 
 		@Attribute(defaultValue = "Bas", description = "Test", displayName = "Naampje", readOnly = true, prompt = "Prompt", searchable = true, main = true, sortable = false)
@@ -665,7 +666,6 @@ public class EntityModelFactoryTest extends BaseMockitoTest {
 	 * For testing attribute lookup mode
 	 * 
 	 * @author bas.rutten
-	 *
 	 */
 	private class Entity7 {
 

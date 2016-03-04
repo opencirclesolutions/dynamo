@@ -18,14 +18,13 @@ import com.vaadin.ui.Layout;
  * (rather than an single object)
  * 
  * @author bas.rutten
- * 
  * @param <ID>
  *            the type of the primary key
  * @param <T>
  *            the type of the entity
  */
-public abstract class BaseCollectionLayout<ID, T extends AbstractEntity<ID>> extends
-		BaseServiceCustomComponent<ID, T> {
+public abstract class BaseCollectionLayout<ID, T extends AbstractEntity<ID>>
+        extends BaseServiceCustomComponent<ID, T> {
 
 	private static final long serialVersionUID = -2864711994829582000L;
 
@@ -62,7 +61,7 @@ public abstract class BaseCollectionLayout<ID, T extends AbstractEntity<ID>> ext
 	 *            the joins to use when fetching data
 	 */
 	public BaseCollectionLayout(BaseService<ID, T> service, EntityModel<T> entityModel,
-			FormOptions formOptions, SortOrder sortOrder, FetchJoinInformation... joins) {
+	        FormOptions formOptions, SortOrder sortOrder, FetchJoinInformation... joins) {
 		super(service, entityModel, formOptions);
 		this.joins = joins;
 		this.sortOrder = sortOrder;
@@ -154,7 +153,8 @@ public abstract class BaseCollectionLayout<ID, T extends AbstractEntity<ID>> ext
 	 * selected. use the "mustEnableButton" callback method to impose additional
 	 * constraints on when the button must be enabled
 	 * 
-	 * @param button the button to register
+	 * @param button
+	 *            the button to register
 	 */
 	protected void registerDetailButton(Button button) {
 		if (button != null) {

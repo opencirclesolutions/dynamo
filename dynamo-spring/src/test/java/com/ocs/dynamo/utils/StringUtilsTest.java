@@ -14,7 +14,7 @@ public class StringUtilsTest {
 
 		// a value that is too long is truncated
 		String result = StringUtil.restrictToMaxFieldLength(
-				"longlonglonglonglonglonglonglonglonglonglong", TestEntity.class, "name");
+		        "longlonglonglonglonglonglonglonglonglonglong", TestEntity.class, "name");
 		Assert.assertEquals(25, result.length());
 
 		// a short value is left alone
@@ -22,8 +22,8 @@ public class StringUtilsTest {
 		Assert.assertEquals(10, result.length());
 
 		// no restriction on the field means no change
-		result = StringUtil.restrictToMaxFieldLength(
-				"longlonglonglonglonglonglonglonglonglonglong", TestEntity.class, "somestring");
+		result = StringUtil.restrictToMaxFieldLength("longlonglonglonglonglonglonglonglonglonglong",
+		        TestEntity.class, "somestring");
 		Assert.assertEquals(44, result.length());
 	}
 

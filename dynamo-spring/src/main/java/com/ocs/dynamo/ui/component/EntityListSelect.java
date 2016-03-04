@@ -17,14 +17,13 @@ import com.vaadin.ui.ListSelect;
  * Custom ListSelect component for displaying a collection of entities
  * 
  * @author bas.rutten
- * 
  * @param <ID>
  *            type of the primary key of the entity
  * @param <T>
  *            type of the entity
  */
-public class EntityListSelect<ID extends Serializable, T extends AbstractEntity<ID>> extends
-		ListSelect {
+public class EntityListSelect<ID extends Serializable, T extends AbstractEntity<ID>>
+        extends ListSelect {
 
 	private static final long serialVersionUID = 3041574615271340579L;
 
@@ -50,7 +49,7 @@ public class EntityListSelect<ID extends Serializable, T extends AbstractEntity<
 	 *            the service used to retrieve entities
 	 */
 	public EntityListSelect(EntityModel<T> targetEntityModel, AttributeModel attributeModel,
-			BaseService<ID, T> service, SortOrder... sortOrder) {
+	        BaseService<ID, T> service, SortOrder... sortOrder) {
 		this(targetEntityModel, attributeModel, service, SelectMode.ALL, null, null, sortOrder);
 	}
 
@@ -66,7 +65,7 @@ public class EntityListSelect<ID extends Serializable, T extends AbstractEntity<
 	 *            the list of entities to display
 	 */
 	public EntityListSelect(EntityModel<T> targetEntityModel, AttributeModel attributeModel,
-			List<T> items) {
+	        List<T> items) {
 		this(targetEntityModel, attributeModel, null, SelectMode.FIXED, null, items);
 	}
 
@@ -86,9 +85,9 @@ public class EntityListSelect<ID extends Serializable, T extends AbstractEntity<
 	 *            the sort order used to sort the entities
 	 */
 	public EntityListSelect(EntityModel<T> targetEntityModel, AttributeModel attributeModel,
-			BaseService<ID, T> service, Filter filter, SortOrder... sortOrder) {
+	        BaseService<ID, T> service, Filter filter, SortOrder... sortOrder) {
 		this(targetEntityModel, attributeModel, service, SelectMode.FILTERED, filter, null,
-				sortOrder);
+		        sortOrder);
 	}
 
 	/**
@@ -104,8 +103,8 @@ public class EntityListSelect<ID extends Serializable, T extends AbstractEntity<
 	 * @param sortOrder
 	 */
 	public EntityListSelect(EntityModel<T> targetEntityModel, AttributeModel attributeModel,
-			BaseService<ID, T> service, SelectMode mode, Filter filter, List<T> items,
-			SortOrder... sortOrder) {
+	        BaseService<ID, T> service, SelectMode mode, Filter filter, List<T> items,
+	        SortOrder... sortOrder) {
 
 		this.selectMode = mode;
 		this.sortOrder = sortOrder;
@@ -116,7 +115,7 @@ public class EntityListSelect<ID extends Serializable, T extends AbstractEntity<
 		}
 
 		BeanItemContainer<T> container = new BeanItemContainer<T>(
-				targetEntityModel.getEntityClass());
+		        targetEntityModel.getEntityClass());
 		this.setContainerDataSource(container);
 
 		if (SelectMode.ALL.equals(mode)) {
@@ -125,7 +124,7 @@ public class EntityListSelect<ID extends Serializable, T extends AbstractEntity<
 		} else if (SelectMode.FILTERED.equals(mode)) {
 			// add a filtered selection of items
 			items = service.find(new FilterConverter().convert(filter),
-					SortUtil.translate(sortOrder));
+			        SortUtil.translate(sortOrder));
 			container.addAll(items);
 		} else if (SelectMode.FIXED.equals(mode)) {
 			container.addAll(items);

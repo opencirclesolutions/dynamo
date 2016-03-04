@@ -64,53 +64,51 @@ public class TableUtilsTest extends BaseMockitoTest {
 
 		// simple string
 		Assert.assertEquals("Bob", TableUtils.formatPropertyValue(factory, model, messageService,
-				"name", "Bob", LOCALE));
+		        "name", "Bob", LOCALE));
 
 		// boolean (without overrides)
 		Assert.assertEquals("ocs.true", TableUtils.formatPropertyValue(factory, model,
-				messageService, "someBoolean", true, LOCALE));
+		        messageService, "someBoolean", true, LOCALE));
 		Assert.assertEquals("ocs.false", TableUtils.formatPropertyValue(factory, model,
-				messageService, "someBoolean", false, LOCALE));
+		        messageService, "someBoolean", false, LOCALE));
 
 		// boolean (with overrides)
 		Assert.assertEquals("On", TableUtils.formatPropertyValue(factory, model, messageService,
-				"someBoolean2", true, LOCALE));
+		        "someBoolean2", true, LOCALE));
 		Assert.assertEquals("Off", TableUtils.formatPropertyValue(factory, model, messageService,
-				"someBoolean2", false, LOCALE));
+		        "someBoolean2", false, LOCALE));
 
 		// enumeration
 		Assert.assertEquals("A", TableUtils.formatPropertyValue(factory, model, messageService,
-				"someEnum", TestEnum.A, LOCALE));
+		        "someEnum", TestEnum.A, LOCALE));
 
 		// BigDecimal
 		Assert.assertEquals("12,40", TableUtils.formatPropertyValue(factory, model, messageService,
-				"discount", BigDecimal.valueOf(12.4), LOCALE));
+		        "discount", BigDecimal.valueOf(12.4), LOCALE));
 		Assert.assertEquals("1.042,40", TableUtils.formatPropertyValue(factory, model,
-				messageService, "discount", BigDecimal.valueOf(1042.4), LOCALE));
-		Assert.assertEquals(
-				"1.042,40%",
-				TableUtils.formatPropertyValue(factory, model, messageService, "rate",
-						BigDecimal.valueOf(1042.4), LOCALE));
+		        messageService, "discount", BigDecimal.valueOf(1042.4), LOCALE));
+		Assert.assertEquals("1.042,40%", TableUtils.formatPropertyValue(factory, model,
+		        messageService, "rate", BigDecimal.valueOf(1042.4), LOCALE));
 
 		// US formatting (reverse separators)
 		Assert.assertEquals("1,000.40", TableUtils.formatPropertyValue(factory, model,
-				messageService, "discount", BigDecimal.valueOf(1000.4), Locale.US));
+		        messageService, "discount", BigDecimal.valueOf(1000.4), Locale.US));
 
 		// date
 		Assert.assertEquals("12/10/2015", TableUtils.formatPropertyValue(factory, model,
-				messageService, "birthDate", DateUtils.createDate("12102015"), LOCALE));
+		        messageService, "birthDate", DateUtils.createDate("12102015"), LOCALE));
 
 		// date (as week)
 		Assert.assertEquals("2015-42", TableUtils.formatPropertyValue(factory, model,
-				messageService, "birthWeek", DateUtils.createDate("12102015"), LOCALE));
+		        messageService, "birthWeek", DateUtils.createDate("12102015"), LOCALE));
 
 		// integer (with grouping)
 		Assert.assertEquals("1.234", TableUtils.formatPropertyValue(factory, model, messageService,
-				"someInt", 1234, LOCALE));
+		        "someInt", 1234, LOCALE));
 
 		// long
 		Assert.assertEquals("1.234", TableUtils.formatPropertyValue(factory, model, messageService,
-				"age", 1234L, LOCALE));
+		        "age", 1234L, LOCALE));
 	}
 
 	@Test
@@ -128,7 +126,7 @@ public class TableUtilsTest extends BaseMockitoTest {
 		e2.setEntity1(e1);
 
 		String result = TableUtils.formatPropertyValue(factory, model, messageService, "entity1",
-				e1, LOCALE);
+		        e1, LOCALE);
 		Assert.assertEquals("some name", result);
 	}
 

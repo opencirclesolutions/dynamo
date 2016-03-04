@@ -11,7 +11,6 @@ import org.apache.commons.lang.ObjectUtils;
  * Base class for entities
  * 
  * @author bas.rutten
- * 
  * @param <ID>
  *            the type of the primary key
  */

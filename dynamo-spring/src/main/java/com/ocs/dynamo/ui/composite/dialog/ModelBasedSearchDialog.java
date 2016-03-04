@@ -20,14 +20,13 @@ import com.vaadin.ui.Layout;
  * A dialog that contains a search form
  * 
  * @author bas.rutten
- * 
  * @param <ID>
  *            the type of the primary key
  * @param <T>
  *            the type of the entity to search for
  */
-public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractEntity<ID>> extends
-		SimpleModalDialog {
+public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractEntity<ID>>
+        extends SimpleModalDialog {
 
 	private static final long serialVersionUID = -7158664165266474097L;
 
@@ -80,14 +79,13 @@ public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractE
 	 * @param entityModel
 	 *            the entity model of the displayed entities
 	 * @param additionalFilters
-	 * 
 	 * @param sortOrder
 	 * @param multiSelect
 	 * @param joins
 	 */
 	public ModelBasedSearchDialog(BaseService<ID, T> service, EntityModel<T> entityModel,
-			List<Filter> filters, SortOrder sortOrder, boolean multiSelect,
-			FetchJoinInformation... joins) {
+	        List<Filter> filters, SortOrder sortOrder, boolean multiSelect,
+	        FetchJoinInformation... joins) {
 		super(true);
 		this.service = service;
 		this.entityModel = entityModel;
@@ -104,7 +102,7 @@ public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractE
 		formOptions.setPopup(true);
 
 		searchLayout = new SimpleSearchLayout<ID, T>(service, entityModel, QueryType.ID_BASED,
-				formOptions, null, filters, sortOrder, joins);
+		        formOptions, null, filters, sortOrder, joins);
 		if (pageLength != null) {
 			searchLayout.setPageLength(pageLength);
 		}
@@ -127,7 +125,7 @@ public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractE
 	@Override
 	protected String getTitle() {
 		return ServiceLocator.getMessageService().getMessage("ocs.search.title",
-				entityModel.getDisplayNamePlural());
+		        entityModel.getDisplayNamePlural());
 	}
 
 	public void setPageLength(Integer pageLength) {

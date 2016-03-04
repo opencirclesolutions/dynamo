@@ -6,7 +6,6 @@ import org.apache.commons.lang.ObjectUtils;
  * A filter that compares a property value against a provided value
  * 
  * @author bas.rutten
- * 
  */
 public abstract class Compare extends AbstractFilter implements PropertyFilter {
 
@@ -25,7 +24,6 @@ public abstract class Compare extends AbstractFilter implements PropertyFilter {
 	 * provided value
 	 * 
 	 * @author bas.rutten
-	 * 
 	 */
 	public static final class Equal extends Compare {
 
@@ -45,7 +43,6 @@ public abstract class Compare extends AbstractFilter implements PropertyFilter {
 	 * provided value
 	 * 
 	 * @author bas.rutten
-	 * 
 	 */
 	public static final class Greater extends Compare {
 
@@ -65,7 +62,6 @@ public abstract class Compare extends AbstractFilter implements PropertyFilter {
 	 * provided value
 	 * 
 	 * @author bas.rutten
-	 * 
 	 */
 	public static final class Less extends Compare {
 
@@ -85,12 +81,10 @@ public abstract class Compare extends AbstractFilter implements PropertyFilter {
 	 * equal to the provided value
 	 * 
 	 * @author bas.rutten
-	 * 
 	 */
 	public static final class GreaterOrEqual extends Compare {
 
 		/**
-		 * 
 		 * @param propertyId
 		 * @param value
 		 */
@@ -104,7 +98,6 @@ public abstract class Compare extends AbstractFilter implements PropertyFilter {
 	 * equal to the provided value
 	 * 
 	 * @author bas.rutten
-	 * 
 	 */
 	public static final class LessOrEqual extends Compare {
 
@@ -173,7 +166,7 @@ public abstract class Compare extends AbstractFilter implements PropertyFilter {
 		} else if (value == otherValue) {
 			return true;
 		} else if (value instanceof Comparable
-				&& otherValue.getClass().isAssignableFrom(getValue().getClass())) {
+		        && otherValue.getClass().isAssignableFrom(getValue().getClass())) {
 			return ((Comparable<Object>) value).compareTo(otherValue) == 0;
 		} else {
 			return value.equals(otherValue);
@@ -187,11 +180,11 @@ public abstract class Compare extends AbstractFilter implements PropertyFilter {
 		} else if (null == value1) {
 			return 1;
 		} else if (getValue() instanceof Comparable
-				&& value1.getClass().isAssignableFrom(getValue().getClass())) {
+		        && value1.getClass().isAssignableFrom(getValue().getClass())) {
 			return -((Comparable) getValue()).compareTo(value1);
 		}
-		throw new IllegalArgumentException("Could not compare the arguments: " + value1 + ", "
-				+ getValue());
+		throw new IllegalArgumentException(
+		        "Could not compare the arguments: " + value1 + ", " + getValue());
 	}
 
 	@Override
@@ -213,7 +206,7 @@ public abstract class Compare extends AbstractFilter implements PropertyFilter {
 	@Override
 	public int hashCode() {
 		return (null != getPropertyId() ? getPropertyId().hashCode() : 0)
-				^ (null != getValue() ? getValue().hashCode() : 0);
+		        ^ (null != getValue() ? getValue().hashCode() : 0);
 	}
 
 	@Override

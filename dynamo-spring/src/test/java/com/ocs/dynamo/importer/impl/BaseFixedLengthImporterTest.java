@@ -32,7 +32,7 @@ public class BaseFixedLengthImporterTest {
 	public void testReadFile() throws IOException {
 		byte[] bytes = readFile("importertest.fixed");
 		List<String[]> lines = importer.readFixedLengthFile(bytes,
-				Lists.newArrayList(10, 10, 10, 10, 10, 10, 10));
+		        Lists.newArrayList(10, 10, 10, 10, 10, 10, 10));
 
 		PersonDTO dto = importer.processRow(0, lines.get(0), PersonDTO.class);
 		Assert.assertNotNull(dto);

@@ -9,7 +9,6 @@ import org.springframework.util.StringUtils;
  * Utility class for dealing with common functionality when pasting into fields
  * 
  * @author bas.rutten
- * 
  */
 public class PasteUtils {
 
@@ -70,7 +69,6 @@ public class PasteUtils {
 	/**
 	 * Translates the decimal separator in the input to the format that is
 	 * appropriate for the provided Locale
-	 * 
 	 * Note - this only works for input that does not contain any grouping
 	 * separators!
 	 * 

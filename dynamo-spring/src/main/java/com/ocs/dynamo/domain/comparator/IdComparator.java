@@ -8,7 +8,6 @@ import com.ocs.dynamo.domain.AbstractEntity;
  * A comparator for comparing entities based on their IDs
  * 
  * @author bas.rutten
- * 
  */
 public class IdComparator implements Comparator<AbstractEntity<Integer>> {
 

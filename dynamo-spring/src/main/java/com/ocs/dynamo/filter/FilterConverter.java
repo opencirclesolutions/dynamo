@@ -16,7 +16,6 @@ import com.vaadin.data.util.filter.SimpleStringFilter;
  * Converts a Vaadin filter into an Open Circle filter
  * 
  * @author bas.rutten
- * 
  */
 public class FilterConverter implements Converter<Filter, com.ocs.dynamo.filter.Filter> {
 
@@ -47,25 +46,25 @@ public class FilterConverter implements Converter<Filter, com.ocs.dynamo.filter.
 		} else if (filter instanceof Between) {
 			final Between between = (Between) filter;
 			return new com.ocs.dynamo.filter.Between(between.getPropertyId().toString(),
-					between.getStartValue(), between.getEndValue());
+			        between.getStartValue(), between.getEndValue());
 		} else if (filter instanceof Compare) {
 			final Compare compare = (Compare) filter;
 			switch (compare.getOperation()) {
 			case EQUAL:
 				return new com.ocs.dynamo.filter.Compare.Equal(compare.getPropertyId().toString(),
-						compare.getValue());
+				        compare.getValue());
 			case GREATER:
 				return new com.ocs.dynamo.filter.Compare.Greater(compare.getPropertyId().toString(),
-						compare.getValue());
+				        compare.getValue());
 			case GREATER_OR_EQUAL:
-				return new com.ocs.dynamo.filter.Compare.GreaterOrEqual(compare.getPropertyId().toString(),
-						compare.getValue());
+				return new com.ocs.dynamo.filter.Compare.GreaterOrEqual(
+				        compare.getPropertyId().toString(), compare.getValue());
 			case LESS:
 				return new com.ocs.dynamo.filter.Compare.Less(compare.getPropertyId().toString(),
-						compare.getValue());
+				        compare.getValue());
 			case LESS_OR_EQUAL:
-				return new com.ocs.dynamo.filter.Compare.LessOrEqual(compare.getPropertyId().toString(),
-						compare.getValue());
+				return new com.ocs.dynamo.filter.Compare.LessOrEqual(
+				        compare.getPropertyId().toString(), compare.getValue());
 			default:
 				return null;
 			}
@@ -75,15 +74,15 @@ public class FilterConverter implements Converter<Filter, com.ocs.dynamo.filter.
 		} else if (filter instanceof Like) {
 			final Like like = (Like) filter;
 			return new com.ocs.dynamo.filter.Like(like.getPropertyId().toString(), like.getValue(),
-					like.isCaseSensitive());
+			        like.isCaseSensitive());
 		} else if (filter instanceof SimpleStringFilter) {
 			final SimpleStringFilter like = (SimpleStringFilter) filter;
 			return new com.ocs.dynamo.filter.Like(like.getPropertyId().toString(),
-					(like.isOnlyMatchPrefix() ? "" : "%") + like.getFilterString() + "%",
-					!like.isIgnoreCase());
+			        (like.isOnlyMatchPrefix() ? "" : "%") + like.getFilterString() + "%",
+			        !like.isIgnoreCase());
 		} else {
-			throw new UnsupportedOperationException("Filter: " + filter.getClass().getName()
-					+ " is not supported.");
+			throw new UnsupportedOperationException(
+			        "Filter: " + filter.getClass().getName() + " is not supported.");
 		}
 	}
 

@@ -36,7 +36,6 @@ import com.vaadin.ui.UI;
  * various often-used services
  * 
  * @author bas.rutten
- * 
  */
 public abstract class BaseCustomComponent extends CustomComponent implements Buildable {
 
@@ -74,23 +73,24 @@ public abstract class BaseCustomComponent extends CustomComponent implements Bui
 				if (AttributeDateType.TIME.equals(attributeModel.getDateType())) {
 					// for a time, do not include a time zone (we have no way of
 					// knowing it!)
-					fieldLabel.setConverter(new FormattedStringToDateConverter(null, attributeModel
-							.getDisplayFormat()));
+					fieldLabel.setConverter(new FormattedStringToDateConverter(null,
+					        attributeModel.getDisplayFormat()));
 				} else {
-					fieldLabel.setConverter(new FormattedStringToDateConverter(VaadinUtils
-							.getTimeZone(UI.getCurrent()), attributeModel.getDisplayFormat()));
+					fieldLabel.setConverter(new FormattedStringToDateConverter(
+					        VaadinUtils.getTimeZone(UI.getCurrent()),
+					        attributeModel.getDisplayFormat()));
 				}
 			} else if (attributeModel.getType().isEnum()) {
-				String msg = getMessageService().getEnumMessage(
-						(Class<Enum<?>>) attributeModel.getType(), (Enum<?>) value);
+				String msg = getMessageService()
+				        .getEnumMessage((Class<Enum<?>>) attributeModel.getType(), (Enum<?>) value);
 				if (msg != null) {
 					fieldLabel.setValue(msg);
 				}
 			} else if (BigDecimal.class.equals(type)) {
 				property = new ObjectProperty<BigDecimal>((BigDecimal) value);
 				fieldLabel.setConverter(ConverterFactory.createBigDecimalConverter(
-						attributeModel.isCurrency(), attributeModel.isPercentage(), true,
-						attributeModel.getPrecision(), VaadinUtils.getCurrencySymbol()));
+				        attributeModel.isCurrency(), attributeModel.isPercentage(), true,
+				        attributeModel.getPrecision(), VaadinUtils.getCurrencySymbol()));
 			} else if (Integer.class.equals(type)) {
 				property = new ObjectProperty<Integer>((Integer) value);
 				fieldLabel.setConverter(ConverterFactory.createIntegerConverter(true));
@@ -109,12 +109,12 @@ public abstract class BaseCustomComponent extends CustomComponent implements Bui
 				image.setStyleName(OCSConstants.CSS_CLASS_UPLOAD);
 				return image;
 			} else if (Boolean.class.equals(attributeModel.getType())
-					|| boolean.class.equals(attributeModel.getType())) {
+			        || boolean.class.equals(attributeModel.getType())) {
 				if (!StringUtils.isEmpty(attributeModel.getTrueRepresentation())
-						&& Boolean.TRUE.equals(value)) {
+				        && Boolean.TRUE.equals(value)) {
 					property = new ObjectProperty<String>(attributeModel.getTrueRepresentation());
 				} else if (!StringUtils.isEmpty(attributeModel.getFalseRepresentation())
-						&& Boolean.FALSE.equals(value)) {
+				        && Boolean.FALSE.equals(value)) {
 					property = new ObjectProperty<String>(attributeModel.getFalseRepresentation());
 				} else {
 					property = new ObjectProperty<Boolean>((Boolean) value);
@@ -123,7 +123,7 @@ public abstract class BaseCustomComponent extends CustomComponent implements Bui
 			} else if (Iterable.class.isAssignableFrom(attributeModel.getType())) {
 				// collection of entities
 				String str = TableUtils.formatEntityCollection(getEntityModelFactory(),
-						(Iterable<?>) value);
+				        (Iterable<?>) value);
 				property = new ObjectProperty<String>(str);
 				fieldLabel.setPropertyDataSource(property);
 			}

@@ -11,7 +11,7 @@ public class UnsecuredTestView extends BaseView {
 
 	@Override
 	public void enter(ViewChangeEvent event) {
-	
+
 	}
 
 }

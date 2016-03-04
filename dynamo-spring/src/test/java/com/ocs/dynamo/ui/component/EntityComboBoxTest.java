@@ -41,7 +41,7 @@ public class EntityComboBoxTest extends BaseMockitoTest {
 		AttributeModel am = factory.getModel(TestEntity.class).getAttributeModel("name");
 
 		EntityComboBox<Integer, TestEntity> select = new EntityComboBox<>(
-				factory.getModel(TestEntity.class), am, service);
+		        factory.getModel(TestEntity.class), am, service);
 		Assert.assertEquals(EntityComboBox.SelectMode.ALL, select.getSelectMode());
 		Assert.assertEquals(am, select.getAttributeModel());
 
@@ -51,7 +51,7 @@ public class EntityComboBoxTest extends BaseMockitoTest {
 	@Test
 	public void testFixed() {
 		EntityComboBox<Integer, TestEntity> select = new EntityComboBox<>(
-				factory.getModel(TestEntity.class), null, Lists.newArrayList(new TestEntity()));
+		        factory.getModel(TestEntity.class), null, Lists.newArrayList(new TestEntity()));
 		Assert.assertEquals(EntityComboBox.SelectMode.FIXED, select.getSelectMode());
 
 		Mockito.verifyZeroInteractions(service);
@@ -60,10 +60,11 @@ public class EntityComboBoxTest extends BaseMockitoTest {
 	@Test
 	public void testFilter() {
 		EntityComboBox<Integer, TestEntity> select = new EntityComboBox<>(
-				factory.getModel(TestEntity.class), null, service, new Compare.Equal("name", "Bob"));
+		        factory.getModel(TestEntity.class), null, service,
+		        new Compare.Equal("name", "Bob"));
 		Assert.assertEquals(EntityComboBox.SelectMode.FILTERED, select.getSelectMode());
 
 		Mockito.verify(service).find(Matchers.any(com.ocs.dynamo.filter.Filter.class),
-				Matchers.any(com.ocs.dynamo.dao.SortOrder[].class));
+		        Matchers.any(com.ocs.dynamo.dao.SortOrder[].class));
 	}
 }

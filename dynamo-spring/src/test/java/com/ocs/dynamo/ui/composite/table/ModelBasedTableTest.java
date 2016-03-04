@@ -47,11 +47,12 @@ public class ModelBasedTableTest extends BaseMockitoTest {
 		BeanItemContainer<Person> container = new BeanItemContainer<>(Person.class);
 		EntityModel<Person> model = entityModelFactory.getModel(Person.class);
 
-		Person person = new Person(1, "Bob", 50, BigDecimal.valueOf(76.4), BigDecimal.valueOf(44.4));
+		Person person = new Person(1, "Bob", 50, BigDecimal.valueOf(76.4),
+		        BigDecimal.valueOf(44.4));
 		container.addItem(person);
 
 		ModelBasedTable<Integer, Person> table = new ModelBasedTable<>(container, model,
-				entityModelFactory, messageService);
+		        entityModelFactory, messageService);
 
 		Assert.assertEquals("Persons", table.getCaption());
 		Assert.assertEquals("Person", table.getDescription());
@@ -60,8 +61,8 @@ public class ModelBasedTableTest extends BaseMockitoTest {
 		// numeric column aligned to the right
 		Assert.assertEquals(Table.Align.RIGHT, table.getColumnAlignment("age"));
 
-		String result = table.formatPropertyValue(person, "age", table.getItem(person)
-				.getItemProperty("age"));
+		String result = table.formatPropertyValue(person, "age",
+		        table.getItem(person).getItemProperty("age"));
 		Assert.assertEquals("50", result);
 	}
 
@@ -71,7 +72,7 @@ public class ModelBasedTableTest extends BaseMockitoTest {
 
 		EntityModel<TestEntity> model = entityModelFactory.getModel(TestEntity.class);
 		FixedTableWrapper<Integer, TestEntity> wrapper = new FixedTableWrapper<Integer, TestEntity>(
-				service, model, Lists.newArrayList(entity), null);
+		        service, model, Lists.newArrayList(entity), null);
 		wrapper.build();
 
 		Table table = wrapper.getTable();

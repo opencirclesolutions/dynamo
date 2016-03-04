@@ -17,7 +17,6 @@ import javax.persistence.OptimisticLockException;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 
-import com.vaadin.data.Container.Filter;
 import com.ocs.dynamo.constants.OCSConstants;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
@@ -36,6 +35,7 @@ import com.ocs.dynamo.ui.composite.layout.BaseCustomComponent;
 import com.ocs.dynamo.ui.composite.type.AttributeGroupMode;
 import com.ocs.dynamo.ui.composite.type.ScreenMode;
 import com.ocs.dynamo.utils.ClassUtils;
+import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.fieldgroup.BeanFieldGroup;
@@ -67,15 +67,14 @@ import com.vaadin.ui.VerticalLayout;
  * An edit form that is constructed based on an entity model
  * 
  * @author bas.rutten
- * 
  * @param <ID>
  *            the type of the primary key
  * @param <T>
  *            the type of the entity
  */
 @SuppressWarnings("serial")
-public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntity<ID>> extends
-		BaseCustomComponent {
+public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntity<ID>>
+        extends BaseCustomComponent {
 
 	private class UploadComponent extends CustomField<byte[]> {
 
@@ -105,7 +104,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 			// callback object to handle successful upload
 			UploadReceiver receiver = new UploadReceiver(image, attributeModel.getName(),
-					attributeModel.getAllowedExtensions().toArray(new String[0]));
+			        attributeModel.getAllowedExtensions().toArray(new String[0]));
 
 			HorizontalLayout buttons = new DefaultHorizontalLayout(false, true);
 			main.addComponent(buttons);
@@ -114,7 +113,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			upload.addSucceededListener(receiver);
 			buttons.addComponent(upload);
 
-			
 			// a button used to clear the image
 			Button clearButton = new Button(message("ocs.clear"));
 			clearButton.addClickListener(new ClickListener() {
@@ -143,7 +141,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	 * Callback object for handling a file upload
 	 * 
 	 * @author bas.rutten
-	 * 
 	 */
 	private class UploadReceiver implements SucceededListener, Receiver {
 
@@ -174,10 +171,9 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			if (stream != null && stream.toByteArray().length > 0) {
 				String extension = FilenameUtils.getExtension(event.getFilename());
 
-				if (supportedExtensions == null
-						|| supportedExtensions.length == 0
-						|| (extension != null && Arrays.asList(supportedExtensions).contains(
-								extension))) {
+				if (supportedExtensions == null || supportedExtensions.length == 0
+				        || (extension != null
+				                && Arrays.asList(supportedExtensions).contains(extension))) {
 
 					// set the image source
 					if (target != null) {
@@ -198,7 +194,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 					ClassUtils.setBytes(stream.toByteArray(), entity, fieldName);
 				} else {
 					Notification.show(message("ocs.modelbasededitform.upload.format.invalid"),
-							Notification.Type.ERROR_MESSAGE);
+					        Notification.Type.ERROR_MESSAGE);
 				}
 			}
 		}
@@ -291,7 +287,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	 * @param formOptions
 	 */
 	public ModelBasedEditForm(T entity, BaseService<ID, T> service, EntityModel<T> entityModel,
-			FormOptions formOptions, Map<String, Filter> fieldFilters) {
+	        FormOptions formOptions, Map<String, Filter> fieldFilters) {
 		this.service = service;
 		this.entity = entity;
 		this.formOptions = formOptions;
@@ -305,7 +301,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 		// open in view mode when this is requested, and it is not a new object
 		this.viewMode = !isEditAllowed()
-				|| (formOptions.isOpenInViewMode() && entity.getId() != null);
+		        || (formOptions.isOpenInViewMode() && entity.getId() != null);
 
 		// set up a bean field group for automatic binding and validation
 		BeanItem<T> beanItem = new BeanItem<T>(entity);
@@ -330,16 +326,16 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	 * @param attributeModel
 	 */
 	private void addField(Layout parent, EntityModel<T> entityModel, AttributeModel attributeModel,
-			int count) {
+	        int count) {
 		AttributeType type = attributeModel.getAttributeType();
-		if (attributeModel.isVisible()
-				&& (AttributeType.BASIC.equals(type) || AttributeType.LOB.equals(type) || attributeModel
-						.isComplexEditable())) {
+		if (attributeModel.isVisible() && (AttributeType.BASIC.equals(type)
+		        || AttributeType.LOB.equals(type) || attributeModel.isComplexEditable())) {
 			if (attributeModel.isReadOnly() || isViewMode()) {
 				if (entity.getId() != null) {
 					// read-only attribute are hidden for new entities
-					if ((AttributeType.DETAIL.equals(type) || AttributeType.ELEMENT_COLLECTION
-							.equals(type)) && attributeModel.isComplexEditable()) {
+					if ((AttributeType.DETAIL.equals(type)
+					        || AttributeType.ELEMENT_COLLECTION.equals(type))
+					        && attributeModel.isComplexEditable()) {
 						// display a complex component in read-only mode
 						constructSimpleField(parent, entityModel, attributeModel, true, count);
 					} else {
@@ -358,8 +354,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			} else {
 				// display an editable field
 				if (AttributeType.BASIC.equals(type) || AttributeType.MASTER.equals(type)
-						|| AttributeType.DETAIL.equals(type)
-						|| AttributeType.ELEMENT_COLLECTION.equals(type)) {
+				        || AttributeType.DETAIL.equals(type)
+				        || AttributeType.ELEMENT_COLLECTION.equals(type)) {
 					constructSimpleField(parent, entityModel, attributeModel, false, count);
 				} else if (AttributeType.LOB.equals(type)) {
 					// for a LOB field we need to construct a rather
@@ -468,7 +464,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 				// extra layer of grouping
 				for (String parentGroupHeader : getParentGroupHeaders()) {
 					Layout innerForm = constructAttributeGroupLayout(form, tabs, tabSheet,
-							parentGroupHeader, false);
+					        parentGroupHeader, false);
 
 					// check if there is a tabsheet needed on the inner level
 					TabSheet innerTabSheet = null;
@@ -479,17 +475,17 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 					}
 
 					int tempCount = processParentHeaderGroup(parentGroupHeader, innerForm,
-							innerTabs, innerTabSheet, count);
+					        innerTabs, innerTabSheet, count);
 					count += tempCount;
 				}
 			} else {
 				for (String attributeGroup : entityModel.getAttributeGroups()) {
 					if (entityModel.isAttributeGroupVisible(attributeGroup, viewMode)) {
 						Layout innerForm = constructAttributeGroupLayout(form, tabs, tabSheet,
-								getAttributeGroupCaption(attributeGroup), true);
+						        getAttributeGroupCaption(attributeGroup), true);
 
 						for (AttributeModel attributeModel : entityModel
-								.getAttributeModelsForGroup(attributeGroup)) {
+						        .getAttributeModelsForGroup(attributeGroup)) {
 							addField(innerForm, entityModel, attributeModel, count);
 							count++;
 						}
@@ -518,16 +514,16 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	}
 
 	private int processParentHeaderGroup(String parentGroupHeader, Layout innerForm,
-			boolean innerTabs, TabSheet innerTabSheet, int startCount) {
+	        boolean innerTabs, TabSheet innerTabSheet, int startCount) {
 		int count = 0;
 
 		for (String attributeGroup : entityModel.getAttributeGroups()) {
 			if (entityModel.isAttributeGroupVisible(attributeGroup, viewMode)) {
 				if (getParentGroup(attributeGroup).equals(parentGroupHeader)) {
 					Layout innerLayout2 = constructAttributeGroupLayout(innerForm, innerTabs,
-							innerTabSheet, getAttributeGroupCaption(attributeGroup), true);
+					        innerTabSheet, getAttributeGroupCaption(attributeGroup), true);
 					for (AttributeModel attributeModel : entityModel
-							.getAttributeModelsForGroup(attributeGroup)) {
+					        .getAttributeModelsForGroup(attributeGroup)) {
 						addField(innerLayout2, entityModel, attributeModel, startCount + count);
 						count++;
 					}
@@ -569,7 +565,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	 * @return
 	 */
 	private Layout constructAttributeGroupLayout(Layout parent, boolean tabs, TabSheet tabSheet,
-			String caption, boolean lowest) {
+	        String caption, boolean lowest) {
 		Layout innerLayout = null;
 		if (lowest) {
 			innerLayout = new FormLayout();
@@ -604,7 +600,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	 * @return
 	 */
 	protected Field<?> constructCustomField(EntityModel<T> entityModel,
-			AttributeModel attributeModel, boolean viewMode) {
+	        AttributeModel attributeModel, boolean viewMode) {
 		// by default, return null. override in subclasses in order to create
 		// specific fields
 		return null;
@@ -625,10 +621,10 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 					entity = service.save(entity);
 					setEntity(service.fetchById(entity.getId()));
 					Notification.show(message("ocs.changes.saved"),
-							Notification.Type.TRAY_NOTIFICATION);
+		                    Notification.Type.TRAY_NOTIFICATION);
 
 					// set to viewmode, load the view mode screen, and fill the
-					// details
+		            // details
 					if (formOptions.isOpenInViewMode()) {
 						viewMode = true;
 						build();
@@ -648,7 +644,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 					// optimistic lock
 					LOG.error(ex.getMessage(), ex);
 					Notification.show(message("ocs.optimistic.lock"),
-							Notification.Type.ERROR_MESSAGE);
+		                    Notification.Type.ERROR_MESSAGE);
 				} catch (OCSSecurityException ex) {
 					// security exception (not allowed concurrent modification)
 					LOG.error(ex.getMessage(), ex);
@@ -680,7 +676,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	 */
 	@SuppressWarnings("unchecked")
 	private void constructSimpleField(Layout form, EntityModel<T> entityModel,
-			AttributeModel attributeModel, boolean viewMode, int count) {
+	        AttributeModel attributeModel, boolean viewMode, int count) {
 
 		// allow the user to override the construction of a field
 		Field<?> field = constructCustomField(entityModel, attributeModel, viewMode);
@@ -725,16 +721,16 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		String mainValue = EntityModelUtil.getMainAttributeValue(entity, entityModel);
 		if (isViewMode()) {
 			label = new Label(message("ocs.modelbasededitform.title.view",
-					entityModel.getDisplayName(), mainValue), ContentMode.HTML);
+			        entityModel.getDisplayName(), mainValue), ContentMode.HTML);
 		} else {
 			if (entity.getId() == null) {
 				// create a new entity
 				label = new Label(message("ocs.modelbasededitform.title.create",
-						entityModel.getDisplayName()), ContentMode.HTML);
+				        entityModel.getDisplayName()), ContentMode.HTML);
 			} else {
 				// update an existing entity
 				label = new Label(message("ocs.modelbasededitform.title.update",
-						entityModel.getDisplayName(), mainValue), ContentMode.HTML);
+				        entityModel.getDisplayName(), mainValue), ContentMode.HTML);
 			}
 		}
 		return label;
@@ -810,13 +806,12 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	}
 
 	/**
-	 * 
 	 * @param attributeGroup
 	 * @return
 	 */
 	private String getAttributeGroupCaption(String attributeGroup) {
-		return EntityModel.DEFAULT_GROUP.equals(attributeGroup) ? message("ocs.default.group.caption")
-				: attributeGroup;
+		return EntityModel.DEFAULT_GROUP.equals(attributeGroup)
+		        ? message("ocs.default.group.caption") : attributeGroup;
 	}
 
 	public List<DetailsEditTable<?, ?>> getDetailTables() {

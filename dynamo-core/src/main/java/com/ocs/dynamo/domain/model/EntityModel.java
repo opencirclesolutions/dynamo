@@ -7,7 +7,6 @@ import java.util.Map;
  * An interface representating a model that contains an entity's metadata
  * 
  * @author bas.rutten
- * 
  * @param <T>
  */
 public interface EntityModel<T> {
@@ -31,11 +30,11 @@ public interface EntityModel<T> {
 	static final String READ_ONLY = "readOnly";
 
 	static final String SEARCHABLE = "searchable";
-	
+
 	static final String SEARCH_CASE_SENSITIVE = "searchCaseSensitive";
 
 	static final String SEARCH_PREFIX_ONLY = "searchPrefixOnly";
-	
+
 	static final String SORTABLE = "sortable";
 
 	static final String SHOW_IN_TABLE = "showInTable";
@@ -81,10 +80,9 @@ public interface EntityModel<T> {
 	/**
 	 * Indicates that a lookup field (rather than a combo box) must be used when
 	 * selecting the component
-	 * 
 	 */
 	static final String SELECT_MODE = "selectMode";
-	
+
 	static final String TEXTFIELD_MODE = "textFieldMode";
 
 	/**
@@ -182,7 +180,6 @@ public interface EntityModel<T> {
 	boolean isAttributeGroupVisible(String group, boolean readOnly);
 
 	/**
-	 * 
 	 * @return
 	 */
 	boolean usesDefaultGroupOnly();
@@ -205,7 +202,8 @@ public interface EntityModel<T> {
 	 * @param existingModel
 	 *            The existing attribute model
 	 */
-	void addAttributeModel(String attributeGroup, AttributeModel model, AttributeModel existingModel);
+	void addAttributeModel(String attributeGroup, AttributeModel model,
+	        AttributeModel existingModel);
 
 	/**
 	 * @return The attribute model of the id

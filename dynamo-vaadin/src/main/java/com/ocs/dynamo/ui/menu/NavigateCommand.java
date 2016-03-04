@@ -10,7 +10,6 @@ import com.vaadin.ui.MenuBar.MenuItem;
  * Command for navigating to a certain view
  * 
  * @author bas.rutten
- * 
  */
 public class NavigateCommand implements Command {
 
@@ -36,7 +35,8 @@ public class NavigateCommand implements Command {
 	 * @param mode
 	 *            an optional screen mode
 	 */
-	public NavigateCommand(Navigator navigator, String destination, String selectedTab, String mode) {
+	public NavigateCommand(Navigator navigator, String destination, String selectedTab,
+	        String mode) {
 		this.navigator = navigator;
 		this.destination = destination;
 		this.selectedTab = selectedTab;
@@ -47,14 +47,14 @@ public class NavigateCommand implements Command {
 	public void menuSelected(MenuItem selectedItem) {
 		if (selectedTab != null) {
 			VaadinSession.getCurrent().setAttribute(OCSConstants.SELECTED_TAB,
-					Integer.valueOf(selectedTab));
+			        Integer.valueOf(selectedTab));
 		} else {
 			// clear the selected tab index
 			VaadinSession.getCurrent().setAttribute(OCSConstants.SELECTED_TAB, null);
 		}
-		
+
 		VaadinSession.getCurrent().setAttribute(OCSConstants.SCREEN_MODE, mode);
-		
+
 		navigator.navigateTo(destination);
 	}
 

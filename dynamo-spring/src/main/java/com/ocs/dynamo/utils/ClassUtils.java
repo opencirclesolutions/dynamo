@@ -23,7 +23,6 @@ import com.ocs.dynamo.exception.OCSRuntimeException;
 
 /**
  * @author patrick.deenen
- * 
  *         Utility class for dealing with classes and annotations
  */
 public class ClassUtils {
@@ -55,7 +54,7 @@ public class ClassUtils {
 			if (p >= 0) {
 				String firstProperty = fieldName.substring(0, p);
 				Object first = MethodUtils.invokeMethod(obj,
-						GET + StringUtils.capitalize(firstProperty), new Object[] {});
+				        GET + StringUtils.capitalize(firstProperty), new Object[] {});
 				if (first != null) {
 					return canSetProperty(first, fieldName.substring(p + 1));
 				}
@@ -83,13 +82,13 @@ public class ClassUtils {
 			if (p >= 0) {
 				String firstProperty = fieldName.substring(0, p);
 				Object first = MethodUtils.invokeMethod(obj,
-						GET + StringUtils.capitalize(firstProperty), new Object[] {});
+				        GET + StringUtils.capitalize(firstProperty), new Object[] {});
 				if (first != null) {
 					clearFieldValue(first, fieldName.substring(p + 1), argType);
 				}
 			} else {
 				Method m = obj.getClass().getMethod(SET + StringUtils.capitalize(fieldName),
-						new Class[] { argType });
+				        new Class[] { argType });
 				m.invoke(obj, new Object[] { null });
 			}
 		} catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
@@ -130,7 +129,7 @@ public class ClassUtils {
 	 * @return
 	 */
 	public static <T extends Annotation> T getAnnotation(Class<?> clazz, String fieldName,
-			Class<T> annotationClass) {
+	        Class<T> annotationClass) {
 		T t = getAnnotationOnMethod(clazz, fieldName, annotationClass);
 		if (t == null) {
 			t = getAnnotationOnField(clazz, fieldName, annotationClass);
@@ -152,7 +151,7 @@ public class ClassUtils {
 	 */
 	@SuppressWarnings("unchecked")
 	public static <T extends Annotation, R> R getAnnotationAttributeValue(Field field,
-			Class<T> annotationClass, String attributeName) {
+	        Class<T> annotationClass, String attributeName) {
 		R result = null;
 		Annotation annotation = getAnnotationOnField(field, annotationClass);
 		if (annotation != null) {
@@ -173,7 +172,7 @@ public class ClassUtils {
 	 * @return
 	 */
 	public static <T extends Annotation> T getAnnotationOnField(Class<?> clazz, String fieldName,
-			Class<T> annotationClass) {
+	        Class<T> annotationClass) {
 		Field field = getField(clazz, fieldName);
 		if (field != null) {
 			return getAnnotationOnField(field, annotationClass);
@@ -192,7 +191,7 @@ public class ClassUtils {
 	 */
 	@SuppressWarnings("unchecked")
 	public static <T extends Annotation> T getAnnotationOnField(Field field,
-			Class<T> annotationClass) {
+	        Class<T> annotationClass) {
 		T result = null;
 		if (field != null) {
 			for (Annotation a : field.getDeclaredAnnotations()) {
@@ -216,7 +215,7 @@ public class ClassUtils {
 	 * @return
 	 */
 	public static <T extends Annotation> T getAnnotationOnMethod(Class<?> clazz, String fieldName,
-			Class<T> annotationClass) {
+	        Class<T> annotationClass) {
 		Method method = getGetterMethod(clazz, fieldName);
 		if (method != null) {
 			return getAnnotationOnMethod(method, annotationClass);
@@ -235,7 +234,7 @@ public class ClassUtils {
 	 */
 	@SuppressWarnings("unchecked")
 	public static <T extends Annotation> T getAnnotationOnMethod(Method method,
-			Class<T> annotationClass) {
+	        Class<T> annotationClass) {
 		T result = null;
 		if (method != null) {
 			for (Annotation a : method.getDeclaredAnnotations()) {
@@ -311,7 +310,6 @@ public class ClassUtils {
 	}
 
 	/**
-	 * 
 	 * @param obj
 	 * @param fieldName
 	 * @return
@@ -322,17 +320,17 @@ public class ClassUtils {
 			if (p >= 0) {
 				String firstProperty = fieldName.substring(0, p);
 				Object first = MethodUtils.invokeMethod(obj,
-						GET + StringUtils.capitalize(firstProperty), new Object[] {});
+				        GET + StringUtils.capitalize(firstProperty), new Object[] {});
 				return getFieldValue(first, fieldName.substring(p + 1));
 			} else {
 				if (hasMethod(obj, GET + StringUtils.capitalize(fieldName))) {
 					// first check for a getter
 					return MethodUtils.invokeMethod(obj, GET + StringUtils.capitalize(fieldName),
-							new Object[] {});
+					        new Object[] {});
 				} else {
 					// next, check for an "is" method in case of a boolean
 					return MethodUtils.invokeMethod(obj, IS + StringUtils.capitalize(fieldName),
-							new Object[] {});
+					        new Object[] {});
 				}
 			}
 		} catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
@@ -360,12 +358,12 @@ public class ClassUtils {
 			try {
 				// first, try to find a "get" method
 				method = clazz.getDeclaredMethod(GET + StringUtils.capitalize(fieldName),
-						new Class[] {});
+				        new Class[] {});
 			} catch (NoSuchMethodException | SecurityException ex) {
 				try {
 					// next, try to find an "is" method
 					method = clazz.getDeclaredMethod(IS + StringUtils.capitalize(fieldName),
-							new Class[] {});
+					        new Class[] {});
 				} catch (NoSuchMethodException | SecurityException ex2) {
 					// if that fails, try the superclass
 					if (clazz.getSuperclass() != null) {
@@ -402,7 +400,7 @@ public class ClassUtils {
 	 * @return
 	 */
 	public static PropertyDescriptor getPropertyDescriptorForNestedProperty(Class<?> clazz,
-			String property) {
+	        String property) {
 		PropertyDescriptor pd = null;
 		if (clazz != null && !StringUtils.isEmpty(property)) {
 			String[] props = property.split("\\.", 2);
@@ -484,7 +482,6 @@ public class ClassUtils {
 	}
 
 	/**
-	 * 
 	 * @param obj
 	 * @param fieldName
 	 * @param value
@@ -495,13 +492,13 @@ public class ClassUtils {
 			if (p >= 0) {
 				String firstProperty = fieldName.substring(0, p);
 				Object first = MethodUtils.invokeMethod(obj,
-						GET + StringUtils.capitalize(firstProperty), new Object[] {});
+				        GET + StringUtils.capitalize(firstProperty), new Object[] {});
 				if (first != null) {
 					setFieldValue(first, fieldName.substring(p + 1), value);
 				}
 			} else {
 				MethodUtils.invokeMethod(obj, SET + StringUtils.capitalize(fieldName),
-						new Object[] { value });
+				        new Object[] { value });
 			}
 		} catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
 			LOG.error(e.getMessage(), e);

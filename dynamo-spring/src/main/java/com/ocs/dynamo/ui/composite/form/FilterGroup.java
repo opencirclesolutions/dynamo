@@ -25,7 +25,6 @@ import com.vaadin.ui.Field;
  * Represents one or more search fields used to filter on a single property
  * 
  * @author bas.rutten
- *
  */
 public class FilterGroup {
 
@@ -78,7 +77,7 @@ public class FilterGroup {
 	 */
 	@SuppressWarnings("unchecked")
 	public FilterGroup(AttributeModel attributeModel, String propertyId, FilterType filterType,
-			Component filterComponent, Field<?> field, Field<?> auxField) {
+	        Component filterComponent, Field<?> field, Field<?> auxField) {
 		this.attributeModel = attributeModel;
 		this.propertyId = propertyId;
 		this.filterType = filterType;
@@ -93,8 +92,8 @@ public class FilterGroup {
 
 			@Override
 			public void valueChange(ValueChangeEvent event) {
-				FilterGroup.this.valueChange(FilterGroup.this.field, convertSearchValue(event
-						.getProperty().getValue()));
+				FilterGroup.this.valueChange(FilterGroup.this.field,
+		                convertSearchValue(event.getProperty().getValue()));
 			}
 		});
 
@@ -107,7 +106,7 @@ public class FilterGroup {
 				@Override
 				public void valueChange(ValueChangeEvent event) {
 					FilterGroup.this.valueChange(FilterGroup.this.auxField,
-							convertSearchValue(event.getProperty().getValue()));
+			                convertSearchValue(event.getProperty().getValue()));
 				}
 			});
 		}
@@ -181,8 +180,8 @@ public class FilterGroup {
 				String valueStr = value.toString();
 				if (StringUtils.isNotEmpty(valueStr)) {
 					filter = new SimpleStringFilter(propertyId, valueStr,
-							!attributeModel.isSearchCaseSensitive(),
-							attributeModel.isSearchPrefixOnly());
+					        !attributeModel.isSearchCaseSensitive(),
+					        attributeModel.isSearchPrefixOnly());
 				}
 			}
 			break;

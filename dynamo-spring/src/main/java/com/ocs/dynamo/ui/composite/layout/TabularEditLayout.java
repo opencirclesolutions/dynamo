@@ -5,7 +5,6 @@ import java.util.Collection;
 
 import org.apache.log4j.Logger;
 
-import com.vaadin.data.Container.Filter;
 import com.ocs.dynamo.dao.query.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
@@ -21,6 +20,7 @@ import com.ocs.dynamo.ui.composite.table.ServiceResultsTableWrapper;
 import com.ocs.dynamo.ui.container.QueryType;
 import com.ocs.dynamo.ui.container.ServiceContainer;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
+import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Property;
 import com.vaadin.data.sort.SortOrder;
 import com.vaadin.shared.data.sort.SortDirection;
@@ -36,7 +36,6 @@ import com.vaadin.ui.VerticalLayout;
  * query container
  * 
  * @author bas.rutten
- * 
  * @param <ID>
  *            type of the primary key
  * @param <T>
@@ -44,7 +43,7 @@ import com.vaadin.ui.VerticalLayout;
  */
 @SuppressWarnings("serial")
 public abstract class TabularEditLayout<ID extends Serializable, T extends AbstractEntity<ID>>
-		extends BaseCollectionLayout<ID, T> implements Reloadable {
+        extends BaseCollectionLayout<ID, T> implements Reloadable {
 
 	private static final Logger LOG = Logger.getLogger(TabularEditLayout.class);
 
@@ -83,7 +82,7 @@ public abstract class TabularEditLayout<ID extends Serializable, T extends Abstr
 	 * @param formOptions
 	 */
 	public TabularEditLayout(BaseService<ID, T> service, EntityModel<T> entityModel,
-			FormOptions formOptions, SortOrder sortOrder, FetchJoinInformation... joins) {
+	        FormOptions formOptions, SortOrder sortOrder, FetchJoinInformation... joins) {
 		super(service, entityModel, formOptions, sortOrder, joins);
 	}
 
@@ -143,7 +142,7 @@ public abstract class TabularEditLayout<ID extends Serializable, T extends Abstr
 					@SuppressWarnings("unchecked")
 					public void buttonClick(ClickEvent event) {
 						// delegate the construction of a new item to the lazy
-						// query container
+				        // query container
 						ID id = (ID) getContainer().addItem();
 						constructEntity(getEntityFromTable(id));
 						getTableWrapper().getTable().setCurrentPageFirstItemId(id);
@@ -241,7 +240,7 @@ public abstract class TabularEditLayout<ID extends Serializable, T extends Abstr
 	protected void constructTable() {
 		if (tableWrapper == null) {
 			tableWrapper = new ServiceResultsTableWrapper<ID, T>(getService(), getEntityModel(),
-					QueryType.ID_BASED, filter, null, getJoins()) {
+			        QueryType.ID_BASED, filter, null, getJoins()) {
 
 				@Override
 				protected void onSelect(Object selected) {
@@ -273,35 +272,36 @@ public abstract class TabularEditLayout<ID extends Serializable, T extends Abstr
 		}
 
 		EntityModel<T> entityModel = getEntityModelFactory()
-				.getModel(getService().getEntityClass());
+		        .getModel(getService().getEntityClass());
 
 		// overwrite the field factory to handle validation
-		table.setTableFieldFactory(new ModelBasedFieldFactory<T>(entityModel, getMessageService(),
-				true, false) {
+		table.setTableFieldFactory(
+		        new ModelBasedFieldFactory<T>(entityModel, getMessageService(), true, false) {
 
-			@Override
-			public Field<?> createField(String propertyId) {
-				final Field<?> field = super.createField(propertyId);
+			        @Override
+			        public Field<?> createField(String propertyId) {
+				        final Field<?> field = super.createField(propertyId);
 
-				if (field != null && field.isEnabled()) {
-					field.addValueChangeListener(new Property.ValueChangeListener() {
+				        if (field != null && field.isEnabled()) {
+					        field.addValueChangeListener(new Property.ValueChangeListener() {
 
-						@Override
-						public void valueChange(com.vaadin.data.Property.ValueChangeEvent event) {
-							if (saveButton != null) {
-								saveButton.setEnabled(VaadinUtils
-										.allFixedTableFieldsValid(getTableWrapper().getTable()));
-							}
-						}
+						        @Override
+						        public void valueChange(
+		                                com.vaadin.data.Property.ValueChangeEvent event) {
+							        if (saveButton != null) {
+								        saveButton.setEnabled(VaadinUtils.allFixedTableFieldsValid(
+		                                        getTableWrapper().getTable()));
+							        }
+						        }
 
-					});
+					        });
 
-					postProcessField(propertyId, field);
-				}
+					        postProcessField(propertyId, field);
+				        }
 
-				return field;
-			}
-		});
+				        return field;
+			        }
+		        });
 		mainLayout.addComponent(tableWrapper);
 	}
 

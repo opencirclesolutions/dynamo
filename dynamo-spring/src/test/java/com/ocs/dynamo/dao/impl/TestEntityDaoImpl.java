@@ -4,7 +4,6 @@ import org.springframework.stereotype.Repository;
 
 import com.mysema.query.types.path.EntityPathBase;
 import com.ocs.dynamo.dao.TestEntityDao;
-import com.ocs.dynamo.domain.QTestEntity;
 import com.ocs.dynamo.domain.TestEntity;
 
 @Repository("testEntityDao")

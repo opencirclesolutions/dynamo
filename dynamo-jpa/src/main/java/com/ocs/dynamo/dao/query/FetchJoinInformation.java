@@ -8,7 +8,6 @@ import org.apache.commons.lang.ObjectUtils;
  * A DTO representing the properties of a fetch join
  * 
  * @author bas.rutten
- * 
  */
 public class FetchJoinInformation {
 
@@ -60,6 +59,6 @@ public class FetchJoinInformation {
 		}
 		FetchJoinInformation other = (FetchJoinInformation) obj;
 		return ObjectUtils.equals(this.getProperty(), other.getProperty())
-				&& ObjectUtils.equals(this.getJoinType(), other.getJoinType());
+		        && ObjectUtils.equals(this.getJoinType(), other.getJoinType());
 	}
 }

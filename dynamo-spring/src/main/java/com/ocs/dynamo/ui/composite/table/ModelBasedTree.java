@@ -15,7 +15,6 @@ import com.vaadin.ui.Tree;
  * currently only works with a BeanItemContainer
  * 
  * @author bas.rutten
- *
  * @param <ID>
  * @param <T>
  */

@@ -10,7 +10,6 @@ import com.vaadin.data.util.converter.StringToIntegerConverter;
  * a thousands separator must be used
  * 
  * @author bas.rutten
- *
  */
 public class GroupingStringToIntegerConverter extends StringToIntegerConverter {
 

@@ -4,7 +4,6 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.ocs.dynamo.dao.impl.DefaultDaoImpl;
-import com.ocs.dynamo.domain.QTestEntity;
 import com.ocs.dynamo.domain.TestEntity;
 
 public class DefaultDaoImplTest {

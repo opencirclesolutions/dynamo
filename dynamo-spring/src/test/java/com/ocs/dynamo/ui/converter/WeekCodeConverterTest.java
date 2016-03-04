@@ -11,7 +11,6 @@ import com.ocs.dynamo.utils.DateUtils;
  * Test cases for the WeekCodeConverter
  * 
  * @author bas.rutten
- * 
  */
 public class WeekCodeConverterTest {
 

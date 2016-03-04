@@ -11,7 +11,6 @@ import com.ocs.dynamo.exception.OCSRuntimeException;
  * Object representing a sort order and direction
  * 
  * @author bas.rutten
- * 
  */
 public class SortOrder implements Serializable {
 
@@ -37,8 +36,8 @@ public class SortOrder implements Serializable {
 			try {
 				return Direction.valueOf(value.toUpperCase());
 			} catch (Exception e) {
-				throw new OCSRuntimeException(String.format("Sort order %s is not recognized",
-						value), e);
+				throw new OCSRuntimeException(
+				        String.format("Sort order %s is not recognized", value), e);
 			}
 		}
 	}
@@ -95,7 +94,7 @@ public class SortOrder implements Serializable {
 
 		SortOrder that = (SortOrder) obj;
 		return ObjectUtils.equals(this.direction, that.direction)
-				&& ObjectUtils.equals(this.property, that.property);
+		        && ObjectUtils.equals(this.property, that.property);
 	}
 
 	@Override

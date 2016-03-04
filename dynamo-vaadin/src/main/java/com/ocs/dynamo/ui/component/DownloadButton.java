@@ -12,7 +12,6 @@ import com.vaadin.ui.Button;
  * A button that starts a file download process when clicked
  * 
  * @author bas.rutten
- * 
  */
 public abstract class DownloadButton extends Button {
 

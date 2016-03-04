@@ -18,12 +18,10 @@ import com.monitorjbl.xlsx.exceptions.NotSupportedException;
 
 /**
  * A Cell that is used along with the streaming Excel reader
- * 
  * This is a classpath override that fixes some glaring bugs and omissions in
  * the original code
  * 
  * @author bas.rutten
- *
  */
 public class StreamingCell implements Cell {
 

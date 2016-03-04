@@ -39,18 +39,18 @@ public class ModelBasedFieldFactoryIntegrationTest extends BaseIntegrationTest {
 	public void testCreateLookupField() {
 
 		EntityModel<TestEntity2> model = entityModelFactory.getModel("TestEntity2Lookup",
-				TestEntity2.class);
+		        TestEntity2.class);
 		AttributeModel am = model.getAttributeModel("testEntity");
 
 		ModelBasedFieldFactory<TestEntity2> factory = new ModelBasedFieldFactory<>(model,
-				messageService, false, false);
+		        messageService, false, false);
 
 		Field<?> field = factory.createField(am.getName());
 		Assert.assertTrue(field instanceof EntityLookupField);
 
 		EntityLookupField<Integer, TestEntity> f = (EntityLookupField<Integer, TestEntity>) field;
 		Assert.assertEquals(new com.vaadin.data.sort.SortOrder("name", SortDirection.ASCENDING),
-				f.getSortOrder());
+		        f.getSortOrder());
 
 	}
 
@@ -62,20 +62,20 @@ public class ModelBasedFieldFactoryIntegrationTest extends BaseIntegrationTest {
 	public void testCreatelistSelect() {
 
 		EntityModel<TestEntity2> model = entityModelFactory.getModel("TestEntity2ListSelect",
-				TestEntity2.class);
+		        TestEntity2.class);
 		AttributeModel am = model.getAttributeModel("testEntity");
 
 		ModelBasedFieldFactory<TestEntity2> factory = new ModelBasedFieldFactory<>(model,
-				messageService, false, false);
+		        messageService, false, false);
 
 		Field<?> field = factory.createField(am.getName());
 		Assert.assertTrue(field instanceof EntityListSelect);
 
 		EntityListSelect<Integer, TestEntity> f = (EntityListSelect<Integer, TestEntity>) field;
 		Assert.assertEquals(new com.vaadin.data.sort.SortOrder("name", SortDirection.ASCENDING),
-				f.getSortOrder()[0]);
+		        f.getSortOrder()[0]);
 		Assert.assertEquals(com.ocs.dynamo.ui.component.EntityListSelect.SelectMode.FILTERED,
-				f.getSelectMode());
+		        f.getSelectMode());
 		Assert.assertEquals(5, f.getRows());
 	}
 
@@ -85,8 +85,8 @@ public class ModelBasedFieldFactoryIntegrationTest extends BaseIntegrationTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testCreateComboBox() {
-		ModelBasedFieldFactory<TestEntity2> fieldFactory = ModelBasedFieldFactory.getInstance(
-				entityModelFactory.getModel(TestEntity2.class), messageService);
+		ModelBasedFieldFactory<TestEntity2> fieldFactory = ModelBasedFieldFactory
+		        .getInstance(entityModelFactory.getModel(TestEntity2.class), messageService);
 
 		EntityModel<TestEntity2> model = entityModelFactory.getModel(TestEntity2.class);
 		AttributeModel am = model.getAttributeModel("testEntity");

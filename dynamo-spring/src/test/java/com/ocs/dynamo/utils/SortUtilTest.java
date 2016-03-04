@@ -14,8 +14,8 @@ public class SortUtilTest {
 
 		Assert.assertNull(SortUtil.translate());
 
-		com.ocs.dynamo.dao.SortOrder[] orders = SortUtil.translate(new SortOrder("test1",
-				SortDirection.ASCENDING));
+		com.ocs.dynamo.dao.SortOrder[] orders = SortUtil
+		        .translate(new SortOrder("test1", SortDirection.ASCENDING));
 		Assert.assertEquals(1, orders.length);
 
 		Assert.assertEquals("test1", orders[0].getProperty());

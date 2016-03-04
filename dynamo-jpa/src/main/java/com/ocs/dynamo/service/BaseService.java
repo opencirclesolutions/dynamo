@@ -52,7 +52,6 @@ public interface BaseService<ID, T extends AbstractEntity<ID>> {
 
 	/**
 	 * Fetches entities based on a filter
-	 * 
 	 * Careful - when any OneToMany or ManyToMany relations are fetched, this
 	 * might lead to in-memory calculation!
 	 * 
@@ -69,7 +68,7 @@ public interface BaseService<ID, T extends AbstractEntity<ID>> {
 	 * @return
 	 */
 	public List<T> fetch(Filter filter, int pageNumber, int pageSize,
-			FetchJoinInformation[] fetchJoins, SortOrder... orders);
+	        FetchJoinInformation[] fetchJoins, SortOrder... orders);
 
 	/**
 	 * Fetches an entity based on its ID
@@ -107,7 +106,7 @@ public interface BaseService<ID, T extends AbstractEntity<ID>> {
 	 * @return
 	 */
 	public T fetchByUniqueProperty(String propertyName, Object value, boolean caseSensitive,
-			FetchJoinInformation... joins);
+	        FetchJoinInformation... joins);
 
 	/**
 	 * Finds entities based on a Filter

@@ -18,7 +18,6 @@ import com.vaadin.ui.Upload.SucceededListener;
  * A form that contains a file upload component and a progress bar
  * 
  * @author bas.rutten
- * 
  */
 @SuppressWarnings("serial")
 public abstract class UploadForm extends ProgressForm<byte[]> {
@@ -27,7 +26,6 @@ public abstract class UploadForm extends ProgressForm<byte[]> {
 	 * Callback object for handling a file upload
 	 * 
 	 * @author bas.rutten
-	 * 
 	 */
 	private class UploadReceiver implements SucceededListener, Receiver {
 

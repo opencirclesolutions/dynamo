@@ -11,14 +11,14 @@ public class DateUtilsTest {
 	public void testGetStartDateOfWeek() {
 
 		Assert.assertEquals(DateUtils.createDate("30122013"),
-				DateUtils.getStartDateOfWeek("2014-01"));
+		        DateUtils.getStartDateOfWeek("2014-01"));
 		Assert.assertEquals(DateUtils.createDate("06012014"),
-				DateUtils.getStartDateOfWeek("2014-02"));
+		        DateUtils.getStartDateOfWeek("2014-02"));
 
 		Assert.assertEquals(DateUtils.createDate("29122014"),
-				DateUtils.getStartDateOfWeek("2015-01"));
+		        DateUtils.getStartDateOfWeek("2015-01"));
 		Assert.assertEquals(DateUtils.createDate("05012015"),
-				DateUtils.getStartDateOfWeek("2015-02"));
+		        DateUtils.getStartDateOfWeek("2015-02"));
 	}
 
 	@Test

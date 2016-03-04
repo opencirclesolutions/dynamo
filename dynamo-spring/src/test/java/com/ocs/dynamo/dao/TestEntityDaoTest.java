@@ -16,7 +16,6 @@ import org.springframework.data.domain.Sort.Order;
 
 import com.google.common.collect.Lists;
 import com.mysema.query.BooleanBuilder;
-import com.ocs.dynamo.domain.QTestEntity;
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.filter.And;
 import com.ocs.dynamo.filter.Compare;
@@ -27,7 +26,6 @@ import com.ocs.dynamo.test.BaseIntegrationTest;
  * A basic integration test for testing the functionality of a DAO
  * 
  * @author bas.rutten
- * 
  */
 public class TestEntityDaoTest extends BaseIntegrationTest {
 

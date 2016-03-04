@@ -14,7 +14,6 @@ import org.springframework.context.support.GenericApplicationContext;
  * annotated with "@Mock" into the bean
  * 
  * @author bas.rutten
- * 
  */
 @RunWith(MockitoJUnitRunner.class)
 public abstract class BaseMockitoTest {
@@ -34,7 +33,7 @@ public abstract class BaseMockitoTest {
 
 	protected void initialize(Object subject) {
 		applicationContext.getAutowireCapableBeanFactory().initializeBean(subject,
-				subject.getClass().getSimpleName());
+		        subject.getClass().getSimpleName());
 	}
 
 	protected void addBeanToContext(Object bean) {
@@ -61,6 +60,5 @@ public abstract class BaseMockitoTest {
 		applicationContext.start();
 		MockitoSpringUtil.registerMocks(applicationContext.getBeanFactory(), this);
 	}
-	
 
 }

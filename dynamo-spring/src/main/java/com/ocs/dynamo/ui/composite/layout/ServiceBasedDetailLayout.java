@@ -13,18 +13,18 @@ import com.vaadin.data.sort.SortOrder;
  * A split layout that contains a reference to the parent object
  * 
  * @author bas.rutten
- * 
  * @param <ID>
  *            type of the primary key
  * @param <T>
  *            type of the entity
  * @param <ID2>
  *            type of the primary key of the parent
- * @param <Q>
+ * @param
+ *            <Q>
  *            type of the parent entity
  */
 public abstract class ServiceBasedDetailLayout<ID extends Serializable, T extends AbstractEntity<ID>, ID2 extends Serializable, Q extends AbstractEntity<ID2>>
-		extends ServiceBasedSplitLayout<ID, T> {
+        extends ServiceBasedSplitLayout<ID, T> {
 
 	private static final long serialVersionUID = 1068860513192819804L;
 
@@ -43,8 +43,8 @@ public abstract class ServiceBasedDetailLayout<ID extends Serializable, T extend
 	 * @param joins
 	 */
 	public ServiceBasedDetailLayout(BaseService<ID, T> service, Q parentEntity,
-			BaseService<ID2, Q> parentService, EntityModel<T> entityModel, FormOptions formOptions,
-			SortOrder sortOrder, FetchJoinInformation... joins) {
+	        BaseService<ID2, Q> parentService, EntityModel<T> entityModel, FormOptions formOptions,
+	        SortOrder sortOrder, FetchJoinInformation... joins) {
 		super(service, entityModel, formOptions, sortOrder, joins);
 		this.parentEntity = parentEntity;
 		this.parentService = parentService;

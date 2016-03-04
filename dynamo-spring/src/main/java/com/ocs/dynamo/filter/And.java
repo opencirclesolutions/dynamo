@@ -6,12 +6,10 @@ import java.util.Collection;
  * A composite filter that evaluates to true if all of the subfilters match
  * 
  * @author bas.rutten
- * 
  */
 public final class And extends AbstractJunctionFilter {
 
 	/**
-	 * 
 	 * @param filters
 	 *            filters of which the And filter will be composed
 	 */

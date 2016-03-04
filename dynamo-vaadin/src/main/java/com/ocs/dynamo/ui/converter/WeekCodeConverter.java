@@ -15,7 +15,6 @@ import com.vaadin.data.util.converter.Converter;
  * previous yes
  * 
  * @author bas.rutten
- * 
  */
 public class WeekCodeConverter implements Converter<String, Date> {
 
@@ -37,7 +36,7 @@ public class WeekCodeConverter implements Converter<String, Date> {
 	 */
 	@Override
 	public String convertToPresentation(Date value, Class<? extends String> targetType,
-			Locale locale) {
+	        Locale locale) {
 		if (value == null) {
 			return null;
 		}

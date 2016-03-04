@@ -9,7 +9,6 @@ import java.util.Locale;
  * A converter for a BigDecimal field that includes a currency symbol.
  * 
  * @author bas.rutten
- *
  */
 public class CurrencyBigDecimalConverter extends BigDecimalConverter {
 
@@ -24,7 +23,7 @@ public class CurrencyBigDecimalConverter extends BigDecimalConverter {
 
 	@Override
 	public BigDecimal convertToModel(String value, Class<? extends BigDecimal> targetType,
-			Locale locale) {
+	        Locale locale) {
 		if (value != null && !value.startsWith(currencySymbol)) {
 			value = currencySymbol + " " + value.trim();
 		}

@@ -9,7 +9,6 @@ import com.ocs.dynamo.importer.XlsField;
  * Base class for importers that read data from a text file
  * 
  * @author bas.rutten
- * 
  */
 public abstract class BaseTextImporter extends BaseImporter<String[], String> {
 

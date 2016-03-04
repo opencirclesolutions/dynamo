@@ -5,7 +5,6 @@ package com.ocs.dynamo.exception;
  * update because it would violate a uniqueness constraint
  * 
  * @author bas.rutten
- * 
  */
 public class OCSNonUniqueException extends RuntimeException {
 

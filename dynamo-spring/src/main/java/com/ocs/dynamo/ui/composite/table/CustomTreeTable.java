@@ -45,7 +45,6 @@ import com.vaadin.ui.UI;
  * everything in memory
  * 
  * @author bas.rutten
- * 
  * @param <ID>
  *            type of the primary key of the child entity
  * @param <U>
@@ -57,7 +56,7 @@ import com.vaadin.ui.UI;
  */
 @SuppressWarnings({ "serial", "unchecked" })
 public abstract class CustomTreeTable<ID, U extends AbstractEntity<ID>, ID2, V extends AbstractEntity<ID2>>
-		extends TreeTable implements Buildable {
+        extends TreeTable implements Buildable {
 
 	// the prefix that is added to the key of a child row
 	public static final String PREFIX_CHILDROW = "c";
@@ -114,10 +113,10 @@ public abstract class CustomTreeTable<ID, U extends AbstractEntity<ID>, ID2, V e
 			boolean editAllowed = isEditAllowed();
 
 			@Override
-			public Field<?> createField(Container container, Object itemId,
-					final Object propertyId, Component uiContext) {
+			public Field<?> createField(Container container, Object itemId, final Object propertyId,
+		            Component uiContext) {
 				if (!isViewMode() && editAllowed && isEditable(propertyId.toString())
-						&& itemId.toString().startsWith(PREFIX_CHILDROW)) {
+		                && itemId.toString().startsWith(PREFIX_CHILDROW)) {
 					final TextField tf = new TextField();
 					tf.setData(itemId);
 					tf.setNullRepresentation("");
@@ -133,14 +132,14 @@ public abstract class CustomTreeTable<ID, U extends AbstractEntity<ID>, ID2, V e
 					});
 
 					// add a value change listener (for responding to paste
-					// events and normal changes)
+		            // events and normal changes)
 					tf.addValueChangeListener(new Property.ValueChangeListener() {
 
 						@Override
 						public void valueChange(com.vaadin.data.Property.ValueChangeEvent event) {
 							if (propagateChanges) {
-								handleChange(tf, propertyId.toString(), (String) event
-										.getProperty().getValue());
+								handleChange(tf, propertyId.toString(),
+		                                (String) event.getProperty().getValue());
 							}
 						}
 					});
@@ -193,10 +192,10 @@ public abstract class CustomTreeTable<ID, U extends AbstractEntity<ID>, ID2, V e
 				// update the sum columns on the parent level
 				for (String column : sumColumns) {
 					Number value = (Number) this.getItem(childId).getItemProperty(column)
-							.getValue();
+					        .getValue();
 					BigDecimal sum = sumMap.get(column);
 					sumMap.put(column,
-							sum.add(value == null ? BigDecimal.ZERO : toBigDecimal(value)));
+					        sum.add(value == null ? BigDecimal.ZERO : toBigDecimal(value)));
 				}
 				childCounter++;
 			}
@@ -250,14 +249,14 @@ public abstract class CustomTreeTable<ID, U extends AbstractEntity<ID>, ID2, V e
 	protected void constructActionMenu(final List<V> parentCollection) {
 
 		final Action copyPreviousAction = new Action(
-				messageService.getMessage("ocs.copy.previous.column"));
+		        messageService.getMessage("ocs.copy.previous.column"));
 		final Action clearColumnAction = new Action(messageService.getMessage("ocs.clear.column"));
 		final Action fillColumnAction = new Action(messageService.getMessage("ocs.fill.column"));
 
 		final List<Action> actions = new ArrayList<>();
 		if (!isViewMode() && isEditAllowed()) {
-			actions.addAll(Lists.newArrayList(copyPreviousAction, fillColumnAction,
-					clearColumnAction));
+			actions.addAll(
+			        Lists.newArrayList(copyPreviousAction, fillColumnAction, clearColumnAction));
 		}
 
 		actions.addAll(getAdditionalActions());
@@ -279,17 +278,17 @@ public abstract class CustomTreeTable<ID, U extends AbstractEntity<ID>, ID2, V e
 						// fill all cells in column with the same value
 						String targetRow = (String) target;
 						Number value = (Number) getItem(targetRow).getItemProperty(clickedColumn)
-								.getValue();
+		                        .getValue();
 
 						int i = 0;
 						for (V v : parentCollection) {
 							for (U u : getRowCollection(v)) {
 								if (!targetRow.equals(PREFIX_CHILDROW + i)) {
-									CustomTreeTable.this.handleChange(
-											PREFIX_CHILDROW + i,
-											clickedColumn,
-											value == null ? null : convertToString(
-													toBigDecimal(value), clickedColumn));
+									CustomTreeTable.this.handleChange(PREFIX_CHILDROW + i,
+		                                    clickedColumn,
+		                                    value == null ? null
+		                                            : convertToString(toBigDecimal(value),
+		                                                    clickedColumn));
 								}
 								i++;
 							}
@@ -304,7 +303,7 @@ public abstract class CustomTreeTable<ID, U extends AbstractEntity<ID>, ID2, V e
 						for (V v : parentCollection) {
 							for (U u : getRowCollection(v)) {
 								CustomTreeTable.this.handleChange(PREFIX_CHILDROW + i,
-										clickedColumn, null);
+		                                clickedColumn, null);
 								i++;
 							}
 						}
@@ -320,7 +319,7 @@ public abstract class CustomTreeTable<ID, U extends AbstractEntity<ID>, ID2, V e
 
 		// add export functionality
 		addActionHandler(new TableExportActionHandler(UI.getCurrent(), messageService, null,
-				getReportTitle(), true, null));
+		        getReportTitle(), true, null));
 	}
 
 	/**
@@ -349,7 +348,6 @@ public abstract class CustomTreeTable<ID, U extends AbstractEntity<ID>, ID2, V e
 	 * form
 	 * 
 	 * @param value
-	 * 
 	 * @param propertyId
 	 * @return
 	 */
@@ -385,8 +383,8 @@ public abstract class CustomTreeTable<ID, U extends AbstractEntity<ID>, ID2, V e
 		} else if (clazz.equals(Long.class)) {
 			return VaadinUtils.longToString(true, value.longValue());
 		} else if (clazz.equals(BigDecimal.class)) {
-			return VaadinUtils.bigDecimalToString(false, true, value, VaadinSession.getCurrent()
-					.getLocale());
+			return VaadinUtils.bigDecimalToString(false, true, value,
+			        VaadinSession.getCurrent().getLocale());
 		}
 		return null;
 	}
@@ -406,13 +404,12 @@ public abstract class CustomTreeTable<ID, U extends AbstractEntity<ID>, ID2, V e
 			for (V v : getParentCollection()) {
 				for (U u : getRowCollection(v)) {
 					Object value = getItem(PREFIX_CHILDROW + i).getItemProperty(sourceColumnId)
-							.getValue();
+					        .getValue();
 					if (value instanceof Number || value == null) {
-						CustomTreeTable.this.handleChange(
-								PREFIX_CHILDROW + i,
-								targetColumnId,
-								value == null ? null : convertToString(
-										toBigDecimal((Number) value), targetColumnId));
+						CustomTreeTable.this.handleChange(PREFIX_CHILDROW + i, targetColumnId,
+						        value == null ? null
+						                : convertToString(toBigDecimal((Number) value),
+						                        targetColumnId));
 					}
 					i++;
 				}
@@ -435,7 +432,7 @@ public abstract class CustomTreeTable<ID, U extends AbstractEntity<ID>, ID2, V e
 			return ConverterFactory.createLongConverter(useThousandsGrouping());
 		} else if (clazz.equals(BigDecimal.class)) {
 			return ConverterFactory.createBigDecimalConverter(false, false, useThousandsGrouping(),
-					getDefaultPrecision(), null);
+			        getDefaultPrecision(), null);
 		}
 		return null;
 	}
@@ -451,7 +448,7 @@ public abstract class CustomTreeTable<ID, U extends AbstractEntity<ID>, ID2, V e
 	 */
 	protected BigDecimal difference(BigDecimal newValue, BigDecimal oldValue) {
 		return (newValue == null ? BigDecimal.ZERO : newValue)
-				.subtract(oldValue == null ? BigDecimal.ZERO : oldValue);
+		        .subtract(oldValue == null ? BigDecimal.ZERO : oldValue);
 	}
 
 	/**
@@ -477,7 +474,6 @@ public abstract class CustomTreeTable<ID, U extends AbstractEntity<ID>, ID2, V e
 	protected abstract void fillParentRow(Object[] row, V entity);
 
 	/**
-	 * 
 	 * @return
 	 */
 	protected List<Action> getAdditionalActions() {
@@ -569,7 +565,6 @@ public abstract class CustomTreeTable<ID, U extends AbstractEntity<ID>, ID2, V e
 	protected abstract String getPreviousColumnId(String columnId);
 
 	/**
-	 * 
 	 * @return
 	 */
 	protected abstract String getReportTitle();
@@ -642,16 +637,16 @@ public abstract class CustomTreeTable<ID, U extends AbstractEntity<ID>, ID2, V e
 
 						// get the child key and parent key of this row
 						String cKey = (String) getItem(rId).getItemProperty(getKeyPropertyId())
-								.getValue();
+						        .getValue();
 						parentId = (String) getParent(rId);
 						if (parentId != null) {
-							parentKey = (String) getItem(parentId).getItemProperty(
-									getKeyPropertyId()).getValue();
+							parentKey = (String) getItem(parentId)
+							        .getItemProperty(getKeyPropertyId()).getValue();
 						}
 
 						// propagate the change
 						Number change = handleChange(propertyId, rId, parentId, cKey, parentKey,
-								values[i]);
+						        values[i]);
 
 						// update the dependent fields
 						if (hasValueChanged(change)) {
@@ -665,7 +660,7 @@ public abstract class CustomTreeTable<ID, U extends AbstractEntity<ID>, ID2, V e
 			} else {
 				// update a single value
 				Number change = handleChange(propertyId.toString(), rowId, parentId, childKey,
-						parentKey, value);
+				        parentKey, value);
 				if (hasValueChanged(change)) {
 					updateDependentFields(rowId, parentId, propertyId, toBigDecimal(change));
 					setValue(rowId, propertyId, value);
@@ -691,7 +686,7 @@ public abstract class CustomTreeTable<ID, U extends AbstractEntity<ID>, ID2, V e
 	 *            the new value (can be NULL in case the cell is emptied)
 	 */
 	protected abstract Number handleChange(String propertyId, String rowId, String parentRowId,
-			String childKey, String parentKey, Object newValue);
+	        String childKey, String parentKey, Object newValue);
 
 	private void handleChange(TextField tf, String propertyId, String value) {
 		handleChange((String) tf.getData(), propertyId, value);
@@ -743,7 +738,6 @@ public abstract class CustomTreeTable<ID, U extends AbstractEntity<ID>, ID2, V e
 	}
 
 	/**
-	 * 
 	 * @param value
 	 * @return
 	 */
@@ -828,7 +822,7 @@ public abstract class CustomTreeTable<ID, U extends AbstractEntity<ID>, ID2, V e
 		temp = PasteUtils.stripSeparators(temp);
 		// use Vaadin converter to make sure the formatting is correct
 		return ConverterFactory.createIntegerConverter(false).convertToModel(temp, Integer.class,
-				null);
+		        null);
 	}
 
 	/**
@@ -844,7 +838,7 @@ public abstract class CustomTreeTable<ID, U extends AbstractEntity<ID>, ID2, V e
 	 *            the delta between the old and the new value
 	 */
 	private void updateDependentFields(String rowId, String parentRowId, String propertyId,
-			BigDecimal delta) {
+	        BigDecimal delta) {
 		for (String column : getColumnstoUpdate(propertyId)) {
 			updateTableField(rowId, column, delta);
 			updateParentAndFooter(parentRowId, column, delta);
@@ -908,6 +902,7 @@ public abstract class CustomTreeTable<ID, U extends AbstractEntity<ID>, ID2, V e
 
 	/**
 	 * Returns the default precision
+	 * 
 	 * @return
 	 */
 	protected int getDefaultPrecision() {

@@ -26,11 +26,9 @@ import com.vaadin.ui.VerticalLayout;
 
 /**
  * A component for editing a property that is annotated as an
- * 
  * @ElementCollection. This
  * 
  * @author bas.rutten
- *
  */
 @SuppressWarnings("serial")
 public class CollectionTable extends CustomField<Collection<String>> implements SignalsParent {
@@ -124,7 +122,7 @@ public class CollectionTable extends CustomField<Collection<String>> implements 
 			@Override
 			public void buttonClick(ClickEvent event) {
 				// add a new item then set the validity to false (since an empty
-				// item is never allowed)
+		        // item is never allowed)
 				table.addItem();
 				if (parentForm != null) {
 					parentForm.signalDetailsTableValid(CollectionTable.this, false);
@@ -252,7 +250,7 @@ public class CollectionTable extends CustomField<Collection<String>> implements 
 
 			@Override
 			public Field<?> createField(Container container, Object itemId, Object propertyId,
-					Component uiContext) {
+		            Component uiContext) {
 
 				Field<?> f = super.createField(container, itemId, propertyId, uiContext);
 				if (f instanceof TextField) {
@@ -263,12 +261,12 @@ public class CollectionTable extends CustomField<Collection<String>> implements 
 
 				// add a validator that checks for the maximum length
 				if (maxLength != null) {
-					f.addValidator(new StringLengthValidator(messageService
-							.getMessage("ocs.value.too.long"), 0, maxLength, true));
+					f.addValidator(new StringLengthValidator(
+		                    messageService.getMessage("ocs.value.too.long"), 0, maxLength, true));
 				}
 
 				// value change listener that makes sure the validity of the
-				// parent form is correctly set
+		        // parent form is correctly set
 				f.addValueChangeListener(new ValueChangeListener() {
 
 					@Override
@@ -278,7 +276,7 @@ public class CollectionTable extends CustomField<Collection<String>> implements 
 							Set<String> set = extractValues();
 							setValue(set);
 							parentForm.signalDetailsTableValid(CollectionTable.this,
-									VaadinUtils.allFixedTableFieldsValid(table));
+		                            VaadinUtils.allFixedTableFieldsValid(table));
 							propagateChanges = true;
 						}
 					}
@@ -308,7 +306,7 @@ public class CollectionTable extends CustomField<Collection<String>> implements 
 		// set the reference to the parent so the status of the save button can
 		// be set correctly
 		ModelBasedEditForm<?, ?> parent = VaadinUtils.getParentOfClass(this,
-				ModelBasedEditForm.class);
+		        ModelBasedEditForm.class);
 		setParentForm(parent);
 
 		return layout;

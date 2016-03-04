@@ -15,20 +15,18 @@ import com.vaadin.ui.Notification;
  * Base class for UI components that need/have access to a Service
  * 
  * @author bas.rutten
- * 
  * @param <ID>
  *            type of the primary key
  * @param <T>
  *            type of the entity
  */
-public abstract class BaseServiceCustomComponent<ID, T extends AbstractEntity<ID>> extends
-		BaseCustomComponent {
+public abstract class BaseServiceCustomComponent<ID, T extends AbstractEntity<ID>>
+        extends BaseCustomComponent {
 
 	/**
 	 * A remove button with a built in confirmation message
 	 * 
 	 * @author bas.rutten
-	 *
 	 */
 	protected abstract class RemoveButton extends Button {
 
@@ -50,13 +48,13 @@ public abstract class BaseServiceCustomComponent<ID, T extends AbstractEntity<ID
 								doDelete();
 							} catch (OCSValidationException ex) {
 								Notification.show(ex.getErrors().get(0),
-										Notification.Type.ERROR_MESSAGE);
+			                            Notification.Type.ERROR_MESSAGE);
 							}
 						}
 
 					};
 					VaadinUtils.showConfirmDialog(getMessageService(),
-							message("ocs.delete.confirm"), r);
+			                message("ocs.delete.confirm"), r);
 
 				}
 			});
@@ -90,7 +88,7 @@ public abstract class BaseServiceCustomComponent<ID, T extends AbstractEntity<ID
 	 *            the form options
 	 */
 	public BaseServiceCustomComponent(BaseService<ID, T> service, EntityModel<T> entityModel,
-			FormOptions formOptions) {
+	        FormOptions formOptions) {
 		this.service = service;
 		this.entityModel = entityModel;
 		this.formOptions = formOptions;
@@ -110,7 +108,7 @@ public abstract class BaseServiceCustomComponent<ID, T extends AbstractEntity<ID
 	 * @return
 	 */
 	protected Field<?> constructCustomField(EntityModel<T> entityModel,
-			AttributeModel attributeModel, boolean viewMode, boolean searchMode) {
+	        AttributeModel attributeModel, boolean viewMode, boolean searchMode) {
 		return null;
 	}
 

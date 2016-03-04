@@ -39,7 +39,7 @@ public class JPAQueryBuilderTest extends BaseIntegrationTest {
 	@Test
 	public void testCreateCountQuery() {
 		CriteriaQuery<Long> query = JpaQueryBuilder.createCountQuery(entityManager,
-				TestEntity.class, null, false);
+		        TestEntity.class, null, false);
 		TypedQuery<Long> tQuery = entityManager.createQuery(query);
 		long count = tQuery.getSingleResult();
 
@@ -49,7 +49,7 @@ public class JPAQueryBuilderTest extends BaseIntegrationTest {
 	@Test
 	public void testCreateCountQuery_Equals() {
 		CriteriaQuery<Long> query = JpaQueryBuilder.createCountQuery(entityManager,
-				TestEntity.class, new Compare.Equal("name", "Bob"), false);
+		        TestEntity.class, new Compare.Equal("name", "Bob"), false);
 		TypedQuery<Long> tQuery = entityManager.createQuery(query);
 		long count = tQuery.getSingleResult();
 
@@ -59,7 +59,7 @@ public class JPAQueryBuilderTest extends BaseIntegrationTest {
 	@Test
 	public void testCreateCountQuery_Greater() {
 		CriteriaQuery<Long> query = JpaQueryBuilder.createCountQuery(entityManager,
-				TestEntity.class, new Compare.Greater("age", 25L), false);
+		        TestEntity.class, new Compare.Greater("age", 25L), false);
 		TypedQuery<Long> tQuery = entityManager.createQuery(query);
 		long count = tQuery.getSingleResult();
 
@@ -69,7 +69,7 @@ public class JPAQueryBuilderTest extends BaseIntegrationTest {
 	@Test
 	public void testCreateCountQuery_GreaterOrEqual() {
 		CriteriaQuery<Long> query = JpaQueryBuilder.createCountQuery(entityManager,
-				TestEntity.class, new Compare.GreaterOrEqual("age", 25L), false);
+		        TestEntity.class, new Compare.GreaterOrEqual("age", 25L), false);
 		TypedQuery<Long> tQuery = entityManager.createQuery(query);
 		long count = tQuery.getSingleResult();
 
@@ -79,7 +79,7 @@ public class JPAQueryBuilderTest extends BaseIntegrationTest {
 	@Test
 	public void testCreateCountQuery_Less() {
 		CriteriaQuery<Long> query = JpaQueryBuilder.createCountQuery(entityManager,
-				TestEntity.class, new Compare.Less("age", 25L), false);
+		        TestEntity.class, new Compare.Less("age", 25L), false);
 		TypedQuery<Long> tQuery = entityManager.createQuery(query);
 		long count = tQuery.getSingleResult();
 
@@ -89,7 +89,7 @@ public class JPAQueryBuilderTest extends BaseIntegrationTest {
 	@Test
 	public void testCreateCountQuery_LessOrEqual() {
 		CriteriaQuery<Long> query = JpaQueryBuilder.createCountQuery(entityManager,
-				TestEntity.class, new Compare.LessOrEqual("age", 25L), false);
+		        TestEntity.class, new Compare.LessOrEqual("age", 25L), false);
 		TypedQuery<Long> tQuery = entityManager.createQuery(query);
 		long count = tQuery.getSingleResult();
 
@@ -99,7 +99,7 @@ public class JPAQueryBuilderTest extends BaseIntegrationTest {
 	@Test
 	public void testCreateCountQuery_LikeCaseSensitive() {
 		CriteriaQuery<Long> query = JpaQueryBuilder.createCountQuery(entityManager,
-				TestEntity.class, new Like("name", "s%", true), false);
+		        TestEntity.class, new Like("name", "s%", true), false);
 		TypedQuery<Long> tQuery = entityManager.createQuery(query);
 		long count = tQuery.getSingleResult();
 
@@ -109,18 +109,18 @@ public class JPAQueryBuilderTest extends BaseIntegrationTest {
 	@Test
 	public void testCreateCountQuery_LikeCaseInsensitive() {
 		CriteriaQuery<Long> query = JpaQueryBuilder.createCountQuery(entityManager,
-				TestEntity.class, new Like("name", "s%", false), false);
+		        TestEntity.class, new Like("name", "s%", false), false);
 		TypedQuery<Long> tQuery = entityManager.createQuery(query);
 		long count = tQuery.getSingleResult();
 
 		// "Sally" should match
 		Assert.assertEquals(1, count);
 	}
-	
+
 	@Test
 	public void testCreateCountQuery_LikeCaseInsensitiveInfx() {
 		CriteriaQuery<Long> query = JpaQueryBuilder.createCountQuery(entityManager,
-				TestEntity.class, new Like("name", "%a%", false), false);
+		        TestEntity.class, new Like("name", "%a%", false), false);
 		TypedQuery<Long> tQuery = entityManager.createQuery(query);
 		long count = tQuery.getSingleResult();
 
@@ -131,7 +131,7 @@ public class JPAQueryBuilderTest extends BaseIntegrationTest {
 	@Test
 	public void testCreateCountQuery_Between() {
 		CriteriaQuery<Long> query = JpaQueryBuilder.createCountQuery(entityManager,
-				TestEntity.class, new com.ocs.dynamo.filter.Between("age", 20L, 30L), false);
+		        TestEntity.class, new com.ocs.dynamo.filter.Between("age", 20L, 30L), false);
 		TypedQuery<Long> tQuery = entityManager.createQuery(query);
 		long count = tQuery.getSingleResult();
 
@@ -141,17 +141,17 @@ public class JPAQueryBuilderTest extends BaseIntegrationTest {
 	@Test
 	public void testCreateCountQuery_IsNull() {
 		CriteriaQuery<Long> query = JpaQueryBuilder.createCountQuery(entityManager,
-				TestEntity.class, new IsNull("age"), false);
+		        TestEntity.class, new IsNull("age"), false);
 		TypedQuery<Long> tQuery = entityManager.createQuery(query);
 		long count = tQuery.getSingleResult();
 
 		Assert.assertEquals(0, count);
 	}
-	
+
 	@Test
 	public void testCreateCountQuery_In() {
 		CriteriaQuery<Long> query = JpaQueryBuilder.createCountQuery(entityManager,
-				TestEntity.class, new In("name", Lists.newArrayList("Bob", "Sally")), false);
+		        TestEntity.class, new In("name", Lists.newArrayList("Bob", "Sally")), false);
 		TypedQuery<Long> tQuery = entityManager.createQuery(query);
 		long count = tQuery.getSingleResult();
 
@@ -161,7 +161,7 @@ public class JPAQueryBuilderTest extends BaseIntegrationTest {
 	@Test
 	public void testCreateCountQuery_ModuloLiteral() {
 		CriteriaQuery<Long> query = JpaQueryBuilder.createCountQuery(entityManager,
-				TestEntity.class, new Modulo("age", 4, 0), false);
+		        TestEntity.class, new Modulo("age", 4, 0), false);
 		TypedQuery<Long> tQuery = entityManager.createQuery(query);
 		long count = tQuery.getSingleResult();
 
@@ -171,7 +171,7 @@ public class JPAQueryBuilderTest extends BaseIntegrationTest {
 	@Test
 	public void testCreateCountQuery_ModuloExpression() {
 		CriteriaQuery<Long> query = JpaQueryBuilder.createCountQuery(entityManager,
-				TestEntity.class, new Modulo("age", "age", 0), false);
+		        TestEntity.class, new Modulo("age", "age", 0), false);
 		TypedQuery<Long> tQuery = entityManager.createQuery(query);
 		long count = tQuery.getSingleResult();
 
@@ -181,8 +181,8 @@ public class JPAQueryBuilderTest extends BaseIntegrationTest {
 	@Test
 	public void testCreateCountQuery_And() {
 		CriteriaQuery<Long> query = JpaQueryBuilder.createCountQuery(entityManager,
-				TestEntity.class, new And(new Compare.Equal("name", "Bob"), new Compare.Equal(
-						"age", 25L)), false);
+		        TestEntity.class,
+		        new And(new Compare.Equal("name", "Bob"), new Compare.Equal("age", 25L)), false);
 		TypedQuery<Long> tQuery = entityManager.createQuery(query);
 		long count = tQuery.getSingleResult();
 
@@ -192,8 +192,8 @@ public class JPAQueryBuilderTest extends BaseIntegrationTest {
 	@Test
 	public void testCreateCountQuery_Or() {
 		CriteriaQuery<Long> query = JpaQueryBuilder.createCountQuery(entityManager,
-				TestEntity.class, new Or(new Compare.Equal("name", "Bob"), new Compare.Equal("age",
-						35L)), false);
+		        TestEntity.class,
+		        new Or(new Compare.Equal("name", "Bob"), new Compare.Equal("age", 35L)), false);
 		TypedQuery<Long> tQuery = entityManager.createQuery(query);
 		long count = tQuery.getSingleResult();
 
@@ -202,11 +202,12 @@ public class JPAQueryBuilderTest extends BaseIntegrationTest {
 
 	@Test
 	public void testCreateFetchQuery() {
-		TestEntity e1 = entityManager.createQuery("from TestEntity t where t.name = 'Bob'",
-				TestEntity.class).getSingleResult();
+		TestEntity e1 = entityManager
+		        .createQuery("from TestEntity t where t.name = 'Bob'", TestEntity.class)
+		        .getSingleResult();
 
 		CriteriaQuery<TestEntity> query = JpaQueryBuilder.createFetchQuery(entityManager,
-				TestEntity.class, Lists.newArrayList(e1.getId()), null, null);
+		        TestEntity.class, Lists.newArrayList(e1.getId()), null, null);
 		TypedQuery<TestEntity> tQuery = entityManager.createQuery(query);
 		List<TestEntity> entity = tQuery.getResultList();
 
@@ -215,16 +216,17 @@ public class JPAQueryBuilderTest extends BaseIntegrationTest {
 
 	@Test
 	public void testCreateFetchQuery2() {
-		TestEntity e1 = entityManager.createQuery("from TestEntity t where t.name = 'Bob'",
-				TestEntity.class).getSingleResult();
+		TestEntity e1 = entityManager
+		        .createQuery("from TestEntity t where t.name = 'Bob'", TestEntity.class)
+		        .getSingleResult();
 		TestEntity2 e2 = new TestEntity2();
 		e2.setTestEntity(e1);
 		entityManager.persist(e2);
 
 		// fetch join the testEntity
 		CriteriaQuery<TestEntity2> query = JpaQueryBuilder.createFetchQuery(entityManager,
-				TestEntity2.class, Lists.newArrayList(e2.getId()), null,
-				new FetchJoinInformation[] { new FetchJoinInformation("testEntity") });
+		        TestEntity2.class, Lists.newArrayList(e2.getId()), null,
+		        new FetchJoinInformation[] { new FetchJoinInformation("testEntity") });
 		TypedQuery<TestEntity2> tQuery = entityManager.createQuery(query);
 		List<TestEntity2> entity = tQuery.getResultList();
 
@@ -236,11 +238,12 @@ public class JPAQueryBuilderTest extends BaseIntegrationTest {
 
 	@Test
 	public void testCreateFetchSingleObjectQuery() {
-		TestEntity e1 = entityManager.createQuery("from TestEntity t where t.name = 'Bob'",
-				TestEntity.class).getSingleResult();
+		TestEntity e1 = entityManager
+		        .createQuery("from TestEntity t where t.name = 'Bob'", TestEntity.class)
+		        .getSingleResult();
 
-		CriteriaQuery<TestEntity> query = JpaQueryBuilder.createFetchSingleObjectQuery(
-				entityManager, TestEntity.class, e1.getId(), null);
+		CriteriaQuery<TestEntity> query = JpaQueryBuilder
+		        .createFetchSingleObjectQuery(entityManager, TestEntity.class, e1.getId(), null);
 		TypedQuery<TestEntity> tQuery = entityManager.createQuery(query);
 		TestEntity entity = tQuery.getSingleResult();
 

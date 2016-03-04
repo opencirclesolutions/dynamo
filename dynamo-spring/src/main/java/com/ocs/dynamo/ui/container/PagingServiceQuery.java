@@ -13,14 +13,13 @@ import com.ocs.dynamo.filter.Filter;
  * mechanism
  * 
  * @author bas.rutten
- * 
  * @param <ID>
  *            the type of the primary key
  * @param <T>
  *            the type of the entity
  */
-public class PagingServiceQuery<ID extends Serializable, T extends AbstractEntity<ID>> extends
-		BaseServiceQuery<ID, T> {
+public class PagingServiceQuery<ID extends Serializable, T extends AbstractEntity<ID>>
+        extends BaseServiceQuery<ID, T> {
 
 	private static final long serialVersionUID = -324739194626626683L;
 
@@ -31,7 +30,7 @@ public class PagingServiceQuery<ID extends Serializable, T extends AbstractEntit
 	 * @param queryConfiguration
 	 */
 	public PagingServiceQuery(ServiceQueryDefinition<ID, T> queryDefinition,
-			Map<String, Object> queryConfiguration) {
+	        Map<String, Object> queryConfiguration) {
 		super(queryDefinition, queryConfiguration);
 	}
 
@@ -44,7 +43,7 @@ public class PagingServiceQuery<ID extends Serializable, T extends AbstractEntit
 		SortOrder[] orders = constructOrder();
 		ServiceQueryDefinition<ID, T> definition = getCustomQueryDefinition();
 		return definition.getService().fetch(serviceFilter, startIndex / definition.getBatchSize(),
-				definition.getBatchSize(), definition.getJoins(), orders);
+		        definition.getBatchSize(), definition.getJoins(), orders);
 	}
 
 	/**

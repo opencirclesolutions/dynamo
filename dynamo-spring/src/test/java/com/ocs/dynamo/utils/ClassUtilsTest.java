@@ -176,7 +176,7 @@ public class ClassUtilsTest {
 		Assert.assertEquals("desc", attribute.description());
 
 		String desc = (String) ClassUtils.getAnnotationAttributeValue(fieldOne, Attribute.class,
-				"description");
+		        "description");
 		Assert.assertEquals("desc", desc);
 
 		// check for null
@@ -190,7 +190,7 @@ public class ClassUtilsTest {
 	@Test
 	public void testGetAnnotationOnMethod() {
 		Attribute attribute = ClassUtils.getAnnotationOnMethod(TestObject.class, "fieldThree",
-				Attribute.class);
+		        Attribute.class);
 		Assert.assertNotNull(attribute);
 		Assert.assertEquals("Bert", attribute.displayName());
 	}

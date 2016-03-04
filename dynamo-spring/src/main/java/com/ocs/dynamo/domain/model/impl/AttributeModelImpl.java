@@ -17,7 +17,6 @@ import com.ocs.dynamo.domain.model.EntityModel;
  * properties
  * 
  * @author bas.rutten
- * 
  */
 public class AttributeModelImpl implements AttributeModel {
 

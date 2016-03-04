@@ -94,8 +94,8 @@ public class FilterTest {
 		Assert.assertFalse(conjunction.equals(null));
 		Assert.assertFalse(conjunction.equals(new Object()));
 		Assert.assertTrue(conjunction.equals(conjunction));
-		Assert.assertFalse(conjunction.equals(new And(new Like("name", "%er%"), new Compare.Equal(
-				"age", 24L))));
+		Assert.assertFalse(conjunction
+		        .equals(new And(new Like("name", "%er%"), new Compare.Equal("age", 24L))));
 
 		Assert.assertNotNull(conjunction.toString());
 	}
@@ -120,8 +120,8 @@ public class FilterTest {
 		Assert.assertFalse(disjunction.equals(null));
 		Assert.assertFalse(disjunction.equals(new Object()));
 		Assert.assertTrue(disjunction.equals(disjunction));
-		Assert.assertFalse(disjunction.equals(new Or(new Like("name", "%er%"), new Compare.Equal(
-				"age", 24L))));
+		Assert.assertFalse(disjunction
+		        .equals(new Or(new Like("name", "%er%"), new Compare.Equal("age", 24L))));
 	}
 
 	@Test

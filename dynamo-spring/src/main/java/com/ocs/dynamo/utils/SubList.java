@@ -10,7 +10,6 @@ import java.util.NoSuchElementException;
 /**
  * Copy of AbstractList.SubList without concurrency check. Use to delegate to a
  * subset of another list.
- *
  */
 public class SubList<E> extends AbstractList<E> {
 
@@ -92,8 +91,8 @@ public class SubList<E> extends AbstractList<E> {
 			throw new IndexOutOfBoundsException("toIndex = " + toIndex);
 		}
 		if (fromIndex > toIndex) {
-			throw new IllegalArgumentException("fromIndex(" + fromIndex + ") > toIndex(" + toIndex
-					+ ")");
+			throw new IllegalArgumentException(
+			        "fromIndex(" + fromIndex + ") > toIndex(" + toIndex + ")");
 		}
 		l = list;
 		offset = fromIndex;

@@ -29,7 +29,6 @@ import com.vaadin.ui.UI;
  * subclasses.
  * 
  * @author Patrick Deenen (patrick.deenen@opencirclesolutions.nl)
- * 
  */
 public final class TableUtils {
 
@@ -63,7 +62,7 @@ public final class TableUtils {
 	 * @return
 	 */
 	public static String formatEntityCollection(EntityModelFactory entityModelFactory,
-			Object collection) {
+	        Object collection) {
 		StringBuilder builder = new StringBuilder();
 		Iterable<?> col = (Iterable<?>) collection;
 		Iterator<?> it = col.iterator();
@@ -92,7 +91,7 @@ public final class TableUtils {
 	 * @return
 	 */
 	public static String formatEntityCollection(EntityModelFactory entityModelFactory,
-			Property<?> property) {
+	        Property<?> property) {
 		return formatEntityCollection(entityModelFactory, property.getValue());
 	}
 
@@ -107,9 +106,9 @@ public final class TableUtils {
 	 * @return
 	 */
 	public static <T> String formatPropertyValue(EntityModelFactory entityModelFactory,
-			EntityModel<T> entityModel, MessageService messageService, Object colId, Object value) {
+	        EntityModel<T> entityModel, MessageService messageService, Object colId, Object value) {
 		return formatPropertyValue(entityModelFactory, entityModel, messageService, colId, value,
-				VaadinSession.getCurrent() == null ? null : VaadinSession.getCurrent().getLocale());
+		        VaadinSession.getCurrent() == null ? null : VaadinSession.getCurrent().getLocale());
 	}
 
 	/**
@@ -124,8 +123,8 @@ public final class TableUtils {
 	 */
 	@SuppressWarnings("unchecked")
 	public static <T> String formatPropertyValue(EntityModelFactory entityModelFactory,
-			EntityModel<T> entityModel, MessageService messageService, Object colId, Object value,
-			Locale locale) {
+	        EntityModel<T> entityModel, MessageService messageService, Object colId, Object value,
+	        Locale locale) {
 		if (value != null) {
 			AttributeModel model = entityModel.getAttributeModel((String) colId);
 			if (model != null) {
@@ -133,12 +132,12 @@ public final class TableUtils {
 					WeekCodeConverter converter = new WeekCodeConverter();
 					return converter.convertToPresentation((Date) value, String.class, null);
 				} else if (Boolean.class.equals(model.getType())
-						|| boolean.class.equals(model.getType())) {
+				        || boolean.class.equals(model.getType())) {
 					if (!StringUtils.isEmpty(model.getTrueRepresentation())
-							&& Boolean.TRUE.equals(value)) {
+					        && Boolean.TRUE.equals(value)) {
 						return model.getTrueRepresentation();
 					} else if (!StringUtils.isEmpty(model.getFalseRepresentation())
-							&& Boolean.FALSE.equals(value)) {
+					        && Boolean.FALSE.equals(value)) {
 						return model.getFalseRepresentation();
 					}
 					return null;
@@ -155,7 +154,7 @@ public final class TableUtils {
 
 				} else if (BigDecimal.class.equals(model.getType())) {
 					return VaadinUtils.bigDecimalToString(model.isCurrency(), model.isPercentage(),
-							true, model.getPrecision(), (BigDecimal) value, locale);
+					        true, model.getPrecision(), (BigDecimal) value, locale);
 				} else if (Integer.class.equals(model.getType())) {
 					return VaadinUtils.integerToString(true, (Integer) value, locale);
 				} else if (Long.class.equals(model.getType())) {
@@ -163,7 +162,7 @@ public final class TableUtils {
 				} else if (model.getType().isEnum()) {
 					// in case of an enum, look it up in the message bundle
 					String msg = messageService.getEnumMessage((Class<Enum<?>>) model.getType(),
-							(Enum<?>) value);
+					        (Enum<?>) value);
 					if (msg != null) {
 						return msg;
 					}
@@ -177,8 +176,8 @@ public final class TableUtils {
 
 					String displayProperty = detailEntityModel.getDisplayProperty();
 					return formatPropertyValue(entityModelFactory, detailEntityModel,
-							messageService, displayProperty,
-							ClassUtils.getFieldValue(value, displayProperty), locale);
+					        messageService, displayProperty,
+					        ClassUtils.getFieldValue(value, displayProperty), locale);
 				} else if (Iterable.class.isAssignableFrom(model.getType())) {
 					return formatEntityCollection(entityModelFactory, value);
 				} else if (value instanceof AbstractEntity) {
@@ -194,7 +193,6 @@ public final class TableUtils {
 	}
 
 	/**
-	 * 
 	 * @param table
 	 * @param entityModelFactory
 	 * @param entityModel
@@ -204,12 +202,12 @@ public final class TableUtils {
 	 * @param property
 	 * @return
 	 */
-	public static <T> String formatPropertyValue(Table table,
-			EntityModelFactory entityModelFactory, EntityModel<T> entityModel,
-			MessageService messageService, Object rowId, Object colId, Property<?> property) {
+	public static <T> String formatPropertyValue(Table table, EntityModelFactory entityModelFactory,
+	        EntityModel<T> entityModel, MessageService messageService, Object rowId, Object colId,
+	        Property<?> property) {
 		return formatPropertyValue(table, entityModelFactory, entityModel, messageService, rowId,
-				colId, property, VaadinSession.getCurrent() == null ? null : VaadinSession
-						.getCurrent().getLocale());
+		        colId, property,
+		        VaadinSession.getCurrent() == null ? null : VaadinSession.getCurrent().getLocale());
 	}
 
 	/**
@@ -226,18 +224,17 @@ public final class TableUtils {
 	 * @return
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public static <T> String formatPropertyValue(Table table,
-			EntityModelFactory entityModelFactory, EntityModel<T> entityModel,
-			MessageService messageService, Object rowId, Object colId, Property<?> property,
-			Locale locale) {
+	public static <T> String formatPropertyValue(Table table, EntityModelFactory entityModelFactory,
+	        EntityModel<T> entityModel, MessageService messageService, Object rowId, Object colId,
+	        Property<?> property, Locale locale) {
 		if (table.getContainerDataSource() instanceof ModelBasedHierarchicalContainer) {
 			ModelBasedHierarchicalContainer<?> c = (ModelBasedHierarchicalContainer<?>) table
-					.getContainerDataSource();
+			        .getContainerDataSource();
 			ModelBasedHierarchicalDefinition def = c.getHierarchicalDefinitionByItemId(rowId);
 			return TableUtils.formatPropertyValue(entityModelFactory, def.getEntityModel(),
-					messageService, c.unmapProperty(def, colId), property.getValue(), locale);
+			        messageService, c.unmapProperty(def, colId), property.getValue(), locale);
 		}
 		return formatPropertyValue(entityModelFactory, entityModel, messageService, colId,
-				property.getValue(), locale);
+		        property.getValue(), locale);
 	}
 }

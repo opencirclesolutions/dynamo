@@ -80,7 +80,7 @@ public class TableExportActionHandlerTest extends BaseMockitoTest {
 	public void testExportSimpleWithoutEntityModel() throws IOException {
 
 		handler = new TableExportActionHandler(ui, messageService, columnIds, REPORT_TITLE, false,
-				null);
+		        null);
 
 		handler.handleAction(handler.getActions(null, null)[0], getTable(), null);
 
@@ -97,9 +97,9 @@ public class TableExportActionHandlerTest extends BaseMockitoTest {
 
 		// bigdecimal
 		Assert.assertEquals(76.0, wb.getSheetAt(0).getRow(2).getCell(2).getNumericCellValue(),
-				0.001);
+		        0.001);
 		Assert.assertEquals(77.0, wb.getSheetAt(0).getRow(3).getCell(2).getNumericCellValue(),
-				0.001);
+		        0.001);
 
 		// without an entity model, the application doesn't know this is a
 		// percentage
@@ -111,15 +111,15 @@ public class TableExportActionHandlerTest extends BaseMockitoTest {
 	public void testExportTreeTable() throws IOException {
 
 		handler = new TableExportActionHandler(ui, messageService, shortColumnIds, REPORT_TITLE,
-				false, null);
+		        false, null);
 		handler.handleAction(handler.getActions(null, null)[0], getTreeTable(), null);
 
 		byte[] bytes = captureSave();
 		Workbook wb = importer.createWorkbook(bytes);
 
 		// string
-		Assert.assertEquals("Special ops", wb.getSheetAt(0).getRow(2).getCell(0)
-				.getStringCellValue());
+		Assert.assertEquals("Special ops",
+		        wb.getSheetAt(0).getRow(2).getCell(0).getStringCellValue());
 		Assert.assertEquals("Bas, Bob", wb.getSheetAt(0).getRow(3).getCell(0).getStringCellValue());
 		Assert.assertEquals("Patrick", wb.getSheetAt(0).getRow(4).getCell(0).getStringCellValue());
 
@@ -132,7 +132,7 @@ public class TableExportActionHandlerTest extends BaseMockitoTest {
 	public void testExportGrid() throws IOException {
 
 		handler = new TableExportActionHandler(ui, messageService, columnIds, REPORT_TITLE, false,
-				null);
+		        null);
 
 		handler.exportFromGrid(getGrid());
 
@@ -143,8 +143,8 @@ public class TableExportActionHandlerTest extends BaseMockitoTest {
 		Assert.assertEquals("Naam", wb.getSheetAt(0).getRow(1).getCell(0).getStringCellValue());
 		Assert.assertEquals("Leeftijd", wb.getSheetAt(0).getRow(1).getCell(1).getStringCellValue());
 		Assert.assertEquals("Gewicht", wb.getSheetAt(0).getRow(1).getCell(2).getStringCellValue());
-		Assert.assertEquals("Percentage", wb.getSheetAt(0).getRow(1).getCell(3)
-				.getStringCellValue());
+		Assert.assertEquals("Percentage",
+		        wb.getSheetAt(0).getRow(1).getCell(3).getStringCellValue());
 
 		// string
 		Assert.assertEquals("Bas, Bob", wb.getSheetAt(0).getRow(2).getCell(0).getStringCellValue());
@@ -156,9 +156,9 @@ public class TableExportActionHandlerTest extends BaseMockitoTest {
 
 		// bigdecimal
 		Assert.assertEquals(76.0, wb.getSheetAt(0).getRow(2).getCell(2).getNumericCellValue(),
-				0.001);
+		        0.001);
 		Assert.assertEquals(77.0, wb.getSheetAt(0).getRow(3).getCell(2).getNumericCellValue(),
-				0.001);
+		        0.001);
 
 		// without an entity model, the application doesn't know this is a
 		// percentage
@@ -173,7 +173,7 @@ public class TableExportActionHandlerTest extends BaseMockitoTest {
 		models.add(entityModelFactory.getModel(Person.class));
 
 		handler = new TableExportActionHandler(ui, entityModelFactory, models, messageService,
-				REPORT_TITLE, columnIds, false, null);
+		        REPORT_TITLE, columnIds, false, null);
 
 		handler.handleAction(handler.getActions(null, null)[0], getTable(), null);
 
@@ -190,21 +190,21 @@ public class TableExportActionHandlerTest extends BaseMockitoTest {
 
 		// bigdecimal
 		Assert.assertEquals(76.0, wb.getSheetAt(0).getRow(2).getCell(2).getNumericCellValue(),
-				0.001);
+		        0.001);
 		Assert.assertEquals(77.0, wb.getSheetAt(0).getRow(3).getCell(2).getNumericCellValue(),
-				0.001);
+		        0.001);
 
 		// percentage
 		Assert.assertEquals(0.12, wb.getSheetAt(0).getRow(2).getCell(3).getNumericCellValue(),
-				0.001);
+		        0.001);
 		Assert.assertEquals(0.15, wb.getSheetAt(0).getRow(3).getCell(3).getNumericCellValue(),
-				0.001);
+		        0.001);
 	}
 
 	@Test
 	public void testExportWithTotalsRow() throws IOException {
 		handler = new TableExportActionHandler(ui, messageService, columnIds, REPORT_TITLE, true,
-				null);
+		        null);
 
 		handler.handleAction(handler.getActions(null, null)[0], getTable(), null);
 
@@ -229,50 +229,50 @@ public class TableExportActionHandlerTest extends BaseMockitoTest {
 		models.add(entityModelFactory.getModel(Person.class));
 
 		handler = new TableExportActionHandler(ui, entityModelFactory, models, messageService,
-				REPORT_TITLE, columnIds, true, new CustomCellStyleGenerator() {
+		        REPORT_TITLE, columnIds, true, new CustomCellStyleGenerator() {
 
-					private CellStyle cellStyle;
+			        private CellStyle cellStyle;
 
-					private CellStyle bdStyle;
+			        private CellStyle bdStyle;
 
-					@Override
-					public CellStyle getCustomCellStyle(Workbook workbook, Object propId,
-							Object value, AttributeModel attributeModel) {
-						if (cellStyle == null) {
-							cellStyle = workbook.createCellStyle();
-							cellStyle.setAlignment(CellStyle.ALIGN_RIGHT);
-							cellStyle.setBorderBottom(CellStyle.BORDER_THIN);
-							cellStyle.setBorderTop(CellStyle.BORDER_THIN);
-							cellStyle.setBorderLeft(CellStyle.BORDER_THIN);
-							cellStyle.setBorderRight(CellStyle.BORDER_THIN);
-							Font font = workbook.createFont();
-							font.setColor(IndexedColors.BLUE.getIndex());
-							cellStyle.setFont(font);
-						}
+			        @Override
+			        public CellStyle getCustomCellStyle(Workbook workbook, Object propId,
+		                    Object value, AttributeModel attributeModel) {
+				        if (cellStyle == null) {
+					        cellStyle = workbook.createCellStyle();
+					        cellStyle.setAlignment(CellStyle.ALIGN_RIGHT);
+					        cellStyle.setBorderBottom(CellStyle.BORDER_THIN);
+					        cellStyle.setBorderTop(CellStyle.BORDER_THIN);
+					        cellStyle.setBorderLeft(CellStyle.BORDER_THIN);
+					        cellStyle.setBorderRight(CellStyle.BORDER_THIN);
+					        Font font = workbook.createFont();
+					        font.setColor(IndexedColors.BLUE.getIndex());
+					        cellStyle.setFont(font);
+				        }
 
-						if (bdStyle == null) {
-							DataFormat format = workbook.createDataFormat();
-							bdStyle = workbook.createCellStyle();
-							bdStyle.setAlignment(CellStyle.ALIGN_RIGHT);
-							bdStyle.setBorderBottom(CellStyle.BORDER_THIN);
-							bdStyle.setBorderTop(CellStyle.BORDER_THIN);
-							bdStyle.setBorderLeft(CellStyle.BORDER_THIN);
-							bdStyle.setBorderRight(CellStyle.BORDER_THIN);
-							bdStyle.setDataFormat(format.getFormat("#,##0.00"));
+				        if (bdStyle == null) {
+					        DataFormat format = workbook.createDataFormat();
+					        bdStyle = workbook.createCellStyle();
+					        bdStyle.setAlignment(CellStyle.ALIGN_RIGHT);
+					        bdStyle.setBorderBottom(CellStyle.BORDER_THIN);
+					        bdStyle.setBorderTop(CellStyle.BORDER_THIN);
+					        bdStyle.setBorderLeft(CellStyle.BORDER_THIN);
+					        bdStyle.setBorderRight(CellStyle.BORDER_THIN);
+					        bdStyle.setDataFormat(format.getFormat("#,##0.00"));
 
-							Font font = workbook.createFont();
-							font.setColor(IndexedColors.BLUE.getIndex());
-							bdStyle.setFont(font);
-						}
+					        Font font = workbook.createFont();
+					        font.setColor(IndexedColors.BLUE.getIndex());
+					        bdStyle.setFont(font);
+				        }
 
-						if ("name".equals(propId)) {
-							return cellStyle;
-						} else if ("percentage".equals(propId)) {
-							return bdStyle;
-						}
-						return null;
-					}
-				});
+				        if ("name".equals(propId)) {
+					        return cellStyle;
+				        } else if ("percentage".equals(propId)) {
+					        return bdStyle;
+				        }
+				        return null;
+			        }
+		        });
 
 		handler.handleAction(handler.getActions(null, null)[0], getTable(), null);
 
@@ -280,8 +280,8 @@ public class TableExportActionHandlerTest extends BaseMockitoTest {
 		Workbook wb = importer.createWorkbook(bytes);
 
 		Assert.assertEquals("Bas, Bob", wb.getSheetAt(0).getRow(2).getCell(0).getStringCellValue());
-		Font font = wb.getFontAt(wb.getSheetAt(0).getRow(2).getCell(0).getCellStyle()
-				.getFontIndex());
+		Font font = wb
+		        .getFontAt(wb.getSheetAt(0).getRow(2).getCell(0).getCellStyle().getFontIndex());
 		Assert.assertEquals(IndexedColors.BLUE.getIndex(), font.getColor());
 
 		Assert.assertEquals("Patrick", wb.getSheetAt(0).getRow(3).getCell(0).getStringCellValue());
@@ -294,9 +294,9 @@ public class TableExportActionHandlerTest extends BaseMockitoTest {
 
 		// percentage
 		Assert.assertEquals(0.12, wb.getSheetAt(0).getRow(2).getCell(3).getNumericCellValue(),
-				0.001);
+		        0.001);
 		Assert.assertEquals(0.15, wb.getSheetAt(0).getRow(3).getCell(3).getNumericCellValue(),
-				0.001);
+		        0.001);
 
 	}
 
@@ -304,13 +304,13 @@ public class TableExportActionHandlerTest extends BaseMockitoTest {
 		BeanItemContainer<Person> container = new BeanItemContainer<>(Person.class);
 
 		Person person1 = new Person(1, "Bas<br/>Bob", 35, BigDecimal.valueOf(76.0),
-				BigDecimal.valueOf(12));
+		        BigDecimal.valueOf(12));
 		Person person2 = new Person(2, "Patrick", 44, BigDecimal.valueOf(77.0),
-				BigDecimal.valueOf(15));
+		        BigDecimal.valueOf(15));
 		container.addAll(Lists.newArrayList(person1, person2));
 
 		return new ModelBasedTable<Integer, Person>(container,
-				entityModelFactory.getModel(Person.class), entityModelFactory, messageService);
+		        entityModelFactory.getModel(Person.class), entityModelFactory, messageService);
 	}
 
 	private TreeTable getTreeTable() {
@@ -318,9 +318,9 @@ public class TableExportActionHandlerTest extends BaseMockitoTest {
 		// BeanItemContainer<>(Person.class);
 
 		final Person person1 = new Person(1, "Bas<br/>Bob", 35, BigDecimal.valueOf(76.0),
-				BigDecimal.valueOf(12));
+		        BigDecimal.valueOf(12));
 		final Person person2 = new Person(2, "Patrick", 44, BigDecimal.valueOf(77.0),
-				BigDecimal.valueOf(15));
+		        BigDecimal.valueOf(15));
 		// container.addAll(Lists.newArrayList(person1, person2));
 
 		final Department department = new Department();
@@ -343,7 +343,7 @@ public class TableExportActionHandlerTest extends BaseMockitoTest {
 
 			@Override
 			protected Number handleChange(String propertyId, String rowId, String parentRowId,
-					String childKey, String parentKey, Object newValue) {
+		            String childKey, String parentKey, Object newValue) {
 				return 0;
 			}
 
@@ -414,9 +414,9 @@ public class TableExportActionHandlerTest extends BaseMockitoTest {
 		BeanItemContainer<Person> container = new BeanItemContainer<>(Person.class);
 
 		Person person1 = new Person(1, "Bas<br/>Bob", 35, BigDecimal.valueOf(76.0),
-				BigDecimal.valueOf(12));
+		        BigDecimal.valueOf(12));
 		Person person2 = new Person(2, "Patrick", 44, BigDecimal.valueOf(77.0),
-				BigDecimal.valueOf(15));
+		        BigDecimal.valueOf(15));
 		container.addAll(Lists.newArrayList(person1, person2));
 
 		Grid grid = new Grid(container);
@@ -432,7 +432,7 @@ public class TableExportActionHandlerTest extends BaseMockitoTest {
 	private byte[] captureSave() throws IOException {
 
 		ArgumentCaptor<TemporaryFileDownloadResource> captor = ArgumentCaptor
-				.forClass(TemporaryFileDownloadResource.class);
+		        .forClass(TemporaryFileDownloadResource.class);
 		Mockito.verify(page).open(captor.capture(), Matchers.anyString(), Matchers.anyBoolean());
 		TemporaryFileDownloadResource resource = captor.getValue();
 

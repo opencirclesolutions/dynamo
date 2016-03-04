@@ -5,7 +5,6 @@ package com.ocs.dynamo.ui.composite.form;
  * after a change to an editable component
  * 
  * @author bas.rutten
- *
  */
 public interface SignalsParent {
 

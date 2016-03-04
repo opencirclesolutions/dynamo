@@ -17,7 +17,6 @@ import com.vaadin.ui.TextField;
  * table view and a details view
  * 
  * @author bas.rutten
- *
  * @param <ID>
  *            the type of the primary key
  * @param <T>
@@ -25,7 +24,7 @@ import com.vaadin.ui.TextField;
  */
 @SuppressWarnings("serial")
 public abstract class FixedSplitLayout<ID extends Serializable, T extends AbstractEntity<ID>>
-		extends BaseSplitLayout<ID, T> {
+        extends BaseSplitLayout<ID, T> {
 
 	private static final long serialVersionUID = 4606800218149558500L;
 
@@ -46,7 +45,7 @@ public abstract class FixedSplitLayout<ID extends Serializable, T extends Abstra
 	 * @param sortOrder
 	 */
 	public FixedSplitLayout(BaseService<ID, T> service, EntityModel<T> entityModel,
-			FormOptions formOptions, SortOrder sortOrder) {
+	        FormOptions formOptions, SortOrder sortOrder) {
 		super(service, entityModel, formOptions, sortOrder);
 	}
 
@@ -65,7 +64,7 @@ public abstract class FixedSplitLayout<ID extends Serializable, T extends Abstra
 	protected void constructTable() {
 		// a table that displays a fixed collection of items
 		FixedTableWrapper<ID, T> tw = new FixedTableWrapper<ID, T>(getService(), getEntityModel(),
-				getItems(), getSortOrder()) {
+		        getItems(), getSortOrder()) {
 			@Override
 			protected void onSelect(Object selected) {
 				setSelectedItems(selected);
@@ -106,7 +105,7 @@ public abstract class FixedSplitLayout<ID extends Serializable, T extends Abstra
 		init();
 		// remove all items from the container and add the new ones
 		BeanItemContainer<T> beanContainer = (BeanItemContainer<T>) getTableWrapper()
-				.getContainer();
+		        .getContainer();
 		beanContainer.removeAllItems();
 		beanContainer.addAll(getItems());
 	}

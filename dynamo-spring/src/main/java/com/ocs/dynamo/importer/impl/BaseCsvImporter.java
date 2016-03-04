@@ -15,7 +15,6 @@ import au.com.bytecode.opencsv.CSVReader;
  * Base class for importing CSV files
  * 
  * @author bas.rutten
- * 
  */
 public class BaseCsvImporter extends BaseTextImporter {
 
@@ -37,8 +36,9 @@ public class BaseCsvImporter extends BaseTextImporter {
 	 * @throws IOException
 	 */
 	protected List<String[]> readCsvFile(byte[] bytes, String separator) {
-		try (CSVReader reader = new CSVReader(new CharSequenceReader(new String(bytes,
-				Charset.forName(OCSConstants.UTF_8))), separator.charAt(0))) {
+		try (CSVReader reader = new CSVReader(
+		        new CharSequenceReader(new String(bytes, Charset.forName(OCSConstants.UTF_8))),
+		        separator.charAt(0))) {
 			return reader.readAll();
 		} catch (IOException ex) {
 			throw new OCSImportException(ex.getMessage(), ex);

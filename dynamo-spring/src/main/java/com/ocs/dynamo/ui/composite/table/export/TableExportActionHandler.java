@@ -46,16 +46,13 @@ import com.vaadin.ui.UI;
  * Action Handler which adds export functionality to a table.
  * 
  * @author Patrick Deenen
- *
  */
 public class TableExportActionHandler implements Handler {
 
 	private static final Logger LOG = Logger.getLogger(TableExportActionHandler.class);
 
 	/**
-	 * 
 	 * @author bas.rutten
-	 *
 	 */
 	class ModelExcelExport extends ExcelExport {
 
@@ -76,8 +73,8 @@ public class TableExportActionHandler implements Handler {
 		 */
 		public ModelExcelExport(Table table) {
 			super(table, new XSSFWorkbook(), messageService.getMessage("ocs.export"),
-					TableExportActionHandler.this.reportTitle, null,
-					TableExportActionHandler.this.totalsRow);
+			        TableExportActionHandler.this.reportTitle, null,
+			        TableExportActionHandler.this.totalsRow);
 
 			DataFormat format = workbook.createDataFormat();
 
@@ -159,15 +156,15 @@ public class TableExportActionHandler implements Handler {
 							// but in Excel they are fractions that
 							// are displayed as percentages -> so, divide by 100
 							double temp = ((BigDecimal) value)
-									.divide(HUNDRED, 10, RoundingMode.HALF_UP)
-									.setScale(am.getPrecision() + 2, RoundingMode.HALF_UP)
-									.doubleValue();
+							        .divide(HUNDRED, 10, RoundingMode.HALF_UP)
+							        .setScale(am.getPrecision() + 2, RoundingMode.HALF_UP)
+							        .doubleValue();
 							sheetCell.setCellValue(temp);
 							standard = bigDecimalPercentageStyle;
 						} else {
 							// just display as a number
-							sheetCell.setCellValue(((BigDecimal) value).setScale(SCALE,
-									RoundingMode.HALF_UP).doubleValue());
+							sheetCell.setCellValue(((BigDecimal) value)
+							        .setScale(SCALE, RoundingMode.HALF_UP).doubleValue());
 							standard = bigDecimalStyle;
 						}
 					} else if (am != null) {
@@ -181,10 +178,10 @@ public class TableExportActionHandler implements Handler {
 
 						// if there is only one entity model, use that one.
 						EntityModel<?> onlyModel = entityModels.size() == 1 ? entityModels.get(0)
-								: null;
+						        : null;
 						sheetCell.setCellValue(TableUtils.formatPropertyValue(entityModelFactory,
-								onlyModel != null ? onlyModel : am.getEntityModel(),
-								messageService, propId, value));
+						        onlyModel != null ? onlyModel : am.getEntityModel(), messageService,
+						        propId, value));
 					} else {
 						// if everything else fails, use the string
 						// representation
@@ -213,7 +210,7 @@ public class TableExportActionHandler implements Handler {
 		 * @return
 		 */
 		private int addDataRowRecursively(final Sheet sheetToAddTo, final Object rootItemId,
-				final int row) {
+		        final int row) {
 			int numberAdded = 0;
 			int localRow = row;
 
@@ -223,9 +220,9 @@ public class TableExportActionHandler implements Handler {
 
 			// iterate over the children
 			if (((Container.Hierarchical) getTableHolder().getContainerDataSource())
-					.hasChildren(rootItemId)) {
+			        .hasChildren(rootItemId)) {
 				final Collection<?> children = ((Container.Hierarchical) getTableHolder()
-						.getContainerDataSource()).getChildren(rootItemId);
+				        .getContainerDataSource()).getChildren(rootItemId);
 
 				int childCount = 0;
 				for (final Object child : children) {
@@ -260,7 +257,7 @@ public class TableExportActionHandler implements Handler {
 			final Collection<?> roots;
 			int localRow = row;
 			roots = ((Container.Hierarchical) getTableHolder().getContainerDataSource())
-					.rootItemIds();
+			        .rootItemIds();
 			/*
 			 * For Hierarchical Containers, the outlining/grouping in the sheet
 			 * is with the summary row at the top and the grouped/outlined
@@ -308,15 +305,15 @@ public class TableExportActionHandler implements Handler {
 						// outlined category, so
 						// we will range value it first
 						cell.setCellFormula("SUM("
-								+ cra.formatAsString(hierarchicalTotalsSheet.getSheetName(), true)
-								+ ")");
+						        + cra.formatAsString(hierarchicalTotalsSheet.getSheetName(), true)
+						        + ")");
 					} else {
 						cell.setCellFormula("SUM(" + cra.formatAsString() + ")");
 					}
 				} else {
 					if (0 == col) {
-						cell.setCellValue(createHelper.createRichTextString(messageService
-								.getMessage("ocs.total")));
+						cell.setCellValue(createHelper
+						        .createRichTextString(messageService.getMessage("ocs.total")));
 					}
 				}
 			}
@@ -350,8 +347,9 @@ public class TableExportActionHandler implements Handler {
 				prop = getTableHolder().getPropertyForGeneratedColumn(propId, rootItemId);
 			} else {
 				prop = getTableHolder().getContainerDataSource().getContainerProperty(rootItemId,
-						propId);
-				if (useTableFormatPropertyValue && getTableHolder().isExportableFormattedProperty()) {
+				        propId);
+				if (useTableFormatPropertyValue
+				        && getTableHolder().isExportableFormattedProperty()) {
 					prop = getPropertyInner(rootItemId, propId, prop);
 				}
 			}
@@ -359,7 +357,6 @@ public class TableExportActionHandler implements Handler {
 		}
 
 		/**
-		 * 
 		 * @param rootItemId
 		 * @param propId
 		 * @param prop
@@ -367,7 +364,7 @@ public class TableExportActionHandler implements Handler {
 		 */
 		private Property<?> getPropertyInner(Object rootItemId, Object propId, Property<?> prop) {
 			final String formattedProp = getTableHolder().getFormattedPropertyValue(rootItemId,
-					propId, prop);
+			        propId, prop);
 			Property<?> result = null;
 			if (prop == null || prop.getValue() == null) {
 				// property not found, use the formatted value instead
@@ -443,7 +440,7 @@ public class TableExportActionHandler implements Handler {
 				UI tableUI = getTableHolder().getUI();
 
 				return super.sendConvertedFileToUser(tableUI != null ? tableUI : ui, tempFile,
-						exportFileName);
+				        exportFileName);
 			} catch (IOException e) {
 				LOG.error(e.getMessage(), e);
 				return false;
@@ -500,8 +497,9 @@ public class TableExportActionHandler implements Handler {
 	 *            exported file)
 	 */
 	public TableExportActionHandler(UI ui, EntityModelFactory entityModelFactory,
-			List<EntityModel<?>> entityModels, MessageService messageService, String reportTitle,
-			List<String> columnIds, boolean totalsRow, CustomCellStyleGenerator cellStyleGenerator) {
+	        List<EntityModel<?>> entityModels, MessageService messageService, String reportTitle,
+	        List<String> columnIds, boolean totalsRow,
+	        CustomCellStyleGenerator cellStyleGenerator) {
 		this(ui, messageService, columnIds, reportTitle, totalsRow, cellStyleGenerator);
 		this.entityModelFactory = entityModelFactory;
 		this.entityModels = entityModels;
@@ -521,7 +519,7 @@ public class TableExportActionHandler implements Handler {
 	 * @param totalsRow
 	 */
 	public TableExportActionHandler(UI ui, MessageService messageService, List<String> columnIds,
-			String reportTitle, boolean totalsRow, CustomCellStyleGenerator cellStyleGenerator) {
+	        String reportTitle, boolean totalsRow, CustomCellStyleGenerator cellStyleGenerator) {
 		this.messageService = messageService;
 		this.columnIds = columnIds;
 		this.cellStyleGenerator = cellStyleGenerator;

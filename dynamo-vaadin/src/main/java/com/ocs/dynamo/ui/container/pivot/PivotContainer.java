@@ -21,7 +21,6 @@ import com.vaadin.data.Property;
  * data.
  * 
  * @author Patrick Deenen
- * 
  */
 public class PivotContainer implements Container, ItemSetChangeListener, Indexed, Sortable {
 
@@ -66,7 +65,7 @@ public class PivotContainer implements Container, ItemSetChangeListener, Indexed
 	 *            Unsigned number of expected rows
 	 */
 	public PivotContainer(Container sourceContainer, Object columnPropertyId, Object rowPropertyId,
-			List<?> columnIds, List<String> pivotedColumnPostFixes, int rowCount) {
+	        List<?> columnIds, List<String> pivotedColumnPostFixes, int rowCount) {
 		if (sourceContainer == null) {
 			throw new AssertionError("sourceContainer is mandatory");
 		}
@@ -261,7 +260,7 @@ public class PivotContainer implements Container, ItemSetChangeListener, Indexed
 					// The rowvalue is the same, hence the item is part of this
 					// row
 					columnItems.put(column.getItemProperty(columnPropertyId).getValue().toString(),
-							column);
+					        column);
 				} else {
 					// When the rowvalue is not equal to the first, the item is
 					// part of the next row
@@ -365,12 +364,12 @@ public class PivotContainer implements Container, ItemSetChangeListener, Indexed
 	@Override
 	public List<?> getItemIds(int startIndex, int numberOfItems) {
 		if (startIndex < 0) {
-			throw new IndexOutOfBoundsException("Start index cannot be negative! startIndex="
-					+ startIndex);
+			throw new IndexOutOfBoundsException(
+			        "Start index cannot be negative! startIndex=" + startIndex);
 		}
 		if (startIndex > size()) {
 			throw new IndexOutOfBoundsException("Start index exceeds container size! startIndex="
-					+ startIndex + " containerLastItemIndex=" + (size() - 1));
+			        + startIndex + " containerLastItemIndex=" + (size() - 1));
 		}
 
 		if (numberOfItems < 1) {
@@ -378,7 +377,7 @@ public class PivotContainer implements Container, ItemSetChangeListener, Indexed
 				return Collections.emptyList();
 			}
 			throw new IllegalArgumentException(
-					"Cannot get negative amount of items! numberOfItems=" + numberOfItems);
+			        "Cannot get negative amount of items! numberOfItems=" + numberOfItems);
 		}
 
 		int endIndex = startIndex + numberOfItems;

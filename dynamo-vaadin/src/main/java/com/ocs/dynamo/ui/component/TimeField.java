@@ -17,7 +17,6 @@ import com.vaadin.ui.NativeSelect;
  * combo box
  * 
  * @author bas.rutten
- *
  */
 public class TimeField extends CustomField<Date> {
 
@@ -104,7 +103,7 @@ public class TimeField extends CustomField<Date> {
 
 		if (hours < minHours || hours > maxHours) {
 			throw new IllegalArgumentException("Value '" + hours + "' is outside bounds '"
-					+ minHours + "' - '" + maxHours + "'");
+			        + minHours + "' - '" + maxHours + "'");
 		}
 
 		hourSelect.setValue(hours);
@@ -118,7 +117,6 @@ public class TimeField extends CustomField<Date> {
 
 	/**
 	 * @param minutes
-	 * 
 	 * @throws IllegalArgumentException
 	 *             If the minute parameter is not compatible with
 	 *             {@link #getMinuteInterval()}
@@ -126,7 +124,7 @@ public class TimeField extends CustomField<Date> {
 	public void setMinutes(int minutes) {
 		if (minutes % intervalMinutes != 0) {
 			throw new IllegalArgumentException("Value '" + minutes
-					+ "' is not compatible with interval '" + intervalMinutes + "'");
+			        + "' is not compatible with interval '" + intervalMinutes + "'");
 		}
 		minuteSelect.setValue(minutes);
 	}
@@ -340,7 +338,7 @@ public class TimeField extends CustomField<Date> {
 		String time = df.format(new Date());
 
 		if (time.contains("am") || time.contains("AM") || time.contains("pm")
-				|| time.contains("PM")) {
+		        || time.contains("PM")) {
 			use24HourClock = false;
 		} else {
 			use24HourClock = true;
@@ -459,7 +457,6 @@ public class TimeField extends CustomField<Date> {
 	 * Changing this setting so that the field has a value outside the new
 	 * bounds will lead to the field resetting its value to the first bigger
 	 * value that is valid.
-	 * 
 	 */
 	public void setHourMin(int minHours) {
 
@@ -485,7 +482,6 @@ public class TimeField extends CustomField<Date> {
 	 * Changing this setting so that the field has a value outside the new
 	 * bounds will lead to the field resetting its value to the first smaller
 	 * value that is valid.
-	 * 
 	 */
 	public void setHourMax(int maxHours) {
 

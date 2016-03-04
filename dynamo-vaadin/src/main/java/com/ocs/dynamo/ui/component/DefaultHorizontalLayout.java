@@ -6,7 +6,6 @@ import com.vaadin.ui.HorizontalLayout;
  * Default horizontal layout
  * 
  * @author bas.rutten
- * 
  */
 public class DefaultHorizontalLayout extends HorizontalLayout {
 

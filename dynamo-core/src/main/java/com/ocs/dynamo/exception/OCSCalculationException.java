@@ -5,7 +5,6 @@ package com.ocs.dynamo.exception;
  * (long-running) calculation
  * 
  * @author bas.rutten
- *
  */
 public class OCSCalculationException extends OCSRuntimeException {
 

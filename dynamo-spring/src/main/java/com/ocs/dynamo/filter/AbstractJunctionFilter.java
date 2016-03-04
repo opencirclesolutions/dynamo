@@ -9,7 +9,6 @@ import java.util.List;
  * Abstract class for composite filters
  * 
  * @author bas.rutten
- * 
  */
 public abstract class AbstractJunctionFilter extends AbstractFilter {
 
@@ -17,6 +16,7 @@ public abstract class AbstractJunctionFilter extends AbstractFilter {
 
 	/**
 	 * Constructor
+	 * 
 	 * @param filters
 	 */
 	public AbstractJunctionFilter(Filter... filters) {
@@ -25,6 +25,7 @@ public abstract class AbstractJunctionFilter extends AbstractFilter {
 
 	/**
 	 * Constructor
+	 * 
 	 * @param filters
 	 */
 	public AbstractJunctionFilter(Collection<Filter> filters) {

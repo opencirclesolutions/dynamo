@@ -12,9 +12,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import com.monitorjbl.xlsx.exceptions.NotSupportedException;
 
 /**
- * 
  * @author bas.rutten
- *
  */
 public class StreamingRow implements Row {
 

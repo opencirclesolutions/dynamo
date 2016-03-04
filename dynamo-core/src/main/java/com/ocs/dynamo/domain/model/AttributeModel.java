@@ -101,7 +101,6 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	Integer getOrder();
 
 	/**
-	 * 
 	 * @return the (nested) path to this attribute
 	 */
 	String getPath();

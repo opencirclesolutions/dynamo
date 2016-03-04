@@ -10,7 +10,6 @@ import com.vaadin.data.util.converter.StringToLongConverter;
  * grouping separator must be used
  * 
  * @author bas.rutten
- *
  */
 public class GroupingStringToLongConverter extends StringToLongConverter {
 

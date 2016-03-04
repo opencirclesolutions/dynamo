@@ -6,7 +6,6 @@ import com.ocs.dynamo.domain.AbstractEntity;
  * A subject (also known as an Observable) according to the well-known pattern
  * 
  * @author bas.rutten
- *
  * @param <T>
  *            the type of the entity being observed
  */

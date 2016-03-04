@@ -70,7 +70,8 @@ public final class FilterUtil {
 	 *            the propertyId of the filter to extract
 	 * @return
 	 */
-	public static com.ocs.dynamo.filter.Filter extractFilter(com.ocs.dynamo.filter.Filter filter, String propertyId) {
+	public static com.ocs.dynamo.filter.Filter extractFilter(com.ocs.dynamo.filter.Filter filter,
+	        String propertyId) {
 		if (filter instanceof com.ocs.dynamo.filter.AbstractJunctionFilter) {
 			com.ocs.dynamo.filter.AbstractJunctionFilter junction = (com.ocs.dynamo.filter.AbstractJunctionFilter) filter;
 			for (com.ocs.dynamo.filter.Filter child : junction.getFilters()) {
@@ -108,8 +109,9 @@ public final class FilterUtil {
 	 * @param propertyId
 	 *            the property id of the filter that must be replaced
 	 */
-	public static void replaceFilter(com.ocs.dynamo.filter.Filter parent, com.ocs.dynamo.filter.Filter original,
-			com.ocs.dynamo.filter.Filter newFilter, String propertyId) {
+	public static void replaceFilter(com.ocs.dynamo.filter.Filter parent,
+	        com.ocs.dynamo.filter.Filter original, com.ocs.dynamo.filter.Filter newFilter,
+	        String propertyId) {
 		if (original instanceof com.ocs.dynamo.filter.AbstractJunctionFilter) {
 			// junction filter, iterate over its children
 			com.ocs.dynamo.filter.AbstractJunctionFilter junction = (com.ocs.dynamo.filter.AbstractJunctionFilter) original;

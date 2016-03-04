@@ -11,7 +11,6 @@ import com.vaadin.data.Item;
 
 /**
  * @author Patrick Deenen
- *
  */
 public class PivotIdList extends AbstractList<Integer> {
 

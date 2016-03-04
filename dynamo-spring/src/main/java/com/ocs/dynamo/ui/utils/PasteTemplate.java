@@ -12,13 +12,11 @@ import com.vaadin.ui.Table;
  * A template for handling a paste into a text field. The template will try to
  * split up the input into separate fields. The fields can be separated by any
  * kind of whitespace
- * 
  * The template takes a locale as a constructor argument. Any decimal separators
  * in the input will be converted to the appropriate separator for the provided
  * locale
  * 
  * @author bas.rutten
- * 
  */
 public abstract class PasteTemplate {
 
@@ -31,7 +29,6 @@ public abstract class PasteTemplate {
 	private Table table;
 
 	/**
-	 * 
 	 * @param locale
 	 * @param event
 	 */

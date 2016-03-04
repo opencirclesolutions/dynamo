@@ -9,7 +9,6 @@ import java.lang.annotation.Target;
  * An annotation that can be used to override the default attribute order
  * 
  * @author bas.rutten
- * 
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)

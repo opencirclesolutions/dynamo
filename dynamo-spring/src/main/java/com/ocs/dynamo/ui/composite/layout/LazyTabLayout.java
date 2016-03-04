@@ -19,15 +19,14 @@ import com.vaadin.ui.VerticalLayout;
  * A layout that contains a tab sheet with tabs that are lazily loaded
  * 
  * @author bas.rutten
- * 
  * @param <ID>
  *            type of the primary key
  * @param <T>
  *            type of the entity
  */
 @SuppressWarnings("serial")
-public abstract class LazyTabLayout<ID extends Serializable, T extends AbstractEntity<ID>> extends
-		BaseCustomComponent {
+public abstract class LazyTabLayout<ID extends Serializable, T extends AbstractEntity<ID>>
+        extends BaseCustomComponent {
 
 	private static final long serialVersionUID = 3788799136302802727L;
 

@@ -23,7 +23,6 @@ import com.vaadin.spring.annotation.SpringView;
  * Permission checker - checks if the user has the correct role to access a view
  * 
  * @author bas.rutten
- * 
  */
 public class PermissionChecker {
 
@@ -49,7 +48,7 @@ public class PermissionChecker {
 
 		// scan the class path for all classes annotated with @SpringView
 		ClassPathScanningCandidateComponentProvider provider = new ClassPathScanningCandidateComponentProvider(
-				true);
+		        true);
 		provider.addIncludeFilter(new AnnotationTypeFilter(SpringView.class));
 
 		Set<BeanDefinition> views = provider.findCandidateComponents(basePackage);
@@ -67,7 +66,7 @@ public class PermissionChecker {
 				if (auth != null && auth.roles().length > 0) {
 					int p = d.getBeanClassName().lastIndexOf(".");
 					permissions.put(d.getBeanClassName().substring(p + 1),
-							Arrays.asList(auth.roles()));
+					        Arrays.asList(auth.roles()));
 					editOnly.put(d.getBeanClassName().substring(p + 1), auth.editOnly());
 
 					permissions.put(view.name(), Arrays.asList(auth.roles()));
@@ -103,6 +102,7 @@ public class PermissionChecker {
 
 	/**
 	 * Returns a list of all view names
+	 * 
 	 * @return
 	 */
 	public List<String> getViewNames() {
@@ -110,7 +110,6 @@ public class PermissionChecker {
 	}
 
 	/**
-	 * 
 	 * @param viewName
 	 * @return
 	 */

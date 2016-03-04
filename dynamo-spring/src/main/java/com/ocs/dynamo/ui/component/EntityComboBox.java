@@ -16,7 +16,8 @@ import com.vaadin.shared.ui.combobox.FilteringMode;
 /**
  * Combo box for displaying a list of entities
  */
-public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID>> extends ComboBox {
+public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID>>
+        extends ComboBox {
 
 	private static final long serialVersionUID = 3041574615271340579L;
 
@@ -42,7 +43,7 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 	 *            the service used to retrieve the entities
 	 */
 	public EntityComboBox(EntityModel<T> targetEntityModel, AttributeModel attributeModel,
-			BaseService<ID, T> service, SortOrder... sortOrder) {
+	        BaseService<ID, T> service, SortOrder... sortOrder) {
 		this(targetEntityModel, attributeModel, service, SelectMode.ALL, null, null, sortOrder);
 	}
 
@@ -58,7 +59,7 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 	 *            the list of entities to display
 	 */
 	public EntityComboBox(EntityModel<T> targetEntityModel, AttributeModel attributeModel,
-			List<T> items) {
+	        List<T> items) {
 		this(targetEntityModel, attributeModel, null, SelectMode.FIXED, null, items);
 	}
 
@@ -72,9 +73,9 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 	 * @param sortOrder
 	 */
 	public EntityComboBox(EntityModel<T> targetEntityModel, AttributeModel attributeModel,
-			BaseService<ID, T> service, Filter filter, SortOrder... sortOrder) {
+	        BaseService<ID, T> service, Filter filter, SortOrder... sortOrder) {
 		this(targetEntityModel, attributeModel, service, SelectMode.FILTERED, filter, null,
-				sortOrder);
+		        sortOrder);
 	}
 
 	/**
@@ -100,8 +101,8 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 	 *            the sort order(s) to apply
 	 */
 	public EntityComboBox(EntityModel<T> targetEntityModel, AttributeModel attributeModel,
-			BaseService<ID, T> service, SelectMode mode, Filter filter, List<T> items,
-			SortOrder... sortOrder) {
+	        BaseService<ID, T> service, SelectMode mode, Filter filter, List<T> items,
+	        SortOrder... sortOrder) {
 
 		this.selectMode = mode;
 		this.sortOrder = sortOrder;
@@ -114,7 +115,7 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 		setFilteringMode(FilteringMode.CONTAINS);
 
 		BeanItemContainer<T> container = new BeanItemContainer<T>(
-				targetEntityModel.getEntityClass());
+		        targetEntityModel.getEntityClass());
 		this.setContainerDataSource(container);
 
 		if (SelectMode.ALL.equals(mode)) {
@@ -125,7 +126,7 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 		} else if (SelectMode.FILTERED.equals(mode)) {
 			// add a filtered selection of items
 			items = service.find(new FilterConverter().convert(filter),
-					SortUtil.translate(sortOrder));
+			        SortUtil.translate(sortOrder));
 			container.addAll(items);
 		} else if (SelectMode.FIXED.equals(mode)) {
 			container.addAll(items);

@@ -48,12 +48,12 @@ public class ModelBasedTableIntegrationTest extends BaseIntegrationTest {
 	@Test
 	public void testIdBasedQuery() {
 		ServiceContainer<Integer, TestEntity> container = new ServiceContainer<>(testEntityService,
-				false, 20, QueryType.ID_BASED, new FetchJoinInformation[0]);
+		        false, 20, QueryType.ID_BASED, new FetchJoinInformation[0]);
 		Assert.assertNotNull(container.getService());
 
 		EntityModel<TestEntity> model = entityModelFactory.getModel(TestEntity.class);
 		ModelBasedTable<Integer, TestEntity> table = new ModelBasedTable<>(container, model,
-				entityModelFactory, messageService);
+		        entityModelFactory, messageService);
 
 		Assert.assertEquals(13, table.getVisibleColumns().length);
 
@@ -75,14 +75,14 @@ public class ModelBasedTableIntegrationTest extends BaseIntegrationTest {
 		EntityModel<TestEntity> model = entityModelFactory.getModel(TestEntity.class);
 
 		ServiceResultsTableWrapper<Integer, TestEntity> wrapper = new ServiceResultsTableWrapper<>(
-				testEntityService, model, QueryType.ID_BASED, null, null, null);
+		        testEntityService, model, QueryType.ID_BASED, null, null, null);
 		wrapper.build();
 
 		Assert.assertNotNull(wrapper.getTable());
 		Assert.assertNull(wrapper.getSortOrder());
 		Assert.assertNull(wrapper.getJoins());
 		ServiceContainer<Integer, TestEntity> container = (ServiceContainer<Integer, TestEntity>) wrapper
-				.getContainer();
+		        .getContainer();
 		Assert.assertNotNull(container);
 
 		Assert.assertEquals(1, wrapper.getContainer().size());
@@ -109,15 +109,15 @@ public class ModelBasedTableIntegrationTest extends BaseIntegrationTest {
 		EntityModel<TestEntity> model = entityModelFactory.getModel(TestEntity.class);
 
 		ServiceResultsTableWrapper<Integer, TestEntity> wrapper = new ServiceResultsTableWrapper<>(
-				testEntityService, model, QueryType.ID_BASED, null, new SortOrder("name",
-						SortDirection.ASCENDING), null);
+		        testEntityService, model, QueryType.ID_BASED, null,
+		        new SortOrder("name", SortDirection.ASCENDING), null);
 		wrapper.build();
 
 		Assert.assertNotNull(wrapper.getTable());
 		Assert.assertEquals(new SortOrder("name", SortDirection.ASCENDING), wrapper.getSortOrder());
 		Assert.assertNull(wrapper.getJoins());
 		ServiceContainer<Integer, TestEntity> container = (ServiceContainer<Integer, TestEntity>) wrapper
-				.getContainer();
+		        .getContainer();
 		Assert.assertNotNull(container);
 
 	}
@@ -129,12 +129,12 @@ public class ModelBasedTableIntegrationTest extends BaseIntegrationTest {
 	@Test
 	public void testPagingQuery() {
 		ServiceContainer<Integer, TestEntity> container = new ServiceContainer<>(testEntityService,
-				false, 20, QueryType.PAGING, null);
+		        false, 20, QueryType.PAGING, null);
 		Assert.assertNotNull(container.getService());
 
 		EntityModel<TestEntity> model = entityModelFactory.getModel(TestEntity.class);
 		ModelBasedTable<Integer, TestEntity> table = new ModelBasedTable<>(container, model,
-				entityModelFactory, messageService);
+		        entityModelFactory, messageService);
 
 		Assert.assertEquals(13, table.getVisibleColumns().length);
 
@@ -150,7 +150,7 @@ public class ModelBasedTableIntegrationTest extends BaseIntegrationTest {
 	@Test
 	public void testSaveNewEntity() {
 		ServiceContainer<Integer, TestEntity> container = new ServiceContainer<>(testEntityService,
-				false, 20, QueryType.PAGING, null);
+		        false, 20, QueryType.PAGING, null);
 
 		Integer id = (Integer) container.addItem();
 		TestEntity te = VaadinUtils.getEntityFromContainer(container, id);
@@ -166,7 +166,7 @@ public class ModelBasedTableIntegrationTest extends BaseIntegrationTest {
 	@Test
 	public void testRemoveEntity() {
 		ServiceContainer<Integer, TestEntity> container = new ServiceContainer<>(testEntityService,
-				false, 20, QueryType.PAGING, null);
+		        false, 20, QueryType.PAGING, null);
 
 		Assert.assertEquals(1, testEntityService.findAll().size());
 
@@ -184,7 +184,7 @@ public class ModelBasedTableIntegrationTest extends BaseIntegrationTest {
 	@Test
 	public void testFilter() {
 		ServiceContainer<Integer, TestEntity> container = new ServiceContainer<>(testEntityService,
-				false, 20, QueryType.PAGING, null);
+		        false, 20, QueryType.PAGING, null);
 		container.getQueryView().getQueryDefinition().addFilter(new Compare.Equal("name", "Hank"));
 
 		Assert.assertEquals(1, testEntityService.findAll().size());
@@ -194,7 +194,7 @@ public class ModelBasedTableIntegrationTest extends BaseIntegrationTest {
 	@Test
 	public void testSort() {
 		ServiceContainer<Integer, TestEntity> container = new ServiceContainer<>(testEntityService,
-				entityModelFactory, false, 20, QueryType.PAGING, null);
+		        entityModelFactory, false, 20, QueryType.PAGING, null);
 
 		TestEntity entity2 = new TestEntity("Kevin", 74L);
 		testEntityService.save(entity2);
@@ -203,14 +203,14 @@ public class ModelBasedTableIntegrationTest extends BaseIntegrationTest {
 
 		container.sort(new SortOrder("name", SortDirection.DESCENDING));
 		Assert.assertEquals("Kevin",
-				container.getItem(container.getIdByIndex(0)).getItemProperty("name").getValue());
+		        container.getItem(container.getIdByIndex(0)).getItemProperty("name").getValue());
 		Assert.assertEquals("Bob",
-				container.getItem(container.getIdByIndex(1)).getItemProperty("name").getValue());
+		        container.getItem(container.getIdByIndex(1)).getItemProperty("name").getValue());
 
 		container.sort(new SortOrder("name", SortDirection.ASCENDING));
 		Assert.assertEquals("Bob",
-				container.getItem(container.getIdByIndex(0)).getItemProperty("name").getValue());
+		        container.getItem(container.getIdByIndex(0)).getItemProperty("name").getValue());
 		Assert.assertEquals("Kevin",
-				container.getItem(container.getIdByIndex(1)).getItemProperty("name").getValue());
+		        container.getItem(container.getIdByIndex(1)).getItemProperty("name").getValue());
 	}
 }

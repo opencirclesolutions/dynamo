@@ -7,7 +7,6 @@ import java.util.Collection;
  * does
  * 
  * @author bas.rutten
- * 
  */
 public final class Or extends AbstractJunctionFilter {
 

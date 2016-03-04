@@ -12,8 +12,8 @@ import com.ocs.dynamo.service.TestEntityService;
 
 @Service("testEntityService")
 @Transactional
-public class TestEntityServiceImpl extends BaseServiceImpl<Integer, TestEntity> implements
-		TestEntityService {
+public class TestEntityServiceImpl extends BaseServiceImpl<Integer, TestEntity>
+        implements TestEntityService {
 
 	@Inject
 	private TestEntityDao dao;

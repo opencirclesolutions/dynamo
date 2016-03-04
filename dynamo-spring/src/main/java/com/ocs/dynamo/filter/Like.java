@@ -6,7 +6,6 @@ import org.apache.commons.lang.ObjectUtils;
  * A filter for checking if a string value contains a certain pattern
  * 
  * @author bas.rutten
- * 
  */
 public class Like extends AbstractFilter implements PropertyFilter {
 
@@ -93,14 +92,14 @@ public class Like extends AbstractFilter implements PropertyFilter {
 		}
 		Like o = (Like) obj;
 		return ObjectUtils.equals(propertyId, o.getPropertyId())
-				&& ObjectUtils.equals(value, o.getValue())
-				&& ObjectUtils.equals(caseSensitive, o.isCaseSensitive());
+		        && ObjectUtils.equals(value, o.getValue())
+		        && ObjectUtils.equals(caseSensitive, o.isCaseSensitive());
 	}
 
 	@Override
 	public String toString() {
 		return getPropertyId() + " " + super.toString() + " " + getValue()
-				+ (isCaseSensitive() ? "" : " (ignore case)");
+		        + (isCaseSensitive() ? "" : " (ignore case)");
 	}
 
 }

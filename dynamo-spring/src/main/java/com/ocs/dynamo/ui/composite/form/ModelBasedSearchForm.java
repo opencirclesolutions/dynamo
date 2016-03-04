@@ -32,14 +32,13 @@ import com.vaadin.ui.VerticalLayout;
  * A search form that is constructed based on the metadata model
  * 
  * @author bas.rutten
- * 
  * @param <ID>
  *            type of the primary key
  * @param <T>
  *            type of the entity to search for
  */
-public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEntity<ID>> extends
-		BaseCustomComponent implements FilterListener, Button.ClickListener {
+public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEntity<ID>>
+        extends BaseCustomComponent implements FilterListener, Button.ClickListener {
 
 	// the types of search field
 	protected enum FilterType {
@@ -95,7 +94,7 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 	 *            the form options
 	 */
 	public ModelBasedSearchForm(Searchable searchable, EntityModel<T> entityModel,
-			FormOptions formOptions) {
+	        FormOptions formOptions) {
 		this(searchable, entityModel, formOptions, null, null);
 	}
 
@@ -114,14 +113,14 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 	 *            a map of filters to apply to the individual fields
 	 */
 	public ModelBasedSearchForm(Searchable searchable, EntityModel<T> entityModel,
-			FormOptions formOptions, List<Filter> additionalFilters,
-			Map<String, Filter> fieldFilters) {
+	        FormOptions formOptions, List<Filter> additionalFilters,
+	        Map<String, Filter> fieldFilters) {
 		this.searchable = searchable;
 		this.fieldFactory = ModelBasedFieldFactory.getSearchInstance(entityModel,
-				getMessageService());
+		        getMessageService());
 		this.formOptions = formOptions;
 		this.additionalFilters = additionalFilters == null ? new ArrayList<Filter>()
-				: additionalFilters;
+		        : additionalFilters;
 		this.currentFilters.addAll(this.additionalFilters);
 		this.fieldFilters = fieldFilters == null ? new HashMap<String, Filter>() : fieldFilters;
 		this.entityModel = entityModel;
@@ -223,7 +222,7 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 	 * @return
 	 */
 	protected Field<?> constructCustomField(EntityModel<T> entityModel,
-			AttributeModel attributeModel) {
+	        AttributeModel attributeModel) {
 		return null;
 	}
 
@@ -260,14 +259,14 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 	 * @return
 	 */
 	protected FilterGroup constructFilterGroup(EntityModel<T> entityModel,
-			AttributeModel attributeModel) {
+	        AttributeModel attributeModel) {
 		Field<?> field = this.constructField(entityModel, attributeModel);
 		if (field != null) {
 			FilterType filterType = FilterType.BETWEEN;
 			if (String.class.isAssignableFrom(attributeModel.getType())) {
 				filterType = FilterType.LIKE;
 			} else if (Boolean.class.isAssignableFrom(attributeModel.getType())
-					|| Boolean.TYPE.isAssignableFrom(attributeModel.getType())) {
+			        || Boolean.TYPE.isAssignableFrom(attributeModel.getType())) {
 				filterType = FilterType.BOOLEAN;
 			} else if (attributeModel.getType().isEnum()) {
 				filterType = FilterType.ENUM;
@@ -294,7 +293,7 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 				comp = layout;
 			}
 			return new FilterGroup(attributeModel, attributeModel.getPath(), filterType, comp,
-					field, auxField);
+			        field, auxField);
 		}
 		return null;
 	}
@@ -355,7 +354,7 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 	private void iterate(Layout form, List<AttributeModel> attributeModels) {
 		for (AttributeModel attributeModel : attributeModels) {
 			if (attributeModel.isSearchable()
-					&& !AttributeType.DETAIL.equals(attributeModel.getAttributeType())) {
+			        && !AttributeType.DETAIL.equals(attributeModel.getAttributeType())) {
 
 				FilterGroup group = constructFilterGroup(entityModel, attributeModel);
 				group.getFilterComponent().setSizeFull();

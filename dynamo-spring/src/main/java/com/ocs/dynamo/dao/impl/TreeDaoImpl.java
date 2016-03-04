@@ -11,17 +11,15 @@ import com.ocs.dynamo.domain.AbstractEntity;
  * Base implementation of a DAO with tree support
  * 
  * @author bas.rutten
- * 
  * @param <ID>
  *            type of the primary key
  * @param <T>
  *            type of the entity
  */
 public abstract class TreeDaoImpl<ID, T extends AbstractEntity<ID>> extends BaseDaoImpl<ID, T>
-		implements TreeDao<ID, T> {
+        implements TreeDao<ID, T> {
 
 	/**
-	 * 
 	 * @return the QueryDSL path to the parent
 	 */
 	protected abstract EntityPathBase<T> getParentPath();

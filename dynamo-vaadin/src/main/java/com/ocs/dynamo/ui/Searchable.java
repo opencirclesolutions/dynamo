@@ -6,7 +6,6 @@ import com.vaadin.data.Container.Filter;
  * An interface for objects that can receive search requests
  * 
  * @author bas.rutten
- * 
  */
 public interface Searchable {
 

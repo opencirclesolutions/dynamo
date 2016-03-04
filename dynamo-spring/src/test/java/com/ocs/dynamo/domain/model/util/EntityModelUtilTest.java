@@ -112,7 +112,7 @@ public class EntityModelUtilTest extends BaseMockitoTest {
 		TestEntity target = new TestEntity();
 
 		EntityModelUtil.copySimpleAttributes(source, target, factory.getModel(TestEntity.class),
-				"name");
+		        "name");
 
 		// name is listed in the ignore list and is not copied
 		Assert.assertNull(target.getName());
@@ -125,19 +125,19 @@ public class EntityModelUtilTest extends BaseMockitoTest {
 
 		// there are no changes
 		List<String> changes = EntityModelUtil.compare(e1, e2, factory.getModel(TestEntity.class),
-				factory, messageService);
+		        factory, messageService);
 		Assert.assertEquals(0, changes.size());
 
 		e1.setAge(12L);
 		changes = EntityModelUtil.compare(e1, e2, factory.getModel(TestEntity.class), factory,
-				messageService);
+		        messageService);
 		Assert.assertEquals(1, changes.size());
 		Assert.assertEquals("ocs.value.changed", changes.get(0));
 
 		e1.setAge(null);
 		e2.setName("Kevin");
 		changes = EntityModelUtil.compare(e1, e2, factory.getModel(TestEntity.class), factory,
-				messageService);
+		        messageService);
 		Assert.assertEquals(1, changes.size());
 		Assert.assertEquals("ocs.value.changed", changes.get(0));
 	}
@@ -151,12 +151,12 @@ public class EntityModelUtilTest extends BaseMockitoTest {
 
 		// name has changed
 		List<String> changes = EntityModelUtil.compare(e1, e2, factory.getModel(TestEntity.class),
-				factory, messageService);
+		        factory, messageService);
 		Assert.assertEquals(1, changes.size());
 
 		// ignore the name change
 		changes = EntityModelUtil.compare(e1, e2, factory.getModel(TestEntity.class), factory,
-				messageService, "name");
+		        messageService, "name");
 		Assert.assertEquals(0, changes.size());
 	}
 
@@ -168,7 +168,7 @@ public class EntityModelUtilTest extends BaseMockitoTest {
 		e1.addTestEntity2(new TestEntity2());
 
 		List<String> changes = EntityModelUtil.compare(e1, e2, factory.getModel(TestEntity.class),
-				factory, messageService);
+		        factory, messageService);
 		Assert.assertEquals(1, changes.size());
 		Assert.assertEquals("ocs.value.removed", changes.get(0));
 	}
@@ -181,7 +181,7 @@ public class EntityModelUtilTest extends BaseMockitoTest {
 		e2.addTestEntity2(new TestEntity2());
 
 		List<String> changes = EntityModelUtil.compare(e1, e2, factory.getModel(TestEntity.class),
-				factory, messageService);
+		        factory, messageService);
 		Assert.assertEquals(1, changes.size());
 		Assert.assertEquals("ocs.value.added", changes.get(0));
 	}

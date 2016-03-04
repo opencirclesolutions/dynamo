@@ -9,7 +9,6 @@ import com.ocs.dynamo.domain.AbstractEntity;
  * Default implementation of a DAO, when default capabilities are sufficient.
  * 
  * @author Patrick Deenen
- *
  */
 @Transactional
 public class DefaultDaoImpl<ID, T extends AbstractEntity<ID>> extends BaseDaoImpl<ID, T> {
