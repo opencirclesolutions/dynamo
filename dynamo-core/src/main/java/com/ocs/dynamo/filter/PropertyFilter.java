@@ -7,10 +7,10 @@ package com.ocs.dynamo.filter;
  */
 public interface PropertyFilter {
 
-	/**
-	 * The name of the property
-	 * 
-	 * @return
-	 */
-	public String getPropertyId();
+    /**
+     * The name of the property
+     * 
+     * @return
+     */
+    String getPropertyId();
 }

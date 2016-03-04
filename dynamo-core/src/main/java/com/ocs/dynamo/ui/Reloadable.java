@@ -7,5 +7,5 @@ package com.ocs.dynamo.ui;
  */
 public interface Reloadable {
 
-	public void reload();
+    void reload();
 }

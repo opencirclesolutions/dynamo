@@ -6,5 +6,5 @@ package com.ocs.dynamo.ui.composite.type;
  * @author bas.rutten
  */
 public enum ScreenMode {
-	HORIZONTAL, VERTICAL;
+    HORIZONTAL, VERTICAL;
 }

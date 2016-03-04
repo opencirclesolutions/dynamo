@@ -6,8 +6,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * An annotation that can be used to indicate that certain attribute should be
- * grouped together on the screen
+ * An annotation that can be used to indicate that certain attribute should be grouped together on
+ * the screen
  * 
  * @author bas.rutten
  */
@@ -15,7 +15,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface AttributeGroup {
 
-	public String displayName();
+    String displayName();
 
-	public String[] attributeNames() default {};
+    String[] attributeNames() default {};
 }

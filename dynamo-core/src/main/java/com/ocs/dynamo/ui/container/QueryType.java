@@ -7,5 +7,5 @@ package com.ocs.dynamo.ui.container;
  */
 public enum QueryType {
 
-	NONE, PAGING, ID_BASED;
+    NONE, PAGING, ID_BASED;
 }

@@ -7,9 +7,9 @@ package com.ocs.dynamo.exception;
  */
 public class OCSSecurityException extends OCSRuntimeException {
 
-	private static final long serialVersionUID = 5973822987694088860L;
+    private static final long serialVersionUID = 5973822987694088860L;
 
-	public OCSSecurityException(String message) {
-		super(message);
-	}
+    public OCSSecurityException(String message) {
+        super(message);
+    }
 }

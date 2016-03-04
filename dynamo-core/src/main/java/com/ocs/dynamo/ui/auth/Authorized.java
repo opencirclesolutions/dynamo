@@ -12,17 +12,17 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface Authorized {
 
-	/**
-	 * The roles that are given access to the view
-	 * 
-	 * @return
-	 */
-	public String[] roles();
+    /**
+     * The roles that are given access to the view
+     * 
+     * @return
+     */
+    String[] roles();
 
-	/**
-	 * Indicates that this screen is for editing purposes only
-	 * 
-	 * @return
-	 */
-	public boolean editOnly() default false;
+    /**
+     * Indicates that this screen is for editing purposes only
+     * 
+     * @return
+     */
+    boolean editOnly() default false;
 }

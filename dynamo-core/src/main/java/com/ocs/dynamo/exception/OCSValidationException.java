@@ -10,31 +10,31 @@ import java.util.List;
  */
 public class OCSValidationException extends OCSRuntimeException {
 
-	private static final long serialVersionUID = 8242893962990806889L;
+    private static final long serialVersionUID = 8242893962990806889L;
 
-	private final List<String> errors;
+    private final List<String> errors;
 
-	/**
-	 * Constructor
-	 * 
-	 * @param error
-	 */
-	public OCSValidationException(String error) {
-		this.errors = new ArrayList<>();
-		this.errors.add(error);
-	}
+    /**
+     * Constructor
+     * 
+     * @param error
+     */
+    public OCSValidationException(String error) {
+        this.errors = new ArrayList<>();
+        this.errors.add(error);
+    }
 
-	/**
-	 * Constructor
-	 * 
-	 * @param errors
-	 */
-	public OCSValidationException(List<String> errors) {
-		this.errors = errors;
-	}
+    /**
+     * Constructor
+     * 
+     * @param errors
+     */
+    public OCSValidationException(List<String> errors) {
+        this.errors = errors;
+    }
 
-	public List<String> getErrors() {
-		return errors;
-	}
+    public List<String> getErrors() {
+        return errors;
+    }
 
 }

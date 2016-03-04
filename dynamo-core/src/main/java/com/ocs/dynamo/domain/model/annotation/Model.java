@@ -14,19 +14,18 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface Model {
 
-	// the display name
-	public String displayName() default "";
+    // the display name
+    String displayName() default "";
 
-	// the display name (plural form)
-	public String displayNamePlural() default "";
+    // the display name (plural form)
+    String displayNamePlural() default "";
 
-	// the description
-	public String description() default "";
+    // the description
+    String description() default "";
 
-	// the property to use when displaying this item in a select component (like a combobox)
-	public String displayProperty() default "";
+    // the property to use when displaying this item in a select component (like a combobox)
+    String displayProperty() default "";
 
-	// the default sort order for this entity
-	public String sortOrder() default "";
-
+    // the default sort order for this entity
+    String sortOrder() default "";
 }

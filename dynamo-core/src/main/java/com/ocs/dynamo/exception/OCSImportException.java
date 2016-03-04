@@ -7,16 +7,16 @@ package com.ocs.dynamo.exception;
  */
 public class OCSImportException extends OCSRuntimeException {
 
-	private static final long serialVersionUID = -8031113801985156724L;
+    private static final long serialVersionUID = -8031113801985156724L;
 
-	public OCSImportException() {
-	}
+    public OCSImportException() {
+    }
 
-	public OCSImportException(String message) {
-		super(message);
-	}
+    public OCSImportException(String message) {
+        super(message);
+    }
 
-	public OCSImportException(String message, Throwable cause) {
-		super(message, cause);
-	}
+    public OCSImportException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

@@ -14,5 +14,5 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface AttributeOrder {
 
-	public String[] attributeNames() default {};
+    String[] attributeNames() default {};
 }

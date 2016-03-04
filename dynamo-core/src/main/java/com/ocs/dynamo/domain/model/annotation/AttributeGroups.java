@@ -6,8 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * An annotation that can be used to place multiple "AttributeGroup" annotation
- * on an entity
+ * An annotation that can be used to place multiple "AttributeGroup" annotation on an entity.
  * 
  * @author bas.rutten
  */
@@ -15,6 +14,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface AttributeGroups {
 
-	public AttributeGroup[] attributeGroups() default {};
+    AttributeGroup[] attributeGroups() default {};
 
 }

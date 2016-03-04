@@ -8,16 +8,16 @@ package com.ocs.dynamo.exception;
  */
 public class OCSNonUniqueException extends RuntimeException {
 
-	private static final long serialVersionUID = -6263372299801009820L;
+    private static final long serialVersionUID = -6263372299801009820L;
 
-	public OCSNonUniqueException() {
-	}
+    public OCSNonUniqueException() {
+    }
 
-	public OCSNonUniqueException(String message) {
-		super(message);
-	}
+    public OCSNonUniqueException(String message) {
+        super(message);
+    }
 
-	public OCSNonUniqueException(String message, Throwable cause) {
-		super(message, cause);
-	}
+    public OCSNonUniqueException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

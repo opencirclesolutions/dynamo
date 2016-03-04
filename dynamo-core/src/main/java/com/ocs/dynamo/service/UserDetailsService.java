@@ -7,25 +7,25 @@ package com.ocs.dynamo.service;
  */
 public interface UserDetailsService {
 
-	/**
-	 * Retrieve the name of the currently logged in user
-	 */
-	public String getCurrentUserName();
+    /**
+     * Retrieve the name of the currently logged in user
+     */
+    String getCurrentUserName();
 
-	/**
-	 * Indicates whether the currently logged in user has a certain role
-	 * 
-	 * @param role
-	 * @return
-	 */
-	public boolean isUserInRole(String role);
+    /**
+     * Indicates whether the currently logged in user has a certain role
+     * 
+     * @param role
+     * @return
+     */
+    boolean isUserInRole(String role);
 
-	/**
-	 * Returns true when the user is in (at least one of) the provided roles
-	 * 
-	 * @param roles
-	 * @return
-	 */
-	public boolean isUserInRole(String... roles);
+    /**
+     * Returns true when the user is in (at least one of) the provided roles
+     * 
+     * @param roles
+     * @return
+     */
+    boolean isUserInRole(String... roles);
 
 }

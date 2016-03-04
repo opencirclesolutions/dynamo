@@ -9,16 +9,16 @@ package com.ocs.dynamo.exception;
  */
 public class OCSRuntimeException extends RuntimeException {
 
-	private static final long serialVersionUID = -6263372299801009820L;
+    private static final long serialVersionUID = -6263372299801009820L;
 
-	public OCSRuntimeException() {
-	}
+    public OCSRuntimeException() {
+    }
 
-	public OCSRuntimeException(String message) {
-		super(message);
-	}
+    public OCSRuntimeException(String message) {
+        super(message);
+    }
 
-	public OCSRuntimeException(String message, Throwable cause) {
-		super(message, cause);
-	}
+    public OCSRuntimeException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

@@ -8,14 +8,14 @@ package com.ocs.dynamo.exception;
  */
 public class OCSCalculationException extends OCSRuntimeException {
 
-	private static final long serialVersionUID = -6208518328383294989L;
+    private static final long serialVersionUID = -6208518328383294989L;
 
-	/**
-	 * Constructor
-	 * 
-	 * @param message
-	 */
-	public OCSCalculationException(String message) {
-		super(message);
-	}
+    /**
+     * Constructor
+     * 
+     * @param message
+     */
+    public OCSCalculationException(String message) {
+        super(message);
+    }
 }
