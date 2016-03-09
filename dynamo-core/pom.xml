@@ -104,14 +104,17 @@
 	</dependencies>
 	<build>
 		<plugins>
+			<!-- Enforce compile version. -->		
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 			</plugin>
+			<!-- Enforce coding Standards and Guidelines. -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-checkstyle-plugin</artifactId>
 			</plugin>
+			<!-- Generate jar for Unit/Integration testing. -->			
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
@@ -123,10 +126,12 @@
 					</execution>
 				</executions>
 			</plugin>
+			<!-- Build Release. -->			
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-release-plugin</artifactId>
 			</plugin>
+			<!-- Code coverage. -->
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>

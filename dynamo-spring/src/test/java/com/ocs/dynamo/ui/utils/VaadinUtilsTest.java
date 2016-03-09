@@ -1,3 +1,16 @@
+/*
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
 package com.ocs.dynamo.ui.utils;
 
 import java.math.BigDecimal;
@@ -28,140 +41,140 @@ import com.vaadin.ui.VerticalLayout;
 
 public class VaadinUtilsTest extends BaseMockitoTest {
 
-	private static final Locale LOCALE = new Locale("nl");
+    private static final Locale LOCALE = new Locale("nl");
 
-	@Mock
-	private MessageService messageService;
+    @Mock
+    private MessageService messageService;
 
-	@Mock
-	private BaseService<Integer, TestEntity> service;
+    @Mock
+    private BaseService<Integer, TestEntity> service;
 
-	@Mock
-	private UI ui;
+    @Mock
+    private UI ui;
 
-	@Mock
-	private Page page;
+    @Mock
+    private Page page;
 
-	@Mock
-	private WebBrowser browser;
+    @Mock
+    private WebBrowser browser;
 
-	@Override
-	public void setUp() throws Exception {
-		super.setUp();
-		Mockito.when(service.getEntityClass()).thenReturn(TestEntity.class);
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
+        Mockito.when(service.getEntityClass()).thenReturn(TestEntity.class);
 
-		Mockito.when(ui.getPage()).thenReturn(page);
-		Mockito.when(page.getWebBrowser()).thenReturn(browser);
-	}
+        Mockito.when(ui.getPage()).thenReturn(page);
+        Mockito.when(page.getWebBrowser()).thenReturn(browser);
+    }
 
-	@Test
-	public void testGetParentOfClass() {
+    @Test
+    public void testGetParentOfClass() {
 
-		VerticalLayout vert = new VerticalLayout();
-		HorizontalLayout hor = new HorizontalLayout();
-		Button button = new Button();
+        VerticalLayout vert = new VerticalLayout();
+        HorizontalLayout hor = new HorizontalLayout();
+        Button button = new Button();
 
-		vert.addComponent(hor);
-		hor.addComponent(button);
+        vert.addComponent(hor);
+        hor.addComponent(button);
 
-		Assert.assertEquals(hor, VaadinUtils.getParentOfClass(button, HorizontalLayout.class));
-		Assert.assertEquals(vert, VaadinUtils.getParentOfClass(button, VerticalLayout.class));
-		Assert.assertNull(VaadinUtils.getParentOfClass(button, Panel.class));
-	}
+        Assert.assertEquals(hor, VaadinUtils.getParentOfClass(button, HorizontalLayout.class));
+        Assert.assertEquals(vert, VaadinUtils.getParentOfClass(button, VerticalLayout.class));
+        Assert.assertNull(VaadinUtils.getParentOfClass(button, Panel.class));
+    }
 
-	@Test
-	public void testBigDecimalToString() {
-		Assert.assertEquals("1.234,56%",
-		        VaadinUtils.bigDecimalToString(true, true, BigDecimal.valueOf(1234.56), LOCALE));
-		Assert.assertEquals("1.234,56",
-		        VaadinUtils.bigDecimalToString(false, true, BigDecimal.valueOf(1234.56), LOCALE));
-		Assert.assertEquals("1234,56",
-		        VaadinUtils.bigDecimalToString(false, false, BigDecimal.valueOf(1234.56), LOCALE));
-		Assert.assertEquals("1,234.56%",
-		        VaadinUtils.bigDecimalToString(true, true, BigDecimal.valueOf(1234.56), Locale.US));
-	}
+    @Test
+    public void testBigDecimalToString() {
+        Assert.assertEquals("1.234,56%",
+                VaadinUtils.bigDecimalToString(true, true, BigDecimal.valueOf(1234.56), LOCALE));
+        Assert.assertEquals("1.234,56",
+                VaadinUtils.bigDecimalToString(false, true, BigDecimal.valueOf(1234.56), LOCALE));
+        Assert.assertEquals("1234,56",
+                VaadinUtils.bigDecimalToString(false, false, BigDecimal.valueOf(1234.56), LOCALE));
+        Assert.assertEquals("1,234.56%",
+                VaadinUtils.bigDecimalToString(true, true, BigDecimal.valueOf(1234.56), Locale.US));
+    }
 
-	@Test
-	public void testIntegerToString() {
-		Assert.assertEquals("123.456", VaadinUtils.integerToString(true, 123456, LOCALE));
-		Assert.assertEquals("123456", VaadinUtils.integerToString(false, 123456, LOCALE));
-		Assert.assertEquals("123,456", VaadinUtils.integerToString(true, 123456, Locale.US));
-	}
+    @Test
+    public void testIntegerToString() {
+        Assert.assertEquals("123.456", VaadinUtils.integerToString(true, 123456, LOCALE));
+        Assert.assertEquals("123456", VaadinUtils.integerToString(false, 123456, LOCALE));
+        Assert.assertEquals("123,456", VaadinUtils.integerToString(true, 123456, Locale.US));
+    }
 
-	@Test
-	public void testLongToString() {
-		Assert.assertEquals("123.456", VaadinUtils.longToString(true, 123456L, LOCALE));
-		Assert.assertEquals("123456", VaadinUtils.longToString(false, 123456L, LOCALE));
-		Assert.assertEquals("123,456", VaadinUtils.longToString(true, 123456L, Locale.US));
-	}
+    @Test
+    public void testLongToString() {
+        Assert.assertEquals("123.456", VaadinUtils.longToString(true, 123456L, LOCALE));
+        Assert.assertEquals("123456", VaadinUtils.longToString(false, 123456L, LOCALE));
+        Assert.assertEquals("123,456", VaadinUtils.longToString(true, 123456L, Locale.US));
+    }
 
-	@Test
-	public void testGetItemFromContainer() {
-		BeanItemContainer<TestEntity> container = new BeanItemContainer<>(TestEntity.class);
+    @Test
+    public void testGetItemFromContainer() {
+        BeanItemContainer<TestEntity> container = new BeanItemContainer<>(TestEntity.class);
 
-		TestEntity t = new TestEntity();
-		t.setId(1);
-		container.addBean(t);
+        TestEntity t = new TestEntity();
+        t.setId(1);
+        container.addBean(t);
 
-		TestEntity t2 = VaadinUtils.getEntityFromContainer(container, t);
-		Assert.assertEquals(t, t2);
-	}
+        TestEntity t2 = VaadinUtils.getEntityFromContainer(container, t);
+        Assert.assertEquals(t, t2);
+    }
 
-	@Test
-	public void testGetItemFromContainer2() {
-		ServiceContainer<Integer, TestEntity> container = new ServiceContainer<>(
-		        new ServiceQueryDefinition<>(service, false, 20, QueryType.ID_BASED, null));
+    @Test
+    public void testGetItemFromContainer2() {
+        ServiceContainer<Integer, TestEntity> container = new ServiceContainer<>(
+                new ServiceQueryDefinition<>(service, false, 20, QueryType.ID_BASED, null));
 
-		Integer i = (Integer) container.addItem();
-		TestEntity t2 = VaadinUtils.getEntityFromContainer(container, i);
-		Assert.assertNotNull(t2);
-	}
+        Integer i = (Integer) container.addItem();
+        TestEntity t2 = VaadinUtils.getEntityFromContainer(container, i);
+        Assert.assertNotNull(t2);
+    }
 
-	@Test
-	public void testGetTimeZone_CET() {
+    @Test
+    public void testGetTimeZone_CET() {
 
-		TimeZone def = TimeZone.getTimeZone("CET");
-		boolean dst = def.inDaylightTime(new Date());
+        TimeZone def = TimeZone.getTimeZone("CET");
+        boolean dst = def.inDaylightTime(new Date());
 
-		Mockito.when(browser.getRawTimezoneOffset()).thenReturn(3_600_000);
-		Mockito.when(browser.isDSTInEffect()).thenReturn(false);
+        Mockito.when(browser.getRawTimezoneOffset()).thenReturn(3_600_000);
+        Mockito.when(browser.isDSTInEffect()).thenReturn(false);
 
-		TimeZone tz = VaadinUtils.getTimeZone(ui);
-		Assert.assertEquals(3_600_000, tz.getRawOffset());
-		Assert.assertEquals(dst, tz.inDaylightTime(new Date()));
-	}
+        TimeZone tz = VaadinUtils.getTimeZone(ui);
+        Assert.assertEquals(3_600_000, tz.getRawOffset());
+        Assert.assertEquals(dst, tz.inDaylightTime(new Date()));
+    }
 
-	@Test
-	public void testGetTimeZone_Eastern() {
+    @Test
+    public void testGetTimeZone_Eastern() {
 
-		Mockito.when(browser.getRawTimezoneOffset()).thenReturn(7_200_000);
-		Mockito.when(browser.isDSTInEffect()).thenReturn(false);
+        Mockito.when(browser.getRawTimezoneOffset()).thenReturn(7_200_000);
+        Mockito.when(browser.isDSTInEffect()).thenReturn(false);
 
-		TimeZone tz = VaadinUtils.getTimeZone(ui);
+        TimeZone tz = VaadinUtils.getTimeZone(ui);
 
-		Assert.assertEquals(7_200_000, tz.getRawOffset());
-		Assert.assertEquals(false, tz.inDaylightTime(new Date()));
-	}
+        Assert.assertEquals(7_200_000, tz.getRawOffset());
+        Assert.assertEquals(false, tz.inDaylightTime(new Date()));
+    }
 
-	@Test
-	public void testStringToInteger() {
-		Assert.assertEquals(1234, VaadinUtils.stringToInteger(false, "1234", LOCALE).intValue());
-		Assert.assertEquals(1234, VaadinUtils.stringToInteger(true, "1.234", LOCALE).intValue());
-	}
+    @Test
+    public void testStringToInteger() {
+        Assert.assertEquals(1234, VaadinUtils.stringToInteger(false, "1234", LOCALE).intValue());
+        Assert.assertEquals(1234, VaadinUtils.stringToInteger(true, "1.234", LOCALE).intValue());
+    }
 
-	@Test
-	public void testStringToBigDecimal() {
-		Assert.assertEquals(1234,
-		        VaadinUtils.stringToBigDecimal(false, false, "1234", LOCALE).intValue());
-		Assert.assertEquals(1234,
-		        VaadinUtils.stringToBigDecimal(false, true, "1.234", LOCALE).intValue());
-		Assert.assertEquals(1234,
-		        VaadinUtils.stringToBigDecimal(true, true, "1.234%", LOCALE).intValue());
-	}
+    @Test
+    public void testStringToBigDecimal() {
+        Assert.assertEquals(1234,
+                VaadinUtils.stringToBigDecimal(false, false, "1234", LOCALE).intValue());
+        Assert.assertEquals(1234,
+                VaadinUtils.stringToBigDecimal(false, true, "1.234", LOCALE).intValue());
+        Assert.assertEquals(1234,
+                VaadinUtils.stringToBigDecimal(true, true, "1.234%", LOCALE).intValue());
+    }
 
-	@Test
-	public void testStringToLong() {
-		Assert.assertEquals(1234L, VaadinUtils.stringToLong(false, "1234", LOCALE).longValue());
-		Assert.assertEquals(1234L, VaadinUtils.stringToLong(true, "1.234", LOCALE).longValue());
-	}
+    @Test
+    public void testStringToLong() {
+        Assert.assertEquals(1234L, VaadinUtils.stringToLong(false, "1234", LOCALE).longValue());
+        Assert.assertEquals(1234L, VaadinUtils.stringToLong(true, "1.234", LOCALE).longValue());
+    }
 }

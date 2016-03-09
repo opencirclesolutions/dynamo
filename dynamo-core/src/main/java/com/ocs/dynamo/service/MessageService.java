@@ -1,3 +1,16 @@
+/*
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
 package com.ocs.dynamo.service;
 
 import java.util.Locale;
@@ -5,9 +18,8 @@ import java.util.Locale;
 import com.ocs.dynamo.domain.model.AttributeModel;
 
 /**
- * A service for convenient access to message bundles - catches any exceptions
- * related to missing messages and returns either NULL or a warning when no
- * message can be found
+ * A service for convenient access to message bundles - catches any exceptions related to missing
+ * messages and returns either NULL or a warning when no message can be found
  * 
  * @author bas.rutten
  */
@@ -39,8 +51,7 @@ public interface MessageService {
     String getEntityMessage(String reference, String propertyName);
 
     /**
-     * Retrieves a message that is used as the human-readable definition of an
-     * enum
+     * Retrieves a message that is used as the human-readable definition of an enum
      * 
      * @param enumClass
      *            the class of the enum
@@ -51,8 +62,7 @@ public interface MessageService {
     <E extends Enum<?>> String getEnumMessage(Class<E> enumClass, E value);
 
     /**
-     * Retrieves a simple message - returns a warning if no such message can be
-     * found
+     * Retrieves a simple message - returns a warning if no such message can be found
      * 
      * @param key
      *            the key of the message
@@ -61,8 +71,7 @@ public interface MessageService {
     String getMessage(String key);
 
     /**
-     * Retrieves a simple parameterized message - returns a warning if no such
-     * message can be found
+     * Retrieves a simple parameterized message - returns a warning if no such message can be found
      * 
      * @param key
      *            the key of the message
@@ -73,8 +82,7 @@ public interface MessageService {
     String getMessage(String key, Object... args);
 
     /**
-     * Retrieves a simple parameterized message - returns a warning if no such
-     * message can be found
+     * Retrieves a simple parameterized message - returns a warning if no such message can be found
      * 
      * @param key
      *            the key of the message
@@ -87,31 +95,28 @@ public interface MessageService {
     String getMessage(String key, Locale locale, Object... args);
 
     /**
-     * Retrieves a message - does NOT fall back to a default version if the
-     * message is not found.
+     * Retrieves a message - does NOT fall back to a default version if the message is not found.
      * 
      * @param key
      *            the key of the message
-     * @return the message specified by the key, or <code>null</code> if no such
-     *         message can be found
+     * @return the message specified by the key, or <code>null</code> if no such message can be
+     *         found
      */
     String getMessageNoDefault(String key);
 
     /**
-     * Retrieves a message - does NOT fall back to a default version if the
-     * message is not found.
+     * Retrieves a message - does NOT fall back to a default version if the message is not found.
      * 
      * @param key
      *            the key of the message
      * @param args
-     * @return the message specified by the key, or <code>null</code> if no such
-     *         message can be found
+     * @return the message specified by the key, or <code>null</code> if no such message can be
+     *         found
      */
     String getMessageNoDefault(String key, Object... args);
 
     /**
-     * Retrieves a message - does NOT fall back to a default version if the
-     * message is not found.
+     * Retrieves a message - does NOT fall back to a default version if the message is not found.
      * 
      * @param key
      *            the key of the message

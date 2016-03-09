@@ -1,3 +1,16 @@
+/*
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
 package com.ocs.dynamo.ui.composite.form;
 
 import java.io.Serializable;
@@ -6,9 +19,8 @@ import com.ocs.dynamo.ui.composite.type.AttributeGroupMode;
 import com.ocs.dynamo.ui.composite.type.ScreenMode;
 
 /**
- * Parameter object that can be passed along when creating a page - this object
- * uses smart defaults so that in most cases, you do not have to set the
- * properties individually
+ * Parameter object that can be passed along when creating a page - this object uses smart defaults
+ * so that in most cases, you do not have to set the properties individually
  * 
  * @author bas.rutten
  */
@@ -17,10 +29,9 @@ public class FormOptions implements Serializable {
     private static final long serialVersionUID = 7383335254540591298L;
 
     /**
-     * How to display the various attribute groups. The default is PANEL
-     * (related fields are shown in a panel, the panels are placed below each
-     * other), but it can be changed to TABSHEET (related attributes are placed
-     * on separate tabs)
+     * How to display the various attribute groups. The default is PANEL (related fields are shown
+     * in a panel, the panels are placed below each other), but it can be changed to TABSHEET
+     * (related attributes are placed on separate tabs)
      */
     private AttributeGroupMode attributeGroupMode = AttributeGroupMode.PANEL;
 
@@ -35,10 +46,9 @@ public class FormOptions implements Serializable {
     private boolean hideCancelButton;
 
     /**
-     * The orientation of the screen (horizontal or vertical). This is relevant
-     * for the split layout. In the HORIZONTAL view the table and form are
-     * displayed next to each other, in the VERTICAL view they are below each
-     * other
+     * The orientation of the screen (horizontal or vertical). This is relevant for the split
+     * layout. In the HORIZONTAL view the table and form are displayed next to each other, in the
+     * VERTICAL view they are below each other
      */
     private ScreenMode screenMode = ScreenMode.HORIZONTAL;
 
@@ -83,9 +93,8 @@ public class FormOptions implements Serializable {
     private boolean showBackButton;
 
     /**
-     * Whether to display the screen in complete read-only mode. Settings
-     * readOnly to true will automatically adapt all other necessray settings
-     * (e.g. it will set "openInViewMode" to true)
+     * Whether to display the screen in complete read-only mode. Settings readOnly to true will
+     * automatically adapt all other necessray settings (e.g. it will set "openInViewMode" to true)
      */
     private boolean readOnly;
 
@@ -184,8 +193,8 @@ public class FormOptions implements Serializable {
     }
 
     /**
-     * Sets the screen to strict read-only modus. Will hide any add buttons and
-     * set the screen to read only
+     * Sets the screen to strict read-only modus. Will hide any add buttons and set the screen to
+     * read only
      * 
      * @param readOnly
      */

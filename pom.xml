@@ -408,6 +408,8 @@
 								<consoleOutput>true</consoleOutput>
 								<failsOnError>true</failsOnError>
 								<linkXRef>false</linkXRef>
+								<includeResources>false</includeResources>
+								<includeTestResources>false</includeTestResources>
 							</configuration>
 							<goals>
 								<goal>check</goal>
