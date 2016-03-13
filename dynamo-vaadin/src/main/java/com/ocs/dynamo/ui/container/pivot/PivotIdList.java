@@ -13,11 +13,13 @@
  */
 package com.ocs.dynamo.ui.container.pivot;
 
+import java.io.Serializable;
 import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
@@ -25,7 +27,12 @@ import com.vaadin.data.Item;
 /**
  * @author Patrick Deenen
  */
-public class PivotIdList extends AbstractList<Integer> {
+public class PivotIdList extends AbstractList<Integer> implements Serializable {
+
+    /**
+     * Default Serial Version ID.
+     */
+    private static final long serialVersionUID = 1L;
 
     private Map<Integer, Integer> cachedIds = new HashMap<Integer, Integer>();
 
@@ -98,9 +105,9 @@ public class PivotIdList extends AbstractList<Integer> {
             throw new AssertionError("Id is mandatory");
         }
         // Search in cache
-        for (Integer index : cachedIds.keySet()) {
-            if (id.equals(cachedIds.get(index))) {
-                return index;
+        for (Entry<Integer, Integer> entry : cachedIds.entrySet()) {
+            if (id.equals(entry.getValue())) {
+                return entry.getKey();
             }
         }
         return -1;

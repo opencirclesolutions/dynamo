@@ -455,9 +455,13 @@ public class TableExportActionHandler implements Handler {
                 LOG.error(e.getMessage(), e);
                 return false;
             } finally {
-                tempFile.deleteOnExit();
+                if (tempFile != null) {
+                    tempFile.deleteOnExit();
+                }
                 try {
-                    fileOut.close();
+                    if (fileOut != null) {
+                        fileOut.close();
+                    }
                 } catch (final IOException e) {
                     LOG.error(e.getMessage(), e);
                 }

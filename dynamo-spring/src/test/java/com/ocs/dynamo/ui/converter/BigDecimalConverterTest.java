@@ -29,11 +29,11 @@ public class BigDecimalConverterTest {
     public void testConvertToModel() {
         BigDecimalConverter converter = new BigDecimalConverter(2, false);
         BigDecimal result = converter.convertToModel("3,14", BigDecimal.class, new Locale("nl"));
-        Assert.assertEquals(new BigDecimal(3.14).setScale(2, RoundingMode.HALF_EVEN), result);
+        Assert.assertEquals(BigDecimal.valueOf(3.14).setScale(2, RoundingMode.HALF_EVEN), result);
 
         converter = new BigDecimalConverter(2, false);
         result = converter.convertToModel("3.142", BigDecimal.class, Locale.US);
-        Assert.assertEquals(new BigDecimal(3.14).setScale(2, RoundingMode.HALF_EVEN), result);
+        Assert.assertEquals(BigDecimal.valueOf(3.14).setScale(2, RoundingMode.HALF_EVEN), result);
 
         converter = new BigDecimalConverter(3, false);
         result = converter.convertToModel("3.142", BigDecimal.class, Locale.US);
@@ -51,20 +51,20 @@ public class BigDecimalConverterTest {
     @Test
     public void testConvertToPresentation() {
         BigDecimalConverter converter = new BigDecimalConverter(2, false);
-        String result = converter.convertToPresentation(new BigDecimal(3.14), String.class,
+        String result = converter.convertToPresentation(BigDecimal.valueOf(3.14), String.class,
                 new Locale("nl"));
         Assert.assertEquals("3,14", result);
 
         converter = new BigDecimalConverter(2, false);
-        result = converter.convertToPresentation(new BigDecimal(3.14), String.class, Locale.US);
+        result = converter.convertToPresentation(BigDecimal.valueOf(3.14), String.class, Locale.US);
         Assert.assertEquals("3.14", result);
 
         converter = new BigDecimalConverter(0, false);
-        result = converter.convertToPresentation(new BigDecimal(3.14), String.class, Locale.US);
+        result = converter.convertToPresentation(BigDecimal.valueOf(3.14), String.class, Locale.US);
         Assert.assertEquals("3", result);
 
         converter = new BigDecimalConverter(3, false);
-        result = converter.convertToPresentation(new BigDecimal(3.14), String.class, Locale.US);
+        result = converter.convertToPresentation(BigDecimal.valueOf(3.14), String.class, Locale.US);
         Assert.assertEquals("3.140", result);
     }
 

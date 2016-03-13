@@ -30,7 +30,7 @@ import com.vaadin.shared.ui.combobox.FilteringMode;
  * Combo box for displaying a list of entities
  */
 public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID>>
-        extends ComboBox {
+        extends ComboBoxFixed {
 
     private static final long serialVersionUID = 3041574615271340579L;
 

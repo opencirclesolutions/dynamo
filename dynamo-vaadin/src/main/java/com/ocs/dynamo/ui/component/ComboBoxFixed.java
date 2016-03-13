@@ -20,7 +20,7 @@ import java.util.List;
  * 
  * @author Patrick Deenen (patrick.deenen@opencirclesolutions.nl)
  */
-public class ComboBox extends com.vaadin.ui.ComboBox {
+public class ComboBoxFixed extends com.vaadin.ui.ComboBox {
 
     private static final long serialVersionUID = -4596900792135738280L;
 

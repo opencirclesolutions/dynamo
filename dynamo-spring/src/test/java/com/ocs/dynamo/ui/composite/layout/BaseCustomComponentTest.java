@@ -53,7 +53,7 @@ public class BaseCustomComponentTest extends BaseMockitoTest {
     private MessageService messageService;
 
     @Before
-    public void setup() throws NoSuchFieldException {
+    public void setupBaseCustomComponentTest() throws NoSuchFieldException {
         MockitoSpringUtil.mockMessageService(messageService);
         PrivateAccessor.setField(component, "messageService", messageService);
         PrivateAccessor.setField(factory, "defaultPrecision", 2);

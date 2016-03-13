@@ -50,7 +50,7 @@ public class TableUtilsTest extends BaseMockitoTest {
     private MessageService messageService;
 
     @Before
-    public void setup() throws NoSuchFieldException {
+    public void setupTableUtilsTest() throws NoSuchFieldException {
 
         MockitoSpringUtil.mockMessageService(messageService);
         PrivateAccessor.setField(factory, "messageService", messageService);

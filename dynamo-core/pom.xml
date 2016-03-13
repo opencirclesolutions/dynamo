@@ -114,6 +114,11 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-checkstyle-plugin</artifactId>
 			</plugin>
+			<!-- Check for bugs. -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>findbugs-maven-plugin</artifactId>
+			</plugin>
 			<!-- Generate jar for Unit/Integration testing. -->			
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

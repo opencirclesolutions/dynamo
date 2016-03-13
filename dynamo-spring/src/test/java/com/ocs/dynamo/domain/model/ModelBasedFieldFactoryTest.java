@@ -180,7 +180,7 @@ public class ModelBasedFieldFactoryTest extends BaseMockitoTest {
         Assert.assertEquals(new BigDecimal("3.43"), dec);
 
         Assert.assertEquals("3,14%",
-                tf.getConverter().convertToPresentation(new BigDecimal(3.14), null, null));
+                tf.getConverter().convertToPresentation(BigDecimal.valueOf(3.14), null, null));
     }
 
     /**

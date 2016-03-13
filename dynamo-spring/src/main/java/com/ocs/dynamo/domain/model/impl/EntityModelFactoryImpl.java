@@ -646,7 +646,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
             model = (EntityModel<T>) cache.get(reference);
             if (model == null) {
                 model = constructModel(reference, entityClass);
-                cache.putIfAbsent(reference, model);
+                EntityModel<?> oldModel = cache.putIfAbsent(reference, model);
             }
         }
         return model;
@@ -1065,8 +1065,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 
     private boolean isVisible(String msg) {
         try {
-            VisibilityType.valueOf(msg);
-            return VisibilityType.SHOW.equals(msg);
+            VisibilityType other = VisibilityType.valueOf(msg);
+            return VisibilityType.SHOW.equals(other);
         } catch (IllegalArgumentException ex) {
             // do nothing
         }

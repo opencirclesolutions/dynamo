@@ -265,7 +265,7 @@ public class HierarchicalContainer
 
         @Override
         public String toString() {
-            return itemId == null ? null : itemId.toString();
+            return itemId == null ? "" : itemId.toString();
         }
     }
 

@@ -70,7 +70,7 @@ public class BaseServiceImplTest extends BaseMockitoTest {
     private TestService service = new TestService();
 
     @Before
-    public void setup() throws NoSuchFieldException {
+    public void setupBaseServiceImplTest() throws NoSuchFieldException {
 
         Mockito.when(dao.getEntityClass()).thenReturn(TestEntity.class);
         addBeanToContext(validatorFactory);

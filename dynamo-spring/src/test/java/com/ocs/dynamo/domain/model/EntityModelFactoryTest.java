@@ -62,7 +62,7 @@ public class EntityModelFactoryTest extends BaseMockitoTest {
     private MessageService messageService = new MessageServiceImpl();
 
     @Before
-    public void setup() throws NoSuchFieldException {
+    public void setupEntityModelFactoryTest() throws NoSuchFieldException {
 
         wireTestSubject(factory);
 
