@@ -1,3 +1,16 @@
+/*
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
 package com.ocs.dynamo.ui.composite.layout;
 
 import java.io.Serializable;
@@ -19,139 +32,138 @@ import com.vaadin.ui.VerticalLayout;
  * A layout that contains a tab sheet with tabs that are lazily loaded
  * 
  * @author bas.rutten
- * 
  * @param <ID>
  *            type of the primary key
  * @param <T>
  *            type of the entity
  */
 @SuppressWarnings("serial")
-public abstract class LazyTabLayout<ID extends Serializable, T extends AbstractEntity<ID>> extends
-		BaseCustomComponent {
+public abstract class LazyTabLayout<ID extends Serializable, T extends AbstractEntity<ID>>
+        extends BaseCustomComponent {
 
-	private static final long serialVersionUID = 3788799136302802727L;
+    private static final long serialVersionUID = 3788799136302802727L;
 
-	// the entity whose details are being shown
-	private T entity;
+    // the entity whose details are being shown
+    private T entity;
 
-	private Set<String> replacedTabs = new HashSet<>();
+    private Set<String> replacedTabs = new HashSet<>();
 
-	private TabSheet tabs;
+    private TabSheet tabs;
 
-	/**
-	 * Constructor
-	 * 
-	 * @param entity
-	 */
-	public LazyTabLayout(T entity) {
-		this.entity = entity;
-	}
+    /**
+     * Constructor
+     * 
+     * @param entity
+     */
+    public LazyTabLayout(T entity) {
+        this.entity = entity;
+    }
 
-	@Override
-	public void attach() {
-		super.attach();
-		build();
-	}
+    @Override
+    public void attach() {
+        super.attach();
+        build();
+    }
 
-	@Override
-	public void build() {
-		Panel panel = new Panel();
-		panel.setCaptionAsHtml(true);
-		panel.setCaption(createTitle());
+    @Override
+    public void build() {
+        Panel panel = new Panel();
+        panel.setCaptionAsHtml(true);
+        panel.setCaption(createTitle());
 
-		VerticalLayout main = new DefaultVerticalLayout(true, true);
-		panel.setContent(main);
+        VerticalLayout main = new DefaultVerticalLayout(true, true);
+        panel.setContent(main);
 
-		tabs = new TabSheet();
-		tabs.setSizeFull();
+        tabs = new TabSheet();
+        tabs.setSizeFull();
 
-		main.addComponent(tabs);
-		setupLazySheet(tabs);
-		setCompositionRoot(panel);
-	}
+        main.addComponent(tabs);
+        setupLazySheet(tabs);
+        setCompositionRoot(panel);
+    }
 
-	/**
-	 * Returns the captions of the tabs
-	 * 
-	 * @return
-	 */
-	protected abstract String[] getTabCaptions();
+    /**
+     * Returns the captions of the tabs
+     * 
+     * @return
+     */
+    protected abstract String[] getTabCaptions();
 
-	/**
-	 * Lazily creates a certain tab
-	 * 
-	 * @param index
-	 *            the index of the tab to create
-	 * @return
-	 */
-	protected abstract Component initTab(int index);
+    /**
+     * Lazily creates a certain tab
+     * 
+     * @param index
+     *            the index of the tab to create
+     * @return
+     */
+    protected abstract Component initTab(int index);
 
-	private void setupLazySheet(final TabSheet tabs) {
+    private void setupLazySheet(final TabSheet tabs) {
 
-		// build up placeholder tabs that only contain an empty layout
-		for (String caption : getTabCaptions()) {
-			tabs.addTab(new DefaultVerticalLayout(false, false), caption);
-		}
+        // build up placeholder tabs that only contain an empty layout
+        for (String caption : getTabCaptions()) {
+            tabs.addTab(new DefaultVerticalLayout(false, false), caption);
+        }
 
-		// load the first tab
-		((Layout) tabs.getTab(0).getComponent()).addComponent(initTab(0));
-		replacedTabs.add(tabs.getTab(0).getCaption());
+        // load the first tab
+        ((Layout) tabs.getTab(0).getComponent()).addComponent(initTab(0));
+        replacedTabs.add(tabs.getTab(0).getCaption());
 
-		// respond to a tab change by actually loading the sheet
-		tabs.addSelectedTabChangeListener(new TabSheet.SelectedTabChangeListener() {
+        // respond to a tab change by actually loading the sheet
+        tabs.addSelectedTabChangeListener(new TabSheet.SelectedTabChangeListener() {
 
-			@Override
-			public void selectedTabChange(SelectedTabChangeEvent event) {
-				Component selectedTab = event.getTabSheet().getSelectedTab();
-				Tab tab = event.getTabSheet().getTab(selectedTab);
+            @Override
+            public void selectedTabChange(SelectedTabChangeEvent event) {
+                Component selectedTab = event.getTabSheet().getSelectedTab();
+                Tab tab = event.getTabSheet().getTab(selectedTab);
 
-				// lazily load a tab
-				if (!replacedTabs.contains(tab.getCaption())) {
-					replacedTabs.add(tab.getCaption());
+                // lazily load a tab
+                if (!replacedTabs.contains(tab.getCaption())) {
+                    replacedTabs.add(tab.getCaption());
 
-					// look up the tab in the copies
-					int index = 0;
-					for (int i = 0; i < tabs.getComponentCount(); i++) {
-						Tab t = tabs.getTab(i);
-						if (t.getCaption().equals(tab.getCaption())) {
-							index = i;
-							break;
-						}
-					}
+                    // look up the tab in the copies
+                    int index = 0;
+                    for (int i = 0; i < tabs.getComponentCount(); i++) {
+                        Tab t = tabs.getTab(i);
+                        if (t.getCaption().equals(tab.getCaption())) {
+                            index = i;
+                            break;
+                        }
+                    }
 
-					// paste the real tab into the placeholder
-					Component realTab = initTab(index);
-					((Layout) selectedTab).addComponent(realTab);
+                    // paste the real tab into the placeholder
+                    Component realTab = initTab(index);
+                    ((Layout) selectedTab).addComponent(realTab);
 
-				} else {
-					// reload the tab if needed
-					Layout layout = (Layout) selectedTab;
-					Component next = layout.iterator().next();
-					if (next instanceof Reloadable) {
-						((Reloadable) next).reload();
-					}
-				}
+                } else {
+                    // reload the tab if needed
+                    Layout layout = (Layout) selectedTab;
+                    Component next = layout.iterator().next();
+                    if (next instanceof Reloadable) {
+                        ((Reloadable) next).reload();
+                    }
+                }
 
-			}
-		});
-	}
+            }
+        });
+    }
 
-	/**
-	 * Constructs the title of the page
-	 * 
-	 * @return
-	 */
-	protected abstract String createTitle();
+    /**
+     * Constructs the title of the page
+     * 
+     * @return
+     */
+    protected abstract String createTitle();
 
-	public T getEntity() {
-		return entity;
-	}
+    public T getEntity() {
+        return entity;
+    }
 
-	public void setEntity(T entity) {
-		this.entity = entity;
-	}
+    public void setEntity(T entity) {
+        this.entity = entity;
+    }
 
-	public void selectTab(int index) {
-		tabs.setSelectedTab(index);
-	}
+    public void selectTab(int index) {
+        tabs.setSelectedTab(index);
+    }
 }

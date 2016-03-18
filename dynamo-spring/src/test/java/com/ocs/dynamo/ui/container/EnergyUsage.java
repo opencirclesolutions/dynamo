@@ -1,45 +1,58 @@
+/*
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
 package com.ocs.dynamo.ui.container;
 
 public class EnergyUsage {
-	
-	private String ean;
 
-	private Integer week;
-	
-	private Integer usage;
+    private String ean;
 
-	public EnergyUsage(String ean, Integer week, Integer usage) {
-		this.ean = ean;
-		this.week = week;
-		this.usage = usage;
-	}
+    private Integer week;
 
-	public String getEan() {
-		return ean;
-	}
+    private Integer usage;
 
-	public void setEan(String ean) {
-		this.ean = ean;
-	}
+    public EnergyUsage(String ean, Integer week, Integer usage) {
+        this.ean = ean;
+        this.week = week;
+        this.usage = usage;
+    }
 
-	public Integer getWeek() {
-		return week;
-	}
+    public String getEan() {
+        return ean;
+    }
 
-	public void setWeek(Integer week) {
-		this.week = week;
-	}
+    public void setEan(String ean) {
+        this.ean = ean;
+    }
 
-	public Integer getUsage() {
-		return usage;
-	}
+    public Integer getWeek() {
+        return week;
+    }
 
-	public void setUsage(Integer usage) {
-		this.usage = usage;
-	}
+    public void setWeek(Integer week) {
+        this.week = week;
+    }
 
-	public String getId() {
-		return ean + "_" + week;
-	}
+    public Integer getUsage() {
+        return usage;
+    }
+
+    public void setUsage(Integer usage) {
+        this.usage = usage;
+    }
+
+    public String getId() {
+        return ean + "_" + week;
+    }
 
 }

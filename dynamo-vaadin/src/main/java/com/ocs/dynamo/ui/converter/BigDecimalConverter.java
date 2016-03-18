@@ -1,3 +1,16 @@
+/*
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
 package com.ocs.dynamo.ui.converter;
 
 import java.math.BigDecimal;
@@ -15,91 +28,90 @@ import com.vaadin.server.VaadinSession;
  * A converter for converting between Strings and BigDecimals
  * 
  * @author bas.rutten
- * 
  */
 public class BigDecimalConverter extends StringToBigDecimalConverter {
 
-	private static final long serialVersionUID = -6491010958762673241L;
+    private static final long serialVersionUID = -6491010958762673241L;
 
-	private DecimalFormat decimalFormat;
+    private DecimalFormat decimalFormat;
 
-	private String pattern;
+    private String pattern;
 
-	private boolean useGrouping;
+    private boolean useGrouping;
 
-	private int precision;
+    private int precision;
 
-	/**
-	 * Constructor - for use with a pattern
-	 * 
-	 * @param pattern
-	 *            will be applied to the decimalFormat of this converter.
-	 */
-	public BigDecimalConverter(final String pattern) {
-		this.pattern = pattern;
-	}
+    /**
+     * Constructor - for use with a pattern
+     * 
+     * @param pattern
+     *            will be applied to the decimalFormat of this converter.
+     */
+    public BigDecimalConverter(final String pattern) {
+        this.pattern = pattern;
+    }
 
-	/**
-	 * Constructor - for use with a precision and grouping setting
-	 */
-	public BigDecimalConverter(int precision, boolean useGrouping) {
-		this.precision = precision;
-		this.useGrouping = useGrouping;
-	}
+    /**
+     * Constructor - for use with a precision and grouping setting
+     */
+    public BigDecimalConverter(int precision, boolean useGrouping) {
+        this.precision = precision;
+        this.useGrouping = useGrouping;
+    }
 
-	@Override
-	public BigDecimal convertToModel(String value, Class<? extends BigDecimal> targetType,
-			Locale locale) {
-		// the original Vaadin code curiously returns a Double here and casts
-		// that to a BigDecimal.
-		// That is not correct, so we use this additional step here
-		Number number = convertToNumber(value, BigDecimal.class, locale);
-		return number == null ? null : BigDecimal.valueOf(number.doubleValue()).setScale(precision,
-				RoundingMode.HALF_UP);
-	}
+    @Override
+    public BigDecimal convertToModel(String value, Class<? extends BigDecimal> targetType,
+            Locale locale) {
+        // the original Vaadin code curiously returns a Double here and casts
+        // that to a BigDecimal.
+        // That is not correct, so we use this additional step here
+        Number number = convertToNumber(value, BigDecimal.class, locale);
+        return number == null ? null
+                : BigDecimal.valueOf(number.doubleValue()).setScale(precision,
+                        RoundingMode.HALF_UP);
+    }
 
-	@Override
-	protected NumberFormat getFormat(Locale locale) {
-		return getDecimalFormat(locale);
-	}
+    @Override
+    protected NumberFormat getFormat(Locale locale) {
+        return getDecimalFormat(locale);
+    }
 
-	public DecimalFormat getDecimalFormat() {
-		return getDecimalFormat(Locale.getDefault());
-	}
+    public DecimalFormat getDecimalFormat() {
+        return getDecimalFormat(Locale.getDefault());
+    }
 
-	/**
-	 * 
-	 * @param locale
-	 * @return
-	 */
-	public DecimalFormat getDecimalFormat(Locale locale) {
+    /**
+     * @param locale
+     * @return
+     */
+    public DecimalFormat getDecimalFormat(Locale locale) {
 
-		if (locale == null) {
-			if (VaadinSession.getCurrent() != null) {
-				locale = VaadinSession.getCurrent().getLocale();
-			} else {
-				locale = Locale.getDefault();
-			}
-		}
-		decimalFormat = constructFormat(locale);
+        if (locale == null) {
+            if (VaadinSession.getCurrent() != null) {
+                locale = VaadinSession.getCurrent().getLocale();
+            } else {
+                locale = Locale.getDefault();
+            }
+        }
+        decimalFormat = constructFormat(locale);
 
-		if (!StringUtils.isEmpty(pattern)) {
-			decimalFormat.applyPattern(pattern);
-		} else {
-			decimalFormat.setGroupingUsed(useGrouping);
-			decimalFormat.setMaximumFractionDigits(precision);
-			decimalFormat.setMinimumFractionDigits(precision);
-		}
-		return decimalFormat;
-	}
+        if (!StringUtils.isEmpty(pattern)) {
+            decimalFormat.applyPattern(pattern);
+        } else {
+            decimalFormat.setGroupingUsed(useGrouping);
+            decimalFormat.setMaximumFractionDigits(precision);
+            decimalFormat.setMinimumFractionDigits(precision);
+        }
+        return decimalFormat;
+    }
 
-	/**
-	 * Constructs the number format - overwrite in subclasses if needed
-	 * 
-	 * @param locale
-	 * @return
-	 */
-	protected DecimalFormat constructFormat(Locale locale) {
-		return (DecimalFormat) DecimalFormat.getInstance(locale);
-	}
+    /**
+     * Constructs the number format - overwrite in subclasses if needed
+     * 
+     * @param locale
+     * @return
+     */
+    protected DecimalFormat constructFormat(Locale locale) {
+        return (DecimalFormat) DecimalFormat.getInstance(locale);
+    }
 }

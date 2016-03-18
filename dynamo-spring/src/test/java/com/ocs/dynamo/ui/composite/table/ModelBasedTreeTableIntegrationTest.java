@@ -1,3 +1,16 @@
+/*
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
 package com.ocs.dynamo.ui.composite.table;
 
 import java.util.ArrayList;
@@ -27,95 +40,95 @@ import com.vaadin.shared.data.sort.SortDirection;
 
 public class ModelBasedTreeTableIntegrationTest extends BaseIntegrationTest {
 
-	@Inject
-	private TestEntityService testEntityService;
+    @Inject
+    private TestEntityService testEntityService;
 
-	@Inject
-	private TestEntity2Service testEntity2Service;
+    @Inject
+    private TestEntity2Service testEntity2Service;
 
-	@Inject
-	private EntityModelFactory entityModelFactory;
+    @Inject
+    private EntityModelFactory entityModelFactory;
 
-	@Inject
-	private MessageService messageService;
+    @Inject
+    private MessageService messageService;
 
-	private TestEntity entity;
+    private TestEntity entity;
 
-	@Before
-	public void setup() {
-		entity = new TestEntity("Bob", 45L);
+    @Before
+    public void setup() {
+        entity = new TestEntity("Bob", 45L);
 
-		TestEntity2 child1 = new TestEntity2();
-		TestEntity2 child2 = new TestEntity2();
-		entity.addTestEntity2(child1);
-		entity.addTestEntity2(child2);
-		entity = testEntityService.save(entity);
-	}
+        TestEntity2 child1 = new TestEntity2();
+        TestEntity2 child2 = new TestEntity2();
+        entity.addTestEntity2(child1);
+        entity.addTestEntity2(child2);
+        entity = testEntityService.save(entity);
+    }
 
-	@Test
-	public void testCreateModelBasedHierarchicalContainer() {
-		EntityModel<TestEntity> model = entityModelFactory.getModel(TestEntity.class);
-		List<BaseService<?, ?>> services = new ArrayList<>();
+    @Test
+    public void testCreateModelBasedHierarchicalContainer() {
+        EntityModel<TestEntity> model = entityModelFactory.getModel(TestEntity.class);
+        List<BaseService<?, ?>> services = new ArrayList<>();
 
-		services.add(testEntityService);
-		services.add(testEntity2Service);
+        services.add(testEntityService);
+        services.add(testEntity2Service);
 
-		ModelBasedHierarchicalContainer<TestEntity> container = new ModelBasedHierarchicalContainer<TestEntity>(
-				messageService, model, services, null);
+        ModelBasedHierarchicalContainer<TestEntity> container = new ModelBasedHierarchicalContainer<TestEntity>(
+                messageService, model, services, null);
 
-		ModelBasedTreeTable<Integer, TestEntity> table = new ModelBasedTreeTable<Integer, TestEntity>(
-				container, entityModelFactory);
+        ModelBasedTreeTable<Integer, TestEntity> table = new ModelBasedTreeTable<Integer, TestEntity>(
+                container, entityModelFactory);
 
-		Assert.assertEquals(1, table.getContainerDataSource().size());
+        Assert.assertEquals(1, table.getContainerDataSource().size());
 
-		// check that properties are properly created
-		String name = (String) table.getItem(table.getItemIds().iterator().next())
-				.getItemProperty("name").getValue();
-		Assert.assertEquals("Bob", name);
-		Assert.assertEquals(3, table.getVisibleColumns().length);
-	}
+        // check that properties are properly created
+        String name = (String) table.getItem(table.getItemIds().iterator().next())
+                .getItemProperty("name").getValue();
+        Assert.assertEquals("Bob", name);
+        Assert.assertEquals(3, table.getVisibleColumns().length);
+    }
 
-	@Test
-	public void testCreateServiceResultsTreeTableWrapper() {
-		EntityModel<TestEntity> model = entityModelFactory.getModel(TestEntity.class);
-		List<BaseService<?, ?>> services = new ArrayList<>();
+    @Test
+    public void testCreateServiceResultsTreeTableWrapper() {
+        EntityModel<TestEntity> model = entityModelFactory.getModel(TestEntity.class);
+        List<BaseService<?, ?>> services = new ArrayList<>();
 
-		services.add(testEntityService);
-		services.add(testEntity2Service);
+        services.add(testEntityService);
+        services.add(testEntity2Service);
 
-		ServiceResultsTreeTableWrapper<Integer, TestEntity> wrapper = new ServiceResultsTreeTableWrapper<>(
-				services, model, QueryType.PAGING, null, new HierarchicalFetchJoinInformation[0]);
-		wrapper.build();
+        ServiceResultsTreeTableWrapper<Integer, TestEntity> wrapper = new ServiceResultsTreeTableWrapper<>(
+                services, model, QueryType.PAGING, null, new HierarchicalFetchJoinInformation[0]);
+        wrapper.build();
 
-		Assert.assertNotNull(wrapper.getContainer());
-		Assert.assertNotNull(wrapper.getTable());
-		Assert.assertNull(wrapper.getTable().getSortContainerPropertyId());
+        Assert.assertNotNull(wrapper.getContainer());
+        Assert.assertNotNull(wrapper.getTable());
+        Assert.assertNull(wrapper.getTable().getSortContainerPropertyId());
 
-		Assert.assertEquals(1, wrapper.getContainer().size());
-	}
+        Assert.assertEquals(1, wrapper.getContainer().size());
+    }
 
-	@Test
-	public void testCreateServiceResultsTreeTableWrapper_Sorting() {
-		EntityModel<TestEntity> model = entityModelFactory.getModel(TestEntity.class);
-		List<BaseService<?, ?>> services = new ArrayList<>();
+    @Test
+    public void testCreateServiceResultsTreeTableWrapper_Sorting() {
+        EntityModel<TestEntity> model = entityModelFactory.getModel(TestEntity.class);
+        List<BaseService<?, ?>> services = new ArrayList<>();
 
-		services.add(testEntityService);
-		services.add(testEntity2Service);
+        services.add(testEntityService);
+        services.add(testEntity2Service);
 
-		ServiceResultsTreeTableWrapper<Integer, TestEntity> wrapper = new ServiceResultsTreeTableWrapper<>(
-				services, model, QueryType.PAGING, new SortOrder("name", SortDirection.ASCENDING),
-				new HierarchicalFetchJoinInformation[0]);
-		wrapper.build();
+        ServiceResultsTreeTableWrapper<Integer, TestEntity> wrapper = new ServiceResultsTreeTableWrapper<>(
+                services, model, QueryType.PAGING, new SortOrder("name", SortDirection.ASCENDING),
+                new HierarchicalFetchJoinInformation[0]);
+        wrapper.build();
 
-		Assert.assertNotNull(wrapper.getContainer());
-		Assert.assertNotNull(wrapper.getTable());
-		Assert.assertEquals("name", wrapper.getTable().getSortContainerPropertyId());
-		Assert.assertTrue(wrapper.getTable().isSortAscending());
+        Assert.assertNotNull(wrapper.getContainer());
+        Assert.assertNotNull(wrapper.getTable());
+        Assert.assertEquals("name", wrapper.getTable().getSortContainerPropertyId());
+        Assert.assertTrue(wrapper.getTable().isSortAscending());
 
-		Assert.assertEquals(1, wrapper.getContainer().size());
+        Assert.assertEquals(1, wrapper.getContainer().size());
 
-		// try a search
-		wrapper.search(new Compare.Equal("name", "Kevin"));
-		Assert.assertEquals(0, wrapper.getContainer().size());
-	}
+        // try a search
+        wrapper.search(new Compare.Equal("name", "Kevin"));
+        Assert.assertEquals(0, wrapper.getContainer().size());
+    }
 }

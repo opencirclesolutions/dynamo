@@ -1,3 +1,16 @@
+/*
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
 package com.ocs.dynamo.domain.model.annotation;
 
 import java.lang.annotation.ElementType;
@@ -6,30 +19,26 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * An annotation that can be placed on an entity - allows you to override meta
- * data defaults
+ * An annotation that can be placed on an entity - allows you to override metadata defaults
  * 
  * @author bas.rutten
- * 
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface Model {
 
-	// the display name
-	public String displayName() default "";
+    // the display name
+    String displayName() default "";
 
-	// the display name (plural form)
-	public String displayNamePlural() default "";
+    // the display name (plural form)
+    String displayNamePlural() default "";
 
-	// the description
-	public String description() default "";
+    // the description
+    String description() default "";
 
-	// the property to use when displaying this item in a select component (like
-	// a combobox)
-	public String displayProperty() default "";
+    // the property to use when displaying this item in a select component (like a combobox)
+    String displayProperty() default "";
 
-	// the default sort order for this entity
-	public String sortOrder() default "";
-
+    // the default sort order for this entity
+    String sortOrder() default "";
 }

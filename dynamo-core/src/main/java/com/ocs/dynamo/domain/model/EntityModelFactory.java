@@ -1,3 +1,16 @@
+/*
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
 package com.ocs.dynamo.domain.model;
 
 import com.ocs.dynamo.service.MessageService;
@@ -6,22 +19,21 @@ import com.ocs.dynamo.service.MessageService;
  * Factory for entity models
  * 
  * @author bas.rutten
- * 
  */
 public interface EntityModelFactory {
 
-	public <T> EntityModel<T> getModel(Class<T> entityClass);
+    <T> EntityModel<T> getModel(Class<T> entityClass);
 
-	public <T> EntityModel<T> getModel(String reference, Class<T> entityClass);
+    <T> EntityModel<T> getModel(String reference, Class<T> entityClass);
 
-	public MessageService getMessageService();
+    MessageService getMessageService();
 
-	/**
-	 * Checks if the factory contains a model for a certain reference
-	 * 
-	 * @param reference
-	 * @return
-	 */
-	public boolean hasModel(String reference);
+    /**
+     * Checks if the factory contains a model for a certain reference
+     * 
+     * @param reference
+     * @return
+     */
+    boolean hasModel(String reference);
 
 }

@@ -1,3 +1,16 @@
+/*
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
 package com.ocs.dynamo.domain.model;
 
 import java.math.BigDecimal;
@@ -41,296 +54,294 @@ import junitx.util.PrivateAccessor;
 
 public class ModelBasedFieldFactoryTest extends BaseMockitoTest {
 
-	@Mock
-	private MessageService messageService;
+    @Mock
+    private MessageService messageService;
 
-	private EntityModelFactory factory = new EntityModelFactoryImpl();
+    private EntityModelFactory factory = new EntityModelFactoryImpl();
 
-	private ModelBasedFieldFactory<TestEntity> fieldFactory;
+    private ModelBasedFieldFactory<TestEntity> fieldFactory;
 
-	@Before
-	public void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
 
-		super.setUp();
-		MockitoSpringUtil.mockMessageService(messageService);
+        super.setUp();
+        MockitoSpringUtil.mockMessageService(messageService);
 
-		PrivateAccessor.setField(factory, "defaultPrecision", 2);
+        PrivateAccessor.setField(factory, "defaultPrecision", 2);
 
-		fieldFactory = new ModelBasedFieldFactory<>(factory.getModel(TestEntity.class),
-				messageService, false, false);
+        fieldFactory = new ModelBasedFieldFactory<>(factory.getModel(TestEntity.class),
+                messageService, false, false);
 
-	}
+    }
 
-	/**
-	 * Test a text field
-	 */
-	@Test
-	public void testTextField() {
-		Object obj = fieldFactory.createField("name");
-		Assert.assertTrue(obj instanceof TextField);
+    /**
+     * Test a text field
+     */
+    @Test
+    public void testTextField() {
+        Object obj = fieldFactory.createField("name");
+        Assert.assertTrue(obj instanceof TextField);
 
-		TextField tf = (TextField) obj;
-		Assert.assertEquals("", tf.getNullRepresentation());
-		Assert.assertNotNull(tf.getInputPrompt());
-	}
+        TextField tf = (TextField) obj;
+        Assert.assertEquals("", tf.getNullRepresentation());
+        Assert.assertNotNull(tf.getInputPrompt());
+    }
 
-	/**
-	 * Test a text area
-	 */
-	@Test
-	public void testTextArea() {
-		Object obj = fieldFactory.createField("someTextArea");
-		Assert.assertTrue(obj instanceof TextArea);
-	}
+    /**
+     * Test a text area
+     */
+    @Test
+    public void testTextArea() {
+        Object obj = fieldFactory.createField("someTextArea");
+        Assert.assertTrue(obj instanceof TextArea);
+    }
 
-	/**
-	 * Test a long field
-	 */
-	@Test
-	public void testLongField() {
-		Object obj = fieldFactory.createField("age");
-		Assert.assertTrue(obj instanceof TextField);
+    /**
+     * Test a long field
+     */
+    @Test
+    public void testLongField() {
+        Object obj = fieldFactory.createField("age");
+        Assert.assertTrue(obj instanceof TextField);
 
-		TextField tf = (TextField) obj;
-		Assert.assertEquals(Long.class, tf.getConverter().getModelType());
-	}
+        TextField tf = (TextField) obj;
+        Assert.assertEquals(Long.class, tf.getConverter().getModelType());
+    }
 
-	/**
-	 * Test an integer field
-	 */
-	@Test
-	public void testIntegerField() {
-		Object obj = fieldFactory.createField("someInt");
-		Assert.assertTrue(obj instanceof TextField);
+    /**
+     * Test an integer field
+     */
+    @Test
+    public void testIntegerField() {
+        Object obj = fieldFactory.createField("someInt");
+        Assert.assertTrue(obj instanceof TextField);
 
-		TextField tf = (TextField) obj;
-		Assert.assertEquals(Integer.class, tf.getConverter().getModelType());
-	}
+        TextField tf = (TextField) obj;
+        Assert.assertEquals(Integer.class, tf.getConverter().getModelType());
+    }
 
-	/**
-	 * Test an "elementcollection" field
-	 */
-	@Test
-	public void testCollectionField() {
-		Object obj = fieldFactory.createField("tags");
-		Assert.assertTrue(obj instanceof CollectionTable);
+    /**
+     * Test an "elementcollection" field
+     */
+    @Test
+    public void testCollectionField() {
+        Object obj = fieldFactory.createField("tags");
+        Assert.assertTrue(obj instanceof CollectionTable);
 
-		CollectionTable ct = (CollectionTable) obj;
-		Assert.assertEquals(25, ct.getMaxLength().intValue());
-	}
+        CollectionTable ct = (CollectionTable) obj;
+        Assert.assertEquals(25, ct.getMaxLength().intValue());
+    }
 
-	/**
-	 * Test a text field
-	 */
-	@Test
-	public void testTextFieldValidating() {
-		fieldFactory = ModelBasedFieldFactory.getValidatingInstance(
-				factory.getModel(TestEntity.class), messageService);
-		Object obj = fieldFactory.createField("name");
+    /**
+     * Test a text field
+     */
+    @Test
+    public void testTextFieldValidating() {
+        fieldFactory = ModelBasedFieldFactory
+                .getValidatingInstance(factory.getModel(TestEntity.class), messageService);
+        Object obj = fieldFactory.createField("name");
 
-		Assert.assertTrue(obj instanceof TextField);
+        Assert.assertTrue(obj instanceof TextField);
 
-		TextField tf = (TextField) obj;
-		Assert.assertEquals("", tf.getNullRepresentation());
-		Assert.assertNotNull(tf.getInputPrompt());
-		Assert.assertFalse(tf.getValidators().isEmpty());
-	}
+        TextField tf = (TextField) obj;
+        Assert.assertEquals("", tf.getNullRepresentation());
+        Assert.assertNotNull(tf.getInputPrompt());
+        Assert.assertFalse(tf.getValidators().isEmpty());
+    }
 
-	/**
-	 * Test a text field that displays a BigDecimal
-	 */
-	@Test
-	public void testBigDecimalField() {
-		Object obj = fieldFactory.createField("discount");
-		Assert.assertTrue(obj instanceof TextField);
+    /**
+     * Test a text field that displays a BigDecimal
+     */
+    @Test
+    public void testBigDecimalField() {
+        Object obj = fieldFactory.createField("discount");
+        Assert.assertTrue(obj instanceof TextField);
 
-		TextField tf = (TextField) obj;
-		Assert.assertEquals("", tf.getNullRepresentation());
+        TextField tf = (TextField) obj;
+        Assert.assertEquals("", tf.getNullRepresentation());
 
-		Assert.assertNotNull(tf.getConverter());
+        Assert.assertNotNull(tf.getConverter());
 
-		BigDecimal dec = (BigDecimal) tf.getConverter().convertToModel("3,43", null, null);
-		Assert.assertEquals(new BigDecimal("3.43"), dec);
-	}
+        BigDecimal dec = (BigDecimal) tf.getConverter().convertToModel("3,43", null, null);
+        Assert.assertEquals(new BigDecimal("3.43"), dec);
+    }
 
-	@Test
-	public void testBigDecimalPercentageField() {
-		Object obj = fieldFactory.createField("rate");
-		Assert.assertTrue(obj instanceof TextField);
+    @Test
+    public void testBigDecimalPercentageField() {
+        Object obj = fieldFactory.createField("rate");
+        Assert.assertTrue(obj instanceof TextField);
 
-		TextField tf = (TextField) obj;
-		Assert.assertEquals("", tf.getNullRepresentation());
+        TextField tf = (TextField) obj;
+        Assert.assertEquals("", tf.getNullRepresentation());
 
-		Assert.assertNotNull(tf.getConverter());
+        Assert.assertNotNull(tf.getConverter());
 
-		BigDecimal dec = (BigDecimal) tf.getConverter().convertToModel("3,43%", null, null);
-		Assert.assertEquals(new BigDecimal("3.43"), dec);
+        BigDecimal dec = (BigDecimal) tf.getConverter().convertToModel("3,43%", null, null);
+        Assert.assertEquals(new BigDecimal("3.43"), dec);
 
-		Assert.assertEquals("3,14%",
-				tf.getConverter().convertToPresentation(new BigDecimal(3.14), null, null));
-	}
+        Assert.assertEquals("3,14%",
+                tf.getConverter().convertToPresentation(BigDecimal.valueOf(3.14), null, null));
+    }
 
-	/**
-	 * Test the creation of a date field and verify the date format is correctly
-	 * set
-	 */
-	@Test
-	public void testDateField() {
-		Object obj = fieldFactory.createField("birthDate");
-		Assert.assertTrue(obj instanceof DateField);
+    /**
+     * Test the creation of a date field and verify the date format is correctly set
+     */
+    @Test
+    public void testDateField() {
+        Object obj = fieldFactory.createField("birthDate");
+        Assert.assertTrue(obj instanceof DateField);
 
-		DateField df = (DateField) obj;
-		Assert.assertEquals("dd/MM/yyyy", df.getDateFormat());
-	}
+        DateField df = (DateField) obj;
+        Assert.assertEquals("dd/MM/yyyy", df.getDateFormat());
+    }
 
-	/**
-	 * Test the creation of a time field
-	 */
-	@Test
-	public void testTimeField() {
-		Object obj = fieldFactory.createField("someTime");
-		Assert.assertTrue(obj instanceof TimeField);
+    /**
+     * Test the creation of a time field
+     */
+    @Test
+    public void testTimeField() {
+        Object obj = fieldFactory.createField("someTime");
+        Assert.assertTrue(obj instanceof TimeField);
 
-		TimeField tf = (TimeField) obj;
-		Assert.assertEquals(Resolution.MINUTE, tf.getResolution());
-	}
+        TimeField tf = (TimeField) obj;
+        Assert.assertEquals(Resolution.MINUTE, tf.getResolution());
+    }
 
-	/**
-	 * Test the creation of a date field and verify the date format is correctly
-	 * set
-	 */
-	@Test
-	public void testWeekField() {
-		Object obj = fieldFactory.createField("birthWeek");
-		Assert.assertTrue(obj instanceof TextField);
+    /**
+     * Test the creation of a date field and verify the date format is correctly set
+     */
+    @Test
+    public void testWeekField() {
+        Object obj = fieldFactory.createField("birthWeek");
+        Assert.assertTrue(obj instanceof TextField);
 
-		TextField tf = (TextField) obj;
-		Assert.assertEquals("", tf.getNullRepresentation());
+        TextField tf = (TextField) obj;
+        Assert.assertEquals("", tf.getNullRepresentation());
 
-		Assert.assertNotNull(tf.getConverter());
+        Assert.assertNotNull(tf.getConverter());
 
-		Date d = (Date) tf.getConverter().convertToModel("2015-03", null, null);
-		Assert.assertEquals(DateUtils.createDate("12012015"), d);
-	}
+        Date d = (Date) tf.getConverter().convertToModel("2015-03", null, null);
+        Assert.assertEquals(DateUtils.createDate("12012015"), d);
+    }
 
-	/**
-	 * Test the creation of an enum field
-	 */
-	@Test
-	public void testEnumField() {
-		Object obj = fieldFactory.createField("someEnum");
-		Assert.assertTrue(obj instanceof AbstractSelect);
+    /**
+     * Test the creation of an enum field
+     */
+    @Test
+    public void testEnumField() {
+        Object obj = fieldFactory.createField("someEnum");
+        Assert.assertTrue(obj instanceof AbstractSelect);
 
-		AbstractSelect select = (AbstractSelect) obj;
-		Item item = select.getItem(TestEntity.TestEnum.A);
-		Assert.assertNotNull(item);
-		Assert.assertEquals("A", item.getItemProperty("Caption").getValue());
+        AbstractSelect select = (AbstractSelect) obj;
+        Item item = select.getItem(TestEntity.TestEnum.A);
+        Assert.assertNotNull(item);
+        Assert.assertEquals("A", item.getItemProperty("Caption").getValue());
 
-		Item itemB = select.getItem(TestEntity.TestEnum.B);
-		Assert.assertNotNull(itemB);
-		Assert.assertEquals("B", itemB.getItemProperty("Caption").getValue());
-	}
+        Item itemB = select.getItem(TestEntity.TestEnum.B);
+        Assert.assertNotNull(itemB);
+        Assert.assertEquals("B", itemB.getItemProperty("Caption").getValue());
+    }
 
-	/**
-	 * Test that in a search screen, a CombobBox is created for a boolean field
-	 */
-	@Test
-	public void testSearchBooleanField() {
-		fieldFactory = ModelBasedFieldFactory.getSearchInstance(factory.getModel(TestEntity.class),
-				messageService);
+    /**
+     * Test that in a search screen, a CombobBox is created for a boolean field
+     */
+    @Test
+    public void testSearchBooleanField() {
+        fieldFactory = ModelBasedFieldFactory.getSearchInstance(factory.getModel(TestEntity.class),
+                messageService);
 
-		Field<?> field = fieldFactory.createField("someBoolean");
-		Assert.assertTrue(field instanceof ComboBox);
-	}
+        Field<?> field = fieldFactory.createField("someBoolean");
+        Assert.assertTrue(field instanceof ComboBox);
+    }
 
-	/**
-	 * Test that in a normal screen, a Checkbox is created for a boolean field
-	 */
-	@Test
-	public void testNormalBooleanField() {
-		fieldFactory = ModelBasedFieldFactory.getInstance(factory.getModel(TestEntity.class),
-				messageService);
+    /**
+     * Test that in a normal screen, a Checkbox is created for a boolean field
+     */
+    @Test
+    public void testNormalBooleanField() {
+        fieldFactory = ModelBasedFieldFactory.getInstance(factory.getModel(TestEntity.class),
+                messageService);
 
-		Field<?> field = fieldFactory.createField("someBoolean");
-		Assert.assertTrue(field instanceof CheckBox);
-	}
+        Field<?> field = fieldFactory.createField("someBoolean");
+        Assert.assertTrue(field instanceof CheckBox);
+    }
 
-	@Test
-	public void testDoNotCreateReadonlyField() {
-		ModelBasedFieldFactory<TestX> f = ModelBasedFieldFactory.getInstance(
-				factory.getModel(TestX.class), messageService);
-		Assert.assertNull(f.createField("readOnlyField"));
+    @Test
+    public void testDoNotCreateReadonlyField() {
+        ModelBasedFieldFactory<TestX> f = ModelBasedFieldFactory
+                .getInstance(factory.getModel(TestX.class), messageService);
+        Assert.assertNull(f.createField("readOnlyField"));
 
-		// in search mode, it does not matter if the field is readonly
-		f = ModelBasedFieldFactory.getSearchInstance(factory.getModel(TestX.class), messageService);
-		Assert.assertNotNull(f.createField("readOnlyField"));
-	}
+        // in search mode, it does not matter if the field is readonly
+        f = ModelBasedFieldFactory.getSearchInstance(factory.getModel(TestX.class), messageService);
+        Assert.assertNotNull(f.createField("readOnlyField"));
+    }
 
-	@Test
-	@SuppressWarnings("unchecked")
-	public void testConstructField() {
-		EntityModel<TestEntity2> model = factory.getModel(TestEntity2.class);
-		ModelBasedFieldFactory<TestEntity2> ff = ModelBasedFieldFactory.getInstance(model,
-				messageService);
+    @Test
+    @SuppressWarnings("unchecked")
+    public void testConstructField() {
+        EntityModel<TestEntity2> model = factory.getModel(TestEntity2.class);
+        ModelBasedFieldFactory<TestEntity2> ff = ModelBasedFieldFactory.getInstance(model,
+                messageService);
 
-		// simple case - simply create the normal field
-		Field<?> f = ff.constructField(model.getAttributeModel("name"), null);
-		Assert.assertTrue(f instanceof TextField);
+        // simple case - simply create the normal field
+        Field<?> f = ff.constructField(model.getAttributeModel("name"), null);
+        Assert.assertTrue(f instanceof TextField);
 
-		// default case - lookup field (no field filter)
-		f = ff.constructField(model.getAttributeModel("testEntity"), null);
-		Assert.assertTrue(f instanceof EntityLookupField);
-		EntityLookupField<Integer, TestEntity> lf = (EntityLookupField<Integer, TestEntity>) f;
-		Assert.assertNull(lf.getFilters());
+        // default case - lookup field (no field filter)
+        f = ff.constructField(model.getAttributeModel("testEntity"), null);
+        Assert.assertTrue(f instanceof EntityLookupField);
+        EntityLookupField<Integer, TestEntity> lf = (EntityLookupField<Integer, TestEntity>) f;
+        Assert.assertNull(lf.getFilters());
 
-		// field filter is propagated
-		Map<String, com.vaadin.data.Container.Filter> fieldFilters = new HashMap<>();
-		fieldFilters.put("testEntity", new Compare.Equal("name", "John"));
+        // field filter is propagated
+        Map<String, com.vaadin.data.Container.Filter> fieldFilters = new HashMap<>();
+        fieldFilters.put("testEntity", new Compare.Equal("name", "John"));
 
-		f = ff.constructField(model.getAttributeModel("testEntity"), fieldFilters);
-		Assert.assertTrue(f instanceof EntityLookupField);
-		lf = (EntityLookupField<Integer, TestEntity>) f;
-		Assert.assertEquals(1, lf.getFilters().size());
+        f = ff.constructField(model.getAttributeModel("testEntity"), fieldFilters);
+        Assert.assertTrue(f instanceof EntityLookupField);
+        lf = (EntityLookupField<Integer, TestEntity>) f;
+        Assert.assertEquals(1, lf.getFilters().size());
 
-		fieldFilters = new HashMap<>();
-		fieldFilters.put("testEntityAlt", new Compare.Equal("name", "John"));
+        fieldFilters = new HashMap<>();
+        fieldFilters.put("testEntityAlt", new Compare.Equal("name", "John"));
 
-		f = ff.constructField(model.getAttributeModel("testEntityAlt"), fieldFilters);
-		Assert.assertTrue(f instanceof EntityComboBox);
-		EntityComboBox<Integer, TestEntity> df = (EntityComboBox<Integer, TestEntity>) f;
-		Assert.assertEquals(SelectMode.FILTERED, df.getSelectMode());
+        f = ff.constructField(model.getAttributeModel("testEntityAlt"), fieldFilters);
+        Assert.assertTrue(f instanceof EntityComboBox);
+        EntityComboBox<Integer, TestEntity> df = (EntityComboBox<Integer, TestEntity>) f;
+        Assert.assertEquals(SelectMode.FILTERED, df.getSelectMode());
 
-		f = ff.constructField(model.getAttributeModel("testEntityAlt2"), fieldFilters);
-		Assert.assertTrue(f instanceof EntityListSelect);
-	}
+        f = ff.constructField(model.getAttributeModel("testEntityAlt2"), fieldFilters);
+        Assert.assertTrue(f instanceof EntityListSelect);
+    }
 
-	@SuppressWarnings("unused")
-	private class TestX extends AbstractEntity<Integer> {
+    @SuppressWarnings("unused")
+    private class TestX extends AbstractEntity<Integer> {
 
-		private static final long serialVersionUID = 2993052752064838180L;
+        private static final long serialVersionUID = 2993052752064838180L;
 
-		private Integer id;
+        private Integer id;
 
-		@Attribute(readOnly = true)
-		private String readOnlyField;
+        @Attribute(readOnly = true)
+        private String readOnlyField;
 
-		@Override
-		public Integer getId() {
-			return id;
-		}
+        @Override
+        public Integer getId() {
+            return id;
+        }
 
-		@Override
-		public void setId(Integer id) {
-			this.id = id;
-		}
+        @Override
+        public void setId(Integer id) {
+            this.id = id;
+        }
 
-		public String getReadOnlyField() {
-			return readOnlyField;
-		}
+        public String getReadOnlyField() {
+            return readOnlyField;
+        }
 
-		public void setReadOnlyField(String readOnlyField) {
-			this.readOnlyField = readOnlyField;
-		}
+        public void setReadOnlyField(String readOnlyField) {
+            this.readOnlyField = readOnlyField;
+        }
 
-	}
+    }
 }

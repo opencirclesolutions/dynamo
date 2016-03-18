@@ -1,3 +1,16 @@
+/*
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
 package com.ocs.dynamo.domain.model;
 
 import javax.inject.Inject;
@@ -21,89 +34,89 @@ import com.vaadin.ui.Field;
 
 public class ModelBasedFieldFactoryIntegrationTest extends BaseIntegrationTest {
 
-	@Inject
-	private EntityModelFactory entityModelFactory;
+    @Inject
+    private EntityModelFactory entityModelFactory;
 
-	@Inject
-	private MessageService messageService;
+    @Inject
+    private MessageService messageService;
 
-	@Before
-	public void setup() {
-	}
+    @Before
+    public void setup() {
+    }
 
-	/**
-	 * Test the creation of
-	 */
-	@SuppressWarnings("unchecked")
-	@Test
-	public void testCreateLookupField() {
+    /**
+     * Test the creation of
+     */
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testCreateLookupField() {
 
-		EntityModel<TestEntity2> model = entityModelFactory.getModel("TestEntity2Lookup",
-				TestEntity2.class);
-		AttributeModel am = model.getAttributeModel("testEntity");
+        EntityModel<TestEntity2> model = entityModelFactory.getModel("TestEntity2Lookup",
+                TestEntity2.class);
+        AttributeModel am = model.getAttributeModel("testEntity");
 
-		ModelBasedFieldFactory<TestEntity2> factory = new ModelBasedFieldFactory<>(model,
-				messageService, false, false);
+        ModelBasedFieldFactory<TestEntity2> factory = new ModelBasedFieldFactory<>(model,
+                messageService, false, false);
 
-		Field<?> field = factory.createField(am.getName());
-		Assert.assertTrue(field instanceof EntityLookupField);
+        Field<?> field = factory.createField(am.getName());
+        Assert.assertTrue(field instanceof EntityLookupField);
 
-		EntityLookupField<Integer, TestEntity> f = (EntityLookupField<Integer, TestEntity>) field;
-		Assert.assertEquals(new com.vaadin.data.sort.SortOrder("name", SortDirection.ASCENDING),
-				f.getSortOrder());
+        EntityLookupField<Integer, TestEntity> f = (EntityLookupField<Integer, TestEntity>) field;
+        Assert.assertEquals(new com.vaadin.data.sort.SortOrder("name", SortDirection.ASCENDING),
+                f.getSortOrder());
 
-	}
+    }
 
-	/**
-	 * Test the creation of a ListSelectComponent
-	 */
-	@SuppressWarnings("unchecked")
-	@Test
-	public void testCreatelistSelect() {
+    /**
+     * Test the creation of a ListSelectComponent
+     */
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testCreatelistSelect() {
 
-		EntityModel<TestEntity2> model = entityModelFactory.getModel("TestEntity2ListSelect",
-				TestEntity2.class);
-		AttributeModel am = model.getAttributeModel("testEntity");
+        EntityModel<TestEntity2> model = entityModelFactory.getModel("TestEntity2ListSelect",
+                TestEntity2.class);
+        AttributeModel am = model.getAttributeModel("testEntity");
 
-		ModelBasedFieldFactory<TestEntity2> factory = new ModelBasedFieldFactory<>(model,
-				messageService, false, false);
+        ModelBasedFieldFactory<TestEntity2> factory = new ModelBasedFieldFactory<>(model,
+                messageService, false, false);
 
-		Field<?> field = factory.createField(am.getName());
-		Assert.assertTrue(field instanceof EntityListSelect);
+        Field<?> field = factory.createField(am.getName());
+        Assert.assertTrue(field instanceof EntityListSelect);
 
-		EntityListSelect<Integer, TestEntity> f = (EntityListSelect<Integer, TestEntity>) field;
-		Assert.assertEquals(new com.vaadin.data.sort.SortOrder("name", SortDirection.ASCENDING),
-				f.getSortOrder()[0]);
-		Assert.assertEquals(com.ocs.dynamo.ui.component.EntityListSelect.SelectMode.FILTERED,
-				f.getSelectMode());
-		Assert.assertEquals(5, f.getRows());
-	}
+        EntityListSelect<Integer, TestEntity> f = (EntityListSelect<Integer, TestEntity>) field;
+        Assert.assertEquals(new com.vaadin.data.sort.SortOrder("name", SortDirection.ASCENDING),
+                f.getSortOrder()[0]);
+        Assert.assertEquals(com.ocs.dynamo.ui.component.EntityListSelect.SelectMode.FILTERED,
+                f.getSelectMode());
+        Assert.assertEquals(5, f.getRows());
+    }
 
-	/**
-	 * Test the creation of a combo box
-	 */
-	@SuppressWarnings("unchecked")
-	@Test
-	public void testCreateComboBox() {
-		ModelBasedFieldFactory<TestEntity2> fieldFactory = ModelBasedFieldFactory.getInstance(
-				entityModelFactory.getModel(TestEntity2.class), messageService);
+    /**
+     * Test the creation of a combo box
+     */
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testCreateComboBox() {
+        ModelBasedFieldFactory<TestEntity2> fieldFactory = ModelBasedFieldFactory
+                .getInstance(entityModelFactory.getModel(TestEntity2.class), messageService);
 
-		EntityModel<TestEntity2> model = entityModelFactory.getModel(TestEntity2.class);
-		AttributeModel am = model.getAttributeModel("testEntity");
+        EntityModel<TestEntity2> model = entityModelFactory.getModel(TestEntity2.class);
+        AttributeModel am = model.getAttributeModel("testEntity");
 
-		Field<?> field = fieldFactory.constructComboBox(am.getNestedEntityModel(), am, null);
-		Assert.assertTrue(field instanceof EntityComboBox);
+        Field<?> field = fieldFactory.constructComboBox(am.getNestedEntityModel(), am, null);
+        Assert.assertTrue(field instanceof EntityComboBox);
 
-		EntityComboBox<Integer, TestEntity> dc = (EntityComboBox<Integer, TestEntity>) field;
-		Assert.assertEquals(SelectMode.FILTERED, dc.getSelectMode());
+        EntityComboBox<Integer, TestEntity> dc = (EntityComboBox<Integer, TestEntity>) field;
+        Assert.assertEquals(SelectMode.FILTERED, dc.getSelectMode());
 
-		SortOrder[] sortOrders = dc.getSortOrder();
-		Assert.assertEquals(2, sortOrders.length);
+        SortOrder[] sortOrders = dc.getSortOrder();
+        Assert.assertEquals(2, sortOrders.length);
 
-		Assert.assertEquals("name", sortOrders[0].getPropertyId());
-		Assert.assertEquals(SortDirection.ASCENDING, sortOrders[0].getDirection());
+        Assert.assertEquals("name", sortOrders[0].getPropertyId());
+        Assert.assertEquals(SortDirection.ASCENDING, sortOrders[0].getDirection());
 
-		Assert.assertEquals("age", sortOrders[1].getPropertyId());
-		Assert.assertEquals(SortDirection.ASCENDING, sortOrders[1].getDirection());
-	}
+        Assert.assertEquals("age", sortOrders[1].getPropertyId());
+        Assert.assertEquals(SortDirection.ASCENDING, sortOrders[1].getDirection());
+    }
 }

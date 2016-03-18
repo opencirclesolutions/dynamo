@@ -1,3 +1,16 @@
+/*
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
 package com.ocs.dynamo.ui.composite.layout;
 
 import java.io.Serializable;
@@ -21,11 +34,9 @@ import com.vaadin.event.FieldEvents.TextChangeListener;
 import com.vaadin.ui.TextField;
 
 /**
- * A split layout - contains both a table and a details view - that uses a
- * service to fetch data
+ * A split layout - contains both a table and a details view - that uses a service to fetch data
  * 
  * @author bas.rutten
- * 
  * @param <ID>
  *            type of the primary key
  * @param <T>
@@ -33,142 +44,142 @@ import com.vaadin.ui.TextField;
  */
 @SuppressWarnings("serial")
 public abstract class ServiceBasedSplitLayout<ID extends Serializable, T extends AbstractEntity<ID>>
-		extends BaseSplitLayout<ID, T> {
+        extends BaseSplitLayout<ID, T> {
 
-	private static final long serialVersionUID = 1068860513192819804L;
+    private static final long serialVersionUID = 1068860513192819804L;
 
-	private Filter filter;
+    private Filter filter;
 
-	/**
-	 * Constructor
-	 * 
-	 * @param service
-	 * @param entityModel
-	 * @param formOptions
-	 * @param fieldFilters
-	 * @param sortOrder
-	 * @param joins
-	 */
-	public ServiceBasedSplitLayout(BaseService<ID, T> service, EntityModel<T> entityModel,
-			FormOptions formOptions, SortOrder sortOrder, FetchJoinInformation... joins) {
-		super(service, entityModel, formOptions, sortOrder, joins);
-	}
+    /**
+     * Constructor
+     * 
+     * @param service
+     * @param entityModel
+     * @param formOptions
+     * @param fieldFilters
+     * @param sortOrder
+     * @param joins
+     */
+    public ServiceBasedSplitLayout(BaseService<ID, T> service, EntityModel<T> entityModel,
+            FormOptions formOptions, SortOrder sortOrder, FetchJoinInformation... joins) {
+        super(service, entityModel, formOptions, sortOrder, joins);
+    }
 
-	@Override
-	public void reload() {
-		super.reload();
-		getTableWrapper().reloadContainer();
-	}
+    @Override
+    public void reload() {
+        super.reload();
+        getTableWrapper().reloadContainer();
+    }
 
-	@Override
-	protected void init() {
-		filter = createFilter();
-	}
+    @Override
+    protected void init() {
+        filter = createFilter();
+    }
 
-	/**
-	 * Creates the search filter
-	 * 
-	 * @return
-	 */
-	protected abstract Filter createFilter();
+    /**
+     * Creates the search filter
+     * 
+     * @return
+     */
+    protected abstract Filter createFilter();
 
-	@Override
-	protected void constructTable() {
-		ServiceResultsTableWrapper<ID, T> tw = new ServiceResultsTableWrapper<ID, T>(getService(),
-				getEntityModel(), QueryType.ID_BASED, filter, getSortOrder(), getJoins()) {
+    @Override
+    protected void constructTable() {
+        ServiceResultsTableWrapper<ID, T> tw = new ServiceResultsTableWrapper<ID, T>(getService(),
+                getEntityModel(), QueryType.ID_BASED, filter, getSortOrder(), getJoins()) {
 
-			@Override
-			protected void onSelect(Object selected) {
-				setSelectedItems(selected);
-				checkButtonState(getSelectedItem());
-				if (getSelectedItem() != null) {
-					detailsView(getSelectedItem());
-				}
-			}
-		};
-		tw.build();
-		setTableWrapper(tw);
+            @Override
+            protected void onSelect(Object selected) {
+                setSelectedItems(selected);
+                checkButtonState(getSelectedItem());
+                if (getSelectedItem() != null) {
+                    detailsView(getSelectedItem());
+                }
+            }
+        };
+        tw.build();
+        setTableWrapper(tw);
 
-	}
+    }
 
-	@SuppressWarnings("unchecked")
-	public void setSelectedItems(Object selectedItems) {
-		if (selectedItems != null) {
-			if (selectedItems instanceof Collection<?>) {
-				// the lazy query container returns an array of IDs of the
-				// selected items
-				Collection<?> col = (Collection<?>) selectedItems;
-				ID id = (ID) col.iterator().next();
-				setSelectedItem(getService().fetchById(id));
-			} else {
-				ID id = (ID) selectedItems;
-				setSelectedItem(getService().fetchById(id));
-			}
-		} else {
-			setSelectedItem(null);
-			emptyDetailView();
-		}
-	}
+    @SuppressWarnings("unchecked")
+    public void setSelectedItems(Object selectedItems) {
+        if (selectedItems != null) {
+            if (selectedItems instanceof Collection<?>) {
+                // the lazy query container returns an array of IDs of the
+                // selected items
+                Collection<?> col = (Collection<?>) selectedItems;
+                ID id = (ID) col.iterator().next();
+                setSelectedItem(getService().fetchById(id));
+            } else {
+                ID id = (ID) selectedItems;
+                setSelectedItem(getService().fetchById(id));
+            }
+        } else {
+            setSelectedItem(null);
+            emptyDetailView();
+        }
+    }
 
-	public Filter getFilter() {
-		return filter;
-	}
+    public Filter getFilter() {
+        return filter;
+    }
 
-	public void setFilter(Filter filter) {
-		this.filter = filter;
-	}
+    public void setFilter(Filter filter) {
+        this.filter = filter;
+    }
 
-	/**
-	 * Constructs a quick search field
-	 */
-	@Override
-	protected TextField constructSearchField() {
-		if (getFormOptions().isShowExtraSearchField()) {
-			TextField searchField = new TextField(message("ocs.search"));
+    /**
+     * Constructs a quick search field
+     */
+    @Override
+    protected TextField constructSearchField() {
+        if (getFormOptions().isShowExtraSearchField()) {
+            TextField searchField = new TextField(message("ocs.search"));
 
-			// respond to the user entering a search term
-			searchField.addTextChangeListener(new TextChangeListener() {
+            // respond to the user entering a search term
+            searchField.addTextChangeListener(new TextChangeListener() {
 
-				@Override
-				public void textChange(TextChangeEvent event) {
-					String text = event.getText();
-					if (!StringUtils.isEmpty(text)) {
-						Filter extra = constructExtraSearchFilter(text);
+                @Override
+                public void textChange(TextChangeEvent event) {
+                    String text = event.getText();
+                    if (!StringUtils.isEmpty(text)) {
+                        Filter extra = constructExtraSearchFilter(text);
 
-						Filter f = extra;
-						if (getFilter() != null) {
-							f = new And(extra, getFilter());
-						}
-						getContainer().search(f);
-					} else {
-						getContainer().search(filter);
-					}
-				}
-			});
-			return searchField;
-		}
-		return null;
-	}
+                        Filter f = extra;
+                        if (getFilter() != null) {
+                            f = new And(extra, getFilter());
+                        }
+                        getContainer().search(f);
+                    } else {
+                        getContainer().search(filter);
+                    }
+                }
+            });
+            return searchField;
+        }
+        return null;
+    }
 
-	@SuppressWarnings("unchecked")
-	protected ServiceContainer<ID, T> getContainer() {
-		return (ServiceContainer<ID, T>) getTableWrapper().getContainer();
-	}
+    @SuppressWarnings("unchecked")
+    protected ServiceContainer<ID, T> getContainer() {
+        return (ServiceContainer<ID, T>) getTableWrapper().getContainer();
+    }
 
-	/**
-	 * Constructs the extra search filter - override in subclass if your panel
-	 * contains a quick search field
-	 * 
-	 * @param value
-	 * @return
-	 */
-	protected Filter constructExtraSearchFilter(String value) {
-		return null;
-	}
+    /**
+     * Constructs the extra search filter - override in subclass if your panel contains a quick
+     * search field
+     * 
+     * @param value
+     * @return
+     */
+    protected Filter constructExtraSearchFilter(String value) {
+        return null;
+    }
 
-	@Override
-	protected void afterReload(T t) {
-		// in a lazy query container, the entity ID is used as the key
-		getTableWrapper().getTable().select(t == null ? null : t.getId());
-	}
+    @Override
+    protected void afterReload(T t) {
+        // in a lazy query container, the entity ID is used as the key
+        getTableWrapper().getTable().select(t == null ? null : t.getId());
+    }
 }

@@ -1,3 +1,16 @@
+/*
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
 package com.ocs.dynamo.ui.component;
 
 import java.io.ByteArrayInputStream;
@@ -12,46 +25,45 @@ import com.vaadin.ui.Button;
  * A button that starts a file download process when clicked
  * 
  * @author bas.rutten
- * 
  */
 public abstract class DownloadButton extends Button {
 
-	private static final long serialVersionUID = -7163648327567831406L;
+    private static final long serialVersionUID = -7163648327567831406L;
 
-	/**
-	 * Constructor
-	 * 
-	 * @param caption
-	 *            the caption of the button
-	 * @param fileName
-	 *            the name of the file to download
-	 */
-	public DownloadButton(String caption, String fileName) {
-		super(caption);
-		StreamResource resource = new StreamResource(new StreamSource() {
+    /**
+     * Constructor
+     * 
+     * @param caption
+     *            the caption of the button
+     * @param fileName
+     *            the name of the file to download
+     */
+    public DownloadButton(String caption, String fileName) {
+        super(caption);
+        StreamResource resource = new StreamResource(new StreamSource() {
 
-			private static final long serialVersionUID = -4870779918745663459L;
+            private static final long serialVersionUID = -4870779918745663459L;
 
-			@Override
-			public InputStream getStream() {
-				byte[] content = doCreateContent();
-				if (content != null) {
-					return new ByteArrayInputStream(content);
-				}
-				return null;
-			}
+            @Override
+            public InputStream getStream() {
+                byte[] content = doCreateContent();
+                if (content != null) {
+                    return new ByteArrayInputStream(content);
+                }
+                return null;
+            }
 
-		}, fileName);
+        }, fileName);
 
-		FileDownloader downloader = new FileDownloader(resource);
-		downloader.extend(this);
-	}
+        FileDownloader downloader = new FileDownloader(resource);
+        downloader.extend(this);
+    }
 
-	/**
-	 * Creates the file content (as a byte array)
-	 * 
-	 * @return
-	 */
-	protected abstract byte[] doCreateContent();
+    /**
+     * Creates the file content (as a byte array)
+     * 
+     * @return
+     */
+    protected abstract byte[] doCreateContent();
 
 }
