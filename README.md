@@ -13,4 +13,4 @@ The  Framework is built around a number of proven and highly productive set of t
 *	QueryDSL for type-safe query generation
 *	Apache Camel for integration
 
-Interested in contributing? Check our [wiki](/wiki)!
+Interested in contributing? Check our [wiki](https://github.com/opencirclesolutions/dynamo/wiki)!
