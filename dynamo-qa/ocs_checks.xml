@@ -13,8 +13,13 @@
   <property name="fileExtensions" value="java, properties, xml"/>
   <module name="TreeWalker">
     <module name="JavadocMethod">
-      <property name="severity" value="ignore"/>
-      <metadata name="net.sf.eclipsecs.core.lastEnabledSeverity" value="inherit"/>
+      <property name="scope" value="package"/>
+      <property name="excludeScope" value="public"/>
+      <property name="allowUndeclaredRTE" value="true"/>
+      <property name="allowThrowsTagsForSubclasses" value="true"/>
+      <property name="allowMissingParamTags" value="true"/>
+      <property name="allowMissingThrowsTags" value="true"/>
+      <property name="allowMissingReturnTag" value="true"/>
     </module>
     <module name="JavadocVariable">
       <property name="severity" value="ignore"/>
@@ -68,7 +73,10 @@
     </module>
     <module name="IllegalInstantiation"/>
     <module name="InnerAssignment"/>
-    <module name="MagicNumber"/>
+    <module name="MagicNumber">
+      <property name="severity" value="ignore"/>
+      <metadata name="net.sf.eclipsecs.core.lastEnabledSeverity" value="inherit"/>
+    </module>
     <module name="MissingSwitchDefault"/>
     <module name="SimplifyBooleanExpression"/>
     <module name="SimplifyBooleanReturn"/>
@@ -87,6 +95,9 @@
     </module>
     <module name="TodoComment"/>
     <module name="UpperEll"/>
+    <module name="JavadocType">
+      <property name="tokens" value="INTERFACE_DEF"/>
+    </module>
   </module>
   <module name="JavadocPackage">
     <property name="severity" value="ignore"/>
