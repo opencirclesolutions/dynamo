@@ -17,6 +17,12 @@ import java.util.List;
 
 import com.ocs.dynamo.domain.AbstractEntity;
 
+/**
+ * TODO Description of TreeDao.
+ *
+ * @param <ID>
+ * @param <T>
+ */
 public interface TreeDao<ID, T extends AbstractEntity<ID>> extends BaseDao<ID, T> {
 
     /**

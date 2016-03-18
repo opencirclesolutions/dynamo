@@ -15,6 +15,9 @@ package com.ocs.dynamo.service;
 
 import com.ocs.dynamo.domain.TestEntity2;
 
+/**
+ * TODO Description of TestEntity2Service.
+ */
 public interface TestEntity2Service extends BaseService<Integer, TestEntity2> {
 
 }

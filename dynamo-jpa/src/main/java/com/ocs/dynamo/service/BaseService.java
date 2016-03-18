@@ -20,6 +20,12 @@ import com.ocs.dynamo.dao.query.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.filter.Filter;
 
+/**
+ * TODO Description of BaseService.
+ * 
+ * @param <ID>
+ * @param <T>
+ */
 public interface BaseService<ID, T extends AbstractEntity<ID>> {
 
     /**

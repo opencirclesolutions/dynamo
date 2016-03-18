@@ -15,6 +15,9 @@ package com.ocs.dynamo.domain.model;
 
 import java.util.Set;
 
+/**
+ * TODO Description of AttributeModel.
+ */
 public interface AttributeModel extends Comparable<AttributeModel> {
 
     /**
