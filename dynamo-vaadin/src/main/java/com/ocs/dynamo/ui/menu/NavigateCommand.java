@@ -13,7 +13,7 @@
  */
 package com.ocs.dynamo.ui.menu;
 
-import com.ocs.dynamo.constants.OCSConstants;
+import com.ocs.dynamo.constants.DynamoConstants;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.MenuBar.Command;
@@ -59,14 +59,14 @@ public class NavigateCommand implements Command {
     @Override
     public void menuSelected(MenuItem selectedItem) {
         if (selectedTab != null) {
-            VaadinSession.getCurrent().setAttribute(OCSConstants.SELECTED_TAB,
+            VaadinSession.getCurrent().setAttribute(DynamoConstants.SELECTED_TAB,
                     Integer.valueOf(selectedTab));
         } else {
             // clear the selected tab index
-            VaadinSession.getCurrent().setAttribute(OCSConstants.SELECTED_TAB, null);
+            VaadinSession.getCurrent().setAttribute(DynamoConstants.SELECTED_TAB, null);
         }
 
-        VaadinSession.getCurrent().setAttribute(OCSConstants.SCREEN_MODE, mode);
+        VaadinSession.getCurrent().setAttribute(DynamoConstants.SCREEN_MODE, mode);
 
         navigator.navigateTo(destination);
     }

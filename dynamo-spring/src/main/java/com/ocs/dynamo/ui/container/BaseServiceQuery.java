@@ -22,7 +22,7 @@ import java.util.Map;
 import org.vaadin.addons.lazyquerycontainer.AbstractBeanQuery;
 import org.vaadin.addons.lazyquerycontainer.QueryDefinition;
 
-import com.ocs.dynamo.constants.OCSConstants;
+import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.dao.SortOrder;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.filter.Filter;
@@ -67,7 +67,7 @@ public abstract class BaseServiceQuery<ID extends Serializable, T extends Abstra
         // to circumvent this, we give the object a temporary ID which we clear
         // before actually persisting the object
         T result = ClassUtils.instantiateClass(ec);
-        ClassUtils.setFieldValue(result, OCSConstants.ID, Integer.MAX_VALUE - countDown);
+        ClassUtils.setFieldValue(result, DynamoConstants.ID, Integer.MAX_VALUE - countDown);
         countDown--;
 
         return result;

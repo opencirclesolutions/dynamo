@@ -18,7 +18,7 @@ import java.util.Date;
 
 import org.springframework.util.StringUtils;
 
-import com.ocs.dynamo.constants.OCSConstants;
+import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeDateType;
 import com.ocs.dynamo.domain.model.AttributeModel;
@@ -119,7 +119,7 @@ public abstract class BaseCustomComponent extends CustomComponent implements Bui
                 // create image preview
                 final byte[] bytes = ClassUtils.getBytes(entity, attributeModel.getName());
                 Embedded image = new DefaultEmbedded(attributeModel.getDisplayName(), bytes);
-                image.setStyleName(OCSConstants.CSS_CLASS_UPLOAD);
+                image.setStyleName(DynamoConstants.CSS_CLASS_UPLOAD);
                 return image;
             } else if (Boolean.class.equals(attributeModel.getType())
                     || boolean.class.equals(attributeModel.getType())) {
@@ -142,7 +142,7 @@ public abstract class BaseCustomComponent extends CustomComponent implements Bui
             }
 
             if (attributeModel.isNumerical()) {
-                fieldLabel.setStyleName(OCSConstants.CSS_NUMERICAL);
+                fieldLabel.setStyleName(DynamoConstants.CSS_NUMERICAL);
             }
 
             if (property != null) {

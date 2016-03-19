@@ -22,7 +22,7 @@ import java.util.List;
 
 import org.apache.commons.io.input.CharSequenceReader;
 
-import com.ocs.dynamo.constants.OCSConstants;
+import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.exception.OCSImportException;
 
 /**
@@ -90,7 +90,7 @@ public class BaseFixedLengthImporter extends BaseTextImporter {
      */
     protected List<String[]> readFixedLengthFile(byte[] bytes, List<Integer> fieldLengths) {
         try (BufferedReader reader = new BufferedReader(
-                new CharSequenceReader(new String(bytes, OCSConstants.UTF_8)))) {
+                new CharSequenceReader(new String(bytes, DynamoConstants.UTF_8)))) {
             List<String[]> result = new ArrayList<String[]>();
 
             String line = reader.readLine();

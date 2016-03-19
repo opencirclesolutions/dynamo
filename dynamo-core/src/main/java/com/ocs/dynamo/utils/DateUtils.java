@@ -21,7 +21,7 @@ import java.util.GregorianCalendar;
 
 import org.apache.commons.lang.StringUtils;
 
-import com.ocs.dynamo.constants.OCSConstants;
+import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.exception.OCSRuntimeException;
 
 /**
@@ -77,7 +77,7 @@ public final class DateUtils {
      */
     public static int getLastWeekOfYear(int year) {
         Date date = createDate("3112" + year);
-        Calendar calendar = Calendar.getInstance(OCSConstants.DEFAULT_LOCALE);
+        Calendar calendar = Calendar.getInstance(DynamoConstants.DEFAULT_LOCALE);
         calendar.setTime(date);
 
         // it is possible for the last day of a year to actually be part of the
@@ -145,7 +145,7 @@ public final class DateUtils {
             int year = getYearFromWeekCode(weekCode);
             int week = getWeekFromWeekCode(weekCode);
 
-            Calendar calendar = new GregorianCalendar(OCSConstants.DEFAULT_LOCALE);
+            Calendar calendar = new GregorianCalendar(DynamoConstants.DEFAULT_LOCALE);
             calendar.set(Calendar.YEAR, year);
             calendar.set(Calendar.WEEK_OF_YEAR, week);
             calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
@@ -163,7 +163,7 @@ public final class DateUtils {
      */
     public static String toWeekCode(Date date) {
         if (date != null) {
-            Calendar calendar = new GregorianCalendar(OCSConstants.DEFAULT_LOCALE);
+            Calendar calendar = new GregorianCalendar(DynamoConstants.DEFAULT_LOCALE);
             calendar.setTime(date);
             int year = calendar.get(Calendar.YEAR);
             int week = calendar.get(Calendar.WEEK_OF_YEAR);

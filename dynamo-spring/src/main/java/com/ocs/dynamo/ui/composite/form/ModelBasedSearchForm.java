@@ -19,7 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.ocs.dynamo.constants.OCSConstants;
+import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.AttributeType;
@@ -319,7 +319,7 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
         FormLayout form = new FormLayout();
 
         if (!formOptions.isPopup()) {
-            form.setStyleName(OCSConstants.CSS_CLASS_HALFSCREEN);
+            form.setStyleName(DynamoConstants.CSS_CLASS_HALFSCREEN);
         }
 
         // iterate over the searchable attributes and add a field for each

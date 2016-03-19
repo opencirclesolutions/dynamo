@@ -17,13 +17,16 @@ import com.ocs.dynamo.domain.AbstractEntity;
 
 /**
  * An Observer according to the well-known pattern
+ * 
+ * @param <T>
+ *            The type of the entity whose changes are monitored
  */
 public interface Observer<T extends AbstractEntity<?>> {
 
-    /**
-     * Call this to notify the observer of a change to the observed entity
-     * 
-     * @param entity
-     */
-    void notify(T entity);
+	/**
+	 * Call this to notify the observer of a change to the observed entity
+	 * 
+	 * @param entity
+	 */
+	void notify(T entity);
 }

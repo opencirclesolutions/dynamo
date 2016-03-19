@@ -22,7 +22,7 @@ import java.util.Set;
 import org.apache.commons.lang.ObjectUtils;
 
 import com.google.common.collect.Sets;
-import com.ocs.dynamo.constants.OCSConstants;
+import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.AttributeType;
@@ -92,7 +92,7 @@ public final class EntityModelUtil {
             if ((AttributeType.BASIC.equals(am.getAttributeType())
                     || AttributeType.LOB.equals(am.getAttributeType()))
                     && !toIgnore.contains(am.getName())) {
-                if (!OCSConstants.ID.equals(am.getName())) {
+                if (!DynamoConstants.ID.equals(am.getName())) {
                     Object value = ClassUtils.getFieldValue(source, am.getName());
                     if (ClassUtils.canSetProperty(target, am.getName())) {
                         if (value != null) {

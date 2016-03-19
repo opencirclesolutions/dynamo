@@ -48,7 +48,7 @@ public class SubListTest {
 
         // creation
         SubList<Integer> subList = new SubList<>(list, 0, 3);
-        Assert.assertEquals(3, subList.size);
+        Assert.assertEquals(3, subList.size());
 
         // setting
         subList.set(0, 4);
