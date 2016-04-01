@@ -25,7 +25,7 @@ import org.vaadin.addons.lazyquerycontainer.CompositeItem;
 import org.vaadin.addons.lazyquerycontainer.NestingBeanItem;
 import org.vaadin.dialogs.ConfirmDialog;
 
-import com.ocs.dynamo.constants.OCSConstants;
+import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.ui.converter.BigDecimalConverter;
 import com.ocs.dynamo.ui.converter.ConverterFactory;
@@ -132,7 +132,7 @@ public final class VaadinUtils {
         if (vs == null) {
             return null;
         }
-        String cs = (String) vs.getAttribute(OCSConstants.CURRENCY_SYMBOL);
+        String cs = (String) vs.getAttribute(DynamoConstants.CURRENCY_SYMBOL);
         return cs != null ? cs : System.getProperty("default.currency.symbol");
     }
 

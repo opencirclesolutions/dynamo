@@ -15,7 +15,7 @@ package com.ocs.dynamo.ui.view;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.ocs.dynamo.constants.OCSConstants;
+import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.vaadin.navigator.View;
 import com.vaadin.server.VaadinSession;
@@ -41,8 +41,8 @@ public abstract class BaseView extends CustomComponent implements View {
     }
 
     protected String getScreenMode() {
-        String mode = (String) VaadinSession.getCurrent().getAttribute(OCSConstants.SCREEN_MODE);
-        VaadinSession.getCurrent().setAttribute(OCSConstants.SCREEN_MODE, null);
+        String mode = (String) VaadinSession.getCurrent().getAttribute(DynamoConstants.SCREEN_MODE);
+        VaadinSession.getCurrent().setAttribute(DynamoConstants.SCREEN_MODE, null);
         return mode;
     }
 

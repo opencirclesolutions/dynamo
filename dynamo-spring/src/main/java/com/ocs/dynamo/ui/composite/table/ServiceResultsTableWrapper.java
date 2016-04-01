@@ -15,7 +15,7 @@ package com.ocs.dynamo.ui.composite.table;
 
 import java.io.Serializable;
 
-import com.ocs.dynamo.constants.OCSConstants;
+import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.dao.query.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
@@ -41,7 +41,7 @@ public class ServiceResultsTableWrapper<ID extends Serializable, T extends Abstr
 
     private static final long serialVersionUID = -4691108261565306844L;
 
-    protected Filter filter;
+    private Filter filter;
 
     /**
      * @param service
@@ -63,7 +63,7 @@ public class ServiceResultsTableWrapper<ID extends Serializable, T extends Abstr
 
     @Override
     protected Container constructContainer() {
-        return new ServiceContainer<ID, T>(getService(), true, OCSConstants.PAGE_SIZE,
+        return new ServiceContainer<ID, T>(getService(), true, DynamoConstants.PAGE_SIZE,
                 getQueryType(), getJoins());
     }
 
@@ -87,5 +87,13 @@ public class ServiceResultsTableWrapper<ID extends Serializable, T extends Abstr
         if (getContainer() instanceof Searchable) {
             ((Searchable) getContainer()).search(filter);
         }
-    }
+	}
+
+	protected Filter getFilter() {
+		return filter;
+	}
+
+	protected void setFilter(Filter filter) {
+		this.filter = filter;
+	}
 }

@@ -16,7 +16,7 @@ package com.ocs.dynamo.ui.composite.form;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 
-import com.ocs.dynamo.constants.OCSConstants;
+import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.ui.composite.type.ScreenMode;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -103,7 +103,7 @@ public abstract class UploadForm extends ProgressForm<byte[]> {
         FormLayout form = new FormLayout();
         form.setMargin(true);
         if (ScreenMode.VERTICAL.equals(screenMode)) {
-            form.setStyleName(OCSConstants.CSS_CLASS_HALFSCREEN);
+            form.setStyleName(DynamoConstants.CSS_CLASS_HALFSCREEN);
         }
 
         main.addComponent(form);

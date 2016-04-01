@@ -30,7 +30,7 @@ import javax.persistence.OptimisticLockException;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 
-import com.ocs.dynamo.constants.OCSConstants;
+import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.AttributeType;
@@ -107,7 +107,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
             // for a LOB field, create an upload and an image
             // retrieve the current value
             if (attributeModel.isImage()) {
-                image.setStyleName(OCSConstants.CSS_CLASS_UPLOAD);
+                image.setStyleName(DynamoConstants.CSS_CLASS_UPLOAD);
                 image.setVisible(bytes != null);
                 main.addComponent(image);
             } else {
@@ -458,7 +458,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
         // in case of vertical layout (the default), don't use the entire screen
         if (ScreenMode.VERTICAL.equals(formOptions.getScreenMode())) {
-            form.setStyleName(OCSConstants.CSS_CLASS_HALFSCREEN);
+            form.setStyleName(DynamoConstants.CSS_CLASS_HALFSCREEN);
         }
 
         int count = 0;
@@ -583,7 +583,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
             ((FormLayout) innerLayout).setMargin(true);
 
             if (!tabs) {
-                ((FormLayout) innerLayout).setStyleName(OCSConstants.CSS_CLASS_HALFSCREEN);
+                ((FormLayout) innerLayout).setStyleName(DynamoConstants.CSS_CLASS_HALFSCREEN);
             }
         } else {
             innerLayout = new DefaultVerticalLayout(true, true);

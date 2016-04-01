@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.google.common.collect.Lists;
-import com.ocs.dynamo.constants.OCSConstants;
+import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.dao.query.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
@@ -295,7 +295,7 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
     protected void detailsMode(T entity) {
         if (mainEditLayout == null) {
             mainEditLayout = new DefaultVerticalLayout();
-            mainEditLayout.setStyleName(OCSConstants.CSS_CLASS_HALFSCREEN);
+            mainEditLayout.setStyleName(DynamoConstants.CSS_CLASS_HALFSCREEN);
 
             // set the form options for the detail form
             FormOptions options = new FormOptions();

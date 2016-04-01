@@ -15,7 +15,7 @@ package com.ocs.dynamo.ui.composite.table;
 
 import java.io.Serializable;
 
-import com.ocs.dynamo.constants.OCSConstants;
+import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.dao.query.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
@@ -31,7 +31,8 @@ import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 
 /**
- * A base class for wrapper objects for tables that are based on the entity model
+ * A base class for wrapper objects for tables that are based on the entity
+ * model
  * 
  * @author bas.rutten
  * @param <ID>
@@ -41,140 +42,140 @@ import com.vaadin.ui.VerticalLayout;
  */
 @SuppressWarnings("serial")
 public abstract class BaseTableWrapper<ID extends Serializable, T extends AbstractEntity<ID>>
-        extends BaseCustomComponent {
+		extends BaseCustomComponent {
 
-    private static final long serialVersionUID = -4691108261565306844L;
+	private static final long serialVersionUID = -4691108261565306844L;
 
-    private Container container;
+	private Container container;
 
-    private EntityModel<T> entityModel;
+	private EntityModel<T> entityModel;
 
-    private FetchJoinInformation[] joins;
+	private FetchJoinInformation[] joins;
 
-    private final QueryType queryType;
+	private final QueryType queryType;
 
-    private final BaseService<ID, T> service;
+	private final BaseService<ID, T> service;
 
-    private SortOrder sortOrder;
+	private SortOrder sortOrder;
 
-    protected Table table;
+	protected Table table;
 
-    /**
-     * Constructor
-     * 
-     * @param service
-     * @param entityModel
-     * @param queryType
-     * @param sortOrder
-     * @param joins
-     */
-    public BaseTableWrapper(BaseService<ID, T> service, EntityModel<T> entityModel,
-            QueryType queryType, SortOrder sortOrder, FetchJoinInformation[] joins) {
-        this.service = service;
-        this.entityModel = entityModel;
-        this.queryType = queryType;
-        this.sortOrder = sortOrder;
-        this.joins = joins;
-    }
+	/**
+	 * Constructor
+	 * 
+	 * @param service
+	 * @param entityModel
+	 * @param queryType
+	 * @param sortOrder
+	 * @param joins
+	 */
+	public BaseTableWrapper(BaseService<ID, T> service, EntityModel<T> entityModel,
+			QueryType queryType, SortOrder sortOrder, FetchJoinInformation[] joins) {
+		this.service = service;
+		this.entityModel = entityModel;
+		this.queryType = queryType;
+		this.sortOrder = sortOrder;
+		this.joins = joins;
+	}
 
-    /**
-     * Builds the component.
-     */
-    @Override
-    public void build() {
-        VerticalLayout main = new VerticalLayout();
+	/**
+	 * Builds the component.
+	 */
+	@Override
+	public void build() {
+		VerticalLayout main = new VerticalLayout();
 
-        this.container = constructContainer();
+		this.container = constructContainer();
 
-        table = getTable();
-        table.setPageLength(OCSConstants.PAGE_SIZE);
+		table = getTable();
+		table.setPageLength(DynamoConstants.PAGE_SIZE);
 
-        initSortingAndFiltering();
+		initSortingAndFiltering();
 
-        main.addComponent(table);
+		main.addComponent(table);
 
-        // add a change listener that responds to the selection of an item
-        table.addValueChangeListener(new Property.ValueChangeListener() {
+		// add a change listener that responds to the selection of an item
+		table.addValueChangeListener(new Property.ValueChangeListener() {
 
-            @Override
-            public void valueChange(ValueChangeEvent event) {
-                onSelect(table.getValue());
-            }
-        });
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				onSelect(table.getValue());
+			}
+		});
 
-        setCompositionRoot(main);
-    }
+		setCompositionRoot(main);
+	}
 
-    /**
-     * Creates the container that holds the relevant data
-     * 
-     * @return
-     */
-    protected abstract Container constructContainer();
+	/**
+	 * Creates the container that holds the relevant data
+	 * 
+	 * @return
+	 */
+	protected abstract Container constructContainer();
 
-    public Container getContainer() {
-        return container;
-    }
+	public Container getContainer() {
+		return container;
+	}
 
-    /**
-     * @return the entityModel
-     */
-    public EntityModel<T> getEntityModel() {
-        return entityModel;
-    }
+	/**
+	 * @return the entityModel
+	 */
+	public EntityModel<T> getEntityModel() {
+		return entityModel;
+	}
 
-    public FetchJoinInformation[] getJoins() {
-        return joins;
-    }
+	public FetchJoinInformation[] getJoins() {
+		return joins;
+	}
 
-    public QueryType getQueryType() {
-        return queryType;
-    }
+	public QueryType getQueryType() {
+		return queryType;
+	}
 
-    public BaseService<ID, T> getService() {
-        return service;
-    }
+	public BaseService<ID, T> getService() {
+		return service;
+	}
 
-    public SortOrder getSortOrder() {
-        return sortOrder;
-    }
+	public SortOrder getSortOrder() {
+		return sortOrder;
+	}
 
-    public Table getTable() {
-        if (table == null) {
-            table = new ModelBasedTable<>(this.container, entityModel, getEntityModelFactory(),
-                    getMessageService());
-        }
-        return table;
-    }
+	public Table getTable() {
+		if (table == null) {
+			table = new ModelBasedTable<>(this.container, entityModel, getEntityModelFactory(),
+					getMessageService());
+		}
+		return table;
+	}
 
-    /**
-     * Initializes the sorting and filtering for the table
-     */
-    protected void initSortingAndFiltering() {
-        if (getSortOrder() != null) {
-            table.sort(new Object[] { getSortOrder().getPropertyId() },
-                    new boolean[] { SortDirection.ASCENDING == getSortOrder().getDirection() });
-        }
-    }
+	/**
+	 * Initializes the sorting and filtering for the table
+	 */
+	protected void initSortingAndFiltering() {
+		if (getSortOrder() != null) {
+			table.sort(new Object[] { getSortOrder().getPropertyId() },
+					new boolean[] { SortDirection.ASCENDING == getSortOrder().getDirection() });
+		}
+	}
 
-    /**
-     * Respond to a selection of an item in the table
-     */
-    protected void onSelect(Object selected) {
-        // override in subclass if needed
-    }
+	/**
+	 * Respond to a selection of an item in the table
+	 */
+	protected void onSelect(Object selected) {
+		// override in subclass if needed
+	}
 
-    /**
-     * Reloads the data in the container
-     */
-    public abstract void reloadContainer();
+	/**
+	 * Reloads the data in the container
+	 */
+	public abstract void reloadContainer();
 
-    public void setJoins(FetchJoinInformation[] joins) {
-        this.joins = joins;
-    }
+	public void setJoins(FetchJoinInformation[] joins) {
+		this.joins = joins;
+	}
 
-    public void setSortOrder(SortOrder sortOrder) {
-        this.sortOrder = sortOrder;
-    }
+	public void setSortOrder(SortOrder sortOrder) {
+		this.sortOrder = sortOrder;
+	}
 
 }

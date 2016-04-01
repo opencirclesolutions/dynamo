@@ -22,7 +22,7 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 
 import com.google.common.collect.Lists;
-import com.ocs.dynamo.constants.OCSConstants;
+import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.MessageService;
@@ -157,7 +157,7 @@ public abstract class CustomTreeTable<ID, U extends AbstractEntity<ID>, ID2, V e
                     });
 
                     // align all text field to the right
-                    tf.setStyleName(OCSConstants.CSS_NUMERICAL);
+                    tf.setStyleName(DynamoConstants.CSS_NUMERICAL);
 
                     postProcessField(propertyId, itemId, tf);
                     return tf;
@@ -899,7 +899,7 @@ public abstract class CustomTreeTable<ID, U extends AbstractEntity<ID>, ID2, V e
      * @return
      */
     private boolean useThousandsGrouping() {
-        return Boolean.getBoolean(OCSConstants.SP_THOUSAND_GROUPING);
+        return Boolean.getBoolean(DynamoConstants.SP_THOUSAND_GROUPING);
     }
 
     /**
@@ -917,7 +917,7 @@ public abstract class CustomTreeTable<ID, U extends AbstractEntity<ID>, ID2, V e
      * @return
      */
     protected int getDefaultPrecision() {
-        Integer i = Integer.getInteger(OCSConstants.SP_DECIMAL_PRECISION);
+        Integer i = Integer.getInteger(DynamoConstants.SP_DECIMAL_PRECISION);
         return i == null ? EntityModel.DEFAULT_PRECISION : i;
     }
 }
