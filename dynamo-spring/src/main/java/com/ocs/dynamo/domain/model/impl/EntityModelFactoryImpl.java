@@ -647,7 +647,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 			model = (EntityModel<T>) cache.get(reference);
 			if (model == null) {
 				model = constructModel(reference, entityClass);
-				EntityModel<?> oldModel = cache.putIfAbsent(reference, model);
+				cache.putIfAbsent(reference, model);
 			}
 		}
 		return model;
