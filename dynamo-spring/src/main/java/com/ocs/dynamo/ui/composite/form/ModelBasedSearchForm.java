@@ -37,6 +37,7 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.FormLayout;
+import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.VerticalLayout;
@@ -50,8 +51,8 @@ import com.vaadin.ui.VerticalLayout;
  * @param <T>
  *            type of the entity to search for
  */
-public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEntity<ID>>
-        extends BaseCustomComponent implements FilterListener, Button.ClickListener {
+public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEntity<ID>> extends
+        BaseCustomComponent implements FilterListener, Button.ClickListener {
 
     // the types of search field
     protected enum FilterType {
@@ -79,19 +80,32 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
     // list of extra filters to apply to certain fields
     private Map<String, Filter> fieldFilters = new HashMap<>();
 
+    // the number of fields added
+    private int fieldsAdded = 0;
+
     // the layout that contains all the filter fields
     private Component filterLayout;
 
+    // the main layout
+    private Layout form;
+
+    // the form options
     private FormOptions formOptions;
 
     // the list of filter groups
     private Map<String, FilterGroup> groups = new HashMap<>();
+
+    // the number of columns
+    private int nrOfColumns = 1;
 
     // the object to search when the button is pressed
     private Searchable searchable;
 
     // the search button
     private Button searchButton;
+
+    // sub form
+    private List<FormLayout> subForms = new ArrayList<>();
 
     // toggle butoon (hides/shows the search form)
     private Button toggleButton;
@@ -237,6 +251,10 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
         return null;
     }
 
+    protected List<Component> constructExtraSearchFields() {
+        return new ArrayList<>();
+    }
+
     /**
      * Creates a search field based on an attribute model
      * 
@@ -316,23 +334,40 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
      * @return
      */
     protected Component constructFilterLayout(EntityModel<T> entityModel) {
-        FormLayout form = new FormLayout();
+        if (nrOfColumns == 1) {
+            form = new FormLayout();
+            // don't use all the space unless it's a popup window
+            if (!formOptions.isPopup()) {
+                form.setStyleName(DynamoConstants.CSS_CLASS_HALFSCREEN);
+            }
+        } else {
+            // create a number of form layouts next to each others
+            form = new GridLayout(nrOfColumns, 1);
+            form.setSizeFull();
 
-        if (!formOptions.isPopup()) {
-            form.setStyleName(DynamoConstants.CSS_CLASS_HALFSCREEN);
+            for (int i = 0; i < nrOfColumns; i++) {
+                FormLayout column = new FormLayout();
+                column.setMargin(true);
+                subForms.add(column);
+                form.addComponent(column);
+            }
+        }
+
+        // add any extra fields
+        List<Component> extra = constructExtraSearchFields();
+        for (Component c : extra) {
+            if (nrOfColumns == 1) {
+                form.addComponent(c);
+            } else {
+                int index = fieldsAdded % nrOfColumns;
+                subForms.get(index).addComponent(c);
+            }
+            fieldsAdded++;
         }
 
         // iterate over the searchable attributes and add a field for each
-        iterate(form, entityModel.getAttributeModels());
+        iterate(entityModel.getAttributeModels());
         return form;
-    }
-
-    @Override
-    public void onFilterChange(FilterChangeEvent event) {
-        currentFilters.remove(event.getOldFilter());
-        if (event.getNewFilter() != null) {
-            currentFilters.add(event.getNewFilter());
-        }
     }
 
     /**
@@ -352,6 +387,10 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
         return groups;
     }
 
+    public int getNrOfColumns() {
+        return nrOfColumns;
+    }
+
     /**
      * Recursively iterate over the attribute models (including nested models) and add search fields
      * if the fields are searchable
@@ -361,25 +400,41 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
      * @param attributeModels
      *            the attribute models to iterate over
      */
-    private void iterate(Layout form, List<AttributeModel> attributeModels) {
+    private void iterate(List<AttributeModel> attributeModels) {
         for (AttributeModel attributeModel : attributeModels) {
             if (attributeModel.isSearchable()
                     && !AttributeType.DETAIL.equals(attributeModel.getAttributeType())) {
 
                 FilterGroup group = constructFilterGroup(entityModel, attributeModel);
                 group.getFilterComponent().setSizeFull();
-                form.addComponent(group.getFilterComponent());
+
+                if (nrOfColumns == 1) {
+                    form.addComponent(group.getFilterComponent());
+                } else {
+                    int index = fieldsAdded % nrOfColumns;
+                    subForms.get(index).addComponent(group.getFilterComponent());
+                }
 
                 // register with the form and set the listener
                 group.addListener(this);
                 groups.put(group.getPropertyId(), group);
+
+                fieldsAdded++;
             }
 
             // also support search on nested attributes
             if (attributeModel.getNestedEntityModel() != null) {
                 EntityModel<?> nested = attributeModel.getNestedEntityModel();
-                iterate(form, nested.getAttributeModels());
+                iterate(nested.getAttributeModels());
             }
+        }
+    }
+
+    @Override
+    public void onFilterChange(FilterChangeEvent event) {
+        currentFilters.remove(event.getOldFilter());
+        if (event.getNewFilter() != null) {
+            currentFilters.add(event.getNewFilter());
         }
     }
 
@@ -402,6 +457,10 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
             // search without any filters
             searchable.search(null);
         }
+    }
+
+    public void setNrOfColumns(int nrOfColumns) {
+        this.nrOfColumns = nrOfColumns;
     }
 
     /**

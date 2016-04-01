@@ -15,10 +15,9 @@ package com.ocs.dynamo.ui.view;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
+import com.ocs.dynamo.ui.BaseUI;
 import com.vaadin.navigator.View;
-import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.UI;
 
@@ -40,29 +39,24 @@ public abstract class BaseView extends CustomComponent implements View {
         return modelFactory;
     }
 
+    /**
+     * Returns the current screen mode
+     */
     protected String getScreenMode() {
-        String mode = (String) VaadinSession.getCurrent().getAttribute(DynamoConstants.SCREEN_MODE);
-        VaadinSession.getCurrent().setAttribute(DynamoConstants.SCREEN_MODE, null);
-        return mode;
+        if (UI.getCurrent() instanceof BaseUI) {
+            BaseUI b = (BaseUI) UI.getCurrent();
+            return b.getScreenMode();
+        }
+        return null;
     }
 
     /**
      * Navigates to the selected view
      * 
      * @param viewId
+     *            the ID of the desired view
      */
     protected void navigate(String viewId) {
-        UI.getCurrent().getNavigator().navigateTo(viewId);
-    }
-
-    /**
-     * Sets the ID of the selected object in the session, then navigates to the desired view
-     * 
-     * @param viewId
-     * @param id
-     */
-    protected void selectAndNavigate(String viewId, Object id) {
-        UI.getCurrent().getSession().setAttribute(SELECTED_ID, id);
         UI.getCurrent().getNavigator().navigateTo(viewId);
     }
 
