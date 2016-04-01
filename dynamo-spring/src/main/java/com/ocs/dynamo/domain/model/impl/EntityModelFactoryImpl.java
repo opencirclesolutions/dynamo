@@ -537,6 +537,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
                     model.setMemberType(ClassUtils.getResolvedType(parentClass, model.getName(), 0));
                 } else if (ClassUtils.getAnnotation(parentClass, name, ElementCollection.class) != null) {
                     result = AttributeType.ELEMENT_COLLECTION;
+                    model.setMemberType(ClassUtils.getResolvedType(parentClass, model.getName(), 0));
                 } else if (AbstractEntity.class.isAssignableFrom(model.getType())) {
                     // not a collection but a reference to another object
                     result = AttributeType.MASTER;
@@ -638,14 +639,15 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "unused" })
     public <T> EntityModel<T> getModel(String reference, Class<T> entityClass) {
         EntityModel<T> model = null;
         if (!StringUtils.isEmpty(reference) && entityClass != null) {
             model = (EntityModel<T>) cache.get(reference);
             if (model == null) {
                 model = constructModel(reference, entityClass);
-                cache.putIfAbsent(reference, model);
+                // needed to make FindBugs happy
+                EntityModel<?> skip = cache.putIfAbsent(reference, model);
             }
         }
         return model;

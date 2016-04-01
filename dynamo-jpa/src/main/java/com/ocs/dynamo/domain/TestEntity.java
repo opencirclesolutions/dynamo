@@ -99,7 +99,7 @@ public class TestEntity extends AbstractTreeEntity<Integer, TestEntity> {
     private Date someTime;
 
     @ElementCollection
-    @Size(max = 25)
+    @Attribute(maxLength = 25)
     private Set<String> tags = new HashSet<>();
 
     public TestEntity() {

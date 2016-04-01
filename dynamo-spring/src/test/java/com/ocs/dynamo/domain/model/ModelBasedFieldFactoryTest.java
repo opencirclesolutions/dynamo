@@ -121,14 +121,14 @@ public class ModelBasedFieldFactoryTest extends BaseMockitoTest {
     }
 
     /**
-     * Test an "elementcollection" field
+     * Test an "element collection" field
      */
     @Test
     public void testCollectionField() {
         Object obj = fieldFactory.createField("tags");
         Assert.assertTrue(obj instanceof CollectionTable);
 
-        CollectionTable ct = (CollectionTable) obj;
+        CollectionTable<?> ct = (CollectionTable<?>) obj;
         Assert.assertEquals(25, ct.getMaxLength().intValue());
     }
 
@@ -137,8 +137,8 @@ public class ModelBasedFieldFactoryTest extends BaseMockitoTest {
      */
     @Test
     public void testTextFieldValidating() {
-        fieldFactory = ModelBasedFieldFactory
-                .getValidatingInstance(factory.getModel(TestEntity.class), messageService);
+        fieldFactory = ModelBasedFieldFactory.getValidatingInstance(
+                factory.getModel(TestEntity.class), messageService);
         Object obj = fieldFactory.createField("name");
 
         Assert.assertTrue(obj instanceof TextField);
@@ -268,8 +268,8 @@ public class ModelBasedFieldFactoryTest extends BaseMockitoTest {
 
     @Test
     public void testDoNotCreateReadonlyField() {
-        ModelBasedFieldFactory<TestX> f = ModelBasedFieldFactory
-                .getInstance(factory.getModel(TestX.class), messageService);
+        ModelBasedFieldFactory<TestX> f = ModelBasedFieldFactory.getInstance(
+                factory.getModel(TestX.class), messageService);
         Assert.assertNull(f.createField("readOnlyField"));
 
         // in search mode, it does not matter if the field is readonly
