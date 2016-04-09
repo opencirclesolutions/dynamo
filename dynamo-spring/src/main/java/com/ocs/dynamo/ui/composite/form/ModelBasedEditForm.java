@@ -44,6 +44,7 @@ import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.component.DefaultEmbedded;
 import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
+import com.ocs.dynamo.ui.component.URLField;
 import com.ocs.dynamo.ui.composite.layout.BaseCustomComponent;
 import com.ocs.dynamo.ui.composite.type.AttributeGroupMode;
 import com.ocs.dynamo.ui.composite.type.ScreenMode;
@@ -89,6 +90,12 @@ import com.vaadin.ui.VerticalLayout;
 public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntity<ID>> extends
         BaseCustomComponent {
 
+    /**
+     * A custom field that can be used to upload a file
+     * 
+     * @author bas.rutten
+     *
+     */
     private final class UploadComponent extends CustomField<byte[]> {
 
         private AttributeModel attributeModel;
@@ -351,26 +358,38 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
                     if ((AttributeType.DETAIL.equals(type) || AttributeType.ELEMENT_COLLECTION
                             .equals(type)) && attributeModel.isComplexEditable()) {
                         // display a complex component in read-only mode
-                        constructSimpleField(parent, entityModel, attributeModel, true, count);
+                        constructField(parent, entityModel, attributeModel, true, count);
                     } else {
                         // display a label
-                        Component label = constructLabel(entity, attributeModel);
-                        labels.get(isViewMode()).put(attributeModel, label);
-                        parent.addComponent(label);
+                        if (attributeModel.isUrl()) {
+                            URLField urlField = new URLField(attributeModel);
+                            groups.get(isViewMode()).bind(urlField, attributeModel.getName());
+                            parent.addComponent(urlField);
+                        } else {
+                            Component label = constructLabel(entity, attributeModel);
+                            labels.get(isViewMode()).put(attributeModel, label);
+                            parent.addComponent(label);
+                        }
                     }
                 } else {
                     // new entity - create the label but do not display it
-                    Component label = constructLabel(entity, attributeModel);
-                    label.setVisible(false);
-                    labels.get(isViewMode()).put(attributeModel, label);
-                    parent.addComponent(label);
+                    if (attributeModel.isUrl()) {
+                        URLField urlField = new URLField(attributeModel);
+                        groups.get(isViewMode()).bind(urlField, attributeModel.getName());
+                        parent.addComponent(urlField);
+                    } else {
+                        Component label = constructLabel(entity, attributeModel);
+                        label.setVisible(false);
+                        labels.get(isViewMode()).put(attributeModel, label);
+                        parent.addComponent(label);
+                    }
                 }
             } else {
                 // display an editable field
                 if (AttributeType.BASIC.equals(type) || AttributeType.MASTER.equals(type)
                         || AttributeType.DETAIL.equals(type)
                         || AttributeType.ELEMENT_COLLECTION.equals(type)) {
-                    constructSimpleField(parent, entityModel, attributeModel, false, count);
+                    constructField(parent, entityModel, attributeModel, false, count);
                 } else if (AttributeType.LOB.equals(type)) {
                     // for a LOB field we need to construct a rather
                     // elaborate upload component
@@ -680,14 +699,14 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
     }
 
     /**
-     * Constructs a simple field (for an int, date, string etc)
+     * Constructs a field for a certain attribute
      * 
      * @param form
      * @param entityModel
      * @param attributeModel
      */
     @SuppressWarnings("unchecked")
-    private void constructSimpleField(Layout form, EntityModel<T> entityModel,
+    private void constructField(Layout form, EntityModel<T> entityModel,
             AttributeModel attributeModel, boolean viewMode, int count) {
 
         // allow the user to override the construction of a field
@@ -710,7 +729,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
             if (!(field instanceof DetailsEditTable)) {
                 groups.get(viewMode).bind(field, attributeModel.getName());
             }
-
             field.setSizeFull();
             form.addComponent(field);
         }
@@ -887,6 +905,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
             // label is displayed in view mode or when its an existing entity
             newLabel.setVisible(entity.getId() != null || isViewMode());
 
+            // replace all existing labels with new labels
             HasComponents hc = e.getValue().getParent();
             if (hc instanceof Layout) {
                 ((Layout) hc).replaceComponent(e.getValue(), newLabel);

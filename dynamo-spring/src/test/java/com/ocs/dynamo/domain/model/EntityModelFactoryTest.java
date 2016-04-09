@@ -132,8 +132,11 @@ public class EntityModelFactoryTest extends BaseMockitoTest {
         AttributeModel mailModel = model.getAttributeModel("email");
         Assert.assertTrue(mailModel.isEmail());
 
+        AttributeModel urlModel = model.getAttributeModel("url");
+        Assert.assertTrue(urlModel.isUrl());
+
         // test the total size
-        Assert.assertEquals(6, model.getAttributeModels().size());
+        Assert.assertEquals(7, model.getAttributeModels().size());
     }
 
     @Test
@@ -396,8 +399,7 @@ public class EntityModelFactoryTest extends BaseMockitoTest {
     public void testEmbedded() {
         EntityModel<EmbeddedParent> model = factory.getModel(EmbeddedParent.class);
         Assert.assertNotNull(model.getAttributeModel("name"));
-        Assert.assertEquals(AttributeType.BASIC,
-                model.getAttributeModel("name").getAttributeType());
+        Assert.assertEquals(AttributeType.BASIC, model.getAttributeModel("name").getAttributeType());
 
         // there must not be a separate model for the embedded object
         Assert.assertNull(model.getAttributeModel("child"));
@@ -475,6 +477,9 @@ public class EntityModelFactoryTest extends BaseMockitoTest {
         @Email
         private String email;
 
+        @Attribute(url = true)
+        private String url;
+
         public String getName() {
             return name;
         }
@@ -521,6 +526,14 @@ public class EntityModelFactoryTest extends BaseMockitoTest {
 
         public void setEmail(String email) {
             this.email = email;
+        }
+
+        public String getUrl() {
+            return url;
+        }
+
+        public void setUrl(String url) {
+            this.url = url;
         }
 
     }

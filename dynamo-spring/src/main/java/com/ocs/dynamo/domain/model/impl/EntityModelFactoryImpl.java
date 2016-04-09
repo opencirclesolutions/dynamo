@@ -154,6 +154,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
             model.setPrecision(defaultPrecision);
             model.setSearchCaseSensitive(false);
             model.setSearchPrefixOnly(false);
+            model.setUrl(false);
 
             Id idAttr = ClassUtils.getAnnotation(entityModel.getEntityClass(),
                     descriptor.getName(), Id.class);
@@ -805,6 +806,10 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
             if (attribute.maxLength() > -1) {
                 model.setMaxLength(attribute.maxLength());
             }
+
+            if (attribute.url()) {
+                model.setUrl(true);
+            }
         }
     }
 
@@ -996,6 +1001,11 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
         msg = getAttributeMessage(entityModel, model, EntityModel.MAX_LENGTH);
         if (!StringUtils.isEmpty(msg)) {
             model.setMaxLength(Integer.parseInt(msg));
+        }
+
+        msg = getAttributeMessage(entityModel, model, EntityModel.URL);
+        if (!StringUtils.isEmpty(msg)) {
+            model.setUrl(Boolean.valueOf(msg));
         }
     }
 

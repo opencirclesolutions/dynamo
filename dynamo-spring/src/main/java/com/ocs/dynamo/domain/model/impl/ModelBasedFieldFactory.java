@@ -44,6 +44,7 @@ import com.ocs.dynamo.ui.composite.form.FormOptions;
 import com.ocs.dynamo.ui.converter.ConverterFactory;
 import com.ocs.dynamo.ui.converter.WeekCodeConverter;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
+import com.ocs.dynamo.ui.validator.URLValidator;
 import com.vaadin.data.Container;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Item;
@@ -476,6 +477,13 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
                 field.addValidator(new EmailValidator(messageService
                         .getMessage("ocs.no.valid.email")));
             }
+
+            // add URL validator
+            if (attributeModel.isUrl()) {
+                field.addValidator(new URLValidator(messageService
+                        .getMessage("ocs.no.valid.url")));
+            }
+
         } else if (field instanceof DateField) {
             // set a separate format for a date field
             DateField dateField = (DateField) field;
