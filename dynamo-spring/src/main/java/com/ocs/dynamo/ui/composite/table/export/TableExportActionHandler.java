@@ -216,7 +216,7 @@ public class TableExportActionHandler implements Handler {
                     } else {
                         // if everything else fails, use the string
                         // representation
-                        String v = value.toString();
+                        String v = value == null ? "" : value.toString();
                         v = StringUtil.replaceHtmlBreaks(v);
                         sheetCell.setCellValue(v);
                     }
