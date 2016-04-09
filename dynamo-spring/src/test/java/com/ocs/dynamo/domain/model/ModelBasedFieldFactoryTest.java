@@ -38,8 +38,10 @@ import com.ocs.dynamo.ui.component.EntityListSelect;
 import com.ocs.dynamo.ui.component.EntityLookupField;
 import com.ocs.dynamo.ui.component.TimeField;
 import com.ocs.dynamo.ui.composite.form.CollectionTable;
+import com.ocs.dynamo.ui.validator.URLValidator;
 import com.ocs.dynamo.utils.DateUtils;
 import com.vaadin.data.Item;
+import com.vaadin.data.Validator;
 import com.vaadin.data.util.filter.Compare;
 import com.vaadin.shared.ui.datefield.Resolution;
 import com.vaadin.ui.AbstractSelect;
@@ -85,6 +87,26 @@ public class ModelBasedFieldFactoryTest extends BaseMockitoTest {
         TextField tf = (TextField) obj;
         Assert.assertEquals("", tf.getNullRepresentation());
         Assert.assertNotNull(tf.getInputPrompt());
+    }
+
+    /**
+     * Test a URL field
+     */
+    @Test
+    public void testURLField() {
+        Object obj = fieldFactory.createField("url");
+        Assert.assertTrue(obj instanceof TextField);
+
+        TextField tf = (TextField) obj;
+
+        // check that a URL validator was added
+        URLValidator validator = null;
+        for (Validator v : tf.getValidators()) {
+            if (v instanceof URLValidator) {
+                validator = (URLValidator) v;
+            }
+        }
+        Assert.assertNotNull(validator);
     }
 
     /**

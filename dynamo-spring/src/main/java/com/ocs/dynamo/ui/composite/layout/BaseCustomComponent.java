@@ -86,16 +86,15 @@ public abstract class BaseCustomComponent extends CustomComponent implements Bui
                 if (AttributeDateType.TIME.equals(attributeModel.getDateType())) {
                     // for a time, do not include a time zone (we have no way of
                     // knowing it!)
-                    fieldLabel.setConverter(new FormattedStringToDateConverter(null,
-                            attributeModel.getDisplayFormat()));
+                    fieldLabel.setConverter(new FormattedStringToDateConverter(null, attributeModel
+                            .getDisplayFormat()));
                 } else {
-                    fieldLabel.setConverter(new FormattedStringToDateConverter(
-                            VaadinUtils.getTimeZone(UI.getCurrent()),
-                            attributeModel.getDisplayFormat()));
+                    fieldLabel.setConverter(new FormattedStringToDateConverter(VaadinUtils
+                            .getTimeZone(UI.getCurrent()), attributeModel.getDisplayFormat()));
                 }
             } else if (attributeModel.getType().isEnum()) {
-                String msg = getMessageService()
-                        .getEnumMessage((Class<Enum<?>>) attributeModel.getType(), (Enum<?>) value);
+                String msg = getMessageService().getEnumMessage(
+                        (Class<Enum<?>>) attributeModel.getType(), (Enum<?>) value);
                 if (msg != null) {
                     fieldLabel.setValue(msg);
                 }

@@ -17,8 +17,43 @@ public final class StringUtil {
 
     private static final String EMAIL_PATTERN = "(.+)@(.+)";
 
+    private static final String HTTP = "http";
+
     private StringUtil() {
         // private constructor
+    }
+
+    /**
+     * Checks if an value is a valid email address - this is actually a very simple check that only
+     * checks for the @-sign
+     * 
+     * @param value
+     *            the value to check
+     */
+    public static boolean isValidEmail(String value) {
+        if (value == null) {
+            return true;
+        }
+
+        return value.matches(EMAIL_PATTERN);
+    }
+
+    /**
+     * Prepends the default protocol ("http://") to a value that represents a URL
+     * 
+     * @param value
+     *            the value
+     * @return
+     */
+    public static String prependProtocol(String value) {
+        if (value == null) {
+            return value;
+        }
+
+        if (!value.startsWith(HTTP)) {
+            return HTTP + "://" + value;
+        }
+        return value;
     }
 
     /**
@@ -57,21 +92,6 @@ public final class StringUtil {
             }
         }
         return value;
-    }
-
-    /**
-     * Checks if an value is a valid email address - this is actually a very simple check that only
-     * checks for the @-sign
-     * 
-     * @param value
-     *            the value to check
-     */
-    public static boolean isValidEmail(String value) {
-        if (value == null) {
-            return true;
-        }
-
-        return value.matches(EMAIL_PATTERN);
     }
 
 }

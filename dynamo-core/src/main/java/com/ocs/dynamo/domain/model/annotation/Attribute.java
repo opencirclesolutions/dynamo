@@ -115,6 +115,9 @@ public @interface Attribute {
 
 	// the representation to use instead of "true"
 	String trueRepresentation() default "";
+	
+	// indicates whether this is a clickable URL
+	boolean url() default false;
 
 	// whether the field is visible
 	VisibilityType visible() default VisibilityType.INHERIT;

@@ -33,8 +33,8 @@ import com.vaadin.data.util.BeanItemContainer;
  * @param <T>
  *            type of the entity
  */
-public class FixedTableWrapper<ID extends Serializable, T extends AbstractEntity<ID>>
-        extends BaseTableWrapper<ID, T> {
+public class FixedTableWrapper<ID extends Serializable, T extends AbstractEntity<ID>> extends
+        BaseTableWrapper<ID, T> {
 
     private static final long serialVersionUID = -6711832174203817230L;
 
@@ -45,13 +45,17 @@ public class FixedTableWrapper<ID extends Serializable, T extends AbstractEntity
      * Constructor
      * 
      * @param service
+     *            the service
      * @param entityModel
+     *            the entity model of the items to display in the table
      * @param items
+     *            the items to display
      * @param sortOrder
+     *            optional sort order
      */
     public FixedTableWrapper(BaseService<ID, T> service, EntityModel<T> entityModel,
             Collection<T> items, SortOrder sortOrder) {
-        super(service, entityModel, QueryType.NONE, sortOrder, null);
+        super(service, entityModel, QueryType.NONE, sortOrder);
         this.items = items;
     }
 

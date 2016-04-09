@@ -163,7 +163,6 @@ public final class TableUtils {
                         format.setTimeZone(VaadinUtils.getTimeZone(UI.getCurrent()));
                     }
                     return format.format((Date) value);
-
                 } else if (BigDecimal.class.equals(model.getType())) {
                     return VaadinUtils.bigDecimalToString(model.isCurrency(), model.isPercentage(),
                             true, model.getPrecision(), (BigDecimal) value, locale);
@@ -214,12 +213,12 @@ public final class TableUtils {
      * @param property
      * @return
      */
-    public static <T> String formatPropertyValue(Table table, EntityModelFactory entityModelFactory,
-            EntityModel<T> entityModel, MessageService messageService, Object rowId, Object colId,
-            Property<?> property) {
+    public static <T> String formatPropertyValue(Table table,
+            EntityModelFactory entityModelFactory, EntityModel<T> entityModel,
+            MessageService messageService, Object rowId, Object colId, Property<?> property) {
         return formatPropertyValue(table, entityModelFactory, entityModel, messageService, rowId,
-                colId, property,
-                VaadinSession.getCurrent() == null ? null : VaadinSession.getCurrent().getLocale());
+                colId, property, VaadinSession.getCurrent() == null ? null : VaadinSession
+                        .getCurrent().getLocale());
     }
 
     /**
@@ -236,9 +235,10 @@ public final class TableUtils {
      * @return
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public static <T> String formatPropertyValue(Table table, EntityModelFactory entityModelFactory,
-            EntityModel<T> entityModel, MessageService messageService, Object rowId, Object colId,
-            Property<?> property, Locale locale) {
+    public static <T> String formatPropertyValue(Table table,
+            EntityModelFactory entityModelFactory, EntityModel<T> entityModel,
+            MessageService messageService, Object rowId, Object colId, Property<?> property,
+            Locale locale) {
         if (table.getContainerDataSource() instanceof ModelBasedHierarchicalContainer) {
             ModelBasedHierarchicalContainer<?> c = (ModelBasedHierarchicalContainer<?>) table
                     .getContainerDataSource();

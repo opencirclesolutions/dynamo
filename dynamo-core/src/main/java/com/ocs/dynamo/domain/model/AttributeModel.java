@@ -269,6 +269,12 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	 * @return
 	 */
 	boolean isSortable();
+	
+	/**
+	 * Indicates whether this represents a (clickable) URL
+	 * @return
+	 */
+	boolean isUrl();
 
 	/**
 	 * Indicates whether the attribute is visible

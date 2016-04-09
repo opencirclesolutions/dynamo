@@ -102,6 +102,9 @@ public class TestEntity extends AbstractTreeEntity<Integer, TestEntity> {
     @Attribute(maxLength = 25)
     private Set<String> tags = new HashSet<>();
 
+    @Attribute(url = true)
+    private String url;
+
     public TestEntity() {
     }
 
@@ -256,6 +259,14 @@ public class TestEntity extends AbstractTreeEntity<Integer, TestEntity> {
 
     public void setTags(Set<String> tags) {
         this.tags = tags;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 
 }

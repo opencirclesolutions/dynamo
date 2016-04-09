@@ -41,6 +41,9 @@ public class ServiceResultsTableWrapper<ID extends Serializable, T extends Abstr
 
     private static final long serialVersionUID = -4691108261565306844L;
 
+    /**
+     * The search filter that is applied to the table
+     */
     private Filter filter;
 
     /**
@@ -87,13 +90,13 @@ public class ServiceResultsTableWrapper<ID extends Serializable, T extends Abstr
         if (getContainer() instanceof Searchable) {
             ((Searchable) getContainer()).search(filter);
         }
-	}
+    }
 
-	protected Filter getFilter() {
-		return filter;
-	}
+    protected Filter getFilter() {
+        return filter;
+    }
 
-	protected void setFilter(Filter filter) {
-		this.filter = filter;
-	}
+    protected void setFilter(Filter filter) {
+        this.filter = filter;
+    }
 }

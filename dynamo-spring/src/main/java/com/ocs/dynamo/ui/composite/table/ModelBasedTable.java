@@ -26,9 +26,12 @@ import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.domain.model.impl.ModelBasedFieldFactory;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.ui.composite.table.export.TableExportActionHandler;
+import com.ocs.dynamo.utils.StringUtil;
 import com.vaadin.data.Container;
-import com.vaadin.data.Container.ItemSetChangeEvent;
 import com.vaadin.data.Property;
+import com.vaadin.server.ExternalResource;
+import com.vaadin.shared.ui.BorderStyle;
+import com.vaadin.ui.Link;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.UI;
 
@@ -143,12 +146,31 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
                 // needed
                 if (container instanceof LazyQueryContainer) {
                     LazyQueryContainer lazyContainer = (LazyQueryContainer) container;
-                    if (!lazyContainer.getContainerPropertyIds()
-                            .contains(attributeModel.getName())) {
+                    if (!lazyContainer.getContainerPropertyIds().contains(attributeModel.getName())) {
                         lazyContainer.addContainerProperty(attributeModel.getName(),
                                 attributeModel.getType(), attributeModel.getDefaultValue(),
                                 attributeModel.isReadOnly(), attributeModel.isSortable());
                     }
+                }
+
+                // generated column with clickable URL
+                if (attributeModel.isUrl()) {
+                    table.addGeneratedColumn(attributeModel.getName(), new ColumnGenerator() {
+
+                        private static final long serialVersionUID = -3191235289754428914L;
+
+                        @Override
+                        public Object generateCell(Table source, Object itemId, Object columnId) {
+                            String caption = (String) getItem(itemId).getItemProperty(columnId)
+                                    .getValue();
+                            if (caption != null) {
+                                caption = StringUtil.prependProtocol(caption);
+                                return new Link(caption, new ExternalResource(caption), "_blank",
+                                        0, 0, BorderStyle.DEFAULT);
+                            }
+                            return null;
+                        }
+                    });
                 }
 
                 if (attributeModel.isNumerical()) {
@@ -159,6 +181,7 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
 
         table.setVisibleColumns(propertyNames.toArray());
         table.setColumnHeaders(headerNames.toArray(new String[0]));
+
     }
 
     public Container getContainer() {
@@ -166,8 +189,8 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
     }
 
     public void updateTableCaption() {
-        setCaption(entityModel.getDisplayNamePlural() + " " + messageService
-                .getMessage("ocs.showing.results", getContainerDataSource().size()));
+        setCaption(entityModel.getDisplayNamePlural() + " "
+                + messageService.getMessage("ocs.showing.results", getContainerDataSource().size()));
     }
 
 }
