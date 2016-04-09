@@ -44,6 +44,7 @@ import com.ocs.dynamo.ui.composite.table.TableUtils;
 import com.ocs.dynamo.utils.StringUtil;
 import com.vaadin.addon.tableexport.ExcelExport;
 import com.vaadin.data.Container;
+import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.event.Action;
@@ -71,12 +72,24 @@ public class TableExportActionHandler implements Handler {
 
         private static final long serialVersionUID = 5811530790417796915L;
 
+        /**
+         * Cell style for BigDecimal percentage fields
+         */
         private CellStyle bigDecimalPercentageStyle;
 
+        /**
+         * Cell style for BigDecimal fields
+         */
         private CellStyle bigDecimalStyle;
 
+        /**
+         * Cell style for integer fields
+         */
         private CellStyle integerStyle;
 
+        /**
+         * Cell style for normal (text) fields
+         */
         private CellStyle normal;
 
         /**
@@ -95,34 +108,37 @@ public class TableExportActionHandler implements Handler {
             // gain!
             integerStyle = workbook.createCellStyle();
             integerStyle.setAlignment(CellStyle.ALIGN_RIGHT);
-            integerStyle.setBorderBottom(CellStyle.BORDER_THIN);
-            integerStyle.setBorderTop(CellStyle.BORDER_THIN);
-            integerStyle.setBorderLeft(CellStyle.BORDER_THIN);
-            integerStyle.setBorderRight(CellStyle.BORDER_THIN);
+            setBorder(integerStyle, CellStyle.BORDER_THIN);
             integerStyle.setDataFormat(format.getFormat("#,#"));
 
             bigDecimalStyle = workbook.createCellStyle();
             bigDecimalStyle.setAlignment(CellStyle.ALIGN_RIGHT);
-            bigDecimalStyle.setBorderBottom(CellStyle.BORDER_THIN);
-            bigDecimalStyle.setBorderTop(CellStyle.BORDER_THIN);
-            bigDecimalStyle.setBorderLeft(CellStyle.BORDER_THIN);
-            bigDecimalStyle.setBorderRight(CellStyle.BORDER_THIN);
+            setBorder(bigDecimalStyle, CellStyle.BORDER_THIN);
             bigDecimalStyle.setDataFormat(format.getFormat("#,##0.00"));
 
             bigDecimalPercentageStyle = workbook.createCellStyle();
             bigDecimalPercentageStyle.setAlignment(CellStyle.ALIGN_RIGHT);
-            bigDecimalPercentageStyle.setBorderBottom(CellStyle.BORDER_THIN);
-            bigDecimalPercentageStyle.setBorderTop(CellStyle.BORDER_THIN);
-            bigDecimalPercentageStyle.setBorderLeft(CellStyle.BORDER_THIN);
-            bigDecimalPercentageStyle.setBorderRight(CellStyle.BORDER_THIN);
+            setBorder(bigDecimalPercentageStyle, CellStyle.BORDER_THIN);
             bigDecimalPercentageStyle.setDataFormat(format.getFormat("#,##0.00%"));
 
             normal = workbook.createCellStyle();
             normal.setAlignment(CellStyle.ALIGN_LEFT);
-            normal.setBorderBottom(CellStyle.BORDER_THIN);
-            normal.setBorderTop(CellStyle.BORDER_THIN);
-            normal.setBorderLeft(CellStyle.BORDER_THIN);
-            normal.setBorderRight(CellStyle.BORDER_THIN);
+            setBorder(normal, CellStyle.BORDER_THIN);
+        }
+
+        /**
+         * Sets a certain border for a cell style
+         * 
+         * @param style
+         *            the cell style
+         * @param border
+         *            the border type
+         */
+        private void setBorder(CellStyle style, short border) {
+            style.setBorderBottom(border);
+            style.setBorderTop(border);
+            style.setBorderLeft(border);
+            style.setBorderRight(border);
         }
 
         /**
@@ -137,9 +153,12 @@ public class TableExportActionHandler implements Handler {
             Cell sheetCell;
 
             List<Object> props = getPropIds();
+
+            // look up the item once (much faster!)
+            Item item = getTableHolder().getContainerDataSource().getItem(rootItemId);
             for (int col = 0; col < props.size(); col++) {
                 propId = props.get(col);
-                prop = getProperty(rootItemId, propId);
+                prop = getProperty(item, rootItemId, propId);
                 value = prop == null ? null : prop.getValue();
 
                 sheetCell = sheetRow.createCell(col);
@@ -157,11 +176,10 @@ public class TableExportActionHandler implements Handler {
 
                     // for numbers we do not use the default formatting since
                     // that would produce strings and we
-                    // want actual numerical values!
+                    // want actual numerical values
                     if (value instanceof Integer) {
                         sheetCell.setCellValue(((Integer) value).doubleValue());
                         standard = integerStyle;
-
                     } else if (value instanceof BigDecimal) {
                         boolean isPercentage = am != null && am.isPercentage();
                         if (isPercentage) {
@@ -176,15 +194,15 @@ public class TableExportActionHandler implements Handler {
                             standard = bigDecimalPercentageStyle;
                         } else {
                             // just display as a number
-                            sheetCell.setCellValue(((BigDecimal) value)
-                                    .setScale(SCALE, RoundingMode.HALF_UP).doubleValue());
+                            sheetCell.setCellValue(((BigDecimal) value).setScale(SCALE,
+                                    RoundingMode.HALF_UP).doubleValue());
                             standard = bigDecimalStyle;
                         }
                     } else if (am != null) {
                         // if it's an actual model attribute, then defer to the
                         // normal formatting functionality
 
-                        // replaces all HTML
+                        // replace all HTML breaks
                         if (value instanceof String) {
                             value = StringUtil.replaceHtmlBreaks((String) value);
                         }
@@ -193,12 +211,11 @@ public class TableExportActionHandler implements Handler {
                         EntityModel<?> onlyModel = entityModels.size() == 1 ? entityModels.get(0)
                                 : null;
                         sheetCell.setCellValue(TableUtils.formatPropertyValue(entityModelFactory,
-                                onlyModel != null ? onlyModel : am.getEntityModel(), messageService,
-                                propId, value));
+                                onlyModel != null ? onlyModel : am.getEntityModel(),
+                                messageService, propId, value));
                     } else {
                         // if everything else fails, use the string
                         // representation
-                        // replaces all HTML
                         String v = value.toString();
                         v = StringUtil.replaceHtmlBreaks(v);
                         sheetCell.setCellValue(v);
@@ -324,8 +341,8 @@ public class TableExportActionHandler implements Handler {
                     }
                 } else {
                     if (0 == col) {
-                        cell.setCellValue(createHelper
-                                .createRichTextString(messageService.getMessage("ocs.total")));
+                        cell.setCellValue(createHelper.createRichTextString(messageService
+                                .getMessage("ocs.total")));
                     }
                 }
             }
@@ -349,21 +366,16 @@ public class TableExportActionHandler implements Handler {
             return null;
         }
 
-        /**
-         * Overruled from parent class to support model based formatting. Method is private in
-         * parent.
-         */
-        protected Property<?> getProperty(final Object rootItemId, final Object propId) {
+        protected Property<?> getProperty(Item item, Object rootItemId, Object propId) {
             Property<?> prop;
             if (getTableHolder().isGeneratedColumn(propId)) {
                 prop = getTableHolder().getPropertyForGeneratedColumn(propId, rootItemId);
             } else {
-                prop = getTableHolder().getContainerDataSource().getContainerProperty(rootItemId,
-                        propId);
-                if (useTableFormatPropertyValue
-                        && getTableHolder().isExportableFormattedProperty()) {
+                prop = item.getItemProperty(propId);
+                if (useTableFormatPropertyValue && getTableHolder().isExportableFormattedProperty()) {
                     prop = getPropertyInner(rootItemId, propId, prop);
                 }
+
             }
             return prop;
         }
@@ -511,8 +523,7 @@ public class TableExportActionHandler implements Handler {
      */
     public TableExportActionHandler(UI ui, EntityModelFactory entityModelFactory,
             List<EntityModel<?>> entityModels, MessageService messageService, String reportTitle,
-            List<String> columnIds, boolean totalsRow,
-            CustomCellStyleGenerator cellStyleGenerator) {
+            List<String> columnIds, boolean totalsRow, CustomCellStyleGenerator cellStyleGenerator) {
         this(ui, messageService, columnIds, reportTitle, totalsRow, cellStyleGenerator);
         this.entityModelFactory = entityModelFactory;
         this.entityModels = entityModels;
