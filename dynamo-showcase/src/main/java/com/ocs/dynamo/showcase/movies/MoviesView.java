@@ -56,8 +56,11 @@ public class MoviesView extends BaseView {
         // Set form options by convention.
         FormOptions fo = new FormOptions();
 
-        // Modify the default remove button behavior.
+        // Add a remove button.
         fo.setShowRemoveButton(true);
+
+        // Add an edit button.
+        fo.setShowEditButton(true);
 
         // This is where the magic happens. The Simple Search layout uses the Dynamo Entity
         // Model Factory to define a Simple Search Screen with sorting, filtering and lazy loading

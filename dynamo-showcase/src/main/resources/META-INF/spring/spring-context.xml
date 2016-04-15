@@ -7,12 +7,14 @@
 		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.2.xsd">
 
 	<tx:annotation-driven transaction-manager="transactionManager" />
-
+	
+	<!-- Show Case Database -->
 	<jdbc:embedded-database id="dataSource" type="H2">
 		<jdbc:script location="classpath:/META-INF/database/create-db.sql" />
 		<jdbc:script location="classpath:/META-INF/database/insert-data.sql" />
 	</jdbc:embedded-database>
 
+	<!-- Show Case JPA Persistence Context -->
 	<bean id="entityManagerFactory"
 		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
 		<property name="persistenceUnitName" value="movies" />
@@ -25,6 +27,7 @@
 		<property name="dataSource" ref="dataSource" />
 	</bean>
 
+	<!-- JPA Transaction manager -->
 	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager" />
 
 	<!-- The entity model factory -->
@@ -33,11 +36,13 @@
 	<!-- The message service -->
 	<bean id="messageService" class="com.ocs.dynamo.service.impl.MessageServiceImpl" />
 
+	<!-- Lookup validation messages -->
 	<bean id="validator"
 		class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean">
 		<property name="validationMessageSource" ref="messageSource" />
 	</bean>
-
+	
+	<!-- Application messages -->
 	<bean id="messageSource"
 		class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
 		<property name="basenames">
@@ -51,6 +56,14 @@
 		</property>
 		<property name="fallbackToSystemLocale" value="false" />
 	</bean>
-
-
+	
+	<!-- Anonymous service for Countries -->
+	<bean id="countryService" class="com.ocs.dynamo.service.impl.DefaultServiceImpl">
+		<constructor-arg>
+			<bean class="com.ocs.dynamo.dao.impl.DefaultDaoImpl">
+				<constructor-arg index="0"><null /></constructor-arg>
+				<constructor-arg index="1" value="com.ocs.dynamo.showcase.movies.Country" />
+			</bean>
+		</constructor-arg>
+	</bean>
 </beans>

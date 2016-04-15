@@ -13,17 +13,28 @@
  */
 package com.ocs.dynamo.showcase.movies;
 
+import java.math.BigDecimal;
 import java.util.Date;
+import java.util.Set;
 
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeDateType;
+import com.ocs.dynamo.domain.model.AttributeSelectMode;
+import com.ocs.dynamo.domain.model.VisibilityType;
 import com.ocs.dynamo.domain.model.annotation.Attribute;
 import com.ocs.dynamo.domain.model.annotation.AttributeOrder;
 import com.ocs.dynamo.domain.model.annotation.Model;
@@ -60,25 +71,45 @@ public class Movie extends AbstractEntity<Integer> {
     private Date releaseDate;
 
     /**
-     * The Movie Action Genre contains a Dynamo annotation to make it searchable and use another
-     * value representation.
+     * The Movie Kids Genre contains a Dynamo annotation to make it searchable but not sortable and
+     * to apply another label than the default.
      */
-    @Attribute(searchable = true, trueRepresentation = "Yeah!", falseRepresentation = "Nope...")
-    @Column(name = "ACTION")
-    private Boolean action;
-
-    /** The Movie Kids Genre contains a Dynamo annotation to make it searchable but not sortable. */
-    @Attribute(searchable = true, sortable = false)
-    @Column(name = "KIDS")
-    private Boolean kids;
+    @Attribute(searchable = true, sortable = false, displayName = "MPAA Rating")
+    @Enumerated(EnumType.STRING)
+    @Column(name = "MPAA_RATING")
+    private MovieRating rating;
 
     /**
-     * The Movie Sci-Fi Genre contains a Dynamo annotation to make it searchable and to use another
-     * label than the default.
+     * The Movie Gross contains a Dynamo annotation to make it searchable and use another value
+     * representation.
      */
-    @Attribute(searchable = true, displayName = "Sci-fi")
-    @Column(name = "SCI_FI")
-    private Boolean sciFi;
+    @Attribute
+    // @Attribute(currency = true)
+    private BigDecimal gross;
+
+    /**
+     * Display the JPA Element collection in a table and make it editable.
+     */
+    @Attribute(showInTable = VisibilityType.SHOW, complexEditable = true)
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "TAG")
+    @Column(name = "Name")
+    private Set<String> tags;
+
+    /**
+     * Make the documentary classification searchable and to use another value representation than
+     * the default.
+     */
+    @Attribute(searchable = true, trueRepresentation = "Yep!", falseRepresentation = "Nope!")
+    private Boolean documentary;
+
+    /**
+     * Display the country in a table and create a lookup table for it.
+     */
+    @Attribute(complexEditable = true, searchable = true, selectMode = AttributeSelectMode.LOOKUP, displayName = "Country", showInTable = VisibilityType.SHOW)
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "COUNTRY_ID")
+    private Country country;
 
     /**
      * @return the id
@@ -126,47 +157,78 @@ public class Movie extends AbstractEntity<Integer> {
     }
 
     /**
-     * @return the action
+     * @return the rating
      */
-    public Boolean getAction() {
-        return action;
+    public MovieRating getRating() {
+        return rating;
     }
 
     /**
-     * @param action
-     *            the action to set
+     * @param rating
+     *            the rating to set
      */
-    public void setAction(Boolean action) {
-        this.action = action;
+    public void setRating(MovieRating rating) {
+        this.rating = rating;
     }
 
     /**
-     * @return the kids
+     * @return the gross
      */
-    public Boolean getKids() {
-        return kids;
+    public BigDecimal getGross() {
+        return gross;
     }
 
     /**
-     * @param kids
-     *            the kids to set
+     * @param gross
+     *            the gross to set
      */
-    public void setKids(Boolean kids) {
-        this.kids = kids;
+    public void setGross(BigDecimal gross) {
+        this.gross = gross;
     }
 
     /**
-     * @return the sciFi
+     * @return the tags
      */
-    public Boolean getSciFi() {
-        return sciFi;
+    public Set<String> getTags() {
+        return tags;
     }
 
     /**
-     * @param sciFi
-     *            the sciFi to set
+     * @param tags
+     *            the tags to set
      */
-    public void setSciFi(Boolean sciFi) {
-        this.sciFi = sciFi;
+    public void setTags(Set<String> tags) {
+        this.tags = tags;
     }
+
+    /**
+     * @return the documentary
+     */
+    public Boolean getDocumentary() {
+        return documentary;
+    }
+
+    /**
+     * @param documentary
+     *            the documentary to set
+     */
+    public void setDocumentary(Boolean documentary) {
+        this.documentary = documentary;
+    }
+
+    /**
+     * @return the country
+     */
+    public Country getCountry() {
+        return country;
+    }
+
+    /**
+     * @param country
+     *            the country to set
+     */
+    public void setCountry(Country country) {
+        this.country = country;
+    }
+
 }

@@ -37,6 +37,7 @@
 	</properties>
 
 	<dependencies>
+		<!-- Bootstrapping -->
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
@@ -44,12 +45,14 @@
 			<scope>provided</scope>
 		</dependency>
 
+		<!-- Dynamo dependency -->
 		<dependency>
 			<groupId>com.ocs</groupId>
 			<artifactId>dynamo-spring</artifactId>
 			<version>${com.ocs.dynamo.version}</version>
 		</dependency>
 
+		<!-- JPA Dependencies -->
 		<dependency>
 			<groupId>org.eclipse.persistence</groupId>
 			<artifactId>javax.persistence</artifactId>
@@ -57,31 +60,25 @@
 		</dependency>
 		<dependency>
 			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-validator</artifactId>
-			<version>4.3.1.Final</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-entitymanager</artifactId>
 			<version>4.3.1.Final</version>
 		</dependency>
 
+		<!-- Bean validation -->
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-validator</artifactId>
+			<version>4.3.1.Final</version>
+		</dependency>
+
+		<!-- In-memory Show Case database -->
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
 			<version>${h2.version}</version>
 		</dependency>
-
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>3.8.1</version>
-			<scope>test</scope>
-		</dependency>
 	</dependencies>
 	<build>
-		<finalName>demo</finalName>
 		<plugins>
 			<plugin>
 				<groupId>com.vaadin</groupId>
