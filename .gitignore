@@ -15,6 +15,7 @@ hs_err_pid*
 .classpath
 .project
 .settings/
+.tern-project
 
 # Ignore Maven Target folder in SCM
 target/

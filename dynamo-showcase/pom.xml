@@ -1,0 +1,177 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>com.ocs</groupId>
+	<artifactId>dynamo-showcase</artifactId>
+	<packaging>war</packaging>
+	<version>1.0.0-SNAPSHOT</version>
+	<name>Dynamo Show Case</name>
+	<url>http://maven.apache.org</url>
+
+	<organization>
+		<name>Open Circle Solutions</name>
+		<url>http://www.opencirclesolutions.nl</url>
+	</organization>
+
+	<licenses>
+		<license>
+			<name>Apache License Version 2.0</name>
+			<distribution>repo</distribution>
+			<url>http://www.apache.org/licenses/LICENSE-2.0</url>
+		</license>
+	</licenses>
+
+	<properties>
+
+		<!-- The Dynamo Web Accelerator Framework to show. -->
+		<com.ocs.dynamo.version>1.0.0-SNAPSHOT</com.ocs.dynamo.version>
+
+		<!-- H2 as the embedded database provider. -->
+		<h2.version>1.4.191</h2.version>
+		
+		<!-- Maven plugin versions. -->
+		<org.apache.maven.plugins.checkstyle.version>2.17</org.apache.maven.plugins.checkstyle.version>
+		<org.apache.maven.plugins.findbugs.version>3.0.3</org.apache.maven.plugins.findbugs.version>
+		
+	</properties>
+
+	<dependencies>
+		<!-- Bootstrapping -->
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>3.0.1</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- Dynamo dependency -->
+		<dependency>
+			<groupId>com.ocs</groupId>
+			<artifactId>dynamo-spring</artifactId>
+			<version>${com.ocs.dynamo.version}</version>
+		</dependency>
+
+		<!-- JPA Dependencies -->
+		<dependency>
+			<groupId>org.eclipse.persistence</groupId>
+			<artifactId>javax.persistence</artifactId>
+			<version>2.1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-entitymanager</artifactId>
+			<version>4.3.1.Final</version>
+		</dependency>
+
+		<!-- Bean validation -->
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-validator</artifactId>
+			<version>4.3.1.Final</version>
+		</dependency>
+
+		<!-- In-memory Show Case database -->
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<version>${h2.version}</version>
+		</dependency>
+	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>com.vaadin</groupId>
+				<artifactId>vaadin-maven-plugin</artifactId>
+				<version>7.5.6</version>
+				<configuration>
+					<extraJvmArgs>-Xmx512M -Xss1024k</extraJvmArgs>
+					<webappDirectory>${basedir}/src/main/webapp/VAADIN/widgetsets
+					</webappDirectory>
+					<hostedWebapp>${basedir}/src/main/webapp/VAADIN/widgetsets
+					</hostedWebapp>
+					<persistentunitcachedir>${project.build.directory}</persistentunitcachedir>
+					<deploy>${project.build.directory}/gwt-deploy</deploy>
+					<compileReport>false</compileReport>
+					<noServer>true</noServer>
+					<draftCompile>false</draftCompile>
+					<style>OBF</style>
+					<strict>true</strict>
+					<runTarget>http://localhost:8080/</runTarget>
+				</configuration>
+				<executions>
+					<execution>
+						<configuration>
+						</configuration>
+						<goals>
+							<goal>clean</goal>
+							<goal>resources</goal>
+							<goal>update-theme</goal>
+							<goal>update-widgetset</goal>
+							<goal>compile-theme</goal>
+							<goal>compile</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<!-- QA - Checkstyle -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+				<version>${org.apache.maven.plugins.checkstyle.version}</version>
+				<executions>
+					<execution>
+						<id>validate</id>
+						<phase>validate</phase>
+						<configuration>
+							<configLocation>${project.baseUri}../dynamo-qa/ocs_checks.xml</configLocation>
+							<encoding>UTF-8</encoding>
+							<consoleOutput>true</consoleOutput>
+							<failsOnError>true</failsOnError>
+							<linkXRef>false</linkXRef>
+							<includeResources>false</includeResources>
+							<includeTestResources>false</includeTestResources>
+						</configuration>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<!-- QA - FindBugs -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>findbugs-maven-plugin</artifactId>
+				<version>${org.apache.maven.plugins.findbugs.version}</version>
+				<configuration>
+					<!-- Enables analysis which takes more memory but finds more bugs. If 
+						you run out of memory, changes the value of the effort element to 'Low'. -->
+					<effort>Max</effort>
+					<!-- Reports all bugs (other values are medium and max). -->
+					<threshold>Medium</threshold>
+					<!-- Produces XML report. -->
+					<xmlOutput>true</xmlOutput>
+					<!-- The maximum rank of bugs to be reported. -->
+					<maxRank>15</maxRank>
+				</configuration>
+				<executions>
+					<!-- Ensures that FindBugs inspects source code when project is compiled. -->
+					<execution>
+						<id>analyze-compile</id>
+						<phase>compile</phase>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<!-- Run - Jetty server. -->
+			<plugin>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-maven-plugin</artifactId>
+				<version>9.3.8.v20160314</version>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>
