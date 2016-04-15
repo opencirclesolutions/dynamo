@@ -62,6 +62,11 @@ public class Movie extends AbstractEntity<Integer> {
     @Attribute(searchable = true, searchCaseSensitive = true)
     private String title;
 
+    /** The Movie IMDB URL contains a Dynamo annotation to make it clickable. */
+    @Attribute(url = true)
+    @Column(name = "IMDB_URL")
+    private String imdbUrl;
+
     /**
      * The Movie Release Date contains a Dynamo annotation to make it searchable and indicating it's
      * a date only.
@@ -229,6 +234,21 @@ public class Movie extends AbstractEntity<Integer> {
      */
     public void setCountry(Country country) {
         this.country = country;
+    }
+
+    /**
+     * @return the imdbUrl
+     */
+    public String getImdbUrl() {
+        return imdbUrl;
+    }
+
+    /**
+     * @param imdbUrl
+     *            the imdbUrl to set
+     */
+    public void setImdbUrl(String imdbUrl) {
+        this.imdbUrl = imdbUrl;
     }
 
 }
