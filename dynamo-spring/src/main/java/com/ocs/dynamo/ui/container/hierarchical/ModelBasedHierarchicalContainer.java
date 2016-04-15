@@ -19,7 +19,7 @@ import java.util.List;
 
 import org.springframework.util.StringUtils;
 
-import com.ocs.dynamo.constants.OCSConstants;
+import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.dao.query.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
@@ -274,10 +274,10 @@ public class ModelBasedHierarchicalContainer<T> extends HierarchicalContainer {
             }
         }
         ServiceContainer container = new ServiceContainer(service, entityModel, false,
-                OCSConstants.EXTENDED_PAGE_SIZE, queryType,
+                DynamoConstants.EXTENDED_PAGE_SIZE, queryType,
                 ljoins.toArray(new FetchJoinInformation[0]));
         // increase cache size to prevent endless re-queries
-        container.getQueryView().setMaxCacheSize(OCSConstants.CACHE_SIZE);
+        container.getQueryView().setMaxCacheSize(DynamoConstants.CACHE_SIZE);
 
         return container;
     }

@@ -154,9 +154,10 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
             model.setPrecision(defaultPrecision);
             model.setSearchCaseSensitive(false);
             model.setSearchPrefixOnly(false);
+            model.setUrl(false);
 
-            Id idAttr = ClassUtils.getAnnotation(entityModel.getEntityClass(), descriptor.getName(),
-                    Id.class);
+            Id idAttr = ClassUtils.getAnnotation(entityModel.getEntityClass(),
+                    descriptor.getName(), Id.class);
             if (idAttr != null) {
                 entityModel.setIdAttributeModel(model);
                 // the ID column is hidden. details collections are also hidden
@@ -177,20 +178,21 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
                     descriptor.getName(), NotNull.class);
             model.setRequired(notNull != null);
 
-            // maximum length based ont he @Size annotation
-            Size size = ClassUtils.getAnnotation(entityModel.getEntityClass(), descriptor.getName(),
-                    Size.class);
-            if (size != null) {
-                model.setMaxLength(size.max());
-            }
-
             model.setAttributeType(determineAttributeType(parentClass, model));
+
+            // minimum and maximum length based on the @Size annotation
+            Size size = ClassUtils.getAnnotation(entityModel.getEntityClass(),
+                    descriptor.getName(), Size.class);
+            if (AttributeType.BASIC.equals(model.getAttributeType()) && size != null) {
+                model.setMaxLength(size.max());
+                model.setMinLength(size.min());
+            }
 
             setNestedEntityModel(model);
 
             // only basic attributes are shown in the table by default
-            model.setVisibleInTable(
-                    model.isVisible() && (AttributeType.BASIC.equals(model.getAttributeType())));
+            model.setVisibleInTable(model.isVisible()
+                    && (AttributeType.BASIC.equals(model.getAttributeType())));
 
             if (getMessageService() != null) {
                 model.setTrueRepresentation(getMessageService().getMessage("ocs.true"));
@@ -203,8 +205,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
                         descriptor.getName(), Temporal.class);
                 if (temporal != null) {
                     // use the @Temporal annotation when available
-                    model.setDateType(translateDateType(
-                            temporal.value() == null ? TemporalType.DATE : temporal.value()));
+                    model.setDateType(translateDateType(temporal.value() == null ? TemporalType.DATE
+                            : temporal.value()));
                 } else {
                     // by default use date
                     model.setDateType(AttributeDateType.DATE);
@@ -234,8 +236,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
                 if (model.getType().equals(entityModel.getEntityClass())) {
                     throw new IllegalStateException("Embedding a class in itself is not allowed");
                 }
-                PropertyDescriptor[] embeddedDescriptors = BeanUtils
-                        .getPropertyDescriptors(model.getType());
+                PropertyDescriptor[] embeddedDescriptors = BeanUtils.getPropertyDescriptors(model
+                        .getType());
                 for (PropertyDescriptor embeddedDescriptor : embeddedDescriptors) {
                     String name = embeddedDescriptor.getName();
                     if (!skipAttribute(name)) {
@@ -348,8 +350,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
      */
     private <T> EntityModelImpl<T> constructModelInner(Class<T> entityClass, String reference) {
 
-        String displayName = DefaultFieldFactory
-                .createCaptionByPropertyId(entityClass.getSimpleName());
+        String displayName = DefaultFieldFactory.createCaptionByPropertyId(entityClass
+                .getSimpleName());
         String displayNamePlural = displayName + PLURAL_POSTFIX;
         String description = displayName;
         String selectDisplayProperty = null;
@@ -471,8 +473,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
         }
 
         // overwrite by message bundle (if present)
-        String msg = messageService == null ? null
-                : messageService.getEntityMessage(reference, EntityModel.ATTRIBUTE_ORDER);
+        String msg = messageService == null ? null : messageService.getEntityMessage(reference,
+                EntityModel.ATTRIBUTE_ORDER);
         if (msg != null) {
             explicitAttributeNames = Arrays.asList(msg.replaceAll("\\s+", "").split(","));
         }
@@ -533,11 +535,10 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
                 if (ClassUtils.getAnnotation(parentClass, name, ManyToMany.class) != null
                         || ClassUtils.getAnnotation(parentClass, name, OneToMany.class) != null) {
                     result = AttributeType.DETAIL;
-                    model.setMemberType(
-                            ClassUtils.getResolvedType(parentClass, model.getName(), 0));
-                } else if (ClassUtils.getAnnotation(parentClass, name,
-                        ElementCollection.class) != null) {
+                    model.setMemberType(ClassUtils.getResolvedType(parentClass, model.getName(), 0));
+                } else if (ClassUtils.getAnnotation(parentClass, name, ElementCollection.class) != null) {
                     result = AttributeType.ELEMENT_COLLECTION;
+                    model.setMemberType(ClassUtils.getResolvedType(parentClass, model.getName(), 0));
                 } else if (AbstractEntity.class.isAssignableFrom(model.getType())) {
                     // not a collection but a reference to another object
                     result = AttributeType.MASTER;
@@ -639,14 +640,15 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "unused" })
     public <T> EntityModel<T> getModel(String reference, Class<T> entityClass) {
         EntityModel<T> model = null;
         if (!StringUtils.isEmpty(reference) && entityClass != null) {
             model = (EntityModel<T>) cache.get(reference);
             if (model == null) {
                 model = constructModel(reference, entityClass);
-                EntityModel<?> oldModel = cache.putIfAbsent(reference, model);
+                // needed to make FindBugs happy
+                EntityModel<?> skip = cache.putIfAbsent(reference, model);
             }
         }
         return model;
@@ -709,8 +711,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
                 model.setReadOnly(true);
             }
 
-            if (attribute.visible() != null
-                    && !VisibilityType.INHERIT.equals(attribute.visible())) {
+            if (attribute.visible() != null && !VisibilityType.INHERIT.equals(attribute.visible())) {
                 model.setVisible(VisibilityType.SHOW.equals(attribute.visible()));
                 model.setVisibleInTable(model.isVisible());
             }
@@ -797,6 +798,18 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
             if (attribute.precision() > -1) {
                 model.setPrecision(attribute.precision());
             }
+
+            if (attribute.minLength() > -1) {
+                model.setMinLength(attribute.minLength());
+            }
+
+            if (attribute.maxLength() > -1) {
+                model.setMaxLength(attribute.maxLength());
+            }
+
+            if (attribute.url()) {
+                model.setUrl(true);
+            }
         }
     }
 
@@ -809,8 +822,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
     @SuppressWarnings("unchecked")
     private void setDefaultValue(AttributeModelImpl model, String defaultValue) {
         if (model.getType().isEnum()) {
-            model.setDefaultValue(
-                    Enum.valueOf(model.getType().asSubclass(Enum.class), defaultValue));
+            model.setDefaultValue(Enum
+                    .valueOf(model.getType().asSubclass(Enum.class), defaultValue));
         } else if (model.getType().equals(Date.class)) {
             String format = null;
             switch (model.getDateType()) {
@@ -841,8 +854,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
      * @param entityModel
      * @param model
      */
-    private <T> void setMessageBundleOverrides(EntityModel<T> entityModel,
-            AttributeModelImpl model) {
+    private <T> void setMessageBundleOverrides(EntityModel<T> entityModel, AttributeModelImpl model) {
 
         String msg = getAttributeMessage(entityModel, model, EntityModel.DISPLAY_NAME);
         if (!StringUtils.isEmpty(msg)) {
@@ -980,6 +992,21 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
         if (!StringUtils.isEmpty(msg)) {
             model.setTextFieldMode(AttributeTextFieldMode.valueOf(msg));
         }
+
+        msg = getAttributeMessage(entityModel, model, EntityModel.MIN_LENGTH);
+        if (!StringUtils.isEmpty(msg)) {
+            model.setMinLength(Integer.parseInt(msg));
+        }
+
+        msg = getAttributeMessage(entityModel, model, EntityModel.MAX_LENGTH);
+        if (!StringUtils.isEmpty(msg)) {
+            model.setMaxLength(Integer.parseInt(msg));
+        }
+
+        msg = getAttributeMessage(entityModel, model, EntityModel.URL);
+        if (!StringUtils.isEmpty(msg)) {
+            model.setUrl(Boolean.valueOf(msg));
+        }
     }
 
     /**
@@ -1025,9 +1052,10 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
                 String[] sd = token.trim().split(" ");
                 if (sd.length > 0 && !StringUtils.isEmpty(sd[0])
                         && model.getAttributeModel(sd[0]) != null) {
-                    model.getSortOrder().put(model.getAttributeModel(sd[0]), (sd.length > 1
-                            && ("DESC".equalsIgnoreCase(sd[1]) || "DSC".equalsIgnoreCase(sd[1])))
-                                    ? false : true);
+                    model.getSortOrder().put(
+                            model.getAttributeModel(sd[0]),
+                            (sd.length > 1 && ("DESC".equalsIgnoreCase(sd[1]) || "DSC"
+                                    .equalsIgnoreCase(sd[1]))) ? false : true);
                 }
             }
         }

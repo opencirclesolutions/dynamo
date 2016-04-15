@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.google.common.collect.Lists;
-import com.ocs.dynamo.constants.OCSConstants;
+import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.dao.query.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
@@ -52,13 +52,13 @@ import com.vaadin.ui.VerticalLayout;
  *            type of the entity
  */
 @SuppressWarnings("serial")
-public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntity<ID>>
-        extends BaseCollectionLayout<ID, T> {
-
-    private static final long serialVersionUID = 4606800218149558500L;
+public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntity<ID>> extends
+        BaseCollectionLayout<ID, T> {
 
     // the default page length
     private static final int PAGE_LENGTH = 18;
+
+    private static final long serialVersionUID = 4606800218149558500L;
 
     // button for adding new items. displayed by default
     private Button addButton;
@@ -84,6 +84,9 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 
     // the main layout (in search mode)
     private VerticalLayout mainLayout;
+
+    // the number of columns in the search form
+    private int nrOfColumns = 1;
 
     // the number of rows to display in the table
     private int pageLength = PAGE_LENGTH;
@@ -253,8 +256,8 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
      */
     protected Button constructEditButton() {
         // edit button
-        editButton = new Button(
-                getFormOptions().isOpenInViewMode() ? message("ocs.view") : message("ocs.edit"));
+        editButton = new Button(getFormOptions().isOpenInViewMode() ? message("ocs.view")
+                : message("ocs.edit"));
         editButton.addClickListener(new Button.ClickListener() {
 
             @Override
@@ -295,7 +298,7 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
     protected void detailsMode(T entity) {
         if (mainEditLayout == null) {
             mainEditLayout = new DefaultVerticalLayout();
-            mainEditLayout.setStyleName(OCSConstants.CSS_CLASS_HALFSCREEN);
+            mainEditLayout.setStyleName(DynamoConstants.CSS_CLASS_HALFSCREEN);
 
             // set the form options for the detail form
             FormOptions options = new FormOptions();
@@ -318,8 +321,8 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
                 @Override
                 protected Field<?> constructCustomField(EntityModel<T> entityModel,
                         AttributeModel attributeModel, boolean viewMode) {
-                    return SimpleSearchLayout.this.constructCustomField(entityModel, attributeModel,
-                            true, false);
+                    return SimpleSearchLayout.this.constructCustomField(entityModel,
+                            attributeModel, true, false);
                 }
 
                 @Override
@@ -359,6 +362,10 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
         return fieldFilters;
     }
 
+    public int getNrOfColumns() {
+        return nrOfColumns;
+    }
+
     public int getPageLength() {
         return pageLength;
     }
@@ -389,10 +396,11 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
                 @Override
                 protected Field<?> constructCustomField(EntityModel<T> entityModel,
                         AttributeModel attributeModel) {
-                    return SimpleSearchLayout.this.constructCustomField(entityModel, attributeModel,
-                            false, true);
+                    return SimpleSearchLayout.this.constructCustomField(entityModel,
+                            attributeModel, false, true);
                 }
             };
+            searchForm.setNrOfColumns(getNrOfColumns());
             searchForm.build();
         }
         return searchForm;
@@ -478,6 +486,10 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 
     public void setFieldFilters(Map<String, Filter> fieldFilters) {
         this.fieldFilters = fieldFilters;
+    }
+
+    public void setNrOfColumns(int nrOfColumns) {
+        this.nrOfColumns = nrOfColumns;
     }
 
     public void setPageLength(int pageLength) {

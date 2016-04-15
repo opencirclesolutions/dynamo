@@ -32,6 +32,7 @@ import com.vaadin.data.Container;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.sort.SortOrder;
 import com.vaadin.shared.data.sort.SortDirection;
+import com.vaadin.ui.Table;
 
 /**
  * Simple search of hierarchical information presented in tree table. Uses
@@ -47,7 +48,7 @@ public class ServiceResultsTreeTableWrapper<ID extends Serializable, T extends A
 
     private static final long serialVersionUID = -9054619694421055983L;
 
-    protected List<BaseService<?, ?>> services;
+    private List<BaseService<?, ?>> services;
 
     /**
      * Constructor
@@ -103,30 +104,23 @@ public class ServiceResultsTreeTableWrapper<ID extends Serializable, T extends A
         return (ModelBasedHierarchicalContainer<T>) super.getContainer();
     }
 
-    /**
-     * 
-     */
-    @SuppressWarnings("unchecked")
     @Override
-    public ModelBasedTreeTable<ID, T> getTable() {
-        if (table == null) {
-            table = new ModelBasedTreeTable<ID, T>(getContainer(), getEntityModelFactory());
-        }
-        return (ModelBasedTreeTable<ID, T>) table;
+    public Table constructTable() {
+        return new ModelBasedTreeTable<ID, T>(getContainer(), getEntityModelFactory());
     }
 
     @Override
     protected void initSortingAndFiltering() {
         if (!getContainer().getHierarchy().isEmpty()) {
             // get the definition on the lowest level
-            HierarchicalDefinition def = getContainer().getHierarchy()
-                    .get(getContainer().getHierarchy().size() - 1);
-            if (filter != null && def.getContainer() instanceof ServiceContainer<?, ?>) {
-                ((ServiceContainer<?, ?>) def.getContainer()).getQueryView().addFilter(filter);
+            HierarchicalDefinition def = getContainer().getHierarchy().get(
+                    getContainer().getHierarchy().size() - 1);
+            if (getFilter() != null && def.getContainer() instanceof ServiceContainer<?, ?>) {
+                ((ServiceContainer<?, ?>) def.getContainer()).getQueryView().addFilter(getFilter());
             }
         }
         if (getSortOrder() != null) {
-            table.sort(new Object[] { getSortOrder().getPropertyId() },
+            getTable().sort(new Object[] { getSortOrder().getPropertyId() },
                     new boolean[] { SortDirection.ASCENDING == getSortOrder().getDirection() });
         }
     }

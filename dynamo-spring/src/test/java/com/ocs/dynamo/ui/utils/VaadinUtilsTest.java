@@ -30,6 +30,7 @@ import com.ocs.dynamo.test.BaseMockitoTest;
 import com.ocs.dynamo.ui.container.QueryType;
 import com.ocs.dynamo.ui.container.ServiceContainer;
 import com.ocs.dynamo.ui.container.ServiceQueryDefinition;
+import com.ocs.dynamo.utils.DateUtils;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.Page;
 import com.vaadin.server.WebBrowser;
@@ -133,15 +134,17 @@ public class VaadinUtilsTest extends BaseMockitoTest {
     @Test
     public void testGetTimeZone_CET() {
 
+        Date dt = DateUtils.createDate("01012016");
+
         TimeZone def = TimeZone.getTimeZone("CET");
-        boolean dst = def.inDaylightTime(new Date());
+        boolean dst = def.inDaylightTime(dt);
 
         Mockito.when(browser.getRawTimezoneOffset()).thenReturn(3_600_000);
         Mockito.when(browser.isDSTInEffect()).thenReturn(false);
 
         TimeZone tz = VaadinUtils.getTimeZone(ui);
         Assert.assertEquals(3_600_000, tz.getRawOffset());
-        Assert.assertEquals(dst, tz.inDaylightTime(new Date()));
+        Assert.assertEquals(dst, tz.inDaylightTime(dt));
     }
 
     @Test

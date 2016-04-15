@@ -46,7 +46,8 @@ import com.vaadin.ui.Component;
 public class SimpleSearchTreeComponent<ID extends Serializable, T extends AbstractEntity<ID>>
         extends SimpleSearchLayout<ID, T> {
 
-    protected List<BaseService<?, ?>> services;
+    private List<BaseService<?, ?>> services;
+    
     private Object selectedItem;
 
     /**

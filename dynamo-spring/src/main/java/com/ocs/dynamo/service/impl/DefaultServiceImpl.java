@@ -26,7 +26,7 @@ import com.ocs.dynamo.domain.AbstractEntity;
  */
 public class DefaultServiceImpl<ID, T extends AbstractEntity<ID>> extends BaseServiceImpl<ID, T> {
 
-    protected BaseDao<ID, T> dao;
+    private BaseDao<ID, T> dao;
 
     public DefaultServiceImpl(EntityPathBase<T> dslRoot, Class<T> entityClass) {
         super();

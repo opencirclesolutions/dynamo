@@ -16,22 +16,22 @@ package com.ocs.dynamo.constants;
 import java.util.Locale;
 
 /**
- * Various constants that are used by the framework.
+ * Various constants that are used by the Dynamo framework.
  *
  * @author bas.rutten
  */
-public final class OCSConstants {
+public final class DynamoConstants {
 
     /**
      * Maximum cache size (for lazy query container)
      */
     public static final int CACHE_SIZE = 10000;
 
-    /**
-     * CSS style for an element that is almost full width
-     */
-    public static final String CSS_ALMOST_FULL_WIDTH = "almostFullWidth";
-
+	/**
+	 * CSS style for button bar components
+	 */
+	public static final String CSS_BUTTON_BAR = "buttonBar";
+    
     /**
      * Custom style for forms that should span 50% of the screen
      */
@@ -88,14 +88,14 @@ public final class OCSConstants {
     public static final String SELECTED_TAB = "selectedTab";
 
     /**
-     * System property that indicates whether to use the thousands grouping separator in edit mode
-     */
-    public static final String SP_THOUSAND_GROUPING = "ocs.edit.thousands.grouping";
-
-    /**
      * System property default decimal precision.
      */
     public static final String SP_DECIMAL_PRECISION = "ocs.default.decimal.precision";
+
+    /**
+     * System property that indicates whether to use the thousands grouping separator in edit mode
+     */
+    public static final String SP_THOUSAND_GROUPING = "ocs.edit.thousands.grouping";
 
     /**
      * The name of the variable that is used to store the user
@@ -115,6 +115,6 @@ public final class OCSConstants {
     /**
      * Constructor for OCSConstants.
      */
-    private OCSConstants() {
+    private DynamoConstants() {
     }
 }

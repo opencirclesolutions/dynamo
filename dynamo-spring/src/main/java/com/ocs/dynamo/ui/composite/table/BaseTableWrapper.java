@@ -15,7 +15,7 @@ package com.ocs.dynamo.ui.composite.table;
 
 import java.io.Serializable;
 
-import com.ocs.dynamo.constants.OCSConstants;
+import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.dao.query.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
@@ -31,7 +31,7 @@ import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 
 /**
- * A base class for wrapper objects for tables that are based on the entity model
+ * A base class for objects that wrap around a ModelBasedTable
  * 
  * @author bas.rutten
  * @param <ID>
@@ -57,19 +57,24 @@ public abstract class BaseTableWrapper<ID extends Serializable, T extends Abstra
 
     private SortOrder sortOrder;
 
-    protected Table table;
+    private Table table;
 
     /**
      * Constructor
      * 
      * @param service
+     *            the service used to query the repository
      * @param entityModel
+     *            the entity model for the items that are displayed in the table
      * @param queryType
+     *            the type of query
      * @param sortOrder
+     *            the sort order
      * @param joins
+     *            the fetch joins to use when executing the query
      */
     public BaseTableWrapper(BaseService<ID, T> service, EntityModel<T> entityModel,
-            QueryType queryType, SortOrder sortOrder, FetchJoinInformation[] joins) {
+            QueryType queryType, SortOrder sortOrder, FetchJoinInformation... joins) {
         this.service = service;
         this.entityModel = entityModel;
         this.queryType = queryType;
@@ -86,11 +91,10 @@ public abstract class BaseTableWrapper<ID extends Serializable, T extends Abstra
 
         this.container = constructContainer();
 
+        // init the table
         table = getTable();
-        table.setPageLength(OCSConstants.PAGE_SIZE);
-
+        table.setPageLength(DynamoConstants.PAGE_SIZE);
         initSortingAndFiltering();
-
         main.addComponent(table);
 
         // add a change listener that responds to the selection of an item
@@ -101,17 +105,30 @@ public abstract class BaseTableWrapper<ID extends Serializable, T extends Abstra
                 onSelect(table.getValue());
             }
         });
-
         setCompositionRoot(main);
     }
 
     /**
-     * Creates the container that holds the relevant data
+     * Creates the container that holds the data
      * 
      * @return
      */
     protected abstract Container constructContainer();
 
+    /**
+     * Constructs the table - override in subclasses if you need a different table implementation
+     * 
+     * @return
+     */
+    public Table constructTable() {
+        return new ModelBasedTable<>(this.container, entityModel, getEntityModelFactory(),
+                getMessageService());
+    }
+
+    /**
+     * 
+     * @return the container that holds the data
+     */
     public Container getContainer() {
         return container;
     }
@@ -141,8 +158,7 @@ public abstract class BaseTableWrapper<ID extends Serializable, T extends Abstra
 
     public Table getTable() {
         if (table == null) {
-            table = new ModelBasedTable<>(this.container, entityModel, getEntityModelFactory(),
-                    getMessageService());
+            table = constructTable();
         }
         return table;
     }
@@ -175,6 +191,10 @@ public abstract class BaseTableWrapper<ID extends Serializable, T extends Abstra
 
     public void setSortOrder(SortOrder sortOrder) {
         this.sortOrder = sortOrder;
+    }
+
+    protected void setTable(Table table) {
+        this.table = table;
     }
 
 }

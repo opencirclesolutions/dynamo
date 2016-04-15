@@ -23,7 +23,7 @@ import java.util.concurrent.ConcurrentMap;
 import org.apache.commons.lang.StringUtils;
 
 import com.google.common.collect.Lists;
-import com.ocs.dynamo.constants.OCSConstants;
+import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeDateType;
 import com.ocs.dynamo.domain.model.AttributeModel;
@@ -31,6 +31,7 @@ import com.ocs.dynamo.domain.model.AttributeSelectMode;
 import com.ocs.dynamo.domain.model.AttributeTextFieldMode;
 import com.ocs.dynamo.domain.model.AttributeType;
 import com.ocs.dynamo.domain.model.EntityModel;
+import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.ui.ServiceLocator;
@@ -43,6 +44,7 @@ import com.ocs.dynamo.ui.composite.form.FormOptions;
 import com.ocs.dynamo.ui.converter.ConverterFactory;
 import com.ocs.dynamo.ui.converter.WeekCodeConverter;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
+import com.ocs.dynamo.ui.validator.URLValidator;
 import com.vaadin.data.Container;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Item;
@@ -73,8 +75,8 @@ import com.vaadin.ui.TextField;
  * @param <T>
  *            the type of the entity for which to create a field
  */
-public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory
-        implements TableFieldFactory {
+public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory implements
+        TableFieldFactory {
 
     private static final int LIST_SELECT_ROWS = 5;
 
@@ -112,8 +114,8 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory
     public static <T> ModelBasedFieldFactory<T> getInstance(EntityModel<T> model,
             MessageService messageService) {
         if (!nonValidatingInstances.containsKey(model.getReference())) {
-            nonValidatingInstances.put(model.getReference(),
-                    new ModelBasedFieldFactory<>(model, messageService, false, false));
+            nonValidatingInstances.put(model.getReference(), new ModelBasedFieldFactory<>(model,
+                    messageService, false, false));
         }
         return (ModelBasedFieldFactory<T>) nonValidatingInstances.get(model.getReference());
     }
@@ -129,8 +131,8 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory
     public static <T> ModelBasedFieldFactory<T> getSearchInstance(EntityModel<T> model,
             MessageService messageService) {
         if (!searchInstances.containsKey(model.getReference())) {
-            searchInstances.put(model.getReference(),
-                    new ModelBasedFieldFactory<>(model, messageService, false, true));
+            searchInstances.put(model.getReference(), new ModelBasedFieldFactory<>(model,
+                    messageService, false, true));
         }
         return (ModelBasedFieldFactory<T>) searchInstances.get(model.getReference());
     }
@@ -146,8 +148,8 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory
     public static <T> ModelBasedFieldFactory<T> getValidatingInstance(EntityModel<T> model,
             MessageService messageService) {
         if (!validatingInstances.containsKey(model.getReference())) {
-            validatingInstances.put(model.getReference(),
-                    new ModelBasedFieldFactory<>(model, messageService, true, false));
+            validatingInstances.put(model.getReference(), new ModelBasedFieldFactory<>(model,
+                    messageService, true, false));
         }
         return (ModelBasedFieldFactory<T>) validatingInstances.get(model.getReference());
     }
@@ -205,11 +207,10 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory
      *            the list of field filters
      * @return
      */
-    public Field<?> constructField(AttributeModel attributeModel,
-            Map<String, Filter> fieldFilters) {
+    public Field<?> constructField(AttributeModel attributeModel, Map<String, Filter> fieldFilters) {
 
-        Filter fieldFilter = fieldFilters == null ? null
-                : fieldFilters.get(attributeModel.getPath());
+        Filter fieldFilter = fieldFilters == null ? null : fieldFilters.get(attributeModel
+                .getPath());
         Field<?> field = null;
         if (fieldFilter != null) {
             if (AttributeType.MASTER.equals(attributeModel.getAttributeType())) {
@@ -232,7 +233,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory
             }
         } else {
             // no field filter present - delegate to default construction
-            field = this.createField(attributeModel.getName());
+            field = this.createField(attributeModel.getPath());
         }
 
         // mark the field as required (this is skipped for search fields since
@@ -292,8 +293,8 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory
             EntityModel<?> entityModel, AttributeModel attributeModel, Filter fieldFilter) {
         // for a lookup field, don't use the nested model but the base model -
         // otherwise the searching goes totally wrong
-        entityModel = ServiceLocator.getEntityModelFactory()
-                .getModel(attributeModel.getType().asSubclass(AbstractEntity.class));
+        entityModel = ServiceLocator.getEntityModelFactory().getModel(
+                attributeModel.getType().asSubclass(AbstractEntity.class));
         BaseService<ID, S> service = (BaseService<ID, S>) ServiceLocator
                 .getServiceForEntity(entityModel.getEntityClass());
         SortOrder[] sos = constructSortOrder(entityModel);
@@ -308,12 +309,12 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory
      * 
      * @return
      */
-    protected ComboBox constructSearchBooleanComboBox() {
+    protected ComboBox constructSearchBooleanComboBox(AttributeModel am) {
         ComboBox cb = new ComboBox();
         cb.addItem(Boolean.TRUE);
-        cb.setItemCaption(Boolean.TRUE, messageService.getMessage("ocs.true"));
+        cb.setItemCaption(Boolean.TRUE, am.getTrueRepresentation());
         cb.addItem(Boolean.FALSE);
-        cb.setItemCaption(Boolean.FALSE, messageService.getMessage("ocs.false"));
+        cb.setItemCaption(Boolean.FALSE, am.getFalseRepresentation());
         return cb;
     }
 
@@ -328,8 +329,9 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory
         SortOrder[] sos = new SortOrder[entityModel.getSortOrder().size()];
         int i = 0;
         for (AttributeModel am : entityModel.getSortOrder().keySet()) {
-            sos[i++] = new SortOrder(am.getName(), entityModel.getSortOrder().get(am)
-                    ? SortDirection.ASCENDING : SortDirection.DESCENDING);
+            sos[i++] = new SortOrder(am.getName(),
+                    entityModel.getSortOrder().get(am) ? SortDirection.ASCENDING
+                            : SortDirection.DESCENDING);
         }
         return sos;
     }
@@ -422,7 +424,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory
         } else if (search && attributeModel.getType().equals(Boolean.class)) {
             // in a search screen, we need to offer the true, false, and
             // undefined options
-            field = constructSearchBooleanComboBox();
+            field = constructSearchBooleanComboBox(attributeModel);
         } else if (AbstractEntity.class.isAssignableFrom(attributeModel.getType())) {
             // lookup or combo field for an entity
             field = createSelectField(attributeModel);
@@ -430,17 +432,26 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory
             // use a "collection table" for an element collection
             FormOptions fo = new FormOptions();
             fo.setShowRemoveButton(true);
-            CollectionTable table = new CollectionTable(false, fo);
-            table.setMaxLength(attributeModel.getMaxLength());
-            field = table;
+            if (String.class.equals(attributeModel.getMemberType())) {
+                CollectionTable<String> table = new CollectionTable<>(false, fo, String.class);
+                table.setMinLength(attributeModel.getMinLength());
+                table.setMaxLength(attributeModel.getMaxLength());
+                field = table;
+            } else if (Integer.class.equals(attributeModel.getMemberType())) {
+                CollectionTable<Integer> table = new CollectionTable<>(false, fo, Integer.class);
+                field = table;
+            } else {
+                // other types not supported for now
+                throw new OCSRuntimeException();
+            }
         } else if (Collection.class.isAssignableFrom(attributeModel.getType())) {
             // render a multiple select component for a collection
-            field = constructListSelect(attributeModel.getNestedEntityModel(), attributeModel, null,
-                    true);
+            field = constructListSelect(attributeModel.getNestedEntityModel(), attributeModel,
+                    null, true);
         } else if (AttributeDateType.TIME.equals(attributeModel.getDateType())) {
             TimeField tf = new TimeField();
             tf.setResolution(Resolution.MINUTE);
-            tf.setLocale(VaadinSession.getCurrent() == null ? OCSConstants.DEFAULT_LOCALE
+            tf.setLocale(VaadinSession.getCurrent() == null ? DynamoConstants.DEFAULT_LOCALE
                     : VaadinSession.getCurrent().getLocale());
             field = tf;
         } else {
@@ -463,9 +474,16 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory
 
             // add email validator
             if (attributeModel.isEmail()) {
-                field.addValidator(
-                        new EmailValidator(messageService.getMessage("ocs.no.valid.email")));
+                field.addValidator(new EmailValidator(messageService
+                        .getMessage("ocs.no.valid.email")));
             }
+
+            // add URL validator
+            if (attributeModel.isUrl()) {
+                field.addValidator(new URLValidator(messageService
+                        .getMessage("ocs.no.valid.url")));
+            }
+
         } else if (field instanceof DateField) {
             // set a separate format for a date field
             DateField dateField = (DateField) field;
@@ -485,7 +503,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory
             // disable the field if it cannot be edited
             field.setEnabled(!attributeModel.isReadOnly());
             if (attributeModel.isNumerical()) {
-                field.addStyleName(OCSConstants.CSS_NUMERICAL);
+                field.addStyleName(DynamoConstants.CSS_NUMERICAL);
             }
         }
         return field;
@@ -534,8 +552,8 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory
             if (msg != null) {
                 newItem.getItemProperty(CAPTION_PROPERTY_ID).setValue(msg);
             } else {
-                newItem.getItemProperty(CAPTION_PROPERTY_ID)
-                        .setValue(DefaultFieldFactory.createCaptionByPropertyId(e.name()));
+                newItem.getItemProperty(CAPTION_PROPERTY_ID).setValue(
+                        DefaultFieldFactory.createCaptionByPropertyId(e.name()));
             }
         }
     }
@@ -552,8 +570,8 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory
     private EntityModel<?> resolveEntityModel(EntityModel<?> entityModel,
             AttributeModel attributeModel) {
         if (entityModel == null) {
-            entityModel = ServiceLocator.getEntityModelFactory()
-                    .getModel(attributeModel.getType().asSubclass(AbstractEntity.class));
+            entityModel = ServiceLocator.getEntityModelFactory().getModel(
+                    attributeModel.getType().asSubclass(AbstractEntity.class));
         }
         return entityModel;
     }
@@ -572,11 +590,11 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory
                     attributeModel.isCurrency(), attributeModel.isPercentage(), false,
                     attributeModel.getPrecision(), VaadinUtils.getCurrencySymbol()));
         } else if (attributeModel.getType().equals(Integer.class)) {
-            textField.setConverter(
-                    ConverterFactory.createIntegerConverter(useThousandsGroupingInEditMode()));
+            textField.setConverter(ConverterFactory
+                    .createIntegerConverter(useThousandsGroupingInEditMode()));
         } else if (attributeModel.getType().equals(Long.class)) {
-            textField.setConverter(
-                    ConverterFactory.createLongConverter(useThousandsGroupingInEditMode()));
+            textField.setConverter(ConverterFactory
+                    .createLongConverter(useThousandsGroupingInEditMode()));
         }
     }
 
@@ -586,6 +604,6 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory
      * @return
      */
     private boolean useThousandsGroupingInEditMode() {
-        return Boolean.getBoolean(OCSConstants.SP_THOUSAND_GROUPING);
+        return Boolean.getBoolean(DynamoConstants.SP_THOUSAND_GROUPING);
     }
 }

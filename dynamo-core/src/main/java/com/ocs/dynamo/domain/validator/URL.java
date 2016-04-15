@@ -11,22 +11,24 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-package com.ocs.dynamo.ui;
+package com.ocs.dynamo.domain.validator;
 
-import com.ocs.dynamo.domain.AbstractEntity;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-/**
- * An Observer according to the well-known pattern
- * 
- * @param <T>
- *            The type of the entity whose changes are monitored
- */
-public interface Observer<T extends AbstractEntity<?>> {
+import javax.validation.Constraint;
+import javax.validation.Payload;
 
-	/**
-	 * Call this to notify the observer of a change to the observed entity
-	 * 
-	 * @param entity
-	 */
-	void notify(T entity);
+@Target(value = ElementType.FIELD)
+@Retention(RetentionPolicy.RUNTIME)
+@Constraint(validatedBy = URLValidator.class)
+public @interface URL {
+
+    String message() default "";
+
+    Class<?>[] groups() default {};
+
+    Class<? extends Payload>[] payload() default {};
 }

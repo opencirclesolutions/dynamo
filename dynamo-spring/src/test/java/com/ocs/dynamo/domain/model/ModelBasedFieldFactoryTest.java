@@ -38,8 +38,10 @@ import com.ocs.dynamo.ui.component.EntityListSelect;
 import com.ocs.dynamo.ui.component.EntityLookupField;
 import com.ocs.dynamo.ui.component.TimeField;
 import com.ocs.dynamo.ui.composite.form.CollectionTable;
+import com.ocs.dynamo.ui.validator.URLValidator;
 import com.ocs.dynamo.utils.DateUtils;
 import com.vaadin.data.Item;
+import com.vaadin.data.Validator;
 import com.vaadin.data.util.filter.Compare;
 import com.vaadin.shared.ui.datefield.Resolution;
 import com.vaadin.ui.AbstractSelect;
@@ -88,6 +90,26 @@ public class ModelBasedFieldFactoryTest extends BaseMockitoTest {
     }
 
     /**
+     * Test a URL field
+     */
+    @Test
+    public void testURLField() {
+        Object obj = fieldFactory.createField("url");
+        Assert.assertTrue(obj instanceof TextField);
+
+        TextField tf = (TextField) obj;
+
+        // check that a URL validator was added
+        URLValidator validator = null;
+        for (Validator v : tf.getValidators()) {
+            if (v instanceof URLValidator) {
+                validator = (URLValidator) v;
+            }
+        }
+        Assert.assertNotNull(validator);
+    }
+
+    /**
      * Test a text area
      */
     @Test
@@ -121,14 +143,14 @@ public class ModelBasedFieldFactoryTest extends BaseMockitoTest {
     }
 
     /**
-     * Test an "elementcollection" field
+     * Test an "element collection" field
      */
     @Test
     public void testCollectionField() {
         Object obj = fieldFactory.createField("tags");
         Assert.assertTrue(obj instanceof CollectionTable);
 
-        CollectionTable ct = (CollectionTable) obj;
+        CollectionTable<?> ct = (CollectionTable<?>) obj;
         Assert.assertEquals(25, ct.getMaxLength().intValue());
     }
 
@@ -137,8 +159,8 @@ public class ModelBasedFieldFactoryTest extends BaseMockitoTest {
      */
     @Test
     public void testTextFieldValidating() {
-        fieldFactory = ModelBasedFieldFactory
-                .getValidatingInstance(factory.getModel(TestEntity.class), messageService);
+        fieldFactory = ModelBasedFieldFactory.getValidatingInstance(
+                factory.getModel(TestEntity.class), messageService);
         Object obj = fieldFactory.createField("name");
 
         Assert.assertTrue(obj instanceof TextField);
@@ -268,8 +290,8 @@ public class ModelBasedFieldFactoryTest extends BaseMockitoTest {
 
     @Test
     public void testDoNotCreateReadonlyField() {
-        ModelBasedFieldFactory<TestX> f = ModelBasedFieldFactory
-                .getInstance(factory.getModel(TestX.class), messageService);
+        ModelBasedFieldFactory<TestX> f = ModelBasedFieldFactory.getInstance(
+                factory.getModel(TestX.class), messageService);
         Assert.assertNull(f.createField("readOnlyField"));
 
         // in search mode, it does not matter if the field is readonly

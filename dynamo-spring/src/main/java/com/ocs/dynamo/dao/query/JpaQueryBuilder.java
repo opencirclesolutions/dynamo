@@ -33,7 +33,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Order;
 
 import com.google.common.collect.Lists;
-import com.ocs.dynamo.constants.OCSConstants;
+import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.filter.And;
 import com.ocs.dynamo.filter.Between;
 import com.ocs.dynamo.filter.Compare;
@@ -242,7 +242,7 @@ public final class JpaQueryBuilder {
 
         boolean distinct = addFetchJoinInformation(root, fetchJoins);
 
-        Expression<String> exp = root.get(OCSConstants.ID);
+        Expression<String> exp = root.get(DynamoConstants.ID);
         cq.where(exp.in(ids));
         cq.distinct(distinct);
 
@@ -270,7 +270,7 @@ public final class JpaQueryBuilder {
 
         addFetchJoinInformation(root, fetchJoins);
 
-        cq.where(builder.equal(root.get(OCSConstants.ID), id));
+        cq.where(builder.equal(root.get(DynamoConstants.ID), id));
         return cq;
     }
 
@@ -294,7 +294,7 @@ public final class JpaQueryBuilder {
         Root<T> root = cq.from(entityClass);
 
         // select only the ID
-        cq.multiselect(root.get(OCSConstants.ID));
+        cq.multiselect(root.get(DynamoConstants.ID));
 
         // Set where clause
         Predicate p = createPredicate(filter, builder, root);

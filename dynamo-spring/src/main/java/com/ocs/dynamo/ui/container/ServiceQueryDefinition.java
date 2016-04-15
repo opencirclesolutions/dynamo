@@ -17,7 +17,7 @@ import java.io.Serializable;
 
 import org.vaadin.addons.lazyquerycontainer.LazyQueryDefinition;
 
-import com.ocs.dynamo.constants.OCSConstants;
+import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.dao.query.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.service.BaseService;
@@ -56,7 +56,7 @@ public class ServiceQueryDefinition<ID extends Serializable, T extends AbstractE
      */
     public ServiceQueryDefinition(BaseService<ID, T> service, boolean compositeItems, int batchSize,
             QueryType queryType, FetchJoinInformation[] joins) {
-        super(compositeItems, batchSize, OCSConstants.ID);
+        super(compositeItems, batchSize, DynamoConstants.ID);
         this.service = service;
         this.queryType = queryType;
         this.joins = joins;

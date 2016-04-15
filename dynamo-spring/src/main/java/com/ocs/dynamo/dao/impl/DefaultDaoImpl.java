@@ -26,22 +26,23 @@ import com.ocs.dynamo.domain.AbstractEntity;
 @Transactional
 public class DefaultDaoImpl<ID, T extends AbstractEntity<ID>> extends BaseDaoImpl<ID, T> {
 
-    protected EntityPathBase<T> dslRoot;
-    protected Class<T> entityClass;
+	private EntityPathBase<T> dslRoot;
 
-    public DefaultDaoImpl(EntityPathBase<T> dslRoot, Class<T> entityClass) {
-        this.dslRoot = dslRoot;
-        this.entityClass = entityClass;
-    }
+	private Class<T> entityClass;
 
-    @Override
-    public EntityPathBase<T> getDslRoot() {
-        return dslRoot;
-    }
+	public DefaultDaoImpl(EntityPathBase<T> dslRoot, Class<T> entityClass) {
+		this.dslRoot = dslRoot;
+		this.entityClass = entityClass;
+	}
 
-    @Override
-    public Class<T> getEntityClass() {
-        return entityClass;
-    }
+	@Override
+	public EntityPathBase<T> getDslRoot() {
+		return dslRoot;
+	}
+
+	@Override
+	public Class<T> getEntityClass() {
+		return entityClass;
+	}
 
 }

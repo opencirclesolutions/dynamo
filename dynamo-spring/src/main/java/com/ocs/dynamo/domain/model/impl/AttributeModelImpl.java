@@ -66,6 +66,8 @@ public class AttributeModelImpl implements AttributeModel {
 
     private Class<?> memberType;
 
+    private Integer minLength;
+
     private String name;
 
     private EntityModel<?> nestedEntityModel;
@@ -103,6 +105,8 @@ public class AttributeModelImpl implements AttributeModel {
     private boolean visibleInTable;
 
     private boolean week;
+
+    private boolean url;
 
     @Override
     public int compareTo(AttributeModel o) {
@@ -162,6 +166,11 @@ public class AttributeModelImpl implements AttributeModel {
     @Override
     public Class<?> getMemberType() {
         return memberType;
+    }
+
+    @Override
+    public Integer getMinLength() {
+        return minLength;
     }
 
     @Override
@@ -234,6 +243,11 @@ public class AttributeModelImpl implements AttributeModel {
     @Override
     public boolean isDetailFocus() {
         return detailFocus;
+    }
+
+    @Override
+    public boolean isEmail() {
+        return email;
     }
 
     @Override
@@ -346,6 +360,10 @@ public class AttributeModelImpl implements AttributeModel {
         this.displayName = displayName;
     }
 
+    public void setEmail(boolean email) {
+        this.email = email;
+    }
+
     public void setEntityModel(EntityModel<?> entityModel) {
         this.entityModel = entityModel;
     }
@@ -369,6 +387,10 @@ public class AttributeModelImpl implements AttributeModel {
 
     public void setMemberType(Class<?> memberType) {
         this.memberType = memberType;
+    }
+
+    public void setMinLength(Integer minLength) {
+        this.minLength = minLength;
     }
 
     public void setName(String name) {
@@ -447,13 +469,12 @@ public class AttributeModelImpl implements AttributeModel {
         this.week = week;
     }
 
-    @Override
-    public boolean isEmail() {
-        return email;
+    public boolean isUrl() {
+        return url;
     }
 
-    public void setEmail(boolean email) {
-        this.email = email;
+    public void setUrl(boolean url) {
+        this.url = url;
     }
 
     @Override

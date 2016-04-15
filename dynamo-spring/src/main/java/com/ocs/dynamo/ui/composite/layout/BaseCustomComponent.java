@@ -18,7 +18,7 @@ import java.util.Date;
 
 import org.springframework.util.StringUtils;
 
-import com.ocs.dynamo.constants.OCSConstants;
+import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeDateType;
 import com.ocs.dynamo.domain.model.AttributeModel;
@@ -86,16 +86,15 @@ public abstract class BaseCustomComponent extends CustomComponent implements Bui
                 if (AttributeDateType.TIME.equals(attributeModel.getDateType())) {
                     // for a time, do not include a time zone (we have no way of
                     // knowing it!)
-                    fieldLabel.setConverter(new FormattedStringToDateConverter(null,
-                            attributeModel.getDisplayFormat()));
+                    fieldLabel.setConverter(new FormattedStringToDateConverter(null, attributeModel
+                            .getDisplayFormat()));
                 } else {
-                    fieldLabel.setConverter(new FormattedStringToDateConverter(
-                            VaadinUtils.getTimeZone(UI.getCurrent()),
-                            attributeModel.getDisplayFormat()));
+                    fieldLabel.setConverter(new FormattedStringToDateConverter(VaadinUtils
+                            .getTimeZone(UI.getCurrent()), attributeModel.getDisplayFormat()));
                 }
             } else if (attributeModel.getType().isEnum()) {
-                String msg = getMessageService()
-                        .getEnumMessage((Class<Enum<?>>) attributeModel.getType(), (Enum<?>) value);
+                String msg = getMessageService().getEnumMessage(
+                        (Class<Enum<?>>) attributeModel.getType(), (Enum<?>) value);
                 if (msg != null) {
                     fieldLabel.setValue(msg);
                 }
@@ -119,7 +118,7 @@ public abstract class BaseCustomComponent extends CustomComponent implements Bui
                 // create image preview
                 final byte[] bytes = ClassUtils.getBytes(entity, attributeModel.getName());
                 Embedded image = new DefaultEmbedded(attributeModel.getDisplayName(), bytes);
-                image.setStyleName(OCSConstants.CSS_CLASS_UPLOAD);
+                image.setStyleName(DynamoConstants.CSS_CLASS_UPLOAD);
                 return image;
             } else if (Boolean.class.equals(attributeModel.getType())
                     || boolean.class.equals(attributeModel.getType())) {
@@ -142,7 +141,7 @@ public abstract class BaseCustomComponent extends CustomComponent implements Bui
             }
 
             if (attributeModel.isNumerical()) {
-                fieldLabel.setStyleName(OCSConstants.CSS_NUMERICAL);
+                fieldLabel.setStyleName(DynamoConstants.CSS_NUMERICAL);
             }
 
             if (property != null) {

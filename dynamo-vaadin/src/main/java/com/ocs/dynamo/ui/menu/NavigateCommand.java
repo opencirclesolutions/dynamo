@@ -13,11 +13,11 @@
  */
 package com.ocs.dynamo.ui.menu;
 
-import com.ocs.dynamo.constants.OCSConstants;
+import com.ocs.dynamo.ui.BaseUI;
 import com.vaadin.navigator.Navigator;
-import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.MenuBar.MenuItem;
+import com.vaadin.ui.UI;
 
 /**
  * Command for navigating to a certain view
@@ -48,8 +48,7 @@ public class NavigateCommand implements Command {
      * @param mode
      *            an optional screen mode
      */
-    public NavigateCommand(Navigator navigator, String destination, String selectedTab,
-            String mode) {
+    public NavigateCommand(Navigator navigator, String destination, String selectedTab, String mode) {
         this.navigator = navigator;
         this.destination = destination;
         this.selectedTab = selectedTab;
@@ -58,16 +57,17 @@ public class NavigateCommand implements Command {
 
     @Override
     public void menuSelected(MenuItem selectedItem) {
-        if (selectedTab != null) {
-            VaadinSession.getCurrent().setAttribute(OCSConstants.SELECTED_TAB,
-                    Integer.valueOf(selectedTab));
-        } else {
-            // clear the selected tab index
-            VaadinSession.getCurrent().setAttribute(OCSConstants.SELECTED_TAB, null);
+        UI ui = UI.getCurrent();
+        if (ui instanceof BaseUI) {
+            BaseUI b = (BaseUI) ui;
+
+            if (selectedTab != null) {
+                b.setSelectedTab(Integer.valueOf(selectedTab));
+            } else {
+                b.setSelectedTab(null);
+            }
+            b.setScreenMode(mode);
         }
-
-        VaadinSession.getCurrent().setAttribute(OCSConstants.SCREEN_MODE, mode);
-
         navigator.navigateTo(destination);
     }
 

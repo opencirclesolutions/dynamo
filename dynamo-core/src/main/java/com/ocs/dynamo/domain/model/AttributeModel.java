@@ -16,282 +16,293 @@ package com.ocs.dynamo.domain.model;
 import java.util.Set;
 
 /**
- * TODO Description of AttributeModel.
+ * An attribute model represents how a certain attribute of an entity will be
+ * behave in the user interface. This includes e.g. whether the attribute is
+ * searchable, sortable, what kind of user interface component is used to edit
+ * the attribute etc
+ * 
+ * @author bas.rutten
+ *
  */
 public interface AttributeModel extends Comparable<AttributeModel> {
 
-    /**
-     * In case of a LOB object - the allowed extensions
-     * 
-     * @return
-     */
-    Set<String> getAllowedExtensions();
+	/**
+	 * @return the allowed extensions for a LOB attribute
+	 */
+	Set<String> getAllowedExtensions();
 
-    /**
-     * @return the attribute type for this property
-     */
-    AttributeType getAttributeType();
+	/**
+	 * @return the attribute type (e.g. BASIC, MASTER, DETAIL) of the attribute
+	 */
+	AttributeType getAttributeType();
 
-    /**
-     * The type of date information (date, time, or timestamp)
-     * 
-     * @return
-     */
-    AttributeDateType getDateType();
+	/**
+	 * 
+	 * @return the date type (date, time, or timestamp) of the attribute
+	 */
+	AttributeDateType getDateType();
 
-    /**
-     * Returns the default value of the attribute
-     * 
-     * @return
-     */
-    Object getDefaultValue();
+	/**
+	 * 
+	 * @return the default value of the attribute
+	 */
+	Object getDefaultValue();
 
-    /**
-     * The description of the attribute
-     * 
-     * @return
-     */
-    String getDescription();
+	/**
+	 * 
+	 * @return the description of the attribute
+	 */
+	String getDescription();
 
-    /**
-     * Returns the display format of a property. Mainly used for strings
-     * 
-     * @return
-     */
-    String getDisplayFormat();
+	/**
+	 * 
+	 * @return the display format of the attribute (determines how to format a
+	 *         data)
+	 */
+	String getDisplayFormat();
 
-    /**
-     * The display name of the attribute
-     * 
-     * @return
-     */
-    String getDisplayName();
+	/**
+	 * 
+	 * @return the display name of the attribute
+	 */
+	String getDisplayName();
 
-    /**
-     * @return the model which contains this attribute
-     */
-    EntityModel<?> getEntityModel();
+	/**
+	 * @return the EntityModel for the entity that contains this attribute
+	 */
+	EntityModel<?> getEntityModel();
 
-    /**
-     * Indicates a string value to use instead of "false"
-     * 
-     * @return
-     */
-    String getFalseRepresentation();
+	/**
+	 * 
+	 * @return the textual representation of a "false" value
+	 */
+	String getFalseRepresentation();
 
-    /**
-     * If the attribute is a Collection, then this returns the member type of the collection
-     * 
-     * @return
-     */
-    Class<?> getMemberType();
+	/**
+	 * 
+	 * @return the member type of the collection, if this attribute holds a
+	 *         collection of values
+	 */
+	Class<?> getMemberType();
 
-    /**
-     * The name of the attribute
-     * 
-     * @return
-     */
-    String getName();
+	/**
+	 * 
+	 * @return the name/identifier of the attribute
+	 */
+	String getName();
 
-    /**
-     * The maximum allowed length of the attribute
-     * 
-     * @return
-     */
-    Integer getMaxLength();
+	/**
+	 * 
+	 * @return the maximum allowed length of the attribute
+	 */
+	Integer getMaxLength();
 
-    /**
-     * When this is a MASTER or DETAIL attribute then return the entity model for the nested entity
-     * 
-     * @return The nested entity model
-     */
-    EntityModel<?> getNestedEntityModel();
+	/**
+	 * 
+	 * @return the minimum allowed length of the attribute
+	 */
+	Integer getMinLength();
 
-    /**
-     * The order number of the attribute
-     * 
-     * @return
-     */
-    Integer getOrder();
+	/**
+	 * When this is a MASTER or DETAIL attribute then return the entity model
+	 * for the nested entity
+	 * 
+	 * @return The nested entity model
+	 */
+	EntityModel<?> getNestedEntityModel();
 
-    /**
-     * @return the (nested) path to this attribute
-     */
-    String getPath();
+	/**
+	 * The order number of the attribute
+	 * 
+	 * @return
+	 */
+	Integer getOrder();
 
-    /**
-     * The precision (number of decimals) to use when displaying a decimal number
-     * 
-     * @return
-     */
-    int getPrecision();
+	/**
+	 * @return the (nested) path to this attribute
+	 */
+	String getPath();
 
-    /**
-     * The input prompt to use for a field
-     * 
-     * @return
-     */
-    String getPrompt();
+	/**
+	 * The precision (number of decimals) to use when displaying a decimal
+	 * number
+	 * 
+	 * @return
+	 */
+	int getPrecision();
 
-    /**
-     * The select mode for picking MASTER objects (combo box or lookup field)
-     * 
-     * @return
-     */
-    AttributeSelectMode getSelectMode();
+	/**
+	 * The input prompt to use for a field
+	 * 
+	 * @return
+	 */
+	String getPrompt();
 
-    /**
-     * Returns the text field mode
-     * 
-     * @return
-     */
-    AttributeTextFieldMode getTextFieldMode();
+	/**
+	 * The select mode for picking MASTER objects (combo box or lookup field)
+	 * 
+	 * @return
+	 */
+	AttributeSelectMode getSelectMode();
 
-    /**
-     * Indicates a string value to use instead of "true"
-     * 
-     * @return
-     */
-    String getTrueRepresentation();
+	/**
+	 * Returns the text field mode
+	 * 
+	 * @return
+	 */
+	AttributeTextFieldMode getTextFieldMode();
 
-    /**
-     * The Java type of the property
-     * 
-     * @return
-     */
-    Class<?> getType();
+	/**
+	 * Indicates a string value to use instead of "true"
+	 * 
+	 * @return
+	 */
+	String getTrueRepresentation();
 
-    /**
-     * Indicates whether the attribute is a one-to-one or many-to-one attribute that can ben
-     * selected in a form
-     */
-    boolean isComplexEditable();
+	/**
+	 * The Java type of the property
+	 * 
+	 * @return
+	 */
+	Class<?> getType();
 
-    /**
-     * Is this a currency?
-     * 
-     * @return
-     */
-    boolean isCurrency();
+	/**
+	 * Indicates whether the attribute is a one-to-one or many-to-one attribute
+	 * that can ben selected in a form
+	 */
+	boolean isComplexEditable();
 
-    /**
-     * Indicates this field must get the focus on a detail table
-     * 
-     * @return
-     */
-    boolean isDetailFocus();
+	/**
+	 * Is this a currency?
+	 * 
+	 * @return
+	 */
+	boolean isCurrency();
 
-    /**
-     * Is this an embedded object
-     * 
-     * @return
-     */
-    boolean isEmbedded();
+	/**
+	 * Indicates this field must get the focus on a detail table
+	 * 
+	 * @return
+	 */
+	boolean isDetailFocus();
 
-    /**
-     * Is this an email field
-     * 
-     * @return
-     */
-    boolean isEmail();
+	/**
+	 * Is this an embedded object
+	 * 
+	 * @return
+	 */
+	boolean isEmbedded();
 
-    /**
-     * Whether this attribute should be presented as an image
-     * 
-     * @return
-     */
-    boolean isImage();
+	/**
+	 * Is this an email field
+	 * 
+	 * @return
+	 */
+	boolean isEmail();
 
-    /**
-     * Indicates whether this is the main attribute
-     * 
-     * @return
-     */
-    boolean isMainAttribute();
+	/**
+	 * Whether this attribute should be presented as an image
+	 * 
+	 * @return
+	 */
+	boolean isImage();
 
-    /**
-     * Is this a numeric attribute
-     * 
-     * @return
-     */
-    boolean isNumerical();
+	/**
+	 * Indicates whether this is the main attribute
+	 * 
+	 * @return
+	 */
+	boolean isMainAttribute();
 
-    /**
-     * Indicates whether a numerical field is a percentage
-     * 
-     * @return
-     */
-    boolean isPercentage();
+	/**
+	 * Is this a numeric attribute
+	 * 
+	 * @return
+	 */
+	boolean isNumerical();
 
-    /**
-     * Indicates whether the attribute is read only
-     * 
-     * @return
-     */
-    boolean isReadOnly();
+	/**
+	 * Indicates whether a numerical field is a percentage
+	 * 
+	 * @return
+	 */
+	boolean isPercentage();
 
-    /**
-     * Indicates whether this is a required attribute
-     * 
-     * @return
-     */
-    boolean isRequired();
+	/**
+	 * Indicates whether the attribute is read only
+	 * 
+	 * @return
+	 */
+	boolean isReadOnly();
 
-    /**
-     * Indicates whether it is possible to search on this attribute
-     * 
-     * @return
-     */
-    boolean isSearchable();
+	/**
+	 * Indicates whether this is a required attribute
+	 * 
+	 * @return
+	 */
+	boolean isRequired();
 
-    /**
-     * Indicates whether saerching on this fields is case sensitive
-     * 
-     * @return
-     */
-    boolean isSearchCaseSensitive();
+	/**
+	 * Indicates whether it is possible to search on this attribute
+	 * 
+	 * @return
+	 */
+	boolean isSearchable();
 
-    /**
-     * Indicates whether to only match the prefix when performing a search
-     * 
-     * @return
-     */
-    boolean isSearchPrefixOnly();
+	/**
+	 * Indicates whether saerching on this fields is case sensitive
+	 * 
+	 * @return
+	 */
+	boolean isSearchCaseSensitive();
 
-    /**
-     * Indicates whether the attribute is sortable
-     * 
-     * @return
-     */
-    boolean isSortable();
+	/**
+	 * Indicates whether to only match the prefix when performing a search
+	 * 
+	 * @return
+	 */
+	boolean isSearchPrefixOnly();
 
-    /**
-     * Indicates whether the attribute is visible
-     * 
-     * @return
-     */
-    boolean isVisible();
+	/**
+	 * Indicates whether the attribute is sortable
+	 * 
+	 * @return
+	 */
+	boolean isSortable();
+	
+	/**
+	 * Indicates whether this represents a (clickable) URL
+	 * @return
+	 */
+	boolean isUrl();
 
-    /**
-     * Indicates whether the attribute must be shown in a table
-     * 
-     * @return
-     */
-    boolean isVisibleInTable();
+	/**
+	 * Indicates whether the attribute is visible
+	 * 
+	 * @return
+	 */
+	boolean isVisible();
 
-    /**
-     * Indicates whether this attribute represents a weekly recurring date
-     * 
-     * @return
-     */
-    boolean isWeek();
+	/**
+	 * Indicates whether the attribute must be shown in a table
+	 * 
+	 * @return
+	 */
+	boolean isVisibleInTable();
 
-    /**
-     * Marks this attribute as the main attribute
-     * 
-     * @param main
-     * @return
-     */
-    void setMainAttribute(boolean main);
+	/**
+	 * Indicates whether this attribute represents a weekly recurring date
+	 * 
+	 * @return
+	 */
+	boolean isWeek();
+
+	/**
+	 * Marks this attribute as the main attribute
+	 * 
+	 * @param main
+	 * @return
+	 */
+	void setMainAttribute(boolean main);
 
 }

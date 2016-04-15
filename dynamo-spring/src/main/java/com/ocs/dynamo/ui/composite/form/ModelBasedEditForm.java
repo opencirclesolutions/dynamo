@@ -30,7 +30,7 @@ import javax.persistence.OptimisticLockException;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 
-import com.ocs.dynamo.constants.OCSConstants;
+import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.AttributeType;
@@ -44,6 +44,7 @@ import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.component.DefaultEmbedded;
 import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
+import com.ocs.dynamo.ui.component.URLField;
 import com.ocs.dynamo.ui.composite.layout.BaseCustomComponent;
 import com.ocs.dynamo.ui.composite.type.AttributeGroupMode;
 import com.ocs.dynamo.ui.composite.type.ScreenMode;
@@ -86,9 +87,15 @@ import com.vaadin.ui.VerticalLayout;
  *            the type of the entity
  */
 @SuppressWarnings("serial")
-public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntity<ID>>
-        extends BaseCustomComponent {
+public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntity<ID>> extends
+        BaseCustomComponent {
 
+    /**
+     * A custom field that can be used to upload a file
+     * 
+     * @author bas.rutten
+     *
+     */
     private final class UploadComponent extends CustomField<byte[]> {
 
         private AttributeModel attributeModel;
@@ -107,7 +114,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
             // for a LOB field, create an upload and an image
             // retrieve the current value
             if (attributeModel.isImage()) {
-                image.setStyleName(OCSConstants.CSS_CLASS_UPLOAD);
+                image.setStyleName(DynamoConstants.CSS_CLASS_UPLOAD);
                 image.setVisible(bytes != null);
                 main.addComponent(image);
             } else {
@@ -184,9 +191,10 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
             if (stream != null && stream.toByteArray().length > 0) {
                 String extension = FilenameUtils.getExtension(event.getFilename());
 
-                if (supportedExtensions == null || supportedExtensions.length == 0
-                        || (extension != null
-                                && Arrays.asList(supportedExtensions).contains(extension))) {
+                if (supportedExtensions == null
+                        || supportedExtensions.length == 0
+                        || (extension != null && Arrays.asList(supportedExtensions).contains(
+                                extension))) {
 
                     // set the image source
                     if (target != null) {
@@ -230,7 +238,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
     /**
      * A map containing the collection tables per view mode
      */
-    private Map<Boolean, List<CollectionTable>> collectionTables = new HashMap<>();
+    private Map<Boolean, List<CollectionTable<?>>> collectionTables = new HashMap<>();
 
     /**
      * Indicates whether all details tables for editing complex fields are valid
@@ -341,35 +349,47 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
     private void addField(Layout parent, EntityModel<T> entityModel, AttributeModel attributeModel,
             int count) {
         AttributeType type = attributeModel.getAttributeType();
-        if (attributeModel.isVisible() && (AttributeType.BASIC.equals(type)
-                || AttributeType.LOB.equals(type) || attributeModel.isComplexEditable())) {
+        if (attributeModel.isVisible()
+                && (AttributeType.BASIC.equals(type) || AttributeType.LOB.equals(type) || attributeModel
+                        .isComplexEditable())) {
             if (attributeModel.isReadOnly() || isViewMode()) {
                 if (entity.getId() != null) {
                     // read-only attribute are hidden for new entities
-                    if ((AttributeType.DETAIL.equals(type)
-                            || AttributeType.ELEMENT_COLLECTION.equals(type))
-                            && attributeModel.isComplexEditable()) {
+                    if ((AttributeType.DETAIL.equals(type) || AttributeType.ELEMENT_COLLECTION
+                            .equals(type)) && attributeModel.isComplexEditable()) {
                         // display a complex component in read-only mode
-                        constructSimpleField(parent, entityModel, attributeModel, true, count);
+                        constructField(parent, entityModel, attributeModel, true, count);
                     } else {
                         // display a label
-                        Component label = constructLabel(entity, attributeModel);
-                        labels.get(isViewMode()).put(attributeModel, label);
-                        parent.addComponent(label);
+                        if (attributeModel.isUrl()) {
+                            URLField urlField = new URLField(attributeModel);
+                            groups.get(isViewMode()).bind(urlField, attributeModel.getName());
+                            parent.addComponent(urlField);
+                        } else {
+                            Component label = constructLabel(entity, attributeModel);
+                            labels.get(isViewMode()).put(attributeModel, label);
+                            parent.addComponent(label);
+                        }
                     }
                 } else {
                     // new entity - create the label but do not display it
-                    Component label = constructLabel(entity, attributeModel);
-                    label.setVisible(false);
-                    labels.get(isViewMode()).put(attributeModel, label);
-                    parent.addComponent(label);
+                    if (attributeModel.isUrl()) {
+                        URLField urlField = new URLField(attributeModel);
+                        groups.get(isViewMode()).bind(urlField, attributeModel.getName());
+                        parent.addComponent(urlField);
+                    } else {
+                        Component label = constructLabel(entity, attributeModel);
+                        label.setVisible(false);
+                        labels.get(isViewMode()).put(attributeModel, label);
+                        parent.addComponent(label);
+                    }
                 }
             } else {
                 // display an editable field
                 if (AttributeType.BASIC.equals(type) || AttributeType.MASTER.equals(type)
                         || AttributeType.DETAIL.equals(type)
                         || AttributeType.ELEMENT_COLLECTION.equals(type)) {
-                    constructSimpleField(parent, entityModel, attributeModel, false, count);
+                    constructField(parent, entityModel, attributeModel, false, count);
                 } else if (AttributeType.LOB.equals(type)) {
                     // for a LOB field we need to construct a rather
                     // elaborate upload component
@@ -402,7 +422,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
                 uploads.put(Boolean.TRUE, uploadMap);
 
                 detailTables.put(Boolean.TRUE, new ArrayList<DetailsEditTable<?, ?>>());
-                collectionTables.put(Boolean.TRUE, new ArrayList<CollectionTable>());
+                collectionTables.put(Boolean.TRUE, new ArrayList<CollectionTable<?>>());
                 mainViewLayout = buildMainLayout(entityModel);
             }
             setCompositionRoot(mainViewLayout);
@@ -415,7 +435,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
                 uploads.put(Boolean.FALSE, uploadMap);
 
                 detailTables.put(Boolean.FALSE, new ArrayList<DetailsEditTable<?, ?>>());
-                collectionTables.put(Boolean.FALSE, new ArrayList<CollectionTable>());
+                collectionTables.put(Boolean.FALSE, new ArrayList<CollectionTable<?>>());
                 mainEditLayout = buildMainLayout(entityModel);
 
                 postProcessEditFields();
@@ -458,7 +478,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
         // in case of vertical layout (the default), don't use the entire screen
         if (ScreenMode.VERTICAL.equals(formOptions.getScreenMode())) {
-            form.setStyleName(OCSConstants.CSS_CLASS_HALFSCREEN);
+            form.setStyleName(DynamoConstants.CSS_CLASS_HALFSCREEN);
         }
 
         int count = 0;
@@ -583,7 +603,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
             ((FormLayout) innerLayout).setMargin(true);
 
             if (!tabs) {
-                ((FormLayout) innerLayout).setStyleName(OCSConstants.CSS_CLASS_HALFSCREEN);
+                ((FormLayout) innerLayout).setStyleName(DynamoConstants.CSS_CLASS_HALFSCREEN);
             }
         } else {
             innerLayout = new DefaultVerticalLayout(true, true);
@@ -679,14 +699,14 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
     }
 
     /**
-     * Constructs a simple field (for an int, date, string etc)
+     * Constructs a field for a certain attribute
      * 
      * @param form
      * @param entityModel
      * @param attributeModel
      */
     @SuppressWarnings("unchecked")
-    private void constructSimpleField(Layout form, EntityModel<T> entityModel,
+    private void constructField(Layout form, EntityModel<T> entityModel,
             AttributeModel attributeModel, boolean viewMode, int count) {
 
         // allow the user to override the construction of a field
@@ -701,15 +721,14 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
         }
 
         if (field instanceof CollectionTable) {
-            ((CollectionTable) field).setViewMode(isViewMode());
-            collectionTables.get(isViewMode()).add((CollectionTable) field);
+            ((CollectionTable<?>) field).setViewMode(isViewMode());
+            collectionTables.get(isViewMode()).add((CollectionTable<?>) field);
         }
 
         if (field != null) {
             if (!(field instanceof DetailsEditTable)) {
                 groups.get(viewMode).bind(field, attributeModel.getName());
             }
-
             field.setSizeFull();
             form.addComponent(field);
         }
@@ -821,8 +840,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
      * @return
      */
     private String getAttributeGroupCaption(String attributeGroup) {
-        return EntityModel.DEFAULT_GROUP.equals(attributeGroup)
-                ? message("ocs.default.group.caption") : attributeGroup;
+        return EntityModel.DEFAULT_GROUP.equals(attributeGroup) ? message("ocs.default.group.caption")
+                : attributeGroup;
     }
 
     public List<DetailsEditTable<?, ?>> getDetailTables() {
@@ -886,6 +905,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
             // label is displayed in view mode or when its an existing entity
             newLabel.setVisible(entity.getId() != null || isViewMode());
 
+            // replace all existing labels with new labels
             HasComponents hc = e.getValue().getParent();
             if (hc instanceof Layout) {
                 ((Layout) hc).replaceComponent(e.getValue(), newLabel);

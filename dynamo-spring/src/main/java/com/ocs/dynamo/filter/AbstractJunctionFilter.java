@@ -25,7 +25,7 @@ import java.util.List;
  */
 public abstract class AbstractJunctionFilter extends AbstractFilter {
 
-    protected final List<Filter> filters = new ArrayList<Filter>();
+    private final List<Filter> filters = new ArrayList<Filter>();
 
     /**
      * Constructor

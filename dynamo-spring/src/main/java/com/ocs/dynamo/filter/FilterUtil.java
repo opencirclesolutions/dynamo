@@ -15,6 +15,7 @@ package com.ocs.dynamo.filter;
 
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.util.filter.AbstractJunctionFilter;
+import com.vaadin.data.util.filter.SimpleStringFilter;
 import com.vaadin.data.util.filter.Compare.Equal;
 
 public final class FilterUtil {
@@ -67,6 +68,11 @@ public final class FilterUtil {
             com.vaadin.data.util.filter.Like like = (com.vaadin.data.util.filter.Like) filter;
             if (like.getPropertyId().equals(propertyId)) {
                 return like;
+            }
+        } else if (filter instanceof SimpleStringFilter) {
+            SimpleStringFilter ssf = (SimpleStringFilter) filter;
+            if (ssf.getPropertyId().equals(propertyId)) {
+                return ssf;
             }
         }
 
