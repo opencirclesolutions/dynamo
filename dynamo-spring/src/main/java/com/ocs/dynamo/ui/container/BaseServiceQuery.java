@@ -44,6 +44,12 @@ public abstract class BaseServiceQuery<ID extends Serializable, T extends Abstra
     // local variable used as a counter for assigning temporary IDs
     private int countDown;
 
+    // the class of the primary key
+    private Class<?> idClass;
+
+    // the class of the entity
+    private Class<T> entityClass;
+
     /**
      * Constructor
      * 
@@ -60,14 +66,30 @@ public abstract class BaseServiceQuery<ID extends Serializable, T extends Abstra
      */
     @Override
     protected T constructBean() {
-        Class<T> ec = getCustomQueryDefinition().getService().getEntityClass();
+
+        // lazily load the entity class
+        if (entityClass == null) {
+            entityClass = getCustomQueryDefinition().getService().getEntityClass();
+        }
+
+        // lazily load the ID class
+        if (idClass == null) {
+            idClass = ClassUtils.getResolvedType(entityClass, DynamoConstants.ID);
+        }
 
         // the lazy query container cannot deal with situations in which the
         // new object doesn't have an ID
         // to circumvent this, we give the object a temporary ID which we clear
         // before actually persisting the object
-        T result = ClassUtils.instantiateClass(ec);
-        ClassUtils.setFieldValue(result, DynamoConstants.ID, Integer.MAX_VALUE - countDown);
+        T result = ClassUtils.instantiateClass(entityClass);
+
+        // set the primary key
+        if (Integer.class.equals(idClass)) {
+            ClassUtils.setFieldValue(result, DynamoConstants.ID, Integer.MAX_VALUE - countDown);
+        } else if (Long.class.equals(idClass)) {
+            ClassUtils.setFieldValue(result, DynamoConstants.ID, Long.MAX_VALUE - countDown);
+        }
+
         countDown--;
 
         return result;

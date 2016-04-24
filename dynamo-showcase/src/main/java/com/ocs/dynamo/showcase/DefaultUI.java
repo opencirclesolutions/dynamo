@@ -17,10 +17,14 @@ import javax.inject.Inject;
 import javax.servlet.annotation.WebListener;
 import javax.servlet.annotation.WebServlet;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.context.ContextLoaderListener;
 
+import com.ocs.dynamo.ui.BaseUI;
 import com.ocs.dynamo.ui.component.ErrorView;
+import com.ocs.dynamo.ui.menu.MenuService;
+import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.VaadinRequest;
@@ -29,6 +33,7 @@ import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.spring.navigator.SpringViewProvider;
 import com.vaadin.spring.server.SpringVaadinServlet;
+import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
@@ -36,10 +41,16 @@ import com.vaadin.ui.VerticalLayout;
 /**
  * Vaadin UI.
  */
+@Theme("light")
 @SpringUI()
 @SuppressWarnings("serial")
 @UIScope
-public class DefaultUI extends UI {
+public class DefaultUI extends BaseUI {
+
+    private MenuBar menu;
+
+    @Autowired
+    private MenuService menuService;
 
     /**
      * 'Marker class' to initialize the Vaadin Web Context.
@@ -100,6 +111,9 @@ public class DefaultUI extends UI {
         UI.getCurrent().setNavigator(navigator);
         navigator.addProvider(viewProvider);
         navigator.setErrorView(new ErrorView());
+
+        menu = menuService.constructMenu("movies.menu", navigator);
+        content.addComponent(menu);
 
         // Display the greeting
         content.addComponent(viewPanel);

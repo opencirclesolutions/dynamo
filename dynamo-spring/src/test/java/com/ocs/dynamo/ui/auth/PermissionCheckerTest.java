@@ -24,7 +24,7 @@ import com.ocs.dynamo.test.BaseMockitoTest;
 
 public class PermissionCheckerTest extends BaseMockitoTest {
 
-    public PermissionChecker checker = new PermissionChecker("com.ocs.dynamo");
+    public DefaultPermissionCheckerImpl checker = new DefaultPermissionCheckerImpl("com.ocs.dynamo");
 
     @Mock
     private UserDetailsService userDetailsService;

@@ -67,7 +67,7 @@
 
 	<bean id="menuService" class="com.ocs.dynamo.ui.menu.MenuService" />
 
-	<bean id="permissionChecker" class="com.ocs.dynamo.ui.auth.PermissionChecker">
+	<bean id="permissionChecker" class="com.ocs.dynamo.ui.auth.DefaultPermissionCheckerImpl">
 		<constructor-arg value="com.ocs.dynamo" />
 	</bean>
 

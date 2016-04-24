@@ -61,21 +61,28 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
     // the form layout that is nested inside the detail view
     private Layout detailFormLayout;
 
-    // the outer layout that holds the detail view
+    // the layout that contains the form/detail view
     private Layout detailLayout;
 
+    // the edit form
     private ModelBasedEditForm<ID, T> editForm;
 
-    private TextField extraSearchField;
-
+    // a map of filters to apply to apply to the individual search fields
     private Map<String, Filter> fieldFilters = new HashMap<>();
 
+    // layout that is placed above the table view
     private Component headerLayout;
 
+    // the main layout
     private VerticalLayout main;
 
+    // quick search filed for filtering the table
+    private TextField quickSearchField;
+
+    // the currently selected detail layout (can be either edit mode or read-only mode)
     private Component selectedDetailLayout;
 
+    // wrapper around the search results tables
     private BaseTableWrapper<ID, T> tableWrapper;
 
     /**
@@ -115,7 +122,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
      * 
      * @param t
      */
-    protected abstract void afterReload(T t);
+    protected abstract void afterReload(T entity);
 
     @Override
     public void attach() {
@@ -125,7 +132,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
     }
 
     /**
-     * Builds the form
+     * Builds the component
      */
     @Override
     public void build() {
@@ -143,16 +150,18 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
             main.addComponent(headerLayout);
         }
 
+        quickSearchField = constructSearchField();
+
         // additional quick search field
         if (!isHorizontalMode()) {
-            extraSearchField = constructSearchField();
-            if (extraSearchField != null) {
-                main.addComponent(extraSearchField);
+            if (quickSearchField != null) {
+                main.addComponent(quickSearchField);
             }
         }
 
         // constructs the results table
         constructTable();
+        tableWrapper.getTable().setPageLength(getPageLength());
 
         // extra splitter (for horizontal mode)
         if (isHorizontalMode()) {
@@ -160,9 +169,8 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
             main.addComponent(splitter);
 
             splitterLayout = new DefaultVerticalLayout(false, true);
-            extraSearchField = constructSearchField();
-            if (extraSearchField != null) {
-                splitterLayout.addComponent(extraSearchField);
+            if (quickSearchField != null) {
+                splitterLayout.addComponent(quickSearchField);
             }
 
             splitterLayout.addComponent(tableWrapper);
@@ -171,7 +179,6 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
             main.addComponent(tableWrapper);
         }
 
-        // button bar
         setButtonBar(new DefaultHorizontalLayout());
 
         if (isHorizontalMode()) {
@@ -397,8 +404,8 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
         }
         headerLayout = component;
 
-        if (extraSearchField != null) {
-            extraSearchField.setValue("");
+        if (quickSearchField != null) {
+            quickSearchField.setValue("");
         }
 
         // refresh the details

@@ -281,37 +281,33 @@ public abstract class TabularEditLayout<ID extends Serializable, T extends Abstr
             table.setSortAscending(SortDirection.ASCENDING.equals(getSortOrder().getDirection()));
         }
 
-        EntityModel<T> entityModel = getEntityModelFactory()
-                .getModel(getService().getEntityClass());
-
         // overwrite the field factory to handle validation
-        table.setTableFieldFactory(
-                new ModelBasedFieldFactory<T>(entityModel, getMessageService(), true, false) {
+        table.setTableFieldFactory(new ModelBasedFieldFactory<T>(getEntityModel(),
+                getMessageService(), true, false) {
 
-                    @Override
-                    public Field<?> createField(String propertyId) {
-                        final Field<?> field = super.createField(propertyId);
+            @Override
+            public Field<?> createField(String propertyId) {
+                final Field<?> field = super.createField(propertyId);
 
-                        if (field != null && field.isEnabled()) {
-                            field.addValueChangeListener(new Property.ValueChangeListener() {
+                if (field != null && field.isEnabled()) {
+                    field.addValueChangeListener(new Property.ValueChangeListener() {
 
-                                @Override
-                                public void valueChange(
-                                        com.vaadin.data.Property.ValueChangeEvent event) {
-                                    if (saveButton != null) {
-                                        saveButton.setEnabled(VaadinUtils.allFixedTableFieldsValid(
-                                                getTableWrapper().getTable()));
-                                    }
-                                }
-
-                            });
-
-                            postProcessField(propertyId, field);
+                        @Override
+                        public void valueChange(com.vaadin.data.Property.ValueChangeEvent event) {
+                            if (saveButton != null) {
+                                saveButton.setEnabled(VaadinUtils
+                                        .allFixedTableFieldsValid(getTableWrapper().getTable()));
+                            }
                         }
 
-                        return field;
-                    }
-                });
+                    });
+
+                    postProcessField(propertyId, field);
+                }
+
+                return field;
+            }
+        });
         mainLayout.addComponent(tableWrapper);
     }
 

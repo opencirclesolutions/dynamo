@@ -36,8 +36,11 @@ import com.vaadin.ui.Layout;
  * @param <T>
  *            the type of the entity
  */
-public abstract class BaseCollectionLayout<ID, T extends AbstractEntity<ID>>
-        extends BaseServiceCustomComponent<ID, T> {
+public abstract class BaseCollectionLayout<ID, T extends AbstractEntity<ID>> extends
+        BaseServiceCustomComponent<ID, T> {
+
+    // the default page length
+    private static final int PAGE_LENGTH = 20;
 
     private static final long serialVersionUID = -2864711994829582000L;
 
@@ -45,6 +48,8 @@ public abstract class BaseCollectionLayout<ID, T extends AbstractEntity<ID>>
 
     // the joins to use when fetching data
     private FetchJoinInformation[] joins;
+
+    private int pageLength = PAGE_LENGTH;
 
     // the currently selected item
     private T selectedItem;
@@ -106,6 +111,10 @@ public abstract class BaseCollectionLayout<ID, T extends AbstractEntity<ID>>
 
     public FetchJoinInformation[] getJoins() {
         return joins;
+    }
+
+    public int getPageLength() {
+        return pageLength;
     }
 
     public T getSelectedItem() {
@@ -180,6 +189,10 @@ public abstract class BaseCollectionLayout<ID, T extends AbstractEntity<ID>>
         this.buttonBar = buttonBar;
     }
 
+    public void setPageLength(int pageLength) {
+        this.pageLength = pageLength;
+    }
+
     public void setSelectedItem(T selectedItem) {
         this.selectedItem = selectedItem;
     }
@@ -191,4 +204,5 @@ public abstract class BaseCollectionLayout<ID, T extends AbstractEntity<ID>>
     public void setSortOrder(SortOrder sortOrder) {
         this.sortOrder = sortOrder;
     }
+
 }

@@ -122,8 +122,8 @@ public class ModelBasedTableIntegrationTest extends BaseIntegrationTest {
         EntityModel<TestEntity> model = entityModelFactory.getModel(TestEntity.class);
 
         ServiceResultsTableWrapper<Integer, TestEntity> wrapper = new ServiceResultsTableWrapper<>(
-                testEntityService, model, QueryType.ID_BASED, null,
-                new SortOrder("name", SortDirection.ASCENDING), null);
+                testEntityService, model, QueryType.ID_BASED, null, new SortOrder("name",
+                        SortDirection.ASCENDING), null);
         wrapper.build();
 
         Assert.assertNotNull(wrapper.getTable());

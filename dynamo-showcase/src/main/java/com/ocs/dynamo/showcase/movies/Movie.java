@@ -30,6 +30,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeDateType;
@@ -58,8 +59,8 @@ public class Movie extends AbstractEntity<Integer> {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    /** The Movie Title contains a Dynamo annotation to make it case-sensitive searchable. */
-    @Attribute(searchable = true, searchCaseSensitive = true)
+    @NotNull
+    @Attribute(searchable = true, main = true)
     private String title;
 
     /** The Movie IMDB URL contains a Dynamo annotation to make it clickable. */
@@ -88,8 +89,7 @@ public class Movie extends AbstractEntity<Integer> {
      * The Movie Gross contains a Dynamo annotation to make it searchable and use another value
      * representation.
      */
-    @Attribute
-    // @Attribute(currency = true)
+    @NotNull
     private BigDecimal gross;
 
     /**

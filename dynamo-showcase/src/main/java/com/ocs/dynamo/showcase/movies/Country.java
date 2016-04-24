@@ -1,4 +1,4 @@
-/**
+/*
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
@@ -29,7 +29,7 @@ import com.ocs.dynamo.domain.model.annotation.Model;
 @Entity
 @Table(name = "COUNTRY")
 //
-@Model(displayProperty = "name")
+@Model(displayProperty = "name", displayNamePlural = "Countries")
 public class Country extends AbstractEntity<Integer> {
 
     /** Classes version. */

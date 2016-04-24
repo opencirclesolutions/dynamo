@@ -439,10 +439,13 @@ public final class ClassUtils {
         if (field != null) {
             ResolvableType rt = ResolvableType.forField(field);
             if (rt != null) {
-                rt = rt.getGeneric(indexes);
+                if (indexes != null && indexes.length > 0) {
+                    rt = rt.getGeneric(indexes);
+                }
                 if (rt != null) {
                     return rt.resolve();
                 }
+
             }
         }
         return null;

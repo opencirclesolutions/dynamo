@@ -63,9 +63,9 @@ public class FormOptions implements Serializable {
     private boolean showEditButton;
 
     /**
-     * Whether to include an extra search field
+     * Whether to include an quick search field
      */
-    private boolean showExtraSearchField;
+    private boolean showQuickSearchField;
 
     /**
      * Whether or not to add a "remove" button - by default this is disabled
@@ -124,10 +124,6 @@ public class FormOptions implements Serializable {
         return showEditButton;
     }
 
-    public boolean isShowExtraSearchField() {
-        return showExtraSearchField;
-    }
-
     public boolean isShowRemoveButton() {
         return showRemoveButton;
     }
@@ -162,10 +158,6 @@ public class FormOptions implements Serializable {
 
     public void setShowEditButton(boolean showEditButton) {
         this.showEditButton = showEditButton;
-    }
-
-    public void setShowExtraSearchField(boolean showExtraSearchField) {
-        this.showExtraSearchField = showExtraSearchField;
     }
 
     public void setShowRemoveButton(boolean showRemoveButton) {
@@ -222,6 +214,14 @@ public class FormOptions implements Serializable {
 
     public void setPopup(boolean popup) {
         this.popup = popup;
+    }
+
+    public boolean isShowQuickSearchField() {
+        return showQuickSearchField;
+    }
+
+    public void setShowQuickSearchField(boolean showQuickSearchField) {
+        this.showQuickSearchField = showQuickSearchField;
     }
 
 }

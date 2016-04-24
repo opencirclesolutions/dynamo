@@ -31,6 +31,7 @@ import com.ocs.dynamo.ui.composite.form.FormOptions;
 import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
 import com.ocs.dynamo.ui.composite.form.ModelBasedSearchForm;
 import com.ocs.dynamo.ui.composite.table.ServiceResultsTableWrapper;
+import com.ocs.dynamo.ui.composite.type.ScreenMode;
 import com.ocs.dynamo.ui.container.QueryType;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Property;
@@ -54,9 +55,6 @@ import com.vaadin.ui.VerticalLayout;
 @SuppressWarnings("serial")
 public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntity<ID>> extends
         BaseCollectionLayout<ID, T> {
-
-    // the default page length
-    private static final int PAGE_LENGTH = 18;
 
     private static final long serialVersionUID = 4606800218149558500L;
 
@@ -87,9 +85,6 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 
     // the number of columns in the search form
     private int nrOfColumns = 1;
-
-    // the number of rows to display in the table
-    private int pageLength = PAGE_LENGTH;
 
     // the query type (paging or id-based)
     private QueryType queryType;
@@ -194,7 +189,7 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 
             // search results table
             tableWrapper = getTableWrapper();
-            tableWrapper.getTable().setPageLength(pageLength);
+            tableWrapper.getTable().setPageLength(getPageLength());
 
             // add a listener to respond to the selection of an item
             tableWrapper.getTable().addValueChangeListener(new Property.ValueChangeListener() {
@@ -303,6 +298,8 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
             // set the form options for the detail form
             FormOptions options = new FormOptions();
             options.setOpenInViewMode(getFormOptions().isOpenInViewMode());
+            options.setScreenMode(ScreenMode.VERTICAL);
+
             if (options.isOpenInViewMode()) {
                 options.setShowBackButton(true);
                 options.setShowEditButton(true);
@@ -364,10 +361,6 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 
     public int getNrOfColumns() {
         return nrOfColumns;
-    }
-
-    public int getPageLength() {
-        return pageLength;
     }
 
     public QueryType getQueryType() {
@@ -490,10 +483,6 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 
     public void setNrOfColumns(int nrOfColumns) {
         this.nrOfColumns = nrOfColumns;
-    }
-
-    public void setPageLength(int pageLength) {
-        this.pageLength = pageLength;
     }
 
     public void setQueryType(QueryType queryType) {

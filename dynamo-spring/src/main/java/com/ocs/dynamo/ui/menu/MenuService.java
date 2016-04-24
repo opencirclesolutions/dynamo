@@ -13,12 +13,11 @@
  */
 package com.ocs.dynamo.ui.menu;
 
-import javax.inject.Inject;
-
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.ocs.dynamo.service.MessageService;
-import com.ocs.dynamo.ui.auth.PermissionChecker;
+import com.ocs.dynamo.ui.auth.DefaultPermissionCheckerImpl;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.Command;
@@ -42,10 +41,10 @@ public class MenuService {
 
     public static final String TAB_INDEX = "tabIndex";
 
-    @Inject
-    private PermissionChecker checker;
+    @Autowired(required = false)
+    private DefaultPermissionCheckerImpl checker;
 
-    @Inject
+    @Autowired
     private MessageService messageService;
 
     /**
@@ -85,17 +84,17 @@ public class MenuService {
 
             // add the child items
             int index = 1;
-            String childKey = messageService
-                    .getMessageNoDefault(key + "." + index + "." + DISPLAY_NAME);
+            String childKey = messageService.getMessageNoDefault(key + "." + index + "."
+                    + DISPLAY_NAME);
 
             while (childKey != null) {
                 constructMenu(menuItem, key + "." + index, navigator);
                 index++;
-                childKey = messageService
-                        .getMessageNoDefault(key + "." + index + "." + DISPLAY_NAME);
+                childKey = messageService.getMessageNoDefault(key + "." + index + "."
+                        + DISPLAY_NAME);
             }
 
-            if (!checker.isAccessAllowed(destination)) {
+            if (checker != null && !checker.isAccessAllowed(destination)) {
                 menuItem.setVisible(false);
             }
 

@@ -21,6 +21,11 @@ public final class Views {
     /** Movies view - displays the use of the Vaadin Simple Search Layout. */
     public static final String MOVIES_VIEW = "MoviesView";
 
+    /** Movies view - displays the use of the Vaadin Simple Search Layout. */
+    public static final String HORIZONTAL_MOVIES_SPLIT_VIEW = "HorizontalMoviesSplitView";
+
+    public static final String VERTICAL_MOVIES_SPLIT_VIEW = "VerticalMoviesSplitView";
+    
     /**
      * Only use static members.
      */
