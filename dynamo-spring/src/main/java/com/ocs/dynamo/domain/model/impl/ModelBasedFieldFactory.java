@@ -39,6 +39,7 @@ import com.ocs.dynamo.ui.component.EntityComboBox;
 import com.ocs.dynamo.ui.component.EntityListSelect;
 import com.ocs.dynamo.ui.component.EntityLookupField;
 import com.ocs.dynamo.ui.component.TimeField;
+import com.ocs.dynamo.ui.component.URLField;
 import com.ocs.dynamo.ui.composite.form.CollectionTable;
 import com.ocs.dynamo.ui.composite.form.FormOptions;
 import com.ocs.dynamo.ui.converter.ConverterFactory;
@@ -78,6 +79,7 @@ import com.vaadin.ui.TextField;
 public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory implements
         TableFieldFactory {
 
+    // the default number of rows in a list select - TODO make this a configurable parameter
     private static final int LIST_SELECT_ROWS = 5;
 
     private static ConcurrentMap<String, ModelBasedFieldFactory<?>> nonValidatingInstances = new ConcurrentHashMap<>();
@@ -92,9 +94,9 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 
     private EntityModel<T> model;
 
-    // indicates whether the system is in search mode. In search mode, field are
-    // returned
-    // for read-only components
+    // indicates whether the system is in search mode. In search mode, components for
+    // some attributes are constructed differently (e.g. we render two search fields to be able to
+    // search for a range of integers)
     private boolean search;
 
     // indicates whether extra validators must be added. This is the case when
@@ -454,12 +456,37 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
             tf.setLocale(VaadinSession.getCurrent() == null ? DynamoConstants.DEFAULT_LOCALE
                     : VaadinSession.getCurrent().getLocale());
             field = tf;
+        } else if (attributeModel.isUrl()) {
+            // URL field (offers clickable link in readonly mode)
+            TextField tf = (TextField) createField(attributeModel.getType(), Field.class);
+            tf.addValidator(new URLValidator(messageService.getMessage("ocs.no.valid.url")));
+            tf.setNullRepresentation(null);
+            tf.setSizeFull();
+            
+            // wrap text field in URL field
+            field = new URLField(tf, attributeModel, false);
+            field.setSizeFull();
         } else {
             // just a regular field
             field = createField(attributeModel.getType(), Field.class);
         }
         field.setCaption(attributeModel.getDisplayName());
 
+        postProcessField(field, attributeModel);
+
+        // add a field validator based on JSR-303 bean validation
+        if (validate) {
+            field.addValidator(new BeanValidator(model.getEntityClass(), (String) propertyId));
+            // disable the field if it cannot be edited
+            field.setEnabled(!attributeModel.isReadOnly());
+            if (attributeModel.isNumerical()) {
+                field.addStyleName(DynamoConstants.CSS_NUMERICAL);
+            }
+        }
+        return field;
+    }
+
+    private void postProcessField(Field<?> field, AttributeModel attributeModel) {
         if (field instanceof AbstractTextField) {
             AbstractTextField textField = (AbstractTextField) field;
             textField.setDescription(attributeModel.getDescription());
@@ -478,12 +505,6 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
                         .getMessage("ocs.no.valid.email")));
             }
 
-            // add URL validator
-            if (attributeModel.isUrl()) {
-                field.addValidator(new URLValidator(messageService
-                        .getMessage("ocs.no.valid.url")));
-            }
-
         } else if (field instanceof DateField) {
             // set a separate format for a date field
             DateField dateField = (DateField) field;
@@ -496,17 +517,6 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
                 dateField.setResolution(Resolution.MINUTE);
             }
         }
-
-        // add a field validator based on JSR-303 bean validation
-        if (validate) {
-            field.addValidator(new BeanValidator(model.getEntityClass(), (String) propertyId));
-            // disable the field if it cannot be edited
-            field.setEnabled(!attributeModel.isReadOnly());
-            if (attributeModel.isNumerical()) {
-                field.addStyleName(DynamoConstants.CSS_NUMERICAL);
-            }
-        }
-        return field;
     }
 
     /**

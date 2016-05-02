@@ -27,6 +27,7 @@ import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.Reloadable;
 import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
+import com.ocs.dynamo.ui.component.URLField;
 import com.ocs.dynamo.ui.composite.form.FormOptions;
 import com.ocs.dynamo.ui.composite.table.BaseTableWrapper;
 import com.ocs.dynamo.ui.composite.table.ServiceResultsTableWrapper;
@@ -115,7 +116,7 @@ public abstract class TabularEditLayout<ID extends Serializable, T extends Abstr
     @Override
     public void attach() {
         super.attach();
-        this.filter = createFilter();
+        this.filter = constructFilter();
         build();
     }
 
@@ -225,7 +226,7 @@ public abstract class TabularEditLayout<ID extends Serializable, T extends Abstr
                     }
 
                 });
-                cancelButton.setVisible(!isViewmode());
+                cancelButton.setVisible(!isViewmode() && getFormOptions().isOpenInViewMode());
                 getButtonBar().addComponent(cancelButton);
             }
 
@@ -287,13 +288,22 @@ public abstract class TabularEditLayout<ID extends Serializable, T extends Abstr
 
             @Override
             public Field<?> createField(String propertyId) {
-                final Field<?> field = super.createField(propertyId);
+
+                // first try to create a custom field
+                Field<?> custom = constructCustomField(getEntityModel(), getEntityModel()
+                        .getAttributeModel(propertyId), isViewmode(), false);
+
+                final Field<?> field = custom != null ? custom : super.createField(propertyId);
+
+                if (field instanceof URLField) {
+                    ((URLField) field).setEditable(!isViewmode());
+                }
 
                 if (field != null && field.isEnabled()) {
                     field.addValueChangeListener(new Property.ValueChangeListener() {
 
                         @Override
-                        public void valueChange(com.vaadin.data.Property.ValueChangeEvent event) {
+                        public void valueChange(Property.ValueChangeEvent event) {
                             if (saveButton != null) {
                                 saveButton.setEnabled(VaadinUtils
                                         .allFixedTableFieldsValid(getTableWrapper().getTable()));
@@ -301,10 +311,8 @@ public abstract class TabularEditLayout<ID extends Serializable, T extends Abstr
                         }
 
                     });
-
                     postProcessField(propertyId, field);
                 }
-
                 return field;
             }
         });
@@ -316,7 +324,9 @@ public abstract class TabularEditLayout<ID extends Serializable, T extends Abstr
      * 
      * @return
      */
-    protected abstract Filter createFilter();
+    protected Filter constructFilter() {
+        return null;
+    }
 
     @SuppressWarnings("unchecked")
     protected ServiceContainer<ID, T> getContainer() {

@@ -25,13 +25,10 @@ import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.domain.model.impl.ModelBasedFieldFactory;
 import com.ocs.dynamo.service.MessageService;
+import com.ocs.dynamo.ui.component.URLField;
 import com.ocs.dynamo.ui.composite.table.export.TableExportActionHandler;
-import com.ocs.dynamo.utils.StringUtil;
 import com.vaadin.data.Container;
 import com.vaadin.data.Property;
-import com.vaadin.server.ExternalResource;
-import com.vaadin.shared.ui.BorderStyle;
-import com.vaadin.ui.Link;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.UI;
 
@@ -136,7 +133,7 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
         List<Object> propertyNames = new ArrayList<>();
         List<String> headerNames = new ArrayList<>();
 
-        for (AttributeModel attributeModel : attributeModels) {
+        for (final AttributeModel attributeModel : attributeModels) {
             if (attributeModel.isVisibleInTable()) {
                 propertyNames.add(attributeModel.getName());
                 headerNames.add(attributeModel.getDisplayName());
@@ -161,14 +158,12 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
 
                         @Override
                         public Object generateCell(Table source, Object itemId, Object columnId) {
-                            String caption = (String) getItem(itemId).getItemProperty(columnId)
+                            URLField field = (URLField) ((ModelBasedFieldFactory<?>) getTableFieldFactory())
+                                    .createField(attributeModel.getPath());
+                            String val = (String) getItem(itemId).getItemProperty(columnId)
                                     .getValue();
-                            if (caption != null) {
-                                caption = StringUtil.prependProtocol(caption);
-                                return new Link(caption, new ExternalResource(caption), "_blank",
-                                        0, 0, BorderStyle.DEFAULT);
-                            }
-                            return null;
+                            field.setValue(val);
+                            return field;
                         }
                     });
                 }

@@ -23,6 +23,8 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Link;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.VerticalLayout;
 
 /**
  * A custom field for displaying a clickable URL
@@ -38,14 +40,46 @@ public class URLField extends CustomField<String> {
 
     private HorizontalLayout bar;
 
+    private boolean editable;
+
     private Link link;
 
-    public URLField(AttributeModel attributeModel) {
+    private VerticalLayout main;
+
+    private TextField textField;
+
+    /**
+     * Constructor
+     * 
+     * @param textField
+     *            the text field that this component wraps around
+     * @param attributeModel
+     *            the attribute model used to construct the compoent
+     * @param editable
+     *            whether to display the field in editable mode
+     */
+    public URLField(TextField textField, AttributeModel attributeModel, boolean editable) {
         this.attributeModel = attributeModel;
+        this.textField = textField;
+        this.editable = editable;
+
+        textField.addValueChangeListener(new ValueChangeListener() {
+
+            private static final long serialVersionUID = 3876834083532952681L;
+
+            @Override
+            public void valueChange(com.vaadin.data.Property.ValueChangeEvent event) {
+                setValue((String) event.getProperty().getValue());
+            }
+        });
     }
 
     protected Link getLink() {
         return link;
+    }
+
+    public TextField getTextField() {
+        return textField;
     }
 
     @Override
@@ -55,22 +89,53 @@ public class URLField extends CustomField<String> {
 
     @Override
     protected Component initContent() {
-        bar = new DefaultHorizontalLayout(false, true);
+        main = new VerticalLayout();
         setCaption(attributeModel.getDisplayName());
+
+        bar = new DefaultHorizontalLayout(false, true);
         updateLink(getValue());
-        return bar;
+
+        // read only by default
+        setMode();
+
+        return main;
+    }
+
+    public boolean isEditable() {
+        return editable;
+    }
+
+    public void setEditable(boolean editable) {
+        this.editable = editable;
+        setMode();
     }
 
     @Override
     protected void setInternalValue(String newValue) {
         super.setInternalValue(newValue);
         updateLink(newValue);
+        textField.setValue(newValue);
+    }
+
+    /**
+     * Sets the correct mode (read only or editable)
+     */
+    private void setMode() {
+        if (main != null) {
+            // display different component depending on mode
+            if (editable) {
+                main.replaceComponent(bar, textField);
+            } else {
+                main.replaceComponent(textField, bar);
+            }
+        }
     }
 
     @Override
     public void setValue(String newValue) {
         super.setValue(newValue);
         updateLink(newValue);
+        textField.setValue(newValue);
     }
 
     /**

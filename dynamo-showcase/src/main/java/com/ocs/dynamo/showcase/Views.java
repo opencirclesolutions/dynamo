@@ -18,14 +18,26 @@ package com.ocs.dynamo.showcase;
  */
 public final class Views {
 
-    /** Movies view - displays the use of the Vaadin Simple Search Layout. */
+    /**
+     * Search screen for movies
+     */
     public static final String MOVIES_VIEW = "MoviesView";
 
-    /** Movies view - displays the use of the Vaadin Simple Search Layout. */
+    /**
+     * Horizontal split view for movies
+     */
     public static final String HORIZONTAL_MOVIES_SPLIT_VIEW = "HorizontalMoviesSplitView";
 
+    /**
+     * Vertical split view for movies
+     */
     public static final String VERTICAL_MOVIES_SPLIT_VIEW = "VerticalMoviesSplitView";
-    
+
+    /**
+     * Editable table view
+     */
+    public static final String TABULAR_MOVIES_VIEW = "TabularMoviesView";
+
     /**
      * Only use static members.
      */

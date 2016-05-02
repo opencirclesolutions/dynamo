@@ -13,6 +13,7 @@ import com.ocs.dynamo.domain.model.impl.EntityModelFactoryImpl;
 import com.ocs.dynamo.service.TestEntityService;
 import com.ocs.dynamo.test.BaseMockitoTest;
 import com.vaadin.server.ExternalResource;
+import com.vaadin.ui.TextField;
 
 public class URLFieldTest extends BaseMockitoTest {
 
@@ -33,8 +34,12 @@ public class URLFieldTest extends BaseMockitoTest {
     public void test() {
         EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
 
-        URLField field = new URLField(em.getAttributeModel("url"));
+        TextField tf = new TextField();
+
+        URLField field = new URLField(tf, em.getAttributeModel("url"), true);
         field.initContent();
+
+        Assert.assertEquals(tf, field.getTextField());
 
         Assert.assertEquals(String.class, field.getType());
         Assert.assertNull(field.getValue());
@@ -44,6 +49,7 @@ public class URLFieldTest extends BaseMockitoTest {
 
         ExternalResource resource = (ExternalResource) field.getLink().getResource();
         Assert.assertEquals(URL, resource.getURL());
+        Assert.assertEquals(URL, tf.getValue());
 
         field.setInternalValue(null);
         Assert.assertNull(field.getLink());

@@ -37,6 +37,7 @@ import com.ocs.dynamo.ui.component.EntityComboBox.SelectMode;
 import com.ocs.dynamo.ui.component.EntityListSelect;
 import com.ocs.dynamo.ui.component.EntityLookupField;
 import com.ocs.dynamo.ui.component.TimeField;
+import com.ocs.dynamo.ui.component.URLField;
 import com.ocs.dynamo.ui.composite.form.CollectionTable;
 import com.ocs.dynamo.ui.validator.URLValidator;
 import com.ocs.dynamo.utils.DateUtils;
@@ -95,9 +96,9 @@ public class ModelBasedFieldFactoryTest extends BaseMockitoTest {
     @Test
     public void testURLField() {
         Object obj = fieldFactory.createField("url");
-        Assert.assertTrue(obj instanceof TextField);
+        Assert.assertTrue(obj instanceof URLField);
 
-        TextField tf = (TextField) obj;
+        TextField tf = ((URLField) obj).getTextField();
 
         // check that a URL validator was added
         URLValidator validator = null;

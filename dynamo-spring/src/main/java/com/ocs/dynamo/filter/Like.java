@@ -16,7 +16,8 @@ package com.ocs.dynamo.filter;
 import org.apache.commons.lang.ObjectUtils;
 
 /**
- * A filter for checking if a string value contains a certain pattern
+ * A filter for checking if a string value contains a certain pattern. Use percent signs ("%")
+ * to denote wildcards
  * 
  * @author bas.rutten
  */

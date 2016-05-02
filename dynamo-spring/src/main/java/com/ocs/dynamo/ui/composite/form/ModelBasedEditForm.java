@@ -355,14 +355,15 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
             if (attributeModel.isReadOnly() || isViewMode()) {
                 if (entity.getId() != null) {
                     // read-only attribute are hidden for new entities
-                    if ((AttributeType.DETAIL.equals(type) || AttributeType.ELEMENT_COLLECTION
+                    if (attributeModel.isUrl() || (AttributeType.DETAIL.equals(type) || AttributeType.ELEMENT_COLLECTION
                             .equals(type)) && attributeModel.isComplexEditable()) {
                         // display a complex component in read-only mode
                         constructField(parent, entityModel, attributeModel, true, count);
                     } else {
                         // display a label
                         if (attributeModel.isUrl()) {
-                            URLField urlField = new URLField(attributeModel);
+                            URLField urlField = (URLField) fieldFactory.constructField(
+                                    attributeModel, fieldFilters);
                             groups.get(isViewMode()).bind(urlField, attributeModel.getName());
                             parent.addComponent(urlField);
                         } else {
@@ -374,7 +375,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
                 } else {
                     // new entity - create the label but do not display it
                     if (attributeModel.isUrl()) {
-                        URLField urlField = new URLField(attributeModel);
+                        URLField urlField = (URLField) fieldFactory.constructField(attributeModel,
+                                fieldFilters);
                         groups.get(isViewMode()).bind(urlField, attributeModel.getName());
                         parent.addComponent(urlField);
                     } else {
@@ -714,6 +716,10 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
         if (field == null) {
             // if no custom field is defined, then use the default
             field = fieldFactory.constructField(attributeModel, fieldFilters);
+        }
+
+        if (field instanceof URLField) {
+            ((URLField) field).setEditable(!isViewMode());
         }
 
         if (field instanceof DetailsEditTable) {
