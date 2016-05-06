@@ -2,16 +2,16 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	
-	<artifactId>dynamo-spring</artifactId>
+	<artifactId>dynamo-camel</artifactId>
 	<packaging>jar</packaging>
-	<name>Dynamo Framework - Spring</name>
-    <url>https://github.com/opencirclesolutions/dynamo</url>
+	<name>Dynamo Framework - Camel</name>
+    	<url>https://github.com/opencirclesolutions/dynamo</url>
 	
 	<parent>
 		<groupId>com.ocs</groupId>
 		<artifactId>dynamo-parent</artifactId>
 		<version>1.0.0-SNAPSHOT</version>
-    </parent>
+   	 </parent>
 	
 	<organization>
         <name>Open Circle Solutions</name>
@@ -32,95 +32,22 @@
 			<artifactId>dynamo-core</artifactId>
 			<version>1.0.0-SNAPSHOT</version>
 		</dependency>
-		<dependency>
-			<groupId>com.ocs</groupId>
-			<artifactId>dynamo-vaadin</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>com.ocs</groupId>
-			<artifactId>dynamo-jpa</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
-		</dependency>
 		
-		<!-- JEE -->
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.persistence</groupId>
-			<artifactId>javax.persistence</artifactId>
-		</dependency>
-		
-		<!-- Vaadin - Spring -->
-		<dependency>
-			<groupId>com.vaadin</groupId>
-			<artifactId>vaadin-spring</artifactId>
-		</dependency>
 		
 		<!-- Spring Framework -->
 		<dependency>
 			<groupId>org.springframework</groupId>
-			<artifactId>spring-web</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-expression</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-context</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-tx</artifactId>
-			<exclusions>
-				<exclusion>
-					<artifactId>commons-logging</artifactId>
-					<groupId>commons-logging</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.data</groupId>
-			<artifactId>spring-data-commons</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-orm</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-test</artifactId>
+			<artifactId>spring-core</artifactId>
 		</dependency>
 		
-		<!-- Hibernate -->
+		<!-- Camel -->
 		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-core</artifactId>
+			<groupId>org.apache.camel</groupId>
+			<artifactId>camel-core</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-entitymanager</artifactId>
-		</dependency>		
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-validator</artifactId>
-		</dependency>
-		
-		<!-- Query DSL -->
-		<dependency>
-			<groupId>com.mysema.querydsl</groupId>
-			<artifactId>querydsl-core</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.mysema.querydsl</groupId>
-			<artifactId>querydsl-jpa</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.mysema.querydsl</groupId>
-			<artifactId>querydsl-apt</artifactId>
+			<groupId>org.apache.camel</groupId>
+			<artifactId>camel-spring</artifactId>
 		</dependency>		
 		
 		<!-- Test -->

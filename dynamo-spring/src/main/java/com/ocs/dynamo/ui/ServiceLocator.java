@@ -18,8 +18,6 @@ import java.util.Map.Entry;
 
 import javax.servlet.ServletContext;
 
-import org.apache.camel.CamelContext;
-import org.apache.camel.ProducerTemplate;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -93,11 +91,6 @@ public final class ServiceLocator {
      */
     public static EntityModelFactory getEntityModelFactory() {
         return getService(EntityModelFactory.class);
-    }
-
-    public static ProducerTemplate getProducerTemplate() {
-        CamelContext context = ServiceLocator.getService(CamelContext.class);
-        return context.createProducerTemplate();
     }
 
     /**

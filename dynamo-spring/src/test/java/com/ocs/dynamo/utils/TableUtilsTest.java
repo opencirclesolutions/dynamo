@@ -34,7 +34,7 @@ import com.ocs.dynamo.domain.model.annotation.Model;
 import com.ocs.dynamo.domain.model.impl.EntityModelFactoryImpl;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.test.BaseMockitoTest;
-import com.ocs.dynamo.test.MockitoSpringUtil;
+import com.ocs.dynamo.test.MockUtil;
 import com.ocs.dynamo.ui.composite.table.TableUtils;
 import com.vaadin.ui.Table;
 
@@ -52,7 +52,7 @@ public class TableUtilsTest extends BaseMockitoTest {
     @Before
     public void setupTableUtilsTest() throws NoSuchFieldException {
 
-        MockitoSpringUtil.mockMessageService(messageService);
+        MockUtil.mockMessageService(messageService);
         PrivateAccessor.setField(factory, "messageService", messageService);
         PrivateAccessor.setField(factory, "defaultPrecision", 2);
     }
