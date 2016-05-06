@@ -28,7 +28,7 @@ import com.ocs.dynamo.domain.model.impl.EntityModelFactoryImpl;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.service.TestEntityService;
 import com.ocs.dynamo.test.BaseMockitoTest;
-import com.ocs.dynamo.test.MockitoSpringUtil;
+import com.ocs.dynamo.test.MockUtil;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.ui.Table;
 
@@ -50,7 +50,7 @@ public class ModelBasedTableTest extends BaseMockitoTest {
 
         Mockito.when(service.getEntityClass()).thenReturn(TestEntity.class);
 
-        MockitoSpringUtil.mockMessageService(messageService);
+        MockUtil.mockMessageService(messageService);
         PrivateAccessor.setField(entityModelFactory, "messageService", messageService);
         PrivateAccessor.setField(entityModelFactory, "defaultPrecision", 2);
     }

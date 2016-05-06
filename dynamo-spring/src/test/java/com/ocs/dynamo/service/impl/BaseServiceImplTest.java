@@ -42,7 +42,7 @@ import com.ocs.dynamo.filter.Compare;
 import com.ocs.dynamo.filter.Filter;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.test.BaseMockitoTest;
-import com.ocs.dynamo.test.MockitoSpringUtil;
+import com.ocs.dynamo.test.MockUtil;
 
 /**
  * A basic test class for both testing the general testing framework and the BaseServiceImpl class
@@ -91,7 +91,7 @@ public class BaseServiceImplTest extends BaseMockitoTest {
     @Test
     public void testSave() {
         TestEntity obj = new TestEntity("name1", 14L);
-        MockitoSpringUtil.mockSave(dao, TestEntity.class);
+        MockUtil.mockSave(dao, TestEntity.class);
 
         TestEntity result = service.save(obj);
         Assert.assertNotNull(result);

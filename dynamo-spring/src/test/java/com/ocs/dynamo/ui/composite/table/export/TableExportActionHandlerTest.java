@@ -40,7 +40,7 @@ import com.ocs.dynamo.domain.model.impl.EntityModelFactoryImpl;
 import com.ocs.dynamo.importer.impl.BaseXlsImporter;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.test.BaseMockitoTest;
-import com.ocs.dynamo.test.MockitoSpringUtil;
+import com.ocs.dynamo.test.MockUtil;
 import com.ocs.dynamo.ui.composite.table.CustomTreeTable;
 import com.ocs.dynamo.ui.composite.table.Department;
 import com.ocs.dynamo.ui.composite.table.ModelBasedTable;
@@ -81,7 +81,7 @@ public class TableExportActionHandlerTest extends BaseMockitoTest {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        MockitoSpringUtil.mockMessageService(messageService);
+        MockUtil.mockMessageService(messageService);
 
         Mockito.when(ui.getPage()).thenReturn(page);
 

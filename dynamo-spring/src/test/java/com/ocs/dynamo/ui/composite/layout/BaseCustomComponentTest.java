@@ -29,7 +29,7 @@ import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.domain.model.impl.EntityModelFactoryImpl;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.test.BaseMockitoTest;
-import com.ocs.dynamo.test.MockitoSpringUtil;
+import com.ocs.dynamo.test.MockUtil;
 import com.ocs.dynamo.utils.DateUtils;
 import com.vaadin.ui.Label;
 
@@ -54,7 +54,7 @@ public class BaseCustomComponentTest extends BaseMockitoTest {
 
     @Before
     public void setupBaseCustomComponentTest() throws NoSuchFieldException {
-        MockitoSpringUtil.mockMessageService(messageService);
+        MockUtil.mockMessageService(messageService);
         PrivateAccessor.setField(component, "messageService", messageService);
         PrivateAccessor.setField(factory, "defaultPrecision", 2);
     }
