@@ -8,10 +8,6 @@
 
 	<tx:annotation-driven transaction-manager="transactionManager" />
 
-	<!-- Data Source. -->
-
-	<!-- Persistence Context -->
-
 	<!-- JPA Transaction manager -->
 	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager" />
 

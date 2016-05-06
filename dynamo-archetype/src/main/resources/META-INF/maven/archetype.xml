@@ -1,21 +1,34 @@
-<archetype xmlns="http://maven.apache.org/plugins/maven-archetype-plugin/archetype/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/plugins/maven-archetype-plugin/archetype/1.0.0 http://maven.apache.org/xsd/archetype-1.0.0.xsd">
+<archetype
+	xmlns="http://maven.apache.org/plugins/maven-archetype-plugin/archetype/1.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/plugins/maven-archetype-plugin/archetype/1.0.0 http://maven.apache.org/xsd/archetype-1.0.0.xsd">
 
-  <id>dynamo-spring-archetype</id>
+	<id>dynamo-spring-archetype</id>
 
-  <!-- New projects only. -->
-  <allowPartial>false</allowPartial>
+	<!-- New projects only. -->
+	<allowPartial>false</allowPartial>
 
-  <sources>
-    <source>src/main/java/application/dao/SomeEntityDao.java</source>
-    <source>src/main/java/application/dao/SomeEntityDaoImpl.java</source>
-    <source>src/main/java/application/domain/SomeEntity.java</source>
-    <source>src/main/java/application/service/SomeEntityService.java</source>
-    <source>src/main/java/application/service/SomeEntityServiceImpl.java</source>
-    <source>src/main/java/application/ui/Views.java</source>
-    <source>src/main/java/application/ui/ApplicationUI.java</source>
-  </sources>
- <!--  <resources>
-    <source>src/main/resources/*</source>
-  </resources> -->
+	<sources>
+		<source>src/main/java/application/dao/SomeEntityDao.java</source>
+		<source>src/main/java/application/dao/SomeEntityDaoImpl.java</source>
+		<source>src/main/java/application/domain/SomeEntity.java</source>
+		<source>src/main/java/application/service/SomeEntityService.java</source>
+		<source>src/main/java/application/service/SomeEntityServiceImpl.java</source>
+		<source>src/main/java/application/ui/Views.java</source>
+		<source>src/main/java/application/ui/ApplicationUI.java</source>
+	</sources>
+	<resources>
+		<resource>src/main/resources/META-INF/entitymodel.properties</resource>
+		<resource>src/main/resources/spring/applicationContext-common.xml</resource>
+		<resource>src/main/resources/menu.properties</resource>
+		<resource>src/main/resources/messages.properties</resource>
+		<resource>src/main/webapp/VAADIN/themes/light/addons.scss</resource>
+		<resource>src/main/webapp/VAADIN/themes/light/internet_explorer.css</resource>
+		<resource>src/main/webapp/VAADIN/themes/light/light.scss</resource>
+		<resource>src/main/webapp/VAADIN/themes/light/styles.css</resource>
+		<resource>src/main/webapp/VAADIN/themes/light/styles.scss</resource>
+		<resource>src/main/webapp/VAADIN/themes/light/triangle.png</resource>
+		<resource>src/main/webapp/WEB-INF/spring/applicationContext.xml</resource>
+		<resource>src/main/webapp/WEB-INF/web.xml</resource>
+	</resources>
 </archetype>
