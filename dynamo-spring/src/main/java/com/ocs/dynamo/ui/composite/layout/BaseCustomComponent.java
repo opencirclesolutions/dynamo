@@ -16,6 +16,9 @@ package com.ocs.dynamo.ui.composite.layout;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import javax.persistence.OptimisticLockException;
+
+import org.apache.log4j.Logger;
 import org.springframework.util.StringUtils;
 
 import com.ocs.dynamo.constants.DynamoConstants;
@@ -24,6 +27,8 @@ import com.ocs.dynamo.domain.model.AttributeDateType;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
+import com.ocs.dynamo.exception.OCSRuntimeException;
+import com.ocs.dynamo.exception.OCSValidationException;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.ui.Buildable;
 import com.ocs.dynamo.ui.ServiceLocator;
@@ -42,6 +47,7 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.Embedded;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 
 /**
@@ -51,6 +57,8 @@ import com.vaadin.ui.UI;
  * @author bas.rutten
  */
 public abstract class BaseCustomComponent extends CustomComponent implements Buildable {
+
+    private static final Logger LOG = Logger.getLogger(BaseCustomComponent.class);
 
     private static final long serialVersionUID = -8982555842423738005L;
 
@@ -148,7 +156,6 @@ public abstract class BaseCustomComponent extends CustomComponent implements Bui
                 fieldLabel.setPropertyDataSource(property);
             }
         }
-
         return fieldLabel;
     }
 
@@ -164,6 +171,29 @@ public abstract class BaseCustomComponent extends CustomComponent implements Bui
         return ServiceLocator.getService(clazz);
     }
 
+    /**
+     * Generic handling of error messages after a save operation
+     * 
+     * @param ex
+     *            the exception that occurred
+     */
+    protected void handleSaveException(RuntimeException ex) {
+        if (ex instanceof OCSValidationException) {
+            // validation exception
+            LOG.error(ex.getMessage(), ex);
+            Notification.show(((OCSValidationException) ex).getErrors().get(0),
+                    Notification.Type.ERROR_MESSAGE);
+        } else if (ex instanceof OCSRuntimeException) {
+            // any other OCS runtime exception
+            LOG.error(ex.getMessage(), ex);
+            Notification.show(ex.getMessage(), Notification.Type.ERROR_MESSAGE);
+        } else if (ex instanceof OptimisticLockException) {
+            // optimistic lock
+            LOG.error(ex.getMessage(), ex);
+            Notification.show(message("ocs.optimistic.lock"), Notification.Type.ERROR_MESSAGE);
+        }
+    }
+
     protected String message(String key) {
         return getMessageService().getMessage(key);
     }
@@ -171,5 +201,4 @@ public abstract class BaseCustomComponent extends CustomComponent implements Bui
     protected String message(String key, Object... args) {
         return getMessageService().getMessage(key, args);
     }
-
 }

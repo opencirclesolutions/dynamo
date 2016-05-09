@@ -15,12 +15,14 @@ package com.ocs.dynamo.ui.composite.table;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.List;
 
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.container.QueryType;
 import com.vaadin.data.Container;
+import com.vaadin.data.Container.Filter;
 import com.vaadin.data.sort.SortOrder;
 import com.vaadin.data.util.BeanItemContainer;
 
@@ -54,8 +56,8 @@ public class FixedTableWrapper<ID extends Serializable, T extends AbstractEntity
      *            optional sort order
      */
     public FixedTableWrapper(BaseService<ID, T> service, EntityModel<T> entityModel,
-            Collection<T> items, SortOrder sortOrder) {
-        super(service, entityModel, QueryType.NONE, sortOrder);
+            Collection<T> items, List<SortOrder> sortOrders) {
+        super(service, entityModel, QueryType.NONE, sortOrders);
         this.items = items;
     }
 
@@ -68,6 +70,11 @@ public class FixedTableWrapper<ID extends Serializable, T extends AbstractEntity
 
     @Override
     public void reloadContainer() {
-        // not needed
+        // do nothing
+    }
+
+    @Override
+    public void search(Filter filter) {
+        // do nothing
     }
 }

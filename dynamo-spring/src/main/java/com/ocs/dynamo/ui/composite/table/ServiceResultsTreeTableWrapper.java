@@ -31,7 +31,6 @@ import com.ocs.dynamo.ui.container.hierarchical.ModelBasedHierarchicalContainer.
 import com.vaadin.data.Container;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.sort.SortOrder;
-import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.Table;
 
 /**
@@ -61,9 +60,9 @@ public class ServiceResultsTreeTableWrapper<ID extends Serializable, T extends A
      */
     @SuppressWarnings("unchecked")
     public ServiceResultsTreeTableWrapper(EntityModel<T> rootEntityModel, QueryType queryType,
-            SortOrder order, HierarchicalFetchJoinInformation[] joins,
+            List<SortOrder> sortOrders, HierarchicalFetchJoinInformation[] joins,
             BaseService<?, ?>... services) {
-        super((BaseService<ID, T>) services[0], rootEntityModel, queryType, null, order, joins);
+        super((BaseService<ID, T>) services[0], rootEntityModel, queryType, null, sortOrders, joins);
         this.services = new ArrayList<>();
         this.services.addAll(Arrays.asList(services));
     }
@@ -79,9 +78,10 @@ public class ServiceResultsTreeTableWrapper<ID extends Serializable, T extends A
      */
     @SuppressWarnings("unchecked")
     public ServiceResultsTreeTableWrapper(List<BaseService<?, ?>> services,
-            EntityModel<T> rootEntityModel, QueryType queryType, SortOrder order,
+            EntityModel<T> rootEntityModel, QueryType queryType, List<SortOrder> sortOrders,
             HierarchicalFetchJoinInformation[] joins) {
-        super((BaseService<ID, T>) services.get(0), rootEntityModel, queryType, null, order, joins);
+        super((BaseService<ID, T>) services.get(0), rootEntityModel, queryType, null, sortOrders,
+                joins);
         this.services = services;
     }
 
@@ -105,7 +105,7 @@ public class ServiceResultsTreeTableWrapper<ID extends Serializable, T extends A
     }
 
     @Override
-    public Table constructTable() {
+    protected Table constructTable() {
         return new ModelBasedTreeTable<ID, T>(getContainer(), getEntityModelFactory());
     }
 
@@ -119,9 +119,8 @@ public class ServiceResultsTreeTableWrapper<ID extends Serializable, T extends A
                 ((ServiceContainer<?, ?>) def.getContainer()).getQueryView().addFilter(getFilter());
             }
         }
-        if (getSortOrder() != null) {
-            getTable().sort(new Object[] { getSortOrder().getPropertyId() },
-                    new boolean[] { SortDirection.ASCENDING == getSortOrder().getDirection() });
+        if (getSortOrders() != null && getSortOrders().size() > 0) {
+            getTable().sort(getSortProperties(), getSortDirections());
         }
     }
 

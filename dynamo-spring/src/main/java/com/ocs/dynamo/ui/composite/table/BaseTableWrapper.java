@@ -14,12 +14,16 @@
 package com.ocs.dynamo.ui.composite.table;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.dao.query.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
+import com.ocs.dynamo.ui.Searchable;
 import com.ocs.dynamo.ui.composite.layout.BaseCustomComponent;
 import com.ocs.dynamo.ui.container.QueryType;
 import com.vaadin.data.Container;
@@ -41,7 +45,7 @@ import com.vaadin.ui.VerticalLayout;
  */
 @SuppressWarnings("serial")
 public abstract class BaseTableWrapper<ID extends Serializable, T extends AbstractEntity<ID>>
-        extends BaseCustomComponent {
+        extends BaseCustomComponent implements Searchable {
 
     private static final long serialVersionUID = -4691108261565306844L;
 
@@ -55,7 +59,7 @@ public abstract class BaseTableWrapper<ID extends Serializable, T extends Abstra
 
     private final BaseService<ID, T> service;
 
-    private SortOrder sortOrder;
+    private List<SortOrder> sortOrders = new ArrayList<>();
 
     private Table table;
 
@@ -74,11 +78,11 @@ public abstract class BaseTableWrapper<ID extends Serializable, T extends Abstra
      *            the fetch joins to use when executing the query
      */
     public BaseTableWrapper(BaseService<ID, T> service, EntityModel<T> entityModel,
-            QueryType queryType, SortOrder sortOrder, FetchJoinInformation... joins) {
+            QueryType queryType, List<SortOrder> sortOrders, FetchJoinInformation... joins) {
         this.service = service;
         this.entityModel = entityModel;
         this.queryType = queryType;
-        this.sortOrder = sortOrder;
+        this.sortOrders = sortOrders != null ? sortOrders : new ArrayList<SortOrder>();
         this.joins = joins;
     }
 
@@ -120,7 +124,7 @@ public abstract class BaseTableWrapper<ID extends Serializable, T extends Abstra
      * 
      * @return
      */
-    public Table constructTable() {
+    protected Table constructTable() {
         return new ModelBasedTable<>(this.container, entityModel, getEntityModelFactory(),
                 getMessageService());
     }
@@ -152,8 +156,34 @@ public abstract class BaseTableWrapper<ID extends Serializable, T extends Abstra
         return service;
     }
 
-    public SortOrder getSortOrder() {
-        return sortOrder;
+    /**
+     * Extracts the sort directions from the sort orders
+     */
+    protected boolean[] getSortDirections() {
+        boolean[] result = new boolean[getSortOrders().size()];
+        for (int i = 0; i < result.length; i++) {
+            result[i] = SortDirection.ASCENDING == getSortOrders().get(i).getDirection();
+        }
+        return result;
+    }
+
+    /**
+     * 
+     * @return the sort orders
+     */
+    public List<SortOrder> getSortOrders() {
+        return Collections.unmodifiableList(sortOrders);
+    }
+
+    /**
+     * Extracts the properties to sort on from the sort orders
+     */
+    protected Object[] getSortProperties() {
+        Object[] result = new Object[getSortOrders().size()];
+        for (int i = 0; i < result.length; i++) {
+            result[i] = getSortOrders().get(i).getPropertyId();
+        }
+        return result;
     }
 
     public Table getTable() {
@@ -167,9 +197,8 @@ public abstract class BaseTableWrapper<ID extends Serializable, T extends Abstra
      * Initializes the sorting and filtering for the table
      */
     protected void initSortingAndFiltering() {
-        if (getSortOrder() != null) {
-            table.sort(new Object[] { getSortOrder().getPropertyId() },
-                    new boolean[] { SortDirection.ASCENDING == getSortOrder().getDirection() });
+        if (getSortOrders() != null && !getSortOrders().isEmpty()) {
+            table.sort(getSortProperties(), getSortDirections());
         }
     }
 
@@ -189,8 +218,8 @@ public abstract class BaseTableWrapper<ID extends Serializable, T extends Abstra
         this.joins = joins;
     }
 
-    public void setSortOrder(SortOrder sortOrder) {
-        this.sortOrder = sortOrder;
+    public void setSortOrders(List<SortOrder> sortOrders) {
+        this.sortOrders = sortOrders;
     }
 
     protected void setTable(Table table) {
