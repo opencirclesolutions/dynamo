@@ -23,6 +23,7 @@ import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.composite.form.FormOptions;
+import com.ocs.dynamo.ui.composite.table.BaseTableWrapper;
 import com.ocs.dynamo.ui.composite.table.ServiceResultsTableWrapper;
 import com.ocs.dynamo.ui.container.QueryType;
 import com.ocs.dynamo.ui.container.ServiceContainer;
@@ -117,22 +118,21 @@ public abstract class ServiceBasedSplitLayout<ID extends Serializable, T extends
     }
 
     @Override
-    protected void constructTable() {
+    protected BaseTableWrapper<ID, T> constructTableWrapper() {
         ServiceResultsTableWrapper<ID, T> tw = new ServiceResultsTableWrapper<ID, T>(getService(),
-                getEntityModel(), getQueryType(), filter, getSortOrder(), getJoins()) {
+                getEntityModel(), getQueryType(), filter, getSortOrders(), getJoins()) {
 
             @Override
             protected void onSelect(Object selected) {
                 setSelectedItems(selected);
                 checkButtonState(getSelectedItem());
                 if (getSelectedItem() != null) {
-                    detailsView(getSelectedItem());
+                    detailsMode(getSelectedItem());
                 }
             }
         };
         tw.build();
-        setTableWrapper(tw);
-
+        return tw;
     }
 
     /**

@@ -20,6 +20,7 @@ import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.composite.form.FormOptions;
+import com.ocs.dynamo.ui.composite.table.BaseTableWrapper;
 import com.ocs.dynamo.ui.composite.table.FixedTableWrapper;
 import com.vaadin.data.sort.SortOrder;
 import com.vaadin.data.util.BeanItemContainer;
@@ -74,21 +75,20 @@ public abstract class FixedSplitLayout<ID extends Serializable, T extends Abstra
     }
 
     @Override
-    protected void constructTable() {
-        // a table that displays a fixed collection of items
+    protected BaseTableWrapper<ID, T> constructTableWrapper() {
         FixedTableWrapper<ID, T> tw = new FixedTableWrapper<ID, T>(getService(), getEntityModel(),
-                getItems(), getSortOrder()) {
+                getItems(), getSortOrders()) {
             @Override
             protected void onSelect(Object selected) {
                 setSelectedItems(selected);
                 checkButtonState(getSelectedItem());
                 if (getSelectedItem() != null) {
-                    detailsView(getSelectedItem());
+                    detailsMode(getSelectedItem());
                 }
             }
         };
         tw.build();
-        setTableWrapper(tw);
+        return tw;
     }
 
     public Collection<T> getItems() {

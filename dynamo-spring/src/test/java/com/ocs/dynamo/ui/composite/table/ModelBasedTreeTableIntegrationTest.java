@@ -22,6 +22,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.google.common.collect.Lists;
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.TestEntity2;
 import com.ocs.dynamo.domain.model.EntityModel;
@@ -116,8 +117,8 @@ public class ModelBasedTreeTableIntegrationTest extends BaseIntegrationTest {
         services.add(testEntity2Service);
 
         ServiceResultsTreeTableWrapper<Integer, TestEntity> wrapper = new ServiceResultsTreeTableWrapper<>(
-                services, model, QueryType.PAGING, new SortOrder("name", SortDirection.ASCENDING),
-                new HierarchicalFetchJoinInformation[0]);
+                services, model, QueryType.PAGING, Lists.newArrayList(new SortOrder("name",
+                        SortDirection.ASCENDING)), new HierarchicalFetchJoinInformation[0]);
         wrapper.build();
 
         Assert.assertNotNull(wrapper.getContainer());

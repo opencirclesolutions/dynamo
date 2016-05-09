@@ -23,16 +23,13 @@ import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.Reloadable;
-import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.composite.form.FormOptions;
 import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
-import com.ocs.dynamo.ui.composite.table.BaseTableWrapper;
 import com.ocs.dynamo.ui.composite.type.ScreenMode;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.sort.SortOrder;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.HorizontalSplitPanel;
@@ -74,16 +71,13 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
     private Component headerLayout;
 
     // the main layout
-    private VerticalLayout main;
+    private VerticalLayout mainLayout;
 
     // quick search filed for filtering the table
     private TextField quickSearchField;
 
     // the currently selected detail layout (can be either edit mode or read-only mode)
     private Component selectedDetailLayout;
-
-    // wrapper around the search results tables
-    private BaseTableWrapper<ID, T> tableWrapper;
 
     /**
      * Constructor
@@ -120,7 +114,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
      * Perform any actions after the screen reloads after a save. This is usually used to reselect
      * the item that was selected before
      * 
-     * @param t
+     * @param entity
      */
     protected abstract void afterReload(T entity);
 
@@ -136,7 +130,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
      */
     @Override
     public void build() {
-        main = new DefaultVerticalLayout(true, true);
+        mainLayout = new DefaultVerticalLayout(true, true);
 
         HorizontalSplitPanel splitter = null;
         VerticalLayout splitterLayout = null;
@@ -147,44 +141,43 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
         // optional header
         headerLayout = constructHeaderLayout();
         if (headerLayout != null) {
-            main.addComponent(headerLayout);
+            mainLayout.addComponent(headerLayout);
         }
 
+        // construct option quick search field
         quickSearchField = constructSearchField();
 
         // additional quick search field
         if (!isHorizontalMode()) {
             if (quickSearchField != null) {
-                main.addComponent(quickSearchField);
+                mainLayout.addComponent(quickSearchField);
             }
         }
 
-        // constructs the results table
-        constructTable();
-        tableWrapper.getTable().setPageLength(getPageLength());
+        // table init
+        getTableWrapper().getTable().setPageLength(getPageLength());
+        getTableWrapper().getTable().setSortEnabled(isSortEnabled());
 
         // extra splitter (for horizontal mode)
         if (isHorizontalMode()) {
             splitter = new HorizontalSplitPanel();
-            main.addComponent(splitter);
+            mainLayout.addComponent(splitter);
 
             splitterLayout = new DefaultVerticalLayout(false, true);
             if (quickSearchField != null) {
                 splitterLayout.addComponent(quickSearchField);
             }
 
-            splitterLayout.addComponent(tableWrapper);
+            splitterLayout.addComponent(getTableWrapper());
             splitter.setFirstComponent(splitterLayout);
         } else {
-            main.addComponent(tableWrapper);
+            mainLayout.addComponent(getTableWrapper());
         }
-
-        setButtonBar(new DefaultHorizontalLayout());
 
         if (isHorizontalMode()) {
             splitterLayout.addComponent(getButtonBar());
         } else {
-            main.addComponent(getButtonBar());
+            mainLayout.addComponent(getButtonBar());
         }
 
         // create a panel to hold the edit form
@@ -197,34 +190,26 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
             extra.addComponent(editPanel);
             splitter.setSecondComponent(extra);
         } else {
-            main.addComponent(editPanel);
+            mainLayout.addComponent(editPanel);
         }
 
-        // only add the "Add" button when it makes sense in this page
-        if (!getFormOptions().isHideAddButton() && isEditAllowed()) {
-            Button addButton = new Button(message("ocs.add"));
-            addButton.addClickListener(new Button.ClickListener() {
-
-                @Override
-                public void buttonClick(ClickEvent event) {
-                    setSelectedItem(createEntity());
-                    detailsView(getSelectedItem());
-                }
-            });
+        Button addButton = constructAddButton();
+        if (addButton != null) {
             getButtonBar().addComponent(addButton);
         }
 
-        if (getFormOptions().isShowRemoveButton() && isEditAllowed()) {
-            constructRemoveButton();
+        Button removeButton = constructRemoveButton();
+        if (removeButton != null) {
+            getButtonBar().addComponent(removeButton);
         }
 
         // allow the user to define extra buttons
         postProcessButtonBar(getButtonBar());
 
-        postProcessLayout(main);
+        postProcessLayout(mainLayout);
 
         checkButtonState(null);
-        setCompositionRoot(main);
+        setCompositionRoot(mainLayout);
     }
 
     /**
@@ -239,8 +224,8 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
     /**
      * Constructs the remove button
      */
-    protected void constructRemoveButton() {
-        Button removeButton = new RemoveButton() {
+    protected Button constructRemoveButton() {
+        Button rb = new RemoveButton() {
 
             @Override
             protected void doDelete() {
@@ -250,8 +235,9 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
                 reload();
             }
         };
-        getButtonBar().addComponent(removeButton);
-        registerDetailButton(removeButton);
+        rb.setVisible(getFormOptions().isShowRemoveButton() && isEditAllowed());
+        registerDetailButton(rb);
+        return rb;
     }
 
     /**
@@ -260,13 +246,6 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
      * @param parent
      */
     protected abstract TextField constructSearchField();
-
-    /**
-     * Constructs the table used for displaying the data
-     * 
-     * @return
-     */
-    protected abstract void constructTable();
 
     /**
      * Fills the detail part of the screen with a custom component
@@ -284,10 +263,9 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
      * @param parent
      *            the parent of the entity
      * @param entity
-     *            the entity itself
+     *            the entity
      */
-    protected void detailsView(T entity) {
-
+    protected void detailsMode(T entity) {
         if (detailFormLayout == null) {
             detailFormLayout = new DefaultVerticalLayout(false, false);
 
@@ -324,7 +302,6 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
                 }
             };
             editForm.build();
-
             detailFormLayout.addComponent(editForm);
         } else {
             // reset the form's view mode if needed
@@ -360,10 +337,6 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
         return fieldFilters;
     }
 
-    public BaseTableWrapper<ID, T> getTableWrapper() {
-        return tableWrapper;
-    }
-
     /**
      * Perform any required initialization (e.g. load the required items) before attaching the
      * screen
@@ -395,12 +368,12 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
         Component component = constructHeaderLayout();
         if (component != null) {
             if (headerLayout != null) {
-                main.replaceComponent(headerLayout, component);
+                mainLayout.replaceComponent(headerLayout, component);
             } else {
-                main.addComponent(component, 0);
+                mainLayout.addComponent(component, 0);
             }
         } else if (headerLayout != null) {
-            main.removeComponent(headerLayout);
+            mainLayout.removeComponent(headerLayout);
         }
         headerLayout = component;
 
@@ -410,7 +383,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 
         // refresh the details
         if (getSelectedItem() != null) {
-            detailsView(getSelectedItem());
+            detailsMode(getSelectedItem());
         }
     }
 
@@ -419,16 +392,12 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
      */
     public void reloadDetails() {
         this.setSelectedItem(getService().fetchById(this.getSelectedItem().getId(), getJoins()));
-        detailsView(getSelectedItem());
+        detailsMode(getSelectedItem());
         getTableWrapper().reloadContainer();
     }
 
     public void setFieldFilters(Map<String, Filter> fieldFilters) {
         this.fieldFilters = fieldFilters;
-    }
-
-    public void setTableWrapper(BaseTableWrapper<ID, T> tableWrapper) {
-        this.tableWrapper = tableWrapper;
     }
 
     public void setViewMode(boolean viewMode) {

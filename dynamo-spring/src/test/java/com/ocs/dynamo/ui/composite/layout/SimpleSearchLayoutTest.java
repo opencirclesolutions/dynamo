@@ -66,7 +66,8 @@ public class SimpleSearchLayoutTest extends BaseIntegrationTest {
         Assert.assertFalse(layout.getEditButton().isVisible());
         Assert.assertFalse(layout.getRemoveButton().isVisible());
 
-        Assert.assertEquals(new SortOrder("name", SortDirection.ASCENDING), layout.getSortOrder());
+        Assert.assertEquals(new SortOrder("name", SortDirection.ASCENDING), layout.getSortOrders()
+                .get(0));
 
         TestEntity entity = layout.createEntity();
         Assert.assertNotNull(entity);
@@ -75,8 +76,8 @@ public class SimpleSearchLayoutTest extends BaseIntegrationTest {
         Assert.assertEquals(3, table.size());
 
         Object id = table.getItemIds().iterator().next();
-        TestEntity t = (TestEntity) VaadinUtils
-                .getEntityFromContainer(table.getContainerDataSource(), id);
+        TestEntity t = (TestEntity) VaadinUtils.getEntityFromContainer(
+                table.getContainerDataSource(), id);
 
         layout.detailsMode(t);
     }
@@ -120,7 +121,8 @@ public class SimpleSearchLayoutTest extends BaseIntegrationTest {
         layout.setAdditionalFilters(filters);
         layout.build();
 
-        Assert.assertEquals(new SortOrder("name", SortDirection.ASCENDING), layout.getSortOrder());
+        Assert.assertEquals(new SortOrder("name", SortDirection.ASCENDING), layout.getSortOrders()
+                .get(0));
 
         Table table = layout.getTableWrapper().getTable();
         Assert.assertEquals(1, table.size());

@@ -13,18 +13,23 @@
  */
 package com.ocs.dynamo.ui.composite.layout;
 
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import com.ocs.dynamo.dao.query.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
+import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
 import com.ocs.dynamo.ui.composite.form.FormOptions;
+import com.ocs.dynamo.ui.composite.table.BaseTableWrapper;
 import com.vaadin.data.sort.SortOrder;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Layout;
+import com.vaadin.ui.Button.ClickEvent;
 
 /**
  * A base class for a composite layout that displays a collection of data (rather than an single
@@ -36,19 +41,21 @@ import com.vaadin.ui.Layout;
  * @param <T>
  *            the type of the entity
  */
-public abstract class BaseCollectionLayout<ID, T extends AbstractEntity<ID>> extends
-        BaseServiceCustomComponent<ID, T> {
+public abstract class BaseCollectionLayout<ID extends Serializable, T extends AbstractEntity<ID>>
+        extends BaseServiceCustomComponent<ID, T> {
 
     // the default page length
     private static final int PAGE_LENGTH = 20;
 
     private static final long serialVersionUID = -2864711994829582000L;
 
-    private HorizontalLayout buttonBar;
+    // the button bar
+    private HorizontalLayout buttonBar = new DefaultHorizontalLayout();
 
     // the joins to use when fetching data
     private FetchJoinInformation[] joins;
 
+    // the page length (number of rows that is displayed in the table)
     private int pageLength = PAGE_LENGTH;
 
     // the currently selected item
@@ -57,8 +64,11 @@ public abstract class BaseCollectionLayout<ID, T extends AbstractEntity<ID>> ext
     // whether the table can manually be sorted
     private boolean sortEnabled = true;
 
-    // the sort order
-    private SortOrder sortOrder;
+    // the sort orders
+    private List<SortOrder> sortOrders = new ArrayList<>();
+
+    // the table wrapper
+    private BaseTableWrapper<ID, T> tableWrapper;
 
     // list of buttons to update after the user selects an item in the tabular
     // view
@@ -82,7 +92,18 @@ public abstract class BaseCollectionLayout<ID, T extends AbstractEntity<ID>> ext
             FormOptions formOptions, SortOrder sortOrder, FetchJoinInformation... joins) {
         super(service, entityModel, formOptions);
         this.joins = joins;
-        this.sortOrder = sortOrder;
+        if (sortOrder != null) {
+            sortOrders.add(sortOrder);
+        }
+    }
+
+    /**
+     * Adds an additional sort order
+     * 
+     * @param sortOrder
+     */
+    public void addSortOrder(SortOrder sortOrder) {
+        this.sortOrders.add(sortOrder);
     }
 
     /**
@@ -97,6 +118,21 @@ public abstract class BaseCollectionLayout<ID, T extends AbstractEntity<ID>> ext
     }
 
     /**
+     * Removes all sort orders
+     */
+    public void clearSortOrders() {
+        this.sortOrders.clear();
+    }
+
+    /**
+     * Lazily constructs the table wrapper - implement in subclasses in order to create the right
+     * type of wrapper
+     * 
+     * @return
+     */
+    protected abstract BaseTableWrapper<ID, T> constructTableWrapper();
+
+    /**
      * Creates a new entity - override in subclass if needed
      * 
      * @return
@@ -105,6 +141,34 @@ public abstract class BaseCollectionLayout<ID, T extends AbstractEntity<ID>> ext
         return getService().createNewEntity();
     }
 
+    /**
+     * Displays the details mode
+     * 
+     * @param entity
+     */
+    protected abstract void detailsMode(T entity);
+
+    /**
+     * Constructs the add button
+     * 
+     * @return
+     */
+    protected Button constructAddButton() {
+        Button ab = new Button(message("ocs.add"));
+        ab.addClickListener(new Button.ClickListener() {
+
+            private static final long serialVersionUID = -5005648144833272606L;
+
+            @Override
+            public void buttonClick(ClickEvent event) {
+                setSelectedItem(createEntity());
+                detailsMode(getSelectedItem());
+            }
+        });
+        ab.setVisible(!getFormOptions().isHideAddButton() && isEditAllowed());
+        return ab;
+    };
+    
     public HorizontalLayout getButtonBar() {
         return buttonBar;
     }
@@ -121,8 +185,23 @@ public abstract class BaseCollectionLayout<ID, T extends AbstractEntity<ID>> ext
         return selectedItem;
     }
 
-    public SortOrder getSortOrder() {
-        return sortOrder;
+    /**
+     * 
+     * @return the currently configured sort orders
+     */
+    public List<SortOrder> getSortOrders() {
+        return Collections.unmodifiableList(sortOrders);
+    }
+
+    /**
+     * 
+     * @return the table wrapper
+     */
+    public BaseTableWrapper<ID, T> getTableWrapper() {
+        if (tableWrapper == null) {
+            tableWrapper = constructTableWrapper();
+        }
+        return tableWrapper;
     }
 
     /**
@@ -139,8 +218,8 @@ public abstract class BaseCollectionLayout<ID, T extends AbstractEntity<ID>> ext
     }
 
     /**
-     * Callback method that is called in order to enable/disable a button after selecting an item in
-     * the table
+     * Method that is called in order to enable/disable a button after selecting an item in the
+     * table
      * 
      * @param button
      * @return
@@ -185,10 +264,6 @@ public abstract class BaseCollectionLayout<ID, T extends AbstractEntity<ID>> ext
         }
     }
 
-    protected void setButtonBar(HorizontalLayout buttonBar) {
-        this.buttonBar = buttonBar;
-    }
-
     public void setPageLength(int pageLength) {
         this.pageLength = pageLength;
     }
@@ -200,9 +275,4 @@ public abstract class BaseCollectionLayout<ID, T extends AbstractEntity<ID>> ext
     public void setSortEnabled(boolean sortEnabled) {
         this.sortEnabled = sortEnabled;
     }
-
-    public void setSortOrder(SortOrder sortOrder) {
-        this.sortOrder = sortOrder;
-    }
-
 }

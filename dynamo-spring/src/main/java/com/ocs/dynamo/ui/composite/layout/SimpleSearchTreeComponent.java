@@ -35,7 +35,6 @@ import com.ocs.dynamo.ui.container.hierarchical.ModelBasedHierarchicalContainer.
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanItem;
-import com.vaadin.ui.Component;
 
 /**
  * Extends simple search with the support of hierarchy in a tree table.
@@ -47,7 +46,7 @@ public class SimpleSearchTreeComponent<ID extends Serializable, T extends Abstra
         extends SimpleSearchLayout<ID, T> {
 
     private List<BaseService<?, ?>> services;
-    
+
     private Object selectedItem;
 
     /**
@@ -82,33 +81,24 @@ public class SimpleSearchTreeComponent<ID extends Serializable, T extends Abstra
         this.services = services;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.ocs.dynamo.ui.page.SimpleSearchPanel#getTableWrapper()
-     */
     @Override
-    public ServiceResultsTableWrapper<ID, T> getTableWrapper() {
-        if (tableWrapper == null) {
-            tableWrapper = new ServiceResultsTreeTableWrapper<ID, T>(services, getEntityModel(),
-                    getQueryType(), null, getJoins());
-            tableWrapper.build();
-        }
-        return tableWrapper;
+    public ServiceResultsTableWrapper<ID, T> constructTableWrapper() {
+        ServiceResultsTableWrapper<ID, T> result = new ServiceResultsTreeTableWrapper<ID, T>(
+                services, getEntityModel(), getQueryType(), null, getJoins());
+        result.build();
+        return result;
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
-    protected Component getSearchForm() {
+    protected ModelBasedSearchForm<ID, T> constructSearchform() {
         ModelBasedHierarchicalContainer<T> c = (ModelBasedHierarchicalContainer<T>) getTableWrapper()
                 .getContainer();
-        if (searchForm == null && !c.getHierarchy().isEmpty()) {
-            ModelBasedHierarchicalDefinition def = c.getHierarchicalDefinition(0);
-            searchForm = new ModelBasedSearchForm(getTableWrapper(), def.getEntityModel(),
-                    getFormOptions(), getAdditionalFilters(), getFieldFilters());
-            searchForm.build();
-        }
-        return searchForm;
+        ModelBasedHierarchicalDefinition def = c.getHierarchicalDefinition(0);
+        ModelBasedSearchForm<ID, T> result = new ModelBasedSearchForm<ID, T>(getTableWrapper(),
+                def.getEntityModel(), getFormOptions(), getAdditionalFilters(), getFieldFilters());
+        result.build();
+        return result;
     }
 
     @Override
@@ -139,8 +129,8 @@ public class SimpleSearchTreeComponent<ID extends Serializable, T extends Abstra
                         if (item instanceof BeanItem) {
                             setSelectedHierarchicalItem(((BeanItem<?>) item).getBean());
                         } else if (item instanceof CompositeItem) {
-                            setSelectedHierarchicalItem(
-                                    ((CompositeItem) item).getItem(CompositeItem.DEFAULT_ITEM_KEY));
+                            setSelectedHierarchicalItem(((CompositeItem) item)
+                                    .getItem(CompositeItem.DEFAULT_ITEM_KEY));
                         } else {
                             setSelectedHierarchicalItem(item);
                         }

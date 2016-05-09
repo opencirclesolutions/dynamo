@@ -25,7 +25,6 @@ import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
-import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.composite.form.FormOptions;
 import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
@@ -39,7 +38,6 @@ import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.sort.SortOrder;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Component;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.VerticalLayout;
 
@@ -81,7 +79,7 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
     private VerticalLayout mainEditLayout;
 
     // the main layout (in search mode)
-    private VerticalLayout mainLayout;
+    private VerticalLayout mainSearchLayout;
 
     // the number of columns in the search form
     private int nrOfColumns = 1;
@@ -94,13 +92,10 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
     private Button removeButton;
 
     // the search form
-    protected ModelBasedSearchForm<ID, T> searchForm;
+    private ModelBasedSearchForm<ID, T> searchForm;
 
     // the set of currently selected items
     private Collection<T> selectedItems;
-
-    // the table wrapper
-    protected ServiceResultsTableWrapper<ID, T> tableWrapper;
 
     /**
      * Constructor - all fields
@@ -155,10 +150,12 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
     }
 
     /**
-     * Callback method that is called after a detail entity has been selected
+     * Method that is called after the user select an entity to view in Details mode
      * 
      * @param editForm
+     *            the edit form which displays the entity
      * @param entity
+     *            the selected entity
      */
     protected void afterDetailSelected(ModelBasedEditForm<ID, T> editForm, T entity) {
         // override in subclass
@@ -168,6 +165,7 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
      * Responds to the toggling of the visibility of the search fields
      * 
      * @param visible
+     *            whether the search fields are now visible
      */
     protected void afterSearchFieldToggle(boolean visible) {
         // do nothing
@@ -184,64 +182,48 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
      */
     @Override
     public void build() {
-        if (mainLayout == null) {
-            mainLayout = new DefaultVerticalLayout();
+        if (mainSearchLayout == null) {
+            mainSearchLayout = new DefaultVerticalLayout();
 
-            // search results table
-            tableWrapper = getTableWrapper();
-            tableWrapper.getTable().setPageLength(getPageLength());
+            getTableWrapper().getTable().setPageLength(getPageLength());
+            getTableWrapper().getTable().setSortEnabled(isSortEnabled());
 
             // add a listener to respond to the selection of an item
-            tableWrapper.getTable().addValueChangeListener(new Property.ValueChangeListener() {
+            getTableWrapper().getTable().addValueChangeListener(new Property.ValueChangeListener() {
                 @Override
                 public void valueChange(ValueChangeEvent event) {
-                    select(tableWrapper.getTable().getValue());
+                    select(getTableWrapper().getTable().getValue());
                     checkButtonState(getSelectedItem());
                 }
             });
 
-            mainLayout.addComponent(getSearchForm());
-            mainLayout.addComponent(tableWrapper);
-
-            setButtonBar(new DefaultHorizontalLayout());
+            mainSearchLayout.addComponent(getSearchForm());
+            mainSearchLayout.addComponent(getTableWrapper());
 
             // add button
-            getButtonBar().addComponent(constructAddButton());
+            addButton = constructAddButton();
+            if (addButton != null) {
+                getButtonBar().addComponent(addButton);
+            }
 
             // edit/view button
-            Button b = constructEditButton();
-            if (b != null) {
-                getButtonBar().addComponent(b);
+            editButton = constructEditButton();
+            if (editButton != null) {
+                getButtonBar().addComponent(editButton);
             }
 
             // remove button
-            getButtonBar().addComponent(constructRemoveButton());
+            removeButton = constructRemoveButton();
+            if (removeButton != null) {
+                getButtonBar().addComponent(removeButton);
+            }
 
             // callback for adding additional buttons
             postProcessButtonBar(getButtonBar());
 
-            mainLayout.addComponent(getButtonBar());
+            mainSearchLayout.addComponent(getButtonBar());
         }
-        setCompositionRoot(mainLayout);
-    }
-
-    /**
-     * Constructs the add button
-     * 
-     * @return
-     */
-    protected Button constructAddButton() {
-        addButton = new Button(message("ocs.add"));
-        addButton.addClickListener(new Button.ClickListener() {
-
-            @Override
-            public void buttonClick(ClickEvent event) {
-                setSelectedItem(createEntity());
-                detailsMode(getSelectedItem());
-            }
-        });
-        addButton.setVisible(isEditAllowed() && !getFormOptions().isHideAddButton());
-        return addButton;
+        setCompositionRoot(mainSearchLayout);
     }
 
     /**
@@ -251,9 +233,9 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
      */
     protected Button constructEditButton() {
         // edit button
-        editButton = new Button(getFormOptions().isOpenInViewMode() ? message("ocs.view")
+        Button eb = new Button(getFormOptions().isOpenInViewMode() ? message("ocs.view")
                 : message("ocs.edit"));
-        editButton.addClickListener(new Button.ClickListener() {
+        eb.addClickListener(new Button.ClickListener() {
 
             @Override
             public void buttonClick(ClickEvent event) {
@@ -262,8 +244,8 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
                 }
             }
         });
-        editButton.setVisible(isEditAllowed() && getFormOptions().isShowEditButton());
-        return editButton;
+        eb.setVisible(isEditAllowed() && getFormOptions().isShowEditButton());
+        return eb;
     }
 
     /**
@@ -272,7 +254,7 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
      * @return
      */
     protected Button constructRemoveButton() {
-        removeButton = new RemoveButton() {
+        Button rb = new RemoveButton() {
 
             @Override
             protected void doDelete() {
@@ -280,8 +262,8 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
             }
 
         };
-        removeButton.setVisible(isEditAllowed() && getFormOptions().isShowRemoveButton());
-        return removeButton;
+        rb.setVisible(isEditAllowed() && getFormOptions().isShowRemoveButton());
+        return rb;
     }
 
     /**
@@ -311,7 +293,7 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
                 @Override
                 protected void afterEditDone(boolean cancel, boolean newObject, T entity) {
                     // when the user is done, display the search screen again
-                    setCompositionRoot(mainLayout);
+                    setCompositionRoot(mainSearchLayout);
                     search();
                 }
 
@@ -371,45 +353,45 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
         return removeButton;
     }
 
-    /**
-     * Constructs and returns the search form
-     * 
-     * @return
-     */
-    protected Component getSearchForm() {
+    protected ModelBasedSearchForm<ID, T> getSearchForm() {
         if (searchForm == null) {
-            searchForm = new ModelBasedSearchForm<ID, T>(getTableWrapper(), getEntityModel(),
-                    getFormOptions(), this.additionalFilters, this.fieldFilters) {
-
-                @Override
-                protected void afterSearchFieldToggle(boolean visible) {
-                    SimpleSearchLayout.this.afterSearchFieldToggle(visible);
-                }
-
-                @Override
-                protected Field<?> constructCustomField(EntityModel<T> entityModel,
-                        AttributeModel attributeModel) {
-                    return SimpleSearchLayout.this.constructCustomField(entityModel,
-                            attributeModel, false, true);
-                }
-            };
-            searchForm.setNrOfColumns(getNrOfColumns());
-            searchForm.build();
+            searchForm = constructSearchform();
         }
         return searchForm;
+    }
+
+    protected ModelBasedSearchForm<ID, T> constructSearchform() {
+        ModelBasedSearchForm<ID, T> result = new ModelBasedSearchForm<ID, T>(getTableWrapper(),
+                getEntityModel(), getFormOptions(), this.additionalFilters, this.fieldFilters) {
+
+            @Override
+            protected void afterSearchFieldToggle(boolean visible) {
+                SimpleSearchLayout.this.afterSearchFieldToggle(visible);
+            }
+
+            @Override
+            protected Field<?> constructCustomField(EntityModel<T> entityModel,
+                    AttributeModel attributeModel) {
+                return SimpleSearchLayout.this.constructCustomField(entityModel, attributeModel,
+                        false, true);
+            }
+        };
+        result.setNrOfColumns(getNrOfColumns());
+        result.build();
+        return result;
     }
 
     public Collection<T> getSelectedItems() {
         return selectedItems;
     }
 
-    public ServiceResultsTableWrapper<ID, T> getTableWrapper() {
-        if (tableWrapper == null) {
-            tableWrapper = new ServiceResultsTableWrapper<ID, T>(this.getService(),
-                    getEntityModel(), getQueryType(), null, getSortOrder(), getJoins());
-            tableWrapper.build();
-        }
-        return tableWrapper;
+    @Override
+    public ServiceResultsTableWrapper<ID, T> constructTableWrapper() {
+        ServiceResultsTableWrapper<ID, T> result = new ServiceResultsTableWrapper<ID, T>(
+                this.getService(), getEntityModel(), getQueryType(), null, getSortOrders(),
+                getJoins());
+        result.build();
+        return result;
     }
 
     /**
@@ -433,7 +415,7 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
      * Perform the actual search
      */
     public void search() {
-        searchForm.search();
+        getSearchForm().search();
         getTableWrapper().getTable().select(null);
         setSelectedItem(null);
         checkButtonState(getSelectedItem());
