@@ -9,11 +9,11 @@
 	<allowPartial>false</allowPartial>
 
 	<sources>
-		<source>src/main/java/application/dao/SomeEntityDao.java</source>
-		<source>src/main/java/application/dao/SomeEntityDaoImpl.java</source>
-		<source>src/main/java/application/domain/SomeEntity.java</source>
-		<source>src/main/java/application/service/SomeEntityService.java</source>
-		<source>src/main/java/application/service/SomeEntityServiceImpl.java</source>
+		<source>src/main/java/application/dao/MyEntityDao.java</source>
+		<source>src/main/java/application/dao/MyEntityDaoImpl.java</source>
+		<source>src/main/java/application/domain/MyEntity.java</source>
+		<source>src/main/java/application/service/MyEntityService.java</source>
+		<source>src/main/java/application/service/MyEntityServiceImpl.java</source>
 		<source>src/main/java/application/ui/Views.java</source>
 		<source>src/main/java/application/ui/ApplicationUI.java</source>
 	</sources>

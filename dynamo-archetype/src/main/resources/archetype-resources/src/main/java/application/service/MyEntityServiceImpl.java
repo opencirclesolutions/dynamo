@@ -8,18 +8,18 @@ import org.springframework.transaction.annotation.Transactional;
 import com.ocs.dynamo.dao.BaseDao;
 import com.ocs.dynamo.service.impl.BaseServiceImpl;
 
-import ${package}.application.domain.SomeEntity;
-import ${package}.application.dao.SomeEntityDao;
+import ${package}.application.domain.MyEntity;
+import ${package}.application.dao.MyEntityDao;
 
 @Transactional
 @Service("entityService")
-public class SomeEntityServiceImpl extends BaseServiceImpl<Integer, SomeEntity> implements SomeEntityService {
+public class MyEntityServiceImpl extends BaseServiceImpl<Integer, MyEntity> implements MyEntityService {
 
     @Inject
-    private SomeEntityDao entityDao;
+    private MyEntityDao entityDao;
 
     @Override
-    protected BaseDao<Integer, SomeEntity> getDao() {
+    protected BaseDao<Integer, MyEntity> getDao() {
         return entityDao;
     }
 }

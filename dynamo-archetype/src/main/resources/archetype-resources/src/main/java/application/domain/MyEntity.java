@@ -15,7 +15,7 @@ import com.ocs.dynamo.domain.model.annotation.AttributeOrder;
 
 @Entity
 @AttributeOrder(attributeNames = { "id", "stringAttribute", "dateAttribute" })
-public class SomeEntity extends AbstractEntity<Integer> {
+public class MyEntity extends AbstractEntity<Integer> {
 
     private static final long serialVersionUID = -6342590031746525068L;
 

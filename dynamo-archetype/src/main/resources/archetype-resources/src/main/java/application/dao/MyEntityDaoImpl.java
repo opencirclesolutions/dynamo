@@ -5,18 +5,18 @@ import org.springframework.stereotype.Repository;
 import com.mysema.query.types.path.EntityPathBase;
 import com.ocs.dynamo.dao.impl.BaseDaoImpl;
 
-import ${package}.application.domain.SomeEntity;
+import ${package}.application.domain.MyEntity;
 
 @Repository("entityDao")
-public class SomeEntityDaoImpl extends BaseDaoImpl<Integer, SomeEntity> implements SomeEntityDao {
+public class MyEntityDaoImpl extends BaseDaoImpl<Integer, MyEntity> implements MyEntityDao {
 
     /*
      * (non-Javadoc)
      * 
-     * @see com.ocs.dynamo.dao.BaseDao#getSomeEntityClass()
+     * @see com.ocs.dynamo.dao.BaseDao#getMyEntityClass()
      */
-    public Class<SomeEntity> getEntityClass() {
-        return SomeEntity.class;
+    public Class<MyEntity> getEntityClass() {
+        return MyEntity.class;
     }
 
     /*
@@ -25,7 +25,7 @@ public class SomeEntityDaoImpl extends BaseDaoImpl<Integer, SomeEntity> implemen
      * @see com.ocs.dynamo.dao.impl.BaseDaoImpl#getDslRoot()
      */
     @Override
-    protected EntityPathBase<SomeEntity> getDslRoot() {
+    protected EntityPathBase<MyEntity> getDslRoot() {
         return null;
     }
 
