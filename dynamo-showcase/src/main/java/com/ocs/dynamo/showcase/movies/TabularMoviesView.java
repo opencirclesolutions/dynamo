@@ -102,7 +102,6 @@ public class TabularMoviesView extends BaseView {
 
         movieLayout.setPageLength(25);
 
-        // Some plumbing.
         mainLayout.addComponent(movieLayout);
         setCompositionRoot(mainLayout);
     }

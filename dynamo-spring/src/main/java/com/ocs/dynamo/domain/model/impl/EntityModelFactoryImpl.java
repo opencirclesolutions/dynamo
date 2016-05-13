@@ -191,7 +191,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
             setNestedEntityModel(model);
 
             // only basic attributes are shown in the table by default
-            model.setVisibleInTable(model.isVisible()
+            model.setVisibleInTable(!nested && model.isVisible()
                     && (AttributeType.BASIC.equals(model.getAttributeType())));
 
             if (getMessageService() != null) {
@@ -711,7 +711,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
                 model.setReadOnly(true);
             }
 
-            if (attribute.visible() != null && !VisibilityType.INHERIT.equals(attribute.visible())) {
+            if (attribute.visible() != null && !VisibilityType.INHERIT.equals(attribute.visible())
+                    && !nested) {
                 model.setVisible(VisibilityType.SHOW.equals(attribute.visible()));
                 model.setVisibleInTable(model.isVisible());
             }
@@ -731,7 +732,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
             }
 
             if (attribute.showInTable() != null
-                    && !VisibilityType.INHERIT.equals(attribute.showInTable())) {
+                    && !VisibilityType.INHERIT.equals(attribute.showInTable()) && !nested) {
                 model.setVisibleInTable(VisibilityType.SHOW.equals(attribute.showInTable()));
             }
 

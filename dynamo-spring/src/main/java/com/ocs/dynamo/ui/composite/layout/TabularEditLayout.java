@@ -430,4 +430,9 @@ public abstract class TabularEditLayout<ID extends Serializable, T extends Abstr
             cancelButton.setVisible(!isViewmode());
         }
     }
+
+    @Override
+    protected void detailsMode(T entity) {
+        // not needed
+    }
 }

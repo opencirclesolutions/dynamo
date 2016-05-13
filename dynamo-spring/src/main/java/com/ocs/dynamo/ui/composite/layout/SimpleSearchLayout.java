@@ -222,6 +222,7 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
             postProcessButtonBar(getButtonBar());
 
             mainSearchLayout.addComponent(getButtonBar());
+            postProcessLayout(mainSearchLayout);
         }
         setCompositionRoot(mainSearchLayout);
     }
@@ -245,6 +246,7 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
             }
         });
         eb.setVisible(isEditAllowed() && getFormOptions().isShowEditButton());
+        registerDetailButton(eb);
         return eb;
     }
 
@@ -263,6 +265,7 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 
         };
         rb.setVisible(isEditAllowed() && getFormOptions().isShowRemoveButton());
+        registerDetailButton(rb);
         return rb;
     }
 
@@ -404,11 +407,23 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
     /**
      * Performs the actual delete action
      */
-    protected void remove() {
-        getService().delete(getSelectedItem());
+    /**
+     * Performs the actual delete action
+     */
+    protected final void remove() {
+        doRemove();
         // refresh the results so that the deleted item is no longer
         // there
+        setSelectedItem(null);
+        checkButtonState(getSelectedItem());
         search();
+    }
+
+    /**
+     * Performs the actual remove functionality - overwrite in subclass if needed
+     */
+    protected void doRemove() {
+        getService().delete(getSelectedItem());
     }
 
     /**

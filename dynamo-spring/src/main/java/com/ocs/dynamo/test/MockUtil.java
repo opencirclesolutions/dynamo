@@ -24,12 +24,15 @@ import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import com.ocs.dynamo.dao.BaseDao;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.MessageService;
+import com.ocs.dynamo.service.impl.MessageServiceImpl;
 
 /**
  * Utility class for registering service and DAO related mock functionality
@@ -137,6 +140,23 @@ public final class MockUtil {
         ArgumentCaptor<X> captor = ArgumentCaptor.forClass(clazz);
         Mockito.verify(service, Mockito.times(times)).save(captor.capture());
         return captor.getAllValues();
+    }
+
+    /**
+     * Util method to initialize the messageservice and inject it into the target object when @Inject
+     * can not be used.
+     * 
+     * @param target
+     *            Object with the field messageService of type MessageService
+     * @param basename
+     *            the base name of the message bundle to use
+     */
+    public static void injectMessageService(Object target, String basename) {
+        ResourceBundleMessageSource rmb = new ResourceBundleMessageSource();
+        rmb.setBasename(basename);
+        MessageService ms = new MessageServiceImpl();
+        ReflectionTestUtils.setField(ms, "source", rmb);
+        ReflectionTestUtils.setField(target, "messageService", ms);
     }
 
     /**

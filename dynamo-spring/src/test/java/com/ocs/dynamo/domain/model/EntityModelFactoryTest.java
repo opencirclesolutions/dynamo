@@ -34,6 +34,8 @@ import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import junitx.util.PrivateAccessor;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -49,8 +51,6 @@ import com.ocs.dynamo.domain.validator.Email;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.service.impl.MessageServiceImpl;
 import com.ocs.dynamo.test.BaseMockitoTest;
-
-import junitx.util.PrivateAccessor;
 
 @SuppressWarnings("unused")
 public class EntityModelFactoryTest extends BaseMockitoTest {
@@ -370,11 +370,20 @@ public class EntityModelFactoryTest extends BaseMockitoTest {
 
     @Test
     public void testNestedAttributes() {
+
+        EntityModel<EntityParent> parentModel = factory.getModel(EntityParent.class);
+        AttributeModel pm = parentModel.getAttributeModel("name");
+        Assert.assertNotNull(pm);
+        Assert.assertEquals("name", pm.getName());
+        Assert.assertTrue(pm.isVisibleInTable());
+
         EntityModel<EntityChild> model = factory.getModel(EntityChild.class);
         AttributeModel am = model.getAttributeModel("parent.name");
         Assert.assertNotNull(am);
         Assert.assertEquals("name", am.getName());
         Assert.assertEquals(EntityParent.class, am.getEntityModel().getEntityClass());
+        Assert.assertFalse(am.isVisibleInTable());
+
     }
 
     @Test

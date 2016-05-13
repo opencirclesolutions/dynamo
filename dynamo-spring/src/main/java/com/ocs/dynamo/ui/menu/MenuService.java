@@ -13,6 +13,8 @@
  */
 package com.ocs.dynamo.ui.menu;
 
+import java.util.List;
+
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -163,6 +165,35 @@ public class MenuService {
     private void hideRecursively(MenuBar bar) {
         for (MenuItem item : bar.getItems()) {
             hideIfAllChildrenHidden(item);
+        }
+    }
+
+    /**
+     * Sets the visibility of a certain item
+     * 
+     * @param key
+     * @param visible
+     */
+    public void setVisible(MenuBar menu, String destination, boolean visible) {
+
+        List<MenuItem> items = menu.getItems();
+        for (MenuItem item : items) {
+            setVisible(item, destination, visible);
+        }
+    }
+
+    private void setVisible(MenuItem item, String destination, boolean visible) {
+
+        if (item.getCommand() instanceof NavigateCommand) {
+            NavigateCommand command = (NavigateCommand) item.getCommand();
+            if (command.getDestination().equals(destination)) {
+                item.setVisible(visible);
+            }
+        }
+
+        // recursively process children
+        for (MenuItem child : item.getChildren()) {
+            setVisible(child, destination, visible);
         }
     }
 }
