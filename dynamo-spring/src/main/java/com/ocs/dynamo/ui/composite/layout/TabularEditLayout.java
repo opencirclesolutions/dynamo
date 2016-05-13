@@ -321,42 +321,40 @@ public abstract class TabularEditLayout<ID extends Serializable, T extends Abstr
         }
 
         // overwrite the field factory to handle validation
-        table.setTableFieldFactory(
-                new ModelBasedFieldFactory<T>(getEntityModel(), getMessageService(), true, false) {
+        table.setTableFieldFactory(new ModelBasedFieldFactory<T>(getEntityModel(),
+                getMessageService(), true, false) {
 
-                    @Override
-                    public Field<?> createField(String propertyId) {
+            @Override
+            public Field<?> createField(String propertyId) {
 
-                        // first try to create a custom field
-                        Field<?> custom = constructCustomField(getEntityModel(),
-                                getEntityModel().getAttributeModel(propertyId), isViewmode(),
-                                false);
+                // first try to create a custom field
+                Field<?> custom = constructCustomField(getEntityModel(), getEntityModel()
+                        .getAttributeModel(propertyId), isViewmode(), false);
 
-                        final Field<?> field = custom != null ? custom
-                                : super.createField(propertyId);
+                final Field<?> field = custom != null ? custom : super.createField(propertyId);
 
-                        if (field instanceof URLField) {
-                            ((URLField) field).setEditable(!isViewmode());
+                if (field instanceof URLField) {
+                    ((URLField) field).setEditable(!isViewmode());
+                }
+
+                if (field != null && field.isEnabled()) {
+                    field.addValueChangeListener(new Property.ValueChangeListener() {
+
+                        @Override
+                        public void valueChange(Property.ValueChangeEvent event) {
+                            if (saveButton != null) {
+                                saveButton.setEnabled(VaadinUtils
+                                        .allFixedTableFieldsValid(getTableWrapper().getTable()));
+                            }
                         }
 
-                        if (field != null && field.isEnabled()) {
-                            field.addValueChangeListener(new Property.ValueChangeListener() {
-
-                                @Override
-                                public void valueChange(Property.ValueChangeEvent event) {
-                                    if (saveButton != null) {
-                                        saveButton.setEnabled(VaadinUtils.allFixedTableFieldsValid(
-                                                getTableWrapper().getTable()));
-                                    }
-                                }
-
-                            });
-                            field.setSizeFull();
-                            postProcessField(propertyId, field);
-                        }
-                        return field;
-                    }
-                });
+                    });
+                    field.setSizeFull();
+                    postProcessField(propertyId, field);
+                }
+                return field;
+            }
+        });
         mainLayout.addComponent(getTableWrapper());
     }
 
@@ -433,15 +431,8 @@ public abstract class TabularEditLayout<ID extends Serializable, T extends Abstr
         }
     }
 
-    /**
-     * Shows the details of a selected entity
-     * 
-     * @param parent
-     *            the parent of the entity
-     * @param entity
-     *            the entity
-     */
+    @Override
     protected void detailsMode(T entity) {
-        // TODO Make the Show Case Compile.
+        // not needed
     }
 }

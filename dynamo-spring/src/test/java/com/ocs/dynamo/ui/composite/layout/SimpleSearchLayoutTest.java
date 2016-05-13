@@ -167,6 +167,7 @@ public class SimpleSearchLayoutTest extends BaseIntegrationTest {
         Assert.assertTrue(layout.getRemoveButton().isVisible());
 
         layout.setSelectedItem(e1);
+        layout.checkButtonState(layout.getSelectedItem());
         layout.getRemoveButton().click();
 
         // check that nothing is selected any more and the item has been removed
