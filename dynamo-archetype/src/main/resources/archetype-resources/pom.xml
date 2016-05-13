@@ -1,10 +1,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
- 
-  	<groupId>${groupId}</groupId>
-  	<artifactId>${artifactId}</artifactId>
-  	<version>${version}</version>
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>${groupId}</groupId>
+	<artifactId>${artifactId}</artifactId>
+	<version>${version}</version>
 	<packaging>war</packaging>
 
 	<properties>
@@ -37,16 +37,14 @@
 
 		<!-- JPA Dependencies -->
 		<dependency>
-			<groupId>org.eclipse.persistence</groupId>
-			<artifactId>javax.persistence</artifactId>
-			<version>2.1.0</version>
-			<scope>provided</scope>			
+			<groupId>org.hibernate.javax.persistence</groupId>
+			<artifactId>hibernate-jpa-2.0-api</artifactId>
+			<version>1.0.0.Final</version>
 		</dependency>
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-entitymanager</artifactId>
 			<version>${hibernate.version}</version>
-			<scope>provided</scope>			
 		</dependency>
 
 		<!-- Bean validation -->
@@ -54,7 +52,6 @@
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-validator</artifactId>
 			<version>${hibernate.version}</version>
-			<scope>provided</scope>			
 		</dependency>
 
 	</dependencies>
@@ -74,10 +71,8 @@
 				<version>${vaadin.version}</version>
 				<configuration>
 					<extraJvmArgs>-Xmx512M -Xss1024k</extraJvmArgs>
-					<webappDirectory>${basedir}/src/main/webapp/VAADIN/widgetsets
-					</webappDirectory>
-					<hostedWebapp>${basedir}/src/main/webapp/VAADIN/widgetsets
-					</hostedWebapp>
+					<webappDirectory>src/main/webapp/VAADIN/widgetsets</webappDirectory>
+					<hostedWebapp>src/main/webapp/VAADIN/widgetsets</hostedWebapp>
 					<persistentunitcachedir>${project.build.directory}</persistentunitcachedir>
 					<deploy>${project.build.directory}/gwt-deploy</deploy>
 					<compileReport>false</compileReport>

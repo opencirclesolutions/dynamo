@@ -16,10 +16,11 @@
 		<source>src/main/java/application/service/MyEntityServiceImpl.java</source>
 		<source>src/main/java/application/ui/Views.java</source>
 		<source>src/main/java/application/ui/ApplicationUI.java</source>
+		<source>src/main/java/application/ui/MyEntityView.java</source>
 	</sources>
 	<resources>
 		<resource>src/main/resources/META-INF/entitymodel.properties</resource>
-		<resource>src/main/resources/spring/applicationContext-common.xml</resource>
+		<resource>src/main/resources/META-INF/spring/applicationContext-common.xml</resource>
 		<resource>src/main/resources/menu.properties</resource>
 		<resource>src/main/resources/messages.properties</resource>
 		<resource>src/main/webapp/VAADIN/themes/light/addons.scss</resource>
