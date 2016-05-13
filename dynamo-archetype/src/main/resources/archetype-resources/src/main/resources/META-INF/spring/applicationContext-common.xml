@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-4.1.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.2.xsd">
+
+	<tx:annotation-driven transaction-manager="transactionManager" />
+
+	<!-- JPA Transaction manager -->
+	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager" />
+
+	<!-- The entity model factory -->
+	<bean id="entityModelFactory" class="com.ocs.dynamo.domain.model.impl.EntityModelFactoryImpl" />
+
+	<!-- The message service -->
+	<bean id="messageService" class="com.ocs.dynamo.service.impl.MessageServiceImpl" />
+
+	<!-- Lookup validation messages -->
+	<bean id="validator"
+		class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean">
+		<property name="validationMessageSource" ref="messageSource" />
+	</bean>
+
+	<!-- Application messages -->
+	<bean id="messageSource"
+		class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+		<property name="basenames">
+			<list>
+				<value>classpath:/META-INF/entitymodel</value>
+				<value>classpath:/menu</value>
+				<value>classpath:/messages</value>
+				<value>classpath:/ocscommon</value>
+				<value>classpath:/ValidationMessages</value>
+			</list>
+		</property>
+		<property name="fallbackToSystemLocale" value="false" />
+	</bean>
+
+	<!-- Component responsible for creating the menu -->
+	<bean id="menuService" class="com.ocs.dynamo.ui.menu.MenuService" />
+</beans>
