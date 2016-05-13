@@ -19,6 +19,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.google.common.collect.Lists;
 import com.ocs.dynamo.dao.query.FetchJoinInformation;
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
@@ -88,12 +89,12 @@ public class ModelBasedTableIntegrationTest extends BaseIntegrationTest {
         EntityModel<TestEntity> model = entityModelFactory.getModel(TestEntity.class);
 
         ServiceResultsTableWrapper<Integer, TestEntity> wrapper = new ServiceResultsTableWrapper<>(
-                testEntityService, model, QueryType.ID_BASED, null, null, null);
+                testEntityService, model, QueryType.ID_BASED, null, null);
         wrapper.build();
 
         Assert.assertNotNull(wrapper.getTable());
-        Assert.assertNull(wrapper.getSortOrder());
-        Assert.assertNull(wrapper.getJoins());
+        Assert.assertEquals(0, wrapper.getSortOrders().size());
+        Assert.assertEquals(0, wrapper.getJoins().length);
         ServiceContainer<Integer, TestEntity> container = (ServiceContainer<Integer, TestEntity>) wrapper
                 .getContainer();
         Assert.assertNotNull(container);
@@ -121,14 +122,15 @@ public class ModelBasedTableIntegrationTest extends BaseIntegrationTest {
 
         EntityModel<TestEntity> model = entityModelFactory.getModel(TestEntity.class);
 
-        ServiceResultsTableWrapper<Integer, TestEntity> wrapper = new ServiceResultsTableWrapper<>(
-                testEntityService, model, QueryType.ID_BASED, null, new SortOrder("name",
-                        SortDirection.ASCENDING), null);
+        ServiceResultsTableWrapper<Integer, TestEntity> wrapper = new ServiceResultsTableWrapper<Integer, TestEntity>(
+                testEntityService, model, QueryType.ID_BASED, null,
+                Lists.newArrayList(new SortOrder("name", SortDirection.ASCENDING)));
         wrapper.build();
 
         Assert.assertNotNull(wrapper.getTable());
-        Assert.assertEquals(new SortOrder("name", SortDirection.ASCENDING), wrapper.getSortOrder());
-        Assert.assertNull(wrapper.getJoins());
+        Assert.assertEquals(new SortOrder("name", SortDirection.ASCENDING), wrapper.getSortOrders()
+                .get(0));
+        Assert.assertEquals(0, wrapper.getJoins().length);
         ServiceContainer<Integer, TestEntity> container = (ServiceContainer<Integer, TestEntity>) wrapper
                 .getContainer();
         Assert.assertNotNull(container);

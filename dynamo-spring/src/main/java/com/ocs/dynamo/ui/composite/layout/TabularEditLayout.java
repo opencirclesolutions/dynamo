@@ -16,16 +16,12 @@ package com.ocs.dynamo.ui.composite.layout;
 import java.io.Serializable;
 import java.util.Collection;
 
-import org.apache.log4j.Logger;
-
 import com.ocs.dynamo.dao.query.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.impl.ModelBasedFieldFactory;
-import com.ocs.dynamo.exception.OCSValidationException;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.Reloadable;
-import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.component.URLField;
 import com.ocs.dynamo.ui.composite.form.FormOptions;
@@ -37,11 +33,9 @@ import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Property;
 import com.vaadin.data.sort.SortOrder;
-import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Field;
-import com.vaadin.ui.Notification;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 
@@ -58,12 +52,16 @@ import com.vaadin.ui.VerticalLayout;
 public abstract class TabularEditLayout<ID extends Serializable, T extends AbstractEntity<ID>>
         extends BaseCollectionLayout<ID, T> implements Reloadable {
 
-    private static final Logger LOG = Logger.getLogger(TabularEditLayout.class);
-
     // the default page length
-    private static final int PAGE_LENGTH = 18;
+    private static final int PAGE_LENGTH = 15;
 
     private static final long serialVersionUID = 4606800218149558500L;
+
+    private Button addButton;
+
+    private Button cancelButton;
+
+    private Button editButton;
 
     private Filter filter;
 
@@ -76,23 +74,21 @@ public abstract class TabularEditLayout<ID extends Serializable, T extends Abstr
 
     private Button saveButton;
 
-    private Button editButton;
-
-    private Button addButton;
-
-    private Button cancelButton;
-
-    private BaseTableWrapper<ID, T> tableWrapper;
-
     private boolean viewmode;
 
     /**
      * Constructor
      * 
      * @param service
-     * @param parent
-     * @param parentService
+     *            the service used to query the database
+     * @param entityModel
+     *            the entity model the entity model used to build the table
      * @param formOptions
+     *            the form options
+     * @param sortOrder
+     *            the first sort order
+     * @param joins
+     *            the desired joins
      */
     public TabularEditLayout(BaseService<ID, T> service, EntityModel<T> entityModel,
             FormOptions formOptions, SortOrder sortOrder, FetchJoinInformation... joins) {
@@ -100,7 +96,7 @@ public abstract class TabularEditLayout<ID extends Serializable, T extends Abstr
     }
 
     /**
-     * Callback method that is called after a remove operation has been carried out
+     * Method that is called after a remove operation has been carried out
      */
     protected void afterRemove() {
         // do nothing
@@ -121,7 +117,17 @@ public abstract class TabularEditLayout<ID extends Serializable, T extends Abstr
     }
 
     /**
-     * Callback method that is called before a save operation is carried out
+     * Method that is called before a remove operation is carried out
+     * 
+     * @param entity
+     *            the entity to remove
+     */
+    protected void beforeRemove(T entity) {
+        // do nothing
+    }
+
+    /**
+     * Method that is called before a save operation is carried out
      */
     protected void beforeSave() {
         // do nothing
@@ -135,13 +141,10 @@ public abstract class TabularEditLayout<ID extends Serializable, T extends Abstr
         if (mainLayout == null) {
 
             setViewmode(!isEditAllowed() || getFormOptions().isOpenInViewMode());
-
             mainLayout = new DefaultVerticalLayout(true, true);
 
-            // construct the table
-            constructTable();
+            initTable();
 
-            setButtonBar(new DefaultHorizontalLayout());
             mainLayout.addComponent(getButtonBar());
 
             // add button
@@ -170,6 +173,7 @@ public abstract class TabularEditLayout<ID extends Serializable, T extends Abstr
                     @Override
                     protected void doDelete() {
                         if (getSelectedItem() != null) {
+                            beforeRemove(getSelectedItem());
                             getTableWrapper().getTable().removeItem(getSelectedItem().getId());
                             getContainer().commit();
                             setSelectedItem(null);
@@ -193,9 +197,8 @@ public abstract class TabularEditLayout<ID extends Serializable, T extends Abstr
                         beforeSave();
                         getContainer().commit();
                         afterSave();
-                    } catch (OCSValidationException ex) {
-                        LOG.error(ex.getMessage(), ex);
-                        Notification.show(ex.getErrors().get(0), Notification.Type.ERROR_MESSAGE);
+                    } catch (RuntimeException ex) {
+                        handleSaveException(ex);
                     }
                 }
             });
@@ -209,7 +212,6 @@ public abstract class TabularEditLayout<ID extends Serializable, T extends Abstr
                     @Override
                     public void buttonClick(ClickEvent event) {
                         toggleViewMode(false);
-
                     }
 
                 });
@@ -233,35 +235,70 @@ public abstract class TabularEditLayout<ID extends Serializable, T extends Abstr
             postProcessButtonBar(getButtonBar());
             postProcessLayout(mainLayout);
         }
-
         setCompositionRoot(mainLayout);
     }
 
     /**
-     * Sets any additional fields on a new entity
+     * Method that is called after a new row with a fresh entity is added to the table. Use this
+     * method to perform initialization
      * 
-     * @param t
+     * @param entity
      *            the newly created entity that has to be initialized
      * @return
      */
-    protected T constructEntity(T t) {
-        return t;
+    protected T constructEntity(T entity) {
+        return entity;
     }
 
-    protected void constructTable() {
-        if (tableWrapper == null) {
-            tableWrapper = new ServiceResultsTableWrapper<ID, T>(getService(), getEntityModel(),
-                    QueryType.ID_BASED, filter, null, getJoins()) {
+    /**
+     * Creates the filter used for searching
+     * 
+     * @return
+     */
+    protected Filter constructFilter() {
+        return null;
+    }
 
-                @Override
-                protected void onSelect(Object selected) {
-                    setSelectedItems(selected);
-                    checkButtonState(getSelectedItem());
-                }
-            };
-            tableWrapper.build();
+    @Override
+    protected BaseTableWrapper<ID, T> constructTableWrapper() {
+        ServiceResultsTableWrapper<ID, T> tableWrapper = new ServiceResultsTableWrapper<ID, T>(
+                getService(), getEntityModel(), QueryType.ID_BASED, filter, getSortOrders(),
+                getJoins()) {
 
-        }
+            @Override
+            protected void onSelect(Object selected) {
+                setSelectedItems(selected);
+                checkButtonState(getSelectedItem());
+            }
+        };
+        tableWrapper.build();
+        return tableWrapper;
+    }
+
+    @SuppressWarnings("unchecked")
+    protected ServiceContainer<ID, T> getContainer() {
+        return (ServiceContainer<ID, T>) getTableWrapper().getContainer();
+    }
+
+    /**
+     * Retrieves an entity with a certain ID from the lazy query container
+     * 
+     * @param id
+     *            the ID of the entity
+     * @return
+     */
+    protected T getEntityFromTable(ID id) {
+        return VaadinUtils.getEntityFromContainer(getContainer(), id);
+    }
+
+    public int getPageLength() {
+        return pageLength;
+    }
+
+    /**
+     * Initializes the table
+     */
+    protected void initTable() {
 
         final Table table = getTableWrapper().getTable();
 
@@ -277,9 +314,10 @@ public abstract class TabularEditLayout<ID extends Serializable, T extends Abstr
         table.setPageLength(getPageLength());
 
         // default sorting
-        if (getSortOrder() != null) {
-            table.setSortContainerPropertyId(getSortOrder().getPropertyId());
-            table.setSortAscending(SortDirection.ASCENDING.equals(getSortOrder().getDirection()));
+        // default sorting
+        if (getSortOrders() != null && !getSortOrders().isEmpty()) {
+            ServiceContainer<ID, T> sc = getContainer();
+            sc.sort(getSortOrders().toArray(new SortOrder[0]));
         }
 
         // overwrite the field factory to handle validation
@@ -311,51 +349,27 @@ public abstract class TabularEditLayout<ID extends Serializable, T extends Abstr
                         }
 
                     });
+                    field.setSizeFull();
                     postProcessField(propertyId, field);
                 }
                 return field;
             }
         });
-        mainLayout.addComponent(tableWrapper);
-    }
-
-    /**
-     * Creates the filter used for searching
-     * 
-     * @return
-     */
-    protected Filter constructFilter() {
-        return null;
-    }
-
-    @SuppressWarnings("unchecked")
-    protected ServiceContainer<ID, T> getContainer() {
-        return (ServiceContainer<ID, T>) getTableWrapper().getContainer();
-    }
-
-    /**
-     * Retrieves an entity with a certain ID from the lazy query container
-     * 
-     * @param id
-     *            the ID of the entity
-     * @return
-     */
-    protected T getEntityFromTable(ID id) {
-        return VaadinUtils.getEntityFromContainer(getContainer(), id);
-    }
-
-    public int getPageLength() {
-        return pageLength;
-    }
-
-    public BaseTableWrapper<ID, T> getTableWrapper() {
-        return tableWrapper;
+        mainLayout.addComponent(getTableWrapper());
     }
 
     public boolean isViewmode() {
         return viewmode;
     }
 
+    /**
+     * Post processes a field
+     * 
+     * @param propertyId
+     *            the property ID
+     * @param field
+     *            the generated field
+     */
     protected void postProcessField(Object propertyId, Field<?> field) {
         // overwrite in subclass
     }
@@ -385,10 +399,6 @@ public abstract class TabularEditLayout<ID extends Serializable, T extends Abstr
         } else {
             setSelectedItem(null);
         }
-    }
-
-    protected void setTableWrapper(BaseTableWrapper<ID, T> tableWrapper) {
-        this.tableWrapper = tableWrapper;
     }
 
     protected void setViewmode(boolean viewmode) {

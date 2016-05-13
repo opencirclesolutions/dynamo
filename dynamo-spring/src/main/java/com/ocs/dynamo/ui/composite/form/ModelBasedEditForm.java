@@ -25,10 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.persistence.OptimisticLockException;
-
 import org.apache.commons.io.FilenameUtils;
-import org.apache.log4j.Logger;
 
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.domain.AbstractEntity;
@@ -37,9 +34,6 @@ import com.ocs.dynamo.domain.model.AttributeType;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.impl.ModelBasedFieldFactory;
 import com.ocs.dynamo.domain.model.util.EntityModelUtil;
-import com.ocs.dynamo.exception.OCSNonUniqueException;
-import com.ocs.dynamo.exception.OCSSecurityException;
-import com.ocs.dynamo.exception.OCSValidationException;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.component.DefaultEmbedded;
 import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
@@ -221,8 +215,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
         }
     }
 
-    private static final Logger LOG = Logger.getLogger(ModelBasedEditForm.class);
-
     private static final long serialVersionUID = 2201140375797069148L;
 
     /**
@@ -355,8 +347,9 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
             if (attributeModel.isReadOnly() || isViewMode()) {
                 if (entity.getId() != null) {
                     // read-only attribute are hidden for new entities
-                    if (attributeModel.isUrl() || (AttributeType.DETAIL.equals(type) || AttributeType.ELEMENT_COLLECTION
-                            .equals(type)) && attributeModel.isComplexEditable()) {
+                    if (attributeModel.isUrl()
+                            || (AttributeType.DETAIL.equals(type) || AttributeType.ELEMENT_COLLECTION
+                                    .equals(type)) && attributeModel.isComplexEditable()) {
                         // display a complex component in read-only mode
                         constructField(parent, entityModel, attributeModel, true, count);
                     } else {
@@ -665,23 +658,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
                     }
 
                     afterEditDone(false, isNew, getEntity());
-                } catch (OCSValidationException ex) {
-                    // validation exception
-                    LOG.error(ex.getMessage(), ex);
-                    Notification.show(ex.getErrors().get(0), Notification.Type.ERROR_MESSAGE);
-                } catch (OCSNonUniqueException ex) {
-                    // non-unique object
-                    LOG.error(ex.getMessage(), ex);
-                    Notification.show(ex.getMessage(), Notification.Type.ERROR_MESSAGE);
-                } catch (OptimisticLockException ex) {
-                    // optimistic lock
-                    LOG.error(ex.getMessage(), ex);
-                    Notification.show(message("ocs.optimistic.lock"),
-                            Notification.Type.ERROR_MESSAGE);
-                } catch (OCSSecurityException ex) {
-                    // security exception (not allowed concurrent modification)
-                    LOG.error(ex.getMessage(), ex);
-                    Notification.show(ex.getMessage(), Notification.Type.ERROR_MESSAGE);
+                } catch (RuntimeException ex) {
+                    handleSaveException(ex);
                 }
             }
         });

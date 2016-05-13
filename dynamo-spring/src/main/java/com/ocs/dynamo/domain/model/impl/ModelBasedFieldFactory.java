@@ -16,6 +16,7 @@ package com.ocs.dynamo.domain.model.impl;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -317,6 +318,21 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
         cb.setItemCaption(Boolean.TRUE, am.getTrueRepresentation());
         cb.addItem(Boolean.FALSE);
         cb.setItemCaption(Boolean.FALSE, am.getFalseRepresentation());
+        return cb;
+    }
+    
+    /**
+     * Construct a combo box that contains a list of String values
+     * 
+     * @param values the list of values
+     * @param am the attribute model
+     * @return
+     */
+    public static ComboBox constructStringListCombo(List<String> values, AttributeModel am) {
+        ComboBox cb = new ComboBox();
+        cb.setCaption(am.getDisplayName());
+        cb.addItems(values);
+        cb.setFilteringMode(FilteringMode.CONTAINS);
         return cb;
     }
 

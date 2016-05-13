@@ -71,7 +71,7 @@ public abstract class BaseMockitoTest {
         this.applicationContext = new AnnotationConfigApplicationContext();
         applicationContext.refresh();
         applicationContext.start();
-        MockitoSpringUtil.registerMocks(applicationContext.getBeanFactory(), this);
+        MockUtil.registerMocks(applicationContext.getBeanFactory(), this);
     }
 
 }
