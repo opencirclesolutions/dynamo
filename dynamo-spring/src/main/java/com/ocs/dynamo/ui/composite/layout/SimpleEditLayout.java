@@ -17,6 +17,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.ocs.dynamo.dao.query.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
@@ -40,18 +41,25 @@ import com.vaadin.ui.VerticalLayout;
  *            type of the entity
  */
 @SuppressWarnings("serial")
-public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<ID>>
-        extends BaseServiceCustomComponent<ID, T> implements Reloadable {
+public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<ID>> extends
+        BaseServiceCustomComponent<ID, T> implements Reloadable {
 
     private static final long serialVersionUID = -7935358582100755140L;
 
+    // the edit form
     private ModelBasedEditForm<ID, T> editForm;
 
+    // the selected entity
     private T entity;
 
+    // the main layout
     private VerticalLayout main;
 
+    // map of additional field filters
     private Map<String, Filter> fieldFilters = new HashMap<>();
+
+    // specifies which relations to fetch when querying
+    private FetchJoinInformation[] joins;
 
     /**
      * Constructor
@@ -60,11 +68,13 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
      * @param service
      * @param entityModel
      * @param formOptions
+     * @param joins
      */
     public SimpleEditLayout(T entity, BaseService<ID, T> service, EntityModel<T> entityModel,
-            FormOptions formOptions) {
+            FormOptions formOptions, FetchJoinInformation... joins) {
         super(service, entityModel, formOptions);
         this.entity = entity;
+        this.joins = joins;
     }
 
     @Override
@@ -98,6 +108,11 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
             }
 
             @Override
+            protected void afterModeChanged(boolean viewMode) {
+                SimpleEditLayout.this.afterModeChanged(viewMode, editForm);
+            }
+
+            @Override
             protected Field<?> constructCustomField(EntityModel<T> entityModel,
                     AttributeModel attributeModel, boolean viewMode) {
                 return SimpleEditLayout.this.constructCustomField(entityModel, attributeModel,
@@ -124,11 +139,6 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
                 SimpleEditLayout.this.postProcessEditFields(editForm);
             }
 
-            @Override
-            protected void afterModeChanged(boolean viewMode) {
-                SimpleEditLayout.this.afterModeChanged(viewMode, editForm);
-            }
-
         };
         editForm.build();
 
@@ -151,17 +161,6 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
      */
     protected void postProcessEditFields(ModelBasedEditForm<ID, T> editForm) {
         // do nothing by default - override in subclasses
-    }
-
-    /**
-     * Method that is called after the mode is changes
-     * 
-     * @param viewMode
-     *            the new view mode
-     * @param editForm
-     */
-    protected void afterModeChanged(boolean viewMode, ModelBasedEditForm<ID, T> editForm) {
-        // override in subclasses
     }
 
     /**
@@ -196,7 +195,7 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
         }
 
         if (entity.getId() != null) {
-            setEntity(getService().fetchById(entity.getId()));
+            setEntity(getService().fetchById(entity.getId(), getJoins()));
         }
     }
 
@@ -222,7 +221,7 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
         }
 
         if (entity.getId() != null) {
-            setEntity(getService().fetchById(entity.getId()));
+            setEntity(getService().fetchById(entity.getId(), getJoins()));
         }
     }
 
@@ -240,6 +239,14 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 
     protected boolean isEditAllowed() {
         return true;
+    }
+
+    public FetchJoinInformation[] getJoins() {
+        return joins;
+    }
+
+    public void setJoins(FetchJoinInformation[] joins) {
+        this.joins = joins;
     }
 
 }

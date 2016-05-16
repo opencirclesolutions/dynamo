@@ -24,6 +24,7 @@ import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
 import com.ocs.dynamo.ui.composite.form.FormOptions;
+import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
 import com.ocs.dynamo.ui.composite.table.BaseTableWrapper;
 import com.vaadin.data.sort.SortOrder;
 import com.vaadin.ui.Button;
@@ -104,6 +105,18 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
      */
     public void addSortOrder(SortOrder sortOrder) {
         this.sortOrders.add(sortOrder);
+    }
+    
+    /**
+     * Method that is called after the user select an entity to view in Details mode
+     * 
+     * @param editForm
+     *            the edit form which displays the entity
+     * @param entity
+     *            the selected entity
+     */
+    protected void afterDetailSelected(ModelBasedEditForm<ID, T> editForm, T entity) {
+        // override in subclass
     }
 
     /**

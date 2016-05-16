@@ -99,18 +99,6 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
     }
 
     /**
-     * Callback method that is called after a detail entity has been selected
-     * 
-     * @param editForm
-     *            the edit form that contains the entity
-     * @param entity
-     *            the selected entity
-     */
-    protected void afterDetailSelected(ModelBasedEditForm<ID, T> editForm, T entity) {
-        // override in subclass
-    }
-
-    /**
      * Perform any actions after the screen reloads after a save. This is usually used to reselect
      * the item that was selected before
      * 
@@ -282,6 +270,11 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
                     setSelectedItem(entity);
                     reload();
                     afterReload(entity);
+                }
+
+                @Override
+                protected void afterModeChanged(boolean viewMode) {
+                    BaseSplitLayout.this.afterModeChanged(viewMode, editForm);
                 }
 
                 @Override

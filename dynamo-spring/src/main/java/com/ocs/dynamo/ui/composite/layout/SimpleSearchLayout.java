@@ -150,18 +150,6 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
     }
 
     /**
-     * Method that is called after the user select an entity to view in Details mode
-     * 
-     * @param editForm
-     *            the edit form which displays the entity
-     * @param entity
-     *            the selected entity
-     */
-    protected void afterDetailSelected(ModelBasedEditForm<ID, T> editForm, T entity) {
-        // override in subclass
-    }
-
-    /**
      * Responds to the toggling of the visibility of the search fields
      * 
      * @param visible
@@ -185,6 +173,7 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
         if (mainSearchLayout == null) {
             mainSearchLayout = new DefaultVerticalLayout();
 
+            // construct table and set properties
             getTableWrapper().getTable().setPageLength(getPageLength());
             getTableWrapper().getTable().setSortEnabled(isSortEnabled());
 
@@ -209,26 +198,28 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
             // edit/view button
             editButton = constructEditButton();
             if (editButton != null) {
+                registerDetailButton(editButton);
                 getButtonBar().addComponent(editButton);
             }
 
             // remove button
             removeButton = constructRemoveButton();
             if (removeButton != null) {
+                registerDetailButton(removeButton);
                 getButtonBar().addComponent(removeButton);
             }
 
             // callback for adding additional buttons
             postProcessButtonBar(getButtonBar());
-
             mainSearchLayout.addComponent(getButtonBar());
+
             postProcessLayout(mainSearchLayout);
         }
         setCompositionRoot(mainSearchLayout);
     }
 
     /**
-     * Constructs the edit button
+     * Constructs the edit button - this will display the details view when clicked
      * 
      * @return
      */
@@ -246,7 +237,6 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
             }
         });
         eb.setVisible(isEditAllowed() && getFormOptions().isShowEditButton());
-        registerDetailButton(eb);
         return eb;
     }
 
@@ -265,7 +255,6 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 
         };
         rb.setVisible(isEditAllowed() && getFormOptions().isShowRemoveButton());
-        registerDetailButton(rb);
         return rb;
     }
 
@@ -301,6 +290,11 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
                 }
 
                 @Override
+                protected void afterModeChanged(boolean viewMode) {
+                    SimpleSearchLayout.this.afterModeChanged(viewMode, editForm);
+                }
+
+                @Override
                 protected Field<?> constructCustomField(EntityModel<T> entityModel,
                         AttributeModel attributeModel, boolean viewMode) {
                     return SimpleSearchLayout.this.constructCustomField(entityModel,
@@ -310,6 +304,11 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
                 @Override
                 protected void postProcessEditFields() {
                     SimpleSearchLayout.this.postProcessEditFields(editForm);
+                }
+
+                @Override
+                protected boolean isEditAllowed() {
+                   return SimpleSearchLayout.this.isEditAllowed();
                 }
 
             };
@@ -363,6 +362,11 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
         return searchForm;
     }
 
+    /**
+     * Lazily constructs the search form
+     * 
+     * @return
+     */
     protected ModelBasedSearchForm<ID, T> constructSearchform() {
         ModelBasedSearchForm<ID, T> result = new ModelBasedSearchForm<ID, T>(getTableWrapper(),
                 getEntityModel(), getFormOptions(), this.additionalFilters, this.fieldFilters) {
@@ -388,6 +392,9 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
         return selectedItems;
     }
 
+    /**
+     * Lazliy constructs the table wrapper
+     */
     @Override
     public ServiceResultsTableWrapper<ID, T> constructTableWrapper() {
         ServiceResultsTableWrapper<ID, T> result = new ServiceResultsTableWrapper<ID, T>(

@@ -169,10 +169,14 @@ public class MenuService {
     }
 
     /**
-     * Sets the visibility of a certain item
+     * Sets the visibility of a certain item identified by its destination
      * 
-     * @param key
+     * @param menu
+     *            the menu bar
+     * @param destination
+     *            the destination
      * @param visible
+     *            the desired visibility
      */
     public void setVisible(MenuBar menu, String destination, boolean visible) {
 

@@ -46,6 +46,7 @@ public abstract class LazyTabLayout<ID extends Serializable, T extends AbstractE
     // the entity whose details are being shown
     private T entity;
 
+    // the set of tabs that have already been loaded
     private Set<String> replacedTabs = new HashSet<>();
 
     private TabSheet tabs;
@@ -98,6 +99,10 @@ public abstract class LazyTabLayout<ID extends Serializable, T extends AbstractE
      */
     protected abstract Component initTab(int index);
 
+    /**
+     * Constructs the lazy tab sheet by setting up empty dummy tabs
+     * @param tabs
+     */
     private void setupLazySheet(final TabSheet tabs) {
 
         // build up placeholder tabs that only contain an empty layout

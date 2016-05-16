@@ -921,6 +921,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
     }
 
     public void setViewMode(boolean viewMode) {
+        boolean oldMode = this.viewMode;
 
         // check what the new view mode must become and adapt the screen
         this.viewMode = !isEditAllowed() || viewMode;
@@ -942,7 +943,9 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
             fieldsProcessed = true;
         }
 
-        afterModeChanged(isViewMode());
+        if (oldMode != this.viewMode) {
+            afterModeChanged(isViewMode());
+        }
     }
 
     public void signalDetailsTableValid(SignalsParent component, boolean valid) {
