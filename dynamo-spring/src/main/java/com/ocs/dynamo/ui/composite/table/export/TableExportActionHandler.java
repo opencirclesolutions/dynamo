@@ -366,6 +366,13 @@ public class TableExportActionHandler implements Handler {
             return null;
         }
 
+        /**
+         * 
+         * @param item
+         * @param rootItemId
+         * @param propId
+         * @return
+         */
         protected Property<?> getProperty(Item item, Object rootItemId, Object propId) {
             Property<?> prop;
             if (getTableHolder().isGeneratedColumn(propId)) {

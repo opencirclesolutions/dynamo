@@ -32,7 +32,7 @@ import com.vaadin.ui.UI;
  * @author bas.rutten
  * @param <T>
  *            the type of the object that is being processed. This can usually be "Object" but can
- *            e.g. be more specific in case of a file upload
+ *            e.g. be more specific in case of a file upload you can provide a byte array.
  */
 public abstract class ProgressForm<T> extends BaseCustomComponent implements Progressable {
 
@@ -79,7 +79,7 @@ public abstract class ProgressForm<T> extends BaseCustomComponent implements Pro
      * Specify what to do after the work is complete
      */
     protected void afterWorkComplete() {
-        formMode();
+        // overwrite in subclass
     }
 
     @Override
@@ -102,6 +102,14 @@ public abstract class ProgressForm<T> extends BaseCustomComponent implements Pro
     protected abstract void doBuildLayout(Layout main);
 
     /**
+     * method that is called after the process completes
+     */
+    private void done() {
+        afterWorkComplete();
+        formMode();
+    }
+
+    /**
      * Estimates the current progress - overwrite this method if you want to use a custom mechanism
      * for updating the progress
      * 
@@ -113,12 +121,22 @@ public abstract class ProgressForm<T> extends BaseCustomComponent implements Pro
     }
 
     /**
-     * Estimates the size of the process that is carried out
+     * Estimates the total size of the process that is carried out
      * 
-     * @param uploaded
+     * @param t
+     *            the object being processed (can be null)
      * @return
      */
     protected abstract int estimateSize(T t);
+
+    protected OCSRuntimeException extractRuntimeException(Throwable t) {
+        if (t instanceof OCSRuntimeException) {
+            return (OCSRuntimeException) t;
+        } else if (t.getCause() != null) {
+            return extractRuntimeException(t.getCause());
+        }
+        return null;
+    }
 
     /**
      * Renders the "form" mode which allows the user to input data before starting the
@@ -162,7 +180,7 @@ public abstract class ProgressForm<T> extends BaseCustomComponent implements Pro
 
     /**
      * Indicates whether the form is valid for processing. By default this method returns
-     * <code>true</code>. Override if needed.
+     * <code>true</code>. Override if needed and return false if the process cannot be started
      * 
      * @param t
      *            the (optional) object that is being processed
@@ -170,71 +188,6 @@ public abstract class ProgressForm<T> extends BaseCustomComponent implements Pro
      */
     protected boolean isFormValid(T t) {
         return true;
-    }
-
-    /**
-     * Prepares the screen for the actual processing - this is the method that must be called from
-     * an action listener in order to start the process
-     * 
-     * @param t
-     *            the (optional) object that is being processed
-     * @param fileName
-     */
-    protected void prepare(final T t) {
-        if (isFormValid(t)) {
-            if (ProgressMode.SIMPLE.equals(progressMode)) {
-                // simply execute the process (without displaying any feedback)
-                process(t, 0);
-                afterWorkComplete();
-            } else {
-                // switch to progress bar mode
-                progressMode();
-
-                // start a thread to update the progress
-                try {
-                    final int estimatedSize = estimateSize(t);
-
-                    counter.set(0);
-                    UI.getCurrent().setPollInterval(POLL_INTERVAL);
-
-                    final ProgressBarUpdater updater = new ProgressBarUpdater(this, estimatedSize);
-
-                    // the thread that repaints the progress bar
-                    Thread thread = new Thread(updater);
-                    thread.start();
-
-                    // the thread that performs the actual work
-                    Thread worker = new Thread(new Runnable() {
-
-                        @Override
-                        public void run() {
-                            try {
-                                process(t, estimatedSize);
-                            } finally {
-                                updater.setStopped(true);
-                                getUI().getSession().lock();
-                                try {
-                                    afterWorkComplete();
-                                } finally {
-                                    getUI().getSession().unlock();
-                                }
-                            }
-                        }
-                    });
-                    worker.start();
-                } catch (OCSRuntimeException ex) {
-                    LOGGER.error(ex.getMessage(), ex);
-                    // exception during size estimation
-                    showNotification(ex.getMessage(), Notification.Type.ERROR_MESSAGE);
-                    getUI().getSession().lock();
-                    try {
-                        afterWorkComplete();
-                    } finally {
-                        getUI().getSession().unlock();
-                    }
-                }
-            }
-        }
     }
 
     /**
@@ -287,13 +240,69 @@ public abstract class ProgressForm<T> extends BaseCustomComponent implements Pro
         }
     }
 
-    protected OCSRuntimeException extractRuntimeException(Throwable t) {
-        if (t instanceof OCSRuntimeException) {
-            return (OCSRuntimeException) t;
-        } else if (t.getCause() != null) {
-            return extractRuntimeException(t.getCause());
+    /**
+     * Start the actual work - this is the method that must be called in order to actually start the
+     * processing
+     * 
+     * @param t
+     *            the (optional) object that is being processed
+     * @param fileName
+     */
+    protected final void startWork(final T t) {
+        if (isFormValid(t)) {
+            if (ProgressMode.SIMPLE.equals(progressMode)) {
+                // simply execute the process (without displaying any feedback)
+                process(t, 0);
+                done();
+            } else {
+                // switch to progress bar mode
+                progressMode();
+
+                // start a thread to update the progress
+                try {
+                    final int estimatedSize = estimateSize(t);
+
+                    counter.set(0);
+                    UI.getCurrent().setPollInterval(POLL_INTERVAL);
+
+                    final ProgressBarUpdater updater = new ProgressBarUpdater(this, estimatedSize);
+
+                    // the thread that updates the progress bar
+                    Thread updateThread = new Thread(updater);
+                    updateThread.start();
+
+                    // the thread that performs the actual work
+                    Thread worker = new Thread(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            try {
+                                process(t, estimatedSize);
+                            } finally {
+                                updater.setStopped(true);
+                                getUI().getSession().lock();
+                                try {
+                                    done();
+                                } finally {
+                                    getUI().getSession().unlock();
+                                }
+                            }
+                        }
+                    });
+                    worker.start();
+                } catch (OCSRuntimeException ex) {
+                    LOGGER.error(ex.getMessage(), ex);
+                    // exception during size estimation
+                    showNotification(ex.getMessage(), Notification.Type.ERROR_MESSAGE);
+                    getUI().getSession().lock();
+                    try {
+                        done();
+                    } finally {
+                        getUI().getSession().unlock();
+                    }
+                }
+            }
         }
-        return null;
     }
 
 }

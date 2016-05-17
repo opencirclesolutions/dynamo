@@ -56,7 +56,7 @@ public abstract class UploadForm extends ProgressForm<byte[]> {
         public void uploadSucceeded(final SucceededEvent event) {
             final byte[] bytes = stream.toByteArray();
             UploadForm.this.fileName = event.getFilename();
-            prepare(bytes);
+            startWork(bytes);
         }
     }
 
@@ -115,6 +115,7 @@ public abstract class UploadForm extends ProgressForm<byte[]> {
         UploadReceiver receiver = new UploadReceiver();
 
         Upload upload = new Upload(message("ocs.uploadform.title"), receiver);
+
         upload.addSucceededListener(receiver);
         form.addComponent(upload);
 
@@ -131,23 +132,8 @@ public abstract class UploadForm extends ProgressForm<byte[]> {
         }
     }
 
-    /**
-     * Estimates the size of the uploaded file
-     * 
-     * @param uploaded
-     * @return
-     */
-    @Override
-    protected int estimateSize(byte[] uploaded) {
-        return 0;
-    }
-
     public String getFileName() {
         return fileName;
-    }
-
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
     }
 
 }

@@ -320,12 +320,14 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
         cb.setItemCaption(Boolean.FALSE, am.getFalseRepresentation());
         return cb;
     }
-    
+
     /**
      * Construct a combo box that contains a list of String values
      * 
-     * @param values the list of values
-     * @param am the attribute model
+     * @param values
+     *            the list of values
+     * @param am
+     *            the attribute model
      * @return
      */
     public static ComboBox constructStringListCombo(List<String> values, AttributeModel am) {
@@ -425,7 +427,8 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
         // render a label instead
         AttributeModel attributeModel = model.getAttributeModel(propertyId);
         if (attributeModel.isReadOnly()
-                && (!AttributeType.DETAIL.equals(attributeModel.getAttributeType())) && !search) {
+                && (!attributeModel.isUrl() && !AttributeType.DETAIL.equals(attributeModel
+                        .getAttributeType())) && !search) {
             return null;
         }
 
@@ -478,7 +481,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
             tf.addValidator(new URLValidator(messageService.getMessage("ocs.no.valid.url")));
             tf.setNullRepresentation(null);
             tf.setSizeFull();
-            
+
             // wrap text field in URL field
             field = new URLField(tf, attributeModel, false);
             field.setSizeFull();
@@ -494,7 +497,10 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
         if (validate) {
             field.addValidator(new BeanValidator(model.getEntityClass(), (String) propertyId));
             // disable the field if it cannot be edited
-            field.setEnabled(!attributeModel.isReadOnly());
+            if (!attributeModel.isUrl()) {
+                field.setEnabled(!attributeModel.isReadOnly());
+            }
+
             if (attributeModel.isNumerical()) {
                 field.addStyleName(DynamoConstants.CSS_NUMERICAL);
             }

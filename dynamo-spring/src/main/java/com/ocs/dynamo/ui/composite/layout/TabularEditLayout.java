@@ -333,8 +333,10 @@ public abstract class TabularEditLayout<ID extends Serializable, T extends Abstr
 
                 final Field<?> field = custom != null ? custom : super.createField(propertyId);
 
+                // field is editable when not in view mode and not read only
                 if (field instanceof URLField) {
-                    ((URLField) field).setEditable(!isViewmode());
+                    ((URLField) field).setEditable(!isViewmode()
+                            && !getEntityModel().getAttributeModel(propertyId).isReadOnly());
                 }
 
                 if (field != null && field.isEnabled()) {

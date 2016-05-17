@@ -30,7 +30,7 @@ import com.vaadin.data.sort.SortOrder;
 import com.vaadin.ui.Layout;
 
 /**
- * A dialog that contains a search form
+ * A dialog that contains a search form based on the Entity Model
  * 
  * @author bas.rutten
  * @param <ID>
@@ -38,8 +38,8 @@ import com.vaadin.ui.Layout;
  * @param <T>
  *            the type of the entity to search for
  */
-public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractEntity<ID>>
-        extends SimpleModalDialog {
+public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractEntity<ID>> extends
+        SimpleModalDialog {
 
     private static final long serialVersionUID = -7158664165266474097L;
 
@@ -54,7 +54,7 @@ public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractE
     private EntityModel<T> entityModel;
 
     /**
-     * 
+     * The optional joins that determine which related data to fetch
      */
     private FetchJoinInformation[] joins;
 

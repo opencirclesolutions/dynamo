@@ -134,9 +134,13 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
                     public Object generateCell(Table source, Object itemId, Object columnId) {
                         URLField field = (URLField) ((ModelBasedFieldFactory<?>) getTableFieldFactory())
                                 .createField(attributeModel.getPath());
-                        String val = (String) getItem(itemId).getItemProperty(columnId).getValue();
-                        field.setValue(val);
-                        return field;
+                        if (field != null) {
+                            String val = (String) getItem(itemId).getItemProperty(columnId)
+                                    .getValue();
+                            field.setValue(val);
+                            return field;
+                        }
+                        return null;
                     }
                 });
             }
