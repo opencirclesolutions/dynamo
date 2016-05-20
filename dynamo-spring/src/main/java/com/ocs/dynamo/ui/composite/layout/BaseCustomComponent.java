@@ -18,8 +18,8 @@ import java.util.Date;
 
 import javax.persistence.OptimisticLockException;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.springframework.util.StringUtils;
 
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.domain.AbstractEntity;

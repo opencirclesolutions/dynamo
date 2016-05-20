@@ -68,7 +68,8 @@ public class ModelBasedTreeTableIntegrationTest extends BaseIntegrationTest {
 
     @Test
     public void testCreateModelBasedHierarchicalContainer() {
-        EntityModel<TestEntity> model = entityModelFactory.getModel(TestEntity.class);
+        EntityModel<TestEntity> model = entityModelFactory.getModel("TestEntityNested",
+                TestEntity.class);
         List<BaseService<?, ?>> services = new ArrayList<>();
 
         services.add(testEntityService);
@@ -91,7 +92,8 @@ public class ModelBasedTreeTableIntegrationTest extends BaseIntegrationTest {
 
     @Test
     public void testCreateServiceResultsTreeTableWrapper() {
-        EntityModel<TestEntity> model = entityModelFactory.getModel(TestEntity.class);
+        EntityModel<TestEntity> model = entityModelFactory.getModel("TestEntityNested",
+                TestEntity.class);
         List<BaseService<?, ?>> services = new ArrayList<>();
 
         services.add(testEntityService);
@@ -110,7 +112,8 @@ public class ModelBasedTreeTableIntegrationTest extends BaseIntegrationTest {
 
     @Test
     public void testCreateServiceResultsTreeTableWrapper_Sorting() {
-        EntityModel<TestEntity> model = entityModelFactory.getModel(TestEntity.class);
+        EntityModel<TestEntity> model = entityModelFactory.getModel("TestEntityNested",
+                TestEntity.class);
         List<BaseService<?, ?>> services = new ArrayList<>();
 
         services.add(testEntityService);

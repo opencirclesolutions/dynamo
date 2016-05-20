@@ -29,10 +29,12 @@ import com.vaadin.ui.HorizontalLayout;
  * 
  * @author bas.rutten
  * @param <ID>
+ *            the type of the primary key of the entity
  * @param <T>
+ *            the type of the entity being displayed
  */
-public class HorizontalDisplayLayout<ID extends Serializable, T extends AbstractEntity<ID>>
-        extends BaseServiceCustomComponent<ID, T> {
+public class HorizontalDisplayLayout<ID extends Serializable, T extends AbstractEntity<ID>> extends
+        BaseServiceCustomComponent<ID, T> {
 
     private static final long serialVersionUID = -2610435729199505546L;
 
@@ -50,8 +52,8 @@ public class HorizontalDisplayLayout<ID extends Serializable, T extends Abstract
      * @param formOptions
      *            the form options that govern how the layout is displayed
      */
-    public HorizontalDisplayLayout(BaseService<ID, T> service, EntityModel<T> entityModel, T entity,
-            FormOptions formOptions) {
+    public HorizontalDisplayLayout(BaseService<ID, T> service, EntityModel<T> entityModel,
+            T entity, FormOptions formOptions) {
         super(service, entityModel, formOptions);
         this.entity = entity;
     }

@@ -13,12 +13,15 @@
  */
 package com.ocs.dynamo.ui.composite.layout;
 
+import java.io.Serializable;
+
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.exception.OCSValidationException;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.composite.form.FormOptions;
+import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Field;
@@ -33,7 +36,7 @@ import com.vaadin.ui.Notification;
  * @param <T>
  *            type of the entity
  */
-public abstract class BaseServiceCustomComponent<ID, T extends AbstractEntity<ID>>
+public abstract class BaseServiceCustomComponent<ID extends Serializable, T extends AbstractEntity<ID>>
         extends BaseCustomComponent {
 
     /**
@@ -123,6 +126,17 @@ public abstract class BaseServiceCustomComponent<ID, T extends AbstractEntity<ID
     protected Field<?> constructCustomField(EntityModel<T> entityModel,
             AttributeModel attributeModel, boolean viewMode, boolean searchMode) {
         return null;
+    }
+    
+    /**
+     * Method that is called after the mode is changed (from editable to read only or vice versa)
+     * 
+     * @param viewMode
+     *            the new view mode
+     * @param editForm
+     */
+    protected void afterModeChanged(boolean viewMode, ModelBasedEditForm<ID, T> editForm) {
+        // override in subclasses
     }
 
     public EntityModel<T> getEntityModel() {

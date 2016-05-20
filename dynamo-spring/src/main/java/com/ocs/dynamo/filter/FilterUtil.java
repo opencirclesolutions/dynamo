@@ -13,32 +13,25 @@
  */
 package com.ocs.dynamo.filter;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.util.filter.AbstractJunctionFilter;
-import com.vaadin.data.util.filter.SimpleStringFilter;
 import com.vaadin.data.util.filter.Compare.Equal;
+import com.vaadin.data.util.filter.SimpleStringFilter;
 
+/**
+ * Various utility methods for dealing with filters
+ * 
+ * @author bas.rutten
+ *
+ */
 public final class FilterUtil {
 
     private FilterUtil() {
-    }
-
-    /**
-     * Indicated whether a certain filter (that contains somewhere as a child of the provided
-     * filter) has the value "true"
-     * 
-     * @param filter
-     *            the root filter
-     * @param propertyId
-     * @return
-     */
-    public static boolean isTrue(Filter filter, String propertyId) {
-        Filter extracted = extractFilter(filter, propertyId);
-        if (extracted != null && extracted instanceof Equal) {
-            Equal equal = (Equal) extracted;
-            return Boolean.TRUE.equals(equal.getValue());
-        }
-        return false;
+        // hidden constructor
     }
 
     /**
@@ -75,9 +68,7 @@ public final class FilterUtil {
                 return ssf;
             }
         }
-
         return null;
-
     }
 
     /**
@@ -113,6 +104,124 @@ public final class FilterUtil {
 
         return null;
 
+    }
+
+    /**
+     * Take a (nested) And filter and flatten it to a single level
+     * 
+     * @param and
+     *            the filter to flatten
+     * @return
+     */
+    public static List<com.ocs.dynamo.filter.Filter> flattenAnd(com.ocs.dynamo.filter.And and) {
+        List<com.ocs.dynamo.filter.Filter> children = new ArrayList<>();
+
+        for (com.ocs.dynamo.filter.Filter f : and.getFilters()) {
+            if (f instanceof com.ocs.dynamo.filter.And) {
+                com.ocs.dynamo.filter.And childAnd = (com.ocs.dynamo.filter.And) f;
+                List<com.ocs.dynamo.filter.Filter> temp = flattenAnd(childAnd);
+                children.addAll(temp);
+            } else {
+                children.add(f);
+            }
+        }
+        return children;
+    }
+
+    /**
+     * Indicated whether a certain filter (that contains somewhere as a child of the provided
+     * filter) has the value "true"
+     * 
+     * @param filter
+     *            the root filter
+     * @param propertyId
+     *            the property ID
+     * @return
+     */
+    public static boolean isTrue(Filter filter, String propertyId) {
+        Filter extracted = extractFilter(filter, propertyId);
+        if (extracted != null && extracted instanceof Equal) {
+            Equal equal = (Equal) extracted;
+            return Boolean.TRUE.equals(equal.getValue());
+        }
+        return false;
+    }
+
+    /**
+     * Removes the specified filters
+     * 
+     * @param filter
+     *            the filter to remove the filters from
+     * @param propertyIds
+     *            the property IDs of the filters to remove
+     */
+    public static void removeFilters(com.ocs.dynamo.filter.Filter filter, String... propertyIds) {
+        if (filter instanceof com.ocs.dynamo.filter.AbstractJunctionFilter) {
+            // junction filter, iterate over its children
+            com.ocs.dynamo.filter.AbstractJunctionFilter junction = (com.ocs.dynamo.filter.AbstractJunctionFilter) filter;
+            Iterator<com.ocs.dynamo.filter.Filter> it = junction.getFilters().iterator();
+
+            // remove simple filters
+            while (it.hasNext()) {
+                com.ocs.dynamo.filter.Filter child = it.next();
+                if (child instanceof PropertyFilter) {
+                    PropertyFilter pf = (PropertyFilter) child;
+                    for (String s : propertyIds) {
+                        if (pf.getPropertyId().equals(s)) {
+                            it.remove();
+                        }
+                    }
+                }
+            }
+
+            // pass through to nested junction filters
+            it = junction.getFilters().iterator();
+            while (it.hasNext()) {
+                com.ocs.dynamo.filter.Filter child = it.next();
+                if (!(child instanceof PropertyFilter)) {
+                    removeFilters(child, propertyIds);
+                }
+            }
+
+            // clean up empty filters
+            it = junction.getFilters().iterator();
+            while (it.hasNext()) {
+                com.ocs.dynamo.filter.Filter child = it.next();
+                if (child instanceof com.ocs.dynamo.filter.AbstractJunctionFilter) {
+                    com.ocs.dynamo.filter.AbstractJunctionFilter ajf = (com.ocs.dynamo.filter.AbstractJunctionFilter) child;
+                    if (ajf.getFilters().size() == 0) {
+                        it.remove();
+                    }
+                } else if (child instanceof Not) {
+                    Not not = (Not) child;
+                    if (not.getFilter() == null) {
+                        it.remove();
+                    }
+                }
+            }
+        } else if (filter instanceof Not) {
+            // in case of a not-filter, propagate to the child
+            Not not = (Not) filter;
+
+            if (not.getFilter() != null) {
+                removeFilters(not.getFilter(), propertyIds);
+            }
+
+            com.ocs.dynamo.filter.Filter child = not.getFilter();
+            if (child instanceof PropertyFilter) {
+                PropertyFilter pf = (PropertyFilter) child;
+                for (String s : propertyIds) {
+                    if (pf.getPropertyId().equals(s)) {
+                        not.setFilter(null);
+                    }
+                }
+            } else if (child instanceof com.ocs.dynamo.filter.AbstractJunctionFilter) {
+                com.ocs.dynamo.filter.AbstractJunctionFilter ajf = (com.ocs.dynamo.filter.AbstractJunctionFilter) child;
+                if (ajf.getFilters().size() == 0) {
+                    not.setFilter(null);
+                }
+            }
+        }
     }
 
     /**
@@ -154,4 +263,5 @@ public final class FilterUtil {
             replaceFilter(not, not.getFilter(), newFilter, propertyId);
         }
     }
+
 }

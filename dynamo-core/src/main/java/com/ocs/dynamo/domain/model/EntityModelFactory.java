@@ -22,8 +22,24 @@ import com.ocs.dynamo.service.MessageService;
  */
 public interface EntityModelFactory {
 
+    /**
+     * Retrieves the entity model for a class
+     * 
+     * @param entityClass
+     *            the class of the entity
+     * @return
+     */
     <T> EntityModel<T> getModel(Class<T> entityClass);
 
+    /**
+     * Retrieves a named entity model for a class
+     * 
+     * @param reference
+     *            the unique reference
+     * @param entityClass
+     *            the class of the eneity
+     * @return
+     */
     <T> EntityModel<T> getModel(String reference, Class<T> entityClass);
 
     MessageService getMessageService();

@@ -191,7 +191,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
             setNestedEntityModel(model);
 
             // only basic attributes are shown in the table by default
-            model.setVisibleInTable(model.isVisible()
+            model.setVisibleInTable(!nested && model.isVisible()
                     && (AttributeType.BASIC.equals(model.getAttributeType())));
 
             if (getMessageService() != null) {
@@ -562,8 +562,10 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
     }
 
     /**
-     * @param type
-     * @param entityClass
+     * Determines the display format on a property
+     * 
+     * @param type the java type
+     * @param entityClass the class on which the property is defined
      * @param fieldName
      * @return
      */
@@ -574,7 +576,6 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
             TemporalType temporalType = temporal == null ? TemporalType.DATE : temporal.value();
 
             String format = null;
-
             if (TemporalType.TIMESTAMP.equals(temporalType)) {
                 // the field is a date field
                 format = defaultDateTimeFormat;
@@ -711,7 +712,9 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
                 model.setReadOnly(true);
             }
 
-            if (attribute.visible() != null && !VisibilityType.INHERIT.equals(attribute.visible())) {
+            // set visibility (but not for nested attributes - these are hidden by default)
+            if (attribute.visible() != null && !VisibilityType.INHERIT.equals(attribute.visible())
+                    && !nested) {
                 model.setVisible(VisibilityType.SHOW.equals(attribute.visible()));
                 model.setVisibleInTable(model.isVisible());
             }
@@ -731,7 +734,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
             }
 
             if (attribute.showInTable() != null
-                    && !VisibilityType.INHERIT.equals(attribute.showInTable())) {
+                    && !VisibilityType.INHERIT.equals(attribute.showInTable()) && !nested) {
                 model.setVisibleInTable(VisibilityType.SHOW.equals(attribute.showInTable()));
             }
 

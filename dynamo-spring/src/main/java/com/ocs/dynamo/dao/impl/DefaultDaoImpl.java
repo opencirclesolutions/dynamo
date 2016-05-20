@@ -19,30 +19,35 @@ import com.mysema.query.types.path.EntityPathBase;
 import com.ocs.dynamo.domain.AbstractEntity;
 
 /**
- * Default implementation of a DAO, when default capabilities are sufficient.
- * 
- * @author Patrick Deenen
+ * A default DAO implementation
+ *
+ * @author bas.rutten
+ *
+ * @param <ID>
+ *            the type of the primary key
+ * @param <T>
+ *            the type of the entity
  */
 @Transactional
 public class DefaultDaoImpl<ID, T extends AbstractEntity<ID>> extends BaseDaoImpl<ID, T> {
 
-	private EntityPathBase<T> dslRoot;
+    private EntityPathBase<T> dslRoot;
 
-	private Class<T> entityClass;
+    private Class<T> entityClass;
 
-	public DefaultDaoImpl(EntityPathBase<T> dslRoot, Class<T> entityClass) {
-		this.dslRoot = dslRoot;
-		this.entityClass = entityClass;
-	}
+    public DefaultDaoImpl(EntityPathBase<T> dslRoot, Class<T> entityClass) {
+        this.dslRoot = dslRoot;
+        this.entityClass = entityClass;
+    }
 
-	@Override
-	public EntityPathBase<T> getDslRoot() {
-		return dslRoot;
-	}
+    @Override
+    public EntityPathBase<T> getDslRoot() {
+        return dslRoot;
+    }
 
-	@Override
-	public Class<T> getEntityClass() {
-		return entityClass;
-	}
+    @Override
+    public Class<T> getEntityClass() {
+        return entityClass;
+    }
 
 }

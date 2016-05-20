@@ -95,6 +95,63 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
     }
 
     /**
+     * Adds a column to the table
+     * 
+     * @param table
+     *            the table
+     * @param attributeModel
+     *            the (possibly nested) attribute model
+     * @param propertyNames
+     *            the properties to be added
+     * @param headerNames
+     *            the headers to be added
+     */
+    private void addColumn(Table table, final AttributeModel attributeModel,
+            List<Object> propertyNames, List<String> headerNames) {
+        if (attributeModel.isVisibleInTable()) {
+            propertyNames.add(attributeModel.getName());
+            headerNames.add(attributeModel.getDisplayName());
+
+            // for the lazy query container we explicitly have to add the
+            // properties - for the standard Bean container this is not
+            // needed
+            if (container instanceof LazyQueryContainer) {
+                LazyQueryContainer lazyContainer = (LazyQueryContainer) container;
+                if (!lazyContainer.getContainerPropertyIds().contains(attributeModel.getName())) {
+                    lazyContainer.addContainerProperty(attributeModel.getName(),
+                            attributeModel.getType(), attributeModel.getDefaultValue(),
+                            attributeModel.isReadOnly(), attributeModel.isSortable());
+                }
+            }
+
+            // generated column with clickable URL
+            if (attributeModel.isUrl()) {
+                table.addGeneratedColumn(attributeModel.getName(), new ColumnGenerator() {
+
+                    private static final long serialVersionUID = -3191235289754428914L;
+
+                    @Override
+                    public Object generateCell(Table source, Object itemId, Object columnId) {
+                        URLField field = (URLField) ((ModelBasedFieldFactory<?>) getTableFieldFactory())
+                                .createField(attributeModel.getPath());
+                        if (field != null) {
+                            String val = (String) getItem(itemId).getItemProperty(columnId)
+                                    .getValue();
+                            field.setValue(val);
+                            return field;
+                        }
+                        return null;
+                    }
+                });
+            }
+
+            if (attributeModel.isNumerical()) {
+                table.setColumnAlignment(attributeModel.getName(), Table.Align.RIGHT);
+            }
+        }
+    }
+
+    /**
      * Overridden to deal with custom formatting
      */
     @Override
@@ -134,42 +191,11 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
         List<String> headerNames = new ArrayList<>();
 
         for (final AttributeModel attributeModel : attributeModels) {
-            if (attributeModel.isVisibleInTable()) {
-                propertyNames.add(attributeModel.getName());
-                headerNames.add(attributeModel.getDisplayName());
-
-                // for the lazy query container we explicitly have to add the
-                // properties - for the standard Bean container this is not
-                // needed
-                if (container instanceof LazyQueryContainer) {
-                    LazyQueryContainer lazyContainer = (LazyQueryContainer) container;
-                    if (!lazyContainer.getContainerPropertyIds().contains(attributeModel.getName())) {
-                        lazyContainer.addContainerProperty(attributeModel.getName(),
-                                attributeModel.getType(), attributeModel.getDefaultValue(),
-                                attributeModel.isReadOnly(), attributeModel.isSortable());
-                    }
-                }
-
-                // generated column with clickable URL
-                if (attributeModel.isUrl()) {
-                    table.addGeneratedColumn(attributeModel.getName(), new ColumnGenerator() {
-
-                        private static final long serialVersionUID = -3191235289754428914L;
-
-                        @Override
-                        public Object generateCell(Table source, Object itemId, Object columnId) {
-                            URLField field = (URLField) ((ModelBasedFieldFactory<?>) getTableFieldFactory())
-                                    .createField(attributeModel.getPath());
-                            String val = (String) getItem(itemId).getItemProperty(columnId)
-                                    .getValue();
-                            field.setValue(val);
-                            return field;
-                        }
-                    });
-                }
-
-                if (attributeModel.isNumerical()) {
-                    table.setColumnAlignment(attributeModel.getName(), Table.Align.RIGHT);
+            addColumn(table, attributeModel, propertyNames, headerNames);
+            if (attributeModel.getNestedEntityModel() != null) {
+                for (AttributeModel nestedAttributeModel : attributeModel.getNestedEntityModel()
+                        .getAttributeModels()) {
+                    addColumn(table, nestedAttributeModel, propertyNames, headerNames);
                 }
             }
         }
