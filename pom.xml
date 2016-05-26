@@ -33,6 +33,7 @@
 		<module>dynamo-vaadin</module>
 		<module>dynamo-jpa</module>
 		<module>dynamo-spring</module>
+		<module>dynamo-functional-domain</module>
 	</modules>
 
 	<properties>
