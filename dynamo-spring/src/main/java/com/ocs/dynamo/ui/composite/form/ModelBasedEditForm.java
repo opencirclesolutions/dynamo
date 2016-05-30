@@ -39,7 +39,6 @@ import com.ocs.dynamo.ui.component.DefaultEmbedded;
 import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.component.URLField;
-import com.ocs.dynamo.ui.composite.layout.BaseCustomComponent;
 import com.ocs.dynamo.ui.composite.type.AttributeGroupMode;
 import com.ocs.dynamo.ui.composite.type.ScreenMode;
 import com.ocs.dynamo.utils.ClassUtils;
@@ -82,7 +81,7 @@ import com.vaadin.ui.VerticalLayout;
  */
 @SuppressWarnings("serial")
 public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntity<ID>> extends
-        BaseCustomComponent {
+        AbstractModelBasedForm<ID, T> {
 
     /**
      * A custom field that can be used to upload a file
@@ -100,7 +99,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
         @Override
         protected Component initContent() {
-            final byte[] bytes = ClassUtils.getBytes(entity, attributeModel.getName());
+            final byte[] bytes = ClassUtils.getBytes(getEntity(), attributeModel.getName());
             final Embedded image = new DefaultEmbedded(null, bytes);
 
             VerticalLayout main = new DefaultVerticalLayout(false, true);
@@ -206,7 +205,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
                     }
 
                     // copy the bytes to the entity
-                    ClassUtils.setBytes(stream.toByteArray(), entity, fieldName);
+                    ClassUtils.setBytes(stream.toByteArray(), getEntity(), fieldName);
                 } else {
                     Notification.show(message("ocs.modelbasededitform.upload.format.invalid"),
                             Notification.Type.ERROR_MESSAGE);
@@ -238,14 +237,9 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
     private Map<SignalsParent, Boolean> detailTablesValid = new HashMap<>();
 
     /**
-     * 
+     * The selected entity
      */
     private T entity;
-
-    /**
-     * 
-     */
-    private EntityModel<T> entityModel;
 
     /**
      * The field factory
@@ -253,16 +247,9 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
     private ModelBasedFieldFactory<T> fieldFactory;
 
     /**
-     * Field filters for easily building filtered combo boxes
-     */
-    private Map<String, Filter> fieldFilters = new HashMap<>();
-
-    /**
      * The field that must receive focus
      */
     private Field<?> firstField;
-
-    private FormOptions formOptions;
 
     /**
      * A map containing all the labels that were added - used to replace the label values as the
@@ -278,9 +265,9 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
     private List<Button> saveButtons = new ArrayList<>();
 
-    private BaseService<ID, T> service;
-
     private Map<Boolean, HorizontalLayout> titleBars = new HashMap<>();
+
+    private BaseService<ID, T> service;
 
     private Map<Boolean, Map<AttributeModel, Component>> uploads = new HashMap<>();
 
@@ -295,18 +282,21 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
      * Constructor
      * 
      * @param entity
+     *            the constructor
      * @param service
+     *            the service
      * @param entityModel
+     *            the entity model
      * @param formOptions
+     *            the form options
+     * @param fieldFilters
+     *            the field filters
      */
     public ModelBasedEditForm(T entity, BaseService<ID, T> service, EntityModel<T> entityModel,
             FormOptions formOptions, Map<String, Filter> fieldFilters) {
+        super(formOptions, fieldFilters, entityModel);
         this.service = service;
         this.entity = entity;
-        this.formOptions = formOptions;
-        this.entityModel = entityModel;
-        this.fieldFilters = fieldFilters;
-
         Class<T> clazz = service.getEntityClass();
 
         // set the custom field factory
@@ -345,6 +335,10 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
                 && (AttributeType.BASIC.equals(type) || AttributeType.LOB.equals(type) || attributeModel
                         .isComplexEditable())) {
             if (attributeModel.isReadOnly() || isViewMode()) {
+
+                // determine custom attribute model
+                EntityModel<?> em = getFieldEntityModel(attributeModel);
+
                 if (entity.getId() != null) {
                     // read-only attribute are hidden for new entities
                     if (attributeModel.isUrl()
@@ -356,7 +350,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
                         // display a label
                         if (attributeModel.isUrl()) {
                             URLField urlField = (URLField) fieldFactory.constructField(
-                                    attributeModel, fieldFilters);
+                                    attributeModel, getFieldFilters(), em);
                             groups.get(isViewMode()).bind(urlField, attributeModel.getName());
                             parent.addComponent(urlField);
                         } else {
@@ -369,7 +363,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
                     // new entity - create the label but do not display it
                     if (attributeModel.isUrl()) {
                         URLField urlField = (URLField) fieldFactory.constructField(attributeModel,
-                                fieldFilters);
+                                getFieldFilters(), em);
                         groups.get(isViewMode()).bind(urlField, attributeModel.getName());
                         parent.addComponent(urlField);
                     } else {
@@ -418,7 +412,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
                 detailTables.put(Boolean.TRUE, new ArrayList<DetailsEditTable<?, ?>>());
                 collectionTables.put(Boolean.TRUE, new ArrayList<CollectionTable<?>>());
-                mainViewLayout = buildMainLayout(entityModel);
+                mainViewLayout = buildMainLayout(getEntityModel());
             }
             setCompositionRoot(mainViewLayout);
         } else {
@@ -431,7 +425,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
                 detailTables.put(Boolean.FALSE, new ArrayList<DetailsEditTable<?, ?>>());
                 collectionTables.put(Boolean.FALSE, new ArrayList<CollectionTable<?>>());
-                mainEditLayout = buildMainLayout(entityModel);
+                mainEditLayout = buildMainLayout(getEntityModel());
 
                 postProcessEditFields();
             }
@@ -472,7 +466,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
         }
 
         // in case of vertical layout (the default), don't use the entire screen
-        if (ScreenMode.VERTICAL.equals(formOptions.getScreenMode())) {
+        if (ScreenMode.VERTICAL.equals(getFormOptions().getScreenMode())) {
             form.setStyleName(DynamoConstants.CSS_CLASS_HALFSCREEN);
         }
 
@@ -481,7 +475,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
             // display the attributes in groups
 
             TabSheet tabSheet = null;
-            boolean tabs = AttributeGroupMode.TABSHEET.equals(formOptions.getAttributeGroupMode());
+            boolean tabs = AttributeGroupMode.TABSHEET.equals(getFormOptions()
+                    .getAttributeGroupMode());
             if (tabs) {
                 tabSheet = new TabSheet();
                 form.addComponent(tabSheet);
@@ -544,14 +539,14 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
             boolean innerTabs, TabSheet innerTabSheet, int startCount) {
         int count = 0;
 
-        for (String attributeGroup : entityModel.getAttributeGroups()) {
-            if (entityModel.isAttributeGroupVisible(attributeGroup, viewMode)) {
+        for (String attributeGroup : getEntityModel().getAttributeGroups()) {
+            if (getEntityModel().isAttributeGroupVisible(attributeGroup, viewMode)) {
                 if (getParentGroup(attributeGroup).equals(parentGroupHeader)) {
                     Layout innerLayout2 = constructAttributeGroupLayout(innerForm, innerTabs,
                             innerTabSheet, getAttributeGroupCaption(attributeGroup), true);
-                    for (AttributeModel attributeModel : entityModel
+                    for (AttributeModel attributeModel : getEntityModel()
                             .getAttributeModelsForGroup(attributeGroup)) {
-                        addField(innerLayout2, entityModel, attributeModel, startCount + count);
+                        addField(innerLayout2, getEntityModel(), attributeModel, startCount + count);
                         count++;
                     }
                 }
@@ -651,10 +646,9 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
                     // set to viewmode, load the view mode screen, and fill the
                     // details
-                    if (formOptions.isOpenInViewMode()) {
+                    if (getFormOptions().isOpenInViewMode()) {
                         viewMode = true;
                         build();
-
                     }
 
                     afterEditDone(false, isNew, getEntity());
@@ -689,11 +683,12 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
     private void constructField(Layout form, EntityModel<T> entityModel,
             AttributeModel attributeModel, boolean viewMode, int count) {
 
+        EntityModel<?> em = getFieldEntityModel(attributeModel);
         // allow the user to override the construction of a field
         Field<?> field = constructCustomField(entityModel, attributeModel, viewMode);
         if (field == null) {
             // if no custom field is defined, then use the default
-            field = fieldFactory.constructField(attributeModel, fieldFilters);
+            field = fieldFactory.constructField(attributeModel, getFieldFilters(), em);
         }
 
         if (field instanceof URLField) {
@@ -732,19 +727,19 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
         Label label = null;
 
         // add title label
-        String mainValue = EntityModelUtil.getMainAttributeValue(entity, entityModel);
+        String mainValue = EntityModelUtil.getMainAttributeValue(entity, getEntityModel());
         if (isViewMode()) {
-            label = new Label(message("ocs.modelbasededitform.title.view",
-                    entityModel.getDisplayName(), mainValue), ContentMode.HTML);
+            label = new Label(message("ocs.modelbasededitform.title.view", getEntityModel()
+                    .getDisplayName(), mainValue), ContentMode.HTML);
         } else {
             if (entity.getId() == null) {
                 // create a new entity
-                label = new Label(message("ocs.modelbasededitform.title.create",
-                        entityModel.getDisplayName()), ContentMode.HTML);
+                label = new Label(message("ocs.modelbasededitform.title.create", getEntityModel()
+                        .getDisplayName()), ContentMode.HTML);
             } else {
                 // update an existing entity
-                label = new Label(message("ocs.modelbasededitform.title.update",
-                        entityModel.getDisplayName(), mainValue), ContentMode.HTML);
+                label = new Label(message("ocs.modelbasededitform.title.update", getEntityModel()
+                        .getDisplayName(), mainValue), ContentMode.HTML);
             }
         }
         return label;
@@ -764,7 +759,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
         HorizontalLayout buttonBar = new DefaultHorizontalLayout();
 
         // button to go back to the main screen when in view mode
-        if (isViewMode() && formOptions.isShowBackButton()) {
+        if (isViewMode() && getFormOptions().isShowBackButton()) {
             Button backButton = new Button(message("ocs.back"));
             backButton.addClickListener(new Button.ClickListener() {
 
@@ -778,7 +773,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
         }
 
         // in edit mode, display a cancel button
-        if (!isViewMode() && !formOptions.isHideCancelButton()) {
+        if (!isViewMode() && !getFormOptions().isHideCancelButton()) {
 
             Button cancelButton = new Button(message("ocs.cancel"));
             cancelButton.addClickListener(new Button.ClickListener() {
@@ -803,7 +798,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
         }
 
         // create the edit button
-        if (isViewMode() && formOptions.isShowEditButton() && isEditAllowed()) {
+        if (isViewMode() && getFormOptions().isShowEditButton() && isEditAllowed()) {
             Button editButton = new Button(message("ocs.edit"));
             editButton.addClickListener(new Button.ClickListener() {
 
@@ -834,10 +829,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
     public T getEntity() {
         return entity;
-    }
-
-    public EntityModel<T> getEntityModel() {
-        return entityModel;
     }
 
     public Field<?> getField(String propertyName) {
@@ -873,7 +864,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
     public void setEntity(T entity) {
         this.entity = entity;
 
-        setViewMode(formOptions.isOpenInViewMode() && entity.getId() != null);
+        setViewMode(getFormOptions().isOpenInViewMode() && entity.getId() != null);
 
         // recreate the group
         BeanItem<T> beanItem = new BeanItem<T>(entity);
@@ -976,5 +967,4 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
     protected void afterModeChanged(boolean viewMode) {
         // overwrite in subclasses
     }
-
 }

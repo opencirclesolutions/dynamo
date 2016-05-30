@@ -165,4 +165,8 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
         return attributeModel;
     }
 
+    public void setSelectMode(SelectMode selectMode) {
+        this.selectMode = selectMode;
+    }
+
 }

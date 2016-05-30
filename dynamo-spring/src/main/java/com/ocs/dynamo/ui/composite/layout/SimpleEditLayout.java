@@ -140,6 +140,8 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
             }
 
         };
+        
+        editForm.setFieldEntityModels(getFieldEntityModels());
         editForm.build();
 
         main.addComponent(editForm);

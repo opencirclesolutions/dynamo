@@ -14,9 +14,7 @@
 package com.ocs.dynamo.filter;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -107,8 +105,8 @@ public class FilterTest {
         Assert.assertFalse(conjunction.equals(null));
         Assert.assertFalse(conjunction.equals(new Object()));
         Assert.assertTrue(conjunction.equals(conjunction));
-        Assert.assertFalse(conjunction
-                .equals(new And(new Like("name", "%er%"), new Compare.Equal("age", 24L))));
+        Assert.assertFalse(conjunction.equals(new And(new Like("name", "%er%"), new Compare.Equal(
+                "age", 24L))));
 
         Assert.assertNotNull(conjunction.toString());
     }
@@ -133,8 +131,8 @@ public class FilterTest {
         Assert.assertFalse(disjunction.equals(null));
         Assert.assertFalse(disjunction.equals(new Object()));
         Assert.assertTrue(disjunction.equals(disjunction));
-        Assert.assertFalse(disjunction
-                .equals(new Or(new Like("name", "%er%"), new Compare.Equal("age", 24L))));
+        Assert.assertFalse(disjunction.equals(new Or(new Like("name", "%er%"), new Compare.Equal(
+                "age", 24L))));
     }
 
     @Test
@@ -219,7 +217,7 @@ public class FilterTest {
         Assert.assertFalse(contains.equals(contains2));
 
         CollectionHolder holder = new CollectionHolder();
-        holder.entities.add(testEntity);
+        holder.getEntities().add(testEntity);
 
         Assert.assertTrue(contains.evaluate(holder));
         Assert.assertFalse(contains.evaluate(new CollectionHolder()));
@@ -380,28 +378,4 @@ public class FilterTest {
         Assert.assertEquals(1, result.size());
     }
 
-    @SuppressWarnings("unused")
-    private class CollectionHolder {
-
-        private Set<TestEntity> entities = new HashSet<>();
-
-        private Integer other;
-
-        public Set<TestEntity> getEntities() {
-            return entities;
-        }
-
-        public void setEntities(Set<TestEntity> entities) {
-            this.entities = entities;
-        }
-
-        public Integer getOther() {
-            return other;
-        }
-
-        public void setOther(Integer other) {
-            this.other = other;
-        }
-
-    }
 }

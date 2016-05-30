@@ -27,11 +27,11 @@ public final class DynamoConstants {
      */
     public static final int CACHE_SIZE = 10000;
 
-	/**
-	 * CSS style for button bar components
-	 */
-	public static final String CSS_BUTTON_BAR = "buttonBar";
-    
+    /**
+     * CSS style for button bar components
+     */
+    public static final String CSS_BUTTON_BAR = "buttonBar";
+
     /**
      * Custom style for forms that should span 50% of the screen
      */
@@ -46,6 +46,11 @@ public final class DynamoConstants {
      * The CSS class that indicates a dangerous value
      */
     public static final String CSS_DANGER = "danger";
+
+    /**
+     * The CSS class used to indicate a divider row in a table
+     */
+    public static final String CSS_DIVIDER = "divider";
 
     /**
      * The CSS class that is assigned to numerical cells in a table

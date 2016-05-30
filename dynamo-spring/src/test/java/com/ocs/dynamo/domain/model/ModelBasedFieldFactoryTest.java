@@ -308,11 +308,11 @@ public class ModelBasedFieldFactoryTest extends BaseMockitoTest {
                 messageService);
 
         // simple case - simply create the normal field
-        Field<?> f = ff.constructField(model.getAttributeModel("name"), null);
+        Field<?> f = ff.constructField(model.getAttributeModel("name"), null, null);
         Assert.assertTrue(f instanceof TextField);
 
         // default case - lookup field (no field filter)
-        f = ff.constructField(model.getAttributeModel("testEntity"), null);
+        f = ff.constructField(model.getAttributeModel("testEntity"), null, null);
         Assert.assertTrue(f instanceof EntityLookupField);
         EntityLookupField<Integer, TestEntity> lf = (EntityLookupField<Integer, TestEntity>) f;
         Assert.assertNull(lf.getFilters());
@@ -321,7 +321,7 @@ public class ModelBasedFieldFactoryTest extends BaseMockitoTest {
         Map<String, com.vaadin.data.Container.Filter> fieldFilters = new HashMap<>();
         fieldFilters.put("testEntity", new Compare.Equal("name", "John"));
 
-        f = ff.constructField(model.getAttributeModel("testEntity"), fieldFilters);
+        f = ff.constructField(model.getAttributeModel("testEntity"), fieldFilters, null);
         Assert.assertTrue(f instanceof EntityLookupField);
         lf = (EntityLookupField<Integer, TestEntity>) f;
         Assert.assertEquals(1, lf.getFilters().size());
@@ -329,12 +329,12 @@ public class ModelBasedFieldFactoryTest extends BaseMockitoTest {
         fieldFilters = new HashMap<>();
         fieldFilters.put("testEntityAlt", new Compare.Equal("name", "John"));
 
-        f = ff.constructField(model.getAttributeModel("testEntityAlt"), fieldFilters);
+        f = ff.constructField(model.getAttributeModel("testEntityAlt"), fieldFilters, null);
         Assert.assertTrue(f instanceof EntityComboBox);
         EntityComboBox<Integer, TestEntity> df = (EntityComboBox<Integer, TestEntity>) f;
         Assert.assertEquals(SelectMode.FILTERED, df.getSelectMode());
 
-        f = ff.constructField(model.getAttributeModel("testEntityAlt2"), fieldFilters);
+        f = ff.constructField(model.getAttributeModel("testEntityAlt2"), fieldFilters, null);
         Assert.assertTrue(f instanceof EntityListSelect);
     }
 

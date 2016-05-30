@@ -390,56 +390,53 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
                 messageService);
 
         // overwrite the field factory to deal with validation
-        table.setTableFieldFactory(
-                new ModelBasedFieldFactory<T>(entityModel, messageService, true, false) {
+        table.setTableFieldFactory(new ModelBasedFieldFactory<T>(entityModel, messageService, true,
+                false) {
 
-                    @Override
-                    public Field<?> createField(String propertyId) {
-                        AttributeModel attributeModel = entityModel.getAttributeModel(propertyId);
+            @Override
+            public Field<?> createField(String propertyId, EntityModel<?> fieldEntityModel) {
+                AttributeModel attributeModel = entityModel.getAttributeModel(propertyId);
 
-                        Field<?> field = constructCustomField(entityModel, attributeModel,
-                                isTableEditEnabled());
-                        if (field == null) {
+                Field<?> field = constructCustomField(entityModel, attributeModel,
+                        isTableEditEnabled());
+                if (field == null) {
 
-                            Filter filter = fieldFilters == null ? null
-                                    : fieldFilters.get(attributeModel.getName());
-                            if (filter != null) {
-                                // create a filtered combo box
-                                field = (Field<?>) constructComboBox(
-                                        attributeModel.getNestedEntityModel(), attributeModel,
-                                        filter);
-                            } else {
-                                // delegate to the field factory
-                                field = super.createField(propertyId);
-                            }
-                        }
-
-                        if (field != null) {
-                            // add a bean validator
-                            field.setEnabled(isTableEditEnabled());
-                            field.setSizeFull();
-
-                            // adds a value change listener (for updating the save
-                            // button)
-                            if (!viewMode) {
-                                field.addValueChangeListener(new Property.ValueChangeListener() {
-
-                                    @Override
-                                    public void valueChange(
-                                            com.vaadin.data.Property.ValueChangeEvent event) {
-                                        if (parentForm != null) {
-                                            parentForm.signalDetailsTableValid(
-                                                    DetailsEditTable.this,
-                                                    VaadinUtils.allFixedTableFieldsValid(table));
-                                        }
-                                    }
-
-                                });
-                            }
-                        }
-                        return field;
+                    Filter filter = fieldFilters == null ? null : fieldFilters.get(attributeModel
+                            .getName());
+                    if (filter != null) {
+                        // create a filtered combo box
+                        field = (Field<?>) constructComboBox(attributeModel.getNestedEntityModel(),
+                                attributeModel, filter);
+                    } else {
+                        // delegate to the field factory
+                        field = super.createField(propertyId, fieldEntityModel);
                     }
-                });
+                }
+
+                if (field != null) {
+                    // add a bean validator
+                    field.setEnabled(isTableEditEnabled());
+                    field.setSizeFull();
+
+                    // adds a value change listener (for updating the save
+                    // button)
+                    if (!viewMode) {
+                        field.addValueChangeListener(new Property.ValueChangeListener() {
+
+                            @Override
+                            public void valueChange(com.vaadin.data.Property.ValueChangeEvent event) {
+                                if (parentForm != null) {
+                                    parentForm.signalDetailsTableValid(DetailsEditTable.this,
+                                            VaadinUtils.allFixedTableFieldsValid(table));
+                                }
+                            }
+
+                        });
+                    }
+                }
+                return field;
+            }
+        });
 
         table.setEditable(isTableEditEnabled());
         table.setMultiSelect(false);

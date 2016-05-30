@@ -22,13 +22,10 @@ import javax.inject.Inject;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.beans.support.SortDefinition;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
-import org.springframework.data.domain.Sort.Order;
 
 import com.google.common.collect.Lists;
 import com.mysema.query.BooleanBuilder;
+import com.ocs.dynamo.dao.SortOrder.Direction;
 import com.ocs.dynamo.domain.QTestEntity;
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.filter.And;
@@ -74,7 +71,7 @@ public class TestEntityDaoTest extends BaseIntegrationTest {
 
         dao.save(Lists.newArrayList(entity1, entity2, entity3));
 
-        List<TestEntity> list = dao.findAll(null);
+        List<TestEntity> list = dao.findAll();
         Assert.assertEquals(3, list.size());
     }
 
@@ -89,7 +86,7 @@ public class TestEntityDaoTest extends BaseIntegrationTest {
 
         assertEquals(3, dao.count());
 
-        List<TestEntity> list = dao.findAll(null);
+        List<TestEntity> list = dao.findAll();
         assertEquals(3, list.size());
 
         BooleanBuilder builder = new BooleanBuilder();
@@ -101,7 +98,7 @@ public class TestEntityDaoTest extends BaseIntegrationTest {
         dao.delete(list);
 
         // verify the delete
-        list = dao.findAll(null);
+        list = dao.findAll();
         assertEquals(2, list.size());
 
         dao.delete(list);
@@ -180,11 +177,11 @@ public class TestEntityDaoTest extends BaseIntegrationTest {
 
         and = new And(filter, new Compare.Equal("age", 11L));
 
-        Order order = new Order(Direction.ASC, "name");
-        list = dao.find(and, new Sort(order));
+        SortOrder order = new SortOrder(Direction.ASC, "name");
+        list = dao.find(and, order);
         assertEquals(1, list.size());
 
-        list = dao.find(null, new Sort(order));
+        list = dao.find(null, order);
         assertEquals(3, list.size());
         Assert.assertEquals("Jan", list.get(0).getName());
         Assert.assertEquals("Klaas", list.get(1).getName());
@@ -203,45 +200,11 @@ public class TestEntityDaoTest extends BaseIntegrationTest {
         Assert.assertEquals(2, dao.count(builder));
         Assert.assertEquals(2, dao.find(builder).size());
 
-        List<TestEntity> result = dao.find(builder, 0, 10, new SortDefinition() {
-
-            @Override
-            public String getProperty() {
-                return "name";
-            }
-
-            @Override
-            public boolean isIgnoreCase() {
-                return true;
-            }
-
-            @Override
-            public boolean isAscending() {
-                return true;
-            }
-
-        });
+        List<TestEntity> result = dao.find(builder, 0, 10, new SortOrder(Direction.ASC, "name"));
         Assert.assertEquals("Jan", result.get(0).getName());
         Assert.assertEquals("Klaas", result.get(1).getName());
 
-        result = dao.find(builder, 0, 10, new SortDefinition() {
-
-            @Override
-            public String getProperty() {
-                return "name";
-            }
-
-            @Override
-            public boolean isIgnoreCase() {
-                return true;
-            }
-
-            @Override
-            public boolean isAscending() {
-                return false;
-            }
-
-        });
+        result = dao.find(builder, 0, 10, new SortOrder(Direction.DESC, "name"));
         Assert.assertEquals("Klaas", result.get(0).getName());
         Assert.assertEquals("Jan", result.get(1).getName());
     }
@@ -256,19 +219,20 @@ public class TestEntityDaoTest extends BaseIntegrationTest {
         save("Klaas", 13L);
 
         // retrieve the IDs (sorted by name)
-        List<Integer> ids = dao.findIds(null, new Sort(new Order(Direction.ASC, "name")));
+        List<Integer> ids = dao.findIds(null, new SortOrder(Direction.ASC, "name"));
         Assert.assertEquals(3, ids.size());
 
         TestEntity entity = dao.fetchById(ids.get(0));
         Assert.assertEquals("Jan", entity.getName());
 
-        ids = dao.findIds(null, new Sort(new Order(Direction.DESC, "name")));
+        ids = dao.findIds(null, new SortOrder(Direction.DESC, "name"));
         Assert.assertEquals(3, ids.size());
 
         entity = dao.fetchById(ids.get(0));
         Assert.assertEquals("Piet", entity.getName());
 
-        List<TestEntity> list = dao.fetchByIds(ids, new Sort(new Order(Direction.ASC, "name")));
+        List<TestEntity> list = dao.fetchByIds(ids, new SortOrders(new SortOrder(Direction.ASC,
+                "name")));
         Assert.assertEquals("Jan", list.get(0).getName());
         Assert.assertEquals("Klaas", list.get(1).getName());
         Assert.assertEquals("Piet", list.get(2).getName());

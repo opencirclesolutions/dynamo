@@ -37,11 +37,13 @@ import com.ocs.dynamo.test.BaseIntegrationTest;
 public class DomainServiceTest extends BaseIntegrationTest {
 
 	@Inject
-	DomainService domainService;
+	private DomainService domainService;
+	
 	@Inject
-	DomainService regionService;
+	private DomainService regionService;
+	
 	@Inject
-	DefaultServiceImpl<Integer, Currency> currencyService;
+	private DefaultServiceImpl<Integer, Currency> currencyService;
 
 	Region europa;
 	Region asia;
@@ -79,7 +81,7 @@ public class DomainServiceTest extends BaseIntegrationTest {
 
 	@Test
 	public void testAll() {
-		List<Domain> all = domainService.findAll((SortOrder) null);
+		List<Domain> all = domainService.findAll();
 		Assert.assertEquals(12, all.size());
 	}
 

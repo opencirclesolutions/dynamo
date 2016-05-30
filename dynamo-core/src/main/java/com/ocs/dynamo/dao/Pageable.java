@@ -11,22 +11,22 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-package com.ocs.dynamo.functional.domain;
+package com.ocs.dynamo.dao;
 
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
+/**
+ * Interface for pagination information
+ * 
+ * @author bas.rutten
+ *
+ */
+public interface Pageable {
 
-@Entity
-@DiscriminatorValue("CURRENCY")
-public class Currency extends Domain {
+    int getPageNumber();
 
-	private static final long serialVersionUID = 3270223599926941961L;
+    int getPageSize();
 
-	public Currency() {
-	}
+    int getOffset();
 
-	public Currency(String code, String name) {
-		super(code, name);
-	}
+    SortOrders getSortOrders();
 
 }

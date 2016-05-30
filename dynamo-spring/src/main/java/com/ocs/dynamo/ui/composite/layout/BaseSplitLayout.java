@@ -145,7 +145,8 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
         // table init
         getTableWrapper().getTable().setPageLength(getPageLength());
         getTableWrapper().getTable().setSortEnabled(isSortEnabled());
-
+        constructTableDividers();
+        
         // extra splitter (for horizontal mode)
         if (isHorizontalMode()) {
             splitter = new HorizontalSplitPanel();
@@ -294,6 +295,8 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
                     BaseSplitLayout.this.postProcessEditFields(editForm);
                 }
             };
+            
+            editForm.setFieldEntityModels(getFieldEntityModels());
             editForm.build();
             detailFormLayout.addComponent(editForm);
         } else {

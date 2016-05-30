@@ -233,6 +233,7 @@ public abstract class TabularEditLayout<ID extends Serializable, T extends Abstr
             }
 
             postProcessButtonBar(getButtonBar());
+            constructTableDividers();
             postProcessLayout(mainLayout);
         }
         setCompositionRoot(mainLayout);
@@ -325,13 +326,14 @@ public abstract class TabularEditLayout<ID extends Serializable, T extends Abstr
                 getMessageService(), true, false) {
 
             @Override
-            public Field<?> createField(String propertyId) {
+            public Field<?> createField(String propertyId, EntityModel<?> fieldEntityModel) {
 
                 // first try to create a custom field
                 Field<?> custom = constructCustomField(getEntityModel(), getEntityModel()
                         .getAttributeModel(propertyId), isViewmode(), false);
 
-                final Field<?> field = custom != null ? custom : super.createField(propertyId);
+                final Field<?> field = custom != null ? custom : super.createField(propertyId, 
+                        fieldEntityModel);
 
                 // field is editable when not in view mode and not read only
                 if (field instanceof URLField) {

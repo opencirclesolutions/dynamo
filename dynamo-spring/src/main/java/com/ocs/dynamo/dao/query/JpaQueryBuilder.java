@@ -14,7 +14,6 @@
 package com.ocs.dynamo.dao.query;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -29,11 +28,10 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.metamodel.Attribute;
 
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Order;
-
 import com.google.common.collect.Lists;
 import com.ocs.dynamo.constants.DynamoConstants;
+import com.ocs.dynamo.dao.SortOrder;
+import com.ocs.dynamo.dao.SortOrders;
 import com.ocs.dynamo.filter.And;
 import com.ocs.dynamo.filter.Between;
 import com.ocs.dynamo.filter.Compare;
@@ -102,14 +100,13 @@ public final class JpaQueryBuilder {
      * @return
      */
     private static <T, R> CriteriaQuery<R> addSortInformation(CriteriaBuilder builder,
-            CriteriaQuery<R> cq, Root<T> root, Sort sortOrder) {
-        if (sortOrder != null) {
-            Iterator<Order> it = sortOrder.iterator();
+            CriteriaQuery<R> cq, Root<T> root, SortOrder... sortOrders) {
+        if (sortOrders != null && sortOrders.length > 0) {
             List<javax.persistence.criteria.Order> orders = new ArrayList<>();
-            while (it.hasNext()) {
-                Order order = it.next();
-                Expression<?> property = (Expression<?>) getPropertyPath(root, order.getProperty());
-                orders.add(order.isAscending() ? builder.asc(property) : builder.desc(property));
+            for (SortOrder sortOrder : sortOrders) {
+                Expression<?> property = (Expression<?>) getPropertyPath(root,
+                        sortOrder.getProperty());
+                orders.add(sortOrder.isAscending() ? builder.asc(property) : builder.desc(property));
             }
             cq.orderBy(orders);
         }
@@ -127,8 +124,7 @@ public final class JpaQueryBuilder {
      *            the "And" filter
      * @return
      */
-    private static Predicate createAndPredicate(CriteriaBuilder builder, Root<?> root,
-            Filter filter) {
+    private static Predicate createAndPredicate(CriteriaBuilder builder, Root<?> root, Filter filter) {
         And and = (And) filter;
         List<Filter> filters = new ArrayList<>(and.getFilters());
         Predicate predicate = createPredicate(filters.remove(0), builder, root);
@@ -164,8 +160,9 @@ public final class JpaQueryBuilder {
             value = ((String) value).replace('%', ' ').trim();
 
             String str = (String) value;
-            if (str != null && org.apache.commons.lang.StringUtils
-                    .isNumeric(str.replaceAll("\\.", "").replaceAll(",", ""))) {
+            if (str != null
+                    && org.apache.commons.lang.StringUtils.isNumeric(str.replaceAll("\\.", "")
+                            .replaceAll(",", ""))) {
                 // first remove all periods (which may be used as
                 // thousand
                 // separators), then replace comma by period
@@ -228,14 +225,15 @@ public final class JpaQueryBuilder {
      *            the entity class
      * @param ids
      *            the IDs of the desired entities
-     * @param sortOrder
+     * @param sortOrders
      *            the sorting information
      * @param fetchJoins
      *            the desired fetch joins
      * @return
      */
     public static <ID, T> CriteriaQuery<T> createFetchQuery(EntityManager entityManager,
-            Class<T> entityClass, List<ID> ids, Sort sortOrder, FetchJoinInformation[] fetchJoins) {
+            Class<T> entityClass, List<ID> ids, SortOrders sortOrders,
+            FetchJoinInformation[] fetchJoins) {
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaQuery<T> cq = builder.createQuery(entityClass);
         Root<T> root = cq.from(entityClass);
@@ -246,7 +244,8 @@ public final class JpaQueryBuilder {
         cq.where(exp.in(ids));
         cq.distinct(distinct);
 
-        return addSortInformation(builder, cq, root, sortOrder);
+        return addSortInformation(builder, cq, root,
+                sortOrders == null ? null : sortOrders.toArray());
     }
 
     /**
@@ -262,8 +261,9 @@ public final class JpaQueryBuilder {
      *            fetch joins to include
      * @return
      */
-    public static <ID, T> CriteriaQuery<T> createFetchSingleObjectQuery(EntityManager entityManager,
-            Class<T> entityClass, ID id, FetchJoinInformation[] fetchJoins) {
+    public static <ID, T> CriteriaQuery<T> createFetchSingleObjectQuery(
+            EntityManager entityManager, Class<T> entityClass, ID id,
+            FetchJoinInformation[] fetchJoins) {
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaQuery<T> cq = builder.createQuery(entityClass);
         Root<T> root = cq.from(entityClass);
@@ -288,7 +288,7 @@ public final class JpaQueryBuilder {
      * @return
      */
     public static <T> CriteriaQuery<Tuple> createIdQuery(EntityManager entityManager,
-            Class<T> entityClass, Filter filter, Sort sortOrder) {
+            Class<T> entityClass, Filter filter, SortOrder... sortOrders) {
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Tuple> cq = builder.createTupleQuery();
         Root<T> root = cq.from(entityClass);
@@ -304,7 +304,7 @@ public final class JpaQueryBuilder {
 
         // add order clause - this is also important in case of an ID query
         // since we do need to return the correct IDs!
-        return addSortInformation(builder, cq, root, sortOrder);
+        return addSortInformation(builder, cq, root, sortOrders);
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -315,9 +315,8 @@ public final class JpaQueryBuilder {
             return builder.like((Expression) getPropertyPath(root, like.getPropertyId()),
                     like.getValue());
         } else {
-            return builder.like(
-                    builder.lower((Expression) getPropertyPath(root, like.getPropertyId())),
-                    like.getValue().toLowerCase());
+            return builder.like(builder.lower((Expression) getPropertyPath(root,
+                    like.getPropertyId())), like.getValue().toLowerCase());
         }
     }
 
@@ -334,20 +333,19 @@ public final class JpaQueryBuilder {
         Modulo modulo = (Modulo) filter;
         if (modulo.getModExpression() != null) {
             // compare to a literal expression
-            return builder.equal(
-                    builder.mod((Expression) getPropertyPath(root, modulo.getPropertyId()),
-                            (Expression) getPropertyPath(root, modulo.getModExpression())),
-                    modulo.getResult());
+            return builder.equal(builder.mod(
+                    (Expression) getPropertyPath(root, modulo.getPropertyId()),
+                    (Expression) getPropertyPath(root, modulo.getModExpression())), modulo
+                    .getResult());
         } else {
             // compare to a property
-            return builder
-                    .equal(builder.mod((Expression) getPropertyPath(root, modulo.getPropertyId()),
-                            modulo.getModValue().intValue()), modulo.getResult());
+            return builder.equal(builder.mod(
+                    (Expression) getPropertyPath(root, modulo.getPropertyId()), modulo
+                            .getModValue().intValue()), modulo.getResult());
         }
     }
 
-    private static Predicate createOrPredicate(CriteriaBuilder builder, Root<?> root,
-            Filter filter) {
+    private static Predicate createOrPredicate(CriteriaBuilder builder, Root<?> root, Filter filter) {
         Or or = (Or) filter;
         List<Filter> filters = new ArrayList<>(or.getFilters());
 
@@ -413,8 +411,8 @@ public final class JpaQueryBuilder {
             return createModuloPredicate(builder, root, filter);
         }
 
-        throw new UnsupportedOperationException(
-                "Filter: " + filter.getClass().getName() + " not recognized");
+        throw new UnsupportedOperationException("Filter: " + filter.getClass().getName()
+                + " not recognized");
     }
 
     /**
@@ -430,8 +428,9 @@ public final class JpaQueryBuilder {
      *            the sorting information
      * @return
      */
-    public static <T> CriteriaQuery<T> createSelectQuery(Filter filter, EntityManager entityManager,
-            Class<T> entityClass, FetchJoinInformation[] fetchJoins, Sort sortOrder) {
+    public static <T> CriteriaQuery<T> createSelectQuery(Filter filter,
+            EntityManager entityManager, Class<T> entityClass, FetchJoinInformation[] fetchJoins,
+            SortOrder... sortOrders) {
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaQuery<T> cq = builder.createQuery(entityClass);
         Root<T> root = cq.from(entityClass);
@@ -444,7 +443,7 @@ public final class JpaQueryBuilder {
             cq.where(p);
         }
 
-        return addSortInformation(builder, cq, root, sortOrder);
+        return addSortInformation(builder, cq, root, sortOrders);
     }
 
     /**

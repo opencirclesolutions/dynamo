@@ -28,13 +28,13 @@ import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 
 import com.google.common.collect.Lists;
 import com.ocs.dynamo.dao.BaseDao;
+import com.ocs.dynamo.dao.Pageable;
 import com.ocs.dynamo.dao.SortOrder;
 import com.ocs.dynamo.dao.SortOrder.Direction;
+import com.ocs.dynamo.dao.SortOrders;
 import com.ocs.dynamo.dao.query.FetchJoinInformation;
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.exception.OCSValidationException;
@@ -131,21 +131,21 @@ public class BaseServiceImplTest extends BaseMockitoTest {
         SortOrder order = new SortOrder(Direction.ASC, "name");
         SortOrder order2 = new SortOrder(Direction.DESC, "age");
 
-        service.fetchByIds(ids, new FetchJoinInformation[] { new FetchJoinInformation("test") },
-                order, order2);
+        service.fetchByIds(ids, new SortOrders(order, order2),
+                new FetchJoinInformation[] { new FetchJoinInformation("test") });
 
-        ArgumentCaptor<Sort> captor = ArgumentCaptor.forClass(Sort.class);
+        ArgumentCaptor<SortOrders> captor = ArgumentCaptor.forClass(SortOrders.class);
         Mockito.verify(dao).fetchByIds(Matchers.any(List.class), captor.capture(),
                 Matchers.any(FetchJoinInformation[].class));
 
-        Sort s = captor.getValue();
+        SortOrders s = captor.getValue();
         Assert.assertNotNull(s);
 
-        org.springframework.data.domain.Sort.Direction dir = s.getOrderFor("name").getDirection();
-        Assert.assertEquals(org.springframework.data.domain.Sort.Direction.ASC, dir);
+        Direction dir = s.getOrderFor("name").getDirection();
+        Assert.assertEquals(Direction.ASC, dir);
 
-        org.springframework.data.domain.Sort.Direction dir2 = s.getOrderFor("age").getDirection();
-        Assert.assertEquals(org.springframework.data.domain.Sort.Direction.DESC, dir2);
+        dir = s.getOrderFor("age").getDirection();
+        Assert.assertEquals(Direction.DESC, dir);
 
         Assert.assertNull(s.getOrderFor("notExists"));
     }
@@ -159,20 +159,18 @@ public class BaseServiceImplTest extends BaseMockitoTest {
 
         SortOrder order = new SortOrder(Direction.ASC, "name");
         SortOrder order2 = new SortOrder(Direction.DESC, "age");
-        service.find(filter, 2, 10, order, order2);
+        service.fetch(filter, 2, 10, new SortOrders(order, order2));
 
         ArgumentCaptor<Pageable> captor = ArgumentCaptor.forClass(Pageable.class);
-        Mockito.verify(dao).find(Matchers.any(Filter.class), captor.capture());
+        Mockito.verify(dao).fetch(Matchers.any(Filter.class), captor.capture());
 
         Pageable p = captor.getValue();
 
-        org.springframework.data.domain.Sort.Direction dir = p.getSort().getOrderFor("name")
-                .getDirection();
-        Assert.assertEquals(org.springframework.data.domain.Sort.Direction.ASC, dir);
+        Direction dir = p.getSortOrders().getOrderFor("name").getDirection();
+        Assert.assertEquals(Direction.ASC, dir);
 
-        org.springframework.data.domain.Sort.Direction dir2 = p.getSort().getOrderFor("age")
-                .getDirection();
-        Assert.assertEquals(org.springframework.data.domain.Sort.Direction.DESC, dir2);
+        Direction dir2 = p.getSortOrders().getOrderFor("age").getDirection();
+        Assert.assertEquals(Direction.DESC, dir2);
 
         Assert.assertEquals(2, p.getPageNumber());
         Assert.assertEquals(20, p.getOffset());
@@ -230,13 +228,11 @@ public class BaseServiceImplTest extends BaseMockitoTest {
     @Test
     public void testFetchByIds() {
 
-        service.fetchByIds(Lists.newArrayList(1, 2), null);
-        Mockito.verify(dao).fetchByIds(Lists.newArrayList(1, 2), null,
-                (FetchJoinInformation[]) null);
+        service.fetchByIds(Lists.newArrayList(1, 2));
+        Mockito.verify(dao).fetchByIds(Lists.newArrayList(1, 2), null);
 
         service.fetchByIds(Lists.newArrayList(1, 2),
-                new FetchJoinInformation[] { new FetchJoinInformation("property1") },
-                (SortOrder[]) null);
+                new FetchJoinInformation[] { new FetchJoinInformation("property1") });
         Mockito.verify(dao).fetchByIds(Lists.newArrayList(1, 2), null,
                 new FetchJoinInformation("property1"));
     }
@@ -254,22 +250,20 @@ public class BaseServiceImplTest extends BaseMockitoTest {
     @Test
     public void testFindAll() {
         service.findAll();
-        Mockito.verify(dao).findAll(null);
+        Mockito.verify(dao).findAll();
 
         service.findAll(new SortOrder("property1"));
-        Mockito.verify(dao)
-                .findAll(new Sort(org.springframework.data.domain.Sort.Direction.ASC, "property1"));
+        Mockito.verify(dao).findAll(new SortOrder(Direction.ASC, "property1"));
 
         service.findAll(new SortOrder(Direction.DESC, "property1"));
-        Mockito.verify(dao).findAll(
-                new Sort(org.springframework.data.domain.Sort.Direction.DESC, "property1"));
+        Mockito.verify(dao).findAll(new SortOrder(Direction.DESC, "property1"));
     }
 
     @Test
     public void testFindIds() {
         service.findIds(new Compare.Equal("property1", 12), new SortOrder("property1"));
         Mockito.verify(dao).findIds(new Compare.Equal("property1", 12),
-                new Sort(org.springframework.data.domain.Sort.Direction.ASC, "property1"));
+                new SortOrder(Direction.ASC, "property1"));
     }
 
     /**

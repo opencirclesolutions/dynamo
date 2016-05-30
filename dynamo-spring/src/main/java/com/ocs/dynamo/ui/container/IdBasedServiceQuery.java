@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.ocs.dynamo.dao.SortOrders;
 import com.ocs.dynamo.domain.AbstractEntity;
 
 /**
@@ -30,8 +31,8 @@ import com.ocs.dynamo.domain.AbstractEntity;
  * @param <T>
  *            type of the entity
  */
-public class IdBasedServiceQuery<ID extends Serializable, T extends AbstractEntity<ID>>
-        extends BaseServiceQuery<ID, T> {
+public class IdBasedServiceQuery<ID extends Serializable, T extends AbstractEntity<ID>> extends
+        BaseServiceQuery<ID, T> {
 
     private static final long serialVersionUID = -1910477652022230437L;
 
@@ -72,7 +73,7 @@ public class IdBasedServiceQuery<ID extends Serializable, T extends AbstractEnti
             }
         }
         return getCustomQueryDefinition().getService().fetchByIds(results,
-                getCustomQueryDefinition().getJoins(), constructOrder());
+                new SortOrders(constructOrder()), getCustomQueryDefinition().getJoins());
     }
 
     /**

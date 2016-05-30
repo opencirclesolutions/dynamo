@@ -25,12 +25,13 @@ import javax.validation.constraints.AssertFalse;
 import javax.validation.constraints.AssertTrue;
 
 import org.apache.log4j.Logger;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ocs.dynamo.dao.BaseDao;
+import com.ocs.dynamo.dao.Pageable;
+import com.ocs.dynamo.dao.PageableImpl;
 import com.ocs.dynamo.dao.SortOrder;
+import com.ocs.dynamo.dao.SortOrders;
 import com.ocs.dynamo.dao.query.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.exception.OCSNonUniqueException;
@@ -50,8 +51,8 @@ import com.ocs.dynamo.utils.ClassUtils;
  *            type of the entity
  */
 
-public abstract class BaseServiceImpl<ID, T extends AbstractEntity<ID>>
-        implements BaseService<ID, T> {
+public abstract class BaseServiceImpl<ID, T extends AbstractEntity<ID>> implements
+        BaseService<ID, T> {
 
     private static final Logger LOGGER = Logger.getLogger(BaseServiceImpl.class);
 
@@ -70,54 +71,18 @@ public abstract class BaseServiceImpl<ID, T extends AbstractEntity<ID>>
      * @param orders
      * @return
      */
-    private PageRequest constructPageRequest(int pageNumber, int pageSize, SortOrder... orders) {
-        PageRequest pr = null;
-        if (orders != null && orders.length > 0) {
-            List<org.springframework.data.domain.Sort.Order> list = new ArrayList<>();
-            for (SortOrder o : orders) {
-                if (o != null) {
-                    list.add(new org.springframework.data.domain.Sort.Order(
-                            o.getDirection() == SortOrder.Direction.ASC
-                                    ? org.springframework.data.domain.Sort.Direction.ASC
-                                    : org.springframework.data.domain.Sort.Direction.DESC,
-                            o.getProperty()));
-                }
-            }
-            if (list.isEmpty()) {
-                pr = new PageRequest(pageNumber, pageSize);
-            } else {
-                pr = new PageRequest(pageNumber, pageSize, new Sort(list));
-            }
-        } else {
-            pr = new PageRequest(pageNumber, pageSize);
-        }
-        return pr;
+    private Pageable constructPageRequest(int pageNumber, int pageSize, SortOrder... orders) {
+        return new PageableImpl(pageNumber, pageSize, orders);
     }
 
-    /**
-     * Create a Sort object based on a number of Order objects
-     * 
-     * @param orders
-     * @return
-     */
-    private Sort constructSortOrder(SortOrder... orders) {
-        if (orders != null && orders.length > 0) {
-            List<org.springframework.data.domain.Sort.Order> list = new ArrayList<>();
-            for (SortOrder o : orders) {
-                if (o != null) {
-                    list.add(new org.springframework.data.domain.Sort.Order(
-                            o.getDirection() == SortOrder.Direction.ASC
-                                    ? org.springframework.data.domain.Sort.Direction.ASC
-                                    : org.springframework.data.domain.Sort.Direction.DESC,
-                            o.getProperty()));
-                }
-            }
+    @Override
+    public long count(Filter filter) {
+        return getDao().count(filter);
+    }
 
-            if (!list.isEmpty()) {
-                return new Sort(list);
-            }
-        }
-        return null;
+    @Override
+    public List<T> findAll() {
+        return getDao().findAll();
     }
 
     @Override
@@ -153,8 +118,13 @@ public abstract class BaseServiceImpl<ID, T extends AbstractEntity<ID>>
     }
 
     @Override
-    public List<T> fetchByIds(List<ID> ids, FetchJoinInformation[] joins, SortOrder... orders) {
-        return getDao().fetchByIds(ids, constructSortOrder(orders), joins);
+    public List<T> fetchByIds(List<ID> ids, FetchJoinInformation... joins) {
+        return getDao().fetchByIds(ids, null, joins);
+    }
+
+    @Override
+    public List<T> fetchByIds(List<ID> ids, SortOrders sortOrders, FetchJoinInformation... joins) {
+        return getDao().fetchByIds(ids, sortOrders, joins);
     }
 
     @Override
@@ -164,24 +134,43 @@ public abstract class BaseServiceImpl<ID, T extends AbstractEntity<ID>>
     }
 
     @Override
-    public List<T> fetch(Filter filter, int pageNumber, int pageSize, FetchJoinInformation[] joins,
-            SortOrder... orders) {
-        return getDao().find(filter, constructPageRequest(pageNumber, pageSize, orders), joins);
+    public List<T> fetch(Filter filter, FetchJoinInformation... joins) {
+        return getDao().fetch(filter, joins);
     }
 
     @Override
-    public List<T> find(Filter filter, int pageNumber, int pageSize, SortOrder... orders) {
-        return getDao().find(filter, constructPageRequest(pageNumber, pageSize, orders));
+    public List<T> fetch(Filter filter, int pageNumber, int pageSize, FetchJoinInformation... joins) {
+        return getDao().fetch(filter,
+                constructPageRequest(pageNumber, pageSize, (SortOrder[]) null), joins);
     }
 
     @Override
-    public List<T> find(Filter filter, SortOrder... orders) {
-        return getDao().find(filter, constructSortOrder(orders));
+    public List<T> fetch(Filter filter, int pageNumber, int pageSize, SortOrders sortOrders,
+            FetchJoinInformation... joins) {
+        return getDao().fetch(
+                filter,
+                constructPageRequest(pageNumber, pageSize,
+                        sortOrders == null ? null : sortOrders.toArray()), joins);
+    }
+
+    @Override
+    public List<T> fetch(Filter filter, SortOrders orders, FetchJoinInformation... joins) {
+        return getDao().fetch(filter, orders, joins);
     }
 
     @Override
     public List<T> findAll(SortOrder... orders) {
-        return getDao().findAll(constructSortOrder(orders));
+        return getDao().findAll(orders);
+    }
+
+    @Override
+    public List<T> find(Filter filter) {
+        return getDao().find(filter);
+    }
+
+    @Override
+    public List<T> find(Filter filter, SortOrder... orders) {
+        return getDao().find(filter, orders);
     }
 
     @Override
@@ -206,7 +195,7 @@ public abstract class BaseServiceImpl<ID, T extends AbstractEntity<ID>>
 
     @Override
     public List<ID> findIds(Filter filter, SortOrder... orders) {
-        return getDao().findIds(filter, constructSortOrder(orders));
+        return getDao().findIds(filter, orders);
     }
 
     protected abstract BaseDao<ID, T> getDao();
@@ -285,8 +274,8 @@ public abstract class BaseServiceImpl<ID, T extends AbstractEntity<ID>>
         }
 
         if (identicalEntityExists(t)) {
-            throw new OCSNonUniqueException(
-                    messageService.getMessage(getEntityClass().getSimpleName() + ".not.unique"));
+            throw new OCSNonUniqueException(messageService.getMessage(getEntityClass()
+                    .getSimpleName() + ".not.unique"));
         }
     }
 }

@@ -208,35 +208,30 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
      *            the attribute model
      * @param fieldFilters
      *            the list of field filters
+     * @param fieldEntityModel
+     *            the custom entity model for the field
      * @return
      */
-    public Field<?> constructField(AttributeModel attributeModel, Map<String, Filter> fieldFilters) {
+    public Field<?> constructField(AttributeModel attributeModel, Map<String, Filter> fieldFilters,
+            EntityModel<?> fieldEntityModel) {
 
         Filter fieldFilter = fieldFilters == null ? null : fieldFilters.get(attributeModel
                 .getPath());
+        EntityModel<?> em = fieldEntityModel != null ? fieldEntityModel : attributeModel
+                .getNestedEntityModel();
+
         Field<?> field = null;
         if (fieldFilter != null) {
             if (AttributeType.MASTER.equals(attributeModel.getAttributeType())) {
                 // create a combo box or lookup field
-                AttributeSelectMode sm = attributeModel.getSelectMode();
-                if (AttributeSelectMode.COMBO.equals(sm)) {
-                    field = this.constructComboBox(attributeModel.getNestedEntityModel(),
-                            attributeModel, fieldFilter);
-                } else if (AttributeSelectMode.LOOKUP.equals(sm)) {
-                    field = this.constructLookupField(attributeModel.getNestedEntityModel(),
-                            attributeModel, fieldFilter);
-                } else {
-                    field = this.constructListSelect(attributeModel.getNestedEntityModel(),
-                            attributeModel, fieldFilter, false);
-                }
+                field = constructSelectField(attributeModel, fieldEntityModel, fieldFilter);
             } else {
                 // detail relationship, render a multiple select
-                field = this.constructListSelect(attributeModel.getNestedEntityModel(),
-                        attributeModel, fieldFilter, true);
+                field = this.constructListSelect(em, attributeModel, fieldFilter, true);
             }
         } else {
             // no field filter present - delegate to default construction
-            field = this.createField(attributeModel.getPath());
+            field = this.createField(attributeModel.getPath(), fieldEntityModel);
         }
 
         // mark the field as required (this is skipped for search fields since
@@ -269,7 +264,6 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
             EntityModel<?> entityModel, AttributeModel attributeModel, Filter fieldFilter,
             boolean multipleSelect) {
         entityModel = resolveEntityModel(entityModel, attributeModel);
-
         BaseService<ID, S> service = (BaseService<ID, S>) ServiceLocator
                 .getServiceForEntity(entityModel.getEntityClass());
         SortOrder[] sos = constructSortOrder(entityModel);
@@ -294,10 +288,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
     @SuppressWarnings("unchecked")
     public <ID extends Serializable, S extends AbstractEntity<ID>> EntityLookupField<ID, S> constructLookupField(
             EntityModel<?> entityModel, AttributeModel attributeModel, Filter fieldFilter) {
-        // for a lookup field, don't use the nested model but the base model -
-        // otherwise the searching goes totally wrong
-        entityModel = ServiceLocator.getEntityModelFactory().getModel(
-                attributeModel.getType().asSubclass(AbstractEntity.class));
+        entityModel = resolveEntityModel(entityModel, attributeModel);
         BaseService<ID, S> service = (BaseService<ID, S>) ServiceLocator
                 .getServiceForEntity(entityModel.getEntityClass());
         SortOrder[] sos = constructSortOrder(entityModel);
@@ -411,7 +402,16 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
     @Override
     public Field<?> createField(Container container, Object itemId, Object propertyId,
             Component uiContext) {
-        return createField(propertyId.toString());
+        return createField(propertyId.toString(), null);
+    }
+
+    /**
+     * 
+     * @param propertyId
+     * @return
+     */
+    public Field<?> createField(String propertyId) {
+        return createField(propertyId, null);
     }
 
     /**
@@ -419,9 +419,11 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
      * 
      * @param propertyId
      *            the name of the property that can be edited by this field
+     * @param fieldEntityModel
+     *            the custom entity model for the field
      * @return
      */
-    public Field<?> createField(String propertyId) {
+    public Field<?> createField(String propertyId, EntityModel<?> fieldEntityModel) {
 
         // in case of a read-only field, return <code>null</code> so Vaadin will
         // render a label instead
@@ -448,7 +450,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
             field = constructSearchBooleanComboBox(attributeModel);
         } else if (AbstractEntity.class.isAssignableFrom(attributeModel.getType())) {
             // lookup or combo field for an entity
-            field = createSelectField(attributeModel);
+            field = constructSelectField(attributeModel, fieldEntityModel, null);
         } else if (AttributeType.ELEMENT_COLLECTION.equals(attributeModel.getAttributeType())) {
             // use a "collection table" for an element collection
             FormOptions fo = new FormOptions();
@@ -548,17 +550,21 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
      *            the attribute model of the attribute to bind to the field
      * @return
      */
-    protected Field<?> createSelectField(AttributeModel attributeModel) {
+    protected Field<?> constructSelectField(AttributeModel attributeModel,
+            EntityModel<?> fieldEntityModel, Filter fieldFilter) {
         Field<?> field = null;
+
+        EntityModel<?> em = fieldEntityModel != null ? fieldEntityModel : attributeModel
+                .getNestedEntityModel();
+
         if (AttributeSelectMode.COMBO.equals(attributeModel.getSelectMode())) {
-            field = (Field<?>) constructComboBox(attributeModel.getNestedEntityModel(),
-                    attributeModel, null);
+            field = (Field<?>) constructComboBox(em, attributeModel, fieldFilter);
         } else if (AttributeSelectMode.LOOKUP.equals(attributeModel.getSelectMode())) {
-            field = (Field<?>) constructLookupField(attributeModel.getNestedEntityModel(),
-                    attributeModel, null);
+            field = (Field<?>) constructLookupField(fieldEntityModel != null ? fieldEntityModel
+                    : ServiceLocator.getEntityModelFactory().getModel(attributeModel.getType()),
+                    attributeModel, fieldFilter);
         } else {
-            field = this.constructListSelect(attributeModel.getNestedEntityModel(), attributeModel,
-                    null, false);
+            field = this.constructListSelect(em, attributeModel, fieldFilter, false);
         }
         return field;
     }

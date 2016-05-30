@@ -213,6 +213,7 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
             postProcessButtonBar(getButtonBar());
             mainSearchLayout.addComponent(getButtonBar());
 
+            constructTableDividers();
             postProcessLayout(mainSearchLayout);
         }
         setCompositionRoot(mainSearchLayout);
@@ -308,10 +309,11 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 
                 @Override
                 protected boolean isEditAllowed() {
-                   return SimpleSearchLayout.this.isEditAllowed();
+                    return SimpleSearchLayout.this.isEditAllowed();
                 }
 
             };
+            editForm.setFieldEntityModels(getFieldEntityModels());
             editForm.build();
             mainEditLayout.addComponent(editForm);
         } else {
@@ -384,7 +386,9 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
             }
         };
         result.setNrOfColumns(getNrOfColumns());
+        result.setFieldEntityModels(getFieldEntityModels());
         result.build();
+
         return result;
     }
 

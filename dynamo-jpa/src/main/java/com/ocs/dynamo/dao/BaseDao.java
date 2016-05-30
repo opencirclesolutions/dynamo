@@ -11,25 +11,25 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-package com.ocs.dynamo.service;
+package com.ocs.dynamo.dao;
 
 import java.util.List;
 
-import com.ocs.dynamo.dao.SortOrder;
-import com.ocs.dynamo.dao.SortOrders;
 import com.ocs.dynamo.dao.query.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.filter.Filter;
+import com.mysema.query.types.Predicate;
 
 /**
- * The interface for a service that manages an entity
+ * Interface that all DAO objects must implement
  * 
+ * @author bas.rutten
  * @param <ID>
- *            the type of the primary key of the entity
+ *            The type of the primary key of the entity managed by this DAO
  * @param <T>
- *            the type of the entity
+ *            The type of the entity managed by this DAO
  */
-public interface BaseService<ID, T extends AbstractEntity<ID>> {
+public interface BaseDao<ID, T extends AbstractEntity<ID>> {
 
     /**
      * Returns the total number of entities of this type
@@ -59,11 +59,13 @@ public interface BaseService<ID, T extends AbstractEntity<ID>> {
     long count(Filter filter, boolean distinct);
 
     /**
-     * Creates a new entity
+     * Returns the number of entities that match the provided predicate
      * 
+     * @param predicate
+     *            the predicate
      * @return
      */
-    T createNewEntity();
+    long count(Predicate predicate);
 
     /**
      * Deletes all entities in the provided list
@@ -93,26 +95,17 @@ public interface BaseService<ID, T extends AbstractEntity<ID>> {
     List<T> fetch(Filter filter, FetchJoinInformation... joins);
 
     /**
+     * Fetches entities that match the provided filter
      * 
      * @param filter
-     * @param pageNumber
-     * @param pageSize
+     *            the filter
+     * @param pageable
+     *            the page info
      * @param joins
+     *            the desired relations to fetch
      * @return
      */
-    List<T> fetch(Filter filter, int pageNumber, int pageSize, FetchJoinInformation... joins);
-
-    /**
-     * 
-     * @param filter
-     * @param pageNumber
-     * @param pageSize
-     * @param sortOrders
-     * @param joins
-     * @return
-     */
-    List<T> fetch(Filter filter, int pageNumber, int pageSize, SortOrders sortOrders,
-            FetchJoinInformation... joins);
+    List<T> fetch(Filter filter, Pageable pageable, FetchJoinInformation... joins);
 
     /**
      * Fetches entities that match the provided filter
@@ -152,16 +145,6 @@ public interface BaseService<ID, T extends AbstractEntity<ID>> {
     List<T> fetchByIds(List<ID> ids, SortOrders sortOrders, FetchJoinInformation... joins);
 
     /**
-     * Fetches the entities identified by the provided IDs
-     * 
-     * @param ids
-     *            the IDs
-     * @param joins
-     * @return
-     */
-    List<T> fetchByIds(List<ID> ids, FetchJoinInformation... joins);
-
-    /**
      * Fetches an entity based on a unique property
      * 
      * @param propertyName
@@ -188,12 +171,39 @@ public interface BaseService<ID, T extends AbstractEntity<ID>> {
     List<T> find(Filter filter);
 
     /**
+     * Returns all entities that match the provided filter
      * 
      * @param filter
-     * @param orders
+     *            the filter
+     * @param sort
+     *            the sort info
      * @return
      */
     List<T> find(Filter filter, SortOrder... orders);
+
+    /**
+     * Returns all entities that match a certain predicate
+     * 
+     * @param predicate
+     *            the predicate
+     * @return
+     */
+    List<T> find(Predicate predicate);
+
+    /**
+     * Finds the entities that match a certain predicate
+     * 
+     * @param predicate
+     *            the predicate
+     * @param firstIndex
+     *            the index of the first result
+     * @param maxResults
+     *            the maximum number of results
+     * @param sorts
+     *            the sort order information
+     * @return
+     */
+    List<T> find(Predicate predicate, int firstIndex, int maxResults, SortOrder... sorts);
 
     /**
      * Returns a list of all entities. Use with caution
@@ -245,6 +255,11 @@ public interface BaseService<ID, T extends AbstractEntity<ID>> {
     List<ID> findIds(Filter filter, SortOrder... orders);
 
     /**
+     * Flushes and clears the entity manager (useful after an explicit update or delete)
+     */
+    void flushAndClear();
+
+    /**
      * Returns the class of the entity managed by this DAO
      * 
      * @return
@@ -268,4 +283,5 @@ public interface BaseService<ID, T extends AbstractEntity<ID>> {
      * @return
      */
     T save(T entity);
+
 }

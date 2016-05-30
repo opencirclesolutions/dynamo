@@ -11,7 +11,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-package com.ocs.dynamo.dao;
+package com.ocs.dynamo.dao.query;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -24,7 +24,9 @@ import com.ocs.dynamo.domain.AbstractEntity;
  * 
  * @author bas.rutten
  * @param <ID>
+ *            the type of the primary key of the entity
  * @param <T>
+ *            the type of the entity
  */
 public abstract class DataSetIterator<ID extends Serializable, T extends AbstractEntity<ID>> {
 

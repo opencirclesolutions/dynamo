@@ -23,7 +23,6 @@ public class Country extends DomainChild<Region> {
 	private static final long serialVersionUID = 1410771214783677106L;
 
 	public Country() {
-		super();
 	}
 
 	public Country(String code, String name) {

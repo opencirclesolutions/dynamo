@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.ocs.dynamo.dao.SortOrder;
+import com.ocs.dynamo.dao.SortOrders;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.filter.Filter;
 
@@ -30,8 +31,8 @@ import com.ocs.dynamo.filter.Filter;
  * @param <T>
  *            the type of the entity
  */
-public class PagingServiceQuery<ID extends Serializable, T extends AbstractEntity<ID>>
-        extends BaseServiceQuery<ID, T> {
+public class PagingServiceQuery<ID extends Serializable, T extends AbstractEntity<ID>> extends
+        BaseServiceQuery<ID, T> {
 
     private static final long serialVersionUID = -324739194626626683L;
 
@@ -55,7 +56,7 @@ public class PagingServiceQuery<ID extends Serializable, T extends AbstractEntit
         SortOrder[] orders = constructOrder();
         ServiceQueryDefinition<ID, T> definition = getCustomQueryDefinition();
         return definition.getService().fetch(serviceFilter, startIndex / definition.getBatchSize(),
-                definition.getBatchSize(), definition.getJoins(), orders);
+                definition.getBatchSize(), new SortOrders(orders), definition.getJoins());
     }
 
     /**

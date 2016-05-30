@@ -14,6 +14,8 @@
 package com.ocs.dynamo.ui.composite.layout;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
@@ -89,9 +91,21 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
      */
     private EntityModel<T> entityModel;
 
+    /**
+     * The form options that determine what options are available in the screen
+     */
     private FormOptions formOptions;
 
+    /**
+     * The service used for retrieving data
+     */
     private BaseService<ID, T> service;
+
+    /**
+     * The entity models used for rendering the individual fields (mostly useful for lookup
+     * components)
+     */
+    private Map<String, String> fieldEntityModels = new HashMap<>();
 
     /**
      * Constructor
@@ -127,7 +141,7 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
             AttributeModel attributeModel, boolean viewMode, boolean searchMode) {
         return null;
     }
-    
+
     /**
      * Method that is called after the mode is changed (from editable to read only or vice versa)
      * 
@@ -153,5 +167,25 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 
     public void setService(BaseService<ID, T> service) {
         this.service = service;
+    }
+
+    public Map<String, String> getFieldEntityModels() {
+        return fieldEntityModels;
+    }
+
+    /**
+     * Adds a field entity model reference
+     * 
+     * @param path
+     *            the path to the field
+     * @param reference
+     *            the unique ID of the entity model
+     */
+    public void addFieldEntityModel(String path, String reference) {
+        fieldEntityModels.put(path, reference);
+    }
+    
+    public void removeFieldEntityModel(String path) {
+        fieldEntityModels.remove(path);
     }
 }

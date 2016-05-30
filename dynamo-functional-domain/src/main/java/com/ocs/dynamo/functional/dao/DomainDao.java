@@ -29,22 +29,22 @@ import com.ocs.dynamo.functional.domain.DomainParent;
  */
 public interface DomainDao extends BaseDao<Integer, Domain> {
 
-	/**
-	 * Query the children for a given parent
-	 * 
-	 * @param parent
-	 * @return the children for the given parent
-	 */
-	@SuppressWarnings("rawtypes")
-	List<DomainChild<? extends DomainParent>> findChildren(
-			DomainParent<? extends DomainChild> parent);
+    /**
+     * Returns the children for a certain parent
+     * 
+     * @param parent
+     * @return the children for the given parent
+     */
+    @SuppressWarnings("rawtypes")
+    List<DomainChild<? extends DomainParent>> findChildren(
+            DomainParent<? extends DomainChild> parent);
 
-	/**
-	 * Query all entities for a specific type (subclass)
-	 * 
-	 * @param type
-	 *            The subclass
-	 * @return All entities of given type
-	 */
-	List<? extends Domain> findAllByType(Class<? extends Domain> type);
+    /**
+     * Returns all entities for of the specified type
+     * 
+     * @param type
+     *            The subclass
+     * @return All entities of given type
+     */
+    List<? extends Domain> findAllByType(Class<? extends Domain> type);
 }

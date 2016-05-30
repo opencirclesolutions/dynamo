@@ -18,6 +18,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.lang.ObjectUtils;
+
+import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.dao.query.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
@@ -26,11 +29,14 @@ import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
 import com.ocs.dynamo.ui.composite.form.FormOptions;
 import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
 import com.ocs.dynamo.ui.composite.table.BaseTableWrapper;
+import com.vaadin.data.Property;
 import com.vaadin.data.sort.SortOrder;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Layout;
-import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Table;
+import com.vaadin.ui.Table.CellStyleGenerator;
 
 /**
  * A base class for a composite layout that displays a collection of data (rather than an single
@@ -53,8 +59,14 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
     // the button bar
     private HorizontalLayout buttonBar = new DefaultHorizontalLayout();
 
+    // the property used to determine when to draw a divider row
+    private String dividerProperty;
+
     // the joins to use when fetching data
     private FetchJoinInformation[] joins;
+
+    // the value from the previous row used when drawing divider rows
+    private Object previousDividerValue;
 
     // the page length (number of rows that is displayed in the table)
     private int pageLength = PAGE_LENGTH;
@@ -106,7 +118,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
     public void addSortOrder(SortOrder sortOrder) {
         this.sortOrders.add(sortOrder);
     }
-    
+
     /**
      * Method that is called after the user select an entity to view in Details mode
      * 
@@ -146,6 +158,35 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
     protected abstract BaseTableWrapper<ID, T> constructTableWrapper();
 
     /**
+     * Set up the code for adding table dividers
+     */
+    protected void constructTableDividers() {
+        if (dividerProperty != null) {
+            getTableWrapper().getTable().setStyleName(DynamoConstants.CSS_DIVIDER);
+            getTableWrapper().getTable().setCellStyleGenerator(new CellStyleGenerator() {
+
+                private static final long serialVersionUID = -943390318671601151L;
+
+                @Override
+                public String getStyle(Table source, Object itemId, Object propertyId) {
+                    String result = null;
+                    if (itemId != null) {
+                        Property<?> prop = source.getItem(itemId).getItemProperty(dividerProperty);
+                        if (prop != null) {
+                            Object obj = prop.getValue();
+                            if (!ObjectUtils.equals(obj, previousDividerValue)) {
+                                result = DynamoConstants.CSS_DIVIDER;
+                            }
+                            previousDividerValue = obj;
+                        }
+                    }
+                    return result;
+                }
+            });
+        }
+    }
+
+    /**
      * Creates a new entity - override in subclass if needed
      * 
      * @return
@@ -181,7 +222,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
         ab.setVisible(!getFormOptions().isHideAddButton() && isEditAllowed());
         return ab;
     };
-    
+
     public HorizontalLayout getButtonBar() {
         return buttonBar;
     }
@@ -288,4 +329,13 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
     public void setSortEnabled(boolean sortEnabled) {
         this.sortEnabled = sortEnabled;
     }
+
+    public String getDividerProperty() {
+        return dividerProperty;
+    }
+
+    public void setDividerProperty(String dividerProperty) {
+        this.dividerProperty = dividerProperty;
+    }
+
 }

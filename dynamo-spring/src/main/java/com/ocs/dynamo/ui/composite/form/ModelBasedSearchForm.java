@@ -29,7 +29,6 @@ import com.ocs.dynamo.filter.listener.FilterChangeEvent;
 import com.ocs.dynamo.filter.listener.FilterListener;
 import com.ocs.dynamo.ui.Searchable;
 import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
-import com.ocs.dynamo.ui.composite.layout.BaseCustomComponent;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.util.filter.And;
 import com.vaadin.ui.Button;
@@ -47,12 +46,12 @@ import com.vaadin.ui.VerticalLayout;
  * 
  * @author bas.rutten
  * @param <ID>
- *            type of the primary key
+ *            The type of the primary key of the entity
  * @param <T>
- *            type of the entity to search for
+ *            The type of the entity
  */
 public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEntity<ID>> extends
-        BaseCustomComponent implements FilterListener, Button.ClickListener {
+        AbstractModelBasedForm<ID, T> implements FilterListener, Button.ClickListener {
 
     // the types of search field
     protected enum FilterType {
@@ -68,17 +67,13 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
     // button to clear the search form
     private Button clearButton;
 
-    // the currently active filters
+    // the currently active search filters
     private List<Filter> currentFilters = new ArrayList<Filter>();
 
-    // the entity model on which to base the search form
-    private EntityModel<T> entityModel;
-
-    // custom field factory
+    /**
+     * Custom field factory
+     */
     private ModelBasedFieldFactory<T> fieldFactory;
-
-    // list of extra filters to apply to certain fields
-    private Map<String, Filter> fieldFilters = new HashMap<>();
 
     // the number of fields added
     private int fieldsAdded = 0;
@@ -88,9 +83,6 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 
     // the main layout
     private Layout form;
-
-    // the form options
-    private FormOptions formOptions;
 
     // the list of filter groups
     private Map<String, FilterGroup> groups = new HashMap<>();
@@ -107,7 +99,7 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
     // sub form
     private List<FormLayout> subForms = new ArrayList<>();
 
-    // toggle butoon (hides/shows the search form)
+    // toggle button (hides/shows the search form)
     private Button toggleButton;
 
     /**
@@ -142,15 +134,13 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
     public ModelBasedSearchForm(Searchable searchable, EntityModel<T> entityModel,
             FormOptions formOptions, List<Filter> additionalFilters,
             Map<String, Filter> fieldFilters) {
-        this.searchable = searchable;
+        super(formOptions, fieldFilters, entityModel);
         this.fieldFactory = ModelBasedFieldFactory.getSearchInstance(entityModel,
                 getMessageService());
-        this.formOptions = formOptions;
         this.additionalFilters = additionalFilters == null ? new ArrayList<Filter>()
                 : additionalFilters;
         this.currentFilters.addAll(this.additionalFilters);
-        this.fieldFilters = fieldFilters == null ? new HashMap<String, Filter>() : fieldFilters;
-        this.entityModel = entityModel;
+        this.searchable = searchable;
     }
 
     /**
@@ -167,7 +157,7 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
         VerticalLayout main = new VerticalLayout();
 
         // create the search form
-        filterLayout = constructFilterLayout(entityModel);
+        filterLayout = constructFilterLayout(getEntityModel());
         main.addComponent(filterLayout);
 
         // create the button bar
@@ -185,13 +175,13 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
         clearButton.setCaption(message("ocs.clear"));
         clearButton.setImmediate(true);
         clearButton.addClickListener(this);
-        clearButton.setVisible(!formOptions.isHideClearButton());
+        clearButton.setVisible(!getFormOptions().isHideClearButton());
         buttonBar.addComponent(clearButton);
 
         // create the toggle button
         toggleButton = new Button(message("ocs.hide"));
         toggleButton.addClickListener(this);
-        toggleButton.setVisible(formOptions.isShowToggleButton());
+        toggleButton.setVisible(getFormOptions().isShowToggleButton());
         buttonBar.addComponent(toggleButton);
 
         postProcessButtonBar(buttonBar);
@@ -268,7 +258,8 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 
         Field<?> field = constructCustomField(entityModel, attributeModel);
         if (field == null) {
-            field = fieldFactory.constructField(attributeModel, fieldFilters);
+            EntityModel<?> em = getFieldEntityModel(attributeModel);
+            field = fieldFactory.constructField(attributeModel, getFieldFilters(), em);
         }
 
         if (field != null) {
@@ -337,7 +328,7 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
         if (nrOfColumns == 1) {
             form = new FormLayout();
             // don't use all the space unless it's a popup window
-            if (!formOptions.isPopup()) {
+            if (!getFormOptions().isPopup()) {
                 form.setStyleName(DynamoConstants.CSS_CLASS_HALFSCREEN);
             }
         } else {
@@ -405,7 +396,7 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
             if (attributeModel.isSearchable()
                     && !AttributeType.DETAIL.equals(attributeModel.getAttributeType())) {
 
-                FilterGroup group = constructFilterGroup(entityModel, attributeModel);
+                FilterGroup group = constructFilterGroup(getEntityModel(), attributeModel);
                 group.getFilterComponent().setSizeFull();
 
                 if (nrOfColumns == 1) {

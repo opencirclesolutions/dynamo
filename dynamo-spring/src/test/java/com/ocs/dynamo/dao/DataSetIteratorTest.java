@@ -20,6 +20,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.google.common.collect.Lists;
+import com.ocs.dynamo.dao.query.DataSetIterator;
 import com.ocs.dynamo.domain.TestEntity;
 
 public class DataSetIteratorTest {
