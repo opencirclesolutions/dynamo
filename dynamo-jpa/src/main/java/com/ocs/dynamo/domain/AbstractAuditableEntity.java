@@ -36,20 +36,20 @@ public abstract class AbstractAuditableEntity<ID> extends AbstractEntity<ID> {
     private static final long serialVersionUID = 3347137920794563022L;
 
     @Attribute(readOnly = true)
-    @Column(name = "Created_by")
+    @Column(name = "created_by")
     private String createdBy;
 
     @Attribute(readOnly = true)
-    @Column(name = "Created_on")
+    @Column(name = "created_on")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdOn;
 
     @Attribute(readOnly = true, showInTable = VisibilityType.HIDE)
-    @Column(name = "Changed_by")
+    @Column(name = "changed_by")
     private String changedBy;
 
     @Attribute(readOnly = true, showInTable = VisibilityType.HIDE)
-    @Column(name = "Changed_on")
+    @Column(name = "changed_on")
     @Temporal(TemporalType.TIMESTAMP)
     private Date changedOn;
 

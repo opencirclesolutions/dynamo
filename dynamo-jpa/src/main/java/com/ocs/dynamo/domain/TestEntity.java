@@ -92,6 +92,7 @@ public class TestEntity extends AbstractTreeEntity<Integer, TestEntity> {
     private Boolean someBoolean2;
 
     @OneToMany(mappedBy = "testEntity", cascade = CascadeType.ALL)
+    @Attribute(searchable = true)
     private Set<TestEntity2> testEntities = new HashSet<>();
 
     @Attribute(displayFormat = "HH:mm:ss")

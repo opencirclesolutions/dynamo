@@ -16,6 +16,7 @@ package com.ocs.dynamo.dao.impl;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.mysema.query.types.path.EntityPathBase;
+import com.ocs.dynamo.dao.query.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 
 /**
@@ -35,9 +36,30 @@ public class DefaultDaoImpl<ID, T extends AbstractEntity<ID>> extends BaseDaoImp
 
     private Class<T> entityClass;
 
+    private String[] fetchPropertyIds;
+
+    /**
+     * Constructor
+     * 
+     * @param dslRoot
+     * @param entityClass
+     */
     public DefaultDaoImpl(EntityPathBase<T> dslRoot, Class<T> entityClass) {
         this.dslRoot = dslRoot;
         this.entityClass = entityClass;
+    }
+
+    /**
+     * 
+     * @param dslRoot
+     * @param entityClass
+     * @param fetchPropertyIds
+     */
+    public DefaultDaoImpl(EntityPathBase<T> dslRoot, Class<T> entityClass,
+            String... fetchPropertyIds) {
+        this.dslRoot = dslRoot;
+        this.entityClass = entityClass;
+        this.fetchPropertyIds = fetchPropertyIds;
     }
 
     @Override
@@ -50,4 +72,18 @@ public class DefaultDaoImpl<ID, T extends AbstractEntity<ID>> extends BaseDaoImp
         return entityClass;
     }
 
+    @Override
+    protected FetchJoinInformation[] getFetchJoins() {
+        if (fetchPropertyIds == null || fetchPropertyIds.length == 0) {
+            return super.getFetchJoins();
+        }
+
+        FetchJoinInformation[] joins = new FetchJoinInformation[fetchPropertyIds.length];
+        int i = 0;
+        for (String s : fetchPropertyIds) {
+            joins[i] = new FetchJoinInformation(s);
+            i++;
+        }
+        return joins;
+    }
 }

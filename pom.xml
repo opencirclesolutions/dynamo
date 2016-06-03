@@ -71,6 +71,8 @@
 		<javax.persistence.version>2.1.0</javax.persistence.version>
 		<xlsx-streamer.version>0.2.9</xlsx-streamer.version>
 		<junit-addons.version>1.4</junit-addons.version>
+		<jaxen.version>1.1.6</jaxen.version>
+		<dom4j.version>1.6.1</dom4j.version>
 
 		<!-- Maven plugin versions. -->
 		<org.apache.maven.plugins.compiler.version>3.3</org.apache.maven.plugins.compiler.version>
@@ -225,6 +227,11 @@
 				<artifactId>log4j</artifactId>
 				<version>${log4j.version}</version>
 			</dependency>
+			<dependency>
+				<groupId>jaxen</groupId>
+				<artifactId>jaxen</artifactId>
+				<version>${jaxen.version}</version>
+			</dependency>			
 			<!-- Hibernate -->
 			<dependency>
 				<groupId>org.hibernate</groupId>
@@ -355,6 +362,11 @@
 				<artifactId>jaxen</artifactId>
 				<version>${jaxen.version}</version>
 			</dependency>
+			<dependency>
+				<groupId>dom4j</groupId>
+				<artifactId>dom4j</artifactId>
+				<version>${dom4j.version}</version>
+			</dependency>			
 		</dependencies>
 	</dependencyManagement>
 

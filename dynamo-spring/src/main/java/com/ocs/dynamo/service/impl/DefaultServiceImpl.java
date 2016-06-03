@@ -17,6 +17,7 @@ import com.mysema.query.types.path.EntityPathBase;
 import com.ocs.dynamo.dao.BaseDao;
 import com.ocs.dynamo.dao.impl.DefaultDaoImpl;
 import com.ocs.dynamo.domain.AbstractEntity;
+import com.ocs.dynamo.utils.ClassUtils;
 
 /**
  * Default service implementation that uses the DefaultDaoImpl when no other implementation is
@@ -28,19 +29,67 @@ public class DefaultServiceImpl<ID, T extends AbstractEntity<ID>> extends BaseSe
 
     private BaseDao<ID, T> dao;
 
+    /**
+     * The name of the unique property
+     */
+    private String uniquePropertyId;
+
+    /**
+     * Constructor
+     * 
+     * @param dslRoot
+     * @param entityClass
+     */
     public DefaultServiceImpl(EntityPathBase<T> dslRoot, Class<T> entityClass) {
-        super();
-        dao = new DefaultDaoImpl<>(dslRoot, entityClass);
+        this(dslRoot, entityClass, null);
     }
 
+    /**
+     * Constructor
+     * 
+     * @param dslRoot
+     * @param entityClass
+     * @param uniquePropertyId
+     */
+    public DefaultServiceImpl(EntityPathBase<T> dslRoot, Class<T> entityClass,
+            String uniquePropertyId) {
+        dao = new DefaultDaoImpl<>(dslRoot, entityClass);
+        this.uniquePropertyId = uniquePropertyId;
+    }
+
+    /**
+     * 
+     * @param dao
+     */
     public DefaultServiceImpl(BaseDao<ID, T> dao) {
-        super();
+        this(dao, null);
+    }
+
+    /**
+     * 
+     * @param dao
+     * @param uniquePropertyId
+     */
+    public DefaultServiceImpl(BaseDao<ID, T> dao, String uniquePropertyId) {
         this.dao = dao;
+        this.uniquePropertyId = uniquePropertyId;
     }
 
     @Override
     protected BaseDao<ID, T> getDao() {
         return dao;
+    }
+
+    /**
+     * Check for an identical entry - by default we to this by simply checking for a unique property
+     */
+    @Override
+    protected T findIdenticalEntity(T entity) {
+        if (uniquePropertyId == null) {
+            return super.findIdenticalEntity(entity);
+        }
+        return getDao().findByUniqueProperty(uniquePropertyId,
+                ClassUtils.getFieldValue(entity, uniquePropertyId), false);
     }
 
 }

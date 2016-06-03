@@ -92,7 +92,7 @@ public class URLField extends CustomField<String> {
         main = new VerticalLayout();
         setCaption(attributeModel.getDisplayName());
 
-        bar = new DefaultHorizontalLayout(false, true);
+        bar = new DefaultHorizontalLayout(false, true, true);
         updateLink(getValue());
 
         // read only by default

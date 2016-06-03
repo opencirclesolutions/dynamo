@@ -75,7 +75,15 @@ public interface EntityModel<T> {
     String PROMPT = "prompt";
 
     String READ_ONLY = "readOnly";
+    
+    /**
+     * The path to actually search for (replaces the standard search path)
+     */
+    String REPLACEMENT_SEARCH_PATH = "replacementSearchPath";
 
+    /**
+     * Whether searching is case sensivite
+     */
     String SEARCH_CASE_SENSITIVE = "searchCaseSensitive";
 
     String SEARCH_PREFIX_ONLY = "searchPrefixOnly";

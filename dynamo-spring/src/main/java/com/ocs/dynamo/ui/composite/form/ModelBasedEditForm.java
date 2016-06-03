@@ -119,7 +119,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
             UploadReceiver receiver = new UploadReceiver(image, attributeModel.getName(),
                     attributeModel.getAllowedExtensions().toArray(new String[0]));
 
-            HorizontalLayout buttons = new DefaultHorizontalLayout(false, true);
+            HorizontalLayout buttons = new DefaultHorizontalLayout(false, true, true);
             main.addComponent(buttons);
 
             Upload upload = new Upload(null, receiver);
@@ -447,7 +447,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
         // horizontal layout that contains title label and buttons
 
-        titleBars.put(isViewMode(), new DefaultHorizontalLayout(false, true));
+        titleBars.put(isViewMode(), new DefaultHorizontalLayout(false, true, true));
         titleBars.get(isViewMode()).addComponent(titleLabels.get(isViewMode()));
 
         HorizontalLayout buttonBar = constructButtonBar();
@@ -488,7 +488,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
                     Layout innerForm = constructAttributeGroupLayout(form, tabs, tabSheet,
                             parentGroupHeader, false);
 
-                    // check if there is a tabsheet needed on the inner level
+                    // add a tab sheet on the inner level if needed
                     TabSheet innerTabSheet = null;
                     boolean innerTabs = !tabs;
                     if (innerTabs) {
@@ -496,11 +496,13 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
                         innerForm.addComponent(innerTabSheet);
                     }
 
+                    // add all appropriate inner groups 
                     int tempCount = processParentHeaderGroup(parentGroupHeader, innerForm,
                             innerTabs, innerTabSheet, count);
                     count += tempCount;
                 }
             } else {
+                // just one layer of attribute groups
                 for (String attributeGroup : entityModel.getAttributeGroups()) {
                     if (entityModel.isAttributeGroupVisible(attributeGroup, viewMode)) {
                         Layout innerForm = constructAttributeGroupLayout(form, tabs, tabSheet,
@@ -535,6 +537,15 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
         return layout;
     }
 
+    /**
+     * Processes all fields that are part of a property group
+     * @param parentGroupHeader the group header
+     * @param innerForm the form layout to which to add the fields
+     * @param innerTabs whether we are displaying tabs
+     * @param innerTabSheet the tab sheet to which to add the fields
+     * @param startCount
+     * @return
+     */
     private int processParentHeaderGroup(String parentGroupHeader, Layout innerForm,
             boolean innerTabs, TabSheet innerTabSheet, int startCount) {
         int count = 0;
@@ -591,7 +602,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
         if (lowest) {
             innerLayout = new FormLayout();
             ((FormLayout) innerLayout).setMargin(true);
-
             if (!tabs) {
                 ((FormLayout) innerLayout).setStyleName(DynamoConstants.CSS_CLASS_HALFSCREEN);
             }

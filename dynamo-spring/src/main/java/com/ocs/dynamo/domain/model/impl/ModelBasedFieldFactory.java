@@ -601,6 +601,8 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
     }
 
     /**
+     * Resolves an entity model by falling back to the default model for a certain class
+     * 
      * @param entityModel
      * @param attributeModel
      * @return
@@ -608,8 +610,10 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
     private EntityModel<?> resolveEntityModel(EntityModel<?> entityModel,
             AttributeModel attributeModel) {
         if (entityModel == null) {
+            Class<?> type = attributeModel.getMemberType() != null ? attributeModel.getMemberType()
+                    : attributeModel.getType();
             entityModel = ServiceLocator.getEntityModelFactory().getModel(
-                    attributeModel.getType().asSubclass(AbstractEntity.class));
+                    type.asSubclass(AbstractEntity.class));
         }
         return entityModel;
     }

@@ -108,6 +108,8 @@ public class AttributeModelImpl implements AttributeModel {
 
     private boolean url;
 
+    private String replacementSearchPath;
+
     @Override
     public int compareTo(AttributeModel o) {
         return this.getOrder() - o.getOrder();
@@ -480,6 +482,15 @@ public class AttributeModelImpl implements AttributeModel {
     @Override
     public String toString() {
         return ReflectionToStringBuilder.toStringExclude(this, "entityModel");
+    }
+
+    @Override
+    public String getReplacementSearchPath() {
+        return replacementSearchPath;
+    }
+
+    public void setReplacementSearchPath(String replacementSearchPath) {
+        this.replacementSearchPath = replacementSearchPath;
     }
 
 }

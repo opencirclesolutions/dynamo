@@ -147,6 +147,7 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
      * Callback method that is called when the user toggles the visibility of the search form
      * 
      * @param visible
+     *            indicates the search fields are visible now
      */
     protected void afterSearchFieldToggle(boolean visible) {
         // override in subclasses
@@ -171,8 +172,7 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
         buttonBar.addComponent(searchButton);
 
         // create the clear button
-        clearButton = new Button();
-        clearButton.setCaption(message("ocs.clear"));
+        clearButton = new Button(message("ocs.clear"));
         clearButton.setImmediate(true);
         clearButton.addClickListener(this);
         clearButton.setVisible(!getFormOptions().isHideClearButton());
@@ -184,6 +184,7 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
         toggleButton.setVisible(getFormOptions().isShowToggleButton());
         buttonBar.addComponent(toggleButton);
 
+        // add custom buttons
         postProcessButtonBar(buttonBar);
 
         // initial search
@@ -241,6 +242,12 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
         return null;
     }
 
+    /**
+     * Callback method that can be used to create any additional search fields (that are not
+     * governed by the entity model)
+     * 
+     * @return
+     */
     protected List<Component> constructExtraSearchFields() {
         return new ArrayList<>();
     }
@@ -289,7 +296,9 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
                 filterType = FilterType.BOOLEAN;
             } else if (attributeModel.getType().isEnum()) {
                 filterType = FilterType.ENUM;
-            } else if (AbstractEntity.class.isAssignableFrom(attributeModel.getType())) {
+            } else if (AbstractEntity.class.isAssignableFrom(attributeModel.getType())
+                    || AttributeType.DETAIL.equals(attributeModel.getAttributeType())) {
+                // search for an entity
                 filterType = FilterType.ENTITY;
             }
 
@@ -393,8 +402,7 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
      */
     private void iterate(List<AttributeModel> attributeModels) {
         for (AttributeModel attributeModel : attributeModels) {
-            if (attributeModel.isSearchable()
-                    && !AttributeType.DETAIL.equals(attributeModel.getAttributeType())) {
+            if (attributeModel.isSearchable()) {
 
                 FilterGroup group = constructFilterGroup(getEntityModel(), attributeModel);
                 group.getFilterComponent().setSizeFull();
@@ -429,10 +437,21 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
         }
     }
 
+    /**
+     * Callback method that allows the user to modify the button bar
+     * 
+     * @param groups
+     */
     protected void postProcessButtonBar(Layout buttonBar) {
         // Use in subclass to add additional buttons
     }
 
+    /**
+     * Callback method that allows the user to modify the various filter groups
+     * 
+     * @param groups
+     *            the filter groups
+     */
     protected void postProcessFilterGroups(Map<String, FilterGroup> groups) {
         // overwrite in subclasses
     }

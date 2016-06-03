@@ -19,39 +19,39 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.validation.constraints.NotNull;
 
 /**
- * The persistent class for the domain entity that manages hierarchical
- * reference information.
+ * The persistent class for the domain entity that manages hierarchical reference information.
  * 
  * @author Patrick Deenen (patrick@opencircle.solutions)
  * 
  */
 @SuppressWarnings("rawtypes")
 @Entity
-public abstract class DomainChild<P extends DomainParent> extends Domain
-		implements Serializable {
+public abstract class DomainChild<P extends DomainParent> extends Domain implements Serializable {
 
-	private static final long serialVersionUID = 2615942460028599211L;
-	// bi-directional many-to-one association to Domain
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "parent")
-	private P parent;
+    private static final long serialVersionUID = 2615942460028599211L;
 
-	public DomainChild() {
-		super();
-	}
+    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent")
+    private P parent;
 
-	public DomainChild(String code, String name) {
-		super(code, name);
-	}
+    public DomainChild() {
+        super();
+    }
 
-	public P getParent() {
-		return this.parent;
-	}
+    public DomainChild(String code, String name) {
+        super(code, name);
+    }
 
-	public void setParent(P parent) {
-		this.parent = parent;
-	}
+    public P getParent() {
+        return this.parent;
+    }
+
+    public void setParent(P parent) {
+        this.parent = parent;
+    }
 
 }

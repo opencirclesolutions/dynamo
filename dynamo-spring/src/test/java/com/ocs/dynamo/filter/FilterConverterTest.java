@@ -13,12 +13,33 @@
  */
 package com.ocs.dynamo.filter;
 
+import java.util.List;
+
+import junitx.util.PrivateAccessor;
+
 import org.junit.Assert;
 import org.junit.Test;
+import org.mockito.Mock;
 
-public class FilterConverterTest {
+import com.google.common.collect.Lists;
+import com.ocs.dynamo.domain.TestEntity;
+import com.ocs.dynamo.domain.TestEntity2;
+import com.ocs.dynamo.domain.model.EntityModelFactory;
+import com.ocs.dynamo.domain.model.impl.EntityModelFactoryImpl;
+import com.ocs.dynamo.service.MessageService;
+import com.ocs.dynamo.test.BaseMockitoTest;
+import com.ocs.dynamo.test.MockUtil;
 
-    private FilterConverter converter = new FilterConverter();
+public class FilterConverterTest extends BaseMockitoTest {
+
+    private EntityModelFactory emf = new EntityModelFactoryImpl();
+
+    @Mock
+    private MessageService messageService;
+
+    private FilterConverter converter = new FilterConverter(null);
+
+    private FilterConverter modelConverter;
 
     private com.vaadin.data.util.filter.Compare.Equal f1 = new com.vaadin.data.util.filter.Compare.Equal(
             "test", "test");
@@ -26,38 +47,47 @@ public class FilterConverterTest {
     private com.vaadin.data.util.filter.Compare.Equal f2 = new com.vaadin.data.util.filter.Compare.Equal(
             "test", "test");
 
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
+        PrivateAccessor.setField(emf, "defaultPrecision", 2);
+        MockUtil.mockMessageService(messageService);
+
+        modelConverter = new FilterConverter(emf.getModel(TestEntity.class));
+    }
+
     @Test
     public void testCompareEqual() {
-        Filter result = converter
-                .convert(new com.vaadin.data.util.filter.Compare.Equal("test", "test"));
+        Filter result = converter.convert(new com.vaadin.data.util.filter.Compare.Equal("test",
+                "test"));
         Assert.assertTrue(result instanceof Compare.Equal);
     }
 
     @Test
     public void testCompareLess() {
-        Filter result = converter
-                .convert(new com.vaadin.data.util.filter.Compare.Less("test", "test"));
+        Filter result = converter.convert(new com.vaadin.data.util.filter.Compare.Less("test",
+                "test"));
         Assert.assertTrue(result instanceof Compare.Less);
     }
 
     @Test
     public void testCompareLessOrEqual() {
-        Filter result = converter
-                .convert(new com.vaadin.data.util.filter.Compare.LessOrEqual("test", "test"));
+        Filter result = converter.convert(new com.vaadin.data.util.filter.Compare.LessOrEqual(
+                "test", "test"));
         Assert.assertTrue(result instanceof Compare.LessOrEqual);
     }
 
     @Test
     public void testCompareGreater() {
-        Filter result = converter
-                .convert(new com.vaadin.data.util.filter.Compare.Greater("test", "test"));
+        Filter result = converter.convert(new com.vaadin.data.util.filter.Compare.Greater("test",
+                "test"));
         Assert.assertTrue(result instanceof Compare.Greater);
     }
 
     @Test
     public void testCompareGreaterOrEqual() {
-        Filter result = converter
-                .convert(new com.vaadin.data.util.filter.Compare.GreaterOrEqual("test", "test"));
+        Filter result = converter.convert(new com.vaadin.data.util.filter.Compare.GreaterOrEqual(
+                "test", "test"));
         Assert.assertTrue(result instanceof Compare.GreaterOrEqual);
     }
 
@@ -96,8 +126,8 @@ public class FilterConverterTest {
      */
     @Test
     public void testSimpleStringFilter1() {
-        Filter result = converter.convert(
-                new com.vaadin.data.util.filter.SimpleStringFilter("test", "test", false, true));
+        Filter result = converter.convert(new com.vaadin.data.util.filter.SimpleStringFilter(
+                "test", "test", false, true));
         Assert.assertTrue(result instanceof Like);
         Like like = (Like) result;
         Assert.assertTrue(like.isCaseSensitive());
@@ -109,11 +139,43 @@ public class FilterConverterTest {
      */
     @Test
     public void testSimpleStringFilter2() {
-        Filter result = converter.convert(
-                new com.vaadin.data.util.filter.SimpleStringFilter("test", "test", true, false));
+        Filter result = converter.convert(new com.vaadin.data.util.filter.SimpleStringFilter(
+                "test", "test", true, false));
         Assert.assertTrue(result instanceof Like);
         Like like = (Like) result;
         Assert.assertFalse(like.isCaseSensitive());
         Assert.assertEquals("%test%", like.getValue());
+    }
+
+    /**
+     * Test that a search for a details attribute is replaced by a Contains filter
+     */
+    @Test
+    public void testSearchDetails() {
+        Filter result = modelConverter.convert(new com.vaadin.data.util.filter.And(
+                new com.vaadin.data.util.filter.Compare.Equal("testEntities", new TestEntity2())));
+
+        Assert.assertTrue(result instanceof And);
+        Filter first = ((And) result).getFilters().iterator().next();
+        Assert.assertTrue(first instanceof Contains);
+    }
+
+    /**
+     * Test that a search for a details attribute is replaced by a Contains filter
+     */
+    @Test
+    public void testSearchDetails2() {
+        List<TestEntity2> entities = Lists.newArrayList(new TestEntity2(), new TestEntity2());
+
+        Filter result = modelConverter.convert(new com.vaadin.data.util.filter.And(
+                new com.vaadin.data.util.filter.Compare.Equal("testEntities", entities)));
+
+        Assert.assertTrue(result instanceof And);
+        Filter first = ((And) result).getFilters().iterator().next();
+        Assert.assertTrue(first instanceof Or);
+
+        for (Filter f : ((Or) first).getFilters()) {
+            Assert.assertTrue(f instanceof Contains);
+        }
     }
 }

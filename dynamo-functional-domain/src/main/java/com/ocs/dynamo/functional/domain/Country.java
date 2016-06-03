@@ -15,32 +15,69 @@ package com.ocs.dynamo.functional.domain;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.validation.constraints.NotNull;
 
+import org.apache.commons.lang.builder.ReflectionToStringBuilder;
+
+import com.ocs.dynamo.domain.model.VisibilityType;
+import com.ocs.dynamo.domain.model.annotation.Attribute;
+import com.ocs.dynamo.domain.model.annotation.Model;
+
+/**
+ * A Country identified by an ISO country code
+ * 
+ * @author bas.rutten
+ *
+ */
 @Entity
 @DiscriminatorValue("COUNTRY")
+@Model(displayNamePlural = "Countries", displayProperty = "name", sortOrder = "name asc")
 public class Country extends DomainChild<Region> {
 
-	private static final long serialVersionUID = 1410771214783677106L;
+    private static final long serialVersionUID = 1410771214783677106L;
 
-	public Country() {
-	}
+    public Country() {
+    }
 
-	public Country(String code, String name) {
-		super(code, name);
-	}
+    public Country(String code, String name) {
+        super(code, name);
+    }
 
-	public Region getRegion() {
-		return getParent();
-	}
+    public void setRegion(Region region) {
+        setParent(region);
+    }
 
-	public void setRegion(Region region) {
-		setParent(region);
-	}
+    /**
+     * The region - note that this is not a JPA attribute and you must use "parent" instead in
+     * queries
+     * 
+     * @return
+     */
+    public Region getRegion() {
+        return getParent();
+    }
 
-	@Override
-	public Region getParent() {
-		// TODO Auto-generated method stub
-		return super.getParent();
-	}
+    /**
+     * Overridden so we can modify the attribute model
+     */
+    @Override
+    @Attribute(complexEditable = true, displayName = "Region", showInTable = VisibilityType.SHOW)
+    public Region getParent() {
+        return super.getParent();
+    }
 
+    /**
+     * Overridden so we can modify the attribute model
+     */
+    @Override
+    @NotNull
+    @Attribute(visible = VisibilityType.SHOW)
+    public String getCode() {
+        return super.getCode();
+    }
+
+    @Override
+    public String toString() {
+        return ReflectionToStringBuilder.toStringExclude(this, new String[] { "parent", "region" });
+    }
 }

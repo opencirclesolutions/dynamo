@@ -66,7 +66,7 @@ public class HorizontalDisplayLayout<ID extends Serializable, T extends Abstract
 
     @Override
     public void build() {
-        HorizontalLayout layout = new DefaultHorizontalLayout(false, true);
+        HorizontalLayout layout = new DefaultHorizontalLayout(false, true, true);
 
         for (AttributeModel attributeModel : getEntityModel().getAttributeModels()) {
             if (attributeModel.isVisible()

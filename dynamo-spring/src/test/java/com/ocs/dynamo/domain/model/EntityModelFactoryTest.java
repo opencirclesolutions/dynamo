@@ -319,6 +319,16 @@ public class EntityModelFactoryTest extends BaseMockitoTest {
         Assert.assertNotNull(child);
         Assert.assertEquals("EntityParent.children", child.getReference());
 
+        // check a detail property that does not map directly to a field
+        attributeModel = parent.getAttributeModel("calculatedChildren");
+        Assert.assertNotNull(attributeModel);
+        EntityModel<EntityGrandChild> grandChild = (EntityModel<EntityGrandChild>) attributeModel
+                .getNestedEntityModel();
+        Assert.assertNotNull(grandChild);
+        Assert.assertEquals("EntityParent.calculatedChildren", grandChild.getReference());
+        Assert.assertEquals(EntityGrandChild.class, attributeModel.getMemberType());
+        Assert.assertEquals("children", attributeModel.getReplacementSearchPath());
+
         // check that any loops in the nested properties are skipped
         Assert.assertFalse(factory.hasModel("EntityChild.parent.children"));
         Assert.assertFalse(factory.hasModel("EntityParent.children.parent"));
@@ -836,6 +846,15 @@ public class EntityModelFactoryTest extends BaseMockitoTest {
         public void setChildren(List<EntityChild> children) {
             this.children = children;
         }
+
+        @Attribute(memberType = EntityGrandChild.class, replacementSearchPath = "children")
+        public List<EntityGrandChild> getCalculatedChildren() {
+            return null;
+        }
+
+        public void setCalculatedChildren(List<EntityGrandChild> children) {
+            // do nothing
+        }
     }
 
     private class EntityChild {
@@ -876,6 +895,10 @@ public class EntityModelFactoryTest extends BaseMockitoTest {
         public void setParent2(EntityParent parent2) {
             this.parent2 = parent2;
         }
+    }
+
+    private class EntityGrandChild extends EntityChild {
+
     }
 
     @Model(sortOrder = "code unknown, unknown asc")

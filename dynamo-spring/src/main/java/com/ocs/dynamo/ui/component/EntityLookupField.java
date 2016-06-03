@@ -45,8 +45,8 @@ import com.vaadin.ui.UI;
  * @param <T>
  *            the type of the entity
  */
-public class EntityLookupField<ID extends Serializable, T extends AbstractEntity<ID>>
-        extends CustomField<T> {
+public class EntityLookupField<ID extends Serializable, T extends AbstractEntity<ID>> extends
+        CustomField<T> {
 
     private static final long serialVersionUID = 5377765863515463622L;
 
@@ -151,7 +151,7 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 
     @Override
     protected Component initContent() {
-        HorizontalLayout bar = new DefaultHorizontalLayout(false, true);
+        HorizontalLayout bar = new DefaultHorizontalLayout(false, true, true);
 
         if (this.attributeModel != null) {
             this.setCaption(attributeModel.getDisplayName());

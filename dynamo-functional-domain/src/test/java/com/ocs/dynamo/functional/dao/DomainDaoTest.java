@@ -36,12 +36,14 @@ import com.ocs.dynamo.test.BaseIntegrationTest;
 public class DomainDaoTest extends BaseIntegrationTest {
 
     @Inject
-    DomainDao domainDao;
-    @Inject
-    DomainDao regionDao;
+    private DomainDao domainDao;
 
-    Region europa;
-    Region asia;
+    @Inject
+    private DomainDao regionDao;
+
+    private Region europa;
+
+    private Region asia;
 
     @Before
     public void setup() {

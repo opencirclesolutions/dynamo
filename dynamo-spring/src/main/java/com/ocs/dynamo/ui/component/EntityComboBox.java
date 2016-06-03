@@ -29,8 +29,8 @@ import com.vaadin.shared.ui.combobox.FilteringMode;
 /**
  * Combo box for displaying a list of entities
  */
-public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID>>
-        extends ComboBoxFixed {
+public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID>> extends
+        ComboBoxFixed {
 
     private static final long serialVersionUID = 3041574615271340579L;
 
@@ -134,7 +134,7 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
             }
         } else if (SelectMode.FILTERED.equals(mode)) {
             // add a filtered selection of items
-            items = service.find(new FilterConverter().convert(filter),
+            items = service.find(new FilterConverter(null).convert(filter),
                     SortUtil.translate(sortOrder));
             container.addAll(items);
         } else if (SelectMode.FIXED.equals(mode)) {

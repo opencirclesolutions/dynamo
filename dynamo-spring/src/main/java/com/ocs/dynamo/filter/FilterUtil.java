@@ -14,9 +14,13 @@
 package com.ocs.dynamo.filter;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import com.ocs.dynamo.domain.model.AttributeModel;
+import com.ocs.dynamo.domain.model.AttributeType;
+import com.ocs.dynamo.domain.model.EntityModel;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.util.filter.AbstractJunctionFilter;
 import com.vaadin.data.util.filter.Compare.Equal;
@@ -264,4 +268,46 @@ public final class FilterUtil {
         }
     }
 
+    /**
+     * Replaces all filters that query a detail relation by the appropriate filters
+     * 
+     * @param filter
+     *            the original filter
+     * @param entityModel
+     *            the entity model used to determine which filters must be replaced
+     * @param overrideProperty
+     *            optional property - if supplied, then we the application will check this property
+     *            instead of the property supplied in the original filters
+     */
+    public static void replaceDetailsFilters(com.ocs.dynamo.filter.Filter filter,
+            EntityModel<?> entityModel) {
+
+        // iterate over models and try to find filters that query DETAIL relations
+        for (AttributeModel am : entityModel.getAttributeModels()) {
+            if (am.isSearchable() && AttributeType.DETAIL.equals(am.getAttributeType())) {
+                com.ocs.dynamo.filter.Filter detailFilter = FilterUtil.extractFilter(filter,
+                        am.getPath());
+                if (detailFilter != null) {
+                    // check which property to use
+                    String prop = am.getReplacementSearchPath() != null ? am
+                            .getReplacementSearchPath() : am.getPath();
+
+                    com.ocs.dynamo.filter.Compare.Equal bf = (Compare.Equal) detailFilter;
+                    if (bf.getValue() instanceof Collection) {
+                        // multiple values supplied - construct an OR filter
+                        Collection<?> col = (Collection<?>) bf.getValue();
+                        Or or = new Or();
+                        for (Object o : col) {
+                            or.or(new Contains(prop, o));
+                        }
+                        replaceFilter(null, filter, or, am.getPath());
+                    } else {
+                        // just a single value
+                        replaceFilter(null, filter, new Contains(prop, bf.getValue()), am.getPath());
+                    }
+
+                }
+            }
+        }
+    }
 }

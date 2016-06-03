@@ -186,10 +186,10 @@ public abstract class BaseServiceImpl<ID, T extends AbstractEntity<ID>> implemen
     /**
      * Looks for an identical entity (which has a different primary key but
      * 
-     * @param t
+     * @param entity the entity
      * @return
      */
-    protected T findIdenticalEntity(T t) {
+    protected T findIdenticalEntity(T entity) {
         return null;
     }
 

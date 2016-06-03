@@ -18,26 +18,35 @@ import java.util.Set;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
+import org.apache.commons.lang.builder.ReflectionToStringBuilder;
+
+import com.ocs.dynamo.domain.model.annotation.Model;
+
 @Entity
 @DiscriminatorValue("REGION")
+@Model(displayProperty = "name", sortOrder = "name asc")
 public class Region extends DomainParent<Country> {
 
-	private static final long serialVersionUID = 1410771214783677106L;
+    private static final long serialVersionUID = 1410771214783677106L;
 
-	public Region() {
-		super();
-	}
+    public Region() {
+    }
 
-	public Region(String code, String name) {
-		super(code, name);
-	}
+    public Region(String code, String name) {
+        super(code, name);
+    }
 
-	public Set<Country> getCountries() {
-		return getChildren();
-	}
+    public Set<Country> getCountries() {
+        return getChildren();
+    }
 
-	public void setCountries(Set<Country> countries) {
-		setChildren(countries);
-	}
+    public void setCountries(Set<Country> countries) {
+        setChildren(countries);
+    }
 
+    @Override
+    public String toString() {
+        return ReflectionToStringBuilder.toStringExclude(this, new String[] { "countries",
+                "children" });
+    }
 }

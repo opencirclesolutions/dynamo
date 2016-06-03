@@ -15,6 +15,7 @@ package com.ocs.dynamo.filter;
 
 import org.springframework.core.convert.converter.Converter;
 
+import com.ocs.dynamo.domain.model.EntityModel;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.util.filter.And;
 import com.vaadin.data.util.filter.Between;
@@ -32,6 +33,15 @@ import com.vaadin.data.util.filter.SimpleStringFilter;
  */
 public class FilterConverter implements Converter<Filter, com.ocs.dynamo.filter.Filter> {
 
+    /**
+     * Entity model used when converting filters for detail collections
+     */
+    private EntityModel<?> entityModel;
+
+    public FilterConverter(EntityModel<?> entityModel) {
+        this.entityModel = entityModel;
+    }
+
     @Override
     public com.ocs.dynamo.filter.Filter convert(Filter filter) {
         if (filter == null) {
@@ -45,58 +55,68 @@ public class FilterConverter implements Converter<Filter, com.ocs.dynamo.filter.
             for (Filter f : ((And) filter).getFilters()) {
                 and.getFilters().add(convert(f));
             }
-            return result;
         } else if (filter instanceof Or) {
             com.ocs.dynamo.filter.Or or = new com.ocs.dynamo.filter.Or();
             result = or;
             for (Filter f : ((Or) filter).getFilters()) {
                 or.getFilters().add(convert(f));
             }
-            return result;
         } else if (filter instanceof Not) {
             final Not not = (Not) filter;
-            return new com.ocs.dynamo.filter.Not(convert(not.getFilter()));
+            result = new com.ocs.dynamo.filter.Not(convert(not.getFilter()));
         } else if (filter instanceof Between) {
             final Between between = (Between) filter;
-            return new com.ocs.dynamo.filter.Between(between.getPropertyId().toString(),
+            result = new com.ocs.dynamo.filter.Between(between.getPropertyId().toString(),
                     between.getStartValue(), between.getEndValue());
         } else if (filter instanceof Compare) {
             final Compare compare = (Compare) filter;
             switch (compare.getOperation()) {
             case EQUAL:
-                return new com.ocs.dynamo.filter.Compare.Equal(compare.getPropertyId().toString(),
-                        compare.getValue());
+                result = new com.ocs.dynamo.filter.Compare.Equal(
+                        compare.getPropertyId().toString(), compare.getValue());
+                break;
             case GREATER:
-                return new com.ocs.dynamo.filter.Compare.Greater(compare.getPropertyId().toString(),
-                        compare.getValue());
+                result = new com.ocs.dynamo.filter.Compare.Greater(compare.getPropertyId()
+                        .toString(), compare.getValue());
+                break;
             case GREATER_OR_EQUAL:
-                return new com.ocs.dynamo.filter.Compare.GreaterOrEqual(
-                        compare.getPropertyId().toString(), compare.getValue());
+                result = new com.ocs.dynamo.filter.Compare.GreaterOrEqual(compare.getPropertyId()
+                        .toString(), compare.getValue());
+                break;
             case LESS:
-                return new com.ocs.dynamo.filter.Compare.Less(compare.getPropertyId().toString(),
+                result = new com.ocs.dynamo.filter.Compare.Less(compare.getPropertyId().toString(),
                         compare.getValue());
+                break;
             case LESS_OR_EQUAL:
-                return new com.ocs.dynamo.filter.Compare.LessOrEqual(
-                        compare.getPropertyId().toString(), compare.getValue());
+                result = new com.ocs.dynamo.filter.Compare.LessOrEqual(compare.getPropertyId()
+                        .toString(), compare.getValue());
+                break;
             default:
-                return null;
+                result = null;
             }
         } else if (filter instanceof IsNull) {
             final IsNull isNull = (IsNull) filter;
-            return new com.ocs.dynamo.filter.IsNull(isNull.getPropertyId().toString());
+            result = new com.ocs.dynamo.filter.IsNull(isNull.getPropertyId().toString());
         } else if (filter instanceof Like) {
             final Like like = (Like) filter;
-            return new com.ocs.dynamo.filter.Like(like.getPropertyId().toString(), like.getValue(),
-                    like.isCaseSensitive());
+            result = new com.ocs.dynamo.filter.Like(like.getPropertyId().toString(),
+                    like.getValue(), like.isCaseSensitive());
         } else if (filter instanceof SimpleStringFilter) {
             final SimpleStringFilter like = (SimpleStringFilter) filter;
-            return new com.ocs.dynamo.filter.Like(like.getPropertyId().toString(),
+            result = new com.ocs.dynamo.filter.Like(like.getPropertyId().toString(),
                     (like.isOnlyMatchPrefix() ? "" : "%") + like.getFilterString() + "%",
                     !like.isIgnoreCase());
         } else {
-            throw new UnsupportedOperationException(
-                    "Filter: " + filter.getClass().getName() + " is not supported.");
+            throw new UnsupportedOperationException("Filter: " + filter.getClass().getName()
+                    + " is not supported.");
         }
+
+        // replace any filters for searching detail fields by Contains-filters
+        if (entityModel != null) {
+            FilterUtil.replaceDetailsFilters(result, entityModel);
+        }
+
+        return result;
     }
 
 }

@@ -25,8 +25,10 @@ import org.vaadin.addons.lazyquerycontainer.QueryDefinition;
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.dao.SortOrder;
 import com.ocs.dynamo.domain.AbstractEntity;
+import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.filter.Filter;
 import com.ocs.dynamo.filter.FilterConverter;
+import com.ocs.dynamo.ui.ServiceLocator;
 import com.ocs.dynamo.utils.ClassUtils;
 import com.vaadin.data.Container;
 import com.vaadin.data.util.filter.And;
@@ -116,7 +118,10 @@ public abstract class BaseServiceQuery<ID extends Serializable, T extends Abstra
             first = new And(first, filter);
         }
 
-        return new FilterConverter().convert(first);
+        // look up the correct entity model for filter conversion
+        EntityModel<?> em = ServiceLocator.getEntityModelFactory().getModel(
+                getCustomQueryDefinition().getService().getEntityClass());
+        return new FilterConverter(em).convert(first);
     }
 
     /**

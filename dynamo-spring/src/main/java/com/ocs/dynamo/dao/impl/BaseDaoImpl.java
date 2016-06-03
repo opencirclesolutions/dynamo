@@ -133,7 +133,8 @@ public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements B
             FetchJoinInformation... joins) {
         // Create select and where clauses
         CriteriaQuery<T> cq = JpaQueryBuilder.createSelectQuery(filter, entityManager,
-                getEntityClass(), joins, sortOrders == null ? null : sortOrders.toArray());
+                getEntityClass(), (joins == null || joins.length == 0) ? getFetchJoins() : joins,
+                sortOrders == null ? null : sortOrders.toArray());
 
         TypedQuery<T> query = entityManager.createQuery(cq);
 

@@ -35,8 +35,8 @@ import com.vaadin.ui.ListSelect;
  * @param <T>
  *            type of the entity
  */
-public class EntityListSelect<ID extends Serializable, T extends AbstractEntity<ID>>
-        extends ListSelect {
+public class EntityListSelect<ID extends Serializable, T extends AbstractEntity<ID>> extends
+        ListSelect {
 
     private static final long serialVersionUID = 3041574615271340579L;
 
@@ -133,7 +133,7 @@ public class EntityListSelect<ID extends Serializable, T extends AbstractEntity<
             container.addAll(service.findAll(SortUtil.translate(sortOrder)));
         } else if (SelectMode.FILTERED.equals(mode)) {
             // add a filtered selection of items
-            items = service.find(new FilterConverter().convert(filter),
+            items = service.find(new FilterConverter(null).convert(filter),
                     SortUtil.translate(sortOrder));
             container.addAll(items);
         } else if (SelectMode.FIXED.equals(mode)) {

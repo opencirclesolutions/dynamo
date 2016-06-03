@@ -529,10 +529,17 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
             // No relation type set in view model definition, hence derive
             // defaults
             Embedded embedded = ClassUtils.getAnnotation(parentClass, name, Embedded.class);
+            Attribute attribute = ClassUtils.getAnnotation(parentClass, name, Attribute.class);
+
             if (embedded != null) {
                 result = AttributeType.EMBEDDED;
             } else if (Collection.class.isAssignableFrom(model.getType())) {
-                if (ClassUtils.getAnnotation(parentClass, name, ManyToMany.class) != null
+                if (attribute != null && attribute.memberType() != null
+                        && !attribute.memberType().equals(Object.class)) {
+                    // if a member type is explicitly set, use that type
+                    result = AttributeType.DETAIL;
+                    model.setMemberType(attribute.memberType());
+                } else if (ClassUtils.getAnnotation(parentClass, name, ManyToMany.class) != null
                         || ClassUtils.getAnnotation(parentClass, name, OneToMany.class) != null) {
                     result = AttributeType.DETAIL;
                     model.setMemberType(ClassUtils.getResolvedType(parentClass, model.getName(), 0));
@@ -564,8 +571,10 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
     /**
      * Determines the display format on a property
      * 
-     * @param type the java type
-     * @param entityClass the class on which the property is defined
+     * @param type
+     *            the java type
+     * @param entityClass
+     *            the class on which the property is defined
      * @param fieldName
      * @return
      */
@@ -813,6 +822,10 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
             if (attribute.url()) {
                 model.setUrl(true);
             }
+
+            if (!StringUtils.isEmpty(attribute.replacementSearchPath())) {
+                model.setReplacementSearchPath(attribute.replacementSearchPath());
+            }
         }
     }
 
@@ -1010,6 +1023,11 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
         if (!StringUtils.isEmpty(msg)) {
             model.setUrl(Boolean.valueOf(msg));
         }
+
+        msg = getAttributeMessage(entityModel, model, EntityModel.REPLACEMENT_SEARCH_PATH);
+        if (!StringUtils.isEmpty(msg)) {
+            model.setReplacementSearchPath(msg);
+        }
     }
 
     /**
@@ -1029,7 +1047,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
             if (AttributeType.MASTER.equals(model.getAttributeType())) {
                 type = model.getType();
             } else if (AttributeType.DETAIL.equals(model.getAttributeType())) {
-                type = ClassUtils.getResolvedType(em.getEntityClass(), model.getName(), 0);
+                type = model.getMemberType();
             }
 
             if (type != null) {

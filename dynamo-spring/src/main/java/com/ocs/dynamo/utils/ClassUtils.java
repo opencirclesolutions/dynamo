@@ -320,8 +320,12 @@ public final class ClassUtils {
     }
 
     /**
+     * Retrieves a field value
+     * 
      * @param obj
+     *            the object from which to retrieve the field value
      * @param fieldName
+     *            the name of the field
      * @return
      */
     public static Object getFieldValue(Object obj, String fieldName) {

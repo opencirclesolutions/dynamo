@@ -13,6 +13,9 @@
  */
 package com.ocs.dynamo.ui;
 
+import com.vaadin.navigator.Navigator;
+import com.vaadin.navigator.ViewProvider;
+import com.vaadin.ui.SingleComponentContainer;
 import com.vaadin.ui.UI;
 
 public abstract class BaseUI extends UI {
@@ -29,6 +32,11 @@ public abstract class BaseUI extends UI {
      */
     private String screenMode;
 
+    /**
+     * The navigator
+     */
+    private Navigator navigator;
+
     public Integer getSelectedTab() {
         return selectedTab;
     }
@@ -43,6 +51,36 @@ public abstract class BaseUI extends UI {
 
     public void setScreenMode(String screenMode) {
         this.screenMode = screenMode;
+    }
+
+    /**
+     * Initializes the startup view
+     * 
+     * @param startView
+     */
+    protected void initNavigation(ViewProvider viewProvider, SingleComponentContainer container, String startView) {
+        // create a state manager and set its default view
+        // this is done to circumvent a bug with the view being created
+        // twice if
+        // navigator.navigateTo is called directly
+        Navigator.UriFragmentManager stateManager = new com.vaadin.navigator.Navigator.UriFragmentManager(
+                this.getPage());
+        stateManager.setState(startView);
+
+        // create the navigator
+        navigator = new Navigator(this, stateManager,
+                new Navigator.SingleComponentContainerViewDisplay(container));
+        UI.getCurrent().setNavigator(navigator);
+        navigator.addProvider(viewProvider);
+        //navigator.setErrorView(new ErrorView());
+    }
+
+    public Navigator getNavigator() {
+        return navigator;
+    }
+
+    public void setNavigator(Navigator navigator) {
+        this.navigator = navigator;
     }
 
 }
