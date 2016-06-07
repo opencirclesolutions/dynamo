@@ -14,7 +14,9 @@
 package com.ocs.dynamo.ui.composite.layout;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.ocs.dynamo.domain.AbstractEntity;
@@ -92,6 +94,12 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
     private EntityModel<T> entityModel;
 
     /**
+     * The entity models used for rendering the individual fields (mostly useful for lookup
+     * components)
+     */
+    private Map<String, String> fieldEntityModels = new HashMap<>();
+
+    /**
      * The form options that determine what options are available in the screen
      */
     private FormOptions formOptions;
@@ -101,11 +109,9 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
      */
     private BaseService<ID, T> service;
 
-    /**
-     * The entity models used for rendering the individual fields (mostly useful for lookup
-     * components)
-     */
-    private Map<String, String> fieldEntityModels = new HashMap<>();
+    // list of buttons to update after the user selects an item in the tabular
+    // view
+    private List<Button> toUpdate = new ArrayList<>();
 
     /**
      * Constructor
@@ -122,6 +128,40 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
         this.service = service;
         this.entityModel = entityModel;
         this.formOptions = formOptions;
+    }
+
+    /**
+     * Adds a field entity model reference
+     * 
+     * @param path
+     *            the path to the field
+     * @param reference
+     *            the unique ID of the entity model
+     */
+    public void addFieldEntityModel(String path, String reference) {
+        fieldEntityModels.put(path, reference);
+    }
+
+    /**
+     * Method that is called after the mode is changed (from editable to read only or vice versa)
+     * 
+     * @param viewMode
+     *            the new view mode
+     * @param editForm
+     */
+    protected void afterModeChanged(boolean viewMode, ModelBasedEditForm<ID, T> editForm) {
+        // override in subclasses
+    }
+
+    /**
+     * Checks which buttons in the button bar must be enabled
+     * 
+     * @param selectedItem
+     */
+    protected void checkButtonState(T selectedItem) {
+        for (Button b : toUpdate) {
+            b.setEnabled(selectedItem != null && mustEnableButton(b, selectedItem));
+        }
     }
 
     /**
@@ -142,19 +182,12 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
         return null;
     }
 
-    /**
-     * Method that is called after the mode is changed (from editable to read only or vice versa)
-     * 
-     * @param viewMode
-     *            the new view mode
-     * @param editForm
-     */
-    protected void afterModeChanged(boolean viewMode, ModelBasedEditForm<ID, T> editForm) {
-        // override in subclasses
-    }
-
     public EntityModel<T> getEntityModel() {
         return entityModel;
+    }
+
+    public Map<String, String> getFieldEntityModels() {
+        return fieldEntityModels;
     }
 
     public FormOptions getFormOptions() {
@@ -165,27 +198,38 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
         return service;
     }
 
-    public void setService(BaseService<ID, T> service) {
-        this.service = service;
-    }
-
-    public Map<String, String> getFieldEntityModels() {
-        return fieldEntityModels;
+    /**
+     * Method that is called in order to enable/disable a button after selecting an item in the
+     * table
+     * 
+     * @param button
+     * @return
+     */
+    protected boolean mustEnableButton(Button button, T selectedItem) {
+        // overwrite in subclasses if needed
+        return true;
     }
 
     /**
-     * Adds a field entity model reference
+     * Registers a button that must be enabled/disabled after an item is selected. use the
+     * "mustEnableButton" callback method to impose additional constraints on when the button must
+     * be enabled
      * 
-     * @param path
-     *            the path to the field
-     * @param reference
-     *            the unique ID of the entity model
+     * @param button
+     *            the button to register
      */
-    public void addFieldEntityModel(String path, String reference) {
-        fieldEntityModels.put(path, reference);
+    protected void registerButton(Button button) {
+        if (button != null) {
+            button.setEnabled(false);
+            toUpdate.add(button);
+        }
     }
-    
+
     public void removeFieldEntityModel(String path) {
         fieldEntityModels.remove(path);
+    }
+
+    public void setService(BaseService<ID, T> service) {
+        this.service = service;
     }
 }

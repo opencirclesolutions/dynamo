@@ -183,7 +183,7 @@ public abstract class TabularEditLayout<ID extends Serializable, T extends Abstr
                 };
                 getButtonBar().addComponent(removeButton);
                 removeButton.setVisible(!isViewmode());
-                registerDetailButton(removeButton);
+                registerButton(removeButton);
             }
 
             // save button

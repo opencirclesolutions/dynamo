@@ -29,6 +29,7 @@ import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
 import com.ocs.dynamo.ui.composite.type.ScreenMode;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.ui.Field;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
 
 /**
@@ -52,14 +53,14 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
     // the selected entity
     private T entity;
 
-    // the main layout
-    private VerticalLayout main;
-
     // map of additional field filters
     private Map<String, Filter> fieldFilters = new HashMap<>();
 
     // specifies which relations to fetch when querying
     private FetchJoinInformation[] joins;
+
+    // the main layout
+    private VerticalLayout main;
 
     /**
      * Constructor
@@ -75,6 +76,23 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
         super(service, entityModel, formOptions);
         this.entity = entity;
         this.joins = joins;
+    }
+
+    /**
+     * Method that is called after the user has completed (or cancelled) an edit action
+     * 
+     * @param newObject
+     * @param entity
+     */
+    protected void afterEditDone(boolean cancel, boolean newObject, T entity) {
+        // reset to view mode
+        if (getFormOptions().isOpenInViewMode()) {
+            editForm.setViewMode(true);
+        }
+
+        if (entity.getId() != null) {
+            setEntity(getService().fetchById(entity.getId(), getJoins()));
+        }
     }
 
     @Override
@@ -120,13 +138,13 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
             }
 
             @Override
-            protected String[] getParentGroupHeaders() {
-                return SimpleEditLayout.this.getParentGroupHeaders();
+            protected String getParentGroup(String childGroup) {
+                return SimpleEditLayout.this.getParentGroup(childGroup);
             }
 
             @Override
-            protected String getParentGroup(String childGroup) {
-                return SimpleEditLayout.this.getParentGroup(childGroup);
+            protected String[] getParentGroupHeaders() {
+                return SimpleEditLayout.this.getParentGroupHeaders();
             }
 
             @Override
@@ -135,12 +153,17 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
             }
 
             @Override
+            protected void postProcessButtonBar(HorizontalLayout buttonBar, boolean viewMode) {
+                SimpleEditLayout.this.postProcessButtonBar(buttonBar, viewMode);
+            }
+
+            @Override
             protected void postProcessEditFields() {
                 SimpleEditLayout.this.postProcessEditFields(editForm);
             }
 
         };
-        
+
         editForm.setFieldEntityModels(getFieldEntityModels());
         editForm.build();
 
@@ -158,11 +181,32 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
         return getService().createNewEntity();
     }
 
+    public ModelBasedEditForm<ID, T> getEditForm() {
+        return editForm;
+    }
+
+    public T getEntity() {
+        return entity;
+    }
+
+    public Map<String, Filter> getFieldFilters() {
+        return fieldFilters;
+    }
+
+    public FetchJoinInformation[] getJoins() {
+        return joins;
+    }
+
     /**
-     * @param editForm
+     * Returns the parent group (which must be returned by the getParentGroupHeaders method) to
+     * which a certain child group belongs
+     * 
+     * @param childGroup
+     * @return
      */
-    protected void postProcessEditFields(ModelBasedEditForm<ID, T> editForm) {
-        // do nothing by default - override in subclasses
+    protected String getParentGroup(String childGroup) {
+        // overwrite in subclasses if needed
+        return null;
     }
 
     /**
@@ -176,16 +220,28 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
         return null;
     }
 
+    protected boolean isEditAllowed() {
+        return true;
+    }
+
     /**
-     * Returns the parent group (which must be returned by the getParentGroupHeaders method) to
-     * which a certain child group belongs
+     * Callback method that can be used to add additional buttons to the button bar (at both the top
+     * and the bottom of the screen)
      * 
-     * @param childGroup
-     * @return
+     * @param buttonBar
+     *            the button bar
+     * @param viewMode
+     *            the view mode
      */
-    protected String getParentGroup(String childGroup) {
-        // overwrite in subclasses if needed
-        return null;
+    protected void postProcessButtonBar(HorizontalLayout buttonBar, boolean viewMode) {
+        // overwrite in subclasses
+    }
+
+    /**
+     * @param editForm
+     */
+    protected void postProcessEditFields(ModelBasedEditForm<ID, T> editForm) {
+        // do nothing by default - override in subclasses
     }
 
     @Override
@@ -201,54 +257,18 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
         }
     }
 
-    public T getEntity() {
-        return entity;
-    }
-
     public void setEntity(T entity) {
         this.entity = entity;
         editForm.setEntity(entity);
-    }
-
-    /**
-     * Method that is called after the user has completed (or cancelled) an edit action
-     * 
-     * @param newObject
-     * @param entity
-     */
-    protected void afterEditDone(boolean cancel, boolean newObject, T entity) {
-        // reset to view mode
-        if (getFormOptions().isOpenInViewMode()) {
-            editForm.setViewMode(true);
-        }
-
-        if (entity.getId() != null) {
-            setEntity(getService().fetchById(entity.getId(), getJoins()));
-        }
-    }
-
-    public ModelBasedEditForm<ID, T> getEditForm() {
-        return editForm;
-    }
-
-    public Map<String, Filter> getFieldFilters() {
-        return fieldFilters;
     }
 
     public void setFieldFilters(Map<String, Filter> fieldFilters) {
         this.fieldFilters = fieldFilters;
     }
 
-    protected boolean isEditAllowed() {
-        return true;
-    }
-
-    public FetchJoinInformation[] getJoins() {
-        return joins;
-    }
-
     public void setJoins(FetchJoinInformation[] joins) {
         this.joins = joins;
     }
 
+    
 }

@@ -199,14 +199,14 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
             // edit/view button
             editButton = constructEditButton();
             if (editButton != null) {
-                registerDetailButton(editButton);
+                registerButton(editButton);
                 getButtonBar().addComponent(editButton);
             }
 
             // remove button
             removeButton = constructRemoveButton();
             if (removeButton != null) {
-                registerDetailButton(removeButton);
+                registerButton(removeButton);
                 getButtonBar().addComponent(removeButton);
             }
 
