@@ -15,18 +15,48 @@ package com.ocs.dynamo.functional.domain;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.validation.constraints.NotNull;
 
+import com.ocs.dynamo.domain.model.VisibilityType;
+import com.ocs.dynamo.domain.model.annotation.Attribute;
+import com.ocs.dynamo.domain.model.annotation.Model;
+
+/**
+ * 
+ * @author bas.rutten
+ *
+ */
 @Entity
 @DiscriminatorValue("CURRENCY")
+@Model(displayProperty = "codeAndName", sortOrder = "name asc")
 public class Currency extends Domain {
 
-	private static final long serialVersionUID = 3270223599926941961L;
+    private static final long serialVersionUID = 3270223599926941961L;
 
-	public Currency() {
-	}
+    public Currency() {
+    }
 
-	public Currency(String code, String name) {
-		super(code, name);
-	}
+    /**
+     * 
+     * @param code
+     * @param name
+     */
+    public Currency(String code, String name) {
+        super(code, name);
+    }
 
+    /**
+     * Overridden so we can modify the attribute model
+     */
+    @Override
+    @NotNull
+    @Attribute(visible = VisibilityType.SHOW)
+    public String getCode() {
+        return super.getCode();
+    }
+
+    @Attribute(visible = VisibilityType.HIDE)
+    public String getCodeAndName() {
+        return getCode() + " - " + getName();
+    }
 }

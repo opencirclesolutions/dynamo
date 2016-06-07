@@ -110,6 +110,10 @@ public class AttributeModelImpl implements AttributeModel {
 
     private String replacementSearchPath;
 
+    private String quickAddPropertyName;
+
+    private boolean quickAddAllowed;
+
     @Override
     public int compareTo(AttributeModel o) {
         return this.getOrder() - o.getOrder();
@@ -491,6 +495,24 @@ public class AttributeModelImpl implements AttributeModel {
 
     public void setReplacementSearchPath(String replacementSearchPath) {
         this.replacementSearchPath = replacementSearchPath;
+    }
+
+    @Override
+    public String getQuickAddPropertyName() {
+        return quickAddPropertyName;
+    }
+
+    @Override
+    public boolean isQuickAddAllowed() {
+        return quickAddAllowed;
+    }
+
+    public void setQuickAddPropertyName(String quickAddPropertyName) {
+        this.quickAddPropertyName = quickAddPropertyName;
+    }
+
+    public void setQuickAddAllowed(boolean quickAddAllowed) {
+        this.quickAddAllowed = quickAddAllowed;
     }
 
 }

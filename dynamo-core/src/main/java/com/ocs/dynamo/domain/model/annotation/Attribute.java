@@ -56,9 +56,6 @@ public @interface Attribute {
     // should the field get focus in a detail table
     boolean detailFocus() default false;
 
-    // the type of the members in a detail collection - needed in very specific cases
-    Class<?> memberType() default Object.class;
-
     // the display format (useful in case of dates)
     String displayFormat() default "";
 
@@ -80,6 +77,9 @@ public @interface Attribute {
     // the maximum element length (-1 indicates no value)
     int maxLength() default -1;
 
+    // the type of the members in a detail collection - needed in very specific cases
+    Class<?> memberType() default Object.class;
+
     // the minimum element length (-1 indicates no value)
     int minLength() default -1;
 
@@ -91,6 +91,8 @@ public @interface Attribute {
 
     // prompt value to use in input fields
     String prompt() default "";
+
+    String quickAddPropertyName() default "";
 
     // whether the field is readonly (i.e. does not appear in edit forms)
     boolean readOnly() default false;

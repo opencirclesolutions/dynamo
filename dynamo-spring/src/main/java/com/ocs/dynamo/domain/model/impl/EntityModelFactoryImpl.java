@@ -738,8 +738,6 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 
             if (attribute.main() && !nested) {
                 model.setMainAttribute(true);
-                // the main field is always searchable
-                model.setSearchable(true);
             }
 
             if (attribute.showInTable() != null
@@ -826,6 +824,12 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
             if (!StringUtils.isEmpty(attribute.replacementSearchPath())) {
                 model.setReplacementSearchPath(attribute.replacementSearchPath());
             }
+
+            if (!StringUtils.isEmpty(attribute.quickAddPropertyName())) {
+                model.setQuickAddPropertyName(attribute.quickAddPropertyName());
+                model.setQuickAddAllowed(true);
+            }
+
         }
     }
 
@@ -1027,6 +1031,11 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
         msg = getAttributeMessage(entityModel, model, EntityModel.REPLACEMENT_SEARCH_PATH);
         if (!StringUtils.isEmpty(msg)) {
             model.setReplacementSearchPath(msg);
+        }
+
+        msg = getAttributeMessage(entityModel, model, EntityModel.QUICK_ADD_PROPERTY);
+        if (!StringUtils.isEmpty(msg)) {
+            model.setQuickAddPropertyName(msg);
         }
     }
 

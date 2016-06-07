@@ -37,8 +37,11 @@ import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.ui.ServiceLocator;
 import com.ocs.dynamo.ui.component.EntityComboBox;
+import com.ocs.dynamo.ui.component.EntityComboBox.SelectMode;
 import com.ocs.dynamo.ui.component.EntityListSelect;
 import com.ocs.dynamo.ui.component.EntityLookupField;
+import com.ocs.dynamo.ui.component.QuickAddListSelect;
+import com.ocs.dynamo.ui.component.QuickAddEntityComboBox;
 import com.ocs.dynamo.ui.component.TimeField;
 import com.ocs.dynamo.ui.component.URLField;
 import com.ocs.dynamo.ui.composite.form.CollectionTable;
@@ -59,6 +62,7 @@ import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.shared.ui.combobox.FilteringMode;
 import com.vaadin.shared.ui.datefield.Resolution;
 import com.vaadin.ui.AbstractComponent;
+import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.AbstractTextField;
 import com.vaadin.ui.ComboBox;
@@ -191,14 +195,19 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
      * @return
      */
     @SuppressWarnings("unchecked")
-    public <ID extends Serializable, S extends AbstractEntity<ID>> EntityComboBox<ID, S> constructComboBox(
-            EntityModel<?> entityModel, AttributeModel attributeModel, Filter filter) {
+    public <ID extends Serializable, S extends AbstractEntity<ID>> AbstractField<?> constructComboBox(
+            EntityModel<?> entityModel, AttributeModel attributeModel, Filter filter, boolean search) {
         entityModel = resolveEntityModel(entityModel, attributeModel);
         BaseService<ID, S> service = (BaseService<ID, S>) ServiceLocator
                 .getServiceForEntity(entityModel.getEntityClass());
         SortOrder[] sos = constructSortOrder(entityModel);
-        return new EntityComboBox<ID, S>((EntityModel<S>) entityModel, attributeModel, service,
-                filter, sos);
+        if (attributeModel != null && attributeModel.isQuickAddAllowed() && !search) {
+            return new QuickAddEntityComboBox<ID, S>((EntityModel<S>) entityModel, attributeModel,
+                    service, SelectMode.FILTERED, filter, null, sos);
+        } else {
+            return new EntityComboBox<ID, S>((EntityModel<S>) entityModel, attributeModel, service,
+                    filter, sos);
+        }
     }
 
     /**
@@ -227,7 +236,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
                 field = constructSelectField(attributeModel, fieldEntityModel, fieldFilter);
             } else {
                 // detail relationship, render a multiple select
-                field = this.constructListSelect(em, attributeModel, fieldFilter, true);
+                field = this.constructListSelect(em, attributeModel, fieldFilter, true, search);
             }
         } else {
             // no field filter present - delegate to default construction
@@ -257,21 +266,31 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
      *            optional field filter
      * @param multipleSelect
      *            is multiple select supported?
+     * @param search
+     *            indicates whether the component is being used in a search screen
      * @return
      */
     @SuppressWarnings("unchecked")
-    public <ID extends Serializable, S extends AbstractEntity<ID>> EntityListSelect<ID, S> constructListSelect(
+    public <ID extends Serializable, S extends AbstractEntity<ID>> Field<?> constructListSelect(
             EntityModel<?> entityModel, AttributeModel attributeModel, Filter fieldFilter,
-            boolean multipleSelect) {
+            boolean multipleSelect, boolean search) {
         entityModel = resolveEntityModel(entityModel, attributeModel);
         BaseService<ID, S> service = (BaseService<ID, S>) ServiceLocator
                 .getServiceForEntity(entityModel.getEntityClass());
         SortOrder[] sos = constructSortOrder(entityModel);
-        EntityListSelect<ID, S> listSelect = new EntityListSelect<ID, S>(
-                (EntityModel<S>) entityModel, attributeModel, service, fieldFilter, sos);
-        listSelect.setMultiSelect(multipleSelect);
-        listSelect.setRows(LIST_SELECT_ROWS);
-        return listSelect;
+
+        if (attributeModel.isQuickAddAllowed() && !search) {
+            QuickAddListSelect<ID, S> quickSelect = new QuickAddListSelect<ID, S>(
+                    (EntityModel<S>) entityModel, attributeModel, service, fieldFilter,
+                    multipleSelect, LIST_SELECT_ROWS, sos);
+            return quickSelect;
+        } else {
+            EntityListSelect<ID, S> listSelect = new EntityListSelect<ID, S>(
+                    (EntityModel<S>) entityModel, attributeModel, service, fieldFilter, sos);
+            listSelect.setMultiSelect(multipleSelect);
+            listSelect.setRows(LIST_SELECT_ROWS);
+            return listSelect;
+        }
     }
 
     /**
@@ -287,13 +306,14 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
      */
     @SuppressWarnings("unchecked")
     public <ID extends Serializable, S extends AbstractEntity<ID>> EntityLookupField<ID, S> constructLookupField(
-            EntityModel<?> entityModel, AttributeModel attributeModel, Filter fieldFilter) {
+            EntityModel<?> entityModel, AttributeModel attributeModel, Filter fieldFilter,
+            boolean search) {
         entityModel = resolveEntityModel(entityModel, attributeModel);
         BaseService<ID, S> service = (BaseService<ID, S>) ServiceLocator
                 .getServiceForEntity(entityModel.getEntityClass());
         SortOrder[] sos = constructSortOrder(entityModel);
         return new EntityLookupField<ID, S>(service, (EntityModel<S>) entityModel, attributeModel,
-                fieldFilter == null ? null : Lists.newArrayList(fieldFilter),
+                fieldFilter == null ? null : Lists.newArrayList(fieldFilter), search,
                 sos.length == 0 ? null : sos[0]);
     }
 
@@ -386,7 +406,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
         } else if (AbstractEntity.class.isAssignableFrom(type)) {
             // inside a table, always use a combo box
             EntityModel<?> entityModel = ServiceLocator.getEntityModelFactory().getModel(type);
-            return (F) constructComboBox(entityModel, null, null);
+            return (F) constructComboBox(entityModel, null, null, search);
         }
 
         return super.createField(type, fieldType);
@@ -470,7 +490,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
         } else if (Collection.class.isAssignableFrom(attributeModel.getType())) {
             // render a multiple select component for a collection
             field = constructListSelect(attributeModel.getNestedEntityModel(), attributeModel,
-                    null, true);
+                    null, true, search);
         } else if (AttributeDateType.TIME.equals(attributeModel.getDateType())) {
             TimeField tf = new TimeField();
             tf.setResolution(Resolution.MINUTE);
@@ -558,13 +578,14 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
                 .getNestedEntityModel();
 
         if (AttributeSelectMode.COMBO.equals(attributeModel.getSelectMode())) {
-            field = (Field<?>) constructComboBox(em, attributeModel, fieldFilter);
+            field = (Field<?>) constructComboBox(em, attributeModel, fieldFilter, search);
         } else if (AttributeSelectMode.LOOKUP.equals(attributeModel.getSelectMode())) {
             field = (Field<?>) constructLookupField(fieldEntityModel != null ? fieldEntityModel
                     : ServiceLocator.getEntityModelFactory().getModel(attributeModel.getType()),
-                    attributeModel, fieldFilter);
+                    attributeModel, fieldFilter, search);
         } else {
-            field = this.constructListSelect(em, attributeModel, fieldFilter, false);
+            // list select (single select)
+            field = this.constructListSelect(em, attributeModel, fieldFilter, false, search);
         }
         return field;
     }

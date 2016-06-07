@@ -44,8 +44,8 @@ public class EntityLookupFieldTest extends BaseMockitoTest {
     @Test
     public void test() {
         EntityLookupField<Integer, TestEntity> field = new EntityLookupField<>(service,
-                factory.getModel(TestEntity.class), null, null,
-                new SortOrder("name", SortDirection.ASCENDING));
+                factory.getModel(TestEntity.class), null, null, false, new SortOrder("name",
+                        SortDirection.ASCENDING));
         field.initContent();
 
         Assert.assertEquals(new SortOrder("name", SortDirection.ASCENDING), field.getSortOrder());
@@ -69,8 +69,8 @@ public class EntityLookupFieldTest extends BaseMockitoTest {
     @Test
     public void testPageLength() {
         EntityLookupField<Integer, TestEntity> field = new EntityLookupField<>(service,
-                factory.getModel(TestEntity.class), null, null,
-                new SortOrder("name", SortDirection.ASCENDING));
+                factory.getModel(TestEntity.class), null, null, false, new SortOrder("name",
+                        SortDirection.ASCENDING));
         field.setPageLength(10);
         field.initContent();
 

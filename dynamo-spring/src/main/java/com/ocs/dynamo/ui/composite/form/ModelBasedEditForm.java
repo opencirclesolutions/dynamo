@@ -38,6 +38,7 @@ import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.component.DefaultEmbedded;
 import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
+import com.ocs.dynamo.ui.component.QuickAddListSelect;
 import com.ocs.dynamo.ui.component.URLField;
 import com.ocs.dynamo.ui.composite.type.AttributeGroupMode;
 import com.ocs.dynamo.ui.composite.type.ScreenMode;
@@ -167,6 +168,16 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
         // the target component that must be updated after an upload
         private Embedded target;
 
+        /**
+         * Constructor
+         * 
+         * @param target
+         *            the target component that must be updated after an upload
+         * @param fieldName
+         *            the name of the field
+         * @param supportedExtensions
+         *            the supported file extensions
+         */
         private UploadReceiver(Embedded target, String fieldName, String... supportedExtensions) {
             this.target = target;
             this.fieldName = fieldName;
@@ -222,16 +233,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
     private boolean fieldsProcessed;
 
     /**
-     * A map containing the edit tables per view mode
-     */
-    private Map<Boolean, List<DetailsEditTable<?, ?>>> detailTables = new HashMap<>();
-
-    /**
-     * A map containing the collection tables per view mode
-     */
-    private Map<Boolean, List<CollectionTable<?>>> collectionTables = new HashMap<>();
-
-    /**
      * Indicates whether all details tables for editing complex fields are valid
      */
     private Map<SignalsParent, Boolean> detailTablesValid = new HashMap<>();
@@ -282,7 +283,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
      * Constructor
      * 
      * @param entity
-     *            the constructor
+     *            the entity
      * @param service
      *            the service
      * @param entityModel
@@ -391,10 +392,26 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
     }
 
     /**
-     * Method that is called after save action has been successfully carried out
+     * Method that is called after the user is done editing an entity
+     * 
+     * @param cancel
+     *            whether the user cancelled the editing
+     * @param newObject
+     *            whether the object is a new object
+     * @param entity
+     *            the entity
      */
     protected void afterEditDone(boolean cancel, boolean newObject, T entity) {
         // do nothing
+    }
+
+    /**
+     * Called after the user navigates back to a search screen using the back button
+     * 
+     * @return
+     */
+    protected void back() {
+        // overwrite in subclasses
     }
 
     /**
@@ -410,8 +427,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
                 Map<AttributeModel, Component> uploadMap = new HashMap<>();
                 uploads.put(Boolean.TRUE, uploadMap);
 
-                detailTables.put(Boolean.TRUE, new ArrayList<DetailsEditTable<?, ?>>());
-                collectionTables.put(Boolean.TRUE, new ArrayList<CollectionTable<?>>());
                 mainViewLayout = buildMainLayout(getEntityModel());
             }
             setCompositionRoot(mainViewLayout);
@@ -423,8 +438,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
                 Map<AttributeModel, Component> uploadMap = new HashMap<>();
                 uploads.put(Boolean.FALSE, uploadMap);
 
-                detailTables.put(Boolean.FALSE, new ArrayList<DetailsEditTable<?, ?>>());
-                collectionTables.put(Boolean.FALSE, new ArrayList<CollectionTable<?>>());
                 mainEditLayout = buildMainLayout(getEntityModel());
 
                 postProcessEditFields();
@@ -496,7 +509,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
                         innerForm.addComponent(innerTabSheet);
                     }
 
-                    // add all appropriate inner groups 
+                    // add all appropriate inner groups
                     int tempCount = processParentHeaderGroup(parentGroupHeader, innerForm,
                             innerTabs, innerTabSheet, count);
                     count += tempCount;
@@ -539,10 +552,15 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
     /**
      * Processes all fields that are part of a property group
-     * @param parentGroupHeader the group header
-     * @param innerForm the form layout to which to add the fields
-     * @param innerTabs whether we are displaying tabs
-     * @param innerTabSheet the tab sheet to which to add the fields
+     * 
+     * @param parentGroupHeader
+     *            the group header
+     * @param innerForm
+     *            the form layout to which to add the fields
+     * @param innerTabs
+     *            whether we are displaying tabs
+     * @param innerTabSheet
+     *            the tab sheet to which to add the fields
      * @param startCount
      * @return
      */
@@ -705,20 +723,18 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
             ((URLField) field).setEditable(!isViewMode());
         }
 
-        if (field instanceof DetailsEditTable) {
-            detailTables.get(isViewMode()).add((DetailsEditTable<?, ?>) field);
-        }
-
         if (field instanceof CollectionTable) {
             ((CollectionTable<?>) field).setViewMode(isViewMode());
-            collectionTables.get(isViewMode()).add((CollectionTable<?>) field);
+        }
+
+        if (field instanceof QuickAddListSelect) {
+            ((QuickAddListSelect<?, ?>) field).setViewMode(isViewMode());
         }
 
         if (field != null) {
-            if (!(field instanceof DetailsEditTable)) {
-                groups.get(viewMode).bind(field, attributeModel.getName());
-            }
+            groups.get(viewMode).bind(field, attributeModel.getName());
             field.setSizeFull();
+            // field.setEnabled(!viewMode);
             form.addComponent(field);
         }
 
@@ -775,10 +791,9 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
                 @Override
                 public void buttonClick(ClickEvent event) {
-                    afterEditDone(true, entity.getId() == null, entity);
+                    back();
                 }
             });
-
             buttonBar.addComponent(backButton);
         }
 
@@ -796,7 +811,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
                     afterEditDone(true, entity.getId() == null, entity);
                 }
             });
-
             buttonBar.addComponent(cancelButton);
         }
 
@@ -817,9 +831,10 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
                     setViewMode(false);
                 }
             });
-
             buttonBar.addComponent(editButton);
         }
+
+        postProcessButtonBar(buttonBar, isViewMode());
 
         return buttonBar;
     }
@@ -831,10 +846,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
     private String getAttributeGroupCaption(String attributeGroup) {
         return EntityModel.DEFAULT_GROUP.equals(attributeGroup) ? message("ocs.default.group.caption")
                 : attributeGroup;
-    }
-
-    public List<DetailsEditTable<?, ?>> getDetailTables() {
-        return detailTables.get(isViewMode());
     }
 
     public T getEntity() {
@@ -900,18 +911,17 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
         // refresh the upload components
         for (Entry<AttributeModel, Component> e : uploads.get(isViewMode()).entrySet()) {
-            Component newLabel = constructUploadField(e.getKey());
+            Component uc = constructUploadField(e.getKey());
 
             HasComponents hc = e.getValue().getParent();
             if (hc instanceof Layout) {
-                ((Layout) hc).replaceComponent(e.getValue(), newLabel);
-                uploads.get(isViewMode()).put(e.getKey(), newLabel);
+                ((Layout) hc).replaceComponent(e.getValue(), uc);
+                uploads.get(isViewMode()).put(e.getKey(), uc);
             }
         }
 
-        //
-        for (DetailsEditTable<?, ?> table : getDetailTables()) {
-            table.fillDetails();
+        if (!isViewMode() && firstField != null) {
+            firstField.focus();
         }
 
         // update the title label
@@ -932,10 +942,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
         constructTitleLabel();
         build();
-
-        for (DetailsEditTable<?, ?> table : getDetailTables()) {
-            table.fillDetails();
-        }
 
         // if this is the first time in edit mode, post process the editable
         // fields
@@ -968,6 +974,16 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
      * the postProcessEditFields callback method on an enclosing component
      */
     protected void postProcessEditFields() {
+        // overwrite in subclasses
+    }
+
+    /**
+     * Post-processes the button bar that is displayed above/below the edit form
+     * 
+     * @param buttonBar
+     * @param viewMode
+     */
+    protected void postProcessButtonBar(HorizontalLayout buttonBar, boolean viewMode) {
         // overwrite in subclasses
     }
 

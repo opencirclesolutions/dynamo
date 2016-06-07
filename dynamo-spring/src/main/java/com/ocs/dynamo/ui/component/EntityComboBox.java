@@ -144,7 +144,6 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
         setItemCaptionMode(ItemCaptionMode.PROPERTY);
         setItemCaptionPropertyId(targetEntityModel.getDisplayProperty());
         setSizeFull();
-
     }
 
     public SelectMode getSelectMode() {

@@ -22,15 +22,12 @@ import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.util.EntityModelUtil;
 import com.ocs.dynamo.service.BaseService;
-import com.ocs.dynamo.service.MessageService;
-import com.ocs.dynamo.ui.ServiceLocator;
 import com.ocs.dynamo.ui.composite.dialog.ModelBasedSearchDialog;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.sort.SortOrder;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.CustomField;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
@@ -46,24 +43,14 @@ import com.vaadin.ui.UI;
  *            the type of the entity
  */
 public class EntityLookupField<ID extends Serializable, T extends AbstractEntity<ID>> extends
-        CustomField<T> {
+        QuickAddEntityField<ID, T, T> {
 
     private static final long serialVersionUID = 5377765863515463622L;
-
-    /**
-     * The attribute model of the property that is bound to this component
-     */
-    private final AttributeModel attributeModel;
 
     /**
      * The button used to clear the current selection
      */
     private Button clearButton;
-
-    /**
-     * The entity model of the entities that are displayed in the component
-     */
-    private final EntityModel<T> entityModel;
 
     /**
      * The filters to apply to the search dialog
@@ -81,11 +68,6 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
     private Label label;
 
     /**
-     * The message service
-     */
-    private MessageService messageService;
-
-    /**
      * The page length of the table in the search dialog
      */
     private Integer pageLength;
@@ -95,33 +77,42 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
      */
     private Button selectButton;
 
-    private final BaseService<ID, T> service;
-
     /**
      * The sort order to apply to the search dialog
      */
     private SortOrder sortOrder;
 
     /**
+     * Indicates whether it is allowed to add items
+     */
+    private boolean addAllowed;
+
+    /**
      * Constructor
      * 
      * @param service
+     *            the service used to query the database
      * @param entityModel
+     *            the entity model
      * @param attributeModel
+     *            the attribute mode
      * @param filters
+     *            the filter to apply when searching
+     * @param search
+     *            whether the component is used in a search screen
      * @param sortOrder
+     *            the sort order
      * @param joins
+     *            the joins to use when fetching data when filling the popop dialog
      */
     public EntityLookupField(BaseService<ID, T> service, EntityModel<T> entityModel,
-            AttributeModel attributeModel, List<Filter> filters, SortOrder sortOrder,
-            FetchJoinInformation... joins) {
-        this.service = service;
-        this.entityModel = entityModel;
-        this.messageService = ServiceLocator.getMessageService();
+            AttributeModel attributeModel, List<Filter> filters, boolean search,
+            SortOrder sortOrder, FetchJoinInformation... joins) {
+        super(service, entityModel, attributeModel);
         this.sortOrder = sortOrder;
         this.filters = filters;
-        this.attributeModel = attributeModel;
         this.joins = joins;
+        this.addAllowed = !search && (attributeModel != null && attributeModel.isQuickAddAllowed());
     }
 
     public Button getClearButton() {
@@ -146,15 +137,15 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 
     @Override
     public Class<? extends T> getType() {
-        return entityModel.getEntityClass();
+        return getEntityModel().getEntityClass();
     }
 
     @Override
     protected Component initContent() {
         HorizontalLayout bar = new DefaultHorizontalLayout(false, true, true);
 
-        if (this.attributeModel != null) {
-            this.setCaption(attributeModel.getDisplayName());
+        if (this.getAttributeModel() != null) {
+            this.setCaption(getAttributeModel().getDisplayName());
         }
 
         label = new Label();
@@ -162,15 +153,15 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
         bar.addComponent(label);
 
         // button for selecting an entity - brings up the search dialog
-        selectButton = new Button(messageService.getMessage("ocs.select"));
+        selectButton = new Button(getMessageService().getMessage("ocs.select"));
         selectButton.addClickListener(new Button.ClickListener() {
 
             private static final long serialVersionUID = 8377632639548698729L;
 
             @Override
             public void buttonClick(ClickEvent event) {
-                ModelBasedSearchDialog<ID, T> dialog = new ModelBasedSearchDialog<ID, T>(service,
-                        entityModel, filters, sortOrder, false, joins) {
+                ModelBasedSearchDialog<ID, T> dialog = new ModelBasedSearchDialog<ID, T>(
+                        getService(), getEntityModel(), filters, sortOrder, false, joins) {
 
                     private static final long serialVersionUID = -3432107069929941520L;
 
@@ -188,7 +179,7 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
         bar.addComponent(selectButton);
 
         // button for clearing the current selection
-        clearButton = new Button(messageService.getMessage("ocs.clear"));
+        clearButton = new Button(getMessageService().getMessage("ocs.clear"));
         clearButton.addClickListener(new Button.ClickListener() {
 
             private static final long serialVersionUID = 8377632639548698729L;
@@ -199,6 +190,12 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
             }
         });
         bar.addComponent(clearButton);
+
+        // quick add button
+        if (addAllowed) {
+            Button addButton = constructAddButton();
+            bar.addComponent(addButton);
+        }
 
         return bar;
     }
@@ -240,9 +237,15 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
      */
     private void updateLabel(T newValue) {
         if (label != null) {
-            label.setValue(newValue == null ? messageService.getMessage("ocs.no.item.selected")
-                    : EntityModelUtil.getDisplayPropertyValue(newValue, entityModel));
+            label.setValue(newValue == null ? getMessageService()
+                    .getMessage("ocs.no.item.selected") : EntityModelUtil.getDisplayPropertyValue(
+                    newValue, getEntityModel()));
         }
+    }
+
+    @Override
+    protected void afterNewEntityAdded(T entity) {
+        setValue(entity);
     }
 
 }

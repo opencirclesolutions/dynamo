@@ -74,8 +74,13 @@ public interface EntityModel<T> {
 
     String PROMPT = "prompt";
 
+    /**
+     * Indicates that quick add functionality is enabled
+     */
+    String QUICK_ADD_PROPERTY = "quickAddProperty";
+
     String READ_ONLY = "readOnly";
-    
+
     /**
      * The path to actually search for (replaces the standard search path)
      */
@@ -106,14 +111,14 @@ public interface EntityModel<T> {
 
     String TRUE_REPRESENTATION = "trueRepresentation";
 
-    String VISIBLE = "visible";
-
-    String WEEK = "week";
-    
     /**
      * Indicates that a value must be represented in a table as a clickable URL
      */
     String URL = "url";
+
+    String VISIBLE = "visible";
+
+    String WEEK = "week";
 
     /**
      * Adds a new attribute model on the position of the given existing attribute model. The

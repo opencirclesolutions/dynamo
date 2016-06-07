@@ -294,6 +294,28 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
     }
 
     /**
+     * Adds additional buttons to the button bar above/below the detail scren
+     * 
+     * @param buttonBar
+     *            the button bar
+     * @param viewMode
+     *            indicates whether the form is in view mode
+     */
+    protected void postProcessDetailButtonBar(Layout buttonBar, boolean viewMode) {
+        // overwrite in subclass if needed
+    }
+
+    /**
+     * Post processes the edit fields. This method is called once, just before the screen is
+     * displayed in edit mode for the first time
+     * 
+     * @param editForm
+     */
+    protected void postProcessEditFields(ModelBasedEditForm<ID, T> editForm) {
+        // do nothing by default - override in subclasses
+    }
+
+    /**
      * Adds additional layout components to the layout
      * 
      * @param main

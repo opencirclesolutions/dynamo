@@ -14,7 +14,10 @@
 package com.ocs.dynamo.ui.composite.form;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +39,7 @@ import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Property;
 import com.vaadin.data.sort.SortOrder;
 import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.data.util.converter.Converter.ConversionException;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Component;
@@ -161,6 +165,11 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
      * will be displayed
      */
     private boolean viewMode;
+
+    /**
+     * The comparator (will be used to sort the items)
+     */
+    private Comparator<T> comparator;
 
     /**
      * Constructor
@@ -320,15 +329,6 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
      */
     protected abstract T createEntity();
 
-    /**
-     * Method that is called after an entity is selected in the form of which this table is placed -
-     * should be overridden in child classes and used to make sure that the table contains the
-     * correct values
-     */
-    public void fillDetails() {
-        // override in child tables
-    }
-
     public EntityModel<T> getEntityModel() {
         return entityModel;
     }
@@ -406,7 +406,7 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
                     if (filter != null) {
                         // create a filtered combo box
                         field = (Field<?>) constructComboBox(attributeModel.getNestedEntityModel(),
-                                attributeModel, filter);
+                                attributeModel, filter, false);
                     } else {
                         // delegate to the field factory
                         field = super.createField(propertyId, fieldEntityModel);
@@ -432,6 +432,11 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
                             }
 
                         });
+
+                        // focus if necessary
+                        if (attributeModel.isDetailFocus()) {
+                            field.focus();
+                        }
                     }
                 }
                 return field;
@@ -528,6 +533,13 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
         super.setInternalValue(newValue);
     }
 
+    @Override
+    public void setValue(Collection<T> newFieldValue)
+            throws com.vaadin.data.Property.ReadOnlyException, ConversionException {
+        setItems(newFieldValue);
+        super.setValue(newFieldValue);
+    }
+
     /**
      * Refreshes the items that are displayed in the table
      * 
@@ -535,6 +547,14 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
      *            the new set of items to be displayed
      */
     public void setItems(Collection<T> items) {
+
+        if (comparator != null) {
+            List<T> list = new ArrayList<T>();
+            list.addAll(items);
+            Collections.sort(list, comparator);
+            items = list;
+        }
+
         this.items = items;
         if (container != null) {
             container.removeAllItems();
@@ -579,6 +599,14 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 
     public void setTableReadOnly(boolean tableReadOnly) {
         this.tableReadOnly = tableReadOnly;
+    }
+
+    public Comparator<T> getComparator() {
+        return comparator;
+    }
+
+    public void setComparator(Comparator<T> comparator) {
+        this.comparator = comparator;
     }
 
 }

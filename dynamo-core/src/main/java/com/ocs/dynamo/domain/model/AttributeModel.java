@@ -78,27 +78,27 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 
     /**
      * 
-     * @return the member type of the collection, if this attribute holds a collection of values
-     */
-    Class<?> getMemberType();
-
-    /**
-     * 
-     * @return the name/identifier of the attribute
-     */
-    String getName();
-
-    /**
-     * 
      * @return the maximum allowed length of the attribute
      */
     Integer getMaxLength();
 
     /**
      * 
+     * @return the member type of the collection, if this attribute holds a collection of values
+     */
+    Class<?> getMemberType();
+
+    /**
+     * 
      * @return the minimum allowed length of the attribute
      */
     Integer getMinLength();
+
+    /**
+     * 
+     * @return the name/identifier of the attribute
+     */
+    String getName();
 
     /**
      * When this is a MASTER or DETAIL attribute then return the entity model for the nested entity
@@ -132,6 +132,21 @@ public interface AttributeModel extends Comparable<AttributeModel> {
      * @return
      */
     String getPrompt();
+
+    /**
+     * 
+     * @return
+     */
+    String getQuickAddPropertyName();
+
+    /**
+     * Returns the path by which to replace the actual path when carrying out a search. This is
+     * needed in very specific cases when an Entity has multiple detail relations that are mapped to
+     * the same table
+     * 
+     * @return
+     */
+    String getReplacementSearchPath();
 
     /**
      * The select mode for picking MASTER objects (combo box or lookup field)
@@ -182,18 +197,18 @@ public interface AttributeModel extends Comparable<AttributeModel> {
     boolean isDetailFocus();
 
     /**
-     * Is this an embedded object
-     * 
-     * @return
-     */
-    boolean isEmbedded();
-
-    /**
      * Is this an email field
      * 
      * @return
      */
     boolean isEmail();
+
+    /**
+     * Is this an embedded object
+     * 
+     * @return
+     */
+    boolean isEmbedded();
 
     /**
      * Whether this attribute should be presented as an image
@@ -222,6 +237,12 @@ public interface AttributeModel extends Comparable<AttributeModel> {
      * @return
      */
     boolean isPercentage();
+
+    /**
+     * Indicates whether "quick edit" functionality is allowed. Quick edit functionality allows for
+     * the inline addition of simple domain values
+     */
+    boolean isQuickAddAllowed();
 
     /**
      * Indicates whether the attribute is read only
@@ -292,7 +313,7 @@ public interface AttributeModel extends Comparable<AttributeModel> {
      * @return
      */
     boolean isWeek();
-
+    
     /**
      * Marks this attribute as the main attribute
      * 
@@ -300,14 +321,5 @@ public interface AttributeModel extends Comparable<AttributeModel> {
      * @return
      */
     void setMainAttribute(boolean main);
-
-    /**
-     * Returns the path by which to replace the actual path when carrying out a search. This is
-     * needed in very specific cases when an Entity has multiple detail relations that are mapped to
-     * the same table
-     * 
-     * @return
-     */
-    String getReplacementSearchPath();
 
 }

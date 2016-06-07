@@ -39,6 +39,7 @@ import com.vaadin.data.sort.SortOrder;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Field;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
 
 /**
@@ -156,7 +157,7 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
      *            whether the search fields are now visible
      */
     protected void afterSearchFieldToggle(boolean visible) {
-        // do nothing
+        // overwrite in subclasses
     }
 
     @Override
@@ -233,11 +234,14 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
             @Override
             public void buttonClick(ClickEvent event) {
                 if (getSelectedItem() != null) {
-                    detailsMode(getSelectedItem());
+                    doEdit();
                 }
             }
         });
-        eb.setVisible(isEditAllowed() && getFormOptions().isShowEditButton());
+
+        // show button if editing is allowed or if detail screen opens in view mode
+        eb.setVisible(getFormOptions().isShowEditButton()
+                && (isEditAllowed() || getFormOptions().isOpenInViewMode()));
         return eb;
     }
 
@@ -257,6 +261,46 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
         };
         rb.setVisible(isEditAllowed() && getFormOptions().isShowRemoveButton());
         return rb;
+    }
+
+    /**
+     * Lazily constructs the search form
+     * 
+     * @return
+     */
+    protected ModelBasedSearchForm<ID, T> constructSearchform() {
+        ModelBasedSearchForm<ID, T> result = new ModelBasedSearchForm<ID, T>(getTableWrapper(),
+                getEntityModel(), getFormOptions(), this.additionalFilters, this.fieldFilters) {
+
+            @Override
+            protected void afterSearchFieldToggle(boolean visible) {
+                SimpleSearchLayout.this.afterSearchFieldToggle(visible);
+            }
+
+            @Override
+            protected Field<?> constructCustomField(EntityModel<T> entityModel,
+                    AttributeModel attributeModel) {
+                return SimpleSearchLayout.this.constructCustomField(entityModel, attributeModel,
+                        false, true);
+            }
+        };
+        result.setNrOfColumns(getNrOfColumns());
+        result.setFieldEntityModels(getFieldEntityModels());
+        result.build();
+
+        return result;
+    }
+
+    /**
+     * Lazily constructs the table wrapper
+     */
+    @Override
+    public ServiceResultsTableWrapper<ID, T> constructTableWrapper() {
+        ServiceResultsTableWrapper<ID, T> result = new ServiceResultsTableWrapper<ID, T>(
+                this.getService(), getEntityModel(), getQueryType(), null, getSortOrders(),
+                getJoins());
+        result.build();
+        return result;
     }
 
     /**
@@ -285,14 +329,25 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 
                 @Override
                 protected void afterEditDone(boolean cancel, boolean newObject, T entity) {
-                    // when the user is done, display the search screen again
-                    setCompositionRoot(mainSearchLayout);
-                    search();
+                    if (getFormOptions().isOpenInViewMode()) {
+                        // if details screen opens in view mode, simply switch to view mode
+                        setViewMode(true);
+                        detailsMode(entity);
+                    } else {
+                        // otherwise go back to the main screen
+                        back();
+                    }
                 }
 
                 @Override
                 protected void afterModeChanged(boolean viewMode) {
                     SimpleSearchLayout.this.afterModeChanged(viewMode, editForm);
+                }
+
+                @Override
+                protected void back() {
+                    setCompositionRoot(mainSearchLayout);
+                    search();
                 }
 
                 @Override
@@ -303,13 +358,18 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
                 }
 
                 @Override
-                protected void postProcessEditFields() {
-                    SimpleSearchLayout.this.postProcessEditFields(editForm);
+                protected boolean isEditAllowed() {
+                    return SimpleSearchLayout.this.isEditAllowed();
                 }
 
                 @Override
-                protected boolean isEditAllowed() {
-                    return SimpleSearchLayout.this.isEditAllowed();
+                protected void postProcessButtonBar(HorizontalLayout buttonBar, boolean viewMode) {
+                    SimpleSearchLayout.this.postProcessDetailButtonBar(buttonBar, viewMode);
+                }
+
+                @Override
+                protected void postProcessEditFields() {
+                    SimpleSearchLayout.this.postProcessEditFields(editForm);
                 }
 
             };
@@ -320,9 +380,25 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
             editForm.setViewMode(getFormOptions().isOpenInViewMode());
             editForm.setEntity(entity);
         }
-        afterDetailSelected(editForm, entity);
 
+        checkButtonState(getSelectedItem());
+        afterDetailSelected(editForm, entity);
         setCompositionRoot(mainEditLayout);
+    }
+
+    /**
+     * Callback method that is called when the user presses the edit method. Will by default open
+     * the screen in edit mode. Overwrite in subclass if needed
+     */
+    protected void doEdit() {
+        detailsMode(getSelectedItem());
+    }
+
+    /**
+     * Performs the actual remove functionality - overwrite in subclass if needed
+     */
+    protected void doRemove() {
+        getService().delete(getSelectedItem());
     }
 
     public Button getAddButton() {
@@ -364,60 +440,18 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
         return searchForm;
     }
 
-    /**
-     * Lazily constructs the search form
-     * 
-     * @return
-     */
-    protected ModelBasedSearchForm<ID, T> constructSearchform() {
-        ModelBasedSearchForm<ID, T> result = new ModelBasedSearchForm<ID, T>(getTableWrapper(),
-                getEntityModel(), getFormOptions(), this.additionalFilters, this.fieldFilters) {
-
-            @Override
-            protected void afterSearchFieldToggle(boolean visible) {
-                SimpleSearchLayout.this.afterSearchFieldToggle(visible);
-            }
-
-            @Override
-            protected Field<?> constructCustomField(EntityModel<T> entityModel,
-                    AttributeModel attributeModel) {
-                return SimpleSearchLayout.this.constructCustomField(entityModel, attributeModel,
-                        false, true);
-            }
-        };
-        result.setNrOfColumns(getNrOfColumns());
-        result.setFieldEntityModels(getFieldEntityModels());
-        result.build();
-
-        return result;
-    }
-
     public Collection<T> getSelectedItems() {
         return selectedItems;
     }
 
     /**
-     * Lazliy constructs the table wrapper
+     * Reloads the details view only
      */
-    @Override
-    public ServiceResultsTableWrapper<ID, T> constructTableWrapper() {
-        ServiceResultsTableWrapper<ID, T> result = new ServiceResultsTableWrapper<ID, T>(
-                this.getService(), getEntityModel(), getQueryType(), null, getSortOrders(),
-                getJoins());
-        result.build();
-        return result;
+    public void reloadDetails() {
+        this.setSelectedItem(getService().fetchById(this.getSelectedItem().getId(), getJoins()));
+        detailsMode(getSelectedItem());
     }
 
-    /**
-     * Post processes the edit fields
-     */
-    protected void postProcessEditFields(ModelBasedEditForm<ID, T> editForm) {
-        // overwrite in subclasses
-    }
-
-    /**
-     * Performs the actual delete action
-     */
     /**
      * Performs the actual delete action
      */
@@ -431,13 +465,6 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
     }
 
     /**
-     * Performs the actual remove functionality - overwrite in subclass if needed
-     */
-    protected void doRemove() {
-        getService().delete(getSelectedItem());
-    }
-
-    /**
      * Perform the actual search
      */
     public void search() {
@@ -447,6 +474,12 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
         checkButtonState(getSelectedItem());
     }
 
+    /**
+     * Select one or more items
+     * 
+     * @param selectedItems
+     *            the item or items to select
+     */
     @SuppressWarnings("unchecked")
     public void select(Object selectedItems) {
         if (selectedItems != null) {

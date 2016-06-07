@@ -72,7 +72,7 @@ public class ModelBasedFieldFactoryIntegrationTest extends BaseIntegrationTest {
      */
     @SuppressWarnings("unchecked")
     @Test
-    public void testCreatelistSelect() {
+    public void testCreateListSelect() {
 
         EntityModel<TestEntity2> model = entityModelFactory.getModel("TestEntity2ListSelect",
                 TestEntity2.class);
@@ -104,7 +104,7 @@ public class ModelBasedFieldFactoryIntegrationTest extends BaseIntegrationTest {
         EntityModel<TestEntity2> model = entityModelFactory.getModel(TestEntity2.class);
         AttributeModel am = model.getAttributeModel("testEntity");
 
-        Field<?> field = fieldFactory.constructComboBox(am.getNestedEntityModel(), am, null);
+        Field<?> field = fieldFactory.constructComboBox(am.getNestedEntityModel(), am, null, false);
         Assert.assertTrue(field instanceof EntityComboBox);
 
         EntityComboBox<Integer, TestEntity> dc = (EntityComboBox<Integer, TestEntity>) field;

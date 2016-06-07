@@ -32,6 +32,7 @@ import com.vaadin.data.sort.SortOrder;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Field;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Layout;
@@ -146,7 +147,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
         getTableWrapper().getTable().setPageLength(getPageLength());
         getTableWrapper().getTable().setSortEnabled(isSortEnabled());
         constructTableDividers();
-        
+
         // extra splitter (for horizontal mode)
         if (isHorizontalMode()) {
             splitter = new HorizontalSplitPanel();
@@ -189,6 +190,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 
         Button removeButton = constructRemoveButton();
         if (removeButton != null) {
+            registerDetailButton(removeButton);
             getButtonBar().addComponent(removeButton);
         }
 
@@ -218,15 +220,28 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 
             @Override
             protected void doDelete() {
-                getService().delete(getSelectedItem());
-                setSelectedItem(null);
-                emptyDetailView();
-                reload();
+                remove();
             }
         };
         rb.setVisible(getFormOptions().isShowRemoveButton() && isEditAllowed());
-        registerDetailButton(rb);
         return rb;
+    }
+
+    /**
+     * Remove the item and clean up the screen afterwards
+     */
+    protected final void remove() {
+        doRemove();
+        setSelectedItem(null);
+        emptyDetailView();
+        reload();
+    }
+
+    /**
+     * Performs the actual remove functionality - overwrite in subclass if needed
+     */
+    protected void doRemove() {
+        getService().delete(getSelectedItem());
     }
 
     /**
@@ -294,8 +309,13 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
                 protected void postProcessEditFields() {
                     BaseSplitLayout.this.postProcessEditFields(editForm);
                 }
+                
+                @Override
+                protected void postProcessButtonBar(HorizontalLayout buttonBar, boolean viewMode) {
+                    BaseSplitLayout.this.postProcessDetailButtonBar(buttonBar, viewMode);
+                }
             };
-            
+
             editForm.setFieldEntityModels(getFieldEntityModels());
             editForm.build();
             detailFormLayout.addComponent(editForm);
@@ -304,6 +324,8 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
             editForm.setViewMode(getFormOptions().isOpenInViewMode());
             editForm.setEntity(entity);
         }
+        
+        checkButtonState(getSelectedItem());
         afterDetailSelected(editForm, entity);
 
         detailLayout.replaceComponent(selectedDetailLayout, detailFormLayout);
@@ -346,16 +368,6 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
      */
     protected boolean isHorizontalMode() {
         return ScreenMode.HORIZONTAL.equals(getFormOptions().getScreenMode());
-    }
-
-    /**
-     * Post processes the edit fields. This method is called once, just before the screen is
-     * displayed in edit mode for the first time
-     * 
-     * @param editForm
-     */
-    protected void postProcessEditFields(ModelBasedEditForm<ID, T> editForm) {
-        // do nothing by default - override in subclasses
     }
 
     @Override
