@@ -50,7 +50,10 @@ public class CurrencyBigDecimalConverterTest {
                 0.001);
 
         // check that the currency symbol is added if it is not there
-        Assert.assertEquals(123456, cv.convertToModel("123.456", null, null).doubleValue(), 0.001);
+        Assert.assertEquals(123456,
+                cv.convertToModel("123" + symbols.getGroupingSeparator() + "456", null, null)
+                        .doubleValue(),
+                0.001);
     }
 
 }
