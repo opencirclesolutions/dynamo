@@ -72,4 +72,7 @@
 
 	<!-- Component responsible for creating the menu -->
 	<bean id="menuService" class="com.ocs.dynamo.ui.menu.MenuService" />
+	
+	<!-- Required Component for auditing. -->
+	<bean id="userDetailsService" class="com.ocs.dynamo.service.impl.UserDetailsServiceMockImpl" />
 </beans>
