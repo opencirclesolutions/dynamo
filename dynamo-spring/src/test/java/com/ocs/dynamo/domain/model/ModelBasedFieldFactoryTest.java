@@ -188,8 +188,9 @@ public class ModelBasedFieldFactoryTest extends BaseMockitoTest {
 
         Assert.assertNotNull(tf.getConverter());
 
-        BigDecimal dec = (BigDecimal) tf.getConverter().convertToModel("3,43", null, null);
-        Assert.assertEquals(new BigDecimal("3" + symbols.getGroupingSeparator() + "43"), dec);
+        BigDecimal dec = (BigDecimal) tf.getConverter()
+                .convertToModel("3" + symbols.getDecimalSeparator() + "43", null, null);
+        Assert.assertEquals(new BigDecimal("3.43"), dec);
     }
 
     @Test
@@ -202,10 +203,11 @@ public class ModelBasedFieldFactoryTest extends BaseMockitoTest {
 
         Assert.assertNotNull(tf.getConverter());
 
-        BigDecimal dec = (BigDecimal) tf.getConverter().convertToModel("3,43%", null, null);
-        Assert.assertEquals(new BigDecimal("3" + symbols.getGroupingSeparator() + "43"), dec);
+        BigDecimal dec = (BigDecimal) tf.getConverter()
+                .convertToModel("3" + symbols.getDecimalSeparator() + "43%", null, null);
+        Assert.assertEquals(new BigDecimal("3.43"), dec);
 
-        Assert.assertEquals("3,14%",
+        Assert.assertEquals("3" + symbols.getDecimalSeparator() + "14%",
                 tf.getConverter().convertToPresentation(BigDecimal.valueOf(3.14), null, null));
     }
 

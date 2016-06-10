@@ -14,6 +14,7 @@
 package com.ocs.dynamo.ui.composite.layout;
 
 import java.math.BigDecimal;
+import java.text.DecimalFormatSymbols;
 import java.util.Calendar;
 
 import org.junit.Assert;
@@ -94,7 +95,8 @@ public class BaseCustomComponentTest extends BaseMockitoTest {
 
         // integer
         label = (Label) component.constructLabel(e, model.getAttributeModel("someInt"));
-        Assert.assertEquals("1.234", label.getValue());
+        Assert.assertEquals("1" + DecimalFormatSymbols.getInstance().getGroupingSeparator() + "234",
+                label.getValue());
 
         // long
         label = (Label) component.constructLabel(e, model.getAttributeModel("age"));
