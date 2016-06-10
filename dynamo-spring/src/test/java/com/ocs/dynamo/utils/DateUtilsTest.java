@@ -80,7 +80,7 @@ public class DateUtilsTest {
     }
 
     @Test
-    public void testFormat() {
+    public void testFormatDate() {
         Date date = DateUtils.createDate("01042015");
 
         Assert.assertNull(DateUtils.formatDate(null, "dd-MM-yyyy"));
@@ -88,5 +88,19 @@ public class DateUtilsTest {
 
         Assert.assertEquals("01-04-2015", DateUtils.formatDate(date, "dd-MM-yyyy"));
         Assert.assertEquals("01/04/15", DateUtils.formatDate(date, "dd/MM/yy"));
+    }
+
+    @Test
+    public void testGetYear() {
+        Assert.assertNull(DateUtils.getYearFromDate(null));
+
+        Date date = DateUtils.createDate("01042010");
+
+        Assert.assertEquals(2010, DateUtils.getYearFromDate(date).intValue());
+
+        Assert.assertEquals(2015, DateUtils.getYearFromDate(DateUtils.createDate("31122015"))
+                .intValue());
+        Assert.assertEquals(2016, DateUtils.getYearFromDate(DateUtils.createDate("01012016"))
+                .intValue());
     }
 }

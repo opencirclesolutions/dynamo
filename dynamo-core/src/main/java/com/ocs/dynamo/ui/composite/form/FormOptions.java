@@ -94,10 +94,13 @@ public class FormOptions implements Serializable {
 
     /**
      * Whether to display the screen in complete read-only mode. Settings readOnly to true will
-     * automatically adapt all other necessray settings (e.g. it will set "openInViewMode" to true)
+     * automatically adapt all other necessary settings (e.g. it will set "openInViewMode" to true)
      */
     private boolean readOnly;
 
+    /**
+     * Whether the form is shown as part of a popup
+     */
     private boolean popup;
 
     public AttributeGroupMode getAttributeGroupMode() {

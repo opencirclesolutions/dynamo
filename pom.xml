@@ -73,6 +73,7 @@
 		<junit-addons.version>1.4</junit-addons.version>
 		<jaxen.version>1.1.6</jaxen.version>
 		<dom4j.version>1.6.1</dom4j.version>
+		<aspectj.version>1.6.12</aspectj.version>		
 
 		<!-- Maven plugin versions. -->
 		<org.apache.maven.plugins.compiler.version>3.3</org.apache.maven.plugins.compiler.version>
@@ -197,10 +198,10 @@
 				</exclusions>
 			</dependency>
 			<dependency>
-				<groupId>org.springframework.data</groupId>
-				<artifactId>spring-data-commons</artifactId>
-				<version>${spring-data.version}</version>
-			</dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-aop</artifactId>
+				<version>${spring.version}</version>
+			</dependency>	
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-orm</artifactId>
@@ -211,6 +212,17 @@
 				<artifactId>spring-test</artifactId>
 				<version>${spring.version}</version>
 			</dependency>
+			<!-- Aspect -->
+			<dependency>
+				<groupId>org.aspectj</groupId>
+				<artifactId>aspectjrt</artifactId>
+				<version>${aspectj.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.aspectj</groupId>
+				<artifactId>aspectjweaver</artifactId>
+				<version>${aspectj.version}</version>
+			</dependency>			
 			<!-- logging -->
 			<dependency>
 				<groupId>org.slf4j</groupId>
