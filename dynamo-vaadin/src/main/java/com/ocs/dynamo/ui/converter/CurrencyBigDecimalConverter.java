@@ -37,8 +37,12 @@ public class CurrencyBigDecimalConverter extends BigDecimalConverter {
     @Override
     public BigDecimal convertToModel(String value, Class<? extends BigDecimal> targetType,
             Locale locale) {
+
         if (value != null && !value.startsWith(currencySymbol)) {
-            value = currencySymbol + " " + value.trim();
+            String oldValue = value.trim();
+            value = currencySymbol;
+            value += this.getDecimalFormat().getPositivePrefix().length() > 1 ? " " : "";
+            value += oldValue;
         }
         return super.convertToModel(value, targetType, locale);
     }

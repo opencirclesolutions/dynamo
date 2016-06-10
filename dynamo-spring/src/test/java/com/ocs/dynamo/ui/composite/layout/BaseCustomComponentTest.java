@@ -104,7 +104,8 @@ public class BaseCustomComponentTest extends BaseMockitoTest {
 
         // BigDecimal
         label = (Label) component.constructLabel(e, model.getAttributeModel("discount"));
-        Assert.assertEquals("12,34", label.getValue());
+        Assert.assertEquals("12" + DecimalFormatSymbols.getInstance().getDecimalSeparator() + "34",
+                label.getValue());
 
         // date
         label = (Label) component.constructLabel(e, model.getAttributeModel("birthDate"));
