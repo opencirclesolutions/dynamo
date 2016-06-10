@@ -14,22 +14,27 @@
 package com.ocs.dynamo.ui.converter;
 
 import java.math.BigDecimal;
+import java.text.DecimalFormatSymbols;
 
 import org.junit.Assert;
 import org.junit.Test;
 
 public class CurrencyBigDecimalConverterTest {
 
+    private DecimalFormatSymbols symbols = DecimalFormatSymbols.getInstance();
+
     @Test
     public void testConvertToPresentation() {
         CurrencyBigDecimalConverter cv = new CurrencyBigDecimalConverter(2, true, "€");
 
         String result = cv.convertToPresentation(new BigDecimal(123456), null, null);
-        Assert.assertEquals("€ 123.456,00", result);
+        Assert.assertEquals(String.format("€ 123%s456%s00", symbols.getGroupingSeparator(),
+                symbols.getMonetaryDecimalSeparator()), result);
 
         cv = new CurrencyBigDecimalConverter(2, true, "$");
         result = cv.convertToPresentation(new BigDecimal(123456), null, null);
-        Assert.assertEquals("$ 123.456,00", result);
+        Assert.assertEquals(String.format("$ 123%s456%s00", symbols.getGroupingSeparator(),
+                symbols.getMonetaryDecimalSeparator()), result);
     }
 
     @Test

@@ -14,6 +14,7 @@
 package com.ocs.dynamo.domain.model;
 
 import java.math.BigDecimal;
+import java.text.DecimalFormatSymbols;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -63,6 +64,8 @@ public class ModelBasedFieldFactoryTest extends BaseMockitoTest {
     private EntityModelFactory factory = new EntityModelFactoryImpl();
 
     private ModelBasedFieldFactory<TestEntity> fieldFactory;
+
+    private DecimalFormatSymbols symbols = DecimalFormatSymbols.getInstance();
 
     @Before
     public void setUp() throws Exception {
@@ -160,8 +163,8 @@ public class ModelBasedFieldFactoryTest extends BaseMockitoTest {
      */
     @Test
     public void testTextFieldValidating() {
-        fieldFactory = ModelBasedFieldFactory.getValidatingInstance(
-                factory.getModel(TestEntity.class), messageService);
+        fieldFactory = ModelBasedFieldFactory
+                .getValidatingInstance(factory.getModel(TestEntity.class), messageService);
         Object obj = fieldFactory.createField("name");
 
         Assert.assertTrue(obj instanceof TextField);
@@ -186,7 +189,7 @@ public class ModelBasedFieldFactoryTest extends BaseMockitoTest {
         Assert.assertNotNull(tf.getConverter());
 
         BigDecimal dec = (BigDecimal) tf.getConverter().convertToModel("3,43", null, null);
-        Assert.assertEquals(new BigDecimal("3.43"), dec);
+        Assert.assertEquals(new BigDecimal("3" + symbols.getGroupingSeparator() + "43"), dec);
     }
 
     @Test
@@ -200,7 +203,7 @@ public class ModelBasedFieldFactoryTest extends BaseMockitoTest {
         Assert.assertNotNull(tf.getConverter());
 
         BigDecimal dec = (BigDecimal) tf.getConverter().convertToModel("3,43%", null, null);
-        Assert.assertEquals(new BigDecimal("3.43"), dec);
+        Assert.assertEquals(new BigDecimal("3" + symbols.getGroupingSeparator() + "43"), dec);
 
         Assert.assertEquals("3,14%",
                 tf.getConverter().convertToPresentation(BigDecimal.valueOf(3.14), null, null));
@@ -291,8 +294,8 @@ public class ModelBasedFieldFactoryTest extends BaseMockitoTest {
 
     @Test
     public void testDoNotCreateReadonlyField() {
-        ModelBasedFieldFactory<TestX> f = ModelBasedFieldFactory.getInstance(
-                factory.getModel(TestX.class), messageService);
+        ModelBasedFieldFactory<TestX> f = ModelBasedFieldFactory
+                .getInstance(factory.getModel(TestX.class), messageService);
         Assert.assertNull(f.createField("readOnlyField"));
 
         // in search mode, it does not matter if the field is readonly
