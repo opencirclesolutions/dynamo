@@ -40,6 +40,15 @@ public final class DateUtils {
     private DateUtils() {
     }
 
+    /**
+     * Formats a date according to the specified format
+     * 
+     * @param date
+     *            the date
+     * @param format
+     *            the format
+     * @return
+     */
     public static String formatDate(Date date, String format) {
         if (date == null || format == null) {
             return null;
@@ -73,6 +82,7 @@ public final class DateUtils {
      * Gets the number of the last week of a year
      * 
      * @param year
+     *            the year
      * @return
      */
     public static int getLastWeekOfYear(int year) {
@@ -113,7 +123,10 @@ public final class DateUtils {
     }
 
     /**
+     * Checks if a string represents a valid week code (yyyy-ww)
+     * 
      * @param weekCode
+     *            the week code
      * @return
      */
     public static boolean isValidWeekCode(String weekCode) {
@@ -192,6 +205,22 @@ public final class DateUtils {
         calendar.set(Calendar.SECOND, 0);
         calendar.set(Calendar.MILLISECOND, 0);
         return calendar;
+    }
+
+    /**
+     * Retrieves the date from a year
+     * 
+     * @param date
+     * @return
+     */
+    public static Integer getYearFromDate(Date date) {
+        if (date == null) {
+            return null;
+        }
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        return calendar.get(Calendar.YEAR);
     }
 
     private static int getYearFromWeekCode(String weekCode) {

@@ -30,6 +30,7 @@ import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.sort.SortOrder;
 import com.vaadin.data.util.filter.SimpleStringFilter;
 import com.vaadin.shared.data.sort.SortDirection;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.VerticalLayout;
@@ -65,6 +66,8 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
      * The main layout
      */
     private VerticalLayout mainLayout;
+
+    private Class<? extends Domain> selectedDomain;
 
     /**
      * The layout that contains the controls for editing the selected domain
@@ -167,6 +170,14 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
                 protected Filter constructQuickSearchFilter(String value) {
                     return new SimpleStringFilter(Domain.NAME, value, true, false);
                 }
+
+                @Override
+                protected boolean mustEnableButton(Button button, T selectedItem) {
+                    if (getRemoveButton() == button) {
+                        return isDeleteAllowed(getSelectedDomain());
+                    }
+                    return true;
+                }
             };
             return splitLayout;
         } else {
@@ -179,12 +190,32 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
     }
 
     /**
+     * 
+     * @return the currently selected domain class
+     */
+    public Class<? extends Domain> getSelectedDomain() {
+        return selectedDomain;
+    }
+
+    /**
+     * Check if the deletion of domain values for a certain class is allowed
+     * 
+     * @param clazz
+     *            the class
+     * @return
+     */
+    protected boolean isDeleteAllowed(Class<?> clazz) {
+        return true;
+    }
+
+    /**
      * Constructs a layout for editing a certain domain
      * 
      * @param clazz
      *            the domain class
      */
     private void selectDomain(Class<? extends Domain> clazz) {
+        selectedDomain = clazz;
         ServiceBasedSplitLayout<?, ?> layout = constructSplitLayout(clazz, formOptions);
         selectedDomainLayout.replaceComponent(splitLayout, layout);
         splitLayout = layout;

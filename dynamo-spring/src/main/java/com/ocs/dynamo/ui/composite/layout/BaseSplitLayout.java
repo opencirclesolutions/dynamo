@@ -56,6 +56,9 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 
     private static final long serialVersionUID = 4606800218149558500L;
 
+    // the add button
+    private Button addButton;
+
     // the form layout that is nested inside the detail view
     private Layout detailFormLayout;
 
@@ -76,6 +79,9 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 
     // quick search filed for filtering the table
     private TextField quickSearchField;
+
+    // the remove button
+    private Button removeButton;
 
     // the currently selected detail layout (can be either edit mode or read-only mode)
     private Component selectedDetailLayout;
@@ -183,12 +189,12 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
             mainLayout.addComponent(editPanel);
         }
 
-        Button addButton = constructAddButton();
+        addButton = constructAddButton();
         if (addButton != null) {
             getButtonBar().addComponent(addButton);
         }
 
-        Button removeButton = constructRemoveButton();
+        removeButton = constructRemoveButton();
         if (removeButton != null) {
             registerButton(removeButton);
             getButtonBar().addComponent(removeButton);
@@ -225,23 +231,6 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
         };
         rb.setVisible(getFormOptions().isShowRemoveButton() && isEditAllowed());
         return rb;
-    }
-
-    /**
-     * Remove the item and clean up the screen afterwards
-     */
-    protected final void remove() {
-        doRemove();
-        setSelectedItem(null);
-        emptyDetailView();
-        reload();
-    }
-
-    /**
-     * Performs the actual remove functionality - overwrite in subclass if needed
-     */
-    protected void doRemove() {
-        getService().delete(getSelectedItem());
     }
 
     /**
@@ -306,13 +295,13 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
                 }
 
                 @Override
-                protected void postProcessEditFields() {
-                    BaseSplitLayout.this.postProcessEditFields(editForm);
-                }
-                
-                @Override
                 protected void postProcessButtonBar(HorizontalLayout buttonBar, boolean viewMode) {
                     BaseSplitLayout.this.postProcessDetailButtonBar(buttonBar, viewMode);
+                }
+
+                @Override
+                protected void postProcessEditFields() {
+                    BaseSplitLayout.this.postProcessEditFields(editForm);
                 }
             };
 
@@ -324,12 +313,19 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
             editForm.setViewMode(getFormOptions().isOpenInViewMode());
             editForm.setEntity(entity);
         }
-        
+
         checkButtonState(getSelectedItem());
         afterDetailSelected(editForm, entity);
 
         detailLayout.replaceComponent(selectedDetailLayout, detailFormLayout);
         selectedDetailLayout = detailFormLayout;
+    }
+
+    /**
+     * Performs the actual remove functionality - overwrite in subclass if needed
+     */
+    protected void doRemove() {
+        getService().delete(getSelectedItem());
     }
 
     /**
@@ -343,6 +339,10 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
         selectedDetailLayout = vLayout;
     }
 
+    public Button getAddButton() {
+        return addButton;
+    }
+
     public Layout getDetailLayout() {
         return detailLayout;
     }
@@ -353,6 +353,10 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 
     public Map<String, Filter> getFieldFilters() {
         return fieldFilters;
+    }
+
+    public Button getRemoveButton() {
+        return removeButton;
     }
 
     /**
@@ -402,6 +406,16 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
         this.setSelectedItem(getService().fetchById(this.getSelectedItem().getId(), getJoins()));
         detailsMode(getSelectedItem());
         getTableWrapper().reloadContainer();
+    }
+
+    /**
+     * Remove the item and clean up the screen afterwards
+     */
+    protected final void remove() {
+        doRemove();
+        setSelectedItem(null);
+        emptyDetailView();
+        reload();
     }
 
     public void setFieldFilters(Map<String, Filter> fieldFilters) {

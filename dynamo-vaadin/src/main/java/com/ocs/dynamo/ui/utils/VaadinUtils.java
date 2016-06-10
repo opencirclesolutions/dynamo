@@ -89,15 +89,26 @@ public final class VaadinUtils {
     }
 
     /**
-     * Converts a BigDecimal to a string, using the built in Vaadin converter
      * 
      * @param percentage
-     *            whether the value represents a percentage
      * @param useGrouping
-     *            whether to use a thousands grouping separator
+     * @param value
+     * @return
+     */
+    public static String bigDecimalToString(boolean percentage, boolean useGrouping,
+            BigDecimal value) {
+        return bigDecimalToString(percentage, useGrouping, value, VaadinSession.getCurrent()
+                .getLocale());
+    }
+
+    /**
+     * 
+     * @param currency
+     * @param percentage
+     * @param useGrouping
      * @param precision
-     *            the precision (number of decimals)
-     * @Param value the value to convert
+     * @param value
+     * @param locale
      * @return
      */
     public static String bigDecimalToString(boolean currency, boolean percentage,
@@ -327,8 +338,8 @@ public final class VaadinUtils {
      */
     public static BigDecimal stringToBigDecimal(boolean percentage, boolean useGrouping,
             String value) {
-        return stringToBigDecimal(percentage, useGrouping, value,
-                VaadinSession.getCurrent().getLocale());
+        return stringToBigDecimal(percentage, useGrouping, value, VaadinSession.getCurrent()
+                .getLocale());
     }
 
     public static BigDecimal stringToBigDecimal(boolean percentage, boolean useGrouping,
