@@ -188,6 +188,14 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
     protected abstract void detailsMode(T entity);
 
     /**
+     * The code that is carried out once the add button is clicked
+     */
+    protected void doAdd() {
+        setSelectedItem(createEntity());
+        detailsMode(getSelectedItem());
+    }
+
+    /**
      * Constructs the add button
      * 
      * @return
@@ -200,8 +208,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 
             @Override
             public void buttonClick(ClickEvent event) {
-                setSelectedItem(createEntity());
-                detailsMode(getSelectedItem());
+                doAdd();
             }
         });
         ab.setVisible(!getFormOptions().isHideAddButton() && isEditAllowed());

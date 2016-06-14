@@ -21,6 +21,7 @@ import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.filter.FilterConverter;
 import com.ocs.dynamo.service.BaseService;
+import com.ocs.dynamo.ui.Refreshable;
 import com.ocs.dynamo.utils.SortUtil;
 import com.vaadin.data.sort.SortOrder;
 import com.vaadin.data.util.BeanItemContainer;
@@ -30,15 +31,34 @@ import com.vaadin.shared.ui.combobox.FilteringMode;
  * Combo box for displaying a list of entities
  */
 public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID>> extends
-        ComboBoxFixed {
+        ComboBoxFixed implements Refreshable {
 
     private static final long serialVersionUID = 3041574615271340579L;
 
-    private final AttributeModel attributeModel;
+    /**
+     * The service
+     */
+    private BaseService<ID, T> service;
 
+    /**
+     * The attribute mode
+     */
+    private AttributeModel attributeModel;
+
+    /**
+     * The select mode
+     */
     private SelectMode selectMode = SelectMode.FILTERED;
 
+    /**
+     * The sort orders
+     */
     private final SortOrder[] sortOrder;
+
+    /**
+     * The search filter
+     */
+    private Filter filter;
 
     public enum SelectMode {
         ALL, FILTERED, FIXED;
@@ -113,9 +133,11 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
             BaseService<ID, T> service, SelectMode mode, Filter filter, List<T> items,
             SortOrder... sortOrder) {
 
+        this.service = service;
         this.selectMode = mode;
         this.sortOrder = sortOrder;
         this.attributeModel = attributeModel;
+        this.filter = filter;
 
         if (attributeModel != null) {
             this.setCaption(attributeModel.getDisplayName());
@@ -166,6 +188,22 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 
     public void setSelectMode(SelectMode selectMode) {
         this.selectMode = selectMode;
+    }
+
+    @SuppressWarnings("unchecked")
+    public void refresh() {
+        if (SelectMode.ALL.equals(selectMode)) {
+            // add all items (but sorted)
+            getContainerDataSource().removeAllItems();
+            ((BeanItemContainer<T>) getContainerDataSource()).addAll(service.findAll(SortUtil
+                    .translate(sortOrder)));
+        } else if (SelectMode.FILTERED.equals(selectMode)) {
+            // add a filtered selection of items
+            getContainerDataSource().removeAllItems();
+            List<T> list = service.find(new FilterConverter(null).convert(filter),
+                    SortUtil.translate(sortOrder));
+            ((BeanItemContainer<T>) getContainerDataSource()).addAll(list);
+        }
     }
 
 }

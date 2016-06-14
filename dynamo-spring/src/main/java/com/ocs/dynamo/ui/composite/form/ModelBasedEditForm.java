@@ -35,6 +35,7 @@ import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.impl.ModelBasedFieldFactory;
 import com.ocs.dynamo.domain.model.util.EntityModelUtil;
 import com.ocs.dynamo.service.BaseService;
+import com.ocs.dynamo.ui.Refreshable;
 import com.ocs.dynamo.ui.component.DefaultEmbedded;
 import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
@@ -331,7 +332,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
      */
     private void addField(Layout parent, EntityModel<T> entityModel, AttributeModel attributeModel,
             int count) {
-        
+
         AttributeType type = attributeModel.getAttributeType();
         if (attributeModel.isVisible()
                 && (AttributeType.BASIC.equals(type) || AttributeType.LOB.equals(type) || attributeModel
@@ -918,6 +919,13 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
             if (hc instanceof Layout) {
                 ((Layout) hc).replaceComponent(e.getValue(), uc);
                 uploads.get(isViewMode()).put(e.getKey(), uc);
+            }
+        }
+
+        // refresh any fields that need it
+        for (Field<?> f : groups.get(isViewMode()).getFields()) {
+            if (f instanceof Refreshable) {
+                ((Refreshable) f).refresh();
             }
         }
 

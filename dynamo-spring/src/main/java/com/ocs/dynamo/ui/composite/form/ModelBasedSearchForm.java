@@ -27,6 +27,7 @@ import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.impl.ModelBasedFieldFactory;
 import com.ocs.dynamo.filter.listener.FilterChangeEvent;
 import com.ocs.dynamo.filter.listener.FilterListener;
+import com.ocs.dynamo.ui.Refreshable;
 import com.ocs.dynamo.ui.Searchable;
 import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
 import com.vaadin.data.Container.Filter;
@@ -152,7 +153,7 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
     protected void afterSearchFieldToggle(boolean visible) {
         // override in subclasses
     }
-
+    
     @Override
     public void build() {
         VerticalLayout main = new VerticalLayout();
@@ -503,4 +504,14 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
         }
     }
 
+    /**
+     * Refreshes the
+     */
+    public void refresh() {
+        for (FilterGroup group : getGroups().values()) {
+            if (group.getField() instanceof Refreshable) {
+                ((Refreshable) group.getField()).refresh();
+            }
+        }
+    }
 }

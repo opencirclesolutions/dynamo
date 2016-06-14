@@ -58,7 +58,9 @@ public class EntityComboBoxTest extends BaseMockitoTest {
         Assert.assertEquals(EntityComboBox.SelectMode.ALL, select.getSelectMode());
         Assert.assertEquals(am, select.getAttributeModel());
 
-        Mockito.verify(service).findAll((SortOrder[]) null);
+        select.refresh();
+
+        Mockito.verify(service, Mockito.times(2)).findAll((SortOrder[]) null);
     }
 
     @Test
@@ -73,11 +75,14 @@ public class EntityComboBoxTest extends BaseMockitoTest {
     @Test
     public void testFilter() {
         EntityComboBox<Integer, TestEntity> select = new EntityComboBox<>(
-                factory.getModel(TestEntity.class), null, service,
-                new Compare.Equal("name", "Bob"));
+                factory.getModel(TestEntity.class), null, service, new Compare.Equal("name", "Bob"));
         Assert.assertEquals(EntityComboBox.SelectMode.FILTERED, select.getSelectMode());
 
-        Mockito.verify(service).find(Matchers.any(com.ocs.dynamo.filter.Filter.class),
+        select.refresh();
+
+        // data must have been retrieved twice - once during creation and once during request
+        Mockito.verify(service, Mockito.times(2)).find(
+                Matchers.any(com.ocs.dynamo.filter.Filter.class),
                 Matchers.any(com.ocs.dynamo.dao.SortOrder[].class));
     }
 }

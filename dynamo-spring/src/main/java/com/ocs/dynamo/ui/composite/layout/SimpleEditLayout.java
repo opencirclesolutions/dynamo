@@ -74,7 +74,7 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
     public SimpleEditLayout(T entity, BaseService<ID, T> service, EntityModel<T> entityModel,
             FormOptions formOptions, FetchJoinInformation... joins) {
         super(service, entityModel, formOptions);
-        this.entity = entity;
+        this.entity = entity == null ? createEntity() : entity;
         this.joins = joins;
     }
 
@@ -85,14 +85,24 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
      * @param entity
      */
     protected void afterEditDone(boolean cancel, boolean newObject, T entity) {
-        // reset to view mode
-        if (getFormOptions().isOpenInViewMode()) {
-            editForm.setViewMode(true);
-        }
 
         if (entity.getId() != null) {
+            // reset to view mode
+            if (getFormOptions().isOpenInViewMode()) {
+                editForm.setViewMode(true);
+            }
             setEntity(getService().fetchById(entity.getId(), getJoins()));
+        } else {
+            // new entity
+            back();
         }
+    }
+
+    /**
+     * Code to carry out after navigating "back" to the main screen
+     */
+    protected void back() {
+        // overwrite in subclasses
     }
 
     @Override
@@ -270,5 +280,4 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
         this.joins = joins;
     }
 
-    
 }
