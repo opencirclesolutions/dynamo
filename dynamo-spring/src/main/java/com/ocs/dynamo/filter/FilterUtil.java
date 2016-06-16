@@ -279,12 +279,13 @@ public final class FilterUtil {
      *            optional property - if supplied, then we the application will check this property
      *            instead of the property supplied in the original filters
      */
-    public static void replaceDetailsFilters(com.ocs.dynamo.filter.Filter filter,
+    public static void replaceMasterAndDetailFilters(com.ocs.dynamo.filter.Filter filter,
             EntityModel<?> entityModel) {
 
         // iterate over models and try to find filters that query DETAIL relations
         for (AttributeModel am : entityModel.getAttributeModels()) {
-            if (am.isSearchable() && AttributeType.DETAIL.equals(am.getAttributeType())) {
+            if (AttributeType.DETAIL.equals(am.getAttributeType())
+                    || (AttributeType.MASTER.equals(am.getAttributeType()) && am.isMultipleSearch())) {
                 com.ocs.dynamo.filter.Filter detailFilter = FilterUtil.extractFilter(filter,
                         am.getPath());
                 if (detailFilter != null) {
@@ -293,19 +294,30 @@ public final class FilterUtil {
                             .getReplacementSearchPath() : am.getPath();
 
                     com.ocs.dynamo.filter.Compare.Equal bf = (Compare.Equal) detailFilter;
-                    if (bf.getValue() instanceof Collection) {
-                        // multiple values supplied - construct an OR filter
-                        Collection<?> col = (Collection<?>) bf.getValue();
-                        Or or = new Or();
-                        for (Object o : col) {
-                            or.or(new Contains(prop, o));
-                        }
-                        replaceFilter(null, filter, or, am.getPath());
-                    } else {
-                        // just a single value
-                        replaceFilter(null, filter, new Contains(prop, bf.getValue()), am.getPath());
-                    }
+                    if (AttributeType.DETAIL.equals(am.getAttributeType())) {
 
+                        if (bf.getValue() instanceof Collection) {
+                            // multiple values supplied - construct an OR filter
+                            Collection<?> col = (Collection<?>) bf.getValue();
+                            Or or = new Or();
+                            for (Object o : col) {
+                                or.or(new Contains(prop, o));
+                            }
+                            replaceFilter(null, filter, or, am.getPath());
+                        } else {
+                            // just a single value
+                            replaceFilter(null, filter, new Contains(prop, bf.getValue()),
+                                    am.getPath());
+                        }
+                    } else {
+                        // master attribute - translate to an "in" filter
+                        if (bf.getValue() instanceof Collection) {
+                            // multiple values supplied - construct an OR filter
+                            Collection<?> col = (Collection<?>) bf.getValue();
+                            In in = new In(prop, col);
+                            replaceFilter(null, filter, in, am.getPath());
+                        }
+                    }
                 }
             }
         }

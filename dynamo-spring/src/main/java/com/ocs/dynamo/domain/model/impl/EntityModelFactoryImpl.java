@@ -830,6 +830,13 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
                 model.setQuickAddAllowed(true);
             }
 
+            if (attribute.required()) {
+                model.setRequired(true);
+            }
+
+            if (attribute.multipleSearch()) {
+                model.setMultipleSearch(true);
+            }
         }
     }
 

@@ -113,7 +113,7 @@ public class FilterConverter implements Converter<Filter, com.ocs.dynamo.filter.
 
         // replace any filters for searching detail fields by Contains-filters
         if (entityModel != null) {
-            FilterUtil.replaceDetailsFilters(result, entityModel);
+            FilterUtil.replaceMasterAndDetailFilters(result, entityModel);
         }
 
         return result;

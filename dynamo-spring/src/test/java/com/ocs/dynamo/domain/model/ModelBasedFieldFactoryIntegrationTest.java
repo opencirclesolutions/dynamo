@@ -89,7 +89,7 @@ public class ModelBasedFieldFactoryIntegrationTest extends BaseIntegrationTest {
                 f.getSortOrder()[0]);
         Assert.assertEquals(com.ocs.dynamo.ui.component.EntityListSelect.SelectMode.FILTERED,
                 f.getSelectMode());
-        Assert.assertEquals(5, f.getRows());
+        Assert.assertEquals(3, f.getRows());
     }
 
     /**
@@ -98,8 +98,8 @@ public class ModelBasedFieldFactoryIntegrationTest extends BaseIntegrationTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testCreateComboBox() {
-        ModelBasedFieldFactory<TestEntity2> fieldFactory = ModelBasedFieldFactory
-                .getInstance(entityModelFactory.getModel(TestEntity2.class), messageService);
+        ModelBasedFieldFactory<TestEntity2> fieldFactory = ModelBasedFieldFactory.getInstance(
+                entityModelFactory.getModel(TestEntity2.class), messageService);
 
         EntityModel<TestEntity2> model = entityModelFactory.getModel(TestEntity2.class);
         AttributeModel am = model.getAttributeModel("testEntity");

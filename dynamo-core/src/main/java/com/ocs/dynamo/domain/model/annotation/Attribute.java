@@ -74,6 +74,9 @@ public @interface Attribute {
     // whether this field is the main attribute
     boolean main() default false;
 
+    // whether this attribute allows search for multiple values (only for MASTER attributes)
+    boolean multipleSearch() default false;
+
     // the maximum element length (-1 indicates no value)
     int maxLength() default -1;
 
@@ -96,6 +99,9 @@ public @interface Attribute {
 
     // whether the field is readonly (i.e. does not appear in edit forms)
     boolean readOnly() default false;
+
+    //
+    boolean required() default false;
 
     // replacement search path
     String replacementSearchPath() default "";

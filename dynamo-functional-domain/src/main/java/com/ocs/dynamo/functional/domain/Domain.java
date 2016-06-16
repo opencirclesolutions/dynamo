@@ -13,6 +13,7 @@
  */
 package com.ocs.dynamo.functional.domain;
 
+import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -64,11 +65,15 @@ public abstract class Domain extends AbstractEntity<Integer> {
     private String name;
 
     public Domain() {
-        super();
     }
 
+    /**
+     * Constructor
+     * 
+     * @param code
+     * @param name
+     */
     public Domain(String code, String name) {
-        super();
         this.code = code;
         this.name = name;
     }

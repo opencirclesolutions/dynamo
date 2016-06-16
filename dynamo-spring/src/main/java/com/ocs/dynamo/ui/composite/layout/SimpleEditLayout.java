@@ -81,10 +81,13 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
     /**
      * Method that is called after the user has completed (or cancelled) an edit action
      * 
-     * @param newObject
+     * @param cancel
+     *            whether the edit was cancelled
+     * @param newEntity
+     *            whether a new entity was being edited
      * @param entity
      */
-    protected void afterEditDone(boolean cancel, boolean newObject, T entity) {
+    protected void afterEditDone(boolean cancel, boolean newEntity, T entity) {
 
         if (entity.getId() != null) {
             // reset to view mode
@@ -171,13 +174,14 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
             protected void postProcessEditFields() {
                 SimpleEditLayout.this.postProcessEditFields(editForm);
             }
-
         };
 
         editForm.setFieldEntityModels(getFieldEntityModels());
         editForm.build();
 
         main.addComponent(editForm);
+
+        checkButtonState(getEntity());
 
         setCompositionRoot(main);
     }

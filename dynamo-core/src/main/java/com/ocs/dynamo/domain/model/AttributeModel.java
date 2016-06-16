@@ -225,6 +225,13 @@ public interface AttributeModel extends Comparable<AttributeModel> {
     boolean isMainAttribute();
 
     /**
+     * Indicates whether this is a "multiple search" attribute
+     * 
+     * @return
+     */
+    boolean isMultipleSearch();
+
+    /**
      * Is this a numeric attribute
      * 
      * @return
@@ -313,7 +320,7 @@ public interface AttributeModel extends Comparable<AttributeModel> {
      * @return
      */
     boolean isWeek();
-    
+
     /**
      * Marks this attribute as the main attribute
      * 
