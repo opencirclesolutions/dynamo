@@ -109,14 +109,17 @@ public abstract class BaseCustomComponent extends CustomComponent implements Bui
             } else if (BigDecimal.class.equals(type)) {
                 property = new ObjectProperty<BigDecimal>((BigDecimal) value);
                 fieldLabel.setConverter(ConverterFactory.createBigDecimalConverter(
-                        attributeModel.isCurrency(), attributeModel.isPercentage(), true,
-                        attributeModel.getPrecision(), VaadinUtils.getCurrencySymbol()));
+                        attributeModel.isCurrency(), attributeModel.isPercentage(),
+                        attributeModel.isUseThousandsGrouping(), attributeModel.getPrecision(),
+                        VaadinUtils.getCurrencySymbol()));
             } else if (Integer.class.equals(type)) {
                 property = new ObjectProperty<Integer>((Integer) value);
-                fieldLabel.setConverter(ConverterFactory.createIntegerConverter(true));
+                fieldLabel.setConverter(ConverterFactory.createIntegerConverter(attributeModel
+                        .isUseThousandsGrouping()));
             } else if (Long.class.equals(type)) {
                 property = new ObjectProperty<Long>((Long) value);
-                fieldLabel.setConverter(ConverterFactory.createLongConverter(true));
+                fieldLabel.setConverter(ConverterFactory.createLongConverter(attributeModel
+                        .isUseThousandsGrouping()));
             } else if (AbstractEntity.class.isAssignableFrom(type)) {
                 // another entity - use the value of the "displayProperty"
                 EntityModel<?> model = getEntityModelFactory().getModel(type);

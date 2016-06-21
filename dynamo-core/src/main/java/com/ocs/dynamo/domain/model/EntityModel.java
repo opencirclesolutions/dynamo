@@ -68,6 +68,11 @@ public interface EntityModel<T> {
 
     String MIN_LENGTH = "minLength";
 
+    /**
+     * Whether to allow searching for multiple values in case of a MASTER attribute
+     */
+    String MULTIPLE_SEARCH = "multipleSearch";
+
     String PERCENTAGE = "percentage";
 
     String PRECISION = "precision";
@@ -119,6 +124,11 @@ public interface EntityModel<T> {
     String VISIBLE = "visible";
 
     String WEEK = "week";
+
+    /**
+     * Indicates whether to use thousand grouping characters
+     */
+    String THOUSANDS_GROUPING = "thousandsGrouping";
 
     /**
      * Adds a new attribute model on the position of the given existing attribute model. The

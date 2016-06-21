@@ -33,7 +33,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
 
 /**
- * A layout for editing a single object
+ * A layout for editing a single entity (can either be an existing or a new entity)
  * 
  * @author bas.rutten
  * @param <ID>
@@ -121,11 +121,6 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
     public void build() {
         main = new DefaultVerticalLayout(true, true);
 
-        // if opening in edit mode, the cancel button is useless since there is
-        // nothing to cancel or go back to
-        if (!getFormOptions().isOpenInViewMode()) {
-            getFormOptions().setHideCancelButton(true);
-        }
         // there is just one component here, so the screen mode is always
         // vertical
         getFormOptions().setScreenMode(ScreenMode.VERTICAL);
@@ -141,6 +136,11 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
             @Override
             protected void afterModeChanged(boolean viewMode) {
                 SimpleEditLayout.this.afterModeChanged(viewMode, editForm);
+            }
+
+            @Override
+            protected void back() {
+                SimpleEditLayout.this.back();
             }
 
             @Override

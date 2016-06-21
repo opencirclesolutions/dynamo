@@ -110,6 +110,8 @@ public class AttributeModelImpl implements AttributeModel {
 
     private boolean url;
 
+    private boolean useThousandsGrouping;
+
     private boolean visible;
 
     private boolean visibleInTable;
@@ -518,6 +520,14 @@ public class AttributeModelImpl implements AttributeModel {
 
     public void setWeek(boolean week) {
         this.week = week;
+    }
+
+    public boolean isUseThousandsGrouping() {
+        return useThousandsGrouping;
+    }
+
+    public void setUseThousandsGrouping(boolean useThousandsGrouping) {
+        this.useThousandsGrouping = useThousandsGrouping;
     }
 
     @Override

@@ -400,7 +400,6 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
                 Field<?> field = constructCustomField(entityModel, attributeModel,
                         isTableEditEnabled());
                 if (field == null) {
-
                     Filter filter = fieldFilters == null ? null : fieldFilters.get(attributeModel
                             .getName());
                     if (filter != null) {
@@ -432,6 +431,8 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
                             }
 
                         });
+
+                        postProcessTableField(propertyId, field);
 
                         // focus if necessary
                         if (attributeModel.isDetailFocus()) {
@@ -607,6 +608,10 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 
     public void setComparator(Comparator<T> comparator) {
         this.comparator = comparator;
+    }
+
+    public void postProcessTableField(String propertyId, Field<?> field) {
+
     }
 
 }

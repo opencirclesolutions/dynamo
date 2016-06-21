@@ -301,6 +301,13 @@ public interface AttributeModel extends Comparable<AttributeModel> {
     boolean isUrl();
 
     /**
+     * Indicates whether to use a thousands grouping character
+     * 
+     * @return
+     */
+    boolean isUseThousandsGrouping();
+
+    /**
      * Indicates whether the attribute is visible
      * 
      * @return

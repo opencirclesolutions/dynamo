@@ -133,6 +133,9 @@ public @interface Attribute {
     // indicates whether this is a clickable URL
     boolean url() default false;
 
+    // indicates whether to use thousands grouping
+    boolean useThousandsGrouping() default true;
+
     // whether the field is visible
     VisibilityType visible() default VisibilityType.INHERIT;
 

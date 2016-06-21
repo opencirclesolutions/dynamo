@@ -111,6 +111,7 @@ public class EntityModelFactoryTest extends BaseMockitoTest {
         Assert.assertNull(nameModel.getDisplayFormat());
         Assert.assertEquals(AttributeType.BASIC, ageModel.getAttributeType());
         Assert.assertTrue(ageModel.isRequired());
+        Assert.assertTrue(ageModel.isUseThousandsGrouping());
 
         AttributeModel birthDateModel = model.getAttributeModel("birthDate");
         Assert.assertNull(birthDateModel.getDefaultValue());
@@ -215,6 +216,7 @@ public class EntityModelFactoryTest extends BaseMockitoTest {
         Assert.assertNotNull(ageModel);
         Assert.assertTrue(ageModel.isSearchCaseSensitive());
         Assert.assertTrue(ageModel.isSearchPrefixOnly());
+        Assert.assertFalse(ageModel.isUseThousandsGrouping());
 
         AttributeModel entityModel = model.getAttributeModel("entity2");
         Assert.assertEquals(AttributeType.MASTER, entityModel.getAttributeType());
@@ -601,7 +603,7 @@ public class EntityModelFactoryTest extends BaseMockitoTest {
         @Attribute(defaultValue = "Bas", description = "Test", displayName = "Naampje", readOnly = true, prompt = "Prompt", searchable = true, main = true, sortable = false)
         private String name;
 
-        @Attribute(searchCaseSensitive = true, searchPrefixOnly = true)
+        @Attribute(searchCaseSensitive = true, searchPrefixOnly = true, useThousandsGrouping = false)
         private Integer age;
 
         @Attribute(displayFormat = "dd/MM/yyyy")

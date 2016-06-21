@@ -23,10 +23,14 @@ public final class ConverterFactory {
     }
 
     /**
-     * Creates a BigDecimal converter
+     * Creates a BigDecimalConverter
      * 
+     * @param currency
+     *            whether the field is a currency field
      * @param percentage
-     *            indicates whether the converter must take percentage signs into account
+     * @param useGrouping
+     * @param precision
+     * @param currencySymbol
      * @return
      */
     public static BigDecimalConverter createBigDecimalConverter(boolean currency,

@@ -338,43 +338,16 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
                 && (AttributeType.BASIC.equals(type) || AttributeType.LOB.equals(type) || attributeModel
                         .isComplexEditable())) {
             if (attributeModel.isReadOnly() || isViewMode()) {
-
-                // determine custom attribute model
-                EntityModel<?> em = getFieldEntityModel(attributeModel);
-
-                if (entity.getId() != null) {
-                    // read-only attribute are hidden for new entities
-                    if (attributeModel.isUrl()
-                            || (AttributeType.DETAIL.equals(type) || AttributeType.ELEMENT_COLLECTION
-                                    .equals(type)) && attributeModel.isComplexEditable()) {
-                        // display a complex component in read-only mode
-                        constructField(parent, entityModel, attributeModel, true, count);
-                    } else {
-                        // display a label
-                        if (attributeModel.isUrl()) {
-                            URLField urlField = (URLField) fieldFactory.constructField(
-                                    attributeModel, getFieldFilters(), em);
-                            groups.get(isViewMode()).bind(urlField, attributeModel.getName());
-                            parent.addComponent(urlField);
-                        } else {
-                            Component label = constructLabel(entity, attributeModel);
-                            labels.get(isViewMode()).put(attributeModel, label);
-                            parent.addComponent(label);
-                        }
-                    }
+                if (attributeModel.isUrl()
+                        || (AttributeType.DETAIL.equals(type) || AttributeType.ELEMENT_COLLECTION
+                                .equals(type)) && attributeModel.isComplexEditable()) {
+                    // display a complex component in read-only mode
+                    constructField(parent, entityModel, attributeModel, true, count);
                 } else {
-                    // new entity - create the label but do not display it
-                    if (attributeModel.isUrl()) {
-                        URLField urlField = (URLField) fieldFactory.constructField(attributeModel,
-                                getFieldFilters(), em);
-                        groups.get(isViewMode()).bind(urlField, attributeModel.getName());
-                        parent.addComponent(urlField);
-                    } else {
-                        Component label = constructLabel(entity, attributeModel);
-                        label.setVisible(false);
-                        labels.get(isViewMode()).put(attributeModel, label);
-                        parent.addComponent(label);
-                    }
+                    // otherwise display a label
+                    Component label = constructLabel(entity, attributeModel);
+                    labels.get(isViewMode()).put(attributeModel, label);
+                    parent.addComponent(label);
                 }
             } else {
                 // display an editable field
@@ -470,9 +443,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
         titleBars.get(isViewMode()).addComponent(buttonBar);
         layout.addComponent(titleBars.get(isViewMode()));
 
-        // extra label (just for spacing)
-        layout.addComponent(new Label(""));
-
         Layout form = null;
         if (entityModel.usesDefaultGroupOnly()) {
             form = new FormLayout();
@@ -546,7 +516,9 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
             firstField.focus();
         }
 
-        layout.addComponent(constructButtonBar());
+        buttonBar = constructButtonBar();
+        buttonBar.setSizeUndefined();
+        layout.addComponent(buttonBar);
         checkSaveButtonState();
 
         return layout;
@@ -725,10 +697,12 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
             ((URLField) field).setEditable(!isViewMode());
         }
 
+        // set view mode if appropriate
         if (field instanceof CollectionTable) {
             ((CollectionTable<?>) field).setViewMode(isViewMode());
         }
 
+        // set view mode if appropriate
         if (field instanceof QuickAddListSelect) {
             ((QuickAddListSelect<?, ?>) field).setViewMode(isViewMode());
         }
@@ -736,7 +710,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
         if (field != null) {
             groups.get(viewMode).bind(field, attributeModel.getName());
             field.setSizeFull();
-            // field.setEnabled(!viewMode);
             form.addComponent(field);
         }
 
