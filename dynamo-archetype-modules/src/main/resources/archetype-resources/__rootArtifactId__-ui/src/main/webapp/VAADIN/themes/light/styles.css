@@ -12441,11 +12441,3 @@ div.v-layout.v-horizontal.v-widget {
 .light div.attributePanel td.v-formlayout-captioncell {
 	width: 20%;
 }
-
-.light div.divider .v-table-header table, .light div.divider .v-table-table {
-	border-collapse: collapse;
-}
-
-.light td.v-table-cell-content-divider {
-	border-top: 1px solid black;
-}

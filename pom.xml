@@ -34,6 +34,9 @@
 		<module>dynamo-jpa</module>
 		<module>dynamo-spring</module>
 		<module>dynamo-functional-domain</module>
+		<module>dynamo-archetype</module>
+		<module>dynamo-archetype-modules</module>
+		<module>dynamo-showcase</module>
 	</modules>
 
 	<properties>
