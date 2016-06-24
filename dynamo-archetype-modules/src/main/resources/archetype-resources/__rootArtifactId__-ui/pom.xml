@@ -20,13 +20,13 @@
 
 		<!-- Dynamo dependency -->
 		<dependency>
-			<groupId>${groupId}</groupId>
+			<groupId>com.ocs</groupId>
 			<artifactId>dynamo-spring</artifactId>
 		</dependency>
 
 		<!-- Module dependency -->
 		<dependency>
-			<groupId>com.ocs</groupId>
+			<groupId>${groupId}</groupId>
 			<artifactId>${rootArtifactId}-core</artifactId>
 			<version>${version}</version>
 		</dependency>
