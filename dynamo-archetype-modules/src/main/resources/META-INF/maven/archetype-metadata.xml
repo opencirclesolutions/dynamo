@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<archetype-descriptor
+	xsi:schemaLocation="http://maven.apache.org/plugins/maven-archetype-plugin/archetype-descriptor/1.0.0 http://maven.apache.org/xsd/archetype-descriptor-1.0.0.xsd"
+	name="dynamo-spring-archetype-modules"
+	xmlns="http://maven.apache.org/plugins/maven-archetype-plugin/archetype-descriptor/1.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modules>
+		<module id="${rootArtifactId}-domain" dir="__rootArtifactId__-domain" name="${rootArtifactId}-domain">
+			<fileSets>
+				<fileSet filtered="true" packaged="true" encoding="UTF-8">
+					<directory>src/main/java</directory>
+					<includes>
+						<include>**/*.java</include>
+					</includes>
+				</fileSet>
+				<fileSet filtered="true" encoding="UTF-8">
+					<directory>src/main/resources</directory>
+					<includes>
+						<include>**/*.xml</include>
+						<include>**/*.properties</include>
+					</includes>
+				</fileSet>
+			</fileSets>
+		</module>
+		<module id="${rootArtifactId}-core" dir="__rootArtifactId__-core" name="${rootArtifactId}-core">
+			<fileSets>
+				<fileSet filtered="true" packaged="true" encoding="UTF-8">
+					<directory>src/main/java</directory>
+					<includes>
+						<include>**/*.java</include>
+					</includes>
+				</fileSet>
+				<fileSet filtered="true" encoding="UTF-8">
+					<directory>src/main/resources</directory>
+					<includes>
+						<include>**/*.xml</include>
+						<include>**/*.properties</include>
+					</includes>
+				</fileSet>
+			</fileSets>
+		</module>
+		<module id="${rootArtifactId}-ui" dir="__rootArtifactId__-ui"
+			name="${rootArtifactId}-ui">
+			<fileSets>
+				<fileSet filtered="true" packaged="true" encoding="UTF-8">
+					<directory>src/main/java</directory>
+					<includes>
+						<include>**/*.java</include>
+					</includes>
+				</fileSet>
+				<fileSet filtered="true" encoding="UTF-8">
+					<directory>src/main/resources</directory>
+					<includes>
+						<include>**/*.xml</include>
+						<include>**/*.properties</include>
+					</includes>
+				</fileSet>
+				<fileSet filtered="true" encoding="UTF-8">
+					<directory>src/main/webapp</directory>
+					<includes>
+						<include>**/*.txt</include>
+						<include>**/*.xml</include>
+					</includes>
+				</fileSet>
+				<fileSet encoding="UTF-8">
+					<directory>src/main/webapp</directory>
+					<includes>
+						<include>**/*.jpg</include>
+						<include>**/*.otf</include>
+						<include>**/*.css</include>
+						<include>**/*.scss</include>
+						<include>**/*.svg</include>
+						<include>**/*.gif</include>
+						<include>**/*.ttf</include>
+						<include>**/*.png</include>
+						<include>**/*.js</include>
+						<include>**/*.eot</include>
+						<include>**/*.less</include>
+						<include>**/*.woff</include>
+						<include>**/*.gz</include>
+						<include>**/*.ico</include>
+						<include>**/*.MF</include>
+						<include>**/*.woff2</include>
+					</includes>
+				</fileSet>
+			</fileSets>
+		</module>
+	</modules>
+</archetype-descriptor>
