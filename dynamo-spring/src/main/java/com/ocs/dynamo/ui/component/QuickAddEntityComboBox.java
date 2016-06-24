@@ -46,6 +46,9 @@ public class QuickAddEntityComboBox<ID extends Serializable, T extends AbstractE
 
     private static final long serialVersionUID = 4246187881499965296L;
 
+    /**
+     * The combo box that we wrap this component around
+     */
     private EntityComboBox<ID, T> comboBox;
 
     /**

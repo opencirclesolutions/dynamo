@@ -77,7 +77,16 @@ public abstract class QuickAddEntityField<ID extends Serializable, T extends Abs
             if (!StringUtils.isEmpty(value)) {
                 T t = getService().createNewEntity();
 
-                ClassUtils.setFieldValue(t, getAttributeModel().getQuickAddPropertyName(), value);
+                // disallow values that are too long
+                String propName = getAttributeModel().getQuickAddPropertyName();
+                Integer maxLength = getEntityModel().getAttributeModel(propName).getMaxLength();
+
+                if (maxLength != null && value.length() > maxLength) {
+                    Notification.show(getMessageService().getMessage("ocs.value.too.long"),
+                            Notification.Type.ERROR_MESSAGE);
+                    return false;
+                }
+                ClassUtils.setFieldValue(t, propName, value);
 
                 try {
                     t = getService().save(t);
@@ -104,6 +113,7 @@ public abstract class QuickAddEntityField<ID extends Serializable, T extends Abs
 
     /**
      * Constructor
+     * 
      * @param service
      * @param entityModel
      * @param attributeModel

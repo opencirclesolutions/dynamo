@@ -36,7 +36,7 @@ public class BaseCsvImporter extends BaseTextImporter {
      */
     @Override
     public int countRows(byte[] bytes, int row, int column) {
-        List<String[]> lines = readCsvFile(bytes, ";");
+        List<String[]> lines = readCsvFile(bytes, ";", "'");
         return lines.size();
     }
 
@@ -48,10 +48,9 @@ public class BaseCsvImporter extends BaseTextImporter {
      * @return
      * @throws IOException
      */
-    protected List<String[]> readCsvFile(byte[] bytes, String separator) {
-        try (CSVReader reader = new CSVReader(
-                new CharSequenceReader(new String(bytes, Charset.forName(DynamoConstants.UTF_8))),
-                separator.charAt(0))) {
+    protected List<String[]> readCsvFile(byte[] bytes, String separator, String quote) {
+        try (CSVReader reader = new CSVReader(new CharSequenceReader(new String(bytes,
+                Charset.forName(DynamoConstants.UTF_8))), separator.charAt(0), quote.charAt(0))) {
             return reader.readAll();
         } catch (IOException ex) {
             throw new OCSImportException(ex.getMessage(), ex);

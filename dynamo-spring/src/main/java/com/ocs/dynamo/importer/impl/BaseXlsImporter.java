@@ -112,14 +112,39 @@ public class BaseXlsImporter extends BaseImporter<Row, Cell> {
     }
 
     /**
+     * Extracts a boolean value from a cell
+     * 
+     * @param cell
+     * @return
+     */
+    protected Boolean getBooleanValue(Cell cell) {
+        if (cell != null && (Cell.CELL_TYPE_BOOLEAN == cell.getCellType())) {
+            return cell.getBooleanCellValue();
+        } else if (cell != null && Cell.CELL_TYPE_STRING == cell.getCellType()) {
+            return Boolean.valueOf(cell.getStringCellValue());
+        }
+        return Boolean.FALSE;
+    }
+
+    @Override
+    protected Boolean getBooleanValueWithDefault(Cell unit, XlsField field) {
+        Boolean b = getBooleanValue(unit);
+        if (b == null && field.defaultValue() != null) {
+            return Boolean.valueOf(field.defaultValue());
+        }
+        return b;
+    }
+
+    /**
      * Retrieves the numeric value of a cell
      * 
      * @param cell
      * @return
      */
     protected Double getNumericValue(Cell cell) {
-        if (cell != null && (Cell.CELL_TYPE_NUMERIC == cell.getCellType()
-                || Cell.CELL_TYPE_BLANK == cell.getCellType())) {
+        if (cell != null
+                && (Cell.CELL_TYPE_NUMERIC == cell.getCellType() || Cell.CELL_TYPE_BLANK == cell
+                        .getCellType())) {
             try {
                 return cell.getNumericCellValue();
             } catch (NullPointerException nex) {
@@ -128,16 +153,16 @@ public class BaseXlsImporter extends BaseImporter<Row, Cell> {
                 // have to handle it in this ugly way
                 return null;
             } catch (Exception ex) {
-                throw new OCSImportException(
-                        "Found an invalid numeric value: " + cell.getStringCellValue(), ex);
+                throw new OCSImportException("Found an invalid numeric value: "
+                        + cell.getStringCellValue(), ex);
             }
         } else if (cell != null && Cell.CELL_TYPE_STRING == cell.getCellType()) {
             // in case the value is not numeric, simply output a warning. If the
             // field is required, this will trigger
             // an error at a later stage
             if (!StringUtils.isEmpty(cell.getStringCellValue().trim())) {
-                throw new OCSImportException(
-                        "Found an invalid numeric value: " + cell.getStringCellValue());
+                throw new OCSImportException("Found an invalid numeric value: "
+                        + cell.getStringCellValue());
             }
         }
         return null;
@@ -168,8 +193,8 @@ public class BaseXlsImporter extends BaseImporter<Row, Cell> {
      * @return
      */
     protected String getStringValue(Cell cell) {
-        if (cell != null && (Cell.CELL_TYPE_STRING == cell.getCellType()
-                || cell.getCellType() == Cell.CELL_TYPE_BLANK)) {
+        if (cell != null
+                && (Cell.CELL_TYPE_STRING == cell.getCellType() || cell.getCellType() == Cell.CELL_TYPE_BLANK)) {
             String value = cell.getStringCellValue();
             return value == null ? null : value.trim();
         } else if (cell != null && Cell.CELL_TYPE_NUMERIC == cell.getCellType()) {

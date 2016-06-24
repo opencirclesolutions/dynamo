@@ -126,6 +126,8 @@ public class StreamingCell implements Cell {
             return Cell.CELL_TYPE_NUMERIC;
         } else if ("s".equals(type) || "e".equals(type)) {
             return Cell.CELL_TYPE_STRING;
+        } else if ("b".equals(type)) {
+            return Cell.CELL_TYPE_BOOLEAN;
         } else {
             throw new UnsupportedOperationException("Unsupported cell type '" + type + "'");
         }
