@@ -87,7 +87,11 @@ public final class TableUtils {
             if (next instanceof AbstractEntity) {
                 EntityModel<?> entityModel = entityModelFactory.getModel(next.getClass());
                 String displayProperty = entityModel.getDisplayProperty();
-                builder.append(ClassUtils.getFieldValueAsString(next, displayProperty));
+                if (displayProperty != null) {
+                    builder.append(ClassUtils.getFieldValueAsString(next, displayProperty));
+                } else {
+                    builder.append(next.toString());
+                }
             } else {
                 builder.append(next);
             }
@@ -165,11 +169,14 @@ public final class TableUtils {
                     return format.format((Date) value);
                 } else if (BigDecimal.class.equals(model.getType())) {
                     return VaadinUtils.bigDecimalToString(model.isCurrency(), model.isPercentage(),
-                            true, model.getPrecision(), (BigDecimal) value, locale);
+                            model.isUseThousandsGrouping(), model.getPrecision(),
+                            (BigDecimal) value, locale);
                 } else if (Integer.class.equals(model.getType())) {
-                    return VaadinUtils.integerToString(true, (Integer) value, locale);
+                    return VaadinUtils.integerToString(model.isUseThousandsGrouping(),
+                            (Integer) value, locale);
                 } else if (Long.class.equals(model.getType())) {
-                    return VaadinUtils.longToString(true, (Long) value, locale);
+                    return VaadinUtils.longToString(model.isUseThousandsGrouping(), (Long) value,
+                            locale);
                 } else if (model.getType().isEnum()) {
                     // in case of an enum, look it up in the message bundle
                     String msg = messageService.getEnumMessage((Class<Enum<?>>) model.getType(),

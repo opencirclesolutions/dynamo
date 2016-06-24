@@ -19,6 +19,7 @@ import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
+import com.ocs.dynamo.ui.Refreshable;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.sort.SortOrder;
 import com.vaadin.data.util.BeanItemContainer;
@@ -40,7 +41,7 @@ import com.vaadin.ui.HorizontalLayout;
  *            the type of the entity that is being displayed
  */
 public class QuickAddListSelect<ID extends Serializable, T extends AbstractEntity<ID>> extends
-        QuickAddEntityField<ID, T, Object> {
+        QuickAddEntityField<ID, T, Object> implements Refreshable {
 
     private static final long serialVersionUID = 4246187881499965296L;
 
@@ -49,6 +50,9 @@ public class QuickAddListSelect<ID extends Serializable, T extends AbstractEntit
      */
     private EntityListSelect<ID, T> listSelect;
 
+    /**
+     * The button for adding new entries
+     */
     private Button addButton;
 
     private boolean viewMode;
@@ -139,5 +143,14 @@ public class QuickAddListSelect<ID extends Serializable, T extends AbstractEntit
 
     public void setViewMode(boolean viewMode) {
         this.viewMode = viewMode;
+    }
+
+    /**
+     * Refreshes the data in the list
+     */
+    public void refresh() {
+        if (listSelect != null) {
+            listSelect.refresh();
+        }
     }
 }

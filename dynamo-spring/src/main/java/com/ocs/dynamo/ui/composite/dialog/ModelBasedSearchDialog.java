@@ -144,4 +144,8 @@ public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractE
         this.pageLength = pageLength;
     }
 
+    public SimpleSearchLayout<ID, T> getSearchLayout() {
+        return searchLayout;
+    }
+
 }

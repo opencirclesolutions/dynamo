@@ -225,6 +225,13 @@ public interface AttributeModel extends Comparable<AttributeModel> {
     boolean isMainAttribute();
 
     /**
+     * Indicates whether this is a "multiple search" attribute
+     * 
+     * @return
+     */
+    boolean isMultipleSearch();
+
+    /**
      * Is this a numeric attribute
      * 
      * @return
@@ -294,6 +301,13 @@ public interface AttributeModel extends Comparable<AttributeModel> {
     boolean isUrl();
 
     /**
+     * Indicates whether to use a thousands grouping character
+     * 
+     * @return
+     */
+    boolean isUseThousandsGrouping();
+
+    /**
      * Indicates whether the attribute is visible
      * 
      * @return
@@ -313,7 +327,7 @@ public interface AttributeModel extends Comparable<AttributeModel> {
      * @return
      */
     boolean isWeek();
-    
+
     /**
      * Marks this attribute as the main attribute
      * 

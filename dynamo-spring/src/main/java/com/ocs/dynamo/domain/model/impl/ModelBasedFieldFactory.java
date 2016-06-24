@@ -85,7 +85,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
         TableFieldFactory {
 
     // the default number of rows in a list select - TODO make this a configurable parameter
-    private static final int LIST_SELECT_ROWS = 5;
+    private static final int LIST_SELECT_ROWS = 3;
 
     private static ConcurrentMap<String, ModelBasedFieldFactory<?>> nonValidatingInstances = new ConcurrentHashMap<>();
 
@@ -530,6 +530,12 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
         return field;
     }
 
+    /**
+     * Add additional field settings
+     * 
+     * @param field
+     * @param attributeModel
+     */
     private void postProcessField(Field<?> field, AttributeModel attributeModel) {
         if (field instanceof AbstractTextField) {
             AbstractTextField textField = (AbstractTextField) field;
@@ -577,7 +583,9 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
         EntityModel<?> em = fieldEntityModel != null ? fieldEntityModel : attributeModel
                 .getNestedEntityModel();
 
-        if (AttributeSelectMode.COMBO.equals(attributeModel.getSelectMode())) {
+        if (search && attributeModel.isMultipleSearch()) {
+            field = this.constructListSelect(em, attributeModel, fieldFilter, true, search);
+        } else if (AttributeSelectMode.COMBO.equals(attributeModel.getSelectMode())) {
             field = (Field<?>) constructComboBox(em, attributeModel, fieldFilter, search);
         } else if (AttributeSelectMode.LOOKUP.equals(attributeModel.getSelectMode())) {
             field = (Field<?>) constructLookupField(fieldEntityModel != null ? fieldEntityModel

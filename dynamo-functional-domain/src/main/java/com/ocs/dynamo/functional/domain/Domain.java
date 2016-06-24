@@ -60,15 +60,19 @@ public abstract class Domain extends AbstractEntity<Integer> {
     private String code;
 
     @NotNull
-    @Attribute(main = true)
+    @Attribute(main = true, maxLength = 60)
     private String name;
 
     public Domain() {
-        super();
     }
 
+    /**
+     * Constructor
+     * 
+     * @param code
+     * @param name
+     */
     public Domain(String code, String name) {
-        super();
         this.code = code;
         this.name = name;
     }

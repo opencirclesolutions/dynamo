@@ -2,12 +2,27 @@ package com.ocs.dynamo.filter;
 
 import java.util.List;
 
+import junitx.util.PrivateAccessor;
+
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
+import com.google.common.collect.Lists;
+import com.ocs.dynamo.domain.TestEntity;
+import com.ocs.dynamo.domain.TestEntity2;
+import com.ocs.dynamo.domain.model.EntityModel;
+import com.ocs.dynamo.domain.model.impl.EntityModelFactoryImpl;
 import com.vaadin.data.util.filter.Compare.Equal;
 
 public class FilterUtilTest {
+
+    private EntityModelFactoryImpl emf = new EntityModelFactoryImpl();
+
+    @Before
+    public void setup() throws NoSuchFieldException {
+        PrivateAccessor.setField(emf, "defaultPrecision", 2);
+    }
 
     @Test
     public void testReplaceFilter() {
@@ -227,5 +242,49 @@ public class FilterUtilTest {
         and = new And(compare1, new Not(new And(compare2, compare3)));
         FilterUtil.removeFilters(and, "prop2", "prop3");
         Assert.assertEquals(1, and.getFilters().size());
+    }
+
+    @Test
+    public void testReplaceMasterAndDetailFilters1() {
+        EntityModel<TestEntity> model = emf.getModel(TestEntity.class);
+
+        And and = new And(new Compare.Equal("testEntities", Lists.newArrayList(new TestEntity2())));
+
+        // check that the equals filter is replaced by an Or-filter that consists of "contains"
+        // clauses
+        FilterUtil.replaceMasterAndDetailFilters(and, model);
+        Filter replaced = and.getFilters().get(0);
+        Assert.assertTrue(replaced instanceof Or);
+        Or or = (Or) replaced;
+        Assert.assertTrue(or.getFilters().get(0) instanceof Contains);
+
+        // now once more but now without the intermediate OR filter
+        and = new And(new Compare.Equal("testEntities", new TestEntity2()));
+
+        FilterUtil.replaceMasterAndDetailFilters(and, model);
+        replaced = and.getFilters().get(0);
+        Assert.assertTrue(replaced instanceof Contains);
+
+    }
+
+    @Test
+    public void testReplaceMasterAndDetailFilters2() {
+        EntityModel<TestEntity2> model = emf.getModel(TestEntity2.class);
+
+        And and = new And(new Compare.Equal("testEntity", Lists.newArrayList(new TestEntity(),
+                new TestEntity())));
+
+        // check that the equals filter is replaced by an "in" filter
+        FilterUtil.replaceMasterAndDetailFilters(and, model);
+        Filter replaced = and.getFilters().get(0);
+        Assert.assertTrue(replaced instanceof In);
+        In in = (In) replaced;
+        Assert.assertEquals(2, in.getValues().size());
+
+        // if there is just one value then no replacement is needed
+        and = new And(new Compare.Equal("testEntity", new TestEntity()));
+        FilterUtil.replaceMasterAndDetailFilters(and, model);
+        replaced = and.getFilters().get(0);
+        Assert.assertTrue(replaced instanceof Compare.Equal);
     }
 }

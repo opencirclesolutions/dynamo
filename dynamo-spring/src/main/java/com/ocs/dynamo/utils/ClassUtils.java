@@ -394,7 +394,7 @@ public final class ClassUtils {
      * 
      * @param clazz
      * @param fieldName
-     * @return
+     * @return 
      */
     public static int getMaxLength(Class<?> clazz, String fieldName) {
         Size size = getAnnotation(clazz, fieldName, Size.class);

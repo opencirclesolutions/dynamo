@@ -26,6 +26,29 @@ import com.ocs.dynamo.importer.XlsField;
 public abstract class BaseTextImporter extends BaseImporter<String[], String> {
 
     /**
+     * Extracts a boolean value
+     * 
+     * @param unit
+     * @return
+     */
+    protected Boolean getBooleanValue(String unit) {
+        String value = unit;
+        if (StringUtils.isEmpty(value)) {
+            return Boolean.FALSE;
+        }
+        return Boolean.valueOf(value);
+    }
+
+    @Override
+    protected Boolean getBooleanValueWithDefault(String unit, XlsField field) {
+        Boolean result = getBooleanValue(unit);
+        if (result == null && !StringUtils.isEmpty(field.defaultValue())) {
+            return Boolean.valueOf(field.defaultValue());
+        }
+        return result;
+    }
+
+    /**
      * Reads a numeric value form a unit (i.e. a single string or a single cell)
      * 
      * @param unit
@@ -85,6 +108,11 @@ public abstract class BaseTextImporter extends BaseImporter<String[], String> {
         return row[field.index()];
     }
 
+    @Override
+    public boolean isPercentageCorrectionSupported() {
+        return false;
+    }
+
     /**
      * Checks whether a certain field's index is within range for a certain row
      * 
@@ -96,11 +124,6 @@ public abstract class BaseTextImporter extends BaseImporter<String[], String> {
     @Override
     protected boolean isWithinRange(String[] row, XlsField field) {
         return field.index() < row.length;
-    }
-
-    @Override
-    public boolean isPercentageCorrectionSupported() {
-        return false;
     }
 
 }

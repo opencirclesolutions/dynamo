@@ -155,6 +155,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
             model.setSearchCaseSensitive(false);
             model.setSearchPrefixOnly(false);
             model.setUrl(false);
+            model.setUseThousandsGrouping(true);
 
             Id idAttr = ClassUtils.getAnnotation(entityModel.getEntityClass(),
                     descriptor.getName(), Id.class);
@@ -830,6 +831,17 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
                 model.setQuickAddAllowed(true);
             }
 
+            if (attribute.required()) {
+                model.setRequired(true);
+            }
+
+            if (attribute.multipleSearch()) {
+                model.setMultipleSearch(true);
+            }
+
+            if (!attribute.useThousandsGrouping()) {
+                model.setUseThousandsGrouping(false);
+            }
         }
     }
 
@@ -1036,6 +1048,11 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
         msg = getAttributeMessage(entityModel, model, EntityModel.QUICK_ADD_PROPERTY);
         if (!StringUtils.isEmpty(msg)) {
             model.setQuickAddPropertyName(msg);
+        }
+
+        msg = getAttributeMessage(entityModel, model, EntityModel.THOUSANDS_GROUPING);
+        if (!StringUtils.isEmpty(msg)) {
+            model.setUseThousandsGrouping(Boolean.valueOf(msg));
         }
     }
 

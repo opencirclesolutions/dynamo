@@ -48,6 +48,16 @@ public abstract class BaseImporter<R, U> {
      */
     public abstract int countRows(byte[] bytes, int row, int column);
 
+    /**
+     * Retrieves a boolean value from the input and falls back to a default if the value is empty or
+     * not defined
+     * 
+     * @param unit
+     * @param field
+     * @return
+     */
+    protected abstract Boolean getBooleanValueWithDefault(U unit, XlsField field);
+
     @SuppressWarnings("unchecked")
     private Object getFieldValue(PropertyDescriptor d, U unit, XlsField field) {
         Object obj = null;
@@ -65,9 +75,8 @@ public abstract class BaseImporter<R, U> {
                     obj = Enum.valueOf(d.getPropertyType().asSubclass(Enum.class),
                             value.toUpperCase());
                 } catch (IllegalArgumentException ex) {
-                    throw new OCSImportException(
-                            "Value " + value + " cannot be translated to a valid enumeration value",
-                            ex);
+                    throw new OCSImportException("Value " + value
+                            + " cannot be translated to a valid enumeration value", ex);
                 }
             }
 
@@ -88,8 +97,8 @@ public abstract class BaseImporter<R, U> {
 
                 // illegal negative value
                 if (field.cannotBeNegative() && value < 0.0) {
-                    throw new OCSImportException(
-                            "Negative value " + value + " found for field '" + d.getName() + "'");
+                    throw new OCSImportException("Negative value " + value + " found for field '"
+                            + d.getName() + "'");
                 }
 
                 if (Integer.class.equals(d.getPropertyType())) {
@@ -101,6 +110,8 @@ public abstract class BaseImporter<R, U> {
                     obj = value;
                 }
             }
+        } else if (Boolean.class.isAssignableFrom(d.getPropertyType())) {
+            return getBooleanValueWithDefault(unit, field);
         }
         return obj;
     }
@@ -174,8 +185,8 @@ public abstract class BaseImporter<R, U> {
                         ClassUtils.setFieldValue(t, d.getName(), obj);
                     } else if (field.required()) {
                         // a required value is missing!
-                        throw new OCSImportException(
-                                "Required value for field '" + d.getName() + "' is missing");
+                        throw new OCSImportException("Required value for field '" + d.getName()
+                                + "' is missing");
                     }
                 } else {
                     throw new OCSImportException("Row doesn't have enough columns");

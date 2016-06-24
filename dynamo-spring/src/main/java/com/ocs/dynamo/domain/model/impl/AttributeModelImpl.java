@@ -68,6 +68,8 @@ public class AttributeModelImpl implements AttributeModel {
 
     private Integer minLength;
 
+    private boolean multipleSearch;
+
     private String name;
 
     private EntityModel<?> nestedEntityModel;
@@ -80,7 +82,13 @@ public class AttributeModelImpl implements AttributeModel {
 
     private String prompt;
 
+    private boolean quickAddAllowed;
+
+    private String quickAddPropertyName;
+
     private boolean readOnly;
+
+    private String replacementSearchPath;
 
     private boolean required;
 
@@ -100,19 +108,15 @@ public class AttributeModelImpl implements AttributeModel {
 
     private Class<?> type;
 
+    private boolean url;
+
+    private boolean useThousandsGrouping;
+
     private boolean visible;
 
     private boolean visibleInTable;
 
     private boolean week;
-
-    private boolean url;
-
-    private String replacementSearchPath;
-
-    private String quickAddPropertyName;
-
-    private boolean quickAddAllowed;
 
     @Override
     public int compareTo(AttributeModel o) {
@@ -217,6 +221,16 @@ public class AttributeModelImpl implements AttributeModel {
     }
 
     @Override
+    public String getQuickAddPropertyName() {
+        return quickAddPropertyName;
+    }
+
+    @Override
+    public String getReplacementSearchPath() {
+        return replacementSearchPath;
+    }
+
+    @Override
     public AttributeSelectMode getSelectMode() {
         return selectMode;
     }
@@ -271,6 +285,10 @@ public class AttributeModelImpl implements AttributeModel {
         return mainAttribute;
     }
 
+    public boolean isMultipleSearch() {
+        return multipleSearch;
+    }
+
     @Override
     public boolean isNumerical() {
         return Number.class.isAssignableFrom(type);
@@ -279,6 +297,11 @@ public class AttributeModelImpl implements AttributeModel {
     @Override
     public boolean isPercentage() {
         return percentage;
+    }
+
+    @Override
+    public boolean isQuickAddAllowed() {
+        return quickAddAllowed;
     }
 
     @Override
@@ -309,6 +332,10 @@ public class AttributeModelImpl implements AttributeModel {
     @Override
     public boolean isSortable() {
         return sortable;
+    }
+
+    public boolean isUrl() {
+        return url;
     }
 
     @Override
@@ -399,6 +426,10 @@ public class AttributeModelImpl implements AttributeModel {
         this.minLength = minLength;
     }
 
+    public void setMultipleSearch(boolean multipleSearch) {
+        this.multipleSearch = multipleSearch;
+    }
+
     public void setName(String name) {
         this.name = name;
     }
@@ -423,8 +454,20 @@ public class AttributeModelImpl implements AttributeModel {
         this.prompt = prompt;
     }
 
+    public void setQuickAddAllowed(boolean quickAddAllowed) {
+        this.quickAddAllowed = quickAddAllowed;
+    }
+
+    public void setQuickAddPropertyName(String quickAddPropertyName) {
+        this.quickAddPropertyName = quickAddPropertyName;
+    }
+
     public void setReadOnly(boolean readOnly) {
         this.readOnly = readOnly;
+    }
+
+    public void setReplacementSearchPath(String replacementSearchPath) {
+        this.replacementSearchPath = replacementSearchPath;
     }
 
     public void setRequired(boolean required) {
@@ -463,6 +506,10 @@ public class AttributeModelImpl implements AttributeModel {
         this.type = type;
     }
 
+    public void setUrl(boolean url) {
+        this.url = url;
+    }
+
     public void setVisible(boolean visible) {
         this.visible = visible;
     }
@@ -475,44 +522,17 @@ public class AttributeModelImpl implements AttributeModel {
         this.week = week;
     }
 
-    public boolean isUrl() {
-        return url;
+    public boolean isUseThousandsGrouping() {
+        return useThousandsGrouping;
     }
 
-    public void setUrl(boolean url) {
-        this.url = url;
+    public void setUseThousandsGrouping(boolean useThousandsGrouping) {
+        this.useThousandsGrouping = useThousandsGrouping;
     }
 
     @Override
     public String toString() {
         return ReflectionToStringBuilder.toStringExclude(this, "entityModel");
-    }
-
-    @Override
-    public String getReplacementSearchPath() {
-        return replacementSearchPath;
-    }
-
-    public void setReplacementSearchPath(String replacementSearchPath) {
-        this.replacementSearchPath = replacementSearchPath;
-    }
-
-    @Override
-    public String getQuickAddPropertyName() {
-        return quickAddPropertyName;
-    }
-
-    @Override
-    public boolean isQuickAddAllowed() {
-        return quickAddAllowed;
-    }
-
-    public void setQuickAddPropertyName(String quickAddPropertyName) {
-        this.quickAddPropertyName = quickAddPropertyName;
-    }
-
-    public void setQuickAddAllowed(boolean quickAddAllowed) {
-        this.quickAddAllowed = quickAddAllowed;
     }
 
 }

@@ -33,7 +33,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
 
 /**
- * A layout for editing a single object
+ * A layout for editing a single entity (can either be an existing or a new entity)
  * 
  * @author bas.rutten
  * @param <ID>
@@ -74,25 +74,38 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
     public SimpleEditLayout(T entity, BaseService<ID, T> service, EntityModel<T> entityModel,
             FormOptions formOptions, FetchJoinInformation... joins) {
         super(service, entityModel, formOptions);
-        this.entity = entity;
+        this.entity = entity == null ? createEntity() : entity;
         this.joins = joins;
     }
 
     /**
      * Method that is called after the user has completed (or cancelled) an edit action
      * 
-     * @param newObject
+     * @param cancel
+     *            whether the edit was cancelled
+     * @param newEntity
+     *            whether a new entity was being edited
      * @param entity
      */
-    protected void afterEditDone(boolean cancel, boolean newObject, T entity) {
-        // reset to view mode
-        if (getFormOptions().isOpenInViewMode()) {
-            editForm.setViewMode(true);
-        }
+    protected void afterEditDone(boolean cancel, boolean newEntity, T entity) {
 
         if (entity.getId() != null) {
+            // reset to view mode
+            if (getFormOptions().isOpenInViewMode()) {
+                editForm.setViewMode(true);
+            }
             setEntity(getService().fetchById(entity.getId(), getJoins()));
+        } else {
+            // new entity
+            back();
         }
+    }
+
+    /**
+     * Code to carry out after navigating "back" to the main screen
+     */
+    protected void back() {
+        // overwrite in subclasses
     }
 
     @Override
@@ -108,11 +121,6 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
     public void build() {
         main = new DefaultVerticalLayout(true, true);
 
-        // if opening in edit mode, the cancel button is useless since there is
-        // nothing to cancel or go back to
-        if (!getFormOptions().isOpenInViewMode()) {
-            getFormOptions().setHideCancelButton(true);
-        }
         // there is just one component here, so the screen mode is always
         // vertical
         getFormOptions().setScreenMode(ScreenMode.VERTICAL);
@@ -128,6 +136,11 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
             @Override
             protected void afterModeChanged(boolean viewMode) {
                 SimpleEditLayout.this.afterModeChanged(viewMode, editForm);
+            }
+
+            @Override
+            protected void back() {
+                SimpleEditLayout.this.back();
             }
 
             @Override
@@ -161,13 +174,14 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
             protected void postProcessEditFields() {
                 SimpleEditLayout.this.postProcessEditFields(editForm);
             }
-
         };
 
         editForm.setFieldEntityModels(getFieldEntityModels());
         editForm.build();
 
         main.addComponent(editForm);
+
+        checkButtonState(getEntity());
 
         setCompositionRoot(main);
     }
@@ -270,5 +284,4 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
         this.joins = joins;
     }
 
-    
 }

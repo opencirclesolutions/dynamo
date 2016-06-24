@@ -37,7 +37,7 @@ public class TestEntity2 extends AbstractEntity<Integer> {
     private String name;
 
     @ManyToOne
-    @Attribute(selectMode = AttributeSelectMode.LOOKUP)
+    @Attribute(selectMode = AttributeSelectMode.LOOKUP, multipleSearch = true)
     private TestEntity testEntity;
 
     @ManyToOne

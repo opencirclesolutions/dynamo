@@ -27,10 +27,15 @@ import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.impl.ModelBasedFieldFactory;
 import com.ocs.dynamo.filter.listener.FilterChangeEvent;
 import com.ocs.dynamo.filter.listener.FilterListener;
+import com.ocs.dynamo.ui.Refreshable;
 import com.ocs.dynamo.ui.Searchable;
 import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
+import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.util.filter.And;
+import com.vaadin.event.Action;
+import com.vaadin.event.ShortcutAction;
+import com.vaadin.event.Action.Handler;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Component;
@@ -39,6 +44,7 @@ import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Layout;
+import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 
 /**
@@ -155,11 +161,35 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 
     @Override
     public void build() {
-        VerticalLayout main = new VerticalLayout();
+        VerticalLayout main = new DefaultVerticalLayout(false, true);
+
+        // add a wrapper for adding an action handler
+        Panel formWrapper = new Panel();
+        main.addComponent(formWrapper);
 
         // create the search form
         filterLayout = constructFilterLayout(getEntityModel());
-        main.addComponent(filterLayout);
+        formWrapper.setContent(filterLayout);
+
+        // action handler for carrying out a search after an Enter press
+        formWrapper.addActionHandler(new Handler() {
+
+            private static final long serialVersionUID = -2136828212405809213L;
+
+            private Action enter = new ShortcutAction(null, ShortcutAction.KeyCode.ENTER, null);
+
+            @Override
+            public Action[] getActions(Object target, Object sender) {
+                return new Action[] { enter };
+            }
+
+            @Override
+            public void handleAction(Action action, Object sender, Object target) {
+                if (action == enter) {
+                    search();
+                }
+            }
+        });
 
         // create the button bar
         HorizontalLayout buttonBar = new DefaultHorizontalLayout();
@@ -503,4 +533,14 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
         }
     }
 
+    /**
+     * Refreshes the
+     */
+    public void refresh() {
+        for (FilterGroup group : getGroups().values()) {
+            if (group.getField() instanceof Refreshable) {
+                ((Refreshable) group.getField()).refresh();
+            }
+        }
+    }
 }

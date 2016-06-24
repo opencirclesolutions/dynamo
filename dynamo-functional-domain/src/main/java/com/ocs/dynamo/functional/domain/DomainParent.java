@@ -23,52 +23,48 @@ import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 
 /**
- * The persistent class for the domain entity that manages hierarchical
- * reference information.
+ * The persistent class for the domain entity that manages hierarchical reference information.
  * 
  * @author Patrick Deenen (patrick@opencircle.solutions)
  * 
  */
 @SuppressWarnings("rawtypes")
 @Entity
-public abstract class DomainParent<C extends DomainChild> extends Domain
-		implements Serializable {
+public abstract class DomainParent<C extends DomainChild> extends Domain implements Serializable {
 
-	private static final long serialVersionUID = 20446010658685722L;
+    private static final long serialVersionUID = 20446010658685722L;
 
-	// bi-directional many-to-one association to Domain
-	@OneToMany(mappedBy = "parent", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, targetEntity = DomainChild.class)
-	private Set<C> children = new HashSet<>();
+    @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, targetEntity = DomainChild.class)
+    private Set<C> children = new HashSet<>();
 
-	public DomainParent() {
-		super();
-	}
+    public DomainParent() {
+    }
 
-	public DomainParent(String code, String name) {
-		super(code, name);
-	}
+    public DomainParent(String code, String name) {
+        super(code, name);
+    }
 
-	public Set<C> getChildren() {
-		return this.children;
-	}
+    public Set<C> getChildren() {
+        return this.children;
+    }
 
-	public void setChildren(Set<C> children) {
-		this.children = children;
-	}
+    public void setChildren(Set<C> children) {
+        this.children = children;
+    }
 
-	@SuppressWarnings("unchecked")
-	public C addChild(C child) {
-		getChildren().add(child);
-		child.setParent(this);
+    @SuppressWarnings("unchecked")
+    public C addChild(C child) {
+        getChildren().add(child);
+        child.setParent(this);
 
-		return child;
-	}
+        return child;
+    }
 
-	@SuppressWarnings("unchecked")
-	public C removeChild(C child) {
-		getChildren().remove(child);
-		child.setParent(null);
+    @SuppressWarnings("unchecked")
+    public C removeChild(C child) {
+        getChildren().remove(child);
+        child.setParent(null);
 
-		return child;
-	}
+        return child;
+    }
 }

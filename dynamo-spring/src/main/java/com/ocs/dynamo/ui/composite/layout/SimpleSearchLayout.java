@@ -330,9 +330,13 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
                 @Override
                 protected void afterEditDone(boolean cancel, boolean newObject, T entity) {
                     if (getFormOptions().isOpenInViewMode()) {
-                        // if details screen opens in view mode, simply switch to view mode
-                        setViewMode(true);
-                        detailsMode(entity);
+                        if (newObject) {
+                            back();
+                        } else {
+                            // if details screen opens in view mode, simply switch to view mode
+                            setViewMode(true);
+                            detailsMode(entity);
+                        }
                     } else {
                         // otherwise go back to the main screen
                         back();
@@ -346,8 +350,7 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 
                 @Override
                 protected void back() {
-                    setCompositionRoot(mainSearchLayout);
-                    search();
+                    searchMode();
                 }
 
                 @Override
@@ -433,7 +436,7 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
         return removeButton;
     }
 
-    protected ModelBasedSearchForm<ID, T> getSearchForm() {
+    public ModelBasedSearchForm<ID, T> getSearchForm() {
         if (searchForm == null) {
             searchForm = constructSearchform();
         }
@@ -472,6 +475,15 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
         getTableWrapper().getTable().select(null);
         setSelectedItem(null);
         checkButtonState(getSelectedItem());
+    }
+
+    /**
+     * Puts the screen in search mode
+     */
+    protected void searchMode() {
+        setCompositionRoot(mainSearchLayout);
+        getSearchForm().refresh();
+        search();
     }
 
     /**
@@ -529,5 +541,4 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
     public void setQueryType(QueryType queryType) {
         this.queryType = queryType;
     }
-
 }

@@ -35,6 +35,7 @@ import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.impl.ModelBasedFieldFactory;
 import com.ocs.dynamo.domain.model.util.EntityModelUtil;
 import com.ocs.dynamo.service.BaseService;
+import com.ocs.dynamo.ui.Refreshable;
 import com.ocs.dynamo.ui.component.DefaultEmbedded;
 import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
@@ -331,49 +332,22 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
      */
     private void addField(Layout parent, EntityModel<T> entityModel, AttributeModel attributeModel,
             int count) {
-        
+
         AttributeType type = attributeModel.getAttributeType();
         if (attributeModel.isVisible()
                 && (AttributeType.BASIC.equals(type) || AttributeType.LOB.equals(type) || attributeModel
                         .isComplexEditable())) {
             if (attributeModel.isReadOnly() || isViewMode()) {
-
-                // determine custom attribute model
-                EntityModel<?> em = getFieldEntityModel(attributeModel);
-
-                if (entity.getId() != null) {
-                    // read-only attribute are hidden for new entities
-                    if (attributeModel.isUrl()
-                            || (AttributeType.DETAIL.equals(type) || AttributeType.ELEMENT_COLLECTION
-                                    .equals(type)) && attributeModel.isComplexEditable()) {
-                        // display a complex component in read-only mode
-                        constructField(parent, entityModel, attributeModel, true, count);
-                    } else {
-                        // display a label
-                        if (attributeModel.isUrl()) {
-                            URLField urlField = (URLField) fieldFactory.constructField(
-                                    attributeModel, getFieldFilters(), em);
-                            groups.get(isViewMode()).bind(urlField, attributeModel.getName());
-                            parent.addComponent(urlField);
-                        } else {
-                            Component label = constructLabel(entity, attributeModel);
-                            labels.get(isViewMode()).put(attributeModel, label);
-                            parent.addComponent(label);
-                        }
-                    }
+                if (attributeModel.isUrl()
+                        || (AttributeType.DETAIL.equals(type) || AttributeType.ELEMENT_COLLECTION
+                                .equals(type)) && attributeModel.isComplexEditable()) {
+                    // display a complex component in read-only mode
+                    constructField(parent, entityModel, attributeModel, true, count);
                 } else {
-                    // new entity - create the label but do not display it
-                    if (attributeModel.isUrl()) {
-                        URLField urlField = (URLField) fieldFactory.constructField(attributeModel,
-                                getFieldFilters(), em);
-                        groups.get(isViewMode()).bind(urlField, attributeModel.getName());
-                        parent.addComponent(urlField);
-                    } else {
-                        Component label = constructLabel(entity, attributeModel);
-                        label.setVisible(false);
-                        labels.get(isViewMode()).put(attributeModel, label);
-                        parent.addComponent(label);
-                    }
+                    // otherwise display a label
+                    Component label = constructLabel(entity, attributeModel);
+                    labels.get(isViewMode()).put(attributeModel, label);
+                    parent.addComponent(label);
                 }
             } else {
                 // display an editable field
@@ -469,9 +443,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
         titleBars.get(isViewMode()).addComponent(buttonBar);
         layout.addComponent(titleBars.get(isViewMode()));
 
-        // extra label (just for spacing)
-        layout.addComponent(new Label(""));
-
         Layout form = null;
         if (entityModel.usesDefaultGroupOnly()) {
             form = new FormLayout();
@@ -545,7 +516,9 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
             firstField.focus();
         }
 
-        layout.addComponent(constructButtonBar());
+        buttonBar = constructButtonBar();
+        buttonBar.setSizeUndefined();
+        layout.addComponent(buttonBar);
         checkSaveButtonState();
 
         return layout;
@@ -724,10 +697,12 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
             ((URLField) field).setEditable(!isViewMode());
         }
 
+        // set view mode if appropriate
         if (field instanceof CollectionTable) {
             ((CollectionTable<?>) field).setViewMode(isViewMode());
         }
 
+        // set view mode if appropriate
         if (field instanceof QuickAddListSelect) {
             ((QuickAddListSelect<?, ?>) field).setViewMode(isViewMode());
         }
@@ -735,7 +710,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
         if (field != null) {
             groups.get(viewMode).bind(field, attributeModel.getName());
             field.setSizeFull();
-            // field.setEnabled(!viewMode);
             form.addComponent(field);
         }
 
@@ -918,6 +892,13 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
             if (hc instanceof Layout) {
                 ((Layout) hc).replaceComponent(e.getValue(), uc);
                 uploads.get(isViewMode()).put(e.getKey(), uc);
+            }
+        }
+
+        // refresh any fields that need it
+        for (Field<?> f : groups.get(isViewMode()).getFields()) {
+            if (f instanceof Refreshable) {
+                ((Refreshable) f).refresh();
             }
         }
 

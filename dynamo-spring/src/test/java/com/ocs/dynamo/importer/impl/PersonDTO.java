@@ -47,6 +47,9 @@ public class PersonDTO extends AbstractDTO {
     @XlsField(index = 5, percentage = true)
     private BigDecimal percentage;
 
+    @XlsField(index = 6)
+    private Boolean abool;
+
     public String getName() {
         return name;
     }
@@ -93,6 +96,14 @@ public class PersonDTO extends AbstractDTO {
 
     public void setPercentage(BigDecimal percentage) {
         this.percentage = percentage;
+    }
+
+    public Boolean getAbool() {
+        return abool;
+    }
+
+    public void setAbool(Boolean abool) {
+        this.abool = abool;
     }
 
 }

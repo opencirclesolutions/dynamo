@@ -65,6 +65,7 @@ public class BaseXlsImporterTest {
         Assert.assertEquals("abc", dto.getRandom());
         Assert.assertEquals(Gender.M, dto.getGender());
         Assert.assertEquals(1.50, dto.getPercentage().doubleValue(), 0.001);
+        Assert.assertTrue(dto.getAbool());
 
         // check that default values are set
         dto = importer.processRow(1, sheet.getRow(1), PersonDTO.class);
@@ -73,6 +74,7 @@ public class BaseXlsImporterTest {
         Assert.assertEquals("Unknown", dto.getName());
         Assert.assertEquals(2, dto.getNumber().intValue());
         Assert.assertEquals(1.0, dto.getFactor().doubleValue(), 0.001);
+        Assert.assertFalse(dto.getAbool());
 
         // check negative values
         dto = importer.processRow(2, sheet.getRow(2), PersonDTO.class);

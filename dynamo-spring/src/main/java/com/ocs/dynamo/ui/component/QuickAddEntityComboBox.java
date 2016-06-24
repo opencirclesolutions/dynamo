@@ -20,6 +20,7 @@ import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
+import com.ocs.dynamo.ui.Refreshable;
 import com.ocs.dynamo.ui.component.EntityComboBox.SelectMode;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.sort.SortOrder;
@@ -41,10 +42,13 @@ import com.vaadin.ui.HorizontalLayout;
  *            the type of the entity
  */
 public class QuickAddEntityComboBox<ID extends Serializable, T extends AbstractEntity<ID>> extends
-        QuickAddEntityField<ID, T, T> {
+        QuickAddEntityField<ID, T, T> implements Refreshable {
 
     private static final long serialVersionUID = 4246187881499965296L;
 
+    /**
+     * The combo box that we wrap this component around
+     */
     private EntityComboBox<ID, T> comboBox;
 
     /**
@@ -132,5 +136,12 @@ public class QuickAddEntityComboBox<ID extends Serializable, T extends AbstractE
     @Override
     public Class<? extends T> getType() {
         return getEntityModel().getEntityClass();
+    }
+
+    @Override
+    public void refresh() {
+        if (comboBox != null) {
+            comboBox.refresh();
+        }
     }
 }

@@ -28,6 +28,7 @@ import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.ocs.dynamo.dao.BaseDao;
+import com.ocs.dynamo.dao.query.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.service.BaseService;
@@ -233,6 +234,16 @@ public final class MockUtil {
             }
 
         });
+    }
+
+    /**
+     * Mocks the "fetchById" method of a DAO by returning the provided entity
+     */
+    public static <ID, X extends AbstractEntity<ID>> void mockFetchById(BaseDao<ID, X> dao, ID id,
+            X entity) {
+        Mockito.when(
+                dao.fetchById((ID) Matchers.eq(id), (FetchJoinInformation[]) Matchers.anyVararg()))
+                .thenReturn(entity);
     }
 
     /**

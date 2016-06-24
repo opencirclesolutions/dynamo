@@ -23,7 +23,7 @@ import com.ocs.dynamo.utils.ClassUtils;
  * 
  * @author bas.rutten
  */
-public class AttributeComparator implements Comparator<AbstractEntity<?>> {
+public class AttributeComparator<T extends AbstractEntity<?>> implements Comparator<T> {
 
     private String attribute;
 
@@ -38,7 +38,7 @@ public class AttributeComparator implements Comparator<AbstractEntity<?>> {
 
     @Override
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public int compare(AbstractEntity<?> o1, AbstractEntity<?> o2) {
+    public int compare(T o1, T o2) {
         Object v1 = ClassUtils.getFieldValue(o1, attribute);
         Object v2 = ClassUtils.getFieldValue(o2, attribute);
 
