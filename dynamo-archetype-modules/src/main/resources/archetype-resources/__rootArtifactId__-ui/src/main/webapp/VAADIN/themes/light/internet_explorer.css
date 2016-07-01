@@ -1,0 +1,10 @@
+.v-treetable-node-open:before {
+    content: '\02C5' !important;
+}
+
+.v-treetable-node-closed:before {
+    content: '\02C3' !important;
+}
+  
+
+  

@@ -2,9 +2,9 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<artifactId>dynamo-spring-archetype</artifactId>
+	<artifactId>dynamo-spring-archetype-modules</artifactId>
 	<packaging>jar</packaging>
-	<name>Dynamo Maven Archetype</name>
+	<name>Dynamo Maven Archetype (Modules)</name>
 
 	<parent>
 		<groupId>com.ocs</groupId>
