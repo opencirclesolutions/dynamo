@@ -68,11 +68,6 @@ public final class DynamoConstants {
     public static final Locale DEFAULT_LOCALE = Locale.UK;
 
     /**
-     * The default precision
-     */
-    // public static final int DEFAULT_PRECISION = 2;
-
-    /**
      * Larger page size (for lazy query container)
      */
     public static final int EXTENDED_PAGE_SIZE = 500;

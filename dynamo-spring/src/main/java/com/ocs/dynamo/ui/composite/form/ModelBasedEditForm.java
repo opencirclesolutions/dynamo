@@ -332,7 +332,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
      */
     private void addField(Layout parent, EntityModel<T> entityModel, AttributeModel attributeModel,
             int count) {
-
         AttributeType type = attributeModel.getAttributeType();
         if (attributeModel.isVisible()
                 && (AttributeType.BASIC.equals(type) || AttributeType.LOB.equals(type) || attributeModel
