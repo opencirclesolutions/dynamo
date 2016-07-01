@@ -115,6 +115,9 @@ public @interface Attribute {
     // search prefix only
     boolean searchPrefixOnly() default false;
 
+    // whether to search by single value (for integer or date fields)
+    boolean searchForExactValue() default false;
+    
     // selection mode (use either a combo box, a list box, or a lookup field)
     AttributeSelectMode selectMode() default AttributeSelectMode.INHERIT;
 
@@ -133,7 +136,7 @@ public @interface Attribute {
     // indicates whether this is a clickable URL
     boolean url() default false;
 
-    // indicates whether to use thousands grouping
+    // indicates whether to use thousands grouping for an integer or decimal field
     boolean useThousandsGrouping() default true;
 
     // whether the field is visible

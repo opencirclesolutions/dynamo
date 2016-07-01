@@ -73,8 +73,14 @@ public interface EntityModel<T> {
      */
     String MULTIPLE_SEARCH = "multipleSearch";
 
+    /**
+     * Whether to include a percentage sign to a numerical field (cosmetic only)
+     */
     String PERCENTAGE = "percentage";
 
+    /**
+     * The decimal precision
+     */
     String PRECISION = "precision";
 
     String PROMPT = "prompt";
@@ -121,8 +127,14 @@ public interface EntityModel<T> {
      */
     String URL = "url";
 
+    /**
+     * Indicated whether the field is visible
+     */
     String VISIBLE = "visible";
 
+    /**
+     * Indicates whether to format a date field as a week code
+     */
     String WEEK = "week";
 
     /**

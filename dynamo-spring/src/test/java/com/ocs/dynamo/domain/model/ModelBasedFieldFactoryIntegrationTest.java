@@ -28,6 +28,7 @@ import com.ocs.dynamo.ui.component.EntityComboBox;
 import com.ocs.dynamo.ui.component.EntityComboBox.SelectMode;
 import com.ocs.dynamo.ui.component.EntityListSelect;
 import com.ocs.dynamo.ui.component.EntityLookupField;
+import com.ocs.dynamo.ui.component.FancyListSelect;
 import com.vaadin.data.sort.SortOrder;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.Field;
@@ -86,10 +87,51 @@ public class ModelBasedFieldFactoryIntegrationTest extends BaseIntegrationTest {
 
         EntityListSelect<Integer, TestEntity> f = (EntityListSelect<Integer, TestEntity>) field;
         Assert.assertEquals(new com.vaadin.data.sort.SortOrder("name", SortDirection.ASCENDING),
-                f.getSortOrder()[0]);
+                f.getSortOrders()[0]);
         Assert.assertEquals(com.ocs.dynamo.ui.component.EntityListSelect.SelectMode.FILTERED,
                 f.getSelectMode());
         Assert.assertEquals(3, f.getRows());
+    }
+
+    /**
+     * Test that a fancy list select is created for a multiple search component
+     */
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testCreateListSelectFancyForMultiSearch() {
+
+        EntityModel<TestEntity2> model = entityModelFactory.getModel("TestEntity2ListSelectFancy",
+                TestEntity2.class);
+        AttributeModel am = model.getAttributeModel("testEntity");
+        Assert.assertTrue(am.isMultipleSearch());
+
+        ModelBasedFieldFactory<TestEntity2> factory = new ModelBasedFieldFactory<>(model,
+                messageService, false, true);
+
+        Field<?> field = factory.createField(am.getName());
+        Assert.assertTrue(field instanceof FancyListSelect);
+
+        FancyListSelect<Integer, TestEntity> f = (FancyListSelect<Integer, TestEntity>) field;
+        Assert.assertEquals(new com.vaadin.data.sort.SortOrder("name", SortDirection.ASCENDING),
+                f.getSortOrders()[0]);
+    }
+
+    /**
+     * Test that a fancy list select is created for searching for a DETAIL relation
+     */
+    @Test
+    public void testCreateListSelectFancy() {
+
+        EntityModel<TestEntity> model = entityModelFactory.getModel("TestEntityFancy",
+                TestEntity.class);
+        AttributeModel am = model.getAttributeModel("testEntities");
+        Assert.assertTrue(AttributeSelectMode.FANCY_LIST.equals(am.getSelectMode()));
+
+        ModelBasedFieldFactory<TestEntity> factory = new ModelBasedFieldFactory<>(model,
+                messageService, false, true);
+
+        Field<?> field = factory.createField(am.getName());
+        Assert.assertTrue(field instanceof FancyListSelect);
     }
 
     /**

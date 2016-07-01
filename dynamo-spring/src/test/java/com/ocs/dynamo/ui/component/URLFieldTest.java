@@ -1,7 +1,5 @@
 package com.ocs.dynamo.ui.component;
 
-import junitx.util.PrivateAccessor;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -23,12 +21,6 @@ public class URLFieldTest extends BaseMockitoTest {
     private TestEntityService service;
 
     private EntityModelFactory factory = new EntityModelFactoryImpl();
-
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
-        PrivateAccessor.setField(factory, "defaultPrecision", 2);
-    }
 
     @Test
     public void test() {

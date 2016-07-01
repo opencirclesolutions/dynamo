@@ -15,8 +15,6 @@ package com.ocs.dynamo.filter;
 
 import java.util.List;
 
-import junitx.util.PrivateAccessor;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -50,9 +48,7 @@ public class FilterConverterTest extends BaseMockitoTest {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        PrivateAccessor.setField(emf, "defaultPrecision", 2);
         MockUtil.mockMessageService(messageService);
-
         modelConverter = new FilterConverter(emf.getModel(TestEntity.class));
     }
 

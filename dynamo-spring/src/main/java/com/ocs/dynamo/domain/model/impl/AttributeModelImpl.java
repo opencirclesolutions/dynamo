@@ -96,6 +96,8 @@ public class AttributeModelImpl implements AttributeModel {
 
     private boolean searchCaseSensitive;
 
+    private boolean searchForExactValue;
+
     private boolean searchPrefixOnly;
 
     private AttributeSelectMode selectMode;
@@ -325,6 +327,11 @@ public class AttributeModelImpl implements AttributeModel {
     }
 
     @Override
+    public boolean isSearchForExactValue() {
+        return searchForExactValue;
+    }
+
+    @Override
     public boolean isSearchPrefixOnly() {
         return searchPrefixOnly;
     }
@@ -336,6 +343,10 @@ public class AttributeModelImpl implements AttributeModel {
 
     public boolean isUrl() {
         return url;
+    }
+
+    public boolean isUseThousandsGrouping() {
+        return useThousandsGrouping;
     }
 
     @Override
@@ -482,6 +493,10 @@ public class AttributeModelImpl implements AttributeModel {
         this.searchCaseSensitive = searchCaseSensitive;
     }
 
+    public void setSearchForExactValue(boolean searchForExactValue) {
+        this.searchForExactValue = searchForExactValue;
+    }
+
     public void setSearchPrefixOnly(boolean searchPrefixOnly) {
         this.searchPrefixOnly = searchPrefixOnly;
     }
@@ -510,6 +525,10 @@ public class AttributeModelImpl implements AttributeModel {
         this.url = url;
     }
 
+    public void setUseThousandsGrouping(boolean useThousandsGrouping) {
+        this.useThousandsGrouping = useThousandsGrouping;
+    }
+
     public void setVisible(boolean visible) {
         this.visible = visible;
     }
@@ -520,14 +539,6 @@ public class AttributeModelImpl implements AttributeModel {
 
     public void setWeek(boolean week) {
         this.week = week;
-    }
-
-    public boolean isUseThousandsGrouping() {
-        return useThousandsGrouping;
-    }
-
-    public void setUseThousandsGrouping(boolean useThousandsGrouping) {
-        this.useThousandsGrouping = useThousandsGrouping;
     }
 
     @Override

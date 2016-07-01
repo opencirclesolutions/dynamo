@@ -27,6 +27,7 @@ import com.ocs.dynamo.domain.model.impl.ModelBasedFieldFactory;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.ui.component.URLField;
 import com.ocs.dynamo.ui.composite.table.export.TableExportActionHandler;
+import com.ocs.dynamo.utils.SystemPropertyUtils;
 import com.vaadin.data.Container;
 import com.vaadin.data.Property;
 import com.vaadin.ui.Table;
@@ -77,11 +78,13 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
 
         generateColumns(this, container, model);
 
-        // add export functionality
-        List<EntityModel<?>> list = new ArrayList<>();
-        list.add(model);
-        addActionHandler(new TableExportActionHandler(UI.getCurrent(), entityModelFactory, list,
-                messageService, model.getDisplayNamePlural(), null, false, null));
+        if (SystemPropertyUtils.allowTableExport()) {
+            // add export functionality
+            List<EntityModel<?>> list = new ArrayList<>();
+            list.add(model);
+            addActionHandler(new TableExportActionHandler(UI.getCurrent(), entityModelFactory,
+                    list, messageService, model.getDisplayNamePlural(), null, false, null));
+        }
 
         addItemSetChangeListener(new ItemSetChangeListener() {
 

@@ -57,7 +57,6 @@ public class BaseCustomComponentTest extends BaseMockitoTest {
     public void setupBaseCustomComponentTest() throws NoSuchFieldException {
         MockUtil.mockMessageService(messageService);
         PrivateAccessor.setField(component, "messageService", messageService);
-        PrivateAccessor.setField(factory, "defaultPrecision", 2);
     }
 
     @Test
@@ -95,7 +94,8 @@ public class BaseCustomComponentTest extends BaseMockitoTest {
 
         // integer
         label = (Label) component.constructLabel(e, model.getAttributeModel("someInt"));
-        Assert.assertEquals("1" + DecimalFormatSymbols.getInstance().getGroupingSeparator() + "234",
+        Assert.assertEquals(
+                "1" + DecimalFormatSymbols.getInstance().getGroupingSeparator() + "234",
                 label.getValue());
 
         // long

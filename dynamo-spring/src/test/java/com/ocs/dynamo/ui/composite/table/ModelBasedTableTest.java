@@ -49,12 +49,9 @@ public class ModelBasedTableTest extends BaseMockitoTest {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-
         Mockito.when(service.getEntityClass()).thenReturn(TestEntity.class);
-
         MockUtil.mockMessageService(messageService);
         PrivateAccessor.setField(entityModelFactory, "messageService", messageService);
-        PrivateAccessor.setField(entityModelFactory, "defaultPrecision", 2);
     }
 
     @Test

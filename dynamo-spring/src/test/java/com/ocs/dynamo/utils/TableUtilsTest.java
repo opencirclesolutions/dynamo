@@ -51,10 +51,8 @@ public class TableUtilsTest extends BaseMockitoTest {
 
     @Before
     public void setupTableUtilsTest() throws NoSuchFieldException {
-
         MockUtil.mockMessageService(messageService);
         PrivateAccessor.setField(factory, "messageService", messageService);
-        PrivateAccessor.setField(factory, "defaultPrecision", 2);
     }
 
     @Test
@@ -100,8 +98,10 @@ public class TableUtilsTest extends BaseMockitoTest {
                 "discount", BigDecimal.valueOf(12.4), LOCALE));
         Assert.assertEquals("1.042,40", TableUtils.formatPropertyValue(factory, model,
                 messageService, "discount", BigDecimal.valueOf(1042.4), LOCALE));
-        Assert.assertEquals("1.042,40%", TableUtils.formatPropertyValue(factory, model,
-                messageService, "rate", BigDecimal.valueOf(1042.4), LOCALE));
+        Assert.assertEquals(
+                "1.042,40%",
+                TableUtils.formatPropertyValue(factory, model, messageService, "rate",
+                        BigDecimal.valueOf(1042.4), LOCALE));
 
         // US formatting (reverse separators)
         Assert.assertEquals("1,000.40", TableUtils.formatPropertyValue(factory, model,

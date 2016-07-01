@@ -2,10 +2,7 @@ package com.ocs.dynamo.filter;
 
 import java.util.List;
 
-import junitx.util.PrivateAccessor;
-
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
 import com.google.common.collect.Lists;
@@ -18,11 +15,6 @@ import com.vaadin.data.util.filter.Compare.Equal;
 public class FilterUtilTest {
 
     private EntityModelFactoryImpl emf = new EntityModelFactoryImpl();
-
-    @Before
-    public void setup() throws NoSuchFieldException {
-        PrivateAccessor.setField(emf, "defaultPrecision", 2);
-    }
 
     @Test
     public void testReplaceFilter() {

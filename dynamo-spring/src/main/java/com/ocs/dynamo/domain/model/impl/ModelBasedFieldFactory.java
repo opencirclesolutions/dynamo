@@ -40,8 +40,9 @@ import com.ocs.dynamo.ui.component.EntityComboBox;
 import com.ocs.dynamo.ui.component.EntityComboBox.SelectMode;
 import com.ocs.dynamo.ui.component.EntityListSelect;
 import com.ocs.dynamo.ui.component.EntityLookupField;
-import com.ocs.dynamo.ui.component.QuickAddListSelect;
+import com.ocs.dynamo.ui.component.FancyListSelect;
 import com.ocs.dynamo.ui.component.QuickAddEntityComboBox;
+import com.ocs.dynamo.ui.component.QuickAddListSelect;
 import com.ocs.dynamo.ui.component.TimeField;
 import com.ocs.dynamo.ui.component.URLField;
 import com.ocs.dynamo.ui.composite.form.CollectionTable;
@@ -50,6 +51,7 @@ import com.ocs.dynamo.ui.converter.ConverterFactory;
 import com.ocs.dynamo.ui.converter.WeekCodeConverter;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.ui.validator.URLValidator;
+import com.ocs.dynamo.utils.SystemPropertyUtils;
 import com.vaadin.data.Container;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Item;
@@ -83,9 +85,6 @@ import com.vaadin.ui.TextField;
  */
 public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory implements
         TableFieldFactory {
-
-    // the default number of rows in a list select - TODO make this a configurable parameter
-    private static final int LIST_SELECT_ROWS = 3;
 
     private static ConcurrentMap<String, ModelBasedFieldFactory<?>> nonValidatingInstances = new ConcurrentHashMap<>();
 
@@ -279,16 +278,25 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
                 .getServiceForEntity(entityModel.getEntityClass());
         SortOrder[] sos = constructSortOrder(entityModel);
 
-        if (attributeModel.isQuickAddAllowed() && !search) {
+        if (AttributeSelectMode.FANCY_LIST.equals(attributeModel.getSelectMode())
+                || (search && attributeModel.isMultipleSearch())) {
+            // fancy list in case specified or when searching for multiple values
+            FancyListSelect<ID, S> listSelect = new FancyListSelect<ID, S>(service,
+                    (EntityModel<S>) entityModel, attributeModel, fieldFilter, search, sos);
+            listSelect.setRows(SystemPropertyUtils.getDefaultListSelectRows());
+            return listSelect;
+        } else if (attributeModel.isQuickAddAllowed() && !search) {
+            // quick add list select
             QuickAddListSelect<ID, S> quickSelect = new QuickAddListSelect<ID, S>(
                     (EntityModel<S>) entityModel, attributeModel, service, fieldFilter,
-                    multipleSelect, LIST_SELECT_ROWS, sos);
+                    multipleSelect, SystemPropertyUtils.getDefaultListSelectRows(), sos);
             return quickSelect;
         } else {
+            // simple list select
             EntityListSelect<ID, S> listSelect = new EntityListSelect<ID, S>(
                     (EntityModel<S>) entityModel, attributeModel, service, fieldFilter, sos);
             listSelect.setMultiSelect(multipleSelect);
-            listSelect.setRows(LIST_SELECT_ROWS);
+            listSelect.setRows(SystemPropertyUtils.getDefaultListSelectRows());
             return listSelect;
         }
     }
@@ -661,20 +669,12 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
                     attributeModel.isCurrency(), attributeModel.isPercentage(), false,
                     attributeModel.getPrecision(), VaadinUtils.getCurrencySymbol()));
         } else if (attributeModel.getType().equals(Integer.class)) {
-            textField.setConverter(ConverterFactory
-                    .createIntegerConverter(useThousandsGroupingInEditMode()));
+            textField.setConverter(ConverterFactory.createIntegerConverter(SystemPropertyUtils
+                    .useThousandsGroupingInEditMode()));
         } else if (attributeModel.getType().equals(Long.class)) {
-            textField.setConverter(ConverterFactory
-                    .createLongConverter(useThousandsGroupingInEditMode()));
+            textField.setConverter(ConverterFactory.createLongConverter(SystemPropertyUtils
+                    .useThousandsGroupingInEditMode()));
         }
     }
 
-    /**
-     * Whether to include thousands groupings in edit mode
-     * 
-     * @return
-     */
-    private boolean useThousandsGroupingInEditMode() {
-        return Boolean.getBoolean(DynamoConstants.SP_THOUSAND_GROUPING);
-    }
 }

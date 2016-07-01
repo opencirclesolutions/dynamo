@@ -26,20 +26,12 @@ import com.vaadin.data.sort.SortOrder;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.Component;
 
-import junitx.util.PrivateAccessor;
-
 public class EntityLookupFieldTest extends BaseMockitoTest {
 
     @Mock
     private TestEntityService service;
 
     private EntityModelFactory factory = new EntityModelFactoryImpl();
-
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
-        PrivateAccessor.setField(factory, "defaultPrecision", 2);
-    }
 
     @Test
     public void test() {

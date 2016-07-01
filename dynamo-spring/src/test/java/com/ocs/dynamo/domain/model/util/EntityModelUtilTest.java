@@ -30,8 +30,6 @@ import com.ocs.dynamo.service.impl.MessageServiceImpl;
 import com.ocs.dynamo.test.BaseMockitoTest;
 import com.ocs.dynamo.test.MockUtil;
 
-import junitx.util.PrivateAccessor;
-
 public class EntityModelUtilTest extends BaseMockitoTest {
 
     private EntityModelFactory factory = new EntityModelFactoryImpl();
@@ -42,7 +40,6 @@ public class EntityModelUtilTest extends BaseMockitoTest {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        PrivateAccessor.setField(factory, "defaultPrecision", 2);
         MockUtil.mockMessageService(messageService);
     }
 

@@ -44,15 +44,18 @@ public abstract class AddDialog<ID extends Serializable, T extends AbstractEntit
 
     private BaseService<ID, T> service;
 
+    private FormOptions formOptions;
+
     /**
      * Constructor
      * 
      * @param service
      * @param entityModel
      */
-    public AddDialog(BaseService<ID, T> service, EntityModel<T> entityModel) {
+    public AddDialog(BaseService<ID, T> service, EntityModel<T> entityModel, FormOptions formOptions) {
         this.service = service;
         this.entityModel = entityModel;
+        this.formOptions = formOptions;
     }
 
     /**
@@ -65,10 +68,10 @@ public abstract class AddDialog<ID extends Serializable, T extends AbstractEntit
 
     @Override
     protected void doBuild(Layout parent) {
-        FormOptions fo = new FormOptions();
-        fo.setHideCancelButton(false);
 
-        layout = new SimpleEditLayout<ID, T>(null, service, entityModel, fo) {
+        formOptions.setHideCancelButton(false);
+
+        layout = new SimpleEditLayout<ID, T>(null, service, entityModel, formOptions) {
 
             private static final long serialVersionUID = -2965981316297118264L;
 
@@ -94,7 +97,7 @@ public abstract class AddDialog<ID extends Serializable, T extends AbstractEntit
 
     @Override
     protected String getTitle() {
-        // TODO Auto-generated method stub
+        // not needed
         return null;
     }
 }

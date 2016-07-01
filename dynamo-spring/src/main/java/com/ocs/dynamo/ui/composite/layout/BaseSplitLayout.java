@@ -303,6 +303,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
                 protected void postProcessEditFields() {
                     BaseSplitLayout.this.postProcessEditFields(editForm);
                 }
+
             };
 
             editForm.setFieldEntityModels(getFieldEntityModels());
@@ -418,6 +419,12 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
         reload();
     }
 
+    public void replaceLabel(String propertyName) {
+        if (editForm != null) {
+            editForm.replaceLabel(propertyName);
+        }
+    }
+
     public void setFieldFilters(Map<String, Filter> fieldFilters) {
         this.fieldFilters = fieldFilters;
     }
@@ -427,5 +434,4 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
             editForm.setViewMode(viewMode);
         }
     }
-
 }

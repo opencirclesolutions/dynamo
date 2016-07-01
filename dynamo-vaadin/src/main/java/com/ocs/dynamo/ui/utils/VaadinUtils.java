@@ -29,6 +29,7 @@ import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.ui.converter.BigDecimalConverter;
 import com.ocs.dynamo.ui.converter.ConverterFactory;
+import com.ocs.dynamo.utils.SystemPropertyUtils;
 import com.vaadin.data.Container;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.converter.StringToIntegerConverter;
@@ -144,7 +145,7 @@ public final class VaadinUtils {
             return null;
         }
         String cs = (String) vs.getAttribute(DynamoConstants.CURRENCY_SYMBOL);
-        return cs != null ? cs : System.getProperty("default.currency.symbol");
+        return cs != null ? cs : SystemPropertyUtils.getDefaultCurrencySymbol();
     }
 
     /**

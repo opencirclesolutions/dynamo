@@ -82,11 +82,8 @@ public class TableExportActionHandlerTest extends BaseMockitoTest {
     public void setUp() throws Exception {
         super.setUp();
         MockUtil.mockMessageService(messageService);
-
         Mockito.when(ui.getPage()).thenReturn(page);
-
         PrivateAccessor.setField(entityModelFactory, "messageService", messageService);
-        PrivateAccessor.setField(entityModelFactory, "defaultPrecision", 2);
     }
 
     @Test
@@ -131,8 +128,8 @@ public class TableExportActionHandlerTest extends BaseMockitoTest {
         Workbook wb = importer.createWorkbook(bytes);
 
         // string
-        Assert.assertEquals("Special ops",
-                wb.getSheetAt(0).getRow(2).getCell(0).getStringCellValue());
+        Assert.assertEquals("Special ops", wb.getSheetAt(0).getRow(2).getCell(0)
+                .getStringCellValue());
         Assert.assertEquals("Bas, Bob", wb.getSheetAt(0).getRow(3).getCell(0).getStringCellValue());
         Assert.assertEquals("Patrick", wb.getSheetAt(0).getRow(4).getCell(0).getStringCellValue());
 
@@ -156,8 +153,8 @@ public class TableExportActionHandlerTest extends BaseMockitoTest {
         Assert.assertEquals("Naam", wb.getSheetAt(0).getRow(1).getCell(0).getStringCellValue());
         Assert.assertEquals("Leeftijd", wb.getSheetAt(0).getRow(1).getCell(1).getStringCellValue());
         Assert.assertEquals("Gewicht", wb.getSheetAt(0).getRow(1).getCell(2).getStringCellValue());
-        Assert.assertEquals("Percentage",
-                wb.getSheetAt(0).getRow(1).getCell(3).getStringCellValue());
+        Assert.assertEquals("Percentage", wb.getSheetAt(0).getRow(1).getCell(3)
+                .getStringCellValue());
 
         // string
         Assert.assertEquals("Bas, Bob", wb.getSheetAt(0).getRow(2).getCell(0).getStringCellValue());
@@ -293,8 +290,8 @@ public class TableExportActionHandlerTest extends BaseMockitoTest {
         Workbook wb = importer.createWorkbook(bytes);
 
         Assert.assertEquals("Bas, Bob", wb.getSheetAt(0).getRow(2).getCell(0).getStringCellValue());
-        Font font = wb
-                .getFontAt(wb.getSheetAt(0).getRow(2).getCell(0).getCellStyle().getFontIndex());
+        Font font = wb.getFontAt(wb.getSheetAt(0).getRow(2).getCell(0).getCellStyle()
+                .getFontIndex());
         Assert.assertEquals(IndexedColors.BLUE.getIndex(), font.getColor());
 
         Assert.assertEquals("Patrick", wb.getSheetAt(0).getRow(3).getCell(0).getStringCellValue());

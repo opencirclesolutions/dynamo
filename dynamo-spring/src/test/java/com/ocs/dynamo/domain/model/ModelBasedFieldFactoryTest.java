@@ -54,8 +54,6 @@ import com.vaadin.ui.Field;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 
-import junitx.util.PrivateAccessor;
-
 public class ModelBasedFieldFactoryTest extends BaseMockitoTest {
 
     @Mock
@@ -72,12 +70,8 @@ public class ModelBasedFieldFactoryTest extends BaseMockitoTest {
 
         super.setUp();
         MockUtil.mockMessageService(messageService);
-
-        PrivateAccessor.setField(factory, "defaultPrecision", 2);
-
         fieldFactory = new ModelBasedFieldFactory<>(factory.getModel(TestEntity.class),
                 messageService, false, false);
-
     }
 
     /**
@@ -163,8 +157,8 @@ public class ModelBasedFieldFactoryTest extends BaseMockitoTest {
      */
     @Test
     public void testTextFieldValidating() {
-        fieldFactory = ModelBasedFieldFactory
-                .getValidatingInstance(factory.getModel(TestEntity.class), messageService);
+        fieldFactory = ModelBasedFieldFactory.getValidatingInstance(
+                factory.getModel(TestEntity.class), messageService);
         Object obj = fieldFactory.createField("name");
 
         Assert.assertTrue(obj instanceof TextField);
@@ -188,8 +182,8 @@ public class ModelBasedFieldFactoryTest extends BaseMockitoTest {
 
         Assert.assertNotNull(tf.getConverter());
 
-        BigDecimal dec = (BigDecimal) tf.getConverter()
-                .convertToModel("3" + symbols.getDecimalSeparator() + "43", null, null);
+        BigDecimal dec = (BigDecimal) tf.getConverter().convertToModel(
+                "3" + symbols.getDecimalSeparator() + "43", null, null);
         Assert.assertEquals(new BigDecimal("3.43"), dec);
     }
 
@@ -203,12 +197,12 @@ public class ModelBasedFieldFactoryTest extends BaseMockitoTest {
 
         Assert.assertNotNull(tf.getConverter());
 
-        BigDecimal dec = (BigDecimal) tf.getConverter()
-                .convertToModel("3" + symbols.getDecimalSeparator() + "43%", null, null);
+        BigDecimal dec = (BigDecimal) tf.getConverter().convertToModel(
+                "3" + symbols.getDecimalSeparator() + "43%", null, null);
         Assert.assertEquals(new BigDecimal("3.43"), dec);
 
-        Assert.assertEquals("3" + symbols.getDecimalSeparator() + "14%",
-                tf.getConverter().convertToPresentation(BigDecimal.valueOf(3.14), null, null));
+        Assert.assertEquals("3" + symbols.getDecimalSeparator() + "14%", tf.getConverter()
+                .convertToPresentation(BigDecimal.valueOf(3.14), null, null));
     }
 
     /**
@@ -296,8 +290,8 @@ public class ModelBasedFieldFactoryTest extends BaseMockitoTest {
 
     @Test
     public void testDoNotCreateReadonlyField() {
-        ModelBasedFieldFactory<TestX> f = ModelBasedFieldFactory
-                .getInstance(factory.getModel(TestX.class), messageService);
+        ModelBasedFieldFactory<TestX> f = ModelBasedFieldFactory.getInstance(
+                factory.getModel(TestX.class), messageService);
         Assert.assertNull(f.createField("readOnlyField"));
 
         // in search mode, it does not matter if the field is readonly

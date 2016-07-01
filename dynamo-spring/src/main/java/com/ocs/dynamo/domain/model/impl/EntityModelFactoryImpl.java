@@ -46,7 +46,6 @@ import javax.validation.constraints.Size;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 
 import com.google.common.collect.Sets;
 import com.ocs.dynamo.domain.AbstractEntity;
@@ -67,6 +66,7 @@ import com.ocs.dynamo.domain.validator.Email;
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.utils.ClassUtils;
+import com.ocs.dynamo.utils.SystemPropertyUtils;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.DefaultFieldFactory;
 
@@ -84,18 +84,6 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
     private static final String VERSION = "version";
 
     private static final int RECURSIVE_MODEL_DEPTH = 3;
-
-    @Value("#{systemProperties['ocs.default.date.format']?:'dd-MM-yyyy'}")
-    private String defaultDateFormat;
-
-    @Value("#{systemProperties['ocs.default.time.format']?:'HH:mm:ss'}")
-    private String defaultTimeFormat;
-
-    @Value("#{systemProperties['ocs.default.datetime.format']?:'dd-MM-yyyy HH:mm:ss'}")
-    private String defaultDateTimeFormat;
-
-    @Value("#{systemProperties['ocs.default.decimal.precision']?:'2'}")
-    private Integer defaultPrecision;
 
     @Autowired(required = false)
     private MessageService messageService;
@@ -151,7 +139,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
             model.setReadOnly(descriptor.isHidden());
             model.setSortable(true);
             model.setComplexEditable(false);
-            model.setPrecision(defaultPrecision);
+            model.setPrecision(SystemPropertyUtils.getDefaultDecimalPrecision());
             model.setSearchCaseSensitive(false);
             model.setSearchPrefixOnly(false);
             model.setUrl(false);
@@ -492,6 +480,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
         // add the additional unmentioned attributes
         result.addAll(additionalNames);
 
+        // loop over the attributes and set the orders
         int i = 0;
         for (String attributeName : result) {
             AttributeModel am = null;
@@ -588,13 +577,13 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
             String format = null;
             if (TemporalType.TIMESTAMP.equals(temporalType)) {
                 // the field is a date field
-                format = defaultDateTimeFormat;
+                format = SystemPropertyUtils.getDefaultDateTimeFormat();
             } else if (TemporalType.TIME.equals(temporalType)) {
                 // time
-                format = defaultTimeFormat;
+                format = SystemPropertyUtils.getDefaultTimeFormat();
             } else {
                 // by default use a date
-                format = defaultDateFormat;
+                format = SystemPropertyUtils.getDefaultDateFormat();
             }
             return format;
         }
@@ -842,6 +831,10 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
             if (!attribute.useThousandsGrouping()) {
                 model.setUseThousandsGrouping(false);
             }
+
+            if (attribute.searchForExactValue()) {
+                model.setSearchForExactValue(true);
+            }
         }
     }
 
@@ -860,13 +853,13 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
             String format = null;
             switch (model.getDateType()) {
             case TIME:
-                format = defaultTimeFormat;
+                format = SystemPropertyUtils.getDefaultTimeFormat();
                 break;
             case TIMESTAMP:
-                format = defaultDateTimeFormat;
+                format = SystemPropertyUtils.getDefaultDateTimeFormat();
                 break;
             default:
-                format = defaultDateFormat;
+                format = SystemPropertyUtils.getDefaultDateFormat();
             }
 
             SimpleDateFormat fmt = new SimpleDateFormat(format);
@@ -1092,6 +1085,14 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
         }
     }
 
+    /**
+     * Sets the sort order on an entity model
+     * 
+     * @param model
+     *            the entity model
+     * @param sortOrderMsg
+     *            the sort order from the message bundle
+     */
     private <T> void setSortOrder(EntityModelImpl<T> model, String sortOrderMsg) {
         if (!StringUtils.isEmpty(sortOrderMsg)) {
             String[] tokens = sortOrderMsg.split(",");

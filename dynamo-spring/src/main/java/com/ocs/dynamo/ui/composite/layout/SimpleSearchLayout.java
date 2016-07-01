@@ -36,6 +36,8 @@ import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.sort.SortOrder;
+import com.vaadin.event.ItemClickEvent;
+import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Field;
@@ -184,6 +186,18 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
                 public void valueChange(ValueChangeEvent event) {
                     select(getTableWrapper().getTable().getValue());
                     checkButtonState(getSelectedItem());
+                }
+            });
+
+            // double click listener
+            getTableWrapper().getTable().addItemClickListener(new ItemClickListener() {
+
+                @Override
+                public void itemClick(ItemClickEvent event) {
+                    if (event.isDoubleClick()) {
+                        select(event.getItem().getItemProperty(DynamoConstants.ID).getValue());
+                        doEdit();
+                    }
                 }
             });
 
@@ -465,6 +479,12 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
         setSelectedItem(null);
         checkButtonState(getSelectedItem());
         search();
+    }
+
+    public void replaceLabel(String propertyName) {
+        if (editForm != null) {
+            editForm.replaceLabel(propertyName);
+        }
     }
 
     /**

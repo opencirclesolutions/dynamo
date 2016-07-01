@@ -273,11 +273,19 @@ public interface AttributeModel extends Comparable<AttributeModel> {
     boolean isSearchable();
 
     /**
-     * Indicates whether saerching on this fields is case sensitive
+     * Indicates whether searching on this fields is case sensitive
      * 
      * @return
      */
     boolean isSearchCaseSensitive();
+
+    /**
+     * Indicates whether searching for this value is by exact match (rather than using a range).
+     * Only applicable to numerical and date field
+     * 
+     * @return
+     */
+    boolean isSearchForExactValue();
 
     /**
      * Indicates whether to only match the prefix when performing a search

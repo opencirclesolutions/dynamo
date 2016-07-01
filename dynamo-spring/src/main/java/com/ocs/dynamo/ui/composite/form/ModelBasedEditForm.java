@@ -339,10 +339,21 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
                         .isComplexEditable())) {
             if (attributeModel.isReadOnly() || isViewMode()) {
                 if (attributeModel.isUrl()
-                        || (AttributeType.DETAIL.equals(type) || AttributeType.ELEMENT_COLLECTION
-                                .equals(type)) && attributeModel.isComplexEditable()) {
+                        || (AttributeType.ELEMENT_COLLECTION.equals(type) && attributeModel
+                                .isComplexEditable())) {
                     // display a complex component in read-only mode
                     constructField(parent, entityModel, attributeModel, true, count);
+                } else if (AttributeType.DETAIL.equals(type) && attributeModel.isComplexEditable()) {
+                    Field<?> f = constructCustomField(entityModel, attributeModel, viewMode);
+                    if (f instanceof DetailsEditTable) {
+                        // a details edit table must be displayed
+                        constructField(parent, entityModel, attributeModel, true, count);
+                    } else {
+                        // otherwise display a label
+                        Component label = constructLabel(entity, attributeModel);
+                        labels.get(isViewMode()).put(attributeModel, label);
+                        parent.addComponent(label);
+                    }
                 } else {
                     // otherwise display a label
                     Component label = constructLabel(entity, attributeModel);
@@ -974,5 +985,28 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
      */
     protected void afterModeChanged(boolean viewMode) {
         // overwrite in subclasses
+    }
+
+    /**
+     * Replaces a label (in response to a change)
+     * 
+     * @param propertyName
+     */
+    public void replaceLabel(String propertyName) {
+        AttributeModel am = getEntityModel().getAttributeModel(propertyName);
+        if (am != null) {
+            Component replacement = constructLabel(getEntity(), am);
+            Component oldLabel = labels.get(isViewMode()).get(am);
+
+            // label is displayed in view mode or when its an existing entity
+            replacement.setVisible(oldLabel.isVisible());
+
+            // replace all existing labels with new labels
+            HasComponents hc = labels.get(isViewMode()).get(am).getParent();
+            if (hc instanceof Layout) {
+                ((Layout) hc).replaceComponent(oldLabel, replacement);
+                labels.get(isViewMode()).put(am, replacement);
+            }
+        }
     }
 }

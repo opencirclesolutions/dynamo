@@ -635,7 +635,7 @@ public class TableExportActionHandler implements Handler {
             ExcelExport export = null;
             export = new ModelExcelExport((Table) sender);
             export.setReportTitle(reportTitle);
-            export.setRowHeaders(true);
+            export.setRowHeaders(((Table) sender).getVisibleColumns().length > 1);
             if (sender instanceof TreeTable) {
                 export.getTableHolder().setHierarchical(true);
                 // a model based tree table has multiple levels - the built-in

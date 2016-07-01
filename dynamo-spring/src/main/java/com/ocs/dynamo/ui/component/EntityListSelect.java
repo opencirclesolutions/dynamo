@@ -45,7 +45,7 @@ public class EntityListSelect<ID extends Serializable, T extends AbstractEntity<
 
     private SelectMode selectMode = SelectMode.FILTERED;
 
-    private final SortOrder[] sortOrder;
+    private final SortOrder[] sortOrders;
 
     private BaseService<ID, T> service;
 
@@ -119,11 +119,11 @@ public class EntityListSelect<ID extends Serializable, T extends AbstractEntity<
      */
     public EntityListSelect(EntityModel<T> targetEntityModel, AttributeModel attributeModel,
             BaseService<ID, T> service, SelectMode mode, Filter filter, List<T> items,
-            SortOrder... sortOrder) {
+            SortOrder... sortOrders) {
 
         this.service = service;
         this.selectMode = mode;
-        this.sortOrder = sortOrder;
+        this.sortOrders = sortOrders;
         this.attributeModel = attributeModel;
         this.filter = filter;
 
@@ -137,11 +137,11 @@ public class EntityListSelect<ID extends Serializable, T extends AbstractEntity<
 
         if (SelectMode.ALL.equals(mode)) {
             // add all items (but sorted)
-            container.addAll(service.findAll(SortUtil.translate(sortOrder)));
+            container.addAll(service.findAll(SortUtil.translate(sortOrders)));
         } else if (SelectMode.FILTERED.equals(mode)) {
             // add a filtered selection of items
             items = service.find(new FilterConverter(null).convert(filter),
-                    SortUtil.translate(sortOrder));
+                    SortUtil.translate(sortOrders));
             container.addAll(items);
         } else if (SelectMode.FIXED.equals(mode)) {
             container.addAll(items);
@@ -156,8 +156,8 @@ public class EntityListSelect<ID extends Serializable, T extends AbstractEntity<
         return selectMode;
     }
 
-    public SortOrder[] getSortOrder() {
-        return sortOrder;
+    public SortOrder[] getSortOrders() {
+        return sortOrders;
     }
 
     public AttributeModel getAttributeModel() {
@@ -170,12 +170,12 @@ public class EntityListSelect<ID extends Serializable, T extends AbstractEntity<
             // add all items (but sorted)
             getContainerDataSource().removeAllItems();
             ((BeanItemContainer<T>) getContainerDataSource()).addAll(service.findAll(SortUtil
-                    .translate(sortOrder)));
+                    .translate(sortOrders)));
         } else if (SelectMode.FILTERED.equals(selectMode)) {
             // add a filtered selection of items
             getContainerDataSource().removeAllItems();
             List<T> list = service.find(new FilterConverter(null).convert(filter),
-                    SortUtil.translate(sortOrder));
+                    SortUtil.translate(sortOrders));
             ((BeanItemContainer<T>) getContainerDataSource()).addAll(list);
         }
     }

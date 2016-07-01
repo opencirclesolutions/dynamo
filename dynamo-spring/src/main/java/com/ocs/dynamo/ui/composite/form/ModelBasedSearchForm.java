@@ -61,7 +61,7 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 
     // the types of search field
     protected enum FilterType {
-        BETWEEN, BOOLEAN, ENTITY, ENUM, LIKE
+        BETWEEN, BOOLEAN, ENTITY, ENUM, LIKE, EQUAL
     }
 
     private static final long serialVersionUID = -7226808613882934559L;
@@ -330,6 +330,8 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
                     || AttributeType.DETAIL.equals(attributeModel.getAttributeType())) {
                 // search for an entity
                 filterType = FilterType.ENTITY;
+            } else if (attributeModel.isSearchForExactValue()) {
+                filterType = FilterType.EQUAL;
             }
 
             Component comp = field;

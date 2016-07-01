@@ -55,6 +55,9 @@ public class QuickAddListSelect<ID extends Serializable, T extends AbstractEntit
      */
     private Button addButton;
 
+    /**
+     * Whether the component is in view mode
+     */
     private boolean viewMode;
 
     /**

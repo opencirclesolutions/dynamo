@@ -70,8 +70,8 @@ public final class DynamoConstants {
     /**
      * The default precision
      */
-    public static final int DEFAULT_PRECISION = 2;
-   
+    // public static final int DEFAULT_PRECISION = 2;
+
     /**
      * Larger page size (for lazy query container)
      */
@@ -98,9 +98,45 @@ public final class DynamoConstants {
     public static final String SELECTED_TAB = "selectedTab";
 
     /**
-     * System property default decimal precision.
+     * Name of the system property that is used to determine if table export is allowed
+     */
+    public static final String SP_ALLOW_TABLE_EXPORT = "ocs.allow.table.export";
+
+    /**
+     * Name of the system property that is used to determine the default decimal precision
      */
     public static final String SP_DECIMAL_PRECISION = "ocs.default.decimal.precision";
+
+    /**
+     * Name of the system property that is used to determine the default currency symbol
+     */
+    public static final String SP_DEFAULT_CURRENCY_SYMBOL = "ocs.default.currency.symbol";
+
+    /**
+     * Name of the system property that is used to determine the default date format
+     */
+    public static final String SP_DEFAULT_DATE_FORMAT = "ocs.default.date.format";
+
+    /**
+     * Name of the system property that is used to determine the default date/time (timestamp)
+     * format
+     */
+    public static final String SP_DEFAULT_DATETIME_FORMAT = "ocs.default.datetime.format";
+
+    /**
+     * Name of the system property that is used to determine the default decimal precision
+     */
+    public static final String SP_DEFAULT_DECIMAL_PRECISION = "ocs.default.decimal.precision";
+
+    /**
+     * Name of the system property that is used to determine the amount of rows in a list select
+     */
+    public static final String SP_DEFAULT_LISTSELECT_ROWS = "ocs.default.listselect.rows";
+
+    /**
+     * Name of the system property that is used to determine the default time format
+     */
+    public static final String SP_DEFAULT_TIME_FORMAT = "ocs.default.time.format";
 
     /**
      * System property that indicates whether to use the thousands grouping separator in edit mode

@@ -174,6 +174,7 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
             protected void postProcessEditFields() {
                 SimpleEditLayout.this.postProcessEditFields(editForm);
             }
+
         };
 
         editForm.setFieldEntityModels(getFieldEntityModels());
@@ -284,4 +285,9 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
         this.joins = joins;
     }
 
+    public void replaceLabel(String propertyName) {
+        if (editForm != null) {
+            editForm.replaceLabel(propertyName);
+        }
+    }
 }

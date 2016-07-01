@@ -105,8 +105,8 @@ public class FilterGroup {
 
             @Override
             public void valueChange(ValueChangeEvent event) {
-                FilterGroup.this.valueChange(FilterGroup.this.field,
-                        convertSearchValue(event.getProperty().getValue()));
+                FilterGroup.this.valueChange(FilterGroup.this.field, convertSearchValue(event
+                        .getProperty().getValue()));
             }
         });
 
@@ -129,6 +129,7 @@ public class FilterGroup {
      * Converts the search value from the presentation to the model
      * 
      * @param input
+     *            the search value to convert
      * @return
      */
     private Object convertSearchValue(Object input) {

@@ -29,25 +29,12 @@ import com.ocs.dynamo.service.TestEntityService;
 import com.ocs.dynamo.test.BaseMockitoTest;
 import com.vaadin.data.util.filter.Compare;
 
-import junitx.util.PrivateAccessor;
-
 public class EntityComboBoxTest extends BaseMockitoTest {
 
     private EntityModelFactory factory = new EntityModelFactoryImpl();
 
     @Mock
     private TestEntityService service;
-
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
-        PrivateAccessor.setField(factory, "defaultPrecision", 2);
-    }
-
-    @Test
-    public void test() {
-
-    }
 
     @Test
     public void testAll() {
