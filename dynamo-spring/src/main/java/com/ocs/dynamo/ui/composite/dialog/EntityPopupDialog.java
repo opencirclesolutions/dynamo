@@ -33,8 +33,8 @@ import com.vaadin.ui.Layout;
  * @param <T>
  *            the type of the entity
  */
-public abstract class AddDialog<ID extends Serializable, T extends AbstractEntity<ID>> extends
-        BaseModalDialog {
+public abstract class EntityPopupDialog<ID extends Serializable, T extends AbstractEntity<ID>>
+        extends BaseModalDialog {
 
     private static final long serialVersionUID = -2012972894321597214L;
 
@@ -46,16 +46,20 @@ public abstract class AddDialog<ID extends Serializable, T extends AbstractEntit
 
     private FormOptions formOptions;
 
+    private T entity;
+
     /**
      * Constructor
      * 
      * @param service
      * @param entityModel
      */
-    public AddDialog(BaseService<ID, T> service, EntityModel<T> entityModel, FormOptions formOptions) {
+    public EntityPopupDialog(BaseService<ID, T> service, T entity, EntityModel<T> entityModel,
+            FormOptions formOptions) {
         this.service = service;
         this.entityModel = entityModel;
         this.formOptions = formOptions;
+        this.entity = entity;
     }
 
     /**
@@ -71,15 +75,15 @@ public abstract class AddDialog<ID extends Serializable, T extends AbstractEntit
 
         formOptions.setHideCancelButton(false);
 
-        layout = new SimpleEditLayout<ID, T>(null, service, entityModel, formOptions) {
+        layout = new SimpleEditLayout<ID, T>(entity, service, entityModel, formOptions) {
 
             private static final long serialVersionUID = -2965981316297118264L;
 
             @Override
             protected void afterEditDone(boolean cancel, boolean newEntity, T entity) {
                 super.afterEditDone(cancel, newEntity, entity);
-                AddDialog.this.close();
-                AddDialog.this.afterAddition(entity);
+                EntityPopupDialog.this.close();
+                EntityPopupDialog.this.afterAddition(entity);
             }
         };
         parent.addComponent(layout);

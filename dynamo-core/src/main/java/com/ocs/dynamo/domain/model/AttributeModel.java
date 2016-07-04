@@ -77,6 +77,13 @@ public interface AttributeModel extends Comparable<AttributeModel> {
     String getFalseRepresentation();
 
     /**
+     * The property of the field in which to store the file name of an uploaded file
+     * 
+     * @return
+     */
+    String getFileNameProperty();
+
+    /**
      * 
      * @return the maximum allowed length of the attribute
      */

@@ -30,6 +30,8 @@ public abstract class DownloadButton extends Button {
 
     private static final long serialVersionUID = -7163648327567831406L;
 
+    private StreamResource resource;
+
     /**
      * Constructor
      * 
@@ -38,9 +40,9 @@ public abstract class DownloadButton extends Button {
      * @param fileName
      *            the name of the file to download
      */
-    public DownloadButton(String caption, String fileName) {
+    public DownloadButton(String caption) {
         super(caption);
-        StreamResource resource = new StreamResource(new StreamSource() {
+        resource = new StreamResource(new StreamSource() {
 
             private static final long serialVersionUID = -4870779918745663459L;
 
@@ -53,10 +55,11 @@ public abstract class DownloadButton extends Button {
                 return null;
             }
 
-        }, fileName);
+        }, doCreateFileName());
 
         FileDownloader downloader = new FileDownloader(resource);
         downloader.extend(this);
+
     }
 
     /**
@@ -65,5 +68,21 @@ public abstract class DownloadButton extends Button {
      * @return
      */
     protected abstract byte[] doCreateContent();
+
+    /**
+     * Creates the file name
+     * 
+     * @return
+     */
+    protected abstract String doCreateFileName();
+
+    /**
+     * Sets the file name
+     * 
+     * @param fileName
+     */
+    public void setFileName(String fileName) {
+        resource.setFilename(fileName);
+    }
 
 }

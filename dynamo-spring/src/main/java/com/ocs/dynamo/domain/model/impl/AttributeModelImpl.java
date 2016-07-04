@@ -58,6 +58,8 @@ public class AttributeModelImpl implements AttributeModel {
 
     private String falseRepresentation;
 
+    private String fileNameProperty;
+
     private boolean image;
 
     private boolean mainAttribute;
@@ -168,6 +170,11 @@ public class AttributeModelImpl implements AttributeModel {
     @Override
     public String getFalseRepresentation() {
         return falseRepresentation;
+    }
+
+    @Override
+    public String getFileNameProperty() {
+        return fileNameProperty;
     }
 
     @Override
@@ -414,6 +421,10 @@ public class AttributeModelImpl implements AttributeModel {
 
     public void setFalseRepresentation(String falseRepresentation) {
         this.falseRepresentation = falseRepresentation;
+    }
+
+    public void setFileNameProperty(String fileNameProperty) {
+        this.fileNameProperty = fileNameProperty;
     }
 
     public void setImage(boolean image) {

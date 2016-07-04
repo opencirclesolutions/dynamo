@@ -561,4 +561,12 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
     public void setQueryType(QueryType queryType) {
         this.queryType = queryType;
     }
+
+    public Filter getCompositeFilter() {
+        return getSearchForm().getCompositeFilter();
+    }
+
+    public void setCompositeFilter(Filter filter) {
+        getSearchForm().setCompositeFilter(filter);
+    }
 }

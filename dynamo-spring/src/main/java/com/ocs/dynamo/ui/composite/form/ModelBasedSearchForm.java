@@ -108,6 +108,8 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
     // toggle button (hides/shows the search form)
     private Button toggleButton;
 
+    private Filter compositeFilter;
+
     /**
      * Constructor
      * 
@@ -493,12 +495,12 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
      */
     public void search() {
         if (!currentFilters.isEmpty()) {
-            Filter composite = new And(currentFilters.toArray(new Filter[0]));
-            searchable.search(composite);
+            compositeFilter = new And(currentFilters.toArray(new Filter[0]));
         } else {
             // search without any filters
-            searchable.search(null);
+            compositeFilter = null;
         }
+        searchable.search(compositeFilter);
     }
 
     public void setNrOfColumns(int nrOfColumns) {
@@ -544,5 +546,14 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
                 ((Refreshable) group.getField()).refresh();
             }
         }
+    }
+
+    public Filter getCompositeFilter() {
+        return compositeFilter;
+    }
+
+    public void setCompositeFilter(Filter compositeFilter) {
+        this.compositeFilter = compositeFilter;
+        searchable.search(compositeFilter);
     }
 }

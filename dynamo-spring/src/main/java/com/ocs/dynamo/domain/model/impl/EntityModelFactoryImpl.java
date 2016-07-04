@@ -835,6 +835,10 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
             if (attribute.searchForExactValue()) {
                 model.setSearchForExactValue(true);
             }
+
+            if (!StringUtils.isEmpty(attribute.fileNameProperty())) {
+                model.setFileNameProperty(attribute.fileNameProperty());
+            }
         }
     }
 
@@ -1046,6 +1050,11 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
         msg = getAttributeMessage(entityModel, model, EntityModel.THOUSANDS_GROUPING);
         if (!StringUtils.isEmpty(msg)) {
             model.setUseThousandsGrouping(Boolean.valueOf(msg));
+        }
+
+        msg = getAttributeMessage(entityModel, model, EntityModel.SEARCH_EXACT_VALUE);
+        if (!StringUtils.isEmpty(msg)) {
+            model.setSearchForExactValue(Boolean.valueOf(msg));
         }
     }
 

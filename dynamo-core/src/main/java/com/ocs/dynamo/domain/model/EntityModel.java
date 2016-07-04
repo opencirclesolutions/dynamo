@@ -102,9 +102,20 @@ public interface EntityModel<T> {
      */
     String SEARCH_CASE_SENSITIVE = "searchCaseSensitive";
 
+    /**
+     * 
+     */
     String SEARCH_PREFIX_ONLY = "searchPrefixOnly";
 
+    /**
+     * Whether the field is searchable
+     */
     String SEARCHABLE = "searchable";
+    
+    /**
+     * Whether to search for exact values
+     */
+    String SEARCH_EXACT_VALUE = "searchForExactValue";
 
     /**
      * Indicates that a lookup field (rather than a combo box) must be used when selecting the

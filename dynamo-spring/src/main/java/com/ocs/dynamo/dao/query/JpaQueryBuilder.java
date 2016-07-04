@@ -127,10 +127,14 @@ public final class JpaQueryBuilder {
     private static Predicate createAndPredicate(CriteriaBuilder builder, Root<?> root, Filter filter) {
         And and = (And) filter;
         List<Filter> filters = new ArrayList<>(and.getFilters());
-        Predicate predicate = createPredicate(filters.remove(0), builder, root);
 
-        while (!filters.isEmpty()) {
-            predicate = builder.and(predicate, createPredicate(filters.remove(0), builder, root));
+        Predicate predicate = null;
+        if (!filters.isEmpty()) {
+            predicate = createPredicate(filters.remove(0), builder, root);
+            while (!filters.isEmpty()) {
+                predicate = builder.and(predicate,
+                        createPredicate(filters.remove(0), builder, root));
+            }
         }
         return predicate;
     }
@@ -349,10 +353,13 @@ public final class JpaQueryBuilder {
         Or or = (Or) filter;
         List<Filter> filters = new ArrayList<>(or.getFilters());
 
-        Predicate predicate = createPredicate(filters.remove(0), builder, root);
-
-        while (!filters.isEmpty()) {
-            predicate = builder.or(predicate, createPredicate(filters.remove(0), builder, root));
+        Predicate predicate = null;
+        if (!filters.isEmpty()) {
+            predicate = createPredicate(filters.remove(0), builder, root);
+            while (!filters.isEmpty()) {
+                predicate = builder
+                        .or(predicate, createPredicate(filters.remove(0), builder, root));
+            }
         }
 
         return predicate;

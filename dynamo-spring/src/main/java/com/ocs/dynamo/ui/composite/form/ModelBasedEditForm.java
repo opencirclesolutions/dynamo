@@ -119,7 +119,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
             // callback object to handle successful upload
             UploadReceiver receiver = new UploadReceiver(image, attributeModel.getName(),
-                    attributeModel.getAllowedExtensions().toArray(new String[0]));
+                    attributeModel.getFileNameProperty(), attributeModel.getAllowedExtensions()
+                            .toArray(new String[0]));
 
             HorizontalLayout buttons = new DefaultHorizontalLayout(false, true, true);
             main.addComponent(buttons);
@@ -162,6 +163,9 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
         // the name of the field that must be updated
         private String fieldName;
 
+        // the name of the file that is uploaded
+        private String fileNameFieldName;
+
         private ByteArrayOutputStream stream;
 
         private String[] supportedExtensions;
@@ -179,9 +183,11 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
          * @param supportedExtensions
          *            the supported file extensions
          */
-        private UploadReceiver(Embedded target, String fieldName, String... supportedExtensions) {
+        private UploadReceiver(Embedded target, String fieldName, String fileNameFieldName,
+                String... supportedExtensions) {
             this.target = target;
             this.fieldName = fieldName;
+            this.fileNameFieldName = fileNameFieldName;
             this.supportedExtensions = supportedExtensions;
         }
 
@@ -218,6 +224,10 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
                     // copy the bytes to the entity
                     ClassUtils.setBytes(stream.toByteArray(), getEntity(), fieldName);
+                    if (fileNameFieldName != null) {
+                        ClassUtils.setFieldValue(getEntity(), fileNameFieldName,
+                                event.getFilename());
+                    }
                 } else {
                     Notification.show(message("ocs.modelbasededitform.upload.format.invalid"),
                             Notification.Type.ERROR_MESSAGE);

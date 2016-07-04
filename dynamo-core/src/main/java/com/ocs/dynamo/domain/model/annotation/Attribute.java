@@ -68,6 +68,9 @@ public @interface Attribute {
     // the representation to use instead of "false"
     String falseRepresentation() default "";
 
+    // the name of the property in which to store the file name (after an upload)
+    String fileNameProperty() default "";
+
     // whether the component should be represented as an image
     boolean image() default false;
 
@@ -117,7 +120,7 @@ public @interface Attribute {
 
     // whether to search by single value (for integer or date fields)
     boolean searchForExactValue() default false;
-    
+
     // selection mode (use either a combo box, a list box, or a lookup field)
     AttributeSelectMode selectMode() default AttributeSelectMode.INHERIT;
 
