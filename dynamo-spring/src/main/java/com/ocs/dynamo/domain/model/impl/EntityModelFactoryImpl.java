@@ -769,10 +769,6 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
                 model.setPercentage(true);
             }
 
-            if (attribute.embedded()) {
-                model.setAttributeType(AttributeType.EMBEDDED);
-            }
-
             if (attribute.currency()) {
                 model.setCurrency(true);
             }

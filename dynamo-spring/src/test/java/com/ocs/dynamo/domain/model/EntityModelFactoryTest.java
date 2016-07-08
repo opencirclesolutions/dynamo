@@ -13,44 +13,27 @@
  */
 package com.ocs.dynamo.domain.model;
 
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import javax.persistence.Basic;
-import javax.persistence.ElementCollection;
-import javax.persistence.Embeddable;
-import javax.persistence.Embedded;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.Lob;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.validation.constraints.AssertTrue;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-
-import junitx.util.PrivateAccessor;
-
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.springframework.context.support.ResourceBundleMessageSource;
-
-import com.ocs.dynamo.domain.model.annotation.Attribute;
-import com.ocs.dynamo.domain.model.annotation.AttributeGroup;
-import com.ocs.dynamo.domain.model.annotation.AttributeGroups;
-import com.ocs.dynamo.domain.model.annotation.AttributeOrder;
-import com.ocs.dynamo.domain.model.annotation.Model;
+import com.ocs.dynamo.domain.model.annotation.*;
 import com.ocs.dynamo.domain.model.impl.EntityModelFactoryImpl;
 import com.ocs.dynamo.domain.validator.Email;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.service.impl.MessageServiceImpl;
 import com.ocs.dynamo.test.BaseMockitoTest;
+import junitx.util.PrivateAccessor;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.springframework.context.support.ResourceBundleMessageSource;
+
+import javax.persistence.*;
+import javax.validation.constraints.AssertTrue;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @SuppressWarnings("unused")
 public class EntityModelFactoryTest extends BaseMockitoTest {
@@ -960,7 +943,7 @@ public class EntityModelFactoryTest extends BaseMockitoTest {
         @Attribute(searchable = true)
         private String embedded2;
 
-        @Attribute(embedded = true)
+        @Embedded
         private EmbeddedGrandChild grandChild;
 
         public String getEmbedded1() {
@@ -988,6 +971,7 @@ public class EntityModelFactoryTest extends BaseMockitoTest {
         }
     }
 
+    @Embeddable
     private class EmbeddedGrandChild {
 
         private String sometAttribute;

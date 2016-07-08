@@ -60,9 +60,6 @@ public @interface Attribute {
     /** the display name */
     String displayName() default "";
 
-    /** is this an embedded object */
-    boolean embedded() default false;
-
     /** the representation to use instead of "false" */
     String falseRepresentation() default "";
 
