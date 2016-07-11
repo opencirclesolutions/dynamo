@@ -13,10 +13,10 @@
  */
 package com.ocs.dynamo.ui.composite.form;
 
-import java.io.Serializable;
-
 import com.ocs.dynamo.ui.composite.type.AttributeGroupMode;
 import com.ocs.dynamo.ui.composite.type.ScreenMode;
+
+import java.io.Serializable;
 
 /**
  * Parameter object that can be passed along when creating a page - this object uses smart defaults
@@ -135,52 +135,62 @@ public class FormOptions implements Serializable {
         return showToggleButton;
     }
 
-    public void setShowToggleButton(boolean showToggleButton) {
+    public FormOptions setShowToggleButton(boolean showToggleButton) {
         this.showToggleButton = showToggleButton;
+        return this;
     }
 
-    public void setAttributeGroupMode(AttributeGroupMode attributeGroupMode) {
+    public FormOptions setAttributeGroupMode(AttributeGroupMode attributeGroupMode) {
         this.attributeGroupMode = attributeGroupMode;
+        return this;
     }
 
-    public void setHideAddButton(boolean hideAddButton) {
+    public FormOptions setHideAddButton(boolean hideAddButton) {
         this.hideAddButton = hideAddButton;
+        return this;
     }
 
-    public void setHideCancelButton(boolean hideCancelButton) {
+    public FormOptions setHideCancelButton(boolean hideCancelButton) {
         this.hideCancelButton = hideCancelButton;
+        return this;
     }
 
-    public void setScreenMode(ScreenMode screenMode) {
+    public FormOptions setScreenMode(ScreenMode screenMode) {
         this.screenMode = screenMode;
+        return this;
     }
 
-    public void setOpenInViewMode(boolean openInViewMode) {
+    public FormOptions setOpenInViewMode(boolean openInViewMode) {
         this.openInViewMode = openInViewMode;
+        return this;
     }
 
-    public void setShowEditButton(boolean showEditButton) {
+    public FormOptions setShowEditButton(boolean showEditButton) {
         this.showEditButton = showEditButton;
+        return this;
     }
 
-    public void setShowRemoveButton(boolean showRemoveButton) {
+    public FormOptions setShowRemoveButton(boolean showRemoveButton) {
         this.showRemoveButton = showRemoveButton;
+        return this;
     }
 
     public boolean isHideClearButton() {
         return hideClearButton;
     }
 
-    public void setHideClearButton(boolean hideClearButton) {
+    public FormOptions setHideClearButton(boolean hideClearButton) {
         this.hideClearButton = hideClearButton;
+        return this;
     }
 
     public boolean isShowSearchDialogButton() {
         return showSearchDialogButton;
     }
 
-    public void setShowSearchDialogButton(boolean showSearchDialogButton) {
+    public FormOptions setShowSearchDialogButton(boolean showSearchDialogButton) {
         this.showSearchDialogButton = showSearchDialogButton;
+        return this;
     }
 
     public boolean isReadOnly() {
@@ -190,10 +200,10 @@ public class FormOptions implements Serializable {
     /**
      * Sets the screen to strict read-only modus. Will hide any add buttons and set the screen to
      * read only
-     * 
+     *
      * @param readOnly
      */
-    public void setReadOnly(boolean readOnly) {
+    public FormOptions setReadOnly(boolean readOnly) {
         if (readOnly) {
             this.setOpenInViewMode(true);
             this.setShowEditButton(false);
@@ -201,30 +211,34 @@ public class FormOptions implements Serializable {
             this.setShowRemoveButton(false);
         }
         this.readOnly = readOnly;
+        return this;
     }
 
     public boolean isShowBackButton() {
         return showBackButton;
     }
 
-    public void setShowBackButton(boolean showBackButton) {
+    public FormOptions setShowBackButton(boolean showBackButton) {
         this.showBackButton = showBackButton;
+        return this;
     }
 
     public boolean isPopup() {
         return popup;
     }
 
-    public void setPopup(boolean popup) {
+    public FormOptions setPopup(boolean popup) {
         this.popup = popup;
+        return this;
     }
 
     public boolean isShowQuickSearchField() {
         return showQuickSearchField;
     }
 
-    public void setShowQuickSearchField(boolean showQuickSearchField) {
+    public FormOptions setShowQuickSearchField(boolean showQuickSearchField) {
         this.showQuickSearchField = showQuickSearchField;
+        return this;
     }
 
 }
