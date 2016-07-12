@@ -21,7 +21,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.ocs.dynamo.functional.dao.DomainDao;
 import com.ocs.dynamo.functional.domain.Country;
 import com.ocs.dynamo.functional.domain.Currency;
 import com.ocs.dynamo.functional.domain.Domain;

@@ -13,19 +13,17 @@
  */
 package com.ocs.dynamo.functional.service;
 
-import java.util.List;
-
-import javax.inject.Inject;
-import javax.transaction.Transactional;
-
-import org.springframework.stereotype.Service;
-
 import com.ocs.dynamo.dao.BaseDao;
 import com.ocs.dynamo.functional.dao.DomainDao;
 import com.ocs.dynamo.functional.domain.Domain;
 import com.ocs.dynamo.functional.domain.DomainChild;
 import com.ocs.dynamo.functional.domain.DomainParent;
 import com.ocs.dynamo.service.impl.DefaultServiceImpl;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.inject.Inject;
+import java.util.List;
 
 /**
  * Service for working with reference information.
