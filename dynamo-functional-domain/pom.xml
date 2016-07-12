@@ -42,6 +42,11 @@
 			<artifactId>dynamo-spring</artifactId>
 			<version>${project.parent.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>com.ocs</groupId>
+			<artifactId>dynamo-vaadin</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 		
 		<!-- Hibernate -->
 		<dependency>
@@ -56,14 +61,24 @@
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-validator</artifactId>
 		</dependency>
-		<!-- javax.persistence version 2.1.0 is needed for hibernate 4.3+ -->
+
 		<dependency>
-			<groupId>org.eclipse.persistence</groupId>
-			<artifactId>javax.persistence</artifactId>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-tx</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.vaadin</groupId>
+			<artifactId>vaadin-server</artifactId>
+		</dependency>
+
+		<dependency>
 			<groupId>org.hibernate.javax.persistence</groupId>
-			<artifactId>hibernate-jpa-2.1-api</artifactId>
+			<artifactId>hibernate-jpa-2.0-api</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.mysema.querydsl</groupId>
@@ -79,6 +94,15 @@
 		</dependency>
 
 		<!-- Test -->
+		<dependency>
+			<groupId>com.ocs</groupId>
+			<artifactId>dynamo-test</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
