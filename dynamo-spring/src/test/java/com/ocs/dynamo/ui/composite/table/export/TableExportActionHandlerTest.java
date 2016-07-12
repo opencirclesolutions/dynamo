@@ -38,7 +38,6 @@ import junitx.util.PrivateAccessor;
 import org.apache.commons.io.IOUtils;
 import org.apache.poi.ss.usermodel.*;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Matchers;
@@ -50,7 +49,6 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-@Ignore
 public class TableExportActionHandlerTest extends BaseMockitoTest {
 
     private TableExportActionHandler handler;
