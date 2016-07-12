@@ -24,6 +24,7 @@ import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.Searchable;
 import com.ocs.dynamo.ui.container.QueryType;
 import com.ocs.dynamo.ui.container.ServiceContainer;
+import com.ocs.dynamo.ui.container.ServiceQueryDefinition;
 import com.vaadin.data.Container;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.sort.SortOrder;
@@ -67,9 +68,13 @@ public class ServiceResultsTableWrapper<ID extends Serializable, T extends Abstr
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     protected Container constructContainer() {
-        return new ServiceContainer<ID, T>(getService(), true, DynamoConstants.PAGE_SIZE,
-                getQueryType(), getJoins());
+        ServiceContainer<ID, T> container = new ServiceContainer<ID, T>(getService(), true,
+                DynamoConstants.PAGE_SIZE, getQueryType(), getJoins());
+        ((ServiceQueryDefinition<ID, T>) container.getQueryView().getQueryDefinition())
+                .setEntityModel(getEntityModel());
+        return container;
     }
 
     @Override

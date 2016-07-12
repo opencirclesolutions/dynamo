@@ -15,9 +15,8 @@ package com.ocs.dynamo.service.impl;
 
 import java.util.Locale;
 
-import javax.inject.Inject;
-
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.NoSuchMessageException;
 
@@ -36,7 +35,7 @@ public class MessageServiceImpl implements MessageService {
 
     private static final Logger LOG = Logger.getLogger(MessageServiceImpl.class);
 
-    @Inject
+    @Autowired
     private MessageSource source;
 
     @Override

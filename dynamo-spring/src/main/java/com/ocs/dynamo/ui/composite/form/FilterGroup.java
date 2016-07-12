@@ -14,7 +14,6 @@
 package com.ocs.dynamo.ui.composite.form;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -23,14 +22,14 @@ import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.filter.listener.FilterChangeEvent;
 import com.ocs.dynamo.filter.listener.FilterListener;
 import com.ocs.dynamo.ui.composite.form.ModelBasedSearchForm.FilterType;
-import com.ocs.dynamo.ui.converter.WeekCodeConverter;
-import com.ocs.dynamo.ui.utils.VaadinUtils;
+import com.ocs.dynamo.utils.ConvertUtil;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.filter.And;
 import com.vaadin.data.util.filter.Compare;
 import com.vaadin.data.util.filter.SimpleStringFilter;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Field;
 
@@ -105,8 +104,9 @@ public class FilterGroup {
 
             @Override
             public void valueChange(ValueChangeEvent event) {
-                FilterGroup.this.valueChange(FilterGroup.this.field, convertSearchValue(event
-                        .getProperty().getValue()));
+                FilterGroup.this.valueChange(FilterGroup.this.field, ConvertUtil
+                        .convertSearchValue(FilterGroup.this.attributeModel, event.getProperty()
+                                .getValue(), VaadinSession.getCurrent().getLocale()));
             }
         });
 
@@ -118,30 +118,13 @@ public class FilterGroup {
 
                 @Override
                 public void valueChange(ValueChangeEvent event) {
-                    FilterGroup.this.valueChange(FilterGroup.this.auxField,
-                            convertSearchValue(event.getProperty().getValue()));
+                    FilterGroup.this.valueChange(FilterGroup.this.auxField, ConvertUtil
+                            .convertSearchValue(FilterGroup.this.attributeModel, event
+                                    .getProperty().getValue(), VaadinSession.getCurrent()
+                                    .getLocale()));
                 }
             });
         }
-    }
-
-    /**
-     * Converts the search value from the presentation to the model
-     * 
-     * @param input
-     *            the search value to convert
-     * @return
-     */
-    private Object convertSearchValue(Object input) {
-        if (attributeModel.isWeek()) {
-            WeekCodeConverter converter = new WeekCodeConverter();
-            return converter.convertToModel((String) input, Date.class, null);
-        } else if (Integer.class.equals(attributeModel.getType())) {
-            return VaadinUtils.stringToInteger(false, (String) input);
-        } else if (Long.class.equals(attributeModel.getType())) {
-            return VaadinUtils.stringToLong(false, (String) input);
-        }
-        return input;
     }
 
     /**

@@ -168,11 +168,13 @@ public class VaadinUtilsTest extends BaseMockitoTest {
     @Test
     public void testStringToBigDecimal() {
         Assert.assertEquals(1234,
-                VaadinUtils.stringToBigDecimal(false, false, "1234", LOCALE).intValue());
+                VaadinUtils.stringToBigDecimal(false, false, false, "1234", LOCALE).intValue());
         Assert.assertEquals(1234,
-                VaadinUtils.stringToBigDecimal(false, true, "1.234", LOCALE).intValue());
+                VaadinUtils.stringToBigDecimal(false, true, false, "1.234", LOCALE).intValue());
         Assert.assertEquals(1234,
-                VaadinUtils.stringToBigDecimal(true, true, "1.234%", LOCALE).intValue());
+                VaadinUtils.stringToBigDecimal(true, true, false, "1.234%", LOCALE).intValue());
+        Assert.assertEquals(1234,
+                VaadinUtils.stringToBigDecimal(false, true, true, "€ 1.234", LOCALE).intValue());
     }
 
     @Test

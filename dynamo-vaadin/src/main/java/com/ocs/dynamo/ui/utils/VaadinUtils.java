@@ -48,18 +48,13 @@ import com.vaadin.ui.UI;
  */
 public final class VaadinUtils {
 
-    private static final int DEFAULT_PRECISION = 2;
-
-    private VaadinUtils() {
-        // hidden constructor
-    }
-
     /**
      * Check if all editable fields that are contained in a (fixed, non-lazy) table are valid. This
      * method is needed because simply calling table.isValid() will not take into account any
      * editable components within the table
      * 
      * @param table
+     *            the table
      * @return
      */
     public static boolean allFixedTableFieldsValid(Table table) {
@@ -75,25 +70,16 @@ public final class VaadinUtils {
     }
 
     /**
-     * Converts a BigDecimal to a string, using the built in Vaadin converter
+     * 
+     * Converts a BigDecimal value to a String (shortcut for values that are not currency and not
+     * percentage)
      * 
      * @param percentage
      *            whether the value represents a percentage
      * @param useGrouping
-     *            whether to use a thousands grouping separator
-     * @Param value the value to convert
-     * @return
-     */
-    public static String bigDecimalToString(boolean percentage, boolean useGrouping,
-            BigDecimal value, Locale locale) {
-        return bigDecimalToString(false, percentage, useGrouping, DEFAULT_PRECISION, value, locale);
-    }
-
-    /**
-     * 
-     * @param percentage
-     * @param useGrouping
+     *            whether to use a thousand grouping
      * @param value
+     *            the value
      * @return
      */
     public static String bigDecimalToString(boolean percentage, boolean useGrouping,
@@ -103,13 +89,37 @@ public final class VaadinUtils {
     }
 
     /**
+     * Converts a BigDecimal value to a String
+     * 
+     * @param percentage
+     *            whether the value represents a percentage
+     * @param useGrouping
+     *            whether to use a thousand grouping
+     * @param value
+     *            the value
+     * @param locale
+     *            the locale to use
+     * @return
+     */
+    public static String bigDecimalToString(boolean percentage, boolean useGrouping,
+            BigDecimal value, Locale locale) {
+        return bigDecimalToString(false, percentage, useGrouping,
+                SystemPropertyUtils.getDefaultDecimalPrecision(), value, locale);
+    }
+
+    /**
+     * * Converts a BigDecimal value to a String
      * 
      * @param currency
+     *            whether the value represents a currency
      * @param percentage
+     *            whether the value represents a percentage
      * @param useGrouping
-     * @param precision
+     *            whether to use a thousand grouping
      * @param value
+     *            the value
      * @param locale
+     *            the locale to use
      * @return
      */
     public static String bigDecimalToString(boolean currency, boolean percentage,
@@ -140,17 +150,20 @@ public final class VaadinUtils {
      * @return
      */
     public static String getCurrencySymbol() {
+        String cs = SystemPropertyUtils.getDefaultCurrencySymbol();
+
         VaadinSession vs = VaadinSession.getCurrent();
-        if (vs == null) {
-            return null;
+        if (vs != null && vs.getAttribute(DynamoConstants.CURRENCY_SYMBOL) != null) {
+            cs = (String) vs.getAttribute(DynamoConstants.CURRENCY_SYMBOL);
         }
-        String cs = (String) vs.getAttribute(DynamoConstants.CURRENCY_SYMBOL);
-        return cs != null ? cs : SystemPropertyUtils.getDefaultCurrencySymbol();
+        return cs;
     }
 
     /**
-     * Retrieves an entity with a certain ID from the lazy query container
+     * Retrieves an entity with a certain ID from a container
      * 
+     * @param container
+     *            the container
      * @param id
      *            the ID of the entity
      * @return
@@ -170,37 +183,25 @@ public final class VaadinUtils {
     }
 
     /**
-     * Returns the parent component of the specified component that has a certain class
+     * Returns the first parent component of the specified component that is a subclass of the
+     * specified class
      * 
-     * @param c
+     * @param component
+     *            the component
      * @param clazz
+     *            the class
      * @return
      */
     @SuppressWarnings("unchecked")
-    public static <T extends Component> T getParentOfClass(Component c, Class<T> clazz) {
-        while (c.getParent() != null) {
-            c = c.getParent();
-            if (clazz.isAssignableFrom(c.getClass())) {
-                return (T) c;
+    public static <T extends Component> T getParentOfClass(Component component, Class<T> clazz) {
+        while (component.getParent() != null) {
+            component = component.getParent();
+            if (clazz.isAssignableFrom(component.getClass())) {
+                return (T) component;
             }
 
         }
         return null;
-    }
-
-    /**
-     * Returns the first value from a session attribute that holds a map
-     * 
-     * @param attributeName
-     *            the name of the attribute
-     * @param key
-     * @return
-     */
-    @SuppressWarnings("unchecked")
-    public static String getSessionAttributeValueFromMap(String attributeName, String key) {
-        Map<String, Object> map = (Map<String, Object>) VaadinSession.getCurrent().getSession()
-                .getAttribute(attributeName);
-        return getSessionAttributeValueFromMap(map, key);
     }
 
     public static String getSessionAttributeValueFromMap(Map<String, Object> map, String key) {
@@ -211,6 +212,22 @@ public final class VaadinUtils {
             }
         }
         return null;
+    }
+
+    /**
+     * Returns the first value from a session attribute that contains a map
+     * 
+     * @param attributeName
+     *            the name of the attribute that holds the map
+     * @param key
+     *            the map key
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public static String getSessionAttributeValueFromMap(String attributeName, String key) {
+        Map<String, Object> map = (Map<String, Object>) VaadinSession.getCurrent().getSession()
+                .getAttribute(attributeName);
+        return getSessionAttributeValueFromMap(map, key);
     }
 
     /**
@@ -338,21 +355,41 @@ public final class VaadinUtils {
      * @return
      */
     public static BigDecimal stringToBigDecimal(boolean percentage, boolean useGrouping,
-            String value) {
-        return stringToBigDecimal(percentage, useGrouping, value, VaadinSession.getCurrent()
-                .getLocale());
+            boolean currency, String value) {
+        return stringToBigDecimal(percentage, useGrouping, currency, value, VaadinSession
+                .getCurrent().getLocale());
     }
 
+    /**
+     * Converts a string to a big decimal
+     * 
+     * @param percentage
+     *            is it a percentage value
+     * @param useGrouping
+     *            use thousands grouping
+     * @param currency
+     *            is it a currency value
+     * @param value
+     *            the value
+     * @param locale
+     *            the locale
+     * @return
+     */
     public static BigDecimal stringToBigDecimal(boolean percentage, boolean useGrouping,
-            String value, Locale locale) {
-        BigDecimalConverter converter = ConverterFactory.createBigDecimalConverter(false,
-                percentage, useGrouping, DEFAULT_PRECISION, null);
+            boolean currency, String value, Locale locale) {
+        BigDecimalConverter converter = ConverterFactory.createBigDecimalConverter(currency,
+                percentage, useGrouping, SystemPropertyUtils.getDefaultDecimalPrecision(),
+                VaadinUtils.getCurrencySymbol());
         return converter.convertToModel(value, BigDecimal.class, locale);
     }
 
     /**
+     * Converts a String to an Integer
+     * 
      * @param grouping
+     *            whether to include a thousands grouping separator
      * @param value
+     *            the String to convert
      * @return
      */
     public static Integer stringToInteger(boolean grouping, String value) {
@@ -360,11 +397,14 @@ public final class VaadinUtils {
     }
 
     /**
-     * Converts a String to an Integer, using the Vaadin converters
+     * Converts a String to an Integer
      * 
      * @param grouping
      *            indicates whether the string could contain grouping separators
      * @param value
+     *            the String to convert
+     * @param locale
+     *            the locale to use for the conversion
      * @return
      */
     public static Integer stringToInteger(boolean grouping, String value, Locale locale) {
@@ -373,12 +413,12 @@ public final class VaadinUtils {
     }
 
     /**
-     * Converts a String to a long
+     * Converts a String to a Long
      * 
      * @param grouping
      *            indicates if a thousands separator is used
      * @param value
-     *            the value to convert
+     *            the String to convert
      * @return
      */
     public static Long stringToLong(boolean grouping, String value) {
@@ -387,12 +427,12 @@ public final class VaadinUtils {
     }
 
     /**
-     * Converts a String to a long
+     * Converts a String to a Long
      * 
      * @param grouping
      *            indicates if a thousands separator is used
      * @param value
-     *            the value to convert
+     *            the String to convert to convert
      * @param locale
      *            the locale
      * @return
@@ -400,6 +440,10 @@ public final class VaadinUtils {
     public static Long stringToLong(boolean grouping, String value, Locale locale) {
         StringToLongConverter converter = ConverterFactory.createLongConverter(grouping);
         return converter.convertToModel(value, Long.class, locale);
+    }
+
+    private VaadinUtils() {
+        // hidden constructor
     }
 
 }

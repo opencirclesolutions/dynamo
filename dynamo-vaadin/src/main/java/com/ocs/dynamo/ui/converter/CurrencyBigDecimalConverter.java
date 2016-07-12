@@ -18,6 +18,8 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 
+import org.apache.commons.lang.StringUtils;
+
 /**
  * A converter for a BigDecimal field that includes a currency symbol.
  * 
@@ -45,8 +47,11 @@ public class CurrencyBigDecimalConverter extends BigDecimalConverter {
     @Override
     public BigDecimal convertToModel(String value, Class<? extends BigDecimal> targetType,
             Locale locale) {
+        if (value == null) {
+            return null;
+        }
 
-        if (value != null && !value.startsWith(currencySymbol)) {
+        if (!StringUtils.isEmpty(value) && !value.startsWith(currencySymbol)) {
             String oldValue = value.trim();
             value = currencySymbol;
             value += this.getDecimalFormat().getPositivePrefix().length() > 1 ? " " : "";

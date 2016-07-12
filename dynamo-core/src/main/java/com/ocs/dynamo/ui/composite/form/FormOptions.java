@@ -13,10 +13,10 @@
  */
 package com.ocs.dynamo.ui.composite.form;
 
+import java.io.Serializable;
+
 import com.ocs.dynamo.ui.composite.type.AttributeGroupMode;
 import com.ocs.dynamo.ui.composite.type.ScreenMode;
-
-import java.io.Serializable;
 
 /**
  * Parameter object that can be passed along when creating a page - this object uses smart defaults
@@ -99,9 +99,15 @@ public class FormOptions implements Serializable {
     private boolean readOnly;
 
     /**
-     * Whether the form is shown as part of a popup
+     * Whether the form is shown as part of a popup - this is normally set by the framework when
+     * appropriate
      */
     private boolean popup;
+
+    /**
+     * Whether the user has to confirm the clearing of the search form
+     */
+    private boolean confirmClear;
 
     public AttributeGroupMode getAttributeGroupMode() {
         return attributeGroupMode;
@@ -109,6 +115,14 @@ public class FormOptions implements Serializable {
 
     public ScreenMode getScreenMode() {
         return screenMode;
+    }
+
+    public boolean isConfirmClear() {
+        return confirmClear;
+    }
+
+    public void setConfirmClear(boolean confirmClear) {
+        this.confirmClear = confirmClear;
     }
 
     public boolean isHideAddButton() {
@@ -119,29 +133,53 @@ public class FormOptions implements Serializable {
         return hideCancelButton;
     }
 
+    public boolean isHideClearButton() {
+        return hideClearButton;
+    }
+
     public boolean isOpenInViewMode() {
         return openInViewMode;
+    }
+
+    public boolean isPopup() {
+        return popup;
+    }
+
+    public boolean isReadOnly() {
+        return readOnly;
+    }
+
+    public boolean isShowBackButton() {
+        return showBackButton;
     }
 
     public boolean isShowEditButton() {
         return showEditButton;
     }
 
+    public boolean isShowQuickSearchField() {
+        return showQuickSearchField;
+    }
+
     public boolean isShowRemoveButton() {
         return showRemoveButton;
+    }
+
+    public boolean isShowSearchDialogButton() {
+        return showSearchDialogButton;
     }
 
     public boolean isShowToggleButton() {
         return showToggleButton;
     }
 
-    public FormOptions setShowToggleButton(boolean showToggleButton) {
-        this.showToggleButton = showToggleButton;
+    public FormOptions setAttributeGroupMode(AttributeGroupMode attributeGroupMode) {
+        this.attributeGroupMode = attributeGroupMode;
         return this;
     }
 
-    public FormOptions setAttributeGroupMode(AttributeGroupMode attributeGroupMode) {
-        this.attributeGroupMode = attributeGroupMode;
+    public FormOptions setConfirmClean(boolean confirmClean) {
+        this.confirmClear = confirmClean;
         return this;
     }
 
@@ -155,8 +193,8 @@ public class FormOptions implements Serializable {
         return this;
     }
 
-    public FormOptions setScreenMode(ScreenMode screenMode) {
-        this.screenMode = screenMode;
+    public FormOptions setHideClearButton(boolean hideClearButton) {
+        this.hideClearButton = hideClearButton;
         return this;
     }
 
@@ -165,36 +203,9 @@ public class FormOptions implements Serializable {
         return this;
     }
 
-    public FormOptions setShowEditButton(boolean showEditButton) {
-        this.showEditButton = showEditButton;
+    public FormOptions setPopup(boolean popup) {
+        this.popup = popup;
         return this;
-    }
-
-    public FormOptions setShowRemoveButton(boolean showRemoveButton) {
-        this.showRemoveButton = showRemoveButton;
-        return this;
-    }
-
-    public boolean isHideClearButton() {
-        return hideClearButton;
-    }
-
-    public FormOptions setHideClearButton(boolean hideClearButton) {
-        this.hideClearButton = hideClearButton;
-        return this;
-    }
-
-    public boolean isShowSearchDialogButton() {
-        return showSearchDialogButton;
-    }
-
-    public FormOptions setShowSearchDialogButton(boolean showSearchDialogButton) {
-        this.showSearchDialogButton = showSearchDialogButton;
-        return this;
-    }
-
-    public boolean isReadOnly() {
-        return readOnly;
     }
 
     /**
@@ -214,8 +225,9 @@ public class FormOptions implements Serializable {
         return this;
     }
 
-    public boolean isShowBackButton() {
-        return showBackButton;
+    public FormOptions setScreenMode(ScreenMode screenMode) {
+        this.screenMode = screenMode;
+        return this;
     }
 
     public FormOptions setShowBackButton(boolean showBackButton) {
@@ -223,17 +235,9 @@ public class FormOptions implements Serializable {
         return this;
     }
 
-    public boolean isPopup() {
-        return popup;
-    }
-
-    public FormOptions setPopup(boolean popup) {
-        this.popup = popup;
+    public FormOptions setShowEditButton(boolean showEditButton) {
+        this.showEditButton = showEditButton;
         return this;
-    }
-
-    public boolean isShowQuickSearchField() {
-        return showQuickSearchField;
     }
 
     public FormOptions setShowQuickSearchField(boolean showQuickSearchField) {
@@ -241,4 +245,18 @@ public class FormOptions implements Serializable {
         return this;
     }
 
+    public FormOptions setShowRemoveButton(boolean showRemoveButton) {
+        this.showRemoveButton = showRemoveButton;
+        return this;
+    }
+
+    public FormOptions setShowSearchDialogButton(boolean showSearchDialogButton) {
+        this.showSearchDialogButton = showSearchDialogButton;
+        return this;
+    }
+
+    public FormOptions setShowToggleButton(boolean showToggleButton) {
+        this.showToggleButton = showToggleButton;
+        return this;
+    }
 }

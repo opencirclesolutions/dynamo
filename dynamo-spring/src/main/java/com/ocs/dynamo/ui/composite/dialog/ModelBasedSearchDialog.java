@@ -22,12 +22,14 @@ import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.ServiceLocator;
+import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.composite.form.FormOptions;
 import com.ocs.dynamo.ui.composite.layout.SimpleSearchLayout;
 import com.ocs.dynamo.ui.container.QueryType;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.sort.SortOrder;
 import com.vaadin.ui.Layout;
+import com.vaadin.ui.VerticalLayout;
 
 /**
  * A dialog that contains a search form based on the Entity Model
@@ -113,13 +115,18 @@ public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractE
         formOptions.setHideAddButton(true);
         formOptions.setPopup(true);
 
+        VerticalLayout wrapper = new DefaultVerticalLayout(false, false);
+        wrapper.setStyleName("searchDialogWrapper");
+        parent.addComponent(wrapper);
+
         searchLayout = new SimpleSearchLayout<ID, T>(service, entityModel, QueryType.ID_BASED,
                 formOptions, null, filters, sortOrder, joins);
         if (pageLength != null) {
             searchLayout.setPageLength(pageLength);
         }
         searchLayout.getTableWrapper().getTable().setMultiSelect(multiSelect);
-        parent.addComponent(searchLayout);
+
+        wrapper.addComponent(searchLayout);
     }
 
     public Integer getPageLength() {
@@ -146,6 +153,17 @@ public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractE
 
     public SimpleSearchLayout<ID, T> getSearchLayout() {
         return searchLayout;
+    }
+
+    @SuppressWarnings("unchecked")
+    public void select(Object selectedItems) {
+        if (selectedItems instanceof Collection) {
+            Collection<ID> col = (Collection<ID>) selectedItems;
+            for (ID id : col) {
+                searchLayout.getTableWrapper().getTable().select(id);
+            }
+        }
+
     }
 
 }
