@@ -14,6 +14,11 @@
         <appender-ref ref="STDOUT" />
     </logger>
 
+    <logger name="com.ocs.dynamo.utils.ClassUtils" additivity="false">
+        <level value="INFO" />
+        <appender-ref ref="STDOUT" />
+    </logger>
+
     <root>
         <level value="INFO" />
         <appender-ref ref="STDOUT" />
