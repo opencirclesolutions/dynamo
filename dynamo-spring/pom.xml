@@ -47,6 +47,7 @@
             <groupId>com.ocs</groupId>
             <artifactId>dynamo-test</artifactId>
             <version>${project.version}</version>
+            <scope>test</scope>
         </dependency>
 
         <!-- JEE -->
