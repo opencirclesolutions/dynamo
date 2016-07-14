@@ -29,34 +29,31 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.ocs</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>dynamo-core</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.ocs</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>dynamo-vaadin</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.ocs</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>dynamo-jpa</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.ocs</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>dynamo-test</artifactId>
             <version>${project.version}</version>
+            <scope>test</scope>
         </dependency>
 
         <!-- JEE -->
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.hibernate.javax.persistence</groupId>
-            <artifactId>hibernate-jpa-2.0-api</artifactId>
         </dependency>
 
         <!-- Vaadin - Spring -->

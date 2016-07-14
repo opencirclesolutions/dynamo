@@ -28,7 +28,7 @@
 	
 	<dependencies>
 		<dependency>
-			<groupId>com.ocs</groupId>
+			<groupId>${project.groupId}</groupId>
 			<artifactId>dynamo-core</artifactId>
 			<version>${project.version}</version>
 		</dependency>
