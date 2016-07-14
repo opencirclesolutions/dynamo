@@ -12,10 +12,16 @@
 	</parent>
 	
 	<dependencies>
-		<!-- Bootstrapping -->
+		<!-- Module dependency -->
 		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>${rootArtifactId}-core</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>${rootArtifactId}-domain</artifactId>
+			<version>${project.version}</version>
 		</dependency>
 
 		<!-- Dynamo dependency -->
@@ -24,13 +30,38 @@
 			<artifactId>dynamo-spring</artifactId>
 		</dependency>
 
-		<!-- Module dependency -->
+		<!-- Bootstrapping -->
 		<dependency>
-			<groupId>${groupId}</groupId>
-			<artifactId>${rootArtifactId}-core</artifactId>
-			<version>${version}</version>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
 		</dependency>
 
+		<!-- Non-JEE Runtime Dependencies -->
+		<dependency>
+			<groupId>org.hibernate.javax.persistence</groupId>
+			<artifactId>hibernate-jpa-2.0-api</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-entitymanager</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-core</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>javax.validation</groupId>
+			<artifactId>validation-api</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-validator</artifactId>
+			<scope>runtime</scope>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
@@ -69,6 +100,24 @@
 						</goals>
 					</execution>
 				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-clean-plugin</artifactId>
+				<version>${maven.clean.plugin.version}</version>
+				<configuration>
+					<filesets>
+						<fileset>
+							<directory>src/main/webapp/VAADIN/widgetsets</directory>
+						</fileset>
+					</filesets>
+				</configuration>
+			</plugin>
+			<!-- Run - Jetty server. -->
+			<plugin>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-maven-plugin</artifactId>
+				<version>${jetty.plugin.version}</version>
 			</plugin>
 		</plugins>
 	</build>

@@ -12,21 +12,20 @@
 	</parent>
 	
 	<dependencies>
+		<!-- Module dependency -->
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>${rootArtifactId}-domain</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 
 		<!-- Dynamo dependency -->
 		<dependency>
 			<groupId>com.ocs</groupId>
 			<artifactId>dynamo-spring</artifactId>
 		</dependency>
-		
-		<!-- Module dependency -->
-		<dependency>
-			<groupId>${groupId}</groupId>
-			<artifactId>${rootArtifactId}-domain</artifactId>
-			<version>${version}</version>
-		</dependency>
-
 	</dependencies>
+
 	<build>
 		<plugins>
 			<!-- Enforce compile version. -->

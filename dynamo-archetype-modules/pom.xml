@@ -9,7 +9,7 @@
 	</parent>
 
 	<artifactId>dynamo-spring-archetype-modules</artifactId>
-	<packaging>jar</packaging>
+	<packaging>maven-archetype</packaging>
 	<name>Dynamo Maven Archetype (Modules)</name>
 
 	<properties>
