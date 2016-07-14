@@ -21,6 +21,7 @@
 	<resources>
 		<resource>src/main/resources/META-INF/entitymodel.properties</resource>
 		<resource>src/main/resources/META-INF/spring/applicationContext-common.xml</resource>
+		<resource>src/main/resources/log4j.xml</resource>
 		<resource>src/main/resources/menu.properties</resource>
 		<resource>src/main/resources/messages.properties</resource>
 		<resource>src/main/resources/ValidationMessages.properties</resource>
