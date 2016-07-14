@@ -90,7 +90,7 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>com.ocs</groupId>
+                <groupId>${project.groupId}</groupId>
                 <artifactId>dynamo-spring</artifactId>
                 <version>${project.version}</version>
             </dependency>

@@ -29,7 +29,7 @@
     <dependencies>
         <!-- Dynamo dependency -->
         <dependency>
-            <groupId>com.ocs</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>dynamo-spring</artifactId>
         </dependency>
 
