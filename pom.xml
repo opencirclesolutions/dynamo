@@ -583,6 +583,9 @@
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-javadoc-plugin</artifactId>
 						<version>${org.apache.maven.plugins.javadoc.version}</version>
+						<configuration>
+							<failOnError>false</failOnError>
+						</configuration>
 						<executions>
 							<execution>
 								<id>attach-javadocs</id>
@@ -590,9 +593,6 @@
 									<goal>jar</goal>
 								</goals>
 							</execution>
-							<configuration>
-								<failOnError>false</failOnError>
-							</configuration>
 						</executions>
 					</plugin>
 				</plugins>
