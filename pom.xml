@@ -409,6 +409,7 @@
 					<version>${org.apache.maven.plugins.release.version}</version>
 					<configuration>
 						<releaseProfiles>release</releaseProfiles>
+						<arguments>-Prelease</arguments>
 					</configuration>
 				</plugin>
 				<plugin>
