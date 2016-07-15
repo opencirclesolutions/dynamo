@@ -408,7 +408,9 @@
 					<artifactId>maven-release-plugin</artifactId>
 					<version>${org.apache.maven.plugins.release.version}</version>
 					<configuration>
+						<!-- Select release profile during release:perform. -->
 						<releaseProfiles>release</releaseProfiles>
+						<!-- Select release profile during release:prepare. -->
 						<arguments>-Prelease</arguments>
 					</configuration>
 				</plugin>
@@ -588,6 +590,9 @@
 									<goal>jar</goal>
 								</goals>
 							</execution>
+							<configuration>
+								<failOnError>false</failOnError>
+							</configuration>
 						</executions>
 					</plugin>
 				</plugins>
