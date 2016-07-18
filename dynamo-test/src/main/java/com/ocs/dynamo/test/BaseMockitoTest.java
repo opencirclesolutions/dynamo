@@ -13,14 +13,14 @@
  */
 package com.ocs.dynamo.test;
 
-import java.util.Map;
-import java.util.Properties;
-
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
+
+import java.util.Map;
+import java.util.Properties;
 
 /**
  * Base class for testing Spring beans. Automatically injects all dependencies annotated with

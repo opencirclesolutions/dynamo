@@ -13,15 +13,15 @@
  */
 package com.ocs.dynamo.test;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-
 import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
 @ContextConfiguration(locations = "classpath:META-INF/testApplicationContext.xml")
 @RunWith(SpringJUnit4ClassRunner.class)

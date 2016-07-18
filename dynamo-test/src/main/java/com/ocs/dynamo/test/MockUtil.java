@@ -13,10 +13,12 @@
  */
 package com.ocs.dynamo.test;
 
-import java.lang.reflect.Field;
-import java.util.List;
-import java.util.Locale;
-
+import com.ocs.dynamo.dao.BaseDao;
+import com.ocs.dynamo.dao.query.FetchJoinInformation;
+import com.ocs.dynamo.domain.AbstractEntity;
+import com.ocs.dynamo.exception.OCSRuntimeException;
+import com.ocs.dynamo.service.BaseService;
+import com.ocs.dynamo.service.MessageService;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Matchers;
 import org.mockito.Mock;
@@ -27,13 +29,11 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import com.ocs.dynamo.dao.BaseDao;
-import com.ocs.dynamo.dao.query.FetchJoinInformation;
-import com.ocs.dynamo.domain.AbstractEntity;
-import com.ocs.dynamo.exception.OCSRuntimeException;
-import com.ocs.dynamo.service.BaseService;
-import com.ocs.dynamo.service.MessageService;
-import com.ocs.dynamo.service.impl.MessageServiceImpl;
+import java.lang.reflect.Field;
+import java.util.List;
+import java.util.Locale;
+
+import static org.mockito.Mockito.spy;
 
 /**
  * Utility class for registering service and DAO related mock functionality
@@ -114,8 +114,6 @@ public final class MockUtil {
      * 
      * @param service
      *            the service
-     * @param clazz
-     *            the class of the entities that are being saved
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public static <ID, X extends AbstractEntity<ID>> List<X> captureServiceSaveList(
@@ -155,7 +153,7 @@ public final class MockUtil {
     public static void injectMessageService(Object target, String basename) {
         ResourceBundleMessageSource rmb = new ResourceBundleMessageSource();
         rmb.setBasename(basename);
-        MessageService ms = new MessageServiceImpl();
+        MessageService ms = spy(MessageService.class);
         ReflectionTestUtils.setField(ms, "source", rmb);
         ReflectionTestUtils.setField(target, "messageService", ms);
     }

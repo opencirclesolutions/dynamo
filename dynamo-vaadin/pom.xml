@@ -28,9 +28,9 @@
 	
 	<dependencies>
 		<dependency>
-			<groupId>com.ocs</groupId>
+			<groupId>${project.groupId}</groupId>
 			<artifactId>dynamo-core</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
+			<version>${project.version}</version>
 		</dependency>
 		
 		<!-- JEE -->
@@ -45,12 +45,36 @@
 			<artifactId>vaadin-server</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>com.vaadin</groupId>
+			<artifactId>vaadin-client-compiled</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.vaadin</groupId>
+			<artifactId>vaadin-themes</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>org.vaadin.addons.lazyquerycontainer</groupId>
 			<artifactId>vaadin-lazyquerycontainer</artifactId>
+			<exclusions>
+				<exclusion>
+					<artifactId>vaadin-client-compiled</artifactId>
+					<groupId>com.vaadin</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>vaadin-themes</artifactId>
+					<groupId>com.vaadin</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.vaadin.addon</groupId>
 			<artifactId>tableexport-for-vaadin</artifactId>
+			<exclusions>
+				<exclusion>
+					<artifactId>vaadin-themes</artifactId>
+					<groupId>com.vaadin</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.vaadin.addon</groupId>

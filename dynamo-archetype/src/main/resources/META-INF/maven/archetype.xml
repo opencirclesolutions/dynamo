@@ -27,7 +27,6 @@
 		<resource>src/main/webapp/VAADIN/themes/light/addons.scss</resource>
 		<resource>src/main/webapp/VAADIN/themes/light/internet_explorer.css</resource>
 		<resource>src/main/webapp/VAADIN/themes/light/light.scss</resource>
-		<resource>src/main/webapp/VAADIN/themes/light/styles.css</resource>
 		<resource>src/main/webapp/VAADIN/themes/light/styles.scss</resource>
 		<resource>src/main/webapp/VAADIN/themes/light/triangle.png</resource>
 		<resource>src/main/webapp/WEB-INF/spring/applicationContext.xml</resource>

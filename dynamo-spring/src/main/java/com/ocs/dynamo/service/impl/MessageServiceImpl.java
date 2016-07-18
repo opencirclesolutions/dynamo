@@ -13,16 +13,15 @@
  */
 package com.ocs.dynamo.service.impl;
 
-import java.util.Locale;
-
-import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
-import org.springframework.context.NoSuchMessageException;
-
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.service.MessageService;
 import com.vaadin.server.VaadinSession;
+import org.apache.log4j.Logger;
+import org.springframework.context.MessageSource;
+import org.springframework.context.NoSuchMessageException;
+
+import javax.inject.Inject;
+import java.util.Locale;
 
 /**
  * Implementation of the simple message service
@@ -35,7 +34,7 @@ public class MessageServiceImpl implements MessageService {
 
     private static final Logger LOG = Logger.getLogger(MessageServiceImpl.class);
 
-    @Autowired
+    @Inject
     private MessageSource source;
 
     @Override
@@ -96,7 +95,7 @@ public class MessageServiceImpl implements MessageService {
         try {
             return source.getMessage(key, args, locale);
         } catch (NoSuchMessageException ex) {
-            LOG.error(ex.getMessage(), ex);
+            LOG.error(ex.getMessage());
             return String.format(MESSAGE_NOT_FOUND, key);
         }
     }

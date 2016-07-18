@@ -4,3 +4,4 @@
 /.project
 /.settings
 /target/
+/src/main/resources/archetype-resources/src/main/webapp/VAADIN/themes/light/*.css

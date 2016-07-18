@@ -28,19 +28,24 @@
 	
 	<dependencies>
 		<dependency>
-			<groupId>com.ocs</groupId>
+			<groupId>${project.groupId}</groupId>
 			<artifactId>dynamo-core</artifactId>
-			<version>${project.parent.version}</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>com.ocs</groupId>
+			<groupId>${project.groupId}</groupId>
 			<artifactId>dynamo-jpa</artifactId>
-			<version>${project.parent.version}</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>com.ocs</groupId>
+			<groupId>${project.groupId}</groupId>
 			<artifactId>dynamo-spring</artifactId>
-			<version>${project.parent.version}</version>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>dynamo-vaadin</artifactId>
+			<version>${project.version}</version>
 		</dependency>
 		
 		<!-- Hibernate -->
@@ -56,15 +61,21 @@
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-validator</artifactId>
 		</dependency>
-		<!-- javax.persistence version 2.1.0 is needed for hibernate 4.3+ -->
+
 		<dependency>
-			<groupId>org.eclipse.persistence</groupId>
-			<artifactId>javax.persistence</artifactId>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.hibernate.javax.persistence</groupId>
-			<artifactId>hibernate-jpa-2.1-api</artifactId>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-tx</artifactId>
 		</dependency>
+
+		<dependency>
+			<groupId>com.vaadin</groupId>
+			<artifactId>vaadin-server</artifactId>
+		</dependency>
+
 		<dependency>
 			<groupId>com.mysema.querydsl</groupId>
 			<artifactId>querydsl-core</artifactId>
@@ -80,11 +91,21 @@
 
 		<!-- Test -->
 		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>dynamo-test</artifactId>
+			<version>${project.version}</version>
+            <scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
 			<scope>test</scope>
 		</dependency>
-	
+
 	</dependencies>
 	<build>
 		<plugins>

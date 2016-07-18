@@ -28,9 +28,9 @@
 	
 	<dependencies>
 		<dependency>
-			<groupId>com.ocs</groupId>
+			<groupId>${project.groupId}</groupId>
 			<artifactId>dynamo-core</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
+			<version>${project.version}</version>
 		</dependency>
 		
 		<!-- Hibernate -->
@@ -46,15 +46,6 @@
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-validator</artifactId>
 		</dependency>
-		<!-- javax.persistence version 2.1.0 is needed for hibernate 4.3+ -->
-		<dependency>
-			<groupId>org.eclipse.persistence</groupId>
-			<artifactId>javax.persistence</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.hibernate.javax.persistence</groupId>
-			<artifactId>hibernate-jpa-2.1-api</artifactId>
-		</dependency>
 		<dependency>
 			<groupId>com.mysema.querydsl</groupId>
 			<artifactId>querydsl-core</artifactId>
@@ -67,8 +58,6 @@
 			<groupId>com.mysema.querydsl</groupId>
 			<artifactId>querydsl-apt</artifactId>
 		</dependency>
-
-	
 	</dependencies>
 	<build>
 		<plugins>
