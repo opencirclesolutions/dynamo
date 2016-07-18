@@ -2,13 +2,37 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<artifactId>dynamo-spring-archetype-modules</artifactId>
-	<packaging>jar</packaging>
-	<name>Dynamo Maven Archetype (Modules)</name>
-
 	<parent>
 		<groupId>com.ocs</groupId>
 		<artifactId>dynamo-parent</artifactId>
 		<version>1.0.0-SNAPSHOT</version>
 	</parent>
+
+	<artifactId>dynamo-spring-archetype-modules</artifactId>
+	<packaging>maven-archetype</packaging>
+	<name>Dynamo Maven Archetype (Modules)</name>
+
+	<properties>
+		<archetype-packaging.version>2.4</archetype-packaging.version>
+	</properties>
+
+	<build>
+		<extensions>
+			<extension>
+				<groupId>org.apache.maven.archetype</groupId>
+				<artifactId>archetype-packaging</artifactId>
+				<version>${archetype-packaging.version}</version>
+			</extension>
+		</extensions>
+
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-archetype-plugin</artifactId>
+					<version>${archetype-packaging.version}</version>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
 </project>

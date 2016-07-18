@@ -52,5 +52,12 @@ $v-layout-margin-left: 10px;
   	 width: 20%;
   }
   
+  div.divider .v-table-header table, div.divider .v-table-table {
+      border-collapse: collapse;
+  }
+  
+  td.v-table-cell-content-divider {
+  	border-top: 1px solid black;
+  }
 
 }
