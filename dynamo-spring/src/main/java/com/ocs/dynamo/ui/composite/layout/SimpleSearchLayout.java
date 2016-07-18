@@ -40,6 +40,7 @@ import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
@@ -190,16 +191,18 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
             });
 
             // double click listener
-            getTableWrapper().getTable().addItemClickListener(new ItemClickListener() {
+            if (getFormOptions().isShowEditButton()) {
+                getTableWrapper().getTable().addItemClickListener(new ItemClickListener() {
 
-                @Override
-                public void itemClick(ItemClickEvent event) {
-                    if (event.isDoubleClick()) {
-                        select(event.getItem().getItemProperty(DynamoConstants.ID).getValue());
-                        doEdit();
+                    @Override
+                    public void itemClick(ItemClickEvent event) {
+                        if (event.isDoubleClick()) {
+                            select(event.getItem().getItemProperty(DynamoConstants.ID).getValue());
+                            doEdit();
+                        }
                     }
-                }
-            });
+                });
+            }
 
             mainSearchLayout.addComponent(getSearchForm());
             mainSearchLayout.addComponent(getTableWrapper());
@@ -315,6 +318,15 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
                 getJoins());
         result.build();
         return result;
+    }
+
+    /**
+     * Opens a custom detail view
+     * 
+     * @param component
+     */
+    protected void customDetailView(Component component) {
+        setCompositionRoot(component);
     }
 
     /**

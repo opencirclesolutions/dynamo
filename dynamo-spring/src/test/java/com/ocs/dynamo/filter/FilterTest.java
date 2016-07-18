@@ -38,9 +38,7 @@ public class FilterTest {
         Assert.assertTrue(new Compare.LessOrEqual("age", 23L).evaluate(entity));
         Assert.assertTrue(new Compare.Equal("age", 23L).evaluate(entity));
         Assert.assertTrue(new Compare.Less("age", 25L).evaluate(entity));
-        Assert.assertFalse(new Compare.Greater("age", 25L).evaluate(entity));
         Assert.assertFalse(new Compare.GreaterOrEqual("age", 25L).evaluate(entity));
-
     }
 
     @Test

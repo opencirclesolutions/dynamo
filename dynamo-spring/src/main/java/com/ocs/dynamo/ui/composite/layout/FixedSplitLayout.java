@@ -121,6 +121,7 @@ public abstract class FixedSplitLayout<ID extends Serializable, T extends Abstra
                 .getContainer();
         beanContainer.removeAllItems();
         beanContainer.addAll(getItems());
+        setSelectedItem(null);
     }
 
     @SuppressWarnings("unchecked")

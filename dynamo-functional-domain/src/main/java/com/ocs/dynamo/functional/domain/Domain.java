@@ -60,7 +60,7 @@ public abstract class Domain extends AbstractEntity<Integer> {
     private String code;
 
     @NotNull
-    @Attribute(main = true, maxLength = 60)
+    @Attribute(main = true, maxLength = 255, searchable = true)
     private String name;
 
     public Domain() {

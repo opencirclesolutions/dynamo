@@ -15,22 +15,39 @@ package com.ocs.dynamo.utils;
 
 import com.ocs.dynamo.constants.DynamoConstants;
 
+/**
+ * Utility methods for retrieving system property values
+ * 
+ * @author bas.rutten
+ *
+ */
 public final class SystemPropertyUtils {
 
     private static final int DEFAULT_DECIMAL_PRECISION = 2;
 
     private static final int DEFAULT_LISTSELECT_ROWS = 3;
 
+    private static final int DEFAULT_LOOKUP_FIELD_MAX_ITEMS = 3;
+
     private SystemPropertyUtils() {
     }
 
     /**
-     * Whether to allow dat export from tables
+     * Whether to allow data export from tables
      * 
      * @return
      */
     public static boolean allowTableExport() {
         return Boolean.getBoolean(DynamoConstants.SP_ALLOW_TABLE_EXPORT);
+    }
+
+    /**
+     * The default currency symbol
+     * 
+     * @return
+     */
+    public static String getDefaultCurrencySymbol() {
+        return System.getProperty(DynamoConstants.SP_DEFAULT_CURRENCY_SYMBOL, "€");
     }
 
     /**
@@ -81,6 +98,17 @@ public final class SystemPropertyUtils {
     }
 
     /**
+     * The default maximum number of items to display in an entity lookup field when it is in
+     * multiple select mode
+     * 
+     * @return
+     */
+    public static int getLookupFieldMaxItems() {
+        return Integer.getInteger(DynamoConstants.SP_LOOKUP_FIELD_MAX_ITEMS,
+                DEFAULT_LOOKUP_FIELD_MAX_ITEMS);
+    }
+
+    /**
      * Whether to include thousands groupings in edit mode
      * 
      * @return
@@ -89,12 +117,4 @@ public final class SystemPropertyUtils {
         return Boolean.getBoolean(DynamoConstants.SP_THOUSAND_GROUPING);
     }
 
-    /**
-     * The default currency symbol
-     * 
-     * @return
-     */
-    public static String getDefaultCurrencySymbol() {
-        return System.getProperty(DynamoConstants.SP_DEFAULT_CURRENCY_SYMBOL, "€");
-    }
 }

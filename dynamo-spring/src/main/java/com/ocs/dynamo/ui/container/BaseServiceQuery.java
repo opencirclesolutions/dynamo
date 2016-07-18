@@ -119,8 +119,11 @@ public abstract class BaseServiceQuery<ID extends Serializable, T extends Abstra
         }
 
         // look up the correct entity model for filter conversion
-        EntityModel<?> em = ServiceLocator.getEntityModelFactory().getModel(
-                getCustomQueryDefinition().getService().getEntityClass());
+        EntityModel<T> em = getCustomQueryDefinition().getEntityModel();
+        if (em == null) {
+            em = ServiceLocator.getEntityModelFactory().getModel(
+                    getCustomQueryDefinition().getService().getEntityClass());
+        }
         return new FilterConverter(em).convert(first);
     }
 

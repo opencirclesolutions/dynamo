@@ -209,6 +209,8 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
         setCompositionRoot(mainLayout);
     }
 
+    public abstract void setSelectedItems(Object selectedItems);
+
     /**
      * Constructs a header layout (displayed above the actual tabular content)
      * 

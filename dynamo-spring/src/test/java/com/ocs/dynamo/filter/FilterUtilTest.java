@@ -21,11 +21,49 @@ public class FilterUtilTest {
 
         And and = new And(new Compare.Equal("a", 12), new Compare.Equal("b", 24));
 
-        FilterUtil.replaceFilter(null, and, new Compare.Equal("c", 13), "b");
+        FilterUtil.replaceFilter(and, new Compare.Equal("c", 13), "b", false);
 
         Filter f = and.getFilters().get(1);
         Assert.assertTrue(f instanceof Compare.Equal);
         Assert.assertEquals("c", ((Compare.Equal) f).getPropertyId());
+    }
+
+    /**
+     * Check that both filters are replaced
+     */
+    @Test
+    public void testReplaceFilterAll() {
+
+        And and = new And(new Compare.Equal("a", 12), new Compare.Equal("a", 12));
+
+        FilterUtil.replaceFilter(and, new Compare.Equal("c", 13), "a", false);
+
+        Filter f0 = and.getFilters().get(0);
+        Assert.assertTrue(f0 instanceof Compare.Equal);
+        Assert.assertEquals("c", ((Compare.Equal) f0).getPropertyId());
+
+        Filter f1 = and.getFilters().get(1);
+        Assert.assertTrue(f1 instanceof Compare.Equal);
+        Assert.assertEquals("c", ((Compare.Equal) f1).getPropertyId());
+    }
+
+    /**
+     * Check that only the first filter is replaced
+     */
+    @Test
+    public void testReplaceFilterFirstOnly() {
+
+        And and = new And(new Compare.Equal("a", 12), new Compare.Equal("a", 12));
+
+        FilterUtil.replaceFilter(and, new Compare.Equal("c", 13), "a", true);
+
+        Filter f0 = and.getFilters().get(0);
+        Assert.assertTrue(f0 instanceof Compare.Equal);
+        Assert.assertEquals("c", ((Compare.Equal) f0).getPropertyId());
+
+        Filter f1 = and.getFilters().get(1);
+        Assert.assertTrue(f1 instanceof Compare.Equal);
+        Assert.assertEquals("a", ((Compare.Equal) f1).getPropertyId());
     }
 
     @Test
@@ -33,7 +71,7 @@ public class FilterUtilTest {
 
         Not not = new Not(new Compare.Equal("a", 12));
 
-        FilterUtil.replaceFilter(null, not, new Compare.Equal("d", 13), "a");
+        FilterUtil.replaceFilter(not, new Compare.Equal("d", 13), "a", false);
 
         Filter f = not.getFilter();
         Assert.assertTrue(f instanceof Compare.Equal);
@@ -47,8 +85,8 @@ public class FilterUtilTest {
         And and = new And(new Compare.Equal("b", 12), new Compare.Equal("c", 24));
         Or or = new Or(not, and);
 
-        FilterUtil.replaceFilter(null, or, new And(new Compare.Greater("f", 4), new Compare.Less(
-                "g", 7)), "b");
+        FilterUtil.replaceFilter(or,
+                new And(new Compare.Greater("f", 4), new Compare.Less("g", 7)), "b", false);
 
         // get the AND filter
         Filter f = or.getFilters().get(1);
@@ -170,6 +208,31 @@ public class FilterUtilTest {
     }
 
     @Test
+    public void testExtractFilter_In() {
+
+        com.ocs.dynamo.filter.In in = new com.ocs.dynamo.filter.In("prop1", Lists.newArrayList("a",
+                "b"));
+        com.ocs.dynamo.filter.And and = new com.ocs.dynamo.filter.And(in,
+                new com.ocs.dynamo.filter.Compare.Equal("prop3", "someString"));
+
+        // first operand
+        com.ocs.dynamo.filter.Filter f1 = FilterUtil.extractFilter(and, "prop1");
+        Assert.assertTrue(f1 instanceof In);
+    }
+
+    @Test
+    public void testExtractFilter_Contains() {
+
+        com.ocs.dynamo.filter.Contains contains = new com.ocs.dynamo.filter.Contains("prop1", "a");
+        com.ocs.dynamo.filter.And and = new com.ocs.dynamo.filter.And(contains,
+                new com.ocs.dynamo.filter.Compare.Equal("prop3", "someString"));
+
+        // first operand
+        com.ocs.dynamo.filter.Filter f1 = FilterUtil.extractFilter(and, "prop1");
+        Assert.assertTrue(f1 instanceof Contains);
+    }
+
+    @Test
     public void testExtractFilter_Compare2() {
 
         com.ocs.dynamo.filter.Compare.Equal compare = new com.ocs.dynamo.filter.Compare.Equal(
@@ -236,6 +299,9 @@ public class FilterUtilTest {
         Assert.assertEquals(1, and.getFilters().size());
     }
 
+    /**
+     * Test that a filter that searches for a detail
+     */
     @Test
     public void testReplaceMasterAndDetailFilters1() {
         EntityModel<TestEntity> model = emf.getModel(TestEntity.class);
@@ -259,6 +325,9 @@ public class FilterUtilTest {
 
     }
 
+    /**
+     * Test that a filter that searches on a master field is replaced by an "In" filter
+     */
     @Test
     public void testReplaceMasterAndDetailFilters2() {
         EntityModel<TestEntity2> model = emf.getModel(TestEntity2.class);

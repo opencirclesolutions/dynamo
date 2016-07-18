@@ -594,8 +594,11 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
      * Retrieves a message relating to an attribute from the message bundle
      * 
      * @param model
+     *            the entity model
      * @param attributeModel
+     *            the attribute model
      * @param propertyName
+     *            the name of the property
      * @return
      */
     private <T> String getAttributeMessage(EntityModel<T> model, AttributeModel attributeModel,
@@ -1051,6 +1054,11 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
         msg = getAttributeMessage(entityModel, model, EntityModel.SEARCH_EXACT_VALUE);
         if (!StringUtils.isEmpty(msg)) {
             model.setSearchForExactValue(Boolean.valueOf(msg));
+        }
+
+        msg = getAttributeMessage(entityModel, model, EntityModel.MULTIPLE_SEARCH);
+        if (!StringUtils.isEmpty(msg)) {
+            model.setMultipleSearch(Boolean.valueOf(msg));
         }
     }
 

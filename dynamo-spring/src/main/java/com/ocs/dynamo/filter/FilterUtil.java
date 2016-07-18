@@ -104,6 +104,21 @@ public final class FilterUtil {
             if (like.getPropertyId().equals(propertyId)) {
                 return like;
             }
+        } else if (filter instanceof In) {
+            In in = (In) filter;
+            if (in.getPropertyId().equals(propertyId)) {
+                return in;
+            }
+        } else if (filter instanceof Contains) {
+            Contains c = (Contains) filter;
+            if (c.getPropertyId().equals(propertyId)) {
+                return c;
+            }
+        } else if (filter instanceof com.ocs.dynamo.filter.Between) {
+            com.ocs.dynamo.filter.Between between = (com.ocs.dynamo.filter.Between) filter;
+            if (between.getPropertyId().equals(propertyId)) {
+                return between;
+            }
         }
 
         return null;
@@ -228,6 +243,15 @@ public final class FilterUtil {
         }
     }
 
+    public static void replaceFilter(com.ocs.dynamo.filter.Filter original,
+            com.ocs.dynamo.filter.Filter newFilter, String propertyId, boolean firstOnly) {
+        try {
+            replaceFilter(null, original, newFilter, propertyId, firstOnly);
+        } catch (RuntimeException ex) {
+            // do nothing
+        }
+    }
+
     /**
      * Replaces a filter by another filter. This method only works for junction filters
      * 
@@ -240,14 +264,14 @@ public final class FilterUtil {
      * @param propertyId
      *            the property id of the filter that must be replaced
      */
-    public static void replaceFilter(com.ocs.dynamo.filter.Filter parent,
+    private static void replaceFilter(com.ocs.dynamo.filter.Filter parent,
             com.ocs.dynamo.filter.Filter original, com.ocs.dynamo.filter.Filter newFilter,
-            String propertyId) {
+            String propertyId, boolean firstOnly) {
         if (original instanceof com.ocs.dynamo.filter.AbstractJunctionFilter) {
             // junction filter, iterate over its children
             com.ocs.dynamo.filter.AbstractJunctionFilter junction = (com.ocs.dynamo.filter.AbstractJunctionFilter) original;
             for (com.ocs.dynamo.filter.Filter child : junction.getFilters()) {
-                replaceFilter(junction, child, newFilter, propertyId);
+                replaceFilter(junction, child, newFilter, propertyId, firstOnly);
             }
         } else if (original instanceof PropertyFilter) {
             // filter has a property ID, see if it matches
@@ -255,16 +279,20 @@ public final class FilterUtil {
             if (pf.getPropertyId().equals(propertyId)) {
                 if (parent instanceof com.ocs.dynamo.filter.AbstractJunctionFilter) {
                     com.ocs.dynamo.filter.AbstractJunctionFilter pj = (com.ocs.dynamo.filter.AbstractJunctionFilter) parent;
-                    pj.replace(original, newFilter);
+                    pj.replace(original, newFilter, firstOnly);
                 } else if (parent instanceof Not) {
                     Not not = (Not) parent;
                     not.setFilter(newFilter);
+                }
+
+                if (firstOnly) {
+                    throw new RuntimeException();
                 }
             }
         } else if (original instanceof Not) {
             // in case of a not-filter, propagate to the child
             Not not = (Not) original;
-            replaceFilter(not, not.getFilter(), newFilter, propertyId);
+            replaceFilter(not, not.getFilter(), newFilter, propertyId, firstOnly);
         }
     }
 
@@ -284,39 +312,56 @@ public final class FilterUtil {
 
         // iterate over models and try to find filters that query DETAIL relations
         for (AttributeModel am : entityModel.getAttributeModels()) {
-            if (AttributeType.DETAIL.equals(am.getAttributeType())
-                    || (AttributeType.MASTER.equals(am.getAttributeType()) && am.isMultipleSearch())) {
-                com.ocs.dynamo.filter.Filter detailFilter = FilterUtil.extractFilter(filter,
-                        am.getPath());
-                if (detailFilter != null) {
-                    // check which property to use
-                    String prop = am.getReplacementSearchPath() != null ? am
-                            .getReplacementSearchPath() : am.getPath();
+            replaceMasterDetailFilter(filter, am);
 
-                    com.ocs.dynamo.filter.Compare.Equal bf = (Compare.Equal) detailFilter;
-                    if (AttributeType.DETAIL.equals(am.getAttributeType())) {
+            if (am.getNestedEntityModel() != null) {
+                replaceMasterAndDetailFilters(filter, am.getNestedEntityModel());
+            }
+        }
+    }
 
-                        if (bf.getValue() instanceof Collection) {
-                            // multiple values supplied - construct an OR filter
-                            Collection<?> col = (Collection<?>) bf.getValue();
-                            Or or = new Or();
-                            for (Object o : col) {
-                                or.or(new Contains(prop, o));
-                            }
-                            replaceFilter(null, filter, or, am.getPath());
-                        } else {
-                            // just a single value
-                            replaceFilter(null, filter, new Contains(prop, bf.getValue()),
-                                    am.getPath());
+    /**
+     * Replaces a "Compare.Equal" filter that searches on a master or detail field by a "Contains"
+     * or "In" filter
+     * 
+     * @param filter
+     *            the filter
+     * @param am
+     *            the attribute model
+     */
+    private static void replaceMasterDetailFilter(com.ocs.dynamo.filter.Filter filter,
+            AttributeModel am) {
+        if (AttributeType.DETAIL.equals(am.getAttributeType())
+                || (AttributeType.MASTER.equals(am.getAttributeType()) && am.isMultipleSearch())) {
+            com.ocs.dynamo.filter.Filter detailFilter = FilterUtil.extractFilter(filter,
+                    am.getPath());
+            if (detailFilter != null && detailFilter instanceof Compare.Equal) {
+                // check which property to use in the query
+                String prop = am.getReplacementSearchPath() != null ? am.getReplacementSearchPath()
+                        : am.getPath();
+
+                com.ocs.dynamo.filter.Compare.Equal bf = (Compare.Equal) detailFilter;
+                if (AttributeType.DETAIL.equals(am.getAttributeType())) {
+                    if (bf.getValue() instanceof Collection) {
+                        // multiple values supplied - construct an OR filter
+                        Collection<?> col = (Collection<?>) bf.getValue();
+                        Or or = new Or();
+                        for (Object o : col) {
+                            or.or(new Contains(prop, o));
                         }
+                        replaceFilter(null, filter, or, am.getPath(), false);
                     } else {
-                        // master attribute - translate to an "in" filter
-                        if (bf.getValue() instanceof Collection) {
-                            // multiple values supplied - construct an OR filter
-                            Collection<?> col = (Collection<?>) bf.getValue();
-                            In in = new In(prop, col);
-                            replaceFilter(null, filter, in, am.getPath());
-                        }
+                        // just a single value
+                        replaceFilter(null, filter, new Contains(prop, bf.getValue()),
+                                am.getPath(), false);
+                    }
+                } else {
+                    // master attribute - translate to an "in" filter
+                    if (bf.getValue() instanceof Collection) {
+                        // multiple values supplied - construct an OR filter
+                        Collection<?> col = (Collection<?>) bf.getValue();
+                        In in = new In(prop, col);
+                        replaceFilter(null, filter, in, am.getPath(), false);
                     }
                 }
             }
