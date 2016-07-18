@@ -98,11 +98,16 @@ public abstract class AbstractJunctionFilter extends AbstractFilter {
      *            the filter that must be replaced
      * @param newFilter
      *            the filter that must replace the old filter
+     * @param firstOnly
+     *            indicates whether only the first match must be replaced
      */
-    public void replace(Filter oldFilter, Filter newFilter) {
+    public void replace(Filter oldFilter, Filter newFilter, boolean firstOnly) {
         for (int i = 0; i < filters.size(); i++) {
             if (filters.get(i).equals(oldFilter)) {
                 filters.set(i, newFilter);
+                if (firstOnly) {
+                    break;
+                }
             }
         }
     }

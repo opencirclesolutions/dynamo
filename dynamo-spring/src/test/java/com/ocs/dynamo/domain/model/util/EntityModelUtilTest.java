@@ -20,6 +20,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mock;
 
+import com.google.common.collect.Lists;
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.TestEntity2;
 import com.ocs.dynamo.domain.model.EntityModel;
@@ -63,6 +64,42 @@ public class EntityModelUtilTest extends BaseMockitoTest {
 
         String value = EntityModelUtil.getDisplayPropertyValue(entity, model);
         Assert.assertEquals("test name", value);
+    }
+
+    @Test
+    public void testGetDisplayPropertyValue2() {
+        EntityModel<TestEntity> model = factory.getModel(TestEntity.class);
+
+        TestEntity entity = new TestEntity();
+        entity.setName("test name");
+
+        TestEntity entity2 = new TestEntity();
+        entity2.setName("test name 2");
+
+        String value = EntityModelUtil.getDisplayPropertyValue(Lists.newArrayList(entity, entity2),
+                model, 2, messageService);
+        Assert.assertEquals("test name, test name 2", value);
+    }
+
+    /**
+     * Test truncation of the description
+     */
+    @Test
+    public void testGetDisplayPropertyValue3() {
+        EntityModel<TestEntity> model = factory.getModel(TestEntity.class);
+
+        TestEntity entity = new TestEntity();
+        entity.setName("test name");
+
+        TestEntity entity2 = new TestEntity();
+        entity2.setName("test name 2");
+
+        TestEntity entity3 = new TestEntity();
+        entity3.setName("test name 3");
+
+        String value = EntityModelUtil.getDisplayPropertyValue(
+                Lists.newArrayList(entity, entity2, entity3), model, 2, messageService);
+        Assert.assertEquals("test name, test name 2, ocs.and.others", value);
     }
 
     @Test

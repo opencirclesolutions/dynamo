@@ -29,4 +29,6 @@ public interface FilterListener extends Serializable {
      *            the filter change event
      */
     void onFilterChange(FilterChangeEvent event);
+    
+    
 }

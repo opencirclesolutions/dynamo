@@ -73,6 +73,9 @@ public class FancyListSelect<ID extends Serializable, T extends AbstractEntity<I
      */
     private Filter filter;
 
+    /**
+     * The ListSelect component that shows the selected values
+     */
     private ListSelect listSelect;
 
     /**
@@ -106,7 +109,7 @@ public class FancyListSelect<ID extends Serializable, T extends AbstractEntity<I
      * @param sortOrder
      *            the sort order
      * @param joins
-     *            the joins to use when fetching data when filling the popop dialog
+     *            the joins to use when fetching data when filling the popup dialog
      */
     public FancyListSelect(BaseService<ID, T> service, EntityModel<T> entityModel,
             AttributeModel attributeModel, Filter filter, boolean search, SortOrder... sortOrders) {
@@ -117,6 +120,9 @@ public class FancyListSelect<ID extends Serializable, T extends AbstractEntity<I
 
         container = new BeanItemContainer<>(getEntityModel().getEntityClass());
         listSelect = new ListSelect(null, container);
+        
+        comboBox = new EntityComboBox<ID, T>(getEntityModel(), getAttributeModel(), getService(),
+                this.filter, sortOrders);
     }
 
     @Override
@@ -128,6 +134,14 @@ public class FancyListSelect<ID extends Serializable, T extends AbstractEntity<I
     private void copyValueFromContainer() {
         Collection<T> values = container.getItemIds();
         setValue(new HashSet<>(values));
+    }
+
+    public ListSelect getListSelect() {
+        return listSelect;
+    }
+
+    public EntityComboBox<ID, T> getComboBox() {
+        return comboBox;
     }
 
     public SortOrder[] getSortOrders() {
@@ -146,8 +160,6 @@ public class FancyListSelect<ID extends Serializable, T extends AbstractEntity<I
         HorizontalLayout firstBar = new DefaultHorizontalLayout(false, false, true);
         firstBar.setSizeFull();
 
-        comboBox = new EntityComboBox<ID, T>(getEntityModel(), getAttributeModel(), getService(),
-                filter, sortOrders);
         comboBox.setCaption(null);
         comboBox.setSizeFull();
 
@@ -258,4 +270,5 @@ public class FancyListSelect<ID extends Serializable, T extends AbstractEntity<I
         super.setValue(newFieldValue);
         repopulateContainer(newFieldValue);
     }
+
 }

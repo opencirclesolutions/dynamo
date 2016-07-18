@@ -56,6 +56,8 @@ public final class DynamoConstants {
      * The CSS class that is assigned to numerical cells in a table
      */
     public static final String CSS_NUMERICAL = "numerical";
+    
+    public static final String CSS_NESTED = "nested";
 
     /**
      * Currency symbol
@@ -132,6 +134,12 @@ public final class DynamoConstants {
      * Name of the system property that is used to determine the default time format
      */
     public static final String SP_DEFAULT_TIME_FORMAT = "ocs.default.time.format";
+
+    /**
+     * Name of the system property that indicates the maximum number of items to display in an
+     * entity lookup field in multiple select mode
+     */
+    public static final String SP_LOOKUP_FIELD_MAX_ITEMS = "ocs.default.lookupfield.max.items";
 
     /**
      * System property that indicates whether to use the thousands grouping separator in edit mode
