@@ -27,8 +27,10 @@ public class BigDecimalConverterTest {
      */
     @Test
     public void testConvertToModel() {
+
+        // default using European locale
         BigDecimalConverter converter = new BigDecimalConverter(2, false);
-        BigDecimal result = converter.convertToModel("3,14", BigDecimal.class, new Locale("nl"));
+        BigDecimal result = converter.convertToModel("3,14", BigDecimal.class, null);
         Assert.assertEquals(BigDecimal.valueOf(3.14).setScale(2, RoundingMode.HALF_EVEN), result);
 
         converter = new BigDecimalConverter(2, false);
@@ -50,9 +52,11 @@ public class BigDecimalConverterTest {
      */
     @Test
     public void testConvertToPresentation() {
+        
+        // using default European locale
         BigDecimalConverter converter = new BigDecimalConverter(2, false);
         String result = converter.convertToPresentation(BigDecimal.valueOf(3.14), String.class,
-                new Locale("nl"));
+                null);
         Assert.assertEquals("3,14", result);
 
         converter = new BigDecimalConverter(2, false);
@@ -75,13 +79,13 @@ public class BigDecimalConverterTest {
     public void testDecimalFormat() {
         BigDecimalConverter converter = new BigDecimalConverter("#,##0.00");
 
-        Assert.assertEquals("1.234,56", converter.convertToPresentation(BigDecimal.valueOf(1234.56),
-                String.class, new Locale("nl")));
+        Assert.assertEquals("1.234,56", converter.convertToPresentation(
+                BigDecimal.valueOf(1234.56), String.class, new Locale("nl")));
 
-        Assert.assertEquals("123.456,00", converter
-                .convertToPresentation(BigDecimal.valueOf(123456), String.class, new Locale("nl")));
+        Assert.assertEquals("123.456,00", converter.convertToPresentation(
+                BigDecimal.valueOf(123456), String.class, new Locale("nl")));
 
-        Assert.assertEquals("123,456.00", converter
-                .convertToPresentation(BigDecimal.valueOf(123456), String.class, new Locale("us")));
+        Assert.assertEquals("123,456.00", converter.convertToPresentation(
+                BigDecimal.valueOf(123456), String.class, new Locale("us")));
     }
 }

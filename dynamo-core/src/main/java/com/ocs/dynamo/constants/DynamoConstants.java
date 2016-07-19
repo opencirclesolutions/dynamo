@@ -56,7 +56,7 @@ public final class DynamoConstants {
      * The CSS class that is assigned to numerical cells in a table
      */
     public static final String CSS_NUMERICAL = "numerical";
-    
+
     public static final String CSS_NESTED = "nested";
 
     /**
@@ -103,6 +103,11 @@ public final class DynamoConstants {
      * Name of the system property that is used to determine the default decimal precision
      */
     public static final String SP_DECIMAL_PRECISION = "ocs.default.decimal.precision";
+
+    /**
+     * Name of the system property that is used to set the default locale
+     */
+    public static final String SP_DEFAULT_LOCALE = "ocs.default.locale";
 
     /**
      * Name of the system property that is used to determine the default currency symbol

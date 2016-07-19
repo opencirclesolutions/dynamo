@@ -27,6 +27,7 @@ import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
+import com.ocs.dynamo.filter.FlexibleFilterDefinition;
 import com.ocs.dynamo.filter.listener.FilterChangeEvent;
 import com.ocs.dynamo.filter.listener.FilterListener;
 import com.ocs.dynamo.ui.Searchable;
@@ -41,11 +42,9 @@ import com.vaadin.data.util.filter.Between;
 import com.vaadin.data.util.filter.Compare;
 import com.vaadin.data.util.filter.Not;
 import com.vaadin.data.util.filter.SimpleStringFilter;
-import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.Component;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.Layout;
 
@@ -85,7 +84,7 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
         /**
          * The component that holds the auxiliary search value
          */
-        private Component auxValueComponent;
+        private Field<Object> auxValueComponent;
 
         /**
          * The currently active filter for the entire region (calculated by composing the mainFilter
@@ -101,7 +100,7 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
         /**
          * The filter type
          */
-        private FilterType filterType;
+        private FlexibleFilterType filterType;
 
         /**
          * The main layout
@@ -121,7 +120,7 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
         /**
          * The component that holds the main search value
          */
-        private Component mainValueComponent;
+        private Field<Object> mainValueComponent;
 
         /**
          * The component that holds
@@ -142,6 +141,9 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
                 public void buttonClick(ClickEvent event) {
                     Layout parent = (Layout) layout.getParent();
                     parent.removeComponent(layout);
+
+                    // remove from list
+                    regions.remove(FilterRegion.this);
 
                     // remove the filter
                     FilterRegion.this.listener.onFilterChange(new FilterChangeEvent(am.getPath(),
@@ -183,6 +185,24 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
         }
 
         /**
+         * Extracts the filter definition from the region
+         * 
+         * @return
+         */
+        public FlexibleFilterDefinition toDefinition() {
+            FlexibleFilterDefinition definition = new FlexibleFilterDefinition();
+            definition.setFlexibleFilterType(filterType);
+            definition.setAttributeModel(am);
+            definition.setValue(ConvertUtil.convertSearchValue(am, mainValueComponent.getValue()));
+            if (auxValueComponent != null) {
+                definition.setValueTo(ConvertUtil.convertSearchValue(am,
+                        auxValueComponent.getValue()));
+            }
+
+            return definition;
+        }
+
+        /**
          * Creates a SimpleStringFilter with certain characteristics
          * 
          * @param value
@@ -205,29 +225,29 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
          *            the attribute model
          * @return
          */
-        private List<FilterType> getFilterTypes(AttributeModel am) {
-            List<FilterType> result = new ArrayList<>();
-            result.add(FilterType.EQUALS);
+        private List<FlexibleFilterType> getFilterTypes(AttributeModel am) {
+            List<FlexibleFilterType> result = new ArrayList<>();
+            result.add(FlexibleFilterType.EQUALS);
 
             switch (am.getAttributeType()) {
             case BASIC:
                 if (String.class.equals(am.getType())) {
-                    result.add(FilterType.NOT_EQUAL);
-                    result.add(FilterType.CONTAINS);
-                    result.add(FilterType.STARTS_WITH);
-                    result.add(FilterType.NOT_CONTAINS);
-                    result.add(FilterType.NOT_STARTS_WITH);
+                    result.add(FlexibleFilterType.NOT_EQUAL);
+                    result.add(FlexibleFilterType.CONTAINS);
+                    result.add(FlexibleFilterType.STARTS_WITH);
+                    result.add(FlexibleFilterType.NOT_CONTAINS);
+                    result.add(FlexibleFilterType.NOT_STARTS_WITH);
                 } else if (Enum.class.isAssignableFrom(am.getType())) {
-                    result.add(FilterType.NOT_EQUAL);
+                    result.add(FlexibleFilterType.NOT_EQUAL);
                 } else if (Number.class.isAssignableFrom(am.getType())) {
-                    result.add(FilterType.BETWEEN);
-                    result.add(FilterType.LESS_THAN);
-                    result.add(FilterType.LESS_OR_EQUAL);
-                    result.add(FilterType.GREATER_OR_EQUAL);
-                    result.add(FilterType.GREATER_THAN);
+                    result.add(FlexibleFilterType.BETWEEN);
+                    result.add(FlexibleFilterType.LESS_THAN);
+                    result.add(FlexibleFilterType.LESS_OR_EQUAL);
+                    result.add(FlexibleFilterType.GREATER_OR_EQUAL);
+                    result.add(FlexibleFilterType.GREATER_THAN);
                 } else if (Date.class.isAssignableFrom(am.getType())) {
-                    result.add(FilterType.BETWEEN);
-                    result.add(FilterType.NOT_EQUAL);
+                    result.add(FlexibleFilterType.BETWEEN);
+                    result.add(FlexibleFilterType.NOT_EQUAL);
                 }
                 break;
             default:
@@ -258,14 +278,14 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 
                 @Override
                 public void valueChange(ValueChangeEvent event) {
-                    handleFilterTypeChange((FilterType) event.getProperty().getValue());
+                    handleFilterTypeChange((FlexibleFilterType) event.getProperty().getValue());
                 }
             });
             newTypeFilterCombo.setStyleName(DynamoConstants.CSS_NESTED);
 
             // add the available filter types
-            List<FilterType> filterTypes = getFilterTypes(am);
-            for (FilterType ft : filterTypes) {
+            List<FlexibleFilterType> filterTypes = getFilterTypes(am);
+            for (FlexibleFilterType ft : filterTypes) {
                 newTypeFilterCombo.addItem(ft);
             }
 
@@ -295,20 +315,20 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
         /**
          * Returns the default filter type for a certain attribute
          */
-        private FilterType getDefaultFilterType() {
+        private FlexibleFilterType getDefaultFilterType() {
             switch (am.getAttributeType()) {
             case BASIC:
                 if (String.class.equals(am.getType())) {
-                    return FilterType.CONTAINS;
+                    return FlexibleFilterType.CONTAINS;
                 } else if (Enum.class.isAssignableFrom(am.getType())) {
-                    return FilterType.EQUALS;
+                    return FlexibleFilterType.EQUALS;
                 } else if (Number.class.isAssignableFrom(am.getType())) {
-                    return FilterType.BETWEEN;
+                    return FlexibleFilterType.BETWEEN;
                 } else if (Date.class.isAssignableFrom(am.getType())) {
-                    return FilterType.BETWEEN;
+                    return FlexibleFilterType.BETWEEN;
                 }
             default:
-                return FilterType.EQUALS;
+                return FlexibleFilterType.EQUALS;
             }
         }
 
@@ -318,11 +338,12 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
          * @param type
          *            the selected filter type
          */
-        private void handleFilterTypeChange(FilterType type) {
+        @SuppressWarnings("unchecked")
+        private void handleFilterTypeChange(FlexibleFilterType type) {
             filterType = type;
 
-            final Field<?> newComponent = getFieldFactory().createField(am.getPath(),
-                    getFieldEntityModel(am));
+            final Field<Object> newComponent = (Field<Object>) getFieldFactory().createField(
+                    am.getPath(), getFieldEntityModel(am));
 
             if (newComponent instanceof FancyListSelect) {
                 FancyListSelect<?, ?> fls = (FancyListSelect<?, ?>) newComponent;
@@ -348,10 +369,11 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 
             mainValueComponent = newComponent;
 
-            if (FilterType.BETWEEN.equals(filterType)) {
+            if (FlexibleFilterType.BETWEEN.equals(filterType)) {
                 newComponent.setCaption(am.getDisplayName() + " " + message("ocs.from"));
 
-                final Field<?> newAuxComponent = getFieldFactory().createField(am.getPath());
+                final Field<Object> newAuxComponent = (Field<Object>) getFieldFactory()
+                        .createField(am.getPath());
                 newAuxComponent.addValueChangeListener(new ValueChangeListener() {
 
                     private static final long serialVersionUID = 8238796619466110500L;
@@ -391,8 +413,7 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
             Filter filter = null;
 
             // convert the value to its actual representation
-            value = ConvertUtil.convertSearchValue(am, value, VaadinSession.getCurrent()
-                    .getLocale());
+            value = ConvertUtil.convertSearchValue(am, value);
 
             switch (this.filterType) {
             case BETWEEN:
@@ -471,16 +492,14 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
         }
     }
 
-    private enum FilterType {
-        BETWEEN, CONTAINS, EQUALS, GREATER_OR_EQUAL, GREATER_THAN, LESS_OR_EQUAL, LESS_THAN, NOT_CONTAINS, NOT_EQUAL, NOT_STARTS_WITH, STARTS_WITH
-    }
-
     private static final long serialVersionUID = -6668770373597055403L;
 
     /**
      * The button that is used to add a new filter
      */
     private Button addFilterButton;
+
+    private List<FilterRegion> regions = new ArrayList<>();
 
     /**
      * Constructor
@@ -515,6 +534,8 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
      */
     private void addFilter() {
         FilterRegion region = new FilterRegion(this);
+        regions.add(region);
+
         getFilterLayout().addComponent(region.getLayout());
         toggle(true);
     }
@@ -528,6 +549,7 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
     @Override
     protected void clear() {
         getFilterLayout().removeAllComponents();
+        regions.clear();
         super.clear();
     }
 
@@ -581,5 +603,40 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
             }
         }
         return result;
+    }
+
+    /**
+     * Extracts a list of FlexibleFilterDefinitions form the currently active search filters
+     */
+    public List<FlexibleFilterDefinition> extractFilterDefinitions() {
+        List<FlexibleFilterDefinition> definitions = new ArrayList<>();
+
+        for (FilterRegion region : regions) {
+            definitions.add(region.toDefinition());
+        }
+        return definitions;
+    }
+
+    /**
+     * Restores previously stored filters
+     * 
+     * @param definitions
+     *            the filter definitions to restore
+     */
+    public void restoreFilterDefinitions(List<FlexibleFilterDefinition> definitions) {
+        for (FlexibleFilterDefinition def : definitions) {
+            FilterRegion region = new FilterRegion(this);
+            region.fieldFilterCb.setValue(def.getAttributeModel());
+            region.typeFilterCombo.setValue(def.getFlexibleFilterType());
+
+            region.mainValueComponent.setValue(ConvertUtil.convertToPresentationValue(
+                    def.getAttributeModel(), def.getValue()));
+            if (region.auxValueComponent != null) {
+                region.auxValueComponent.setValue(ConvertUtil.convertToPresentationValue(
+                        def.getAttributeModel(), def.getValueTo()));
+            }
+            regions.add(region);
+            getFilterLayout().addComponent(region.getLayout());
+        }
     }
 }

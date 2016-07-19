@@ -394,8 +394,7 @@ public abstract class CustomTreeTable<ID, U extends AbstractEntity<ID>, ID2, V e
         } else if (clazz.equals(Long.class)) {
             return VaadinUtils.longToString(true, value.longValue());
         } else if (clazz.equals(BigDecimal.class)) {
-            return VaadinUtils.bigDecimalToString(false, true, value, VaadinSession.getCurrent()
-                    .getLocale());
+            return VaadinUtils.bigDecimalToString(false, true, value);
         }
         return null;
     }

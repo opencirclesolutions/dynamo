@@ -206,8 +206,6 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
                 dialog.setPageLength(pageLength);
                 dialog.build();
 
-                selectValuesInDialog(dialog);
-
                 UI.getCurrent().addWindow(dialog);
             }
         });
@@ -239,6 +237,7 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
      * Makes sure any currently selected values are highlighted in the search dialog
      * 
      * @param dialog
+     *            the dialog
      */
     @SuppressWarnings("unchecked")
     public void selectValuesInDialog(ModelBasedSearchDialog<ID, T> dialog) {

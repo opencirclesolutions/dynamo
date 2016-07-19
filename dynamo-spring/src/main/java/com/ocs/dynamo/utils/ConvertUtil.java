@@ -33,6 +33,38 @@ public final class ConvertUtil {
     }
 
     /**
+     * Converts a value to its presentation value
+     * 
+     * @param attributeModel
+     *            the attribute model
+     * @param input
+     *            the input value
+     * @return
+     */
+    public static Object convertToPresentationValue(AttributeModel attributeModel, Object input) {
+        if (input == null) {
+            return null;
+        }
+
+        Locale locale = VaadinUtils.getLocale();
+        boolean grouping = SystemPropertyUtils.useThousandsGroupingInEditMode();
+
+        if (attributeModel.isWeek()) {
+            WeekCodeConverter converter = new WeekCodeConverter();
+            return converter.convertToPresentation((Date) input, String.class, locale);
+        } else if (Integer.class.equals(attributeModel.getType())) {
+            return VaadinUtils.integerToString(grouping, (Integer) input);
+        } else if (Long.class.equals(attributeModel.getType())) {
+            return VaadinUtils.longToString(grouping, (Long) input);
+        } else if (BigDecimal.class.equals(attributeModel.getType())) {
+            return VaadinUtils.bigDecimalToString(attributeModel.isCurrency(),
+                    attributeModel.isPercentage(), grouping, attributeModel.getPrecision(),
+                    (BigDecimal) input, locale);
+        }
+        return input;
+    }
+
+    /**
      * Converts the search value from the presentation to the model
      * 
      * @param attributeModel
@@ -41,24 +73,25 @@ public final class ConvertUtil {
      *            the search value to convert
      * @return
      */
-    public static Object convertSearchValue(AttributeModel attributeModel, Object input,
-            Locale locale) {
+    public static Object convertSearchValue(AttributeModel attributeModel, Object input) {
         if (input == null) {
             return null;
         }
 
         boolean grouping = SystemPropertyUtils.useThousandsGroupingInEditMode();
+        Locale locale = VaadinUtils.getLocale();
 
         if (attributeModel.isWeek()) {
             WeekCodeConverter converter = new WeekCodeConverter();
-            return converter.convertToModel((String) input, Date.class, null);
+            return converter.convertToModel((String) input, Date.class, locale);
         } else if (Integer.class.equals(attributeModel.getType())) {
             return VaadinUtils.stringToInteger(grouping, (String) input, locale);
         } else if (Long.class.equals(attributeModel.getType())) {
             return VaadinUtils.stringToLong(grouping, (String) input, locale);
         } else if (BigDecimal.class.equals(attributeModel.getType())) {
             return VaadinUtils.stringToBigDecimal(attributeModel.isPercentage(), grouping,
-                    attributeModel.isCurrency(), (String) input, locale);
+                    attributeModel.isCurrency(), attributeModel.getPrecision(), (String) input,
+                    locale);
         }
         return input;
     }

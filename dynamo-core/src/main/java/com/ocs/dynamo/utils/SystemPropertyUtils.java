@@ -87,6 +87,14 @@ public final class SystemPropertyUtils {
         return Integer.getInteger(DynamoConstants.SP_DEFAULT_LISTSELECT_ROWS,
                 DEFAULT_LISTSELECT_ROWS);
     }
+    
+    /**
+     * The default locale
+     * @return
+     */
+    public static String getDefaultLocale() {
+        return System.getProperty(DynamoConstants.SP_DEFAULT_LOCALE, "de");
+    }
 
     /**
      * The default date/time format

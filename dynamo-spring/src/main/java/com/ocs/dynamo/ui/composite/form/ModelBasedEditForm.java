@@ -224,7 +224,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
                     // copy the bytes to the entity
                     ClassUtils.setBytes(stream.toByteArray(), getEntity(), fieldName);
-                    
+
                     // also set the file name if needed
                     if (fileNameFieldName != null) {
                         ClassUtils.setFieldValue(getEntity(), fileNameFieldName,

@@ -121,10 +121,6 @@ public class FormOptions implements Serializable {
         return confirmClear;
     }
 
-    public void setConfirmClear(boolean confirmClear) {
-        this.confirmClear = confirmClear;
-    }
-
     public boolean isHideAddButton() {
         return hideAddButton;
     }
@@ -178,8 +174,8 @@ public class FormOptions implements Serializable {
         return this;
     }
 
-    public FormOptions setConfirmClean(boolean confirmClean) {
-        this.confirmClear = confirmClean;
+    public FormOptions setConfirmClear(boolean confirmClear) {
+        this.confirmClear = confirmClear;
         return this;
     }
 

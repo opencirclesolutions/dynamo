@@ -106,7 +106,7 @@ public class FilterGroup {
             public void valueChange(ValueChangeEvent event) {
                 FilterGroup.this.valueChange(FilterGroup.this.field, ConvertUtil
                         .convertSearchValue(FilterGroup.this.attributeModel, event.getProperty()
-                                .getValue(), VaadinSession.getCurrent().getLocale()));
+                                .getValue()));
             }
         });
 
@@ -120,8 +120,7 @@ public class FilterGroup {
                 public void valueChange(ValueChangeEvent event) {
                     FilterGroup.this.valueChange(FilterGroup.this.auxField, ConvertUtil
                             .convertSearchValue(FilterGroup.this.attributeModel, event
-                                    .getProperty().getValue(), VaadinSession.getCurrent()
-                                    .getLocale()));
+                                    .getProperty().getValue()));
                 }
             });
         }
