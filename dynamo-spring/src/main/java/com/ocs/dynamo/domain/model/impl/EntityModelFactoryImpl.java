@@ -15,8 +15,19 @@ package com.ocs.dynamo.domain.model.impl;
 
 import com.google.common.collect.Sets;
 import com.ocs.dynamo.domain.AbstractEntity;
-import com.ocs.dynamo.domain.model.*;
-import com.ocs.dynamo.domain.model.annotation.*;
+import com.ocs.dynamo.domain.model.AttributeDateType;
+import com.ocs.dynamo.domain.model.AttributeModel;
+import com.ocs.dynamo.domain.model.AttributeSelectMode;
+import com.ocs.dynamo.domain.model.AttributeTextFieldMode;
+import com.ocs.dynamo.domain.model.AttributeType;
+import com.ocs.dynamo.domain.model.EntityModel;
+import com.ocs.dynamo.domain.model.EntityModelFactory;
+import com.ocs.dynamo.domain.model.VisibilityType;
+import com.ocs.dynamo.domain.model.annotation.Attribute;
+import com.ocs.dynamo.domain.model.annotation.AttributeGroup;
+import com.ocs.dynamo.domain.model.annotation.AttributeGroups;
+import com.ocs.dynamo.domain.model.annotation.AttributeOrder;
+import com.ocs.dynamo.domain.model.annotation.Model;
 import com.ocs.dynamo.domain.validator.Email;
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.service.MessageService;
@@ -28,7 +39,14 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.persistence.*;
+import javax.persistence.ElementCollection;
+import javax.persistence.Embedded;
+import javax.persistence.Id;
+import javax.persistence.Lob;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.validation.constraints.AssertFalse;
 import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.NotNull;
@@ -36,8 +54,17 @@ import javax.validation.constraints.Size;
 import java.beans.PropertyDescriptor;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -525,13 +552,15 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 		if (Date.class.equals(modelType)) {
 			Temporal temporal = ClassUtils.getAnnotation(entityClass,
 					fieldName, Temporal.class);
-			if (temporal != null) {
-				// use the @Temporal annotation when available
+
+			Attribute attribute = ClassUtils.getAnnotation(entityClass, fieldName, Attribute.class);
+
+			final boolean customAttributeDateTypeSet = attribute != null && attribute.dateType() != AttributeDateType.INHERIT;
+			if (temporal != null && !customAttributeDateTypeSet) {
+				// use the @Temporal annotation when available and not overriden by Attribute
 				return translateDateType(temporal.value());
 			} else {
-				Attribute attribute = ClassUtils.getAnnotation(entityClass, fieldName, Attribute.class);
-
-				if (attribute != null && attribute.dateType() != AttributeDateType.INHERIT) {
+				if (customAttributeDateTypeSet) {
 					return attribute.dateType();
 				}
 

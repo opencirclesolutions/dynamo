@@ -450,7 +450,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
         Assert.assertEquals(AttributeDateType.TIMESTAMP, am.getDateType());
 		Assert.assertEquals("dd-MM-yyyy HH:mm:ss", am.getDisplayFormat());
 
-		// overridden annotation
+		// overridden @Temporal annotation
 		am = model.getAttributeModel("date3");
 		Assert.assertEquals(AttributeDateType.TIME, am.getDateType());
 		Assert.assertEquals("HH:mm:ss", am.getDisplayFormat());
@@ -746,6 +746,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
         @Temporal(TemporalType.TIMESTAMP)
         private Date date2;
 
+        @Temporal(TemporalType.DATE)
 		@Attribute(dateType = AttributeDateType.TIME)
 		private Date date3;
 
