@@ -16,6 +16,7 @@ package com.ocs.dynamo.ui.converter;
 import java.text.NumberFormat;
 import java.util.Locale;
 
+import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.data.util.converter.StringToIntegerConverter;
 
 /**
@@ -36,7 +37,7 @@ public class GroupingStringToIntegerConverter extends StringToIntegerConverter {
 
     @Override
     protected NumberFormat getFormat(Locale locale) {
-        NumberFormat format = super.getFormat(locale);
+        NumberFormat format = super.getFormat(locale == null ? VaadinUtils.getLocale() : locale);
         format.setGroupingUsed(useGrouping);
         return format;
     }
