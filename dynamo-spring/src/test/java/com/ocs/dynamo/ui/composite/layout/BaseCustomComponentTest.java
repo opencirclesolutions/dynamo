@@ -16,6 +16,9 @@ package com.ocs.dynamo.ui.composite.layout;
 import java.math.BigDecimal;
 import java.text.DecimalFormatSymbols;
 import java.util.Calendar;
+import java.util.Locale;
+
+import junitx.util.PrivateAccessor;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -33,8 +36,6 @@ import com.ocs.dynamo.test.BaseMockitoTest;
 import com.ocs.dynamo.test.MockUtil;
 import com.ocs.dynamo.utils.DateUtils;
 import com.vaadin.ui.Label;
-
-import junitx.util.PrivateAccessor;
 
 public class BaseCustomComponentTest extends BaseMockitoTest {
 
@@ -62,6 +63,8 @@ public class BaseCustomComponentTest extends BaseMockitoTest {
     @Test
     public void test() {
         EntityModel<TestEntity> model = factory.getModel(TestEntity.class);
+
+        DecimalFormatSymbols sym = DecimalFormatSymbols.getInstance(new Locale("de"));
 
         TestEntity e = new TestEntity("Kevin", 12L);
         e.setDiscount(BigDecimal.valueOf(12.34));
@@ -94,9 +97,7 @@ public class BaseCustomComponentTest extends BaseMockitoTest {
 
         // integer
         label = (Label) component.constructLabel(e, model.getAttributeModel("someInt"));
-        Assert.assertEquals(
-                "1" + DecimalFormatSymbols.getInstance().getGroupingSeparator() + "234",
-                label.getValue());
+        Assert.assertEquals("1" + sym.getGroupingSeparator() + "234", label.getValue());
 
         // long
         label = (Label) component.constructLabel(e, model.getAttributeModel("age"));
@@ -104,8 +105,7 @@ public class BaseCustomComponentTest extends BaseMockitoTest {
 
         // BigDecimal
         label = (Label) component.constructLabel(e, model.getAttributeModel("discount"));
-        Assert.assertEquals("12" + DecimalFormatSymbols.getInstance().getDecimalSeparator() + "34",
-                label.getValue());
+        Assert.assertEquals("12" + sym.getDecimalSeparator() + "34", label.getValue());
 
         // date
         label = (Label) component.constructLabel(e, model.getAttributeModel("birthDate"));
