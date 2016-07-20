@@ -113,18 +113,17 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
         // validation methods annotated with @AssertTrue or @AssertFalse have to
         // be ignored
         String fieldName = descriptor.getName();
-        AssertTrue assertTrue = ClassUtils.getAnnotation(entityModel.getEntityClass(),
-                fieldName, AssertTrue.class);
-        AssertFalse assertFalse = ClassUtils.getAnnotation(entityModel.getEntityClass(),
-                fieldName, AssertFalse.class);
+        AssertTrue assertTrue = ClassUtils.getAnnotation(entityModel.getEntityClass(), fieldName,
+                AssertTrue.class);
+        AssertFalse assertFalse = ClassUtils.getAnnotation(entityModel.getEntityClass(), fieldName,
+                AssertFalse.class);
 
         if (assertTrue == null && assertFalse == null) {
 
             AttributeModelImpl model = new AttributeModelImpl();
             model.setEntityModel(entityModel);
 
-            String displayName = DefaultFieldFactory
-                    .createCaptionByPropertyId(fieldName);
+            String displayName = DefaultFieldFactory.createCaptionByPropertyId(fieldName);
 
             // first, set the defaults
             model.setDisplayName(displayName);
@@ -144,8 +143,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
             model.setUrl(false);
             model.setUseThousandsGrouping(true);
 
-            Id idAttr = ClassUtils.getAnnotation(entityModel.getEntityClass(),
-                    fieldName, Id.class);
+            Id idAttr = ClassUtils.getAnnotation(entityModel.getEntityClass(), fieldName, Id.class);
             if (idAttr != null) {
                 entityModel.setIdAttributeModel(model);
                 // the ID column is hidden. details collections are also hidden
@@ -156,24 +154,25 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
             }
             model.setType(descriptor.getPropertyType());
 
-			// determine the possible date type
-			model.setDateType(determineDateType(model.getType(), entityModel.getEntityClass(), fieldName));
+            // determine the possible date type
+            model.setDateType(determineDateType(model.getType(), entityModel.getEntityClass(),
+                    fieldName));
 
-			// determine default display format
+            // determine default display format
             model.setDisplayFormat(determineDefaultDisplayFormat(model.getType(),
                     entityModel.getEntityClass(), fieldName, model.getDateType()));
 
             // determine if the attribute is required based on the @NotNull
             // annotation
-            NotNull notNull = ClassUtils.getAnnotation(entityModel.getEntityClass(),
-                    fieldName, NotNull.class);
+            NotNull notNull = ClassUtils.getAnnotation(entityModel.getEntityClass(), fieldName,
+                    NotNull.class);
             model.setRequired(notNull != null);
 
             model.setAttributeType(determineAttributeType(parentClass, model));
 
             // minimum and maximum length based on the @Size annotation
-            Size size = ClassUtils.getAnnotation(entityModel.getEntityClass(),
-                    fieldName, Size.class);
+            Size size = ClassUtils.getAnnotation(entityModel.getEntityClass(), fieldName,
+                    Size.class);
             if (AttributeType.BASIC.equals(model.getAttributeType()) && size != null) {
                 model.setMaxLength(size.max());
                 model.setMinLength(size.min());
@@ -195,8 +194,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
             model.setTextFieldMode(AttributeTextFieldMode.TEXTFIELD);
 
             // is the field an email field?
-            Email email = ClassUtils.getAnnotation(entityModel.getEntityClass(),
-                    fieldName, Email.class);
+            Email email = ClassUtils.getAnnotation(entityModel.getEntityClass(), fieldName,
+                    Email.class);
             model.setEmail(email != null);
 
             // override the defaults with annotation values
@@ -229,7 +228,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
         return result;
     }
 
-	/**
+    /**
      * Constructs the model for an entity
      * 
      * @param entityClass
@@ -435,7 +434,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
      * 
      * @param entityClass
      * @param reference
-	 * @param attributeModels
+     * @param attributeModels
      * @return
      */
     private <T> void determineAttributeOrder(Class<T> entityClass, String reference,
@@ -547,29 +546,30 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
         return result;
     }
 
-	private <T> AttributeDateType determineDateType(Class<?> modelType, Class<T> entityClass, String fieldName) {
-		// set the date type
-		if (Date.class.equals(modelType)) {
-			Temporal temporal = ClassUtils.getAnnotation(entityClass,
-					fieldName, Temporal.class);
+    private <T> AttributeDateType determineDateType(Class<?> modelType, Class<T> entityClass,
+            String fieldName) {
+        // set the date type
+        if (Date.class.equals(modelType)) {
+            Temporal temporal = ClassUtils.getAnnotation(entityClass, fieldName, Temporal.class);
 
-			Attribute attribute = ClassUtils.getAnnotation(entityClass, fieldName, Attribute.class);
+            Attribute attribute = ClassUtils.getAnnotation(entityClass, fieldName, Attribute.class);
 
-			final boolean customAttributeDateTypeSet = attribute != null && attribute.dateType() != AttributeDateType.INHERIT;
-			if (temporal != null && !customAttributeDateTypeSet) {
-				// use the @Temporal annotation when available and not overriden by Attribute
-				return translateDateType(temporal.value());
-			} else {
-				if (customAttributeDateTypeSet) {
-					return attribute.dateType();
-				}
+            final boolean customAttributeDateTypeSet = attribute != null
+                    && attribute.dateType() != AttributeDateType.INHERIT;
+            if (temporal != null && !customAttributeDateTypeSet) {
+                // use the @Temporal annotation when available and not overridden by Attribute
+                return translateDateType(temporal.value());
+            } else {
+                if (customAttributeDateTypeSet) {
+                    return attribute.dateType();
+                }
 
-				// by default use date
-				return AttributeDateType.DATE;
-			}
-		}
-		return null;
-	}
+                // by default use date
+                return AttributeDateType.DATE;
+            }
+        }
+        return null;
+    }
 
     /**
      * Determines the display format on a property
@@ -580,26 +580,26 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
      *            the class on which the property is defined
      * @param fieldName
      * @param dateType
-	 * @return
+     * @return
      */
     private String determineDefaultDisplayFormat(Class<?> type, Class<?> entityClass,
-												 String fieldName, AttributeDateType dateType) {
-		String format = null;
-		if (Date.class.isAssignableFrom(type)) {
-			switch (dateType) {
-				case TIME:
-					format = SystemPropertyUtils.getDefaultTimeFormat();
-					break;
-				case TIMESTAMP:
-					format = SystemPropertyUtils.getDefaultDateTimeFormat();
-					break;
-				default:
-					// by default use a date
-					format = SystemPropertyUtils.getDefaultDateFormat();
-			}
-		}
-		return format;
-	}
+            String fieldName, AttributeDateType dateType) {
+        String format = null;
+        if (Date.class.isAssignableFrom(type)) {
+            switch (dateType) {
+            case TIME:
+                format = SystemPropertyUtils.getDefaultTimeFormat();
+                break;
+            case TIMESTAMP:
+                format = SystemPropertyUtils.getDefaultDateTimeFormat();
+                break;
+            default:
+                // by default use a date
+                format = SystemPropertyUtils.getDefaultDateFormat();
+            }
+        }
+        return format;
+    }
 
     /**
      * Retrieves a message relating to an attribute from the message bundle
@@ -868,7 +868,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
             try {
                 model.setDefaultValue(fmt.parseObject(defaultValue));
             } catch (ParseException e) {
-                throw new OCSRuntimeException("Cannot parse default date value: " + defaultValue + " with format: " + model.getDisplayFormat());
+                throw new OCSRuntimeException("Cannot parse default date value: " + defaultValue
+                        + " with format: " + model.getDisplayFormat());
             }
         } else {
             model.setDefaultValue(ClassUtils.instantiateClass(model.getType(), defaultValue));

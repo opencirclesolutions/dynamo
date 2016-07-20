@@ -132,8 +132,10 @@ public final class JpaQueryBuilder {
         if (!filters.isEmpty()) {
             predicate = createPredicate(filters.remove(0), builder, root);
             while (!filters.isEmpty()) {
-                predicate = builder.and(predicate,
-                        createPredicate(filters.remove(0), builder, root));
+                Predicate next = createPredicate(filters.remove(0), builder, root);
+                if (next != null) {
+                    predicate = builder.and(predicate, next);
+                }
             }
         }
         return predicate;
@@ -357,8 +359,10 @@ public final class JpaQueryBuilder {
         if (!filters.isEmpty()) {
             predicate = createPredicate(filters.remove(0), builder, root);
             while (!filters.isEmpty()) {
-                predicate = builder
-                        .or(predicate, createPredicate(filters.remove(0), builder, root));
+                Predicate next = createPredicate(filters.remove(0), builder, root);
+                if (next != null) {
+                    predicate = builder.or(predicate, next);
+                }
             }
         }
 
