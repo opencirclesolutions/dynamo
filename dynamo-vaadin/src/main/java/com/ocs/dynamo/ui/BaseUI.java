@@ -13,11 +13,13 @@
  */
 package com.ocs.dynamo.ui;
 
+import com.vaadin.annotations.Widgetset;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.ViewProvider;
 import com.vaadin.ui.SingleComponentContainer;
 import com.vaadin.ui.UI;
 
+@Widgetset(value = "com.ocs.dynamo.DynamoWidgetSet")
 public abstract class BaseUI extends UI {
 
     private static final long serialVersionUID = 5903140845804805314L;
