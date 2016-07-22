@@ -82,6 +82,8 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 
     // the table wrapper
     private BaseTableWrapper<ID, T> tableWrapper;
+    
+    private boolean multiSelect = false;
 
     /**
      * Constructor
@@ -323,6 +325,14 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 
     public void setDividerProperty(String dividerProperty) {
         this.dividerProperty = dividerProperty;
+    }
+
+    public boolean isMultiSelect() {
+        return multiSelect;
+    }
+
+    public void setMultiSelect(boolean multiSelect) {
+        this.multiSelect = multiSelect;
     }
 
     

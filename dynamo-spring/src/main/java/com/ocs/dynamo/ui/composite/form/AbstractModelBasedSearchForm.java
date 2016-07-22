@@ -180,7 +180,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
         postProcessLayout();
 
         // initial search
-        search();
+        // search();
 
         setCompositionRoot(main);
     }
@@ -337,12 +337,17 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
             // search without any filters
             compositeFilter = null;
         }
-        searchable.search(compositeFilter);
+
+        if (searchable != null) {
+            searchable.search(compositeFilter);
+        }
     }
 
     public void setCompositeFilter(Filter compositeFilter) {
         this.compositeFilter = compositeFilter;
-        searchable.search(compositeFilter);
+        if (searchable != null) {
+            searchable.search(compositeFilter);
+        }
     }
 
     /**
@@ -360,4 +365,9 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
         wrapperPanel.setVisible(show);
         afterSearchFieldToggle(wrapperPanel.isVisible());
     }
+
+    public void setSearchable(Searchable searchable) {
+        this.searchable = searchable;
+    }
+
 }

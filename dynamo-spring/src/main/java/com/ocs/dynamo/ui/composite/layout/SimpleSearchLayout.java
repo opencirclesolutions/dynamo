@@ -43,6 +43,7 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
 /**
@@ -76,6 +77,9 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
     // the edit form
     private ModelBasedEditForm<ID, T> editForm;
 
+    // label
+    private Label noSearchYetLabel;
+
     // map of extra filters to be applied to certain fields
     private Map<String, Filter> fieldFilters;
 
@@ -84,6 +88,8 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 
     // the main layout (in search mode)
     private VerticalLayout mainSearchLayout;
+
+    private VerticalLayout searchResultsLayout;
 
     // the number of columns in the search form
     private int nrOfColumns = 1;
@@ -100,6 +106,8 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 
     // the set of currently selected items
     private Collection<T> selectedItems;
+
+    private boolean searchLayoutConstructed;
 
     /**
      * Constructor - all fields
@@ -177,35 +185,33 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
         if (mainSearchLayout == null) {
             mainSearchLayout = new DefaultVerticalLayout();
 
-            // construct table and set properties
-            getTableWrapper().getTable().setPageLength(getPageLength());
-            getTableWrapper().getTable().setSortEnabled(isSortEnabled());
-
-            // add a listener to respond to the selection of an item
-            getTableWrapper().getTable().addValueChangeListener(new Property.ValueChangeListener() {
-                @Override
-                public void valueChange(ValueChangeEvent event) {
-                    select(getTableWrapper().getTable().getValue());
-                    checkButtonState(getSelectedItem());
-                }
-            });
-
-            // double click listener
-            if (getFormOptions().isShowEditButton()) {
-                getTableWrapper().getTable().addItemClickListener(new ItemClickListener() {
-
-                    @Override
-                    public void itemClick(ItemClickEvent event) {
-                        if (event.isDoubleClick()) {
-                            select(event.getItem().getItemProperty(DynamoConstants.ID).getValue());
-                            doEdit();
-                        }
-                    }
-                });
+            if (getFormOptions().isSearchImmediately()) {
+                constructSearchLayout();
+                searchLayoutConstructed = true;
             }
 
             mainSearchLayout.addComponent(getSearchForm());
-            mainSearchLayout.addComponent(getTableWrapper());
+
+            searchResultsLayout = new DefaultVerticalLayout(false, false);
+            mainSearchLayout.addComponent(searchResultsLayout);
+
+            if (getFormOptions().isSearchImmediately()) {
+                searchResultsLayout.addComponent(getTableWrapper());
+            } else {
+                // add a label
+                noSearchYetLabel = new Label(message("ocs.no.search.yet"));
+                searchResultsLayout.addComponent(noSearchYetLabel);
+
+                // set up a click listener that will construct the table when needed
+                getSearchForm().getSearchButton().addClickListener(new Button.ClickListener() {
+
+                    @Override
+                    public void buttonClick(ClickEvent event) {
+                        getSearchForm().setSearchable(getTableWrapper());
+                        search();
+                    }
+                });
+            }
 
             // add button
             addButton = constructAddButton();
@@ -231,8 +237,11 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
             postProcessButtonBar(getButtonBar());
             mainSearchLayout.addComponent(getButtonBar());
 
-            constructTableDividers();
             postProcessLayout(mainSearchLayout);
+
+            if (getFormOptions().isSearchImmediately()) {
+                search();
+            }
         }
         setCompositionRoot(mainSearchLayout);
     }
@@ -280,14 +289,48 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
         return rb;
     }
 
+    public void constructSearchLayout() {
+        // construct table and set properties
+        getTableWrapper().getTable().setPageLength(getPageLength());
+        getTableWrapper().getTable().setSortEnabled(isSortEnabled());
+        getTableWrapper().getTable().setMultiSelect(isMultiSelect());
+
+        // add a listener to respond to the selection of an item
+        getTableWrapper().getTable().addValueChangeListener(new Property.ValueChangeListener() {
+            @Override
+            public void valueChange(ValueChangeEvent event) {
+                select(getTableWrapper().getTable().getValue());
+                checkButtonState(getSelectedItem());
+            }
+        });
+
+        // double click listener
+        if (getFormOptions().isShowEditButton()) {
+            getTableWrapper().getTable().addItemClickListener(new ItemClickListener() {
+
+                @Override
+                public void itemClick(ItemClickEvent event) {
+                    if (event.isDoubleClick()) {
+                        select(event.getItem().getItemProperty(DynamoConstants.ID).getValue());
+                        doEdit();
+                    }
+                }
+            });
+        }
+
+        // table dividers
+        constructTableDividers();
+    }
+
     /**
      * Lazily constructs the search form
      * 
      * @return
      */
-    protected ModelBasedSearchForm<ID, T> constructSearchform() {
-        ModelBasedSearchForm<ID, T> result = new ModelBasedSearchForm<ID, T>(getTableWrapper(),
-                getEntityModel(), getFormOptions(), this.additionalFilters, this.fieldFilters) {
+    protected ModelBasedSearchForm<ID, T> constructSearchForm() {
+        ModelBasedSearchForm<ID, T> result = new ModelBasedSearchForm<ID, T>(getFormOptions()
+                .isSearchImmediately() ? getTableWrapper() : null, getEntityModel(),
+                getFormOptions(), this.additionalFilters, this.fieldFilters) {
 
             @Override
             protected void afterSearchFieldToggle(boolean visible) {
@@ -464,7 +507,7 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 
     public ModelBasedSearchForm<ID, T> getSearchForm() {
         if (searchForm == null) {
-            searchForm = constructSearchform();
+            searchForm = constructSearchForm();
         }
         return searchForm;
     }
@@ -503,6 +546,15 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
      * Perform the actual search
      */
     public void search() {
+
+        // lazily construct search form if it is not there yet
+        if (!searchLayoutConstructed) {
+            constructSearchLayout();
+            searchResultsLayout.addComponent(getTableWrapper());
+            searchResultsLayout.removeComponent(noSearchYetLabel);
+            searchLayoutConstructed = true;
+        }
+
         getSearchForm().search();
         getTableWrapper().getTable().select(null);
         setSelectedItem(null);

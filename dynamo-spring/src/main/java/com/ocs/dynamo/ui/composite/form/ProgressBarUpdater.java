@@ -16,7 +16,6 @@ package com.ocs.dynamo.ui.composite.form;
 import java.math.BigDecimal;
 
 import com.ocs.dynamo.ui.utils.VaadinUtils;
-import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.UI;
 
 /**

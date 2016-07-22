@@ -73,6 +73,11 @@ public class FormOptions implements Serializable {
     private boolean showRemoveButton;
 
     /**
+     * Whether to search immediately when opening a search screen
+     */
+    private boolean searchImmediately = true;
+
+    /**
      * Whether to hide the clear button in the search form
      */
     private boolean hideClearButton;
@@ -143,6 +148,10 @@ public class FormOptions implements Serializable {
 
     public boolean isReadOnly() {
         return readOnly;
+    }
+
+    public boolean isSearchImmediately() {
+        return searchImmediately;
     }
 
     public boolean isShowBackButton() {
@@ -226,6 +235,11 @@ public class FormOptions implements Serializable {
         return this;
     }
 
+    public FormOptions setSearchImmediately(boolean searchImmediately) {
+        this.searchImmediately = searchImmediately;
+        return this;
+    }
+
     public FormOptions setShowBackButton(boolean showBackButton) {
         this.showBackButton = showBackButton;
         return this;
@@ -255,4 +269,5 @@ public class FormOptions implements Serializable {
         this.showToggleButton = showToggleButton;
         return this;
     }
+
 }

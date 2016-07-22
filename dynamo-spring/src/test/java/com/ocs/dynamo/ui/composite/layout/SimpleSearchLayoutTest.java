@@ -120,11 +120,12 @@ public class SimpleSearchLayoutTest extends BaseIntegrationTest {
 
         layout.setAdditionalFilters(filters);
         layout.build();
-
+        
         Assert.assertEquals(new SortOrder("name", SortDirection.ASCENDING), layout.getSortOrders()
                 .get(0));
 
         Table table = layout.getTableWrapper().getTable();
+
         Assert.assertEquals(1, table.size());
     }
 

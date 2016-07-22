@@ -66,6 +66,11 @@ public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractE
     private boolean multiSelect;
 
     /**
+     * Whether to immediately perform a search
+     */
+    private boolean searchImmediately;
+
+    /**
      * the (optional) page length. If set it will override the default page length
      */
     private Integer pageLength;
@@ -99,7 +104,7 @@ public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractE
      */
     public ModelBasedSearchDialog(BaseService<ID, T> service, EntityModel<T> entityModel,
             List<Filter> filters, SortOrder sortOrder, boolean multiSelect,
-            FetchJoinInformation... joins) {
+            boolean searchImmediately, FetchJoinInformation... joins) {
         super(true);
         this.service = service;
         this.entityModel = entityModel;
@@ -107,13 +112,13 @@ public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractE
         this.filters = filters;
         this.multiSelect = multiSelect;
         this.joins = joins;
+        this.searchImmediately = searchImmediately;
     }
 
     @Override
     protected void doBuild(Layout parent) {
-        FormOptions formOptions = new FormOptions();
-        formOptions.setHideAddButton(true);
-        formOptions.setPopup(true);
+        FormOptions formOptions = new FormOptions().setHideAddButton(true).setPopup(true)
+                .setSearchImmediately(searchImmediately);
 
         VerticalLayout wrapper = new DefaultVerticalLayout(false, false);
         wrapper.setStyleName("searchDialogWrapper");
@@ -124,7 +129,7 @@ public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractE
         if (pageLength != null) {
             searchLayout.setPageLength(pageLength);
         }
-        searchLayout.getTableWrapper().getTable().setMultiSelect(multiSelect);
+        searchLayout.setMultiSelect(multiSelect);
 
         wrapper.addComponent(searchLayout);
     }
