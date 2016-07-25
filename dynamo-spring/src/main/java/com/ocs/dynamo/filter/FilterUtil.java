@@ -349,11 +349,11 @@ public final class FilterUtil {
                         for (Object o : col) {
                             or.or(new Contains(prop, o));
                         }
-                        replaceFilter(null, filter, or, am.getPath(), false);
+                        replaceFilter(filter, or, am.getPath(), false);
                     } else {
-                        // just a single value
-                        replaceFilter(null, filter, new Contains(prop, bf.getValue()),
-                                am.getPath(), false);
+                        // just a single value - construct a single contains filter
+                        replaceFilter(filter, new Contains(prop, bf.getValue()), am.getPath(),
+                                false);
                     }
                 } else {
                     // master attribute - translate to an "in" filter

@@ -29,7 +29,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Layout;
 
 /**
- * A popup dialog for adding a new entity
+ * A popup dialog for adding a new entity or viewing the details of an existing entrty
  * 
  * @author bas.rutten
  *
@@ -70,10 +70,14 @@ public abstract class EntityPopupDialog<ID extends Serializable, T extends Abstr
     }
 
     /**
-     * Callback method that is called after the a new entity is added
+     * Callback method that is called after the user is done editing the entry
      * 
+     * @param cancel
+     *            whether the edit action was cancelled
+     * @param newEntity
+     *            whether the user was adding a new entity
      * @param entity
-     *            the entity
+     *            the entity that was being edited
      */
     public abstract void afterEditDone(boolean cancel, boolean newEntity, T entity);
 

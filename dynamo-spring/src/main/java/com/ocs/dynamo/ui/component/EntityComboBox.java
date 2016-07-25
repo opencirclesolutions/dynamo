@@ -206,4 +206,30 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
         }
     }
 
+    /**
+     * Overwritten so that diacritics are ignored when comparing
+     */
+    @Override
+    protected Filter buildFilter(String filterString, FilteringMode filteringMode) {
+        Filter filter = null;
+
+        if (null != filterString && !"".equals(filterString)) {
+            switch (filteringMode) {
+            case OFF:
+                break;
+            case STARTSWITH:
+                filter = new IgnoreDiacriticsStringFilter(getItemCaptionPropertyId(), filterString,
+                        true, true);
+                break;
+            case CONTAINS:
+                filter = new IgnoreDiacriticsStringFilter(getItemCaptionPropertyId(), filterString,
+                        true, false);
+                break;
+            default:
+                break;
+            }
+        }
+        return filter;
+    }
+
 }

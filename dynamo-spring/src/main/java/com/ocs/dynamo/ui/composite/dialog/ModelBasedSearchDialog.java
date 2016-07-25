@@ -17,6 +17,7 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 
+import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.dao.query.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
@@ -28,6 +29,8 @@ import com.ocs.dynamo.ui.composite.layout.SimpleSearchLayout;
 import com.ocs.dynamo.ui.container.QueryType;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.sort.SortOrder;
+import com.vaadin.event.ItemClickEvent;
+import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.VerticalLayout;
 
@@ -131,6 +134,20 @@ public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractE
         }
         searchLayout.setMultiSelect(multiSelect);
 
+        // add double click listener
+        searchLayout.getTableWrapper().getTable().addItemClickListener(new ItemClickListener() {
+
+            private static final long serialVersionUID = -6261614659335513455L;
+
+            @Override
+            public void itemClick(ItemClickEvent event) {
+                if (event.isDoubleClick()) {
+                    select(event.getItem().getItemProperty(DynamoConstants.ID).getValue());
+                    getOkButton().click();
+                }
+            }
+        });
+
         wrapper.addComponent(searchLayout);
     }
 
@@ -167,8 +184,10 @@ public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractE
             for (ID id : col) {
                 searchLayout.getTableWrapper().getTable().select(id);
             }
+        } else {
+            ID id = (ID) selectedItems;
+            searchLayout.getTableWrapper().getTable().select(id);
         }
-
     }
 
 }
