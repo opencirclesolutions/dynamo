@@ -9,7 +9,6 @@ import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.utils.ClassUtils;
-import com.vaadin.annotations.StyleSheet;
 import com.vaadin.data.Container;
 import com.vaadin.data.Property;
 import com.vaadin.data.sort.SortOrder;
@@ -24,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-@StyleSheet("tokenField.css")
 public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<ID>> extends
 		CustomEntityField<ID, T, Collection> {
 	private final ExtTokenField extTokenField;
