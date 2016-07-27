@@ -43,7 +43,7 @@ public final class EntityModelUtil {
     private EntityModelUtil() {
         // private constructor
     }
-    
+
     /**
      * Compares two entities based on the entity model and reports a list of the differences
      * 
@@ -52,7 +52,12 @@ public final class EntityModelUtil {
      * @param newEntity
      *            the new entity
      * @param model
+     *            the entity model
+     * @param entityModelFactory
+     * @param messageService
+     *            the message service
      * @param ignore
+     *            the names of the fields to ignore
      */
     public static List<String> compare(Object oldEntity, Object newEntity, EntityModel<?> model,
             EntityModelFactory entityModelFactory, MessageService messageService, String... ignore) {

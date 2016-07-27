@@ -91,7 +91,7 @@ public class SimpleSearchTreeComponent<ID extends Serializable, T extends Abstra
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
-    protected ModelBasedSearchForm<ID, T> constructSearchform() {
+    protected ModelBasedSearchForm<ID, T> constructSearchForm() {
         ModelBasedHierarchicalContainer<T> c = (ModelBasedHierarchicalContainer<T>) getTableWrapper()
                 .getContainer();
         ModelBasedHierarchicalDefinition def = c.getHierarchicalDefinition(0);

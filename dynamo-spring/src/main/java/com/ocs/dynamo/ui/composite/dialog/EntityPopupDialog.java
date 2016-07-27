@@ -18,13 +18,18 @@ import java.io.Serializable;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
+import com.ocs.dynamo.service.MessageService;
+import com.ocs.dynamo.ui.ServiceLocator;
 import com.ocs.dynamo.ui.composite.form.FormOptions;
+import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
 import com.ocs.dynamo.ui.composite.layout.SimpleEditLayout;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Layout;
 
 /**
- * A popup dialog for adding a new entity
+ * A popup dialog for adding a new entity or viewing the details of an existing entrty
  * 
  * @author bas.rutten
  *
@@ -37,6 +42,8 @@ public abstract class EntityPopupDialog<ID extends Serializable, T extends Abstr
         extends BaseModalDialog {
 
     private static final long serialVersionUID = -2012972894321597214L;
+
+    private MessageService messageService = ServiceLocator.getMessageService();
 
     private EntityModel<T> entityModel;
 
@@ -63,12 +70,16 @@ public abstract class EntityPopupDialog<ID extends Serializable, T extends Abstr
     }
 
     /**
-     * Callback method that is called after the a new entity is added
+     * Callback method that is called after the user is done editing the entry
      * 
+     * @param cancel
+     *            whether the edit action was cancelled
+     * @param newEntity
+     *            whether the user was adding a new entity
      * @param entity
-     *            the entity
+     *            the entity that was being edited
      */
-    public abstract void afterAddition(T entity);
+    public abstract void afterEditDone(boolean cancel, boolean newEntity, T entity);
 
     @Override
     protected void doBuild(Layout parent) {
@@ -83,16 +94,36 @@ public abstract class EntityPopupDialog<ID extends Serializable, T extends Abstr
             protected void afterEditDone(boolean cancel, boolean newEntity, T entity) {
                 super.afterEditDone(cancel, newEntity, entity);
                 EntityPopupDialog.this.close();
-                EntityPopupDialog.this.afterAddition(entity);
+                EntityPopupDialog.this.afterEditDone(cancel, newEntity, entity);
             }
+
+            @Override
+            protected void afterModeChanged(boolean viewMode, ModelBasedEditForm<ID, T> editForm) {
+                super.afterModeChanged(viewMode, editForm);
+            }
+
         };
         parent.addComponent(layout);
     }
 
     @Override
     protected void doBuildButtonBar(HorizontalLayout buttonBar) {
-        // no button bar needed (we use the button bar from the edit form)
-        buttonBar.setVisible(false);
+        // in read-only mode, display only an "OK" button that closes the dialog
+        buttonBar.setVisible(formOptions.isReadOnly());
+        if (formOptions.isReadOnly()) {
+            Button okButton = new Button(messageService.getMessage("ocs.ok"));
+            okButton.addClickListener(new Button.ClickListener() {
+
+                private static final long serialVersionUID = 1889018073135108348L;
+
+                @Override
+                public void buttonClick(ClickEvent event) {
+                    close();
+                }
+            });
+
+            buttonBar.addComponent(okButton);
+        }
     }
 
     public T getEntity() {

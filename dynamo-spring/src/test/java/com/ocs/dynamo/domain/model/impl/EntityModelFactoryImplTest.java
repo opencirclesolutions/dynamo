@@ -11,10 +11,10 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-package com.ocs.dynamo.domain.model;
+package com.ocs.dynamo.domain.model.impl;
 
+import com.ocs.dynamo.domain.model.*;
 import com.ocs.dynamo.domain.model.annotation.*;
-import com.ocs.dynamo.domain.model.impl.EntityModelFactoryImpl;
 import com.ocs.dynamo.domain.validator.Email;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.service.impl.MessageServiceImpl;
@@ -36,9 +36,9 @@ import java.util.List;
 import java.util.Set;
 
 @SuppressWarnings("unused")
-public class EntityModelFactoryTest extends BaseMockitoTest {
+public class EntityModelFactoryImplTest extends BaseMockitoTest {
 
-    public EntityModelFactory factory = new EntityModelFactoryImpl();
+    public EntityModelFactoryImpl factory = new EntityModelFactoryImpl();
 
     private ResourceBundleMessageSource source = new ResourceBundleMessageSource();
 
@@ -443,14 +443,32 @@ public class EntityModelFactoryTest extends BaseMockitoTest {
         // default
         AttributeModel am = model.getAttributeModel("date1");
         Assert.assertEquals(AttributeDateType.DATE, am.getDateType());
+        Assert.assertEquals("dd-MM-yyyy", am.getDisplayFormat());
 
         // temporal annotation
         am = model.getAttributeModel("date2");
         Assert.assertEquals(AttributeDateType.TIMESTAMP, am.getDateType());
+		Assert.assertEquals("dd-MM-yyyy HH:mm:ss", am.getDisplayFormat());
 
-        // overridden annotation
-        am = model.getAttributeModel("date3");
-        Assert.assertEquals(AttributeDateType.TIME, am.getDateType());
+		// overridden @Temporal annotation
+		am = model.getAttributeModel("date3");
+		Assert.assertEquals(AttributeDateType.TIME, am.getDateType());
+		Assert.assertEquals("HH:mm:ss", am.getDisplayFormat());
+
+		// overridden annotation
+		am = model.getAttributeModel("date4");
+		Assert.assertEquals(AttributeDateType.TIME, am.getDateType());
+		Assert.assertEquals("ss:mm:HH", am.getDisplayFormat());
+
+		// overridden annotation
+		am = model.getAttributeModel("date5");
+		Assert.assertEquals(AttributeDateType.DATE, am.getDateType());
+		Assert.assertEquals("yyyy-dd-MM ss:mm:HH", am.getDisplayFormat());
+
+		// defaults
+		am = model.getAttributeModel("date6");
+		Assert.assertEquals(AttributeDateType.DATE, am.getDateType());
+		Assert.assertEquals("dd-MM-yyyy", am.getDisplayFormat());
     }
 
     @Test
@@ -728,8 +746,18 @@ public class EntityModelFactoryTest extends BaseMockitoTest {
         @Temporal(TemporalType.TIMESTAMP)
         private Date date2;
 
-        @Attribute(dateType = AttributeDateType.TIME)
-        private Date date3;
+        @Temporal(TemporalType.DATE)
+		@Attribute(dateType = AttributeDateType.TIME)
+		private Date date3;
+
+		@Attribute(dateType = AttributeDateType.TIME, displayFormat = "ss:mm:HH")
+		private Date date4;
+
+		@Attribute(displayFormat = "yyyy-dd-MM ss:mm:HH")
+		private Date date5;
+
+		@Attribute
+		private Date date6;
 
         public Date getDate1() {
             return date1;
@@ -755,7 +783,30 @@ public class EntityModelFactoryTest extends BaseMockitoTest {
             this.date3 = date3;
         }
 
-    }
+		public Date getDate4() {
+			return date4;
+		}
+
+		public void setDate4(Date date4) {
+			this.date4 = date4;
+		}
+
+		public Date getDate5() {
+			return date5;
+		}
+
+		public void setDate5(Date date5) {
+			this.date5 = date5;
+		}
+
+		public Date getDate6() {
+			return date6;
+		}
+
+		public void setDate6(Date date6) {
+			this.date6 = date6;
+		}
+	}
 
     private class Entity9 {
 
