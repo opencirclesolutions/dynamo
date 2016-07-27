@@ -1,8 +1,9 @@
 package com.ocs.dynamo.ui.component;
 
 import com.explicatis.ext_token_field.ExtTokenField;
-import com.explicatis.ext_token_field.SimpleTokenizable;
 import com.explicatis.ext_token_field.Tokenizable;
+import com.explicatis.ext_token_field.events.TokenRemovedEvent;
+import com.explicatis.ext_token_field.events.TokenRemovedListener;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
@@ -13,6 +14,8 @@ import com.vaadin.data.Container;
 import com.vaadin.data.Property;
 import com.vaadin.data.sort.SortOrder;
 import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.data.util.converter.Converter;
+import com.vaadin.shared.ui.combobox.FilteringMode;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 
@@ -40,20 +43,53 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
 
 	@Override
 	protected Component initContent() {
-		HorizontalLayout layout = new DefaultHorizontalLayout(false, false, false);
+		HorizontalLayout layout = new DefaultHorizontalLayout(false, true, false);
 
-		comboBox.setInputPrompt(getMessageService().getMessage("ocs.type.to.add.new.value"));
+		comboBox.setInputPrompt(getMessageService().getMessage("ocs.type.to.add"));
+		comboBox.setFilteringMode(FilteringMode.CONTAINS);
+		comboBox.setWidthUndefined();
 		extTokenField.setInputField(comboBox);
 		extTokenField.setEnableDefaultDeleteTokenAction(true);
-		comboBox.addValueChangeListener(getComboBoxValueChangeListener(extTokenField, comboBox, getEntityModel(), getAttributeModel()));
 
-		extTokenField.setSizeFull();
+		attachComboBoxValueChange();
+		attachTokenFieldValueChange();
+		setupContainerFieldSync();
+
 		layout.addComponent(extTokenField);
+		layout.setSizeFull();
 		return layout;
 	}
 
-	private ValueChangeListener getComboBoxValueChangeListener(final ExtTokenField extTokenField, final EntityComboBox comboBox, EntityModel<T> entityModel, AttributeModel attributeModel) {
-		return new ValueChangeListener() {
+	private void setupContainerFieldSync() {
+		container.addItemSetChangeListener(new Container.ItemSetChangeListener() {
+			@Override
+			public void containerItemSetChange(Container.ItemSetChangeEvent event) {
+				extTokenField.clear();
+				if (container.size() > 0) {
+					for (T item : container.getItemIds()) {
+						Tokenizable token = new BeanItemTokenizable(item, (String) comboBox.getItemCaptionPropertyId());
+						extTokenField.addTokenizable(token);
+					}
+				}
+				for (ValueChangeListener valueChangeListener : valueChangeListeners) {
+					valueChangeListener.valueChange(new ValueChangeEvent(TokenFieldSelect.this));
+				}
+			}
+		});
+	}
+
+	private void attachTokenFieldValueChange() {
+		extTokenField.addTokenRemovedListener(new TokenRemovedListener() {
+			@Override
+			public void tokenRemovedEvent(TokenRemovedEvent event) {
+				final BeanItemTokenizable tokenizable = (BeanItemTokenizable) event.getTokenizable();
+				container.removeItem(tokenizable.getItem());
+			}
+		});
+	}
+
+	private void attachComboBoxValueChange() {
+		comboBox.addValueChangeListener(new ValueChangeListener() {
 			@Override
 			public void valueChange(Property.ValueChangeEvent event) {
 				Object selectedObject = event.getProperty().getValue();
@@ -61,27 +97,36 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
 					T abstractEntity = (T) selectedObject;
 					container.addBean(abstractEntity);
 
-					Tokenizable token = new SimpleTokenizable(getTokenIdentifier(abstractEntity), getTokenDisplayName(abstractEntity, (String) comboBox.getItemCaptionPropertyId()));
-					extTokenField.addTokenizable(token);
-
-					for (ValueChangeListener valueChangeListener : TokenFieldSelect.this.valueChangeListeners) {
-						valueChangeListener.valueChange(new ValueChangeEvent(TokenFieldSelect.this));
-					}
-
 					// reset combobox
 					comboBox.setValue(null);
 				}
 			}
-		};
+		});
 	}
 
 	@Override
 	public List<T> getValue() {
-		return container.getItemIds();
+		return getInternalValue();
+	}
+
+	@Override
+	public void setValue(Collection values) throws ReadOnlyException, Converter.ConversionException {
+		setInternalValue(values);
+	}
+
+	@Override
+	protected void setInternalValue(Collection values) {
+		container.removeAllItems();
+		if (values != null) {
+			container.addAll(values);
+		}
 	}
 
 	@Override
 	protected List<T> getInternalValue() {
+		if (container.size() == 0) {
+			return null;
+		}
 		return container.getItemIds();
 	}
 
@@ -90,16 +135,42 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
 		return List.class;
 	}
 
-	private String getTokenDisplayName(AbstractEntity entity, String captionPropertyId) {
-		return ClassUtils.getFieldValueAsString(entity, captionPropertyId);
-	}
-
-	private long getTokenIdentifier(AbstractEntity entity) {
-		return Long.parseLong(ClassUtils.getFieldValueAsString(entity, "id"));
-	}
-
 	@Override
 	public void addValueChangeListener(final ValueChangeListener listener) {
 		valueChangeListeners.add(listener);
+	}
+
+	private class BeanItemTokenizable implements Tokenizable {
+		private final T item;
+		private final String displayValue;
+		private final Long id;
+
+		private BeanItemTokenizable(T item, String captionPropertyId) {
+			this.item = item;
+			this.id = getTokenIdentifier(item);
+			this.displayValue = getTokenDisplayName(item, captionPropertyId);
+		}
+
+		@Override
+		public String getStringValue() {
+			return displayValue;
+		}
+
+		@Override
+		public long getIdentifier() {
+			return id;
+		}
+
+		public T getItem() {
+			return item;
+		}
+
+		private String getTokenDisplayName(T entity, String captionPropertyId) {
+			return ClassUtils.getFieldValueAsString(entity, captionPropertyId);
+		}
+
+		private long getTokenIdentifier(T entity) {
+			return Long.parseLong(ClassUtils.getFieldValueAsString(entity, "id"));
+		}
 	}
 }
