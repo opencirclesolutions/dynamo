@@ -515,7 +515,7 @@
                     <executions>
                         <execution>
                             <goals>
-                                <goal>update-widgetset</goal>
+                                <!--<goal>update-widgetset</goal>-->
                                 <goal>update-theme</goal>
                                 <goal>compile</goal>
                                 <!-- disabled by default to use on-the-fly theme compilation -->
