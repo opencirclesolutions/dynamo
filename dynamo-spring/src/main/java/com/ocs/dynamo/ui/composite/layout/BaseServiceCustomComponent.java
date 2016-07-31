@@ -218,7 +218,7 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
      * @param button
      *            the button to register
      */
-    protected void registerButton(Button button) {
+    public void registerButton(Button button) {
         if (button != null) {
             button.setEnabled(false);
             toUpdate.add(button);

@@ -33,6 +33,7 @@ import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.FormLayout;
+import com.vaadin.ui.Layout;
 import com.vaadin.ui.VerticalLayout;
 
 /**
@@ -178,6 +179,12 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
                     }
                     return true;
                 }
+
+                @Override
+                protected void postProcessButtonBar(Layout buttonBar) {
+                    MultiDomainEditLayout.this.postProcessButtonBar(buttonBar);
+                }
+
             };
             return splitLayout;
         } else {
@@ -197,6 +204,10 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
         return selectedDomain;
     }
 
+    public Domain getSelectedItem() {
+        return (Domain) splitLayout.getSelectedItem();
+    }
+
     /**
      * Check if the deletion of domain values for a certain class is allowed
      * 
@@ -206,6 +217,29 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
      */
     protected boolean isDeleteAllowed(Class<?> clazz) {
         return true;
+    }
+
+    protected void postProcessButtonBar(Layout buttonBar) {
+        // overwrite in subclasses
+    }
+
+    /**
+     * Registers a button. The button will be disabled or enabled depending on whether an item is
+     * selected
+     * 
+     * @param button
+     *            the button to register
+     */
+    public void registerButton(Button button) {
+        if (splitLayout != null) {
+            splitLayout.registerButton(button);
+        }
+    }
+
+    public void reload() {
+        if (splitLayout != null) {
+            splitLayout.reload();
+        }
     }
 
     /**
@@ -220,5 +254,4 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
         selectedDomainLayout.replaceComponent(splitLayout, layout);
         splitLayout = layout;
     }
-
 }
