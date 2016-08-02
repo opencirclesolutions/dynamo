@@ -283,6 +283,10 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
             Field<?> field = (Field<?>) constructLookupField((EntityModel<S>) fieldEntityModel,
                     attributeModel, fieldFilter, search, true);
             return field;
+        } else if (AttributeSelectMode.TOKEN.equals(attributeModel.getSelectMode())) {
+            TokenFieldSelect<ID, S> tokenFieldSelect = new TokenFieldSelect<ID, S>(
+                    (EntityModel<S>) em, attributeModel, service, fieldFilter, sos);
+            return tokenFieldSelect;
         } else if (AttributeSelectMode.FANCY_LIST.equals(attributeModel.getSelectMode())
                 || (search && attributeModel.isMultipleSearch())) {
             // fancy list in case specified or when searching for multiple values
@@ -290,10 +294,6 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
                     (EntityModel<S>) em, attributeModel, fieldFilter, search, sos);
             listSelect.setRows(SystemPropertyUtils.getDefaultListSelectRows());
             return listSelect;
-        } else if (AttributeSelectMode.TOKEN.equals(attributeModel.getSelectMode())) {
-        	TokenFieldSelect<ID, S> tokenFieldSelect = new TokenFieldSelect<ID, S>(
-					(EntityModel<S>) em, attributeModel, service, fieldFilter, sos);
-			return tokenFieldSelect;
         } else if (attributeModel.isQuickAddAllowed() && !search) {
             // quick add list select
             QuickAddListSelect<ID, S> quickSelect = new QuickAddListSelect<ID, S>(

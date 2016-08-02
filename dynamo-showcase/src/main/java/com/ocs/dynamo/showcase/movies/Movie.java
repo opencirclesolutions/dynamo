@@ -110,7 +110,7 @@ public class Movie extends AbstractEntity<Integer> {
     /**
      * Display the country in a table and create a lookup table for it.
      */
-    @Attribute(complexEditable = true, searchable = true, selectMode = AttributeSelectMode.TOKEN, displayName = "Country", showInTable = VisibilityType.SHOW)
+    @Attribute(complexEditable = true, searchable = true, selectMode = AttributeSelectMode.TOKEN, multipleSearch = true, displayName = "Country", showInTable = VisibilityType.SHOW)
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "COUNTRY_ID")
     private Country country;
