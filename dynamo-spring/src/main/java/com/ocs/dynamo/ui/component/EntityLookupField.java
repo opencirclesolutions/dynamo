@@ -175,7 +175,8 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
             @Override
             public void buttonClick(ClickEvent event) {
                 ModelBasedSearchDialog<ID, T> dialog = new ModelBasedSearchDialog<ID, T>(
-                        getService(), getEntityModel(), filters, sortOrder, multiSelect, joins) {
+                        getService(), getEntityModel(), filters, sortOrder, multiSelect, true,
+                        joins) {
 
                     private static final long serialVersionUID = -3432107069929941520L;
 
@@ -205,8 +206,6 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
                 };
                 dialog.setPageLength(pageLength);
                 dialog.build();
-
-                selectValuesInDialog(dialog);
 
                 UI.getCurrent().addWindow(dialog);
             }
@@ -239,6 +238,7 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
      * Makes sure any currently selected values are highlighted in the search dialog
      * 
      * @param dialog
+     *            the dialog
      */
     @SuppressWarnings("unchecked")
     public void selectValuesInDialog(ModelBasedSearchDialog<ID, T> dialog) {

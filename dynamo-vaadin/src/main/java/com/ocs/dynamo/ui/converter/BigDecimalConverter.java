@@ -21,8 +21,8 @@ import java.util.Locale;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.data.util.converter.StringToBigDecimalConverter;
-import com.vaadin.server.VaadinSession;
 
 /**
  * A converter for converting between Strings and BigDecimals
@@ -66,9 +66,8 @@ public class BigDecimalConverter extends StringToBigDecimalConverter {
         // that to a BigDecimal.
         // That is not correct, so we use this additional step here
         Number number = convertToNumber(value, BigDecimal.class, locale);
-        return number == null ? null
-                : BigDecimal.valueOf(number.doubleValue()).setScale(precision,
-                        RoundingMode.HALF_UP);
+        return number == null ? null : BigDecimal.valueOf(number.doubleValue()).setScale(precision,
+                RoundingMode.HALF_UP);
     }
 
     @Override
@@ -76,23 +75,12 @@ public class BigDecimalConverter extends StringToBigDecimalConverter {
         return getDecimalFormat(locale);
     }
 
-    public DecimalFormat getDecimalFormat() {
-        return getDecimalFormat(Locale.getDefault());
-    }
-
     /**
      * @param locale
      * @return
      */
     public DecimalFormat getDecimalFormat(Locale locale) {
-
-        if (locale == null) {
-            if (VaadinSession.getCurrent() != null) {
-                locale = VaadinSession.getCurrent().getLocale();
-            } else {
-                locale = Locale.getDefault();
-            }
-        }
+        locale = locale != null ? locale : VaadinUtils.getLocale();
         decimalFormat = constructFormat(locale);
 
         if (!StringUtils.isEmpty(pattern)) {

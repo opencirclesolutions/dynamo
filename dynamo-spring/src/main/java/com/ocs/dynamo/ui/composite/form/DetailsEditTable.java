@@ -299,7 +299,7 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
             public void buttonClick(ClickEvent event) {
                 ModelBasedSearchDialog<ID, T> dialog = new ModelBasedSearchDialog<ID, T>(service,
                         searchDialogEntityModel != null ? searchDialogEntityModel : entityModel,
-                        searchDialogFilters, searchDialogSortOrder, true) {
+                        searchDialogFilters, searchDialogSortOrder, true, true) {
                     @Override
                     protected boolean doClose() {
 

@@ -17,6 +17,7 @@ import java.math.BigDecimal;
 import java.text.DecimalFormatSymbols;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import org.junit.Assert;
@@ -63,7 +64,7 @@ public class ModelBasedFieldFactoryTest extends BaseMockitoTest {
 
     private ModelBasedFieldFactory<TestEntity> fieldFactory;
 
-    private DecimalFormatSymbols symbols = DecimalFormatSymbols.getInstance();
+    private DecimalFormatSymbols symbols = DecimalFormatSymbols.getInstance(new Locale("de"));
 
     @Before
     public void setUp() throws Exception {

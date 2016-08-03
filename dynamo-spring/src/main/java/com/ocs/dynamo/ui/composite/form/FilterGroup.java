@@ -29,7 +29,6 @@ import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.filter.And;
 import com.vaadin.data.util.filter.Compare;
 import com.vaadin.data.util.filter.SimpleStringFilter;
-import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Field;
 
@@ -106,7 +105,7 @@ public class FilterGroup {
             public void valueChange(ValueChangeEvent event) {
                 FilterGroup.this.valueChange(FilterGroup.this.field, ConvertUtil
                         .convertSearchValue(FilterGroup.this.attributeModel, event.getProperty()
-                                .getValue(), VaadinSession.getCurrent().getLocale()));
+                                .getValue()));
             }
         });
 
@@ -120,8 +119,7 @@ public class FilterGroup {
                 public void valueChange(ValueChangeEvent event) {
                     FilterGroup.this.valueChange(FilterGroup.this.auxField, ConvertUtil
                             .convertSearchValue(FilterGroup.this.attributeModel, event
-                                    .getProperty().getValue(), VaadinSession.getCurrent()
-                                    .getLocale()));
+                                    .getProperty().getValue()));
                 }
             });
         }

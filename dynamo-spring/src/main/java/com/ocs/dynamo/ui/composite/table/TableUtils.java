@@ -124,7 +124,7 @@ public final class TableUtils {
     public static <T> String formatPropertyValue(EntityModelFactory entityModelFactory,
             EntityModel<T> entityModel, MessageService messageService, Object colId, Object value) {
         return formatPropertyValue(entityModelFactory, entityModel, messageService, colId, value,
-                VaadinSession.getCurrent() == null ? null : VaadinSession.getCurrent().getLocale());
+                VaadinUtils.getLocale());
     }
 
     /**
@@ -211,21 +211,29 @@ public final class TableUtils {
     }
 
     /**
+     * Formats a property value
+     * 
      * @param table
+     *            the table
      * @param entityModelFactory
+     *            the entity model factory
      * @param entityModel
+     *            the entity model
      * @param messageService
+     *            the message service
      * @param rowId
+     *            the row id
      * @param colId
+     *            the column ID
      * @param property
+     *            the nameo fot he property
      * @return
      */
     public static <T> String formatPropertyValue(Table table,
             EntityModelFactory entityModelFactory, EntityModel<T> entityModel,
             MessageService messageService, Object rowId, Object colId, Property<?> property) {
         return formatPropertyValue(table, entityModelFactory, entityModel, messageService, rowId,
-                colId, property, VaadinSession.getCurrent() == null ? null : VaadinSession
-                        .getCurrent().getLocale());
+                colId, property, VaadinUtils.getLocale());
     }
 
     /**

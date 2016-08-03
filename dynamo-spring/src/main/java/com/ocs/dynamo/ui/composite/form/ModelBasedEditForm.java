@@ -224,11 +224,12 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
                     // copy the bytes to the entity
                     ClassUtils.setBytes(stream.toByteArray(), getEntity(), fieldName);
-                    
+
                     // also set the file name if needed
                     if (fileNameFieldName != null) {
                         ClassUtils.setFieldValue(getEntity(), fileNameFieldName,
                                 event.getFilename());
+                        replaceLabel(fileNameFieldName);
                     }
                 } else {
                     Notification.show(message("ocs.modelbasededitform.upload.format.invalid"),
@@ -1010,7 +1011,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
             Component oldLabel = labels.get(isViewMode()).get(am);
 
             // label is displayed in view mode or when its an existing entity
-            replacement.setVisible(oldLabel.isVisible());
+            replacement.setVisible(true);
 
             // replace all existing labels with new labels
             HasComponents hc = labels.get(isViewMode()).get(am).getParent();

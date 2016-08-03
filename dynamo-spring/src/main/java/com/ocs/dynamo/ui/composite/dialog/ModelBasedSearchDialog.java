@@ -17,6 +17,7 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 
+import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.dao.query.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
@@ -28,6 +29,8 @@ import com.ocs.dynamo.ui.composite.layout.SimpleSearchLayout;
 import com.ocs.dynamo.ui.container.QueryType;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.sort.SortOrder;
+import com.vaadin.event.ItemClickEvent;
+import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.VerticalLayout;
 
@@ -66,6 +69,11 @@ public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractE
     private boolean multiSelect;
 
     /**
+     * Whether to immediately perform a search
+     */
+    private boolean searchImmediately;
+
+    /**
      * the (optional) page length. If set it will override the default page length
      */
     private Integer pageLength;
@@ -99,7 +107,7 @@ public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractE
      */
     public ModelBasedSearchDialog(BaseService<ID, T> service, EntityModel<T> entityModel,
             List<Filter> filters, SortOrder sortOrder, boolean multiSelect,
-            FetchJoinInformation... joins) {
+            boolean searchImmediately, FetchJoinInformation... joins) {
         super(true);
         this.service = service;
         this.entityModel = entityModel;
@@ -107,13 +115,13 @@ public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractE
         this.filters = filters;
         this.multiSelect = multiSelect;
         this.joins = joins;
+        this.searchImmediately = searchImmediately;
     }
 
     @Override
     protected void doBuild(Layout parent) {
-        FormOptions formOptions = new FormOptions();
-        formOptions.setHideAddButton(true);
-        formOptions.setPopup(true);
+        FormOptions formOptions = new FormOptions().setHideAddButton(true).setPopup(true)
+                .setSearchImmediately(searchImmediately);
 
         VerticalLayout wrapper = new DefaultVerticalLayout(false, false);
         wrapper.setStyleName("searchDialogWrapper");
@@ -124,7 +132,21 @@ public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractE
         if (pageLength != null) {
             searchLayout.setPageLength(pageLength);
         }
-        searchLayout.getTableWrapper().getTable().setMultiSelect(multiSelect);
+        searchLayout.setMultiSelect(multiSelect);
+
+        // add double click listener
+        searchLayout.getTableWrapper().getTable().addItemClickListener(new ItemClickListener() {
+
+            private static final long serialVersionUID = -6261614659335513455L;
+
+            @Override
+            public void itemClick(ItemClickEvent event) {
+                if (event.isDoubleClick()) {
+                    select(event.getItem().getItemProperty(DynamoConstants.ID).getValue());
+                    getOkButton().click();
+                }
+            }
+        });
 
         wrapper.addComponent(searchLayout);
     }
@@ -162,8 +184,10 @@ public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractE
             for (ID id : col) {
                 searchLayout.getTableWrapper().getTable().select(id);
             }
+        } else {
+            ID id = (ID) selectedItems;
+            searchLayout.getTableWrapper().getTable().select(id);
         }
-
     }
 
 }
