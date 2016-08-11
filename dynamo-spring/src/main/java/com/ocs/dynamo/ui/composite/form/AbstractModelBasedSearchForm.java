@@ -343,6 +343,15 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
         }
     }
 
+    /**
+     * Search immediately without reconstructing the filter
+     */
+    public void searchImmediately() {
+        if (searchable != null) {
+            searchable.search(compositeFilter);
+        }
+    }
+
     public void setCompositeFilter(Filter compositeFilter) {
         this.compositeFilter = compositeFilter;
         if (searchable != null) {

@@ -555,7 +555,14 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
             searchLayoutConstructed = true;
         }
 
-        getSearchForm().search();
+        if (getSearchForm().getCompositeFilter() != null) {
+            // search without clearing any previous filters
+            getSearchForm().searchImmediately();
+        } else {
+            // build filter and search
+            getSearchForm().search();
+        }
+
         getTableWrapper().getTable().select(null);
         setSelectedItem(null);
         checkButtonState(getSelectedItem());

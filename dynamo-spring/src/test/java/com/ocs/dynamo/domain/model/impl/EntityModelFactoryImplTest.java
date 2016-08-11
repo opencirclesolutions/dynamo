@@ -1034,6 +1034,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
         public void setSometAttribute(String sometAttribute) {
             this.sometAttribute = sometAttribute;
         }
-
     }
+    
+    
 }

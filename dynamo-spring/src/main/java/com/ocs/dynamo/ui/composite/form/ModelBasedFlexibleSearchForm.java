@@ -206,7 +206,9 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
          * Creates a SimpleStringFilter with certain characteristics
          * 
          * @param value
+         *            the value to search on
          * @param prefixOnly
+         *            whether to search by prefix only
          * @return
          */
         private SimpleStringFilter createStringFilter(Object value, boolean prefixOnly) {
@@ -477,7 +479,7 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
                 filter = new Not(createStringFilter(value, true));
                 break;
             default:
-                // by default, simply use and "equals" filter
+                // by default, simply use an "equals" filter
                 if (value != null) {
                     filter = new Compare.Equal(am.getPath(), value);
                 }
@@ -499,6 +501,9 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
      */
     private Button addFilterButton;
 
+    /**
+     * The filter regions
+     */
     private List<FilterRegion> regions = new ArrayList<>();
 
     /**
@@ -576,7 +581,7 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 
     @Override
     protected Layout constructFilterLayout() {
-        // nothing needed here
+        // just an enmpty layout - filterw sill be added to it on the fly
         return new DefaultVerticalLayout();
     }
 
@@ -618,7 +623,7 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
     }
 
     /**
-     * Restores previously stored filters
+     * Restores any previously stored filters
      * 
      * @param definitions
      *            the filter definitions to restore

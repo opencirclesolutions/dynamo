@@ -35,6 +35,7 @@ import com.ocs.dynamo.utils.ClassUtils;
 import com.ocs.dynamo.utils.SystemPropertyUtils;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.DefaultFieldFactory;
+
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +52,7 @@ import javax.validation.constraints.AssertFalse;
 import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+
 import java.beans.PropertyDescriptor;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -235,88 +237,93 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
      *            the class of the entity
      * @return
      */
-    private <T> EntityModel<T> constructModel(String reference, Class<T> entityClass) {
+    @SuppressWarnings("unchecked")
+    private synchronized <T> EntityModel<T> constructModel(String reference, Class<T> entityClass) {
+        EntityModel<T> result = (EntityModel<T>) cache.get(reference);
+        if (result == null) {
+            boolean nested = reference.indexOf('.') > 0;
 
-        boolean nested = reference.indexOf('.') > 0;
+            // construct the basic model
+            EntityModelImpl<T> model = constructModelInner(entityClass, reference);
 
-        // construct the basic model
-        EntityModelImpl<T> model = constructModelInner(entityClass, reference);
+            Map<String, String> attributeGroupMap = determineAttributeGroupMapping(model,
+                    entityClass);
+            model.addAttributeGroup(EntityModel.DEFAULT_GROUP);
 
-        Map<String, String> attributeGroupMap = determineAttributeGroupMapping(model, entityClass);
-        model.addAttributeGroup(EntityModel.DEFAULT_GROUP);
+            alreadyProcessed.put(reference, entityClass);
 
-        alreadyProcessed.put(reference, entityClass);
+            // keep track of main attributes - if no main attribute is defined, mark
+            // either the
+            // first string attribute or the first searchable attribute as the main
+            boolean mainAttributeFound = false;
+            AttributeModel firstStringAttribute = null;
+            AttributeModel firstSearchableAttribute = null;
 
-        // keep track of main attributes - if no main attribute is defined, mark
-        // either the
-        // first string attribute or the first searchable attribute as the main
-        boolean mainAttributeFound = false;
-        AttributeModel firstStringAttribute = null;
-        AttributeModel firstSearchableAttribute = null;
+            PropertyDescriptor[] descriptors = BeanUtils.getPropertyDescriptors(entityClass);
+            // create attribute models for all attributes
+            List<AttributeModel> tempModelList = new ArrayList<>();
+            for (PropertyDescriptor descriptor : descriptors) {
+                if (!skipAttribute(descriptor.getName())) {
+                    List<AttributeModel> attributeModels = constructAttributeModel(descriptor,
+                            model, model.getEntityClass(), nested, null);
 
-        PropertyDescriptor[] descriptors = BeanUtils.getPropertyDescriptors(entityClass);
-        // create attribute models for all attributes
-        List<AttributeModel> tempModelList = new ArrayList<>();
-        for (PropertyDescriptor descriptor : descriptors) {
-            if (!skipAttribute(descriptor.getName())) {
-                List<AttributeModel> attributeModels = constructAttributeModel(descriptor, model,
-                        model.getEntityClass(), nested, null);
+                    for (AttributeModel attributeModel : attributeModels) {
 
-                for (AttributeModel attributeModel : attributeModels) {
+                        // check if the main attribute has been found
+                        mainAttributeFound |= attributeModel.isMainAttribute();
 
-                    // check if the main attribute has been found
-                    mainAttributeFound |= attributeModel.isMainAttribute();
-
-                    // also keep track of the first string property...
-                    if (firstStringAttribute == null
-                            && String.class.equals(attributeModel.getType())) {
-                        firstStringAttribute = attributeModel;
+                        // also keep track of the first string property...
+                        if (firstStringAttribute == null
+                                && String.class.equals(attributeModel.getType())) {
+                            firstStringAttribute = attributeModel;
+                        }
+                        // ... and the first searchable property
+                        if (firstSearchableAttribute == null && attributeModel.isSearchable()) {
+                            firstSearchableAttribute = attributeModel;
+                        }
+                        tempModelList.add(attributeModel);
                     }
-                    // ... and the first searchable property
-                    if (firstSearchableAttribute == null && attributeModel.isSearchable()) {
-                        firstSearchableAttribute = attributeModel;
-                    }
-                    tempModelList.add(attributeModel);
                 }
             }
-        }
 
-        // assign ordering and sort
-        determineAttributeOrder(entityClass, reference, tempModelList);
-        Collections.sort(tempModelList);
+            // assign ordering and sort
+            determineAttributeOrder(entityClass, reference, tempModelList);
+            Collections.sort(tempModelList);
 
-        // add the attributes to the model
-        for (AttributeModel attributeModel : tempModelList) {
-            // determine the attribute group name
-            String group = attributeGroupMap.get(attributeModel.getName());
-            if (StringUtils.isEmpty(group)) {
-                group = EntityModel.DEFAULT_GROUP;
+            // add the attributes to the model
+            for (AttributeModel attributeModel : tempModelList) {
+                // determine the attribute group name
+                String group = attributeGroupMap.get(attributeModel.getName());
+                if (StringUtils.isEmpty(group)) {
+                    group = EntityModel.DEFAULT_GROUP;
+                }
+
+                model.addAttributeModel(group, attributeModel);
             }
 
-            model.addAttributeModel(group, attributeModel);
-        }
-
-        if (!mainAttributeFound && !nested) {
-            if (firstStringAttribute != null) {
-                firstStringAttribute.setMainAttribute(true);
-            } else if (firstSearchableAttribute != null) {
-                firstSearchableAttribute.setMainAttribute(true);
+            if (!mainAttributeFound && !nested) {
+                if (firstStringAttribute != null) {
+                    firstStringAttribute.setMainAttribute(true);
+                } else if (firstSearchableAttribute != null) {
+                    firstSearchableAttribute.setMainAttribute(true);
+                }
             }
-        }
 
-        String sortOrder = null;
-        Model annot = entityClass.getAnnotation(Model.class);
-        if (annot != null && !StringUtils.isEmpty(annot.sortOrder())) {
-            sortOrder = annot.sortOrder();
-        }
+            String sortOrder = null;
+            Model annot = entityClass.getAnnotation(Model.class);
+            if (annot != null && !StringUtils.isEmpty(annot.sortOrder())) {
+                sortOrder = annot.sortOrder();
+            }
 
-        String sortOrderMsg = getEntityMessage(reference, EntityModel.SORT_ORDER);
-        if (!StringUtils.isEmpty(sortOrderMsg)) {
-            sortOrder = sortOrderMsg;
+            String sortOrderMsg = getEntityMessage(reference, EntityModel.SORT_ORDER);
+            if (!StringUtils.isEmpty(sortOrderMsg)) {
+                sortOrder = sortOrderMsg;
+            }
+            setSortOrder(model, sortOrder);
+            cache.put(reference, model);
+            result = model;
         }
-        setSortOrder(model, sortOrder);
-
-        return model;
+        return result;
     }
 
     /**
@@ -654,23 +661,32 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
     }
 
     @Override
-    @SuppressWarnings({ "unchecked", "unused" })
+    @SuppressWarnings({ "unchecked" })
     public <T> EntityModel<T> getModel(String reference, Class<T> entityClass) {
         EntityModel<T> model = null;
         if (!StringUtils.isEmpty(reference) && entityClass != null) {
             model = (EntityModel<T>) cache.get(reference);
             if (model == null) {
                 model = constructModel(reference, entityClass);
-                // needed to make FindBugs happy
-                EntityModel<?> skip = cache.putIfAbsent(reference, model);
             }
         }
         return model;
     }
 
+    /**
+     * Check if a certain entity model has already been processed
+     * 
+     * @param type
+     *            the type of the entity
+     * @param reference
+     *            the reference to the entity
+     * @return
+     */
     private boolean hasEntityModel(Class<?> type, String reference) {
         for (Entry<String, Class<?>> e : alreadyProcessed.entrySet()) {
             if (reference.startsWith(e.getKey()) && e.getValue().equals(type)) {
+                // only check for starting reference in order to prevent recursive looping between
+                // two-sided relations
                 return true;
             }
         }
