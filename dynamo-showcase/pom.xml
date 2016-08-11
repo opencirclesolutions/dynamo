@@ -81,10 +81,15 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-clean-plugin</artifactId>
+                <!-- Clean up also any pre-compiled themes -->
                 <configuration>
                     <filesets>
                         <fileset>
-                            <directory>src/main/webapp/VAADIN/widgetsets</directory>
+                            <directory>src/main/webapp/VAADIN/themes</directory>
+                            <includes>
+                                <include>**/styles.css</include>
+                                <include>**/styles.scss.cache</include>
+                            </includes>
                         </fileset>
                     </filesets>
                 </configuration>

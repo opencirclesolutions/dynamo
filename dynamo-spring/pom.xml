@@ -65,6 +65,10 @@
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-server</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.vaadin.addons</groupId>
+            <artifactId>extended-token-field</artifactId>
+        </dependency>
 
         <!-- Spring Framework -->
         <dependency>

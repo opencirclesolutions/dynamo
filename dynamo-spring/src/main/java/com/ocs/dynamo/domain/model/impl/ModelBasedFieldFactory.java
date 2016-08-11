@@ -13,16 +13,6 @@
  */
 package com.ocs.dynamo.domain.model.impl;
 
-import java.io.Serializable;
-import java.math.BigDecimal;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-
-import org.apache.commons.lang.StringUtils;
-
 import com.google.common.collect.Lists;
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.domain.AbstractEntity;
@@ -44,6 +34,7 @@ import com.ocs.dynamo.ui.component.FancyListSelect;
 import com.ocs.dynamo.ui.component.QuickAddEntityComboBox;
 import com.ocs.dynamo.ui.component.QuickAddListSelect;
 import com.ocs.dynamo.ui.component.TimeField;
+import com.ocs.dynamo.ui.component.TokenFieldSelect;
 import com.ocs.dynamo.ui.component.URLField;
 import com.ocs.dynamo.ui.composite.form.CollectionTable;
 import com.ocs.dynamo.ui.composite.form.FormOptions;
@@ -75,6 +66,15 @@ import com.vaadin.ui.Field;
 import com.vaadin.ui.TableFieldFactory;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
+import org.apache.commons.lang.StringUtils;
+
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * Extension of the standard Vaadin field factory for creating custom fields
@@ -283,6 +283,10 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
             Field<?> field = (Field<?>) constructLookupField((EntityModel<S>) fieldEntityModel,
                     attributeModel, fieldFilter, search, true);
             return field;
+        } else if (AttributeSelectMode.TOKEN.equals(attributeModel.getSelectMode())) {
+            TokenFieldSelect<ID, S> tokenFieldSelect = new TokenFieldSelect<ID, S>(
+                    (EntityModel<S>) em, attributeModel, service, fieldFilter, sos);
+            return tokenFieldSelect;
         } else if (AttributeSelectMode.FANCY_LIST.equals(attributeModel.getSelectMode())
                 || (search && attributeModel.isMultipleSearch())) {
             // fancy list in case specified or when searching for multiple values

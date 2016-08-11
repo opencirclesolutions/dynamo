@@ -5,3 +5,4 @@
 /.settings
 /target/
 /src/main/webapp/VAADIN/themes/light/*.css
+/src/main/webapp/VAADIN/themes/light/*.cache

@@ -13,9 +13,13 @@
  */
 package com.ocs.dynamo.showcase.movies;
 
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.Set;
+import com.ocs.dynamo.domain.AbstractEntity;
+import com.ocs.dynamo.domain.model.AttributeDateType;
+import com.ocs.dynamo.domain.model.AttributeSelectMode;
+import com.ocs.dynamo.domain.model.VisibilityType;
+import com.ocs.dynamo.domain.model.annotation.Attribute;
+import com.ocs.dynamo.domain.model.annotation.AttributeOrder;
+import com.ocs.dynamo.domain.model.annotation.Model;
 
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
@@ -31,14 +35,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
-
-import com.ocs.dynamo.domain.AbstractEntity;
-import com.ocs.dynamo.domain.model.AttributeDateType;
-import com.ocs.dynamo.domain.model.AttributeSelectMode;
-import com.ocs.dynamo.domain.model.VisibilityType;
-import com.ocs.dynamo.domain.model.annotation.Attribute;
-import com.ocs.dynamo.domain.model.annotation.AttributeOrder;
-import com.ocs.dynamo.domain.model.annotation.Model;
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.Set;
 
 /**
  * Movie JPA entity, does not need much explanation.
@@ -111,7 +110,7 @@ public class Movie extends AbstractEntity<Integer> {
     /**
      * Display the country in a table and create a lookup table for it.
      */
-    @Attribute(complexEditable = true, searchable = true, selectMode = AttributeSelectMode.LOOKUP, displayName = "Country", showInTable = VisibilityType.SHOW)
+    @Attribute(complexEditable = true, searchable = true, selectMode = AttributeSelectMode.TOKEN, multipleSearch = true, displayName = "Country", showInTable = VisibilityType.SHOW)
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "COUNTRY_ID")
     private Country country;
