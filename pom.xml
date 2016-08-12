@@ -8,7 +8,7 @@
 	<packaging>pom</packaging>
 	<version>1.0.0-SNAPSHOT</version>
 	<name>Dynamo Framework</name>
-	<description>A application used as an example on how to set up pushing its components to the Central Repository.</description>
+	<description>Dynamo Web Application Accelerator is a development framework that aims to increase productivity.</description>
 	<url>https://github.com/opencirclesolutions/dynamo</url>
 
 	<organization>
