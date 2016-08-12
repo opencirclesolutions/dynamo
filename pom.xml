@@ -370,6 +370,9 @@
 					<artifactId>maven-release-plugin</artifactId>
 					<version>${org.apache.maven.plugins.release.version}</version>
 					<configuration>
+   						<autoVersionSubmodules>true</autoVersionSubmodules>
+   						<!-- Disabling the release profile that is part of the Maven Super POM, since we are using our own profile. -->
+    					<useReleaseProfile>false</useReleaseProfile>
 						<!-- Select release profile during release:perform. -->
 						<releaseProfiles>release</releaseProfiles>
 						<!-- Select release profile during release:prepare. -->
