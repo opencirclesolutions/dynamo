@@ -122,6 +122,11 @@ public interface EntityModel<T> {
      * component
      */
     String SELECT_MODE = "selectMode";
+    
+    /**
+     * The select mode in a search screen
+     */
+    String SEARCH_SELECT_MODE = "searchSelectMode";
 
     String SHOW_IN_TABLE = "showInTable";
 

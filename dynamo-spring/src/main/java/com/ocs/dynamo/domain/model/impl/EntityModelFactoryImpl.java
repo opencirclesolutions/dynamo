@@ -13,6 +13,40 @@
  */
 package com.ocs.dynamo.domain.model.impl;
 
+import java.beans.PropertyDescriptor;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+
+import javax.persistence.ElementCollection;
+import javax.persistence.Embedded;
+import javax.persistence.Id;
+import javax.persistence.Lob;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.validation.constraints.AssertFalse;
+import javax.validation.constraints.AssertTrue;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.google.common.collect.Sets;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeDateType;
@@ -35,40 +69,6 @@ import com.ocs.dynamo.utils.ClassUtils;
 import com.ocs.dynamo.utils.SystemPropertyUtils;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.DefaultFieldFactory;
-
-import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import javax.persistence.ElementCollection;
-import javax.persistence.Embedded;
-import javax.persistence.Id;
-import javax.persistence.Lob;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.validation.constraints.AssertFalse;
-import javax.validation.constraints.AssertTrue;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-
-import java.beans.PropertyDescriptor;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 /**
  * Implementation of the entity model factory - creates models that hold metadata about an entity
@@ -1022,9 +1022,23 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
             model.setCurrency(Boolean.valueOf(msg));
         }
 
+        // set the select mode (also sets the search select mode by default)
         msg = getAttributeMessage(entityModel, model, EntityModel.SELECT_MODE);
         if (!StringUtils.isEmpty(msg) && AttributeSelectMode.valueOf(msg) != null) {
             model.setSelectMode(AttributeSelectMode.valueOf(msg));
+            model.setSearchSelectMode(AttributeSelectMode.valueOf(msg));
+        }
+
+        // set multiple search (also overwrites the search select mode and sets it to fancy list)
+        msg = getAttributeMessage(entityModel, model, EntityModel.MULTIPLE_SEARCH);
+        if (!StringUtils.isEmpty(msg)) {
+            model.setMultipleSearch(Boolean.valueOf(msg));
+            model.setSearchSelectMode(AttributeSelectMode.FANCY_LIST);
+        }
+
+        msg = getAttributeMessage(entityModel, model, EntityModel.SEARCH_SELECT_MODE);
+        if (!StringUtils.isEmpty(msg)) {
+            model.setSearchSelectMode(AttributeSelectMode.valueOf(msg));
         }
 
         msg = getAttributeMessage(entityModel, model, EntityModel.DATE_TYPE);
@@ -1082,10 +1096,6 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
             model.setSearchForExactValue(Boolean.valueOf(msg));
         }
 
-        msg = getAttributeMessage(entityModel, model, EntityModel.MULTIPLE_SEARCH);
-        if (!StringUtils.isEmpty(msg)) {
-            model.setMultipleSearch(Boolean.valueOf(msg));
-        }
     }
 
     /**
