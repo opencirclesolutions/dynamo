@@ -194,6 +194,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
             // by default, use a combo box to look up
             model.setSelectMode(AttributeSelectMode.COMBO);
             model.setTextFieldMode(AttributeTextFieldMode.TEXTFIELD);
+            model.setSearchSelectMode(AttributeSelectMode.COMBO);
 
             // is the field an email field?
             Email email = ClassUtils.getAnnotation(entityModel.getEntityClass(), fieldName,
@@ -808,9 +809,22 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
                 model.setDateType(attribute.dateType());
             }
 
+            // overrule select mode - by default, this overrules the search select mode as well
             if (attribute.selectMode() != null
                     && !AttributeSelectMode.INHERIT.equals(attribute.selectMode())) {
                 model.setSelectMode(attribute.selectMode());
+                model.setSearchSelectMode(attribute.selectMode());
+            }
+
+            // set multiple search
+            if (attribute.multipleSearch()) {
+                model.setMultipleSearch(true);
+                // by default, use a fancy list for multiple search
+                model.setSearchSelectMode(AttributeSelectMode.FANCY_LIST);
+            }
+
+            if (!AttributeSelectMode.INHERIT.equals(attribute.searchSelectMode())) {
+                model.setSearchSelectMode(attribute.searchSelectMode());
             }
 
             model.setSearchCaseSensitive(attribute.searchCaseSensitive());
@@ -848,10 +862,6 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 
             if (attribute.required()) {
                 model.setRequired(true);
-            }
-
-            if (attribute.multipleSearch()) {
-                model.setMultipleSearch(true);
             }
 
             if (!attribute.useThousandsGrouping()) {

@@ -185,6 +185,11 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
                     MultiDomainEditLayout.this.postProcessButtonBar(buttonBar);
                 }
 
+                @Override
+                protected boolean isEditAllowed() {
+                    return MultiDomainEditLayout.this.isEditAllowed();
+                }
+
             };
             return splitLayout;
         } else {
@@ -216,6 +221,13 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
      * @return
      */
     protected boolean isDeleteAllowed(Class<?> clazz) {
+        return true;
+    }
+
+    /**
+     * Indicates whether editing is allowed
+     */
+    protected boolean isEditAllowed() {
         return true;
     }
 

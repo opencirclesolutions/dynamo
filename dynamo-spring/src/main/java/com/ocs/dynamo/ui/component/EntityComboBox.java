@@ -207,6 +207,17 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
     }
 
     /**
+     * Adds an entity to the container
+     * 
+     * @param entity
+     */
+    @SuppressWarnings("unchecked")
+    public void addEntity(T entity) {
+        BeanItemContainer<T> bic = (BeanItemContainer<T>) this.getContainerDataSource();
+        bic.addBean(entity);
+    }
+
+    /**
      * Overwritten so that diacritics are ignored when comparing
      */
     @Override

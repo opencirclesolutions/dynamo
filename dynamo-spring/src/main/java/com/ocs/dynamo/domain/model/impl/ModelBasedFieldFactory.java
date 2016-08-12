@@ -13,6 +13,16 @@
  */
 package com.ocs.dynamo.domain.model.impl;
 
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+
+import org.apache.commons.lang.StringUtils;
+
 import com.google.common.collect.Lists;
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.domain.AbstractEntity;
@@ -66,15 +76,6 @@ import com.vaadin.ui.Field;
 import com.vaadin.ui.TableFieldFactory;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
-import org.apache.commons.lang.StringUtils;
-
-import java.io.Serializable;
-import java.math.BigDecimal;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 /**
  * Extension of the standard Vaadin field factory for creating custom fields
@@ -278,30 +279,37 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
                 .getEntityClass());
         SortOrder[] sos = constructSortOrder(em);
 
-        if (AttributeSelectMode.LOOKUP.equals(attributeModel.getSelectMode())) {
+        boolean searchToken = (search && AttributeSelectMode.TOKEN.equals(attributeModel
+                .getSearchSelectMode()));
+        boolean searchLookup = (search && AttributeSelectMode.LOOKUP.equals(attributeModel
+                .getSearchSelectMode()));
+
+        if (searchLookup || AttributeSelectMode.LOOKUP.equals(attributeModel.getSelectMode())) {
             // lookup field - warning: do not use nested entity model here!
             Field<?> field = (Field<?>) constructLookupField((EntityModel<S>) fieldEntityModel,
                     attributeModel, fieldFilter, search, true);
             return field;
-        } else if (AttributeSelectMode.TOKEN.equals(attributeModel.getSelectMode())) {
+        } else if (searchToken || AttributeSelectMode.TOKEN.equals(attributeModel.getSelectMode())) {
+            // token field in case of detail relation or multiple search field
             TokenFieldSelect<ID, S> tokenFieldSelect = new TokenFieldSelect<ID, S>(
-                    (EntityModel<S>) em, attributeModel, service, fieldFilter, sos);
+                    (EntityModel<S>) em, attributeModel, service, fieldFilter, search, sos);
             return tokenFieldSelect;
         } else if (AttributeSelectMode.FANCY_LIST.equals(attributeModel.getSelectMode())
-                || (search && attributeModel.isMultipleSearch())) {
+                || (search && AttributeSelectMode.FANCY_LIST.equals(attributeModel
+                        .getSearchSelectMode()))) {
             // fancy list in case specified or when searching for multiple values
             FancyListSelect<ID, S> listSelect = new FancyListSelect<ID, S>(service,
                     (EntityModel<S>) em, attributeModel, fieldFilter, search, sos);
             listSelect.setRows(SystemPropertyUtils.getDefaultListSelectRows());
             return listSelect;
         } else if (attributeModel.isQuickAddAllowed() && !search) {
-            // quick add list select
+            // quick add list select when in edit mode
             QuickAddListSelect<ID, S> quickSelect = new QuickAddListSelect<ID, S>(
                     (EntityModel<S>) em, attributeModel, service, fieldFilter, multipleSelect,
                     SystemPropertyUtils.getDefaultListSelectRows(), sos);
             return quickSelect;
         } else {
-            // simple list select
+            // simple list select if everything else fails
             EntityListSelect<ID, S> listSelect = new EntityListSelect<ID, S>((EntityModel<S>) em,
                     attributeModel, service, fieldFilter, sos);
             listSelect.setMultiSelect(multipleSelect);

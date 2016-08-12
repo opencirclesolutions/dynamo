@@ -1,48 +1,49 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	
+
 	<artifactId>dynamo-vaadin</artifactId>
 	<packaging>jar</packaging>
 	<name>Dynamo Framework - Vaadin</name>
-    <url>https://github.com/opencirclesolutions/dynamo</url>
-	
+	<url>https://github.com/opencirclesolutions/dynamo</url>
+
 	<parent>
 		<groupId>org.dynamoframework</groupId>
 		<artifactId>dynamo-parent</artifactId>
 		<version>1.0.0-SNAPSHOT</version>
-    </parent>
-	
+	</parent>
+
 	<organization>
-        <name>Open Circle Solutions</name>
-        <url>http://www.opencirclesolutions.nl</url>
-    </organization>
+		<name>Open Circle Solutions</name>
+		<url>http://www.opencirclesolutions.nl</url>
+	</organization>
 
 	<licenses>
-        <license>
-            <name>Apache License Version 2.0</name>
-            <distribution>repo</distribution>
-            <url>http://www.apache.org/licenses/LICENSE-2.0</url>
-        </license>
-    </licenses>
+		<license>
+			<name>Apache License Version 2.0</name>
+			<distribution>repo</distribution>
+			<url>http://www.apache.org/licenses/LICENSE-2.0</url>
+		</license>
+	</licenses>
 
 	<properties>
 		<vaadin.license.title>Apache License Version 2.0</vaadin.license.title>
 	</properties>
-	
+
 	<dependencies>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>dynamo-core</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		
+
 		<!-- JEE -->
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
 		</dependency>
-		
+
 		<!-- Vaadin -->
 		<dependency>
 			<groupId>com.vaadin</groupId>

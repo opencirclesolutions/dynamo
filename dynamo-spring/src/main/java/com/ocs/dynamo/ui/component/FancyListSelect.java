@@ -120,13 +120,14 @@ public class FancyListSelect<ID extends Serializable, T extends AbstractEntity<I
 
         container = new BeanItemContainer<>(getEntityModel().getEntityClass());
         listSelect = new ListSelect(null, container);
-        
+
         comboBox = new EntityComboBox<ID, T>(getEntityModel(), getAttributeModel(), getService(),
                 this.filter, sortOrders);
     }
 
     @Override
     protected void afterNewEntityAdded(T entity) {
+        comboBox.addEntity(entity);
         container.addBean(entity);
         copyValueFromContainer();
     }

@@ -102,6 +102,8 @@ public class AttributeModelImpl implements AttributeModel {
 
     private boolean searchPrefixOnly;
 
+    private AttributeSelectMode searchSelectMode;
+
     private AttributeSelectMode selectMode;
 
     private boolean sortable;
@@ -237,6 +239,11 @@ public class AttributeModelImpl implements AttributeModel {
     @Override
     public String getReplacementSearchPath() {
         return replacementSearchPath;
+    }
+
+    @Override
+    public AttributeSelectMode getSearchSelectMode() {
+        return searchSelectMode;
     }
 
     @Override
@@ -512,6 +519,10 @@ public class AttributeModelImpl implements AttributeModel {
         this.searchPrefixOnly = searchPrefixOnly;
     }
 
+    public void setSearchSelectMode(AttributeSelectMode searchSelectMode) {
+        this.searchSelectMode = searchSelectMode;
+    }
+
     public void setSelectMode(AttributeSelectMode selectMode) {
         this.selectMode = selectMode;
     }
@@ -556,5 +567,4 @@ public class AttributeModelImpl implements AttributeModel {
     public String toString() {
         return ReflectionToStringBuilder.toStringExclude(this, "entityModel");
     }
-
 }

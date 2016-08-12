@@ -72,9 +72,6 @@ public @interface Attribute {
     /** whether this field is the main attribute */
     boolean main() default false;
 
-    /** whether this attribute allows search for multiple values (only for MASTER attributes) */
-    boolean multipleSearch() default false;
-
     /** the maximum element length (-1 indicates no value) */
     int maxLength() default -1;
 
@@ -83,6 +80,9 @@ public @interface Attribute {
 
     /** the minimum element length (-1 indicates no value) */
     int minLength() default -1;
+
+    /** whether this attribute allows search for multiple values (only for MASTER attributes) */
+    boolean multipleSearch() default false;
 
     /** is the numeric field a percentage */
     boolean percentage() default false;
@@ -99,11 +99,11 @@ public @interface Attribute {
     /** whether the field is readonly (i.e. does not appear in edit forms) */
     boolean readOnly() default false;
 
-    /** */
-    boolean required() default false;
-
     /** replacement search path */
     String replacementSearchPath() default "";
+
+    /** */
+    boolean required() default false;
 
     /** whether the field is searchable */
     boolean searchable() default false;
@@ -111,13 +111,16 @@ public @interface Attribute {
     /** case sensitive search */
     boolean searchCaseSensitive() default false;
 
-    /** search prefix only */
-    boolean searchPrefixOnly() default false;
-
     /** whether to search by single value (for integer or date fields) */
     boolean searchForExactValue() default false;
 
-    /** selection mode (use either a combo box, a list box, or a lookup field) */
+    /** search prefix only */
+    boolean searchPrefixOnly() default false;
+
+    /** determines which selection component to use in search mode */
+    AttributeSelectMode searchSelectMode() default AttributeSelectMode.INHERIT;
+
+    /** determines which selection component to use in edit mode */
     AttributeSelectMode selectMode() default AttributeSelectMode.INHERIT;
 
     /** whether the field shows up in a table */

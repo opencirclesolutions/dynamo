@@ -551,6 +551,7 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
         if (!searchLayoutConstructed) {
             constructSearchLayout();
             searchResultsLayout.addComponent(getTableWrapper());
+            getSearchForm().setSearchable(getTableWrapper());
             searchResultsLayout.removeComponent(noSearchYetLabel);
             searchLayoutConstructed = true;
         }

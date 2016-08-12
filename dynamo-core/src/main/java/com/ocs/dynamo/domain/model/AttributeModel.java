@@ -156,7 +156,14 @@ public interface AttributeModel extends Comparable<AttributeModel> {
     String getReplacementSearchPath();
 
     /**
-     * The select mode for picking MASTER objects (combo box or lookup field)
+     * Determines which selection component to use in search mode
+     * 
+     * @return
+     */
+    AttributeSelectMode getSearchSelectMode();
+
+    /**
+     * Determines which selection component to use in edit mode
      * 
      * @return
      */
