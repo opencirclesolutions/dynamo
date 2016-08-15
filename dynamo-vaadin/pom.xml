@@ -123,6 +123,11 @@
 							<Vaadin-Widgetsets>com.ocs.dynamo.DynamoWidgetSet</Vaadin-Widgetsets>
 						</manifestEntries>
 					</archive>
+					<!-- Exclude useless rubbish from JAR (saves 20MB) -->
+					<excludes>
+						<exclude>VAADIN/gwt-unitCache/**</exclude>
+						<exclude>VAADIN/widgetsets/WEB-INF/**</exclude>
+					</excludes>					
 				</configuration>
 			</plugin>
 			<plugin>
