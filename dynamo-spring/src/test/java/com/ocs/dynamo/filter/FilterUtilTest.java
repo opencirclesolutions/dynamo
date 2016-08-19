@@ -167,6 +167,18 @@ public class FilterUtilTest {
     }
 
     @Test
+    public void testExtractFilter_Between() {
+
+        Between between = new Between("prop1", 100, 200);
+        com.ocs.dynamo.filter.Filter f1 = FilterUtil.extractFilter(between, "prop1");
+        Assert.assertNotNull(f1);
+
+        // wrong property
+        com.ocs.dynamo.filter.Filter f2 = FilterUtil.extractFilter(between, "prop2");
+        Assert.assertNull(f2);
+    }
+
+    @Test
     public void testExtractFilter_Complex() {
 
         com.vaadin.data.util.filter.Like compare = new com.vaadin.data.util.filter.Like("prop1",

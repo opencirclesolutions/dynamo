@@ -90,7 +90,7 @@ public abstract class AbstractModelBasedForm<ID extends Serializable, T extends 
     protected EntityModel<?> getFieldEntityModel(AttributeModel attributeModel) {
         String reference = getFieldEntityModels().get(attributeModel.getPath());
         EntityModel<?> em = reference == null ? null : getEntityModelFactory().getModel(reference,
-                attributeModel.getType());
+                attributeModel.getModelType());
         return em;
     }
 

@@ -89,10 +89,8 @@ public abstract class BaseImporter<R, U> {
                 // if the field represents a percentage but it is
                 // received as a
                 // fraction, we multiply it by 100
-                if (field.percentage()) {
-                    if (isPercentageCorrectionSupported()) {
-                        value = PERCENTAGE_FACTOR * value;
-                    }
+                if (field.percentage() && isPercentageCorrectionSupported()) {
+                    value = PERCENTAGE_FACTOR * value;
                 }
 
                 // illegal negative value

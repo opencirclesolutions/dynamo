@@ -162,7 +162,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 
             // determine default display format
             model.setDisplayFormat(determineDefaultDisplayFormat(model.getType(),
-                    entityModel.getEntityClass(), fieldName, model.getDateType()));
+                    model.getDateType()));
 
             // determine if the attribute is required based on the @NotNull
             // annotation
@@ -227,6 +227,15 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
                     }
                 }
             }
+
+            // exception if using a multiple select field type for a single select field
+            if ((AttributeSelectMode.TOKEN.equals(model.getSelectMode()) || AttributeSelectMode.FANCY_LIST
+                    .equals(model.getSelectMode()))
+                    && !AttributeType.DETAIL.equals(model.getAttributeType())) {
+                throw new OCSRuntimeException("Token or Fancy List field not allowed for field "
+                        + model.getName());
+
+            }
         }
         return result;
     }
@@ -242,6 +251,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
     private synchronized <T> EntityModel<T> constructModel(String reference, Class<T> entityClass) {
         EntityModel<T> result = (EntityModel<T>) cache.get(reference);
         if (result == null) {
+
             boolean nested = reference.indexOf('.') > 0;
 
             // construct the basic model
@@ -520,6 +530,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
             if (embedded != null) {
                 result = AttributeType.EMBEDDED;
             } else if (Collection.class.isAssignableFrom(model.getType())) {
+
                 if (attribute != null && attribute.memberType() != null
                         && !attribute.memberType().equals(Object.class)) {
                     // if a member type is explicitly set, use that type
@@ -590,8 +601,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
      * @param dateType
      * @return
      */
-    private String determineDefaultDisplayFormat(Class<?> type, Class<?> entityClass,
-            String fieldName, AttributeDateType dateType) {
+    private String determineDefaultDisplayFormat(Class<?> type, AttributeDateType dateType) {
         String format = null;
         if (Date.class.isAssignableFrom(type)) {
             switch (dateType) {

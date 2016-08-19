@@ -68,6 +68,9 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
      */
     private VerticalLayout mainLayout;
 
+    /**
+     * The selected domain class
+     */
     private Class<? extends Domain> selectedDomain;
 
     /**
@@ -100,6 +103,7 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
         build();
     }
 
+    @Override
     public void build() {
 
         mainLayout = new DefaultVerticalLayout(true, true);
@@ -161,7 +165,7 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
                 .getServiceForEntity(domainClass);
         if (baseService != null) {
 
-            ServiceBasedSplitLayout<Integer, T> splitLayout = new ServiceBasedSplitLayout<Integer, T>(
+            ServiceBasedSplitLayout<Integer, T> split = new ServiceBasedSplitLayout<Integer, T>(
                     baseService, getEntityModelFactory().getModel(domainClass), formOptions,
                     new SortOrder(Domain.NAME, SortDirection.ASCENDING)) {
 
@@ -170,6 +174,11 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
                 @Override
                 protected Filter constructQuickSearchFilter(String value) {
                     return new SimpleStringFilter(Domain.NAME, value, true, false);
+                }
+
+                @Override
+                protected boolean isEditAllowed() {
+                    return MultiDomainEditLayout.this.isEditAllowed();
                 }
 
                 @Override
@@ -185,13 +194,8 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
                     MultiDomainEditLayout.this.postProcessButtonBar(buttonBar);
                 }
 
-                @Override
-                protected boolean isEditAllowed() {
-                    return MultiDomainEditLayout.this.isEditAllowed();
-                }
-
             };
-            return splitLayout;
+            return split;
         } else {
             throw new OCSRuntimeException(message("ocs.no.service.class.found", domainClass));
         }
@@ -211,6 +215,10 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
 
     public Domain getSelectedItem() {
         return (Domain) splitLayout.getSelectedItem();
+    }
+
+    public ServiceBasedSplitLayout<?, ?> getSplitLayout() {
+        return splitLayout;
     }
 
     /**
@@ -248,6 +256,9 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
         }
     }
 
+    /**
+     * Reloads the screen
+     */
     public void reload() {
         if (splitLayout != null) {
             splitLayout.reload();

@@ -21,8 +21,10 @@ import java.util.List;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.AttributeType;
 import com.ocs.dynamo.domain.model.EntityModel;
+import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.util.filter.AbstractJunctionFilter;
+import com.vaadin.data.util.filter.Between;
 import com.vaadin.data.util.filter.Compare.Equal;
 import com.vaadin.data.util.filter.SimpleStringFilter;
 
@@ -36,43 +38,6 @@ public final class FilterUtil {
 
     private FilterUtil() {
         // hidden constructor
-    }
-
-    /**
-     * Extracts a specific filter from a (possibly) composite filter
-     * 
-     * @param filter
-     *            the filter from which to extract a certain part
-     * @param propertyId
-     *            the propertyId of the filter to extract
-     * @return
-     */
-    public static Filter extractFilter(Filter filter, String propertyId) {
-        if (filter instanceof AbstractJunctionFilter) {
-            AbstractJunctionFilter junction = (AbstractJunctionFilter) filter;
-            for (Filter child : junction.getFilters()) {
-                Filter found = extractFilter(child, propertyId);
-                if (found != null) {
-                    return found;
-                }
-            }
-        } else if (filter instanceof com.vaadin.data.util.filter.Compare) {
-            com.vaadin.data.util.filter.Compare compare = (com.vaadin.data.util.filter.Compare) filter;
-            if (compare.getPropertyId().equals(propertyId)) {
-                return compare;
-            }
-        } else if (filter instanceof com.vaadin.data.util.filter.Like) {
-            com.vaadin.data.util.filter.Like like = (com.vaadin.data.util.filter.Like) filter;
-            if (like.getPropertyId().equals(propertyId)) {
-                return like;
-            }
-        } else if (filter instanceof SimpleStringFilter) {
-            SimpleStringFilter ssf = (SimpleStringFilter) filter;
-            if (ssf.getPropertyId().equals(propertyId)) {
-                return ssf;
-            }
-        }
-        return null;
     }
 
     /**
@@ -120,9 +85,50 @@ public final class FilterUtil {
                 return between;
             }
         }
-
         return null;
 
+    }
+
+    /**
+     * Extracts a specific filter from a (possibly) composite filter
+     * 
+     * @param filter
+     *            the filter from which to extract a certain part
+     * @param propertyId
+     *            the propertyId of the filter to extract
+     * @return
+     */
+    public static Filter extractFilter(Filter filter, String propertyId) {
+        if (filter instanceof AbstractJunctionFilter) {
+            AbstractJunctionFilter junction = (AbstractJunctionFilter) filter;
+            for (Filter child : junction.getFilters()) {
+                Filter found = extractFilter(child, propertyId);
+                if (found != null) {
+                    return found;
+                }
+            }
+        } else if (filter instanceof com.vaadin.data.util.filter.Compare) {
+            com.vaadin.data.util.filter.Compare compare = (com.vaadin.data.util.filter.Compare) filter;
+            if (compare.getPropertyId().equals(propertyId)) {
+                return compare;
+            }
+        } else if (filter instanceof com.vaadin.data.util.filter.Like) {
+            com.vaadin.data.util.filter.Like like = (com.vaadin.data.util.filter.Like) filter;
+            if (like.getPropertyId().equals(propertyId)) {
+                return like;
+            }
+        } else if (filter instanceof SimpleStringFilter) {
+            SimpleStringFilter ssf = (SimpleStringFilter) filter;
+            if (ssf.getPropertyId().equals(propertyId)) {
+                return ssf;
+            }
+        } else if (filter instanceof Between) {
+            Between between = (Between) filter;
+            if (between.getPropertyId().equals(propertyId)) {
+                return between;
+            }
+        }
+        return null;
     }
 
     /**
@@ -148,7 +154,7 @@ public final class FilterUtil {
     }
 
     /**
-     * Indicated whether a certain filter (that contains somewhere as a child of the provided
+     * Indicated whether a certain filter (that is contained somewhere as a child of the provided
      * filter) has the value "true"
      * 
      * @param filter
@@ -167,7 +173,7 @@ public final class FilterUtil {
     }
 
     /**
-     * Removes the specified filters
+     * Removes filters with certain property IDs from a certain filter
      * 
      * @param filter
      *            the filter to remove the filters from
@@ -208,7 +214,7 @@ public final class FilterUtil {
                 com.ocs.dynamo.filter.Filter child = it.next();
                 if (child instanceof com.ocs.dynamo.filter.AbstractJunctionFilter) {
                     com.ocs.dynamo.filter.AbstractJunctionFilter ajf = (com.ocs.dynamo.filter.AbstractJunctionFilter) child;
-                    if (ajf.getFilters().size() == 0) {
+                    if (ajf.getFilters().isEmpty()) {
                         it.remove();
                     }
                 } else if (child instanceof Not) {
@@ -236,19 +242,10 @@ public final class FilterUtil {
                 }
             } else if (child instanceof com.ocs.dynamo.filter.AbstractJunctionFilter) {
                 com.ocs.dynamo.filter.AbstractJunctionFilter ajf = (com.ocs.dynamo.filter.AbstractJunctionFilter) child;
-                if (ajf.getFilters().size() == 0) {
+                if (ajf.getFilters().isEmpty()) {
                     not.setFilter(null);
                 }
             }
-        }
-    }
-
-    public static void replaceFilter(com.ocs.dynamo.filter.Filter original,
-            com.ocs.dynamo.filter.Filter newFilter, String propertyId, boolean firstOnly) {
-        try {
-            replaceFilter(null, original, newFilter, propertyId, firstOnly);
-        } catch (RuntimeException ex) {
-            // do nothing
         }
     }
 
@@ -285,14 +282,37 @@ public final class FilterUtil {
                     not.setFilter(newFilter);
                 }
 
+                // throw exception to abort processing - this is nasty but better than propagating
+                // the state via parameters
                 if (firstOnly) {
-                    throw new RuntimeException();
+                    throw new OCSRuntimeException();
                 }
             }
         } else if (original instanceof Not) {
             // in case of a not-filter, propagate to the child
             Not not = (Not) original;
             replaceFilter(not, not.getFilter(), newFilter, propertyId, firstOnly);
+        }
+    }
+
+    /**
+     * Replaces a filter by another filter
+     * 
+     * @param original
+     *            the main filter that contains the filter to be replaced
+     * @param newFilter
+     *            the replacement filter
+     * @param propertyId
+     *            the property ID of the filter to replace
+     * @param firstOnly
+     *            indicates whether to replace only the first instance
+     */
+    public static void replaceFilter(com.ocs.dynamo.filter.Filter original,
+            com.ocs.dynamo.filter.Filter newFilter, String propertyId, boolean firstOnly) {
+        try {
+            replaceFilter(null, original, newFilter, propertyId, firstOnly);
+        } catch (RuntimeException ex) {
+            // do nothing - only used to break out of loop
         }
     }
 
@@ -367,4 +387,5 @@ public final class FilterUtil {
             }
         }
     }
+
 }

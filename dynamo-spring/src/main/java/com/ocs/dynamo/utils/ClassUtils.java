@@ -348,7 +348,7 @@ public final class ClassUtils {
                 }
             }
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-            throw new OCSRuntimeException(e.getMessage(), e);
+            throw new OCSRuntimeException("Error getting of " + obj + ":" + e.getMessage(), e);
         }
     }
 
@@ -394,7 +394,7 @@ public final class ClassUtils {
      * 
      * @param clazz
      * @param fieldName
-     * @return 
+     * @return
      */
     public static int getMaxLength(Class<?> clazz, String fieldName) {
         Size size = getAnnotation(clazz, fieldName, Size.class);

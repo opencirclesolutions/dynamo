@@ -77,10 +77,12 @@ public abstract class Domain extends AbstractEntity<Integer> {
         this.name = name;
     }
 
+    @Override
     public Integer getId() {
         return this.id;
     }
 
+    @Override
     public void setId(Integer id) {
         this.id = id;
     }

@@ -170,6 +170,7 @@ public abstract class ServiceBasedSplitLayout<ID extends Serializable, T extends
     }
 
     @SuppressWarnings("unchecked")
+    @Override
     public void setSelectedItems(Object selectedItems) {
         if (selectedItems != null) {
             if (selectedItems instanceof Collection<?>) {

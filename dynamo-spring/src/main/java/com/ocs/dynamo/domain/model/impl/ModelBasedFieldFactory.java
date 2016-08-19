@@ -257,7 +257,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
     /**
      * Constructs a select component for selecting multiple values
      * 
-     * @param entityModel
+     * @param fieldEntityModel
      *            the entity model of the entity to display in the field
      * @param attributeModel
      *            the attribute model of the property that is displayed in the ListSelect
@@ -279,37 +279,36 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
                 .getEntityClass());
         SortOrder[] sos = constructSortOrder(em);
 
-        boolean searchToken = (search && AttributeSelectMode.TOKEN.equals(attributeModel
-                .getSearchSelectMode()));
-        boolean searchLookup = (search && AttributeSelectMode.LOOKUP.equals(attributeModel
-                .getSearchSelectMode()));
+        // whether to use a token field for searching
+        boolean searchToken = search
+                && AttributeSelectMode.TOKEN.equals(attributeModel.getSearchSelectMode());
+        // whether to use a lookup field for searching
+        boolean searchLookup = search
+                && AttributeSelectMode.LOOKUP.equals(attributeModel.getSearchSelectMode());
 
         if (searchLookup || AttributeSelectMode.LOOKUP.equals(attributeModel.getSelectMode())) {
-            // lookup field - warning: do not use nested entity model here!
-            Field<?> field = (Field<?>) constructLookupField((EntityModel<S>) fieldEntityModel,
-                    attributeModel, fieldFilter, search, true);
-            return field;
+            // lookup field - take care to NOT use the nested model here!
+            return constructLookupField((EntityModel<S>) fieldEntityModel, attributeModel,
+                    fieldFilter, search, true);
         } else if (searchToken || AttributeSelectMode.TOKEN.equals(attributeModel.getSelectMode())) {
-            // token field in case of detail relation or multiple search field
-            TokenFieldSelect<ID, S> tokenFieldSelect = new TokenFieldSelect<ID, S>(
-                    (EntityModel<S>) em, attributeModel, service, fieldFilter, search, sos);
-            return tokenFieldSelect;
+            // token field
+            return new TokenFieldSelect<ID, S>((EntityModel<S>) em, attributeModel, service,
+                    fieldFilter, search, sos);
         } else if (AttributeSelectMode.FANCY_LIST.equals(attributeModel.getSelectMode())
                 || (search && AttributeSelectMode.FANCY_LIST.equals(attributeModel
                         .getSearchSelectMode()))) {
-            // fancy list in case specified or when searching for multiple values
+            // fancy list select
             FancyListSelect<ID, S> listSelect = new FancyListSelect<ID, S>(service,
                     (EntityModel<S>) em, attributeModel, fieldFilter, search, sos);
             listSelect.setRows(SystemPropertyUtils.getDefaultListSelectRows());
             return listSelect;
         } else if (attributeModel.isQuickAddAllowed() && !search) {
-            // quick add list select when in edit mode
-            QuickAddListSelect<ID, S> quickSelect = new QuickAddListSelect<ID, S>(
-                    (EntityModel<S>) em, attributeModel, service, fieldFilter, multipleSelect,
-                    SystemPropertyUtils.getDefaultListSelectRows(), sos);
-            return quickSelect;
+            // quick add list select when adding is allowed an not in search mode
+            return new QuickAddListSelect<ID, S>((EntityModel<S>) em, attributeModel, service,
+                    fieldFilter, multipleSelect, SystemPropertyUtils.getDefaultListSelectRows(),
+                    sos);
         } else {
-            // simple list select if everything else fails
+            // simple list select if everything else failsis not applicable
             EntityListSelect<ID, S> listSelect = new EntityListSelect<ID, S>((EntityModel<S>) em,
                     attributeModel, service, fieldFilter, sos);
             listSelect.setMultiSelect(multipleSelect);
@@ -337,10 +336,11 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
         // for a lookup field, don't use the nested model but the base model - this is
         // because the search in the popup screen is conducted on the non-nested entity list
         EntityModel<?> entityModel = overruled != null ? overruled : ServiceLocator
-                .getEntityModelFactory().getModel(attributeModel.getType());
+                .getEntityModelFactory().getModel(attributeModel.getModelType());
 
         BaseService<ID, S> service = (BaseService<ID, S>) ServiceLocator
-                .getServiceForEntity(entityModel.getEntityClass());
+                .getServiceForEntity(attributeModel.getMemberType() != null ? attributeModel
+                        .getMemberType() : entityModel.getEntityClass());
         SortOrder[] sos = constructSortOrder(entityModel);
         return new EntityLookupField<ID, S>(service, (EntityModel<S>) entityModel, attributeModel,
                 fieldFilter == null ? null : Lists.newArrayList(fieldFilter), search, multiSelect,
@@ -521,8 +521,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
             }
         } else if (Collection.class.isAssignableFrom(attributeModel.getType())) {
             // render a multiple select component for a collection
-            field = constructCollectionSelect(attributeModel.getNestedEntityModel(),
-                    attributeModel, null, true, search);
+            field = constructCollectionSelect(fieldEntityModel, attributeModel, null, true, search);
         } else if (AttributeDateType.TIME.equals(attributeModel.getDateType())) {
             TimeField tf = new TimeField();
             tf.setResolution(Resolution.MINUTE);
@@ -617,7 +616,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
         Field<?> field = null;
 
         if (search && attributeModel.isMultipleSearch()) {
-            // complex search field with multiple selection
+            // in case of multiple search, defer to the "constructCollectionSelect" method
             field = this.constructCollectionSelect(fieldEntityModel, attributeModel, fieldFilter,
                     true, search);
         } else if (AttributeSelectMode.COMBO.equals(attributeModel.getSelectMode())) {
@@ -683,8 +682,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
             if (attributeModel.getNestedEntityModel() != null) {
                 entityModel = attributeModel.getNestedEntityModel();
             } else {
-                Class<?> type = attributeModel.getMemberType() != null ? attributeModel
-                        .getMemberType() : attributeModel.getType();
+                Class<?> type = attributeModel.getModelType();
                 entityModel = ServiceLocator.getEntityModelFactory().getModel(
                         type.asSubclass(AbstractEntity.class));
             }

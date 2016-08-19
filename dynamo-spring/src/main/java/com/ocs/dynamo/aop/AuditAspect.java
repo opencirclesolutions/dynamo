@@ -14,6 +14,7 @@
 package com.ocs.dynamo.aop;
 
 import java.util.Date;
+import java.util.List;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -28,6 +29,9 @@ import com.ocs.dynamo.service.UserDetailsService;
 /**
  * Aspect for intercepting calls and automatically setting audit information (created by/created on
  * etc)
+ * 
+ * Can be used in your application simply by adding "com.ocs.dynamo.aop" to the list of packages to
+ * scan for components
  * 
  * @author bas.rutten
  *
@@ -48,7 +52,7 @@ public class AuditAspect {
     }
 
     /**
-     * intercept the save method of an auditable entity
+     * intercept any method that saves an auditable entity
      * 
      * @param joinPoint
      *            the join point
@@ -70,7 +74,6 @@ public class AuditAspect {
      * @param entity
      */
     private void setAuditFields(AbstractAuditableEntity<?> entity) {
-
         String userName = userDetailsService.getCurrentUserName();
         if (entity.getId() == null) {
             entity.setCreatedBy(userName);

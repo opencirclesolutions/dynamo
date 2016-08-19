@@ -165,6 +165,7 @@ public class EntityListSelect<ID extends Serializable, T extends AbstractEntity<
     }
 
     @SuppressWarnings("unchecked")
+    @Override
     public void refresh() {
         if (SelectMode.ALL.equals(selectMode)) {
             // add all items (but sorted)

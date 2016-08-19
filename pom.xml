@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>org.dynamoframework</groupId>
@@ -54,8 +55,8 @@
 		<connection>scm:git:https://github.com/opencirclesolutions/dynamo.git</connection>
 		<developerConnection>scm:git:https://github.com/opencirclesolutions/dynamo.git</developerConnection>
 		<url>https://github.com/opencirclesolutions/dynamo</url>
-    <tag>HEAD</tag>
-  </scm>
+		<tag>HEAD</tag>
+	</scm>
 
 	<distributionManagement>
 		<snapshotRepository>
@@ -70,6 +71,7 @@
 
 	<modules>
 		<module>dynamo-core</module>
+		<module>dynamo-camel</module>
 		<module>dynamo-vaadin</module>
 		<module>dynamo-jpa</module>
 		<module>dynamo-spring</module>
@@ -691,6 +693,18 @@
 				</plugins>
 			</build>
 		</profile>
+		<profile>
+			<id>sonar</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+			<properties>
+				<sonar.jdbc.url>jdbc:mysql://localhost:3306/sonarqube?useUnicode=true&amp;characterEncoding=utf8</sonar.jdbc.url>
+				<sonar.jdbc.username>sonarqube</sonar.jdbc.username>
+				<sonar.jdbc.password>sonar</sonar.jdbc.password>
+				<sonar.host.url>http://localhost:9000</sonar.host.url>
+			</properties>
+		</profile>
 	</profiles>
 
 	<repositories>
@@ -735,4 +749,5 @@
 			</releases>
 		</repository>
 	</repositories>
+
 </project>

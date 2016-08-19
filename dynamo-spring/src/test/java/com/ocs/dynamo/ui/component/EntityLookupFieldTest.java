@@ -41,7 +41,7 @@ public class EntityLookupFieldTest extends BaseMockitoTest {
         field.initContent();
 
         Assert.assertEquals(new SortOrder("name", SortDirection.ASCENDING), field.getSortOrder());
-        Assert.assertEquals(TestEntity.class, field.getType());
+        Assert.assertEquals(Object.class, field.getType());
 
         Component comp = field.iterator().next();
         Assert.assertTrue(comp instanceof DefaultHorizontalLayout);
@@ -67,7 +67,6 @@ public class EntityLookupFieldTest extends BaseMockitoTest {
         field.initContent();
 
         Assert.assertEquals(new SortOrder("name", SortDirection.ASCENDING), field.getSortOrder());
-        Assert.assertEquals(TestEntity.class, field.getType());
 
         Component comp = field.iterator().next();
         Assert.assertTrue(comp instanceof DefaultHorizontalLayout);

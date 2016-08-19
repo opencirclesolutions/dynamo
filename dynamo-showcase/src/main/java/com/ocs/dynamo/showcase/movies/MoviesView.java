@@ -43,11 +43,7 @@ public class MoviesView extends BaseView {
     @Inject
     private MovieService movieService;
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.vaadin.navigator.View#enter(com.vaadin.navigator.ViewChangeListener.ViewChangeEvent)
-     */
+    @Override
     public void enter(ViewChangeEvent event) {
 
         // Apply Vaadin Layout.
@@ -62,30 +58,13 @@ public class MoviesView extends BaseView {
         // Add an edit button.
         fo.setShowEditButton(true);
 
-        //fo.setOpenInViewMode(true);
-
         // This is where the magic happens. The Simple Search layout uses the Dynamo Entity
         // Model Factory to define a Simple Search Screen with sorting, filtering and lazy loading
         // of data.
         SimpleSearchLayout<Integer, Movie> movieLayout = new SimpleSearchLayout<Integer, Movie>(
                 movieService, getModelFactory().getModel(Movie.class), QueryType.ID_BASED, fo,
-                new com.vaadin.data.sort.SortOrder("id", SortDirection.ASCENDING)) {
+                new com.vaadin.data.sort.SortOrder("id", SortDirection.ASCENDING));
 
-//            @Override
-//            protected void afterModeChanged(boolean viewMode,
-//                    ModelBasedEditForm<Integer, Movie> editForm) {
-//                Notification.show("Mode change", Notification.Type.ERROR_MESSAGE);
-//            }
-//
-//            @Override
-//            protected void afterDetailSelected(ModelBasedEditForm<Integer, Movie> editForm,
-//                    Movie entity) {
-//                editForm.getField("title").setEnabled(false);
-//                Notification.show("Detail selected", Notification.Type.ERROR_MESSAGE);
-//            }
-        };
-
-        // Some plumbing.
         mainLayout.addComponent(movieLayout);
         setCompositionRoot(mainLayout);
     }

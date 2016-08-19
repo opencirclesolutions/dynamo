@@ -179,9 +179,6 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
         // add any custom functionality
         postProcessLayout();
 
-        // initial search
-        // search();
-
         setCompositionRoot(main);
     }
 

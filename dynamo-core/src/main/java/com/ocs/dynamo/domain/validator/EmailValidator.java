@@ -27,12 +27,6 @@ public class EmailValidator implements ConstraintValidator<Email, String> {
     /** Regular expression for an e-mail pattern. */
     private static final String EMAIL_PATTERN = "(.+)@(.+)";
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see javax.validation.ConstraintValidator#isValid(java.lang.Object,
-     * javax.validation.ConstraintValidatorContext)
-     */
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {
         if (value == null) {
@@ -41,13 +35,9 @@ public class EmailValidator implements ConstraintValidator<Email, String> {
         return isValidEmail(value);
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see javax.validation.ConstraintValidator#initialize(java.lang.annotation.Annotation)
-     */
     @Override
     public void initialize(Email constraintAnnotation) {
+        // do nothing
     }
 
     /**

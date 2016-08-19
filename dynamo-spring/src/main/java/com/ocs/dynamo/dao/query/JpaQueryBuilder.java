@@ -544,6 +544,12 @@ public final class JpaQueryBuilder {
         return path;
     }
 
+    /**
+     * Indicates whether at least one of the specified fetches is a fetch that fetches a collection
+     * 
+     * @param parent
+     * @return
+     */
     private static boolean isCollectionFetch(FetchParent<?, ?> parent) {
         boolean result = false;
 

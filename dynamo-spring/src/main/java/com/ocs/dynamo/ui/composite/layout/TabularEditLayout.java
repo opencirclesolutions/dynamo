@@ -292,6 +292,7 @@ public abstract class TabularEditLayout<ID extends Serializable, T extends Abstr
         return VaadinUtils.getEntityFromContainer(getContainer(), id);
     }
 
+    @Override
     public int getPageLength() {
         return pageLength;
     }
@@ -332,7 +333,7 @@ public abstract class TabularEditLayout<ID extends Serializable, T extends Abstr
                 Field<?> custom = constructCustomField(getEntityModel(), getEntityModel()
                         .getAttributeModel(propertyId), isViewmode(), false);
 
-                final Field<?> field = custom != null ? custom : super.createField(propertyId, 
+                final Field<?> field = custom != null ? custom : super.createField(propertyId,
                         fieldEntityModel);
 
                 // field is editable when not in view mode and not read only
@@ -383,6 +384,7 @@ public abstract class TabularEditLayout<ID extends Serializable, T extends Abstr
         getContainer().search(filter);
     }
 
+    @Override
     public void setPageLength(int pageLength) {
         this.pageLength = pageLength;
     }

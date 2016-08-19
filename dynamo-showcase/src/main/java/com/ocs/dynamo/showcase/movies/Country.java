@@ -49,6 +49,7 @@ public class Country extends AbstractEntity<Integer> {
     /**
      * @return the id
      */
+    @Override
     public Integer getId() {
         return id;
     }
@@ -57,6 +58,7 @@ public class Country extends AbstractEntity<Integer> {
      * @param id
      *            the id to set
      */
+    @Override
     public void setId(Integer id) {
         this.id = id;
     }

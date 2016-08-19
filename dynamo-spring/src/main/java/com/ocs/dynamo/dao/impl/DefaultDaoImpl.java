@@ -38,22 +38,19 @@ public class DefaultDaoImpl<ID, T extends AbstractEntity<ID>> extends BaseDaoImp
 
     private String[] fetchPropertyIds;
 
+    public DefaultDaoImpl(EntityPathBase<T> dslRoot, Class<T> entityClass) {
+        this(dslRoot, entityClass, (String[]) null);
+    }
+
     /**
      * Constructor
      * 
      * @param dslRoot
+     *            the query DSL root path
      * @param entityClass
-     */
-    public DefaultDaoImpl(EntityPathBase<T> dslRoot, Class<T> entityClass) {
-        this.dslRoot = dslRoot;
-        this.entityClass = entityClass;
-    }
-
-    /**
-     * 
-     * @param dslRoot
-     * @param entityClass
+     *            the entity class
      * @param fetchPropertyIds
+     *            the IDs of the properties to fetch
      */
     public DefaultDaoImpl(EntityPathBase<T> dslRoot, Class<T> entityClass,
             String... fetchPropertyIds) {

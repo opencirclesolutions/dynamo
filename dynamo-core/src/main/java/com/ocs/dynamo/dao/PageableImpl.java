@@ -51,18 +51,22 @@ public class PageableImpl implements Pageable {
         this.sortOrders = sortOrders;
     }
 
+    @Override
     public int getPageNumber() {
         return pageNumber;
     }
 
+    @Override
     public int getPageSize() {
         return pageSize;
     }
 
+    @Override
     public int getOffset() {
         return pageNumber * pageSize;
     }
 
+    @Override
     public SortOrders getSortOrders() {
         return sortOrders;
     }

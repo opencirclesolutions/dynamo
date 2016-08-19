@@ -57,11 +57,7 @@ public class TabularMoviesView extends BaseView {
 
     private List<Country> allCountries;
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.vaadin.navigator.View#enter(com.vaadin.navigator.ViewChangeListener.ViewChangeEvent)
-     */
+    @Override
     public void enter(ViewChangeEvent event) {
 
         // Apply Vaadin Layout.
@@ -87,6 +83,7 @@ public class TabularMoviesView extends BaseView {
         TabularEditLayout<Integer, Movie> movieLayout = new TabularEditLayout<Integer, Movie>(
                 movieService, em, fo, new SortOrder("title", SortDirection.ASCENDING)) {
 
+            @Override
             protected Field<?> constructCustomField(EntityModel<Movie> entityModel,
                     AttributeModel attributeModel, boolean viewMode, boolean searchMode) {
                 if ("country".equals(attributeModel.getName())) {

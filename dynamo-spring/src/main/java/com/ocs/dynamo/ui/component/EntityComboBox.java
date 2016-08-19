@@ -191,6 +191,7 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
     }
 
     @SuppressWarnings("unchecked")
+    @Override
     public void refresh() {
         if (SelectMode.ALL.equals(selectMode)) {
             // add all items (but sorted)

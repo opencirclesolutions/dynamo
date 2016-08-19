@@ -378,6 +378,7 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
      * @param entity
      *            the entity to display
      */
+    @Override
     protected void detailsMode(T entity) {
         if (mainEditLayout == null) {
             mainEditLayout = new DefaultVerticalLayout();

@@ -216,6 +216,43 @@ public class BaseServiceImplTest extends BaseMockitoTest {
     }
 
     @Test
+    public void testFetchFilter() {
+        Filter filter = new Compare.Equal("property1", 1);
+        service.fetch(filter, new FetchJoinInformation("testEntities"));
+
+        Mockito.verify(dao).fetch(filter, new FetchJoinInformation("testEntities"));
+
+        service.fetch(filter);
+        Mockito.verify(dao).fetch(filter);
+    }
+
+    @Test
+    public void testFetchFilterPageable() {
+        Filter filter = new Compare.Equal("property1", 1);
+        service.fetch(filter, 2, 10, new FetchJoinInformation("testEntities"));
+
+        ArgumentCaptor<Pageable> captor = ArgumentCaptor.forClass(Pageable.class);
+        Mockito.verify(dao).fetch(Matchers.eq(filter), captor.capture(),
+                Matchers.eq(new FetchJoinInformation("testEntities")));
+
+        Pageable pb = captor.getValue();
+        Assert.assertEquals(20, pb.getOffset());
+        Assert.assertEquals(10, pb.getPageSize());
+        Assert.assertEquals(2, pb.getPageNumber());
+    }
+
+    @Test
+    public void testFetchSortOrderJoins() {
+        Filter filter = new Compare.Equal("property1", 1);
+        SortOrders orders = new SortOrders(new SortOrder("property2"));
+        FetchJoinInformation[] joins = new FetchJoinInformation[] { new FetchJoinInformation(
+                "testEntities") };
+
+        service.fetch(filter, orders, joins);
+        Mockito.verify(dao).fetch(filter, orders, joins);
+    }
+
+    @Test
     public void testFetchById() {
 
         service.fetchById(1);

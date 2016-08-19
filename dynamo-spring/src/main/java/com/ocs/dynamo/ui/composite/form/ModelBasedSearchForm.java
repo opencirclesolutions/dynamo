@@ -119,6 +119,7 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
     /**
      * Clears all filters then performs a fresh search
      */
+    @Override
     protected void clear() {
         // Clear all filter groups
         for (FilterGroup group : groups.values()) {
@@ -240,6 +241,7 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
      *            the entity model
      * @return
      */
+    @Override
     protected Layout constructFilterLayout() {
         if (nrOfColumns == 1) {
             form = new FormLayout();

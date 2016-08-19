@@ -193,7 +193,7 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
         List<Object> propertyNames = new ArrayList<>();
         List<String> headerNames = new ArrayList<>();
 
-        for (final AttributeModel attributeModel : attributeModels) {
+        for (AttributeModel attributeModel : attributeModels) {
             addColumn(table, attributeModel, propertyNames, headerNames);
             if (attributeModel.getNestedEntityModel() != null) {
                 for (AttributeModel nestedAttributeModel : attributeModel.getNestedEntityModel()

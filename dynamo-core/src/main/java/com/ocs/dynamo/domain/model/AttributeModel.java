@@ -191,6 +191,13 @@ public interface AttributeModel extends Comparable<AttributeModel> {
     Class<?> getType();
 
     /**
+     * Returns the type of the attribute model, or the element type in case of a collection
+     * 
+     * @return
+     */
+    Class<?> getModelType();
+
+    /**
      * Indicates whether the attribute is a one-to-one or many-to-one attribute that can ben
      * selected in a form
      */

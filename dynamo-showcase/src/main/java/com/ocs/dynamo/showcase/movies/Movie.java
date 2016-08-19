@@ -35,6 +35,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Set;
@@ -118,6 +119,7 @@ public class Movie extends AbstractEntity<Integer> {
     /**
      * @return the id
      */
+    @Override
     public Integer getId() {
         return id;
     }
@@ -126,6 +128,7 @@ public class Movie extends AbstractEntity<Integer> {
      * @param id
      *            the id to set
      */
+    @Override
     public void setId(Integer id) {
         this.id = id;
     }

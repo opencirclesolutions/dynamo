@@ -151,6 +151,7 @@ public class QuickAddListSelect<ID extends Serializable, T extends AbstractEntit
     /**
      * Refreshes the data in the list
      */
+    @Override
     public void refresh() {
         if (listSelect != null) {
             listSelect.refresh();

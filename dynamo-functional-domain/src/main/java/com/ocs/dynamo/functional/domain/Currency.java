@@ -36,6 +36,7 @@ public class Currency extends Domain {
     }
 
     /**
+     * Constructor
      * 
      * @param code
      * @param name

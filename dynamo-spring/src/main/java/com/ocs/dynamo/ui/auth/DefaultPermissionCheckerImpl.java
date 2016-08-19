@@ -102,6 +102,7 @@ public class DefaultPermissionCheckerImpl implements PermissionChecker {
      * @param viewName
      * @return
      */
+    @Override
     public boolean isAccessAllowed(String viewName) {
         List<String> roles = permissions.get(viewName);
         if (roles == null) {
@@ -122,14 +123,20 @@ public class DefaultPermissionCheckerImpl implements PermissionChecker {
      * 
      * @return
      */
+    @Override
     public List<String> getViewNames() {
         return Collections.unmodifiableList(new ArrayList<String>(permissions.keySet()));
     }
 
     /**
+     * Checks whether the view is an "edit only" view that can be hidden if the user doesn't have
+     * certain edit rights
+     * 
      * @param viewName
+     *            the name of the view
      * @return
      */
+    @Override
     public boolean isEditOnly(String viewName) {
         if (!editOnly.containsKey(viewName)) {
             return false;

@@ -74,13 +74,14 @@ public abstract class BaseUI extends UI {
                 new Navigator.SingleComponentContainerViewDisplay(container));
         UI.getCurrent().setNavigator(navigator);
         navigator.addProvider(viewProvider);
-        //navigator.setErrorView(new ErrorView());
     }
 
+    @Override
     public Navigator getNavigator() {
         return navigator;
     }
 
+    @Override
     public void setNavigator(Navigator navigator) {
         this.navigator = navigator;
     }
