@@ -15,6 +15,7 @@ package com.ocs.dynamo.domain.model.impl;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -139,6 +140,15 @@ public class EntityModelImpl<T> implements EntityModel<T> {
         for (List<AttributeModel> list : attributeModels.values()) {
             result.addAll(list);
         }
+        Collections.sort(result, new Comparator<AttributeModel>() {
+
+            @Override
+            public int compare(AttributeModel o1, AttributeModel o2) {
+                return o1.getOrder().compareTo(o2.getOrder());
+            }
+
+        });
+
         return Collections.unmodifiableList(result);
     }
 
@@ -148,16 +158,15 @@ public class EntityModelImpl<T> implements EntityModel<T> {
     }
 
     @Override
-    public List<AttributeModel> getAttributeModelsForType(AttributeType attributeType,
-            Class<?> type) {
+    public List<AttributeModel> getAttributeModelsForType(AttributeType attributeType, Class<?> type) {
         List<AttributeModel> result = new ArrayList<>();
         if (attributeType != null || type != null) {
             for (List<AttributeModel> list : attributeModels.values()) {
                 for (AttributeModel model : list) {
                     Class<?> rt = ClassUtils.getResolvedType(getEntityClass(), model.getName(), 0);
                     if ((attributeType == null || attributeType.equals(model.getAttributeType()))
-                            && (type == null || type.isAssignableFrom(model.getType())
-                                    || (rt != null && type.isAssignableFrom(rt)))) {
+                            && (type == null || type.isAssignableFrom(model.getType()) || (rt != null && type
+                                    .isAssignableFrom(rt)))) {
                         result.add(model);
                     }
                 }

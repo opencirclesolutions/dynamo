@@ -67,7 +67,7 @@ public class MultiDomainEditLayoutTest extends BaseIntegrationTest {
             @Override
             protected void postProcessButtonBar(Layout buttonBar) {
                 Button button = new Button("testButton");
-               buttonBar.addComponent(button);
+                buttonBar.addComponent(button);
                 registerButton(button);
             }
         };
@@ -79,6 +79,9 @@ public class MultiDomainEditLayoutTest extends BaseIntegrationTest {
         // adding is not possible
         Assert.assertNotNull(splitLayout.getAddButton());
         Assert.assertFalse(splitLayout.getAddButton().isVisible());
+        
+        // test the reload method
+        layout.reload();
     }
 
     /**
@@ -96,6 +99,8 @@ public class MultiDomainEditLayoutTest extends BaseIntegrationTest {
     }
 
     private class TestDomain extends Domain {
+
+        private static final long serialVersionUID = -204959303189799878L;
 
     }
 }
