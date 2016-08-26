@@ -15,7 +15,7 @@ package com.ocs.dynamo.importer.impl;
 
 import java.math.BigDecimal;
 
-import com.ocs.dynamo.importer.XlsField;
+import com.ocs.dynamo.importer.ImportField;
 import com.ocs.dynamo.importer.dto.AbstractDTO;
 
 public class PersonDTO extends AbstractDTO {
@@ -29,25 +29,25 @@ public class PersonDTO extends AbstractDTO {
     public PersonDTO() {
     }
 
-    @XlsField(index = 0, defaultValue = "Unknown")
+    @ImportField(index = 0, defaultValue = "Unknown")
     private String name;
 
-    @XlsField(index = 1, required = true)
+    @ImportField(index = 1, required = true)
     private Integer number;
 
-    @XlsField(index = 2, defaultValue = "1.0", cannotBeNegative = true)
+    @ImportField(index = 2, defaultValue = "1.0", cannotBeNegative = true)
     private BigDecimal factor;
 
-    @XlsField(index = 3)
+    @ImportField(index = 3)
     private String random;
 
-    @XlsField(index = 4)
+    @ImportField(index = 4)
     private Gender gender;
 
-    @XlsField(index = 5, percentage = true)
+    @ImportField(index = 5, percentage = true)
     private BigDecimal percentage;
 
-    @XlsField(index = 6)
+    @ImportField(index = 6)
     private Boolean abool;
 
     public String getName() {

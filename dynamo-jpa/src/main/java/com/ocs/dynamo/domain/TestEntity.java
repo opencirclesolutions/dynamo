@@ -27,6 +27,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -107,6 +108,12 @@ public class TestEntity extends AbstractTreeEntity<Integer, TestEntity> {
     private String url;
 
     public TestEntity() {
+    }
+
+    public TestEntity(int id, String name, Long age) {
+        this.id = id;
+        this.name = name;
+        this.age = age;
     }
 
     public TestEntity(String name, Long age) {
@@ -270,4 +277,8 @@ public class TestEntity extends AbstractTreeEntity<Integer, TestEntity> {
         this.url = url;
     }
 
+    @AssertTrue
+    public boolean isAssertSomething() {
+        return !"bogus".equals(name);
+    }
 }

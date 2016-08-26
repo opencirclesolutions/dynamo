@@ -202,13 +202,17 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
                 noSearchYetLabel = new Label(message("ocs.no.search.yet"));
                 searchResultsLayout.addComponent(noSearchYetLabel);
 
-                // set up a click listener that will construct the table when needed
+                // set up a click listener that will construct the table when needed in case of a
+                // deferred search
+                // set up a click listener that will set the searchable when
+                // needed
                 getSearchForm().getSearchButton().addClickListener(new Button.ClickListener() {
 
                     @Override
                     public void buttonClick(ClickEvent event) {
-                        getSearchForm().setSearchable(getTableWrapper());
-                        search();
+                        if (getSearchForm().getSearchable() == null) {
+                            search();
+                        }
                     }
                 });
             }
@@ -289,6 +293,9 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
         return rb;
     }
 
+    /**
+     * Constructs the search layout
+     */
     public void constructSearchLayout() {
         // construct table and set properties
         getTableWrapper().getTable().setPageLength(getPageLength());
@@ -357,8 +364,9 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
     @Override
     public ServiceResultsTableWrapper<ID, T> constructTableWrapper() {
         ServiceResultsTableWrapper<ID, T> result = new ServiceResultsTableWrapper<ID, T>(
-                this.getService(), getEntityModel(), getQueryType(), null, getSortOrders(),
-                getJoins());
+                this.getService(), getEntityModel(), getQueryType(), getFormOptions()
+                        .isSearchImmediately() ? null : getSearchForm().extractFilter(),
+                getSortOrders(), getJoins());
         result.build();
         return result;
     }
@@ -550,11 +558,17 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 
         // lazily construct search form if it is not there yet
         if (!searchLayoutConstructed) {
+
+            // build screen if it is not there yet
             constructSearchLayout();
+
             searchResultsLayout.addComponent(getTableWrapper());
             getSearchForm().setSearchable(getTableWrapper());
+
             searchResultsLayout.removeComponent(noSearchYetLabel);
             searchLayoutConstructed = true;
+        } else {
+            searchForm.search();
         }
 
         if (getSearchForm().getCompositeFilter() != null) {

@@ -20,6 +20,7 @@ import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -100,6 +101,11 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
         }
 
         @Override
+        public Class<? extends byte[]> getType() {
+            return byte[].class;
+        }
+
+        @Override
         protected Component initContent() {
             final byte[] bytes = ClassUtils.getBytes(getEntity(), attributeModel.getName());
             final Embedded image = new DefaultEmbedded(null, bytes);
@@ -144,11 +150,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
             setCaption(attributeModel.getDisplayName());
 
             return main;
-        }
-
-        @Override
-        public Class<? extends byte[]> getType() {
-            return byte[].class;
         }
 
     }
@@ -404,6 +405,13 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
     }
 
     /**
+     * Callback method that is called after the mode has changed from or to view mode
+     */
+    protected void afterModeChanged(boolean viewMode) {
+        // overwrite in subclasses
+    }
+
+    /**
      * Called after the user navigates back to a search screen using the back button
      * 
      * @return
@@ -548,40 +556,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
     }
 
     /**
-     * Processes all fields that are part of a property group
-     * 
-     * @param parentGroupHeader
-     *            the group header
-     * @param innerForm
-     *            the form layout to which to add the fields
-     * @param innerTabs
-     *            whether we are displaying tabs
-     * @param innerTabSheet
-     *            the tab sheet to which to add the fields
-     * @param startCount
-     * @return
-     */
-    private int processParentHeaderGroup(String parentGroupHeader, Layout innerForm,
-            boolean innerTabs, TabSheet innerTabSheet, int startCount) {
-        int count = 0;
-
-        for (String attributeGroup : getEntityModel().getAttributeGroups()) {
-            if (getEntityModel().isAttributeGroupVisible(attributeGroup, viewMode)) {
-                if (getParentGroup(attributeGroup).equals(parentGroupHeader)) {
-                    Layout innerLayout2 = constructAttributeGroupLayout(innerForm, innerTabs,
-                            innerTabSheet, getAttributeGroupCaption(attributeGroup), true);
-                    for (AttributeModel attributeModel : getEntityModel()
-                            .getAttributeModelsForGroup(attributeGroup)) {
-                        addField(innerLayout2, getEntityModel(), attributeModel, startCount + count);
-                        count++;
-                    }
-                }
-            }
-        }
-        return count;
-    }
-
-    /**
      * Sets the state (enabled/disabled) of the save button. The button is enabled if the from is
      * valid and all of its detail tables are as well
      */
@@ -634,149 +608,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
             parent.addComponent(panel);
         }
         return innerLayout;
-    }
-
-    /**
-     * Creates a custom field
-     * 
-     * @param entityModel
-     *            the entity model to base the field on
-     * @param attributeModel
-     *            the attribute model to base the field on
-     * @return
-     */
-    protected Field<?> constructCustomField(EntityModel<T> entityModel,
-            AttributeModel attributeModel, boolean viewMode) {
-        // by default, return null. override in subclasses in order to create
-        // specific fields
-        return null;
-    }
-
-    /**
-     * Constructs the save button
-     */
-    private Button constructSaveButton() {
-        Button saveButton = new Button(message("ocs.save"));
-        saveButton.addClickListener(new Button.ClickListener() {
-
-            @Override
-            public void buttonClick(ClickEvent event) {
-                try {
-                    boolean isNew = entity.getId() == null;
-
-                    entity = service.save(entity);
-                    setEntity(service.fetchById(entity.getId()));
-                    Notification.show(message("ocs.changes.saved"),
-                            Notification.Type.TRAY_NOTIFICATION);
-
-                    // set to viewmode, load the view mode screen, and fill the
-                    // details
-                    if (getFormOptions().isOpenInViewMode()) {
-                        viewMode = true;
-                        build();
-                    }
-
-                    afterEditDone(false, isNew, getEntity());
-                } catch (RuntimeException ex) {
-                    handleSaveException(ex);
-                }
-            }
-        });
-
-        // enable/disable save button based on form validity
-        saveButton.setEnabled(groups.get(isViewMode()).isValid());
-        for (Field<?> f : groups.get(isViewMode()).getFields()) {
-            f.addValueChangeListener(new Property.ValueChangeListener() {
-
-                @Override
-                public void valueChange(ValueChangeEvent event) {
-                    checkSaveButtonState();
-                }
-            });
-        }
-        return saveButton;
-    }
-
-    /**
-     * Constructs a field for a certain attribute
-     * 
-     * @param form
-     * @param entityModel
-     * @param attributeModel
-     */
-    @SuppressWarnings("unchecked")
-    private void constructField(Layout form, EntityModel<T> entityModel,
-            AttributeModel attributeModel, boolean viewMode, int count) {
-
-        EntityModel<?> em = getFieldEntityModel(attributeModel);
-        // allow the user to override the construction of a field
-        Field<?> field = constructCustomField(entityModel, attributeModel, viewMode);
-        if (field == null) {
-            // if no custom field is defined, then use the default
-            field = fieldFactory.constructField(attributeModel, getFieldFilters(), em);
-        }
-
-        if (field instanceof URLField) {
-            ((URLField) field).setEditable(!isViewMode());
-        }
-
-        // set view mode if appropriate
-        if (field instanceof CollectionTable) {
-            ((CollectionTable<?>) field).setViewMode(isViewMode());
-        }
-
-        // set view mode if appropriate
-        if (field instanceof QuickAddListSelect) {
-            ((QuickAddListSelect<?, ?>) field).setViewMode(isViewMode());
-        }
-
-        if (field != null) {
-            groups.get(viewMode).bind(field, attributeModel.getName());
-            field.setSizeFull();
-            form.addComponent(field);
-        }
-
-        // set the default value for new objects
-        if (entity.getId() == null && attributeModel.getDefaultValue() != null) {
-            field.getPropertyDataSource().setValue(attributeModel.getDefaultValue());
-        }
-
-        // store a reference to the first field so we can give it focus
-        if (count == 0) {
-            firstField = field;
-        }
-    }
-
-    private Label constructTitleLabel() {
-        Label label = null;
-
-        // add title label
-        String mainValue = EntityModelUtil.getMainAttributeValue(entity, getEntityModel());
-        if (isViewMode()) {
-            label = new Label(message("ocs.modelbasededitform.title.view", getEntityModel()
-                    .getDisplayName(), mainValue), ContentMode.HTML);
-        } else {
-            if (entity.getId() == null) {
-                // create a new entity
-                label = new Label(message("ocs.modelbasededitform.title.create", getEntityModel()
-                        .getDisplayName()), ContentMode.HTML);
-            } else {
-                // update an existing entity
-                label = new Label(message("ocs.modelbasededitform.title.update", getEntityModel()
-                        .getDisplayName(), mainValue), ContentMode.HTML);
-            }
-        }
-        return label;
-    }
-
-    /**
-     * Constructs an upload field
-     * 
-     * @param entityModel
-     * @param attributeModel
-     */
-    private UploadComponent constructUploadField(AttributeModel attributeModel) {
-        return new UploadComponent(attributeModel);
     }
 
     private HorizontalLayout constructButtonBar() {
@@ -838,6 +669,149 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
     }
 
     /**
+     * Creates a custom field
+     * 
+     * @param entityModel
+     *            the entity model to base the field on
+     * @param attributeModel
+     *            the attribute model to base the field on
+     * @return
+     */
+    protected Field<?> constructCustomField(EntityModel<T> entityModel,
+            AttributeModel attributeModel, boolean viewMode) {
+        // by default, return null. override in subclasses in order to create
+        // specific fields
+        return null;
+    }
+
+    /**
+     * Constructs a field for a certain attribute
+     * 
+     * @param form
+     * @param entityModel
+     * @param attributeModel
+     */
+    @SuppressWarnings("unchecked")
+    private void constructField(Layout form, EntityModel<T> entityModel,
+            AttributeModel attributeModel, boolean viewMode, int count) {
+
+        EntityModel<?> em = getFieldEntityModel(attributeModel);
+        // allow the user to override the construction of a field
+        Field<?> field = constructCustomField(entityModel, attributeModel, viewMode);
+        if (field == null) {
+            // if no custom field is defined, then use the default
+            field = fieldFactory.constructField(attributeModel, getFieldFilters(), em);
+        }
+
+        if (field instanceof URLField) {
+            ((URLField) field).setEditable(!isViewMode());
+        }
+
+        // set view mode if appropriate
+        if (field instanceof CollectionTable) {
+            ((CollectionTable<?>) field).setViewMode(isViewMode());
+        }
+
+        // set view mode if appropriate
+        if (field instanceof QuickAddListSelect) {
+            ((QuickAddListSelect<?, ?>) field).setViewMode(isViewMode());
+        }
+
+        if (field != null) {
+            groups.get(viewMode).bind(field, attributeModel.getName());
+            field.setSizeFull();
+            form.addComponent(field);
+        }
+
+        // set the default value for new objects
+        if (entity.getId() == null && attributeModel.getDefaultValue() != null) {
+            field.getPropertyDataSource().setValue(attributeModel.getDefaultValue());
+        }
+
+        // store a reference to the first field so we can give it focus
+        if (count == 0) {
+            firstField = field;
+        }
+    }
+
+    /**
+     * Constructs the save button
+     */
+    private Button constructSaveButton() {
+        Button saveButton = new Button(message("ocs.save"));
+        saveButton.addClickListener(new Button.ClickListener() {
+
+            @Override
+            public void buttonClick(ClickEvent event) {
+                try {
+                    boolean isNew = entity.getId() == null;
+
+                    entity = service.save(entity);
+                    setEntity(service.fetchById(entity.getId()));
+                    Notification.show(message("ocs.changes.saved"),
+                            Notification.Type.TRAY_NOTIFICATION);
+
+                    // set to viewmode, load the view mode screen, and fill the
+                    // details
+                    if (getFormOptions().isOpenInViewMode()) {
+                        viewMode = true;
+                        build();
+                    }
+
+                    afterEditDone(false, isNew, getEntity());
+                } catch (RuntimeException ex) {
+                    handleSaveException(ex);
+                }
+            }
+        });
+
+        // enable/disable save button based on form validity
+        saveButton.setEnabled(groups.get(isViewMode()).isValid());
+        for (Field<?> f : groups.get(isViewMode()).getFields()) {
+            f.addValueChangeListener(new Property.ValueChangeListener() {
+
+                @Override
+                public void valueChange(ValueChangeEvent event) {
+                    checkSaveButtonState();
+                }
+            });
+        }
+        return saveButton;
+    }
+
+    private Label constructTitleLabel() {
+        Label label = null;
+
+        // add title label
+        String mainValue = EntityModelUtil.getMainAttributeValue(entity, getEntityModel());
+        if (isViewMode()) {
+            label = new Label(message("ocs.modelbasededitform.title.view", getEntityModel()
+                    .getDisplayName(), mainValue), ContentMode.HTML);
+        } else {
+            if (entity.getId() == null) {
+                // create a new entity
+                label = new Label(message("ocs.modelbasededitform.title.create", getEntityModel()
+                        .getDisplayName()), ContentMode.HTML);
+            } else {
+                // update an existing entity
+                label = new Label(message("ocs.modelbasededitform.title.update", getEntityModel()
+                        .getDisplayName(), mainValue), ContentMode.HTML);
+            }
+        }
+        return label;
+    }
+
+    /**
+     * Constructs an upload field
+     * 
+     * @param entityModel
+     * @param attributeModel
+     */
+    private UploadComponent constructUploadField(AttributeModel attributeModel) {
+        return new UploadComponent(attributeModel);
+    }
+
+    /**
      * @param attributeGroup
      * @return
      */
@@ -876,8 +850,96 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
         return null;
     }
 
+    public List<Button> getSaveButtons() {
+        return Collections.unmodifiableList(saveButtons);
+    }
+
+    /**
+     * Indicates whether it is allowed to edit this component
+     * 
+     * @return
+     */
+    protected boolean isEditAllowed() {
+        return true;
+    }
+
     public boolean isViewMode() {
         return viewMode;
+    }
+
+    /**
+     * Post-processes the button bar that is displayed above/below the edit form
+     * 
+     * @param buttonBar
+     * @param viewMode
+     */
+    protected void postProcessButtonBar(HorizontalLayout buttonBar, boolean viewMode) {
+        // overwrite in subclasses
+    }
+
+    /**
+     * Post-processes any edit fields- this method does nothing by default but must be used to call
+     * the postProcessEditFields callback method on an enclosing component
+     */
+    protected void postProcessEditFields() {
+        // overwrite in subclasses
+    }
+
+    /**
+     * Processes all fields that are part of a property group
+     * 
+     * @param parentGroupHeader
+     *            the group header
+     * @param innerForm
+     *            the form layout to which to add the fields
+     * @param innerTabs
+     *            whether we are displaying tabs
+     * @param innerTabSheet
+     *            the tab sheet to which to add the fields
+     * @param startCount
+     * @return
+     */
+    private int processParentHeaderGroup(String parentGroupHeader, Layout innerForm,
+            boolean innerTabs, TabSheet innerTabSheet, int startCount) {
+        int count = 0;
+
+        for (String attributeGroup : getEntityModel().getAttributeGroups()) {
+            if (getEntityModel().isAttributeGroupVisible(attributeGroup, viewMode)) {
+                if (getParentGroup(attributeGroup).equals(parentGroupHeader)) {
+                    Layout innerLayout2 = constructAttributeGroupLayout(innerForm, innerTabs,
+                            innerTabSheet, getAttributeGroupCaption(attributeGroup), true);
+                    for (AttributeModel attributeModel : getEntityModel()
+                            .getAttributeModelsForGroup(attributeGroup)) {
+                        addField(innerLayout2, getEntityModel(), attributeModel, startCount + count);
+                        count++;
+                    }
+                }
+            }
+        }
+        return count;
+    }
+
+    /**
+     * Replaces a label (in response to a change)
+     * 
+     * @param propertyName
+     */
+    public void replaceLabel(String propertyName) {
+        AttributeModel am = getEntityModel().getAttributeModel(propertyName);
+        if (am != null) {
+            Component replacement = constructLabel(getEntity(), am);
+            Component oldLabel = labels.get(isViewMode()).get(am);
+
+            // label is displayed in view mode or when its an existing entity
+            replacement.setVisible(true);
+
+            // replace all existing labels with new labels
+            HasComponents hc = labels.get(isViewMode()).get(am).getParent();
+            if (hc instanceof Layout) {
+                ((Layout) hc).replaceComponent(oldLabel, replacement);
+                labels.get(isViewMode()).put(am, replacement);
+            }
+        }
     }
 
     public void setEntity(T entity) {
@@ -960,65 +1022,14 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
         }
     }
 
+    /**
+     * 
+     * @param component
+     * @param valid
+     */
     public void signalDetailsTableValid(SignalsParent component, boolean valid) {
         detailTablesValid.put(component, valid);
         checkSaveButtonState();
     }
 
-    /**
-     * Indicates whether it is allowed to edit this component
-     * 
-     * @return
-     */
-    protected boolean isEditAllowed() {
-        return true;
-    }
-
-    /**
-     * Post-processes any edit fields- this method does nothing by default but must be used to call
-     * the postProcessEditFields callback method on an enclosing component
-     */
-    protected void postProcessEditFields() {
-        // overwrite in subclasses
-    }
-
-    /**
-     * Post-processes the button bar that is displayed above/below the edit form
-     * 
-     * @param buttonBar
-     * @param viewMode
-     */
-    protected void postProcessButtonBar(HorizontalLayout buttonBar, boolean viewMode) {
-        // overwrite in subclasses
-    }
-
-    /**
-     * Callback method that is called after the mode has changed from or to view mode
-     */
-    protected void afterModeChanged(boolean viewMode) {
-        // overwrite in subclasses
-    }
-
-    /**
-     * Replaces a label (in response to a change)
-     * 
-     * @param propertyName
-     */
-    public void replaceLabel(String propertyName) {
-        AttributeModel am = getEntityModel().getAttributeModel(propertyName);
-        if (am != null) {
-            Component replacement = constructLabel(getEntity(), am);
-            Component oldLabel = labels.get(isViewMode()).get(am);
-
-            // label is displayed in view mode or when its an existing entity
-            replacement.setVisible(true);
-
-            // replace all existing labels with new labels
-            HasComponents hc = labels.get(isViewMode()).get(am).getParent();
-            if (hc instanceof Layout) {
-                ((Layout) hc).replaceComponent(oldLabel, replacement);
-                labels.get(isViewMode()).put(am, replacement);
-            }
-        }
-    }
 }

@@ -16,7 +16,7 @@ package com.ocs.dynamo.importer.impl;
 import org.springframework.util.StringUtils;
 
 import com.ocs.dynamo.exception.OCSImportException;
-import com.ocs.dynamo.importer.XlsField;
+import com.ocs.dynamo.importer.ImportField;
 
 /**
  * Base class for importers that read data from a text file
@@ -40,7 +40,7 @@ public abstract class BaseTextImporter extends BaseImporter<String[], String> {
     }
 
     @Override
-    protected Boolean getBooleanValueWithDefault(String unit, XlsField field) {
+    protected Boolean getBooleanValueWithDefault(String unit, ImportField field) {
         Boolean result = getBooleanValue(unit);
         if (result == null && !StringUtils.isEmpty(field.defaultValue())) {
             return Boolean.valueOf(field.defaultValue());
@@ -75,7 +75,7 @@ public abstract class BaseTextImporter extends BaseImporter<String[], String> {
      *            the field definition (contains a default value)
      */
     @Override
-    protected Double getNumericValueWithDefault(String unit, XlsField field) {
+    protected Double getNumericValueWithDefault(String unit, ImportField field) {
         Double value = getNumericValue(unit);
         if (value == null && !StringUtils.isEmpty(field.defaultValue())) {
             value = Double.valueOf(field.defaultValue());
@@ -92,7 +92,7 @@ public abstract class BaseTextImporter extends BaseImporter<String[], String> {
      *            the field definition (contains a default value)
      */
     @Override
-    protected String getStringValueWithDefault(String unit, XlsField field) {
+    protected String getStringValueWithDefault(String unit, ImportField field) {
         String result = unit;
         if (StringUtils.isEmpty(result) && !StringUtils.isEmpty(field.defaultValue())) {
             result = field.defaultValue();
@@ -104,7 +104,7 @@ public abstract class BaseTextImporter extends BaseImporter<String[], String> {
      * Retrieves the unit (single string value) from a row or line
      */
     @Override
-    protected String getUnit(String[] row, XlsField field) {
+    protected String getUnit(String[] row, ImportField field) {
         return row[field.index()];
     }
 
@@ -122,7 +122,7 @@ public abstract class BaseTextImporter extends BaseImporter<String[], String> {
      *            the field
      */
     @Override
-    protected boolean isWithinRange(String[] row, XlsField field) {
+    protected boolean isWithinRange(String[] row, ImportField field) {
         return field.index() < row.length;
     }
 

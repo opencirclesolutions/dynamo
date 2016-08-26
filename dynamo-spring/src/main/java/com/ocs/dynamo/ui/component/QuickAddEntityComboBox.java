@@ -95,7 +95,6 @@ public class QuickAddEntityComboBox<ID extends Serializable, T extends AbstractE
 
         // no caption needed (the wrapping component has the caption)
         comboBox.setCaption(null);
-        comboBox.setSizeFull();
 
         comboBox.addValueChangeListener(new ValueChangeListener() {
 
@@ -109,9 +108,11 @@ public class QuickAddEntityComboBox<ID extends Serializable, T extends AbstractE
         });
 
         bar.addComponent(comboBox);
+        bar.setExpandRatio(comboBox, 0.90f);
 
         Button addButton = constructAddButton();
         bar.addComponent(addButton);
+        bar.setExpandRatio(addButton, 0.10f);
 
         return bar;
     }

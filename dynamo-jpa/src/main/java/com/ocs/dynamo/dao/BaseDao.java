@@ -43,15 +43,6 @@ public interface BaseDao<ID, T extends AbstractEntity<ID>> {
      * 
      * @param filter
      *            the filter
-     * @return
-     */
-    long count(Filter filter);
-
-    /**
-     * Returns the number of entities that match the provided filter
-     * 
-     * @param filter
-     *            the filter
      * @param distinct
      *            whether to return only distinct results
      * @return

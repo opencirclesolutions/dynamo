@@ -66,10 +66,15 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
      * Constructor
      * 
      * @param entity
+     *            the entity to edit
      * @param service
+     *            the service used to save/refresh the entity
      * @param entityModel
+     *            the entity model used to generate the form
      * @param formOptions
+     *            the form options
      * @param joins
+     *            optional joins to use when fetching the entity from the database
      */
     public SimpleEditLayout(T entity, BaseService<ID, T> service, EntityModel<T> entityModel,
             FormOptions formOptions, FetchJoinInformation... joins) {
@@ -101,17 +106,17 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
         }
     }
 
+    @Override
+    public void attach() {
+        super.attach();
+        build();
+    }
+
     /**
      * Code to carry out after navigating "back" to the main screen
      */
     protected void back() {
         // overwrite in subclasses
-    }
-
-    @Override
-    public void attach() {
-        super.attach();
-        build();
     }
 
     /**
@@ -235,6 +240,10 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
         return null;
     }
 
+    /**
+     * 
+     * @return
+     */
     protected boolean isEditAllowed() {
         return true;
     }
@@ -272,6 +281,12 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
         }
     }
 
+    public void replaceLabel(String propertyName) {
+        if (editForm != null) {
+            editForm.replaceLabel(propertyName);
+        }
+    }
+
     public void setEntity(T entity) {
         this.entity = entity;
         editForm.setEntity(entity);
@@ -283,11 +298,5 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 
     public void setJoins(FetchJoinInformation[] joins) {
         this.joins = joins;
-    }
-
-    public void replaceLabel(String propertyName) {
-        if (editForm != null) {
-            editForm.replaceLabel(propertyName);
-        }
     }
 }

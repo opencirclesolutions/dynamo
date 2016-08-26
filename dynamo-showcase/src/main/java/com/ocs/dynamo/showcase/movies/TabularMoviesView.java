@@ -64,14 +64,7 @@ public class TabularMoviesView extends BaseView {
         mainLayout = new DefaultVerticalLayout(true, true);
 
         // Set form options by convention.
-        FormOptions fo = new FormOptions();
-        // fo.setOpenInViewMode(true);
-
-        // Add a remove button.
-        fo.setShowRemoveButton(true);
-
-        // Add an edit button.
-        fo.setShowEditButton(true);
+        FormOptions fo = new FormOptions().setShowRemoveButton(true).setShowEditButton(true);
 
         // retrieve the country list just once
         allCountries = countryService.findAll();

@@ -72,8 +72,9 @@ public class IdBasedServiceQuery<ID extends Serializable, T extends AbstractEnti
                 index++;
             }
         }
-        return getCustomQueryDefinition().getService().fetchByIds(results,
+        List<T> result =  getCustomQueryDefinition().getService().fetchByIds(results,
                 new SortOrders(constructOrder()), getCustomQueryDefinition().getJoins());
+        return result;
     }
 
     /**

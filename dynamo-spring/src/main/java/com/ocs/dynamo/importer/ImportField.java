@@ -25,7 +25,7 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.FIELD, ElementType.METHOD })
-public @interface XlsField {
+public @interface ImportField {
 
     // the index of the field in the row in the Excel sheet
     int index();

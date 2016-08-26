@@ -264,6 +264,13 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
         toggleButton.setVisible(getFormOptions().isShowToggleButton());
         return toggleButton;
     }
+    
+    public Filter extractFilter() {
+        if (!currentFilters.isEmpty()) {
+            return new And(currentFilters.toArray(new Filter[0]));
+        }
+        return null;
+    }
 
     public List<Filter> getAdditionalFilters() {
         return additionalFilters;

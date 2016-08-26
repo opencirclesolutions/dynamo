@@ -176,7 +176,7 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
      *            the entity model
      */
     protected void generateColumns(Table table, Container container, EntityModel<T> model) {
-        generateColumns(table, container, model.getAttributeModels());
+        generateColumns(table, model.getAttributeModels());
         table.setCaption(model.getDisplayNamePlural());
         table.setDescription(model.getDescription());
     }
@@ -185,11 +185,9 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
      * Generates the columns of the table based on a select number of attribute models
      * 
      * @param table
-     * @param container
      * @param attributeModels
      */
-    protected void generateColumns(Table table, Container container,
-            List<AttributeModel> attributeModels) {
+    protected void generateColumns(Table table, List<AttributeModel> attributeModels) {
         List<Object> propertyNames = new ArrayList<>();
         List<String> headerNames = new ArrayList<>();
 

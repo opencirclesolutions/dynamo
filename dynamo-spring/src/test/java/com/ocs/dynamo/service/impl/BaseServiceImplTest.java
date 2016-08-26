@@ -37,6 +37,7 @@ import com.ocs.dynamo.dao.SortOrder.Direction;
 import com.ocs.dynamo.dao.SortOrders;
 import com.ocs.dynamo.dao.query.FetchJoinInformation;
 import com.ocs.dynamo.domain.TestEntity;
+import com.ocs.dynamo.exception.OCSNonUniqueException;
 import com.ocs.dynamo.exception.OCSValidationException;
 import com.ocs.dynamo.filter.Compare;
 import com.ocs.dynamo.filter.Filter;
@@ -116,6 +117,27 @@ public class BaseServiceImplTest extends BaseMockitoTest {
     @Test(expected = OCSValidationException.class)
     public void testValidate_Error() {
         TestEntity entity = new TestEntity(null, 15L);
+        service.validate(entity);
+    }
+
+    @Test(expected = OCSValidationException.class)
+    public void testValidate_AssertTrue() {
+        TestEntity entity = new TestEntity("bogus", 15L);
+        service.validate(entity);
+    }
+
+    /**
+     * That that a OCSNonUniqueException is thrown in case the validation process results in a
+     * duplicate
+     */
+    @Test(expected = OCSNonUniqueException.class)
+    public void testValidate_Identical() {
+        TestEntity entity = new TestEntity("kevin", 15L);
+
+        TestEntity other = new TestEntity();
+        other.setId(4);
+        Mockito.when(dao.findByUniqueProperty("name", "kevin", true)).thenReturn(other);
+
         service.validate(entity);
     }
 
@@ -227,6 +249,13 @@ public class BaseServiceImplTest extends BaseMockitoTest {
     }
 
     @Test
+    public void testFilter() {
+        Filter filter = new Compare.Equal("property1", 1);
+        service.find(filter);
+        Mockito.verify(dao).find(filter);
+    }
+
+    @Test
     public void testFetchFilterPageable() {
         Filter filter = new Compare.Equal("property1", 1);
         service.fetch(filter, 2, 10, new FetchJoinInformation("testEntities"));
@@ -333,5 +362,9 @@ public class BaseServiceImplTest extends BaseMockitoTest {
             dependency.noop();
         }
 
+        @Override
+        protected TestEntity findIdenticalEntity(TestEntity entity) {
+            return dao.findByUniqueProperty("name", entity.getName(), true);
+        }
     };
 }

@@ -28,7 +28,7 @@ import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.ui.ListSelect;
 
 /**
- * Custom ListSelect component for displaying a collection of entities
+ * Custom ListSelect component for displaying a collection of entities.
  * 
  * @author bas.rutten
  * @param <ID>
@@ -41,14 +41,26 @@ public class EntityListSelect<ID extends Serializable, T extends AbstractEntity<
 
     private static final long serialVersionUID = 3041574615271340579L;
 
+    /**
+     * The attribute model that governs how to build the component
+     */
     private final AttributeModel attributeModel;
 
+    /**
+     * The select mode (filtered, all, or fixed)
+     */
     private SelectMode selectMode = SelectMode.FILTERED;
 
+    /**
+     * The sort orders
+     */
     private final SortOrder[] sortOrders;
 
     private BaseService<ID, T> service;
 
+    /**
+     * The searc filter to use in filtered mode
+     */
     private Filter filter;
 
     public enum SelectMode {

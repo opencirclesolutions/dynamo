@@ -65,4 +65,32 @@ public class EntityListSelectTest extends BaseMockitoTest {
         Mockito.verify(service).find(Matchers.any(com.ocs.dynamo.filter.Filter.class),
                 Matchers.any(com.ocs.dynamo.dao.SortOrder[].class));
     }
+
+    @Test
+    public void testRefreshFiltered() {
+
+        EntityListSelect<Integer, TestEntity> select = new EntityListSelect<>(
+                factory.getModel(TestEntity.class), null, service, new Compare.Equal("name", "Bob"));
+        Assert.assertEquals(EntityListSelect.SelectMode.FILTERED, select.getSelectMode());
+
+        select.refresh();
+
+        Mockito.verify(service, Mockito.times(2)).find(
+                Matchers.any(com.ocs.dynamo.filter.Filter.class),
+                Matchers.any(com.ocs.dynamo.dao.SortOrder[].class));
+    }
+
+    @Test
+    public void testRefreshAll() {
+
+        EntityListSelect<Integer, TestEntity> select = new EntityListSelect<>(
+                factory.getModel(TestEntity.class), null, service, new Compare.Equal("name", "Bob"));
+        Assert.assertEquals(EntityListSelect.SelectMode.FILTERED, select.getSelectMode());
+
+        select.refresh();
+
+        Mockito.verify(service, Mockito.times(2)).find(
+                Matchers.any(com.ocs.dynamo.filter.Filter.class),
+                Matchers.any(com.ocs.dynamo.dao.SortOrder[].class));
+    }
 }

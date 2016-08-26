@@ -34,7 +34,9 @@ import com.vaadin.ui.ListSelect;
 import com.vaadin.ui.VerticalLayout;
 
 /**
- * A ListSelect component with an extra combo box for easily searching items
+ * A ListSelect component with an extra combo box for easily searching items. The combo box holds
+ * the list of available items. Items that are selected, are added to a ListSelect, which is
+ * kept in sync with the actual component value
  * 
  * @author bas.rutten
  *
@@ -42,6 +44,8 @@ import com.vaadin.ui.VerticalLayout;
  *            the type of the ID of the entity
  * @param <T>
  *            the type of the entity
+ * @param <Object>
+ *            the type of the value (can be a single object or a collection)
  */
 public class FancyListSelect<ID extends Serializable, T extends AbstractEntity<ID>> extends
         QuickAddEntityField<ID, T, Object> {
@@ -132,17 +136,32 @@ public class FancyListSelect<ID extends Serializable, T extends AbstractEntity<I
         copyValueFromContainer();
     }
 
+    /**
+     * Copies the selected values from the container behind the ListSelect to the component value
+     */
     private void copyValueFromContainer() {
         Collection<T> values = container.getItemIds();
         setValue(new HashSet<>(values));
+    }
+
+    public EntityComboBox<ID, T> getComboBox() {
+        return comboBox;
     }
 
     public ListSelect getListSelect() {
         return listSelect;
     }
 
-    public EntityComboBox<ID, T> getComboBox() {
-        return comboBox;
+    public Button getClearButton() {
+        return clearButton;
+    }
+
+    public Button getRemoveButton() {
+        return removeButton;
+    }
+
+    public Button getSelectButton() {
+        return selectButton;
     }
 
     public SortOrder[] getSortOrders() {
@@ -180,15 +199,12 @@ public class FancyListSelect<ID extends Serializable, T extends AbstractEntity<I
             @Override
             @SuppressWarnings("unchecked")
             public void buttonClick(ClickEvent event) {
-                if (comboBox.getValue() != null) {
-                    if (!container.containsId(comboBox.getValue())) {
-                        container.addBean((T) comboBox.getValue());
-                        copyValueFromContainer();
-                    }
+                if (comboBox.getValue() != null && !container.containsId(comboBox.getValue())) {
+                    container.addBean((T) comboBox.getValue());
+                    copyValueFromContainer();
                 }
                 comboBox.setValue(null);
             }
-
         });
         secondBar.addComponent(selectButton);
 
@@ -228,11 +244,13 @@ public class FancyListSelect<ID extends Serializable, T extends AbstractEntity<I
         });
         secondBar.addComponent(clearButton);
 
+        // add a quick add button
         if (addAllowed) {
             Button addButton = constructAddButton();
             secondBar.addComponent(addButton);
         }
 
+        // the list select component shows the currently selected values
         listSelect.setSizeFull();
         listSelect.setNullSelectionAllowed(false);
         listSelect.setItemCaptionMode(ItemCaptionMode.PROPERTY);
@@ -243,6 +261,11 @@ public class FancyListSelect<ID extends Serializable, T extends AbstractEntity<I
         return layout;
     }
 
+    /**
+     * Refill the container after a value change
+     * 
+     * @param value
+     */
     @SuppressWarnings("unchecked")
     private void repopulateContainer(Object value) {
         if (container != null) {

@@ -20,7 +20,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.util.StringUtils;
 
 import com.ocs.dynamo.exception.OCSImportException;
-import com.ocs.dynamo.importer.XlsField;
+import com.ocs.dynamo.importer.ImportField;
 import com.ocs.dynamo.importer.dto.AbstractDTO;
 import com.ocs.dynamo.utils.ClassUtils;
 
@@ -42,8 +42,11 @@ public abstract class BaseImporter<R, U> {
      * header, and will not check if any of the rows are valid
      * 
      * @param bytes
+     *            the byte representation of the input file
      * @param row
+     *            the optional row index of the cell that contains the total row count
      * @param column
+     *            the optional column index of the cell that contains the total row count
      * @return
      */
     public abstract int countRows(byte[] bytes, int row, int column);
@@ -53,13 +56,26 @@ public abstract class BaseImporter<R, U> {
      * not defined
      * 
      * @param unit
+     *            the field value to process
      * @param field
+     *            the field definition
      * @return
      */
-    protected abstract Boolean getBooleanValueWithDefault(U unit, XlsField field);
+    protected abstract Boolean getBooleanValueWithDefault(U unit, ImportField field);
 
+    /**
+     * Retrieves a value from a field
+     * 
+     * @param d
+     *            the property descriptor that tells the process the type of the value to retrieve
+     * @param unit
+     *            the input unit from which to retrieve the value
+     * @param field
+     *            the fiel definition
+     * @return
+     */
     @SuppressWarnings("unchecked")
-    private Object getFieldValue(PropertyDescriptor d, U unit, XlsField field) {
+    private Object getFieldValue(PropertyDescriptor d, U unit, ImportField field) {
         Object obj = null;
         if (String.class.equals(d.getPropertyType())) {
             String value = getStringValueWithDefault(unit, field);
@@ -80,7 +96,7 @@ public abstract class BaseImporter<R, U> {
                 }
             }
 
-        } else if (Number.class.isAssignableFrom(d.getPropertyType())) {
+        } else if (isNumeric(d.getPropertyType())) {
             // numeric field
 
             Double value = getNumericValueWithDefault(unit, field);
@@ -101,11 +117,18 @@ public abstract class BaseImporter<R, U> {
 
                 if (Integer.class.equals(d.getPropertyType())) {
                     obj = new Integer(value.intValue());
+                } else if (Long.class.equals(d.getPropertyType())) {
+                    obj = Long.valueOf(value.longValue());
+                } else if (Float.class.equals(d.getPropertyType())) {
+                    obj = Float.valueOf(value.floatValue());
                 } else if (BigDecimal.class.equals(d.getPropertyType())) {
                     obj = BigDecimal.valueOf(value.doubleValue());
-                } else {
-                    // by default, use a double
-                    obj = value;
+                } else if (int.class.equals(d.getPropertyType())) {
+                    obj = value.intValue();
+                } else if (long.class.equals(d.getPropertyType())) {
+                    obj = value.longValue();
+                } else if (float.class.equals(d.getPropertyType())) {
+                    obj = value.floatValue();
                 }
             }
         } else if (Boolean.class.isAssignableFrom(d.getPropertyType())) {
@@ -115,14 +138,16 @@ public abstract class BaseImporter<R, U> {
     }
 
     /**
-     * Retrieves a numeric value from the input and falls back to a default if the value is empty or
-     * not defined
+     * Retrieves a numeric value from an input unit and falls back to a default if the value is
+     * empty or not defined
      * 
      * @param unit
+     *            the input unit
      * @param field
+     *            the field definition
      * @return
      */
-    protected abstract Double getNumericValueWithDefault(U unit, XlsField field);
+    protected abstract Double getNumericValueWithDefault(U unit, ImportField field);
 
     /**
      * Retrieves a string from the input and falls back to a default if the value is empty or not
@@ -132,7 +157,7 @@ public abstract class BaseImporter<R, U> {
      * @param field
      * @return
      */
-    protected abstract String getStringValueWithDefault(U unit, XlsField field);
+    protected abstract String getStringValueWithDefault(U unit, ImportField field);
 
     /**
      * Retrieves a unit (a single cell or field) from a row
@@ -141,7 +166,20 @@ public abstract class BaseImporter<R, U> {
      * @param field
      * @return
      */
-    protected abstract U getUnit(R row, XlsField field);
+    protected abstract U getUnit(R row, ImportField field);
+
+    /**
+     * Check if the class is a numeric class
+     * 
+     * @param clazz
+     *            the class to check
+     * @return
+     */
+    private boolean isNumeric(Class<?> clazz) {
+        return Number.class.isAssignableFrom(clazz) || int.class.equals(clazz)
+                || long.class.equals(clazz) || double.class.equals(clazz)
+                || float.class.equals(clazz);
+    }
 
     /**
      * Indicates whether fraction values are automatically converted to percentages
@@ -157,7 +195,7 @@ public abstract class BaseImporter<R, U> {
      * @param field
      * @return
      */
-    protected abstract boolean isWithinRange(R row, XlsField field);
+    protected abstract boolean isWithinRange(R row, ImportField field);
 
     /**
      * Processes a single row from the input and turns it into an object
@@ -173,7 +211,7 @@ public abstract class BaseImporter<R, U> {
 
         PropertyDescriptor[] descriptors = BeanUtils.getPropertyDescriptors(clazz);
         for (PropertyDescriptor d : descriptors) {
-            XlsField field = ClassUtils.getAnnotation(clazz, d.getName(), XlsField.class);
+            ImportField field = ClassUtils.getAnnotation(clazz, d.getName(), ImportField.class);
             if (field != null) {
                 if (isWithinRange(row, field)) {
                     U unit = getUnit(row, field);

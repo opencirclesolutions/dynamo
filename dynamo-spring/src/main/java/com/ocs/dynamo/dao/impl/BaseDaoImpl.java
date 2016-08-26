@@ -74,11 +74,6 @@ public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements B
     }
 
     @Override
-    public long count(Filter filter) {
-        return count(filter, false);
-    }
-
-    @Override
     public long count(Filter filter, boolean distinct) {
         CriteriaQuery<Long> cq = JpaQueryBuilder.createCountQuery(entityManager, getEntityClass(),
                 filter, distinct);

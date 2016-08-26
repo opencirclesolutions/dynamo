@@ -76,11 +76,6 @@ public abstract class BaseServiceImpl<ID, T extends AbstractEntity<ID>> implemen
     }
 
     @Override
-    public long count(Filter filter) {
-        return getDao().count(filter);
-    }
-
-    @Override
     public List<T> findAll() {
         return getDao().findAll();
     }
@@ -186,7 +181,8 @@ public abstract class BaseServiceImpl<ID, T extends AbstractEntity<ID>> implemen
     /**
      * Looks for an identical entity (which has a different primary key but
      * 
-     * @param entity the entity
+     * @param entity
+     *            the entity
      * @return
      */
     protected T findIdenticalEntity(T entity) {
