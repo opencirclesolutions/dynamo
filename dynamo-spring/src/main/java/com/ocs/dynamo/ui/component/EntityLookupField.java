@@ -275,7 +275,9 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
         if (selectButton != null) {
             selectButton.setEnabled(enabled);
             clearButton.setEnabled(enabled);
-            getAddButton().setEnabled(enabled);
+            if (getAddButton() != null) {
+                getAddButton().setEnabled(enabled);
+            }
         }
     }
 

@@ -57,11 +57,8 @@ public class EntityLookupFieldTest extends BaseMockitoTest {
 
     @Override
     public void setUp() throws Exception {
-        TestEntity e1 = new TestEntity("Bob", 14L);
-        e1.setId(1);
-
-        TestEntity e2 = new TestEntity("Kevin", 15L);
-        e2.setId(2);
+        TestEntity e1 = new TestEntity(1,"Bob", 14L);
+        TestEntity e2 = new TestEntity(2,"Kevin", 15L);
 
         Mockito.when(service.getEntityClass()).thenReturn(TestEntity.class);
 

@@ -46,6 +46,8 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.Layout;
+import com.vaadin.ui.Table;
+import com.vaadin.ui.Table.ColumnGenerator;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
@@ -114,11 +116,6 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
      * The parent form in which this component is embedded
      */
     private ModelBasedEditForm<?, ?> parentForm;
-
-    /**
-     * Button used to remove items from the table
-     */
-    private Button removeButton;
 
     /**
      * Button used to open the search dialog
@@ -235,7 +232,6 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 
         constructAddButton(buttonBar);
         constructSearchButton(buttonBar);
-        constructRemoveButton(buttonBar);
 
         postProcessButtonBar(buttonBar);
     }
@@ -254,35 +250,6 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
     protected Field<?> constructCustomField(EntityModel<T> entityModel,
             AttributeModel attributeModel, boolean viewMode) {
         return null;
-    }
-
-    /**
-     * Constructs the remove button
-     * 
-     * @param buttonBar
-     */
-    protected void constructRemoveButton(Layout buttonBar) {
-        removeButton = new Button(messageService.getMessage("ocs.remove"));
-        removeButton.setEnabled(false);
-        removeButton.addClickListener(new Button.ClickListener() {
-
-            @Override
-            public void buttonClick(ClickEvent event) {
-                container.removeItem(getSelectedItem());
-                items.remove(getSelectedItem());
-                // callback method so the entity can be removed from its
-                // parent
-                removeEntity(getSelectedItem());
-                parentForm.signalDetailsTableValid(DetailsEditTable.this,
-                        VaadinUtils.allFixedTableFieldsValid(table));
-                setSelectedItem(null);
-                onSelect(null);
-            }
-
-        });
-        removeButton.setDescription(messageService.getMessage("ocs.select.row.to.delete"));
-        removeButton.setVisible(!viewMode && formOptions.isShowRemoveButton());
-        buttonBar.addComponent(removeButton);
     }
 
     /**
@@ -388,6 +355,34 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 
         table = new ModelBasedTable<ID, T>(container, entityModel, entityModelFactory,
                 messageService);
+
+        // add a remove button directly in the table
+        if (!isViewMode() && formOptions.isShowRemoveButton()) {
+            final String removeMsg = messageService.getMessage("ocs.remove");
+            table.addGeneratedColumn(removeMsg, new ColumnGenerator() {
+
+                @Override
+                public Object generateCell(Table source, final Object itemId, Object columnId) {
+                    Button remove = new Button(removeMsg);
+                    remove.addClickListener(new Button.ClickListener() {
+
+                        @Override
+                        @SuppressWarnings("unchecked")
+                        public void buttonClick(ClickEvent event) {
+                            container.removeItem(itemId);
+                            items.remove(itemId);
+                            // callback method so the entity can be removed from its
+                            // parent
+                            removeEntity((T) itemId);
+                            parentForm.signalDetailsTableValid(DetailsEditTable.this,
+                                    VaadinUtils.allFixedTableFieldsValid(table));
+
+                        }
+                    });
+                    return remove;
+                }
+            });
+        }
 
         // overwrite the field factory to deal with validation
         table.setTableFieldFactory(new ModelBasedFieldFactory<T>(entityModel, messageService, true,
@@ -498,9 +493,7 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
      * Respond to a selection of an item in the table
      */
     protected void onSelect(Object selected) {
-        if (removeButton != null) {
-            removeButton.setEnabled(getSelectedItem() != null);
-        }
+        // overwrite when needed
     }
 
     /**
