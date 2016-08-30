@@ -15,20 +15,12 @@ package com.ocs.dynamo.ui.component;
 
 import java.io.Serializable;
 
-import org.springframework.util.StringUtils;
-
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
-import com.ocs.dynamo.exception.OCSNonUniqueException;
 import com.ocs.dynamo.service.BaseService;
-import com.ocs.dynamo.ui.composite.dialog.SimpleModalDialog;
-import com.ocs.dynamo.utils.ClassUtils;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Layout;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 
 /**
@@ -48,69 +40,6 @@ public abstract class QuickAddEntityField<ID extends Serializable, T extends Abs
         extends CustomEntityField<ID, T, U> {
 
     private UI ui = UI.getCurrent();
-
-    /**
-     * Simple dialog for adding a new value
-     * 
-     * @author bas.rutten
-     *
-     */
-    private class NewValueDialog extends SimpleModalDialog {
-
-        private static final long serialVersionUID = 6208738706327329145L;
-
-        private TextField valueField;
-
-        NewValueDialog() {
-            super(true);
-        }
-
-        @Override
-        protected void doBuild(Layout parent) {
-            // add a text field that hold the new value
-            valueField = new TextField(getMessageService().getMessage("ocs.enter.new.value"));
-            valueField.setSizeFull();
-            valueField.focus();
-            parent.addComponent(valueField);
-        }
-
-        @Override
-        protected boolean doClose() {
-            String value = valueField.getValue();
-            if (!StringUtils.isEmpty(value)) {
-                T t = getService().createNewEntity();
-
-                // disallow values that are too long
-                String propName = getAttributeModel().getQuickAddPropertyName();
-                Integer maxLength = getEntityModel().getAttributeModel(propName).getMaxLength();
-
-                if (maxLength != null && value.length() > maxLength) {
-                    Notification.show(getMessageService().getMessage("ocs.value.too.long"),
-                            Notification.Type.ERROR_MESSAGE);
-                    return false;
-                }
-                ClassUtils.setFieldValue(t, propName, value);
-
-                try {
-                    t = getService().save(t);
-                    afterNewEntityAdded(t);
-                    return true;
-                } catch (OCSNonUniqueException ex) {
-                    // not unique - produce warning
-                    Notification.show(ex.getMessage(), Notification.Type.ERROR_MESSAGE);
-                }
-            } else {
-                Notification.show(getMessageService().getMessage("ocs.value.required"),
-                        Notification.Type.ERROR_MESSAGE);
-            }
-            return false;
-        }
-
-        @Override
-        protected String getTitle() {
-            return getMessageService().getMessage("ocs.enter.new.value");
-        }
-    }
 
     private static final long serialVersionUID = 7118578276952170818L;
 
@@ -155,7 +84,17 @@ public abstract class QuickAddEntityField<ID extends Serializable, T extends Abs
 
             @Override
             public void buttonClick(ClickEvent event) {
-                NewValueDialog dialog = new NewValueDialog();
+                AddNewValueDialog<ID, T> dialog = new AddNewValueDialog<ID, T>(getEntityModel(),
+                        getAttributeModel(), getService(), getMessageService()) {
+
+                    private static final long serialVersionUID = 2040216794358094524L;
+
+                    @Override
+                    protected void afterNewEntityAdded(T entity) {
+                        QuickAddEntityField.this.afterNewEntityAdded(entity);
+                    }
+
+                };
                 dialog.build();
                 ui.addWindow(dialog);
             }

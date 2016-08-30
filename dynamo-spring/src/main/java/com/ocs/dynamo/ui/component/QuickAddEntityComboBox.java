@@ -84,6 +84,15 @@ public class QuickAddEntityComboBox<ID extends Serializable, T extends AbstractE
         comboBox.setValue(entity);
     }
 
+    public EntityComboBox<ID, T> getComboBox() {
+        return comboBox;
+    }
+
+    @Override
+    public Class<? extends T> getType() {
+        return getEntityModel().getEntityClass();
+    }
+
     @Override
     protected Component initContent() {
         HorizontalLayout bar = new DefaultHorizontalLayout(false, true, true);
@@ -118,6 +127,13 @@ public class QuickAddEntityComboBox<ID extends Serializable, T extends AbstractE
     }
 
     @Override
+    public void refresh() {
+        if (comboBox != null) {
+            comboBox.refresh();
+        }
+    }
+
+    @Override
     protected void setInternalValue(T newValue) {
         super.setInternalValue(newValue);
         if (comboBox != null) {
@@ -131,18 +147,6 @@ public class QuickAddEntityComboBox<ID extends Serializable, T extends AbstractE
         super.setValue(newFieldValue);
         if (comboBox != null) {
             comboBox.setValue(newFieldValue);
-        }
-    }
-
-    @Override
-    public Class<? extends T> getType() {
-        return getEntityModel().getEntityClass();
-    }
-
-    @Override
-    public void refresh() {
-        if (comboBox != null) {
-            comboBox.refresh();
         }
     }
 }

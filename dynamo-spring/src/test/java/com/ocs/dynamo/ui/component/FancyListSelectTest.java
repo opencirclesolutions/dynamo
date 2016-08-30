@@ -5,6 +5,7 @@ import java.util.Collection;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -19,10 +20,16 @@ import com.ocs.dynamo.domain.model.impl.EntityModelFactoryImpl;
 import com.ocs.dynamo.filter.Filter;
 import com.ocs.dynamo.service.TestEntityService;
 import com.ocs.dynamo.test.BaseMockitoTest;
+import com.ocs.dynamo.test.MockUtil;
+import com.vaadin.event.ListenerMethod.MethodException;
+import com.vaadin.ui.UI;
 
 public class FancyListSelectTest extends BaseMockitoTest {
 
     private EntityModelFactory factory = new EntityModelFactoryImpl();
+
+    @Mock
+    private UI ui;
 
     @Mock
     private TestEntityService service;
@@ -41,6 +48,9 @@ public class FancyListSelectTest extends BaseMockitoTest {
 
         Mockito.when(service.find(Matchers.any(Filter.class), (SortOrder[]) Matchers.anyVararg()))
                 .thenReturn(Lists.newArrayList(t1, t2, t3));
+
+        Mockito.when(service.createNewEntity()).thenReturn(new TestEntity());
+        MockUtil.mockServiceSave(service, TestEntity.class);
     }
 
     /**
@@ -87,5 +97,59 @@ public class FancyListSelectTest extends BaseMockitoTest {
 
         col = (Collection<TestEntity>) select.getValue();
         Assert.assertTrue(col.isEmpty());
+    }
+
+    /**
+     * Test the addition of a new value
+     */
+    @Test
+    public void testAdd() {
+        EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
+        AttributeModel am = em.getAttributeModel("testDomain");
+
+        FancyListSelect<Integer, TestEntity> select = new FancyListSelect<>(service, em, am, null,
+                false);
+        select.initContent();
+        MockUtil.injectUI(select, ui);
+
+        Assert.assertEquals(3, select.getComboBox().getContainerDataSource().size());
+
+        // bring up the add dialog
+        addNewValue(select, "New Item");
+
+        // check that a new item has been added
+        Assert.assertEquals(4, select.getComboBox().getContainerDataSource().size());
+    }
+
+    /**
+     * Test the addition of a new value that is too long (will result in an exception)
+     */
+    @Test(expected = MethodException.class)
+    public void testAddTooLong() {
+        EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
+        AttributeModel am = em.getAttributeModel("testDomain");
+
+        FancyListSelect<Integer, TestEntity> select = new FancyListSelect<>(service, em, am, null,
+                false);
+        select.initContent();
+        MockUtil.injectUI(select, ui);
+
+        Assert.assertEquals(3, select.getComboBox().getContainerDataSource().size());
+
+        // bring up the add dialog
+        addNewValue(select, "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    private void addNewValue(FancyListSelect<Integer, TestEntity> select, String newValue) {
+        ArgumentCaptor<AddNewValueDialog> captor = ArgumentCaptor.forClass(AddNewValueDialog.class);
+
+        select.getAddButton().click();
+        Mockito.verify(ui).addWindow(captor.capture());
+
+        AddNewValueDialog<Integer, TestEntity> dialog = (AddNewValueDialog<Integer, TestEntity>) captor
+                .getValue();
+        dialog.getValueField().setValue(newValue);
+        dialog.getOkButton().click();
     }
 }

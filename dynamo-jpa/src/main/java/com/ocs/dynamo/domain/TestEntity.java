@@ -107,6 +107,9 @@ public class TestEntity extends AbstractTreeEntity<Integer, TestEntity> {
     @Attribute(url = true)
     private String url;
 
+    @Attribute(quickAddPropertyName = "name")
+    private TestDomain testDomain;
+
     public TestEntity() {
     }
 
@@ -281,4 +284,13 @@ public class TestEntity extends AbstractTreeEntity<Integer, TestEntity> {
     public boolean isAssertSomething() {
         return !"bogus".equals(name);
     }
+
+    public TestDomain getTestDomain() {
+        return testDomain;
+    }
+
+    public void setTestDomain(TestDomain testDomain) {
+        this.testDomain = testDomain;
+    }
+
 }

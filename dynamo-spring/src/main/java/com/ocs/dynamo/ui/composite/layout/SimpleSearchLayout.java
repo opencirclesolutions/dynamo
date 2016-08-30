@@ -171,6 +171,13 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
         // overwrite in subclasses
     }
 
+    /**
+     * Respond to the completion of a search
+     */
+    protected void afterSearchPerformed() {
+        // overwrite in subclasses
+    }
+
     @Override
     public void attach() {
         super.attach();
@@ -568,20 +575,20 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
             searchResultsLayout.removeComponent(noSearchYetLabel);
             searchLayoutConstructed = true;
         } else {
-            searchForm.search();
-        }
-
-        if (getSearchForm().getCompositeFilter() != null) {
-            // search without clearing any previous filters
-            getSearchForm().searchImmediately();
-        } else {
-            // build filter and search
-            getSearchForm().search();
+            if (searchForm.getCompositeFilter() != null) {
+                // search without clearing any previous filters
+                searchForm.searchImmediately();
+            } else {
+                // build filter and search
+                getSearchForm().search();
+            }
         }
 
         getTableWrapper().getTable().select(null);
         setSelectedItem(null);
         checkButtonState(getSelectedItem());
+
+        afterSearchPerformed();
     }
 
     /**

@@ -13,12 +13,14 @@
  */
 package com.ocs.dynamo.test;
 
-import com.ocs.dynamo.dao.BaseDao;
-import com.ocs.dynamo.dao.query.FetchJoinInformation;
-import com.ocs.dynamo.domain.AbstractEntity;
-import com.ocs.dynamo.exception.OCSRuntimeException;
-import com.ocs.dynamo.service.BaseService;
-import com.ocs.dynamo.service.MessageService;
+import static org.mockito.Mockito.spy;
+
+import java.lang.reflect.Field;
+import java.util.List;
+import java.util.Locale;
+
+import junitx.util.PrivateAccessor;
+
 import org.mockito.ArgumentCaptor;
 import org.mockito.Matchers;
 import org.mockito.Mock;
@@ -29,11 +31,12 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import java.lang.reflect.Field;
-import java.util.List;
-import java.util.Locale;
-
-import static org.mockito.Mockito.spy;
+import com.ocs.dynamo.dao.BaseDao;
+import com.ocs.dynamo.dao.query.FetchJoinInformation;
+import com.ocs.dynamo.domain.AbstractEntity;
+import com.ocs.dynamo.exception.OCSRuntimeException;
+import com.ocs.dynamo.service.BaseService;
+import com.ocs.dynamo.service.MessageService;
 
 /**
  * Utility class for registering service and DAO related mock functionality
@@ -41,10 +44,6 @@ import static org.mockito.Mockito.spy;
  * @author bas.rutten
  */
 public final class MockUtil {
-
-    private MockUtil() {
-        // hidden constructor
-    }
 
     /**
      * Capture a call of the "save" method on a DAO
@@ -159,6 +158,32 @@ public final class MockUtil {
     }
 
     /**
+     * Injects a mocked Vaadin UI into the field
+     * 
+     * @param field
+     *            the field into which to inject
+     * @param ui
+     *            the user interface
+     */
+    public static void injectUI(Object field, Object ui) {
+        try {
+            PrivateAccessor.setField(field, "ui", ui);
+        } catch (NoSuchFieldException e) {
+            // do nothing
+        }
+    }
+
+    /**
+     * Mocks the "fetchById" method of a DAO by returning the provided entity
+     */
+    public static <ID, X extends AbstractEntity<ID>> void mockFetchById(BaseDao<ID, X> dao, ID id,
+            X entity) {
+        Mockito.when(
+                dao.fetchById((ID) Matchers.eq(id), (FetchJoinInformation[]) Matchers.anyVararg()))
+                .thenReturn(entity);
+    }
+
+    /**
      * Set up the message service to simply return the first argument passed to it - this allows for
      * easily checking if the message service is called with the correct parameter
      * 
@@ -235,16 +260,6 @@ public final class MockUtil {
     }
 
     /**
-     * Mocks the "fetchById" method of a DAO by returning the provided entity
-     */
-    public static <ID, X extends AbstractEntity<ID>> void mockFetchById(BaseDao<ID, X> dao, ID id,
-            X entity) {
-        Mockito.when(
-                dao.fetchById((ID) Matchers.eq(id), (FetchJoinInformation[]) Matchers.anyVararg()))
-                .thenReturn(entity);
-    }
-
-    /**
      * Mocks a service save operation, making sure that the argument that is passed to the method is
      * returned from the method as well
      * 
@@ -298,6 +313,10 @@ public final class MockUtil {
         } catch (Exception e) {
             throw new OCSRuntimeException(e.getMessage(), e);
         }
+    }
+
+    private MockUtil() {
+        // hidden constructor
     }
 
 }

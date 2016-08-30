@@ -17,6 +17,12 @@ import java.net.MalformedURLException;
 
 import com.vaadin.data.Validator;
 
+/**
+ * Vaadin validator for checking if an field value is a vallid URL
+ * 
+ * @author bas.rutten
+ *
+ */
 public class URLValidator implements Validator {
 
     private String message;

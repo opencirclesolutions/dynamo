@@ -89,6 +89,15 @@ public class QuickAddListSelect<ID extends Serializable, T extends AbstractEntit
         listSelect.select(entity);
     }
 
+    public EntityListSelect<ID, T> getListSelect() {
+        return listSelect;
+    }
+
+    @Override
+    public Class<? extends Object> getType() {
+        return Object.class;
+    }
+
     @Override
     protected Component initContent() {
         HorizontalLayout bar = new DefaultHorizontalLayout(false, true, true);
@@ -122,6 +131,16 @@ public class QuickAddListSelect<ID extends Serializable, T extends AbstractEntit
         return bar;
     }
 
+    /**
+     * Refreshes the data in the list
+     */
+    @Override
+    public void refresh() {
+        if (listSelect != null) {
+            listSelect.refresh();
+        }
+    }
+
     @Override
     protected void setInternalValue(Object newValue) {
         super.setInternalValue(newValue);
@@ -139,22 +158,8 @@ public class QuickAddListSelect<ID extends Serializable, T extends AbstractEntit
         }
     }
 
-    @Override
-    public Class<? extends Object> getType() {
-        return Object.class;
-    }
-
     public void setViewMode(boolean viewMode) {
         this.viewMode = viewMode;
     }
 
-    /**
-     * Refreshes the data in the list
-     */
-    @Override
-    public void refresh() {
-        if (listSelect != null) {
-            listSelect.refresh();
-        }
-    }
 }
