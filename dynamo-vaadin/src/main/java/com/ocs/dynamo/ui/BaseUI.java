@@ -60,7 +60,8 @@ public abstract class BaseUI extends UI {
      * 
      * @param startView
      */
-    protected void initNavigation(ViewProvider viewProvider, SingleComponentContainer container, String startView) {
+    protected void initNavigation(ViewProvider viewProvider, SingleComponentContainer container,
+            String startView) {
         // create a state manager and set its default view
         // this is done to circumvent a bug with the view being created
         // twice if

@@ -460,7 +460,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
      * @return
      */
     protected VerticalLayout buildMainLayout(EntityModel<T> entityModel) {
-        VerticalLayout layout = new VerticalLayout();
+        VerticalLayout layout = new DefaultVerticalLayout(false, true);
 
         titleLabels.put(isViewMode(), constructTitleLabel());
 

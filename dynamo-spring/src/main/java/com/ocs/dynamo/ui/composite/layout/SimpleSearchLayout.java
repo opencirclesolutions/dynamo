@@ -217,8 +217,19 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 
                     @Override
                     public void buttonClick(ClickEvent event) {
-                        if (getSearchForm().getSearchable() == null) {
+                        if (!searchLayoutConstructed) {
+                            // construct search screen if it is not there yet
+                            constructSearchLayout();
+
+                            searchResultsLayout.addComponent(getTableWrapper());
+                            getSearchForm().setSearchable(getTableWrapper());
+
+                            searchResultsLayout.removeComponent(noSearchYetLabel);
+                            searchLayoutConstructed = true;
                             search();
+                        } else {
+                            // otherwise, only fire the callback method
+                            afterSearchPerformed();
                         }
                     }
                 });
@@ -563,25 +574,12 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
      */
     public void search() {
 
-        // lazily construct search form if it is not there yet
-        if (!searchLayoutConstructed) {
-
-            // build screen if it is not there yet
-            constructSearchLayout();
-
-            searchResultsLayout.addComponent(getTableWrapper());
-            getSearchForm().setSearchable(getTableWrapper());
-
-            searchResultsLayout.removeComponent(noSearchYetLabel);
-            searchLayoutConstructed = true;
+        if (searchForm.getCompositeFilter() != null) {
+            // search without clearing any previous filters
+            searchForm.searchImmediately();
         } else {
-            if (searchForm.getCompositeFilter() != null) {
-                // search without clearing any previous filters
-                searchForm.searchImmediately();
-            } else {
-                // build filter and search
-                getSearchForm().search();
-            }
+            // build filter and search
+            searchForm.search();
         }
 
         getTableWrapper().getTable().select(null);
