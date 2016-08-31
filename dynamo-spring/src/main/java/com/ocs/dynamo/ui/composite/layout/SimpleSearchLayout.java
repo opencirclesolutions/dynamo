@@ -129,9 +129,9 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
      * @param joins
      *            the joins to include in the query
      */
-    public SimpleSearchLayout(BaseService<ID, T> service, EntityModel<T> entityModel,
-            QueryType queryType, FormOptions formOptions, Map<String, Filter> fieldFilters,
-            List<Filter> additionalFilters, SortOrder sortOrder, FetchJoinInformation... joins) {
+    public SimpleSearchLayout(BaseService<ID, T> service, EntityModel<T> entityModel, QueryType queryType,
+            FormOptions formOptions, Map<String, Filter> fieldFilters, List<Filter> additionalFilters,
+            SortOrder sortOrder, FetchJoinInformation... joins) {
         super(service, entityModel, formOptions, sortOrder, joins);
         this.queryType = queryType;
         this.additionalFilters = additionalFilters;
@@ -154,11 +154,17 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
      * @param joins
      *            the joins to include in the query
      */
-    public SimpleSearchLayout(BaseService<ID, T> service, EntityModel<T> entityModel,
-            QueryType queryType, FormOptions formOptions, SortOrder sortOrder,
-            FetchJoinInformation... joins) {
+    public SimpleSearchLayout(BaseService<ID, T> service, EntityModel<T> entityModel, QueryType queryType,
+            FormOptions formOptions, SortOrder sortOrder, FetchJoinInformation... joins) {
         super(service, entityModel, formOptions, sortOrder, joins);
         this.queryType = queryType;
+    }
+
+    /**
+     * Respond to a click on the Clear button
+     */
+    protected void afterClear() {
+        // overwrite in subclasses
     }
 
     /**
@@ -198,6 +204,13 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
             }
 
             mainSearchLayout.addComponent(getSearchForm());
+            getSearchForm().getClearButton().addClickListener(new Button.ClickListener() {
+
+                @Override
+                public void buttonClick(ClickEvent event) {
+                    afterClear();
+                }
+            });
 
             searchResultsLayout = new DefaultVerticalLayout(false, false);
             mainSearchLayout.addComponent(searchResultsLayout);
@@ -275,8 +288,7 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
      */
     protected Button constructEditButton() {
         // edit button
-        Button eb = new Button(getFormOptions().isOpenInViewMode() ? message("ocs.view")
-                : message("ocs.edit"));
+        Button eb = new Button(getFormOptions().isOpenInViewMode() ? message("ocs.view") : message("ocs.edit"));
         eb.addClickListener(new Button.ClickListener() {
 
             @Override
@@ -288,8 +300,7 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
         });
 
         // show button if editing is allowed or if detail screen opens in view mode
-        eb.setVisible(getFormOptions().isShowEditButton()
-                && (isEditAllowed() || getFormOptions().isOpenInViewMode()));
+        eb.setVisible(getFormOptions().isShowEditButton() && (isEditAllowed() || getFormOptions().isOpenInViewMode()));
         return eb;
     }
 
@@ -309,6 +320,33 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
         };
         rb.setVisible(isEditAllowed() && getFormOptions().isShowRemoveButton());
         return rb;
+    }
+
+    /**
+     * Lazily constructs the search form
+     * 
+     * @return
+     */
+    protected ModelBasedSearchForm<ID, T> constructSearchForm() {
+        ModelBasedSearchForm<ID, T> result = new ModelBasedSearchForm<ID, T>(
+                getFormOptions().isSearchImmediately() ? getTableWrapper() : null, getEntityModel(), getFormOptions(),
+                this.additionalFilters, this.fieldFilters) {
+
+            @Override
+            protected void afterSearchFieldToggle(boolean visible) {
+                SimpleSearchLayout.this.afterSearchFieldToggle(visible);
+            }
+
+            @Override
+            protected Field<?> constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel) {
+                return SimpleSearchLayout.this.constructCustomField(entityModel, attributeModel, false, true);
+            }
+        };
+        result.setNrOfColumns(getNrOfColumns());
+        result.setFieldEntityModels(getFieldEntityModels());
+        result.build();
+
+        return result;
     }
 
     /**
@@ -348,43 +386,13 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
     }
 
     /**
-     * Lazily constructs the search form
-     * 
-     * @return
-     */
-    protected ModelBasedSearchForm<ID, T> constructSearchForm() {
-        ModelBasedSearchForm<ID, T> result = new ModelBasedSearchForm<ID, T>(getFormOptions()
-                .isSearchImmediately() ? getTableWrapper() : null, getEntityModel(),
-                getFormOptions(), this.additionalFilters, this.fieldFilters) {
-
-            @Override
-            protected void afterSearchFieldToggle(boolean visible) {
-                SimpleSearchLayout.this.afterSearchFieldToggle(visible);
-            }
-
-            @Override
-            protected Field<?> constructCustomField(EntityModel<T> entityModel,
-                    AttributeModel attributeModel) {
-                return SimpleSearchLayout.this.constructCustomField(entityModel, attributeModel,
-                        false, true);
-            }
-        };
-        result.setNrOfColumns(getNrOfColumns());
-        result.setFieldEntityModels(getFieldEntityModels());
-        result.build();
-
-        return result;
-    }
-
-    /**
      * Lazily constructs the table wrapper
      */
     @Override
     public ServiceResultsTableWrapper<ID, T> constructTableWrapper() {
-        ServiceResultsTableWrapper<ID, T> result = new ServiceResultsTableWrapper<ID, T>(
-                this.getService(), getEntityModel(), getQueryType(), getFormOptions()
-                        .isSearchImmediately() ? null : getSearchForm().extractFilter(),
-                getSortOrders(), getJoins());
+        ServiceResultsTableWrapper<ID, T> result = new ServiceResultsTableWrapper<ID, T>(this.getService(),
+                getEntityModel(), getQueryType(), getFormOptions().isSearchImmediately() ? null : getSearchForm()
+                        .extractFilter(), getSortOrders(), getJoins());
         result.build();
         return result;
     }
@@ -420,8 +428,7 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
                 options.setShowEditButton(true);
             }
 
-            editForm = new ModelBasedEditForm<ID, T>(entity, getService(), getEntityModel(),
-                    options, fieldFilters) {
+            editForm = new ModelBasedEditForm<ID, T>(entity, getService(), getEntityModel(), options, fieldFilters) {
 
                 @Override
                 protected void afterEditDone(boolean cancel, boolean newObject, T entity) {
@@ -450,10 +457,9 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
                 }
 
                 @Override
-                protected Field<?> constructCustomField(EntityModel<T> entityModel,
-                        AttributeModel attributeModel, boolean viewMode) {
-                    return SimpleSearchLayout.this.constructCustomField(entityModel,
-                            attributeModel, true, false);
+                protected Field<?> constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel,
+                        boolean viewMode) {
+                    return SimpleSearchLayout.this.constructCustomField(entityModel, attributeModel, true, false);
                 }
 
                 @Override
@@ -506,6 +512,10 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 
     protected List<Filter> getAdditionalFilters() {
         return additionalFilters;
+    }
+
+    public Filter getCompositeFilter() {
+        return getSearchForm().getCompositeFilter();
     }
 
     public FetchJoinInformation[] getDetailJoins() {
@@ -638,6 +648,10 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
         this.additionalFilters = additionalFilters;
     }
 
+    public void setCompositeFilter(Filter filter) {
+        getSearchForm().setCompositeFilter(filter);
+    }
+
     public void setDetailJoins(FetchJoinInformation[] detailJoins) {
         this.detailJoins = detailJoins;
     }
@@ -652,13 +666,5 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 
     public void setQueryType(QueryType queryType) {
         this.queryType = queryType;
-    }
-
-    public Filter getCompositeFilter() {
-        return getSearchForm().getCompositeFilter();
-    }
-
-    public void setCompositeFilter(Filter filter) {
-        getSearchForm().setCompositeFilter(filter);
     }
 }

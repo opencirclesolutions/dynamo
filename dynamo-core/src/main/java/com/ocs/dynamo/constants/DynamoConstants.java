@@ -100,6 +100,16 @@ public final class DynamoConstants {
     public static final String SP_ALLOW_TABLE_EXPORT = "ocs.allow.table.export";
 
     /**
+     * Name of the system property that is used as the CSV separator when exporting
+     */
+    public static final String SP_EXPORT_CSV_SEPARATOR = "ocs.export.csv.separator";
+
+    /**
+     * Name of the system property that is used as the CSV quote char when exporting
+     */
+    public static final String SP_EXPORT_CSV_QUOTE = "ocs.export.csv.quote";
+    
+    /**
      * Name of the system property that is used to determine the default decimal precision
      */
     public static final String SP_DECIMAL_PRECISION = "ocs.default.decimal.precision";
@@ -150,6 +160,22 @@ public final class DynamoConstants {
      * System property that indicates whether to use the thousands grouping separator in edit mode
      */
     public static final String SP_THOUSAND_GROUPING = "ocs.edit.thousands.grouping";
+
+    /**
+     * System property that indicates that maximum allowed number of rows in a non-streaming export
+     */
+    public static final String SP_MAX_ROWS_NON_STREAMING = "ocs.max.rows.non.streaming";
+
+    /**
+     * System property that indicates that maximum allowed number of rows in a streaming export
+     */
+    public static final String SP_MAX_ROWS_STREAMING = "ocs.max.rows.streaming";
+
+    /**
+     * System property that indicates that maximum allowed number of rows in a streaming export of a
+     * pivoted data set
+     */
+    public static final String SP_MAX_ROWS_STREAMING_PIVOTED = "ocs.max.rows.streaming.pivot";
 
     /**
      * The name of the variable that is used to store the user

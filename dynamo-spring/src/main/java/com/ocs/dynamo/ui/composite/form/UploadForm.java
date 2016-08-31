@@ -68,11 +68,15 @@ public abstract class UploadForm extends ProgressForm<byte[]> {
 
     private boolean showCancelButton;
 
+    private Upload upload;
+
     /**
      * Constructor
      * 
      * @param progressMode
+     *            the desired progress mode
      * @param screenMode
+     *            the desired screen mode
      * @param showCancelButton
      *            whether to include a cancel button
      */
@@ -114,7 +118,7 @@ public abstract class UploadForm extends ProgressForm<byte[]> {
         // add file upload field
         UploadReceiver receiver = new UploadReceiver();
 
-        Upload upload = new Upload(message("ocs.uploadform.title"), receiver);
+        upload = new Upload(message("ocs.uploadform.title"), receiver);
 
         upload.addSucceededListener(receiver);
         form.addComponent(upload);
@@ -134,6 +138,10 @@ public abstract class UploadForm extends ProgressForm<byte[]> {
 
     public String getFileName() {
         return fileName;
+    }
+
+    public Upload getUpload() {
+        return upload;
     }
 
 }

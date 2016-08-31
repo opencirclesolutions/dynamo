@@ -81,7 +81,8 @@ public abstract class BaseView extends CustomComponent implements View {
 
     /**
      * Sets up the outermost layout
-     * @return 
+     * 
+     * @return
      */
     protected Layout initLayout() {
         VerticalLayout container = new DefaultVerticalLayout(true, true);

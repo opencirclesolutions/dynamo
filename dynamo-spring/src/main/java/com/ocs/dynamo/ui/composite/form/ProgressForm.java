@@ -50,6 +50,8 @@ public abstract class ProgressForm<T> extends BaseCustomComponent implements Pro
     // counter for keeping track of the number of processed items
     private volatile AtomicInteger counter = new AtomicInteger();
 
+    private UI ui = UI.getCurrent();
+
     // the main layout
     private Layout mainLayout;
 
@@ -153,7 +155,7 @@ public abstract class ProgressForm<T> extends BaseCustomComponent implements Pro
         }
 
         // disable polling
-        UI.getCurrent().setPollInterval(-1);
+        ui.setPollInterval(-1);
         setCompositionRoot(mainLayout);
     }
 
@@ -263,7 +265,7 @@ public abstract class ProgressForm<T> extends BaseCustomComponent implements Pro
                     final int estimatedSize = estimateSize(t);
 
                     counter.set(0);
-                    UI.getCurrent().setPollInterval(POLL_INTERVAL);
+                    ui.setPollInterval(POLL_INTERVAL);
 
                     final ProgressBarUpdater updater = new ProgressBarUpdater(this, estimatedSize);
 

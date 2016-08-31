@@ -13,21 +13,14 @@
  */
 package com.ocs.dynamo.ui.composite.table.export;
 
-import com.vaadin.addon.tableexport.TableExport;
-
 /**
- * A table that we wrap around a table export so that we can easily intercept the call
- * 
- * @author bas.rutten
+ * Marker interface for objects that provide a report title
  */
-public class TableExportService {
+public interface HasReportTitle {
 
     /**
-     * Performs an export from a table
      * 
-     * @param export the TableExport object
+     * @return the report title
      */
-    public void export(TableExport export) {
-        export.export();
-    }
+    String getReportTitle();
 }

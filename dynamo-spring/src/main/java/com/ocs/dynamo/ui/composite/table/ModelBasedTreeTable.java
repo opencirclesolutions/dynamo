@@ -28,9 +28,11 @@ import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.ui.ServiceLocator;
 import com.ocs.dynamo.ui.composite.table.export.TableExportActionHandler;
+import com.ocs.dynamo.ui.composite.table.export.TableExportMode;
 import com.ocs.dynamo.ui.container.hierarchical.HierarchicalContainer.HierarchicalDefinition;
 import com.ocs.dynamo.ui.container.hierarchical.ModelBasedHierarchicalContainer;
 import com.ocs.dynamo.ui.container.hierarchical.ModelBasedHierarchicalContainer.ModelBasedHierarchicalDefinition;
+import com.ocs.dynamo.utils.SystemPropertyUtils;
 import com.vaadin.data.Property;
 import com.vaadin.event.Action;
 import com.vaadin.ui.Notification;
@@ -43,8 +45,8 @@ import com.vaadin.ui.UI;
  * 
  * @author Patrick Deenen (patrick.deenen@opencirclesolutions.nl)
  */
-public class ModelBasedTreeTable<ID extends Serializable, T extends AbstractEntity<ID>>
-        extends TreeTable implements Action.Handler {
+public class ModelBasedTreeTable<ID extends Serializable, T extends AbstractEntity<ID>> extends TreeTable implements
+        Action.Handler {
 
     private static final long serialVersionUID = -2011675569709594136L;
 
@@ -62,30 +64,32 @@ public class ModelBasedTreeTable<ID extends Serializable, T extends AbstractEnti
      * @param messageService
      */
     @SuppressWarnings("unchecked")
-    public ModelBasedTreeTable(ModelBasedHierarchicalContainer<T> container,
-            EntityModelFactory entityModelFactory) {
+    public ModelBasedTreeTable(ModelBasedHierarchicalContainer<T> container, EntityModelFactory entityModelFactory) {
         super("", container);
         this.messageService = ServiceLocator.getMessageService();
         this.entityModelFactory = entityModelFactory;
-        EntityModel<T> rootEntityModel = (EntityModel<T>) container.getHierarchicalDefinition(0)
-                .getEntityModel();
+        EntityModel<T> rootEntityModel = (EntityModel<T>) container.getHierarchicalDefinition(0).getEntityModel();
         TableUtils.defaultInitialization(this);
 
         setCaption(rootEntityModel.getDisplayName());
 
         // add a custom field factory that takes care of special cases and
         // validation
-        this.setTableFieldFactory(
-                container.new HierarchicalFieldFactory(container, messageService));
+        this.setTableFieldFactory(container.new HierarchicalFieldFactory(container, messageService));
 
         generateColumns(container, rootEntityModel);
 
         actionExpandAll = new Action(messageService.getMessage("ocs.expandAll"));
         actionHideAll = new Action(messageService.getMessage("ocs.hideAll"));
         addActionHandler(this);
-        addActionHandler(
-                new TableExportActionHandler(UI.getCurrent(), entityModelFactory, getEntityModels(),
-                        messageService, rootEntityModel.getDisplayName(), null, true, null));
+        if (SystemPropertyUtils.allowTableExport()) {
+            addActionHandler(new TableExportActionHandler(UI.getCurrent(), getEntityModels(),
+                    rootEntityModel.getDisplayNamePlural(), null, true, TableExportMode.EXCEL, null));
+            addActionHandler(new TableExportActionHandler(UI.getCurrent(), getEntityModels(),
+                    rootEntityModel.getDisplayNamePlural(), null, true, TableExportMode.EXCEL_SIMPLIFIED, null));
+            addActionHandler(new TableExportActionHandler(UI.getCurrent(), getEntityModels(),
+                    rootEntityModel.getDisplayNamePlural(), null, true, TableExportMode.CSV, null));
+        }
     }
 
     /**
@@ -97,20 +101,18 @@ public class ModelBasedTreeTable<ID extends Serializable, T extends AbstractEnti
      * @return
      */
     @SuppressWarnings("rawtypes")
-    protected AttributeModel addContainerProperty(Object scpId,
-            ModelBasedHierarchicalDefinition def, LazyQueryContainer lazyContainer) {
+    protected AttributeModel addContainerProperty(Object scpId, ModelBasedHierarchicalDefinition def,
+            LazyQueryContainer lazyContainer) {
         AttributeModel aModel = null;
         if (scpId != null) {
-            AttributeModel attributeModel = def.getEntityModel()
-                    .getAttributeModel(scpId.toString());
+            AttributeModel attributeModel = def.getEntityModel().getAttributeModel(scpId.toString());
             if (attributeModel != null) {
                 if (aModel == null) {
                     aModel = attributeModel;
                 }
                 if (!lazyContainer.getContainerPropertyIds().contains(attributeModel.getName())) {
-                    lazyContainer.addContainerProperty(attributeModel.getName(),
-                            attributeModel.getType(), attributeModel.getDefaultValue(),
-                            attributeModel.isReadOnly(), attributeModel.isSortable());
+                    lazyContainer.addContainerProperty(attributeModel.getName(), attributeModel.getType(),
+                            attributeModel.getDefaultValue(), attributeModel.isReadOnly(), attributeModel.isSortable());
                 }
             }
         }
@@ -122,8 +124,8 @@ public class ModelBasedTreeTable<ID extends Serializable, T extends AbstractEnti
      */
     @Override
     protected String formatPropertyValue(Object rowId, Object colId, Property<?> property) {
-        String result = TableUtils.formatPropertyValue(this, entityModelFactory, null,
-                messageService, rowId, colId, property);
+        String result = TableUtils.formatPropertyValue(this, entityModelFactory, null, messageService, rowId, colId,
+                property);
         if (result != null) {
             return result;
         }
@@ -139,8 +141,7 @@ public class ModelBasedTreeTable<ID extends Serializable, T extends AbstractEnti
      *            the entity model
      */
     @SuppressWarnings("rawtypes")
-    public void generateColumns(ModelBasedHierarchicalContainer<T> container,
-            EntityModel<T> model) {
+    public void generateColumns(ModelBasedHierarchicalContainer<T> container, EntityModel<T> model) {
         List<Object> propertyNames = new ArrayList<>();
         List<String> headerNames = new ArrayList<>();
 
@@ -230,8 +231,7 @@ public class ModelBasedTreeTable<ID extends Serializable, T extends AbstractEnti
                     setCollapseAll(s, !expand);
                 }
             } else if (target != null) {
-                Notification.show(messageService.getMessage("ocs.select.row"),
-                        Notification.Type.ERROR_MESSAGE);
+                Notification.show(messageService.getMessage("ocs.select.row"), Notification.Type.ERROR_MESSAGE);
             }
         }
     }

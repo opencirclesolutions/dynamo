@@ -29,6 +29,11 @@ public class URLValidator implements Validator {
 
     private static final long serialVersionUID = 680372854650555066L;
 
+    /**
+     * Constructor
+     * 
+     * @param message
+     */
     public URLValidator(String message) {
         this.message = message;
     }

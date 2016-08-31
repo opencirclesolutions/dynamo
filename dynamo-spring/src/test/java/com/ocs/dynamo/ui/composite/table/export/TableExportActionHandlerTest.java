@@ -13,8 +13,30 @@
  */
 package com.ocs.dynamo.ui.composite.table.export;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+
+import junitx.util.PrivateAccessor;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.DataFormat;
+import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.junit.Assert;
+import org.junit.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Matchers;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
@@ -28,26 +50,13 @@ import com.ocs.dynamo.ui.composite.table.Department;
 import com.ocs.dynamo.ui.composite.table.ModelBasedTable;
 import com.ocs.dynamo.ui.composite.table.Person;
 import com.vaadin.addon.tableexport.TemporaryFileDownloadResource;
+import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.server.Page;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TreeTable;
 import com.vaadin.ui.UI;
-import junitx.util.PrivateAccessor;
-import org.apache.commons.io.IOUtils;
-import org.apache.poi.ss.usermodel.*;
-import org.junit.Assert;
-import org.junit.Test;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Matchers;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
 
 public class TableExportActionHandlerTest extends BaseMockitoTest {
 
@@ -81,10 +90,9 @@ public class TableExportActionHandlerTest extends BaseMockitoTest {
     }
 
     @Test
-    public void testExportSimpleWithoutEntityModel() throws IOException {
+    public void testExportSimpleWithoutEntityModelExcel() throws IOException {
 
-        handler = new TableExportActionHandler(ui, messageService, columnIds, REPORT_TITLE, false,
-                null);
+        handler = new TableExportActionHandler(ui, columnIds, REPORT_TITLE, false, TableExportMode.EXCEL, null);
 
         handler.handleAction(handler.getActions(null, null)[0], getTable(), null);
 
@@ -100,10 +108,8 @@ public class TableExportActionHandlerTest extends BaseMockitoTest {
         Assert.assertEquals(44, wb.getSheetAt(0).getRow(3).getCell(1).getNumericCellValue(), 0.001);
 
         // bigdecimal
-        Assert.assertEquals(76.0, wb.getSheetAt(0).getRow(2).getCell(2).getNumericCellValue(),
-                0.001);
-        Assert.assertEquals(77.0, wb.getSheetAt(0).getRow(3).getCell(2).getNumericCellValue(),
-                0.001);
+        Assert.assertEquals(76.0, wb.getSheetAt(0).getRow(2).getCell(2).getNumericCellValue(), 0.001);
+        Assert.assertEquals(77.0, wb.getSheetAt(0).getRow(3).getCell(2).getNumericCellValue(), 0.001);
 
         // without an entity model, the application doesn't know this is a
         // percentage
@@ -112,18 +118,74 @@ public class TableExportActionHandlerTest extends BaseMockitoTest {
     }
 
     @Test
-    public void testExportTreeTable() throws IOException {
+    public void testExportSimpleWithoutEntityModelCsv() throws IOException {
 
-        handler = new TableExportActionHandler(ui, messageService, shortColumnIds, REPORT_TITLE,
-                false, null);
+        handler = new TableExportActionHandler(ui, columnIds, REPORT_TITLE, false, TableExportMode.CSV, null);
+
+        handler.handleAction(handler.getActions(null, null)[0], getTable(), null);
+
+        byte[] bytes = captureSave();
+        List<String> lines = IOUtils.readLines(new ByteArrayInputStream(bytes));
+
+        Assert.assertEquals("\"Name\";\"Age\";\"Weight\";\"Percentage\"", lines.get(0));
+        Assert.assertEquals("\"Bas, Bob\";\"35\";\"76,00\";\"12,00\"", lines.get(1));
+        Assert.assertEquals("\"Patrick\";\"44\";\"77,00\";\"15,00\"", lines.get(2));
+    }
+
+    /**
+     * Perform a CSV export with a different separator
+     * 
+     * @throws IOException
+     */
+    @Test
+    public void testExportSimpleWithoutEntityModelCsvOtherSeparator() throws IOException {
+
+        System.setProperty(DynamoConstants.SP_EXPORT_CSV_SEPARATOR, ",");
+        System.setProperty(DynamoConstants.SP_EXPORT_CSV_QUOTE, "'");
+
+        handler = new TableExportActionHandler(ui, columnIds, REPORT_TITLE, false, TableExportMode.CSV, null);
+
+        handler.handleAction(handler.getActions(null, null)[0], getTable(), null);
+
+        byte[] bytes = captureSave();
+        List<String> lines = IOUtils.readLines(new ByteArrayInputStream(bytes));
+
+        Assert.assertEquals("'Name','Age','Weight','Percentage'", lines.get(0));
+        Assert.assertEquals("'Bas, Bob','35','76,00','12,00'", lines.get(1));
+        Assert.assertEquals("'Patrick','44','77,00','15,00'", lines.get(2));
+
+        System.setProperty(DynamoConstants.SP_EXPORT_CSV_SEPARATOR, ";");
+        System.setProperty(DynamoConstants.SP_EXPORT_CSV_QUOTE, "\"");
+    }
+
+    @Test
+    public void testExportSimpleWithEntityModelCsv() throws IOException {
+
+        List<EntityModel<?>> models = new ArrayList<>();
+        models.add(entityModelFactory.getModel(Person.class));
+
+        handler = new TableExportActionHandler(ui, models, REPORT_TITLE, columnIds, false, TableExportMode.CSV, null);
+
+        handler.handleAction(handler.getActions(null, null)[0], getTable(), null);
+        byte[] bytes = captureSave();
+        List<String> lines = IOUtils.readLines(new ByteArrayInputStream(bytes));
+
+        Assert.assertEquals("\"Name\";\"Age\";\"Weight\";\"Percentage\"", lines.get(0));
+        Assert.assertEquals("\"Bas, Bob\";\"35\";\"76,00\";\"12,00%\"", lines.get(1));
+        Assert.assertEquals("\"Patrick\";\"44\";\"77,00\";\"15,00%\"", lines.get(2));
+    }
+
+    @Test
+    public void testExportTreeTableExcel() throws IOException {
+
+        handler = new TableExportActionHandler(ui, shortColumnIds, REPORT_TITLE, false, TableExportMode.EXCEL, null);
         handler.handleAction(handler.getActions(null, null)[0], getTreeTable(), null);
 
         byte[] bytes = captureSave();
         Workbook wb = importer.createWorkbook(bytes);
 
         // string
-        Assert.assertEquals("Special ops", wb.getSheetAt(0).getRow(2).getCell(0)
-                .getStringCellValue());
+        Assert.assertEquals("Special ops", wb.getSheetAt(0).getRow(2).getCell(0).getStringCellValue());
         Assert.assertEquals("Bas, Bob", wb.getSheetAt(0).getRow(3).getCell(0).getStringCellValue());
         Assert.assertEquals("Patrick", wb.getSheetAt(0).getRow(4).getCell(0).getStringCellValue());
 
@@ -133,10 +195,27 @@ public class TableExportActionHandlerTest extends BaseMockitoTest {
     }
 
     @Test
+    public void testExportTreeTableCsv() throws IOException {
+
+        handler = new TableExportActionHandler(ui, shortColumnIds, REPORT_TITLE, false, TableExportMode.CSV, null);
+        handler.handleAction(handler.getActions(null, null)[0], getTreeTable(), null);
+
+        byte[] bytes = captureSave();
+        List<String> lines = IOUtils.readLines(new ByteArrayInputStream(bytes));
+
+        for (String line : lines) {
+            System.out.println(line);
+        }
+        Assert.assertEquals("\"name\";\"age\"", lines.get(0));
+        Assert.assertEquals("\"Special ops\";\"\"", lines.get(1));
+        Assert.assertEquals("\"Bas, Bob\";\"35\"", lines.get(2));
+        Assert.assertEquals("\"Patrick\";\"44\"", lines.get(3));
+    }
+
+    @Test
     public void testExportGrid() throws IOException {
 
-        handler = new TableExportActionHandler(ui, messageService, columnIds, REPORT_TITLE, false,
-                null);
+        handler = new TableExportActionHandler(ui, columnIds, REPORT_TITLE, false, TableExportMode.EXCEL, null);
 
         handler.exportFromGrid(getGrid());
 
@@ -147,8 +226,7 @@ public class TableExportActionHandlerTest extends BaseMockitoTest {
         Assert.assertEquals("Naam", wb.getSheetAt(0).getRow(1).getCell(0).getStringCellValue());
         Assert.assertEquals("Leeftijd", wb.getSheetAt(0).getRow(1).getCell(1).getStringCellValue());
         Assert.assertEquals("Gewicht", wb.getSheetAt(0).getRow(1).getCell(2).getStringCellValue());
-        Assert.assertEquals("Percentage", wb.getSheetAt(0).getRow(1).getCell(3)
-                .getStringCellValue());
+        Assert.assertEquals("Percentage", wb.getSheetAt(0).getRow(1).getCell(3).getStringCellValue());
 
         // string
         Assert.assertEquals("Bas, Bob", wb.getSheetAt(0).getRow(2).getCell(0).getStringCellValue());
@@ -159,10 +237,8 @@ public class TableExportActionHandlerTest extends BaseMockitoTest {
         Assert.assertEquals(44, wb.getSheetAt(0).getRow(3).getCell(1).getNumericCellValue(), 0.001);
 
         // bigdecimal
-        Assert.assertEquals(76.0, wb.getSheetAt(0).getRow(2).getCell(2).getNumericCellValue(),
-                0.001);
-        Assert.assertEquals(77.0, wb.getSheetAt(0).getRow(3).getCell(2).getNumericCellValue(),
-                0.001);
+        Assert.assertEquals(76.0, wb.getSheetAt(0).getRow(2).getCell(2).getNumericCellValue(), 0.001);
+        Assert.assertEquals(77.0, wb.getSheetAt(0).getRow(3).getCell(2).getNumericCellValue(), 0.001);
 
         // without an entity model, the application doesn't know this is a
         // percentage
@@ -171,13 +247,12 @@ public class TableExportActionHandlerTest extends BaseMockitoTest {
     }
 
     @Test
-    public void testExportSimpleUsingEntityModel() throws IOException {
+    public void testExportSimpleWithEntityModel() throws IOException {
 
         List<EntityModel<?>> models = new ArrayList<>();
         models.add(entityModelFactory.getModel(Person.class));
 
-        handler = new TableExportActionHandler(ui, entityModelFactory, models, messageService,
-                REPORT_TITLE, columnIds, false, null);
+        handler = new TableExportActionHandler(ui, models, REPORT_TITLE, columnIds, false, TableExportMode.EXCEL, null);
 
         handler.handleAction(handler.getActions(null, null)[0], getTable(), null);
 
@@ -193,22 +268,17 @@ public class TableExportActionHandlerTest extends BaseMockitoTest {
         Assert.assertEquals(44, wb.getSheetAt(0).getRow(3).getCell(1).getNumericCellValue(), 0.001);
 
         // bigdecimal
-        Assert.assertEquals(76.0, wb.getSheetAt(0).getRow(2).getCell(2).getNumericCellValue(),
-                0.001);
-        Assert.assertEquals(77.0, wb.getSheetAt(0).getRow(3).getCell(2).getNumericCellValue(),
-                0.001);
+        Assert.assertEquals(76.0, wb.getSheetAt(0).getRow(2).getCell(2).getNumericCellValue(), 0.001);
+        Assert.assertEquals(77.0, wb.getSheetAt(0).getRow(3).getCell(2).getNumericCellValue(), 0.001);
 
         // percentage
-        Assert.assertEquals(0.12, wb.getSheetAt(0).getRow(2).getCell(3).getNumericCellValue(),
-                0.001);
-        Assert.assertEquals(0.15, wb.getSheetAt(0).getRow(3).getCell(3).getNumericCellValue(),
-                0.001);
+        Assert.assertEquals(0.12, wb.getSheetAt(0).getRow(2).getCell(3).getNumericCellValue(), 0.001);
+        Assert.assertEquals(0.15, wb.getSheetAt(0).getRow(3).getCell(3).getNumericCellValue(), 0.001);
     }
 
     @Test
     public void testExportWithTotalsRow() throws IOException {
-        handler = new TableExportActionHandler(ui, messageService, columnIds, REPORT_TITLE, true,
-                null);
+        handler = new TableExportActionHandler(ui, columnIds, REPORT_TITLE, true, TableExportMode.EXCEL, null);
 
         handler.handleAction(handler.getActions(null, null)[0], getTable(), null);
 
@@ -232,15 +302,15 @@ public class TableExportActionHandlerTest extends BaseMockitoTest {
         List<EntityModel<?>> models = new ArrayList<>();
         models.add(entityModelFactory.getModel(Person.class));
 
-        handler = new TableExportActionHandler(ui, entityModelFactory, models, messageService,
-                REPORT_TITLE, columnIds, true, new CustomCellStyleGenerator() {
+        handler = new TableExportActionHandler(ui, models, REPORT_TITLE, columnIds, true, TableExportMode.EXCEL,
+                new CustomCellStyleGenerator() {
 
                     private CellStyle cellStyle;
 
                     private CellStyle bdStyle;
 
                     @Override
-                    public CellStyle getCustomCellStyle(Workbook workbook, Object propId,
+                    public CellStyle getCustomCellStyle(Workbook workbook, Item item, Object rootItemId, Object propId,
                             Object value, AttributeModel attributeModel) {
                         if (cellStyle == null) {
                             cellStyle = workbook.createCellStyle();
@@ -284,8 +354,7 @@ public class TableExportActionHandlerTest extends BaseMockitoTest {
         Workbook wb = importer.createWorkbook(bytes);
 
         Assert.assertEquals("Bas, Bob", wb.getSheetAt(0).getRow(2).getCell(0).getStringCellValue());
-        Font font = wb.getFontAt(wb.getSheetAt(0).getRow(2).getCell(0).getCellStyle()
-                .getFontIndex());
+        Font font = wb.getFontAt(wb.getSheetAt(0).getRow(2).getCell(0).getCellStyle().getFontIndex());
         Assert.assertEquals(IndexedColors.BLUE.getIndex(), font.getColor());
 
         Assert.assertEquals("Patrick", wb.getSheetAt(0).getRow(3).getCell(0).getStringCellValue());
@@ -297,34 +366,28 @@ public class TableExportActionHandlerTest extends BaseMockitoTest {
         Assert.assertEquals(79, wb.getSheetAt(0).getRow(4).getCell(1).getNumericCellValue(), 0.001);
 
         // percentage
-        Assert.assertEquals(0.12, wb.getSheetAt(0).getRow(2).getCell(3).getNumericCellValue(),
-                0.001);
-        Assert.assertEquals(0.15, wb.getSheetAt(0).getRow(3).getCell(3).getNumericCellValue(),
-                0.001);
+        Assert.assertEquals(0.12, wb.getSheetAt(0).getRow(2).getCell(3).getNumericCellValue(), 0.001);
+        Assert.assertEquals(0.15, wb.getSheetAt(0).getRow(3).getCell(3).getNumericCellValue(), 0.001);
 
     }
 
     private Table getTable() {
         BeanItemContainer<Person> container = new BeanItemContainer<>(Person.class);
 
-        Person person1 = new Person(1, "Bas<br/>Bob", 35, BigDecimal.valueOf(76.0),
-                BigDecimal.valueOf(12));
-        Person person2 = new Person(2, "Patrick", 44, BigDecimal.valueOf(77.0),
-                BigDecimal.valueOf(15));
+        Person person1 = new Person(1, "Bas<br/>Bob", 35, BigDecimal.valueOf(76.0), BigDecimal.valueOf(12));
+        Person person2 = new Person(2, "Patrick", 44, BigDecimal.valueOf(77.0), BigDecimal.valueOf(15));
         container.addAll(Lists.newArrayList(person1, person2));
 
-        return new ModelBasedTable<Integer, Person>(container,
-                entityModelFactory.getModel(Person.class), entityModelFactory, messageService);
+        return new ModelBasedTable<Integer, Person>(container, entityModelFactory.getModel(Person.class),
+                entityModelFactory, messageService);
     }
 
     private TreeTable getTreeTable() {
         // BeanItemContainer<Person> container = new
         // BeanItemContainer<>(Person.class);
 
-        final Person person1 = new Person(1, "Bas<br/>Bob", 35, BigDecimal.valueOf(76.0),
-                BigDecimal.valueOf(12));
-        final Person person2 = new Person(2, "Patrick", 44, BigDecimal.valueOf(77.0),
-                BigDecimal.valueOf(15));
+        final Person person1 = new Person(1, "Bas<br/>Bob", 35, BigDecimal.valueOf(76.0), BigDecimal.valueOf(12));
+        final Person person2 = new Person(2, "Patrick", 44, BigDecimal.valueOf(77.0), BigDecimal.valueOf(15));
         // container.addAll(Lists.newArrayList(person1, person2));
 
         final Department department = new Department();
@@ -346,8 +409,8 @@ public class TableExportActionHandlerTest extends BaseMockitoTest {
             }
 
             @Override
-            protected Number handleChange(String propertyId, String rowId, String parentRowId,
-                    String childKey, String parentKey, Object newValue) {
+            protected Number handleChange(String propertyId, String rowId, String parentRowId, String childKey,
+                    String parentKey, Object newValue) {
                 return 0;
             }
 
@@ -417,10 +480,8 @@ public class TableExportActionHandlerTest extends BaseMockitoTest {
     private Grid getGrid() {
         BeanItemContainer<Person> container = new BeanItemContainer<>(Person.class);
 
-        Person person1 = new Person(1, "Bas<br/>Bob", 35, BigDecimal.valueOf(76.0),
-                BigDecimal.valueOf(12));
-        Person person2 = new Person(2, "Patrick", 44, BigDecimal.valueOf(77.0),
-                BigDecimal.valueOf(15));
+        Person person1 = new Person(1, "Bas<br/>Bob", 35, BigDecimal.valueOf(76.0), BigDecimal.valueOf(12));
+        Person person2 = new Person(2, "Patrick", 44, BigDecimal.valueOf(77.0), BigDecimal.valueOf(15));
         container.addAll(Lists.newArrayList(person1, person2));
 
         Grid grid = new Grid(container);
@@ -447,10 +508,6 @@ public class TableExportActionHandlerTest extends BaseMockitoTest {
         // copy into an array that actually has the correct size
         byte[] outBytes = new byte[read];
         System.arraycopy(bytes, 0, outBytes, 0, read);
-
-        // File file = File.createTempFile("export", ".xlsx");
-        // FileUtils.writeByteArrayToFile(file, outBytes);
-        // System.out.println(file.getAbsolutePath());
 
         return outBytes;
     }

@@ -57,10 +57,10 @@ public final class StringUtil {
     }
 
     /**
-     * Replaces all HTML breaks ("<br/>
-     * ") by commas
-     * 
+     * Replaces all HTML line breaks by commas
+     *
      * @param value
+     *            the string in which to replace all line breaks
      * @return
      */
     public static String replaceHtmlBreaks(String value) {
