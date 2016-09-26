@@ -29,6 +29,7 @@ import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
 import com.ocs.dynamo.ui.composite.form.FormOptions;
 import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
 import com.ocs.dynamo.ui.composite.table.BaseTableWrapper;
+import com.vaadin.data.Container;
 import com.vaadin.data.Property;
 import com.vaadin.data.sort.SortOrder;
 import com.vaadin.ui.Button;
@@ -195,6 +196,14 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
     protected void doAdd() {
         setSelectedItem(createEntity());
         detailsMode(getSelectedItem());
+    }
+    
+    /**
+     * 
+     * @param container
+     */
+    protected void doConstructContainer(Container container) {
+    	// overwrite in subclasses
     }
 
     /**

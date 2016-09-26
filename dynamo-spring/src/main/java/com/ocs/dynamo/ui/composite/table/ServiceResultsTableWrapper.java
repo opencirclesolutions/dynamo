@@ -74,6 +74,7 @@ public class ServiceResultsTableWrapper<ID extends Serializable, T extends Abstr
                 DynamoConstants.PAGE_SIZE, getQueryType(), getJoins());
         ((ServiceQueryDefinition<ID, T>) container.getQueryView().getQueryDefinition())
                 .setEntityModel(getEntityModel());
+		doConstructContainer(container);
         return container;
     }
 
