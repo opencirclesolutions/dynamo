@@ -592,8 +592,9 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 			match.mainValueComponent.setValue(list);
 		} else {
 			// singular value, simply set the value
+			match.typeFilterCombo.setValue(filterType);
 			match.mainValueComponent.setValue(value);
-			if (match.auxValueComponent != null && auxValue != null) {
+			if (match.auxValueComponent != null) {
 				match.auxValueComponent.setValue(auxValue);
 			}
 		}
