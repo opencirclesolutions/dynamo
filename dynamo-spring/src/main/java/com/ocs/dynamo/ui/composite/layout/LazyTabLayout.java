@@ -84,6 +84,21 @@ public abstract class LazyTabLayout<ID extends Serializable, T extends AbstractE
     }
 
     /**
+     * Constructs the title of the page
+     * 
+     * @return
+     */
+    protected abstract String createTitle();
+
+    public T getEntity() {
+        return entity;
+    }
+
+    public Tab getTab(int index) {
+    	return tabs.getTab(index);
+    }
+
+    /**
      * Returns the captions of the tabs
      * 
      * @return
@@ -99,6 +114,14 @@ public abstract class LazyTabLayout<ID extends Serializable, T extends AbstractE
      */
     protected abstract Component initTab(int index);
 
+    public void selectTab(int index) {
+        tabs.setSelectedTab(index);
+    }
+
+    public void setEntity(T entity) {
+        this.entity = entity;
+    }
+    
     /**
      * Constructs the lazy tab sheet by setting up empty dummy tabs
      * @param tabs
@@ -151,24 +174,5 @@ public abstract class LazyTabLayout<ID extends Serializable, T extends AbstractE
 
             }
         });
-    }
-
-    /**
-     * Constructs the title of the page
-     * 
-     * @return
-     */
-    protected abstract String createTitle();
-
-    public T getEntity() {
-        return entity;
-    }
-
-    public void setEntity(T entity) {
-        this.entity = entity;
-    }
-
-    public void selectTab(int index) {
-        tabs.setSelectedTab(index);
     }
 }

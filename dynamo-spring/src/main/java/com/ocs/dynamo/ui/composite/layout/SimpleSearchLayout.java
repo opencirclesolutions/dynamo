@@ -505,6 +505,15 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
     protected void doRemove() {
         getService().delete(getSelectedItem());
     }
+    
+    /**
+     * Open the screen in edit mode for the provided entity
+     * @param entity
+     */
+    public void edit(T entity) {
+    	setSelectedItem(entity);
+    	doEdit();
+    }
 
     public Button getAddButton() {
         return addButton;

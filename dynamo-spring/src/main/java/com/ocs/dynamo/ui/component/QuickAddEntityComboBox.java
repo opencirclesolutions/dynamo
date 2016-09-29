@@ -25,7 +25,6 @@ import com.ocs.dynamo.ui.component.EntityComboBox.SelectMode;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.sort.SortOrder;
 import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.data.util.converter.Converter.ConversionException;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
@@ -44,109 +43,106 @@ import com.vaadin.ui.HorizontalLayout;
 public class QuickAddEntityComboBox<ID extends Serializable, T extends AbstractEntity<ID>> extends
         QuickAddEntityField<ID, T, T> implements Refreshable {
 
-    private static final long serialVersionUID = 4246187881499965296L;
+	private static final long serialVersionUID = 4246187881499965296L;
 
-    /**
-     * The combo box that we wrap this component around
-     */
-    private EntityComboBox<ID, T> comboBox;
+	/**
+	 * The combo box that we wrap this component around
+	 */
+	private EntityComboBox<ID, T> comboBox;
 
-    /**
-     * Constructor
-     * 
-     * @param entityModel
-     *            the entity model
-     * @param attributeModel
-     *            the attribute model
-     * @param service
-     *            the service
-     * @param mode
-     *            the mode
-     * @param filter
-     *            the filter that is used for filtering the data
-     * @param items
-     * @param sortOrder
-     */
-    public QuickAddEntityComboBox(EntityModel<T> entityModel, AttributeModel attributeModel,
-            BaseService<ID, T> service, SelectMode mode, Filter filter, List<T> items,
-            SortOrder... sortOrder) {
-        super(service, entityModel, attributeModel);
-        comboBox = new EntityComboBox<>(entityModel, attributeModel, service, mode, filter, items,
-                sortOrder);
-    }
+	/**
+	 * Constructor
+	 * 
+	 * @param entityModel
+	 *            the entity model
+	 * @param attributeModel
+	 *            the attribute model
+	 * @param service
+	 *            the service
+	 * @param mode
+	 *            the mode
+	 * @param filter
+	 *            the filter that is used for filtering the data
+	 * @param items
+	 * @param sortOrder
+	 */
+	public QuickAddEntityComboBox(EntityModel<T> entityModel, AttributeModel attributeModel,
+	        BaseService<ID, T> service, SelectMode mode, Filter filter, List<T> items, SortOrder... sortOrder) {
+		super(service, entityModel, attributeModel);
+		comboBox = new EntityComboBox<>(entityModel, attributeModel, service, mode, filter, items, sortOrder);
+	}
 
-    @Override
-    @SuppressWarnings("unchecked")
-    protected void afterNewEntityAdded(T entity) {
-        // add to the container
-        BeanItemContainer<T> container = (BeanItemContainer<T>) comboBox.getContainerDataSource();
-        container.addBean(entity);
-        comboBox.setValue(entity);
-    }
+	@Override
+	@SuppressWarnings("unchecked")
+	protected void afterNewEntityAdded(T entity) {
+		// add to the container
+		BeanItemContainer<T> container = (BeanItemContainer<T>) comboBox.getContainerDataSource();
+		container.addBean(entity);
+		comboBox.setValue(entity);
+	}
 
-    public EntityComboBox<ID, T> getComboBox() {
-        return comboBox;
-    }
+	public EntityComboBox<ID, T> getComboBox() {
+		return comboBox;
+	}
 
-    @Override
-    public Class<? extends T> getType() {
-        return getEntityModel().getEntityClass();
-    }
+	@Override
+	public Class<? extends T> getType() {
+		return getEntityModel().getEntityClass();
+	}
 
-    @Override
-    protected Component initContent() {
-        HorizontalLayout bar = new DefaultHorizontalLayout(false, true, true);
-        bar.setSizeFull();
+	@Override
+	protected Component initContent() {
+		HorizontalLayout bar = new DefaultHorizontalLayout(false, true, true);
+		bar.setSizeFull();
 
-        if (this.getAttributeModel() != null) {
-            this.setCaption(getAttributeModel().getDisplayName());
-        }
+		if (this.getAttributeModel() != null) {
+			this.setCaption(getAttributeModel().getDisplayName());
+		}
 
-        // no caption needed (the wrapping component has the caption)
-        comboBox.setCaption(null);
+		// no caption needed (the wrapping component has the caption)
+		comboBox.setCaption(null);
 
-        comboBox.addValueChangeListener(new ValueChangeListener() {
+		comboBox.addValueChangeListener(new ValueChangeListener() {
 
-            private static final long serialVersionUID = 5114731461745867455L;
+			private static final long serialVersionUID = 5114731461745867455L;
 
-            @Override
-            @SuppressWarnings("unchecked")
-            public void valueChange(com.vaadin.data.Property.ValueChangeEvent event) {
-                setValue((T) event.getProperty().getValue());
-            }
-        });
+			@Override
+			@SuppressWarnings("unchecked")
+			public void valueChange(com.vaadin.data.Property.ValueChangeEvent event) {
+				setValue((T) event.getProperty().getValue());
+			}
+		});
 
-        bar.addComponent(comboBox);
-        bar.setExpandRatio(comboBox, 0.90f);
+		bar.addComponent(comboBox);
+		bar.setExpandRatio(comboBox, 0.90f);
 
-        Button addButton = constructAddButton();
-        bar.addComponent(addButton);
-        bar.setExpandRatio(addButton, 0.10f);
+		Button addButton = constructAddButton();
+		bar.addComponent(addButton);
+		bar.setExpandRatio(addButton, 0.10f);
 
-        return bar;
-    }
+		return bar;
+	}
 
-    @Override
-    public void refresh() {
-        if (comboBox != null) {
-            comboBox.refresh();
-        }
-    }
+	@Override
+	public void refresh() {
+		if (comboBox != null) {
+			comboBox.refresh();
+		}
+	}
 
-    @Override
-    protected void setInternalValue(T newValue) {
-        super.setInternalValue(newValue);
-        if (comboBox != null) {
-            comboBox.setValue(newValue);
-        }
-    }
+	@Override
+	protected void setInternalValue(T newValue) {
+		super.setInternalValue(newValue);
+		if (comboBox != null) {
+			comboBox.setValue(newValue);
+		}
+	}
 
-    @Override
-    public void setValue(T newFieldValue) throws com.vaadin.data.Property.ReadOnlyException,
-            ConversionException {
-        super.setValue(newFieldValue);
-        if (comboBox != null) {
-            comboBox.setValue(newFieldValue);
-        }
-    }
+	@Override
+	public void setValue(T newFieldValue) {
+		super.setValue(newFieldValue);
+		if (comboBox != null) {
+			comboBox.setValue(newFieldValue);
+		}
+	}
 }

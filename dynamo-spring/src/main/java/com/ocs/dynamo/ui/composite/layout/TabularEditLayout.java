@@ -50,7 +50,7 @@ import com.vaadin.ui.VerticalLayout;
  *            type of the entity
  */
 @SuppressWarnings("serial")
-public abstract class TabularEditLayout<ID extends Serializable, T extends AbstractEntity<ID>> extends
+public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity<ID>> extends
         BaseCollectionLayout<ID, T> implements Reloadable {
 
 	private static final long serialVersionUID = 4606800218149558500L;
@@ -111,7 +111,6 @@ public abstract class TabularEditLayout<ID extends Serializable, T extends Abstr
 	@Override
 	public void attach() {
 		super.attach();
-		this.filter = constructFilter();
 		build();
 	}
 
@@ -137,8 +136,8 @@ public abstract class TabularEditLayout<ID extends Serializable, T extends Abstr
 	 */
 	@Override
 	public void build() {
+		this.filter = constructFilter();
 		if (mainLayout == null) {
-
 			setViewmode(!isEditAllowed() || getFormOptions().isOpenInViewMode());
 			mainLayout = new DefaultVerticalLayout(true, true);
 
@@ -147,43 +146,39 @@ public abstract class TabularEditLayout<ID extends Serializable, T extends Abstr
 			mainLayout.addComponent(getButtonBar());
 
 			// add button
-			if (!getFormOptions().isHideAddButton() && isEditAllowed()) {
-				addButton = new Button(message("ocs.add"));
-				addButton.addClickListener(new Button.ClickListener() {
+			addButton = new Button(message("ocs.add"));
+			addButton.addClickListener(new Button.ClickListener() {
 
-					@Override
-					@SuppressWarnings("unchecked")
-					public void buttonClick(ClickEvent event) {
-						// delegate the construction of a new item to the lazy
-						// query container
-						ID id = (ID) getContainer().addItem();
-						constructEntity(getEntityFromTable(id));
-						getTableWrapper().getTable().setCurrentPageFirstItemId(id);
-					}
-				});
-				getButtonBar().addComponent(addButton);
-				addButton.setVisible(!isViewmode());
-			}
+				@Override
+				@SuppressWarnings("unchecked")
+				public void buttonClick(ClickEvent event) {
+					// delegate the construction of a new item to the lazy
+					// query container
+					ID id = (ID) getContainer().addItem();
+					constructEntity(getEntityFromTable(id));
+					getTableWrapper().getTable().setCurrentPageFirstItemId(id);
+				}
+			});
+			getButtonBar().addComponent(addButton);
+			addButton.setVisible(!getFormOptions().isHideAddButton() && isEditAllowed() && !isViewmode());
 
 			// remove button
-			if (getFormOptions().isShowRemoveButton()) {
-				removeButton = new RemoveButton() {
+			removeButton = new RemoveButton() {
 
-					@Override
-					protected void doDelete() {
-						if (getSelectedItem() != null) {
-							beforeRemove(getSelectedItem());
-							getTableWrapper().getTable().removeItem(getSelectedItem().getId());
-							getContainer().commit();
-							setSelectedItem(null);
-							afterRemove();
-						}
+				@Override
+				protected void doDelete() {
+					if (getSelectedItem() != null) {
+						beforeRemove(getSelectedItem());
+						getTableWrapper().getTable().removeItem(getSelectedItem().getId());
+						getContainer().commit();
+						setSelectedItem(null);
+						afterRemove();
 					}
-				};
-				getButtonBar().addComponent(removeButton);
-				removeButton.setVisible(!isViewmode());
-				registerButton(removeButton);
-			}
+				}
+			};
+			getButtonBar().addComponent(removeButton);
+			removeButton.setVisible(!isViewmode() && getFormOptions().isShowRemoveButton());
+			registerButton(removeButton);
 
 			// save button
 			saveButton = new Button(message("ocs.save"));
@@ -196,6 +191,10 @@ public abstract class TabularEditLayout<ID extends Serializable, T extends Abstr
 						beforeSave();
 						getContainer().commit();
 						afterSave();
+						// back to view mode when appropriate
+						if (getFormOptions().isOpenInViewMode()) {
+							toggleViewMode(true);
+						}
 					} catch (RuntimeException ex) {
 						handleSaveException(ex);
 					}
@@ -204,32 +203,30 @@ public abstract class TabularEditLayout<ID extends Serializable, T extends Abstr
 			getButtonBar().addComponent(saveButton);
 			saveButton.setVisible(!isViewmode());
 
-			if (getFormOptions().isShowEditButton()) {
-				editButton = new Button(message("ocs.edit"));
-				editButton.addClickListener(new Button.ClickListener() {
+			editButton = new Button(message("ocs.edit"));
+			editButton.addClickListener(new Button.ClickListener() {
 
-					@Override
-					public void buttonClick(ClickEvent event) {
-						toggleViewMode(false);
-					}
+				@Override
+				public void buttonClick(ClickEvent event) {
+					toggleViewMode(false);
+				}
 
-				});
-				editButton.setVisible(isViewmode());
-				getButtonBar().addComponent(editButton);
+			});
+			editButton.setVisible(isViewmode() && getFormOptions().isShowEditButton());
+			getButtonBar().addComponent(editButton);
 
-				cancelButton = new Button(message("ocs.cancel"));
-				cancelButton.addClickListener(new Button.ClickListener() {
+			cancelButton = new Button(message("ocs.cancel"));
+			cancelButton.addClickListener(new Button.ClickListener() {
 
-					@Override
-					public void buttonClick(ClickEvent event) {
-						reload();
-						toggleViewMode(true);
-					}
+				@Override
+				public void buttonClick(ClickEvent event) {
+					reload();
+					toggleViewMode(true);
+				}
 
-				});
-				cancelButton.setVisible(!isViewmode() && getFormOptions().isOpenInViewMode());
-				getButtonBar().addComponent(cancelButton);
-			}
+			});
+			cancelButton.setVisible(!isViewmode() && getFormOptions().isOpenInViewMode());
+			getButtonBar().addComponent(cancelButton);
 
 			postProcessButtonBar(getButtonBar());
 			constructTableDividers();
@@ -419,27 +416,33 @@ public abstract class TabularEditLayout<ID extends Serializable, T extends Abstr
 	 */
 	protected void toggleViewMode(boolean viewMode) {
 		setViewmode(viewMode);
-		getTableWrapper().getTable().setEditable(!isViewmode());
-
-		if (saveButton != null) {
-			saveButton.setVisible(!isViewmode());
-		}
-		if (addButton != null) {
-			addButton.setVisible(!isViewmode());
-		}
-		if (removeButton != null) {
-			removeButton.setVisible(!isViewmode());
-		}
-		if (editButton != null) {
-			editButton.setVisible(isViewmode());
-		}
-		if (cancelButton != null) {
-			cancelButton.setVisible(!isViewmode());
-		}
+		getTableWrapper().getTable().setEditable(!isViewmode() && isEditAllowed());
+		saveButton.setVisible(!isViewmode());
+		addButton.setVisible(!isViewmode() && !getFormOptions().isHideAddButton() && isEditAllowed());
+		removeButton.setVisible(!isViewmode() && getFormOptions().isShowRemoveButton() && isEditAllowed());
+		editButton.setVisible(isViewmode() && getFormOptions().isShowEditButton() && isEditAllowed());
+		cancelButton.setVisible(!isViewmode());
 	}
 
 	@Override
 	protected void detailsMode(T entity) {
 		// not needed
 	}
+
+	public Button getAddButton() {
+		return addButton;
+	}
+
+	public Button getCancelButton() {
+		return cancelButton;
+	}
+
+	public Button getEditButton() {
+		return editButton;
+	}
+
+	public Button getRemoveButton() {
+		return removeButton;
+	}
+
 }

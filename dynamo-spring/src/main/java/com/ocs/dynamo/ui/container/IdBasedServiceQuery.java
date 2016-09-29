@@ -31,61 +31,58 @@ import com.ocs.dynamo.domain.AbstractEntity;
  * @param <T>
  *            type of the entity
  */
-public class IdBasedServiceQuery<ID extends Serializable, T extends AbstractEntity<ID>> extends
-        BaseServiceQuery<ID, T> {
+public class IdBasedServiceQuery<ID extends Serializable, T extends AbstractEntity<ID>> extends BaseServiceQuery<ID, T> {
 
-    private static final long serialVersionUID = -1910477652022230437L;
+	private static final long serialVersionUID = -1910477652022230437L;
 
-    /**
-     * the list of the IDs of the objects to display
-     */
-    private List<ID> ids;
+	/**
+	 * the list of the IDs of the objects to display
+	 */
+	private List<ID> ids;
 
-    /**
-     * Constructor
-     * 
-     * @param queryDefinition
-     * @param queryConfiguration
-     */
-    public IdBasedServiceQuery(ServiceQueryDefinition<ID, T> queryDefinition,
-            Map<String, Object> queryConfiguration) {
-        super(queryDefinition, queryConfiguration);
-    }
+	/**
+	 * Constructor
+	 * 
+	 * @param queryDefinition
+	 * @param queryConfiguration
+	 */
+	public IdBasedServiceQuery(ServiceQueryDefinition<ID, T> queryDefinition, Map<String, Object> queryConfiguration) {
+		super(queryDefinition, queryConfiguration);
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected List<T> loadBeans(int firstIndex, int maxResults) {
-        List<ID> results = new ArrayList<>();
-        int index = firstIndex;
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected List<T> loadBeans(int firstIndex, int maxResults) {
+		List<ID> results = new ArrayList<>();
+		int index = firstIndex;
 
-        // Try to load the IDs when they have not been loaded yet
-        if (ids == null) {
-            size();
-        }
-        // construct a page worth of IDs
-        if (ids != null && !ids.isEmpty()) {
-            while (index < ids.size() && results.size() < maxResults) {
-                ID id = ids.get(index);
-                results.add(id);
-                index++;
-            }
-        }
-        List<T> result =  getCustomQueryDefinition().getService().fetchByIds(results,
-                new SortOrders(constructOrder()), getCustomQueryDefinition().getJoins());
-        return result;
-    }
+		// Try to load the IDs when they have not been loaded yet
+		if (ids == null) {
+			size();
+		}
+		// construct a page worth of IDs
+		if (ids != null && !ids.isEmpty()) {
+			while (index < ids.size() && results.size() < maxResults) {
+				ID id = ids.get(index);
+				results.add(id);
+				index++;
+			}
+		}
+		return getCustomQueryDefinition().getService().fetchByIds(results, new SortOrders(constructOrder()),
+		        getCustomQueryDefinition().getJoins());
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int size() {
-        // retrieve the IDs of the relevant records and store them for easy
-        // reference
-        ids = getCustomQueryDefinition().getService().findIds(constructFilter(), constructOrder());
-        return ids.size();
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public int size() {
+		// retrieve the IDs of the relevant records and store them for easy
+		// reference
+		ids = getCustomQueryDefinition().getService().findIds(constructFilter(), constructOrder());
+		return ids.size();
+	}
 
 }

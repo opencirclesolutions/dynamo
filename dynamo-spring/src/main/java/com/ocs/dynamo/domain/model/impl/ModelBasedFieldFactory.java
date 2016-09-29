@@ -108,6 +108,28 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
     // using the field factory in an
     // editable table
     private boolean validate;
+    
+    /**
+     * Constructor
+     * 
+     * @param model
+     *            the entity model
+     * @param messageService
+     *            the message service
+     * @param validate
+     *            whether to add extra validators (this is the case when the field is displayed
+     *            inside a table)
+     * @param search
+     *            whether the fields are displayed inside a search form (this has an effect on the
+     *            construction of some fields)
+     */
+    public ModelBasedFieldFactory(EntityModel<T> model, MessageService messageService,
+            boolean validate, boolean search) {
+        this.model = model;
+        this.messageService = messageService;
+        this.validate = validate;
+        this.search = search;
+    }
 
     /**
      * Returns an appropriate instance from the pool, or creates a new one
@@ -161,27 +183,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
         return (ModelBasedFieldFactory<T>) validatingInstances.get(model.getReference());
     }
 
-    /**
-     * Constructor
-     * 
-     * @param model
-     *            the entity model
-     * @param messageService
-     *            the message service
-     * @param validate
-     *            whether to add extra validators (this is the case when the field is displayed
-     *            inside a table)
-     * @param search
-     *            whether the fields are displayed inside a search form (this has an effect on the
-     *            construction of some fields)
-     */
-    public ModelBasedFieldFactory(EntityModel<T> model, MessageService messageService,
-            boolean validate, boolean search) {
-        this.model = model;
-        this.messageService = messageService;
-        this.validate = validate;
-        this.search = search;
-    }
+
 
     /**
      * Constructs a combo box- the sort order will be taken from the entity model

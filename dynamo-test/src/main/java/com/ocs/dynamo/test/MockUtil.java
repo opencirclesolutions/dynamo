@@ -45,278 +45,267 @@ import com.ocs.dynamo.service.MessageService;
  */
 public final class MockUtil {
 
-    /**
-     * Capture a call of the "save" method on a DAO
-     * 
-     * @param dao
-     *            the DAO
-     * @param clazz
-     *            the class of the entity being saved
-     * @return
-     */
-    public static <ID, X extends AbstractEntity<ID>> X captureSave(BaseDao<ID, X> dao,
-            Class<X> clazz) {
-        ArgumentCaptor<X> captor = ArgumentCaptor.forClass(clazz);
-        Mockito.verify(dao).save(captor.capture());
-        return captor.getValue();
-    }
-
-    /**
-     * Captures the call to the "save" method (that saves a list of entities) on a DAO
-     * 
-     * @param dao
-     *            the DAO that is being called
-     * @return
-     */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public static <ID, X extends AbstractEntity<ID>> List<X> captureSaveList(BaseDao<ID, X> dao) {
-        ArgumentCaptor<List> captor = ArgumentCaptor.forClass(List.class);
-        Mockito.verify(dao).save(captor.capture());
-        return (List<X>) captor.getValue();
-    }
-
-    /**
-     * Capture multipe calls to the "save" method on a DAO
-     * 
-     * @param dao
-     *            the DAO
-     * @param clazz
-     *            the class of the entity being saved
-     * @param times
-     *            the desired number of method calls
-     */
-    public static <ID, X extends AbstractEntity<ID>> List<X> captureSaves(BaseDao<ID, X> dao,
-            Class<X> clazz, int times) {
-        ArgumentCaptor<X> captor = ArgumentCaptor.forClass(clazz);
-        Mockito.verify(dao, Mockito.times(times)).save(captor.capture());
-        return captor.getAllValues();
-    }
-
-    /**
-     * Capture the call of the "save" method on a service
-     * 
-     * @param service
-     *            the service
-     * @param clazz
-     *            the class of the entity being saved
-     * @return
-     */
-    public static <ID, X extends AbstractEntity<ID>> X captureServiceSave(
-            BaseService<ID, X> service, Class<X> clazz) {
-        ArgumentCaptor<X> captor = ArgumentCaptor.forClass(clazz);
-        Mockito.verify(service).save(captor.capture());
-        return captor.getValue();
-    }
-
-    /**
-     * Capture the call to the "save" service method that accepts a list of entities
-     * 
-     * @param service
-     *            the service
-     */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public static <ID, X extends AbstractEntity<ID>> List<X> captureServiceSaveList(
-            BaseService<ID, X> service) {
-        ArgumentCaptor<List> captor = ArgumentCaptor.forClass(List.class);
-        Mockito.verify(service).save(captor.capture());
-        return (List<X>) captor.getValue();
-    }
-
-    /**
-     * Capture multiple calls to the "save" method of a service
-     * 
-     * @param service
-     *            the service
-     * @param clazz
-     *            the class of the object that is saved
-     * @param times
-     *            the number of times the method is supposed to be called
-     * @return
-     */
-    public static <ID, X extends AbstractEntity<ID>> List<X> captureServiceSaves(
-            BaseService<ID, X> service, Class<X> clazz, int times) {
-        ArgumentCaptor<X> captor = ArgumentCaptor.forClass(clazz);
-        Mockito.verify(service, Mockito.times(times)).save(captor.capture());
-        return captor.getAllValues();
-    }
-
-    /**
-     * Util method to initialize the messageservice and inject it into the target object when @Inject
-     * can not be used.
-     * 
-     * @param target
-     *            Object with the field messageService of type MessageService
-     * @param basename
-     *            the base name of the message bundle to use
-     */
-    public static void injectMessageService(Object target, String basename) {
-        ResourceBundleMessageSource rmb = new ResourceBundleMessageSource();
-        rmb.setBasename(basename);
-        MessageService ms = spy(MessageService.class);
-        ReflectionTestUtils.setField(ms, "source", rmb);
-        ReflectionTestUtils.setField(target, "messageService", ms);
-    }
-
-    /**
-     * Injects a mocked Vaadin UI into the field
-     * 
-     * @param field
-     *            the field into which to inject
-     * @param ui
-     *            the user interface
-     */
-    public static void injectUI(Object field, Object ui) {
-        try {
-            PrivateAccessor.setField(field, "ui", ui);
-        } catch (NoSuchFieldException e) {
-            // do nothing
-        }
-    }
-
-    /**
-     * Mocks the "fetchById" method of a DAO by returning the provided entity
-     */
-    public static <ID, X extends AbstractEntity<ID>> void mockFetchById(BaseDao<ID, X> dao, ID id,
-            X entity) {
-        Mockito.when(
-                dao.fetchById((ID) Matchers.eq(id), (FetchJoinInformation[]) Matchers.anyVararg()))
-                .thenReturn(entity);
-    }
-
-    /**
-     * Set up the message service to simply return the first argument passed to it - this allows for
-     * easily checking if the message service is called with the correct parameter
-     * 
-     * @param messageService
-     */
-    @SuppressWarnings("unchecked")
-    public static void mockMessageService(MessageService messageService) {
-        // method without any arguments
-        Mockito.when(messageService.getMessage(Matchers.anyString())).thenAnswer(
-                new Answer<String>() {
-
-                    @Override
-                    public String answer(InvocationOnMock invocation) throws Throwable {
-                        return (String) invocation.getArguments()[0];
-                    }
-
-                });
-        // method with varargs
-        Mockito.when(messageService.getMessage(Matchers.anyString(), Matchers.anyVararg()))
-                .thenAnswer(new Answer<String>() {
-
-                    @Override
-                    public String answer(InvocationOnMock invocation) throws Throwable {
-                        return (String) invocation.getArguments()[0];
-                    }
-
-                });
-
-        // method with locale
-        Mockito.when(messageService.getMessage(Matchers.anyString(), Matchers.any(Locale.class)))
-                .thenAnswer(new Answer<String>() {
-
-                    @Override
-                    public String answer(InvocationOnMock invocation) throws Throwable {
-                        return (String) invocation.getArguments()[0];
-                    }
-
-                });
-
-        // method for retrieving enum message
-        Mockito.when(
-                messageService.getEnumMessage(Matchers.any(Class.class), Matchers.any(Enum.class)))
-                .thenAnswer(new Answer<String>() {
-
-                    @Override
-                    public String answer(InvocationOnMock invocation) throws Throwable {
-                        return invocation.getArguments()[1].toString();
-                    }
-
-                });
-    }
-
-    /**
-     * Mocks a DAO save operation, making sure that the argument that is passed to the method is
-     * returned from the method as well
-     * 
-     * @param dao
-     *            the DAO that must be called
-     * @param clazz
-     *            the class of the entity
-     */
-    @SuppressWarnings("unchecked")
-    public static <ID, X extends AbstractEntity<ID>> void mockSave(BaseDao<ID, X> dao,
-            Class<X> clazz) {
-        // mock the save behaviour - return the first argument being passed to the method
-        Mockito.when(dao.save(Matchers.any(clazz))).thenAnswer(new Answer<X>() {
-
-            @Override
-            public X answer(InvocationOnMock invocation) throws Throwable {
-                return (X) invocation.getArguments()[0];
-            }
-
-        });
-    }
-
-    /**
-     * Mocks a service save operation, making sure that the argument that is passed to the method is
-     * returned from the method as well
-     * 
-     * @param service
-     * @param clazz
-     */
-    @SuppressWarnings("unchecked")
-    public static <ID, U extends AbstractEntity<ID>> void mockServiceSave(
-            BaseService<ID, U> service, Class<U> clazz) {
-        // mock the save behaviour
-        Mockito.when(service.save(Matchers.any(clazz))).thenAnswer(new Answer<U>() {
-
-            @Override
-            public U answer(InvocationOnMock invocation) throws Throwable {
-                return (U) invocation.getArguments()[0];
-            }
-
-        });
-    }
-
-    /**
-     * Registers all fields that are annotated with "@Mock" as beans in the Spring context
-     * 
-     * @param factory
-     * @param subject
-     */
-    public static void registerMocks(ConfigurableListableBeanFactory factory, Object subject) {
-        registerMocks(factory, subject, subject.getClass());
-    }
-
-    /**
-     * Registers all fields that are annotated with "@Mock" as beans in the Spring context
-     * 
-     * @param factory
-     * @param subject
-     * @param clazz
-     */
-    public static void registerMocks(ConfigurableListableBeanFactory factory, Object subject,
-            Class<?> clazz) {
-        try {
-            Field[] fields = clazz.getDeclaredFields();
-            for (Field field : fields) {
-                field.setAccessible(true);
-                if (field.getAnnotation(Mock.class) != null) {
-                    factory.registerSingleton(field.getName(), field.get(subject));
-                }
-            }
-            if (clazz.getSuperclass() != null) {
-                registerMocks(factory, subject, clazz.getSuperclass());
-            }
-        } catch (Exception e) {
-            throw new OCSRuntimeException(e.getMessage(), e);
-        }
-    }
-
     private MockUtil() {
         // hidden constructor
     }
+	
+	/**
+	 * Capture a call of the "save" method on a DAO
+	 * 
+	 * @param dao
+	 *            the DAO
+	 * @param clazz
+	 *            the class of the entity being saved
+	 * @return
+	 */
+	public static <ID, X extends AbstractEntity<ID>> X captureSave(BaseDao<ID, X> dao, Class<X> clazz) {
+		ArgumentCaptor<X> captor = ArgumentCaptor.forClass(clazz);
+		Mockito.verify(dao).save(captor.capture());
+		return captor.getValue();
+	}
+
+	/**
+	 * Captures the call to the "save" method (that saves a list of entities) on a DAO
+	 * 
+	 * @param dao
+	 *            the DAO that is being called
+	 * @return
+	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public static <ID, X extends AbstractEntity<ID>> List<X> captureSaveList(BaseDao<ID, X> dao) {
+		ArgumentCaptor<List> captor = ArgumentCaptor.forClass(List.class);
+		Mockito.verify(dao).save(captor.capture());
+		return (List<X>) captor.getValue();
+	}
+
+	/**
+	 * Capture multipe calls to the "save" method on a DAO
+	 * 
+	 * @param dao
+	 *            the DAO
+	 * @param clazz
+	 *            the class of the entity being saved
+	 * @param times
+	 *            the desired number of method calls
+	 */
+	public static <ID, X extends AbstractEntity<ID>> List<X> captureSaves(BaseDao<ID, X> dao, Class<X> clazz, int times) {
+		ArgumentCaptor<X> captor = ArgumentCaptor.forClass(clazz);
+		Mockito.verify(dao, Mockito.times(times)).save(captor.capture());
+		return captor.getAllValues();
+	}
+
+	/**
+	 * Capture the call of the "save" method on a service
+	 * 
+	 * @param service
+	 *            the service
+	 * @param clazz
+	 *            the class of the entity being saved
+	 * @return
+	 */
+	public static <ID, X extends AbstractEntity<ID>> X captureServiceSave(BaseService<ID, X> service, Class<X> clazz) {
+		ArgumentCaptor<X> captor = ArgumentCaptor.forClass(clazz);
+		Mockito.verify(service).save(captor.capture());
+		return captor.getValue();
+	}
+
+	/**
+	 * Capture the call to the "save" service method that accepts a list of entities
+	 * 
+	 * @param service
+	 *            the service
+	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public static <ID, X extends AbstractEntity<ID>> List<X> captureServiceSaveList(BaseService<ID, X> service) {
+		ArgumentCaptor<List> captor = ArgumentCaptor.forClass(List.class);
+		Mockito.verify(service).save(captor.capture());
+		return (List<X>) captor.getValue();
+	}
+
+	/**
+	 * Capture multiple calls to the "save" method of a service
+	 * 
+	 * @param service
+	 *            the service
+	 * @param clazz
+	 *            the class of the object that is saved
+	 * @param times
+	 *            the number of times the method is supposed to be called
+	 * @return
+	 */
+	public static <ID, X extends AbstractEntity<ID>> List<X> captureServiceSaves(BaseService<ID, X> service,
+	        Class<X> clazz, int times) {
+		ArgumentCaptor<X> captor = ArgumentCaptor.forClass(clazz);
+		Mockito.verify(service, Mockito.times(times)).save(captor.capture());
+		return captor.getAllValues();
+	}
+
+	/**
+	 * Util method to initialize the messageservice and inject it into the target object when @Inject
+	 * can not be used.
+	 * 
+	 * @param target
+	 *            Object with the field messageService of type MessageService
+	 * @param basename
+	 *            the base name of the message bundle to use
+	 */
+	public static void injectMessageService(Object target, String basename) {
+		ResourceBundleMessageSource rmb = new ResourceBundleMessageSource();
+		rmb.setBasename(basename);
+		MessageService ms = spy(MessageService.class);
+		ReflectionTestUtils.setField(ms, "source", rmb);
+		ReflectionTestUtils.setField(target, "messageService", ms);
+	}
+
+	/**
+	 * Injects a mocked Vaadin UI into the field
+	 * 
+	 * @param field
+	 *            the field into which to inject
+	 * @param ui
+	 *            the user interface
+	 */
+	public static void injectUI(Object field, Object ui) {
+		try {
+			PrivateAccessor.setField(field, "ui", ui);
+		} catch (NoSuchFieldException e) {
+			// do nothing
+		}
+	}
+
+	/**
+	 * Mocks the "fetchById" method of a DAO by returning the provided entity
+	 */
+	public static <ID, X extends AbstractEntity<ID>> void mockFetchById(BaseDao<ID, X> dao, ID id, X entity) {
+		Mockito.when(dao.fetchById((ID) Matchers.eq(id), (FetchJoinInformation[]) Matchers.anyVararg())).thenReturn(
+		        entity);
+	}
+
+	/**
+	 * Set up the message service to simply return the first argument passed to it - this allows for
+	 * easily checking if the message service is called with the correct parameter
+	 * 
+	 * @param messageService
+	 */
+	@SuppressWarnings("unchecked")
+	public static void mockMessageService(MessageService messageService) {
+		// method without any arguments
+		Mockito.when(messageService.getMessage(Matchers.anyString())).thenAnswer(new Answer<String>() {
+
+			@Override
+			public String answer(InvocationOnMock invocation) throws Throwable {
+				return (String) invocation.getArguments()[0];
+			}
+
+		});
+		// method with varargs
+		Mockito.when(messageService.getMessage(Matchers.anyString(), Matchers.anyVararg())).thenAnswer(
+		        new Answer<String>() {
+
+			        @Override
+			        public String answer(InvocationOnMock invocation) throws Throwable {
+				        return (String) invocation.getArguments()[0];
+			        }
+
+		        });
+
+		// method with locale
+		Mockito.when(messageService.getMessage(Matchers.anyString(), Matchers.any(Locale.class))).thenAnswer(
+		        new Answer<String>() {
+
+			        @Override
+			        public String answer(InvocationOnMock invocation) throws Throwable {
+				        return (String) invocation.getArguments()[0];
+			        }
+
+		        });
+
+		// method for retrieving enum message
+		Mockito.when(messageService.getEnumMessage(Matchers.any(Class.class), Matchers.any(Enum.class))).thenAnswer(
+		        new Answer<String>() {
+
+			        @Override
+			        public String answer(InvocationOnMock invocation) throws Throwable {
+				        return invocation.getArguments()[1].toString();
+			        }
+
+		        });
+	}
+
+	/**
+	 * Mocks a DAO save operation, making sure that the argument that is passed to the method is
+	 * returned from the method as well
+	 * 
+	 * @param dao
+	 *            the DAO that must be called
+	 * @param clazz
+	 *            the class of the entity
+	 */
+	@SuppressWarnings("unchecked")
+	public static <ID, X extends AbstractEntity<ID>> void mockSave(BaseDao<ID, X> dao, Class<X> clazz) {
+		// mock the save behaviour - return the first argument being passed to the method
+		Mockito.when(dao.save(Matchers.any(clazz))).thenAnswer(new Answer<X>() {
+
+			@Override
+			public X answer(InvocationOnMock invocation) throws Throwable {
+				return (X) invocation.getArguments()[0];
+			}
+
+		});
+	}
+
+	/**
+	 * Mocks a service save operation, making sure that the argument that is passed to the method is
+	 * returned from the method as well
+	 * 
+	 * @param service
+	 * @param clazz
+	 */
+	@SuppressWarnings("unchecked")
+	public static <ID, U extends AbstractEntity<ID>> void mockServiceSave(BaseService<ID, U> service, Class<U> clazz) {
+		// mock the save behaviour
+		Mockito.when(service.save(Matchers.any(clazz))).thenAnswer(new Answer<U>() {
+
+			@Override
+			public U answer(InvocationOnMock invocation) throws Throwable {
+				return (U) invocation.getArguments()[0];
+			}
+
+		});
+	}
+
+	/**
+	 * Registers all fields that are annotated with "@Mock" as beans in the Spring context
+	 * 
+	 * @param factory
+	 * @param subject
+	 */
+	public static void registerMocks(ConfigurableListableBeanFactory factory, Object subject) {
+		registerMocks(factory, subject, subject.getClass());
+	}
+
+	/**
+	 * Registers all fields that are annotated with "@Mock" as beans in the Spring context
+	 * 
+	 * @param factory
+	 * @param subject
+	 * @param clazz
+	 */
+	public static void registerMocks(ConfigurableListableBeanFactory factory, Object subject, Class<?> clazz) {
+		try {
+			Field[] fields = clazz.getDeclaredFields();
+			for (Field field : fields) {
+				field.setAccessible(true);
+				if (field.getAnnotation(Mock.class) != null) {
+					factory.registerSingleton(field.getName(), field.get(subject));
+				}
+			}
+			if (clazz.getSuperclass() != null) {
+				registerMocks(factory, subject, clazz.getSuperclass());
+			}
+		} catch (Exception e) {
+			throw new OCSRuntimeException(e.getMessage(), e);
+		}
+	}
 
 }
