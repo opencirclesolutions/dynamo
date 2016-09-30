@@ -73,6 +73,12 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 	private class FilterRegion {
 
 		/**
+		 * Indicates whether we are restoring an existing definition - if this is the case
+		 * the we do not need to set a default filter value
+		 */
+		private boolean restoring;
+
+		/**
 		 * The attribute model
 		 */
 		private AttributeModel am;
@@ -178,7 +184,7 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 
 				@Override
 				public void valueChange(ValueChangeEvent event) {
-					handleFilterAttributeChange(event);
+					handleFilterAttributeChange(event, restoring);
 				}
 			});
 			layout.addComponent(fieldFilterCb);
@@ -271,7 +277,7 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 		 * @param event
 		 *            the event
 		 */
-		private void handleFilterAttributeChange(ValueChangeEvent event) {
+		private void handleFilterAttributeChange(ValueChangeEvent event, boolean restoring) {
 			am = (AttributeModel) event.getProperty().getValue();
 
 			ComboBox newTypeFilterCombo = new ComboBox(message("ocs.type"));
@@ -310,7 +316,9 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 			typeFilterCombo = newTypeFilterCombo;
 
 			// pre-select the first value and disable the component if there is just one component
-			typeFilterCombo.setValue(getDefaultFilterType());
+			if (!restoring) {
+				typeFilterCombo.setValue(getDefaultFilterType());
+			}
 			if (filterTypes.size() == 1) {
 				typeFilterCombo.setEnabled(false);
 			}
@@ -694,6 +702,7 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 	public void restoreFilterDefinitions(List<FlexibleFilterDefinition> definitions) {
 		for (FlexibleFilterDefinition def : definitions) {
 			FilterRegion region = new FilterRegion(this);
+			region.restoring = true;
 			region.fieldFilterCb.setValue(def.getAttributeModel());
 			region.typeFilterCombo.setValue(def.getFlexibleFilterType());
 
@@ -703,8 +712,10 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 				region.auxValueComponent.setValue(ConvertUtil.convertToPresentationValue(def.getAttributeModel(),
 				        def.getValueTo()));
 			}
+			region.restoring = false;
 			regions.add(region);
 			getFilterLayout().addComponent(region.getLayout());
+
 		}
 	}
 }

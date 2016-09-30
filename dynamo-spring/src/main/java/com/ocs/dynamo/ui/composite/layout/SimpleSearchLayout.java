@@ -611,7 +611,7 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
     /**
      * Puts the screen in search mode
      */
-    protected void searchMode() {
+    public void searchMode() {
         setCompositionRoot(mainSearchLayout);
         getSearchForm().refresh();
         search();

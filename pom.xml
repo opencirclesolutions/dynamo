@@ -90,7 +90,7 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
 		<!-- Dependency versions. -->
-		<vaadin.version>7.5.6</vaadin.version>
+		<vaadin.version>7.7.3</vaadin.version>
 		<vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
 		<vaadin.lazycontainer.version>7.4.0.1</vaadin.lazycontainer.version>
 		<vaadin-spring.version>1.0.0.beta3</vaadin-spring.version>
@@ -184,7 +184,11 @@
 				<artifactId>extended-token-field</artifactId>
 				<version>${vaadin.extended-token-field.version}</version>
 			</dependency>
-
+			<dependency>
+				<groupId>org.tltv.gantt</groupId>
+				<artifactId>gantt-addon</artifactId>
+				<version>0.9.4</version>
+			</dependency>
 			<!-- Bean Validation API -->
 			<dependency>
 				<groupId>javax.validation</groupId>
@@ -375,6 +379,11 @@
 				<artifactId>h2</artifactId>
 				<version>${h2.version}</version>
 				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>com.vaadin.external.google</groupId>
+				<artifactId>guava</artifactId>
+				<version>16.0.1.vaadin1</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
