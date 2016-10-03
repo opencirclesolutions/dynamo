@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<artifactId>dynamo-vaadin</artifactId>
@@ -10,7 +11,7 @@
 	<parent>
 		<groupId>org.dynamoframework</groupId>
 		<artifactId>dynamo-parent</artifactId>
-		<version>1.0.1-CB1</version>
+		<version>1.1-CB1-SNAPSHOT</version>
 	</parent>
 
 	<organization>
@@ -88,7 +89,10 @@
 			<groupId>org.vaadin.addons</groupId>
 			<artifactId>extended-token-field</artifactId>
 		</dependency>
-
+		<dependency>
+			<groupId>org.tltv.gantt</groupId>
+			<artifactId>gantt-addon</artifactId>
+		</dependency>		
 		<dependency>
 			<groupId>com.vaadin</groupId>
 			<artifactId>vaadin-client-compiler</artifactId>
@@ -103,6 +107,10 @@
 			<!-- only needed for compiling widgetset -->
 			<scope>provided</scope>
 		</dependency>
+		<dependency>
+			<groupId>com.vaadin.external.google</groupId>
+			<artifactId>guava</artifactId>
+		</dependency>		
 	</dependencies>
 	<build>
 		<plugins>
@@ -127,7 +135,7 @@
 					<excludes>
 						<exclude>VAADIN/gwt-unitCache/**</exclude>
 						<exclude>VAADIN/widgetsets/WEB-INF/**</exclude>
-					</excludes>					
+					</excludes>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -160,5 +168,41 @@
 				<artifactId>jacoco-maven-plugin</artifactId>
 			</plugin>
 		</plugins>
+		<pluginManagement>
+			<plugins>
+				<!--This plugin's configuration is used to store Eclipse m2e settings 
+					only. It has no influence on the Maven build itself. -->
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>com.vaadin</groupId>
+										<artifactId>
+											vaadin-maven-plugin
+										</artifactId>
+										<versionRange>
+											[7.5.6,)
+										</versionRange>
+										<goals>
+											<goal>update-widgetset</goal>
+											<goal>update-theme</goal>
+											<goal>compile</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<execute />
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
 	</build>
 </project>

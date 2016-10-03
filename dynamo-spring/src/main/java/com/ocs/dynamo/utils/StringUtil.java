@@ -15,83 +15,89 @@ package com.ocs.dynamo.utils;
 
 public final class StringUtil {
 
-    private static final String EMAIL_PATTERN = "(.+)@(.+)";
+	private static final String EMAIL_PATTERN = "(.+)@(.+)";
 
-    private static final String HTTP = "http";
+	private static final String HTTP = "http";
 
-    private StringUtil() {
-        // private constructor
-    }
+	private static final String HTML_LINE_BREAK = "<br/>";
 
-    /**
-     * Checks if an value is a valid email address - this is actually a very simple check that only
-     * checks for the @-sign
-     * 
-     * @param value
-     *            the value to check
-     */
-    public static boolean isValidEmail(String value) {
-        if (value == null) {
-            return true;
-        }
+	private StringUtil() {
+		// private constructor
+	}
 
-        return value.matches(EMAIL_PATTERN);
-    }
+	/**
+	 * Checks if an value is a valid email address - this is actually a very simple check that only
+	 * checks for the @-sign
+	 * 
+	 * @param value
+	 *            the value to check
+	 */
+	public static boolean isValidEmail(String value) {
+		if (value == null) {
+			return true;
+		}
 
-    /**
-     * Prepends the default protocol ("http://") to a value that represents a URL
-     * 
-     * @param value
-     *            the value
-     * @return
-     */
-    public static String prependProtocol(String value) {
-        if (value == null) {
-            return value;
-        }
+		return value.matches(EMAIL_PATTERN);
+	}
 
-        if (!value.startsWith(HTTP)) {
-            return HTTP + "://" + value;
-        }
-        return value;
-    }
+	/**
+	 * Prepends the default protocol ("http://") to a value that represents a URL
+	 * 
+	 * @param value
+	 *            the value
+	 * @return
+	 */
+	public static String prependProtocol(String value) {
+		if (value == null) {
+			return value;
+		}
 
-    /**
-     * Replaces all HTML breaks ("<br/>
-     * ") by commas
-     * 
-     * @param value
-     * @return
-     */
-    public static String replaceHtmlBreaks(String value) {
-        if (value == null) {
-            return null;
-        }
-        value = value.replaceAll("<br/>", ", ").trim();
-        if (value.endsWith(",")) {
-            value = value.substring(0, value.length() - 1);
-        }
-        return value;
-    }
+		if (!value.startsWith(HTTP)) {
+			return HTTP + "://" + value;
+		}
+		return value;
+	}
 
-    /**
-     * Restricts a string value to the maximum length of a certain field
-     * 
-     * @param value
-     * @param clazz
-     * @param fieldName
-     * @return
-     */
-    public static String restrictToMaxFieldLength(String value, Class<?> clazz, String fieldName) {
-        if (value == null) {
-            return null;
-        } else {
-            int maxLength = ClassUtils.getMaxLength(clazz, fieldName);
-            if (maxLength >= 0 && value.length() > maxLength) {
-                value = value.substring(0, maxLength);
-            }
-        }
-        return value;
-    }
+	/**
+	 * Replaces all HTML line breaks by commas
+	 *
+	 * @param value
+	 *            the string in which to replace all line breaks
+	 * @return
+	 */
+	public static String replaceHtmlBreaks(String value) {
+		if (value == null) {
+			return null;
+		}
+		value = value.replaceAll("<br/>", ", ").trim();
+		if (value.endsWith(",")) {
+			value = value.substring(0, value.length() - 1);
+		}
+		return value;
+	}
+
+	/**
+	 * Restricts a string value to the maximum length of a certain field
+	 * 
+	 * @param value
+	 * @param clazz
+	 * @param fieldName
+	 * @return
+	 */
+	public static String restrictToMaxFieldLength(String value, Class<?> clazz, String fieldName) {
+		if (value == null) {
+			return null;
+		} else {
+			int maxLength = ClassUtils.getMaxLength(clazz, fieldName);
+			if (maxLength >= 0 && value.length() > maxLength) {
+				value = value.substring(0, maxLength);
+			}
+		}
+		return value;
+	}
+
+	public static String getHtmlLineBreak() {
+		return HTML_LINE_BREAK;
+	}
 
 }

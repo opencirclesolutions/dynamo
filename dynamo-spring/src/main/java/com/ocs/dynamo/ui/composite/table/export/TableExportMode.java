@@ -13,21 +13,12 @@
  */
 package com.ocs.dynamo.ui.composite.table.export;
 
-import com.vaadin.addon.tableexport.TableExport;
-
 /**
- * A table that we wrap around a table export so that we can easily intercept the call
+ * The various supported modes for exporting data from a table
  * 
  * @author bas.rutten
+ *
  */
-public class TableExportService {
-
-    /**
-     * Performs an export from a table
-     * 
-     * @param export the TableExport object
-     */
-    public void export(TableExport export) {
-        export.export();
-    }
+public enum TableExportMode {
+    EXCEL, EXCEL_SIMPLIFIED, CSV
 }

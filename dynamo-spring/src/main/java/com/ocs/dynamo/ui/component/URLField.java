@@ -148,8 +148,7 @@ public class URLField extends CustomField<String> {
             bar.removeAllComponents();
             if (!StringUtils.isEmpty(value)) {
                 String temp = StringUtil.prependProtocol(value);
-                link = new Link(temp, new ExternalResource(temp), "_blank", 0, 0,
-                        BorderStyle.DEFAULT);
+                link = new Link(temp, new ExternalResource(temp), "_blank", 0, 0, BorderStyle.DEFAULT);
                 bar.addComponent(link);
             } else {
                 link = null;

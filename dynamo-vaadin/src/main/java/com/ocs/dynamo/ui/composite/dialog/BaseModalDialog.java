@@ -31,60 +31,60 @@ import com.vaadin.ui.Window;
  */
 public abstract class BaseModalDialog extends Window implements Buildable {
 
-    private static final long serialVersionUID = -2265149201475495504L;
+	private static final long serialVersionUID = -2265149201475495504L;
 
-    /**
-     * Constructor
-     */
-    public BaseModalDialog() {
-    }
+	/**
+	 * Constructor
+	 */
+	public BaseModalDialog() {
+	}
 
-    @Override
-    public void build() {
-        constructLayout();
-    }
+	@Override
+	public void build() {
+		constructLayout();
+	}
 
-    private void constructLayout() {
-        this.setModal(true);
-        this.setResizable(false);
+	private void constructLayout() {
+		this.setModal(true);
+		this.setResizable(false);
 
-        Panel panel = new Panel();
-        panel.setCaptionAsHtml(true);
-        panel.setCaption(getTitle());
+		Panel panel = new Panel();
+		panel.setCaptionAsHtml(true);
+		panel.setCaption(getTitle());
 
-        this.setContent(panel);
+		this.setContent(panel);
 
-        VerticalLayout main = new DefaultVerticalLayout();
-        main.setStyleName("ocsDialog");
-        panel.setContent(main);
+		VerticalLayout main = new DefaultVerticalLayout();
+		main.setStyleName("ocsDialog");
+		panel.setContent(main);
 
-        doBuild(main);
+		doBuild(main);
 
-        DefaultHorizontalLayout buttonBar = new DefaultHorizontalLayout();
-        main.addComponent(buttonBar);
+		DefaultHorizontalLayout buttonBar = new DefaultHorizontalLayout();
+		main.addComponent(buttonBar);
 
-        doBuildButtonBar(buttonBar);
-    }
+		doBuildButtonBar(buttonBar);
+	}
 
-    /**
-     * Constructs the actual contents of the window
-     * 
-     * @param parent
-     */
-    protected abstract void doBuild(Layout parent);
+	/**
+	 * Constructs the actual contents of the window
+	 * 
+	 * @param parent
+	 */
+	protected abstract void doBuild(Layout parent);
 
-    /**
-     * Constructs the button bar
-     * 
-     * @param buttonBar
-     */
-    protected abstract void doBuildButtonBar(HorizontalLayout buttonBar);
+	/**
+	 * Constructs the button bar
+	 * 
+	 * @param buttonBar
+	 */
+	protected abstract void doBuildButtonBar(HorizontalLayout buttonBar);
 
-    /**
-     * Returns the title
-     * 
-     * @return
-     */
-    protected abstract String getTitle();
+	/**
+	 * Returns the title
+	 * 
+	 * @return
+	 */
+	protected abstract String getTitle();
 
 }

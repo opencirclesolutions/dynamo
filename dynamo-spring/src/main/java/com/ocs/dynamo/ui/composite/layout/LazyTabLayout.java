@@ -38,137 +38,154 @@ import com.vaadin.ui.VerticalLayout;
  *            type of the entity
  */
 @SuppressWarnings("serial")
-public abstract class LazyTabLayout<ID extends Serializable, T extends AbstractEntity<ID>>
-        extends BaseCustomComponent {
+public abstract class LazyTabLayout<ID extends Serializable, T extends AbstractEntity<ID>> extends BaseCustomComponent {
 
-    private static final long serialVersionUID = 3788799136302802727L;
+	private static final long serialVersionUID = 3788799136302802727L;
 
-    // the entity whose details are being shown
-    private T entity;
+	// the entity whose details are being shown
+	private T entity;
 
-    // the set of tabs that have already been loaded
-    private Set<String> replacedTabs = new HashSet<>();
+	// the set of tabs that have already been loaded
+	private Set<String> replacedTabs = new HashSet<>();
 
-    private TabSheet tabs;
+	private TabSheet tabs;
 
-    /**
-     * Constructor
-     * 
-     * @param entity
-     */
-    public LazyTabLayout(T entity) {
-        this.entity = entity;
-    }
+	/**
+	 * Constructor
+	 * 
+	 * @param entity
+	 */
+	public LazyTabLayout(T entity) {
+		this.entity = entity;
+	}
 
-    @Override
-    public void attach() {
-        super.attach();
-        build();
-    }
+	@Override
+	public void attach() {
+		super.attach();
+		build();
+	}
 
-    @Override
-    public void build() {
-        Panel panel = new Panel();
-        panel.setCaptionAsHtml(true);
-        panel.setCaption(createTitle());
+	@Override
+	public void build() {
+		Panel panel = new Panel();
+		panel.setCaptionAsHtml(true);
+		panel.setCaption(createTitle());
 
-        VerticalLayout main = new DefaultVerticalLayout(true, true);
-        panel.setContent(main);
+		VerticalLayout main = new DefaultVerticalLayout(true, true);
+		panel.setContent(main);
 
-        tabs = new TabSheet();
-        tabs.setSizeFull();
+		tabs = new TabSheet();
+		tabs.setSizeFull();
 
-        main.addComponent(tabs);
-        setupLazySheet(tabs);
-        setCompositionRoot(panel);
-    }
+		main.addComponent(tabs);
+		setupLazySheet(tabs);
+		setCompositionRoot(panel);
+	}
 
-    /**
-     * Returns the captions of the tabs
-     * 
-     * @return
-     */
-    protected abstract String[] getTabCaptions();
+	/**
+	 * Constructs the title of the page
+	 * 
+	 * @return
+	 */
+	protected abstract String createTitle();
 
-    /**
-     * Lazily creates a certain tab
-     * 
-     * @param index
-     *            the index of the tab to create
-     * @return
-     */
-    protected abstract Component initTab(int index);
+	public T getEntity() {
+		return entity;
+	}
 
-    /**
-     * Constructs the lazy tab sheet by setting up empty dummy tabs
-     * @param tabs
-     */
-    private void setupLazySheet(final TabSheet tabs) {
+	public Tab getTab(int index) {
+		return tabs.getTab(index);
+	}
 
-        // build up placeholder tabs that only contain an empty layout
-        for (String caption : getTabCaptions()) {
-            tabs.addTab(new DefaultVerticalLayout(false, false), caption);
-        }
+	/**
+	 * Returns the captions of the tabs
+	 * 
+	 * @return
+	 */
+	protected abstract String[] getTabCaptions();
 
-        // load the first tab
-        ((Layout) tabs.getTab(0).getComponent()).addComponent(initTab(0));
-        replacedTabs.add(tabs.getTab(0).getCaption());
+	/**
+	 * Returns the description (tooltip) for a certain tab
+	 * 
+	 * @param index
+	 *            the index of the tab
+	 * @return
+	 */
+	protected String getTabDescription(int index) {
+		return null;
+	}
 
-        // respond to a tab change by actually loading the sheet
-        tabs.addSelectedTabChangeListener(new TabSheet.SelectedTabChangeListener() {
+	/**
+	 * Lazily creates a certain tab
+	 * 
+	 * @param index
+	 *            the index of the tab to create
+	 * @return
+	 */
+	protected abstract Component initTab(int index);
 
-            @Override
-            public void selectedTabChange(SelectedTabChangeEvent event) {
-                Component selectedTab = event.getTabSheet().getSelectedTab();
-                Tab tab = event.getTabSheet().getTab(selectedTab);
+	public void selectTab(int index) {
+		tabs.setSelectedTab(index);
+	}
 
-                // lazily load a tab
-                if (!replacedTabs.contains(tab.getCaption())) {
-                    replacedTabs.add(tab.getCaption());
+	public void setEntity(T entity) {
+		this.entity = entity;
+	}
 
-                    // look up the tab in the copies
-                    int index = 0;
-                    for (int i = 0; i < tabs.getComponentCount(); i++) {
-                        Tab t = tabs.getTab(i);
-                        if (t.getCaption().equals(tab.getCaption())) {
-                            index = i;
-                            break;
-                        }
-                    }
+	/**
+	 * Constructs the lazy tab sheet by setting up empty dummy tabs
+	 * 
+	 * @param tabs
+	 */
+	private void setupLazySheet(final TabSheet tabs) {
 
-                    // paste the real tab into the placeholder
-                    Component realTab = initTab(index);
-                    ((Layout) selectedTab).addComponent(realTab);
+		// build up placeholder tabs that only contain an empty layout
+		int i = 0;
+		for (String caption : getTabCaptions()) {
+			Tab t = tabs.addTab(new DefaultVerticalLayout(false, false), caption);
+			t.setDescription(getTabDescription(i++));
+		}
 
-                } else {
-                    // reload the tab if needed
-                    Layout layout = (Layout) selectedTab;
-                    Component next = layout.iterator().next();
-                    if (next instanceof Reloadable) {
-                        ((Reloadable) next).reload();
-                    }
-                }
+		// load the first tab
+		((Layout) tabs.getTab(0).getComponent()).addComponent(initTab(0));
+		replacedTabs.add(tabs.getTab(0).getCaption());
 
-            }
-        });
-    }
+		// respond to a tab change by actually loading the sheet
+		tabs.addSelectedTabChangeListener(new TabSheet.SelectedTabChangeListener() {
 
-    /**
-     * Constructs the title of the page
-     * 
-     * @return
-     */
-    protected abstract String createTitle();
+			@Override
+			public void selectedTabChange(SelectedTabChangeEvent event) {
+				Component selectedTab = event.getTabSheet().getSelectedTab();
+				Tab tab = event.getTabSheet().getTab(selectedTab);
 
-    public T getEntity() {
-        return entity;
-    }
+				// lazily load a tab
+				if (!replacedTabs.contains(tab.getCaption())) {
+					replacedTabs.add(tab.getCaption());
 
-    public void setEntity(T entity) {
-        this.entity = entity;
-    }
+					// look up the tab in the copies
+					int index = 0;
+					for (int i = 0; i < tabs.getComponentCount(); i++) {
+						Tab t = tabs.getTab(i);
+						if (t.getCaption().equals(tab.getCaption())) {
+							index = i;
+							break;
+						}
+					}
 
-    public void selectTab(int index) {
-        tabs.setSelectedTab(index);
-    }
+					// paste the real tab into the placeholder
+					Component realTab = initTab(index);
+					((Layout) selectedTab).addComponent(realTab);
+
+				} else {
+					// reload the tab if needed
+					Layout layout = (Layout) selectedTab;
+					Component next = layout.iterator().next();
+					if (next instanceof Reloadable) {
+						((Reloadable) next).reload();
+					}
+				}
+
+			}
+		});
+	}
 }

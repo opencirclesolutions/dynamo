@@ -27,6 +27,7 @@ import com.ocs.dynamo.ui.composite.table.BaseTableWrapper;
 import com.ocs.dynamo.ui.composite.table.ServiceResultsTableWrapper;
 import com.ocs.dynamo.ui.container.QueryType;
 import com.ocs.dynamo.ui.container.ServiceContainer;
+import com.vaadin.data.Container;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.sort.SortOrder;
 import com.vaadin.data.util.filter.And;
@@ -44,157 +45,162 @@ import com.vaadin.ui.TextField;
  *            type of the entity
  */
 @SuppressWarnings("serial")
-public abstract class ServiceBasedSplitLayout<ID extends Serializable, T extends AbstractEntity<ID>>
-        extends BaseSplitLayout<ID, T> {
+public abstract class ServiceBasedSplitLayout<ID extends Serializable, T extends AbstractEntity<ID>> extends
+        BaseSplitLayout<ID, T> {
 
-    private static final long serialVersionUID = 1068860513192819804L;
+	private static final long serialVersionUID = 1068860513192819804L;
 
-    private Filter filter;
+	private Filter filter;
 
-    private QueryType queryType = QueryType.ID_BASED;
+	private QueryType queryType = QueryType.ID_BASED;
 
-    /**
-     * Constructor
-     * 
-     * @param service
-     * @param entityModel
-     * @param formOptions
-     * @param fieldFilters
-     * @param sortOrder
-     * @param joins
-     */
-    public ServiceBasedSplitLayout(BaseService<ID, T> service, EntityModel<T> entityModel,
-            FormOptions formOptions, SortOrder sortOrder, FetchJoinInformation... joins) {
-        super(service, entityModel, formOptions, sortOrder, joins);
-    }
+	/**
+	 * Constructor
+	 * 
+	 * @param service
+	 * @param entityModel
+	 * @param formOptions
+	 * @param fieldFilters
+	 * @param sortOrder
+	 * @param joins
+	 */
+	public ServiceBasedSplitLayout(BaseService<ID, T> service, EntityModel<T> entityModel, FormOptions formOptions,
+	        SortOrder sortOrder, FetchJoinInformation... joins) {
+		super(service, entityModel, formOptions, sortOrder, joins);
+	}
 
-    @Override
-    protected void afterReload(T t) {
-        // in a lazy query container, the entity ID is used as the key
-        getTableWrapper().getTable().select(t == null ? null : t.getId());
-    }
+	@Override
+	protected void afterReload(T t) {
+		// in a lazy query container, the entity ID is used as the key
+		getTableWrapper().getTable().select(t == null ? null : t.getId());
+	}
 
-    /**
-     * Constructs the extra search filter - override in subclass if your panel contains a quick
-     * search field
-     * 
-     * @param value
-     * @return
-     */
-    protected Filter constructQuickSearchFilter(String value) {
-        return null;
-    }
+	/**
+	 * Constructs the extra search filter - override in subclass if your panel contains a quick
+	 * search field
+	 * 
+	 * @param value
+	 * @return
+	 */
+	protected Filter constructQuickSearchFilter(String value) {
+		return null;
+	}
 
-    /**
-     * Constructs a quick search field
-     */
-    @Override
-    protected TextField constructSearchField() {
-        if (getFormOptions().isShowQuickSearchField()) {
-            TextField searchField = new TextField(message("ocs.search"));
+	/**
+	 * Constructs a quick search field
+	 */
+	@Override
+	protected TextField constructSearchField() {
+		if (getFormOptions().isShowQuickSearchField()) {
+			TextField searchField = new TextField(message("ocs.search"));
 
-            // respond to the user entering a search term
-            searchField.addTextChangeListener(new TextChangeListener() {
+			// respond to the user entering a search term
+			searchField.addTextChangeListener(new TextChangeListener() {
 
-                @Override
-                public void textChange(TextChangeEvent event) {
-                    String text = event.getText();
-                    if (!StringUtils.isEmpty(text)) {
-                        Filter extra = constructQuickSearchFilter(text);
+				@Override
+				public void textChange(TextChangeEvent event) {
+					String text = event.getText();
+					if (!StringUtils.isEmpty(text)) {
+						Filter extra = constructQuickSearchFilter(text);
 
-                        Filter f = extra;
-                        if (getFilter() != null) {
-                            f = new And(extra, getFilter());
-                        }
-                        getContainer().search(f);
-                    } else {
-                        getContainer().search(filter);
-                    }
-                }
-            });
-            return searchField;
-        }
-        return null;
-    }
+						Filter f = extra;
+						if (getFilter() != null) {
+							f = new And(extra, getFilter());
+						}
+						getContainer().search(f);
+					} else {
+						getContainer().search(filter);
+					}
+				}
+			});
+			return searchField;
+		}
+		return null;
+	}
 
-    @Override
-    protected BaseTableWrapper<ID, T> constructTableWrapper() {
-        ServiceResultsTableWrapper<ID, T> tw = new ServiceResultsTableWrapper<ID, T>(getService(),
-                getEntityModel(), getQueryType(), filter, getSortOrders(), getJoins()) {
+	@Override
+	protected BaseTableWrapper<ID, T> constructTableWrapper() {
+		ServiceResultsTableWrapper<ID, T> tw = new ServiceResultsTableWrapper<ID, T>(getService(), getEntityModel(),
+		        getQueryType(), filter, getSortOrders(), getJoins()) {
 
-            @Override
-            protected void onSelect(Object selected) {
-                setSelectedItems(selected);
-                checkButtonState(getSelectedItem());
-                if (getSelectedItem() != null) {
-                    detailsMode(getSelectedItem());
-                }
-            }
-        };
-        tw.build();
-        return tw;
-    }
+			@Override
+			protected void onSelect(Object selected) {
+				setSelectedItems(selected);
+				checkButtonState(getSelectedItem());
+				if (getSelectedItem() != null) {
+					detailsMode(getSelectedItem());
+				}
+			}
 
-    /**
-     * Creates the main search filter - overwrite in subclass if you need to actually filter the
-     * data
-     * 
-     * @return
-     */
-    protected Filter constructFilter() {
-        return null;
-    }
+			@Override
+			protected void doConstructContainer(Container container) {
+				ServiceBasedSplitLayout.this.doConstructContainer(container);
+			}
+		};
+		tw.build();
+		return tw;
+	}
 
-    @SuppressWarnings("unchecked")
-    protected ServiceContainer<ID, T> getContainer() {
-        return (ServiceContainer<ID, T>) getTableWrapper().getContainer();
-    }
+	/**
+	 * Creates the main search filter - overwrite in subclass if you need to actually filter the
+	 * data
+	 * 
+	 * @return
+	 */
+	protected Filter constructFilter() {
+		return null;
+	}
 
-    public Filter getFilter() {
-        return filter;
-    }
+	@SuppressWarnings("unchecked")
+	protected ServiceContainer<ID, T> getContainer() {
+		return (ServiceContainer<ID, T>) getTableWrapper().getContainer();
+	}
 
-    @Override
-    protected void init() {
-        filter = constructFilter();
-    }
+	public Filter getFilter() {
+		return filter;
+	}
 
-    @Override
-    public void reload() {
-        super.reload();
-        getTableWrapper().reloadContainer();
-    }
+	@Override
+	protected void init() {
+		filter = constructFilter();
+	}
 
-    public void setFilter(Filter filter) {
-        this.filter = filter;
-    }
+	@Override
+	public void reload() {
+		super.reload();
+		getTableWrapper().reloadContainer();
+	}
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public void setSelectedItems(Object selectedItems) {
-        if (selectedItems != null) {
-            if (selectedItems instanceof Collection<?>) {
-                // the lazy query container returns an array of IDs of the
-                // selected items
-                Collection<?> col = (Collection<?>) selectedItems;
-                ID id = (ID) col.iterator().next();
-                setSelectedItem(getService().fetchById(id));
-            } else {
-                ID id = (ID) selectedItems;
-                setSelectedItem(getService().fetchById(id));
-            }
-        } else {
-            setSelectedItem(null);
-            emptyDetailView();
-        }
-    }
+	public void setFilter(Filter filter) {
+		this.filter = filter;
+	}
 
-    public QueryType getQueryType() {
-        return queryType;
-    }
+	@SuppressWarnings("unchecked")
+	@Override
+	public void setSelectedItems(Object selectedItems) {
+		if (selectedItems != null) {
+			if (selectedItems instanceof Collection<?>) {
+				// the lazy query container returns an array of IDs of the
+				// selected items
+				Collection<?> col = (Collection<?>) selectedItems;
+				ID id = (ID) col.iterator().next();
+				setSelectedItem(getService().fetchById(id));
+			} else {
+				ID id = (ID) selectedItems;
+				setSelectedItem(getService().fetchById(id));
+			}
+		} else {
+			setSelectedItem(null);
+			emptyDetailView();
+		}
+	}
 
-    public void setQueryType(QueryType queryType) {
-        this.queryType = queryType;
-    }
+	public QueryType getQueryType() {
+		return queryType;
+	}
+
+	public void setQueryType(QueryType queryType) {
+		this.queryType = queryType;
+	}
 
 }

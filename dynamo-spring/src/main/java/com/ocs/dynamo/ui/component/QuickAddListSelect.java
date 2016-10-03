@@ -23,7 +23,6 @@ import com.ocs.dynamo.ui.Refreshable;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.sort.SortOrder;
 import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.data.util.converter.Converter.ConversionException;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
@@ -43,123 +42,121 @@ import com.vaadin.ui.HorizontalLayout;
 public class QuickAddListSelect<ID extends Serializable, T extends AbstractEntity<ID>> extends
         QuickAddEntityField<ID, T, Object> implements Refreshable {
 
-    private static final long serialVersionUID = 4246187881499965296L;
+	private static final long serialVersionUID = 4246187881499965296L;
 
-    /**
-     * The list select component
-     */
-    private EntityListSelect<ID, T> listSelect;
+	/**
+	 * The list select component
+	 */
+	private EntityListSelect<ID, T> listSelect;
 
-    /**
-     * The button for adding new entries
-     */
-    private Button addButton;
+	/**
+	 * The button for adding new entries
+	 */
+	private Button addButton;
 
-    /**
-     * Whether the component is in view mode
-     */
-    private boolean viewMode;
+	/**
+	 * Whether the component is in view mode
+	 */
+	private boolean viewMode;
 
-    /**
-     * 
-     * @param entityModel
-     * @param attributeModel
-     * @param service
-     * @param filter
-     * @param multiSelect
-     * @param rows
-     * @param sortOrder
-     */
-    public QuickAddListSelect(EntityModel<T> entityModel, AttributeModel attributeModel,
-            BaseService<ID, T> service, Filter filter, boolean multiSelect, int rows,
-            SortOrder... sortOrder) {
-        super(service, entityModel, attributeModel);
-        listSelect = new EntityListSelect<ID, T>(entityModel, attributeModel, service, filter,
-                sortOrder);
-        listSelect.setMultiSelect(multiSelect);
-        listSelect.setRows(rows);
-    }
+	/**
+	 * Constructor
+	 * 
+	 * @param entityModel
+	 * @param attributeModel
+	 * @param service
+	 * @param filter
+	 * @param multiSelect
+	 * @param rows
+	 * @param sortOrder
+	 */
+	public QuickAddListSelect(EntityModel<T> entityModel, AttributeModel attributeModel, BaseService<ID, T> service,
+	        Filter filter, boolean multiSelect, int rows, SortOrder... sortOrder) {
+		super(service, entityModel, attributeModel);
+		listSelect = new EntityListSelect<ID, T>(entityModel, attributeModel, service, filter, sortOrder);
+		listSelect.setMultiSelect(multiSelect);
+		listSelect.setRows(rows);
+	}
 
-    @Override
-    @SuppressWarnings("unchecked")
-    protected void afterNewEntityAdded(T entity) {
-        // add to the container
-        BeanItemContainer<T> container = (BeanItemContainer<T>) listSelect.getContainerDataSource();
-        container.addBean(entity);
-        listSelect.select(entity);
-    }
+	@Override
+	@SuppressWarnings("unchecked")
+	protected void afterNewEntityAdded(T entity) {
+		// add to the container
+		BeanItemContainer<T> container = (BeanItemContainer<T>) listSelect.getContainerDataSource();
+		container.addBean(entity);
+		listSelect.select(entity);
+	}
 
-    public EntityListSelect<ID, T> getListSelect() {
-        return listSelect;
-    }
+	public EntityListSelect<ID, T> getListSelect() {
+		return listSelect;
+	}
 
-    @Override
-    public Class<? extends Object> getType() {
-        return Object.class;
-    }
+	@Override
+	public Class<? extends Object> getType() {
+		return Object.class;
+	}
 
-    @Override
-    protected Component initContent() {
-        HorizontalLayout bar = new DefaultHorizontalLayout(false, true, true);
-        bar.setSizeFull();
+	@Override
+	protected Component initContent() {
+		HorizontalLayout bar = new DefaultHorizontalLayout(false, true, true);
+		bar.setSizeFull();
 
-        if (this.getAttributeModel() != null) {
-            this.setCaption(getAttributeModel().getDisplayName());
-        }
+		if (this.getAttributeModel() != null) {
+			this.setCaption(getAttributeModel().getDisplayName());
+		}
 
-        // no caption needed (the wrapping component has the caption)
-        listSelect.setCaption(null);
-        listSelect.setSizeFull();
+		// no caption needed (the wrapping component has the caption)
+		listSelect.setCaption(null);
+		listSelect.setSizeFull();
 
-        listSelect.addValueChangeListener(new ValueChangeListener() {
+		listSelect.addValueChangeListener(new ValueChangeListener() {
 
-            private static final long serialVersionUID = 5114731461745867455L;
+			private static final long serialVersionUID = 5114731461745867455L;
 
-            @Override
-            public void valueChange(com.vaadin.data.Property.ValueChangeEvent event) {
-                setValue(event.getProperty().getValue());
-            }
-        });
+			@Override
+			public void valueChange(com.vaadin.data.Property.ValueChangeEvent event) {
+				setValue(event.getProperty().getValue());
+			}
+		});
 
-        bar.addComponent(listSelect);
+		bar.addComponent(listSelect);
 
-        if (!viewMode) {
-            addButton = constructAddButton();
-            bar.addComponent(addButton);
-        }
+		if (!viewMode) {
+			addButton = constructAddButton();
+			bar.addComponent(addButton);
+		}
 
-        return bar;
-    }
+		return bar;
+	}
 
-    /**
-     * Refreshes the data in the list
-     */
-    @Override
-    public void refresh() {
-        if (listSelect != null) {
-            listSelect.refresh();
-        }
-    }
+	/**
+	 * Refreshes the data in the list
+	 */
+	@Override
+	public void refresh() {
+		if (listSelect != null) {
+			listSelect.refresh();
+		}
+	}
 
-    @Override
-    protected void setInternalValue(Object newValue) {
-        super.setInternalValue(newValue);
-        if (listSelect != null) {
-            listSelect.setValue(newValue);
-        }
-    }
+	@Override
+	protected void setInternalValue(Object newValue) {
+		super.setInternalValue(newValue);
+		if (listSelect != null) {
+			listSelect.setValue(newValue);
+		}
+	}
 
-    @Override
-    public void setValue(Object newFieldValue) throws com.vaadin.data.Property.ReadOnlyException,
-            ConversionException {
-        super.setValue(newFieldValue);
-        if (listSelect != null) {
-            listSelect.setValue(newFieldValue);
-        }
-    }
+	@Override
+	public void setValue(Object newFieldValue) {
+		super.setValue(newFieldValue);
+		if (listSelect != null) {
+			listSelect.setValue(newFieldValue);
+		}
+	}
 
-    public void setViewMode(boolean viewMode) {
-        this.viewMode = viewMode;
-    }
+	public void setViewMode(boolean viewMode) {
+		this.viewMode = viewMode;
+	}
 
 }

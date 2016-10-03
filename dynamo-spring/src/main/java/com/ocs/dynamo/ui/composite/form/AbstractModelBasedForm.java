@@ -32,82 +32,85 @@ import com.vaadin.data.Container.Filter;
  * @param <T>
  *            the type of the entity
  */
-public abstract class AbstractModelBasedForm<ID extends Serializable, T extends AbstractEntity<ID>>
-        extends BaseCustomComponent {
+public abstract class AbstractModelBasedForm<ID extends Serializable, T extends AbstractEntity<ID>> extends
+        BaseCustomComponent {
 
-    private static final long serialVersionUID = -1163137979989646987L;
+	private static final long serialVersionUID = -1163137979989646987L;
 
-    /**
-     * The entity model on which to base the form
-     */
-    private EntityModel<T> entityModel;
+	/**
+	 * The entity model on which to base the form
+	 */
+	private EntityModel<T> entityModel;
 
-    /**
-     * Map for keeping track of custom entity models for certain fields
-     */
-    private Map<String, String> fieldEntityModels = new HashMap<>();
+	/**
+	 * Map for keeping track of custom entity models for certain fields
+	 */
+	private Map<String, String> fieldEntityModels = new HashMap<>();
 
-    /**
-     * Field filters for easily building filtered combo boxes
-     */
-    private Map<String, Filter> fieldFilters = new HashMap<>();
+	/**
+	 * Field filters for easily building filtered combo boxes
+	 */
+	private Map<String, Filter> fieldFilters = new HashMap<>();
 
-    /**
-     * The form options
-     */
-    private FormOptions formOptions;
+	/**
+	 * The form options
+	 */
+	private FormOptions formOptions;
 
-    /**
-     * Constructor
-     */
-    public AbstractModelBasedForm(FormOptions formOptions, Map<String, Filter> fieldFilters,
-            EntityModel<T> entityModel) {
-        this.formOptions = formOptions;
-        this.fieldFilters = fieldFilters == null ? new HashMap<String, Filter>() : fieldFilters;
-        this.entityModel = entityModel;
-    }
+	/**
+	 * Constructor
+	 */
+	public AbstractModelBasedForm(FormOptions formOptions, Map<String, Filter> fieldFilters, EntityModel<T> entityModel) {
+		this.formOptions = formOptions;
+		this.fieldFilters = fieldFilters == null ? new HashMap<String, Filter>() : fieldFilters;
+		this.entityModel = entityModel;
+	}
 
-    public static long getSerialversionuid() {
-        return serialVersionUID;
-    }
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
 
-    public EntityModel<T> getEntityModel() {
-        return entityModel;
-    }
+	public EntityModel<T> getEntityModel() {
+		return entityModel;
+	}
 
-    public Map<String, String> getFieldEntityModels() {
-        return fieldEntityModels;
-    }
+	public Map<String, String> getFieldEntityModels() {
+		return fieldEntityModels;
+	}
 
-    public Map<String, Filter> getFieldFilters() {
-        return fieldFilters;
-    }
+	public Map<String, Filter> getFieldFilters() {
+		return fieldFilters;
+	}
 
-    public FormOptions getFormOptions() {
-        return formOptions;
-    }
+	public FormOptions getFormOptions() {
+		return formOptions;
+	}
 
-    protected EntityModel<?> getFieldEntityModel(AttributeModel attributeModel) {
-        String reference = getFieldEntityModels().get(attributeModel.getPath());
-        EntityModel<?> em = reference == null ? null : getEntityModelFactory().getModel(reference,
-                attributeModel.getModelType());
-        return em;
-    }
+	/**
+	 * Returns the overruled entity model to be used for a certain field
+	 * 
+	 * @param attributeModel
+	 * @return
+	 */
+	protected EntityModel<?> getFieldEntityModel(AttributeModel attributeModel) {
+		String reference = getFieldEntityModels().get(attributeModel.getPath());
+		return reference == null ? null : getEntityModelFactory().getModel(reference, attributeModel.getModelType());
+	}
 
-    public void setFieldEntityModels(Map<String, String> fieldEntityModels) {
-        this.fieldEntityModels = fieldEntityModels;
-    }
+	public void setFieldEntityModels(Map<String, String> fieldEntityModels) {
+		this.fieldEntityModels = fieldEntityModels;
+	}
 
-    public void setEntityModel(EntityModel<T> entityModel) {
-        this.entityModel = entityModel;
-    }
+	public void setEntityModel(EntityModel<T> entityModel) {
+		this.entityModel = entityModel;
+	}
 
-    public void setFieldFilters(Map<String, Filter> fieldFilters) {
-        this.fieldFilters = fieldFilters;
-    }
+	public void setFieldFilters(Map<String, Filter> fieldFilters) {
+		this.fieldFilters = fieldFilters;
+	}
 
-    public void setFormOptions(FormOptions formOptions) {
-        this.formOptions = formOptions;
-    }
+	public void setFormOptions(FormOptions formOptions) {
+		this.formOptions = formOptions;
+	}
 
 }

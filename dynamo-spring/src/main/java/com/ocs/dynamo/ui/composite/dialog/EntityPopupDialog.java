@@ -21,7 +21,6 @@ import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.ui.ServiceLocator;
 import com.ocs.dynamo.ui.composite.form.FormOptions;
-import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
 import com.ocs.dynamo.ui.composite.layout.SimpleEditLayout;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -38,101 +37,106 @@ import com.vaadin.ui.Layout;
  * @param <T>
  *            the type of the entity
  */
-public abstract class EntityPopupDialog<ID extends Serializable, T extends AbstractEntity<ID>>
-        extends BaseModalDialog {
+public abstract class EntityPopupDialog<ID extends Serializable, T extends AbstractEntity<ID>> extends BaseModalDialog {
 
-    private static final long serialVersionUID = -2012972894321597214L;
+	private static final long serialVersionUID = -2012972894321597214L;
 
-    private MessageService messageService = ServiceLocator.getMessageService();
+	private MessageService messageService = ServiceLocator.getMessageService();
 
-    private EntityModel<T> entityModel;
+	private EntityModel<T> entityModel;
 
-    private SimpleEditLayout<ID, T> layout;
+	private SimpleEditLayout<ID, T> layout;
 
-    private BaseService<ID, T> service;
+	private BaseService<ID, T> service;
 
-    private FormOptions formOptions;
+	private FormOptions formOptions;
 
-    private T entity;
+	private T entity;
 
-    /**
-     * Constructor
-     * 
-     * @param service
-     * @param entityModel
-     */
-    public EntityPopupDialog(BaseService<ID, T> service, T entity, EntityModel<T> entityModel,
-            FormOptions formOptions) {
-        this.service = service;
-        this.entityModel = entityModel;
-        this.formOptions = formOptions;
-        this.entity = entity;
-    }
+	/**
+	 * Constructor
+	 * 
+	 * @param service
+	 * @param entityModel
+	 */
+	public EntityPopupDialog(BaseService<ID, T> service, T entity, EntityModel<T> entityModel, FormOptions formOptions) {
+		this.service = service;
+		this.entityModel = entityModel;
+		this.formOptions = formOptions;
+		this.entity = entity;
+	}
 
-    /**
-     * Callback method that is called after the user is done editing the entry
-     * 
-     * @param cancel
-     *            whether the edit action was cancelled
-     * @param newEntity
-     *            whether the user was adding a new entity
-     * @param entity
-     *            the entity that was being edited
-     */
-    public abstract void afterEditDone(boolean cancel, boolean newEntity, T entity);
+	/**
+	 * Callback method that is called after the user is done editing the entry
+	 * 
+	 * @param cancel
+	 *            whether the edit action was cancelled
+	 * @param newEntity
+	 *            whether the user was adding a new entity
+	 * @param entity
+	 *            the entity that was being edited
+	 */
+	public abstract void afterEditDone(boolean cancel, boolean newEntity, T entity);
 
-    @Override
-    protected void doBuild(Layout parent) {
+	/**
+	 * Creates a new entity
+	 * @return
+	 */
+	protected T createEntity() {
+		return service.createNewEntity();
+	}
 
-        formOptions.setHideCancelButton(false);
+	@Override
+	protected void doBuild(Layout parent) {
 
-        layout = new SimpleEditLayout<ID, T>(entity, service, entityModel, formOptions) {
+		formOptions.setHideCancelButton(false);
 
-            private static final long serialVersionUID = -2965981316297118264L;
+		layout = new SimpleEditLayout<ID, T>(entity, service, entityModel, formOptions) {
 
-            @Override
-            protected void afterEditDone(boolean cancel, boolean newEntity, T entity) {
-                super.afterEditDone(cancel, newEntity, entity);
-                EntityPopupDialog.this.close();
-                EntityPopupDialog.this.afterEditDone(cancel, newEntity, entity);
-            }
+			private static final long serialVersionUID = -2965981316297118264L;
 
-            @Override
-            protected void afterModeChanged(boolean viewMode, ModelBasedEditForm<ID, T> editForm) {
-                super.afterModeChanged(viewMode, editForm);
-            }
+			@Override
+			protected T createEntity() {
+				return EntityPopupDialog.this.createEntity();
+			}
 
-        };
-        parent.addComponent(layout);
-    }
+			@Override
+			protected void afterEditDone(boolean cancel, boolean newEntity, T entity) {
+				super.afterEditDone(cancel, newEntity, entity);
+				EntityPopupDialog.this.close();
+				EntityPopupDialog.this.afterEditDone(cancel, newEntity, entity);
+			}
+		};
+		parent.addComponent(layout);
+	}
 
-    @Override
-    protected void doBuildButtonBar(HorizontalLayout buttonBar) {
-        // in read-only mode, display only an "OK" button that closes the dialog
-        buttonBar.setVisible(formOptions.isReadOnly());
-        if (formOptions.isReadOnly()) {
-            Button okButton = new Button(messageService.getMessage("ocs.ok"));
-            okButton.addClickListener(new Button.ClickListener() {
+	@Override
+	protected void doBuildButtonBar(HorizontalLayout buttonBar) {
+		// in read-only mode, display only an "OK" button that closes the dialog
+		buttonBar.setVisible(formOptions.isReadOnly());
+		if (formOptions.isReadOnly()) {
+			Button okButton = new Button(messageService.getMessage("ocs.ok"));
+			okButton.addClickListener(new Button.ClickListener() {
 
-                private static final long serialVersionUID = 1889018073135108348L;
+				private static final long serialVersionUID = 1889018073135108348L;
 
-                @Override
-                public void buttonClick(ClickEvent event) {
-                    close();
-                }
-            });
+				@Override
+				public void buttonClick(ClickEvent event) {
+					close();
+				}
+			});
 
-            buttonBar.addComponent(okButton);
-        }
-    }
+			buttonBar.addComponent(okButton);
+		}
+	}
 
-    public T getEntity() {
-        return layout.getEntity();
-    }
+	public T getEntity() {
+		return layout.getEntity();
+	}
 
-    @Override
-    protected String getTitle() {
-        // not needed
-        return null;
-    }
+	@Override
+	protected String getTitle() {
+		// not needed
+		return null;
+	}
 }
