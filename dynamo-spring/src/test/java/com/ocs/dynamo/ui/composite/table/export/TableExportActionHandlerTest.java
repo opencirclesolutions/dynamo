@@ -87,6 +87,10 @@ public class TableExportActionHandlerTest extends BaseMockitoTest {
 		MockUtil.mockMessageService(messageService);
 		Mockito.when(ui.getPage()).thenReturn(page);
 		PrivateAccessor.setField(entityModelFactory, "messageService", messageService);
+
+		// set the default values for the system properties
+		System.setProperty(DynamoConstants.SP_EXPORT_CSV_SEPARATOR, ";");
+		System.setProperty(DynamoConstants.SP_EXPORT_CSV_QUOTE, "\"");
 	}
 
 	@Test
@@ -132,34 +136,6 @@ public class TableExportActionHandlerTest extends BaseMockitoTest {
 		        lines.get(1));
 		Assert.assertEquals("\"Patrick\";\"44\";\"" + formatNumber("77,00") + "\";\"" + formatNumber("15,00") + "\"",
 		        lines.get(2));
-	}
-
-	/**
-	 * Perform a CSV export with a different separator
-	 * 
-	 * @throws IOException
-	 */
-	@Test
-	public void testExportSimpleWithoutEntityModelCsvOtherSeparator() throws IOException {
-
-		System.setProperty(DynamoConstants.SP_EXPORT_CSV_SEPARATOR, ",");
-		System.setProperty(DynamoConstants.SP_EXPORT_CSV_QUOTE, "'");
-
-		handler = new TableExportActionHandler(ui, columnIds, REPORT_TITLE, false, TableExportMode.CSV, null);
-
-		handler.handleAction(handler.getActions(null, null)[0], getTable(), null);
-
-		byte[] bytes = captureSave();
-		List<String> lines = IOUtils.readLines(new ByteArrayInputStream(bytes));
-
-		Assert.assertEquals("'Name','Age','Weight','Percentage'", lines.get(0));
-		Assert.assertEquals("'Bas, Bob','35','" + formatNumber("76,00") + "','" + formatNumber("12,00") + "'",
-		        lines.get(1));
-		Assert.assertEquals("'Patrick','44','" + formatNumber("77,00") + "','" + formatNumber("15,00") + "'",
-		        lines.get(2));
-
-		System.setProperty(DynamoConstants.SP_EXPORT_CSV_SEPARATOR, ";");
-		System.setProperty(DynamoConstants.SP_EXPORT_CSV_QUOTE, "\"");
 	}
 
 	@Test
@@ -372,6 +348,31 @@ public class TableExportActionHandlerTest extends BaseMockitoTest {
 		Assert.assertEquals(0.12, wb.getSheetAt(0).getRow(2).getCell(3).getNumericCellValue(), 0.001);
 		Assert.assertEquals(0.15, wb.getSheetAt(0).getRow(3).getCell(3).getNumericCellValue(), 0.001);
 
+	}
+
+	/**
+	 * Perform a CSV export with a different separator
+	 * 
+	 * @throws IOException
+	 */
+	@Test
+	public void testExportSimpleWithoutEntityModelCsvOtherSeparator() throws IOException {
+
+		System.setProperty(DynamoConstants.SP_EXPORT_CSV_SEPARATOR, ",");
+		System.setProperty(DynamoConstants.SP_EXPORT_CSV_QUOTE, "'");
+
+		handler = new TableExportActionHandler(ui, columnIds, REPORT_TITLE, false, TableExportMode.CSV, null);
+
+		handler.handleAction(handler.getActions(null, null)[0], getTable(), null);
+
+		byte[] bytes = captureSave();
+		List<String> lines = IOUtils.readLines(new ByteArrayInputStream(bytes));
+
+		Assert.assertEquals("'Name','Age','Weight','Percentage'", lines.get(0));
+		Assert.assertEquals("'Bas, Bob','35','" + formatNumber("76,00") + "','" + formatNumber("12,00") + "'",
+		        lines.get(1));
+		Assert.assertEquals("'Patrick','44','" + formatNumber("77,00") + "','" + formatNumber("15,00") + "'",
+		        lines.get(2));
 	}
 
 	private Table getTable() {

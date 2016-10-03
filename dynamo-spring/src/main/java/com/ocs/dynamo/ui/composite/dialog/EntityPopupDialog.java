@@ -78,6 +78,14 @@ public abstract class EntityPopupDialog<ID extends Serializable, T extends Abstr
 	 */
 	public abstract void afterEditDone(boolean cancel, boolean newEntity, T entity);
 
+	/**
+	 * Creates a new entity
+	 * @return
+	 */
+	protected T createEntity() {
+		return service.createNewEntity();
+	}
+
 	@Override
 	protected void doBuild(Layout parent) {
 
@@ -86,6 +94,11 @@ public abstract class EntityPopupDialog<ID extends Serializable, T extends Abstr
 		layout = new SimpleEditLayout<ID, T>(entity, service, entityModel, formOptions) {
 
 			private static final long serialVersionUID = -2965981316297118264L;
+
+			@Override
+			protected T createEntity() {
+				return EntityPopupDialog.this.createEntity();
+			}
 
 			@Override
 			protected void afterEditDone(boolean cancel, boolean newEntity, T entity) {
