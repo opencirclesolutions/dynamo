@@ -389,7 +389,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 	 * @return
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	protected <E extends Field<?>> E createEnumCombo(Class<?> type, Class<E> fieldType) {
+	public <E extends Field<?>> E createEnumCombo(Class<?> type, Class<E> fieldType) {
 		AbstractSelect s = createCompatibleSelect((Class<? extends AbstractSelect>) fieldType);
 		s.setNullSelectionAllowed(true);
 		fillEnumField(s, (Class<? extends Enum>) type);

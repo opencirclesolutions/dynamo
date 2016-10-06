@@ -14,6 +14,7 @@
 package com.ocs.dynamo.filter;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -98,31 +99,35 @@ public final class FilterUtil {
      *            the propertyId of the filter to extract
      * @return
      */
-    public static Filter extractFilter(Filter filter, String propertyId) {
+	public static Filter extractFilter(Filter filter, String propertyId, Class<? extends Filter>... typesToFind) {
+		List<Class<? extends Filter>> types = typesToFind == null || typesToFind.length == 0
+				|| (typesToFind.length == 1 && typesToFind[0] == null) ? null : Arrays.asList(typesToFind);
         if (filter instanceof AbstractJunctionFilter) {
             AbstractJunctionFilter junction = (AbstractJunctionFilter) filter;
             for (Filter child : junction.getFilters()) {
-                Filter found = extractFilter(child, propertyId);
+				Filter found = extractFilter(child, propertyId, typesToFind);
                 if (found != null) {
                     return found;
                 }
             }
-        } else if (filter instanceof com.vaadin.data.util.filter.Compare) {
+		} else if (filter instanceof com.vaadin.data.util.filter.Compare
+				&& (types == null || types.contains(filter.getClass()))) {
             com.vaadin.data.util.filter.Compare compare = (com.vaadin.data.util.filter.Compare) filter;
             if (compare.getPropertyId().equals(propertyId)) {
                 return compare;
             }
-        } else if (filter instanceof com.vaadin.data.util.filter.Like) {
+		} else if (filter instanceof com.vaadin.data.util.filter.Like
+				&& (types == null || types.contains(filter.getClass()))) {
             com.vaadin.data.util.filter.Like like = (com.vaadin.data.util.filter.Like) filter;
             if (like.getPropertyId().equals(propertyId)) {
                 return like;
             }
-        } else if (filter instanceof SimpleStringFilter) {
+		} else if (filter instanceof SimpleStringFilter && (types == null || types.contains(filter.getClass()))) {
             SimpleStringFilter ssf = (SimpleStringFilter) filter;
             if (ssf.getPropertyId().equals(propertyId)) {
                 return ssf;
             }
-        } else if (filter instanceof Between) {
+		} else if (filter instanceof Between && (types == null || types.contains(filter.getClass()))) {
             Between between = (Between) filter;
             if (between.getPropertyId().equals(propertyId)) {
                 return between;
@@ -130,6 +135,56 @@ public final class FilterUtil {
         }
         return null;
     }
+
+	/**
+	 * Extracts a specific filter value from a (possibly) composite filter, for between only the start value is returned
+	 *
+	 * @param filter
+	 *            the filter from which to extract a certain part
+	 * @param propertyId
+	 *            the propertyId of the filter to extract
+	 * @return
+	 */
+	@SafeVarargs
+	public static Object extractFilterValue(Filter filter, String propertyId, Class<? extends Filter>... typesToFind) {
+		List<Class<? extends Filter>> types = typesToFind == null || (typesToFind.length == 1 && typesToFind[0] == null)
+				? null : Arrays.asList(typesToFind);
+		if (filter instanceof AbstractJunctionFilter) {
+			AbstractJunctionFilter junction = (AbstractJunctionFilter) filter;
+			for (Filter child : junction.getFilters()) {
+				Filter found = extractFilter(child, propertyId, typesToFind);
+				if (found != null) {
+					Object value = extractFilterValue(found, propertyId, typesToFind);
+					if (value != null) {
+						return value;
+					}
+				}
+			}
+		} else if (filter instanceof com.vaadin.data.util.filter.Compare
+				&& (types == null || types.contains(filter.getClass()))) {
+			com.vaadin.data.util.filter.Compare compare = (com.vaadin.data.util.filter.Compare) filter;
+			if (compare.getPropertyId().equals(propertyId)) {
+				return compare.getValue();
+			}
+		} else if (filter instanceof com.vaadin.data.util.filter.Like
+				&& (types == null || types.contains(filter.getClass()))) {
+			com.vaadin.data.util.filter.Like like = (com.vaadin.data.util.filter.Like) filter;
+			if (like.getPropertyId().equals(propertyId)) {
+				return like.getValue();
+			}
+		} else if (filter instanceof SimpleStringFilter && (types == null || types.contains(filter.getClass()))) {
+			SimpleStringFilter ssf = (SimpleStringFilter) filter;
+			if (ssf.getPropertyId().equals(propertyId)) {
+				return ssf.getFilterString();
+			}
+		} else if (filter instanceof Between && (types == null || types.contains(filter.getClass()))) {
+			Between ssf = (Between) filter;
+			if (ssf.getPropertyId().equals(propertyId)) {
+				return ssf.getStartValue();
+			}
+		}
+		return null;
+	}
 
     /**
      * Take a (nested) And filter and flatten it to a single level

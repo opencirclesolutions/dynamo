@@ -14,6 +14,7 @@
 package com.ocs.dynamo.ui.composite.form;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -122,8 +123,12 @@ public class FilterGroup {
 
 				@Override
 				public void valueChange(ValueChangeEvent event) {
-					FilterGroup.this.valueChange(FilterGroup.this.auxField, ConvertUtil.convertSearchValue(
-					        FilterGroup.this.attributeModel, event.getProperty().getValue()));
+					try {
+						FilterGroup.this.valueChange(FilterGroup.this.auxField, ConvertUtil
+								.convertSearchValue(FilterGroup.this.attributeModel, event.getProperty().getValue()));
+					} catch (ConversionException ex) {
+						// do nothing (this results in a nicer exception being displayed)
+					}
 				}
 			});
 		}
@@ -175,10 +180,14 @@ public class FilterGroup {
 		case LIKE:
 			// like filter for comparing string fields
 			if (value != null) {
-				String valueStr = value.toString();
-				if (StringUtils.isNotEmpty(valueStr)) {
-					filter = new SimpleStringFilter(propertyId, valueStr, !attributeModel.isSearchCaseSensitive(),
-					        attributeModel.isSearchPrefixOnly());
+				if (value instanceof Collection<?>) {
+					filter = new Compare.Equal(propertyId, value);
+				} else {
+					String valueStr = value.toString();
+					if (StringUtils.isNotEmpty(valueStr)) {
+						filter = new SimpleStringFilter(propertyId, valueStr, !attributeModel.isSearchCaseSensitive(),
+								attributeModel.isSearchPrefixOnly());
+					}
 				}
 			}
 			break;

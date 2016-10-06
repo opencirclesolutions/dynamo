@@ -3,7 +3,7 @@
 
 	<artifactId>dynamo-showcase</artifactId>
 	<packaging>war</packaging>
-	<name>Dynamo Show Case</name>
+	<name>Dynamo Framework - Show Case</name>
 	<url>https://github.com/opencirclesolutions/dynamo</url>
 
 	<parent>

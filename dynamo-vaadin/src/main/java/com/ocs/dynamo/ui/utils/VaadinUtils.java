@@ -20,6 +20,8 @@ import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.vaadin.addons.lazyquerycontainer.CompositeItem;
 import org.vaadin.addons.lazyquerycontainer.NestingBeanItem;
@@ -466,4 +468,54 @@ public final class VaadinUtils {
         return converter.convertToModel(value, Long.class, locale);
     }
 
+	/**
+	 * Executes javascript loaded into a page by code
+	 *
+	 * @param id
+	 *            the ID of the element that will hold the contents
+	 * @param originalInput
+	 *            the HTML contents of the report
+	 * @param requireExternalScript
+	 *            indicates if there is a external library required
+	 * @param execute
+	 *            indicates if the relevant external library is already loaded
+	 */
+	public static void loadScript(String id, String originalInput, boolean requireExternalScript, boolean execute) {
+		// replace whitespace and dubious constructions (including an ESCAPED newline, see the 4
+		// backspaces)
+		String input;
+		if (!requireExternalScript) {
+
+			input = originalInput.replaceAll("'", "\"").replaceAll("\r\n", "\\\\r\\\\n").replaceAll("\n", "\\\\n")
+					.replaceAll("\\s+", " ").trim();
+
+			// no need to load an external script first
+			Page.getCurrent().getJavaScript().execute("$('#" + id + "').html('" + input + "');");
+		} else {
+			input = originalInput.replaceAll("'", "\"").replaceAll("\r\n", "").replaceAll("\n", "")
+					.replaceAll("\\s+", " ").replaceAll("\\\\n", "-").trim();
+
+			// find the first script tag that points to an external location
+			Pattern pattern = Pattern.compile("<script.*?src=(.*?)></script>");
+			Matcher matcher = pattern.matcher(input);
+
+			if (matcher.find()) {
+				String script = matcher.group(0);
+
+				// replace HTTP by HTTPS to prevent mixed mode warnings
+				String url = matcher.group(1).replaceAll("\"", "").replaceAll("http://", "https://");
+
+				// remove the external script tag
+				input = input.replace(script, "");
+
+				if (!execute) {
+					// execute external library and load the rest of the contents in the callback
+					Page.getCurrent().getJavaScript()
+							.execute("$.getScript('" + url + "', function(){$('#" + id + "').html('" + input + "');})");
+				} else {
+					Page.getCurrent().getJavaScript().execute("$('#" + id + "').html('" + input + "');");
+				}
+			}
+		}
+	}
 }

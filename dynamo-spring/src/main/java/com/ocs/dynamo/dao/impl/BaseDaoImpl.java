@@ -317,4 +317,24 @@ public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements B
         }
         return t;
     }
+
+	@Override
+	public List<? extends Object> findDistinct(Filter filter, String distinctField, SortOrder... orders) {
+		final CriteriaQuery<Tuple> cq = JpaQueryBuilder.createDistinctQuery(filter, entityManager, getEntityClass(),
+				distinctField, orders);
+
+		TypedQuery<Tuple> query = entityManager.createQuery(cq);
+		List<Tuple> temp = query.getResultList();
+
+		List<Object> result = new ArrayList<>();
+
+		for (Tuple t : temp) {
+			Object o = t.get(0);
+			if (o != null) {
+				result.add(o);
+			}
+		}
+
+		return result;
+	}
 }
