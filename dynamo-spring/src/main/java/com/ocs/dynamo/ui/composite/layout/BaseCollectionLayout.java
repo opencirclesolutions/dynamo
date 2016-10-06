@@ -129,6 +129,14 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	protected void afterDetailSelected(ModelBasedEditForm<ID, T> editForm, T entity) {
 		// override in subclass
 	}
+	
+    /**
+     * 
+     * @param entity
+     */
+    protected void afterEntitySet(T entity) {
+    	
+    }
 
 	/**
 	 * Removes all sort orders

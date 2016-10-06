@@ -151,10 +151,8 @@ public class TableExportActionHandlerTest extends BaseMockitoTest {
 		List<String> lines = IOUtils.readLines(new ByteArrayInputStream(bytes));
 
 		Assert.assertEquals("\"Name\";\"Age\";\"Weight\";\"Percentage\"", lines.get(0));
-		Assert.assertEquals("\"Bas, Bob\";\"35\";\"" + formatNumber("76,00") + "\";\"" + formatNumber("12,00") + "%\"",
-		        lines.get(1));
-		Assert.assertEquals("\"Patrick\";\"44\";\"" + formatNumber("77,00") + "\";\"" + formatNumber("15,00") + "%\"",
-		        lines.get(2));
+		Assert.assertEquals("\"Bas, Bob\";\"35\";\"" + "76,00" + "\";\"" + "12,00" + "%\"", lines.get(1));
+		Assert.assertEquals("\"Patrick\";\"44\";\"" + "77,00" + "\";\"" + "15,00" + "%\"", lines.get(2));
 	}
 
 	@Test

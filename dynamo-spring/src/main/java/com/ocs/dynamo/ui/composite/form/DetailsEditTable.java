@@ -163,6 +163,11 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 	 */
 	private boolean tableReadOnly;
 
+	/**
+	 * List of buttons to update after a detail is selected
+	 */
+	private List<Button> toUpdate = new ArrayList<>();
+
 	private UI ui = UI.getCurrent();
 
 	/**
@@ -199,6 +204,17 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 	 */
 	public void afterItemsSelected(Collection<T> selectedItems) {
 		// override in subclasses
+	}
+
+	/**
+	 * Checks which buttons in the button bar must be enabled
+	 * 
+	 * @param selectedItem
+	 */
+	protected void checkButtonState(T selectedItem) {
+		for (Button b : toUpdate) {
+			b.setEnabled(selectedItem != null);
+		}
 	}
 
 	/**
@@ -469,6 +485,7 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 			public void valueChange(Property.ValueChangeEvent event) {
 				selectedItem = (T) table.getValue();
 				onSelect(table.getValue());
+				checkButtonState(selectedItem);
 			}
 		});
 		table.updateTableCaption();
@@ -522,6 +539,21 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 	}
 
 	/**
+	 * Registers a button that must be enabled/disabled after an item is selected. use the
+	 * "mustEnableButton" callback method to impose additional constraints on when the button must
+	 * be enabled
+	 * 
+	 * @param button
+	 *            the button to register
+	 */
+	public void registerButton(Button button) {
+		if (button != null) {
+			button.setEnabled(false);
+			toUpdate.add(button);
+		}
+	}
+
+	/**
 	 * Callback method that is called when the remove button is clicked - allows decoupling the
 	 * entity from its master
 	 * 
@@ -555,19 +587,19 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 	 */
 	public void setItems(Collection<T> items) {
 
+		List<T> list = new ArrayList<T>();
+		list.addAll(items);
 		if (comparator != null) {
-			List<T> list = new ArrayList<T>();
-			list.addAll(items);
 			Collections.sort(list, comparator);
-			items = list;
 		}
 
-		this.items = items;
+		this.items = list;
 		if (container != null) {
 			container.removeAllItems();
-			container.addAll(items);
-			table.refreshRowCache();
+			container.addAll(this.items);
 		}
+		// clear the selection
+		setSelectedItem(null);
 	}
 
 	public void setPageLength(int pageLength) {
@@ -600,6 +632,7 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 
 	public void setSelectedItem(T selectedItem) {
 		this.selectedItem = selectedItem;
+		checkButtonState(selectedItem);
 	}
 
 	public void setService(BaseService<ID, T> service) {

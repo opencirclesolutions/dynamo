@@ -59,621 +59,627 @@ import com.vaadin.ui.VerticalLayout;
 public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntity<ID>> extends
         BaseCollectionLayout<ID, T> {
 
-    private static final long serialVersionUID = 4606800218149558500L;
-
-    // button for adding new items. displayed by default
-    private Button addButton;
-
-    // any additional filter that are always added to the query
-    private List<Filter> additionalFilters;
-
-    // the fetch joins to use when fetching an item for display in the detail
-    // screen
-    private FetchJoinInformation[] detailJoins;
-
-    // button for opening the screen in edit mode
-    private Button editButton;
-
-    // the edit form
-    private ModelBasedEditForm<ID, T> editForm;
-
-    // label
-    private Label noSearchYetLabel;
-
-    // map of extra filters to be applied to certain fields
-    private Map<String, Filter> fieldFilters;
-
-    // the main layout (in edit mode)
-    private VerticalLayout mainEditLayout;
-
-    // the main layout (in search mode)
-    private VerticalLayout mainSearchLayout;
-
-    private VerticalLayout searchResultsLayout;
-
-    // the number of columns in the search form
-    private int nrOfColumns = 1;
-
-    // the query type (paging or id-based)
-    private QueryType queryType;
-
-    // the button that is used to remove an item - disabled by default, must be
-    // explicitly set to visible
-    private Button removeButton;
-
-    // the search form
-    private ModelBasedSearchForm<ID, T> searchForm;
-
-    // the set of currently selected items
-    private Collection<T> selectedItems;
-
-    private boolean searchLayoutConstructed;
-
-    /**
-     * Constructor - all fields
-     * 
-     * @param service
-     *            the service that is used to query the database
-     * @param entityModel
-     *            the entity model of the entities to search for
-     * @param queryType
-     *            the type of the query
-     * @param formOptions
-     *            form options that governs which buttons and options to show
-     * @param fieldFilters
-     *            filters that are applied to individual search fields
-     * @param additionalFilters
-     *            search filters that are added to every query
-     * @param sortOrder
-     *            the default sort order
-     * @param joins
-     *            the joins to include in the query
-     */
-    public SimpleSearchLayout(BaseService<ID, T> service, EntityModel<T> entityModel, QueryType queryType,
-            FormOptions formOptions, Map<String, Filter> fieldFilters, List<Filter> additionalFilters,
-            SortOrder sortOrder, FetchJoinInformation... joins) {
-        super(service, entityModel, formOptions, sortOrder, joins);
-        this.queryType = queryType;
-        this.additionalFilters = additionalFilters;
-        this.fieldFilters = fieldFilters;
-    }
-
-    /**
-     * Constructor - only the most important fields
-     * 
-     * @param service
-     *            the service that is used to query the database
-     * @param entityModel
-     *            the entity model of the entities to search for
-     * @param queryType
-     *            the type of the query
-     * @param formOptions
-     *            form options that governs which buttons and options to show
-     * @param sortOrder
-     *            the default sort order
-     * @param joins
-     *            the joins to include in the query
-     */
-    public SimpleSearchLayout(BaseService<ID, T> service, EntityModel<T> entityModel, QueryType queryType,
-            FormOptions formOptions, SortOrder sortOrder, FetchJoinInformation... joins) {
-        super(service, entityModel, formOptions, sortOrder, joins);
-        this.queryType = queryType;
-    }
-
-    /**
-     * Respond to a click on the Clear button
-     */
-    protected void afterClear() {
-        // overwrite in subclasses
-    }
-
-    /**
-     * Responds to the toggling of the visibility of the search fields
-     * 
-     * @param visible
-     *            whether the search fields are now visible
-     */
-    protected void afterSearchFieldToggle(boolean visible) {
-        // overwrite in subclasses
-    }
-
-    /**
-     * Respond to the completion of a search
-     */
-    protected void afterSearchPerformed() {
-        // overwrite in subclasses
-    }
-
-    @Override
-    public void attach() {
-        super.attach();
-        build();
-    }
-
-    /**
-     * Lazily constructs the screen
-     */
-    @Override
-    public void build() {
-        if (mainSearchLayout == null) {
-            mainSearchLayout = new DefaultVerticalLayout();
-
-            if (getFormOptions().isSearchImmediately()) {
-                constructSearchLayout();
-                searchLayoutConstructed = true;
-            }
-
-            mainSearchLayout.addComponent(getSearchForm());
-            getSearchForm().getClearButton().addClickListener(new Button.ClickListener() {
-
-                @Override
-                public void buttonClick(ClickEvent event) {
-                    afterClear();
-                }
-            });
-
-            searchResultsLayout = new DefaultVerticalLayout(false, false);
-            mainSearchLayout.addComponent(searchResultsLayout);
-
-            if (getFormOptions().isSearchImmediately()) {
-                searchResultsLayout.addComponent(getTableWrapper());
-            } else {
-                // add a label
-                noSearchYetLabel = new Label(message("ocs.no.search.yet"));
-                searchResultsLayout.addComponent(noSearchYetLabel);
-
-                // set up a click listener that will construct the table when needed in case of a
-                // deferred search
-                // set up a click listener that will set the searchable when
-                // needed
-                getSearchForm().getSearchButton().addClickListener(new Button.ClickListener() {
-
-                    @Override
-                    public void buttonClick(ClickEvent event) {
-                        if (!searchLayoutConstructed) {
-                            // construct search screen if it is not there yet
-                            constructSearchLayout();
-
-                            searchResultsLayout.addComponent(getTableWrapper());
-                            getSearchForm().setSearchable(getTableWrapper());
-
-                            searchResultsLayout.removeComponent(noSearchYetLabel);
-                            searchLayoutConstructed = true;
-                            search();
-                        } else {
-                            // otherwise, only fire the callback method
-                            afterSearchPerformed();
-                        }
-                    }
-                });
-            }
-
-            // add button
-            addButton = constructAddButton();
-            if (addButton != null) {
-                getButtonBar().addComponent(addButton);
-            }
-
-            // edit/view button
-            editButton = constructEditButton();
-            if (editButton != null) {
-                registerButton(editButton);
-                getButtonBar().addComponent(editButton);
-            }
-
-            // remove button
-            removeButton = constructRemoveButton();
-            if (removeButton != null) {
-                registerButton(removeButton);
-                getButtonBar().addComponent(removeButton);
-            }
-
-            // callback for adding additional buttons
-            postProcessButtonBar(getButtonBar());
-            mainSearchLayout.addComponent(getButtonBar());
-
-            postProcessLayout(mainSearchLayout);
-
-            if (getFormOptions().isSearchImmediately()) {
-                search();
-            }
-        }
-        setCompositionRoot(mainSearchLayout);
-    }
-
-    /**
-     * Constructs the edit button - this will display the details view when clicked
-     * 
-     * @return
-     */
-    protected Button constructEditButton() {
-        // edit button
-        Button eb = new Button(getFormOptions().isOpenInViewMode() ? message("ocs.view") : message("ocs.edit"));
-        eb.addClickListener(new Button.ClickListener() {
-
-            @Override
-            public void buttonClick(ClickEvent event) {
-                if (getSelectedItem() != null) {
-                    doEdit();
-                }
-            }
-        });
-
-        // show button if editing is allowed or if detail screen opens in view mode
-        eb.setVisible(getFormOptions().isShowEditButton() && (isEditAllowed() || getFormOptions().isOpenInViewMode()));
-        return eb;
-    }
-
-    /**
-     * Constructs the remove button
-     * 
-     * @return
-     */
-    protected Button constructRemoveButton() {
-        Button rb = new RemoveButton() {
-
-            @Override
-            protected void doDelete() {
-                remove();
-            }
-
-        };
-        rb.setVisible(isEditAllowed() && getFormOptions().isShowRemoveButton());
-        return rb;
-    }
-
-    /**
-     * Lazily constructs the search form
-     * 
-     * @return
-     */
-    protected ModelBasedSearchForm<ID, T> constructSearchForm() {
-        ModelBasedSearchForm<ID, T> result = new ModelBasedSearchForm<ID, T>(
-                getFormOptions().isSearchImmediately() ? getTableWrapper() : null, getEntityModel(), getFormOptions(),
-                this.additionalFilters, this.fieldFilters) {
-
-            @Override
-            protected void afterSearchFieldToggle(boolean visible) {
-                SimpleSearchLayout.this.afterSearchFieldToggle(visible);
-            }
-
-            @Override
-            protected Field<?> constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel) {
-                return SimpleSearchLayout.this.constructCustomField(entityModel, attributeModel, false, true);
-            }
-        };
-        result.setNrOfColumns(getNrOfColumns());
-        result.setFieldEntityModels(getFieldEntityModels());
-        result.build();
-
-        return result;
-    }
-
-    /**
-     * Constructs the search layout
-     */
-    public void constructSearchLayout() {
-        // construct table and set properties
-        getTableWrapper().getTable().setPageLength(getPageLength());
-        getTableWrapper().getTable().setSortEnabled(isSortEnabled());
-        getTableWrapper().getTable().setMultiSelect(isMultiSelect());
-
-        // add a listener to respond to the selection of an item
-        getTableWrapper().getTable().addValueChangeListener(new Property.ValueChangeListener() {
-            @Override
-            public void valueChange(ValueChangeEvent event) {
-                select(getTableWrapper().getTable().getValue());
-                checkButtonState(getSelectedItem());
-            }
-        });
-
-        // double click listener
-        if (getFormOptions().isShowEditButton()) {
-            getTableWrapper().getTable().addItemClickListener(new ItemClickListener() {
-
-                @Override
-                public void itemClick(ItemClickEvent event) {
-                    if (event.isDoubleClick()) {
-                        select(event.getItem().getItemProperty(DynamoConstants.ID).getValue());
-                        doEdit();
-                    }
-                }
-            });
-        }
-
-        // table dividers
-        constructTableDividers();
-    }
-
-    /**
-     * Lazily constructs the table wrapper
-     */
-    @Override
-    public ServiceResultsTableWrapper<ID, T> constructTableWrapper() {
-        ServiceResultsTableWrapper<ID, T> result = new ServiceResultsTableWrapper<ID, T>(this.getService(),
-                getEntityModel(), getQueryType(), getFormOptions().isSearchImmediately() ? null : getSearchForm()
-                        .extractFilter(), getSortOrders(), getJoins());
-        result.build();
-        return result;
-    }
-
-    /**
-     * Opens a custom detail view
-     * 
-     * @param component
-     */
-    protected void customDetailView(Component component) {
-        setCompositionRoot(component);
-    }
-
-    /**
-     * Open the screen in details-mode
-     * 
-     * @param entity
-     *            the entity to display
-     */
-    @Override
-    protected void detailsMode(T entity) {
-        if (mainEditLayout == null) {
-            mainEditLayout = new DefaultVerticalLayout();
-            mainEditLayout.setStyleName(DynamoConstants.CSS_CLASS_HALFSCREEN);
-
-            // set the form options for the detail form
-            FormOptions options = new FormOptions();
-            options.setOpenInViewMode(getFormOptions().isOpenInViewMode());
-            options.setScreenMode(ScreenMode.VERTICAL);
-
-            if (options.isOpenInViewMode()) {
-                options.setShowBackButton(true);
-                options.setShowEditButton(true);
-            }
-
-            editForm = new ModelBasedEditForm<ID, T>(entity, getService(), getEntityModel(), options, fieldFilters) {
-
-                @Override
-                protected void afterEditDone(boolean cancel, boolean newObject, T entity) {
-                    if (getFormOptions().isOpenInViewMode()) {
-                        if (newObject) {
-                            back();
-                        } else {
-                            // if details screen opens in view mode, simply switch to view mode
-                            setViewMode(true);
-                            detailsMode(entity);
-                        }
-                    } else {
-                        // otherwise go back to the main screen
-                        back();
-                    }
-                }
-
-                @Override
-                protected void afterModeChanged(boolean viewMode) {
-                    SimpleSearchLayout.this.afterModeChanged(viewMode, editForm);
-                }
-
-                @Override
-                protected void back() {
-                    searchMode();
-                }
-
-                @Override
-                protected Field<?> constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel,
-                        boolean viewMode) {
-                    return SimpleSearchLayout.this.constructCustomField(entityModel, attributeModel, true, false);
-                }
-
-                @Override
-                protected boolean isEditAllowed() {
-                    return SimpleSearchLayout.this.isEditAllowed();
-                }
-
-                @Override
-                protected void postProcessButtonBar(HorizontalLayout buttonBar, boolean viewMode) {
-                    SimpleSearchLayout.this.postProcessDetailButtonBar(buttonBar, viewMode);
-                }
-
-                @Override
-                protected void postProcessEditFields() {
-                    SimpleSearchLayout.this.postProcessEditFields(editForm);
-                }
-
-            };
-            editForm.setFieldEntityModels(getFieldEntityModels());
-            editForm.build();
-            mainEditLayout.addComponent(editForm);
-        } else {
-            editForm.setViewMode(getFormOptions().isOpenInViewMode());
-            editForm.setEntity(entity);
-        }
-
-        checkButtonState(getSelectedItem());
-        afterDetailSelected(editForm, entity);
-        setCompositionRoot(mainEditLayout);
-    }
-
-    /**
-     * Callback method that is called when the user presses the edit method. Will by default open
-     * the screen in edit mode. Overwrite in subclass if needed
-     */
-    protected void doEdit() {
-        detailsMode(getSelectedItem());
-    }
-
-    /**
-     * Performs the actual remove functionality - overwrite in subclass if needed
-     */
-    protected void doRemove() {
-        getService().delete(getSelectedItem());
-    }
-    
-    /**
-     * Open the screen in edit mode for the provided entity
-     * @param entity
-     */
-    public void edit(T entity) {
-    	setSelectedItem(entity);
-    	doEdit();
-    }
-
-    public Button getAddButton() {
-        return addButton;
-    }
-
-    protected List<Filter> getAdditionalFilters() {
-        return additionalFilters;
-    }
-
-    public Filter getCompositeFilter() {
-        return getSearchForm().getCompositeFilter();
-    }
-
-    public FetchJoinInformation[] getDetailJoins() {
-        return detailJoins;
-    }
-
-    public Button getEditButton() {
-        return editButton;
-    }
-
-    protected Map<String, Filter> getFieldFilters() {
-        return fieldFilters;
-    }
-
-    public int getNrOfColumns() {
-        return nrOfColumns;
-    }
-
-    public QueryType getQueryType() {
-        return queryType;
-    }
-
-    public Button getRemoveButton() {
-        return removeButton;
-    }
-
-    public ModelBasedSearchForm<ID, T> getSearchForm() {
-        if (searchForm == null) {
-            searchForm = constructSearchForm();
-        }
-        return searchForm;
-    }
-
-    public Collection<T> getSelectedItems() {
-        return selectedItems;
-    }
-
-    /**
-     * Reloads the details view only
-     */
-    public void reloadDetails() {
-        this.setSelectedItem(getService().fetchById(this.getSelectedItem().getId(), getJoins()));
-        detailsMode(getSelectedItem());
-    }
-
-    /**
-     * Performs the actual delete action
-     */
-    protected final void remove() {
-        doRemove();
-        // refresh the results so that the deleted item is no longer
-        // there
-        setSelectedItem(null);
-        checkButtonState(getSelectedItem());
-        search();
-    }
-
-    public void replaceLabel(String propertyName) {
-        if (editForm != null) {
-            editForm.replaceLabel(propertyName);
-        }
-    }
-
-    /**
-     * Perform the actual search
-     */
-    public void search() {
-
-        if (searchForm.getCompositeFilter() != null) {
-            // search without clearing any previous filters
-            searchForm.searchImmediately();
-        } else {
-            // build filter and search
-            searchForm.search();
-        }
-
-        getTableWrapper().getTable().select(null);
-        setSelectedItem(null);
-        checkButtonState(getSelectedItem());
-
-        afterSearchPerformed();
-    }
-
-    /**
-     * Puts the screen in search mode
-     */
-    public void searchMode() {
-        setCompositionRoot(mainSearchLayout);
-        getSearchForm().refresh();
-        search();
-    }
-
-    /**
-     * Select one or more items
-     * 
-     * @param selectedItems
-     *            the item or items to select
-     */
-    @SuppressWarnings("unchecked")
-    public void select(Object selectedItems) {
-        if (selectedItems != null) {
-            if (selectedItems instanceof Collection<?>) {
-                // the lazy query container returns an array of IDs of the
-                // selected items
-
-                Collection<?> col = (Collection<?>) selectedItems;
-                if (col.size() == 1) {
-                    ID id = (ID) col.iterator().next();
-                    setSelectedItem(getService().fetchById(id, getDetailJoins()));
-                    this.selectedItems = Lists.newArrayList(getSelectedItem());
-                } else if (col.size() > 1) {
-                    // deal with the selection of multiple items
-                    List<ID> ids = Lists.newArrayList();
-                    for (Object c : col) {
-                        ids.add((ID) c);
-                    }
-                    this.selectedItems = getService().fetchByIds(ids, getDetailJoins());
-                }
-            } else {
-                // single item has been selected
-                ID id = (ID) selectedItems;
-                setSelectedItem(getService().fetchById(id, getDetailJoins()));
-            }
-        } else {
-            setSelectedItem(null);
-        }
-    }
-
-    public void setAdditionalFilters(List<Filter> additionalFilters) {
-        this.additionalFilters = additionalFilters;
-    }
-
-    public void setCompositeFilter(Filter filter) {
-        getSearchForm().setCompositeFilter(filter);
-    }
-
-    public void setDetailJoins(FetchJoinInformation[] detailJoins) {
-        this.detailJoins = detailJoins;
-    }
-
-    public void setFieldFilters(Map<String, Filter> fieldFilters) {
-        this.fieldFilters = fieldFilters;
-    }
-
-    public void setNrOfColumns(int nrOfColumns) {
-        this.nrOfColumns = nrOfColumns;
-    }
-
-    public void setQueryType(QueryType queryType) {
-        this.queryType = queryType;
-    }
+	private static final long serialVersionUID = 4606800218149558500L;
+
+	// button for adding new items. displayed by default
+	private Button addButton;
+
+	// any additional filter that are always added to the query
+	private List<Filter> additionalFilters;
+
+	// the fetch joins to use when fetching an item for display in the detail
+	// screen
+	private FetchJoinInformation[] detailJoins;
+
+	// button for opening the screen in edit mode
+	private Button editButton;
+
+	// the edit form
+	private ModelBasedEditForm<ID, T> editForm;
+
+	// label
+	private Label noSearchYetLabel;
+
+	// map of extra filters to be applied to certain fields
+	private Map<String, Filter> fieldFilters;
+
+	// the main layout (in edit mode)
+	private VerticalLayout mainEditLayout;
+
+	// the main layout (in search mode)
+	private VerticalLayout mainSearchLayout;
+
+	private VerticalLayout searchResultsLayout;
+
+	// the number of columns in the search form
+	private int nrOfColumns = 1;
+
+	// the query type (paging or id-based)
+	private QueryType queryType;
+
+	// the button that is used to remove an item - disabled by default, must be
+	// explicitly set to visible
+	private Button removeButton;
+
+	// the search form
+	private ModelBasedSearchForm<ID, T> searchForm;
+
+	// the set of currently selected items
+	private Collection<T> selectedItems;
+
+	private boolean searchLayoutConstructed;
+
+	/**
+	 * Constructor - all fields
+	 * 
+	 * @param service
+	 *            the service that is used to query the database
+	 * @param entityModel
+	 *            the entity model of the entities to search for
+	 * @param queryType
+	 *            the type of the query
+	 * @param formOptions
+	 *            form options that governs which buttons and options to show
+	 * @param fieldFilters
+	 *            filters that are applied to individual search fields
+	 * @param additionalFilters
+	 *            search filters that are added to every query
+	 * @param sortOrder
+	 *            the default sort order
+	 * @param joins
+	 *            the joins to include in the query
+	 */
+	public SimpleSearchLayout(BaseService<ID, T> service, EntityModel<T> entityModel, QueryType queryType,
+	        FormOptions formOptions, Map<String, Filter> fieldFilters, List<Filter> additionalFilters,
+	        SortOrder sortOrder, FetchJoinInformation... joins) {
+		super(service, entityModel, formOptions, sortOrder, joins);
+		this.queryType = queryType;
+		this.additionalFilters = additionalFilters;
+		this.fieldFilters = fieldFilters;
+	}
+
+	/**
+	 * Constructor - only the most important fields
+	 * 
+	 * @param service
+	 *            the service that is used to query the database
+	 * @param entityModel
+	 *            the entity model of the entities to search for
+	 * @param queryType
+	 *            the type of the query
+	 * @param formOptions
+	 *            form options that governs which buttons and options to show
+	 * @param sortOrder
+	 *            the default sort order
+	 * @param joins
+	 *            the joins to include in the query
+	 */
+	public SimpleSearchLayout(BaseService<ID, T> service, EntityModel<T> entityModel, QueryType queryType,
+	        FormOptions formOptions, SortOrder sortOrder, FetchJoinInformation... joins) {
+		super(service, entityModel, formOptions, sortOrder, joins);
+		this.queryType = queryType;
+	}
+
+	/**
+	 * Respond to a click on the Clear button
+	 */
+	protected void afterClear() {
+		// overwrite in subclasses
+	}
+
+	/**
+	 * Responds to the toggling of the visibility of the search fields
+	 * 
+	 * @param visible
+	 *            whether the search fields are now visible
+	 */
+	protected void afterSearchFieldToggle(boolean visible) {
+		// overwrite in subclasses
+	}
+
+	/**
+	 * Respond to the completion of a search
+	 */
+	protected void afterSearchPerformed() {
+		// overwrite in subclasses
+	}
+
+	@Override
+	public void attach() {
+		super.attach();
+		build();
+	}
+
+	/**
+	 * Lazily constructs the screen
+	 */
+	@Override
+	public void build() {
+		if (mainSearchLayout == null) {
+			mainSearchLayout = new DefaultVerticalLayout();
+
+			if (getFormOptions().isSearchImmediately()) {
+				constructSearchLayout();
+				searchLayoutConstructed = true;
+			}
+
+			mainSearchLayout.addComponent(getSearchForm());
+			getSearchForm().getClearButton().addClickListener(new Button.ClickListener() {
+
+				@Override
+				public void buttonClick(ClickEvent event) {
+					afterClear();
+				}
+			});
+
+			searchResultsLayout = new DefaultVerticalLayout(false, false);
+			mainSearchLayout.addComponent(searchResultsLayout);
+
+			if (getFormOptions().isSearchImmediately()) {
+				searchResultsLayout.addComponent(getTableWrapper());
+			} else {
+				// add a label
+				noSearchYetLabel = new Label(message("ocs.no.search.yet"));
+				searchResultsLayout.addComponent(noSearchYetLabel);
+
+				// set up a click listener that will construct the table when needed in case of a
+				// deferred search
+				// set up a click listener that will set the searchable when
+				// needed
+				getSearchForm().getSearchButton().addClickListener(new Button.ClickListener() {
+
+					@Override
+					public void buttonClick(ClickEvent event) {
+						if (!searchLayoutConstructed) {
+							// construct search screen if it is not there yet
+							constructSearchLayout();
+
+							searchResultsLayout.addComponent(getTableWrapper());
+							getSearchForm().setSearchable(getTableWrapper());
+
+							searchResultsLayout.removeComponent(noSearchYetLabel);
+							searchLayoutConstructed = true;
+							search();
+						} else {
+							// otherwise, only fire the callback method
+							afterSearchPerformed();
+						}
+					}
+				});
+			}
+
+			// add button
+			addButton = constructAddButton();
+			if (addButton != null) {
+				getButtonBar().addComponent(addButton);
+			}
+
+			// edit/view button
+			editButton = constructEditButton();
+			if (editButton != null) {
+				registerButton(editButton);
+				getButtonBar().addComponent(editButton);
+			}
+
+			// remove button
+			removeButton = constructRemoveButton();
+			if (removeButton != null) {
+				registerButton(removeButton);
+				getButtonBar().addComponent(removeButton);
+			}
+
+			// callback for adding additional buttons
+			postProcessButtonBar(getButtonBar());
+			mainSearchLayout.addComponent(getButtonBar());
+
+			postProcessLayout(mainSearchLayout);
+
+			if (getFormOptions().isSearchImmediately()) {
+				search();
+			}
+		}
+		setCompositionRoot(mainSearchLayout);
+	}
+
+	/**
+	 * Constructs the edit button - this will display the details view when clicked
+	 * 
+	 * @return
+	 */
+	protected Button constructEditButton() {
+		// edit button
+		Button eb = new Button(getFormOptions().isOpenInViewMode() ? message("ocs.view") : message("ocs.edit"));
+		eb.addClickListener(new Button.ClickListener() {
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				if (getSelectedItem() != null) {
+					doEdit();
+				}
+			}
+		});
+
+		// show button if editing is allowed or if detail screen opens in view mode
+		eb.setVisible(getFormOptions().isShowEditButton() && (isEditAllowed() || getFormOptions().isOpenInViewMode()));
+		return eb;
+	}
+
+	/**
+	 * Constructs the remove button
+	 * 
+	 * @return
+	 */
+	protected Button constructRemoveButton() {
+		Button rb = new RemoveButton() {
+
+			@Override
+			protected void doDelete() {
+				remove();
+			}
+
+		};
+		rb.setVisible(isEditAllowed() && getFormOptions().isShowRemoveButton());
+		return rb;
+	}
+
+	/**
+	 * Lazily constructs the search form
+	 * 
+	 * @return
+	 */
+	protected ModelBasedSearchForm<ID, T> constructSearchForm() {
+		ModelBasedSearchForm<ID, T> result = new ModelBasedSearchForm<ID, T>(
+		        getFormOptions().isSearchImmediately() ? getTableWrapper() : null, getEntityModel(), getFormOptions(),
+		        this.additionalFilters, this.fieldFilters) {
+
+			@Override
+			protected void afterSearchFieldToggle(boolean visible) {
+				SimpleSearchLayout.this.afterSearchFieldToggle(visible);
+			}
+
+			@Override
+			protected Field<?> constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel) {
+				return SimpleSearchLayout.this.constructCustomField(entityModel, attributeModel, false, true);
+			}
+		};
+		result.setNrOfColumns(getNrOfColumns());
+		result.setFieldEntityModels(getFieldEntityModels());
+		result.build();
+
+		return result;
+	}
+
+	/**
+	 * Constructs the search layout
+	 */
+	public void constructSearchLayout() {
+		// construct table and set properties
+		getTableWrapper().getTable().setPageLength(getPageLength());
+		getTableWrapper().getTable().setSortEnabled(isSortEnabled());
+		getTableWrapper().getTable().setMultiSelect(isMultiSelect());
+
+		// add a listener to respond to the selection of an item
+		getTableWrapper().getTable().addValueChangeListener(new Property.ValueChangeListener() {
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				select(getTableWrapper().getTable().getValue());
+				checkButtonState(getSelectedItem());
+			}
+		});
+
+		// double click listener
+		if (getFormOptions().isShowEditButton()) {
+			getTableWrapper().getTable().addItemClickListener(new ItemClickListener() {
+
+				@Override
+				public void itemClick(ItemClickEvent event) {
+					if (event.isDoubleClick()) {
+						select(event.getItem().getItemProperty(DynamoConstants.ID).getValue());
+						doEdit();
+					}
+				}
+			});
+		}
+
+		// table dividers
+		constructTableDividers();
+	}
+
+	/**
+	 * Lazily constructs the table wrapper
+	 */
+	@Override
+	public ServiceResultsTableWrapper<ID, T> constructTableWrapper() {
+		ServiceResultsTableWrapper<ID, T> result = new ServiceResultsTableWrapper<ID, T>(this.getService(),
+		        getEntityModel(), getQueryType(), getFormOptions().isSearchImmediately() ? null : getSearchForm()
+		                .extractFilter(), getSortOrders(), getJoins());
+		result.build();
+		return result;
+	}
+
+	/**
+	 * Opens a custom detail view
+	 * 
+	 * @param component
+	 */
+	protected void customDetailView(Component component) {
+		setCompositionRoot(component);
+	}
+
+	/**
+	 * Open the screen in details-mode
+	 * 
+	 * @param entity
+	 *            the entity to display
+	 */
+	@Override
+	protected void detailsMode(T entity) {
+		if (mainEditLayout == null) {
+			mainEditLayout = new DefaultVerticalLayout();
+			mainEditLayout.setStyleName(DynamoConstants.CSS_CLASS_HALFSCREEN);
+
+			// set the form options for the detail form
+			FormOptions options = new FormOptions();
+			options.setOpenInViewMode(getFormOptions().isOpenInViewMode());
+			options.setScreenMode(ScreenMode.VERTICAL);
+
+			if (options.isOpenInViewMode()) {
+				options.setShowBackButton(true);
+				options.setShowEditButton(true);
+			}
+
+			editForm = new ModelBasedEditForm<ID, T>(entity, getService(), getEntityModel(), options, fieldFilters) {
+
+				@Override
+				protected void afterEditDone(boolean cancel, boolean newObject, T entity) {
+					if (getFormOptions().isOpenInViewMode()) {
+						if (newObject) {
+							back();
+						} else {
+							// if details screen opens in view mode, simply switch to view mode
+							setViewMode(true);
+							detailsMode(entity);
+						}
+					} else {
+						// otherwise go back to the main screen
+						back();
+					}
+				}
+
+				@Override
+				protected void afterEntitySet(T entity) {
+					SimpleSearchLayout.this.afterEntitySet(entity);
+				}
+
+				@Override
+				protected void afterModeChanged(boolean viewMode) {
+					SimpleSearchLayout.this.afterModeChanged(viewMode, editForm);
+				}
+
+				@Override
+				protected void back() {
+					searchMode();
+				}
+
+				@Override
+				protected Field<?> constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel,
+				        boolean viewMode) {
+					return SimpleSearchLayout.this.constructCustomField(entityModel, attributeModel, true, false);
+				}
+
+				@Override
+				protected boolean isEditAllowed() {
+					return SimpleSearchLayout.this.isEditAllowed();
+				}
+
+				@Override
+				protected void postProcessButtonBar(HorizontalLayout buttonBar, boolean viewMode) {
+					SimpleSearchLayout.this.postProcessDetailButtonBar(buttonBar, viewMode);
+				}
+
+				@Override
+				protected void postProcessEditFields() {
+					SimpleSearchLayout.this.postProcessEditFields(editForm);
+				}
+
+			};
+			editForm.setFieldEntityModels(getFieldEntityModels());
+			editForm.build();
+			mainEditLayout.addComponent(editForm);
+		} else {
+			editForm.setViewMode(getFormOptions().isOpenInViewMode());
+			editForm.setEntity(entity);
+		}
+
+		checkButtonState(getSelectedItem());
+		afterDetailSelected(editForm, entity);
+		setCompositionRoot(mainEditLayout);
+	}
+
+	/**
+	 * Callback method that is called when the user presses the edit method. Will by default open
+	 * the screen in edit mode. Overwrite in subclass if needed
+	 */
+	protected void doEdit() {
+		detailsMode(getSelectedItem());
+	}
+
+	/**
+	 * Performs the actual remove functionality - overwrite in subclass if needed
+	 */
+	protected void doRemove() {
+		getService().delete(getSelectedItem());
+	}
+
+	/**
+	 * Open the screen in edit mode for the provided entity
+	 * 
+	 * @param entity
+	 */
+	public void edit(T entity) {
+		setSelectedItem(entity);
+		doEdit();
+	}
+
+	public Button getAddButton() {
+		return addButton;
+	}
+
+	protected List<Filter> getAdditionalFilters() {
+		return additionalFilters;
+	}
+
+	public Filter getCompositeFilter() {
+		return getSearchForm().getCompositeFilter();
+	}
+
+	public FetchJoinInformation[] getDetailJoins() {
+		return detailJoins;
+	}
+
+	public Button getEditButton() {
+		return editButton;
+	}
+
+	protected Map<String, Filter> getFieldFilters() {
+		return fieldFilters;
+	}
+
+	public int getNrOfColumns() {
+		return nrOfColumns;
+	}
+
+	public QueryType getQueryType() {
+		return queryType;
+	}
+
+	public Button getRemoveButton() {
+		return removeButton;
+	}
+
+	public ModelBasedSearchForm<ID, T> getSearchForm() {
+		if (searchForm == null) {
+			searchForm = constructSearchForm();
+		}
+		return searchForm;
+	}
+
+	public Collection<T> getSelectedItems() {
+		return selectedItems;
+	}
+
+	/**
+	 * Reloads the details view only
+	 */
+	public void reloadDetails() {
+		this.setSelectedItem(getService().fetchById(this.getSelectedItem().getId(), getJoins()));
+		detailsMode(getSelectedItem());
+	}
+
+	/**
+	 * Performs the actual delete action
+	 */
+	protected final void remove() {
+		doRemove();
+		// refresh the results so that the deleted item is no longer
+		// there
+		setSelectedItem(null);
+		checkButtonState(getSelectedItem());
+		search();
+	}
+
+	public void replaceLabel(String propertyName) {
+		if (editForm != null) {
+			editForm.replaceLabel(propertyName);
+		}
+	}
+
+	/**
+	 * Perform the actual search
+	 */
+	public void search() {
+
+		if (searchForm.getCompositeFilter() != null) {
+			// search without clearing any previous filters
+			searchForm.searchImmediately();
+		} else {
+			// build filter and search
+			searchForm.search();
+		}
+
+		getTableWrapper().getTable().select(null);
+		setSelectedItem(null);
+		checkButtonState(getSelectedItem());
+
+		afterSearchPerformed();
+	}
+
+	/**
+	 * Puts the screen in search mode
+	 */
+	public void searchMode() {
+		setCompositionRoot(mainSearchLayout);
+		getSearchForm().refresh();
+		search();
+	}
+
+	/**
+	 * Select one or more items
+	 * 
+	 * @param selectedItems
+	 *            the item or items to select
+	 */
+	@SuppressWarnings("unchecked")
+	public void select(Object selectedItems) {
+		if (selectedItems != null) {
+			if (selectedItems instanceof Collection<?>) {
+				// the lazy query container returns an array of IDs of the
+				// selected items
+
+				Collection<?> col = (Collection<?>) selectedItems;
+				if (col.size() == 1) {
+					ID id = (ID) col.iterator().next();
+					setSelectedItem(getService().fetchById(id, getDetailJoins()));
+					this.selectedItems = Lists.newArrayList(getSelectedItem());
+				} else if (col.size() > 1) {
+					// deal with the selection of multiple items
+					List<ID> ids = Lists.newArrayList();
+					for (Object c : col) {
+						ids.add((ID) c);
+					}
+					this.selectedItems = getService().fetchByIds(ids, getDetailJoins());
+				}
+			} else {
+				// single item has been selected
+				ID id = (ID) selectedItems;
+				setSelectedItem(getService().fetchById(id, getDetailJoins()));
+			}
+		} else {
+			setSelectedItem(null);
+		}
+	}
+
+	public void setAdditionalFilters(List<Filter> additionalFilters) {
+		this.additionalFilters = additionalFilters;
+	}
+
+	public void setCompositeFilter(Filter filter) {
+		getSearchForm().setCompositeFilter(filter);
+	}
+
+	public void setDetailJoins(FetchJoinInformation[] detailJoins) {
+		this.detailJoins = detailJoins;
+	}
+
+	public void setFieldFilters(Map<String, Filter> fieldFilters) {
+		this.fieldFilters = fieldFilters;
+	}
+
+	public void setNrOfColumns(int nrOfColumns) {
+		this.nrOfColumns = nrOfColumns;
+	}
+
+	public void setQueryType(QueryType queryType) {
+		this.queryType = queryType;
+	}
 }
