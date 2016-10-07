@@ -169,6 +169,11 @@ public abstract class BaseServiceImpl<ID, T extends AbstractEntity<ID>> implemen
     }
 
     @Override
+	public List<? extends Object> findDistinct(Filter filter, String distinctField, SortOrder... orders) {
+		return getDao().findDistinct(filter, distinctField, orders);
+	}
+
+	@Override
     public T findById(ID id) {
         return getDao().findById(id);
     }

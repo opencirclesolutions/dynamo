@@ -9,7 +9,7 @@
 
     <artifactId>dynamo-spring-archetype</artifactId>
     <packaging>maven-archetype</packaging>
-    <name>Dynamo Maven Archetype</name>
+    <name>Dynamo Framework - Maven Archetype</name>
 
     <properties>
         <archetype-packaging.version>2.4</archetype-packaging.version>

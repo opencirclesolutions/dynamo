@@ -259,4 +259,17 @@ public interface BaseService<ID, T extends AbstractEntity<ID>> {
      * @return
      */
     T save(T entity);
+
+	/**
+	 * Returns all entities that match the provided filter and apply a distinct on the given column
+	 * 
+	 * @param filter
+	 *            the filter
+	 * @param distinctField
+	 *            the field used to remove duplicate rows
+	 * @param orders
+	 *            the sort info
+	 * @return
+	 */
+	List<? extends Object> findDistinct(Filter filter, String distinctField, SortOrder... orders);
 }

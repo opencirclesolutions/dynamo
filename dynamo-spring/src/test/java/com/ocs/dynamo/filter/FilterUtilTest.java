@@ -360,4 +360,19 @@ public class FilterUtilTest {
         replaced = and.getFilters().get(0);
         Assert.assertTrue(replaced instanceof Compare.Equal);
     }
+
+	@Test
+	public void testExtractFilterValue() {
+
+		com.vaadin.data.util.filter.Like like = new com.vaadin.data.util.filter.Like("prop1", "value1");
+		com.vaadin.data.util.filter.Compare.GreaterOrEqual ge = new com.vaadin.data.util.filter.Compare.GreaterOrEqual(
+				"prop2", 10);
+		com.vaadin.data.util.filter.Compare.LessOrEqual le = new com.vaadin.data.util.filter.Compare.LessOrEqual(
+				"prop2", 5);
+		com.vaadin.data.util.filter.And and = new com.vaadin.data.util.filter.And(like, ge, le);
+
+		Object value = FilterUtil.extractFilterValue(and, "prop2",
+				com.vaadin.data.util.filter.Compare.LessOrEqual.class);
+		Assert.assertEquals(5, value);
+	}
 }

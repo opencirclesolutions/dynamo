@@ -562,4 +562,33 @@ public final class JpaQueryBuilder {
         return result;
     }
 
+	/**
+	 * Creates a distinct query
+	 * 
+	 * @param filter
+	 * @param entityManager
+	 * @param entityClass
+	 * @param distinctField
+	 * @param sortOrders
+	 * @return
+	 */
+	public static <T> CriteriaQuery<Tuple> createDistinctQuery(Filter filter, EntityManager entityManager,
+			Class<T> entityClass, String distinctField, SortOrder... sortOrders) {
+		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+		CriteriaQuery<Tuple> cq = builder.createTupleQuery();
+		Root<T> root = cq.from(entityClass);
+
+		// select only the distinctField
+		cq.multiselect(root.get(distinctField));
+
+		// Set where clause
+		Predicate p = createPredicate(filter, builder, root);
+		if (p != null) {
+			cq.where(p);
+		}
+		cq.distinct(true);
+
+		// add order clause
+		return addSortInformation(builder, cq, root, sortOrders);
+	}
 }

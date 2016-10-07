@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.3.0.final using JasperReports Library version 6.3.0  -->
+<!-- 2016-09-06T14:26:26 -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="test" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="18670a0f-a348-49ad-84f3-221fed51c362">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
+	<parameter name="someParameter" class="java.lang.String">
+		<property name="nl.ocs.some.property" value="propertyValue"/>
+		<property name="com.ocs.dynamo.filterPropertyName" value="filterPropertyName"/>
+		<parameterDescription><![CDATA[Has property]]></parameterDescription>
+		<defaultValueExpression><![CDATA["DefaultValue"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="person_id" class="java.lang.String">
+		<property name="nl.ocs.some.property" value="propertyValue"/>
+		<property name="com.ocs.dynamo.filterPropertyName" value="person"/>
+		<property name="com.ocs.dynamo.propertyNestedName" value="id"/>
+	</parameter>
+	<parameter name="person_id_less_or_equal" class="java.lang.String">
+		<property name="nl.ocs.some.property" value="propertyValue"/>
+		<property name="com.ocs.dynamo.filterPropertyName" value="person"/>
+		<property name="com.ocs.dynamo.propertyNestedName" value="id"/>
+		<property name="com.ocs.dynamo.filterType" value="com.vaadin.data.util.filter.Compare$LessOrEqual"/>
+	</parameter>
+	<queryString>
+		<![CDATA[]]>
+	</queryString>
+	<field name="id" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="name" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="birthDate" class="java.util.Date"/>
+	<field name="email" class="java.lang.String">
+		<property name="com.ocs.dynamo.containerPropertyName" value="customer.email"/>
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<title>
+		<band height="50" splitType="Stretch">
+			<textField isStretchWithOverflow="true">
+				<reportElement x="90" y="19" width="470" height="30" uuid="c60c92af-e5cd-40c1-a61e-07af9fdd0f45"/>
+				<textFieldExpression><![CDATA[$P{REPORT_PARAMETERS_MAP}.keySet()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="19" width="90" height="30" uuid="3aba191d-71fa-444f-9ec5-7a063a0bda3f"/>
+				<text><![CDATA[Report parameters]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="90" y="0" width="470" height="19" uuid="53bfda9e-d0ab-4ffd-87fa-929ab5db2a95"/>
+				<textFieldExpression><![CDATA[$P{someParameter}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="0" width="90" height="19" uuid="102767c8-9281-410d-83e9-2cc3fcc06ea4"/>
+				<text><![CDATA[Some parameter]]></text>
+			</staticText>
+		</band>
+	</title>
+	<columnHeader>
+		<band height="19">
+			<staticText>
+				<reportElement x="0" y="0" width="100" height="14" uuid="4ba77193-2a9e-4514-9207-e7e3d9f1cfc6">
+					<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+				</reportElement>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[id]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="100" y="0" width="245" height="14" uuid="8918f27c-9f40-482c-af78-a4ae08bf5a0b"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="345" y="0" width="100" height="14" uuid="f1b9ae08-693f-4da2-9fb4-9f8b965f6fa5"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[birthDate]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="445" y="0" width="115" height="14" uuid="c63072b1-cb05-40c2-adaa-7d9fb470e1b2">
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+				</reportElement>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[email]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="16">
+			<textField>
+				<reportElement x="0" y="0" width="100" height="14" uuid="b36be606-4083-4c7e-9730-2c6b86e74b1a"/>
+				<textFieldExpression><![CDATA[$F{id}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="100" y="0" width="245" height="14" uuid="726b9ccf-3f5d-4ef6-995c-c757522f4a7c"/>
+				<textFieldExpression><![CDATA[$F{name}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="345" y="0" width="100" height="14" uuid="a8c9db52-eb4d-4135-a569-e22d2c6383d3"/>
+				<textFieldExpression><![CDATA[$F{birthDate}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="445" y="0" width="115" height="14" uuid="a047797e-4d65-4ad9-81b8-9adc7f1a154c"/>
+				<textFieldExpression><![CDATA[$F{email}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>
