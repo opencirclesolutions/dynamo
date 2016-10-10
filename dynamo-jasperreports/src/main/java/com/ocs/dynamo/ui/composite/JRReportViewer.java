@@ -101,13 +101,13 @@ public class JRReportViewer<T> extends BaseCustomComponent {
 	private Button exportPDF;
 
 	/**
-	 * Indicates whether external script has already been loaded (currently only works for one external script!)
+	 * Indicates whether external script has already been loaded (currently only works for one
+	 * external script!)
 	 */
 	private boolean alreadyLoaded = false;
 
 	public JRReportViewer(ReportGenerator reportGenerator, Enum<? extends ReportDefinition> reportDefinition,
-			EntityModel<T> entityModel,
-			String templatePath) {
+	        EntityModel<T> entityModel, String templatePath) {
 		this.reportGenerator = reportGenerator;
 		this.reportDefinition = reportDefinition;
 		this.entityModel = entityModel;
@@ -151,10 +151,10 @@ public class JRReportViewer<T> extends BaseCustomComponent {
 		FormLayout content = new FormLayout();
 		content.setSpacing(true);
 		// Create reporting selection
-		reportSelection = ModelBasedFieldFactory.getInstance(entityModel, getMessageService())
-				.createEnumCombo(reportDefinition.getClass(), ComboBox.class);
-		reportSelection.setCaption(getMessageService()
-				.getMessage(entityModel.getReference() + "." + reportDefinition.getClass().getSimpleName()));
+		reportSelection = ModelBasedFieldFactory.getInstance(entityModel, getMessageService()).createEnumCombo(
+		        reportDefinition.getClass(), ComboBox.class);
+		reportSelection.setCaption(getMessageService().getMessage(
+		        entityModel.getReference() + "." + reportDefinition.getClass().getSimpleName()));
 		reportSelection.setNullSelectionAllowed(false);
 		reportSelection.setRequired(true);
 		reportSelection.select(reportSelection.getItemIds().iterator().next());
@@ -203,11 +203,12 @@ public class JRReportViewer<T> extends BaseCustomComponent {
 					ByteArrayOutputStream os = new ByteArrayOutputStream();
 					reportGenerator.setShowMargins(showMargins.getValue());
 					reportGenerator.executeReport(jasperReport, currentParameters, jrDataSource, format,
-							((WrappedHttpSession) VaadinSession.getCurrent().getSession()).getHttpSession(),
-							VaadinSession.getCurrent().getLocale(), os);
-				return new ByteArrayInputStream(os.toByteArray());
-				} else
+					        ((WrappedHttpSession) VaadinSession.getCurrent().getSession()).getHttpSession(),
+					        VaadinSession.getCurrent().getLocale(), os);
+					return new ByteArrayInputStream(os.toByteArray());
+				} else {
 					return null;
+				}
 			}
 
 		}, "report." + format.name());
@@ -225,8 +226,9 @@ public class JRReportViewer<T> extends BaseCustomComponent {
 		return (StringUtils.isEmpty(templatePath) ? "" : templatePath) + rd.getReportTemplateName() + REPORT_EXTENSION;
 	}
 
-	public void displayReport(Filter filter, Map<String, Object> parameters ) {
-		// TODO make the report generation asynchronous and display the first page when it is ready and not after last
+	public void displayReport(Filter filter, Map<String, Object> parameters) {
+		// TODO make the report generation asynchronous and display the first page when it is ready
+		// and not after last
 		// page is ready
 		currentParameters = parameters;
 
@@ -253,8 +255,8 @@ public class JRReportViewer<T> extends BaseCustomComponent {
 		// Generate report
 		reportGenerator.setShowMargins(showMargins.getValue());
 		String html = reportGenerator.executeReportAsHtml(jasperReport, params, jrDataSource,
-				((WrappedHttpSession) VaadinSession.getCurrent().getSession()).getHttpSession(),
-				VaadinSession.getCurrent().getLocale());
+		        ((WrappedHttpSession) VaadinSession.getCurrent().getSession()).getHttpSession(), VaadinSession
+		                .getCurrent().getLocale());
 		if (html == null || "".equals(html) || (container != null && container.size() <= 0)) {
 			reportArea.setValue(getMessageService().getMessage(NO_DATA_FOUND_KEY));
 			exportPDF.setEnabled(false);
@@ -313,8 +315,7 @@ public class JRReportViewer<T> extends BaseCustomComponent {
 			// Prepare the container by adding all properties needed for the reports
 			for (ReportDefinition type : (ReportDefinition[]) reportDefinition.getClass().getEnumConstants()) {
 				if (!type.requiresDatabaseConnection()) {
-					JRUtils.addContainerPropertiesFromReport(container,
-							reportGenerator.loadTemplate(getFullPath(type)));
+					JRUtils.addContainerPropertiesFromReport(container, reportGenerator.loadTemplate(getFullPath(type)));
 				}
 			}
 		}

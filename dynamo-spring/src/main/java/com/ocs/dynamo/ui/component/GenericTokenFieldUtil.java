@@ -1,3 +1,16 @@
+/*
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
 package com.ocs.dynamo.ui.component;
 
 import java.util.Collection;
@@ -22,7 +35,7 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.HorizontalLayout;
 
-final class GenericTokenFieldUtil {
+public final class GenericTokenFieldUtil {
 
 	private GenericTokenFieldUtil() {
 	}
@@ -47,8 +60,8 @@ final class GenericTokenFieldUtil {
 	 * Adds a token for every selected item
 	 */
 	private static <T> void addTokens(ExtTokenField extTokenField, BeanItemContainer<T> container,
-			Collection<Property.ValueChangeListener> valueChangeListeners, Field field,
-			TokenizableFactory tokenizableFactory) {
+	        Collection<Property.ValueChangeListener> valueChangeListeners, Field<?> field,
+	        TokenizableFactory<T> tokenizableFactory) {
 		extTokenField.clear();
 		if (container.size() > 0) {
 			for (T item : container.getItemIds()) {
@@ -66,8 +79,8 @@ final class GenericTokenFieldUtil {
 	 */
 	@SuppressWarnings("unchecked")
 	private static <T> void attachComboBoxValueChange(final ComboBox comboBox, final ExtTokenField extTokenField,
-			final BeanItemContainer<T> container, final Collection<Property.ValueChangeListener> valueChangeListeners,
-			final Field field, final TokenizableFactory tokenizableFactory) {
+	        final BeanItemContainer<T> container, final Collection<Property.ValueChangeListener> valueChangeListeners,
+	        final Field<?> field, final TokenizableFactory<T> tokenizableFactory) {
 		comboBox.addValueChangeListener(new Property.ValueChangeListener() {
 
 			private static final long serialVersionUID = -1734818761735064248L;
@@ -94,10 +107,9 @@ final class GenericTokenFieldUtil {
 	/**
 	 * Respond to a token removal by also removing the corresponding value from the container
 	 */
-	@SuppressWarnings("unchecked")
 	private static <T> void attachTokenFieldValueChange(ExtTokenField extTokenField,
-			final BeanItemContainer<T> container, final ComboBox comboBox, final List<Object> sortProperties,
-			final List<Boolean> sortOrdering, final Field field, final TokenizableFactory<T> tokenizableFactory) {
+	        final BeanItemContainer<T> container, final ComboBox comboBox, final List<Object> sortProperties,
+	        final List<Boolean> sortOrdering, final Field<?> field, final TokenizableFactory<T> tokenizableFactory) {
 		extTokenField.addTokenRemovedListener(new TokenRemovedListener() {
 			@Override
 			public void tokenRemovedEvent(TokenRemovedEvent event) {
@@ -130,6 +142,7 @@ final class GenericTokenFieldUtil {
 	/**
 	 * Copies the values from the container to the component
 	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	static <T> void copyValueFromContainer(BeanItemContainer<T> container, Field field) {
 		Collection<T> values = container.getItemIds();
 		field.setValue(new HashSet<>(values));
@@ -137,14 +150,13 @@ final class GenericTokenFieldUtil {
 
 	static <T> void addValueToContainer(T value, BeanItemContainer<T> container) {
 		container.addBean(value);
-		//		container.getItem(container.addItem(value)).getItemProperty(VALUE).setValue(value);
 	}
 
 	static <T> Component initContent(final ComboBox comboBox, final MessageService messageService,
-			final ExtTokenField extTokenField, final BeanItemContainer<T> container,
-			final Collection<Property.ValueChangeListener> valueChangeListeners, final Field field,
-			final List<Object> sortProperties, final List<Boolean> sortOrdering, final PostProcessLayout processLayout,
-			final TokenizableFactory tokenizableFactory) {
+	        final ExtTokenField extTokenField, final BeanItemContainer<T> container,
+	        final Collection<Property.ValueChangeListener> valueChangeListeners, final Field<?> field,
+	        final List<Object> sortProperties, final List<Boolean> sortOrdering, final PostProcessLayout processLayout,
+	        final TokenizableFactory<T> tokenizableFactory) {
 		HorizontalLayout layout = new DefaultHorizontalLayout(false, true, false);
 
 		comboBox.setInputPrompt(messageService.getMessage("ocs.type.to.add"));
@@ -158,7 +170,7 @@ final class GenericTokenFieldUtil {
 
 		attachComboBoxValueChange(comboBox, extTokenField, container, valueChangeListeners, field, tokenizableFactory);
 		attachTokenFieldValueChange(extTokenField, container, comboBox, sortProperties, sortOrdering, field,
-				tokenizableFactory);
+		        tokenizableFactory);
 
 		layout.addComponent(extTokenField);
 

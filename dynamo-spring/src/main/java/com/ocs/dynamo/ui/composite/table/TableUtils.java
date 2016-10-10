@@ -123,7 +123,7 @@ public final class TableUtils {
 	 */
 	public static <T> String formatPropertyValue(EntityModelFactory entityModelFactory, EntityModel<T> entityModel,
 	        MessageService messageService, Object colId, Object value) {
-		return formatPropertyValue(entityModelFactory, entityModel, messageService, colId, value,
+		return formatPropertyValue(null, entityModelFactory, entityModel, messageService, colId, value,
 		        VaadinUtils.getLocale());
 	}
 
@@ -138,8 +138,8 @@ public final class TableUtils {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T> String formatPropertyValue(EntityModelFactory entityModelFactory, EntityModel<T> entityModel,
-	        MessageService messageService, Object colId, Object value, Locale locale) {
+	public static <T> String formatPropertyValue(Table table, EntityModelFactory entityModelFactory,
+	        EntityModel<T> entityModel, MessageService messageService, Object colId, Object value, Locale locale) {
 		if (value != null) {
 			AttributeModel model = entityModel.getAttributeModel((String) colId);
 			if (model != null) {
@@ -164,8 +164,13 @@ public final class TableUtils {
 					}
 					return format.format((Date) value);
 				} else if (BigDecimal.class.equals(model.getType())) {
+					String cs = table == null ? null : ((ModelBasedTable<?, ?>) table).getCurrencySymbol();
+					if (cs == null) {
+						cs = VaadinUtils.getCurrencySymbol();
+					}
+
 					return VaadinUtils.bigDecimalToString(model.isCurrency(), model.isPercentage(),
-					        model.isUseThousandsGrouping(), model.getPrecision(), (BigDecimal) value, locale);
+					        model.isUseThousandsGrouping(), model.getPrecision(), (BigDecimal) value, locale, cs);
 				} else if (Integer.class.equals(model.getType())) {
 					return VaadinUtils.integerToString(model.isUseThousandsGrouping(), (Integer) value, locale);
 				} else if (Long.class.equals(model.getType())) {
@@ -186,8 +191,8 @@ public final class TableUtils {
 						detailEntityModel = entityModelFactory.getModel(model.getType());
 					}
 					String displayProperty = detailEntityModel.getDisplayProperty();
-					return formatPropertyValue(entityModelFactory, detailEntityModel, messageService, displayProperty,
-					        ClassUtils.getFieldValue(value, displayProperty), locale);
+					return formatPropertyValue(table, entityModelFactory, detailEntityModel, messageService,
+					        displayProperty, ClassUtils.getFieldValue(value, displayProperty), locale);
 				} else if (value instanceof AbstractEntity) {
 					Object result = ClassUtils.getFieldValue(value, colId.toString());
 					return result != null ? result.toString() : null;
@@ -245,9 +250,10 @@ public final class TableUtils {
 		if (table.getContainerDataSource() instanceof ModelBasedHierarchicalContainer) {
 			ModelBasedHierarchicalContainer<?> c = (ModelBasedHierarchicalContainer<?>) table.getContainerDataSource();
 			ModelBasedHierarchicalDefinition def = c.getHierarchicalDefinitionByItemId(rowId);
-			return TableUtils.formatPropertyValue(entityModelFactory, def.getEntityModel(), messageService,
+			return TableUtils.formatPropertyValue(table, entityModelFactory, def.getEntityModel(), messageService,
 			        c.unmapProperty(def, colId), property.getValue(), locale);
 		}
-		return formatPropertyValue(entityModelFactory, entityModel, messageService, colId, property.getValue(), locale);
+		return formatPropertyValue(table, entityModelFactory, entityModel, messageService, colId, property.getValue(),
+		        locale);
 	}
 }

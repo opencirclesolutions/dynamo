@@ -339,7 +339,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	/**
 	 * Clears the detail view
 	 */
-	protected void emptyDetailView() {
+	public void emptyDetailView() {
 		VerticalLayout vLayout = new VerticalLayout();
 		vLayout.addComponent(new Label(message("ocs.inline.select.item")));
 

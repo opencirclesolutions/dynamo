@@ -45,10 +45,10 @@ import com.ocs.dynamo.service.MessageService;
  */
 public final class MockUtil {
 
-    private MockUtil() {
-        // hidden constructor
-    }
-	
+	private MockUtil() {
+		// hidden constructor
+	}
+
 	/**
 	 * Capture a call of the "save" method on a DAO
 	 * 
@@ -249,6 +249,24 @@ public final class MockUtil {
 			@Override
 			public X answer(InvocationOnMock invocation) throws Throwable {
 				return (X) invocation.getArguments()[0];
+			}
+
+		});
+	}
+
+	/**
+	 * Mock the saving of a list
+	 * 
+	 * @param dao
+	 */
+	@SuppressWarnings("unchecked")
+	public static <ID, X extends AbstractEntity<ID>> void mockSaveList(BaseDao<ID, X> dao) {
+		// mock the save behaviour
+		Mockito.when(dao.save(Matchers.any(List.class))).thenAnswer(new Answer<List<X>>() {
+
+			@Override
+			public List<X> answer(InvocationOnMock invocation) throws Throwable {
+				return (List<X>) invocation.getArguments()[0];
 			}
 
 		});

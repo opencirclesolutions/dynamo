@@ -827,6 +827,14 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		return groups.get(isViewMode()).getField(propertyName);
 	}
 
+	public Label getLabel(String propertyName) {
+		AttributeModel am = getEntityModel().getAttributeModel(propertyName);
+		if (am != null) {
+			return (Label) labels.get(isViewMode()).get(am);
+		}
+		return null;
+	}
+
 	/**
 	 * Indicates which parent group a certain child group belongs to. The parent group must be
 	 * mentioned in the result of the <code>getParentGroupHeaders</code> method. The childGroup must
@@ -926,6 +934,33 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		AttributeModel am = getEntityModel().getAttributeModel(propertyName);
 		if (am != null) {
 			Component replacement = constructLabel(getEntity(), am);
+			Component oldLabel = labels.get(isViewMode()).get(am);
+
+			// label is displayed in view mode or when its an existing entity
+			replacement.setVisible(true);
+
+			// replace all existing labels with new labels
+			HasComponents hc = labels.get(isViewMode()).get(am).getParent();
+			if (hc instanceof Layout) {
+				((Layout) hc).replaceComponent(oldLabel, replacement);
+				labels.get(isViewMode()).put(am, replacement);
+			}
+		}
+	}
+
+	/**
+	 * Replaces an existing label by a label with the provided value
+	 * 
+	 * @param propertyName
+	 *            the name of the property for which to replace the label
+	 * @param value
+	 *            the name value
+	 */
+	public void replaceLabel(String propertyName, String value) {
+		AttributeModel am = getEntityModel().getAttributeModel(propertyName);
+		if (am != null) {
+			Component replacement = new Label(value);
+			replacement.setCaption(am.getDisplayName());
 			Component oldLabel = labels.get(isViewMode()).get(am);
 
 			// label is displayed in view mode or when its an existing entity

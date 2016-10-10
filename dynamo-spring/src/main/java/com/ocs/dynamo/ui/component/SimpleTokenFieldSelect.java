@@ -1,3 +1,16 @@
+/*
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
 package com.ocs.dynamo.ui.component;
 
 import java.util.ArrayList;
@@ -22,18 +35,25 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
 
-public class SimpleTokenFieldSelect<T extends Comparable> extends CustomField<Collection<T>> {
+public class SimpleTokenFieldSelect<T extends Comparable<T>> extends CustomField<Collection<T>> {
 
 	private static final long serialVersionUID = -1490179285573442827L;
-	private static final String VALUE = "value";
+
 	private final ExtTokenField extTokenField;
+
 	private final ComboBox comboBox;
+
 	private final BeanItemContainer<T> container;
+
 	private final Collection<ValueChangeListener> valueChangeListeners;
+
 	private List<Object> sortProperties;
+
 	private List<Boolean> sortOrdering;
+
 	private MessageService messageService;
-	private GenericTokenFieldUtil.TokenizableFactory tokenizableFactory;
+
+	private GenericTokenFieldUtil.TokenizableFactory<T> tokenizableFactory;
 
 	/**
 	 * Constructor
@@ -44,7 +64,7 @@ public class SimpleTokenFieldSelect<T extends Comparable> extends CustomField<Co
 	 * @param sortOrders
 	 */
 	public SimpleTokenFieldSelect(AttributeModel attributeModel, List<T> items, Class<T> elementType,
-			SortOrder... sortOrders) {
+	        SortOrder... sortOrders) {
 		messageService = ServiceLocator.getMessageService();
 
 		extTokenField = new ExtTokenField();
@@ -62,14 +82,14 @@ public class SimpleTokenFieldSelect<T extends Comparable> extends CustomField<Co
 		container = new BeanItemContainer<T>(elementType);
 		valueChangeListeners = new ArrayList<>();
 
-		tokenizableFactory = new GenericTokenFieldUtil.TokenizableFactory() {
+		tokenizableFactory = new GenericTokenFieldUtil.TokenizableFactory<T>() {
 			@Override
-			public Tokenizable createToken(Object item) {
+			public Tokenizable createToken(T item) {
 				return new SimpleTokenizable(System.nanoTime(), item.toString());
 			}
 
 			@Override
-			public void removeTokenFromContainer(Tokenizable tokenizable, BeanItemContainer container) {
+			public void removeTokenFromContainer(Tokenizable tokenizable, BeanItemContainer<T> container) {
 				container.removeItem(tokenizable.getStringValue());
 			}
 
@@ -132,17 +152,19 @@ public class SimpleTokenFieldSelect<T extends Comparable> extends CustomField<Co
 
 	@Override
 	protected Component initContent() {
-		return GenericTokenFieldUtil
-				.initContent(comboBox, messageService, extTokenField, container, valueChangeListeners, this,
-						sortProperties, sortOrdering, new GenericTokenFieldUtil.PostProcessLayout() {
-							@Override
-							public void postProcessLayout(AbstractOrderedLayout layout) {
-								// nothing to do
-							}
-						}, tokenizableFactory);
+		return GenericTokenFieldUtil.initContent(comboBox, messageService, extTokenField, container,
+		        valueChangeListeners, this, sortProperties, sortOrdering,
+		        new GenericTokenFieldUtil.PostProcessLayout() {
+			        @Override
+			        public void postProcessLayout(AbstractOrderedLayout layout) {
+				        // nothing to do
+			        }
+		        }, tokenizableFactory);
 	}
 
 	private class SimpleItemSorter implements ItemSorter {
+
+		private static final long serialVersionUID = -2397932123434432733L;
 
 		private boolean sortOrderAscending;
 
@@ -153,8 +175,8 @@ public class SimpleTokenFieldSelect<T extends Comparable> extends CustomField<Co
 			T item2 = (T) itemId2;
 
 			/*
-			 * Items can be null if the container is filtered. Null is considered
-			 * "less" than not-null.
+			 * Items can be null if the container is filtered. Null is considered "less" than
+			 * not-null.
 			 */
 			if (item1 == null) {
 				if (item2 == null) {

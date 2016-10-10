@@ -26,10 +26,6 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpSession;
 import javax.sql.DataSource;
 
-import org.springframework.stereotype.Service;
-
-import com.ocs.dynamo.exception.OCSRuntimeException;
-
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperFillManager;
@@ -46,6 +42,10 @@ import net.sf.jasperreports.export.SimpleHtmlExporterOutput;
 import net.sf.jasperreports.export.SimpleHtmlReportConfiguration;
 import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
 import net.sf.jasperreports.j2ee.servlets.BaseHttpServlet;
+
+import org.springframework.stereotype.Service;
+
+import com.ocs.dynamo.exception.OCSRuntimeException;
 
 /**
  * Class to support the generation of jasperreports
@@ -89,7 +89,8 @@ public class ReportGenerator {
 	}
 
 	/**
-	 * Load the template (defined by templatePath) and return a JasperDesign object representing the template
+	 * Load the template (defined by templatePath) and return a JasperDesign object representing the
+	 * template
 	 *
 	 * @return JasperDesign
 	 */
@@ -123,9 +124,9 @@ public class ReportGenerator {
 	 * @return The HTML report
 	 */
 	public String executeReportAsHtml(JasperReport jasperReport, Map<String, Object> parameters,
-			JRDataSource jrDataSource, HttpSession session, Locale locale) {
+	        JRDataSource jrDataSource, HttpSession session, Locale locale) {
 		// Start execution
-		StringBuffer sb = executeReport(jasperReport, parameters, jrDataSource, Format.HTML, session, locale, null);
+		StringBuilder sb = executeReport(jasperReport, parameters, jrDataSource, Format.HTML, session, locale, null);
 		return sb.toString();
 	}
 
@@ -137,8 +138,8 @@ public class ReportGenerator {
 	 * @param outputStream
 	 * @throws JRException
 	 */
-	public StringBuffer executeReport(JasperReport jasperReport, Map<String, Object> parameters,
-			JRDataSource jrDataSource, Format format, HttpSession session, Locale locale, OutputStream outputStream) {
+	public StringBuilder executeReport(JasperReport jasperReport, Map<String, Object> parameters,
+	        JRDataSource jrDataSource, Format format, HttpSession session, Locale locale, OutputStream outputStream) {
 		// Add format to parameters
 		Map<String, Object> copyParameters = new HashMap<>(parameters);
 
@@ -166,8 +167,8 @@ public class ReportGenerator {
 	 * @param session
 	 *            The user session
 	 */
-	public StringBuffer exportReportToHTML(JasperPrint jasperPrint, HttpSession session) {
-		StringBuffer sb = new StringBuffer();
+	public StringBuilder exportReportToHTML(JasperPrint jasperPrint, HttpSession session) {
+		StringBuilder sb = new StringBuilder();
 		try {
 			HtmlExporter exporter = new HtmlExporter();
 			exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
@@ -184,7 +185,7 @@ public class ReportGenerator {
 			exporter.setConfiguration(exporterConfig);
 
 			final SimpleHtmlReportConfiguration reportConfiguration = new SimpleHtmlReportConfiguration();
-			//reportConfiguration.setEmbedImage(true);
+			// reportConfiguration.setEmbedImage(true);
 			reportConfiguration.setEmbeddedSvgUseFonts(true);
 			reportConfiguration.setIgnoreHyperlink(false);
 			reportConfiguration.setIgnorePageMargins(true);

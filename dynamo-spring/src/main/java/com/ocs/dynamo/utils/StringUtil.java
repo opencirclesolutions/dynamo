@@ -19,7 +19,7 @@ public final class StringUtil {
 
 	private static final String HTTP = "http";
 
-	private static final String HTML_LINE_BREAK = "<br/>";
+	public static final String HTML_LINE_BREAK = "<br/>";
 
 	private StringUtil() {
 		// private constructor

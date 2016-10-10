@@ -30,7 +30,7 @@ public abstract class BaseIntegrationTest extends AbstractTransactionalJUnit4Spr
     private static final Logger LOG = Logger.getLogger(BaseIntegrationTest.class);
 
     @PersistenceContext
-    private EntityManager entityManager;
+    protected EntityManager entityManager;
 
     protected Logger getLog() {
         return LOG;
