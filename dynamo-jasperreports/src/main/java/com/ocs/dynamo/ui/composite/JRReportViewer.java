@@ -62,27 +62,35 @@ import net.sf.jasperreports.engine.JasperReport;
  */
 public class JRReportViewer<T> extends BaseCustomComponent {
 
+	/**
+	 * 
+	 * @author bas.rutten
+	 *
+	 */
 	public interface ReportDefinition {
 		/**
 		 * @return the name of the report template
 		 */
-		public String getReportTemplateName();
+		String getReportTemplateName();
 
 		/**
 		 * @return whether an external script needs to be loaded
 		 */
-		public boolean requiresExternalScript();
+		boolean requiresExternalScript();
 
 		/**
 		 * @return whether a direct datasource connection needs to be loaded
 		 */
-		public boolean requiresDatabaseConnection();
+		boolean requiresDatabaseConnection();
 	}
 
-	protected final static String REPORT_NA_KEY = "ocs.report.not.available";
-	protected final static String NO_DATA_FOUND_KEY = "ocs.no.data.found";
-	protected final static String REPORT_EXTENSION = ".jasper";
-	protected final static String REPORT_AREA_ID = "reportArea";
+	protected static final String REPORT_NA_KEY = "ocs.report.not.available";
+
+	protected static final String NO_DATA_FOUND_KEY = "ocs.no.data.found";
+
+	protected static final String REPORT_EXTENSION = ".jasper";
+
+	protected static final String REPORT_AREA_ID = "reportArea";
 
 	private static final long serialVersionUID = 6981827314136814213L;
 	private Layout main;

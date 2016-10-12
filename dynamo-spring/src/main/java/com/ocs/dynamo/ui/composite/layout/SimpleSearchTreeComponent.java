@@ -33,6 +33,7 @@ import com.ocs.dynamo.ui.container.hierarchical.HierarchicalFetchJoinInformation
 import com.ocs.dynamo.ui.container.hierarchical.ModelBasedHierarchicalContainer;
 import com.ocs.dynamo.ui.container.hierarchical.ModelBasedHierarchicalContainer.ModelBasedHierarchicalDefinition;
 import com.vaadin.data.Container.Filter;
+import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanItem;
 
@@ -84,6 +85,11 @@ public class SimpleSearchTreeComponent<ID extends Serializable, T extends Abstra
 	public ServiceResultsTableWrapper<ID, T> constructTableWrapper() {
 		ServiceResultsTableWrapper<ID, T> result = new ServiceResultsTreeTableWrapper<ID, T>(services,
 		        getEntityModel(), getQueryType(), null, getJoins()) {
+
+			@Override
+			protected void doConstructContainer(Container container) {
+				SimpleSearchTreeComponent.this.doConstructContainer(container);
+			}
 
 			@Override
 			protected Filter beforeSearchPerformed(Filter filter) {

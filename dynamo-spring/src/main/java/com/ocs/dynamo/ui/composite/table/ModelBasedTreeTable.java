@@ -58,12 +58,25 @@ public class ModelBasedTreeTable<ID extends Serializable, T extends AbstractEnti
 
 	private MessageService messageService;
 
+	/**
+	 * Currency symbol to be used for displaying amounts in the table
+	 */
 	private String currencySymbol;
 
 	/**
+	 * Indicates whether it is allowed to expand/hide the
+	 */
+	private boolean expandAndHideAllowed = true;
+
+	/**
+	 * Constructor
+	 * 
 	 * @param container
+	 *            the container that contains the data for the table
 	 * @param entityModelFactory
+	 *            the entity model factory
 	 * @param messageService
+	 *            the message service
 	 */
 	@SuppressWarnings("unchecked")
 	public ModelBasedTreeTable(ModelBasedHierarchicalContainer<T> container, EntityModelFactory entityModelFactory) {
@@ -98,8 +111,11 @@ public class ModelBasedTreeTable<ID extends Serializable, T extends AbstractEnti
 	 * Adds a container property
 	 * 
 	 * @param scpId
+	 *            the property
 	 * @param def
+	 *            the hierarchical definition
 	 * @param lazyContainer
+	 *            the container feeding this table
 	 * @return
 	 */
 	@SuppressWarnings("rawtypes")
@@ -188,7 +204,10 @@ public class ModelBasedTreeTable<ID extends Serializable, T extends AbstractEnti
 
 	@Override
 	public Action[] getActions(Object target, Object sender) {
-		return new Action[] { actionExpandAll, actionHideAll };
+		if (isExpandAndHideAllowed()) {
+			return new Action[] { actionExpandAll, actionHideAll };
+		}
+		return new Action[0];
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -273,4 +292,13 @@ public class ModelBasedTreeTable<ID extends Serializable, T extends AbstractEnti
 	public void setCurrencySymbol(String currencySymbol) {
 		this.currencySymbol = currencySymbol;
 	}
+
+	public boolean isExpandAndHideAllowed() {
+		return expandAndHideAllowed;
+	}
+
+	public void setExpandAndHideAllowed(boolean expandAndHideAllowed) {
+		this.expandAndHideAllowed = expandAndHideAllowed;
+	}
+
 }
