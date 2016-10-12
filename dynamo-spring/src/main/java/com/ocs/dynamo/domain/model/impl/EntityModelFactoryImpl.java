@@ -221,9 +221,10 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 
 			// exception if using a multiple select field type for a single select field
 			if ((AttributeSelectMode.TOKEN.equals(model.getSelectMode()) || AttributeSelectMode.FANCY_LIST.equals(model
-			        .getSelectMode())) && !AttributeType.DETAIL.equals(model.getAttributeType())) {
+			        .getSelectMode()))
+			        && !AttributeType.DETAIL.equals(model.getAttributeType())
+			        && !AttributeType.BASIC.equals(model.getAttributeType())) {
 				throw new OCSRuntimeException("Token or Fancy List field not allowed for field " + model.getName());
-
 			}
 		}
 		return result;
@@ -793,6 +794,10 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 				model.setPercentage(true);
 			}
 
+			if (attribute.embedded()) {
+				model.setAttributeType(AttributeType.EMBEDDED);
+			}
+
 			if (attribute.currency()) {
 				model.setCurrency(true);
 			}
@@ -1011,13 +1016,6 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 			model.setCurrency(Boolean.valueOf(msg));
 		}
 
-		// set the select mode (also sets the search select mode by default)
-		msg = getAttributeMessage(entityModel, model, EntityModel.SELECT_MODE);
-		if (!StringUtils.isEmpty(msg) && AttributeSelectMode.valueOf(msg) != null) {
-			model.setSelectMode(AttributeSelectMode.valueOf(msg));
-			model.setSearchSelectMode(AttributeSelectMode.valueOf(msg));
-		}
-
 		// set multiple search (also overwrites the search select mode and sets it to fancy list)
 		msg = getAttributeMessage(entityModel, model, EntityModel.MULTIPLE_SEARCH);
 		if (!StringUtils.isEmpty(msg)) {
@@ -1025,6 +1023,14 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 			model.setSearchSelectMode(AttributeSelectMode.FANCY_LIST);
 		}
 
+		// set the select mode (also sets the search select mode to the same value)
+		msg = getAttributeMessage(entityModel, model, EntityModel.SELECT_MODE);
+		if (!StringUtils.isEmpty(msg) && AttributeSelectMode.valueOf(msg) != null) {
+			model.setSelectMode(AttributeSelectMode.valueOf(msg));
+			model.setSearchSelectMode(AttributeSelectMode.valueOf(msg));
+		}
+
+		// explicitly set the search select modeqq
 		msg = getAttributeMessage(entityModel, model, EntityModel.SEARCH_SELECT_MODE);
 		if (!StringUtils.isEmpty(msg)) {
 			model.setSearchSelectMode(AttributeSelectMode.valueOf(msg));

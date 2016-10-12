@@ -73,8 +73,8 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 	private class FilterRegion {
 
 		/**
-		 * Indicates whether we are restoring an existing definition - if this is the case
-		 * the we do not need to set a default filter value
+		 * Indicates whether we are restoring an existing definition - if this is the case the we do
+		 * not need to set a default filter value
 		 */
 		private boolean restoring;
 

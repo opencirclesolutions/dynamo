@@ -29,6 +29,7 @@ import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
 import com.ocs.dynamo.ui.composite.form.FormOptions;
 import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
 import com.ocs.dynamo.ui.composite.table.BaseTableWrapper;
+import com.ocs.dynamo.ui.composite.table.ServiceResultsTableWrapper;
 import com.vaadin.data.Container;
 import com.vaadin.data.Property;
 import com.vaadin.data.sort.SortOrder;
@@ -129,14 +130,14 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	protected void afterDetailSelected(ModelBasedEditForm<ID, T> editForm, T entity) {
 		// override in subclass
 	}
-	
-    /**
-     * 
-     * @param entity
-     */
-    protected void afterEntitySet(T entity) {
-    	
-    }
+
+	/**
+	 * 
+	 * @param entity
+	 */
+	protected void afterEntitySet(T entity) {
+
+	}
 
 	/**
 	 * Removes all sort orders
@@ -265,6 +266,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	public BaseTableWrapper<ID, T> getTableWrapper() {
 		if (tableWrapper == null) {
 			tableWrapper = constructTableWrapper();
+			postProcessTableWrapper(tableWrapper);
 		}
 		return tableWrapper;
 	}
@@ -290,6 +292,10 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	 */
 	protected void postProcessButtonBar(Layout buttonBar) {
 		// overwrite in subclass if needed
+	}
+
+	protected void postProcessTableWrapper(BaseTableWrapper<ID, T> wrapper) {
+		// overwrite in subclasses when needed
 	}
 
 	/**

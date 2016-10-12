@@ -68,7 +68,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	/**
 	 * The filter that is created by taking all individual field filters together
 	 */
-	private Filter compositeFilter;
+	private Filter storedFilter;
 
 	/**
 	 * The list of currently active search filters
@@ -105,6 +105,8 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	 */
 	private Panel wrapperPanel;
 
+	private HorizontalLayout buttonBar;
+
 	/**
 	 * 
 	 * @param searchable
@@ -136,6 +138,8 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	public void build() {
 		VerticalLayout main = new DefaultVerticalLayout(false, true);
 
+		preProcessLayout(main);
+
 		// add a wrapper for adding an action handler
 		wrapperPanel = new Panel();
 		main.addComponent(wrapperPanel);
@@ -165,7 +169,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 		});
 
 		// create the button bar
-		HorizontalLayout buttonBar = new DefaultHorizontalLayout();
+		buttonBar = new DefaultHorizontalLayout();
 		main.addComponent(buttonBar);
 
 		constructButtonBar(buttonBar);
@@ -206,6 +210,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	 * Clears the search filters
 	 */
 	protected void clear() {
+		storedFilter = null;
 		currentFilters.clear();
 		currentFilters.addAll(getAdditionalFilters());
 	}
@@ -272,12 +277,12 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 		return additionalFilters;
 	}
 
-	public Button getClearButton() {
-		return clearButton;
+	public HorizontalLayout getButtonBar() {
+		return buttonBar;
 	}
 
-	public Filter getCompositeFilter() {
-		return compositeFilter;
+	public Button getClearButton() {
+		return clearButton;
 	}
 
 	public List<Filter> getCurrentFilters() {
@@ -328,35 +333,44 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	}
 
 	/**
-	 * Trigger the actual search
+	 * Pre process the layout - this method is called directly after the main layout has been
+	 * created
+	 * 
+	 * @param main
 	 */
-	public void search() {
-		if (!currentFilters.isEmpty()) {
-			compositeFilter = new And(currentFilters.toArray(new Filter[0]));
-		} else {
-			// search without any filters
-			compositeFilter = null;
-		}
-
-		if (searchable != null) {
-			searchable.search(compositeFilter);
-		}
+	protected void preProcessLayout(VerticalLayout main) {
+		// override in subclass
 	}
 
 	/**
-	 * Search immediately without reconstructing the filter
+	 * Trigger the actual search
 	 */
-	public void searchImmediately() {
+	public boolean search() {
 		if (searchable != null) {
-			searchable.search(compositeFilter);
+			if (storedFilter != null) {
+				searchable.search(storedFilter);
+				storedFilter = null;
+			} else {
+				searchable.search(extractFilter());
+			}
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * 
+	 * @param storedFilter
+	 */
+	public void setStoredFilter(Filter storedFilter) {
+		this.storedFilter = storedFilter;
+		if (searchable != null) {
+			searchable.search(storedFilter);
 		}
 	}
 
-	public void setCompositeFilter(Filter compositeFilter) {
-		this.compositeFilter = compositeFilter;
-		if (searchable != null) {
-			searchable.search(compositeFilter);
-		}
+	public void setSearchable(Searchable searchable) {
+		this.searchable = searchable;
 	}
 
 	/**
@@ -373,10 +387,6 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 		}
 		wrapperPanel.setVisible(show);
 		afterSearchFieldToggle(wrapperPanel.isVisible());
-	}
-
-	public void setSearchable(Searchable searchable) {
-		this.searchable = searchable;
 	}
 
 }

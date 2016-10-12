@@ -18,8 +18,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.log4j.Logger;
 
 import com.ocs.dynamo.exception.OCSRuntimeException;
+import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.composite.layout.BaseCustomComponent;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.Notification;
@@ -109,6 +113,31 @@ public abstract class ProgressForm<T> extends BaseCustomComponent implements Pro
 	private void done() {
 		afterWorkComplete();
 		formMode();
+	}
+
+	/**
+	 * Constructs a layout with a single button that will start the process when clicked
+	 * 
+	 * @param parent
+	 *            the layout that serves as the parent of the layout to construct
+	 * @param caption
+	 *            the caption of the button
+	 */
+	protected void constructSingleButtonLayout(Layout parent, String caption) {
+		HorizontalLayout buttonBar = new DefaultHorizontalLayout(true, true, true);
+		parent.addComponent(buttonBar);
+
+		Button clearButton = new Button(caption);
+		clearButton.addClickListener(new Button.ClickListener() {
+
+			private static final long serialVersionUID = -652306482967612622L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				startWork(null);
+			}
+		});
+		buttonBar.addComponent(clearButton);
 	}
 
 	/**

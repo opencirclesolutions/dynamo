@@ -59,11 +59,14 @@ public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements B
 	private EntityManager entityManager;
 
 	/**
-	 * Adds a parameter to a query but only if a certain value is not null
+	 * Adds a parameter to a query but only if the provided value is not null
 	 *
 	 * @param query
+	 *            the query to add the parameter to
 	 * @param name
+	 *            the name of the parameter
 	 * @param value
+	 *            the value of the parameter
 	 */
 	protected void addParameter(Query query, String name, Object value) {
 		if (value != null) {
@@ -71,6 +74,14 @@ public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements B
 		}
 	}
 
+	/**
+	 * Adds sorting to a query
+	 * 
+	 * @param query
+	 *            the query
+	 * @param sorts
+	 *            the list of sort orders to add to the query
+	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void addSorting(JPAQuery query, SortOrder... sorts) {
 		PathBuilder<T> builder = new PathBuilder<T>(getDslRoot().getType(), getDslRoot().getMetadata());
@@ -153,23 +164,33 @@ public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements B
 
 	@Override
 	public List<T> fetch(Filter filter, Pageable pageable, FetchJoinInformation... joins) {
-		return fetch(filter, pageable, pageable.getSortOrders(), joins);
+		return fetch(filter, pageable, pageable == null ? null : pageable.getSortOrders(), joins);
 	}
 
+	/**
+	 * Constructs a fetch query - watch out, paging combined with
+	 * 
+	 * @param filter
+	 *            the filter to apply
+	 * @param pageable
+	 *            object containing the paging data
+	 * @param sortOrders
+	 *            list of sort orders to apply
+	 * @param joins
+	 *            the joins to apply - if null then the default joins will be used
+	 * @return
+	 */
 	private List<T> fetch(Filter filter, Pageable pageable, SortOrders sortOrders, FetchJoinInformation... joins) {
-		// Create select and where clauses
 		CriteriaQuery<T> cq = JpaQueryBuilder.createSelectQuery(filter, entityManager, getEntityClass(),
 		        (joins == null || joins.length == 0) ? getFetchJoins() : joins,
 		        sortOrders == null ? null : sortOrders.toArray());
 
 		TypedQuery<T> query = entityManager.createQuery(cq);
 
-		// Limit results
 		if (pageable != null) {
 			query.setFirstResult(pageable.getOffset());
 			query.setMaxResults(pageable.getPageSize());
 		}
-
 		return query.getResultList();
 	}
 
@@ -214,6 +235,33 @@ public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements B
 		return fetch(filter, null, null, (FetchJoinInformation[]) null);
 	}
 
+	/**
+	 * Performs a query
+	 * 
+	 * @param filter
+	 *            the filter to apply
+	 * @param pageable
+	 *            paging data
+	 * @param sortOrders
+	 *            the sort orders to apply
+	 * @return
+	 */
+	private List<T> find(Filter filter, Pageable pageable, SortOrders sortOrders) {
+		// Create select and where clauses
+		CriteriaQuery<T> cq = JpaQueryBuilder.createSelectQuery(filter, entityManager, getEntityClass(), null,
+		        sortOrders == null ? null : sortOrders.toArray());
+
+		TypedQuery<T> query = entityManager.createQuery(cq);
+
+		// Limit results
+		if (pageable != null) {
+			query.setFirstResult(pageable.getOffset());
+			query.setMaxResults(pageable.getPageSize());
+		}
+
+		return query.getResultList();
+	}
+
 	@Override
 	public List<T> find(Filter filter, SortOrder... orders) {
 		return fetch(filter, null, new SortOrders(orders), (FetchJoinInformation[]) null);
@@ -248,7 +296,7 @@ public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements B
 
 	@Override
 	public List<T> findAll(SortOrder... sortOrders) {
-		return fetch(null, null, new SortOrders(sortOrders));
+		return find(null, null, new SortOrders(sortOrders));
 	}
 
 	@Override
@@ -268,6 +316,26 @@ public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements B
 		} catch (NonUniqueResultException ex) {
 			throw new OCSRuntimeException("Query for unique property returned multiple results", ex);
 		}
+	}
+
+	@Override
+	public List<? extends Object> findDistinct(Filter filter, String distinctField, SortOrder... orders) {
+		final CriteriaQuery<Tuple> cq = JpaQueryBuilder.createDistinctQuery(filter, entityManager, getEntityClass(),
+		        distinctField, orders);
+
+		TypedQuery<Tuple> query = entityManager.createQuery(cq);
+		List<Tuple> temp = query.getResultList();
+
+		List<Object> result = new ArrayList<>();
+
+		for (Tuple t : temp) {
+			Object o = t.get(0);
+			if (o != null) {
+				result.add(o);
+			}
+		}
+
+		return result;
 	}
 
 	@Override
@@ -343,25 +411,5 @@ public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements B
 			t = entityManager.merge(t);
 		}
 		return t;
-	}
-
-	@Override
-	public List<? extends Object> findDistinct(Filter filter, String distinctField, SortOrder... orders) {
-		final CriteriaQuery<Tuple> cq = JpaQueryBuilder.createDistinctQuery(filter, entityManager, getEntityClass(),
-		        distinctField, orders);
-
-		TypedQuery<Tuple> query = entityManager.createQuery(cq);
-		List<Tuple> temp = query.getResultList();
-
-		List<Object> result = new ArrayList<>();
-
-		for (Tuple t : temp) {
-			Object o = t.get(0);
-			if (o != null) {
-				result.add(o);
-			}
-		}
-
-		return result;
 	}
 }

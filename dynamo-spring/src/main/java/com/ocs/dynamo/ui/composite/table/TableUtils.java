@@ -164,11 +164,7 @@ public final class TableUtils {
 					}
 					return format.format((Date) value);
 				} else if (BigDecimal.class.equals(model.getType())) {
-					String cs = table == null ? null : ((ModelBasedTable<?, ?>) table).getCurrencySymbol();
-					if (cs == null) {
-						cs = VaadinUtils.getCurrencySymbol();
-					}
-
+					String cs = getCurrencySymbol(table);
 					return VaadinUtils.bigDecimalToString(model.isCurrency(), model.isPercentage(),
 					        model.isUseThousandsGrouping(), model.getPrecision(), (BigDecimal) value, locale, cs);
 				} else if (Integer.class.equals(model.getType())) {
@@ -255,5 +251,27 @@ public final class TableUtils {
 		}
 		return formatPropertyValue(table, entityModelFactory, entityModel, messageService, colId, property.getValue(),
 		        locale);
+	}
+
+	/**
+	 * Returns the currency symbol to be used in a certain table. This will return the custom
+	 * currency symbol for a certain table, or the default currency symbol if no custmo currency
+	 * symbol is set
+	 * 
+	 * @param table
+	 *            the table
+	 * @return
+	 */
+	private static String getCurrencySymbol(Table table) {
+		String cs = null;
+		if (table instanceof ModelBasedTable) {
+			cs = ((ModelBasedTable<?, ?>) table).getCurrencySymbol();
+		} else if (table instanceof ModelBasedTreeTable) {
+			cs = ((ModelBasedTreeTable<?, ?>) table).getCurrencySymbol();
+		}
+		if (cs == null) {
+			cs = VaadinUtils.getCurrencySymbol();
+		}
+		return cs;
 	}
 }

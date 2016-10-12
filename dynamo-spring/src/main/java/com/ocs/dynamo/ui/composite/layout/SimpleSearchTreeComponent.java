@@ -42,111 +42,114 @@ import com.vaadin.data.util.BeanItem;
  * @author Patrick Deenen (patrick.deenen@opencirclesolutions.nl)
  */
 @SuppressWarnings("serial")
-public class SimpleSearchTreeComponent<ID extends Serializable, T extends AbstractEntity<ID>>
-        extends SimpleSearchLayout<ID, T> {
+public class SimpleSearchTreeComponent<ID extends Serializable, T extends AbstractEntity<ID>> extends
+        SimpleSearchLayout<ID, T> {
 
-    private List<BaseService<?, ?>> services;
+	private List<BaseService<?, ?>> services;
 
-    private Object selectedItem;
+	private Object selectedItem;
 
-    /**
-     * @param service
-     * @param entityModel
-     * @param queryType
-     * @param formOptions
-     */
-    @SuppressWarnings("unchecked")
-    public SimpleSearchTreeComponent(List<BaseService<?, ?>> services, EntityModel<T> entityModel,
-            QueryType queryType, FormOptions formOptions, FetchJoinInformation... joins) {
-        super((BaseService<ID, T>) services.get(0), entityModel, queryType, formOptions, null,
-                joins);
-        this.services = services;
-    }
+	/**
+	 * @param service
+	 * @param entityModel
+	 * @param queryType
+	 * @param formOptions
+	 */
+	@SuppressWarnings("unchecked")
+	public SimpleSearchTreeComponent(List<BaseService<?, ?>> services, EntityModel<T> entityModel, QueryType queryType,
+	        FormOptions formOptions, FetchJoinInformation... joins) {
+		super((BaseService<ID, T>) services.get(0), entityModel, queryType, formOptions, null, joins);
+		this.services = services;
+	}
 
-    /**
-     * @param service
-     * @param entityModel
-     * @param queryType
-     * @param formOptions
-     * @param fieldFilters
-     * @param additionalFilters
-     * @param joins
-     */
-    @SuppressWarnings("unchecked")
-    public SimpleSearchTreeComponent(List<BaseService<?, ?>> services, EntityModel<T> entityModel,
-            QueryType queryType, FormOptions formOptions, Map<String, Filter> fieldFilters,
-            List<Filter> additionalFilters, FetchJoinInformation[] joins) {
-        super((BaseService<ID, T>) services.get(0), entityModel, queryType, formOptions,
-                fieldFilters, additionalFilters, null, joins);
-        this.services = services;
-    }
+	/**
+	 * @param service
+	 * @param entityModel
+	 * @param queryType
+	 * @param formOptions
+	 * @param fieldFilters
+	 * @param additionalFilters
+	 * @param joins
+	 */
+	@SuppressWarnings("unchecked")
+	public SimpleSearchTreeComponent(List<BaseService<?, ?>> services, EntityModel<T> entityModel, QueryType queryType,
+	        FormOptions formOptions, Map<String, Filter> fieldFilters, List<Filter> additionalFilters,
+	        FetchJoinInformation[] joins) {
+		super((BaseService<ID, T>) services.get(0), entityModel, queryType, formOptions, fieldFilters,
+		        additionalFilters, null, joins);
+		this.services = services;
+	}
 
-    @Override
-    public ServiceResultsTableWrapper<ID, T> constructTableWrapper() {
-        ServiceResultsTableWrapper<ID, T> result = new ServiceResultsTreeTableWrapper<ID, T>(
-                services, getEntityModel(), getQueryType(), null, getJoins());
-        result.build();
-        return result;
-    }
+	@Override
+	public ServiceResultsTableWrapper<ID, T> constructTableWrapper() {
+		ServiceResultsTableWrapper<ID, T> result = new ServiceResultsTreeTableWrapper<ID, T>(services,
+		        getEntityModel(), getQueryType(), null, getJoins()) {
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    @Override
-    protected ModelBasedSearchForm<ID, T> constructSearchForm() {
-        ModelBasedHierarchicalContainer<T> c = (ModelBasedHierarchicalContainer<T>) getTableWrapper()
-                .getContainer();
-        ModelBasedHierarchicalDefinition def = c.getHierarchicalDefinition(0);
-        ModelBasedSearchForm<ID, T> result = new ModelBasedSearchForm<ID, T>(getTableWrapper(),
-                def.getEntityModel(), getFormOptions(), getAdditionalFilters(), getFieldFilters());
-        result.build();
-        return result;
-    }
+			@Override
+			protected Filter beforeSearchPerformed(Filter filter) {
+				return SimpleSearchTreeComponent.this.beforeSearchPerformed(filter);
+			}
+		};
+		result.build();
+		return result;
+	}
 
-    @Override
-    public HierarchicalFetchJoinInformation[] getJoins() {
-        return (HierarchicalFetchJoinInformation[]) super.getJoins();
-    }
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@Override
+	protected ModelBasedSearchForm<ID, T> constructSearchForm() {
+		ModelBasedHierarchicalContainer<T> c = (ModelBasedHierarchicalContainer<T>) getTableWrapper().getContainer();
+		ModelBasedHierarchicalDefinition def = c.getHierarchicalDefinition(0);
+		ModelBasedSearchForm<ID, T> result = new ModelBasedSearchForm<ID, T>(getTableWrapper(), def.getEntityModel(),
+		        getFormOptions(), getAdditionalFilters(), getFieldFilters());
+		result.build();
+		return result;
+	}
 
-    @Override
-    public void build() {
-        getTableWrapper();
-        super.build();
-    }
+	@Override
+	public HierarchicalFetchJoinInformation[] getJoins() {
+		return (HierarchicalFetchJoinInformation[]) super.getJoins();
+	}
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public void select(Object selectedItems) {
-        if (selectedItems != null) {
-            if (selectedItems instanceof Collection<?>) {
-                // the lazy query container returns an array of IDs of the
-                // selected items
-                Collection<?> col = (Collection<?>) selectedItems;
-                if (!col.isEmpty()) {
-                    Object id = col.iterator().next();
-                    if (id != null) {
-                        ModelBasedHierarchicalContainer<T> c = (ModelBasedHierarchicalContainer<T>) getTableWrapper()
-                                .getContainer();
-                        Item item = c.getItem(id);
-                        if (item instanceof BeanItem) {
-                            setSelectedHierarchicalItem(((BeanItem<?>) item).getBean());
-                        } else if (item instanceof CompositeItem) {
-                            setSelectedHierarchicalItem(((CompositeItem) item)
-                                    .getItem(CompositeItem.DEFAULT_ITEM_KEY));
-                        } else {
-                            setSelectedHierarchicalItem(item);
-                        }
-                    }
-                }
-            }
-        } else {
-            setSelectedHierarchicalItem(null);
-        }
-    }
+	@Override
+	public void build() {
+		getTableWrapper();
+		super.build();
+	}
 
-    protected void setSelectedHierarchicalItem(Object selectedItem) {
-        this.selectedItem = selectedItem;
-    }
+	@SuppressWarnings("unchecked")
+	@Override
+	public void select(Object selectedItems) {
+		if (selectedItems != null) {
+			if (selectedItems instanceof Collection<?>) {
+				// the lazy query container returns an array of IDs of the
+				// selected items
+				Collection<?> col = (Collection<?>) selectedItems;
+				if (!col.isEmpty()) {
+					Object id = col.iterator().next();
+					if (id != null) {
+						ModelBasedHierarchicalContainer<T> c = (ModelBasedHierarchicalContainer<T>) getTableWrapper()
+						        .getContainer();
+						Item item = c.getItem(id);
+						if (item instanceof BeanItem) {
+							setSelectedHierarchicalItem(((BeanItem<?>) item).getBean());
+						} else if (item instanceof CompositeItem) {
+							setSelectedHierarchicalItem(((CompositeItem) item).getItem(CompositeItem.DEFAULT_ITEM_KEY));
+						} else {
+							setSelectedHierarchicalItem(item);
+						}
+					}
+				}
+			}
+		} else {
+			setSelectedHierarchicalItem(null);
+		}
+	}
 
-    public Object getSelectedHierarchicalItem() {
-        return selectedItem;
-    }
+	protected void setSelectedHierarchicalItem(Object selectedItem) {
+		this.selectedItem = selectedItem;
+	}
+
+	public Object getSelectedHierarchicalItem() {
+		return selectedItem;
+	}
 }

@@ -38,73 +38,73 @@ import com.vaadin.data.sort.SortOrder;
  * @param <T>
  *            type of the entity
  */
-public class ServiceResultsTableWrapper<ID extends Serializable, T extends AbstractEntity<ID>>
-        extends BaseTableWrapper<ID, T> implements Searchable {
+public class ServiceResultsTableWrapper<ID extends Serializable, T extends AbstractEntity<ID>> extends
+        BaseTableWrapper<ID, T> implements Searchable {
 
-    private static final long serialVersionUID = -4691108261565306844L;
+	private static final long serialVersionUID = -4691108261565306844L;
 
-    /**
-     * The search filter that is applied to the table
-     */
-    private Filter filter;
+	/**
+	 * The search filter that is applied to the table
+	 */
+	private Filter filter;
 
-    /**
-     * @param service
-     *            the service object
-     * @param entityModel
-     *            the entity model
-     * @param queryType
-     *            the query type to use
-     * @param order
-     *            the default sort order
-     * @param joins
-     *            options list of fetch joins to include in the query
-     */
-    public ServiceResultsTableWrapper(BaseService<ID, T> service, EntityModel<T> entityModel,
-            QueryType queryType, Filter filter, List<SortOrder> sortOrders,
-            FetchJoinInformation... joins) {
-        super(service, entityModel, queryType, sortOrders, joins);
-        this.filter = filter;
-    }
+	/**
+	 * @param service
+	 *            the service object
+	 * @param entityModel
+	 *            the entity model
+	 * @param queryType
+	 *            the query type to use
+	 * @param order
+	 *            the default sort order
+	 * @param joins
+	 *            options list of fetch joins to include in the query
+	 */
+	public ServiceResultsTableWrapper(BaseService<ID, T> service, EntityModel<T> entityModel, QueryType queryType,
+	        Filter filter, List<SortOrder> sortOrders, FetchJoinInformation... joins) {
+		super(service, entityModel, queryType, sortOrders, joins);
+		this.filter = filter;
+	}
 
-    @Override
-    @SuppressWarnings("unchecked")
-    protected Container constructContainer() {
-        ServiceContainer<ID, T> container = new ServiceContainer<ID, T>(getService(), true,
-                DynamoConstants.PAGE_SIZE, getQueryType(), getJoins());
-        ((ServiceQueryDefinition<ID, T>) container.getQueryView().getQueryDefinition())
-                .setEntityModel(getEntityModel());
+	@Override
+	@SuppressWarnings("unchecked")
+	protected Container constructContainer() {
+		ServiceContainer<ID, T> container = new ServiceContainer<ID, T>(getService(), true, DynamoConstants.PAGE_SIZE,
+		        getQueryType(), getJoins());
+		((ServiceQueryDefinition<ID, T>) container.getQueryView().getQueryDefinition())
+		        .setEntityModel(getEntityModel());
 		doConstructContainer(container);
-        return container;
-    }
+		return container;
+	}
 
-    @Override
-    @SuppressWarnings("unchecked")
-    protected void initSortingAndFiltering() {
-        // set the filter (using the getQueryView() to prevent a useless query)
-        ((ServiceContainer<ID, T>) getContainer()).getQueryView().addFilter(filter);
-        super.initSortingAndFiltering();
-    }
+	@Override
+	@SuppressWarnings("unchecked")
+	protected void initSortingAndFiltering() {
+		// set the filter (using the getQueryView() to prevent a useless query)
+		((ServiceContainer<ID, T>) getContainer()).getQueryView().addFilter(filter);
+		super.initSortingAndFiltering();
+	}
 
-    @Override
-    public void reloadContainer() {
-        if (getContainer() instanceof Searchable) {
-            ((Searchable) getContainer()).search(filter);
-        }
-    }
+	@Override
+	public void reloadContainer() {
+		if (getContainer() instanceof Searchable) {
+			((Searchable) getContainer()).search(filter);
+		}
+	}
 
-    @Override
-    public void search(Filter filter) {
-        if (getContainer() instanceof Searchable) {
-            ((Searchable) getContainer()).search(filter);
-        }
-    }
+	@Override
+	public void search(Filter filter) {
+		Filter temp = beforeSearchPerformed(filter);
+		if (getContainer() instanceof Searchable) {
+			((Searchable) getContainer()).search(temp != null ? temp : filter);
+		}
+	}
 
-    protected Filter getFilter() {
-        return filter;
-    }
+	protected Filter getFilter() {
+		return filter;
+	}
 
-    protected void setFilter(Filter filter) {
-        this.filter = filter;
-    }
+	protected void setFilter(Filter filter) {
+		this.filter = filter;
+	}
 }

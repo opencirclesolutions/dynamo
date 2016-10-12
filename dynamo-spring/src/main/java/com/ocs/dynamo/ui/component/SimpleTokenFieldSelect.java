@@ -67,6 +67,8 @@ public class SimpleTokenFieldSelect<T extends Comparable<T>> extends CustomField
 	        SortOrder... sortOrders) {
 		messageService = ServiceLocator.getMessageService();
 
+		setCaption(attributeModel.getDisplayName());
+
 		extTokenField = new ExtTokenField();
 
 		comboBox = new ComboBox();

@@ -191,6 +191,16 @@ public class MenuService {
 		}
 	}
 
+	/**
+	 * Sets the visibility of a certain item based on its destination
+	 * 
+	 * @param menu
+	 *            the main menu bar
+	 * @param destination
+	 *            the destination
+	 * @param visible
+	 *            the desired visibility of the item
+	 */
 	private void setVisible(MenuItem item, String destination, boolean visible) {
 
 		if (item.getCommand() instanceof NavigateCommand) {
@@ -200,9 +210,11 @@ public class MenuService {
 			}
 		}
 
-		// recursively process children
-		for (MenuItem child : item.getChildren()) {
-			setVisible(child, destination, visible);
+		if (item.getChildren() != null) {
+			// recursively process children
+			for (MenuItem child : item.getChildren()) {
+				setVisible(child, destination, visible);
+			}
 		}
 	}
 }

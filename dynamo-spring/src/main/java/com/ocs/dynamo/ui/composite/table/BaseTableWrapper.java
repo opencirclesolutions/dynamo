@@ -28,6 +28,7 @@ import com.ocs.dynamo.ui.composite.layout.BaseCustomComponent;
 import com.ocs.dynamo.ui.container.QueryType;
 import com.vaadin.data.Container;
 import com.vaadin.data.Property;
+import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.sort.SortOrder;
 import com.vaadin.shared.data.sort.SortDirection;
@@ -102,6 +103,16 @@ public abstract class BaseTableWrapper<ID extends Serializable, T extends Abstra
 		this.queryType = queryType;
 		this.sortOrders = sortOrders != null ? sortOrders : new ArrayList<SortOrder>();
 		this.joins = joins;
+	}
+
+	/**
+	 * Perform any actions that are necessary before carrying out a search
+	 * 
+	 * @param filter
+	 */
+	protected Filter beforeSearchPerformed(Filter filter) {
+		// overwrite in subclasses
+		return null;
 	}
 
 	/**
@@ -256,5 +267,4 @@ public abstract class BaseTableWrapper<ID extends Serializable, T extends Abstra
 	protected void setTable(Table table) {
 		this.table = table;
 	}
-
 }

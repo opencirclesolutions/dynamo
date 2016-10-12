@@ -28,6 +28,7 @@ import com.ocs.dynamo.filter.listener.FilterListener;
 import com.ocs.dynamo.ui.Refreshable;
 import com.ocs.dynamo.ui.Searchable;
 import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
+import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -128,9 +129,9 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 
 	@Override
 	protected void constructButtonBar(Layout buttonBar) {
-		buttonBar.addComponent(constructToggleButton());
 		buttonBar.addComponent(constructSearchButton());
 		buttonBar.addComponent(constructClearButton());
+		buttonBar.addComponent(constructToggleButton());
 	}
 
 	/**
@@ -271,7 +272,11 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 
 		// iterate over the searchable attributes and add a field for each
 		iterate(getEntityModel().getAttributeModels());
-		return form;
+
+		DefaultVerticalLayout margin = new DefaultVerticalLayout(true, false);
+		margin.addComponent(form);
+
+		return margin;
 	}
 
 	/**

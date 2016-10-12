@@ -131,11 +131,12 @@ public class ServiceResultsTreeTableWrapper<ID extends Serializable, T extends A
 	@SuppressWarnings("rawtypes")
 	@Override
 	public void search(Filter filter) {
+		Filter temp = beforeSearchPerformed(filter);
 		if (getContainer() != null && !getContainer().getHierarchy().isEmpty()) {
 			ModelBasedHierarchicalDefinition def = (ModelBasedHierarchicalDefinition) getContainer()
 			        .getHierarchicalDefinition(0);
 			if (def.getContainer() instanceof Searchable) {
-				((Searchable) def.getContainer()).search(filter);
+				((Searchable) def.getContainer()).search(temp != null ? temp : filter);
 			}
 		}
 	}

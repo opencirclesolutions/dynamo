@@ -22,69 +22,71 @@ import com.vaadin.ui.UI;
 @Widgetset(value = "com.ocs.dynamo.DynamoWidgetSet")
 public abstract class BaseUI extends UI {
 
-    private static final long serialVersionUID = 5903140845804805314L;
+	private static final long serialVersionUID = 5903140845804805314L;
 
-    /**
-     * Index of the tab to select directly after opening a screen
-     */
-    private Integer selectedTab;
+	/**
+	 * Index of the tab to select directly after opening a screen
+	 */
+	private Integer selectedTab;
 
-    /**
-     * A string describing the desired screen mode to set after opening a screen
-     */
-    private String screenMode;
+	/**
+	 * A string describing the desired screen mode to set after opening a screen
+	 */
+	private String screenMode;
 
-    /**
-     * The navigator
-     */
-    private Navigator navigator;
+	/**
+	 * The navigator
+	 */
+	private Navigator navigator;
 
-    public Integer getSelectedTab() {
-        return selectedTab;
-    }
+	public Integer getSelectedTab() {
+		return selectedTab;
+	}
 
-    public void setSelectedTab(Integer selectedTab) {
-        this.selectedTab = selectedTab;
-    }
+	public void setSelectedTab(Integer selectedTab) {
+		this.selectedTab = selectedTab;
+	}
 
-    public String getScreenMode() {
-        return screenMode;
-    }
+	public String getScreenMode() {
+		return screenMode;
+	}
 
-    public void setScreenMode(String screenMode) {
-        this.screenMode = screenMode;
-    }
+	public void setScreenMode(String screenMode) {
+		this.screenMode = screenMode;
+	}
 
-    /**
-     * Initializes the startup view
-     * 
-     * @param startView
-     */
-    protected void initNavigation(ViewProvider viewProvider, SingleComponentContainer container,
-            String startView) {
-        // create a state manager and set its default view
-        // this is done to circumvent a bug with the view being created
-        // twice if
-        // navigator.navigateTo is called directly
-        Navigator.UriFragmentManager stateManager = new com.vaadin.navigator.Navigator.UriFragmentManager(
-                this.getPage());
-        stateManager.setState(startView);
+	/**
+	 * Initializes the startup view
+	 * 
+	 * @param startView
+	 */
+	protected void initNavigation(ViewProvider viewProvider, SingleComponentContainer container, String startView) {
+		// create a state manager and set its default view
+		// this is done to circumvent a bug with the view being created
+		// twice if
+		// navigator.navigateTo is called directly
+		// Navigator.UriFragmentManager stateManager = new
+		// com.vaadin.navigator.Navigator.UriFragmentManager(
+		// this.getPage());
+		// stateManager.setState(startView);
 
-        // create the navigator
-        navigator = new Navigator(this, stateManager,
-                new Navigator.SingleComponentContainerViewDisplay(container));
-        UI.getCurrent().setNavigator(navigator);
-        navigator.addProvider(viewProvider);
-    }
+		// create the navigator
+		navigator = new Navigator(this, new Navigator.SingleComponentContainerViewDisplay(container));
 
-    @Override
-    public Navigator getNavigator() {
-        return navigator;
-    }
+		UI.getCurrent().setNavigator(navigator);
+		navigator.addProvider(viewProvider);
 
-    @Override
-    public void setNavigator(Navigator navigator) {
-        this.navigator = navigator;
-    }
+		navigator.navigateTo(startView);
+	}
+
+	@Override
+	public Navigator getNavigator() {
+		return navigator;
+	}
+
+	@Override
+	public void setNavigator(Navigator navigator) {
+		this.navigator = navigator;
+	}
 
 }

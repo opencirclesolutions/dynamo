@@ -14,6 +14,7 @@
 package com.ocs.dynamo.ui.composite.layout;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +33,7 @@ import com.ocs.dynamo.ui.composite.form.ModelBasedSearchForm;
 import com.ocs.dynamo.ui.composite.table.ServiceResultsTableWrapper;
 import com.ocs.dynamo.ui.composite.type.ScreenMode;
 import com.ocs.dynamo.ui.container.QueryType;
+import com.vaadin.data.Container;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
@@ -61,52 +63,85 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 
 	private static final long serialVersionUID = 4606800218149558500L;
 
-	// button for adding new items. displayed by default
+	/**
+	 * Button for adding new items. Displayed by default
+	 */
 	private Button addButton;
 
-	// any additional filter that are always added to the query
+	/**
+	 * Any additional filters to be applied to the query
+	 */
 	private List<Filter> additionalFilters;
 
-	// the fetch joins to use when fetching an item for display in the detail
-	// screen
+	/**
+	 * The list of joins to apply to the query when fetching a single object (if not specified then
+	 * the default will be used)
+	 */
 	private FetchJoinInformation[] detailJoins;
 
-	// button for opening the screen in edit mode
+	/**
+	 * The edit button
+	 */
 	private Button editButton;
 
-	// the edit form
+	/**
+	 * The edit form for editing a single object
+	 */
 	private ModelBasedEditForm<ID, T> editForm;
 
-	// label
+	/**
+	 * Label used to indicate that there are no search results yet
+	 */
 	private Label noSearchYetLabel;
 
-	// map of extra filters to be applied to certain fields
+	/**
+	 * Extra filters to be applied to the individual search fields
+	 */
 	private Map<String, Filter> fieldFilters;
 
-	// the main layout (in edit mode)
+	/**
+	 * The main layout (in edit mode)
+	 */
 	private VerticalLayout mainEditLayout;
 
-	// the main layout (in search mode)
+	/**
+	 * The main layout (in search mode)
+	 */
 	private VerticalLayout mainSearchLayout;
 
+	/**
+	 * The layout that contains the search results table
+	 */
 	private VerticalLayout searchResultsLayout;
 
-	// the number of columns in the search form
+	/**
+	 * The number of columns in the search form
+	 */
 	private int nrOfColumns = 1;
 
-	// the query type (paging or id-based)
+	/**
+	 * The query type
+	 */
 	private QueryType queryType;
 
-	// the button that is used to remove an item - disabled by default, must be
-	// explicitly set to visible
+	/**
+	 * The remove button
+	 */
 	private Button removeButton;
 
-	// the search form
+	/**
+	 * The search form
+	 */
 	private ModelBasedSearchForm<ID, T> searchForm;
 
-	// the set of currently selected items
+	/**
+	 * The currently selected items in the search results table
+	 */
 	private Collection<T> selectedItems;
 
+	/**
+	 * Indicates whether the search layout has been constructed yet
+	 */
 	private boolean searchLayoutConstructed;
 
 	/**
@@ -139,7 +174,7 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 	}
 
 	/**
-	 * Constructor - only the most important fields
+	 * Constructor - only the most important attributes
 	 * 
 	 * @param service
 	 *            the service that is used to query the database
@@ -178,7 +213,7 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 	}
 
 	/**
-	 * Respond to the completion of a search
+	 * Respond to the successful completion of a search
 	 */
 	protected void afterSearchPerformed() {
 		// overwrite in subclasses
@@ -191,6 +226,20 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 	}
 
 	/**
+	 * Perform any actions that are necessary before carrying out a search. Can be used to interfere
+	 * with the search process
+	 * 
+	 * @param filter
+	 *            the current search filter
+	 * @return the modified search filter. If not null, then this filter will be used for the search
+	 *         instead of the current filter
+	 */
+	protected Filter beforeSearchPerformed(Filter filter) {
+		// overwrite in subclasses if needed
+		return null;
+	}
+
+	/**
 	 * Lazily constructs the screen
 	 */
 	@Override
@@ -198,11 +247,13 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 		if (mainSearchLayout == null) {
 			mainSearchLayout = new DefaultVerticalLayout();
 
+			// if search immediately, construct the search results table
 			if (getFormOptions().isSearchImmediately()) {
 				constructSearchLayout();
 				searchLayoutConstructed = true;
 			}
 
+			// listen to a click on the clear button
 			mainSearchLayout.addComponent(getSearchForm());
 			getSearchForm().getClearButton().addClickListener(new Button.ClickListener() {
 
@@ -216,9 +267,10 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 			mainSearchLayout.addComponent(searchResultsLayout);
 
 			if (getFormOptions().isSearchImmediately()) {
+				// immediately construct the search results table
 				searchResultsLayout.addComponent(getTableWrapper());
 			} else {
-				// add a label
+				// do not construct the search results table yet
 				noSearchYetLabel = new Label(message("ocs.no.search.yet"));
 				searchResultsLayout.addComponent(noSearchYetLabel);
 
@@ -305,6 +357,13 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 	}
 
 	/**
+	 * 
+	 */
+	protected List<Component> constructExtraSearchFields() {
+		return new ArrayList<>();
+	}
+
+	/**
 	 * Constructs the remove button
 	 * 
 	 * @return
@@ -328,8 +387,9 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 	 * @return
 	 */
 	protected ModelBasedSearchForm<ID, T> constructSearchForm() {
-		ModelBasedSearchForm<ID, T> result = new ModelBasedSearchForm<ID, T>(
-		        getFormOptions().isSearchImmediately() ? getTableWrapper() : null, getEntityModel(), getFormOptions(),
+		// by default, do not pass a searchable object, in order to prevent an unnecessary and
+		// potentially unfiltered search
+		ModelBasedSearchForm<ID, T> result = new ModelBasedSearchForm<ID, T>(null, getEntityModel(), getFormOptions(),
 		        this.additionalFilters, this.fieldFilters) {
 
 			@Override
@@ -340,6 +400,11 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 			@Override
 			protected Field<?> constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel) {
 				return SimpleSearchLayout.this.constructCustomField(entityModel, attributeModel, false, true);
+			}
+
+			@Override
+			protected List<Component> constructExtraSearchFields() {
+				return SimpleSearchLayout.this.constructExtraSearchFields();
 			}
 		};
 		result.setNrOfColumns(getNrOfColumns());
@@ -391,8 +456,26 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 	@Override
 	public ServiceResultsTableWrapper<ID, T> constructTableWrapper() {
 		ServiceResultsTableWrapper<ID, T> result = new ServiceResultsTableWrapper<ID, T>(this.getService(),
-		        getEntityModel(), getQueryType(), getFormOptions().isSearchImmediately() ? null : getSearchForm()
-		                .extractFilter(), getSortOrders(), getJoins());
+		        getEntityModel(), getQueryType(), getSearchForm().extractFilter(), getSortOrders(), getJoins()) {
+
+			@Override
+			protected Filter beforeSearchPerformed(Filter filter) {
+				return SimpleSearchLayout.this.beforeSearchPerformed(filter);
+			}
+
+			@Override
+			protected void doConstructContainer(Container container) {
+				SimpleSearchLayout.this.doConstructContainer(container);
+			}
+		};
+
+		/**
+		 * Set the searchable object if needed
+		 */
+		if (getFormOptions().isSearchImmediately()) {
+			getSearchForm().setSearchable(result);
+		}
+
 		result.build();
 		return result;
 	}
@@ -529,10 +612,6 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 		return additionalFilters;
 	}
 
-	public Filter getCompositeFilter() {
-		return getSearchForm().getCompositeFilter();
-	}
-
 	public FetchJoinInformation[] getDetailJoins() {
 		return detailJoins;
 	}
@@ -599,19 +678,13 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 	 */
 	public void search() {
 
-		if (searchForm.getCompositeFilter() != null) {
-			// search without clearing any previous filters
-			searchForm.searchImmediately();
-		} else {
-			// build filter and search
-			searchForm.search();
+		boolean searched = searchForm.search();
+		if (searched) {
+			getTableWrapper().getTable().select(null);
+			setSelectedItem(null);
+			checkButtonState(getSelectedItem());
+			afterSearchPerformed();
 		}
-
-		getTableWrapper().getTable().select(null);
-		setSelectedItem(null);
-		checkButtonState(getSelectedItem());
-
-		afterSearchPerformed();
 	}
 
 	/**
@@ -663,8 +736,8 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 		this.additionalFilters = additionalFilters;
 	}
 
-	public void setCompositeFilter(Filter filter) {
-		getSearchForm().setCompositeFilter(filter);
+	public void setStoredFilter(Filter filter) {
+		getSearchForm().setStoredFilter(filter);
 	}
 
 	public void setDetailJoins(FetchJoinInformation[] detailJoins) {
@@ -681,5 +754,31 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 
 	public void setQueryType(QueryType queryType) {
 		this.queryType = queryType;
+	}
+
+	/**
+	 * Sets a certain search value
+	 * 
+	 * @param propertyId
+	 *            the property to search for
+	 * @param value
+	 *            the desired value
+	 */
+	public void setSearchValue(String propertyId, Object value) {
+		getSearchForm().setSearchValue(propertyId, value);
+	}
+
+	/**
+	 * Sets a certain search value (for a property with an upper and a lower bound)
+	 * 
+	 * @param propertyId
+	 *            the property to search for
+	 * @param value
+	 *            the value (lower bound)
+	 * @param auxValue
+	 *            the value (uppoer bound)
+	 */
+	public void setSearchValue(String propertyId, Object value, Object auxValue) {
+		getSearchForm().setSearchValue(propertyId, value, auxValue);
 	}
 }

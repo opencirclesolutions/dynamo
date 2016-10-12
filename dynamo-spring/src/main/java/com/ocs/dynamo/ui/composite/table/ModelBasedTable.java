@@ -30,7 +30,6 @@ import com.ocs.dynamo.ui.composite.table.export.TableExportActionHandler;
 import com.ocs.dynamo.ui.composite.table.export.TableExportMode;
 import com.ocs.dynamo.utils.SystemPropertyUtils;
 import com.vaadin.data.Container;
-import com.vaadin.data.Container.ItemSetChangeEvent;
 import com.vaadin.data.Property;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.UI;
@@ -56,6 +55,9 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
 
 	private MessageService messageService;
 
+	/**
+	 * Custom currency symbol to be used for this table
+	 */
 	private String currencySymbol;
 
 	/**
@@ -80,7 +82,7 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
 		// validation
 		this.setTableFieldFactory(ModelBasedFieldFactory.getInstance(entityModel, messageService));
 
-		generateColumns(this, container, model);
+		generateColumns(container, model);
 
 		if (SystemPropertyUtils.allowTableExport()) {
 			// add export functionality
@@ -108,8 +110,6 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
 	/**
 	 * Adds a column to the table
 	 * 
-	 * @param table
-	 *            the table
 	 * @param attributeModel
 	 *            the (possibly nested) attribute model
 	 * @param propertyNames
@@ -117,8 +117,7 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
 	 * @param headerNames
 	 *            the headers to be added
 	 */
-	private void addColumn(Table table, final AttributeModel attributeModel, List<Object> propertyNames,
-	        List<String> headerNames) {
+	private void addColumn(final AttributeModel attributeModel, List<Object> propertyNames, List<String> headerNames) {
 		if (attributeModel.isVisibleInTable()) {
 			propertyNames.add(attributeModel.getName());
 			headerNames.add(attributeModel.getDisplayName());
@@ -134,28 +133,11 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
 				}
 			}
 
-			// generated column with clickable URL
-			if (attributeModel.isUrl()) {
-				table.addGeneratedColumn(attributeModel.getName(), new ColumnGenerator() {
-
-					private static final long serialVersionUID = -3191235289754428914L;
-
-					@Override
-					public Object generateCell(Table source, Object itemId, Object columnId) {
-						URLField field = (URLField) ((ModelBasedFieldFactory<?>) getTableFieldFactory()).createField(
-						        attributeModel.getPath(), null);
-						if (field != null) {
-							String val = (String) getItem(itemId).getItemProperty(columnId).getValue();
-							field.setValue(val);
-							return field;
-						}
-						return null;
-					}
-				});
-			}
+			// generated column with clickable URL (only in view mode)
+			addUrlField(attributeModel);
 
 			if (attributeModel.isNumerical()) {
-				table.setColumnAlignment(attributeModel.getName(), Table.Align.RIGHT);
+				this.setColumnAlignment(attributeModel.getName(), Table.Align.RIGHT);
 			}
 		}
 	}
@@ -181,51 +163,127 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
 	 * @param model
 	 *            the entity model
 	 */
-	protected void generateColumns(Table table, Container container, EntityModel<T> model) {
-		generateColumns(table, model.getAttributeModels());
-		table.setCaption(model.getDisplayNamePlural());
-		table.setDescription(model.getDescription());
+	protected void generateColumns(Container container, EntityModel<T> model) {
+		generateColumns(model.getAttributeModels());
+		this.setCaption(model.getDisplayNamePlural());
+		this.setDescription(model.getDescription());
 	}
 
 	/**
 	 * Generates the columns of the table based on a select number of attribute models
 	 * 
-	 * @param table
 	 * @param attributeModels
 	 */
-	protected void generateColumns(Table table, List<AttributeModel> attributeModels) {
+	protected void generateColumns(List<AttributeModel> attributeModels) {
 		List<Object> propertyNames = new ArrayList<>();
 		List<String> headerNames = new ArrayList<>();
 
 		for (AttributeModel attributeModel : attributeModels) {
-			addColumn(table, attributeModel, propertyNames, headerNames);
+			addColumn(attributeModel, propertyNames, headerNames);
 			if (attributeModel.getNestedEntityModel() != null) {
 				for (AttributeModel nestedAttributeModel : attributeModel.getNestedEntityModel().getAttributeModels()) {
-					addColumn(table, nestedAttributeModel, propertyNames, headerNames);
+					addColumn(nestedAttributeModel, propertyNames, headerNames);
 				}
 			}
 		}
 
-		table.setVisibleColumns(propertyNames.toArray());
-		table.setColumnHeaders(headerNames.toArray(new String[0]));
-
+		this.setVisibleColumns(propertyNames.toArray());
+		this.setColumnHeaders(headerNames.toArray(new String[0]));
 	}
 
 	public Container getContainer() {
 		return container;
 	}
 
-	public void updateTableCaption() {
-		setCaption(entityModel.getDisplayNamePlural() + " "
-		        + messageService.getMessage("ocs.showing.results", getContainerDataSource().size()));
-	}
-
 	public String getCurrencySymbol() {
 		return currencySymbol;
+	}
+
+	/**
+	 * Removes a generated column
+	 * 
+	 * @param attributeModel
+	 *            the attribute model for which to remove the column
+	 */
+	private void removeGeneratedColumn(final AttributeModel attributeModel) {
+		if (attributeModel.isVisibleInTable() && attributeModel.isUrl()) {
+			removeGeneratedColumn(attributeModel.getName());
+		}
+	}
+
+	/**
+	 * Adds a generated column
+	 * 
+	 * @param attributeModel
+	 *            the attribute model for which to add the column
+	 */
+	private void addGeneratedColumn(final AttributeModel attributeModel) {
+		if (attributeModel.isVisibleInTable() && attributeModel.isUrl()) {
+			addUrlField(attributeModel);
+		}
+	}
+
+	/**
+	 * Adds an URL field for a certain attribute
+	 * 
+	 * @param attributeModel
+	 *            the attribute model
+	 */
+	private void addUrlField(final AttributeModel attributeModel) {
+		if (attributeModel.isUrl() && !isEditable()) {
+			this.addGeneratedColumn(attributeModel.getName(), new ColumnGenerator() {
+
+				private static final long serialVersionUID = -3191235289754428914L;
+
+				@Override
+				public Object generateCell(Table source, final Object itemId, Object columnId) {
+					URLField field = (URLField) ((ModelBasedFieldFactory<?>) getTableFieldFactory()).createField(
+					        attributeModel.getPath(), null);
+					if (field != null) {
+						String val = (String) getItem(itemId).getItemProperty(columnId).getValue();
+						field.setValue(val);
+					}
+					return field;
+				}
+			});
+		}
+	}
+
+	/**
+	 * Remove any generated columns - this is used when switching between modes in order to remove
+	 * any generated columns containing URL fields
+	 */
+	public void removeGeneratedColumns() {
+		for (AttributeModel attributeModel : entityModel.getAttributeModels()) {
+			removeGeneratedColumn(attributeModel);
+			if (attributeModel.getNestedEntityModel() != null) {
+				for (AttributeModel nestedAttributeModel : attributeModel.getNestedEntityModel().getAttributeModels()) {
+					removeGeneratedColumn(nestedAttributeModel);
+				}
+			}
+		}
+	}
+
+	/**
+	 * Adds any generated columns (URL fields) in response to a change to view mode
+	 */
+	public void addGeneratedColumns() {
+		for (AttributeModel attributeModel : entityModel.getAttributeModels()) {
+			addGeneratedColumn(attributeModel);
+			if (attributeModel.getNestedEntityModel() != null) {
+				for (AttributeModel nestedAttributeModel : attributeModel.getNestedEntityModel().getAttributeModels()) {
+					addGeneratedColumn(nestedAttributeModel);
+				}
+			}
+		}
 	}
 
 	public void setCurrencySymbol(String currencySymbol) {
 		this.currencySymbol = currencySymbol;
 	}
 
+	public void updateTableCaption() {
+		setCaption(entityModel.getDisplayNamePlural() + " "
+		        + messageService.getMessage("ocs.showing.results", getContainerDataSource().size()));
+	}
 }

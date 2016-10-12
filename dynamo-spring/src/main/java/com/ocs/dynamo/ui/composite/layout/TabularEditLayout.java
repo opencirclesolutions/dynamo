@@ -26,12 +26,13 @@ import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.component.URLField;
 import com.ocs.dynamo.ui.composite.form.FormOptions;
 import com.ocs.dynamo.ui.composite.table.BaseTableWrapper;
+import com.ocs.dynamo.ui.composite.table.ModelBasedTable;
 import com.ocs.dynamo.ui.composite.table.ServiceResultsTableWrapper;
 import com.ocs.dynamo.ui.container.QueryType;
 import com.ocs.dynamo.ui.container.ServiceContainer;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
-import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Container;
+import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Property;
 import com.vaadin.data.sort.SortOrder;
 import com.vaadin.ui.Button;
@@ -414,6 +415,7 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 	 * 
 	 * @param viewMode
 	 */
+	@SuppressWarnings("unchecked")
 	protected void toggleViewMode(boolean viewMode) {
 		setViewmode(viewMode);
 		getTableWrapper().getTable().setEditable(!isViewmode() && isEditAllowed());
@@ -422,6 +424,13 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 		removeButton.setVisible(!isViewmode() && getFormOptions().isShowRemoveButton() && isEditAllowed());
 		editButton.setVisible(isViewmode() && getFormOptions().isShowEditButton() && isEditAllowed());
 		cancelButton.setVisible(!isViewmode());
+
+		// create or remove any generated columns for correctly dealing with URL fields
+		if (!viewMode) {
+			((ModelBasedTable<ID, T>) getTableWrapper().getTable()).removeGeneratedColumns();
+		} else {
+			((ModelBasedTable<ID, T>) getTableWrapper().getTable()).addGeneratedColumns();
+		}
 	}
 
 	@Override

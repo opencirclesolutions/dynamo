@@ -40,7 +40,7 @@ public class URLValidator implements Validator {
 
     @Override
     public void validate(Object value) throws InvalidValueException {
-        if (value == null) {
+        if (value == null || "".equals(value)) {
             return;
         }
 
