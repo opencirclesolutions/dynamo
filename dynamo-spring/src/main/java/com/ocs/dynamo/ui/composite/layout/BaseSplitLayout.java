@@ -417,7 +417,8 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	}
 
 	/**
-	 * Remove the item and clean up the screen afterwards
+	 * Remove the item and clean up the screen afterwards. Do not override. Use "doRemove" if you
+	 * need to do some custom functionality
 	 */
 	protected final void remove() {
 		doRemove();
@@ -426,6 +427,13 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 		reload();
 	}
 
+	/**
+	 * Replaces the contents of a label by its current value. Use in response to an automatic update
+	 * if a field
+	 * 
+	 * @param propertyName
+	 *            the name of the property for which to replace the label
+	 */
 	public void replaceLabel(String propertyName) {
 		if (editForm != null) {
 			editForm.replaceLabel(propertyName);
@@ -436,6 +444,12 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 		this.fieldFilters = fieldFilters;
 	}
 
+	/**
+	 * Sets the mode of the screen (either view mode or edit mode)
+	 * 
+	 * @param viewMode
+	 *            the desired view mode
+	 */
 	public void setViewMode(boolean viewMode) {
 		if (getSelectedItem() != null) {
 			editForm.setViewMode(viewMode);

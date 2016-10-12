@@ -336,6 +336,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 
 	public void setSelectedItem(T selectedItem) {
 		this.selectedItem = selectedItem;
+		checkButtonState(selectedItem);
 	}
 
 	public void setSortEnabled(boolean sortEnabled) {

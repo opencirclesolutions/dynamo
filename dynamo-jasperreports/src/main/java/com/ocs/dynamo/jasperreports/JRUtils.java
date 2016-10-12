@@ -119,7 +119,7 @@ public final class JRUtils {
 		return fillParameters;
 	}
 
-	private static Collection getPropertyNestedValue(Map<String, Object> fillParameters, String parameterName,
+	private static Collection<?> getPropertyNestedValue(Map<String, Object> fillParameters, String parameterName,
 			String nestedPropertyName, Collection result) {
 		Collection resultCollection = (Collection) fillParameters.remove(parameterName);
 
