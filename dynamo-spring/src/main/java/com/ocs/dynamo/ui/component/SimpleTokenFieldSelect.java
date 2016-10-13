@@ -37,6 +37,44 @@ import com.vaadin.ui.CustomField;
 
 public class SimpleTokenFieldSelect<T extends Comparable<T>> extends CustomField<Collection<T>> {
 
+	private class SimpleItemSorter implements ItemSorter {
+
+		private static final long serialVersionUID = -2397932123434432733L;
+
+		private boolean sortOrderAscending;
+
+		@Override
+		@SuppressWarnings("unchecked")
+		public int compare(Object itemId1, Object itemId2) {
+			T item1 = (T) itemId1;
+			T item2 = (T) itemId2;
+
+			/*
+			 * Items can be null if the container is filtered. Null is considered "less" than
+			 * not-null.
+			 */
+			if (item1 == null) {
+				if (item2 == null) {
+					return 0;
+				} else {
+					return 1;
+				}
+			} else if (item2 == null) {
+				return -1;
+			}
+
+			return this.sortOrderAscending ? item1.compareTo(item2) : item2.compareTo(item1);
+		}
+
+		@Override
+		public void setSortProperties(Container.Sortable container, Object[] propertyId, boolean[] ascending) {
+			sortOrderAscending = true;
+			if (ascending != null) {
+				sortOrderAscending = ascending[0];
+			}
+		}
+	}
+
 	private static final long serialVersionUID = -1490179285573442827L;
 
 	private final ExtTokenField extTokenField;
@@ -86,6 +124,11 @@ public class SimpleTokenFieldSelect<T extends Comparable<T>> extends CustomField
 
 		tokenizableFactory = new GenericTokenFieldUtil.TokenizableFactory<T>() {
 			@Override
+			public void addTokenToComboBox(Tokenizable tokenizable, ComboBox comboBox) {
+				comboBox.addItem(tokenizable.getStringValue());
+			}
+
+			@Override
 			public Tokenizable createToken(T item) {
 				return new SimpleTokenizable(System.nanoTime(), item.toString());
 			}
@@ -93,11 +136,6 @@ public class SimpleTokenFieldSelect<T extends Comparable<T>> extends CustomField
 			@Override
 			public void removeTokenFromContainer(Tokenizable tokenizable, BeanItemContainer<T> container) {
 				container.removeItem(tokenizable.getStringValue());
-			}
-
-			@Override
-			public void addTokenToComboBox(Tokenizable tokenizable, ComboBox comboBox) {
-				comboBox.addItem(tokenizable.getStringValue());
 			}
 		};
 	}
@@ -107,32 +145,20 @@ public class SimpleTokenFieldSelect<T extends Comparable<T>> extends CustomField
 		valueChangeListeners.add(listener);
 	}
 
+	public ComboBox getComboBox() {
+		return comboBox;
+	}
+
 	@Override
 	protected List<T> getInternalValue() {
 		if (container.size() == 0) {
 			return null;
 		}
-
 		return container.getItemIds();
 	}
 
-	@Override
-	protected void setInternalValue(Collection<T> values) {
-		super.setInternalValue(values);
-
-		if (values == null && !container.getItemIds().isEmpty()) {
-			// restore all item in the comboBox
-			for (T item : container.getItemIds()) {
-				comboBox.getContainerDataSource().addItem(item);
-			}
-			GenericTokenFieldUtil.sortComboBox(comboBox, sortProperties, sortOrdering);
-		}
-
-		container.removeAllItems();
-
-		if (values != null) {
-			container.addAll(values);
-		}
+	public ExtTokenField getTokenField() {
+		return extTokenField;
 	}
 
 	@Override
@@ -147,12 +173,6 @@ public class SimpleTokenFieldSelect<T extends Comparable<T>> extends CustomField
 	}
 
 	@Override
-	public void setValue(Collection<T> values) throws ReadOnlyException, Converter.ConversionException {
-		super.setValue(values);
-		setInternalValue(values);
-	}
-
-	@Override
 	protected Component initContent() {
 		return GenericTokenFieldUtil.initContent(comboBox, messageService, extTokenField, container,
 		        valueChangeListeners, this, sortProperties, sortOrdering,
@@ -164,41 +184,27 @@ public class SimpleTokenFieldSelect<T extends Comparable<T>> extends CustomField
 		        }, tokenizableFactory);
 	}
 
-	private class SimpleItemSorter implements ItemSorter {
+	@Override
+	protected void setInternalValue(Collection<T> values) {
+		super.setInternalValue(values);
 
-		private static final long serialVersionUID = -2397932123434432733L;
-
-		private boolean sortOrderAscending;
-
-		@Override
-		@SuppressWarnings("unchecked")
-		public int compare(Object itemId1, Object itemId2) {
-			T item1 = (T) itemId1;
-			T item2 = (T) itemId2;
-
-			/*
-			 * Items can be null if the container is filtered. Null is considered "less" than
-			 * not-null.
-			 */
-			if (item1 == null) {
-				if (item2 == null) {
-					return 0;
-				} else {
-					return 1;
-				}
-			} else if (item2 == null) {
-				return -1;
+		if (values == null && !container.getItemIds().isEmpty()) {
+			// restore all item in the comboBox
+			for (T item : container.getItemIds()) {
+				comboBox.getContainerDataSource().addItem(item);
 			}
-
-			return this.sortOrderAscending ? item1.compareTo(item2) : item2.compareTo(item1);
+			GenericTokenFieldUtil.sortComboBox(comboBox, sortProperties, sortOrdering);
 		}
-
-		@Override
-		public void setSortProperties(Container.Sortable container, Object[] propertyId, boolean[] ascending) {
-			sortOrderAscending = true;
-			if (ascending != null) {
-				sortOrderAscending = ascending[0];
-			}
+		container.removeAllItems();
+		if (values != null) {
+			container.addAll(values);
 		}
 	}
+
+	@Override
+	public void setValue(Collection<T> values) throws ReadOnlyException, Converter.ConversionException {
+		super.setValue(values);
+		setInternalValue(values);
+	}
+
 }

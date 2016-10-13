@@ -274,4 +274,12 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
 		setInternalValue(values);
 	}
 
+	public EntityComboBox<ID, T> getComboBox() {
+		return comboBox;
+	}
+
+	public ExtTokenField getTokenField() {
+		return extTokenField;
+	}
+
 }

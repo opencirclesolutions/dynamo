@@ -213,7 +213,7 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 	 */
 	protected void checkButtonState(T selectedItem) {
 		for (Button b : toUpdate) {
-			b.setEnabled(selectedItem != null);
+			b.setEnabled(selectedItem != null && mustEnableButton(b, selectedItem));
 		}
 	}
 
@@ -516,6 +516,18 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 
 	public boolean isViewMode() {
 		return viewMode;
+	}
+
+	/**
+	 * Method that is called in order to enable/disable a button after selecting an item in the
+	 * table
+	 * 
+	 * @param button
+	 * @return
+	 */
+	protected boolean mustEnableButton(Button button, T selectedItem) {
+		// overwrite in subclasses if needed
+		return true;
 	}
 
 	/**

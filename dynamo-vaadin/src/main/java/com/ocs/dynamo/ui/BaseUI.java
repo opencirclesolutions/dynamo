@@ -61,14 +61,6 @@ public abstract class BaseUI extends UI {
 	 * @param startView
 	 */
 	protected void initNavigation(ViewProvider viewProvider, SingleComponentContainer container, String startView) {
-		// create a state manager and set its default view
-		// this is done to circumvent a bug with the view being created
-		// twice if
-		// navigator.navigateTo is called directly
-		// Navigator.UriFragmentManager stateManager = new
-		// com.vaadin.navigator.Navigator.UriFragmentManager(
-		// this.getPage());
-		// stateManager.setState(startView);
 
 		// create the navigator
 		navigator = new Navigator(this, new Navigator.SingleComponentContainerViewDisplay(container));

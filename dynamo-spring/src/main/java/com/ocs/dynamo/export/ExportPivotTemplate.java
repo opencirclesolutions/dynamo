@@ -592,6 +592,7 @@ public abstract class ExportPivotTemplate<ID extends Serializable, T extends Abs
 			if (createSumColumn()) {
 				createCell(row, lastColumnIndex, null, rowSum).setCellValue(rowSum);
 			} else if (valueCount > 0) {
+				// average
 				BigDecimal avg = rowAverage.divide(new BigDecimal(valueCount));
 				String s = VaadinUtils.bigDecimalToString(usePercentages(), true, (BigDecimal) avg);
 				createCell(row, lastColumnIndex, null, avg).setCellValue(s);

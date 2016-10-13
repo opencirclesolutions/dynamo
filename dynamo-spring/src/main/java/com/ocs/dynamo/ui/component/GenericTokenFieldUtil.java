@@ -58,6 +58,15 @@ public final class GenericTokenFieldUtil {
 
 	/**
 	 * Adds a token for every selected item
+	 * 
+	 * @param extTokenField
+	 *            the token field
+	 * @param container
+	 *            the container
+	 * @param valueChangeListeners
+	 *            list of value change listeners that respond to the addition
+	 * @param field
+	 * @param tokenizableFactory
 	 */
 	private static <T> void addTokens(ExtTokenField extTokenField, BeanItemContainer<T> container,
 	        Collection<Property.ValueChangeListener> valueChangeListeners, Field<?> field,
@@ -125,6 +134,12 @@ public final class GenericTokenFieldUtil {
 		});
 	}
 
+	/**
+	 * 
+	 * @param comboBox
+	 * @param sortProperties
+	 * @param sortOrdering
+	 */
 	static void sortComboBox(ComboBox comboBox, List<Object> sortProperties, List<Boolean> sortOrdering) {
 		// re-order the list to the original order
 		if (sortProperties != null && sortOrdering != null) {
@@ -148,10 +163,39 @@ public final class GenericTokenFieldUtil {
 		field.setValue(new HashSet<>(values));
 	}
 
+	/**
+	 * 
+	 * @param value
+	 * @param container
+	 */
 	static <T> void addValueToContainer(T value, BeanItemContainer<T> container) {
 		container.addBean(value);
 	}
 
+	/**
+	 * Initializes the select component
+	 * 
+	 * @param comboBox
+	 *            the combo box
+	 * @param messageService
+	 *            the message service
+	 * @param extTokenField
+	 *            the extended token field
+	 * @param container
+	 *            the container that holds the available items
+	 * @param valueChangeListeners
+	 *            value change listeners that must be notified when a value is selected in the combo
+	 *            box
+	 * @param field
+	 *            ???
+	 * @param sortProperties
+	 *            the properties to sort on
+	 * @param sortOrdering
+	 *            the sort direction
+	 * @param processLayout
+	 * @param tokenizableFactory
+	 * @return
+	 */
 	static <T> Component initContent(final ComboBox comboBox, final MessageService messageService,
 	        final ExtTokenField extTokenField, final BeanItemContainer<T> container,
 	        final Collection<Property.ValueChangeListener> valueChangeListeners, final Field<?> field,
@@ -194,14 +238,41 @@ public final class GenericTokenFieldUtil {
 		return layout;
 	}
 
+	/**
+	 * Interface for a factory that removes/adds tokens
+	 * 
+	 * @author bas.rutten
+	 *
+	 * @param <T>
+	 */
 	interface TokenizableFactory<T> {
 		Tokenizable createToken(T item);
 
+		/**
+		 * Method that is called when a value is removed from the available values and added as a
+		 * token
+		 * 
+		 * @param tokenizable
+		 * @param container
+		 */
 		void removeTokenFromContainer(Tokenizable tokenizable, BeanItemContainer<T> container);
 
+		/**
+		 * Method that is called when a value is removed as a token and added to the list of
+		 * available values
+		 * 
+		 * @param tokenizable
+		 * @param comboBox
+		 */
 		void addTokenToComboBox(Tokenizable tokenizable, ComboBox comboBox);
 	}
 
+	/**
+	 * Functional interface for performing post-processing
+	 * 
+	 * @author bas.rutten
+	 *
+	 */
 	interface PostProcessLayout {
 		void postProcessLayout(AbstractOrderedLayout layout);
 	}

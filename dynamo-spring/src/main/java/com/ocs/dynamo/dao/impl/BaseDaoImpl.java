@@ -209,6 +209,10 @@ public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements B
 
 	@Override
 	public List<T> fetchByIds(List<ID> ids, SortOrders sortOrders, FetchJoinInformation... joins) {
+		if (ids.isEmpty()) {
+			return new ArrayList<T>();
+		}
+
 		CriteriaQuery<T> cq = JpaQueryBuilder.createFetchQuery(entityManager, getEntityClass(), ids, sortOrders,
 		        (joins != null && joins.length > 0) ? joins : getFetchJoins());
 		TypedQuery<T> query = entityManager.createQuery(cq);

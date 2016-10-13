@@ -185,7 +185,6 @@ public class ReportGenerator {
 			exporter.setConfiguration(exporterConfig);
 
 			final SimpleHtmlReportConfiguration reportConfiguration = new SimpleHtmlReportConfiguration();
-			// reportConfiguration.setEmbedImage(true);
 			reportConfiguration.setEmbeddedSvgUseFonts(true);
 			reportConfiguration.setIgnoreHyperlink(false);
 			reportConfiguration.setIgnorePageMargins(true);
