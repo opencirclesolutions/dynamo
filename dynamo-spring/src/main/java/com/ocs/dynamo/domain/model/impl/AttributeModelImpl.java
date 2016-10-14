@@ -195,7 +195,7 @@ public class AttributeModelImpl implements AttributeModel {
     }
 
     @Override
-    public Class<?> getModelType() {
+    public Class<?> getNormalizedType() {
         return getMemberType() != null ? getMemberType() : getType();
     }
 

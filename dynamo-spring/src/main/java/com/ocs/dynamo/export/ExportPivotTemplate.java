@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -140,7 +141,7 @@ public abstract class ExportPivotTemplate<ID extends Serializable, T extends Abs
 	 */
 	protected Cell createCell(Row row, int colIndex, T entity, Object value) {
 		Cell cell = row.createCell(colIndex);
-		cell.setCellStyle(generator.getCellStyle(colIndex, entity, value));
+		cell.setCellStyle(generator.getCellStyle(colIndex, entity, value, false));
 		if (customGenerator != null) {
 			CellStyle custom = customGenerator.getCustomCellStyle(workbook, entity, value);
 			if (custom != null) {
@@ -185,22 +186,11 @@ public abstract class ExportPivotTemplate<ID extends Serializable, T extends Abs
 	}
 
 	/**
-	 * Write to Excel
+	 * Generate the XLS (Excel) output
 	 * 
-	 * @param exchange
-	 *            the Camel exchange
-	 * @param programme
-	 *            the programme
-	 * @param captions
-	 *            the list of captions
-	 * @param reportTitle
-	 *            the report title
-	 * @param mode
-	 *            the export mode
 	 * @param iterator
-	 *            the data set iterator
-	 * @param predelivery
-	 *            whether to include pre-delivery weeks
+	 *            data set iterator for iterating over the rows
+	 * @return
 	 * @throws IOException
 	 */
 	protected byte[] generateXls(DataSetIterator<ID, T> iterator) throws IOException {
@@ -258,6 +248,7 @@ public abstract class ExportPivotTemplate<ID extends Serializable, T extends Abs
 
 			Object rowId = getRowId(entity);
 			if (!ObjectUtils.equals(prevRowId, rowId)) {
+				// time to move to a new row
 
 				// add empty cells add the end
 				writeEmptyCells(row, index, lastColumnIndex);
@@ -283,6 +274,7 @@ public abstract class ExportPivotTemplate<ID extends Serializable, T extends Abs
 			int colIndex = getCaptions().size() + index;
 
 			if (value != null) {
+				// write the value - currently supports only BigDecimal an Integer
 				if (value instanceof BigDecimal) {
 					createCell(row, colIndex, entity, value).setCellValue(((BigDecimal) value).doubleValue());
 					rowSum += ((BigDecimal) value).intValue();
@@ -593,7 +585,8 @@ public abstract class ExportPivotTemplate<ID extends Serializable, T extends Abs
 				createCell(row, lastColumnIndex, null, rowSum).setCellValue(rowSum);
 			} else if (valueCount > 0) {
 				// average
-				BigDecimal avg = rowAverage.divide(new BigDecimal(valueCount));
+				BigDecimal avg = rowAverage.divide(new BigDecimal(valueCount), DynamoConstants.INTERMEDIATE_PRECISION,
+				        RoundingMode.HALF_UP);
 				String s = VaadinUtils.bigDecimalToString(usePercentages(), true, (BigDecimal) avg);
 				createCell(row, lastColumnIndex, null, avg).setCellValue(s);
 			}

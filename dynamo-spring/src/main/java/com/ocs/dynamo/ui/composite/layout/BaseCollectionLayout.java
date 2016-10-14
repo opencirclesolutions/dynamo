@@ -29,7 +29,6 @@ import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
 import com.ocs.dynamo.ui.composite.form.FormOptions;
 import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
 import com.ocs.dynamo.ui.composite.table.BaseTableWrapper;
-import com.ocs.dynamo.ui.composite.table.ServiceResultsTableWrapper;
 import com.vaadin.data.Container;
 import com.vaadin.data.Property;
 import com.vaadin.data.sort.SortOrder;

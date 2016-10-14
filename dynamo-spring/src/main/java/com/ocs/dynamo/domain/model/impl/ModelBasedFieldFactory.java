@@ -327,9 +327,10 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 	        boolean multiSelect) {
 
 		// for a lookup field, don't use the nested model but the base model - this is
-		// because the search in the popup screen is conducted on the non-nested entity list
+		// because the search in the popup screen is conducted on a "clean", unnested entity list so
+		// using a path from the parent entity makes no sense here
 		EntityModel<?> entityModel = overruled != null ? overruled : ServiceLocator.getEntityModelFactory().getModel(
-		        attributeModel.getModelType());
+		        attributeModel.getNormalizedType());
 
 		BaseService<ID, S> service = (BaseService<ID, S>) ServiceLocator.getServiceForEntity(attributeModel
 		        .getMemberType() != null ? attributeModel.getMemberType() : entityModel.getEntityClass());
@@ -695,7 +696,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 
 	/**
 	 * Resolves an entity model by falling back first to the nested attribute model and then to the
-	 * default model
+	 * default model for the normalized type of the property
 	 * 
 	 * @param entityModel
 	 *            the entity model
@@ -708,7 +709,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 			if (attributeModel.getNestedEntityModel() != null) {
 				entityModel = attributeModel.getNestedEntityModel();
 			} else {
-				Class<?> type = attributeModel.getModelType();
+				Class<?> type = attributeModel.getNormalizedType();
 				entityModel = ServiceLocator.getEntityModelFactory().getModel(type.asSubclass(AbstractEntity.class));
 			}
 		}

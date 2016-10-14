@@ -56,6 +56,7 @@ import com.ocs.dynamo.domain.model.AttributeTextFieldMode;
 import com.ocs.dynamo.domain.model.AttributeType;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
+import com.ocs.dynamo.domain.model.LazyEntityModelWrapper;
 import com.ocs.dynamo.domain.model.VisibilityType;
 import com.ocs.dynamo.domain.model.annotation.Attribute;
 import com.ocs.dynamo.domain.model.annotation.AttributeGroup;
@@ -241,7 +242,6 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 	private synchronized <T> EntityModel<T> constructModel(String reference, Class<T> entityClass) {
 		EntityModel<T> result = (EntityModel<T>) cache.get(reference);
 		if (result == null) {
-
 			boolean nested = reference.indexOf('.') > 0;
 
 			// construct the basic model
@@ -682,7 +682,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 	 */
 	private boolean hasEntityModel(Class<?> type, String reference) {
 		for (Entry<String, Class<?>> e : alreadyProcessed.entrySet()) {
-			if (reference.startsWith(e.getKey()) && e.getValue().equals(type)) {
+			if (reference.equals(e.getKey()) && e.getValue().equals(type)) {
 				// only check for starting reference in order to prevent recursive looping between
 				// two-sided relations
 				return true;
@@ -1120,7 +1120,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 				}
 
 				if (type.equals(em.getEntityClass()) || !hasEntityModel(type, ref)) {
-					EntityModel<?> nem = getModel(ref, type);
+					EntityModel<?> nem = new LazyEntityModelWrapper<>(this, ref, type);
 					model.setNestedEntityModel(nem);
 				}
 			}

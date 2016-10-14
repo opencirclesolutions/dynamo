@@ -325,10 +325,6 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 			mainSearchLayout.addComponent(getButtonBar());
 
 			postProcessLayout(mainSearchLayout);
-
-			if (getFormOptions().isSearchImmediately()) {
-				search();
-			}
 		}
 		setCompositionRoot(mainSearchLayout);
 	}
@@ -663,7 +659,6 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 		// refresh the results so that the deleted item is no longer
 		// there
 		setSelectedItem(null);
-		checkButtonState(getSelectedItem());
 		search();
 	}
 

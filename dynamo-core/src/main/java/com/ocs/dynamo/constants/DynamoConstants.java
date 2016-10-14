@@ -188,9 +188,11 @@ public final class DynamoConstants {
     public static final String USER_NAME = "userName";
 
     /**
-     * the UTF-8 character set
+     * The UTF-8 character set
      */
     public static final String UTF_8 = "UTF-8";
+    
+    public static final int INTERMEDIATE_PRECISION = 10; 
 
     /**
      * Constructor for OCSConstants.

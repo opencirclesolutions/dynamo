@@ -38,12 +38,18 @@ public interface XlsStyleGenerator<ID extends Serializable, T extends AbstractEn
 	CellStyle getHeaderStyle(int index);
 
 	/**
+	 * Returns the cell style for a certain cell
 	 * 
 	 * @param index
+	 *            the column index of the cell
 	 * @param entity
+	 *            the entity for which a value is displayed in the cell
 	 * @param value
+	 *            the value of the cell
+	 * @param percentage
+	 *            whether to format the value as a percentage
 	 * @return
 	 */
-	CellStyle getCellStyle(int index, T entity, Object value);
+	CellStyle getCellStyle(int index, T entity, Object value, boolean percentage);
 
 }

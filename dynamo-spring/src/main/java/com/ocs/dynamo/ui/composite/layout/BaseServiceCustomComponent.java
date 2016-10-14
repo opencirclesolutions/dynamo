@@ -40,196 +40,194 @@ import com.vaadin.ui.Notification;
  * @param <T>
  *            type of the entity
  */
-public abstract class BaseServiceCustomComponent<ID extends Serializable, T extends AbstractEntity<ID>>
-        extends BaseCustomComponent {
+public abstract class BaseServiceCustomComponent<ID extends Serializable, T extends AbstractEntity<ID>> extends
+        BaseCustomComponent {
 
-    /**
-     * A remove button with a built in confirmation message
-     * 
-     * @author bas.rutten
-     */
-    protected abstract class RemoveButton extends Button {
+	/**
+	 * A remove button with a built in confirmation message
+	 * 
+	 * @author bas.rutten
+	 */
+	protected abstract class RemoveButton extends Button {
 
-        private static final long serialVersionUID = -942298948585447203L;
+		private static final long serialVersionUID = -942298948585447203L;
 
-        @SuppressWarnings("serial")
-        public RemoveButton() {
-            super(message("ocs.remove"));
-            this.addClickListener(new Button.ClickListener() {
+		@SuppressWarnings("serial")
+		public RemoveButton() {
+			super(message("ocs.remove"));
+			this.addClickListener(new Button.ClickListener() {
 
-                @Override
-                public void buttonClick(ClickEvent event) {
+				@Override
+				public void buttonClick(ClickEvent event) {
 
-                    Runnable r = new Runnable() {
+					Runnable r = new Runnable() {
 
-                        @Override
-                        public void run() {
-                            try {
-                                doDelete();
-                            } catch (OCSValidationException ex) {
-                                Notification.show(ex.getErrors().get(0),
-                                        Notification.Type.ERROR_MESSAGE);
-                            }
-                        }
+						@Override
+						public void run() {
+							try {
+								doDelete();
+							} catch (OCSValidationException ex) {
+								Notification.show(ex.getErrors().get(0), Notification.Type.ERROR_MESSAGE);
+							}
+						}
 
-                    };
-                    VaadinUtils.showConfirmDialog(getMessageService(),
-                            message("ocs.delete.confirm"), r);
+					};
+					VaadinUtils.showConfirmDialog(getMessageService(), message("ocs.delete.confirm"), r);
 
-                }
-            });
-        }
+				}
+			});
+		}
 
-        /**
-         * Performs the actual deletion
-         */
-        protected abstract void doDelete();
-    }
+		/**
+		 * Performs the actual deletion
+		 */
+		protected abstract void doDelete();
+	}
 
-    private static final long serialVersionUID = 6015180039863418544L;
+	private static final long serialVersionUID = 6015180039863418544L;
 
-    /**
-     * The entity model of the entity or entities to display
-     */
-    private EntityModel<T> entityModel;
+	/**
+	 * The entity model of the entity or entities to display
+	 */
+	private EntityModel<T> entityModel;
 
-    /**
-     * The entity models used for rendering the individual fields (mostly useful for lookup
-     * components)
-     */
-    private Map<String, String> fieldEntityModels = new HashMap<>();
+	/**
+	 * The entity models used for rendering the individual fields (mostly useful for lookup
+	 * components)
+	 */
+	private Map<String, String> fieldEntityModels = new HashMap<>();
 
-    /**
-     * The form options that determine what options are available in the screen
-     */
-    private FormOptions formOptions;
+	/**
+	 * The form options that determine what options are available in the screen
+	 */
+	private FormOptions formOptions;
 
-    /**
-     * The service used for retrieving data
-     */
-    private BaseService<ID, T> service;
+	/**
+	 * The service used for retrieving data
+	 */
+	private BaseService<ID, T> service;
 
-    // list of buttons to update after the user selects an item in the tabular
-    // view
-    private List<Button> toUpdate = new ArrayList<>();
+	// list of buttons to update after the user selects an item in the tabular
+	// view
+	private List<Button> toUpdate = new ArrayList<>();
 
-    /**
-     * Constructor
-     * 
-     * @param service
-     *            the service used to query the database
-     * @param entityModel
-     *            the entity model
-     * @param formOptions
-     *            the form options
-     */
-    public BaseServiceCustomComponent(BaseService<ID, T> service, EntityModel<T> entityModel,
-            FormOptions formOptions) {
-        this.service = service;
-        this.entityModel = entityModel;
-        this.formOptions = formOptions;
-    }
+	/**
+	 * Constructor
+	 * 
+	 * @param service
+	 *            the service used to query the database
+	 * @param entityModel
+	 *            the entity model
+	 * @param formOptions
+	 *            the form options
+	 */
+	public BaseServiceCustomComponent(BaseService<ID, T> service, EntityModel<T> entityModel, FormOptions formOptions) {
+		this.service = service;
+		this.entityModel = entityModel;
+		this.formOptions = formOptions;
+	}
 
-    /**
-     * Adds a field entity model reference
-     * 
-     * @param path
-     *            the path to the field
-     * @param reference
-     *            the unique ID of the entity model
-     */
-    public void addFieldEntityModel(String path, String reference) {
-        fieldEntityModels.put(path, reference);
-    }
+	/**
+	 * Adds a field entity model reference
+	 * 
+	 * @param path
+	 *            the path to the field
+	 * @param reference
+	 *            the unique ID of the entity model
+	 */
+	public void addFieldEntityModel(String path, String reference) {
+		fieldEntityModels.put(path, reference);
+	}
 
-    /**
-     * Method that is called after the mode is changed (from editable to read only or vice versa)
-     * 
-     * @param viewMode
-     *            the new view mode
-     * @param editForm
-     */
-    protected void afterModeChanged(boolean viewMode, ModelBasedEditForm<ID, T> editForm) {
-        // override in subclasses
-    }
+	/**
+	 * Method that is called after the mode is changed (from editable to read only or vice versa)
+	 * 
+	 * @param viewMode
+	 *            the new view mode
+	 * @param editForm
+	 */
+	protected void afterModeChanged(boolean viewMode, ModelBasedEditForm<ID, T> editForm) {
+		// override in subclasses
+	}
 
-    /**
-     * Checks which buttons in the button bar must be enabled
-     * 
-     * @param selectedItem
-     */
-    protected void checkButtonState(T selectedItem) {
-        for (Button b : toUpdate) {
-            b.setEnabled(selectedItem != null && mustEnableButton(b, selectedItem));
-        }
-    }
+	/**
+	 * Checks which buttons in the button bar must be enabled
+	 * 
+	 * @param selectedItem
+	 */
+	protected void checkButtonState(T selectedItem) {
+		for (Button b : toUpdate) {
+			boolean enabled = selectedItem != null && mustEnableButton(b, selectedItem);
+			b.setEnabled(enabled);
+		}
+	}
 
-    /**
-     * Creates a custom field - override in subclass
-     * 
-     * @param entityModel
-     *            the entity model of the entity to display
-     * @param attributeModel
-     *            the attribute model of the entity to display
-     * @param viewMode
-     *            indicates whether the screen is in read only mode
-     * @param searchMode
-     *            indicates whether the screen is in search mode
-     * @return
-     */
-    protected Field<?> constructCustomField(EntityModel<T> entityModel,
-            AttributeModel attributeModel, boolean viewMode, boolean searchMode) {
-        return null;
-    }
+	/**
+	 * Creates a custom field - override in subclass
+	 * 
+	 * @param entityModel
+	 *            the entity model of the entity to display
+	 * @param attributeModel
+	 *            the attribute model of the entity to display
+	 * @param viewMode
+	 *            indicates whether the screen is in read only mode
+	 * @param searchMode
+	 *            indicates whether the screen is in search mode
+	 * @return
+	 */
+	protected Field<?> constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel,
+	        boolean viewMode, boolean searchMode) {
+		return null;
+	}
 
-    public EntityModel<T> getEntityModel() {
-        return entityModel;
-    }
+	public EntityModel<T> getEntityModel() {
+		return entityModel;
+	}
 
-    public Map<String, String> getFieldEntityModels() {
-        return fieldEntityModels;
-    }
+	public Map<String, String> getFieldEntityModels() {
+		return fieldEntityModels;
+	}
 
-    public FormOptions getFormOptions() {
-        return formOptions;
-    }
+	public FormOptions getFormOptions() {
+		return formOptions;
+	}
 
-    public BaseService<ID, T> getService() {
-        return service;
-    }
+	public BaseService<ID, T> getService() {
+		return service;
+	}
 
-    /**
-     * Method that is called in order to enable/disable a button after selecting an item in the
-     * table
-     * 
-     * @param button
-     * @return
-     */
-    protected boolean mustEnableButton(Button button, T selectedItem) {
-        // overwrite in subclasses if needed
-        return true;
-    }
+	/**
+	 * Method that is called in order to enable/disable a button after selecting an item in the
+	 * table
+	 * 
+	 * @param button
+	 * @return
+	 */
+	protected boolean mustEnableButton(Button button, T selectedItem) {
+		// overwrite in subclasses if needed
+		return true;
+	}
 
-    /**
-     * Registers a button that must be enabled/disabled after an item is selected. use the
-     * "mustEnableButton" callback method to impose additional constraints on when the button must
-     * be enabled
-     * 
-     * @param button
-     *            the button to register
-     */
-    public void registerButton(Button button) {
-        if (button != null) {
-            button.setEnabled(false);
-            toUpdate.add(button);
-        }
-    }
+	/**
+	 * Registers a button that must be enabled/disabled after an item is selected. use the
+	 * "mustEnableButton" callback method to impose additional constraints on when the button must
+	 * be enabled
+	 * 
+	 * @param button
+	 *            the button to register
+	 */
+	public void registerButton(Button button) {
+		if (button != null) {
+			button.setEnabled(false);
+			toUpdate.add(button);
+		}
+	}
 
-    public void removeFieldEntityModel(String path) {
-        fieldEntityModels.remove(path);
-    }
+	public void removeFieldEntityModel(String path) {
+		fieldEntityModels.remove(path);
+	}
 
-    public void setService(BaseService<ID, T> service) {
-        this.service = service;
-    }
+	public void setService(BaseService<ID, T> service) {
+		this.service = service;
+	}
 }

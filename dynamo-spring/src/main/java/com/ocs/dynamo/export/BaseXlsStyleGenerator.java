@@ -114,11 +114,14 @@ public class BaseXlsStyleGenerator<ID extends Serializable, T extends AbstractEn
 	 *            the value
 	 */
 	@Override
-	public CellStyle getCellStyle(int index, T entity, Object value) {
+	public CellStyle getCellStyle(int index, T entity, Object value, boolean percentage) {
 		if (value instanceof Integer) {
 			return integerStyle;
 		}
 		if (value instanceof BigDecimal) {
+			if (percentage) {
+				return bigDecimalPercentageStyle;
+			}
 			return bigDecimalStyle;
 		}
 		return normal;
