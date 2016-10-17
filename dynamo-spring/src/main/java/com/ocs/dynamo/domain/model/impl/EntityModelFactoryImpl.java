@@ -227,6 +227,11 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 			        && !AttributeType.BASIC.equals(model.getAttributeType())) {
 				throw new OCSRuntimeException("Token or Fancy List field not allowed for field " + model.getName());
 			}
+
+			// searching on a LOB is pointless
+			if (AttributeType.LOB.equals(model.getAttributeType()) && model.isSearchable()) {
+				throw new OCSRuntimeException("Searching on a LOB is not allowed for field " + model.getName());
+			}
 		}
 		return result;
 	}

@@ -272,14 +272,15 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 		}
 
 		/**
-		 * Handle a change of the attribute to filter on
+		 * Change the filter attribute
 		 * 
-		 * @param event
-		 *            the event
+		 * @param attributeModel
+		 *            the selected attribute model
+		 * @param restoring
+		 *            whether we are restoring an existing filter
 		 */
-		private void handleFilterAttributeChange(ValueChangeEvent event, boolean restoring) {
-			am = (AttributeModel) event.getProperty().getValue();
-
+		private void filterAttributeChange(AttributeModel attributeModel, boolean restoring) {
+			this.am = attributeModel;
 			ComboBox newTypeFilterCombo = new ComboBox(message("ocs.type"));
 			newTypeFilterCombo.setNullSelectionAllowed(false);
 			newTypeFilterCombo.addValueChangeListener(new ValueChangeListener() {
@@ -322,6 +323,17 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 			if (filterTypes.size() == 1) {
 				typeFilterCombo.setEnabled(false);
 			}
+		}
+
+		/**
+		 * Handle a change of the attribute to filter on
+		 * 
+		 * @param event
+		 *            the event
+		 */
+		private void handleFilterAttributeChange(ValueChangeEvent event, boolean restoring) {
+			AttributeModel temp = (AttributeModel) event.getProperty().getValue();
+			filterAttributeChange(temp, restoring);
 		}
 
 		/**
@@ -386,6 +398,7 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 				// no need for the auxiliary field
 				if (auxValueComponent != null) {
 					layout.removeComponent(auxValueComponent);
+					auxValueComponent = null;
 				}
 			}
 		}
@@ -582,7 +595,7 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 		if (match == null) {
 			addFilter();
 			match = regions.get(regions.size() - 1);
-			match.fieldFilterCb.setValue(attributeModel);
+			match.filterAttributeChange(attributeModel, true);
 			match.typeFilterCombo.setValue(filterType);
 		}
 

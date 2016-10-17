@@ -189,6 +189,7 @@ public class MenuService {
 		for (MenuItem item : items) {
 			setVisible(item, destination, visible);
 		}
+		hideRecursively(menu);
 	}
 
 	/**

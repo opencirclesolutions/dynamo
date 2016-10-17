@@ -59,10 +59,11 @@ public class TestEntity extends AbstractTreeEntity<Integer, TestEntity> {
     private Integer id;
 
     @Size(max = 25)
-    @Attribute(main = true)
+    @Attribute(main = true, searchable = true)
     @NotNull
     private String name;
 
+    @Attribute(searchable = true)
     private Long age;
 
     private BigDecimal discount;

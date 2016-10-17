@@ -27,10 +27,19 @@ public class LazyEntityModelWrapper<T> implements EntityModel<T> {
 
 	private EntityModelFactory factory;
 
+	/**
+	 * The entity model to which to delegate the actual functionality
+	 */
 	private EntityModel<T> delegate;
 
+	/**
+	 * The unique reference for this entity model
+	 */
 	private String reference;
 
+	/**
+	 * The entity class
+	 */
 	private Class<T> entityClass;
 
 	/**
