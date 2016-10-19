@@ -41,7 +41,7 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 
 /**
- * A component for editing a property that is annotated as an
+ * A component for editing a property that is annotated as an @ElementCollection
  * 
  * @ElementCollection.
  * 

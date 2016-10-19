@@ -67,7 +67,6 @@ public abstract class BaseUI extends UI {
 
 		UI.getCurrent().setNavigator(navigator);
 		navigator.addProvider(viewProvider);
-
 		navigator.navigateTo(startView);
 	}
 

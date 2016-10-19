@@ -244,9 +244,24 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	private boolean fieldsProcessed;
 
 	/**
+	 * The back button
+	 */
+	private Button backButton;
+
+	/**
 	 * Indicates whether all details tables for editing complex fields are valid
 	 */
 	private Map<SignalsParent, Boolean> detailTablesValid = new HashMap<>();
+
+	/**
+	 * The cancel button
+	 */
+	private Button cancelButton;
+
+	/**
+	 * The edit button
+	 */
+	private Button editButton;
 
 	/**
 	 * The selected entity
@@ -615,34 +630,33 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		HorizontalLayout buttonBar = new DefaultHorizontalLayout();
 
 		// button to go back to the main screen when in view mode
-		if (isViewMode() && getFormOptions().isShowBackButton()) {
-			Button backButton = new Button(message("ocs.back"));
-			backButton.addClickListener(new Button.ClickListener() {
 
-				@Override
-				public void buttonClick(ClickEvent event) {
-					back();
-				}
-			});
-			buttonBar.addComponent(backButton);
-		}
+		backButton = new Button(message("ocs.back"));
+		backButton.addClickListener(new Button.ClickListener() {
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				back();
+			}
+		});
+		backButton.setVisible(isViewMode() && getFormOptions().isShowBackButton());
+		buttonBar.addComponent(backButton);
 
 		// in edit mode, display a cancel button
-		if (!isViewMode() && !getFormOptions().isHideCancelButton()) {
 
-			Button cancelButton = new Button(message("ocs.cancel"));
-			cancelButton.addClickListener(new Button.ClickListener() {
+		cancelButton = new Button(message("ocs.cancel"));
+		cancelButton.addClickListener(new Button.ClickListener() {
 
-				@Override
-				public void buttonClick(ClickEvent event) {
-					if (entity.getId() != null) {
-						entity = service.fetchById(entity.getId());
-					}
-					afterEditDone(true, entity.getId() == null, entity);
+			@Override
+			public void buttonClick(ClickEvent event) {
+				if (entity.getId() != null) {
+					entity = service.fetchById(entity.getId());
 				}
-			});
-			buttonBar.addComponent(cancelButton);
-		}
+				afterEditDone(true, entity.getId() == null, entity);
+			}
+		});
+		cancelButton.setVisible(!isViewMode() && !getFormOptions().isHideCancelButton());
+		buttonBar.addComponent(cancelButton);
 
 		// create the save button
 		if (!isViewMode()) {
@@ -652,17 +666,16 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		}
 
 		// create the edit button
-		if (isViewMode() && getFormOptions().isShowEditButton() && isEditAllowed()) {
-			Button editButton = new Button(message("ocs.edit"));
-			editButton.addClickListener(new Button.ClickListener() {
+		editButton = new Button(message("ocs.edit"));
+		editButton.addClickListener(new Button.ClickListener() {
 
-				@Override
-				public void buttonClick(ClickEvent event) {
-					setViewMode(false);
-				}
-			});
-			buttonBar.addComponent(editButton);
-		}
+			@Override
+			public void buttonClick(ClickEvent event) {
+				setViewMode(false);
+			}
+		});
+		buttonBar.addComponent(editButton);
+		editButton.setVisible(isViewMode() && getFormOptions().isShowEditButton() && isEditAllowed());
 
 		postProcessButtonBar(buttonBar, isViewMode());
 
@@ -817,6 +830,18 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	 */
 	private String getAttributeGroupCaption(String attributeGroup) {
 		return EntityModel.DEFAULT_GROUP.equals(attributeGroup) ? message("ocs.default.group.caption") : attributeGroup;
+	}
+
+	public Button getBackButton() {
+		return backButton;
+	}
+
+	public Button getCancelButton() {
+		return cancelButton;
+	}
+
+	public Button getEditButton() {
+		return editButton;
 	}
 
 	public T getEntity() {
@@ -1032,6 +1057,11 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 	}
 
+	/**
+	 * Switches the form from or to view mode
+	 * 
+	 * @param viewMode
+	 */
 	public void setViewMode(boolean viewMode) {
 		boolean oldMode = this.viewMode;
 
@@ -1057,9 +1087,12 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	}
 
 	/**
+	 * Method used the notify this form that a detail component is valid or not
 	 * 
 	 * @param component
+	 *            the component
 	 * @param valid
+	 *            whether the component is valid
 	 */
 	public void signalDetailsTableValid(SignalsParent component, boolean valid) {
 		detailTablesValid.put(component, valid);

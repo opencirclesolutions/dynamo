@@ -75,5 +75,10 @@ public class LazyTabLayoutTest extends BaseIntegrationTest {
 		vl2 = (VerticalLayout) layout.getTab(1).getComponent();
 		Assert.assertEquals(1, vl2.getComponentCount());
 
+		// select the tab again (triggers a reload)
+		layout.selectTab(1);
+		vl2 = (VerticalLayout) layout.getTab(1).getComponent();
+		Assert.assertEquals(1, vl2.getComponentCount());
+
 	}
 }

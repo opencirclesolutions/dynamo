@@ -45,23 +45,35 @@ import com.vaadin.ui.TextField;
  *            type of the entity
  */
 @SuppressWarnings("serial")
-public abstract class ServiceBasedSplitLayout<ID extends Serializable, T extends AbstractEntity<ID>> extends
+public class ServiceBasedSplitLayout<ID extends Serializable, T extends AbstractEntity<ID>> extends
         BaseSplitLayout<ID, T> {
 
 	private static final long serialVersionUID = 1068860513192819804L;
 
+	/**
+	 * The filter used to restrict the search results. Override the <code>constructFilter</code>
+	 * method to set this filter.
+	 */
 	private Filter filter;
 
+	/**
+	 * The query type (ID based or paging) used to query the database
+	 */
 	private QueryType queryType = QueryType.ID_BASED;
 
 	/**
 	 * Constructor
 	 * 
 	 * @param service
+	 *            the service for retrieving data from the database
 	 * @param entityModel
+	 *            the entity model
 	 * @param formOptions
+	 *            the form options
 	 * @param fieldFilters
+	 *            the field filters
 	 * @param sortOrder
+	 *            the sort order
 	 * @param joins
 	 */
 	public ServiceBasedSplitLayout(BaseService<ID, T> service, EntityModel<T> entityModel, FormOptions formOptions,
@@ -69,6 +81,9 @@ public abstract class ServiceBasedSplitLayout<ID extends Serializable, T extends
 		super(service, entityModel, formOptions, sortOrder, joins);
 	}
 
+	/**
+	 * Method that is called after the layout is reloaded
+	 */
 	@Override
 	protected void afterReload(T t) {
 		// in a lazy query container, the entity ID is used as the key
@@ -76,13 +91,14 @@ public abstract class ServiceBasedSplitLayout<ID extends Serializable, T extends
 	}
 
 	/**
-	 * Constructs the extra search filter - override in subclass if your panel contains a quick
-	 * search field
+	 * Constructs the quick search filter
 	 * 
 	 * @param value
+	 *            the value to search for
 	 * @return
 	 */
 	protected Filter constructQuickSearchFilter(String value) {
+		// override in subclasses
 		return null;
 	}
 
@@ -148,6 +164,7 @@ public abstract class ServiceBasedSplitLayout<ID extends Serializable, T extends
 	 * @return
 	 */
 	protected Filter constructFilter() {
+		// overwrite in subclass
 		return null;
 	}
 

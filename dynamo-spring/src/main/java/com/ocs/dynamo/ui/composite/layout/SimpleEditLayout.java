@@ -37,7 +37,7 @@ import com.vaadin.ui.VerticalLayout;
  * 
  * @author bas.rutten
  * @param <ID>
- *            type of the primary key
+ *            type of the primary key of the entity
  * @param <T>
  *            type of the entity
  */
@@ -91,6 +91,7 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 	 * @param newEntity
 	 *            whether a new entity was being edited
 	 * @param entity
+	 *            the entity that has just been edited
 	 */
 	protected void afterEditDone(boolean cancel, boolean newEntity, T entity) {
 
@@ -225,6 +226,7 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 	 * which a certain child group belongs
 	 * 
 	 * @param childGroup
+	 *            the name of the child group
 	 * @return
 	 */
 	protected String getParentGroup(String childGroup) {
@@ -233,8 +235,8 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 	}
 
 	/**
-	 * Returns a list of additional group headers that can be used to apply an extra layer to the
-	 * layout
+	 * Returns a list of additional group headers that can be used to add an extra nesting layer to
+	 * the layout
 	 * 
 	 * @return
 	 */
@@ -284,12 +286,23 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 		}
 	}
 
+	/**
+	 * Refreshes the contents of a label
+	 * 
+	 * @param propertyName
+	 *            the name of the property for which to refresh the label
+	 */
 	public void replaceLabel(String propertyName) {
 		if (editForm != null) {
 			editForm.replaceLabel(propertyName);
 		}
 	}
 
+	/**
+	 * Sets the entity
+	 * 
+	 * @param entity
+	 */
 	public void setEntity(T entity) {
 		this.entity = entity;
 		editForm.setEntity(entity);
@@ -301,5 +314,14 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 
 	public void setJoins(FetchJoinInformation[] joins) {
 		this.joins = joins;
+	}
+
+	/**
+	 * Check if the layout is in edit mode
+	 * 
+	 * @return
+	 */
+	public boolean isViewMode() {
+		return editForm.isViewMode();
 	}
 }

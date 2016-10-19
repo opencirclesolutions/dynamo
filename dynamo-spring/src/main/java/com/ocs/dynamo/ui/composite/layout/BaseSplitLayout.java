@@ -455,4 +455,8 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 			editForm.setViewMode(viewMode);
 		}
 	}
+
+	public TextField getQuickSearchField() {
+		return quickSearchField;
+	}
 }

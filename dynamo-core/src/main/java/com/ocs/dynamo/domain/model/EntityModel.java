@@ -113,7 +113,7 @@ public interface EntityModel<T> {
     String SEARCHABLE = "searchable";
     
     /**
-     * Whether to search for exact values
+     * Whether to search for exact values (in case of numbers and dates)
      */
     String SEARCH_EXACT_VALUE = "searchForExactValue";
 

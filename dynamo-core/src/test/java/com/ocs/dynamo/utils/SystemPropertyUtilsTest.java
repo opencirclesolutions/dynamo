@@ -23,5 +23,7 @@ public class SystemPropertyUtilsTest {
 		Assert.assertEquals(30000, SystemPropertyUtils.getMaximumExportRowsStreamingPivot());
 
 		Assert.assertEquals(false, SystemPropertyUtils.useThousandsGroupingInEditMode());
+
+		Assert.assertEquals("de", SystemPropertyUtils.getDefaultLocale());
 	}
 }

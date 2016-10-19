@@ -26,66 +26,65 @@ import java.util.Set;
 public interface AttributeModel extends Comparable<AttributeModel> {
 
 	/**
-	 * @return the allowed extensions for a LOB attribute
+	 * @return The allowed extensions for a LOB attribute
 	 */
 	Set<String> getAllowedExtensions();
 
 	/**
-	 * @return the attribute type (e.g. BASIC, MASTER, DETAIL) of the attribute
+	 * @return The attribute type (e.g. BASIC, MASTER, DETAIL) of the attribute
 	 */
 	AttributeType getAttributeType();
 
 	/**
 	 * 
-	 * @return the date type (date, time, or timestamp) of the attribute
+	 * @return The date type (date, time, or timestamp) of the attribute
 	 */
 	AttributeDateType getDateType();
 
 	/**
 	 * 
-	 * @return the default value of the attribute
+	 * @return The default value of the attribute
 	 */
 	Object getDefaultValue();
 
 	/**
 	 * 
-	 * @return the description of the attribute
+	 * @return The description of the attribute. This is used as the tool tip in tables
 	 */
 	String getDescription();
 
 	/**
 	 * 
-	 * @return the display format of the attribute (determines how to format a data)
+	 * @return The display format of the attribute (used in date formatting)
 	 */
 	String getDisplayFormat();
 
 	/**
 	 * 
-	 * @return the display name of the attribute
+	 * @return The display name of the attribute
 	 */
 	String getDisplayName();
 
 	/**
-	 * @return the EntityModel for the entity that contains this attribute
+	 * @return The EntityModel for the entity that contains this attribute
 	 */
 	EntityModel<?> getEntityModel();
 
 	/**
 	 * 
-	 * @return the textual representation of a "false" value
+	 * @return The textual representation of a "false" value
 	 */
 	String getFalseRepresentation();
 
 	/**
-	 * The property of the field in which to store the file name of an uploaded file
 	 * 
-	 * @return
+	 * @return The name of the property in which to store the file name of an uploaded file
 	 */
 	String getFileNameProperty();
 
 	/**
 	 * 
-	 * @return the maximum allowed length of the attribute
+	 * @return The maximum allowed length of the attribute
 	 */
 	Integer getMaxLength();
 
@@ -102,51 +101,43 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	Integer getMinLength();
 
 	/**
-	 * Returns the normalized type of the attribute (this is the same as the <code>type</code> in
-	 * case of a singular attribute, and the member type of the collection case of collection
-	 * attribute
-	 * 
-	 * 
-	 * @return
+	 * @return The normalized type of the attribute (this is the same as the <code>type</code> in
+	 *         case of a singular attribute, and the member type of the collection case of
+	 *         collection attribute
 	 */
 	Class<?> getNormalizedType();
 
 	/**
 	 * 
-	 * @return the name/identifier of the attribute
+	 * @return The name/identifier of the attribute
 	 */
 	String getName();
 
 	/**
-	 * When this is a MASTER or DETAIL attribute then return the entity model for the nested entity
 	 * 
-	 * @return The nested entity model
+	 * @return The nested entity model for this attribute
 	 */
 	EntityModel<?> getNestedEntityModel();
 
 	/**
-	 * The order number of the attribute
 	 * 
-	 * @return
+	 * 
+	 * @return Ther order number (used to internally order the attribute models)
 	 */
 	Integer getOrder();
 
 	/**
-	 * @return the (nested) path to this attribute
+	 * @return The (nested) path to this attribute
 	 */
 	String getPath();
 
 	/**
-	 * The precision (number of decimals) to use when displaying a decimal number
-	 * 
-	 * @return
+	 * @return The precision (number of decimals) to use when displaying a decimal number
 	 */
 	int getPrecision();
 
 	/**
-	 * The input prompt to use for a field
-	 * 
-	 * @return
+	 * @return The value to display as the input prompt value inside an edit field
 	 */
 	String getPrompt();
 
@@ -157,115 +148,104 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	String getQuickAddPropertyName();
 
 	/**
-	 * Returns the path by which to replace the actual path when carrying out a search. This is
-	 * needed in very specific cases when an Entity has multiple detail relations that are mapped to
-	 * the same table
 	 * 
-	 * @return
+	 * @return The path by which to replace the actual path when carrying out a search. This is
+	 *         needed in very specific cases when an Entity has multiple detail relations that are
+	 *         mapped to the same table
 	 */
 	String getReplacementSearchPath();
 
 	/**
-	 * Determines which selection component to use in search mode
 	 * 
-	 * @return
+	 * 
+	 * @return The search select mode (determines which component to render in search screens)
 	 */
 	AttributeSelectMode getSearchSelectMode();
 
 	/**
-	 * Determines which selection component to use in edit mode
 	 * 
-	 * @return
+	 * 
+	 * @return The select mode (determines which component to render in edit screens)
 	 */
 	AttributeSelectMode getSelectMode();
 
 	/**
-	 * Returns the text field mode
 	 * 
-	 * @return
+	 * 
+	 * @return The text field mode (text fiel or text area)
 	 */
 	AttributeTextFieldMode getTextFieldMode();
 
 	/**
-	 * Indicates a string value to use instead of "true"
-	 * 
-	 * @return
+	 * @return The textual representation of a "true" value
 	 */
 	String getTrueRepresentation();
 
 	/**
-	 * The Java type of the property
 	 * 
-	 * @return
+	 * @return The Java type of the property
 	 */
 	Class<?> getType();
 
 	/**
-	 * Indicates whether the attribute is a one-to-one or many-to-one attribute that can ben
-	 * selected in a form
+	 * 
+	 * @return Whether the property is present inside an edit form. By default this is switched off
+	 *         for complex (i.e. MASTER or DETAIL) objects
 	 */
 	boolean isComplexEditable();
 
 	/**
-	 * Is this a currency?
 	 * 
-	 * @return
+	 * @return Whether this property represents a currency
 	 */
 	boolean isCurrency();
 
 	/**
-	 * Indicates this field must get the focus on a detail table
 	 * 
-	 * @return
+	 * 
+	 * @return Whether this attribute must get focus when creating a new row inside a
+	 *         DetailsEditTable
 	 */
 	boolean isDetailFocus();
 
 	/**
-	 * Is this an email field
 	 * 
-	 * @return
+	 * 
+	 * @return Whether the attribute is an email address
 	 */
 	boolean isEmail();
 
 	/**
-	 * Is this an embedded object
 	 * 
-	 * @return
+	 * @return Whether this is an embedded attribute
 	 */
 	boolean isEmbedded();
 
 	/**
-	 * Whether this attribute should be presented as an image
-	 * 
-	 * @return
+	 * @return Whether this attribute represents an image
 	 */
 	boolean isImage();
 
 	/**
-	 * Indicates whether this is the main attribute
-	 * 
-	 * @return
+	 * @return Whether this is the "main" attribute
 	 */
 	boolean isMainAttribute();
 
 	/**
-	 * Indicates whether this is a "multiple search" attribute
 	 * 
-	 * @return
+	 * @return Whether "multiple search" is supported for this attribute
 	 */
 	boolean isMultipleSearch();
 
 	/**
-	 * Is this a numeric attribute
 	 * 
-	 * @return
+	 * @return Whether this is a numeric attribute
 	 */
 	boolean isNumerical();
 
 	/**
-	 * Indicates whether a numerical field is a percentage
 	 * 
-	 * @return
+	 * @return Whether the attribute represents a percentage
 	 */
 	boolean isPercentage();
 
@@ -276,9 +256,7 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	boolean isQuickAddAllowed();
 
 	/**
-	 * Indicates whether the attribute is read only
-	 * 
-	 * @return
+	 * @return Whether the attribute is read only
 	 */
 	boolean isReadOnly();
 
