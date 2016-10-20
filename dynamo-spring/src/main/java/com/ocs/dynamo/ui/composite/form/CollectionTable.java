@@ -158,6 +158,7 @@ public class CollectionTable<T extends Serializable> extends CustomField<Collect
 	 * Constructs the button bar
 	 * 
 	 * @param parent
+	 *            the parent layout
 	 */
 	protected void constructButtonBar(Layout parent) {
 		Layout buttonBar = new DefaultHorizontalLayout();

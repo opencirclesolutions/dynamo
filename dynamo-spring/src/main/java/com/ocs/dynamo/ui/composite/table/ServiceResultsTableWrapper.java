@@ -61,8 +61,8 @@ public class ServiceResultsTableWrapper<ID extends Serializable, T extends Abstr
 	 *            options list of fetch joins to include in the query
 	 */
 	public ServiceResultsTableWrapper(BaseService<ID, T> service, EntityModel<T> entityModel, QueryType queryType,
-	        Filter filter, List<SortOrder> sortOrders, FetchJoinInformation... joins) {
-		super(service, entityModel, queryType, sortOrders, joins);
+	        Filter filter, List<SortOrder> sortOrders, boolean allowExport, FetchJoinInformation... joins) {
+		super(service, entityModel, queryType, sortOrders, allowExport, joins);
 		this.filter = filter;
 	}
 

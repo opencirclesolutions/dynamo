@@ -35,6 +35,8 @@ public final class DateUtils {
 
     private static final String DATE_FORMAT = "ddMMyyyy";
 
+    private static final String TIME_FORMAT = "HHmmss";
+    
     private static final int FIRST_WEEK_NUMBER = 1;
 
     private DateUtils() {
@@ -73,6 +75,24 @@ public final class DateUtils {
         SimpleDateFormat format = new SimpleDateFormat(DATE_FORMAT);
         try {
             return format.parse(dateStr);
+        } catch (ParseException e) {
+            throw new OCSRuntimeException(e.getMessage(), e);
+        }
+    }
+    
+    /**
+     * 
+     * @param timeStr
+     * @return
+     */
+    public static Date createTime(String timeStr) {
+        if (timeStr == null) {
+            return null;
+        }
+
+        SimpleDateFormat format = new SimpleDateFormat(TIME_FORMAT);
+        try {
+            return format.parse(timeStr);
         } catch (ParseException e) {
             throw new OCSRuntimeException(e.getMessage(), e);
         }

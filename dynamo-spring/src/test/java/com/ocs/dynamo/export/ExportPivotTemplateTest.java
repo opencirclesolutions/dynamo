@@ -85,7 +85,7 @@ public class ExportPivotTemplateTest extends BaseMockitoTest {
 
 			@Override
 			protected void setXlsCellValues(Row row, Series entity) {
-				createCell(row, 0, entity, null).setCellValue(entity.getUnit());
+				createCell(row, 0, entity, null, null).setCellValue(entity.getUnit());
 			}
 
 			@Override
@@ -173,7 +173,7 @@ public class ExportPivotTemplateTest extends BaseMockitoTest {
 
 			@Override
 			protected void setXlsCellValues(Row row, Series entity) {
-				createCell(row, 0, entity, null).setCellValue(entity.getUnit());
+				createCell(row, 0, entity, null, null).setCellValue(entity.getUnit());
 			}
 
 			@Override
@@ -261,7 +261,7 @@ public class ExportPivotTemplateTest extends BaseMockitoTest {
 
 			@Override
 			protected void setXlsCellValues(Row row, Series entity) {
-				createCell(row, 0, entity, null).setCellValue(entity.getUnit());
+				createCell(row, 0, entity, null, null).setCellValue(entity.getUnit());
 			}
 
 			@Override

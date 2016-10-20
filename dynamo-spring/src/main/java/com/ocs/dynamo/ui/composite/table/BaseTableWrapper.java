@@ -51,6 +51,11 @@ public abstract class BaseTableWrapper<ID extends Serializable, T extends Abstra
 	private static final long serialVersionUID = -4691108261565306844L;
 
 	/**
+	 * Whether export of the table data is allowed
+	 */
+	private boolean allowExport;
+
+	/**
 	 * The container
 	 */
 	private Container container;
@@ -75,6 +80,9 @@ public abstract class BaseTableWrapper<ID extends Serializable, T extends Abstra
 	 */
 	private final BaseService<ID, T> service;
 
+	/**
+	 * The sort orders
+	 */
 	private List<SortOrder> sortOrders = new ArrayList<>();
 
 	/**
@@ -97,12 +105,13 @@ public abstract class BaseTableWrapper<ID extends Serializable, T extends Abstra
 	 *            the fetch joins to use when executing the query
 	 */
 	public BaseTableWrapper(BaseService<ID, T> service, EntityModel<T> entityModel, QueryType queryType,
-	        List<SortOrder> sortOrders, FetchJoinInformation... joins) {
+	        List<SortOrder> sortOrders, boolean allowExport, FetchJoinInformation... joins) {
 		this.service = service;
 		this.entityModel = entityModel;
 		this.queryType = queryType;
 		this.sortOrders = sortOrders != null ? sortOrders : new ArrayList<SortOrder>();
 		this.joins = joins;
+		this.allowExport = allowExport;
 	}
 
 	/**
@@ -154,7 +163,7 @@ public abstract class BaseTableWrapper<ID extends Serializable, T extends Abstra
 	 * @return
 	 */
 	protected Table constructTable() {
-		return new ModelBasedTable<>(this.container, entityModel, getEntityModelFactory(), getMessageService());
+		return new ModelBasedTable<>(this.container, entityModel, allowExport);
 	}
 
 	/**

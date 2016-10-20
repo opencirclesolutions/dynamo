@@ -19,6 +19,7 @@ import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Workbook;
 
 import com.ocs.dynamo.domain.AbstractEntity;
+import com.ocs.dynamo.domain.model.AttributeModel;
 
 /**
  * Interface for a custom Excel style generator
@@ -44,5 +45,5 @@ public interface CustomXlsStyleGenerator<ID extends Serializable, T extends Abst
 	 *            the cell value
 	 * @return
 	 */
-	CellStyle getCustomCellStyle(Workbook workbook, T entity, Object value);
+	CellStyle getCustomCellStyle(Workbook workbook, T entity, Object value, AttributeModel am);
 }

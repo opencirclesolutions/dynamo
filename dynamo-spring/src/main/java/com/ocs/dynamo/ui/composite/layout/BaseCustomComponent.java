@@ -72,6 +72,7 @@ public abstract class BaseCustomComponent extends CustomComponent implements Bui
 	 * @param entity
 	 *            the entity that is being displayed
 	 * @param attributeModel
+	 *            the attribute model
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
@@ -200,10 +201,26 @@ public abstract class BaseCustomComponent extends CustomComponent implements Bui
 		}
 	}
 
+	/**
+	 * Retrieves a message from the message bundle
+	 * 
+	 * @param key
+	 *            the key of the message
+	 * @return
+	 */
 	protected String message(String key) {
 		return getMessageService().getMessage(key);
 	}
 
+	/**
+	 * Retrieves a message from the message bundle
+	 * 
+	 * @param key
+	 *            the key of the message
+	 * @param args
+	 *            any arguments that are used in the message
+	 * @return
+	 */
 	protected String message(String key, Object... args) {
 		return getMessageService().getMessage(key, args);
 	}

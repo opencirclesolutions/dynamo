@@ -137,7 +137,7 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
 	@Override
 	protected BaseTableWrapper<ID, T> constructTableWrapper() {
 		ServiceResultsTableWrapper<ID, T> tw = new ServiceResultsTableWrapper<ID, T>(getService(), getEntityModel(),
-		        getQueryType(), filter, getSortOrders(), getJoins()) {
+		        getQueryType(), filter, getSortOrders(), getFormOptions().isTableExportAllowed(), getJoins()) {
 
 			@Override
 			protected void onSelect(Object selected) {

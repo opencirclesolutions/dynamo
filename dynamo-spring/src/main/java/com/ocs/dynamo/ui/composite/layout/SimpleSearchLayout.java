@@ -196,24 +196,25 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 	}
 
 	/**
-	 * Respond to a click on the Clear button
+	 * Method that is called after the user clicks the "Clear" button
 	 */
 	protected void afterClear() {
 		// overwrite in subclasses
 	}
 
 	/**
-	 * Responds to the toggling of the visibility of the search fields
+	 * Method that is called after the user clicks the "show/hide" button to show/hide the search
+	 * form
 	 * 
 	 * @param visible
-	 *            whether the search fields are now visible
+	 *            whether the search fields are visible after the toggle
 	 */
 	protected void afterSearchFieldToggle(boolean visible) {
 		// overwrite in subclasses
 	}
 
 	/**
-	 * Respond to the successful completion of a search
+	 * Method that is called after a successful search has been carried out
 	 */
 	protected void afterSearchPerformed() {
 		// overwrite in subclasses
@@ -330,12 +331,12 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 	}
 
 	/**
-	 * Constructs the edit button - this will display the details view when clicked
+	 * Constructs the button that will switch the screen to the detail view. Depending on the
+	 * "open in view mode" setting the caption will read either "view" or "edit"
 	 * 
 	 * @return
 	 */
 	protected Button constructEditButton() {
-		// edit button
 		Button eb = new Button(getFormOptions().isOpenInViewMode() ? message("ocs.view") : message("ocs.edit"));
 		eb.addClickListener(new Button.ClickListener() {
 
@@ -353,9 +354,11 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 	}
 
 	/**
-	 * 
+	 * Method that is used to construct any extra search fields. These will be added at the front of
+	 * the search form
 	 */
 	protected List<Component> constructExtraSearchFields() {
+		// overwrite in subclasses
 		return new ArrayList<>();
 	}
 
@@ -428,7 +431,7 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 			}
 		});
 
-		// double click listener
+		// double click listener - opens the detail view when the user double clicks on a row
 		if (getFormOptions().isShowEditButton()) {
 			getTableWrapper().getTable().addItemClickListener(new ItemClickListener() {
 
@@ -452,7 +455,8 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 	@Override
 	public ServiceResultsTableWrapper<ID, T> constructTableWrapper() {
 		ServiceResultsTableWrapper<ID, T> result = new ServiceResultsTableWrapper<ID, T>(this.getService(),
-		        getEntityModel(), getQueryType(), getSearchForm().extractFilter(), getSortOrders(), getJoins()) {
+		        getEntityModel(), getQueryType(), getSearchForm().extractFilter(), getSortOrders(), getFormOptions()
+		                .isTableExportAllowed(), getJoins()) {
 
 			@Override
 			protected Filter beforeSearchPerformed(Filter filter) {
@@ -465,9 +469,6 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 			}
 		};
 
-		/**
-		 * Set the searchable object if needed
-		 */
 		if (getFormOptions().isSearchImmediately()) {
 			getSearchForm().setSearchable(result);
 		}
@@ -479,14 +480,15 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 	/**
 	 * Opens a custom detail view
 	 * 
-	 * @param component
+	 * @param root
+	 *            the root component of the custom detail view
 	 */
-	protected void customDetailView(Component component) {
-		setCompositionRoot(component);
+	protected void customDetailView(Component root) {
+		setCompositionRoot(root);
 	}
 
 	/**
-	 * Open the screen in details-mode
+	 * Open the screen in details mode
 	 * 
 	 * @param entity
 	 *            the entity to display
@@ -503,8 +505,7 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 			options.setScreenMode(ScreenMode.VERTICAL);
 
 			if (options.isOpenInViewMode()) {
-				options.setShowBackButton(true);
-				options.setShowEditButton(true);
+				options.setShowBackButton(true).setShowEditButton(true);
 			}
 
 			editForm = new ModelBasedEditForm<ID, T>(entity, getService(), getEntityModel(), options, fieldFilters) {
@@ -595,7 +596,7 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 	 * 
 	 * @param entity
 	 */
-	public void edit(T entity) {
+	public final void edit(T entity) {
 		setSelectedItem(entity);
 		doEdit();
 	}
@@ -632,6 +633,11 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 		return removeButton;
 	}
 
+	/**
+	 * Returns the search form (lazily constructing it when needed)
+	 * 
+	 * @return
+	 */
 	public ModelBasedSearchForm<ID, T> getSearchForm() {
 		if (searchForm == null) {
 			searchForm = constructSearchForm();
@@ -662,6 +668,12 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 		search();
 	}
 
+	/**
+	 * Refreshes the contents of a label
+	 * 
+	 * @param propertyName
+	 *            the name of the property for which to refresh the label
+	 */
 	public void replaceLabel(String propertyName) {
 		if (editForm != null) {
 			editForm.replaceLabel(propertyName);
@@ -677,7 +689,6 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 		if (searched) {
 			getTableWrapper().getTable().select(null);
 			setSelectedItem(null);
-			checkButtonState(getSelectedItem());
 			afterSearchPerformed();
 		}
 	}
@@ -769,9 +780,9 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 	 * @param propertyId
 	 *            the property to search for
 	 * @param value
-	 *            the value (lower bound)
+	 *            the value of the lower bound
 	 * @param auxValue
-	 *            the value (uppoer bound)
+	 *            the value of the upper bound
 	 */
 	public void setSearchValue(String propertyId, Object value, Object auxValue) {
 		getSearchForm().setSearchValue(propertyId, value, auxValue);

@@ -876,9 +876,7 @@ public class TableExportActionHandler implements Handler {
 	 */
 	@Override
 	public void handleAction(Action action, Object sender, Object target) {
-
 		if (action == actionExport && sender != null && sender instanceof Table) {
-
 			Table table = (Table) sender;
 
 			// determine the size of the data set

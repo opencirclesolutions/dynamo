@@ -39,7 +39,9 @@ public class FixedTableWrapper<ID extends Serializable, T extends AbstractEntity
 
 	private static final long serialVersionUID = -6711832174203817230L;
 
-	// the collection of items to display
+	/**
+	 * The items to display in the table
+	 */
 	private Collection<T> items;
 
 	/**
@@ -55,8 +57,8 @@ public class FixedTableWrapper<ID extends Serializable, T extends AbstractEntity
 	 *            optional sort order
 	 */
 	public FixedTableWrapper(BaseService<ID, T> service, EntityModel<T> entityModel, Collection<T> items,
-	        List<SortOrder> sortOrders) {
-		super(service, entityModel, QueryType.NONE, sortOrders);
+	        List<SortOrder> sortOrders, boolean allowExport) {
+		super(service, entityModel, QueryType.NONE, sortOrders, allowExport);
 		this.items = items;
 	}
 

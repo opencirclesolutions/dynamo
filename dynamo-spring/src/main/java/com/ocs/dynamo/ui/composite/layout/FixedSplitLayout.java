@@ -78,7 +78,7 @@ public abstract class FixedSplitLayout<ID extends Serializable, T extends Abstra
 	@Override
 	protected BaseTableWrapper<ID, T> constructTableWrapper() {
 		FixedTableWrapper<ID, T> tw = new FixedTableWrapper<ID, T>(getService(), getEntityModel(), getItems(),
-		        getSortOrders()) {
+		        getSortOrders(), getFormOptions().isTableExportAllowed()) {
 			@Override
 			protected void onSelect(Object selected) {
 				setSelectedItems(selected);

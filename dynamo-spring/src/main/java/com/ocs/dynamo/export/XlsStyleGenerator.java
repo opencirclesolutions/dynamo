@@ -18,6 +18,7 @@ import java.io.Serializable;
 import org.apache.poi.ss.usermodel.CellStyle;
 
 import com.ocs.dynamo.domain.AbstractEntity;
+import com.ocs.dynamo.domain.model.AttributeModel;
 
 /**
  * An interface for a custom style generator
@@ -46,10 +47,10 @@ public interface XlsStyleGenerator<ID extends Serializable, T extends AbstractEn
 	 *            the entity for which a value is displayed in the cell
 	 * @param value
 	 *            the value of the cell
-	 * @param percentage
-	 *            whether to format the value as a percentage
+	 * @param attributeModel
+	 *            the attribute model
 	 * @return
 	 */
-	CellStyle getCellStyle(int index, T entity, Object value, boolean percentage);
+	CellStyle getCellStyle(int index, T entity, Object value, AttributeModel am);
 
 }

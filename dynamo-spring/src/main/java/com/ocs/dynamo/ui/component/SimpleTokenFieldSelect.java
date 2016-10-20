@@ -202,7 +202,7 @@ public class SimpleTokenFieldSelect<T extends Comparable<T>> extends CustomField
 	}
 
 	@Override
-	public void setValue(Collection<T> values) throws ReadOnlyException, Converter.ConversionException {
+	public void setValue(Collection<T> values) {
 		super.setValue(values);
 		setInternalValue(values);
 	}

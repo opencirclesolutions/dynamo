@@ -23,6 +23,7 @@ import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -79,6 +80,7 @@ public class TestEntity extends AbstractTreeEntity<Integer, TestEntity> {
 
     private TestEnum someEnum;
 
+    @Lob
     private byte[] someBytes;
 
     private Boolean someBoolean;

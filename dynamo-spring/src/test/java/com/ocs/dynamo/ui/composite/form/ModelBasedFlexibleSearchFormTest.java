@@ -192,7 +192,7 @@ public class ModelBasedFlexibleSearchFormTest extends BaseIntegrationTest {
 	}
 
 	private void build(EntityModel<TestEntity> em) {
-		wrapper = new ServiceResultsTableWrapper<>(testEntityService, em, QueryType.ID_BASED, null, null);
+		wrapper = new ServiceResultsTableWrapper<>(testEntityService, em, QueryType.ID_BASED, null, null, false);
 		wrapper.build();
 
 		form = new ModelBasedFlexibleSearchForm<>(wrapper, em, new FormOptions());

@@ -39,8 +39,6 @@ public class MenuService {
 
 	public static final String MODE = "mode";
 
-	public static final String ROLES = "roles";
-
 	public static final String TAB_INDEX = "tabIndex";
 
 	public static final String DESCRIPTION = "description";

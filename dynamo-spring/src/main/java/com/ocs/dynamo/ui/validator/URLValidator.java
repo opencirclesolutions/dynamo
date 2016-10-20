@@ -25,34 +25,34 @@ import com.vaadin.data.Validator;
  */
 public class URLValidator implements Validator {
 
-    private String message;
+	private String message;
 
-    private static final long serialVersionUID = 680372854650555066L;
+	private static final long serialVersionUID = 680372854650555066L;
 
-    /**
-     * Constructor
-     * 
-     * @param message
-     */
-    public URLValidator(String message) {
-        this.message = message;
-    }
+	/**
+	 * Constructor
+	 * 
+	 * @param message
+	 */
+	public URLValidator(String message) {
+		this.message = message;
+	}
 
-    @Override
-    public void validate(Object value) throws InvalidValueException {
-        if (value == null || "".equals(value)) {
-            return;
-        }
+	@Override
+	public void validate(Object value) {
+		if (value == null || "".equals(value)) {
+			return;
+		}
 
-        if (!(value instanceof String)) {
-            throw new InvalidValueException(message);
-        }
+		if (!(value instanceof String)) {
+			throw new InvalidValueException(message);
+		}
 
-        try {
-            new java.net.URL((String) value);
-        } catch (MalformedURLException ex) {
-            throw new InvalidValueException(message);
-        }
-    }
+		try {
+			new java.net.URL((String) value);
+		} catch (MalformedURLException ex) {
+			throw new InvalidValueException(message);
+		}
+	}
 
 }

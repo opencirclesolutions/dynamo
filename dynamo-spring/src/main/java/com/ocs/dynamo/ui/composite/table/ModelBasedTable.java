@@ -25,6 +25,7 @@ import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.domain.model.impl.ModelBasedFieldFactory;
 import com.ocs.dynamo.service.MessageService;
+import com.ocs.dynamo.ui.ServiceLocator;
 import com.ocs.dynamo.ui.component.URLField;
 import com.ocs.dynamo.ui.composite.table.export.TableExportActionHandler;
 import com.ocs.dynamo.ui.composite.table.export.TableExportMode;
@@ -51,8 +52,14 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
 
 	private EntityModel<T> entityModel;
 
+	/**
+	 * The entity model factory
+	 */
 	private EntityModelFactory entityModelFactory;
 
+	/**
+	 * The message service
+	 */
 	private MessageService messageService;
 
 	/**
@@ -61,20 +68,27 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
 	private String currencySymbol;
 
 	/**
+	 * Indicated whether table export is allowed
+	 */
+	private boolean exportAllowed;
+
+	/**
 	 * Constructor
 	 * 
 	 * @param container
+	 *            the data container
 	 * @param model
-	 * @param entityModelFactory
-	 * @param messageService
+	 *            the entity model that determines what to display
+	 * @param exportAllowed
+	 *            whether export of the table is allowed
 	 */
-	public ModelBasedTable(Container container, EntityModel<T> model, EntityModelFactory entityModelFactory,
-	        MessageService messageService) {
+	public ModelBasedTable(Container container, EntityModel<T> model, boolean exportAllowed) {
 		super("", container);
 		this.container = container;
 		this.entityModel = model;
-		this.messageService = messageService;
-		this.entityModelFactory = entityModelFactory;
+		this.messageService = ServiceLocator.getMessageService();
+		this.entityModelFactory = ServiceLocator.getEntityModelFactory();
+		this.exportAllowed = exportAllowed;
 
 		TableUtils.defaultInitialization(this);
 
@@ -84,7 +98,7 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
 
 		generateColumns(container, model);
 
-		if (SystemPropertyUtils.allowTableExport()) {
+		if (SystemPropertyUtils.allowTableExport() || isExportAllowed()) {
 			// add export functionality
 			List<EntityModel<?>> list = new ArrayList<>();
 			list.add(model);
@@ -139,6 +153,58 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
 			if (attributeModel.isNumerical()) {
 				this.setColumnAlignment(attributeModel.getName(), Table.Align.RIGHT);
 			}
+		}
+	}
+
+	/**
+	 * Adds a generated column
+	 * 
+	 * @param attributeModel
+	 *            the attribute model for which to add the column
+	 */
+	private void addGeneratedColumn(final AttributeModel attributeModel) {
+		if (attributeModel.isVisibleInTable() && attributeModel.isUrl()) {
+			addUrlField(attributeModel);
+		}
+	}
+
+	/**
+	 * Adds any generated columns (URL fields) in response to a change to view mode
+	 */
+	public void addGeneratedColumns() {
+		for (AttributeModel attributeModel : entityModel.getAttributeModels()) {
+			addGeneratedColumn(attributeModel);
+			if (attributeModel.getNestedEntityModel() != null) {
+				for (AttributeModel nestedAttributeModel : attributeModel.getNestedEntityModel().getAttributeModels()) {
+					addGeneratedColumn(nestedAttributeModel);
+				}
+			}
+		}
+	}
+
+	/**
+	 * Adds an URL field for a certain attribute
+	 * 
+	 * @param attributeModel
+	 *            the attribute model
+	 */
+	private void addUrlField(final AttributeModel attributeModel) {
+		if (attributeModel.isUrl() && !isEditable()) {
+			this.addGeneratedColumn(attributeModel.getName(), new ColumnGenerator() {
+
+				private static final long serialVersionUID = -3191235289754428914L;
+
+				@Override
+				public Object generateCell(Table source, final Object itemId, Object columnId) {
+					URLField field = (URLField) ((ModelBasedFieldFactory<?>) getTableFieldFactory()).createField(
+					        attributeModel.getPath(), null);
+					if (field != null) {
+						String val = (String) getItem(itemId).getItemProperty(columnId).getValue();
+						field.setValue(val);
+					}
+					return field;
+				}
+			});
 		}
 	}
 
@@ -199,6 +265,10 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
 		return currencySymbol;
 	}
 
+	public boolean isExportAllowed() {
+		return exportAllowed;
+	}
+
 	/**
 	 * Removes a generated column
 	 * 
@@ -208,44 +278,6 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
 	private void removeGeneratedColumn(final AttributeModel attributeModel) {
 		if (attributeModel.isVisibleInTable() && attributeModel.isUrl()) {
 			removeGeneratedColumn(attributeModel.getName());
-		}
-	}
-
-	/**
-	 * Adds a generated column
-	 * 
-	 * @param attributeModel
-	 *            the attribute model for which to add the column
-	 */
-	private void addGeneratedColumn(final AttributeModel attributeModel) {
-		if (attributeModel.isVisibleInTable() && attributeModel.isUrl()) {
-			addUrlField(attributeModel);
-		}
-	}
-
-	/**
-	 * Adds an URL field for a certain attribute
-	 * 
-	 * @param attributeModel
-	 *            the attribute model
-	 */
-	private void addUrlField(final AttributeModel attributeModel) {
-		if (attributeModel.isUrl() && !isEditable()) {
-			this.addGeneratedColumn(attributeModel.getName(), new ColumnGenerator() {
-
-				private static final long serialVersionUID = -3191235289754428914L;
-
-				@Override
-				public Object generateCell(Table source, final Object itemId, Object columnId) {
-					URLField field = (URLField) ((ModelBasedFieldFactory<?>) getTableFieldFactory()).createField(
-					        attributeModel.getPath(), null);
-					if (field != null) {
-						String val = (String) getItem(itemId).getItemProperty(columnId).getValue();
-						field.setValue(val);
-					}
-					return field;
-				}
-			});
 		}
 	}
 
@@ -264,26 +296,20 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
 		}
 	}
 
-	/**
-	 * Adds any generated columns (URL fields) in response to a change to view mode
-	 */
-	public void addGeneratedColumns() {
-		for (AttributeModel attributeModel : entityModel.getAttributeModels()) {
-			addGeneratedColumn(attributeModel);
-			if (attributeModel.getNestedEntityModel() != null) {
-				for (AttributeModel nestedAttributeModel : attributeModel.getNestedEntityModel().getAttributeModels()) {
-					addGeneratedColumn(nestedAttributeModel);
-				}
-			}
-		}
-	}
-
 	public void setCurrencySymbol(String currencySymbol) {
 		this.currencySymbol = currencySymbol;
 	}
 
+	public void setExportAllowed(boolean exportAllowed) {
+		this.exportAllowed = exportAllowed;
+	}
+
+	/**
+	 * Updates the table caption in response to a change of the data set
+	 */
 	public void updateTableCaption() {
 		setCaption(entityModel.getDisplayNamePlural() + " "
 		        + messageService.getMessage("ocs.showing.results", getContainerDataSource().size()));
 	}
+
 }

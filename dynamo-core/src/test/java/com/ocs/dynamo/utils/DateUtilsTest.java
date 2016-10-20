@@ -31,6 +31,17 @@ public class DateUtilsTest {
 	}
 
 	@Test
+	@SuppressWarnings("deprecation")
+	public void testCreateTime() {
+		Assert.assertNull(DateUtils.createTime(null));
+
+		Date date = DateUtils.createTime("070809");
+		Assert.assertEquals(7, date.getHours());
+		Assert.assertEquals(8, date.getMinutes());
+		Assert.assertEquals(9, date.getSeconds());
+	}
+
+	@Test
 	public void testIsValidWeekCode() {
 
 		Assert.assertTrue(DateUtils.isValidWeekCode(null));

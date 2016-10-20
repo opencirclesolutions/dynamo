@@ -15,6 +15,7 @@ package com.ocs.dynamo.export;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.Date;
 
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.DataFormat;
@@ -23,6 +24,9 @@ import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Workbook;
 
 import com.ocs.dynamo.domain.AbstractEntity;
+import com.ocs.dynamo.domain.model.AttributeDateType;
+import com.ocs.dynamo.domain.model.AttributeModel;
+import com.ocs.dynamo.utils.SystemPropertyUtils;
 
 /**
  * Base style generator for Excel exports
@@ -43,11 +47,19 @@ public class BaseXlsStyleGenerator<ID extends Serializable, T extends AbstractEn
 
 	private CellStyle headerStyle;
 
-	private CellStyle integerStyle;
+	private CellStyle numberStyle;
 
 	private CellStyle normal;
 
 	private CellStyle titleStyle;
+
+	private CellStyle dateStyle;
+
+	private CellStyle dateTimeStyle;
+
+	private CellStyle timeStyle;
+
+	private CellStyle currencyStyle;
 
 	private Workbook workbook;
 
@@ -62,10 +74,10 @@ public class BaseXlsStyleGenerator<ID extends Serializable, T extends AbstractEn
 
 		// create the cell styles only once- this is a huge performance
 		// gain!
-		integerStyle = workbook.createCellStyle();
-		integerStyle.setAlignment(CellStyle.ALIGN_RIGHT);
-		setBorder(integerStyle, CellStyle.BORDER_THIN);
-		integerStyle.setDataFormat(format.getFormat("#,#"));
+		numberStyle = workbook.createCellStyle();
+		numberStyle.setAlignment(CellStyle.ALIGN_RIGHT);
+		setBorder(numberStyle, CellStyle.BORDER_THIN);
+		numberStyle.setDataFormat(format.getFormat("#,#"));
 
 		bigDecimalStyle = workbook.createCellStyle();
 		bigDecimalStyle.setAlignment(CellStyle.ALIGN_RIGHT);
@@ -101,6 +113,22 @@ public class BaseXlsStyleGenerator<ID extends Serializable, T extends AbstractEn
 		headerStyle.setFillPattern(CellStyle.SOLID_FOREGROUND);
 		headerStyle.setFont(monthFont);
 		headerStyle.setWrapText(true);
+
+		dateStyle = workbook.createCellStyle();
+		setBorder(dateStyle, CellStyle.BORDER_THIN);
+		dateStyle.setDataFormat(format.getFormat(SystemPropertyUtils.getDefaultDateFormat()));
+
+		dateTimeStyle = workbook.createCellStyle();
+		setBorder(dateTimeStyle, CellStyle.BORDER_THIN);
+		dateTimeStyle.setDataFormat(format.getFormat(SystemPropertyUtils.getDefaultDateTimeFormat()));
+
+		timeStyle = workbook.createCellStyle();
+		setBorder(timeStyle, CellStyle.BORDER_THIN);
+		timeStyle.setDataFormat(format.getFormat(SystemPropertyUtils.getDefaultTimeFormat()));
+
+		currencyStyle = workbook.createCellStyle();
+		setBorder(currencyStyle, CellStyle.BORDER_THIN);
+		currencyStyle.setDataFormat(format.getFormat(SystemPropertyUtils.getDefaultCurrencySymbol() + " #,##0.00"));
 	}
 
 	/**
@@ -114,13 +142,26 @@ public class BaseXlsStyleGenerator<ID extends Serializable, T extends AbstractEn
 	 *            the value
 	 */
 	@Override
-	public CellStyle getCellStyle(int index, T entity, Object value, boolean percentage) {
-		if (value instanceof Integer) {
-			return integerStyle;
-		}
-		if (value instanceof BigDecimal) {
-			if (percentage) {
+	public CellStyle getCellStyle(int index, T entity, Object value, AttributeModel attributeModel) {
+		if (value instanceof Integer || value instanceof Long) {
+			return numberStyle;
+		} else if (value instanceof Date) {
+			if (attributeModel == null || !attributeModel.isWeek()) {
+				if (attributeModel == null) {
+					return dateStyle;
+				} else if (AttributeDateType.TIMESTAMP.equals(attributeModel.getDateType())) {
+					return dateTimeStyle;
+				} else if (AttributeDateType.DATE.equals(attributeModel.getDateType())) {
+					return dateStyle;
+				} else if (AttributeDateType.TIME.equals(attributeModel.getDateType())) {
+					return timeStyle;
+				}
+			}
+		} else if (value instanceof BigDecimal) {
+			if (attributeModel != null && attributeModel.isPercentage()) {
 				return bigDecimalPercentageStyle;
+			} else if (attributeModel != null && attributeModel.isCurrency()) {
+				return currencyStyle;
 			}
 			return bigDecimalStyle;
 		}

@@ -32,7 +32,7 @@ import com.vaadin.ui.Field;
 import com.vaadin.ui.Notification;
 
 /**
- * Base class for UI components that need/have access to a Service
+ * Base class for UI components that need/have access to a Service that can read from the database
  * 
  * @author bas.rutten
  * @param <ID>
@@ -59,7 +59,6 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 
 				@Override
 				public void buttonClick(ClickEvent event) {
-
 					Runnable r = new Runnable() {
 
 						@Override
@@ -73,7 +72,6 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 
 					};
 					VaadinUtils.showConfirmDialog(getMessageService(), message("ocs.delete.confirm"), r);
-
 				}
 			});
 		}
@@ -107,8 +105,9 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	 */
 	private BaseService<ID, T> service;
 
-	// list of buttons to update after the user selects an item in the tabular
-	// view
+	/**
+	 * The list of buttons to update after an entity is selected
+	 */
 	private List<Button> toUpdate = new ArrayList<>();
 
 	/**
@@ -151,9 +150,10 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	}
 
 	/**
-	 * Checks which buttons in the button bar must be enabled
+	 * Checks which buttons in the button bar must be enabled after an item has been selected
 	 * 
 	 * @param selectedItem
+	 *            the selected item
 	 */
 	protected void checkButtonState(T selectedItem) {
 		for (Button b : toUpdate) {
@@ -177,6 +177,7 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	 */
 	protected Field<?> constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel,
 	        boolean viewMode, boolean searchMode) {
+		// overwrite in subclass
 		return null;
 	}
 
@@ -197,10 +198,12 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	}
 
 	/**
-	 * Method that is called in order to enable/disable a button after selecting an item in the
-	 * table
+	 * Method that is called in order to enable/disable a button after selecting an item table
 	 * 
 	 * @param button
+	 *            the button
+	 * @param selectedItem
+	 *            the currently selected item
 	 * @return
 	 */
 	protected boolean mustEnableButton(Button button, T selectedItem) {

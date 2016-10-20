@@ -25,7 +25,6 @@ import java.util.Map;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
-import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.domain.model.impl.ModelBasedFieldFactory;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.MessageService;
@@ -87,11 +86,6 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 	 * The entity model of the entity to display
 	 */
 	private final EntityModel<T> entityModel;
-
-	/**
-	 * The entity model factory
-	 */
-	private final EntityModelFactory entityModelFactory;
 
 	/**
 	 * Optional field filters for restricting the contents of combo boxes
@@ -190,7 +184,6 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 	 */
 	public DetailsEditTable(Collection<T> items, EntityModel<T> entityModel, boolean viewMode, FormOptions formOptions) {
 		this.entityModel = entityModel;
-		this.entityModelFactory = ServiceLocator.getEntityModelFactory();
 		this.messageService = ServiceLocator.getMessageService();
 		this.items = items;
 		this.viewMode = viewMode;
@@ -384,7 +377,7 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 		container = new BeanItemContainer<T>(entityModel.getEntityClass());
 		container.addAll(items);
 
-		table = new ModelBasedTable<ID, T>(container, entityModel, entityModelFactory, messageService);
+		table = new ModelBasedTable<ID, T>(container, entityModel, false);
 
 		// add a remove button directly in the table
 		if (!isViewMode() && formOptions.isShowRemoveButton()) {

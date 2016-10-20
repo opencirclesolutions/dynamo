@@ -94,7 +94,6 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 	 *            the entity that has just been edited
 	 */
 	protected void afterEditDone(boolean cancel, boolean newEntity, T entity) {
-
 		if (entity.getId() != null) {
 			// reset to view mode
 			if (getFormOptions().isOpenInViewMode()) {

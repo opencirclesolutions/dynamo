@@ -260,7 +260,8 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 	@Override
 	protected BaseTableWrapper<ID, T> constructTableWrapper() {
 		ServiceResultsTableWrapper<ID, T> tableWrapper = new ServiceResultsTableWrapper<ID, T>(getService(),
-		        getEntityModel(), QueryType.ID_BASED, filter, getSortOrders(), getJoins()) {
+		        getEntityModel(), QueryType.ID_BASED, filter, getSortOrders(), getFormOptions().isTableExportAllowed(),
+		        getJoins()) {
 
 			@Override
 			protected void onSelect(Object selected) {

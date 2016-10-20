@@ -380,17 +380,13 @@ public class TableExportActionHandlerTest extends BaseMockitoTest {
 		Person person2 = new Person(2, "Patrick", 44, BigDecimal.valueOf(77.0), BigDecimal.valueOf(15));
 		container.addAll(Lists.newArrayList(person1, person2));
 
-		return new ModelBasedTable<Integer, Person>(container, entityModelFactory.getModel(Person.class),
-		        entityModelFactory, messageService);
+		return new ModelBasedTable<Integer, Person>(container, entityModelFactory.getModel(Person.class), true);
 	}
 
 	private TreeTable getTreeTable() {
-		// BeanItemContainer<Person> container = new
-		// BeanItemContainer<>(Person.class);
 
 		final Person person1 = new Person(1, "Bas<br/>Bob", 35, BigDecimal.valueOf(76.0), BigDecimal.valueOf(12));
 		final Person person2 = new Person(2, "Patrick", 44, BigDecimal.valueOf(77.0), BigDecimal.valueOf(15));
-		// container.addAll(Lists.newArrayList(person1, person2));
 
 		final Department department = new Department();
 		department.setName("Special ops");
