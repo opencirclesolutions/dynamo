@@ -18,7 +18,7 @@ import java.util.Set;
 /**
  * An attribute model represents how a certain attribute of an entity will be behave in the user
  * interface. This includes e.g. whether the attribute is searchable, sortable, what kind of user
- * interface component is used to edit the attribute etc
+ * interface component is used to edit the attribute etc.
  * 
  * @author bas.rutten
  *
@@ -278,6 +278,13 @@ public interface AttributeModel extends Comparable<AttributeModel> {
      * @return
      */
     boolean isRequired();
+
+    /**
+     * Indicates whether it is required when performing a search.
+     * 
+     * @return
+     */
+    boolean isRequiredForSearching();
 
     /**
      * Indicates whether it is possible to search on this attribute

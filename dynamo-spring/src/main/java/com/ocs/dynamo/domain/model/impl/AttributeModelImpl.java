@@ -94,6 +94,8 @@ public class AttributeModelImpl implements AttributeModel {
 
     private boolean required;
 
+    private boolean requiredForSearching;
+
     private boolean searchable;
 
     private boolean searchCaseSensitive;
@@ -331,6 +333,11 @@ public class AttributeModelImpl implements AttributeModel {
     }
 
     @Override
+    public boolean isRequiredForSearching() {
+        return this.requiredForSearching;
+    }
+
+    @Override
     public boolean isSearchable() {
         return searchable;
     }
@@ -501,6 +508,10 @@ public class AttributeModelImpl implements AttributeModel {
 
     public void setRequired(boolean required) {
         this.required = required;
+    }
+
+    public void setRequiredForSearching(boolean requiredForSearching) {
+        this.requiredForSearching = requiredForSearching;
     }
 
     public void setSearchable(boolean searchable) {
