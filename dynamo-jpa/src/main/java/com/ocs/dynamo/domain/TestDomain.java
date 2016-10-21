@@ -24,29 +24,36 @@ import com.ocs.dynamo.domain.model.annotation.Model;
 @Model(displayProperty = "name", sortOrder = "name,age")
 public class TestDomain extends AbstractEntity<Integer> {
 
-    private static final long serialVersionUID = -9183580926970223973L;
+	private static final long serialVersionUID = -9183580926970223973L;
 
-    @Id
-    private Integer id;
+	@Id
+	private Integer id;
 
-    private String name;
+	private String name;
 
-    @Override
-    public Integer getId() {
-        return id;
-    }
+	public TestDomain(String name) {
+		this.name = name;
+	}
 
-    @Override
-    public void setId(Integer id) {
-        this.id = id;
-    }
+	public TestDomain() {
+	}
 
-    public String getName() {
-        return name;
-    }
+	@Override
+	public Integer getId() {
+		return id;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	@Override
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
 
 }

@@ -1035,7 +1035,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 			model.setSearchSelectMode(AttributeSelectMode.valueOf(msg));
 		}
 
-		// explicitly set the search select modeqq
+		// explicitly set the search select mode
 		msg = getAttributeMessage(entityModel, model, EntityModel.SEARCH_SELECT_MODE);
 		if (!StringUtils.isEmpty(msg)) {
 			model.setSearchSelectMode(AttributeSelectMode.valueOf(msg));
@@ -1078,6 +1078,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 
 		msg = getAttributeMessage(entityModel, model, EntityModel.REPLACEMENT_SEARCH_PATH);
 		if (!StringUtils.isEmpty(msg)) {
+			System.out.println(model.getPath());
 			model.setReplacementSearchPath(msg);
 		}
 
