@@ -30,13 +30,13 @@ import com.ocs.dynamo.domain.AbstractEntity;
  */
 public abstract class DataSetIterator<ID extends Serializable, T extends AbstractEntity<ID>> {
 
-	private static final int PAGE_SIZE = 1000;
+	private static final int PAGE_SIZE = 2000;
 
 	private List<ID> idList;
 
 	private List<T> page;
 
-	// the overal index
+	// the overall index
 	private int index;
 
 	// the index of the first record in the latest page that was read

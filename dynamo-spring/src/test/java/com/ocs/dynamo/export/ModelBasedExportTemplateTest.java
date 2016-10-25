@@ -60,7 +60,13 @@ public class ModelBasedExportTemplateTest extends BaseIntegrationTest {
 	@Test
 	public void testExcel() throws IOException {
 		ModelBasedExportTemplate<Integer, TestEntity> template = new ModelBasedExportTemplate<Integer, TestEntity>(
-		        testEntityService, entityModelFactory.getModel(TestEntity.class), null, null, "Sheet name", null);
+		        testEntityService, entityModelFactory.getModel(TestEntity.class), null, null, "Sheet name", null) {
+
+			@Override
+			public int getPageSize() {
+				return 10000;
+			}
+		};
 		byte[] bytes = template.process(true);
 
 		try (Workbook wb = new XSSFWorkbook(new ByteArrayInputStream(bytes))) {
@@ -101,12 +107,18 @@ public class ModelBasedExportTemplateTest extends BaseIntegrationTest {
 			Assert.assertEquals("abab", row.getCell(12).getStringCellValue());
 			Assert.assertEquals("http://www.google.nl", row.getCell(15).getStringCellValue());
 		}
+
 	}
 
 	@Test
 	public void testCsv() {
 		ModelBasedExportTemplate<Integer, TestEntity> template = new ModelBasedExportTemplate<Integer, TestEntity>(
-		        testEntityService, entityModelFactory.getModel(TestEntity.class), null, null, "Sheet name", null);
+		        testEntityService, entityModelFactory.getModel(TestEntity.class), null, null, "Sheet name", null) {
+			@Override
+			public int getPageSize() {
+				return 10000;
+			}
+		};
 		byte[] bytes = template.process(false);
 		String str = new String(bytes);
 		String[] lines = str.split("\n");

@@ -199,6 +199,13 @@ public abstract class BaseExportTemplate<ID extends Serializable, T extends Abst
 		return joins;
 	}
 
+	/**
+	 * Returns the size of a single page of data
+	 * 
+	 * @return
+	 */
+	public abstract int getPageSize();
+
 	public BaseService<ID, T> getService() {
 		return service;
 	}
@@ -226,7 +233,7 @@ public abstract class BaseExportTemplate<ID extends Serializable, T extends Abst
 		try {
 			// retrieve all store series based on the IDs
 			List<ID> ids = service.findIds(getFilter(), sortOrders);
-			DataSetIterator<ID, T> iterator = new DataSetIterator<ID, T>(ids) {
+			DataSetIterator<ID, T> iterator = new DataSetIterator<ID, T>(ids, getPageSize()) {
 
 				@Override
 				protected List<T> readPage(List<ID> ids) {

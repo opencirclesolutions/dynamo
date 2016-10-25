@@ -42,7 +42,11 @@ public class DomainUtilsTest extends BaseMockitoTest {
 
 	@Test
 	public void testFilterDomains() {
-		Set<Currency> cs = DomainUtil.filterDomains(Currency.class, domains);
+
+		Set<Currency> cs = DomainUtil.filterDomains(Currency.class, null);
+		Assert.assertEquals(0, cs.size());
+
+		cs = DomainUtil.filterDomains(Currency.class, domains);
 		Assert.assertEquals(2, cs.size());
 
 		Set<Country> countries = DomainUtil.filterDomains(Country.class, domains);

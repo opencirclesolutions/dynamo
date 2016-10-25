@@ -51,7 +51,7 @@ import com.ocs.dynamo.utils.SystemPropertyUtils;
  * @param <T>
  *            the type of the entity
  */
-public class ModelBasedExportTemplate<ID extends Serializable, T extends AbstractEntity<ID>> extends
+public abstract class ModelBasedExportTemplate<ID extends Serializable, T extends AbstractEntity<ID>> extends
         BaseExportTemplate<ID, T> {
 
 	/**

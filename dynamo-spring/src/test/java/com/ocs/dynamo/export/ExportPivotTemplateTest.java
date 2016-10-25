@@ -127,6 +127,11 @@ public class ExportPivotTemplateTest extends BaseMockitoTest {
 			protected boolean createAveragesColumn() {
 				return false;
 			}
+
+			@Override
+			public int getPageSize() {
+				return 1000;
+			}
 		};
 		byte[] bytes = template.process(true);
 		Assert.assertTrue(bytes != null);
@@ -214,6 +219,11 @@ public class ExportPivotTemplateTest extends BaseMockitoTest {
 			@Override
 			protected boolean createAveragesColumn() {
 				return true;
+			}
+
+			@Override
+			public int getPageSize() {
+				return 1000;
 			}
 		};
 		byte[] bytes = template.process(true);
@@ -307,6 +317,11 @@ public class ExportPivotTemplateTest extends BaseMockitoTest {
 			@Override
 			protected boolean usePercentages() {
 				return true;
+			}
+
+			@Override
+			public int getPageSize() {
+				return 1000;
 			}
 		};
 		byte[] bytes = template.process(true);

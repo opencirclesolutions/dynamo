@@ -50,9 +50,11 @@ public final class DomainUtil {
 	@SuppressWarnings("unchecked")
 	public static <T extends Domain> Set<T> filterDomains(Class<T> clazz, Set<Domain> domains) {
 		Set<T> result = new HashSet<>();
-		for (Domain d : domains) {
-			if (d.getClass().isAssignableFrom(clazz)) {
-				result.add((T) d);
+		if (domains != null) {
+			for (Domain d : domains) {
+				if (d != null && d.getClass().isAssignableFrom(clazz)) {
+					result.add((T) d);
+				}
 			}
 		}
 		return result;
