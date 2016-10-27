@@ -43,10 +43,12 @@ import com.vaadin.data.util.filter.Between;
 import com.vaadin.data.util.filter.Compare;
 import com.vaadin.data.util.filter.Not;
 import com.vaadin.data.util.filter.SimpleStringFilter;
+import com.vaadin.shared.ui.combobox.FilteringMode;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Field;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Layout;
 
 /**
@@ -105,6 +107,11 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 		private ComboBox fieldFilterCb;
 
 		/**
+		 * Label to display when no filter has been selected
+		 */
+		private Label noFilterLabel;
+
+		/**
 		 * The filter type
 		 */
 		private FlexibleFilterType filterType;
@@ -136,10 +143,10 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 
 		FilterRegion(FilterListener listener) {
 			this.listener = listener;
-
 			layout = new DefaultHorizontalLayout();
 
 			Button removeButton = new Button(message("ocs.remove"));
+
 			removeButton.addClickListener(new Button.ClickListener() {
 
 				private static final long serialVersionUID = -3195227654172834655L;
@@ -161,6 +168,7 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 
 			fieldFilterCb = new ComboBox(message("ocs.filter"));
 			fieldFilterCb.setStyleName(DynamoConstants.CSS_NESTED);
+			fieldFilterCb.setFilteringMode(FilteringMode.CONTAINS);
 
 			// find out which attributes can be search on and sort them in alphabetical name
 			List<AttributeModel> filteredModels = iterate(getEntityModel().getAttributeModels());
@@ -189,6 +197,9 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 			});
 			layout.addComponent(fieldFilterCb);
 
+			noFilterLabel = new Label(message("ocs.select.filter"));
+			noFilterLabel.setCaption("");
+			layout.addComponent(noFilterLabel);
 		}
 
 		/**
@@ -281,48 +292,63 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 		 */
 		private void filterAttributeChange(AttributeModel attributeModel, boolean restoring) {
 			this.am = attributeModel;
-			ComboBox newTypeFilterCombo = new ComboBox(message("ocs.type"));
-			newTypeFilterCombo.setNullSelectionAllowed(false);
-			newTypeFilterCombo.addValueChangeListener(new ValueChangeListener() {
+			if (am != null) {
+				ComboBox newTypeFilterCombo = new ComboBox(message("ocs.type"));
+				newTypeFilterCombo.setNullSelectionAllowed(false);
+				newTypeFilterCombo.addValueChangeListener(new ValueChangeListener() {
 
-				private static final long serialVersionUID = -98045001905415268L;
+					private static final long serialVersionUID = -98045001905415268L;
 
-				@Override
-				public void valueChange(ValueChangeEvent event) {
-					handleFilterTypeChange((FlexibleFilterType) event.getProperty().getValue());
+					@Override
+					public void valueChange(ValueChangeEvent event) {
+						handleFilterTypeChange((FlexibleFilterType) event.getProperty().getValue());
+					}
+				});
+				newTypeFilterCombo.setStyleName(DynamoConstants.CSS_NESTED);
+
+				List<FlexibleFilterType> filterTypes = getFilterTypes(am);
+				for (FlexibleFilterType ft : filterTypes) {
+					newTypeFilterCombo.addItem(ft);
 				}
-			});
-			newTypeFilterCombo.setStyleName(DynamoConstants.CSS_NESTED);
 
-			// add the available filter types
-			List<FlexibleFilterType> filterTypes = getFilterTypes(am);
-			for (FlexibleFilterType ft : filterTypes) {
-				newTypeFilterCombo.addItem(ft);
-			}
+				if (typeFilterCombo != null) {
+					layout.replaceComponent(typeFilterCombo, newTypeFilterCombo);
+				} else {
+					layout.addComponent(newTypeFilterCombo);
+				}
 
-			if (typeFilterCombo != null) {
-				layout.replaceComponent(typeFilterCombo, newTypeFilterCombo);
+				// hide the value component after a filter change
+				if (mainValueComponent != null) {
+					layout.removeComponent(mainValueComponent);
+				}
+				if (auxValueComponent != null) {
+					layout.removeComponent(auxValueComponent);
+				}
+
+				typeFilterCombo = newTypeFilterCombo;
+
+				// pre-select the first value and disable the component if there is just one
+				// component
+				if (!restoring) {
+					typeFilterCombo.setValue(getDefaultFilterType());
+				}
+				if (filterTypes.size() == 1) {
+					typeFilterCombo.setEnabled(false);
+				}
 			} else {
-				layout.addComponent(newTypeFilterCombo);
+				// no filter selected, remove everything
+				if (typeFilterCombo != null) {
+					layout.removeComponent(typeFilterCombo);
+				}
+				if (mainValueComponent != null) {
+					layout.removeComponent(mainValueComponent);
+				}
+				if (auxValueComponent != null) {
+					layout.removeComponent(auxValueComponent);
+				}
 			}
+			noFilterLabel.setVisible(this.am == null);
 
-			// hide the value component after a filter change
-			if (mainValueComponent != null) {
-				layout.removeComponent(mainValueComponent);
-			}
-			if (auxValueComponent != null) {
-				layout.removeComponent(auxValueComponent);
-			}
-
-			typeFilterCombo = newTypeFilterCombo;
-
-			// pre-select the first value and disable the component if there is just one component
-			if (!restoring) {
-				typeFilterCombo.setValue(getDefaultFilterType());
-			}
-			if (filterTypes.size() == 1) {
-				typeFilterCombo.setEnabled(false);
-			}
 		}
 
 		/**
@@ -595,6 +621,7 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 		if (match == null) {
 			addFilter();
 			match = regions.get(regions.size() - 1);
+			match.fieldFilterCb.setValue(attributeModel);
 			match.filterAttributeChange(attributeModel, true);
 			match.typeFilterCombo.setValue(filterType);
 		}

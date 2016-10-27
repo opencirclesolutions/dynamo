@@ -276,6 +276,10 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 		DefaultVerticalLayout margin = new DefaultVerticalLayout(true, false);
 		margin.addComponent(form);
 
+		// hide the search form if there are no search criteria
+		if (groups.isEmpty()) {
+			margin.setVisible(false);
+		}
 		return margin;
 	}
 

@@ -256,13 +256,15 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 
 			// listen to a click on the clear button
 			mainSearchLayout.addComponent(getSearchForm());
-			getSearchForm().getClearButton().addClickListener(new Button.ClickListener() {
 
-				@Override
-				public void buttonClick(ClickEvent event) {
-					afterClear();
-				}
-			});
+			if (getSearchForm().getClearButton() != null) {
+				getSearchForm().getClearButton().addClickListener(new Button.ClickListener() {
+					@Override
+					public void buttonClick(ClickEvent event) {
+						afterClear();
+					}
+				});
+			}
 
 			searchResultsLayout = new DefaultVerticalLayout(false, false);
 			mainSearchLayout.addComponent(searchResultsLayout);

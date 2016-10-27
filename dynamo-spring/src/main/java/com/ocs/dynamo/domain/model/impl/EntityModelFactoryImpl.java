@@ -1078,7 +1078,6 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 
 		msg = getAttributeMessage(entityModel, model, EntityModel.REPLACEMENT_SEARCH_PATH);
 		if (!StringUtils.isEmpty(msg)) {
-			System.out.println(model.getPath());
 			model.setReplacementSearchPath(msg);
 		}
 

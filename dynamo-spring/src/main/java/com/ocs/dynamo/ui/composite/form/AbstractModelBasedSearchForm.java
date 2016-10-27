@@ -140,42 +140,45 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 
 		preProcessLayout(main);
 
-		// add a wrapper for adding an action handler
-		wrapperPanel = new Panel();
-		main.addComponent(wrapperPanel);
-
 		// create the search form
 		filterLayout = constructFilterLayout();
-		wrapperPanel.setContent(filterLayout);
+		if (filterLayout.isVisible()) {
 
-		// action handler for carrying out a search after an Enter press
-		wrapperPanel.addActionHandler(new Handler() {
+			// add a wrapper for adding an action handler
+			wrapperPanel = new Panel();
+			main.addComponent(wrapperPanel);
 
-			private static final long serialVersionUID = -2136828212405809213L;
+			wrapperPanel.setContent(filterLayout);
 
-			private Action enter = new ShortcutAction(null, ShortcutAction.KeyCode.ENTER, null);
+			// action handler for carrying out a search after an Enter press
+			wrapperPanel.addActionHandler(new Handler() {
 
-			@Override
-			public Action[] getActions(Object target, Object sender) {
-				return new Action[] { enter };
-			}
+				private static final long serialVersionUID = -2136828212405809213L;
 
-			@Override
-			public void handleAction(Action action, Object sender, Object target) {
-				if (action == enter) {
-					search();
+				private Action enter = new ShortcutAction(null, ShortcutAction.KeyCode.ENTER, null);
+
+				@Override
+				public Action[] getActions(Object target, Object sender) {
+					return new Action[] { enter };
 				}
-			}
-		});
 
-		// create the button bar
-		buttonBar = new DefaultHorizontalLayout();
-		main.addComponent(buttonBar);
+				@Override
+				public void handleAction(Action action, Object sender, Object target) {
+					if (action == enter) {
+						search();
+					}
+				}
+			});
 
-		constructButtonBar(buttonBar);
+			// create the button bar
+			buttonBar = new DefaultHorizontalLayout();
+			main.addComponent(buttonBar);
 
-		// add custom buttons
-		postProcessButtonBar(buttonBar);
+			constructButtonBar(buttonBar);
+
+			// add custom buttons
+			postProcessButtonBar(buttonBar);
+		}
 
 		// add any custom functionality
 		postProcessLayout();

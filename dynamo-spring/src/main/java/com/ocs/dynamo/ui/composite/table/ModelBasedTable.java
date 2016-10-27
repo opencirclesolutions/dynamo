@@ -133,7 +133,7 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
 	 */
 	private void addColumn(final AttributeModel attributeModel, List<Object> propertyNames, List<String> headerNames) {
 		if (attributeModel.isVisibleInTable()) {
-			propertyNames.add(attributeModel.getName());
+			propertyNames.add(attributeModel.getPath());
 			headerNames.add(attributeModel.getDisplayName());
 
 			// for the lazy query container we explicitly have to add the
@@ -141,8 +141,8 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
 			// needed
 			if (container instanceof LazyQueryContainer) {
 				LazyQueryContainer lazyContainer = (LazyQueryContainer) container;
-				if (!lazyContainer.getContainerPropertyIds().contains(attributeModel.getName())) {
-					lazyContainer.addContainerProperty(attributeModel.getName(), attributeModel.getType(),
+				if (!lazyContainer.getContainerPropertyIds().contains(attributeModel.getPath())) {
+					lazyContainer.addContainerProperty(attributeModel.getPath(), attributeModel.getType(),
 					        attributeModel.getDefaultValue(), attributeModel.isReadOnly(), attributeModel.isSortable());
 				}
 			}
@@ -151,7 +151,7 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
 			addUrlField(attributeModel);
 
 			if (attributeModel.isNumerical()) {
-				this.setColumnAlignment(attributeModel.getName(), Table.Align.RIGHT);
+				this.setColumnAlignment(attributeModel.getPath(), Table.Align.RIGHT);
 			}
 		}
 	}
@@ -190,7 +190,7 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
 	 */
 	private void addUrlField(final AttributeModel attributeModel) {
 		if (attributeModel.isUrl() && !isEditable()) {
-			this.addGeneratedColumn(attributeModel.getName(), new ColumnGenerator() {
+			this.addGeneratedColumn(attributeModel.getPath(), new ColumnGenerator() {
 
 				private static final long serialVersionUID = -3191235289754428914L;
 
@@ -213,6 +213,7 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
 	 */
 	@Override
 	protected String formatPropertyValue(Object rowId, Object colId, Property<?> property) {
+
 		String result = TableUtils.formatPropertyValue(this, entityModelFactory, entityModel, messageService, rowId,
 		        colId, property);
 		if (result != null) {
@@ -277,7 +278,7 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
 	 */
 	private void removeGeneratedColumn(final AttributeModel attributeModel) {
 		if (attributeModel.isVisibleInTable() && attributeModel.isUrl()) {
-			removeGeneratedColumn(attributeModel.getName());
+			removeGeneratedColumn(attributeModel.getPath());
 		}
 	}
 
