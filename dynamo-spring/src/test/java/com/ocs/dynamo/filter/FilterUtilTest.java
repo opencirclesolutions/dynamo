@@ -1,11 +1,13 @@
 package com.ocs.dynamo.filter;
 
+import java.util.HashSet;
 import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.TestEntity2;
 import com.ocs.dynamo.domain.model.EntityModel;
@@ -365,5 +367,43 @@ public class FilterUtilTest {
 		Object value = FilterUtil.extractFilterValue(and, "prop2",
 		        com.vaadin.data.util.filter.Compare.LessOrEqual.class);
 		Assert.assertEquals(5, value);
+	}
+
+	@Test
+	public void testIsFilterValueSet() {
+		Assert.assertFalse(FilterUtil.isFilterValueSet(null, new HashSet<String>()));
+
+		com.vaadin.data.util.filter.Compare.GreaterOrEqual empty = new com.vaadin.data.util.filter.Compare.GreaterOrEqual(
+		        "test", null);
+		Assert.assertFalse(FilterUtil.isFilterValueSet(empty, new HashSet<String>()));
+
+		com.vaadin.data.util.filter.Compare.GreaterOrEqual eq = new com.vaadin.data.util.filter.Compare.GreaterOrEqual(
+		        "test", "bob");
+		Assert.assertTrue(FilterUtil.isFilterValueSet(eq, new HashSet<String>()));
+		Assert.assertFalse(FilterUtil.isFilterValueSet(eq, Sets.newHashSet("test")));
+
+		// test with an "and" filter
+		Assert.assertTrue(FilterUtil.isFilterValueSet(new com.vaadin.data.util.filter.And(eq, empty),
+		        new HashSet<String>()));
+
+		// test with a String filter
+		Assert.assertFalse(FilterUtil.isFilterValueSet(new com.vaadin.data.util.filter.SimpleStringFilter("test", "",
+		        true, true), new HashSet<String>()));
+		Assert.assertTrue(FilterUtil.isFilterValueSet(new com.vaadin.data.util.filter.SimpleStringFilter("test", "abc",
+		        true, true), new HashSet<String>()));
+
+		// test with a "Like" filter
+		Assert.assertFalse(FilterUtil.isFilterValueSet(new com.vaadin.data.util.filter.Like("test", "", true),
+		        new HashSet<String>()));
+		Assert.assertTrue(FilterUtil.isFilterValueSet(new com.vaadin.data.util.filter.Like("test", "abc", true),
+		        new HashSet<String>()));
+
+		// test with a "Between" filter
+		Assert.assertFalse(FilterUtil.isFilterValueSet(new com.vaadin.data.util.filter.Between("test", null, null),
+		        new HashSet<String>()));
+		Assert.assertTrue(FilterUtil.isFilterValueSet(new com.vaadin.data.util.filter.Between("test", "abc", null),
+		        new HashSet<String>()));
+		Assert.assertTrue(FilterUtil.isFilterValueSet(new com.vaadin.data.util.filter.Between("test", null, "def"),
+		        new HashSet<String>()));
 	}
 }

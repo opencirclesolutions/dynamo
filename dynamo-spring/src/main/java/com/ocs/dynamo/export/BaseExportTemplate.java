@@ -41,6 +41,7 @@ import com.ocs.dynamo.filter.Filter;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.ServiceLocator;
 import com.ocs.dynamo.ui.composite.table.TableUtils;
+import com.ocs.dynamo.utils.SystemPropertyUtils;
 
 /**
  * Base class for
@@ -68,12 +69,29 @@ public abstract class BaseExportTemplate<ID extends Serializable, T extends Abst
 
 	private CustomXlsStyleGenerator<ID, T> customGenerator;
 
+	/**
+	 * Whether to use the thousands separator for integers
+	 */
+	private final boolean intThousandsGrouping;
+
+	/**
+	 * The filter to use to restrict the search results
+	 */
 	private final Filter filter;
 
+	/**
+	 * The style generator
+	 */
 	private XlsStyleGenerator<ID, T> generator;
 
+	/**
+	 * Custom joins to use
+	 */
 	private final FetchJoinInformation[] joins;
 
+	/**
+	 * Service used to retrieve search results
+	 */
 	private final BaseService<ID, T> service;
 
 	private final SortOrder[] sortOrders;
@@ -98,12 +116,13 @@ public abstract class BaseExportTemplate<ID extends Serializable, T extends Abst
 	 * @param joins
 	 */
 	public BaseExportTemplate(BaseService<ID, T> service, SortOrder[] sortOrders, Filter filter, String title,
-	        CustomXlsStyleGenerator<ID, T> customGenerator, FetchJoinInformation... joins) {
+	        boolean intThousandsGrouping, CustomXlsStyleGenerator<ID, T> customGenerator, FetchJoinInformation... joins) {
 		this.service = service;
 		this.sortOrders = sortOrders;
 		this.filter = filter;
 		this.title = title;
 		this.joins = joins;
+		this.intThousandsGrouping = intThousandsGrouping;
 		this.customGenerator = customGenerator;
 	}
 
@@ -152,7 +171,7 @@ public abstract class BaseExportTemplate<ID extends Serializable, T extends Abst
 	 * @return
 	 */
 	protected XlsStyleGenerator<ID, T> createGenerator(Workbook workbook) {
-		return new BaseXlsStyleGenerator<>(workbook);
+		return new BaseXlsStyleGenerator<>(workbook, intThousandsGrouping);
 	}
 
 	/**
@@ -286,7 +305,9 @@ public abstract class BaseExportTemplate<ID extends Serializable, T extends Abst
 				// are displayed as percentages -> so, divide by 100
 				double temp = ((BigDecimal) value)
 				        .divide(BigDecimal.valueOf(100), DynamoConstants.INTERMEDIATE_PRECISION, RoundingMode.HALF_UP)
-				        .setScale(am == null ? 4 : am.getPrecision() + 2, RoundingMode.HALF_UP).doubleValue();
+				        .setScale(
+				                (am != null ? am.getPrecision() : SystemPropertyUtils.getDefaultDecimalPrecision()) + 2,
+				                RoundingMode.HALF_UP).doubleValue();
 				cell.setCellValue(temp);
 			} else {
 				cell.setCellValue(((BigDecimal) value).setScale(am == null ? 2 : am.getPrecision(),

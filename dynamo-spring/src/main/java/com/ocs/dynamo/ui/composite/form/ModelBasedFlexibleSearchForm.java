@@ -160,8 +160,10 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 					regions.remove(FilterRegion.this);
 
 					// remove the filter
-					FilterRegion.this.listener.onFilterChange(new FilterChangeEvent(am.getPath(), fieldFilter, null,
-					        null));
+					if (am != null) {
+						FilterRegion.this.listener.onFilterChange(new FilterChangeEvent(am.getPath(), fieldFilter,
+						        null, null));
+					}
 				}
 			});
 			layout.addComponent(removeButton);
@@ -268,7 +270,10 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 					result.add(FlexibleFilterType.GREATER_THAN);
 				} else if (Date.class.isAssignableFrom(am.getType())) {
 					result.add(FlexibleFilterType.BETWEEN);
-					result.add(FlexibleFilterType.NOT_EQUAL);
+					result.add(FlexibleFilterType.LESS_THAN);
+					result.add(FlexibleFilterType.LESS_OR_EQUAL);
+					result.add(FlexibleFilterType.GREATER_OR_EQUAL);
+					result.add(FlexibleFilterType.GREATER_THAN);
 				}
 				break;
 			default:

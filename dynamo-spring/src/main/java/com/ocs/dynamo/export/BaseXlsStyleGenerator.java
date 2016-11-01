@@ -41,6 +41,11 @@ import com.ocs.dynamo.utils.SystemPropertyUtils;
 public class BaseXlsStyleGenerator<ID extends Serializable, T extends AbstractEntity<ID>> implements
         XlsStyleGenerator<ID, T> {
 
+	/**
+	 * Whether to use thousands groupings for integer (and longs)
+	 */
+	private boolean thousandsGrouping;
+
 	private CellStyle bigDecimalPercentageStyle;
 
 	private CellStyle bigDecimalStyle;
@@ -48,6 +53,8 @@ public class BaseXlsStyleGenerator<ID extends Serializable, T extends AbstractEn
 	private CellStyle headerStyle;
 
 	private CellStyle numberStyle;
+
+	private CellStyle numberSimpleStyle;
 
 	private CellStyle normal;
 
@@ -68,8 +75,9 @@ public class BaseXlsStyleGenerator<ID extends Serializable, T extends AbstractEn
 	 * 
 	 * @param workbook
 	 */
-	public BaseXlsStyleGenerator(Workbook workbook) {
+	public BaseXlsStyleGenerator(Workbook workbook, boolean thousandsGrouping) {
 		this.workbook = workbook;
+		this.thousandsGrouping = thousandsGrouping;
 		DataFormat format = workbook.createDataFormat();
 
 		// create the cell styles only once- this is a huge performance
@@ -78,6 +86,12 @@ public class BaseXlsStyleGenerator<ID extends Serializable, T extends AbstractEn
 		numberStyle.setAlignment(CellStyle.ALIGN_RIGHT);
 		setBorder(numberStyle, CellStyle.BORDER_THIN);
 		numberStyle.setDataFormat(format.getFormat("#,#"));
+
+		// number style without thousand separators
+		numberSimpleStyle = workbook.createCellStyle();
+		numberSimpleStyle.setAlignment(CellStyle.ALIGN_RIGHT);
+		setBorder(numberSimpleStyle, CellStyle.BORDER_THIN);
+		numberSimpleStyle.setDataFormat(format.getFormat("#"));
 
 		bigDecimalStyle = workbook.createCellStyle();
 		bigDecimalStyle.setAlignment(CellStyle.ALIGN_RIGHT);
@@ -144,7 +158,7 @@ public class BaseXlsStyleGenerator<ID extends Serializable, T extends AbstractEn
 	@Override
 	public CellStyle getCellStyle(int index, T entity, Object value, AttributeModel attributeModel) {
 		if (value instanceof Integer || value instanceof Long) {
-			return numberStyle;
+			return thousandsGrouping ? numberStyle : numberSimpleStyle;
 		} else if (value instanceof Date) {
 			if (attributeModel == null || !attributeModel.isWeek()) {
 				if (attributeModel == null) {
@@ -203,6 +217,10 @@ public class BaseXlsStyleGenerator<ID extends Serializable, T extends AbstractEn
 		style.setBorderTop(border);
 		style.setBorderLeft(border);
 		style.setBorderRight(border);
+	}
+
+	public boolean isThousandsGrouping() {
+		return thousandsGrouping;
 	}
 
 }

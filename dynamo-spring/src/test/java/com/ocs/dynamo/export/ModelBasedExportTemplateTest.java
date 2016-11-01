@@ -60,7 +60,7 @@ public class ModelBasedExportTemplateTest extends BaseIntegrationTest {
 	@Test
 	public void testExcel() throws IOException {
 		ModelBasedExportTemplate<Integer, TestEntity> template = new ModelBasedExportTemplate<Integer, TestEntity>(
-		        testEntityService, entityModelFactory.getModel(TestEntity.class), null, null, "Sheet name", null) {
+		        testEntityService, entityModelFactory.getModel(TestEntity.class), null, null, "Sheet name", true, null) {
 
 			@Override
 			public int getPageSize() {
@@ -113,7 +113,7 @@ public class ModelBasedExportTemplateTest extends BaseIntegrationTest {
 	@Test
 	public void testCsv() {
 		ModelBasedExportTemplate<Integer, TestEntity> template = new ModelBasedExportTemplate<Integer, TestEntity>(
-		        testEntityService, entityModelFactory.getModel(TestEntity.class), null, null, "Sheet name", null) {
+		        testEntityService, entityModelFactory.getModel(TestEntity.class), null, null, "Sheet name", true, null) {
 			@Override
 			public int getPageSize() {
 				return 10000;

@@ -18,6 +18,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
+
+import org.springframework.util.StringUtils;
 
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.AttributeType;
@@ -26,6 +29,8 @@ import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.util.filter.AbstractJunctionFilter;
 import com.vaadin.data.util.filter.Between;
+import com.vaadin.data.util.filter.Compare;
+import com.vaadin.data.util.filter.Like;
 import com.vaadin.data.util.filter.Compare.Equal;
 import com.vaadin.data.util.filter.SimpleStringFilter;
 
@@ -229,6 +234,52 @@ public final class FilterUtil {
 	}
 
 	/**
+	 * Checks if at least one filter value is set
+	 * 
+	 * @param filter
+	 *            the filter to check
+	 * @param ignore
+	 *            the list of properties to ignore when checking (even if a value for one or more of
+	 *            these properties is set, this will not cause a return value of <code>true</code>)
+	 * @return
+	 */
+	public static boolean isFilterValueSet(Filter filter, Set<String> ignore) {
+		boolean result = false;
+		if (filter instanceof AbstractJunctionFilter) {
+			AbstractJunctionFilter jf = (AbstractJunctionFilter) filter;
+			for (Filter f : jf.getFilters()) {
+				result |= isFilterValueSet(f, ignore);
+			}
+		} else if (filter instanceof Compare) {
+			Compare eq = (Compare) filter;
+			if (ignore.contains(eq.getPropertyId())) {
+				return false;
+			}
+			return eq.getValue() != null;
+		} else if (filter instanceof SimpleStringFilter) {
+			SimpleStringFilter sf = (SimpleStringFilter) filter;
+			if (ignore.contains(sf.getPropertyId())) {
+				return false;
+			}
+			return !StringUtils.isEmpty(sf.getFilterString());
+		} else if (filter instanceof Like) {
+			Like lf = (Like) filter;
+			if (ignore.contains(lf.getPropertyId())) {
+				return false;
+			}
+			return !StringUtils.isEmpty(lf.getValue());
+		} else if (filter instanceof Between) {
+			Between bt = (Between) filter;
+			if (ignore.contains(bt.getPropertyId())) {
+				return false;
+			}
+			return bt.getStartValue() != null || bt.getEndValue() != null;
+		}
+
+		return result;
+	}
+
+	/**
 	 * Removes filters with certain property IDs from a certain filter
 	 * 
 	 * @param filter
@@ -408,11 +459,11 @@ public final class FilterUtil {
 		        || ((AttributeType.MASTER.equals(am.getAttributeType()) || AttributeType.BASIC.equals(am
 		                .getAttributeType())) && am.isMultipleSearch())) {
 			com.ocs.dynamo.filter.Filter detailFilter = FilterUtil.extractFilter(filter, am.getPath());
-			if (detailFilter != null && detailFilter instanceof Compare.Equal) {
+			if (detailFilter != null && detailFilter instanceof com.ocs.dynamo.filter.Compare.Equal) {
 				// check which property to use in the query
 				String prop = am.getReplacementSearchPath() != null ? am.getReplacementSearchPath() : am.getPath();
 
-				com.ocs.dynamo.filter.Compare.Equal bf = (Compare.Equal) detailFilter;
+				com.ocs.dynamo.filter.Compare.Equal bf = (com.ocs.dynamo.filter.Compare.Equal) detailFilter;
 				if (AttributeType.DETAIL.equals(am.getAttributeType())) {
 					if (bf.getValue() instanceof Collection) {
 						// multiple values supplied - construct an OR filter

@@ -81,7 +81,7 @@ public class ExportPivotTemplateTest extends BaseMockitoTest {
 	public void testSum() throws IOException {
 
 		ExportPivotTemplate<Integer, Series, Integer, Week> template = new ExportPivotTemplate<Integer, Series, Integer, Week>(
-		        seriesService, orders, filter, Lists.newArrayList("Name"), "Title", null) {
+		        seriesService, orders, filter, Lists.newArrayList("Name"), "Title", true, null) {
 
 			@Override
 			protected void setXlsCellValues(Row row, Series entity) {
@@ -174,7 +174,7 @@ public class ExportPivotTemplateTest extends BaseMockitoTest {
 	public void testAverage() throws IOException {
 
 		ExportPivotTemplate<Integer, Series, Integer, Week> template = new ExportPivotTemplate<Integer, Series, Integer, Week>(
-		        seriesService, orders, filter, Lists.newArrayList("Name"), "Title", null) {
+		        seriesService, orders, filter, Lists.newArrayList("Name"), "Title", true, null) {
 
 			@Override
 			protected void setXlsCellValues(Row row, Series entity) {
@@ -267,7 +267,7 @@ public class ExportPivotTemplateTest extends BaseMockitoTest {
 	public void testBigDecimalSum() throws IOException {
 
 		ExportPivotTemplate<Integer, Series, Integer, Week> template = new ExportPivotTemplate<Integer, Series, Integer, Week>(
-		        seriesService, orders, filter, Lists.newArrayList("Name"), "Title", null) {
+		        seriesService, orders, filter, Lists.newArrayList("Name"), "Title", true, null) {
 
 			@Override
 			protected void setXlsCellValues(Row row, Series entity) {

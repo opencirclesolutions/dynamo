@@ -77,8 +77,9 @@ public abstract class ModelBasedExportTemplate<ID extends Serializable, T extend
 	 * @param joins
 	 */
 	public ModelBasedExportTemplate(BaseService<ID, T> service, EntityModel<T> entityModel, SortOrder[] sortOrders,
-	        Filter filter, String title, CustomXlsStyleGenerator<ID, T> customGenerator, FetchJoinInformation... joins) {
-		super(service, sortOrders, filter, title, customGenerator, joins);
+	        Filter filter, String title, boolean intThousandsGrouping, CustomXlsStyleGenerator<ID, T> customGenerator,
+	        FetchJoinInformation... joins) {
+		super(service, sortOrders, filter, title, intThousandsGrouping, customGenerator, joins);
 		this.entityModel = entityModel;
 	}
 

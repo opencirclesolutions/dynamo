@@ -77,9 +77,9 @@ public abstract class ExportPivotTemplate<ID extends Serializable, T extends Abs
 	 *            the joins used when fetching search results
 	 */
 	public ExportPivotTemplate(BaseService<ID, T> service, SortOrder[] sortOrders, Filter filter,
-	        List<String> captions, String title, CustomXlsStyleGenerator<ID, T> customGenerator,
-	        FetchJoinInformation... joins) {
-		super(service, sortOrders, filter, title, customGenerator, joins);
+	        List<String> captions, String title, boolean intThousandsGrouping,
+	        CustomXlsStyleGenerator<ID, T> customGenerator, FetchJoinInformation... joins) {
+		super(service, sortOrders, filter, title, intThousandsGrouping, customGenerator, joins);
 		this.captions = captions;
 	}
 
