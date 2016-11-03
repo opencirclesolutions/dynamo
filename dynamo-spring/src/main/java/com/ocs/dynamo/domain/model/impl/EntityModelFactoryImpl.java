@@ -157,8 +157,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
             model.setType(descriptor.getPropertyType());
 
             // determine the possible date type
-            model.setDateType(determineDateType(model.getType(), entityModel.getEntityClass(),
-                    fieldName));
+            model.setDateType(
+                    determineDateType(model.getType(), entityModel.getEntityClass(), fieldName));
 
             // determine default display format
             model.setDisplayFormat(determineDefaultDisplayFormat(model.getType(),
@@ -215,8 +215,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
                 if (model.getType().equals(entityModel.getEntityClass())) {
                     throw new IllegalStateException("Embedding a class in itself is not allowed");
                 }
-                PropertyDescriptor[] embeddedDescriptors = BeanUtils.getPropertyDescriptors(model
-                        .getType());
+                PropertyDescriptor[] embeddedDescriptors = BeanUtils
+                        .getPropertyDescriptors(model.getType());
                 for (PropertyDescriptor embeddedDescriptor : embeddedDescriptors) {
                     String name = embeddedDescriptor.getName();
                     if (!skipAttribute(name)) {
@@ -334,8 +334,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
      */
     private <T> EntityModelImpl<T> constructModelInner(Class<T> entityClass, String reference) {
 
-        String displayName = DefaultFieldFactory.createCaptionByPropertyId(entityClass
-                .getSimpleName());
+        String displayName = DefaultFieldFactory
+                .createCaptionByPropertyId(entityClass.getSimpleName());
         String displayNamePlural = displayName + PLURAL_POSTFIX;
         String description = displayName;
         String selectDisplayProperty = null;
@@ -458,8 +458,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
         }
 
         // overwrite by message bundle (if present)
-        String msg = messageService == null ? null : messageService.getEntityMessage(reference,
-                EntityModel.ATTRIBUTE_ORDER);
+        String msg = messageService == null ? null
+                : messageService.getEntityMessage(reference, EntityModel.ATTRIBUTE_ORDER);
         if (msg != null) {
             explicitAttributeNames = Arrays.asList(msg.replaceAll("\\s+", "").split(","));
         }
@@ -528,10 +528,13 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
                 } else if (ClassUtils.getAnnotation(parentClass, name, ManyToMany.class) != null
                         || ClassUtils.getAnnotation(parentClass, name, OneToMany.class) != null) {
                     result = AttributeType.DETAIL;
-                    model.setMemberType(ClassUtils.getResolvedType(parentClass, model.getName(), 0));
-                } else if (ClassUtils.getAnnotation(parentClass, name, ElementCollection.class) != null) {
+                    model.setMemberType(
+                            ClassUtils.getResolvedType(parentClass, model.getName(), 0));
+                } else if (ClassUtils.getAnnotation(parentClass, name,
+                        ElementCollection.class) != null) {
                     result = AttributeType.ELEMENT_COLLECTION;
-                    model.setMemberType(ClassUtils.getResolvedType(parentClass, model.getName(), 0));
+                    model.setMemberType(
+                            ClassUtils.getResolvedType(parentClass, model.getName(), 0));
                 } else if (AbstractEntity.class.isAssignableFrom(model.getType())) {
                     // not a collection but a reference to another object
                     result = AttributeType.MASTER;
@@ -863,6 +866,9 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
             if (attribute.required()) {
                 model.setRequired(true);
             }
+            if (attribute.requiredForSearching()) {
+                model.setRequiredForSearching(true);
+            }
 
             if (!attribute.useThousandsGrouping()) {
                 model.setUseThousandsGrouping(false);
@@ -887,8 +893,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
     @SuppressWarnings("unchecked")
     private void setDefaultValue(AttributeModelImpl model, String defaultValue) {
         if (model.getType().isEnum()) {
-            model.setDefaultValue(Enum
-                    .valueOf(model.getType().asSubclass(Enum.class), defaultValue));
+            model.setDefaultValue(
+                    Enum.valueOf(model.getType().asSubclass(Enum.class), defaultValue));
         } else if (model.getType().equals(Date.class)) {
             SimpleDateFormat fmt = new SimpleDateFormat(model.getDisplayFormat());
             try {
@@ -908,7 +914,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
      * @param entityModel
      * @param model
      */
-    private <T> void setMessageBundleOverrides(EntityModel<T> entityModel, AttributeModelImpl model) {
+    private <T> void setMessageBundleOverrides(EntityModel<T> entityModel,
+            AttributeModelImpl model) {
 
         String msg = getAttributeMessage(entityModel, model, EntityModel.DISPLAY_NAME);
         if (!StringUtils.isEmpty(msg)) {
@@ -1147,10 +1154,9 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
                 String[] sd = token.trim().split(" ");
                 if (sd.length > 0 && !StringUtils.isEmpty(sd[0])
                         && model.getAttributeModel(sd[0]) != null) {
-                    model.getSortOrder().put(
-                            model.getAttributeModel(sd[0]),
-                            (sd.length > 1 && ("DESC".equalsIgnoreCase(sd[1]) || "DSC"
-                                    .equalsIgnoreCase(sd[1]))) ? false : true);
+                    model.getSortOrder().put(model.getAttributeModel(sd[0]), (sd.length > 1
+                            && ("DESC".equalsIgnoreCase(sd[1]) || "DSC".equalsIgnoreCase(sd[1])))
+                                    ? false : true);
                 }
             }
         }

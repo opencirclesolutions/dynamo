@@ -13,15 +13,15 @@
  */
 package com.ocs.dynamo.domain.model.annotation;
 
-import com.ocs.dynamo.domain.model.AttributeDateType;
-import com.ocs.dynamo.domain.model.AttributeSelectMode;
-import com.ocs.dynamo.domain.model.AttributeTextFieldMode;
-import com.ocs.dynamo.domain.model.VisibilityType;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+
+import com.ocs.dynamo.domain.model.AttributeDateType;
+import com.ocs.dynamo.domain.model.AttributeSelectMode;
+import com.ocs.dynamo.domain.model.AttributeTextFieldMode;
+import com.ocs.dynamo.domain.model.VisibilityType;
 
 /**
  * An interface that can be used to specify the properties of an attribute - this will override any
@@ -102,8 +102,11 @@ public @interface Attribute {
     /** replacement search path */
     String replacementSearchPath() default "";
 
-    /** */
+    /** whether this field is required for adding or editing. */
     boolean required() default false;
+
+    /** whether this field is required for searching. */
+    boolean requiredForSearching() default false;
 
     /** whether the field is searchable */
     boolean searchable() default false;

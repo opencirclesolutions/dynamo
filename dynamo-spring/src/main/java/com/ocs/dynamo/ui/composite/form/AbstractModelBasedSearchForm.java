@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.ocs.dynamo.domain.AbstractEntity;
+import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.impl.ModelBasedFieldFactory;
 import com.ocs.dynamo.filter.listener.FilterChangeEvent;
@@ -253,6 +254,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
         searchButton = new Button(message("ocs.search"));
         searchButton.setImmediate(true);
         searchButton.addClickListener(this);
+        searchButton.setEnabled(isSearchAllowed());
         return searchButton;
     }
 
@@ -309,6 +311,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
         if (event.getNewFilter() != null) {
             currentFilters.add(event.getNewFilter());
         }
+        searchButton.setEnabled(isSearchAllowed());
     }
 
     /**
@@ -331,16 +334,53 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
      * Trigger the actual search
      */
     public void search() {
-        if (!currentFilters.isEmpty()) {
-            compositeFilter = new And(currentFilters.toArray(new Filter[0]));
-        } else {
-            // search without any filters
-            compositeFilter = null;
+
+        if (!isSearchAllowed()) {
+            return;
         }
 
-        if (searchable != null) {
-            searchable.search(compositeFilter);
+        compositeFilter = null;
+
+        if (!currentFilters.isEmpty()) {
+            compositeFilter = new And(currentFilters.toArray(new Filter[0]));
         }
+
+        searchable.search(compositeFilter);
+    }
+
+    /**
+     * Searching is allowed when there are no required attributes or all required attributes are in
+     * the composite filter.
+     * 
+     * @return
+     */
+    private boolean isSearchAllowed() {
+
+        if (searchable == null) {
+            return false;
+        }
+
+        // Get the required attributes.
+        List<AttributeModel> requiredAttributes = getEntityModel()
+                .getRequiredForSearchingAttributeModels();
+
+        if (requiredAttributes.isEmpty()) {
+            return true;
+        }
+
+        if (currentFilters.isEmpty()) {
+            return false;
+        }
+
+        int found = 0;
+        for (AttributeModel model : requiredAttributes) {
+            for (Filter filter : currentFilters) {
+                if (filter.appliesToProperty(model.getPath())) {
+                    found++;
+                }
+            }
+        }
+        return found == requiredAttributes.size();
     }
 
     /**

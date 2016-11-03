@@ -13,27 +13,49 @@
  */
 package com.ocs.dynamo.domain.model.impl;
 
-import com.ocs.dynamo.domain.model.*;
-import com.ocs.dynamo.domain.model.annotation.*;
-import com.ocs.dynamo.domain.validator.Email;
-import com.ocs.dynamo.service.MessageService;
-import com.ocs.dynamo.service.impl.MessageServiceImpl;
-import com.ocs.dynamo.test.BaseMockitoTest;
-import junitx.util.PrivateAccessor;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.springframework.context.support.ResourceBundleMessageSource;
-
-import javax.persistence.*;
-import javax.validation.constraints.AssertTrue;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import javax.persistence.Basic;
+import javax.persistence.ElementCollection;
+import javax.persistence.Embeddable;
+import javax.persistence.Embedded;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.Lob;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.validation.constraints.AssertTrue;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.springframework.context.support.ResourceBundleMessageSource;
+
+import com.ocs.dynamo.domain.model.AttributeDateType;
+import com.ocs.dynamo.domain.model.AttributeModel;
+import com.ocs.dynamo.domain.model.AttributeSelectMode;
+import com.ocs.dynamo.domain.model.AttributeType;
+import com.ocs.dynamo.domain.model.EntityModel;
+import com.ocs.dynamo.domain.model.VisibilityType;
+import com.ocs.dynamo.domain.model.annotation.Attribute;
+import com.ocs.dynamo.domain.model.annotation.AttributeGroup;
+import com.ocs.dynamo.domain.model.annotation.AttributeGroups;
+import com.ocs.dynamo.domain.model.annotation.AttributeOrder;
+import com.ocs.dynamo.domain.model.annotation.Model;
+import com.ocs.dynamo.domain.validator.Email;
+import com.ocs.dynamo.service.MessageService;
+import com.ocs.dynamo.service.impl.MessageServiceImpl;
+import com.ocs.dynamo.test.BaseMockitoTest;
+
+import junitx.util.PrivateAccessor;
 
 @SuppressWarnings("unused")
 public class EntityModelFactoryImplTest extends BaseMockitoTest {
@@ -79,6 +101,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
         Assert.assertNull(nameModel.getDisplayFormat());
         Assert.assertEquals(AttributeType.BASIC, nameModel.getAttributeType());
         Assert.assertFalse(nameModel.isRequired());
+        Assert.assertFalse(nameModel.isRequiredForSearching());
         Assert.assertTrue(nameModel.isVisible());
         Assert.assertEquals(55, nameModel.getMaxLength().intValue());
 
@@ -403,7 +426,8 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
     public void testEmbedded() {
         EntityModel<EmbeddedParent> model = factory.getModel(EmbeddedParent.class);
         Assert.assertNotNull(model.getAttributeModel("name"));
-        Assert.assertEquals(AttributeType.BASIC, model.getAttributeModel("name").getAttributeType());
+        Assert.assertEquals(AttributeType.BASIC,
+                model.getAttributeModel("name").getAttributeType());
 
         // there must not be a separate model for the embedded object
         Assert.assertNull(model.getAttributeModel("child"));

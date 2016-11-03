@@ -111,7 +111,7 @@ public interface EntityModel<T> {
      * Whether the field is searchable
      */
     String SEARCHABLE = "searchable";
-    
+
     /**
      * Whether to search for exact values
      */
@@ -122,7 +122,7 @@ public interface EntityModel<T> {
      * component
      */
     String SELECT_MODE = "selectMode";
-    
+
     /**
      * The select mode in a search screen
      */
@@ -170,7 +170,8 @@ public interface EntityModel<T> {
      * @param existingModel
      *            The existing attribute model
      */
-    void addAttributeModel(String attributeGroup, AttributeModel model, AttributeModel existingModel);
+    void addAttributeModel(String attributeGroup, AttributeModel model,
+            AttributeModel existingModel);
 
     /**
      * Returns the attribute groups that are defined for this entity
@@ -286,4 +287,14 @@ public interface EntityModel<T> {
      * @return
      */
     boolean usesDefaultGroupOnly();
+
+    /**
+     * @return the required attributes.
+     */
+    List<AttributeModel> getRequiredAttributeModels();
+
+    /**
+     * @return the required for searching attributes.
+     */
+    List<AttributeModel> getRequiredForSearchingAttributeModels();
 }
