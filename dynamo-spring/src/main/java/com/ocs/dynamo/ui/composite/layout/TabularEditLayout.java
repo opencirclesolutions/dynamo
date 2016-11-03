@@ -15,9 +15,11 @@ package com.ocs.dynamo.ui.composite.layout;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Map;
 
 import com.ocs.dynamo.dao.query.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
+import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.impl.ModelBasedFieldFactory;
 import com.ocs.dynamo.service.BaseService;
@@ -329,17 +331,18 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 
 			@Override
 			public Field<?> createField(String propertyId, EntityModel<?> fieldEntityModel) {
+				AttributeModel am = getEntityModel().getAttributeModel(propertyId);
 
 				// first try to create a custom field
-				Field<?> custom = constructCustomField(getEntityModel(),
-				        getEntityModel().getAttributeModel(propertyId), isViewmode(), false);
+				Field<?> custom = constructCustomField(getEntityModel(), am, isViewmode(), false);
 
-				final Field<?> field = custom != null ? custom : super.createField(propertyId, fieldEntityModel);
+				boolean hasFilter = getFieldFilters().containsKey(propertyId);
+				final Field<?> field = custom != null ? custom : (hasFilter ? super.constructField(am,
+				        getFieldFilters(), fieldEntityModel) : super.createField(propertyId, fieldEntityModel));
 
 				// field is editable when not in view mode and not read only
 				if (field instanceof URLField) {
-					((URLField) field).setEditable(!isViewmode()
-					        && !getEntityModel().getAttributeModel(propertyId).isReadOnly());
+					((URLField) field).setEditable(!isViewmode() && !am.isReadOnly());
 				}
 
 				if (field != null && field.isEnabled()) {
@@ -355,7 +358,7 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 
 					});
 					field.setSizeFull();
-					postProcessField(propertyId, field);
+					postProcessField(am.getPath(), field);
 				}
 				return field;
 			}

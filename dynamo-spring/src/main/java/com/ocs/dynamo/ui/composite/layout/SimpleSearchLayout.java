@@ -74,12 +74,6 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 	private List<Filter> additionalFilters;
 
 	/**
-	 * The list of joins to apply to the query when fetching a single object (if not specified then
-	 * the default will be used)
-	 */
-	private FetchJoinInformation[] detailJoins;
-
-	/**
 	 * The edit button
 	 */
 	private Button editButton;
@@ -93,11 +87,6 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 	 * Label used to indicate that there are no search results yet
 	 */
 	private Label noSearchYetLabel;
-
-	/**
-	 * Extra filters to be applied to the individual search fields
-	 */
-	private Map<String, Filter> fieldFilters;
 
 	/**
 	 * The main layout (in edit mode)
@@ -170,7 +159,7 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 		super(service, entityModel, formOptions, sortOrder, joins);
 		this.queryType = queryType;
 		this.additionalFilters = additionalFilters;
-		this.fieldFilters = fieldFilters;
+		setFieldFilters(fieldFilters);
 	}
 
 	/**
@@ -391,7 +380,7 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 		// by default, do not pass a searchable object, in order to prevent an unnecessary and
 		// potentially unfiltered search
 		ModelBasedSearchForm<ID, T> result = new ModelBasedSearchForm<ID, T>(null, getEntityModel(), getFormOptions(),
-		        this.additionalFilters, this.fieldFilters) {
+		        this.additionalFilters, this.getFieldFilters()) {
 
 			@Override
 			protected void afterSearchFieldToggle(boolean visible) {
@@ -510,7 +499,7 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 				options.setShowBackButton(true).setShowEditButton(true);
 			}
 
-			editForm = new ModelBasedEditForm<ID, T>(entity, getService(), getEntityModel(), options, fieldFilters) {
+			editForm = new ModelBasedEditForm<ID, T>(entity, getService(), getEntityModel(), options, getFieldFilters()) {
 
 				@Override
 				protected void afterEditDone(boolean cancel, boolean newObject, T entity) {
@@ -546,7 +535,7 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 				@Override
 				protected Field<?> constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel,
 				        boolean viewMode) {
-					return SimpleSearchLayout.this.constructCustomField(entityModel, attributeModel, true, false);
+					return SimpleSearchLayout.this.constructCustomField(entityModel, attributeModel, viewMode, false);
 				}
 
 				@Override
@@ -565,6 +554,7 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 				}
 
 			};
+			editForm.setDetailJoins(getDetailJoins());
 			editForm.setFieldEntityModels(getFieldEntityModels());
 			editForm.build();
 			mainEditLayout.addComponent(editForm);
@@ -611,16 +601,8 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 		return additionalFilters;
 	}
 
-	public FetchJoinInformation[] getDetailJoins() {
-		return detailJoins;
-	}
-
 	public Button getEditButton() {
 		return editButton;
-	}
-
-	protected Map<String, Filter> getFieldFilters() {
-		return fieldFilters;
 	}
 
 	public int getNrOfColumns() {
@@ -655,7 +637,7 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 	 * Reloads the details view only
 	 */
 	public void reloadDetails() {
-		this.setSelectedItem(getService().fetchById(this.getSelectedItem().getId(), getJoins()));
+		this.setSelectedItem(getService().fetchById(this.getSelectedItem().getId(), getDetailJoins()));
 		detailsMode(getSelectedItem());
 	}
 
@@ -746,14 +728,6 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 
 	public void setStoredFilter(Filter filter) {
 		getSearchForm().setStoredFilter(filter);
-	}
-
-	public void setDetailJoins(FetchJoinInformation[] detailJoins) {
-		this.detailJoins = detailJoins;
-	}
-
-	public void setFieldFilters(Map<String, Filter> fieldFilters) {
-		this.fieldFilters = fieldFilters;
 	}
 
 	public void setNrOfColumns(int nrOfColumns) {

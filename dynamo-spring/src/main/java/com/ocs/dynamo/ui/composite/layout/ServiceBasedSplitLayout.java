@@ -201,10 +201,10 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
 				// selected items
 				Collection<?> col = (Collection<?>) selectedItems;
 				ID id = (ID) col.iterator().next();
-				setSelectedItem(getService().fetchById(id));
+				setSelectedItem(getService().fetchById(id, getDetailJoins()));
 			} else {
 				ID id = (ID) selectedItems;
-				setSelectedItem(getService().fetchById(id));
+				setSelectedItem(getService().fetchById(id, getDetailJoins()));
 			}
 		} else {
 			setSelectedItem(null);

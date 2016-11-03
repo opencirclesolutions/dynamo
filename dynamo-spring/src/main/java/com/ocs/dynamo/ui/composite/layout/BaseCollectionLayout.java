@@ -16,7 +16,9 @@ package com.ocs.dynamo.ui.composite.layout;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.ObjectUtils;
 
@@ -31,6 +33,7 @@ import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
 import com.ocs.dynamo.ui.composite.table.BaseTableWrapper;
 import com.vaadin.data.Container;
 import com.vaadin.data.Property;
+import com.vaadin.data.Container.Filter;
 import com.vaadin.data.sort.SortOrder;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -60,8 +63,14 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	// the button bar
 	private HorizontalLayout buttonBar = new DefaultHorizontalLayout();
 
+	//
+	private FetchJoinInformation[] detailJoins;
+
 	// the property used to determine when to draw a divider row
 	private String dividerProperty;
+
+	// filters to apply to individual search fields
+	private Map<String, Filter> fieldFilters = new HashMap<>();
 
 	// the joins to use when fetching data
 	private FetchJoinInformation[] joins;
@@ -370,5 +379,21 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 
 	public void setSortEnabled(boolean sortEnabled) {
 		this.sortEnabled = sortEnabled;
+	}
+
+	public FetchJoinInformation[] getDetailJoins() {
+		return detailJoins;
+	}
+
+	public void setDetailJoins(FetchJoinInformation[] detailJoins) {
+		this.detailJoins = detailJoins;
+	}
+
+	public Map<String, Filter> getFieldFilters() {
+		return fieldFilters;
+	}
+
+	public void setFieldFilters(Map<String, Filter> fieldFilters) {
+		this.fieldFilters = fieldFilters;
 	}
 }

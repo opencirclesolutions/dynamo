@@ -29,6 +29,7 @@ import java.util.Map.Entry;
 import org.apache.commons.io.FilenameUtils;
 
 import com.ocs.dynamo.constants.DynamoConstants;
+import com.ocs.dynamo.dao.query.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.AttributeType;
@@ -142,6 +143,10 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 				public void buttonClick(ClickEvent event) {
 					ClassUtils.clearFieldValue(getEntity(), attributeModel.getName(), byte[].class);
 					image.setVisible(false);
+					if (attributeModel.getFileNameProperty() != null) {
+						ClassUtils.clearFieldValue(getEntity(), attributeModel.getFileNameProperty(), String.class);
+						replaceLabel(attributeModel.getFileNameProperty());
+					}
 				}
 			});
 			buttons.addComponent(clearButton);
@@ -277,6 +282,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	 * The field that must receive focus
 	 */
 	private Field<?> firstField;
+
+	private FetchJoinInformation[] detailJoins;
 
 	/**
 	 * A map containing all the labels that were added - used to replace the label values as the
@@ -650,7 +657,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			@Override
 			public void buttonClick(ClickEvent event) {
 				if (entity.getId() != null) {
-					entity = service.fetchById(entity.getId());
+					entity = service.fetchById(entity.getId(), getDetailJoins());
 				}
 				afterEditDone(true, entity.getId() == null, entity);
 			}
@@ -760,7 +767,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 					boolean isNew = entity.getId() == null;
 
 					entity = service.save(entity);
-					setEntity(service.fetchById(entity.getId()));
+					setEntity(service.fetchById(entity.getId(), getDetailJoins()));
 					Notification.show(message("ocs.changes.saved"), Notification.Type.TRAY_NOTIFICATION);
 
 					// set to viewmode, load the view mode screen, and fill the
@@ -1097,6 +1104,14 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	public void signalDetailsTableValid(SignalsParent component, boolean valid) {
 		detailTablesValid.put(component, valid);
 		checkSaveButtonState();
+	}
+
+	public FetchJoinInformation[] getDetailJoins() {
+		return detailJoins;
+	}
+
+	public void setDetailJoins(FetchJoinInformation[] detailJoins) {
+		this.detailJoins = detailJoins;
 	}
 
 }

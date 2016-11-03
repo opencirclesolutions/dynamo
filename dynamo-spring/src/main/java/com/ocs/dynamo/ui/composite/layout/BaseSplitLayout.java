@@ -14,8 +14,6 @@
 package com.ocs.dynamo.ui.composite.layout;
 
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
 
 import com.ocs.dynamo.dao.query.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
@@ -27,7 +25,6 @@ import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.composite.form.FormOptions;
 import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
 import com.ocs.dynamo.ui.composite.type.ScreenMode;
-import com.vaadin.data.Container.Filter;
 import com.vaadin.data.sort.SortOrder;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -67,9 +64,6 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 
 	// the edit form
 	private ModelBasedEditForm<ID, T> editForm;
-
-	// a map of filters to apply to apply to the individual search fields
-	private Map<String, Filter> fieldFilters = new HashMap<>();
 
 	// layout that is placed above the table view
 	private Component headerLayout;
@@ -269,7 +263,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 			getFormOptions().setHideCancelButton(true);
 
 			editForm = new ModelBasedEditForm<ID, T>(entity, getService(), getEntityModel(), getFormOptions(),
-			        fieldFilters) {
+			        getFieldFilters()) {
 
 				@Override
 				protected void afterEditDone(boolean cancel, boolean newObject, T entity) {
@@ -313,6 +307,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 
 			};
 
+			editForm.setDetailJoins(getDetailJoins());
 			editForm.setFieldEntityModels(getFieldEntityModels());
 			editForm.build();
 			detailFormLayout.addComponent(editForm);
@@ -357,10 +352,6 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 
 	public ModelBasedEditForm<ID, T> getEditForm() {
 		return editForm;
-	}
-
-	public Map<String, Filter> getFieldFilters() {
-		return fieldFilters;
 	}
 
 	public Button getRemoveButton() {
@@ -411,7 +402,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	 * Reloads the details view only
 	 */
 	public void reloadDetails() {
-		this.setSelectedItem(getService().fetchById(this.getSelectedItem().getId(), getJoins()));
+		this.setSelectedItem(getService().fetchById(this.getSelectedItem().getId(), getDetailJoins()));
 		detailsMode(getSelectedItem());
 		getTableWrapper().reloadContainer();
 	}
@@ -438,10 +429,6 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 		if (editForm != null) {
 			editForm.replaceLabel(propertyName);
 		}
-	}
-
-	public void setFieldFilters(Map<String, Filter> fieldFilters) {
-		this.fieldFilters = fieldFilters;
 	}
 
 	/**

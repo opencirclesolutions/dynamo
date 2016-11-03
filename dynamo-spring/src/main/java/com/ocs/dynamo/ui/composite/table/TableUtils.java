@@ -26,6 +26,7 @@ import com.ocs.dynamo.domain.model.AttributeDateType;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
+import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.ui.container.hierarchical.ModelBasedHierarchicalContainer;
 import com.ocs.dynamo.ui.container.hierarchical.ModelBasedHierarchicalContainer.ModelBasedHierarchicalDefinition;
@@ -187,6 +188,11 @@ public final class TableUtils {
 						detailEntityModel = entityModelFactory.getModel(model.getType());
 					}
 					String displayProperty = detailEntityModel.getDisplayProperty();
+					if (displayProperty == null) {
+						throw new OCSRuntimeException("No displayProperty set for entity "
+						        + detailEntityModel.getEntityClass());
+					}
+
 					return formatPropertyValue(table, entityModelFactory, detailEntityModel, messageService,
 					        displayProperty, ClassUtils.getFieldValue(value, displayProperty), locale);
 				} else if (value instanceof AbstractEntity) {
