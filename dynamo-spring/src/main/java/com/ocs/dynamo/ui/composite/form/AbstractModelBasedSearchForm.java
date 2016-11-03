@@ -254,6 +254,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
         searchButton = new Button(message("ocs.search"));
         searchButton.setImmediate(true);
         searchButton.addClickListener(this);
+        searchButton.setEnabled(isSearchAllowed());
         return searchButton;
     }
 
@@ -310,6 +311,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
         if (event.getNewFilter() != null) {
             currentFilters.add(event.getNewFilter());
         }
+        searchButton.setEnabled(isSearchAllowed());
     }
 
     /**
