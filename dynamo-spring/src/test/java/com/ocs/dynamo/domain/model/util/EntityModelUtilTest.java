@@ -16,6 +16,7 @@ package com.ocs.dynamo.domain.model.util;
 import java.math.BigDecimal;
 import java.util.List;
 
+import com.ocs.dynamo.constants.DynamoConstants;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -231,5 +232,35 @@ public class EntityModelUtilTest extends BaseMockitoTest {
                 factory, messageService);
         Assert.assertEquals(1, changes.size());
         Assert.assertEquals("ocs.value.added", changes.get(0));
+    }
+
+    @Test
+    public void testDefaultCaptionFormat() {
+        // Given: some field name.
+        String fieldName = "minimumAge";
+
+        // Test: Get caption using configured caption format.
+        String caption = EntityModelUtil.getCaptionByPropertyId(fieldName);
+
+        // Assert: Vaadin formatting applied.
+        Assert.assertEquals("Minimum Age", caption);
+    }
+    @Test
+    public void testAlternativeCaptionFormat() {
+        // Given: some field name.
+        String fieldName = "minimumAge";
+
+        // Given: configured alternative caption format.
+        String oldValue = System.getProperty(DynamoConstants.SP_DEFAULT_CAPTION_FORMAT);
+        System.setProperty(DynamoConstants.SP_DEFAULT_CAPTION_FORMAT, "testAlternativeCaptionFormat");
+
+        // Test: Get caption using configured caption format.
+        String caption = EntityModelUtil.getCaptionByPropertyId(fieldName);
+
+        // Assert: The old default caption format was nog configured.
+        Assert.assertNull(oldValue);
+
+        // Assert: Alternative formatting applied.
+        Assert.assertEquals("Minimum age", caption);
     }
 }

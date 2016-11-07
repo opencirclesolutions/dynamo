@@ -167,6 +167,16 @@ public final class DynamoConstants {
     public static final String UTF_8 = "UTF-8";
 
     /**
+     * System property for the strategy formatting properties without a display name.
+     */
+    public static final String SP_DEFAULT_CAPTION_FORMAT = "ocs.default.caption.format";
+
+    /**
+     * Use Vaadin for formatting properties.
+     */
+    public static final String SP_DEFAULT_CAPTION_FORMAT_VAADIN = "vaadin";
+
+    /**
      * Constructor for OCSConstants.
      */
     private DynamoConstants() {

@@ -106,6 +106,15 @@ public final class SystemPropertyUtils {
     }
 
     /**
+     * The default date/time format
+     *
+     * @return
+     */
+    public static String getDefaultCaptionFormat() {
+        return System.getProperty(DynamoConstants.SP_DEFAULT_CAPTION_FORMAT, DynamoConstants.SP_DEFAULT_CAPTION_FORMAT_VAADIN);
+    }
+
+    /**
      * The default maximum number of items to display in an entity lookup field when it is in
      * multiple select mode
      * 

@@ -13,62 +13,33 @@
  */
 package com.ocs.dynamo.domain.model.impl;
 
-import java.beans.PropertyDescriptor;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-
-import javax.persistence.ElementCollection;
-import javax.persistence.Embedded;
-import javax.persistence.Id;
-import javax.persistence.Lob;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.validation.constraints.AssertFalse;
-import javax.validation.constraints.AssertTrue;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-
-import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.google.common.collect.Sets;
 import com.ocs.dynamo.domain.AbstractEntity;
-import com.ocs.dynamo.domain.model.AttributeDateType;
-import com.ocs.dynamo.domain.model.AttributeModel;
-import com.ocs.dynamo.domain.model.AttributeSelectMode;
-import com.ocs.dynamo.domain.model.AttributeTextFieldMode;
-import com.ocs.dynamo.domain.model.AttributeType;
-import com.ocs.dynamo.domain.model.EntityModel;
-import com.ocs.dynamo.domain.model.EntityModelFactory;
-import com.ocs.dynamo.domain.model.VisibilityType;
-import com.ocs.dynamo.domain.model.annotation.Attribute;
-import com.ocs.dynamo.domain.model.annotation.AttributeGroup;
-import com.ocs.dynamo.domain.model.annotation.AttributeGroups;
-import com.ocs.dynamo.domain.model.annotation.AttributeOrder;
-import com.ocs.dynamo.domain.model.annotation.Model;
+import com.ocs.dynamo.domain.model.*;
+import com.ocs.dynamo.domain.model.annotation.*;
+import com.ocs.dynamo.domain.model.util.EntityModelUtil;
 import com.ocs.dynamo.domain.validator.Email;
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.utils.ClassUtils;
 import com.ocs.dynamo.utils.SystemPropertyUtils;
 import com.vaadin.server.VaadinSession;
-import com.vaadin.ui.DefaultFieldFactory;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import javax.persistence.*;
+import javax.validation.constraints.AssertFalse;
+import javax.validation.constraints.AssertTrue;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+import java.beans.PropertyDescriptor;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * Implementation of the entity model factory - creates models that hold metadata about an entity
@@ -125,7 +96,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
             AttributeModelImpl model = new AttributeModelImpl();
             model.setEntityModel(entityModel);
 
-            String displayName = DefaultFieldFactory.createCaptionByPropertyId(fieldName);
+            String displayName = EntityModelUtil.getCaptionByPropertyId(fieldName);
 
             // first, set the defaults
             model.setDisplayName(displayName);
@@ -334,8 +305,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
      */
     private <T> EntityModelImpl<T> constructModelInner(Class<T> entityClass, String reference) {
 
-        String displayName = DefaultFieldFactory
-                .createCaptionByPropertyId(entityClass.getSimpleName());
+        String displayName = EntityModelUtil.getCaptionByPropertyId(entityClass.getSimpleName());
         String displayNamePlural = displayName + PLURAL_POSTFIX;
         String description = displayName;
         String selectDisplayProperty = null;

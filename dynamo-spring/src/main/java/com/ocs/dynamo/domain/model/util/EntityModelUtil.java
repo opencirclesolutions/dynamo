@@ -13,12 +13,10 @@
  */
 package com.ocs.dynamo.domain.model.util;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
+import com.ocs.dynamo.utils.SystemPropertyUtils;
+import com.vaadin.ui.DefaultFieldFactory;
 import org.apache.commons.lang.ObjectUtils;
 
 import com.google.common.collect.Sets;
@@ -239,4 +237,28 @@ public final class EntityModelUtil {
         return null;
     }
 
+    /**
+     * Returns the caption for a given field name using the configured strategy:<br/>
+     * vaadin - Match camel case for words. Each word starts with a capital.<br/>
+     * other - Match camel case for words. Only first word starts with a capital.<br/>
+     *
+     * @param fieldName
+     *            java property name.
+     * @return the caption for the given field.
+     * @see SystemPropertyUtils
+     */
+    public static String getCaptionByPropertyId(String fieldName) {
+        String displayName = DefaultFieldFactory.createCaptionByPropertyId(fieldName);
+        if (SystemPropertyUtils.getDefaultCaptionFormat().equals(DynamoConstants.SP_DEFAULT_CAPTION_FORMAT_VAADIN)) {
+            return displayName;
+        } else {
+            StringBuffer formatted = new StringBuffer();
+            StringTokenizer st = new StringTokenizer(displayName, " ");
+            if (st.hasMoreTokens()) formatted.append(st.nextToken());
+            while(st.hasMoreTokens()) {
+                formatted.append(" " + st.nextToken().toLowerCase());
+            }
+            return formatted.toString();
+        }
+    }
 }
