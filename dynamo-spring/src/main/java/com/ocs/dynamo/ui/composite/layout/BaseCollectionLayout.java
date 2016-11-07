@@ -124,7 +124,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	 * 
 	 * @param sortOrder
 	 */
-	public void addSortOrder(SortOrder sortOrder) {
+	public final void addSortOrder(SortOrder sortOrder) {
 		this.sortOrders.add(sortOrder);
 	}
 
@@ -181,7 +181,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	/**
 	 * Set up the code for adding table dividers
 	 */
-	protected void constructTableDividers() {
+	protected final void constructTableDividers() {
 		if (dividerProperty != null) {
 			getTableWrapper().getTable().setStyleName(DynamoConstants.CSS_DIVIDER);
 			getTableWrapper().getTable().setCellStyleGenerator(new CellStyleGenerator() {

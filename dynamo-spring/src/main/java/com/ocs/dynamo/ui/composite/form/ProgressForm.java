@@ -13,14 +13,11 @@
  */
 package com.ocs.dynamo.ui.composite.form;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
-import org.apache.log4j.Logger;
-
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.composite.layout.BaseCustomComponent;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.HorizontalLayout;
@@ -29,6 +26,9 @@ import com.vaadin.ui.Layout;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.ProgressBar;
 import com.vaadin.ui.UI;
+import org.apache.log4j.Logger;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * A form that displays of a progress bar while some time consuming process is taking place
@@ -294,7 +294,6 @@ public abstract class ProgressForm<T> extends BaseCustomComponent implements Pro
 	 * 
 	 * @param t
 	 *            the (optional) object that is being processed
-	 * @param fileName
 	 */
 	protected final void startWork(final T t) {
 		if (isFormValid(t)) {
@@ -328,11 +327,13 @@ public abstract class ProgressForm<T> extends BaseCustomComponent implements Pro
 								process(t, estimatedSize);
 							} finally {
 								updater.setStopped(true);
-								getUI().getSession().lock();
+
+								final VaadinSession session = VaadinSession.getCurrent();
+								session.lock();
 								try {
 									done();
 								} finally {
-									getUI().getSession().unlock();
+									session.unlock();
 								}
 							}
 						}

@@ -134,7 +134,7 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	 * @param reference
 	 *            the unique ID of the entity model
 	 */
-	public void addFieldEntityModel(String path, String reference) {
+	public final void addFieldEntityModel(String path, String reference) {
 		fieldEntityModels.put(path, reference);
 	}
 
@@ -144,6 +144,7 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	 * @param viewMode
 	 *            the new view mode
 	 * @param editForm
+	 *            the edit form
 	 */
 	protected void afterModeChanged(boolean viewMode, ModelBasedEditForm<ID, T> editForm) {
 		// override in subclasses
@@ -219,14 +220,14 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	 * @param button
 	 *            the button to register
 	 */
-	public void registerButton(Button button) {
+	public final void registerButton(Button button) {
 		if (button != null) {
 			button.setEnabled(false);
 			toUpdate.add(button);
 		}
 	}
 
-	public void removeFieldEntityModel(String path) {
+	public final void removeFieldEntityModel(String path) {
 		fieldEntityModels.remove(path);
 	}
 

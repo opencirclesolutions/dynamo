@@ -230,9 +230,12 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	}
 
 	/**
-	 * Constructs an extra quick search field - delegate to subclasses for implementation
+	 * Constructs the quick search field - overridden in subclasses.
 	 * 
-	 * @param parent
+	 * Do not override this method as an end user - implement the "constructQuickSearchFilter"
+	 * instead
+	 * 
+	 * @return
 	 */
 	protected abstract TextField constructSearchField();
 
@@ -240,6 +243,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	 * Fills the detail part of the screen with a custom component
 	 * 
 	 * @param component
+	 *            the custom component
 	 */
 	protected void customDetailView(Component component) {
 		detailLayout.replaceComponent(selectedDetailLayout, component);
@@ -337,7 +341,6 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	public void emptyDetailView() {
 		VerticalLayout vLayout = new VerticalLayout();
 		vLayout.addComponent(new Label(message("ocs.inline.select.item")));
-
 		detailLayout.replaceComponent(selectedDetailLayout, vLayout);
 		selectedDetailLayout = vLayout;
 	}

@@ -15,7 +15,6 @@ package com.ocs.dynamo.ui.composite.layout;
 
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.Map;
 
 import com.ocs.dynamo.dao.query.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
@@ -118,16 +117,6 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 	}
 
 	/**
-	 * Method that is called before a remove operation is carried out
-	 * 
-	 * @param entity
-	 *            the entity to remove
-	 */
-	protected void beforeRemove(T entity) {
-		// do nothing
-	}
-
-	/**
 	 * Method that is called before a save operation is carried out
 	 */
 	protected void beforeSave() {
@@ -171,8 +160,8 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 				@Override
 				protected void doDelete() {
 					if (getSelectedItem() != null) {
-						beforeRemove(getSelectedItem());
-						getTableWrapper().getTable().removeItem(getSelectedItem().getId());
+						doRemove();
+
 						getContainer().commit();
 						setSelectedItem(null);
 						afterRemove();
@@ -440,6 +429,13 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 	@Override
 	protected void detailsMode(T entity) {
 		// not needed
+	}
+
+	/**
+	 * Method that is called to remove an item
+	 */
+	protected void doRemove() {
+		getTableWrapper().getTable().removeItem(getSelectedItem().getId());
 	}
 
 	public Button getAddButton() {

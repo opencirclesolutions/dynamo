@@ -347,6 +347,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 
 			if (!StringUtils.isEmpty(annot.displayName())) {
 				displayName = annot.displayName();
+				// set description to display name by default
+				description = annot.displayName();
 			}
 			if (!StringUtils.isEmpty(annot.displayNamePlural())) {
 				displayNamePlural = annot.displayNamePlural();
