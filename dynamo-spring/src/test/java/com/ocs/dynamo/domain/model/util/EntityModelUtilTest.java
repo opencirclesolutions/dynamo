@@ -239,6 +239,9 @@ public class EntityModelUtilTest extends BaseMockitoTest {
         // Given: some field name.
         String fieldName = "minimumAge";
 
+        // Given: default alternative caption format.
+        String oldValue = System.clearProperty(DynamoConstants.SP_DEFAULT_CAPTION_FORMAT);
+
         // Test: Get caption using configured caption format.
         String caption = EntityModelUtil.getCaptionByPropertyId(fieldName);
 
