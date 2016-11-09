@@ -13,8 +13,6 @@
  */
 package com.ocs.dynamo.showcase.movies;
 
-import javax.inject.Inject;
-
 import com.ocs.dynamo.showcase.Views;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.composite.form.FormOptions;
@@ -28,29 +26,37 @@ import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.spring.annotation.UIScope;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Layout;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+
+/**
+ * Master-detail vertical split view of the Movies table.
+ */
+@UIScope // To preserve UI scope place this annotation above @SpringView
 @SpringView(name = Views.VERTICAL_MOVIES_SPLIT_VIEW)
-@UIScope
 @SuppressWarnings("serial")
 public class VerticalMoviesSplitView extends BaseView {
 
-    /** Vaadin vertical layout. */
-    private VerticalLayout mainLayout;
+    /** Logger for {@link VerticalMoviesSplitView}. */
+    private static final Logger LOG = LoggerFactory.getLogger(VerticalMoviesSplitView.class);
 
-    /** The Movies View is using the MovieService for data access. */
+    /** The Vertical Movies Split View is using the {@link MovieService} for data access. */
     @Inject
     private MovieService movieService;
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.vaadin.navigator.View#enter(com.vaadin.navigator.ViewChangeListener.ViewChangeEvent)
+    /**
+     * Construct view.
      */
-    public void enter(ViewChangeEvent event) {
+    @PostConstruct
+    void init() {
+        LOG.debug("Initialize View - {}.", this.getClass().getSimpleName());
 
         // Apply Vaadin Layout.
-        mainLayout = new DefaultVerticalLayout(true, true);
+        Layout mainLayout = new DefaultVerticalLayout(true, true);
 
         // Set form options by convention.
         FormOptions fo = new FormOptions();
@@ -67,7 +73,7 @@ public class VerticalMoviesSplitView extends BaseView {
         // A SplitLayout is a component that displays a search screen and an edit form
         ServiceBasedSplitLayout<Integer, Movie> movieLayout = new ServiceBasedSplitLayout<Integer, Movie>(
                 movieService, getModelFactory().getModel(Movie.class), fo, new SortOrder("title",
-                        SortDirection.ASCENDING)) {
+                SortDirection.ASCENDING)) {
 
             @Override
             protected Filter constructQuickSearchFilter(String value) {
@@ -80,5 +86,13 @@ public class VerticalMoviesSplitView extends BaseView {
         // Some plumbing.
         mainLayout.addComponent(movieLayout);
         setCompositionRoot(mainLayout);
+    }
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.vaadin.navigator.View#enter(com.vaadin.navigator.ViewChangeListener.ViewChangeEvent)
+     */
+    public void enter(ViewChangeEvent event) {
+        LOG.debug("Update View - {}.", this.getClass().getSimpleName());
     }
 }

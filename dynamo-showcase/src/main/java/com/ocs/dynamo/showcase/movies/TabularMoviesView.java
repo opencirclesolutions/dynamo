@@ -13,10 +13,6 @@
  */
 package com.ocs.dynamo.showcase.movies;
 
-import java.util.List;
-
-import javax.inject.Inject;
-
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
@@ -32,7 +28,13 @@ import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.Field;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Layout;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import java.util.List;
 
 /**
  * A tabular display of the Movies table
@@ -40,15 +42,15 @@ import com.vaadin.ui.VerticalLayout;
  * @author bas.rutten
  *
  */
+@UIScope // To preserve UI scope place this annotation above @SpringView.
 @SpringView(name = Views.TABULAR_MOVIES_VIEW)
-@UIScope
 @SuppressWarnings("serial")
 public class TabularMoviesView extends BaseView {
 
-    /** Vaadin vertical layout. */
-    private VerticalLayout mainLayout;
+    /** Logger for {@link TabularMoviesView}. */
+    private static final Logger LOG = LoggerFactory.getLogger(TabularMoviesView.class);
 
-    /** The Movies View is using the MovieService for data access. */
+    /** The Tabular Movies View is using the {@link MovieService} for data access. */
     @Inject
     private MovieService movieService;
 
@@ -57,15 +59,15 @@ public class TabularMoviesView extends BaseView {
 
     private List<Country> allCountries;
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.vaadin.navigator.View#enter(com.vaadin.navigator.ViewChangeListener.ViewChangeEvent)
+    /**
+     * Construct view.
      */
-    public void enter(ViewChangeEvent event) {
+    @PostConstruct
+    void init() {
+        LOG.debug("Initialize View - {}.", this.getClass().getSimpleName());
 
         // Apply Vaadin Layout.
-        mainLayout = new DefaultVerticalLayout(true, true);
+        Layout mainLayout = new DefaultVerticalLayout(true, true);
 
         // Set form options by convention.
         FormOptions fo = new FormOptions();
@@ -88,7 +90,7 @@ public class TabularMoviesView extends BaseView {
                 movieService, em, fo, new SortOrder("title", SortDirection.ASCENDING)) {
 
             protected Field<?> constructCustomField(EntityModel<Movie> entityModel,
-                    AttributeModel attributeModel, boolean viewMode, boolean searchMode) {
+                                                    AttributeModel attributeModel, boolean viewMode, boolean searchMode) {
                 if ("country".equals(attributeModel.getName())) {
                     EntityComboBox<Integer, Country> cb = new EntityComboBox<Integer, Country>(
                             getEntityModelFactory().getModel(Country.class), attributeModel,
@@ -103,5 +105,13 @@ public class TabularMoviesView extends BaseView {
 
         mainLayout.addComponent(movieLayout);
         setCompositionRoot(mainLayout);
+    }
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.vaadin.navigator.View#enter(com.vaadin.navigator.ViewChangeListener.ViewChangeEvent)
+     */
+    public void enter(ViewChangeEvent event) {
+        LOG.debug("Update View - {}.", this.getClass().getSimpleName());
     }
 }
