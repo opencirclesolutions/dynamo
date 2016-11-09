@@ -88,6 +88,8 @@ public class DefaultUI extends BaseUI {
     @Override
     protected void init(VaadinRequest request) {
 
+        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Creating UI Instance - initializing.");
+
         // Create the content root layout for the UI
         VerticalLayout content = new VerticalLayout();
         setContent(content);
