@@ -26,6 +26,7 @@ import org.junit.Test;
 import com.google.common.collect.Lists;
 import com.mysema.query.BooleanBuilder;
 import com.ocs.dynamo.dao.SortOrder.Direction;
+import com.ocs.dynamo.dao.query.FetchJoinInformation;
 import com.ocs.dynamo.domain.QTestEntity;
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.filter.And;
@@ -238,6 +239,29 @@ public class TestEntityDaoTest extends BaseIntegrationTest {
 	}
 
 	@Test
+	public void testFetch() {
+		save("Kevin", 11L);
+		save("Stuart", 12L);
+		save("Bob", 13L);
+
+		List<TestEntity> results = dao.fetch(null);
+		Assert.assertEquals(3, results.size());
+
+		results = dao.fetch(new Compare.Equal("name", "Bob"));
+		Assert.assertEquals(1, results.size());
+
+		// with a sort order
+		results = dao.fetch(null, new SortOrders(new SortOrder("name")));
+		Assert.assertEquals(3, results.size());
+		Assert.assertEquals("Bob", results.get(0).getName());
+
+		// with a sort order and a fetch
+		results = dao.fetch(null, new SortOrders(new SortOrder("name")), new FetchJoinInformation("testEntities"));
+		Assert.assertEquals(3, results.size());
+		Assert.assertEquals("Bob", results.get(0).getName());
+	}
+
+	@Test
 	public void testFlushAndClear() {
 		TestEntity entity = save("Jan", 11L);
 
@@ -246,6 +270,22 @@ public class TestEntityDaoTest extends BaseIntegrationTest {
 		dao.flushAndClear();
 
 		Assert.assertFalse(getEntityManager().contains(entity));
+	}
+
+	@Test
+	public void testFindDistinct() {
+		save("Kevin", 11L);
+		save("Bob", 11L);
+		save("Bob", 11L);
+
+		List<? extends Object> names = dao.findDistinct(null, "name", new SortOrder("name"));
+		Assert.assertEquals(2, names.size());
+		Assert.assertEquals("Bob", names.get(0));
+		Assert.assertEquals("Kevin", names.get(1));
+
+		List<? extends Object> ages = dao.findDistinct(null, "age", new SortOrder("age"));
+		Assert.assertEquals(1, ages.size());
+		Assert.assertEquals(11L, ages.get(0));
 	}
 
 	private TestEntity save(String name, long age) {

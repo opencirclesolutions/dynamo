@@ -104,46 +104,48 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
 
 	@Override
 	public void build() {
+		if (mainLayout == null) {
 
-		mainLayout = new DefaultVerticalLayout(true, true);
+			mainLayout = new DefaultVerticalLayout(true, true);
 
-		// form that contains the combo box
-		FormLayout form = new FormLayout();
-		form.setMargin(true);
-		form.setStyleName(DynamoConstants.CSS_CLASS_HALFSCREEN);
-		mainLayout.addComponent(form);
+			// form that contains the combo box
+			FormLayout form = new FormLayout();
+			form.setMargin(true);
+			form.setStyleName(DynamoConstants.CSS_CLASS_HALFSCREEN);
+			mainLayout.addComponent(form);
 
-		// combo box for selecting domain
-		domainCombo = new ComboBox(message("ocs.select.domain"));
-		for (Class<? extends Domain> clazz : getDomainClasses()) {
-			domainCombo.addItem(clazz);
-			domainCombo.setItemCaption(clazz, getEntityModelFactory().getModel(clazz).getDisplayName());
-		}
-		domainCombo.setNullSelectionAllowed(false);
-		domainCombo.setSizeFull();
-
-		// respond to a change by displaying the correct domain
-		domainCombo.addValueChangeListener(new ValueChangeListener() {
-
-			private static final long serialVersionUID = 8441066091930807231L;
-
-			@Override
-			@SuppressWarnings("unchecked")
-			public void valueChange(ValueChangeEvent event) {
-				selectDomain((Class<? extends Domain>) event.getProperty().getValue());
+			// combo box for selecting domain
+			domainCombo = new ComboBox(message("ocs.select.domain"));
+			for (Class<? extends Domain> clazz : getDomainClasses()) {
+				domainCombo.addItem(clazz);
+				domainCombo.setItemCaption(clazz, getEntityModelFactory().getModel(clazz).getDisplayName());
 			}
-		});
+			domainCombo.setNullSelectionAllowed(false);
+			domainCombo.setSizeFull();
 
-		form.addComponent(domainCombo);
+			// respond to a change by displaying the correct domain
+			domainCombo.addValueChangeListener(new ValueChangeListener() {
 
-		selectedDomainLayout = new DefaultVerticalLayout();
-		mainLayout.addComponent(selectedDomainLayout);
+				private static final long serialVersionUID = 8441066091930807231L;
 
-		// select the first domain (if there is any)
-		if (!getDomainClasses().isEmpty()) {
-			domainCombo.setValue(getDomainClasses().get(0));
+				@Override
+				@SuppressWarnings("unchecked")
+				public void valueChange(ValueChangeEvent event) {
+					selectDomain((Class<? extends Domain>) event.getProperty().getValue());
+				}
+			});
+
+			form.addComponent(domainCombo);
+
+			selectedDomainLayout = new DefaultVerticalLayout();
+			mainLayout.addComponent(selectedDomainLayout);
+
+			// select the first domain (if there is any)
+			if (!getDomainClasses().isEmpty()) {
+				domainCombo.setValue(getDomainClasses().get(0));
+			}
+			setCompositionRoot(mainLayout);
 		}
-		setCompositionRoot(mainLayout);
 	}
 
 	/**

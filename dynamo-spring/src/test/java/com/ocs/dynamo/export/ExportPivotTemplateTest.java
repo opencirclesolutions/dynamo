@@ -132,6 +132,11 @@ public class ExportPivotTemplateTest extends BaseMockitoTest {
 			public int getPageSize() {
 				return 1000;
 			}
+
+			@Override
+			protected boolean columnValueMatches(Series entity, Week column) {
+				return true;
+			}
 		};
 		byte[] bytes = template.process(true);
 		Assert.assertTrue(bytes != null);
@@ -224,6 +229,11 @@ public class ExportPivotTemplateTest extends BaseMockitoTest {
 			@Override
 			public int getPageSize() {
 				return 1000;
+			}
+
+			@Override
+			protected boolean columnValueMatches(Series entity, Week column) {
+				return true;
 			}
 		};
 		byte[] bytes = template.process(true);
@@ -322,6 +332,11 @@ public class ExportPivotTemplateTest extends BaseMockitoTest {
 			@Override
 			public int getPageSize() {
 				return 1000;
+			}
+
+			@Override
+			protected boolean columnValueMatches(Series entity, Week column) {
+				return true;
 			}
 		};
 		byte[] bytes = template.process(true);

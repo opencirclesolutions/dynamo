@@ -16,7 +16,6 @@ package com.ocs.dynamo.domain.model;
 import javax.inject.Inject;
 
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
 import com.ocs.dynamo.domain.TestEntity;

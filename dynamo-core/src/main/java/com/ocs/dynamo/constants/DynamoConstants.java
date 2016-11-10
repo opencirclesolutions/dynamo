@@ -53,6 +53,11 @@ public final class DynamoConstants {
     public static final String CSS_DIVIDER = "divider";
 
     /**
+     * The CSS class for the last visited main menu item
+     */
+    public static final String CSS_LAST_VISITED = "lastVisited";
+    
+    /**
      * The CSS class that is assigned to numerical cells in a table
      */
     public static final String CSS_NUMERICAL = "numerical";

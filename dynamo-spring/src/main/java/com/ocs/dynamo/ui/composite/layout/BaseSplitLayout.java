@@ -119,88 +119,90 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	 */
 	@Override
 	public void build() {
-		mainLayout = new DefaultVerticalLayout(true, true);
+		if (mainLayout == null) {
+			mainLayout = new DefaultVerticalLayout(true, true);
 
-		HorizontalSplitPanel splitter = null;
-		VerticalLayout splitterLayout = null;
+			HorizontalSplitPanel splitter = null;
+			VerticalLayout splitterLayout = null;
 
-		detailLayout = new DefaultVerticalLayout();
-		emptyDetailView();
+			detailLayout = new DefaultVerticalLayout();
+			emptyDetailView();
 
-		// optional header
-		headerLayout = constructHeaderLayout();
-		if (headerLayout != null) {
-			mainLayout.addComponent(headerLayout);
-		}
-
-		// construct option quick search field
-		quickSearchField = constructSearchField();
-
-		// additional quick search field
-		if (!isHorizontalMode()) {
-			if (quickSearchField != null) {
-				mainLayout.addComponent(quickSearchField);
-			}
-		}
-
-		// table init
-		getTableWrapper().getTable().setPageLength(getPageLength());
-		getTableWrapper().getTable().setSortEnabled(isSortEnabled());
-		constructTableDividers();
-
-		// extra splitter (for horizontal mode)
-		if (isHorizontalMode()) {
-			splitter = new HorizontalSplitPanel();
-			mainLayout.addComponent(splitter);
-
-			splitterLayout = new DefaultVerticalLayout(false, true);
-			if (quickSearchField != null) {
-				splitterLayout.addComponent(quickSearchField);
+			// optional header
+			headerLayout = constructHeaderLayout();
+			if (headerLayout != null) {
+				mainLayout.addComponent(headerLayout);
 			}
 
-			splitterLayout.addComponent(getTableWrapper());
-			splitter.setFirstComponent(splitterLayout);
-		} else {
-			mainLayout.addComponent(getTableWrapper());
+			// construct option quick search field
+			quickSearchField = constructSearchField();
+
+			// additional quick search field
+			if (!isHorizontalMode()) {
+				if (quickSearchField != null) {
+					mainLayout.addComponent(quickSearchField);
+				}
+			}
+
+			// table init
+			getTableWrapper().getTable().setPageLength(getPageLength());
+			getTableWrapper().getTable().setSortEnabled(isSortEnabled());
+			constructTableDividers();
+
+			// extra splitter (for horizontal mode)
+			if (isHorizontalMode()) {
+				splitter = new HorizontalSplitPanel();
+				mainLayout.addComponent(splitter);
+
+				splitterLayout = new DefaultVerticalLayout(false, true);
+				if (quickSearchField != null) {
+					splitterLayout.addComponent(quickSearchField);
+				}
+
+				splitterLayout.addComponent(getTableWrapper());
+				splitter.setFirstComponent(splitterLayout);
+			} else {
+				mainLayout.addComponent(getTableWrapper());
+			}
+
+			if (isHorizontalMode()) {
+				splitterLayout.addComponent(getButtonBar());
+			} else {
+				mainLayout.addComponent(getButtonBar());
+			}
+
+			// create a panel to hold the edit form
+			Panel editPanel = new Panel();
+			editPanel.setContent(detailLayout);
+
+			if (isHorizontalMode()) {
+				// create the layout that is the right part of the splitter
+				VerticalLayout extra = new DefaultVerticalLayout(true, false);
+				extra.addComponent(editPanel);
+				splitter.setSecondComponent(extra);
+			} else {
+				mainLayout.addComponent(editPanel);
+			}
+
+			addButton = constructAddButton();
+			if (addButton != null) {
+				getButtonBar().addComponent(addButton);
+			}
+
+			removeButton = constructRemoveButton();
+			if (removeButton != null) {
+				registerButton(removeButton);
+				getButtonBar().addComponent(removeButton);
+			}
+
+			// allow the user to define extra buttons
+			postProcessButtonBar(getButtonBar());
+
+			postProcessLayout(mainLayout);
+
+			checkButtonState(null);
+			setCompositionRoot(mainLayout);
 		}
-
-		if (isHorizontalMode()) {
-			splitterLayout.addComponent(getButtonBar());
-		} else {
-			mainLayout.addComponent(getButtonBar());
-		}
-
-		// create a panel to hold the edit form
-		Panel editPanel = new Panel();
-		editPanel.setContent(detailLayout);
-
-		if (isHorizontalMode()) {
-			// create the layout that is the right part of the splitter
-			VerticalLayout extra = new DefaultVerticalLayout(true, false);
-			extra.addComponent(editPanel);
-			splitter.setSecondComponent(extra);
-		} else {
-			mainLayout.addComponent(editPanel);
-		}
-
-		addButton = constructAddButton();
-		if (addButton != null) {
-			getButtonBar().addComponent(addButton);
-		}
-
-		removeButton = constructRemoveButton();
-		if (removeButton != null) {
-			registerButton(removeButton);
-			getButtonBar().addComponent(removeButton);
-		}
-
-		// allow the user to define extra buttons
-		postProcessButtonBar(getButtonBar());
-
-		postProcessLayout(mainLayout);
-
-		checkButtonState(null);
-		setCompositionRoot(mainLayout);
 	}
 
 	public abstract void setSelectedItems(Object selectedItems);

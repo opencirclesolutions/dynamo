@@ -2,7 +2,6 @@ package com.ocs.dynamo.aop;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;

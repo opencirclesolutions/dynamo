@@ -18,6 +18,7 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.ui.auth.DefaultPermissionCheckerImpl;
 import com.vaadin.navigator.Navigator;
@@ -60,7 +61,7 @@ public class MenuService {
 	 *            the navigator component
 	 * @return the constructed menu item
 	 */
-	private MenuItem constructMenu(Object parent, String key, Navigator navigator) {
+	private MenuItem constructMenu(MenuBar bar, Object parent, String key, Navigator navigator) {
 		String caption = messageService.getMessageNoDefault(key + "." + DISPLAY_NAME);
 
 		MenuItem menuItem = null;
@@ -75,7 +76,7 @@ public class MenuService {
 			// create navigation command
 			Command command = null;
 			if (!StringUtils.isEmpty(destination)) {
-				command = new NavigateCommand(navigator, destination, tabIndex, mode);
+				command = new NavigateCommand(navigator, bar, destination, tabIndex, mode);
 			}
 
 			// create menu item
@@ -94,7 +95,7 @@ public class MenuService {
 			String childKey = messageService.getMessageNoDefault(key + "." + index + "." + DISPLAY_NAME);
 
 			while (childKey != null) {
-				constructMenu(menuItem, key + "." + index, navigator);
+				constructMenu(bar, menuItem, key + "." + index, navigator);
 				index++;
 				childKey = messageService.getMessageNoDefault(key + "." + index + "." + DISPLAY_NAME);
 			}
@@ -122,7 +123,7 @@ public class MenuService {
 		// look up any messages of the form "rootName.i"
 		int i = 1;
 		while (true) {
-			if (constructMenu(mainMenu, rootName + "." + i, navigator) == null) {
+			if (constructMenu(mainMenu, mainMenu, rootName + "." + i, navigator) == null) {
 				break;
 			}
 			i++;
@@ -160,6 +161,24 @@ public class MenuService {
 		}
 	}
 
+	private boolean hasChildWithDestination(MenuItem item, String destination) {
+		if (item.getChildren() != null && !item.getChildren().isEmpty()) {
+			boolean found = false;
+			for (MenuItem child : item.getChildren()) {
+				boolean t = hasChildWithDestination(child, destination);
+				found |= t;
+			}
+
+			return found;
+		} else if (item.getCommand() instanceof NavigateCommand) {
+			NavigateCommand command = (NavigateCommand) item.getCommand();
+			if (command.getDestination().equals(destination)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	/**
 	 * Recursively process all menu items and hides the items that have no visible children
 	 * 
@@ -188,6 +207,22 @@ public class MenuService {
 			setVisible(item, destination, visible);
 		}
 		hideRecursively(menu);
+	}
+
+	/**
+	 * Highlights a certain menu item (adds the "highlight" style) to mark it as the last visited
+	 * main menu item
+	 * 
+	 * @param item
+	 * @param destination
+	 */
+	public void setLastVisited(MenuBar menuBar, String destination) {
+		for (MenuItem item : menuBar.getItems()) {
+			item.setStyleName(null);
+			if (hasChildWithDestination(item, destination)) {
+				item.setStyleName(DynamoConstants.CSS_LAST_VISITED);
+			}
+		}
 	}
 
 	/**

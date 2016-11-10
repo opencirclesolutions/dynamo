@@ -13,8 +13,10 @@
  */
 package com.ocs.dynamo.ui.menu;
 
+import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.ui.BaseUI;
 import com.vaadin.navigator.Navigator;
+import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.UI;
@@ -26,61 +28,76 @@ import com.vaadin.ui.UI;
  */
 public class NavigateCommand implements Command {
 
-    private static final long serialVersionUID = 5192333331107840255L;
+	private static final long serialVersionUID = 5192333331107840255L;
 
-    private final Navigator navigator;
+	private final Navigator navigator;
 
-    private final String destination;
+	private MenuBar menuBar;
 
-    private final String selectedTab;
+	private final String destination;
 
-    private final String mode;
+	private final String selectedTab;
 
-    /**
-     * Constructor
-     * 
-     * @param navigator
-     *            the Vaadin navigator
-     * @param destination
-     *            the destination to navigate to
-     * @param selectedTab
-     *            the index of the tab to select
-     * @param mode
-     *            an optional screen mode
-     */
-    public NavigateCommand(Navigator navigator, String destination, String selectedTab, String mode) {
-        this.navigator = navigator;
-        this.destination = destination;
-        this.selectedTab = selectedTab;
-        this.mode = mode;
-    }
+	private final String mode;
 
-    @Override
-    public void menuSelected(MenuItem selectedItem) {
-        UI ui = UI.getCurrent();
-        if (ui instanceof BaseUI) {
-            BaseUI b = (BaseUI) ui;
+	/**
+	 * Constructor
+	 * 
+	 * @param navigator
+	 *            the Vaadin navigator
+	 * @param destination
+	 *            the destination to navigate to
+	 * @param selectedTab
+	 *            the index of the tab to select
+	 * @param mode
+	 *            an optional screen mode
+	 */
+	public NavigateCommand(Navigator navigator, MenuBar menuBar, String destination, String selectedTab, String mode) {
+		this.menuBar = menuBar;
+		this.navigator = navigator;
+		this.destination = destination;
+		this.selectedTab = selectedTab;
+		this.mode = mode;
+	}
 
-            if (selectedTab != null) {
-                b.setSelectedTab(Integer.valueOf(selectedTab));
-            } else {
-                b.setSelectedTab(null);
-            }
-            b.setScreenMode(mode);
-        }
-        navigator.navigateTo(destination);
-    }
+	@Override
+	public void menuSelected(MenuItem selectedItem) {
+		UI ui = UI.getCurrent();
+		if (ui instanceof BaseUI) {
+			BaseUI b = (BaseUI) ui;
 
-    public String getDestination() {
-        return destination;
-    }
+			if (selectedTab != null) {
+				b.setSelectedTab(Integer.valueOf(selectedTab));
+			} else {
+				b.setSelectedTab(null);
+			}
+			b.setScreenMode(mode);
+		}
 
-    public String getSelectedTab() {
-        return selectedTab;
-    }
+		// reset style names
+		for (MenuItem item : menuBar.getItems()) {
+			item.setStyleName(null);
+		}
 
-    public String getMode() {
-        return mode;
-    }
+		// mark top level menu
+		while (selectedItem.getParent() != null) {
+			selectedItem = selectedItem.getParent();
+		}
+		selectedItem.setStyleName(DynamoConstants.CSS_LAST_VISITED);
+
+		navigator.navigateTo(destination);
+	}
+
+	public String getDestination() {
+		return destination;
+	}
+
+	public String getSelectedTab() {
+		return selectedTab;
+	}
+
+	public String getMode() {
+		return mode;
+	}
 
 }
