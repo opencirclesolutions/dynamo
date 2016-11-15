@@ -18,6 +18,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.Map;
 
+import net.sf.jasperreports.engine.JRDataSource;
+import net.sf.jasperreports.engine.JasperReport;
+
 import org.apache.commons.lang.StringUtils;
 
 import com.ocs.dynamo.domain.model.EntityModel;
@@ -50,9 +53,6 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
-
-import net.sf.jasperreports.engine.JRDataSource;
-import net.sf.jasperreports.engine.JasperReport;
 
 /**
  * Custom component to render HTML versions of JasperReports and export to other formats
