@@ -42,6 +42,22 @@ public final class SystemPropertyUtils {
     }
 
     /**
+     * 
+     * @return the CSV separator character
+     */
+    public static String getExportCsvSeparator() {
+        return System.getProperty(DynamoConstants.SP_EXPORT_CSV_SEPARATOR, ";");
+    }
+
+    /**
+     * 
+     * @return the CSV quote character
+     */
+    public static String getExportCsvQuoteChar() {
+        return System.getProperty(DynamoConstants.SP_EXPORT_CSV_QUOTE, "\"");
+    }
+
+    /**
      * The default currency symbol
      * 
      * @return
@@ -65,8 +81,7 @@ public final class SystemPropertyUtils {
      * @return
      */
     public static String getDefaultDateTimeFormat() {
-        return System
-                .getProperty(DynamoConstants.SP_DEFAULT_DATETIME_FORMAT, "dd-MM-yyyy HH:mm:ss");
+        return System.getProperty(DynamoConstants.SP_DEFAULT_DATETIME_FORMAT, "dd-MM-yyyy HH:mm:ss");
     }
 
     /**
@@ -84,12 +99,12 @@ public final class SystemPropertyUtils {
      * @return
      */
     public static int getDefaultListSelectRows() {
-        return Integer.getInteger(DynamoConstants.SP_DEFAULT_LISTSELECT_ROWS,
-                DEFAULT_LISTSELECT_ROWS);
+        return Integer.getInteger(DynamoConstants.SP_DEFAULT_LISTSELECT_ROWS, DEFAULT_LISTSELECT_ROWS);
     }
-    
+
     /**
      * The default locale
+     * 
      * @return
      */
     public static String getDefaultLocale() {
@@ -106,7 +121,7 @@ public final class SystemPropertyUtils {
     }
 
     /**
-     * The default date/time format
+     * The default caption format
      *
      * @return
      */
@@ -121,8 +136,34 @@ public final class SystemPropertyUtils {
      * @return
      */
     public static int getLookupFieldMaxItems() {
-        return Integer.getInteger(DynamoConstants.SP_LOOKUP_FIELD_MAX_ITEMS,
-                DEFAULT_LOOKUP_FIELD_MAX_ITEMS);
+        return Integer.getInteger(DynamoConstants.SP_LOOKUP_FIELD_MAX_ITEMS, DEFAULT_LOOKUP_FIELD_MAX_ITEMS);
+    }
+
+    /**
+     * Maximum number of rows in a non-streaming export
+     * 
+     * @return
+     */
+    public static int getMaximumExportRowsNonStreaming() {
+        return Integer.getInteger(DynamoConstants.SP_MAX_ROWS_NON_STREAMING, 15000);
+    }
+
+    /**
+     * Maximum number of rows in a streaming export
+     * 
+     * @return
+     */
+    public static int getMaximumExportRowsStreaming() {
+        return Integer.getInteger(DynamoConstants.SP_MAX_ROWS_STREAMING, 10000);
+    }
+
+    /**
+     * Maximum number of rows in a streaming export of a pivoted data set
+     * 
+     * @return
+     */
+    public static int getMaximumExportRowsStreamingPivot() {
+        return Integer.getInteger(DynamoConstants.SP_MAX_ROWS_STREAMING_PIVOTED, 30000);
     }
 
     /**

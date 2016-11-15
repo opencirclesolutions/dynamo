@@ -28,7 +28,7 @@ import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.shared.ui.combobox.FilteringMode;
 
 /**
- * Combo box for displaying a list of entities
+ * Combo box for displaying a list of entities. This component supports filtering
  */
 public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID>> extends
         ComboBoxFixed implements Refreshable {
@@ -191,6 +191,7 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
     }
 
     @SuppressWarnings("unchecked")
+    @Override
     public void refresh() {
         if (SelectMode.ALL.equals(selectMode)) {
             // add all items (but sorted)
@@ -222,25 +223,25 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
      */
     @Override
     protected Filter buildFilter(String filterString, FilteringMode filteringMode) {
-        Filter filter = null;
+        Filter ft = null;
 
         if (null != filterString && !"".equals(filterString)) {
             switch (filteringMode) {
             case OFF:
                 break;
             case STARTSWITH:
-                filter = new IgnoreDiacriticsStringFilter(getItemCaptionPropertyId(), filterString,
+                ft = new IgnoreDiacriticsStringFilter(getItemCaptionPropertyId(), filterString,
                         true, true);
                 break;
             case CONTAINS:
-                filter = new IgnoreDiacriticsStringFilter(getItemCaptionPropertyId(), filterString,
+                ft = new IgnoreDiacriticsStringFilter(getItemCaptionPropertyId(), filterString,
                         true, false);
                 break;
             default:
                 break;
             }
         }
-        return filter;
+        return ft;
     }
 
 }

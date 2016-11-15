@@ -42,11 +42,7 @@ public class VerticalMoviesSplitView extends BaseView {
     @Inject
     private MovieService movieService;
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.vaadin.navigator.View#enter(com.vaadin.navigator.ViewChangeListener.ViewChangeEvent)
-     */
+    @Override
     public void enter(ViewChangeEvent event) {
 
         // Apply Vaadin Layout.

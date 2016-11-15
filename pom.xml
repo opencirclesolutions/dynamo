@@ -70,10 +70,13 @@
 
 	<modules>
 		<module>dynamo-core</module>
+		<module>dynamo-camel</module>
 		<module>dynamo-vaadin</module>
 		<module>dynamo-jpa</module>
 		<module>dynamo-spring</module>
 		<module>dynamo-functional-domain</module>
+		<module>dynamo-jasperreports</module>
+		<module>dynamo-jasperreports-fixes</module>
 		<module>dynamo-archetype</module>
 		<module>dynamo-archetype-modules</module>
 		<module>dynamo-showcase</module>
@@ -88,7 +91,7 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
 		<!-- Dependency versions. -->
-		<vaadin.version>7.5.6</vaadin.version>
+		<vaadin.version>7.7.3</vaadin.version>
 		<vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
 		<vaadin.lazycontainer.version>7.4.0.1</vaadin.lazycontainer.version>
 		<vaadin-spring.version>1.0.0.beta3</vaadin-spring.version>
@@ -114,6 +117,8 @@
 		<xlsx-streamer.version>0.2.9</xlsx-streamer.version>
 		<junit-addons.version>1.4</junit-addons.version>
 		<aspectj.version>1.6.12</aspectj.version>
+		<jasperreports.version>6.3.0</jasperreports.version>
+		<batik.version>1.8</batik.version>
 
 		<!-- Maven plugin versions. -->
 		<org.apache.maven.plugins.compiler.version>3.3</org.apache.maven.plugins.compiler.version>
@@ -182,7 +187,11 @@
 				<artifactId>extended-token-field</artifactId>
 				<version>${vaadin.extended-token-field.version}</version>
 			</dependency>
-
+			<dependency>
+				<groupId>org.tltv.gantt</groupId>
+				<artifactId>gantt-addon</artifactId>
+				<version>0.9.4</version>
+			</dependency>
 			<!-- Bean Validation API -->
 			<dependency>
 				<groupId>javax.validation</groupId>
@@ -340,6 +349,73 @@
 					</exclusion>
 				</exclusions>
 			</dependency>
+			
+			<!-- JasperReports Library -->
+			<dependency>
+				<groupId>nl.opencirclesolutions</groupId>
+				<artifactId>jasperreports-fixes</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<!-- add this in scope provided to have the original classes when developing -->
+			<dependency>
+				<groupId>net.sf.jasperreports</groupId>
+				<artifactId>jasperreports</artifactId>
+				<version>${jasperreports.version}</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>net.sf.jasperreports</groupId>
+				<artifactId>jasperreports-functions</artifactId>
+				<version>${jasperreports.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>net.sf.jasperreports</groupId>
+						<artifactId>jasperreports</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.xmlgraphics</groupId>
+				<artifactId>batik-dom</artifactId>
+				<version>${batik.version}</version>
+				<!--  exclude Xalan to prevent nasty XML parse errors -->
+				<exclusions>
+					<exclusion>
+						<groupId>xalan</groupId>
+						<artifactId>xalan</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.xmlgraphics</groupId>
+				<artifactId>batik-svggen</artifactId>
+				<version>${batik.version}</version>
+				<!--  exclude Xalan to prevent nasty XML parse errors -->
+				<exclusions>
+					<exclusion>
+						<groupId>xalan</groupId>
+						<artifactId>xalan</artifactId>
+					</exclusion>
+				</exclusions>				
+			</dependency>
+			<dependency>
+				<groupId>org.apache.xmlgraphics</groupId>
+				<artifactId>batik-bridge</artifactId>
+				<version>${batik.version}</version>
+				<!--  exclude Xalan to prevent nasty XML parse errors -->
+				<exclusions>
+					<exclusion>
+						<groupId>xalan</groupId>
+						<artifactId>xalan</artifactId>
+					</exclusion>
+				</exclusions>				
+			</dependency>
+			<dependency>
+				<groupId>org.apache.xmlgraphics</groupId>
+				<artifactId>xmlgraphics-commons</artifactId>
+				<version>2.1</version>
+			</dependency>
+			
 			<dependency>
 				<groupId>commons-lang</groupId>
 				<artifactId>commons-lang</artifactId>
@@ -373,6 +449,11 @@
 				<artifactId>h2</artifactId>
 				<version>${h2.version}</version>
 				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>com.vaadin.external.google</groupId>
+				<artifactId>guava</artifactId>
+				<version>16.0.1.vaadin1</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -569,11 +650,9 @@
 					<executions>
 						<execution>
 							<goals>
-								<!--<goal>update-widgetset</goal> -->
+								<goal>update-widgetset</goal>
 								<goal>update-theme</goal>
 								<goal>compile</goal>
-								<!-- disabled by default to use on-the-fly theme compilation -->
-								<!-- <goal>compile-theme</goal> -->
 							</goals>
 						</execution>
 					</executions>
@@ -691,6 +770,18 @@
 				</plugins>
 			</build>
 		</profile>
+		<profile>
+			<id>sonar</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+			<properties>
+				<sonar.jdbc.url>jdbc:mysql://localhost:3306/sonarqube?useUnicode=true&amp;characterEncoding=utf8</sonar.jdbc.url>
+				<sonar.jdbc.username>sonarqube</sonar.jdbc.username>
+				<sonar.jdbc.password>sonar</sonar.jdbc.password>
+				<sonar.host.url>http://localhost:9000</sonar.host.url>
+			</properties>
+		</profile>
 	</profiles>
 
 	<repositories>
@@ -734,5 +825,14 @@
 				<enabled>true</enabled>
 			</releases>
 		</repository>
-	</repositories>
+		<repository>
+            <id>jasperreports-releases</id>
+            <url>https://jaspersoft.artifactoryonline.com/jaspersoft/jr-ce-releases/</url>
+        </repository>
+		<repository>
+            <id>jasperreports-third-party</id>
+            <url>http://jaspersoft.artifactoryonline.com/jaspersoft/third-party-ce-artifacts/</url>
+        </repository>
+   	</repositories>
+
 </project>

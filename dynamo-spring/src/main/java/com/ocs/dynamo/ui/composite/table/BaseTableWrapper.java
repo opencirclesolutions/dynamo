@@ -28,6 +28,7 @@ import com.ocs.dynamo.ui.composite.layout.BaseCustomComponent;
 import com.ocs.dynamo.ui.container.QueryType;
 import com.vaadin.data.Container;
 import com.vaadin.data.Property;
+import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.sort.SortOrder;
 import com.vaadin.shared.data.sort.SortDirection;
@@ -44,186 +45,235 @@ import com.vaadin.ui.VerticalLayout;
  *            type of the entity
  */
 @SuppressWarnings("serial")
-public abstract class BaseTableWrapper<ID extends Serializable, T extends AbstractEntity<ID>>
-        extends BaseCustomComponent implements Searchable {
+public abstract class BaseTableWrapper<ID extends Serializable, T extends AbstractEntity<ID>> extends
+        BaseCustomComponent implements Searchable {
 
-    private static final long serialVersionUID = -4691108261565306844L;
+	private static final long serialVersionUID = -4691108261565306844L;
 
-    private Container container;
+	/**
+	 * Whether export of the table data is allowed
+	 */
+	private boolean allowExport;
 
-    private EntityModel<T> entityModel;
+	/**
+	 * The container
+	 */
+	private Container container;
 
-    private FetchJoinInformation[] joins;
+	/**
+	 * The entity model used to create the container
+	 */
+	private EntityModel<T> entityModel;
 
-    private final QueryType queryType;
+	/**
+	 * The fetch joins to use when querying
+	 */
+	private FetchJoinInformation[] joins;
 
-    private final BaseService<ID, T> service;
+	/**
+	 * The type of the query
+	 */
+	private final QueryType queryType;
 
-    private List<SortOrder> sortOrders = new ArrayList<>();
+	/**
+	 * The service used to query the database
+	 */
+	private final BaseService<ID, T> service;
 
-    private Table table;
+	/**
+	 * The sort orders
+	 */
+	private List<SortOrder> sortOrders = new ArrayList<>();
 
-    /**
-     * Constructor
-     * 
-     * @param service
-     *            the service used to query the repository
-     * @param entityModel
-     *            the entity model for the items that are displayed in the table
-     * @param queryType
-     *            the type of query
-     * @param sortOrder
-     *            the sort order
-     * @param joins
-     *            the fetch joins to use when executing the query
-     */
-    public BaseTableWrapper(BaseService<ID, T> service, EntityModel<T> entityModel,
-            QueryType queryType, List<SortOrder> sortOrders, FetchJoinInformation... joins) {
-        this.service = service;
-        this.entityModel = entityModel;
-        this.queryType = queryType;
-        this.sortOrders = sortOrders != null ? sortOrders : new ArrayList<SortOrder>();
-        this.joins = joins;
-    }
+	/**
+	 * The wrapped table component
+	 */
+	private Table table;
 
-    /**
-     * Builds the component.
-     */
-    @Override
-    public void build() {
-        VerticalLayout main = new VerticalLayout();
+	/**
+	 * Constructor
+	 * 
+	 * @param service
+	 *            the service used to query the repository
+	 * @param entityModel
+	 *            the entity model for the items that are displayed in the table
+	 * @param queryType
+	 *            the type of query
+	 * @param sortOrder
+	 *            the sort order
+	 * @param joins
+	 *            the fetch joins to use when executing the query
+	 */
+	public BaseTableWrapper(BaseService<ID, T> service, EntityModel<T> entityModel, QueryType queryType,
+	        List<SortOrder> sortOrders, boolean allowExport, FetchJoinInformation... joins) {
+		this.service = service;
+		this.entityModel = entityModel;
+		this.queryType = queryType;
+		this.sortOrders = sortOrders != null ? sortOrders : new ArrayList<SortOrder>();
+		this.joins = joins;
+		this.allowExport = allowExport;
+	}
 
-        this.container = constructContainer();
+	/**
+	 * Perform any actions that are necessary before carrying out a search
+	 * 
+	 * @param filter
+	 */
+	protected Filter beforeSearchPerformed(Filter filter) {
+		// overwrite in subclasses
+		return null;
+	}
 
-        // init the table
-        table = getTable();
-        table.setPageLength(DynamoConstants.PAGE_SIZE);
-        initSortingAndFiltering();
-        main.addComponent(table);
+	/**
+	 * Builds the component.
+	 */
+	@Override
+	public void build() {
+		VerticalLayout main = new VerticalLayout();
 
-        // add a change listener that responds to the selection of an item
-        table.addValueChangeListener(new Property.ValueChangeListener() {
+		this.container = constructContainer();
 
-            @Override
-            public void valueChange(ValueChangeEvent event) {
-                onSelect(table.getValue());
-            }
-        });
-        setCompositionRoot(main);
-    }
+		// init the table
+		table = getTable();
+		table.setPageLength(DynamoConstants.PAGE_SIZE);
+		initSortingAndFiltering();
+		main.addComponent(table);
 
-    /**
-     * Creates the container that holds the data
-     * 
-     * @return
-     */
-    protected abstract Container constructContainer();
+		// add a change listener that responds to the selection of an item
+		table.addValueChangeListener(new Property.ValueChangeListener() {
 
-    /**
-     * Constructs the table - override in subclasses if you need a different table implementation
-     * 
-     * @return
-     */
-    protected Table constructTable() {
-        return new ModelBasedTable<>(this.container, entityModel, getEntityModelFactory(),
-                getMessageService());
-    }
+			@Override
+			public void valueChange(ValueChangeEvent event) {
+				onSelect(table.getValue());
+			}
+		});
+		setCompositionRoot(main);
+	}
 
-    /**
-     * 
-     * @return the container that holds the data
-     */
-    public Container getContainer() {
-        return container;
-    }
+	/**
+	 * Creates the container that holds the data
+	 * 
+	 * @return the container
+	 */
+	protected abstract Container constructContainer();
 
-    /**
-     * @return the entityModel
-     */
-    public EntityModel<T> getEntityModel() {
-        return entityModel;
-    }
+	/**
+	 * Constructs the table - override in subclasses if you need a different table implementation
+	 * 
+	 * @return
+	 */
+	protected Table constructTable() {
+		return new ModelBasedTable<>(this.container, entityModel, allowExport);
+	}
 
-    public FetchJoinInformation[] getJoins() {
-        return joins;
-    }
+	/**
+	 * Callback method used to modify container creation
+	 * 
+	 * @param container
+	 */
+	protected void doConstructContainer(Container container) {
+		// overwrite in subclasses
+	}
 
-    public QueryType getQueryType() {
-        return queryType;
-    }
+	/**
+	 * 
+	 * @return the container that holds the data
+	 */
+	public Container getContainer() {
+		return container;
+	}
 
-    public BaseService<ID, T> getService() {
-        return service;
-    }
+	/**
+	 * @return the entityModel
+	 */
+	public EntityModel<T> getEntityModel() {
+		return entityModel;
+	}
 
-    /**
-     * Extracts the sort directions from the sort orders
-     */
-    protected boolean[] getSortDirections() {
-        boolean[] result = new boolean[getSortOrders().size()];
-        for (int i = 0; i < result.length; i++) {
-            result[i] = SortDirection.ASCENDING == getSortOrders().get(i).getDirection();
-        }
-        return result;
-    }
+	public FetchJoinInformation[] getJoins() {
+		return joins;
+	}
 
-    /**
-     * 
-     * @return the sort orders
-     */
-    public List<SortOrder> getSortOrders() {
-        return Collections.unmodifiableList(sortOrders);
-    }
+	public QueryType getQueryType() {
+		return queryType;
+	}
 
-    /**
-     * Extracts the properties to sort on from the sort orders
-     */
-    protected Object[] getSortProperties() {
-        Object[] result = new Object[getSortOrders().size()];
-        for (int i = 0; i < result.length; i++) {
-            result[i] = getSortOrders().get(i).getPropertyId();
-        }
-        return result;
-    }
+	public BaseService<ID, T> getService() {
+		return service;
+	}
 
-    public Table getTable() {
-        if (table == null) {
-            table = constructTable();
-        }
-        return table;
-    }
+	/**
+	 * Extracts the sort directions from the sort orders
+	 */
+	protected boolean[] getSortDirections() {
+		boolean[] result = new boolean[getSortOrders().size()];
+		for (int i = 0; i < result.length; i++) {
+			result[i] = SortDirection.ASCENDING == getSortOrders().get(i).getDirection();
+		}
+		return result;
+	}
 
-    /**
-     * Initializes the sorting and filtering for the table
-     */
-    protected void initSortingAndFiltering() {
-        if (getSortOrders() != null && !getSortOrders().isEmpty()) {
-            table.sort(getSortProperties(), getSortDirections());
-        }
-    }
+	/**
+	 * 
+	 * @return the sort orders
+	 */
+	public List<SortOrder> getSortOrders() {
+		return Collections.unmodifiableList(sortOrders);
+	}
 
-    /**
-     * Respond to a selection of an item in the table
-     */
-    protected void onSelect(Object selected) {
-        // override in subclass if needed
-    }
+	/**
+	 * Extracts the properties to sort on from the sort orders
+	 */
+	protected Object[] getSortProperties() {
+		Object[] result = new Object[getSortOrders().size()];
+		for (int i = 0; i < result.length; i++) {
+			result[i] = getSortOrders().get(i).getPropertyId();
+		}
+		return result;
+	}
 
-    /**
-     * Reloads the data in the container
-     */
-    public abstract void reloadContainer();
+	/**
+	 * Lazily construct and return the table
+	 * 
+	 * @return
+	 */
+	public Table getTable() {
+		if (table == null) {
+			table = constructTable();
+		}
+		return table;
+	}
 
-    public void setJoins(FetchJoinInformation[] joins) {
-        this.joins = joins;
-    }
+	/**
+	 * Initializes the sorting and filtering for the table
+	 */
+	protected void initSortingAndFiltering() {
+		if (getSortOrders() != null && !getSortOrders().isEmpty()) {
+			table.sort(getSortProperties(), getSortDirections());
+		}
+	}
 
-    public void setSortOrders(List<SortOrder> sortOrders) {
-        this.sortOrders = sortOrders;
-    }
+	/**
+	 * Respond to a selection of an item in the table
+	 */
+	protected void onSelect(Object selected) {
+		// override in subclass if needed
+	}
 
-    protected void setTable(Table table) {
-        this.table = table;
-    }
+	/**
+	 * Reloads the data in the container
+	 */
+	public abstract void reloadContainer();
 
+	public void setJoins(FetchJoinInformation[] joins) {
+		this.joins = joins;
+	}
+
+	public void setSortOrders(List<SortOrder> sortOrders) {
+		this.sortOrders = sortOrders;
+	}
+
+	protected void setTable(Table table) {
+		this.table = table;
+	}
 }

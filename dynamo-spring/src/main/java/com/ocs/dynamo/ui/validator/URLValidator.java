@@ -17,31 +17,42 @@ import java.net.MalformedURLException;
 
 import com.vaadin.data.Validator;
 
+/**
+ * Vaadin validator for checking if an field value is a vallid URL
+ * 
+ * @author bas.rutten
+ *
+ */
 public class URLValidator implements Validator {
 
-    private String message;
+	private String message;
 
-    private static final long serialVersionUID = 680372854650555066L;
+	private static final long serialVersionUID = 680372854650555066L;
 
-    public URLValidator(String message) {
-        this.message = message;
-    }
+	/**
+	 * Constructor
+	 * 
+	 * @param message
+	 */
+	public URLValidator(String message) {
+		this.message = message;
+	}
 
-    @Override
-    public void validate(Object value) throws InvalidValueException {
-        if (value == null) {
-            return;
-        }
+	@Override
+	public void validate(Object value) {
+		if (value == null || "".equals(value)) {
+			return;
+		}
 
-        if (!(value instanceof String)) {
-            throw new InvalidValueException(message);
-        }
+		if (!(value instanceof String)) {
+			throw new InvalidValueException(message);
+		}
 
-        try {
-            new java.net.URL((String) value);
-        } catch (MalformedURLException ex) {
-            throw new InvalidValueException(message);
-        }
-    }
+		try {
+			new java.net.URL((String) value);
+		} catch (MalformedURLException ex) {
+			throw new InvalidValueException(message);
+		}
+	}
 
 }

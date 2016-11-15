@@ -46,6 +46,7 @@ public class HorizontalMoviesSplitView extends BaseView {
      * 
      * @see com.vaadin.navigator.View#enter(com.vaadin.navigator.ViewChangeListener.ViewChangeEvent)
      */
+    @Override
     public void enter(ViewChangeEvent event) {
 
         // Apply Vaadin Layout.

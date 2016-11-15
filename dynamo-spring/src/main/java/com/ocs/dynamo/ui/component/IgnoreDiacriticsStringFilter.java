@@ -15,12 +15,14 @@ package com.ocs.dynamo.ui.component;
 
 import java.text.Normalizer;
 
+import org.apache.commons.lang.ObjectUtils;
+
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 
 /**
- * A string filter that ignores diacritic charachters when comparing
+ * A String filter that ignores diacritical characters when comparing
  * 
  * @author bas.rutten
  *
@@ -37,6 +39,18 @@ public class IgnoreDiacriticsStringFilter implements Filter {
 
     private final boolean onlyMatchPrefix;
 
+    /**
+     * Constructor
+     * 
+     * @param propertyId
+     *            the name of the property to filter on
+     * @param filterString
+     *            the filter string
+     * @param ignoreCase
+     *            whether to ignore case
+     * @param onlyMatchPrefix
+     *            whether to only match the prefix
+     */
     public IgnoreDiacriticsStringFilter(Object propertyId, String filterString, boolean ignoreCase,
             boolean onlyMatchPrefix) {
         this.propertyId = propertyId;
@@ -56,6 +70,7 @@ public class IgnoreDiacriticsStringFilter implements Filter {
             return false;
         }
 
+        // replace any diacritical characters
         String temp = ignoreCase ? propertyValue.toString().toLowerCase() : propertyValue
                 .toString();
         temp = Normalizer.normalize(temp, Normalizer.Form.NFD);
@@ -81,8 +96,8 @@ public class IgnoreDiacriticsStringFilter implements Filter {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
+        if (obj == this) {
+            return true;
         }
 
         // Only ones of the objects of the same class can be equal
@@ -90,23 +105,10 @@ public class IgnoreDiacriticsStringFilter implements Filter {
             return false;
         }
         final IgnoreDiacriticsStringFilter o = (IgnoreDiacriticsStringFilter) obj;
-
-        // Checks the properties one by one
-        if (propertyId != o.propertyId && o.propertyId != null && !o.propertyId.equals(propertyId)) {
-            return false;
-        }
-        if (filterString != o.filterString && o.filterString != null
-                && !o.filterString.equals(filterString)) {
-            return false;
-        }
-        if (ignoreCase != o.ignoreCase) {
-            return false;
-        }
-        if (onlyMatchPrefix != o.onlyMatchPrefix) {
-            return false;
-        }
-
-        return true;
+        return ObjectUtils.equals(propertyId, o.propertyId)
+                && ObjectUtils.equals(filterString, o.filterString)
+                && ObjectUtils.equals(ignoreCase, o.ignoreCase)
+                && ObjectUtils.equals(onlyMatchPrefix, o.onlyMatchPrefix);
     }
 
     @Override

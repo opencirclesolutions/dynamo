@@ -45,63 +45,51 @@ import com.vaadin.ui.VerticalLayout;
 @SuppressWarnings("serial")
 public class TabularMoviesView extends BaseView {
 
-    /** Vaadin vertical layout. */
-    private VerticalLayout mainLayout;
+	/** Vaadin vertical layout. */
+	private VerticalLayout mainLayout;
 
-    /** The Movies View is using the MovieService for data access. */
-    @Inject
-    private MovieService movieService;
+	/** The Movies View is using the MovieService for data access. */
+	@Inject
+	private MovieService movieService;
 
-    @Inject
-    private BaseService<Integer, Country> countryService;
+	@Inject
+	private BaseService<Integer, Country> countryService;
 
-    private List<Country> allCountries;
+	private List<Country> allCountries;
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.vaadin.navigator.View#enter(com.vaadin.navigator.ViewChangeListener.ViewChangeEvent)
-     */
-    public void enter(ViewChangeEvent event) {
+	@Override
+	public void enter(ViewChangeEvent event) {
 
-        // Apply Vaadin Layout.
-        mainLayout = new DefaultVerticalLayout(true, true);
+		// Apply Vaadin Layout.
+		mainLayout = new DefaultVerticalLayout(true, true);
 
-        // Set form options by convention.
-        FormOptions fo = new FormOptions();
-        // fo.setOpenInViewMode(true);
+		// Set form options by convention.
+		FormOptions fo = new FormOptions().setOpenInViewMode(false).setShowRemoveButton(true).setShowEditButton(true);
 
-        // Add a remove button.
-        fo.setShowRemoveButton(true);
+		// retrieve the country list just once
+		allCountries = countryService.findAll();
 
-        // Add an edit button.
-        fo.setShowEditButton(true);
+		// custom entity model for this screen. See the "entitymodel.properties" file for specifics
+		EntityModel<Movie> em = getModelFactory().getModel("MoviesTable", Movie.class);
 
-        // retrieve the country list just once
-        allCountries = countryService.findAll();
+		// A SplitLayout is a component that displays a search screen and an edit form
+		TabularEditLayout<Integer, Movie> movieLayout = new TabularEditLayout<Integer, Movie>(movieService, em, fo,
+		        new SortOrder("title", SortDirection.ASCENDING)) {
 
-        // custom entity model for this screen. See the "entitymodel.properties" file for specifics
-        EntityModel<Movie> em = getModelFactory().getModel("MoviesTable", Movie.class);
+			@Override
+			protected Field<?> constructCustomField(EntityModel<Movie> entityModel, AttributeModel attributeModel,
+			        boolean viewMode, boolean searchMode) {
+				if ("country".equals(attributeModel.getName())) {
+					return new EntityComboBox<Integer, Country>(getEntityModelFactory().getModel(Country.class),
+					        attributeModel, allCountries);
+				}
+				return null;
+			}
+		};
 
-        // A SplitLayout is a component that displays a search screen and an edit form
-        TabularEditLayout<Integer, Movie> movieLayout = new TabularEditLayout<Integer, Movie>(
-                movieService, em, fo, new SortOrder("title", SortDirection.ASCENDING)) {
+		movieLayout.setPageLength(25);
 
-            protected Field<?> constructCustomField(EntityModel<Movie> entityModel,
-                    AttributeModel attributeModel, boolean viewMode, boolean searchMode) {
-                if ("country".equals(attributeModel.getName())) {
-                    EntityComboBox<Integer, Country> cb = new EntityComboBox<Integer, Country>(
-                            getEntityModelFactory().getModel(Country.class), attributeModel,
-                            allCountries);
-                    return cb;
-                }
-                return null;
-            }
-        };
-
-        movieLayout.setPageLength(25);
-
-        mainLayout.addComponent(movieLayout);
-        setCompositionRoot(mainLayout);
-    }
+		mainLayout.addComponent(movieLayout);
+		setCompositionRoot(mainLayout);
+	}
 }

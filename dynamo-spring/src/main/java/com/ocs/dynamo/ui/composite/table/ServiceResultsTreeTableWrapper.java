@@ -42,103 +42,102 @@ import com.vaadin.ui.Table;
  * 
  * @author Patrick Deenen (patrick.deenen@opencirclesolutions.nl)
  */
-public class ServiceResultsTreeTableWrapper<ID extends Serializable, T extends AbstractEntity<ID>>
-        extends ServiceResultsTableWrapper<ID, T> {
+public class ServiceResultsTreeTableWrapper<ID extends Serializable, T extends AbstractEntity<ID>> extends
+        ServiceResultsTableWrapper<ID, T> {
 
-    private static final long serialVersionUID = -9054619694421055983L;
+	private static final long serialVersionUID = -9054619694421055983L;
 
-    private List<BaseService<?, ?>> services;
+	private List<BaseService<?, ?>> services;
 
-    /**
-     * Constructor
+	/**
+	 * Constructor
+	 * 
+	 * @param rootEntityModel
+	 * @param queryType
+	 * @param order
+	 * @param joins
+	 * @param services
+	 */
+	@SuppressWarnings("unchecked")
+	public ServiceResultsTreeTableWrapper(EntityModel<T> rootEntityModel, QueryType queryType,
+	        List<SortOrder> sortOrders, HierarchicalFetchJoinInformation[] joins, BaseService<?, ?>... services) {
+		super((BaseService<ID, T>) services[0], rootEntityModel, queryType, null, sortOrders, true, joins);
+		this.services = new ArrayList<>();
+		this.services.addAll(Arrays.asList(services));
+	}
+
+	/**
+	 * Constructor
+	 * 
+	 * @param services
+	 * @param entityModel
+	 * @param queryType
+	 * @param order
+	 * @param joins
+	 */
+	@SuppressWarnings("unchecked")
+	public ServiceResultsTreeTableWrapper(List<BaseService<?, ?>> services, EntityModel<T> rootEntityModel,
+	        QueryType queryType, List<SortOrder> sortOrders, HierarchicalFetchJoinInformation... joins) {
+		super((BaseService<ID, T>) services.get(0), rootEntityModel, queryType, null, sortOrders, true, joins);
+		this.services = services;
+	}
+
+	/**
+	 * Creates the container
+	 */
+	@Override
+	protected Container constructContainer() {
+		ModelBasedHierarchicalContainer<T> c = new ModelBasedHierarchicalContainer<T>(getMessageService(),
+		        getEntityModelFactory(), getEntityModel(), services, (HierarchicalFetchJoinInformation[]) getJoins(),
+		        getQueryType());
+		doConstructContainer(c);
+		return c;
+	}
+
+	/**
      * 
-     * @param rootEntityModel
-     * @param queryType
-     * @param order
-     * @param joins
-     * @param services
      */
-    @SuppressWarnings("unchecked")
-    public ServiceResultsTreeTableWrapper(EntityModel<T> rootEntityModel, QueryType queryType,
-            List<SortOrder> sortOrders, HierarchicalFetchJoinInformation[] joins,
-            BaseService<?, ?>... services) {
-        super((BaseService<ID, T>) services[0], rootEntityModel, queryType, null, sortOrders, joins);
-        this.services = new ArrayList<>();
-        this.services.addAll(Arrays.asList(services));
-    }
+	@SuppressWarnings("unchecked")
+	@Override
+	public ModelBasedHierarchicalContainer<T> getContainer() {
+		return (ModelBasedHierarchicalContainer<T>) super.getContainer();
+	}
 
-    /**
-     * Constructor
-     * 
-     * @param services
-     * @param entityModel
-     * @param queryType
-     * @param order
-     * @param joins
-     */
-    @SuppressWarnings("unchecked")
-    public ServiceResultsTreeTableWrapper(List<BaseService<?, ?>> services,
-            EntityModel<T> rootEntityModel, QueryType queryType, List<SortOrder> sortOrders,
-            HierarchicalFetchJoinInformation[] joins) {
-        super((BaseService<ID, T>) services.get(0), rootEntityModel, queryType, null, sortOrders,
-                joins);
-        this.services = services;
-    }
+	@Override
+	protected Table constructTable() {
+		return new ModelBasedTreeTable<ID, T>(getContainer(), getEntityModelFactory());
+	}
 
-    /**
-     * Creates the container
-     */
-    @Override
-    protected Container constructContainer() {
-        return new ModelBasedHierarchicalContainer<T>(getMessageService(), getEntityModelFactory(),
-                getEntityModel(), services, (HierarchicalFetchJoinInformation[]) getJoins(),
-                getQueryType());
-    }
+	@Override
+	protected void initSortingAndFiltering() {
+		if (!getContainer().getHierarchy().isEmpty()) {
+			// get the definition on the lowest level
+			HierarchicalDefinition def = getContainer().getHierarchy().get(getContainer().getHierarchy().size() - 1);
+			if (getFilter() != null && def.getContainer() instanceof ServiceContainer<?, ?>) {
+				((ServiceContainer<?, ?>) def.getContainer()).getQueryView().addFilter(getFilter());
+			}
+		}
+		if (getSortOrders() != null && getSortOrders().size() > 0) {
+			getTable().sort(getSortProperties(), getSortDirections());
+		}
+	}
 
-    /**
-     * 
-     */
-    @SuppressWarnings("unchecked")
-    @Override
-    public ModelBasedHierarchicalContainer<T> getContainer() {
-        return (ModelBasedHierarchicalContainer<T>) super.getContainer();
-    }
-
-    @Override
-    protected Table constructTable() {
-        return new ModelBasedTreeTable<ID, T>(getContainer(), getEntityModelFactory());
-    }
-
-    @Override
-    protected void initSortingAndFiltering() {
-        if (!getContainer().getHierarchy().isEmpty()) {
-            // get the definition on the lowest level
-            HierarchicalDefinition def = getContainer().getHierarchy().get(
-                    getContainer().getHierarchy().size() - 1);
-            if (getFilter() != null && def.getContainer() instanceof ServiceContainer<?, ?>) {
-                ((ServiceContainer<?, ?>) def.getContainer()).getQueryView().addFilter(getFilter());
-            }
-        }
-        if (getSortOrders() != null && getSortOrders().size() > 0) {
-            getTable().sort(getSortProperties(), getSortDirections());
-        }
-    }
-
-    /**
-     * Perform a search
-     * 
-     * @param filter
-     *            the search filter
-     */
-    @SuppressWarnings("rawtypes")
-    @Override
-    public void search(Filter filter) {
-        if (getContainer() != null && !getContainer().getHierarchy().isEmpty()) {
-            ModelBasedHierarchicalDefinition def = (ModelBasedHierarchicalDefinition) getContainer()
-                    .getHierarchicalDefinition(0);
-            if (def.getContainer() instanceof Searchable) {
-                ((Searchable) def.getContainer()).search(filter);
-            }
-        }
-    }
+	/**
+	 * Perform a search
+	 * 
+	 * @param filter
+	 *            the search filter
+	 */
+	@SuppressWarnings("rawtypes")
+	@Override
+	public void search(Filter filter) {
+		Filter temp = beforeSearchPerformed(filter);
+		if (getContainer() != null && !getContainer().getHierarchy().isEmpty()) {
+			ModelBasedHierarchicalDefinition def = (ModelBasedHierarchicalDefinition) getContainer()
+			        .getHierarchicalDefinition(0);
+			if (def.getContainer() instanceof Searchable) {
+				((Searchable) def.getContainer()).search(temp != null ? temp : filter);
+			}
+		}
+	}
 }

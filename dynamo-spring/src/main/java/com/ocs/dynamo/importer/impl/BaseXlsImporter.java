@@ -29,7 +29,7 @@ import org.springframework.util.StringUtils;
 import com.monitorjbl.xlsx.StreamingReader;
 import com.ocs.dynamo.exception.OCSImportException;
 import com.ocs.dynamo.exception.OCSRuntimeException;
-import com.ocs.dynamo.importer.XlsField;
+import com.ocs.dynamo.importer.ImportField;
 
 /**
  * Base class for services that can be used to import Excel files.
@@ -127,7 +127,7 @@ public class BaseXlsImporter extends BaseImporter<Row, Cell> {
     }
 
     @Override
-    protected Boolean getBooleanValueWithDefault(Cell unit, XlsField field) {
+    protected Boolean getBooleanValueWithDefault(Cell unit, ImportField field) {
         Boolean b = getBooleanValue(unit);
         if (b == null && field.defaultValue() != null) {
             return Boolean.valueOf(field.defaultValue());
@@ -177,7 +177,7 @@ public class BaseXlsImporter extends BaseImporter<Row, Cell> {
      * @return
      */
     @Override
-    public Double getNumericValueWithDefault(Cell cell, XlsField field) {
+    public Double getNumericValueWithDefault(Cell cell, ImportField field) {
         Double value = getNumericValue(cell);
         if (value == null && !StringUtils.isEmpty(field.defaultValue())) {
             value = Double.valueOf(field.defaultValue());
@@ -215,7 +215,7 @@ public class BaseXlsImporter extends BaseImporter<Row, Cell> {
      * @return
      */
     @Override
-    protected String getStringValueWithDefault(Cell cell, XlsField field) {
+    protected String getStringValueWithDefault(Cell cell, ImportField field) {
         String value = getStringValue(cell);
         if (StringUtils.isEmpty(value) && !StringUtils.isEmpty(field.defaultValue())) {
             value = field.defaultValue();
@@ -224,7 +224,7 @@ public class BaseXlsImporter extends BaseImporter<Row, Cell> {
     }
 
     @Override
-    protected Cell getUnit(Row row, XlsField field) {
+    protected Cell getUnit(Row row, ImportField field) {
         return row.getCell(row.getFirstCellNum() + field.index());
     }
 
@@ -257,7 +257,7 @@ public class BaseXlsImporter extends BaseImporter<Row, Cell> {
     }
 
     @Override
-    protected boolean isWithinRange(Row row, XlsField field) {
+    protected boolean isWithinRange(Row row, ImportField field) {
         return row.getFirstCellNum() + field.index() < row.getLastCellNum();
     }
 }

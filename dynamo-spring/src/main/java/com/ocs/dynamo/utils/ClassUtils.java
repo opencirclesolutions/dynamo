@@ -26,6 +26,7 @@ import java.util.List;
 import javax.validation.constraints.Size;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.reflect.FieldUtils;
 import org.apache.commons.lang.reflect.MethodUtils;
 import org.apache.log4j.Logger;
 import org.springframework.core.ResolvableType;
@@ -348,7 +349,7 @@ public final class ClassUtils {
                 }
             }
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-            throw new OCSRuntimeException(e.getMessage(), e);
+            throw new OCSRuntimeException("Error getting of " + obj + ":" + e.getMessage(), e);
         }
     }
 
@@ -394,7 +395,7 @@ public final class ClassUtils {
      * 
      * @param clazz
      * @param fieldName
-     * @return 
+     * @return
      */
     public static int getMaxLength(Class<?> clazz, String fieldName) {
         Size size = getAnnotation(clazz, fieldName, Size.class);
@@ -521,4 +522,29 @@ public final class ClassUtils {
             throw new OCSRuntimeException(e.getMessage(), e);
         }
     }
+
+	public static <T, S extends T> void copyFields(T from, S to) {
+		try {
+			Class<?> aClass = from.getClass();
+			final Field[] declaredFields = aClass.getDeclaredFields();
+			copyFields(from, to, declaredFields);
+
+			while ((aClass = aClass.getSuperclass()) != null) {
+				copyFields(from, to, aClass.getFields());
+			}
+		} catch (Exception e) {
+			LOG.error(e.getMessage(), e);
+			throw new OCSRuntimeException(e.getMessage(), e);
+		}
+	}
+
+	private static <T, S extends T> void copyFields(T from, S to, Field[] fields) throws IllegalAccessException {
+		for (Field field : fields) {
+			final int fieldModifiers = field.getModifiers();
+			if (!Modifier.isFinal(fieldModifiers) && !Modifier.isStatic(fieldModifiers)) {
+				final Object value = FieldUtils.readField(field, from, true);
+				FieldUtils.writeField(field, to, value, true);
+			}
+		}
+	}
 }

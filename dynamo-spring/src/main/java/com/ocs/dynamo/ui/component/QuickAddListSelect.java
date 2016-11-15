@@ -23,7 +23,6 @@ import com.ocs.dynamo.ui.Refreshable;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.sort.SortOrder;
 import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.data.util.converter.Converter.ConversionException;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
@@ -43,117 +42,121 @@ import com.vaadin.ui.HorizontalLayout;
 public class QuickAddListSelect<ID extends Serializable, T extends AbstractEntity<ID>> extends
         QuickAddEntityField<ID, T, Object> implements Refreshable {
 
-    private static final long serialVersionUID = 4246187881499965296L;
+	private static final long serialVersionUID = 4246187881499965296L;
 
-    /**
-     * The list select component
-     */
-    private EntityListSelect<ID, T> listSelect;
+	/**
+	 * The list select component
+	 */
+	private EntityListSelect<ID, T> listSelect;
 
-    /**
-     * The button for adding new entries
-     */
-    private Button addButton;
+	/**
+	 * The button for adding new entries
+	 */
+	private Button addButton;
 
-    /**
-     * Whether the component is in view mode
-     */
-    private boolean viewMode;
+	/**
+	 * Whether the component is in view mode
+	 */
+	private boolean viewMode;
 
-    /**
-     * 
-     * @param entityModel
-     * @param attributeModel
-     * @param service
-     * @param filter
-     * @param multiSelect
-     * @param rows
-     * @param sortOrder
-     */
-    public QuickAddListSelect(EntityModel<T> entityModel, AttributeModel attributeModel,
-            BaseService<ID, T> service, Filter filter, boolean multiSelect, int rows,
-            SortOrder... sortOrder) {
-        super(service, entityModel, attributeModel);
-        listSelect = new EntityListSelect<ID, T>(entityModel, attributeModel, service, filter,
-                sortOrder);
-        listSelect.setMultiSelect(multiSelect);
-        listSelect.setRows(rows);
-    }
+	/**
+	 * Constructor
+	 * 
+	 * @param entityModel
+	 * @param attributeModel
+	 * @param service
+	 * @param filter
+	 * @param multiSelect
+	 * @param rows
+	 * @param sortOrder
+	 */
+	public QuickAddListSelect(EntityModel<T> entityModel, AttributeModel attributeModel, BaseService<ID, T> service,
+	        Filter filter, boolean multiSelect, int rows, SortOrder... sortOrder) {
+		super(service, entityModel, attributeModel);
+		listSelect = new EntityListSelect<ID, T>(entityModel, attributeModel, service, filter, sortOrder);
+		listSelect.setMultiSelect(multiSelect);
+		listSelect.setRows(rows);
+	}
 
-    @Override
-    @SuppressWarnings("unchecked")
-    protected void afterNewEntityAdded(T entity) {
-        // add to the container
-        BeanItemContainer<T> container = (BeanItemContainer<T>) listSelect.getContainerDataSource();
-        container.addBean(entity);
-        listSelect.select(entity);
-    }
+	@Override
+	@SuppressWarnings("unchecked")
+	protected void afterNewEntityAdded(T entity) {
+		// add to the container
+		BeanItemContainer<T> container = (BeanItemContainer<T>) listSelect.getContainerDataSource();
+		container.addBean(entity);
+		listSelect.select(entity);
+	}
 
-    @Override
-    protected Component initContent() {
-        HorizontalLayout bar = new DefaultHorizontalLayout(false, true, true);
-        bar.setSizeFull();
+	public EntityListSelect<ID, T> getListSelect() {
+		return listSelect;
+	}
 
-        if (this.getAttributeModel() != null) {
-            this.setCaption(getAttributeModel().getDisplayName());
-        }
+	@Override
+	public Class<? extends Object> getType() {
+		return Object.class;
+	}
 
-        // no caption needed (the wrapping component has the caption)
-        listSelect.setCaption(null);
-        listSelect.setSizeFull();
+	@Override
+	protected Component initContent() {
+		HorizontalLayout bar = new DefaultHorizontalLayout(false, true, true);
+		bar.setSizeFull();
 
-        listSelect.addValueChangeListener(new ValueChangeListener() {
+		if (this.getAttributeModel() != null) {
+			this.setCaption(getAttributeModel().getDisplayName());
+		}
 
-            private static final long serialVersionUID = 5114731461745867455L;
+		// no caption needed (the wrapping component has the caption)
+		listSelect.setCaption(null);
+		listSelect.setSizeFull();
 
-            @Override
-            public void valueChange(com.vaadin.data.Property.ValueChangeEvent event) {
-                setValue(event.getProperty().getValue());
-            }
-        });
+		listSelect.addValueChangeListener(new ValueChangeListener() {
 
-        bar.addComponent(listSelect);
+			private static final long serialVersionUID = 5114731461745867455L;
 
-        if (!viewMode) {
-            addButton = constructAddButton();
-            bar.addComponent(addButton);
-        }
+			@Override
+			public void valueChange(com.vaadin.data.Property.ValueChangeEvent event) {
+				setValue(event.getProperty().getValue());
+			}
+		});
 
-        return bar;
-    }
+		bar.addComponent(listSelect);
 
-    @Override
-    protected void setInternalValue(Object newValue) {
-        super.setInternalValue(newValue);
-        if (listSelect != null) {
-            listSelect.setValue(newValue);
-        }
-    }
+		if (!viewMode) {
+			addButton = constructAddButton();
+			bar.addComponent(addButton);
+		}
 
-    @Override
-    public void setValue(Object newFieldValue) throws com.vaadin.data.Property.ReadOnlyException,
-            ConversionException {
-        super.setValue(newFieldValue);
-        if (listSelect != null) {
-            listSelect.setValue(newFieldValue);
-        }
-    }
+		return bar;
+	}
 
-    @Override
-    public Class<? extends Object> getType() {
-        return Object.class;
-    }
+	/**
+	 * Refreshes the data in the list
+	 */
+	@Override
+	public void refresh() {
+		if (listSelect != null) {
+			listSelect.refresh();
+		}
+	}
 
-    public void setViewMode(boolean viewMode) {
-        this.viewMode = viewMode;
-    }
+	@Override
+	protected void setInternalValue(Object newValue) {
+		super.setInternalValue(newValue);
+		if (listSelect != null) {
+			listSelect.setValue(newValue);
+		}
+	}
 
-    /**
-     * Refreshes the data in the list
-     */
-    public void refresh() {
-        if (listSelect != null) {
-            listSelect.refresh();
-        }
-    }
+	@Override
+	public void setValue(Object newFieldValue) {
+		super.setValue(newFieldValue);
+		if (listSelect != null) {
+			listSelect.setValue(newFieldValue);
+		}
+	}
+
+	public void setViewMode(boolean viewMode) {
+		this.viewMode = viewMode;
+	}
+
 }
