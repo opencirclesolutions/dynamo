@@ -32,61 +32,82 @@ import com.vaadin.ui.VerticalLayout;
  */
 public abstract class BaseView extends CustomComponent implements View {
 
-    public static final String SELECTED_ID = "selectedId";
+	public static final String SELECTED_ID = "selectedId";
 
-    private static final long serialVersionUID = 8340448520371840427L;
+	private static final long serialVersionUID = 8340448520371840427L;
 
-    @Autowired
-    private EntityModelFactory modelFactory;
+	@Autowired
+	private EntityModelFactory modelFactory;
 
-    @Autowired
-    private MessageService messageService;
+	@Autowired
+	private MessageService messageService;
 
-    public EntityModelFactory getModelFactory() {
-        return modelFactory;
-    }
+	public EntityModelFactory getModelFactory() {
+		return modelFactory;
+	}
 
-    /**
-     * Returns the current screen mode
-     */
-    protected String getScreenMode() {
-        if (UI.getCurrent() instanceof BaseUI) {
-            BaseUI b = (BaseUI) UI.getCurrent();
-            return b.getScreenMode();
-        }
-        return null;
-    }
+	/**
+	 * Returns the current screen mode
+	 */
+	protected String getScreenMode() {
+		if (UI.getCurrent() instanceof BaseUI) {
+			BaseUI b = (BaseUI) UI.getCurrent();
+			return b.getScreenMode();
+		}
+		return null;
+	}
 
-    /**
-     * Navigates to the selected view
-     * 
-     * @param viewId
-     *            the ID of the desired view
-     */
-    protected void navigate(String viewId) {
-        UI.getCurrent().getNavigator().navigateTo(viewId);
-    }
+	/**
+	 * Navigates to the selected view
+	 * 
+	 * @param viewId
+	 *            the ID of the desired view
+	 */
+	protected void navigate(String viewId) {
+		UI.getCurrent().getNavigator().navigateTo(viewId);
+	}
 
-    protected String message(String key) {
-        return messageService.getMessage(key);
-    }
+	/**
+	 * Retrieves a message based on its key
+	 * 
+	 * @param key
+	 *            the key of the message
+	 * @return
+	 */
+	protected String message(String key) {
+		return messageService.getMessage(key);
+	}
 
-    protected String message(String key, Object... args) {
-        return messageService.getMessage(key, args);
-    }
+	/**
+	 * Retrieves a message based on its key
+	 * 
+	 * @param key
+	 *            the key of the message
+	 * @param args
+	 *            any arguments to pass to the message
+	 * @return
+	 */
+	protected String message(String key, Object... args) {
+		return messageService.getMessage(key, args);
+	}
 
-    public void setModelFactory(EntityModelFactory modelFactory) {
-        this.modelFactory = modelFactory;
-    }
+	public void setModelFactory(EntityModelFactory modelFactory) {
+		this.modelFactory = modelFactory;
+	}
 
-    /**
-     * Sets up the outermost layout
-     * @return 
-     */
-    protected Layout initLayout() {
-        VerticalLayout container = new DefaultVerticalLayout(true, true);
-        setCompositionRoot(container);
-        return container;
-    }
+	/**
+	 * Sets up the outermost layout
+	 * 
+	 * @return
+	 */
+	protected Layout initLayout() {
+		VerticalLayout container = new DefaultVerticalLayout(true, true);
+		setCompositionRoot(container);
+		return container;
+	}
+
+	public MessageService getMessageService() {
+		return messageService;
+	}
 
 }

@@ -13,7 +13,7 @@
  */
 package com.ocs.dynamo.ui.composite.table.export;
 
-import com.vaadin.addon.tableexport.ExcelExport;
+import com.vaadin.addon.tableexport.TableExport;
 
 /**
  * A table that we wrap around a table export so that we can easily intercept the call
@@ -22,12 +22,14 @@ import com.vaadin.addon.tableexport.ExcelExport;
  */
 public class TableExportService {
 
-    /**
-     * Performs an export from a table
-     * 
-     * @param export
-     */
-    public void export(ExcelExport export) {
-        export.export();
-    }
+	/**
+	 * Performs an export from a table
+	 * 
+	 * @param export
+	 *            the TableExport object
+	 */
+	public void export(TableExport export) {
+		export.export();
+	}
+
 }

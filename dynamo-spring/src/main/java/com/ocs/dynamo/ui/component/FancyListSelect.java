@@ -24,7 +24,6 @@ import com.ocs.dynamo.service.BaseService;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.sort.SortOrder;
 import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.data.util.converter.Converter.ConversionException;
 import com.vaadin.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -34,7 +33,9 @@ import com.vaadin.ui.ListSelect;
 import com.vaadin.ui.VerticalLayout;
 
 /**
- * A ListSelect component with an extra combo box for easily searching items
+ * A ListSelect component with an extra combo box for easily searching items. The combo box holds
+ * the list of available items. Items that are selected, are added to a ListSelect, which is kept in
+ * sync with the actual component value
  * 
  * @author bas.rutten
  *
@@ -42,234 +43,254 @@ import com.vaadin.ui.VerticalLayout;
  *            the type of the ID of the entity
  * @param <T>
  *            the type of the entity
+ * @param <Object>
+ *            the type of the value (can be a single object or a collection)
  */
 public class FancyListSelect<ID extends Serializable, T extends AbstractEntity<ID>> extends
         QuickAddEntityField<ID, T, Object> {
 
-    private static final long serialVersionUID = 8129335343598146079L;
+	private static final long serialVersionUID = 8129335343598146079L;
 
-    /**
-     * Indicates whether it is allowed to add items
-     */
-    private boolean addAllowed;
+	/**
+	 * Indicates whether it is allowed to add items
+	 */
+	private boolean addAllowed;
 
-    /**
-     * Button for clearing the selection
-     */
-    private Button clearButton;
+	/**
+	 * Button for clearing the selection
+	 */
+	private Button clearButton;
 
-    /**
-     * The combo box for selecting an item
-     */
-    private EntityComboBox<ID, T> comboBox;
+	/**
+	 * The combo box for selecting an item
+	 */
+	private EntityComboBox<ID, T> comboBox;
 
-    /**
-     * the bean containers that holds the selected values
-     */
-    private BeanItemContainer<T> container;
+	/**
+	 * the bean containers that holds the selected values
+	 */
+	private BeanItemContainer<T> container;
 
-    /**
-     * The filters to apply to the search dialog
-     */
-    private Filter filter;
+	/**
+	 * The filters to apply to the search dialog
+	 */
+	private Filter filter;
 
-    /**
-     * The ListSelect component that shows the selected values
-     */
-    private ListSelect listSelect;
+	/**
+	 * The ListSelect component that shows the selected values
+	 */
+	private ListSelect listSelect;
 
-    /**
-     * The button for removing an item
-     */
-    private Button removeButton;
+	/**
+	 * The button for removing an item
+	 */
+	private Button removeButton;
 
-    /**
-     * The button that brings up the search dialog
-     */
-    private Button selectButton;
+	/**
+	 * The button that brings up the search dialog
+	 */
+	private Button selectButton;
 
-    /**
-     * The sort order to apply to the combo box
-     */
-    private SortOrder[] sortOrders;
+	/**
+	 * The sort order to apply to the combo box
+	 */
+	private SortOrder[] sortOrders;
 
-    /**
-     * Constructor
-     * 
-     * @param service
-     *            the service used to query the database
-     * @param entityModel
-     *            the entity model
-     * @param attributeModel
-     *            the attribute mode
-     * @param filters
-     *            the filter to apply when searching
-     * @param search
-     *            whether the component is used in a search screen
-     * @param sortOrder
-     *            the sort order
-     * @param joins
-     *            the joins to use when fetching data when filling the popup dialog
-     */
-    public FancyListSelect(BaseService<ID, T> service, EntityModel<T> entityModel,
-            AttributeModel attributeModel, Filter filter, boolean search, SortOrder... sortOrders) {
-        super(service, entityModel, attributeModel);
-        this.sortOrders = sortOrders;
-        this.filter = filter;
-        this.addAllowed = !search && (attributeModel != null && attributeModel.isQuickAddAllowed());
+	/**
+	 * Constructor
+	 * 
+	 * @param service
+	 *            the service used to query the database
+	 * @param entityModel
+	 *            the entity model
+	 * @param attributeModel
+	 *            the attribute mode
+	 * @param filters
+	 *            the filter to apply when searching
+	 * @param search
+	 *            whether the component is used in a search screen
+	 * @param sortOrder
+	 *            the sort order
+	 * @param joins
+	 *            the joins to use when fetching data when filling the popup dialog
+	 */
+	public FancyListSelect(BaseService<ID, T> service, EntityModel<T> entityModel, AttributeModel attributeModel,
+	        Filter filter, boolean search, SortOrder... sortOrders) {
+		super(service, entityModel, attributeModel);
+		this.sortOrders = sortOrders;
+		this.filter = filter;
+		this.addAllowed = !search && (attributeModel != null && attributeModel.isQuickAddAllowed());
 
-        container = new BeanItemContainer<>(getEntityModel().getEntityClass());
-        listSelect = new ListSelect(null, container);
+		container = new BeanItemContainer<>(getEntityModel().getEntityClass());
+		listSelect = new ListSelect(null, container);
 
-        comboBox = new EntityComboBox<ID, T>(getEntityModel(), getAttributeModel(), getService(),
-                this.filter, sortOrders);
-    }
+		comboBox = new EntityComboBox<ID, T>(getEntityModel(), getAttributeModel(), getService(), this.filter,
+		        sortOrders);
+	}
 
-    @Override
-    protected void afterNewEntityAdded(T entity) {
-        comboBox.addEntity(entity);
-        container.addBean(entity);
-        copyValueFromContainer();
-    }
+	@Override
+	protected void afterNewEntityAdded(T entity) {
+		comboBox.addEntity(entity);
+		container.addBean(entity);
+		copyValueFromContainer();
+	}
 
-    private void copyValueFromContainer() {
-        Collection<T> values = container.getItemIds();
-        setValue(new HashSet<>(values));
-    }
+	/**
+	 * Copies the selected values from the container behind the ListSelect to the component value
+	 */
+	private void copyValueFromContainer() {
+		Collection<T> values = container.getItemIds();
+		setValue(new HashSet<>(values));
+	}
 
-    public ListSelect getListSelect() {
-        return listSelect;
-    }
+	public EntityComboBox<ID, T> getComboBox() {
+		return comboBox;
+	}
 
-    public EntityComboBox<ID, T> getComboBox() {
-        return comboBox;
-    }
+	public ListSelect getListSelect() {
+		return listSelect;
+	}
 
-    public SortOrder[] getSortOrders() {
-        return sortOrders;
-    }
+	public Button getClearButton() {
+		return clearButton;
+	}
 
-    @Override
-    public Class<? extends Object> getType() {
-        return Object.class;
-    }
+	public Button getRemoveButton() {
+		return removeButton;
+	}
 
-    @Override
-    protected Component initContent() {
-        VerticalLayout layout = new DefaultVerticalLayout(false, false);
+	public Button getSelectButton() {
+		return selectButton;
+	}
 
-        HorizontalLayout firstBar = new DefaultHorizontalLayout(false, false, true);
-        firstBar.setSizeFull();
+	public SortOrder[] getSortOrders() {
+		return sortOrders;
+	}
 
-        comboBox.setCaption(null);
-        comboBox.setSizeFull();
+	@Override
+	public Class<? extends Object> getType() {
+		return Object.class;
+	}
 
-        firstBar.addComponent(comboBox);
+	@Override
+	protected Component initContent() {
+		VerticalLayout layout = new DefaultVerticalLayout(false, false);
 
-        layout.addComponent(firstBar);
+		HorizontalLayout firstBar = new DefaultHorizontalLayout(false, false, true);
+		firstBar.setSizeFull();
 
-        HorizontalLayout secondBar = new DefaultHorizontalLayout(false, true, true);
-        firstBar.addComponent(secondBar);
+		comboBox.setCaption(null);
+		comboBox.setSizeFull();
 
-        // button for selecting an item
-        selectButton = new Button(getMessageService().getMessage("ocs.select"));
-        selectButton.addClickListener(new Button.ClickListener() {
+		firstBar.addComponent(comboBox);
 
-            private static final long serialVersionUID = 2333147549550914035L;
+		layout.addComponent(firstBar);
 
-            @Override
-            @SuppressWarnings("unchecked")
-            public void buttonClick(ClickEvent event) {
-                if (comboBox.getValue() != null) {
-                    if (!container.containsId(comboBox.getValue())) {
-                        container.addBean((T) comboBox.getValue());
-                        copyValueFromContainer();
-                    }
-                }
-                comboBox.setValue(null);
-            }
+		HorizontalLayout secondBar = new DefaultHorizontalLayout(false, true, true);
+		firstBar.addComponent(secondBar);
 
-        });
-        secondBar.addComponent(selectButton);
+		// button for selecting an item
+		selectButton = new Button(getMessageService().getMessage("ocs.select"));
+		selectButton.addClickListener(new Button.ClickListener() {
 
-        // adds a button for removing the selected items from the list select
-        removeButton = new Button(getMessageService().getMessage("ocs.remove"));
-        removeButton.addClickListener(new Button.ClickListener() {
+			private static final long serialVersionUID = 2333147549550914035L;
 
-            private static final long serialVersionUID = -1761776309410298236L;
+			@Override
+			@SuppressWarnings("unchecked")
+			public void buttonClick(ClickEvent event) {
+				if (comboBox.getValue() != null && !container.containsId(comboBox.getValue())) {
+					container.addBean((T) comboBox.getValue());
+					copyValueFromContainer();
+				}
+				comboBox.setValue(null);
+			}
+		});
+		secondBar.addComponent(selectButton);
 
-            @Override
-            @SuppressWarnings("unchecked")
-            public void buttonClick(ClickEvent event) {
-                Object value = listSelect.getValue();
-                if (value instanceof Collection) {
-                    Collection<T> col = (Collection<T>) value;
-                    for (T t : col) {
-                        container.removeItem(t);
-                        copyValueFromContainer();
-                    }
-                }
-            }
-        });
-        secondBar.addComponent(removeButton);
+		// adds a button for removing the selected items from the list select
+		removeButton = new Button(getMessageService().getMessage("ocs.remove"));
+		removeButton.addClickListener(new Button.ClickListener() {
 
-        // add a button for removing all items at once
-        clearButton = new Button(getMessageService().getMessage("ocs.clear"));
-        clearButton.addClickListener(new Button.ClickListener() {
+			private static final long serialVersionUID = -1761776309410298236L;
 
-            private static final long serialVersionUID = -1761776309410298236L;
+			@Override
+			@SuppressWarnings("unchecked")
+			public void buttonClick(ClickEvent event) {
+				Object value = listSelect.getValue();
+				if (value instanceof Collection) {
+					Collection<T> col = (Collection<T>) value;
+					for (T t : col) {
+						container.removeItem(t);
+						copyValueFromContainer();
+					}
+				}
+			}
+		});
+		secondBar.addComponent(removeButton);
 
-            @Override
-            public void buttonClick(ClickEvent event) {
-                // clear the container
-                setValue(new HashSet<>());
-                copyValueFromContainer();
-            }
-        });
-        secondBar.addComponent(clearButton);
+		// add a button for removing all items at once
+		clearButton = new Button(getMessageService().getMessage("ocs.clear"));
+		clearButton.addClickListener(new Button.ClickListener() {
 
-        if (addAllowed) {
-            Button addButton = constructAddButton();
-            secondBar.addComponent(addButton);
-        }
+			private static final long serialVersionUID = -1761776309410298236L;
 
-        listSelect.setSizeFull();
-        listSelect.setNullSelectionAllowed(false);
-        listSelect.setItemCaptionMode(ItemCaptionMode.PROPERTY);
-        listSelect.setItemCaptionPropertyId(getEntityModel().getDisplayProperty());
-        listSelect.setMultiSelect(true);
-        layout.addComponent(listSelect);
+			@Override
+			public void buttonClick(ClickEvent event) {
+				// clear the container
+				setValue(new HashSet<>());
+				copyValueFromContainer();
+			}
+		});
+		secondBar.addComponent(clearButton);
 
-        return layout;
-    }
+		// add a quick add button
+		if (addAllowed) {
+			Button addButton = constructAddButton();
+			secondBar.addComponent(addButton);
+		}
 
-    @SuppressWarnings("unchecked")
-    private void repopulateContainer(Object value) {
-        if (container != null) {
-            container.removeAllItems();
-            if (value != null && value instanceof Collection) {
-                container.addAll((Collection<T>) value);
-            }
-        }
-    }
+		// the list select component shows the currently selected values
+		listSelect.setSizeFull();
+		listSelect.setNullSelectionAllowed(false);
+		listSelect.setItemCaptionMode(ItemCaptionMode.PROPERTY);
+		listSelect.setItemCaptionPropertyId(getEntityModel().getDisplayProperty());
+		listSelect.setMultiSelect(true);
+		layout.addComponent(listSelect);
 
-    @Override
-    protected void setInternalValue(Object newValue) {
-        super.setInternalValue(newValue);
-        repopulateContainer(newValue);
-    }
+		return layout;
+	}
 
-    public void setRows(int rows) {
-        if (listSelect != null) {
-            listSelect.setRows(rows);
-        }
-    }
+	/**
+	 * Refill the container after a value change
+	 * 
+	 * @param value
+	 */
+	@SuppressWarnings("unchecked")
+	private void repopulateContainer(Object value) {
+		if (container != null) {
+			container.removeAllItems();
+			if (value != null && value instanceof Collection) {
+				container.addAll((Collection<T>) value);
+			}
+		}
+	}
 
-    @Override
-    public void setValue(Object newFieldValue) throws com.vaadin.data.Property.ReadOnlyException,
-            ConversionException {
-        super.setValue(newFieldValue);
-        repopulateContainer(newFieldValue);
-    }
+	@Override
+	protected void setInternalValue(Object newValue) {
+		super.setInternalValue(newValue);
+		repopulateContainer(newValue);
+	}
+
+	public void setRows(int rows) {
+		if (listSelect != null) {
+			listSelect.setRows(rows);
+		}
+	}
+
+	@Override
+	public void setValue(Object newFieldValue) {
+		super.setValue(newFieldValue);
+		repopulateContainer(newFieldValue);
+	}
 
 }

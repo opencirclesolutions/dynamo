@@ -26,6 +26,7 @@ import org.junit.Test;
 import com.google.common.collect.Lists;
 import com.mysema.query.BooleanBuilder;
 import com.ocs.dynamo.dao.SortOrder.Direction;
+import com.ocs.dynamo.dao.query.FetchJoinInformation;
 import com.ocs.dynamo.domain.QTestEntity;
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.filter.And;
@@ -40,221 +41,259 @@ import com.ocs.dynamo.test.BaseIntegrationTest;
  */
 public class TestEntityDaoTest extends BaseIntegrationTest {
 
-    @Inject
-    TestEntityDao dao;
+	@Inject
+	TestEntityDao dao;
 
-    @Test
-    public void testSaveAndFind() {
+	@Test
+	public void testSaveAndFind() {
 
-        TestEntity entity = save("Piet", 12L);
+		TestEntity entity = save("Piet", 12L);
 
-        TestEntity detail = new TestEntity();
-        detail.setAge(2L);
-        detail.setName("Jantje");
-        entity.addChild(detail);
+		TestEntity detail = new TestEntity();
+		detail.setAge(2L);
+		detail.setName("Jantje");
+		entity.addChild(detail);
 
-        // Test save
-        entity = dao.save(entity);
-        assertNotNull(entity.getId());
-        Integer id = entity.getId();
+		// Test save
+		entity = dao.save(entity);
+		assertNotNull(entity.getId());
+		Integer id = entity.getId();
 
-        // Test find one
-        TestEntity other = dao.findById(id);
-        assertEquals(other, entity);
-    }
+		// Test find one
+		TestEntity other = dao.findById(id);
+		assertEquals(other, entity);
+	}
 
-    @Test
-    public void testSaveBulk() {
-        TestEntity entity1 = new TestEntity("Bob", 1L);
-        TestEntity entity2 = new TestEntity("Bob", 2L);
-        TestEntity entity3 = new TestEntity("Bob", 3L);
+	@Test
+	public void testSaveBulk() {
+		TestEntity entity1 = new TestEntity("Bob", 1L);
+		TestEntity entity2 = new TestEntity("Bob", 2L);
+		TestEntity entity3 = new TestEntity("Bob", 3L);
 
-        dao.save(Lists.newArrayList(entity1, entity2, entity3));
+		dao.save(Lists.newArrayList(entity1, entity2, entity3));
 
-        List<TestEntity> list = dao.findAll();
-        Assert.assertEquals(3, list.size());
-    }
+		List<TestEntity> list = dao.findAll();
+		Assert.assertEquals(3, list.size());
+	}
 
-    /**
-     * Basic test of the count and find methods
-     */
-    @Test
-    public void testCountAndFind() {
-        save("Jan", 11L);
-        save("Piet", 12L);
-        save("Klaas", 13L);
+	/**
+	 * Basic test of the count and find methods
+	 */
+	@Test
+	public void testCountAndFind() {
+		save("Jan", 11L);
+		save("Piet", 12L);
+		save("Klaas", 13L);
 
-        assertEquals(3, dao.count());
+		assertEquals(3, dao.count());
 
-        List<TestEntity> list = dao.findAll();
-        assertEquals(3, list.size());
+		List<TestEntity> list = dao.findAll();
+		assertEquals(3, list.size());
 
-        BooleanBuilder builder = new BooleanBuilder();
-        builder.and(QTestEntity.testEntity.name.eq("Jan"));
-        list = dao.find(builder);
-        assertEquals(1, list.size());
+		BooleanBuilder builder = new BooleanBuilder();
+		builder.and(QTestEntity.testEntity.name.eq("Jan"));
+		list = dao.find(builder);
+		assertEquals(1, list.size());
 
-        // delete a list of objects
-        dao.delete(list);
+		// delete a list of objects
+		dao.delete(list);
 
-        // verify the delete
-        list = dao.findAll();
-        assertEquals(2, list.size());
+		// verify the delete
+		list = dao.findAll();
+		assertEquals(2, list.size());
 
-        dao.delete(list);
+		dao.delete(list);
 
-        assertEquals(0, dao.count());
-    }
+		assertEquals(0, dao.count());
+	}
 
-    @Test
-    public void testByUniqueProperty() {
-        save("Jan", 11L);
+	@Test
+	public void testByUniqueProperty() {
+		save("Jan", 11L);
 
-        TestEntity t = dao.findByUniqueProperty("name", "Jan", false);
-        assertNotNull(t);
+		TestEntity t = dao.findByUniqueProperty("name", "Jan", false);
+		assertNotNull(t);
 
-        // try fetching
-        t = dao.fetchByUniqueProperty("name", "Jan", false);
-        assertNotNull(t);
-        t = dao.fetchByUniqueProperty("name", "Jan", true);
-        assertNotNull(t);
+		// try fetching
+		t = dao.fetchByUniqueProperty("name", "Jan", false);
+		assertNotNull(t);
+		t = dao.fetchByUniqueProperty("name", "Jan", true);
+		assertNotNull(t);
 
-        // case insensitive
-        t = dao.findByUniqueProperty("name", "JAN", false);
-        assertNotNull(t);
-        t = dao.fetchByUniqueProperty("name", "JAN", true);
-        Assert.assertNull(t);
+		// case insensitive
+		t = dao.findByUniqueProperty("name", "JAN", false);
+		assertNotNull(t);
+		t = dao.fetchByUniqueProperty("name", "JAN", true);
+		Assert.assertNull(t);
 
-        // test that NULL is returned if nothing can be found
-        t = dao.findByUniqueProperty("name", "Bert", false);
-        Assert.assertNull(t);
-    }
+		// test that NULL is returned if nothing can be found
+		t = dao.findByUniqueProperty("name", "Bert", false);
+		Assert.assertNull(t);
+	}
 
-    /**
-     * Test the basic working of a tree based entity
-     */
-    @Test
-    public void testTree() {
+	/**
+	 * Test the basic working of a tree based entity
+	 */
+	@Test
+	public void testTree() {
 
-        TestEntity entity = save("Piet", 12L);
+		TestEntity entity = save("Piet", 12L);
 
-        TestEntity detail = new TestEntity();
-        detail.setAge(24L);
-        detail.setName("Jantje");
-        entity.addChild(detail);
+		TestEntity detail = new TestEntity();
+		detail.setAge(24L);
+		detail.setName("Jantje");
+		entity.addChild(detail);
 
-        entity.addChild(detail);
-        entity = dao.save(entity);
+		entity.addChild(detail);
+		entity = dao.save(entity);
 
-        // verify that the detail was cascaded
-        detail = entity.getChildren().get(0);
-        assertNotNull(detail.getId());
+		// verify that the detail was cascaded
+		detail = entity.getChildren().get(0);
+		assertNotNull(detail.getId());
 
-        List<TestEntity> roots = dao.findByParentIsNull();
-        assertEquals(1, roots.size());
-        assertEquals(entity, roots.get(0));
+		List<TestEntity> roots = dao.findByParentIsNull();
+		assertEquals(1, roots.size());
+		assertEquals(entity, roots.get(0));
 
-        List<TestEntity> children = dao.findByParent(entity);
-        assertEquals(1, children.size());
-        assertEquals(detail, children.get(0));
-    }
+		List<TestEntity> children = dao.findByParent(entity);
+		assertEquals(1, children.size());
+		assertEquals(detail, children.get(0));
+	}
 
-    @Test
-    public void testFindFilter() {
-        TestEntity jan = save("Jan", 11L);
-        save("Piet", 12L);
-        save("Klaas", 13L);
+	@Test
+	public void testFindFilter() {
+		TestEntity jan = save("Jan", 11L);
+		save("Piet", 12L);
+		save("Klaas", 13L);
 
-        Filter filter = new Compare.Equal("name", "Jan");
-        Assert.assertEquals(1, dao.count(filter, true));
-        List<TestEntity> list = dao.find(filter);
+		Filter filter = new Compare.Equal("name", "Jan");
+		Assert.assertEquals(1, dao.count(filter, true));
+		List<TestEntity> list = dao.find(filter);
 
-        assertEquals(jan, list.get(0));
+		assertEquals(jan, list.get(0));
 
-        Filter and = new And(filter, new Compare.Equal("age", 99L));
-        list = dao.find(and);
-        assertEquals(0, list.size());
+		Filter and = new And(filter, new Compare.Equal("age", 99L));
+		list = dao.find(and);
+		assertEquals(0, list.size());
 
-        and = new And(filter, new Compare.Equal("age", 11L));
+		and = new And(filter, new Compare.Equal("age", 11L));
 
-        SortOrder order = new SortOrder(Direction.ASC, "name");
-        list = dao.find(and, order);
-        assertEquals(1, list.size());
+		SortOrder order = new SortOrder(Direction.ASC, "name");
+		list = dao.find(and, order);
+		assertEquals(1, list.size());
 
-        list = dao.find(null, order);
-        assertEquals(3, list.size());
-        Assert.assertEquals("Jan", list.get(0).getName());
-        Assert.assertEquals("Klaas", list.get(1).getName());
-        Assert.assertEquals("Piet", list.get(2).getName());
-    }
+		list = dao.find(null, order);
+		assertEquals(3, list.size());
+		Assert.assertEquals("Jan", list.get(0).getName());
+		Assert.assertEquals("Klaas", list.get(1).getName());
+		Assert.assertEquals("Piet", list.get(2).getName());
+	}
 
-    @Test
-    public void testFindPredicate() {
-        save("Jan", 11L);
-        save("Piet", 12L);
-        save("Klaas", 13L);
+	@Test
+	public void testFindPredicate() {
+		save("Jan", 11L);
+		save("Piet", 12L);
+		save("Klaas", 13L);
 
-        BooleanBuilder builder = new BooleanBuilder();
-        builder.and(QTestEntity.testEntity.name.containsIgnoreCase("a"));
+		BooleanBuilder builder = new BooleanBuilder();
+		builder.and(QTestEntity.testEntity.name.containsIgnoreCase("a"));
 
-        Assert.assertEquals(2, dao.count(builder));
-        Assert.assertEquals(2, dao.find(builder).size());
+		Assert.assertEquals(2, dao.count(builder));
+		Assert.assertEquals(2, dao.find(builder).size());
 
-        List<TestEntity> result = dao.find(builder, 0, 10, new SortOrder(Direction.ASC, "name"));
-        Assert.assertEquals("Jan", result.get(0).getName());
-        Assert.assertEquals("Klaas", result.get(1).getName());
+		List<TestEntity> result = dao.find(builder, 0, 10, new SortOrder(Direction.ASC, "name"));
+		Assert.assertEquals("Jan", result.get(0).getName());
+		Assert.assertEquals("Klaas", result.get(1).getName());
 
-        result = dao.find(builder, 0, 10, new SortOrder(Direction.DESC, "name"));
-        Assert.assertEquals("Klaas", result.get(0).getName());
-        Assert.assertEquals("Jan", result.get(1).getName());
-    }
+		result = dao.find(builder, 0, 10, new SortOrder(Direction.DESC, "name"));
+		Assert.assertEquals("Klaas", result.get(0).getName());
+		Assert.assertEquals("Jan", result.get(1).getName());
+	}
 
-    /**
-     * Test filtering by IDs
-     */
-    @Test
-    public void testFindIdsAndFetch() {
-        save("Jan", 11L);
-        save("Piet", 12L);
-        save("Klaas", 13L);
+	/**
+	 * Test filtering by IDs
+	 */
+	@Test
+	public void testFindIdsAndFetch() {
+		save("Jan", 11L);
+		save("Piet", 12L);
+		save("Klaas", 13L);
 
-        // retrieve the IDs (sorted by name)
-        List<Integer> ids = dao.findIds(null, new SortOrder(Direction.ASC, "name"));
-        Assert.assertEquals(3, ids.size());
+		// retrieve the IDs (sorted by name)
+		List<Integer> ids = dao.findIds(null, new SortOrder(Direction.ASC, "name"));
+		Assert.assertEquals(3, ids.size());
 
-        TestEntity entity = dao.fetchById(ids.get(0));
-        Assert.assertEquals("Jan", entity.getName());
+		TestEntity entity = dao.fetchById(ids.get(0));
+		Assert.assertEquals("Jan", entity.getName());
 
-        ids = dao.findIds(null, new SortOrder(Direction.DESC, "name"));
-        Assert.assertEquals(3, ids.size());
+		ids = dao.findIds(null, new SortOrder(Direction.DESC, "name"));
+		Assert.assertEquals(3, ids.size());
 
-        entity = dao.fetchById(ids.get(0));
-        Assert.assertEquals("Piet", entity.getName());
+		entity = dao.fetchById(ids.get(0));
+		Assert.assertEquals("Piet", entity.getName());
 
-        List<TestEntity> list = dao.fetchByIds(ids, new SortOrders(new SortOrder(Direction.ASC,
-                "name")));
-        Assert.assertEquals("Jan", list.get(0).getName());
-        Assert.assertEquals("Klaas", list.get(1).getName());
-        Assert.assertEquals("Piet", list.get(2).getName());
-    }
+		List<TestEntity> list = dao.fetchByIds(ids, new SortOrders(new SortOrder(Direction.ASC, "name")));
+		Assert.assertEquals("Jan", list.get(0).getName());
+		Assert.assertEquals("Klaas", list.get(1).getName());
+		Assert.assertEquals("Piet", list.get(2).getName());
+	}
 
-    @Test
-    public void testFlushAndClear() {
-        TestEntity entity = save("Jan", 11L);
+	@Test
+	public void testFetch() {
+		save("Kevin", 11L);
+		save("Stuart", 12L);
+		save("Bob", 13L);
 
-        Assert.assertTrue(getEntityManager().contains(entity));
+		List<TestEntity> results = dao.fetch(null);
+		Assert.assertEquals(3, results.size());
 
-        dao.flushAndClear();
+		results = dao.fetch(new Compare.Equal("name", "Bob"));
+		Assert.assertEquals(1, results.size());
 
-        Assert.assertFalse(getEntityManager().contains(entity));
-    }
+		// with a sort order
+		results = dao.fetch(null, new SortOrders(new SortOrder("name")));
+		Assert.assertEquals(3, results.size());
+		Assert.assertEquals("Bob", results.get(0).getName());
 
-    private TestEntity save(String name, long age) {
-        TestEntity entity = new TestEntity();
-        entity.setName(name);
-        entity.setAge(age);
-        entity = dao.save(entity);
-        return entity;
-    }
+		// with a sort order and a fetch
+		results = dao.fetch(null, new SortOrders(new SortOrder("name")), new FetchJoinInformation("testEntities"));
+		Assert.assertEquals(3, results.size());
+		Assert.assertEquals("Bob", results.get(0).getName());
+	}
+
+	@Test
+	public void testFlushAndClear() {
+		TestEntity entity = save("Jan", 11L);
+
+		Assert.assertTrue(getEntityManager().contains(entity));
+
+		dao.flushAndClear();
+
+		Assert.assertFalse(getEntityManager().contains(entity));
+	}
+
+	@Test
+	public void testFindDistinct() {
+		save("Kevin", 11L);
+		save("Bob", 11L);
+		save("Bob", 11L);
+
+		List<? extends Object> names = dao.findDistinct(null, "name", new SortOrder("name"));
+		Assert.assertEquals(2, names.size());
+		Assert.assertEquals("Bob", names.get(0));
+		Assert.assertEquals("Kevin", names.get(1));
+
+		List<? extends Object> ages = dao.findDistinct(null, "age", new SortOrder("age"));
+		Assert.assertEquals(1, ages.size());
+		Assert.assertEquals(11L, ages.get(0));
+	}
+
+	private TestEntity save(String name, long age) {
+		TestEntity entity = new TestEntity();
+		entity.setName(name);
+		entity.setAge(age);
+		entity = dao.save(entity);
+		return entity;
+	}
 
 }

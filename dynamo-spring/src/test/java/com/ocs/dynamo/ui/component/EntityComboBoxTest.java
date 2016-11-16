@@ -27,7 +27,9 @@ import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.domain.model.impl.EntityModelFactoryImpl;
 import com.ocs.dynamo.service.TestEntityService;
 import com.ocs.dynamo.test.BaseMockitoTest;
+import com.vaadin.data.Container.Filter;
 import com.vaadin.data.util.filter.Compare;
+import com.vaadin.shared.ui.combobox.FilteringMode;
 
 public class EntityComboBoxTest extends BaseMockitoTest {
 
@@ -71,5 +73,34 @@ public class EntityComboBoxTest extends BaseMockitoTest {
         Mockito.verify(service, Mockito.times(2)).find(
                 Matchers.any(com.ocs.dynamo.filter.Filter.class),
                 Matchers.any(com.ocs.dynamo.dao.SortOrder[].class));
+    }
+
+    @Test
+    public void testAddEntity() {
+        EntityComboBox<Integer, TestEntity> select = new EntityComboBox<>(
+                factory.getModel(TestEntity.class), null, service, new Compare.Equal("name", "Bob"));
+        Assert.assertEquals(0, select.getContainerDataSource().size());
+
+        TestEntity te = new TestEntity("stewart", 77L);
+        select.addEntity(te);
+
+        Assert.assertEquals(1, select.getContainerDataSource().size());
+
+        Assert.assertEquals(te, select.getFirstItem());
+    }
+
+    @Test
+    public void testBuildFilter() {
+        EntityComboBox<Integer, TestEntity> select = new EntityComboBox<>(
+                factory.getModel(TestEntity.class), null, service, new Compare.Equal("name", "Bob"));
+
+        Filter ft = select.buildFilter("abc", FilteringMode.STARTSWITH);
+        Assert.assertTrue(ft instanceof IgnoreDiacriticsStringFilter);
+
+        ft = select.buildFilter("abc", FilteringMode.CONTAINS);
+        Assert.assertTrue(ft instanceof IgnoreDiacriticsStringFilter);
+
+        ft = select.buildFilter("abc", FilteringMode.OFF);
+        Assert.assertNull(ft);
     }
 }

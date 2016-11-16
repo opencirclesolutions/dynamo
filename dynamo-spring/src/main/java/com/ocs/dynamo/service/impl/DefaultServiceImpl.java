@@ -27,10 +27,13 @@ import com.ocs.dynamo.utils.ClassUtils;
  */
 public class DefaultServiceImpl<ID, T extends AbstractEntity<ID>> extends BaseServiceImpl<ID, T> {
 
+    /**
+     * The DAO
+     */
     private BaseDao<ID, T> dao;
 
     /**
-     * The name of the unique property
+     * The name of the property that is used to check if a value is unique
      */
     private String uniquePropertyId;
 
@@ -90,6 +93,10 @@ public class DefaultServiceImpl<ID, T extends AbstractEntity<ID>> extends BaseSe
         }
         return getDao().findByUniqueProperty(uniquePropertyId,
                 ClassUtils.getFieldValue(entity, uniquePropertyId), false);
+    }
+
+    public String getUniquePropertyId() {
+        return uniquePropertyId;
     }
 
 }

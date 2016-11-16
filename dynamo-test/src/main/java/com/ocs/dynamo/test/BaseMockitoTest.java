@@ -13,14 +13,15 @@
  */
 package com.ocs.dynamo.test;
 
+import java.text.DecimalFormat;
+import java.util.Map;
+import java.util.Properties;
+
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
-
-import java.util.Map;
-import java.util.Properties;
 
 /**
  * Base class for testing Spring beans. Automatically injects all dependencies annotated with
@@ -31,47 +32,56 @@ import java.util.Properties;
 @RunWith(MockitoJUnitRunner.class)
 public abstract class BaseMockitoTest {
 
-    private GenericApplicationContext applicationContext;
+	private GenericApplicationContext applicationContext;
 
-    @Before
-    public void setUp() throws Exception {
-        setupApplicationContext();
-    }
+	protected void addBeanToContext(Object bean) {
+		applicationContext.getAutowireCapableBeanFactory().autowireBean(bean);
+		applicationContext.getBeanFactory().registerSingleton(bean.getClass().getName(), bean);
+	}
 
-    protected <T> T wireTestSubject(T subject) {
-        applicationContext.getAutowireCapableBeanFactory().autowireBean(subject);
-        initialize(subject);
-        return subject;
-    }
+	public void addBeanToContext(String qualifier, Object bean) {
+		applicationContext.getAutowireCapableBeanFactory().autowireBean(bean);
+		applicationContext.getBeanFactory().registerSingleton(qualifier, bean);
+	}
 
-    protected void initialize(Object subject) {
-        applicationContext.getAutowireCapableBeanFactory().initializeBean(subject,
-                subject.getClass().getSimpleName());
-    }
+	protected String formatNumber(String str) {
+		DecimalFormat df = (DecimalFormat) DecimalFormat.getNumberInstance();
+		char ds = df.getDecimalFormatSymbols().getDecimalSeparator();
+		return str.replace(',', ds);
+	}
 
-    protected void addBeanToContext(Object bean) {
-        applicationContext.getAutowireCapableBeanFactory().autowireBean(bean);
-        applicationContext.getBeanFactory().registerSingleton(bean.getClass().getName(), bean);
-    }
+	@SuppressWarnings("unchecked")
+	protected Map<String, Object> getSystemProperties() {
+		return (Map<String, Object>) applicationContext.getBean("systemProperties");
+	}
 
-    public void addBeanToContext(String qualifier, Object bean) {
-        applicationContext.getAutowireCapableBeanFactory().autowireBean(bean);
-        applicationContext.getBeanFactory().registerSingleton(qualifier, bean);
-    }
+	protected void initialize(Object subject) {
+		applicationContext.getAutowireCapableBeanFactory().initializeBean(subject, subject.getClass().getSimpleName());
+	}
 
-    public void registerProperties(String name, Properties properties) {
-        applicationContext.getBeanFactory().registerSingleton(name, properties);
-    }
+	public void registerProperties(String name, Map<String, Object> properties) {
+		applicationContext.getBeanFactory().registerSingleton(name, properties);
+	}
 
-    public void registerProperties(String name, Map<String, Object> properties) {
-        applicationContext.getBeanFactory().registerSingleton(name, properties);
-    }
+	public void registerProperties(String name, Properties properties) {
+		applicationContext.getBeanFactory().registerSingleton(name, properties);
+	}
 
-    protected void setupApplicationContext() {
-        this.applicationContext = new AnnotationConfigApplicationContext();
-        applicationContext.refresh();
-        applicationContext.start();
-        MockUtil.registerMocks(applicationContext.getBeanFactory(), this);
-    }
+	@Before
+	public void setUp() throws Exception {
+		setupApplicationContext();
+	}
 
+	protected void setupApplicationContext() {
+		this.applicationContext = new AnnotationConfigApplicationContext();
+		applicationContext.refresh();
+		applicationContext.start();
+		MockUtil.registerMocks(applicationContext.getBeanFactory(), this);
+	}
+
+	protected <T> T wireTestSubject(T subject) {
+		applicationContext.getAutowireCapableBeanFactory().autowireBean(subject);
+		initialize(subject);
+		return subject;
+	}
 }

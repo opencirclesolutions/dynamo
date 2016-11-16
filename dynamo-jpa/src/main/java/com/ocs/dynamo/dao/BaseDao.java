@@ -15,10 +15,10 @@ package com.ocs.dynamo.dao;
 
 import java.util.List;
 
+import com.mysema.query.types.Predicate;
 import com.ocs.dynamo.dao.query.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.filter.Filter;
-import com.mysema.query.types.Predicate;
 
 /**
  * Interface that all DAO objects must implement
@@ -37,15 +37,6 @@ public interface BaseDao<ID, T extends AbstractEntity<ID>> {
      * @return
      */
     long count();
-
-    /**
-     * Returns the number of entities that match the provided filter
-     * 
-     * @param filter
-     *            the filter
-     * @return
-     */
-    long count(Filter filter);
 
     /**
      * Returns the number of entities that match the provided filter
@@ -284,4 +275,16 @@ public interface BaseDao<ID, T extends AbstractEntity<ID>> {
      */
     T save(T entity);
 
+	/**
+	 * Returns all entities that match the provided filter and apply a distinct on the given column
+	 * 
+	 * @param filter
+	 *            the filter
+	 * @param distinctField
+	 *            the field used to remove duplicate rows
+	 * @param orders
+	 *            the sort info
+	 * @return
+	 */
+	List<? extends Object> findDistinct(Filter filter, String distinctField, SortOrder... orders);
 }

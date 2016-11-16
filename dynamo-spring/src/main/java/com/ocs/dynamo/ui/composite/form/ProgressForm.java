@@ -13,18 +13,22 @@
  */
 package com.ocs.dynamo.ui.composite.form;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
-import org.apache.log4j.Logger;
-
 import com.ocs.dynamo.exception.OCSRuntimeException;
+import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.composite.layout.BaseCustomComponent;
+import com.vaadin.server.VaadinSession;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.ProgressBar;
 import com.vaadin.ui.UI;
+import org.apache.log4j.Logger;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * A form that displays of a progress bar while some time consuming process is taking place
@@ -36,273 +40,318 @@ import com.vaadin.ui.UI;
  */
 public abstract class ProgressForm<T> extends BaseCustomComponent implements Progressable {
 
-    // The mode in which the screen operates
-    public enum ProgressMode {
-        PROGRESSBAR, SIMPLE;
-    }
+	// The mode in which the screen operates
+	public enum ProgressMode {
+		PROGRESSBAR, SIMPLE;
+	}
 
-    public static final int POLL_INTERVAL = 500;
+	public static final int POLL_INTERVAL = 500;
 
-    private static final long serialVersionUID = -4717815709838453902L;
+	private static final long serialVersionUID = -4717815709838453902L;
 
-    private static final Logger LOGGER = Logger.getLogger(ProgressForm.class);
+	private static final Logger LOGGER = Logger.getLogger(ProgressForm.class);
 
-    // counter for keeping track of the number of processed items
-    private volatile AtomicInteger counter = new AtomicInteger();
+	// counter for keeping track of the number of processed items
+	private volatile AtomicInteger counter = new AtomicInteger();
 
-    // the main layout
-    private Layout mainLayout;
+	private UI ui = UI.getCurrent();
 
-    // the progress bar
-    private ProgressBar progressBar;
+	// the main layout
+	private Layout mainLayout;
 
-    // the progress layout
-    private Layout progressLayout;
+	// the progress bar
+	private ProgressBar progressBar;
 
-    // the progress mode - indicates whether to render a progress bar
-    private ProgressMode progressMode;
+	// the progress layout
+	private Layout progressLayout;
 
-    // the label that displays the status (which percentage is complete?)
-    private Label status;
+	// the progress mode - indicates whether to render a progress bar
+	private ProgressMode progressMode;
 
-    /**
-     * Constructor
-     * 
-     * @param progressMode
-     *            indicates the mode of the screen (and whether the progress bar will be displayed)
-     */
-    public ProgressForm(ProgressMode progressMode) {
-        this.progressMode = progressMode;
-    }
+	// the label that displays the status (which percentage is complete?)
+	private Label status;
 
-    /**
-     * Specify what to do after the work is complete
-     */
-    protected void afterWorkComplete() {
-        // overwrite in subclass
-    }
+	/**
+	 * Constructor
+	 * 
+	 * @param progressMode
+	 *            indicates the mode of the screen (and whether the progress bar will be displayed)
+	 */
+	public ProgressForm(ProgressMode progressMode) {
+		this.progressMode = progressMode;
+	}
 
-    @Override
-    public void attach() {
-        super.attach();
-        build();
-    }
+	/**
+	 * Specify what to do after the work is complete
+	 */
+	protected void afterWorkComplete() {
+		// overwrite in subclass
+	}
 
-    @Override
-    public void build() {
-        formMode();
-    }
+	@Override
+	public void attach() {
+		super.attach();
+		build();
+	}
 
-    /**
-     * Constructs the specific part of the layout
-     * 
-     * @param main
-     *            the layout that serves as the container for everything that is being added
-     */
-    protected abstract void doBuildLayout(Layout main);
+	@Override
+	public void build() {
+		formMode();
+	}
 
-    /**
-     * method that is called after the process completes
-     */
-    private void done() {
-        afterWorkComplete();
-        formMode();
-    }
+	/**
+	 * Constructs the specific part of the layout
+	 * 
+	 * @param main
+	 *            the layout that serves as the container for everything that is being added
+	 */
+	protected abstract void doBuildLayout(Layout main);
 
-    /**
-     * Estimates the current progress - overwrite this method if you want to use a custom mechanism
-     * for updating the progress
-     * 
-     * @return
-     */
-    @Override
-    public int estimateCurrentProgress() {
-        return counter.get();
-    }
+	/**
+	 * method that is called after the process completes
+	 */
+	private void done() {
+		afterWorkComplete();
+		formMode();
+	}
 
-    /**
-     * Estimates the total size of the process that is carried out
-     * 
-     * @param t
-     *            the object being processed (can be null)
-     * @return
-     */
-    protected abstract int estimateSize(T t);
+	/**
+	 * Constructs a layout with a single button that will start the process when clicked
+	 * 
+	 * @param parent
+	 *            the layout that serves as the parent of the layout to construct
+	 * @param caption
+	 *            the caption of the button
+	 */
+	protected void constructSingleButtonLayout(Layout parent, String caption) {
+		HorizontalLayout buttonBar = new DefaultHorizontalLayout(true, true, true);
+		parent.addComponent(buttonBar);
 
-    protected OCSRuntimeException extractRuntimeException(Throwable t) {
-        if (t instanceof OCSRuntimeException) {
-            return (OCSRuntimeException) t;
-        } else if (t.getCause() != null) {
-            return extractRuntimeException(t.getCause());
-        }
-        return null;
-    }
+		Button clearButton = new Button(caption);
+		clearButton.addClickListener(new Button.ClickListener() {
 
-    /**
-     * Renders the "form" mode which allows the user to input data before starting the
-     */
-    protected void formMode() {
-        if (mainLayout == null) {
-            mainLayout = new DefaultVerticalLayout(false, true);
+			private static final long serialVersionUID = -652306482967612622L;
 
-            Label label = new Label(getTitle());
-            mainLayout.addComponent(label);
+			@Override
+			public void buttonClick(ClickEvent event) {
+				startWork(null);
+			}
+		});
+		buttonBar.addComponent(clearButton);
+	}
 
-            // add the screen-specific content
-            doBuildLayout(mainLayout);
-        }
+	/**
+	 * Estimates the current progress - overwrite this method if you want to use a custom mechanism
+	 * for updating the progress
+	 * 
+	 * @return
+	 */
+	@Override
+	public int estimateCurrentProgress() {
+		return counter.get();
+	}
 
-        // disable polling
-        UI.getCurrent().setPollInterval(-1);
-        setCompositionRoot(mainLayout);
-    }
+	/**
+	 * Estimates the total size of the process that is carried out
+	 * 
+	 * @param t
+	 *            the object being processed (can be null)
+	 * @return
+	 */
+	protected abstract int estimateSize(T t);
 
-    public AtomicInteger getCounter() {
-        return counter;
-    }
+	protected OCSRuntimeException extractRuntimeException(Throwable t) {
+		if (t instanceof OCSRuntimeException) {
+			return (OCSRuntimeException) t;
+		} else if (t.getCause() != null) {
+			return extractRuntimeException(t.getCause());
+		}
+		return null;
+	}
 
-    @Override
-    public ProgressBar getProgressBar() {
-        return progressBar;
-    }
+	/**
+	 * Generic handling of an exception - tries to extract the OCSRuntimeException if possible
+	 * 
+	 * @param ex
+	 */
+	protected void handleException(Exception ex) {
+		OCSRuntimeException r = extractRuntimeException(ex);
+		if (r != null) {
+			showNotification(r.getMessage(), Notification.Type.ERROR_MESSAGE);
+		} else {
+			showNotification(ex.getMessage(), Notification.Type.ERROR_MESSAGE);
+		}
+	}
 
-    @Override
-    public Label getStatusLabel() {
-        return status;
-    }
+	/**
+	 * Renders the "form" mode which allows the user to input data before starting the
+	 */
+	protected void formMode() {
+		if (mainLayout == null) {
+			mainLayout = new DefaultVerticalLayout(false, true);
 
-    /**
-     * Returns the title to be posted above the form
-     * 
-     * @return
-     */
-    protected abstract String getTitle();
+			Label label = new Label(getTitle());
+			mainLayout.addComponent(label);
 
-    /**
-     * Indicates whether the form is valid for processing. By default this method returns
-     * <code>true</code>. Override if needed and return false if the process cannot be started
-     * 
-     * @param t
-     *            the (optional) object that is being processed
-     * @return
-     */
-    protected boolean isFormValid(T t) {
-        return true;
-    }
+			// add the screen-specific content
+			doBuildLayout(mainLayout);
+		}
 
-    /**
-     * Perform the actual processing
-     * 
-     * @param t
-     *            the optional object that is being processed
-     * @param estimatedSize
-     *            the estimated size of the batch process
-     */
-    protected abstract void process(T t, int estimatedSize);
+		// disable polling
+		ui.setPollInterval(-1);
+		setCompositionRoot(mainLayout);
+	}
 
-    /**
-     * Displays a layout that contains a progress bar and a status label
-     */
-    private void progressMode() {
-        // lazily build the layout
-        if (progressLayout == null) {
-            progressLayout = new DefaultVerticalLayout(true, true);
+	public AtomicInteger getCounter() {
+		return counter;
+	}
 
-            progressBar = new ProgressBar(0.0f);
-            progressBar.setSizeFull();
-            progressLayout.addComponent(progressBar);
+	@Override
+	public ProgressBar getProgressBar() {
+		return progressBar;
+	}
 
-            status = new Label();
-            progressLayout.addComponent(status);
-        }
-        progressBar.setValue(0.0f);
-        status.setValue("");
+	@Override
+	public Label getStatusLabel() {
+		return status;
+	}
 
-        setCompositionRoot(progressLayout);
-    }
+	/**
+	 * Returns the title to be posted above the form
+	 * 
+	 * @return
+	 */
+	protected String getTitle() {
+		// overwrite in subclass if needed
+		return null;
+	}
 
-    public void setCounter(AtomicInteger counter) {
-        this.counter = counter;
-    }
+	/**
+	 * Indicates whether the form is valid for processing. By default this method returns
+	 * <code>true</code>. Override if needed and return false if the process cannot be started
+	 * 
+	 * @param t
+	 *            the (optional) object that is being processed
+	 * @return
+	 */
+	protected boolean isFormValid(T t) {
+		return true;
+	}
 
-    /**
-     * Locks the UI and displays a notification
-     * 
-     * @param message
-     * @param type
-     */
-    protected void showNotification(String message, Notification.Type type) {
-        getUI().getSession().lock();
-        try {
-            Notification.show(message, type);
-        } finally {
-            getUI().getSession().unlock();
-        }
-    }
+	/**
+	 * Perform the actual processing
+	 * 
+	 * @param t
+	 *            the optional object that is being processed
+	 * @param estimatedSize
+	 *            the estimated size of the batch process
+	 */
+	protected abstract void process(T t, int estimatedSize);
 
-    /**
-     * Start the actual work - this is the method that must be called in order to actually start the
-     * processing
-     * 
-     * @param t
-     *            the (optional) object that is being processed
-     * @param fileName
-     */
-    protected final void startWork(final T t) {
-        if (isFormValid(t)) {
-            if (ProgressMode.SIMPLE.equals(progressMode)) {
-                // simply execute the process (without displaying any feedback)
-                process(t, 0);
-                done();
-            } else {
-                // switch to progress bar mode
-                progressMode();
+	/**
+	 * Displays a layout that contains a progress bar and a status label
+	 */
+	private void progressMode() {
+		// lazily build the layout
+		if (progressLayout == null) {
+			progressLayout = new DefaultVerticalLayout(true, true);
 
-                // start a thread to update the progress
-                try {
-                    final int estimatedSize = estimateSize(t);
+			progressBar = new ProgressBar(0.0f);
+			progressBar.setSizeFull();
+			progressLayout.addComponent(progressBar);
 
-                    counter.set(0);
-                    UI.getCurrent().setPollInterval(POLL_INTERVAL);
+			status = new Label();
+			progressLayout.addComponent(status);
+		}
+		progressBar.setValue(0.0f);
+		status.setValue("");
 
-                    final ProgressBarUpdater updater = new ProgressBarUpdater(this, estimatedSize);
+		setCompositionRoot(progressLayout);
+	}
 
-                    // the thread that updates the progress bar
-                    Thread updateThread = new Thread(updater);
-                    updateThread.start();
+	public void setCounter(AtomicInteger counter) {
+		this.counter = counter;
+	}
 
-                    // the thread that performs the actual work
-                    Thread worker = new Thread(new Runnable() {
+	/**
+	 * Locks the UI and displays a notification
+	 * 
+	 * @param message
+	 * @param type
+	 */
+	protected void showNotification(String message, Notification.Type type) {
+		getUI().getSession().lock();
+		try {
+			Notification.show(message, type);
+		} finally {
+			getUI().getSession().unlock();
+		}
+	}
 
-                        @Override
-                        public void run() {
-                            try {
-                                process(t, estimatedSize);
-                            } finally {
-                                updater.setStopped(true);
-                                getUI().getSession().lock();
-                                try {
-                                    done();
-                                } finally {
-                                    getUI().getSession().unlock();
-                                }
-                            }
-                        }
-                    });
-                    worker.start();
-                } catch (OCSRuntimeException ex) {
-                    LOGGER.error(ex.getMessage(), ex);
-                    // exception during size estimation
-                    showNotification(ex.getMessage(), Notification.Type.ERROR_MESSAGE);
-                    getUI().getSession().lock();
-                    try {
-                        done();
-                    } finally {
-                        getUI().getSession().unlock();
-                    }
-                }
-            }
-        }
-    }
+	/**
+	 * Start the actual work - this is the method that must be called in order to actually start the
+	 * processing
+	 * 
+	 * @param t
+	 *            the (optional) object that is being processed
+	 */
+	protected final void startWork(final T t) {
+		if (isFormValid(t)) {
+			if (ProgressMode.SIMPLE.equals(progressMode)) {
+				// simply execute the process (without displaying any feedback)
+				process(t, 0);
+				done();
+			} else {
+				// switch to progress bar mode
+				progressMode();
+
+				// start a thread to update the progress
+				try {
+					final int estimatedSize = estimateSize(t);
+
+					counter.set(0);
+					ui.setPollInterval(POLL_INTERVAL);
+
+					final ProgressBarUpdater updater = new ProgressBarUpdater(this, estimatedSize);
+
+					// the thread that updates the progress bar
+					Thread updateThread = new Thread(updater);
+					updateThread.start();
+
+					// the thread that performs the actual work
+					Thread worker = new Thread(new Runnable() {
+
+						@Override
+						public void run() {
+							try {
+								process(t, estimatedSize);
+							} finally {
+								updater.setStopped(true);
+
+								final VaadinSession session = VaadinSession.getCurrent();
+								session.lock();
+								try {
+									done();
+								} finally {
+									session.unlock();
+								}
+							}
+						}
+					});
+					worker.start();
+				} catch (OCSRuntimeException ex) {
+					LOGGER.error(ex.getMessage(), ex);
+					// exception during size estimation
+					showNotification(ex.getMessage(), Notification.Type.ERROR_MESSAGE);
+					getUI().getSession().lock();
+					try {
+						done();
+					} finally {
+						getUI().getSession().unlock();
+					}
+				}
+			}
+		}
+	}
 
 }

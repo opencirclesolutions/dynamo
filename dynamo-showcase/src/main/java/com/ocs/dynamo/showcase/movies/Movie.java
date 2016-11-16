@@ -51,207 +51,209 @@ import com.ocs.dynamo.domain.model.annotation.Model;
 @AttributeOrder(attributeNames = { "id", "title", "releaseDate" })
 public class Movie extends AbstractEntity<Integer> {
 
-    /** Classes version. */
-    private static final long serialVersionUID = -6342590031746525068L;
+	/** Classes version. */
+	private static final long serialVersionUID = -6342590031746525068L;
 
-    /** Primary key */
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+	/** Primary key */
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Integer id;
 
-    /**
-     * It is required to fill in the title before searching.
-     */
-    @NotNull
-    @Attribute(searchable = true, requiredForSearching = true, main = true)
-    private String title;
+	/**
+	 * It is required to fill in the title before searching.
+	 */
+	@NotNull
+	@Attribute(searchable = true, requiredForSearching = true, main = true)
+	private String title;
 
-    /** The Movie IMDB URL contains a Dynamo annotation to make it clickable. */
-    @Attribute(url = true)
-    @Column(name = "IMDB_URL")
-    private String imdbUrl;
+	/** The Movie IMDB URL contains a Dynamo annotation to make it clickable. */
+	@Attribute(url = true)
+	@Column(name = "IMDB_URL")
+	private String imdbUrl;
 
-    /**
-     * The Movie Release Date contains a Dynamo annotation to make it searchable and indicating it's
-     * a date only.
-     */
-    @Attribute(searchable = true, dateType = AttributeDateType.DATE)
-    @Column(name = "RELEASE_DATE")
-    private Date releaseDate;
+	/**
+	 * The Movie Release Date contains a Dynamo annotation to make it searchable and indicating it's
+	 * a date only.
+	 */
+	@Attribute(searchable = true, dateType = AttributeDateType.DATE)
+	@Column(name = "RELEASE_DATE")
+	private Date releaseDate;
 
-    /**
-     * The Movie Kids Genre contains a Dynamo annotation to make it searchable but not sortable and
-     * to apply another label than the default.
-     */
-    @Attribute(searchable = true, sortable = false, displayName = "MPAA Rating")
-    @Enumerated(EnumType.STRING)
-    @Column(name = "MPAA_RATING")
-    private MovieRating rating;
+	/**
+	 * The Movie Kids Genre contains a Dynamo annotation to make it searchable but not sortable and
+	 * to apply another label than the default.
+	 */
+	@Attribute(searchable = true, sortable = false, displayName = "MPAA Rating")
+	@Enumerated(EnumType.STRING)
+	@Column(name = "MPAA_RATING")
+	private MovieRating rating;
 
-    /**
-     * The Movie Gross contains a Dynamo annotation to make it searchable and use another value
-     * representation.
-     */
-    @NotNull
-    private BigDecimal gross;
+	/**
+	 * The Movie Gross contains a Dynamo annotation to make it searchable and use another value
+	 * representation.
+	 */
+	@NotNull
+	private BigDecimal gross;
 
-    /**
-     * Display the JPA Element collection in a table and make it editable.
-     */
-    @Attribute(showInTable = VisibilityType.SHOW, complexEditable = true)
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "TAG")
-    @Column(name = "Name")
-    private Set<String> tags;
+	/**
+	 * Display the JPA Element collection in a table and make it editable.
+	 */
+	@Attribute(showInTable = VisibilityType.SHOW, complexEditable = true)
+	@ElementCollection(fetch = FetchType.EAGER)
+	@CollectionTable(name = "TAG")
+	@Column(name = "Name")
+	private Set<String> tags;
 
-    /**
-     * Make the documentary classification searchable and to use another value representation than
-     * the default.
-     */
-    @Attribute(searchable = true, trueRepresentation = "Yep!", falseRepresentation = "Nope!")
-    private Boolean documentary;
+	/**
+	 * Make the documentary classification searchable and to use another value representation than
+	 * the default.
+	 */
+	@Attribute(searchable = true, trueRepresentation = "Yep!", falseRepresentation = "Nope!")
+	private Boolean documentary;
 
-    /**
-     * Display the country in a table and create a lookup table for it.
-     */
-    @Attribute(complexEditable = true, searchable = true, selectMode = AttributeSelectMode.TOKEN, multipleSearch = true, displayName = "Country", showInTable = VisibilityType.SHOW)
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "COUNTRY_ID")
-    private Country country;
+	/**
+	 * Display the country in a table and create a lookup table for it.
+	 */
+	@Attribute(complexEditable = true, searchable = true, requiredForSearching = true, searchSelectMode = AttributeSelectMode.TOKEN, multipleSearch = true, displayName = "Country", showInTable = VisibilityType.SHOW)
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "COUNTRY_ID")
+	private Country country;
 
-    /**
-     * @return the id
-     */
-    public Integer getId() {
-        return id;
-    }
+	/**
+	 * @return the id
+	 */
+	@Override
+	public Integer getId() {
+		return id;
+	}
 
-    /**
-     * @param id
-     *            the id to set
-     */
-    public void setId(Integer id) {
-        this.id = id;
-    }
+	/**
+	 * @param id
+	 *            the id to set
+	 */
+	@Override
+	public void setId(Integer id) {
+		this.id = id;
+	}
 
-    /**
-     * @return the title
-     */
-    public String getTitle() {
-        return title;
-    }
+	/**
+	 * @return the title
+	 */
+	public String getTitle() {
+		return title;
+	}
 
-    /**
-     * @param title
-     *            the title to set
-     */
-    public void setTitle(String title) {
-        this.title = title;
-    }
+	/**
+	 * @param title
+	 *            the title to set
+	 */
+	public void setTitle(String title) {
+		this.title = title;
+	}
 
-    /**
-     * @return the releaseDate
-     */
-    public Date getReleaseDate() {
-        return releaseDate;
-    }
+	/**
+	 * @return the releaseDate
+	 */
+	public Date getReleaseDate() {
+		return releaseDate;
+	}
 
-    /**
-     * @param releaseDate
-     *            the releaseDate to set
-     */
-    public void setReleaseDate(Date releaseDate) {
-        this.releaseDate = releaseDate;
-    }
+	/**
+	 * @param releaseDate
+	 *            the releaseDate to set
+	 */
+	public void setReleaseDate(Date releaseDate) {
+		this.releaseDate = releaseDate;
+	}
 
-    /**
-     * @return the rating
-     */
-    public MovieRating getRating() {
-        return rating;
-    }
+	/**
+	 * @return the rating
+	 */
+	public MovieRating getRating() {
+		return rating;
+	}
 
-    /**
-     * @param rating
-     *            the rating to set
-     */
-    public void setRating(MovieRating rating) {
-        this.rating = rating;
-    }
+	/**
+	 * @param rating
+	 *            the rating to set
+	 */
+	public void setRating(MovieRating rating) {
+		this.rating = rating;
+	}
 
-    /**
-     * @return the gross
-     */
-    public BigDecimal getGross() {
-        return gross;
-    }
+	/**
+	 * @return the gross
+	 */
+	public BigDecimal getGross() {
+		return gross;
+	}
 
-    /**
-     * @param gross
-     *            the gross to set
-     */
-    public void setGross(BigDecimal gross) {
-        this.gross = gross;
-    }
+	/**
+	 * @param gross
+	 *            the gross to set
+	 */
+	public void setGross(BigDecimal gross) {
+		this.gross = gross;
+	}
 
-    /**
-     * @return the tags
-     */
-    public Set<String> getTags() {
-        return tags;
-    }
+	/**
+	 * @return the tags
+	 */
+	public Set<String> getTags() {
+		return tags;
+	}
 
-    /**
-     * @param tags
-     *            the tags to set
-     */
-    public void setTags(Set<String> tags) {
-        this.tags = tags;
-    }
+	/**
+	 * @param tags
+	 *            the tags to set
+	 */
+	public void setTags(Set<String> tags) {
+		this.tags = tags;
+	}
 
-    /**
-     * @return the documentary
-     */
-    public Boolean getDocumentary() {
-        return documentary;
-    }
+	/**
+	 * @return the documentary
+	 */
+	public Boolean getDocumentary() {
+		return documentary;
+	}
 
-    /**
-     * @param documentary
-     *            the documentary to set
-     */
-    public void setDocumentary(Boolean documentary) {
-        this.documentary = documentary;
-    }
+	/**
+	 * @param documentary
+	 *            the documentary to set
+	 */
+	public void setDocumentary(Boolean documentary) {
+		this.documentary = documentary;
+	}
 
-    /**
-     * @return the country
-     */
-    public Country getCountry() {
-        return country;
-    }
+	/**
+	 * @return the country
+	 */
+	public Country getCountry() {
+		return country;
+	}
 
-    /**
-     * @param country
-     *            the country to set
-     */
-    public void setCountry(Country country) {
-        this.country = country;
-    }
+	/**
+	 * @param country
+	 *            the country to set
+	 */
+	public void setCountry(Country country) {
+		this.country = country;
+	}
 
-    /**
-     * @return the imdbUrl
-     */
-    public String getImdbUrl() {
-        return imdbUrl;
-    }
+	/**
+	 * @return the imdbUrl
+	 */
+	public String getImdbUrl() {
+		return imdbUrl;
+	}
 
-    /**
-     * @param imdbUrl
-     *            the imdbUrl to set
-     */
-    public void setImdbUrl(String imdbUrl) {
-        this.imdbUrl = imdbUrl;
-    }
+	/**
+	 * @param imdbUrl
+	 *            the imdbUrl to set
+	 */
+	public void setImdbUrl(String imdbUrl) {
+		this.imdbUrl = imdbUrl;
+	}
 
 }

@@ -35,46 +35,48 @@ import com.vaadin.data.util.BeanItemContainer;
  * @param <T>
  *            type of the entity
  */
-public class FixedTableWrapper<ID extends Serializable, T extends AbstractEntity<ID>> extends
-        BaseTableWrapper<ID, T> {
+public class FixedTableWrapper<ID extends Serializable, T extends AbstractEntity<ID>> extends BaseTableWrapper<ID, T> {
 
-    private static final long serialVersionUID = -6711832174203817230L;
+	private static final long serialVersionUID = -6711832174203817230L;
 
-    // the collection of items to display
-    private Collection<T> items;
+	/**
+	 * The items to display in the table
+	 */
+	private Collection<T> items;
 
-    /**
-     * Constructor
-     * 
-     * @param service
-     *            the service
-     * @param entityModel
-     *            the entity model of the items to display in the table
-     * @param items
-     *            the items to display
-     * @param sortOrder
-     *            optional sort order
-     */
-    public FixedTableWrapper(BaseService<ID, T> service, EntityModel<T> entityModel,
-            Collection<T> items, List<SortOrder> sortOrders) {
-        super(service, entityModel, QueryType.NONE, sortOrders);
-        this.items = items;
-    }
+	/**
+	 * Constructor
+	 * 
+	 * @param service
+	 *            the service
+	 * @param entityModel
+	 *            the entity model of the items to display in the table
+	 * @param items
+	 *            the items to display
+	 * @param sortOrder
+	 *            optional sort order
+	 */
+	public FixedTableWrapper(BaseService<ID, T> service, EntityModel<T> entityModel, Collection<T> items,
+	        List<SortOrder> sortOrders, boolean allowExport) {
+		super(service, entityModel, QueryType.NONE, sortOrders, allowExport);
+		this.items = items;
+	}
 
-    @Override
-    protected Container constructContainer() {
-        BeanItemContainer<T> container = new BeanItemContainer<T>(getService().getEntityClass());
-        container.addAll(items);
-        return container;
-    }
+	@Override
+	protected Container constructContainer() {
+		BeanItemContainer<T> container = new BeanItemContainer<T>(getService().getEntityClass());
+		doConstructContainer(container);
+		container.addAll(items);
+		return container;
+	}
 
-    @Override
-    public void reloadContainer() {
-        // do nothing
-    }
+	@Override
+	public void reloadContainer() {
+		// do nothing
+	}
 
-    @Override
-    public void search(Filter filter) {
-        // do nothing
-    }
+	@Override
+	public void search(Filter filter) {
+		// do nothing
+	}
 }

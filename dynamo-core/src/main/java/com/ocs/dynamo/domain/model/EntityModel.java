@@ -113,16 +113,21 @@ public interface EntityModel<T> {
     String SEARCHABLE = "searchable";
 
     /**
-     * Whether to search for exact values
+     * Whether to search for exact values (in case of numbers and dates)
      */
     String SEARCH_EXACT_VALUE = "searchForExactValue";
+    
+    /**
+     * Whether this field must be filled before carrying out a search
+     */
+    String SEARCH_REQUIRED = "requiredForSearching";
 
     /**
      * Indicates that a lookup field (rather than a combo box) must be used when selecting the
      * component
      */
     String SELECT_MODE = "selectMode";
-
+    
     /**
      * The select mode in a search screen
      */
@@ -170,8 +175,7 @@ public interface EntityModel<T> {
      * @param existingModel
      *            The existing attribute model
      */
-    void addAttributeModel(String attributeGroup, AttributeModel model,
-            AttributeModel existingModel);
+    void addAttributeModel(String attributeGroup, AttributeModel model, AttributeModel existingModel);
 
     /**
      * Returns the attribute groups that are defined for this entity

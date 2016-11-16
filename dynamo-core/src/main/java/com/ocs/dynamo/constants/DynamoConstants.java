@@ -53,6 +53,11 @@ public final class DynamoConstants {
     public static final String CSS_DIVIDER = "divider";
 
     /**
+     * The CSS class for the last visited main menu item
+     */
+    public static final String CSS_LAST_VISITED = "lastVisited";
+    
+    /**
      * The CSS class that is assigned to numerical cells in a table
      */
     public static final String CSS_NUMERICAL = "numerical";
@@ -99,6 +104,16 @@ public final class DynamoConstants {
      */
     public static final String SP_ALLOW_TABLE_EXPORT = "ocs.allow.table.export";
 
+    /**
+     * Name of the system property that is used as the CSV separator when exporting
+     */
+    public static final String SP_EXPORT_CSV_SEPARATOR = "ocs.export.csv.separator";
+
+    /**
+     * Name of the system property that is used as the CSV quote char when exporting
+     */
+    public static final String SP_EXPORT_CSV_QUOTE = "ocs.export.csv.quote";
+    
     /**
      * Name of the system property that is used to determine the default decimal precision
      */
@@ -152,6 +167,22 @@ public final class DynamoConstants {
     public static final String SP_THOUSAND_GROUPING = "ocs.edit.thousands.grouping";
 
     /**
+     * System property that indicates that maximum allowed number of rows in a non-streaming export
+     */
+    public static final String SP_MAX_ROWS_NON_STREAMING = "ocs.max.rows.non.streaming";
+
+    /**
+     * System property that indicates that maximum allowed number of rows in a streaming export
+     */
+    public static final String SP_MAX_ROWS_STREAMING = "ocs.max.rows.streaming";
+
+    /**
+     * System property that indicates that maximum allowed number of rows in a streaming export of a
+     * pivoted data set
+     */
+    public static final String SP_MAX_ROWS_STREAMING_PIVOTED = "ocs.max.rows.streaming.pivot";
+
+    /**
      * The name of the variable that is used to store the user
      */
     public static final String USER = "user";
@@ -162,9 +193,11 @@ public final class DynamoConstants {
     public static final String USER_NAME = "userName";
 
     /**
-     * the UTF-8 character set
+     * The UTF-8 character set
      */
     public static final String UTF_8 = "UTF-8";
+    
+    public static final int INTERMEDIATE_PRECISION = 10; 
 
     /**
      * System property for the strategy formatting properties without a display name.

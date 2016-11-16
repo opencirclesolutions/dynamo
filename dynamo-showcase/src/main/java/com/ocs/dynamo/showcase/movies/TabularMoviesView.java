@@ -66,12 +66,13 @@ public class TabularMoviesView extends BaseView {
     void init() {
         LOG.debug("Initialize View - {}.", this.getClass().getSimpleName());
 
-        // Apply Vaadin Layout.
-        Layout mainLayout = new DefaultVerticalLayout(true, true);
+        Layout mainLayout = super.initLayout();
 
         // Set form options by convention.
         FormOptions fo = new FormOptions();
-        // fo.setOpenInViewMode(true);
+
+        // retrieve the country list just once
+        allCountries = countryService.findAll();
 
         // Add a remove button.
         fo.setShowRemoveButton(true);
@@ -89,26 +90,25 @@ public class TabularMoviesView extends BaseView {
         TabularEditLayout<Integer, Movie> movieLayout = new TabularEditLayout<Integer, Movie>(
                 movieService, em, fo, new SortOrder("title", SortDirection.ASCENDING)) {
 
-            protected Field<?> constructCustomField(EntityModel<Movie> entityModel,
-                                                    AttributeModel attributeModel, boolean viewMode, boolean searchMode) {
-                if ("country".equals(attributeModel.getName())) {
-                    EntityComboBox<Integer, Country> cb = new EntityComboBox<Integer, Country>(
-                            getEntityModelFactory().getModel(Country.class), attributeModel,
-                            allCountries);
-                    return cb;
-                }
-                return null;
-            }
-        };
+			@Override
+			protected Field<?> constructCustomField(EntityModel<Movie> entityModel, AttributeModel attributeModel,
+			        boolean viewMode, boolean searchMode) {
+				if ("country".equals(attributeModel.getName())) {
+					return new EntityComboBox<Integer, Country>(getEntityModelFactory().getModel(Country.class),
+					        attributeModel, allCountries);
+				}
+				return null;
+			}
+		};
 
         movieLayout.setPageLength(25);
 
+        // Add layout.
         mainLayout.addComponent(movieLayout);
-        setCompositionRoot(mainLayout);
     }
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see com.vaadin.navigator.View#enter(com.vaadin.navigator.ViewChangeListener.ViewChangeEvent)
      */
     public void enter(ViewChangeEvent event) {

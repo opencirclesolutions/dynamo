@@ -78,7 +78,9 @@ public abstract class TextImportTemplate<ID, T> {
      * Processes a row
      * 
      * @param rowNum
+     *            the row number of the row
      * @param row
+     *            the row (as an array of strings denoting the individual field values)
      * @return
      */
     protected abstract T process(int rowNum, String[] row);
@@ -116,8 +118,11 @@ public abstract class TextImportTemplate<ID, T> {
      * Processes a single row
      * 
      * @param i
+     *            the index of the row
      * @param row
+     *            the field values that together from the row
      * @param results
+     *            the list of current results
      */
     @SuppressWarnings("unchecked")
     private void executeRow(int i, String[] row, List<T> results) {
@@ -125,6 +130,8 @@ public abstract class TextImportTemplate<ID, T> {
         ID key = getKeyFromRow(t);
 
         if (checkForDuplicates) {
+
+            // lower case comparison for Strings
             if (key instanceof String) {
                 key = (ID) ((String) key).toLowerCase();
             }

@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import com.google.common.collect.Lists;
 import com.ocs.dynamo.dao.query.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
@@ -33,7 +34,6 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.UI;
 
 /**
  * A composite component that displays a selected entity and offers a search dialog to search for
@@ -44,6 +44,9 @@ import com.vaadin.ui.UI;
  *            the type of the primary key
  * @param <T>
  *            the type of the entity
+ * @param <Object>
+ *            the type of the selected value (can be a single entity or a collection depending on
+ *            the use case)
  */
 public class EntityLookupField<ID extends Serializable, T extends AbstractEntity<ID>> extends
         QuickAddEntityField<ID, T, Object> {
@@ -125,8 +128,21 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     protected void afterNewEntityAdded(T entity) {
-        setValue(entity);
+        if (multiSelect) {
+            if (getValue() == null) {
+                // create new collection
+                setValue(Lists.newArrayList(entity));
+            } else {
+                // add new entity to existing collection
+                Collection<T> col = (Collection<T>) getValue();
+                col.add(entity);
+                setValue(col);
+            }
+        } else {
+            setValue(entity);
+        }
     }
 
     public Button getClearButton() {
@@ -150,8 +166,8 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
     }
 
     @Override
-    public Class<? extends T> getType() {
-        return getEntityModel().getEntityClass();
+    public Class<? extends Object> getType() {
+        return Object.class;
     }
 
     @Override
@@ -162,6 +178,7 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
             this.setCaption(getAttributeModel().getDisplayName());
         }
 
+        // label for displaying selected values
         label = new Label();
         updateLabel(getValue());
         bar.addComponent(label);
@@ -199,6 +216,7 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
                                 EntityLookupField.this.setValue(current);
                             }
                         } else {
+                            // single value select
                             setValue(getSelectedItem());
                         }
                         return true;
@@ -206,8 +224,7 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
                 };
                 dialog.setPageLength(pageLength);
                 dialog.build();
-
-                UI.getCurrent().addWindow(dialog);
+                getUi().addWindow(dialog);
             }
         });
         bar.addComponent(selectButton);
@@ -230,7 +247,6 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
             Button addButton = constructAddButton();
             bar.addComponent(addButton);
         }
-
         return bar;
     }
 
@@ -259,6 +275,9 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
         if (selectButton != null) {
             selectButton.setEnabled(enabled);
             clearButton.setEnabled(enabled);
+            if (getAddButton() != null) {
+                getAddButton().setEnabled(enabled);
+            }
         }
     }
 

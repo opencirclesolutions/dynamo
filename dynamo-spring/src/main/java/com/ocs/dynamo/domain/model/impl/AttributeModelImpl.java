@@ -197,6 +197,11 @@ public class AttributeModelImpl implements AttributeModel {
     }
 
     @Override
+    public Class<?> getNormalizedType() {
+        return getMemberType() != null ? getMemberType() : getType();
+    }
+
+    @Override
     public String getName() {
         return name;
     }
@@ -303,6 +308,7 @@ public class AttributeModelImpl implements AttributeModel {
         return mainAttribute;
     }
 
+    @Override
     public boolean isMultipleSearch() {
         return multipleSearch;
     }
@@ -362,10 +368,12 @@ public class AttributeModelImpl implements AttributeModel {
         return sortable;
     }
 
+    @Override
     public boolean isUrl() {
         return url;
     }
 
+    @Override
     public boolean isUseThousandsGrouping() {
         return useThousandsGrouping;
     }

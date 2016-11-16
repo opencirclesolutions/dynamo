@@ -73,6 +73,7 @@
 
 	<bean id="userDetailsService" class="com.ocs.dynamo.service.impl.UserDetailsServiceMockImpl"></bean>
 
+    <!--  Default service and DAO for region -->
 	<bean id="regionDao" class="com.ocs.dynamo.functional.dao.DomainDaoImpl">
 		<constructor-arg name="dslRoot">
 			<bean class="com.ocs.dynamo.functional.domain.QRegion">
@@ -81,10 +82,12 @@
 		</constructor-arg>
 		<constructor-arg name="entityClass" value="com.ocs.dynamo.functional.domain.Region"/>
 	</bean>
+	
 	<bean id="regionService" class="com.ocs.dynamo.functional.service.DomainServiceImpl">
 		<constructor-arg ref="regionDao"/>
 	</bean>
 
+    <!--  Default service and DAO for currency -->
 	<bean id="currencyDao" class="com.ocs.dynamo.dao.impl.DefaultDaoImpl">
 		<constructor-arg name="dslRoot">
 			<bean class="com.ocs.dynamo.functional.domain.QCurrency">
@@ -93,7 +96,21 @@
 		</constructor-arg>
 		<constructor-arg name="entityClass" value="com.ocs.dynamo.functional.domain.Currency"/>
 	</bean>
+	
 	<bean id="currencyService" class="com.ocs.dynamo.service.impl.DefaultServiceImpl">
 		<constructor-arg ref="currencyDao"/>
+	</bean>
+	
+    <bean id="countryDao" class="com.ocs.dynamo.functional.dao.DomainDaoImpl">
+		<constructor-arg name="dslRoot">
+			<bean class="com.ocs.dynamo.functional.domain.QCountry">
+				<constructor-arg value="Country"/>
+			</bean>
+		</constructor-arg>
+		<constructor-arg name="entityClass" value="com.ocs.dynamo.functional.domain.Country"/>
+	</bean>
+	
+	<bean id="countryService" class="com.ocs.dynamo.functional.service.DomainServiceImpl">
+		<constructor-arg ref="countryDao"/>
 	</bean>
 </beans>

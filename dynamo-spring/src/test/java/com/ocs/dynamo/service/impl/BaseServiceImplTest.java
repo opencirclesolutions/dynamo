@@ -37,6 +37,7 @@ import com.ocs.dynamo.dao.SortOrder.Direction;
 import com.ocs.dynamo.dao.SortOrders;
 import com.ocs.dynamo.dao.query.FetchJoinInformation;
 import com.ocs.dynamo.domain.TestEntity;
+import com.ocs.dynamo.exception.OCSNonUniqueException;
 import com.ocs.dynamo.exception.OCSValidationException;
 import com.ocs.dynamo.filter.Compare;
 import com.ocs.dynamo.filter.Filter;
@@ -116,6 +117,27 @@ public class BaseServiceImplTest extends BaseMockitoTest {
     @Test(expected = OCSValidationException.class)
     public void testValidate_Error() {
         TestEntity entity = new TestEntity(null, 15L);
+        service.validate(entity);
+    }
+
+    @Test(expected = OCSValidationException.class)
+    public void testValidate_AssertTrue() {
+        TestEntity entity = new TestEntity("bogus", 15L);
+        service.validate(entity);
+    }
+
+    /**
+     * That that a OCSNonUniqueException is thrown in case the validation process results in a
+     * duplicate
+     */
+    @Test(expected = OCSNonUniqueException.class)
+    public void testValidate_Identical() {
+        TestEntity entity = new TestEntity("kevin", 15L);
+
+        TestEntity other = new TestEntity();
+        other.setId(4);
+        Mockito.when(dao.findByUniqueProperty("name", "kevin", true)).thenReturn(other);
+
         service.validate(entity);
     }
 
@@ -216,6 +238,50 @@ public class BaseServiceImplTest extends BaseMockitoTest {
     }
 
     @Test
+    public void testFetchFilter() {
+        Filter filter = new Compare.Equal("property1", 1);
+        service.fetch(filter, new FetchJoinInformation("testEntities"));
+
+        Mockito.verify(dao).fetch(filter, new FetchJoinInformation("testEntities"));
+
+        service.fetch(filter);
+        Mockito.verify(dao).fetch(filter);
+    }
+
+    @Test
+    public void testFilter() {
+        Filter filter = new Compare.Equal("property1", 1);
+        service.find(filter);
+        Mockito.verify(dao).find(filter);
+    }
+
+    @Test
+    public void testFetchFilterPageable() {
+        Filter filter = new Compare.Equal("property1", 1);
+        service.fetch(filter, 2, 10, new FetchJoinInformation("testEntities"));
+
+        ArgumentCaptor<Pageable> captor = ArgumentCaptor.forClass(Pageable.class);
+        Mockito.verify(dao).fetch(Matchers.eq(filter), captor.capture(),
+                Matchers.eq(new FetchJoinInformation("testEntities")));
+
+        Pageable pb = captor.getValue();
+        Assert.assertEquals(20, pb.getOffset());
+        Assert.assertEquals(10, pb.getPageSize());
+        Assert.assertEquals(2, pb.getPageNumber());
+    }
+
+    @Test
+    public void testFetchSortOrderJoins() {
+        Filter filter = new Compare.Equal("property1", 1);
+        SortOrders orders = new SortOrders(new SortOrder("property2"));
+        FetchJoinInformation[] joins = new FetchJoinInformation[] { new FetchJoinInformation(
+                "testEntities") };
+
+        service.fetch(filter, orders, joins);
+        Mockito.verify(dao).fetch(filter, orders, joins);
+    }
+
+    @Test
     public void testFetchById() {
 
         service.fetchById(1);
@@ -296,5 +362,9 @@ public class BaseServiceImplTest extends BaseMockitoTest {
             dependency.noop();
         }
 
+        @Override
+        protected TestEntity findIdenticalEntity(TestEntity entity) {
+            return dao.findByUniqueProperty("name", entity.getName(), true);
+        }
     };
 }

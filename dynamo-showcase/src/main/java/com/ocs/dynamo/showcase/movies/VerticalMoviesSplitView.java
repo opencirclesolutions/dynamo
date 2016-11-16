@@ -55,8 +55,7 @@ public class VerticalMoviesSplitView extends BaseView {
     void init() {
         LOG.debug("Initialize View - {}.", this.getClass().getSimpleName());
 
-        // Apply Vaadin Layout.
-        Layout mainLayout = new DefaultVerticalLayout(true, true);
+        Layout mainLayout = super.initLayout();
 
         // Set form options by convention.
         FormOptions fo = new FormOptions();
@@ -83,13 +82,12 @@ public class VerticalMoviesSplitView extends BaseView {
         };
         movieLayout.setPageLength(10);
 
-        // Some plumbing.
+        // Add layout.
         mainLayout.addComponent(movieLayout);
-        setCompositionRoot(mainLayout);
     }
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see com.vaadin.navigator.View#enter(com.vaadin.navigator.ViewChangeListener.ViewChangeEvent)
      */
     public void enter(ViewChangeEvent event) {

@@ -54,8 +54,7 @@ public class HorizontalMoviesSplitView extends BaseView {
     void init() {
         LOG.debug("Initialize View - {}.", this.getClass().getSimpleName());
 
-        // Apply Vaadin Layout.
-        Layout mainLayout = new DefaultVerticalLayout(true, true);
+        Layout mainLayout = super.initLayout();
 
         // Set form options by convention.
         FormOptions fo = new FormOptions();
@@ -80,9 +79,8 @@ public class HorizontalMoviesSplitView extends BaseView {
             }
         };
 
-        // Some plumbing.
+        // Add layout.
         mainLayout.addComponent(movieLayout);
-        setCompositionRoot(mainLayout);
     }
 
     /*

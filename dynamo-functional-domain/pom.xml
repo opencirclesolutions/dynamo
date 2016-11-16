@@ -88,6 +88,11 @@
 			<groupId>com.mysema.querydsl</groupId>
 			<artifactId>querydsl-apt</artifactId>
 		</dependency>
+        <!-- JEE -->
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+        </dependency>		
 
 		<!-- Test -->
 		<dependency>
