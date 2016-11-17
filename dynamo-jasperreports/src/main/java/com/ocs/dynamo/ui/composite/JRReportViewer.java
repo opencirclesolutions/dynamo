@@ -44,10 +44,11 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Layout;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 
@@ -104,15 +105,15 @@ public class JRReportViewer<T> extends BaseCustomComponent {
 	private Button exportPDF;
 	private JasperReport jasperReport;
 	private JRDataSource jrDataSource;
-	private Layout main;
+	private ComponentContainer main;
 	private Label reportArea;
 	private Enum<? extends ReportDefinition> reportDefinition;
 	private ReportGenerator reportGenerator;
 	private AbstractSelect reportSelection;
 	private CheckBox showMargins;
 	private String templatePath;
-
 	private Component toolbar;
+	private boolean splitlayout = false;
 
 	/**
 	 * Constructor
@@ -141,13 +142,27 @@ public class JRReportViewer<T> extends BaseCustomComponent {
 		toolbar = buildToolbar();
 		reportArea = buildReportArea();
 
-		VerticalLayout vl = new VerticalLayout();
-		vl.setMargin(true);
-		vl.setSpacing(true);
-		main = vl;
-		main.addComponent(toolbar);
-		main.addComponent(reportArea);
+		main = buildMain();
 		setCompositionRoot(main);
+	}
+
+	protected ComponentContainer buildMain() {
+		ComponentContainer main = null;
+		if (isSplitlayout()) {
+			// Create split layout for reports
+			HorizontalSplitPanel sp = new HorizontalSplitPanel(toolbar, reportArea);
+			sp.setSizeFull();
+			sp.setSplitPosition(30, Unit.PERCENTAGE);
+			main = sp;
+		} else {
+			VerticalLayout vl = new VerticalLayout();
+			vl.setMargin(true);
+			vl.setSpacing(true);
+			vl.addComponent(toolbar);
+			vl.addComponent(reportArea);
+			main = vl;
+		}
+		return main;
 	}
 
 	protected Component buildExportSelection() {
@@ -200,6 +215,9 @@ public class JRReportViewer<T> extends BaseCustomComponent {
 		});
 		// Add combo
 		content.addComponent(reportSelection);
+		if (reportDefinition.getClass().getEnumConstants().length <= 1) {
+			reportSelection.setVisible(false);
+		}
 		return content;
 	}
 
@@ -306,7 +324,7 @@ public class JRReportViewer<T> extends BaseCustomComponent {
 		return (StringUtils.isEmpty(templatePath) ? "" : templatePath) + rd.getReportTemplateName() + REPORT_EXTENSION;
 	}
 
-	public Layout getMain() {
+	public ComponentContainer getMain() {
 		return main;
 	}
 
@@ -344,5 +362,13 @@ public class JRReportViewer<T> extends BaseCustomComponent {
 				}
 			}
 		}
+	}
+
+	public boolean isSplitlayout() {
+		return splitlayout;
+	}
+
+	public void setSplitlayout(boolean splitlayout) {
+		this.splitlayout = splitlayout;
 	}
 }
