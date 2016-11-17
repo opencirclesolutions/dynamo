@@ -40,6 +40,7 @@ import net.sf.jasperreports.charts.util.ChartHyperlinkProvider;
 import net.sf.jasperreports.charts.util.SvgChartRendererFactory;
 import net.sf.jasperreports.engine.JRAbstractChartCustomizer;
 import net.sf.jasperreports.engine.JRChart;
+import net.sf.jasperreports.engine.JRChartCustomizer;
 import net.sf.jasperreports.engine.JRPrintHyperlink;
 import net.sf.jasperreports.engine.JRRuntimeException;
 import net.sf.jasperreports.engine.JasperReportsContext;
@@ -392,6 +393,11 @@ public class ChartCustomizer extends JRAbstractChartCustomizer {
 			}
 		} catch (JRRuntimeException e) {
 			// No annotations defined and needed
+		}
+
+		if (chartCustomizer instanceof JRChartCustomizer) {
+			// Delegate to custom implementation
+			((JRChartCustomizer) chartCustomizer).customize(chart, jasperChart);
 		}
 	}
 
