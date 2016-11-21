@@ -191,12 +191,6 @@ public class BaseXlsStyleGenerator<ID extends Serializable, T extends AbstractEn
 	 */
 	@Override
 	public CellStyle getHeaderStyle(int index) {
-		if (index == 0) {
-			return titleStyle;
-		}
-		if (headerStyle == null) {
-			return headerStyle;
-		}
 		return headerStyle;
 	}
 
