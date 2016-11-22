@@ -21,6 +21,7 @@ import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.ui.ServiceLocator;
 import com.ocs.dynamo.ui.composite.form.FormOptions;
+import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
 import com.ocs.dynamo.ui.composite.layout.SimpleEditLayout;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -80,6 +81,7 @@ public abstract class EntityPopupDialog<ID extends Serializable, T extends Abstr
 
 	/**
 	 * Creates a new entity
+	 * 
 	 * @return
 	 */
 	protected T createEntity() {
@@ -96,16 +98,22 @@ public abstract class EntityPopupDialog<ID extends Serializable, T extends Abstr
 			private static final long serialVersionUID = -2965981316297118264L;
 
 			@Override
-			protected T createEntity() {
-				return EntityPopupDialog.this.createEntity();
-			}
-
-			@Override
 			protected void afterEditDone(boolean cancel, boolean newEntity, T entity) {
 				super.afterEditDone(cancel, newEntity, entity);
 				EntityPopupDialog.this.close();
 				EntityPopupDialog.this.afterEditDone(cancel, newEntity, entity);
 			}
+
+			@Override
+			protected T createEntity() {
+				return EntityPopupDialog.this.createEntity();
+			}
+
+			@Override
+			protected void postProcessEditFields(ModelBasedEditForm<ID, T> editForm) {
+				EntityPopupDialog.this.postProcessEditFields(editForm);
+			}
+
 		};
 		parent.addComponent(layout);
 	}
@@ -138,4 +146,9 @@ public abstract class EntityPopupDialog<ID extends Serializable, T extends Abstr
 	protected String getTitle() {
 		return entityModel.getDisplayName();
 	}
+
+	protected void postProcessEditFields(ModelBasedEditForm<ID, T> editForm) {
+		// overwrite in subclasses when needed
+	}
+
 }
