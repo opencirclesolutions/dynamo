@@ -313,7 +313,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 
 			};
 
-			editForm.setDetailJoins(getDetailJoins());
+			editForm.setDetailJoins(getDetailJoinsFallBack());
 			editForm.setFieldEntityModels(getFieldEntityModels());
 			editForm.build();
 			detailFormLayout.addComponent(editForm);
@@ -407,7 +407,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	 * Reloads the details view only
 	 */
 	public void reloadDetails() {
-		this.setSelectedItem(getService().fetchById(this.getSelectedItem().getId(), getDetailJoins()));
+		this.setSelectedItem(getService().fetchById(this.getSelectedItem().getId(), getDetailJoinsFallBack()));
 		detailsMode(getSelectedItem());
 		getTableWrapper().reloadContainer();
 	}

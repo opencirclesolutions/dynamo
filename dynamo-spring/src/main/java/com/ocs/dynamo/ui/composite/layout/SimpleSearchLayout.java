@@ -554,7 +554,7 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 				}
 
 			};
-			editForm.setDetailJoins(getDetailJoins());
+			editForm.setDetailJoins(getDetailJoinsFallBack());
 			editForm.setFieldEntityModels(getFieldEntityModels());
 			editForm.build();
 			mainEditLayout.addComponent(editForm);
@@ -637,7 +637,7 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 	 * Reloads the details view only
 	 */
 	public void reloadDetails() {
-		this.setSelectedItem(getService().fetchById(this.getSelectedItem().getId(), getDetailJoins()));
+		this.setSelectedItem(getService().fetchById(this.getSelectedItem().getId(), getDetailJoinsFallBack()));
 		detailsMode(getSelectedItem());
 	}
 
@@ -702,7 +702,7 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 				Collection<?> col = (Collection<?>) selectedItems;
 				if (col.size() == 1) {
 					ID id = (ID) col.iterator().next();
-					setSelectedItem(getService().fetchById(id, getDetailJoins()));
+					setSelectedItem(getService().fetchById(id, getDetailJoinsFallBack()));
 					this.selectedItems = Lists.newArrayList(getSelectedItem());
 				} else if (col.size() > 1) {
 					// deal with the selection of multiple items
@@ -710,12 +710,12 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 					for (Object c : col) {
 						ids.add((ID) c);
 					}
-					this.selectedItems = getService().fetchByIds(ids, getDetailJoins());
+					this.selectedItems = getService().fetchByIds(ids, getDetailJoinsFallBack());
 				}
 			} else {
 				// single item has been selected
 				ID id = (ID) selectedItems;
-				setSelectedItem(getService().fetchById(id, getDetailJoins()));
+				setSelectedItem(getService().fetchById(id, getDetailJoinsFallBack()));
 			}
 		} else {
 			setSelectedItem(null);

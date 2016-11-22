@@ -396,4 +396,8 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	public void setFieldFilters(Map<String, Filter> fieldFilters) {
 		this.fieldFilters = fieldFilters;
 	}
+
+	public FetchJoinInformation[] getDetailJoinsFallBack() {
+		return (detailJoins == null || detailJoins.length == 0) ? getJoins() : detailJoins;
+	}
 }
