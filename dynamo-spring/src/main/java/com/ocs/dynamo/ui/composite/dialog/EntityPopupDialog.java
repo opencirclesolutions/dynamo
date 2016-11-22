@@ -136,7 +136,6 @@ public abstract class EntityPopupDialog<ID extends Serializable, T extends Abstr
 
 	@Override
 	protected String getTitle() {
-		// not needed
-		return null;
+		return entityModel.getDisplayName();
 	}
 }

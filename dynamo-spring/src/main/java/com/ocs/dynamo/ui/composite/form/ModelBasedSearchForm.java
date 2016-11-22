@@ -28,6 +28,7 @@ import com.ocs.dynamo.filter.listener.FilterListener;
 import com.ocs.dynamo.ui.Refreshable;
 import com.ocs.dynamo.ui.Searchable;
 import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
+import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -49,343 +50,374 @@ import com.vaadin.ui.Layout;
 public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEntity<ID>> extends
         AbstractModelBasedSearchForm<ID, T> implements FilterListener, Button.ClickListener {
 
-    // the types of search field
-    protected enum FilterType {
-        BETWEEN, BOOLEAN, ENTITY, ENUM, EQUAL, LIKE
-    }
+	// the types of search field
+	protected enum FilterType {
+		BETWEEN, BOOLEAN, ENTITY, ENUM, EQUAL, LIKE
+	}
 
-    private static final long serialVersionUID = -7226808613882934559L;
+	private static final long serialVersionUID = -7226808613882934559L;
 
-    /**
-     * The number of search fields that was added so far
-     */
-    private int fieldsAdded = 0;
+	/**
+	 * The number of search fields that was added so far
+	 */
+	private int fieldsAdded = 0;
 
-    /**
-     * The main form layout
-     */
-    private Layout form;
+	/**
+	 * The main form layout
+	 */
+	private Layout form;
 
-    /**
-     * The various filter groups
-     */
-    private Map<String, FilterGroup> groups = new HashMap<>();
+	/**
+	 * The various filter groups
+	 */
+	private Map<String, FilterGroup> groups = new HashMap<>();
 
-    /**
-     * The number of search columns
-     */
-    private int nrOfColumns = 1;
+	/**
+	 * The number of search columns
+	 */
+	private int nrOfColumns = 1;
 
-    /**
-     * Sub form layouts that are used in case of multiple column layout
-     */
-    private List<FormLayout> subForms = new ArrayList<>();
+	/**
+	 * Sub form layouts that are used in case of multiple column layout
+	 */
+	private List<FormLayout> subForms = new ArrayList<>();
 
-    /**
-     * Constructor
-     * 
-     * @param searchable
-     *            the component on which to carry out the search
-     * @param entityModel
-     *            the entity model
-     * @param formOptions
-     *            the form options
-     */
-    public ModelBasedSearchForm(Searchable searchable, EntityModel<T> entityModel,
-            FormOptions formOptions) {
-        this(searchable, entityModel, formOptions, null, null);
-    }
+	/**
+	 * Constructor
+	 * 
+	 * @param searchable
+	 *            the component on which to carry out the search
+	 * @param entityModel
+	 *            the entity model
+	 * @param formOptions
+	 *            the form options
+	 */
+	public ModelBasedSearchForm(Searchable searchable, EntityModel<T> entityModel, FormOptions formOptions) {
+		this(searchable, entityModel, formOptions, null, null);
+	}
 
-    /**
-     * Constructor
-     * 
-     * @param searchable
-     *            the component on which to carry out the search
-     * @param entityModel
-     *            the entity model
-     * @param formOptions
-     *            the form options
-     * @param additionalFilters
-     *            the additional filters to apply to every search action
-     * @param fieldFilters
-     *            a map of filters to apply to the individual fields
-     */
-    public ModelBasedSearchForm(Searchable searchable, EntityModel<T> entityModel,
-            FormOptions formOptions, List<Filter> additionalFilters,
-            Map<String, Filter> fieldFilters) {
-        super(searchable, entityModel, formOptions, additionalFilters, fieldFilters);
-    }
+	/**
+	 * Constructor
+	 * 
+	 * @param searchable
+	 *            the component on which to carry out the search
+	 * @param entityModel
+	 *            the entity model
+	 * @param formOptions
+	 *            the form options
+	 * @param additionalFilters
+	 *            the additional filters to apply to every search action
+	 * @param fieldFilters
+	 *            a map of filters to apply to the individual fields
+	 */
+	public ModelBasedSearchForm(Searchable searchable, EntityModel<T> entityModel, FormOptions formOptions,
+	        List<Filter> additionalFilters, Map<String, Filter> fieldFilters) {
+		super(searchable, entityModel, formOptions, additionalFilters, fieldFilters);
+	}
 
-    /**
-     * Clears all filters then performs a fresh search
-     */
-    @Override
-    protected void clear() {
-        // Clear all filter groups
-        for (FilterGroup group : groups.values()) {
-            group.reset();
-        }
-        super.clear();
-    }
+	/**
+	 * Clears all filters then performs a fresh search
+	 */
+	@Override
+	protected void clear() {
+		// Clear all filter groups
+		for (FilterGroup group : groups.values()) {
+			group.reset();
+		}
+		super.clear();
+	}
 
-    @Override
-    protected void constructButtonBar(Layout buttonBar) {
-        buttonBar.addComponent(constructToggleButton());
-        buttonBar.addComponent(constructSearchButton());
-        buttonBar.addComponent(constructClearButton());
-    }
+	@Override
+	protected void constructButtonBar(Layout buttonBar) {
+		buttonBar.addComponent(constructSearchButton());
+		buttonBar.addComponent(constructClearButton());
+		buttonBar.addComponent(constructToggleButton());
+	}
 
-    /**
-     * Creates a custom field - override in subclasses if needed
-     * 
-     * @param entityModel
-     *            the entity model of the entity to search for
-     * @param attributeModel
-     *            the attribute model the attribute model of the property that is bound to the field
-     * @return
-     */
-    protected Field<?> constructCustomField(EntityModel<T> entityModel,
-            AttributeModel attributeModel) {
-        return null;
-    }
+	/**
+	 * Creates a custom field - override in subclasses if needed
+	 * 
+	 * @param entityModel
+	 *            the entity model of the entity to search for
+	 * @param attributeModel
+	 *            the attribute model the attribute model of the property that is bound to the field
+	 * @return
+	 */
+	protected Field<?> constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel) {
+		return null;
+	}
 
-    /**
-     * Callback method that can be used to create any additional search fields (that are not
-     * governed by the entity model)
-     * 
-     * @return
-     */
-    protected List<Component> constructExtraSearchFields() {
-        return new ArrayList<>();
-    }
+	/**
+	 * Callback method that can be used to create any additional search fields (that are not
+	 * governed by the entity model)
+	 * 
+	 * @return
+	 */
+	protected List<Component> constructExtraSearchFields() {
+		return new ArrayList<>();
+	}
 
-    /**
-     * Creates a search field based on an attribute model
-     * 
-     * @param entityModel
-     *            the entity model of the entity to search for
-     * @param attributeModel
-     *            the attribute model the attribute model of the property that is bound to the field
-     * @return
-     */
-    protected Field<?> constructField(EntityModel<T> entityModel, AttributeModel attributeModel) {
-        Field<?> field = constructCustomField(entityModel, attributeModel);
-        if (field == null) {
-            EntityModel<?> em = getFieldEntityModel(attributeModel);
-            field = getFieldFactory().constructField(attributeModel, getFieldFilters(), em);
-        }
+	/**
+	 * Creates a search field based on an attribute model
+	 * 
+	 * @param entityModel
+	 *            the entity model of the entity to search for
+	 * @param attributeModel
+	 *            the attribute model the attribute model of the property that is bound to the field
+	 * @return
+	 */
+	protected Field<?> constructField(EntityModel<T> entityModel, AttributeModel attributeModel) {
+		Field<?> field = constructCustomField(entityModel, attributeModel);
+		if (field == null) {
+			EntityModel<?> em = getFieldEntityModel(attributeModel);
+			field = getFieldFactory().constructField(attributeModel, getFieldFilters(), em);
+		}
 
-        if (field != null) {
-            field.setSizeFull();
-        }
-        return field;
-    }
+		if (field != null) {
+			field.setSizeFull();
+		}
+		return field;
+	}
 
-    /**
-     * Constructs a filter group for searching on a single attribute
-     * 
-     * @param entityModel
-     *            the entity model
-     * @param attributeModel
-     *            the attribute model
-     * @return
-     */
-    protected FilterGroup constructFilterGroup(EntityModel<T> entityModel,
-            AttributeModel attributeModel) {
-        Field<?> field = this.constructField(entityModel, attributeModel);
-        if (field != null) {
-            FilterType filterType = FilterType.BETWEEN;
-            if (String.class.isAssignableFrom(attributeModel.getType())) {
-                filterType = FilterType.LIKE;
-            } else if (Boolean.class.isAssignableFrom(attributeModel.getType())
-                    || Boolean.TYPE.isAssignableFrom(attributeModel.getType())) {
-                filterType = FilterType.BOOLEAN;
-            } else if (attributeModel.getType().isEnum()) {
-                filterType = FilterType.ENUM;
-            } else if (AbstractEntity.class.isAssignableFrom(attributeModel.getType())
-                    || AttributeType.DETAIL.equals(attributeModel.getAttributeType())) {
-                // search for an entity
-                filterType = FilterType.ENTITY;
-            } else if (attributeModel.isSearchForExactValue()) {
-                filterType = FilterType.EQUAL;
-            }
+	/**
+	 * Constructs a filter group for searching on a single attribute
+	 * 
+	 * @param entityModel
+	 *            the entity model
+	 * @param attributeModel
+	 *            the attribute model
+	 * @return
+	 */
+	protected FilterGroup constructFilterGroup(EntityModel<T> entityModel, AttributeModel attributeModel) {
+		Field<?> field = this.constructField(entityModel, attributeModel);
+		if (field != null) {
+			FilterType filterType = FilterType.BETWEEN;
+			if (String.class.isAssignableFrom(attributeModel.getType())) {
+				filterType = FilterType.LIKE;
+			} else if (Boolean.class.isAssignableFrom(attributeModel.getType())
+			        || Boolean.TYPE.isAssignableFrom(attributeModel.getType())) {
+				filterType = FilterType.BOOLEAN;
+			} else if (attributeModel.getType().isEnum()) {
+				filterType = FilterType.ENUM;
+			} else if (AbstractEntity.class.isAssignableFrom(attributeModel.getType())
+			        || AttributeType.DETAIL.equals(attributeModel.getAttributeType())) {
+				// search for an entity
+				filterType = FilterType.ENTITY;
+			} else if (attributeModel.isSearchForExactValue()) {
+				filterType = FilterType.EQUAL;
+			}
 
-            Component comp = field;
-            Field<?> auxField = null;
-            if (FilterType.BETWEEN.equals(filterType)) {
-                // in case of a between value, construct two fields for the
-                // lower
-                // and upper bounds
-                String from = message("ocs.from");
-                field.setCaption(attributeModel.getDisplayName() + " " + from);
-                auxField = constructField(entityModel, attributeModel);
-                String to = message("ocs.to");
-                auxField.setCaption(attributeModel.getDisplayName() + " " + to);
-                auxField.setVisible(true);
-                HorizontalLayout layout = new DefaultHorizontalLayout();
-                layout.setSizeFull();
-                layout.addComponent(field);
-                layout.addComponent(auxField);
-                comp = layout;
-            }
-            return new FilterGroup(attributeModel, attributeModel.getPath(), filterType, comp,
-                    field, auxField);
-        }
-        return null;
-    }
+			Component comp = field;
+			Field<?> auxField = null;
+			if (FilterType.BETWEEN.equals(filterType)) {
+				// in case of a between value, construct two fields for the
+				// lower
+				// and upper bounds
+				String from = message("ocs.from");
+				field.setCaption(attributeModel.getDisplayName() + " " + from);
+				auxField = constructField(entityModel, attributeModel);
+				String to = message("ocs.to");
+				auxField.setCaption(attributeModel.getDisplayName() + " " + to);
+				auxField.setVisible(true);
+				HorizontalLayout layout = new DefaultHorizontalLayout();
+				layout.setSizeFull();
+				layout.addComponent(field);
+				layout.addComponent(auxField);
+				comp = layout;
+			}
+			return new FilterGroup(attributeModel, attributeModel.getPath(), filterType, comp, field, auxField);
+		}
+		return null;
+	}
 
-    /**
-     * Builds the layout that contains the various search filters
-     * 
-     * @param entityModel
-     *            the entity model
-     * @return
-     */
-    @Override
-    protected Layout constructFilterLayout() {
-        if (nrOfColumns == 1) {
-            form = new FormLayout();
-            // don't use all the space unless it's a popup window
-            if (!getFormOptions().isPopup()) {
-                form.setStyleName(DynamoConstants.CSS_CLASS_HALFSCREEN);
-            }
-        } else {
-            // create a number of form layouts next to each others
-            form = new GridLayout(nrOfColumns, 1);
-            form.setSizeFull();
+	/**
+	 * Builds the layout that contains the various search filters
+	 * 
+	 * @param entityModel
+	 *            the entity model
+	 * @return
+	 */
+	@Override
+	protected Layout constructFilterLayout() {
+		if (nrOfColumns == 1) {
+			form = new FormLayout();
+			// don't use all the space unless it's a popup window
+			if (!getFormOptions().isPopup()) {
+				form.setStyleName(DynamoConstants.CSS_CLASS_HALFSCREEN);
+			}
+		} else {
+			// create a number of form layouts next to each others
+			form = new GridLayout(nrOfColumns, 1);
+			form.setSizeFull();
 
-            for (int i = 0; i < nrOfColumns; i++) {
-                FormLayout column = new FormLayout();
-                column.setMargin(true);
-                subForms.add(column);
-                form.addComponent(column);
-            }
-        }
+			for (int i = 0; i < nrOfColumns; i++) {
+				FormLayout column = new FormLayout();
+				column.setMargin(true);
+				subForms.add(column);
+				form.addComponent(column);
+			}
+		}
 
-        // add any extra fields
-        List<Component> extra = constructExtraSearchFields();
-        for (Component c : extra) {
-            if (nrOfColumns == 1) {
-                form.addComponent(c);
-            } else {
-                int index = fieldsAdded % nrOfColumns;
-                subForms.get(index).addComponent(c);
-            }
-            fieldsAdded++;
-        }
+		// add any extra fields
+		List<Component> extra = constructExtraSearchFields();
+		for (Component c : extra) {
+			if (nrOfColumns == 1) {
+				form.addComponent(c);
+			} else {
+				int index = fieldsAdded % nrOfColumns;
+				subForms.get(index).addComponent(c);
+			}
+			fieldsAdded++;
+		}
 
-        // iterate over the searchable attributes and add a field for each
-        iterate(getEntityModel().getAttributeModels());
-        return form;
-    }
+		// iterate over the searchable attributes and add a field for each
+		iterate(getEntityModel().getAttributeModels());
 
-    /**
-     * Returns all filter groups
-     * 
-     * @return
-     */
-    public Map<String, FilterGroup> getGroups() {
-        return groups;
-    }
+		DefaultVerticalLayout margin = new DefaultVerticalLayout(true, false);
+		margin.addComponent(form);
 
-    public int getNrOfColumns() {
-        return nrOfColumns;
-    }
+		// hide the search form if there are no search criteria (and no extra search fields)
+		if (groups.isEmpty() && extra.isEmpty()) {
+			margin.setVisible(false);
+		}
+		return margin;
+	}
 
-    /**
-     * Recursively iterate over the attribute models (including nested models) and add search fields
-     * if the fields are searchable
-     * 
-     * @param form
-     *            the form to add the search fields to
-     * @param attributeModels
-     *            the attribute models to iterate over
-     */
-    private void iterate(List<AttributeModel> attributeModels) {
-        for (AttributeModel attributeModel : attributeModels) {
-            if (attributeModel.isSearchable()) {
+	/**
+	 * Programmatically force a search
+	 * 
+	 * @param propertyId
+	 *            the property ID to search on
+	 * @param value
+	 *            the value of the property
+	 */
+	public void forceSearch(String propertyId, Object value) {
+		setSearchValue(propertyId, value);
+		search();
+	}
 
-                FilterGroup group = constructFilterGroup(getEntityModel(), attributeModel);
-                group.getFilterComponent().setSizeFull();
+	/**
+	 * Sets a search filter then forces a search
+	 * 
+	 * @param propertyId
+	 *            the property to search on
+	 * @param lower
+	 *            the lower bound
+	 * @param upper
+	 *            the upper bound
+	 */
+	public void forceSearch(String propertyId, Object lower, Object upper) {
+		setSearchValue(propertyId, lower, upper);
+		search();
+	}
 
-                if (nrOfColumns == 1) {
-                    form.addComponent(group.getFilterComponent());
-                } else {
-                    int index = fieldsAdded % nrOfColumns;
-                    subForms.get(index).addComponent(group.getFilterComponent());
-                }
+	/**
+	 * Returns all filter groups
+	 * 
+	 * @return
+	 */
+	public Map<String, FilterGroup> getGroups() {
+		return groups;
+	}
 
-                // register with the form and set the listener
-                group.addListener(this);
-                groups.put(group.getPropertyId(), group);
-                fieldsAdded++;
-            }
+	public int getNrOfColumns() {
+		return nrOfColumns;
+	}
 
-            // also support search on nested attributes
-            if (attributeModel.getNestedEntityModel() != null) {
-                EntityModel<?> nested = attributeModel.getNestedEntityModel();
-                iterate(nested.getAttributeModels());
-            }
-        }
-    }
+	/**
+	 * Recursively iterate over the attribute models (including nested models) and add search fields
+	 * if the fields are searchable
+	 * 
+	 * @param form
+	 *            the form to add the search fields to
+	 * @param attributeModels
+	 *            the attribute models to iterate over
+	 */
+	private void iterate(List<AttributeModel> attributeModels) {
+		for (AttributeModel attributeModel : attributeModels) {
+			if (attributeModel.isSearchable()) {
 
-    /**
-     * Callback method that allows the user to modify the various filter groups
-     * 
-     * @param groups
-     *            the filter groups
-     */
-    protected void postProcessFilterGroups(Map<String, FilterGroup> groups) {
-        // overwrite in subclasses
-    }
+				FilterGroup group = constructFilterGroup(getEntityModel(), attributeModel);
+				group.getFilterComponent().setSizeFull();
 
-    @Override
-    protected void postProcessLayout() {
-        postProcessFilterGroups(groups);
-    }
+				if (nrOfColumns == 1) {
+					form.addComponent(group.getFilterComponent());
+				} else {
+					int index = fieldsAdded % nrOfColumns;
+					subForms.get(index).addComponent(group.getFilterComponent());
+				}
 
-    /**
-     * Refreshes any fields that are susceptible to this
-     */
-    public void refresh() {
-        for (FilterGroup group : getGroups().values()) {
-            if (group.getField() instanceof Refreshable) {
-                ((Refreshable) group.getField()).refresh();
-            }
-        }
-    }
+				// register with the form and set the listener
+				group.addListener(this);
+				groups.put(group.getPropertyId(), group);
+				fieldsAdded++;
+			}
 
-    public void setNrOfColumns(int nrOfColumns) {
-        this.nrOfColumns = nrOfColumns;
-    }
+			// also support search on nested attributes
+			if (attributeModel.getNestedEntityModel() != null) {
+				EntityModel<?> nested = attributeModel.getNestedEntityModel();
+				iterate(nested.getAttributeModels());
+			}
+		}
+	}
 
-    /**
-     * Manually set the value for a certain search field
-     * 
-     * @param propertyId
-     *            the ID of the property
-     * @param value
-     *            the desired value
-     */
-    public void setSearchValue(String propertyId, Object value) {
-        setSearchValue(propertyId, value, null);
-    }
+	/**
+	 * Callback method that allows the user to modify the various filter groups
+	 * 
+	 * @param groups
+	 *            the filter groups
+	 */
+	protected void postProcessFilterGroups(Map<String, FilterGroup> groups) {
+		// overwrite in subclasses
+	}
 
-    /**
-     * Manually set the value for a certain search field
-     * 
-     * @param propertyId
-     *            the ID of the property
-     * @param value
-     *            the desired value for the main field
-     * @param auxValue
-     *            the desired value for the auxiliary field
-     */
-    public void setSearchValue(String propertyId, Object value, Object auxValue) {
-        FilterGroup group = groups.get(propertyId);
-        group.getField().setValue((Object) value);
-        if (group.getAuxField() != null) {
-            group.getAuxField().setValue(auxValue);
-        }
-    }
+	@Override
+	protected void postProcessLayout() {
+		postProcessFilterGroups(groups);
+	}
+
+	/**
+	 * Refreshes any fields that are susceptible to this
+	 */
+	public void refresh() {
+		for (FilterGroup group : getGroups().values()) {
+			if (group.getField() instanceof Refreshable) {
+				((Refreshable) group.getField()).refresh();
+			}
+		}
+	}
+
+	public void setNrOfColumns(int nrOfColumns) {
+		this.nrOfColumns = nrOfColumns;
+	}
+
+	/**
+	 * Manually set the value for a certain search field
+	 * 
+	 * @param propertyId
+	 *            the ID of the property
+	 * @param value
+	 *            the desired value
+	 */
+	public void setSearchValue(String propertyId, Object value) {
+		setSearchValue(propertyId, value, null);
+	}
+
+	/**
+	 * Manually set the value for a certain search field
+	 * 
+	 * @param propertyId
+	 *            the ID of the property
+	 * @param value
+	 *            the desired value for the main field
+	 * @param auxValue
+	 *            the desired value for the auxiliary field
+	 */
+	public void setSearchValue(String propertyId, Object value, Object auxValue) {
+		FilterGroup group = groups.get(propertyId);
+		group.getField().setValue((Object) value);
+		if (group.getAuxField() != null) {
+			group.getAuxField().setValue(auxValue);
+		}
+	}
 }

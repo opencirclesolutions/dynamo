@@ -7,7 +7,7 @@
 	<parent>
 		<groupId>org.dynamoframework</groupId>
 		<artifactId>dynamo-parent</artifactId>
-		<version>1.1-CB1-SNAPSHOT</version>
+		<version>1.1-CB1</version>
 	</parent>
 
 	<artifactId>dynamo-jasperreports-fixes</artifactId>
@@ -108,8 +108,7 @@
 			<groupId>xalan</groupId>
 			<artifactId>xalan</artifactId>
 			<version>2.7.2</version>
-			<scope>compile</scope>
-			<optional>true</optional>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.jdt.core.compiler</groupId>

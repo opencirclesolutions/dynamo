@@ -61,7 +61,7 @@ public class ServiceResultsTreeTableWrapper<ID extends Serializable, T extends A
 	@SuppressWarnings("unchecked")
 	public ServiceResultsTreeTableWrapper(EntityModel<T> rootEntityModel, QueryType queryType,
 	        List<SortOrder> sortOrders, HierarchicalFetchJoinInformation[] joins, BaseService<?, ?>... services) {
-		super((BaseService<ID, T>) services[0], rootEntityModel, queryType, null, sortOrders, joins);
+		super((BaseService<ID, T>) services[0], rootEntityModel, queryType, null, sortOrders, true, joins);
 		this.services = new ArrayList<>();
 		this.services.addAll(Arrays.asList(services));
 	}
@@ -77,8 +77,8 @@ public class ServiceResultsTreeTableWrapper<ID extends Serializable, T extends A
 	 */
 	@SuppressWarnings("unchecked")
 	public ServiceResultsTreeTableWrapper(List<BaseService<?, ?>> services, EntityModel<T> rootEntityModel,
-	        QueryType queryType, List<SortOrder> sortOrders, HierarchicalFetchJoinInformation[] joins) {
-		super((BaseService<ID, T>) services.get(0), rootEntityModel, queryType, null, sortOrders, joins);
+	        QueryType queryType, List<SortOrder> sortOrders, HierarchicalFetchJoinInformation... joins) {
+		super((BaseService<ID, T>) services.get(0), rootEntityModel, queryType, null, sortOrders, true, joins);
 		this.services = services;
 	}
 
@@ -131,11 +131,12 @@ public class ServiceResultsTreeTableWrapper<ID extends Serializable, T extends A
 	@SuppressWarnings("rawtypes")
 	@Override
 	public void search(Filter filter) {
+		Filter temp = beforeSearchPerformed(filter);
 		if (getContainer() != null && !getContainer().getHierarchy().isEmpty()) {
 			ModelBasedHierarchicalDefinition def = (ModelBasedHierarchicalDefinition) getContainer()
 			        .getHierarchicalDefinition(0);
 			if (def.getContainer() instanceof Searchable) {
-				((Searchable) def.getContainer()).search(filter);
+				((Searchable) def.getContainer()).search(temp != null ? temp : filter);
 			}
 		}
 	}

@@ -18,6 +18,7 @@ import java.util.Collection;
 
 import com.ocs.dynamo.dao.query.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
+import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.impl.ModelBasedFieldFactory;
 import com.ocs.dynamo.service.BaseService;
@@ -26,12 +27,13 @@ import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.component.URLField;
 import com.ocs.dynamo.ui.composite.form.FormOptions;
 import com.ocs.dynamo.ui.composite.table.BaseTableWrapper;
+import com.ocs.dynamo.ui.composite.table.ModelBasedTable;
 import com.ocs.dynamo.ui.composite.table.ServiceResultsTableWrapper;
 import com.ocs.dynamo.ui.container.QueryType;
 import com.ocs.dynamo.ui.container.ServiceContainer;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
-import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Container;
+import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Property;
 import com.vaadin.data.sort.SortOrder;
 import com.vaadin.ui.Button;
@@ -115,16 +117,6 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 	}
 
 	/**
-	 * Method that is called before a remove operation is carried out
-	 * 
-	 * @param entity
-	 *            the entity to remove
-	 */
-	protected void beforeRemove(T entity) {
-		// do nothing
-	}
-
-	/**
 	 * Method that is called before a save operation is carried out
 	 */
 	protected void beforeSave() {
@@ -168,8 +160,8 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 				@Override
 				protected void doDelete() {
 					if (getSelectedItem() != null) {
-						beforeRemove(getSelectedItem());
-						getTableWrapper().getTable().removeItem(getSelectedItem().getId());
+						doRemove();
+
 						getContainer().commit();
 						setSelectedItem(null);
 						afterRemove();
@@ -259,7 +251,8 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 	@Override
 	protected BaseTableWrapper<ID, T> constructTableWrapper() {
 		ServiceResultsTableWrapper<ID, T> tableWrapper = new ServiceResultsTableWrapper<ID, T>(getService(),
-		        getEntityModel(), QueryType.ID_BASED, filter, getSortOrders(), getJoins()) {
+		        getEntityModel(), QueryType.ID_BASED, filter, getSortOrders(), getFormOptions().isTableExportAllowed(),
+		        getJoins()) {
 
 			@Override
 			protected void onSelect(Object selected) {
@@ -327,17 +320,18 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 
 			@Override
 			public Field<?> createField(String propertyId, EntityModel<?> fieldEntityModel) {
+				AttributeModel am = getEntityModel().getAttributeModel(propertyId);
 
 				// first try to create a custom field
-				Field<?> custom = constructCustomField(getEntityModel(),
-				        getEntityModel().getAttributeModel(propertyId), isViewmode(), false);
+				Field<?> custom = constructCustomField(getEntityModel(), am, isViewmode(), false);
 
-				final Field<?> field = custom != null ? custom : super.createField(propertyId, fieldEntityModel);
+				boolean hasFilter = getFieldFilters().containsKey(propertyId);
+				final Field<?> field = custom != null ? custom : (hasFilter ? super.constructField(am,
+				        getFieldFilters(), fieldEntityModel) : super.createField(propertyId, fieldEntityModel));
 
 				// field is editable when not in view mode and not read only
 				if (field instanceof URLField) {
-					((URLField) field).setEditable(!isViewmode()
-					        && !getEntityModel().getAttributeModel(propertyId).isReadOnly());
+					((URLField) field).setEditable(!isViewmode() && !am.isReadOnly());
 				}
 
 				if (field != null && field.isEnabled()) {
@@ -353,7 +347,7 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 
 					});
 					field.setSizeFull();
-					postProcessField(propertyId, field);
+					postProcessField(am.getPath(), field);
 				}
 				return field;
 			}
@@ -414,6 +408,7 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 	 * 
 	 * @param viewMode
 	 */
+	@SuppressWarnings("unchecked")
 	protected void toggleViewMode(boolean viewMode) {
 		setViewmode(viewMode);
 		getTableWrapper().getTable().setEditable(!isViewmode() && isEditAllowed());
@@ -422,11 +417,25 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 		removeButton.setVisible(!isViewmode() && getFormOptions().isShowRemoveButton() && isEditAllowed());
 		editButton.setVisible(isViewmode() && getFormOptions().isShowEditButton() && isEditAllowed());
 		cancelButton.setVisible(!isViewmode());
+
+		// create or remove any generated columns for correctly dealing with URL fields
+		if (!viewMode) {
+			((ModelBasedTable<ID, T>) getTableWrapper().getTable()).removeGeneratedColumns();
+		} else {
+			((ModelBasedTable<ID, T>) getTableWrapper().getTable()).addGeneratedColumns();
+		}
 	}
 
 	@Override
 	protected void detailsMode(T entity) {
 		// not needed
+	}
+
+	/**
+	 * Method that is called to remove an item
+	 */
+	protected void doRemove() {
+		getTableWrapper().getTable().removeItem(getSelectedItem().getId());
 	}
 
 	public Button getAddButton() {

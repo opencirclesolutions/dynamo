@@ -16,7 +16,9 @@ package com.ocs.dynamo.ui.composite.layout;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.ObjectUtils;
 
@@ -31,6 +33,7 @@ import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
 import com.ocs.dynamo.ui.composite.table.BaseTableWrapper;
 import com.vaadin.data.Container;
 import com.vaadin.data.Property;
+import com.vaadin.data.Container.Filter;
 import com.vaadin.data.sort.SortOrder;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -52,16 +55,22 @@ import com.vaadin.ui.Table.CellStyleGenerator;
 public abstract class BaseCollectionLayout<ID extends Serializable, T extends AbstractEntity<ID>> extends
         BaseServiceCustomComponent<ID, T> {
 
+	private static final long serialVersionUID = -2864711994829582000L;
+
 	// the default page length
 	private static final int PAGE_LENGTH = 20;
-
-	private static final long serialVersionUID = -2864711994829582000L;
 
 	// the button bar
 	private HorizontalLayout buttonBar = new DefaultHorizontalLayout();
 
+	//
+	private FetchJoinInformation[] detailJoins;
+
 	// the property used to determine when to draw a divider row
 	private String dividerProperty;
+
+	// filters to apply to individual search fields
+	private Map<String, Filter> fieldFilters = new HashMap<>();
 
 	// the joins to use when fetching data
 	private FetchJoinInformation[] joins;
@@ -84,6 +93,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	// the table wrapper
 	private BaseTableWrapper<ID, T> tableWrapper;
 
+	// whether the selection of multiple values is allowed
 	private boolean multiSelect = false;
 
 	/**
@@ -114,12 +124,12 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	 * 
 	 * @param sortOrder
 	 */
-	public void addSortOrder(SortOrder sortOrder) {
+	public final void addSortOrder(SortOrder sortOrder) {
 		this.sortOrders.add(sortOrder);
 	}
 
 	/**
-	 * Method that is called after the user select an entity to view in Details mode
+	 * Method that is called after the user selects an entity to view in Details mode
 	 * 
 	 * @param editForm
 	 *            the edit form which displays the entity
@@ -131,6 +141,17 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	}
 
 	/**
+	 * Method that is called after the setEntity method is called. Can be used to fetch additional
+	 * data if required. This method is called before the "afterDetailSelected" method is called
+	 * 
+	 * @param entity
+	 *            the entity
+	 */
+	protected void afterEntitySet(T entity) {
+		// override in subclass
+	}
+
+	/**
 	 * Removes all sort orders
 	 */
 	public void clearSortOrders() {
@@ -138,17 +159,29 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	}
 
 	/**
-	 * Lazily constructs the table wrapper - implement in subclasses in order to create the right
-	 * type of wrapper
+	 * Constructs the "Add"-button
 	 * 
 	 * @return
 	 */
-	protected abstract BaseTableWrapper<ID, T> constructTableWrapper();
+	protected Button constructAddButton() {
+		Button ab = new Button(message("ocs.add"));
+		ab.addClickListener(new Button.ClickListener() {
+
+			private static final long serialVersionUID = -5005648144833272606L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				doAdd();
+			}
+		});
+		ab.setVisible(!getFormOptions().isHideAddButton() && isEditAllowed());
+		return ab;
+	}
 
 	/**
 	 * Set up the code for adding table dividers
 	 */
-	protected void constructTableDividers() {
+	protected final void constructTableDividers() {
 		if (dividerProperty != null) {
 			getTableWrapper().getTable().setStyleName(DynamoConstants.CSS_DIVIDER);
 			getTableWrapper().getTable().setCellStyleGenerator(new CellStyleGenerator() {
@@ -175,6 +208,14 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	}
 
 	/**
+	 * Lazily constructs the table wrapper - implement in subclasses in order to create the right
+	 * type of wrapper
+	 * 
+	 * @return
+	 */
+	protected abstract BaseTableWrapper<ID, T> constructTableWrapper();
+
+	/**
 	 * Creates a new entity - override in subclass if needed
 	 * 
 	 * @return
@@ -184,9 +225,10 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	}
 
 	/**
-	 * Displays the details mode
+	 * Switches to the detail mode (which displays the attributes of a single entity)
 	 * 
 	 * @param entity
+	 *            the entity to display
 	 */
 	protected abstract void detailsMode(T entity);
 
@@ -199,6 +241,8 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	}
 
 	/**
+	 * Method that is called after the search results container has been constructed. Use this to
+	 * modify the container if needed
 	 * 
 	 * @param container
 	 */
@@ -206,28 +250,12 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 		// overwrite in subclasses
 	}
 
-	/**
-	 * Constructs the add button
-	 * 
-	 * @return
-	 */
-	protected Button constructAddButton() {
-		Button ab = new Button(message("ocs.add"));
-		ab.addClickListener(new Button.ClickListener() {
-
-			private static final long serialVersionUID = -5005648144833272606L;
-
-			@Override
-			public void buttonClick(ClickEvent event) {
-				doAdd();
-			}
-		});
-		ab.setVisible(!getFormOptions().isHideAddButton() && isEditAllowed());
-		return ab;
-	}
-
 	public HorizontalLayout getButtonBar() {
 		return buttonBar;
+	}
+
+	public String getDividerProperty() {
+		return dividerProperty;
 	}
 
 	public FetchJoinInformation[] getJoins() {
@@ -257,17 +285,23 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	public BaseTableWrapper<ID, T> getTableWrapper() {
 		if (tableWrapper == null) {
 			tableWrapper = constructTableWrapper();
+			postProcessTableWrapper(tableWrapper);
 		}
 		return tableWrapper;
 	}
 
 	/**
-	 * Indicates whether editing is allowed
+	 * Indicates whether editing is allowed. This defaults to TRUE but you can overwrite it in
+	 * subclasses if needed
 	 * 
 	 * @return
 	 */
 	protected boolean isEditAllowed() {
 		return true;
+	}
+
+	public boolean isMultiSelect() {
+		return multiSelect;
 	}
 
 	public boolean isSortEnabled() {
@@ -285,7 +319,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	}
 
 	/**
-	 * Adds additional buttons to the button bar above/below the detail scren
+	 * Adds additional buttons to the button bar above/below the detail screen
 	 * 
 	 * @param buttonBar
 	 *            the button bar
@@ -298,7 +332,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 
 	/**
 	 * Post processes the edit fields. This method is called once, just before the screen is
-	 * displayed in edit mode for the first time
+	 * displayed in edit mode for the first time. Use this method to e.g. set up change listeners
 	 * 
 	 * @param editForm
 	 */
@@ -307,7 +341,8 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	}
 
 	/**
-	 * Adds additional layout components to the layout
+	 * Method that is called after the entire layout has been constructed. Use this to e.g. add
+	 * additional components to the bottom of the layout or to modify the table
 	 * 
 	 * @param main
 	 *            the main layout
@@ -316,32 +351,53 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 		// overwrite in subclass
 	}
 
-	public void setPageLength(int pageLength) {
-		this.pageLength = pageLength;
-	}
-
-	public void setSelectedItem(T selectedItem) {
-		this.selectedItem = selectedItem;
-	}
-
-	public void setSortEnabled(boolean sortEnabled) {
-		this.sortEnabled = sortEnabled;
-	}
-
-	public String getDividerProperty() {
-		return dividerProperty;
+	/**
+	 * Method that is called after the table wrapper has been constructed
+	 * 
+	 * @param wrapper
+	 */
+	protected void postProcessTableWrapper(BaseTableWrapper<ID, T> wrapper) {
+		// overwrite in subclasses when needed
 	}
 
 	public void setDividerProperty(String dividerProperty) {
 		this.dividerProperty = dividerProperty;
 	}
 
-	public boolean isMultiSelect() {
-		return multiSelect;
-	}
-
 	public void setMultiSelect(boolean multiSelect) {
 		this.multiSelect = multiSelect;
 	}
 
+	public void setPageLength(int pageLength) {
+		this.pageLength = pageLength;
+	}
+
+	public void setSelectedItem(T selectedItem) {
+		this.selectedItem = selectedItem;
+		checkButtonState(selectedItem);
+	}
+
+	public void setSortEnabled(boolean sortEnabled) {
+		this.sortEnabled = sortEnabled;
+	}
+
+	public FetchJoinInformation[] getDetailJoins() {
+		return detailJoins;
+	}
+
+	public void setDetailJoins(FetchJoinInformation[] detailJoins) {
+		this.detailJoins = detailJoins;
+	}
+
+	public Map<String, Filter> getFieldFilters() {
+		return fieldFilters;
+	}
+
+	public void setFieldFilters(Map<String, Filter> fieldFilters) {
+		this.fieldFilters = fieldFilters;
+	}
+
+	public FetchJoinInformation[] getDetailJoinsFallBack() {
+		return (detailJoins == null || detailJoins.length == 0) ? getJoins() : detailJoins;
+	}
 }

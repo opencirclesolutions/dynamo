@@ -53,6 +53,11 @@ public final class DynamoConstants {
     public static final String CSS_DIVIDER = "divider";
 
     /**
+     * The CSS class for the last visited main menu item
+     */
+    public static final String CSS_LAST_VISITED = "lastVisited";
+    
+    /**
      * The CSS class that is assigned to numerical cells in a table
      */
     public static final String CSS_NUMERICAL = "numerical";
@@ -188,9 +193,11 @@ public final class DynamoConstants {
     public static final String USER_NAME = "userName";
 
     /**
-     * the UTF-8 character set
+     * The UTF-8 character set
      */
     public static final String UTF_8 = "UTF-8";
+    
+    public static final int INTERMEDIATE_PRECISION = 10; 
 
     /**
      * Constructor for OCSConstants.

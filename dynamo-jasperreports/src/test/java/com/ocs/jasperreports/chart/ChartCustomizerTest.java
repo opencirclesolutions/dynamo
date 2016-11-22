@@ -37,59 +37,59 @@ import org.mockito.runners.MockitoJUnitRunner;
 @Ignore
 public class ChartCustomizerTest {
 
-    DefaultXYZDataset dataset = new DefaultXYZDataset();
-    JFreeChart chart = ChartFactory.createBubbleChart("Title", "X", "Y", dataset);
-    @Mock
-    JRFillChart jrChart;
-    @Mock
-    JRBaseFiller filler;
-    ChartCustomizer customizer = new ChartCustomizer();
+	DefaultXYZDataset dataset = new DefaultXYZDataset();
+	JFreeChart chart = ChartFactory.createBubbleChart("Title", "X", "Y", dataset);
+	@Mock
+	JRFillChart jrChart;
+	@Mock
+	JRBaseFiller filler;
+	ChartCustomizer customizer = new ChartCustomizer();
 
-    /**
-     * @throws java.lang.Exception
-     */
-    @Before
-    public void setUp() throws Exception {
-	MockitoAnnotations.initMocks(this);
-	Mockito.when(jrChart.getKey()).thenReturn("BubbleChart");
-	customizer.init(filler, jrChart);
+	/**
+	 * @throws java.lang.Exception
+	 */
+	@Before
+	public void setUp() throws Exception {
+		MockitoAnnotations.initMocks(this);
+		Mockito.when(jrChart.getKey()).thenReturn("BubbleChart");
+		customizer.init(filler, jrChart);
 
-	double[][] data = { { 1, 2, 3 }, { 4, 5, 6 }, { 7, 8, 9 } };
-	dataset.addSeries("Series", data);
-    }
+		double[][] data = { { 1, 2, 3 }, { 4, 5, 6 }, { 7, 8, 9 } };
+		dataset.addSeries("Series", data);
+	}
 
-    /**
-     * Test method for
-     * {@link com.ocs.jasperreports.chart.ChartCustomizer#customize(org.jfree.chart.JFreeChart, net.sf.jasperreports.engine.JRChart)}
-     * .
-     */
-    @Test
-    public void testLabels() {
-	Mockito.when(filler.getVariableValue("BubbleChart.Labels")).thenReturn(Boolean.TRUE);
-	customizer.customize(chart, jrChart);
-	Assert.fail("TODO");
-    }
+	/**
+	 * Test method for
+	 * {@link com.ocs.jasperreports.chart.ChartCustomizer#customize(org.jfree.chart.JFreeChart, net.sf.jasperreports.engine.JRChart)}
+	 * .
+	 */
+	@Test
+	public void testLabels() {
+		Mockito.when(filler.getVariableValue("BubbleChart.Labels")).thenReturn(Boolean.TRUE);
+		customizer.customize(chart, jrChart);
+		Assert.fail("TODO");
+	}
 
-    /**
-     * Test method for
-     * {@link com.ocs.jasperreports.chart.ChartCustomizer#customize(org.jfree.chart.JFreeChart, net.sf.jasperreports.engine.JRChart)}
-     * .
-     */
-    @Test
-    public void testMarkers() {
-	// Mockito.when(filler.getVariableValue("BubbleChart.MarkerRange")).thenReturn();
-	// Mockito.when(filler.getVariableValue("BubbleChart.MarkerDomain")).thenReturn();
-	Assert.fail("TODO");
-    }
+	/**
+	 * Test method for
+	 * {@link com.ocs.jasperreports.chart.ChartCustomizer#customize(org.jfree.chart.JFreeChart, net.sf.jasperreports.engine.JRChart)}
+	 * .
+	 */
+	@Test
+	public void testMarkers() {
+		// Mockito.when(filler.getVariableValue("BubbleChart.MarkerRange")).thenReturn();
+		// Mockito.when(filler.getVariableValue("BubbleChart.MarkerDomain")).thenReturn();
+		Assert.fail("TODO");
+	}
 
-    /**
-     * Test method for
-     * {@link com.ocs.jasperreports.chart.ChartCustomizer#customize(org.jfree.chart.JFreeChart, net.sf.jasperreports.engine.JRChart)}
-     * .
-     */
-    @Test
-    public void testQuadrant() {
-	// Mockito.when(filler.getVariableValue("BubbleChart.Quadrant")).thenReturn();
-	Assert.fail("TODO");
-    }
+	/**
+	 * Test method for
+	 * {@link com.ocs.jasperreports.chart.ChartCustomizer#customize(org.jfree.chart.JFreeChart, net.sf.jasperreports.engine.JRChart)}
+	 * .
+	 */
+	@Test
+	public void testQuadrant() {
+		// Mockito.when(filler.getVariableValue("BubbleChart.Quadrant")).thenReturn();
+		Assert.fail("TODO");
+	}
 }

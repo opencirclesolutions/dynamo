@@ -25,7 +25,6 @@ import java.util.Map;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
-import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.domain.model.impl.ModelBasedFieldFactory;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.MessageService;
@@ -87,11 +86,6 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 	 * The entity model of the entity to display
 	 */
 	private final EntityModel<T> entityModel;
-
-	/**
-	 * The entity model factory
-	 */
-	private final EntityModelFactory entityModelFactory;
 
 	/**
 	 * Optional field filters for restricting the contents of combo boxes
@@ -163,6 +157,11 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 	 */
 	private boolean tableReadOnly;
 
+	/**
+	 * List of buttons to update after a detail is selected
+	 */
+	private List<Button> toUpdate = new ArrayList<>();
+
 	private UI ui = UI.getCurrent();
 
 	/**
@@ -185,7 +184,6 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 	 */
 	public DetailsEditTable(Collection<T> items, EntityModel<T> entityModel, boolean viewMode, FormOptions formOptions) {
 		this.entityModel = entityModel;
-		this.entityModelFactory = ServiceLocator.getEntityModelFactory();
 		this.messageService = ServiceLocator.getMessageService();
 		this.items = items;
 		this.viewMode = viewMode;
@@ -199,6 +197,17 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 	 */
 	public void afterItemsSelected(Collection<T> selectedItems) {
 		// override in subclasses
+	}
+
+	/**
+	 * Checks which buttons in the button bar must be enabled
+	 * 
+	 * @param selectedItem
+	 */
+	protected void checkButtonState(T selectedItem) {
+		for (Button b : toUpdate) {
+			b.setEnabled(selectedItem != null && mustEnableButton(b, selectedItem));
+		}
 	}
 
 	/**
@@ -368,7 +377,7 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 		container = new BeanItemContainer<T>(entityModel.getEntityClass());
 		container.addAll(items);
 
-		table = new ModelBasedTable<ID, T>(container, entityModel, entityModelFactory, messageService);
+		table = new ModelBasedTable<ID, T>(container, entityModel, false);
 
 		// add a remove button directly in the table
 		if (!isViewMode() && formOptions.isShowRemoveButton()) {
@@ -469,6 +478,7 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 			public void valueChange(Property.ValueChangeEvent event) {
 				selectedItem = (T) table.getValue();
 				onSelect(table.getValue());
+				checkButtonState(selectedItem);
 			}
 		});
 		table.updateTableCaption();
@@ -502,6 +512,18 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 	}
 
 	/**
+	 * Method that is called in order to enable/disable a button after selecting an item in the
+	 * table
+	 * 
+	 * @param button
+	 * @return
+	 */
+	protected boolean mustEnableButton(Button button, T selectedItem) {
+		// overwrite in subclasses if needed
+		return true;
+	}
+
+	/**
 	 * Respond to a selection of an item in the table
 	 */
 	protected void onSelect(Object selected) {
@@ -519,6 +541,21 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 
 	public void postProcessTableField(String propertyId, Field<?> field) {
 
+	}
+
+	/**
+	 * Registers a button that must be enabled/disabled after an item is selected. use the
+	 * "mustEnableButton" callback method to impose additional constraints on when the button must
+	 * be enabled
+	 * 
+	 * @param button
+	 *            the button to register
+	 */
+	public void registerButton(Button button) {
+		if (button != null) {
+			button.setEnabled(false);
+			toUpdate.add(button);
+		}
 	}
 
 	/**
@@ -555,19 +592,19 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 	 */
 	public void setItems(Collection<T> items) {
 
+		List<T> list = new ArrayList<T>();
+		list.addAll(items);
 		if (comparator != null) {
-			List<T> list = new ArrayList<T>();
-			list.addAll(items);
 			Collections.sort(list, comparator);
-			items = list;
 		}
 
-		this.items = items;
+		this.items = list;
 		if (container != null) {
 			container.removeAllItems();
-			container.addAll(items);
-			table.refreshRowCache();
+			container.addAll(this.items);
 		}
+		// clear the selection
+		setSelectedItem(null);
 	}
 
 	public void setPageLength(int pageLength) {
@@ -600,6 +637,7 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 
 	public void setSelectedItem(T selectedItem) {
 		this.selectedItem = selectedItem;
+		checkButtonState(selectedItem);
 	}
 
 	public void setService(BaseService<ID, T> service) {

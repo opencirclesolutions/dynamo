@@ -87,14 +87,16 @@ public abstract class AbstractModelBasedForm<ID extends Serializable, T extends 
 	}
 
 	/**
-	 * Returns the overruled entity model to be used for a certain field
+	 * Returns the overruled entity model to be used for the rendering of a certain field
 	 * 
 	 * @param attributeModel
+	 *            the attribute model
 	 * @return
 	 */
 	protected EntityModel<?> getFieldEntityModel(AttributeModel attributeModel) {
 		String reference = getFieldEntityModels().get(attributeModel.getPath());
-		return reference == null ? null : getEntityModelFactory().getModel(reference, attributeModel.getModelType());
+		return reference == null ? null : getEntityModelFactory().getModel(reference,
+		        attributeModel.getNormalizedType());
 	}
 
 	public void setFieldEntityModels(Map<String, String> fieldEntityModels) {

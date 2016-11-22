@@ -44,10 +44,11 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Layout;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 
@@ -62,52 +63,68 @@ import net.sf.jasperreports.engine.JasperReport;
  */
 public class JRReportViewer<T> extends BaseCustomComponent {
 
+	/**
+	 * 
+	 * @author bas.rutten
+	 *
+	 */
 	public interface ReportDefinition {
 		/**
 		 * @return the name of the report template
 		 */
-		public String getReportTemplateName();
-
-		/**
-		 * @return whether an external script needs to be loaded
-		 */
-		public boolean requiresExternalScript();
+		String getReportTemplateName();
 
 		/**
 		 * @return whether a direct datasource connection needs to be loaded
 		 */
-		public boolean requiresDatabaseConnection();
+		boolean requiresDatabaseConnection();
+
+		/**
+		 * @return whether an external script needs to be loaded
+		 */
+		boolean requiresExternalScript();
 	}
 
-	protected final static String REPORT_NA_KEY = "ocs.report.not.available";
-	protected final static String NO_DATA_FOUND_KEY = "ocs.no.data.found";
-	protected final static String REPORT_EXTENSION = ".jasper";
-	protected final static String REPORT_AREA_ID = "reportArea";
+	protected static final String NO_DATA_FOUND_KEY = "ocs.no.data.found";
+
+	protected static final String REPORT_AREA_ID = "reportArea";
+
+	protected static final String REPORT_EXTENSION = ".jasper";
+
+	protected static final String REPORT_NA_KEY = "ocs.report.not.available";
 
 	private static final long serialVersionUID = 6981827314136814213L;
-	private Layout main;
-	private Component toolbar;
-	private Label reportArea;
-	private Enum<? extends ReportDefinition> reportDefinition;
-	private EntityModel<T> entityModel;
-	private AbstractSelect reportSelection;
-	private String templatePath;
-	private Container container;
-	private ReportGenerator reportGenerator;
-	private Map<String, Object> currentParameters;
-	private JasperReport jasperReport;
-	private JRDataSource jrDataSource;
-	private CheckBox showMargins;
-	private Button exportPDF;
-
 	/**
-	 * Indicates whether external script has already been loaded (currently only works for one external script!)
+	 * Indicates whether external script has already been loaded (currently only works for one
+	 * external script!)
 	 */
 	private boolean alreadyLoaded = false;
+	private Container container;
+	private Map<String, Object> currentParameters;
+	private EntityModel<T> entityModel;
+	private Button exportPDF;
+	private JasperReport jasperReport;
+	private JRDataSource jrDataSource;
+	private ComponentContainer main;
+	private Label reportArea;
+	private Enum<? extends ReportDefinition> reportDefinition;
+	private ReportGenerator reportGenerator;
+	private AbstractSelect reportSelection;
+	private CheckBox showMargins;
+	private String templatePath;
+	private Component toolbar;
+	private boolean splitlayout = false;
 
+	/**
+	 * Constructor
+	 * 
+	 * @param reportGenerator
+	 * @param reportDefinition
+	 * @param entityModel
+	 * @param templatePath
+	 */
 	public JRReportViewer(ReportGenerator reportGenerator, Enum<? extends ReportDefinition> reportDefinition,
-			EntityModel<T> entityModel,
-			String templatePath) {
+	        EntityModel<T> entityModel, String templatePath) {
 		this.reportGenerator = reportGenerator;
 		this.reportDefinition = reportDefinition;
 		this.entityModel = entityModel;
@@ -125,53 +142,27 @@ public class JRReportViewer<T> extends BaseCustomComponent {
 		toolbar = buildToolbar();
 		reportArea = buildReportArea();
 
-		VerticalLayout vl = new VerticalLayout();
-		vl.setMargin(true);
-		vl.setSpacing(true);
-		main = vl;
-		main.addComponent(toolbar);
-		main.addComponent(reportArea);
+		main = buildMain();
 		setCompositionRoot(main);
 	}
 
-	protected Component buildToolbar() {
-		// TODO add custom component with previous/next page buttons and export pdf
-		HorizontalLayout content = new HorizontalLayout();
-		content.setSizeFull();
-		content.setSpacing(true);
-		content.addComponent(buildReportSelection());
-		content.addComponent(buildExportSelection());
-		content.addComponent(buildReportOptions());
-		Panel toolbar = new Panel();
-		toolbar.setContent(content);
-		return toolbar;
-	}
-
-	protected Component buildReportSelection() {
-		FormLayout content = new FormLayout();
-		content.setSpacing(true);
-		// Create reporting selection
-		reportSelection = ModelBasedFieldFactory.getInstance(entityModel, getMessageService())
-				.createEnumCombo(reportDefinition.getClass(), ComboBox.class);
-		reportSelection.setCaption(getMessageService()
-				.getMessage(entityModel.getReference() + "." + reportDefinition.getClass().getSimpleName()));
-		reportSelection.setNullSelectionAllowed(false);
-		reportSelection.setRequired(true);
-		reportSelection.select(reportSelection.getItemIds().iterator().next());
-		reportSelection.setSizeFull();
-		reportSelection.addValueChangeListener(new Property.ValueChangeListener() {
-			private static final long serialVersionUID = -3358229370015557129L;
-
-			@Override
-			public void valueChange(Property.ValueChangeEvent event) {
-				if (exportPDF != null) {
-					exportPDF.setEnabled(false);
-				}
-			}
-		});
-		// Add combo
-		content.addComponent(reportSelection);
-		return content;
+	protected ComponentContainer buildMain() {
+		ComponentContainer main = null;
+		if (isSplitlayout()) {
+			// Create split layout for reports
+			HorizontalSplitPanel sp = new HorizontalSplitPanel(toolbar, reportArea);
+			sp.setSizeFull();
+			sp.setSplitPosition(30, Unit.PERCENTAGE);
+			main = sp;
+		} else {
+			VerticalLayout vl = new VerticalLayout();
+			vl.setMargin(true);
+			vl.setSpacing(true);
+			vl.addComponent(toolbar);
+			vl.addComponent(reportArea);
+			main = vl;
+		}
+		return main;
 	}
 
 	protected Component buildExportSelection() {
@@ -188,13 +179,77 @@ public class JRReportViewer<T> extends BaseCustomComponent {
 		return exportbar;
 	}
 
+	protected Label buildReportArea() {
+		Label label = new Label(getMessageService().getMessage(REPORT_NA_KEY));
+		label.setContentMode(ContentMode.HTML);
+		label.setId(REPORT_AREA_ID);
+		return label;
+	}
+
 	protected Component buildReportOptions() {
 		showMargins = new CheckBox("Show margins", false);
 		return showMargins;
 	}
 
+	protected Component buildReportSelection() {
+		FormLayout content = new FormLayout();
+		content.setSpacing(true);
+		// Create reporting selection
+		reportSelection = ModelBasedFieldFactory.getInstance(entityModel, getMessageService()).createEnumCombo(
+		        reportDefinition.getClass(), ComboBox.class);
+		reportSelection.setCaption(getMessageService().getMessage(
+		        entityModel.getReference() + "." + reportDefinition.getClass().getSimpleName()));
+		reportSelection.setNullSelectionAllowed(false);
+		reportSelection.setRequired(true);
+		reportSelection.select(reportSelection.getItemIds().iterator().next());
+		reportSelection.setSizeFull();
+		reportSelection.addValueChangeListener(new Property.ValueChangeListener() {
+			private static final long serialVersionUID = -3358229370015557129L;
+
+			@Override
+			public void valueChange(Property.ValueChangeEvent event) {
+				if (exportPDF != null) {
+					exportPDF.setEnabled(false);
+				}
+			}
+		});
+		// Add combo
+		content.addComponent(reportSelection);
+		if (reportDefinition.getClass().getEnumConstants().length <= 1) {
+			reportSelection.setVisible(false);
+		}
+		return content;
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	protected Component buildToolbar() {
+		// TODO add custom component with previous/next page buttons and export pdf
+		HorizontalLayout content = new HorizontalLayout();
+		content.setSizeFull();
+		content.setSpacing(true);
+		content.addComponent(buildReportSelection());
+		content.addComponent(buildExportSelection());
+		content.addComponent(buildReportOptions());
+		Panel panel = new Panel();
+		panel.setContent(content);
+		return panel;
+	}
+
+	public void clear() {
+		reportArea.setValue(getMessageService().getMessage(REPORT_NA_KEY));
+	}
+
+	/**
+	 * Transforms the report into a StreamResource for downloading
+	 * 
+	 * @param format
+	 * @return
+	 */
 	protected StreamResource createResourceForExport(final Format format) {
-		StreamResource resource = new StreamResource(new StreamSource() {
+		return new StreamResource(new StreamSource() {
 			private static final long serialVersionUID = -5207351556320212325L;
 
 			@Override
@@ -203,30 +258,20 @@ public class JRReportViewer<T> extends BaseCustomComponent {
 					ByteArrayOutputStream os = new ByteArrayOutputStream();
 					reportGenerator.setShowMargins(showMargins.getValue());
 					reportGenerator.executeReport(jasperReport, currentParameters, jrDataSource, format,
-							((WrappedHttpSession) VaadinSession.getCurrent().getSession()).getHttpSession(),
-							VaadinSession.getCurrent().getLocale(), os);
-				return new ByteArrayInputStream(os.toByteArray());
-				} else
+					        ((WrappedHttpSession) VaadinSession.getCurrent().getSession()).getHttpSession(),
+					        VaadinSession.getCurrent().getLocale(), os);
+					return new ByteArrayInputStream(os.toByteArray());
+				} else {
 					return null;
+				}
 			}
 
 		}, "report." + format.name());
-		return resource;
 	}
 
-	protected Label buildReportArea() {
-		Label reportArea = new Label(getMessageService().getMessage(REPORT_NA_KEY));
-		reportArea.setContentMode(ContentMode.HTML);
-		reportArea.setId(REPORT_AREA_ID);
-		return reportArea;
-	}
-
-	protected String getFullPath(ReportDefinition rd) {
-		return (StringUtils.isEmpty(templatePath) ? "" : templatePath) + rd.getReportTemplateName() + REPORT_EXTENSION;
-	}
-
-	public void displayReport(Filter filter, Map<String, Object> parameters ) {
-		// TODO make the report generation asynchronous and display the first page when it is ready and not after last
+	public void displayReport(Filter filter, Map<String, Object> parameters) {
+		// TODO make the report generation asynchronous and display the first page when it is ready
+		// and not after last
 		// page is ready
 		currentParameters = parameters;
 
@@ -253,8 +298,8 @@ public class JRReportViewer<T> extends BaseCustomComponent {
 		// Generate report
 		reportGenerator.setShowMargins(showMargins.getValue());
 		String html = reportGenerator.executeReportAsHtml(jasperReport, params, jrDataSource,
-				((WrappedHttpSession) VaadinSession.getCurrent().getSession()).getHttpSession(),
-				VaadinSession.getCurrent().getLocale());
+		        ((WrappedHttpSession) VaadinSession.getCurrent().getSession()).getHttpSession(), VaadinSession
+		                .getCurrent().getLocale());
 		if (html == null || "".equals(html) || (container != null && container.size() <= 0)) {
 			reportArea.setValue(getMessageService().getMessage(NO_DATA_FOUND_KEY));
 			exportPDF.setEnabled(false);
@@ -271,24 +316,16 @@ public class JRReportViewer<T> extends BaseCustomComponent {
 		}
 	}
 
-	public void clear() {
-		reportArea.setValue(getMessageService().getMessage(REPORT_NA_KEY));
-	}
-
-	public CheckBox getShowMargins() {
-		return showMargins;
-	}
-
 	public Button getExportPDF() {
 		return exportPDF;
 	}
 
-	public Layout getMain() {
-		return main;
+	protected String getFullPath(ReportDefinition rd) {
+		return (StringUtils.isEmpty(templatePath) ? "" : templatePath) + rd.getReportTemplateName() + REPORT_EXTENSION;
 	}
 
-	public Component getToolbar() {
-		return toolbar;
+	public ComponentContainer getMain() {
+		return main;
 	}
 
 	public Component getReportArea() {
@@ -307,16 +344,31 @@ public class JRReportViewer<T> extends BaseCustomComponent {
 		return (ReportDefinition) getReportSelection().getValue();
 	}
 
+	public CheckBox getShowMargins() {
+		return showMargins;
+	}
+
+	public Component getToolbar() {
+		return toolbar;
+	}
+
 	public void setContainer(Container container, boolean defineProperties) {
 		this.container = container;
 		if (defineProperties) {
 			// Prepare the container by adding all properties needed for the reports
 			for (ReportDefinition type : (ReportDefinition[]) reportDefinition.getClass().getEnumConstants()) {
 				if (!type.requiresDatabaseConnection()) {
-					JRUtils.addContainerPropertiesFromReport(container,
-							reportGenerator.loadTemplate(getFullPath(type)));
+					JRUtils.addContainerPropertiesFromReport(container, reportGenerator.loadTemplate(getFullPath(type)));
 				}
 			}
 		}
+	}
+
+	public boolean isSplitlayout() {
+		return splitlayout;
+	}
+
+	public void setSplitlayout(boolean splitlayout) {
+		this.splitlayout = splitlayout;
 	}
 }

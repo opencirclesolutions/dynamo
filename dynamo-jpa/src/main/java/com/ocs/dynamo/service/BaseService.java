@@ -31,237 +31,216 @@ import com.ocs.dynamo.filter.Filter;
  */
 public interface BaseService<ID, T extends AbstractEntity<ID>> {
 
-    /**
-     * Returns the total number of entities of this type
-     * 
-     * @return
-     */
-    long count();
-
-    /**
-     * Returns the number of entities that match the provided filter
-     * 
-     * @param filter
-     *            the filter
-     * @param distinct
-     *            whether to return only distinct results
-     * @return
-     */
-    long count(Filter filter, boolean distinct);
-
-    /**
-     * Creates a new entity
-     * 
-     * @return
-     */
-    T createNewEntity();
-
-    /**
-     * Deletes all entities in the provided list
-     * 
-     * @param list
-     *            the list of entities to delete
-     */
-    void delete(List<T> list);
-
-    /**
-     * Deletes the provided entity
-     * 
-     * @param entity
-     *            the entity to delete
-     */
-    void delete(T entity);
-
-    /**
-     * Fetches entities that match the provided filter
-     * 
-     * @param filter
-     *            the filter
-     * @param joins
-     *            the desired relations to fetch
-     * @return
-     */
-    List<T> fetch(Filter filter, FetchJoinInformation... joins);
-
-    /**
-     * 
-     * @param filter
-     * @param pageNumber
-     * @param pageSize
-     * @param joins
-     * @return
-     */
-    List<T> fetch(Filter filter, int pageNumber, int pageSize, FetchJoinInformation... joins);
-
-    /**
-     * 
-     * @param filter
-     * @param pageNumber
-     * @param pageSize
-     * @param sortOrders
-     * @param joins
-     * @return
-     */
-    List<T> fetch(Filter filter, int pageNumber, int pageSize, SortOrders sortOrders,
-            FetchJoinInformation... joins);
-
-    /**
-     * Fetches entities that match the provided filter
-     * 
-     * @param filter
-     *            the filter
-     * @param pageable
-     *            the page info
-     * @param joins
-     *            the desired relations to fetch
-     * @return
-     */
-    List<T> fetch(Filter filter, SortOrders orders, FetchJoinInformation... joins);
-
-    /**
-     * Fetches an entity (and its relations) based on its ID
-     * 
-     * @param id
-     *            the ID of the entity
-     * @param joins
-     *            the desired relations to fetch
-     * @return
-     */
-    T fetchById(ID id, FetchJoinInformation... joins);
-
-    /**
-     * Fetches the entities identified by the provided IDs
-     * 
-     * @param ids
-     *            the IDs of the entities to fetch
-     * @param sort
-     *            the sort order
-     * @param joins
-     *            the desired relations to fetch
-     * @return
-     */
-    List<T> fetchByIds(List<ID> ids, SortOrders sortOrders, FetchJoinInformation... joins);
-
-    /**
-     * Fetches the entities identified by the provided IDs
-     * 
-     * @param ids
-     *            the IDs
-     * @param joins
-     * @return
-     */
-    List<T> fetchByIds(List<ID> ids, FetchJoinInformation... joins);
-
-    /**
-     * Fetches an entity based on a unique property
-     * 
-     * @param propertyName
-     *            the name of the property
-     * @param value
-     *            the value of the property
-     * @param caseSensitive
-     *            indicates whether the value is case sensitive
-     * @param joins
-     *            the desired relations to fetch
-     * 
-     * @return
-     */
-    T fetchByUniqueProperty(String propertyName, Object value, boolean caseSensitive,
-            FetchJoinInformation... joins);
-
-    /**
-     * Returns all entities that match the provided filter
-     * 
-     * @param filter
-     *            the filter
-     * @return
-     */
-    List<T> find(Filter filter);
-
-    /**
-     * 
-     * @param filter
-     * @param orders
-     * @return
-     */
-    List<T> find(Filter filter, SortOrder... orders);
-
-    /**
-     * Returns a list of all entities. Use with caution
-     * 
-     * @return
-     */
-    List<T> findAll();
-
-    /**
-     * Returns a list of all entities. Use with caution
-     * 
-     * @param sort
-     *            the desired sorting information
-     * @return
-     */
-    List<T> findAll(SortOrder... sortOrders);
-
-    /**
-     * Finds an object based on its ID
-     * 
-     * @param id
-     *            the ID
-     * @return the object identified by the ID, or <code>null</code> if it cannot be found
-     */
-    T findById(ID id);
-
-    /**
-     * Finds an object based on a unique property value
-     * 
-     * @param propertyName
-     *            the name of the property
-     * @param value
-     *            the desired value of the property
-     * @param caseSensitive
-     *            whether the match is case sensitive
-     * @return
-     */
-    T findByUniqueProperty(String propertyName, Object value, boolean caseSensitive);
-
-    /**
-     * Returns the IDS of the entities that match the provided filter
-     * 
-     * @param filter
-     *            the filter
-     * @param sort
-     *            the desired sorting
-     * @return
-     */
-    List<ID> findIds(Filter filter, SortOrder... orders);
-
-    /**
-     * Returns the class of the entity managed by this DAO
-     * 
-     * @return
-     */
-    Class<T> getEntityClass();
-
-    /**
-     * Saves the provide list of entities
-     * 
-     * @param list
-     *            the list of entities
-     * @return
-     */
-    List<T> save(List<T> list);
-
-    /**
-     * Saves the provided entity
-     * 
-     * @param entity
-     *            the entity to save
-     * @return
-     */
-    T save(T entity);
+	/**
+	 * Returns the total number of entities of this type
+	 * 
+	 * @return
+	 */
+	long count();
 
 	/**
-	 * Returns all entities that match the provided filter and apply a distinct on the given column
+	 * Returns the number of entities that match the provided filter
+	 * 
+	 * @param filter
+	 *            the filter
+	 * @param distinct
+	 *            whether to return only distinct results
+	 * @return
+	 */
+	long count(Filter filter, boolean distinct);
+
+	/**
+	 * Creates a new entity
+	 * 
+	 * @return
+	 */
+	T createNewEntity();
+
+	/**
+	 * Deletes all entities in the provided list
+	 * 
+	 * @param list
+	 *            the list of entities to delete
+	 */
+	void delete(List<T> list);
+
+	/**
+	 * Deletes the provided entity
+	 * 
+	 * @param entity
+	 *            the entity to delete
+	 */
+	void delete(T entity);
+
+	/**
+	 * Fetches entities that match the provided filter
+	 * 
+	 * @param filter
+	 *            the filter
+	 * @param joins
+	 *            the desired relations to fetch
+	 * @return
+	 */
+	List<T> fetch(Filter filter, FetchJoinInformation... joins);
+
+	/**
+	 * Fetches a page of entities that match the provided filter
+	 * 
+	 * @param filter
+	 *            the filter
+	 * @param pageNumber
+	 *            the page number of the page to fetch
+	 * @param pageSize
+	 *            the page size
+	 * @param joins
+	 *            the desired relations to fetch
+	 * @return
+	 */
+	List<T> fetch(Filter filter, int pageNumber, int pageSize, FetchJoinInformation... joins);
+
+	/**
+	 * Fetches a page of entities that match the provided filter
+	 * 
+	 * @param filter
+	 *            the filter
+	 * @param pageNumber
+	 *            the page number of the page to fetch
+	 * @param pageSize
+	 *            the page size
+	 * @param sortOrders
+	 *            any sort orders to apply to the search results
+	 * @param joins
+	 *            the desired relations to fetch
+	 * @return
+	 */
+	List<T> fetch(Filter filter, int pageNumber, int pageSize, SortOrders sortOrders, FetchJoinInformation... joins);
+
+	/**
+	 * Fetches entities that match the provided filter
+	 * 
+	 * @param filter
+	 *            the filter
+	 * @param pageable
+	 *            the page info
+	 * @param joins
+	 *            the desired relations to fetch
+	 * @return
+	 */
+	List<T> fetch(Filter filter, SortOrders orders, FetchJoinInformation... joins);
+
+	/**
+	 * Fetches an entity (and its relations) based on its ID
+	 * 
+	 * @param id
+	 *            the ID of the entity
+	 * @param joins
+	 *            the desired relations to fetch
+	 * @return
+	 */
+	T fetchById(ID id, FetchJoinInformation... joins);
+
+	/**
+	 * Fetches the entities identified by the provided IDs
+	 * 
+	 * @param ids
+	 *            the IDs
+	 * @param joins
+	 *            desired relations to fetch
+	 * @return
+	 */
+	List<T> fetchByIds(List<ID> ids, FetchJoinInformation... joins);
+
+	/**
+	 * Fetches the entities identified by the provided IDs
+	 * 
+	 * @param ids
+	 *            the IDs of the entities to fetch
+	 * @param sort
+	 *            the sort order
+	 * @param joins
+	 *            the desired relations to fetch
+	 * @return
+	 */
+	List<T> fetchByIds(List<ID> ids, SortOrders sortOrders, FetchJoinInformation... joins);
+
+	/**
+	 * Fetches an entity based on a unique property
+	 * 
+	 * @param propertyName
+	 *            the name of the property
+	 * @param value
+	 *            the value of the property
+	 * @param caseSensitive
+	 *            indicates whether the value is case sensitive
+	 * @param joins
+	 *            the desired relations to fetch
+	 * 
+	 * @return
+	 */
+	T fetchByUniqueProperty(String propertyName, Object value, boolean caseSensitive, FetchJoinInformation... joins);
+
+	/**
+	 * Returns all entities that match the provided filter
+	 * 
+	 * @param filter
+	 *            the filter
+	 * @return
+	 */
+	List<T> find(Filter filter);
+
+	/**
+	 * Returns all entities that match the provided filter, sorted according to the provided sort
+	 * orders
+	 * 
+	 * @param filter
+	 *            the filter
+	 * @param orders
+	 *            the sort order
+	 * @return
+	 */
+	List<T> find(Filter filter, SortOrder... orders);
+
+	/**
+	 * Returns a list of all entities. Use with caution
+	 * 
+	 * @return
+	 */
+	List<T> findAll();
+
+	/**
+	 * Returns a list of all entities, sorted according to the provided sort orders
+	 * 
+	 * @param sort
+	 *            the desired sort orders
+	 * @return
+	 */
+	List<T> findAll(SortOrder... sortOrders);
+
+	/**
+	 * Finds an object based on its ID
+	 * 
+	 * @param id
+	 *            the ID
+	 * @return the object identified by the ID, or <code>null</code> if it cannot be found
+	 */
+	T findById(ID id);
+
+	/**
+	 * Finds an object based on a unique property value
+	 * 
+	 * @param propertyName
+	 *            the name of the property
+	 * @param value
+	 *            the desired value of the property
+	 * @param caseSensitive
+	 *            whether the match is case sensitive
+	 * @return
+	 */
+	T findByUniqueProperty(String propertyName, Object value, boolean caseSensitive);
+
+	/**
+	 * Returns all distinct values that appear in a certain field for all entities that match the
+	 * provided filter
 	 * 
 	 * @param filter
 	 *            the filter
@@ -272,4 +251,40 @@ public interface BaseService<ID, T extends AbstractEntity<ID>> {
 	 * @return
 	 */
 	List<? extends Object> findDistinct(Filter filter, String distinctField, SortOrder... orders);
+
+	/**
+	 * Returns the IDS of the entities that match the provided filter
+	 * 
+	 * @param filter
+	 *            the filter
+	 * @param sort
+	 *            the desired sorting
+	 * @return
+	 */
+	List<ID> findIds(Filter filter, SortOrder... orders);
+
+	/**
+	 * Returns the class of the entity managed by this DAO
+	 * 
+	 * @return
+	 */
+	Class<T> getEntityClass();
+
+	/**
+	 * Saves the provide list of entities
+	 * 
+	 * @param list
+	 *            the list of entities
+	 * @return
+	 */
+	List<T> save(List<T> list);
+
+	/**
+	 * Saves the provided entity
+	 * 
+	 * @param entity
+	 *            the entity to save
+	 * @return
+	 */
+	T save(T entity);
 }

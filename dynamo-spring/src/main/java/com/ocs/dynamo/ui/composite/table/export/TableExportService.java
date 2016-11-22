@@ -22,12 +22,14 @@ import com.vaadin.addon.tableexport.TableExport;
  */
 public class TableExportService {
 
-    /**
-     * Performs an export from a table
-     * 
-     * @param export the TableExport object
-     */
-    public void export(TableExport export) {
-        export.export();
-    }
+	/**
+	 * Performs an export from a table
+	 * 
+	 * @param export
+	 *            the TableExport object
+	 */
+	public void export(TableExport export) {
+		export.export();
+	}
+
 }

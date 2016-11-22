@@ -21,53 +21,72 @@ package com.ocs.dynamo.utils;
  */
 public final class GeoUtils {
 
-    public static class Coordinate {
-	private Double latitude;
-	private Double longitude;
+	/**
+	 * A coordinate which is defined by a latitude and a longitude
+	 * 
+	 * @author bas.rutten
+	 *
+	 */
+	public static class Coordinate {
+		private Double latitude;
+		private Double longitude;
 
-	public Coordinate(Double latitude, Double longitude) {
-	    super();
-	    this.latitude = latitude;
-	    this.longitude = longitude;
+		/**
+		 * Constructor
+		 * 
+		 * @param latitude
+		 *            the latitude
+		 * @param longitude
+		 *            hte longitude
+		 */
+		public Coordinate(Double latitude, Double longitude) {
+			this.latitude = latitude;
+			this.longitude = longitude;
+		}
+
+		public Double getLatitude() {
+			return latitude;
+		}
+
+		public Double getLongitude() {
+			return longitude;
+		}
 	}
 
-	public Double getLatitude() {
-	    return latitude;
+	private GeoUtils() {
+		// hidden constructor
 	}
 
-	public Double getLongitude() {
-	    return longitude;
+	/**
+	 * Calculate the center of a set of coordinates
+	 * 
+	 * @param coordinates the set of coordinates
+	 * @return
+	 */
+	public static Coordinate calculateCenter(Coordinate... coordinates) {
+		if (coordinates == null) {
+			return null;
+		} else if (coordinates.length == 1) {
+			return coordinates[0];
+		}
+		double x = 0, y = 0, z = 0;
+		for (Coordinate c : coordinates) {
+			double latitude = c.getLatitude() * Math.PI / 180;
+			double longitude = c.getLongitude() * Math.PI / 180;
+			x += Math.cos(latitude) * Math.cos(longitude);
+			y += Math.cos(latitude) * Math.sin(longitude);
+			z += Math.sin(latitude);
+		}
+
+		x = x / coordinates.length;
+		y = y / coordinates.length;
+		z = z / coordinates.length;
+
+		double centralLongitude = Math.atan2(y, x);
+		double centralSquareRoot = Math.sqrt(x * x + y * y);
+		double centralLatitude = Math.atan2(z, centralSquareRoot);
+
+		return new Coordinate(centralLatitude * 180 / Math.PI, centralLongitude * 180 / Math.PI);
 	}
-    }
-
-    private GeoUtils() {
-    }
-
-    public static Coordinate calculateCenter(Coordinate... coordinates) {
-	if (coordinates == null) {
-	    return null;
-	} else if (coordinates.length == 1) {
-	    return coordinates[0];
-	}
-	double x = 0, y = 0, z = 0;
-	for (Coordinate c : coordinates) {
-	    double latitude = c.getLatitude() * Math.PI / 180;
-	    double longitude = c.getLongitude() * Math.PI / 180;
-
-	    x += Math.cos(latitude) * Math.cos(longitude);
-	    y += Math.cos(latitude) * Math.sin(longitude);
-	    z += Math.sin(latitude);
-	}
-
-	x = x / coordinates.length;
-	y = y / coordinates.length;
-	z = z / coordinates.length;
-
-	double centralLongitude = Math.atan2(y, x);
-	double centralSquareRoot = Math.sqrt(x * x + y * y);
-	double centralLatitude = Math.atan2(z, centralSquareRoot);
-
-	return new Coordinate(centralLatitude * 180 / Math.PI, centralLongitude * 180 / Math.PI);
-    }
 
 }

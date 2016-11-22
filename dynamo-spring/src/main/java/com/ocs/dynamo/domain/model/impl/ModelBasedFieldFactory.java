@@ -33,6 +33,7 @@ import com.ocs.dynamo.domain.model.AttributeTextFieldMode;
 import com.ocs.dynamo.domain.model.AttributeType;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.exception.OCSRuntimeException;
+import com.ocs.dynamo.filter.FilterConverter;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.ui.ServiceLocator;
@@ -43,6 +44,7 @@ import com.ocs.dynamo.ui.component.EntityLookupField;
 import com.ocs.dynamo.ui.component.FancyListSelect;
 import com.ocs.dynamo.ui.component.QuickAddEntityComboBox;
 import com.ocs.dynamo.ui.component.QuickAddListSelect;
+import com.ocs.dynamo.ui.component.SimpleTokenFieldSelect;
 import com.ocs.dynamo.ui.component.TimeField;
 import com.ocs.dynamo.ui.component.TokenFieldSelect;
 import com.ocs.dynamo.ui.component.URLField;
@@ -52,6 +54,7 @@ import com.ocs.dynamo.ui.converter.ConverterFactory;
 import com.ocs.dynamo.ui.converter.WeekCodeConverter;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.ui.validator.URLValidator;
+import com.ocs.dynamo.utils.SortUtil;
 import com.ocs.dynamo.utils.SystemPropertyUtils;
 import com.vaadin.data.Container;
 import com.vaadin.data.Container.Filter;
@@ -225,6 +228,12 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 			if (AttributeType.MASTER.equals(attributeModel.getAttributeType())) {
 				// create a combo box or lookup field
 				field = constructSelectField(attributeModel, fieldEntityModel, fieldFilter);
+			} else if (search && AttributeSelectMode.TOKEN.equals(attributeModel.getSearchSelectMode())
+			        && AttributeType.BASIC.equals(attributeModel.getAttributeType())) {
+				// simple token field (for distinct string values)
+				field = constructSimpleTokenField(
+				        fieldEntityModel != null ? fieldEntityModel : attributeModel.getEntityModel(), attributeModel,
+				        attributeModel.getPath().substring(attributeModel.getPath().lastIndexOf(".") + 1), fieldFilter);
 			} else {
 				// detail relationship, render a multiple select
 				field = this.constructCollectionSelect(fieldEntityModel, attributeModel, fieldFilter, true, search);
@@ -240,8 +249,10 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 			field.setRequired(attributeModel.isRequired());
 		}
 
+		//
 		if (field instanceof AbstractComponent) {
 			((AbstractComponent) field).setImmediate(true);
+			field.setCaption(attributeModel.getDisplayName());
 		}
 		return field;
 	}
@@ -270,19 +281,16 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 		BaseService<ID, S> service = (BaseService<ID, S>) ServiceLocator.getServiceForEntity(em.getEntityClass());
 		SortOrder[] sos = constructSortOrder(em);
 
-		// whether to use a token field for searching
-		boolean searchToken = search && AttributeSelectMode.TOKEN.equals(attributeModel.getSearchSelectMode());
-		// whether to use a lookup field for searching
-		boolean searchLookup = search && AttributeSelectMode.LOOKUP.equals(attributeModel.getSearchSelectMode());
+		// mode depends on whether we are searching
+		AttributeSelectMode mode = search ? attributeModel.getSearchSelectMode() : attributeModel.getSelectMode();
 
-		if (searchLookup || AttributeSelectMode.LOOKUP.equals(attributeModel.getSelectMode())) {
+		if (AttributeSelectMode.LOOKUP.equals(mode)) {
 			// lookup field - take care to NOT use the nested model here!
 			return constructLookupField((EntityModel<S>) fieldEntityModel, attributeModel, fieldFilter, search, true);
-		} else if (searchToken || AttributeSelectMode.TOKEN.equals(attributeModel.getSelectMode())) {
+		} else if (AttributeSelectMode.TOKEN.equals(mode)) {
 			// token field
 			return new TokenFieldSelect<ID, S>((EntityModel<S>) em, attributeModel, service, fieldFilter, search, sos);
-		} else if (AttributeSelectMode.FANCY_LIST.equals(attributeModel.getSelectMode())
-		        || (search && AttributeSelectMode.FANCY_LIST.equals(attributeModel.getSearchSelectMode()))) {
+		} else if (AttributeSelectMode.FANCY_LIST.equals(mode)) {
 			// fancy list select
 			FancyListSelect<ID, S> listSelect = new FancyListSelect<ID, S>(service, (EntityModel<S>) em,
 			        attributeModel, fieldFilter, search, sos);
@@ -293,7 +301,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 			return new QuickAddListSelect<ID, S>((EntityModel<S>) em, attributeModel, service, fieldFilter,
 			        multipleSelect, SystemPropertyUtils.getDefaultListSelectRows(), sos);
 		} else {
-			// simple list select if everything else failsis not applicable
+			// simple list select if everything else fails or is not applicable
 			EntityListSelect<ID, S> listSelect = new EntityListSelect<ID, S>((EntityModel<S>) em, attributeModel,
 			        service, fieldFilter, sos);
 			listSelect.setMultiSelect(multipleSelect);
@@ -319,9 +327,10 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 	        boolean multiSelect) {
 
 		// for a lookup field, don't use the nested model but the base model - this is
-		// because the search in the popup screen is conducted on the non-nested entity list
+		// because the search in the popup screen is conducted on a "clean", unnested entity list so
+		// using a path from the parent entity makes no sense here
 		EntityModel<?> entityModel = overruled != null ? overruled : ServiceLocator.getEntityModelFactory().getModel(
-		        attributeModel.getModelType());
+		        attributeModel.getNormalizedType());
 
 		BaseService<ID, S> service = (BaseService<ID, S>) ServiceLocator.getServiceForEntity(attributeModel
 		        .getMemberType() != null ? attributeModel.getMemberType() : entityModel.getEntityClass());
@@ -361,6 +370,38 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 		cb.addItems(values);
 		cb.setFilteringMode(FilteringMode.CONTAINS);
 		return cb;
+	}
+
+	/**
+	 * Constructs a token field for basic attributes (Strings)
+	 * 
+	 * @param entityModel
+	 *            the entity model to base the field on
+	 * @param attributeModel
+	 *            the attribute model
+	 * @param distinctField
+	 *            the field for which to return the distinct values
+	 * @param fieldFilter
+	 *            field filter to apply in order to limit the search results
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	private <ID extends Serializable, S extends AbstractEntity<ID>, O extends Comparable<O>> SimpleTokenFieldSelect<O> constructSimpleTokenField(
+	        EntityModel<?> entityModel, AttributeModel attributeModel, String distinctField, Filter fieldFilter) {
+		BaseService<ID, S> service = (BaseService<ID, S>) ServiceLocator.getServiceForEntity(entityModel
+		        .getEntityClass());
+
+		SortOrder[] sos;
+		if (distinctField == null) {
+			sos = constructSortOrder(entityModel);
+		} else {
+			sos = new SortOrder[] { new SortOrder(distinctField, SortDirection.ASCENDING) };
+		}
+
+		// perform the query to look for the distinct values
+		List<O> items = (List<O>) service.findDistinct(new FilterConverter(entityModel).convert(fieldFilter),
+		        distinctField, SortUtil.translate(sos));
+		return new SimpleTokenFieldSelect<>(attributeModel, items, (Class<O>) attributeModel.getType(), sos);
 	}
 
 	/**
@@ -442,6 +483,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 	 * Creates a field for a certain property ID
 	 * 
 	 * @param propertyId
+	 *            the property
 	 * @return
 	 */
 	public Field<?> createField(String propertyId) {
@@ -478,6 +520,13 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 			TextField tf = new TextField();
 			tf.setConverter(new WeekCodeConverter());
 			field = tf;
+		} else if (search && AttributeSelectMode.TOKEN.equals(attributeModel.getSearchSelectMode())
+		        && AttributeType.BASIC.equals(attributeModel.getAttributeType())) {
+			// simple token field (for distinct string values)
+			field = constructSimpleTokenField(
+			        fieldEntityModel != null ? fieldEntityModel : attributeModel.getEntityModel(), attributeModel,
+			        propertyId.substring(propertyId.lastIndexOf(".") + 1), null);
+
 		} else if (search && attributeModel.getType().equals(Boolean.class)) {
 			// in a search screen, we need to offer the true, false, and
 			// undefined options
@@ -647,7 +696,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 
 	/**
 	 * Resolves an entity model by falling back first to the nested attribute model and then to the
-	 * default model
+	 * default model for the normalized type of the property
 	 * 
 	 * @param entityModel
 	 *            the entity model
@@ -660,7 +709,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 			if (attributeModel.getNestedEntityModel() != null) {
 				entityModel = attributeModel.getNestedEntityModel();
 			} else {
-				Class<?> type = attributeModel.getModelType();
+				Class<?> type = attributeModel.getNormalizedType();
 				entityModel = ServiceLocator.getEntityModelFactory().getModel(type.asSubclass(AbstractEntity.class));
 			}
 		}

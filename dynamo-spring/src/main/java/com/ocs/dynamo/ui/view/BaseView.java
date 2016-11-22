@@ -67,10 +67,26 @@ public abstract class BaseView extends CustomComponent implements View {
 		UI.getCurrent().getNavigator().navigateTo(viewId);
 	}
 
+	/**
+	 * Retrieves a message based on its key
+	 * 
+	 * @param key
+	 *            the key of the message
+	 * @return
+	 */
 	protected String message(String key) {
 		return messageService.getMessage(key);
 	}
 
+	/**
+	 * Retrieves a message based on its key
+	 * 
+	 * @param key
+	 *            the key of the message
+	 * @param args
+	 *            any arguments to pass to the message
+	 * @return
+	 */
 	protected String message(String key, Object... args) {
 		return messageService.getMessage(key, args);
 	}
