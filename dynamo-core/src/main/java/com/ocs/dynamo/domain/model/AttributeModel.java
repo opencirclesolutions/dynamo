@@ -49,7 +49,7 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 
 	/**
 	 * 
-	 * @return The description of the attribute. This is used as the tool tip in tables
+	 * @return The description of the attribute. This is used as the value of the tool tip
 	 */
 	String getDescription();
 
