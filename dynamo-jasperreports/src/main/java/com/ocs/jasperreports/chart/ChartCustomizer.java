@@ -355,31 +355,6 @@ public class ChartCustomizer<T extends Plot> extends JRAbstractChartCustomizer {
 		final T plot = (T) chart.getPlot();
 		String key = jasperChart.getKey();
 
-		try {
-			// Adjust the legend in the chart when defined for this chart
-			Object v = getVariableValue(key + LEGEND);
-			if (v instanceof LegendTitle) {
-				chart.removeLegend();
-				chart.addLegend((LegendTitle) v);
-			}
-			if (v instanceof LegendOptions) {
-				LegendOptions lo = (LegendOptions) v;
-				LegendTitle legend = chart.getLegend();
-				if (lo.border != null) {
-					legend.setBorder(lo.border, lo.border, lo.border, lo.border);
-				}
-				if (lo.horizontalAlignment != null) {
-					legend.setHorizontalAlignment(lo.horizontalAlignment);
-				}
-				if (lo.verticalAlignment != null) {
-					legend.setVerticalAlignment(lo.verticalAlignment);
-				}
-			}
-		} catch (JRRuntimeException e) {
-			// No legend defined and needed
-		}
-
-		// All customizations for which a plot customizer is needed
 		CustomChartCustomizer chartCustomizer = null;
 
 		if (plot instanceof XYPlot) {
@@ -387,7 +362,7 @@ public class ChartCustomizer<T extends Plot> extends JRAbstractChartCustomizer {
 		} else if (plot instanceof CategoryPlot) {
 			chartCustomizer = new CategoryChartCustomizer();
 		} else {
-			LOGGER.info("No implementation available to customize");
+			LOGGER.info("no implementation available to customize");
 			return;
 		}
 
@@ -441,6 +416,30 @@ public class ChartCustomizer<T extends Plot> extends JRAbstractChartCustomizer {
 			}
 		} catch (JRRuntimeException e) {
 			// No annotations defined and needed
+		}
+
+		try {
+			// Adjust the legend in the chart when defined for this chart
+			Object v = getVariableValue(key + LEGEND);
+			if (v instanceof LegendTitle) {
+				chart.removeLegend();
+				chart.addLegend((LegendTitle) v);
+			}
+			if (v instanceof LegendOptions) {
+				LegendOptions lo = (LegendOptions) v;
+				LegendTitle legend = chart.getLegend();
+				if (lo.border != null) {
+					legend.setBorder(lo.border, lo.border, lo.border, lo.border);
+				}
+				if (lo.horizontalAlignment != null) {
+					legend.setHorizontalAlignment(lo.horizontalAlignment);
+				}
+				if (lo.verticalAlignment != null) {
+					legend.setVerticalAlignment(lo.verticalAlignment);
+				}
+			}
+		} catch (JRRuntimeException e) {
+			// No legend defined and needed
 		}
 
 		if (chartCustomizer instanceof JRChartCustomizer) {
