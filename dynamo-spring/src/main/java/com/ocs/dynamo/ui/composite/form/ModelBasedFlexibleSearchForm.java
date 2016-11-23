@@ -102,9 +102,9 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 		private Filter fieldFilter;
 
 		/**
-		 * The combo box that contains the field filters
+		 * The combo box that contains the attributes to filter on
 		 */
-		private ComboBox fieldFilterCb;
+		private ComboBox attributeFilterComboBox;
 
 		/**
 		 * Label to display when no filter has been selected
@@ -137,7 +137,7 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 		private Field<Object> mainValueComponent;
 
 		/**
-		 * The component that holds
+		 * The combo box that contains the available filter types
 		 */
 		private ComboBox typeFilterCombo;
 
@@ -168,9 +168,9 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 			});
 			layout.addComponent(removeButton);
 
-			fieldFilterCb = new ComboBox(message("ocs.filter"));
-			fieldFilterCb.setStyleName(DynamoConstants.CSS_NESTED);
-			fieldFilterCb.setFilteringMode(FilteringMode.CONTAINS);
+			attributeFilterComboBox = new ComboBox(message("ocs.filter"));
+			attributeFilterComboBox.setStyleName(DynamoConstants.CSS_NESTED);
+			attributeFilterComboBox.setFilteringMode(FilteringMode.CONTAINS);
 
 			// find out which attributes can be search on and sort them in alphabetical name
 			List<AttributeModel> filteredModels = iterate(getEntityModel().getAttributeModels());
@@ -183,12 +183,12 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 			});
 
 			for (AttributeModel a : filteredModels) {
-				fieldFilterCb.addItem(a);
-				fieldFilterCb.setItemCaption(a, a.getDisplayName());
+				attributeFilterComboBox.addItem(a);
+				attributeFilterComboBox.setItemCaption(a, a.getDisplayName());
 			}
 
-			// add a value change listener that fills the operator select field
-			fieldFilterCb.addValueChangeListener(new ValueChangeListener() {
+			// add a value change listener that fills the filter type combo box after a change
+			attributeFilterComboBox.addValueChangeListener(new ValueChangeListener() {
 
 				private static final long serialVersionUID = -2902597100183015869L;
 
@@ -197,7 +197,7 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 					handleFilterAttributeChange(event, restoring);
 				}
 			});
-			layout.addComponent(fieldFilterCb);
+			layout.addComponent(attributeFilterComboBox);
 
 			noFilterLabel = new Label(message("ocs.select.filter"));
 			noFilterLabel.setCaption("");
@@ -377,8 +377,10 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 		private void handleFilterTypeChange(FlexibleFilterType type) {
 			filterType = type;
 
-			final Field<Object> newComponent = (Field<Object>) getFieldFactory().createField(am.getPath(),
-			        getFieldEntityModel(am));
+			// construct the field
+			Field<Object> custom = (Field<Object>) constructCustomField(getEntityModel(), am);
+			final Field<Object> newComponent = custom != null ? custom : (Field<Object>) getFieldFactory()
+			        .constructField(am, getFieldFilters(), getFieldEntityModel(am));
 
 			if (newComponent instanceof FancyListSelect) {
 				FancyListSelect<?, ?> fls = (FancyListSelect<?, ?>) newComponent;
@@ -626,7 +628,7 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 		if (match == null) {
 			addFilter();
 			match = regions.get(regions.size() - 1);
-			match.fieldFilterCb.setValue(attributeModel);
+			match.attributeFilterComboBox.setValue(attributeModel);
 			match.filterAttributeChange(attributeModel, true);
 			match.typeFilterCombo.setValue(filterType);
 		}
@@ -652,12 +654,6 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 			}
 		}
 
-	}
-
-	@Override
-	public void attach() {
-		super.attach();
-		build();
 	}
 
 	@Override
@@ -748,7 +744,7 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 		for (FlexibleFilterDefinition def : definitions) {
 			FilterRegion region = new FilterRegion(this);
 			region.restoring = true;
-			region.fieldFilterCb.setValue(def.getAttributeModel());
+			region.attributeFilterComboBox.setValue(def.getAttributeModel());
 			region.typeFilterCombo.setValue(def.getFlexibleFilterType());
 
 			region.mainValueComponent.setValue(ConvertUtil.convertToPresentationValue(def.getAttributeModel(),

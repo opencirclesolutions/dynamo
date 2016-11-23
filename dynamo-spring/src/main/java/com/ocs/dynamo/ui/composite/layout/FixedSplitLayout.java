@@ -105,7 +105,7 @@ public abstract class FixedSplitLayout<ID extends Serializable, T extends Abstra
 	 * The initialization consists of retrieving the required items
 	 */
 	@Override
-	public void init() {
+	public void buildFilter() {
 		this.items = loadItems();
 	}
 
@@ -120,8 +120,8 @@ public abstract class FixedSplitLayout<ID extends Serializable, T extends Abstra
 	@Override
 	@SuppressWarnings("unchecked")
 	public void reload() {
+		buildFilter();
 		super.reload();
-		init();
 		// remove all items from the container and add the new ones
 		BeanItemContainer<T> beanContainer = (BeanItemContainer<T>) getTableWrapper().getContainer();
 		beanContainer.removeAllItems();

@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.ocs.dynamo.domain.AbstractEntity;
+import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.impl.ModelBasedFieldFactory;
 import com.ocs.dynamo.filter.listener.FilterChangeEvent;
@@ -34,6 +35,7 @@ import com.vaadin.event.Action.Handler;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Field;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.Panel;
@@ -64,11 +66,6 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	 * Button to clear the search form
 	 */
 	private Button clearButton;
-
-	/**
-	 * The filter that is created by taking all individual field filters together
-	 */
-	private Filter storedFilter;
 
 	/**
 	 * The list of currently active search filters
@@ -105,7 +102,15 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	 */
 	private Panel wrapperPanel;
 
+	/**
+	 * The button bar
+	 */
 	private HorizontalLayout buttonBar;
+
+	/**
+	 * The main layout (constructed only once)
+	 */
+	private VerticalLayout main;
 
 	/**
 	 * 
@@ -135,55 +140,59 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	}
 
 	@Override
+	public void attach() {
+		super.attach();
+		build();
+	}
+
+	@Override
 	public void build() {
-		VerticalLayout main = new DefaultVerticalLayout(false, true);
+		if (main == null) {
+			main = new DefaultVerticalLayout(false, true);
+			preProcessLayout(main);
 
-		preProcessLayout(main);
+			// create the search form
+			filterLayout = constructFilterLayout();
+			if (filterLayout.isVisible()) {
 
-		// create the search form
-		filterLayout = constructFilterLayout();
-		if (filterLayout.isVisible()) {
+				// add a wrapper for adding an action handler
+				wrapperPanel = new Panel();
+				main.addComponent(wrapperPanel);
 
-			// add a wrapper for adding an action handler
-			wrapperPanel = new Panel();
-			main.addComponent(wrapperPanel);
+				wrapperPanel.setContent(filterLayout);
 
-			wrapperPanel.setContent(filterLayout);
+				// action handler for carrying out a search after an Enter press
+				wrapperPanel.addActionHandler(new Handler() {
 
-			// action handler for carrying out a search after an Enter press
-			wrapperPanel.addActionHandler(new Handler() {
+					private static final long serialVersionUID = -2136828212405809213L;
 
-				private static final long serialVersionUID = -2136828212405809213L;
+					private Action enter = new ShortcutAction(null, ShortcutAction.KeyCode.ENTER, null);
 
-				private Action enter = new ShortcutAction(null, ShortcutAction.KeyCode.ENTER, null);
-
-				@Override
-				public Action[] getActions(Object target, Object sender) {
-					return new Action[] { enter };
-				}
-
-				@Override
-				public void handleAction(Action action, Object sender, Object target) {
-					if (action == enter) {
-						search();
+					@Override
+					public Action[] getActions(Object target, Object sender) {
+						return new Action[] { enter };
 					}
-				}
-			});
 
-			// create the button bar
-			buttonBar = new DefaultHorizontalLayout();
-			main.addComponent(buttonBar);
+					@Override
+					public void handleAction(Action action, Object sender, Object target) {
+						if (action == enter) {
+							search();
+						}
+					}
+				});
 
-			constructButtonBar(buttonBar);
+				// create the button bar
+				buttonBar = new DefaultHorizontalLayout();
+				main.addComponent(buttonBar);
+				constructButtonBar(buttonBar);
+				// add custom buttons
+				postProcessButtonBar(buttonBar);
+			}
 
-			// add custom buttons
-			postProcessButtonBar(buttonBar);
+			// add any custom functionality
+			postProcessLayout(main);
+			setCompositionRoot(main);
 		}
-
-		// add any custom functionality
-		postProcessLayout();
-
-		setCompositionRoot(main);
 	}
 
 	@Override
@@ -210,10 +219,9 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	}
 
 	/**
-	 * Clears the search filters
+	 * Clears any search filters (and re-applies the default filters afterwards)
 	 */
 	protected void clear() {
-		storedFilter = null;
 		currentFilters.clear();
 		currentFilters.addAll(getAdditionalFilters());
 	}
@@ -236,6 +244,19 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 		clearButton.addClickListener(this);
 		clearButton.setVisible(!getFormOptions().isHideClearButton());
 		return clearButton;
+	}
+
+	/**
+	 * Creates a custom field - override in subclasses if needed
+	 * 
+	 * @param entityModel
+	 *            the entity model of the entity to search for
+	 * @param attributeModel
+	 *            the attribute model the attribute model of the property that is bound to the field
+	 * @return
+	 */
+	protected Field<?> constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel) {
+		return null;
 	}
 
 	/**
@@ -330,18 +351,30 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 
 	/**
 	 * Perform any actions necessary after the layout has been build
+	 * 
+	 * @param main
+	 *            the layout
 	 */
-	protected void postProcessLayout() {
-
+	protected void postProcessLayout(VerticalLayout layout) {
+		// override in subclass
 	}
 
 	/**
-	 * Pre process the layout - this method is called directly after the main layout has been
+	 * Pre-process the layout - this method is called directly after the main layout has been
 	 * created
 	 * 
 	 * @param main
+	 *            the layout
 	 */
-	protected void preProcessLayout(VerticalLayout main) {
+	protected void preProcessLayout(VerticalLayout layout) {
+		// override in subclass
+	}
+
+	/**
+	 * Refreshes any filter groups that support being refreshed (updating any lookup lists in the
+	 * process)
+	 */
+	public void refresh() {
 		// override in subclass
 	}
 
@@ -350,28 +383,18 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	 */
 	public boolean search() {
 		if (searchable != null) {
-			if (storedFilter != null) {
-				searchable.search(storedFilter);
-				storedFilter = null;
-			} else {
-				searchable.search(extractFilter());
-			}
+			searchable.search(extractFilter());
 			return true;
 		}
 		return false;
 	}
 
 	/**
+	 * Sets the searchable
 	 * 
-	 * @param storedFilter
+	 * @param searchable
+	 *            the searchable
 	 */
-	public void setStoredFilter(Filter storedFilter) {
-		this.storedFilter = storedFilter;
-		if (searchable != null) {
-			searchable.search(storedFilter);
-		}
-	}
-
 	public void setSearchable(Searchable searchable) {
 		this.searchable = searchable;
 	}

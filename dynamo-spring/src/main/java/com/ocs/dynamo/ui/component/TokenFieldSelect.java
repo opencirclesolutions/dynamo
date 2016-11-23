@@ -27,6 +27,7 @@ import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
+import com.ocs.dynamo.ui.Refreshable;
 import com.ocs.dynamo.utils.ClassUtils;
 import com.vaadin.data.Container;
 import com.vaadin.data.Property;
@@ -49,7 +50,7 @@ import com.vaadin.ui.HorizontalLayout;
  * 
  */
 public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<ID>> extends
-        QuickAddEntityField<ID, T, Collection<T>> {
+        QuickAddEntityField<ID, T, Collection<T>> implements Refreshable {
 
 	private final class BeanItemTokenizable implements Tokenizable {
 		private final T item;
@@ -282,4 +283,10 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
 		return extTokenField;
 	}
 
+	@Override
+	public void refresh() {
+		if (comboBox != null) {
+			comboBox.refresh();
+		}
+	}
 }

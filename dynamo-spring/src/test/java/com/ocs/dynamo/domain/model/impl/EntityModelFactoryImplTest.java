@@ -324,7 +324,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		// check on demand constrution of model
 		EntityModel<EntityChild> child2 = factory.getModel("EntityChild.parent.children", EntityChild.class);
 		Assert.assertNotNull(child2);
-		
+
 		// check that the nested model attribute is not searchable...
 		EntityModel<EntityChild> childModel = factory.getModel("EntityChild.parent", EntityChild.class);
 		Assert.assertNotNull(childModel);
@@ -856,7 +856,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 
 		@Lob
 		@Basic(fetch = FetchType.LAZY)
-		@Attribute(image = true, allowedExtensions = "gif,bmp")
+		@Attribute(image = true, allowedExtensions = { "gif", "bmp" })
 		private byte[] logo;
 
 		public byte[] getLogo() {

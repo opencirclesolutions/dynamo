@@ -34,7 +34,7 @@ import com.ocs.dynamo.domain.model.VisibilityType;
 public @interface Attribute {
 
 	/** the allowed extensions in case a file upload is used to edit the attribute */
-	String allowedExtensions() default "";
+	String[] allowedExtensions() default {};
 
 	/** whether a complex attribute is directly editable */
 	boolean complexEditable() default false;

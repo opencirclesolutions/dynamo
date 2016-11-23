@@ -51,7 +51,7 @@ public class ServiceBasedSplitLayoutTest extends BaseIntegrationTest {
 				return new Compare.Equal("name", "%" + value + "%");
 			}
 		};
-		layout.init();
+		layout.buildFilter();
 		layout.build();
 
 		// no filter, so all items are visible
@@ -81,7 +81,7 @@ public class ServiceBasedSplitLayoutTest extends BaseIntegrationTest {
 				return new Compare.Equal("name", "Bob");
 			}
 		};
-		layout.init();
+		layout.buildFilter();
 		layout.build();
 
 		// search results contain only "Bob"
@@ -97,7 +97,7 @@ public class ServiceBasedSplitLayoutTest extends BaseIntegrationTest {
 		ServiceBasedSplitLayout<Integer, TestEntity> layout = new ServiceBasedSplitLayout<Integer, TestEntity>(
 		        testEntityService, entityModelFactory.getModel(TestEntity.class), fo, new SortOrder("name",
 		                SortDirection.ASCENDING));
-		layout.init();
+		layout.buildFilter();
 		layout.build();
 
 		// select an item and check that the edit form is generated (in view mode)

@@ -63,7 +63,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	// the button bar
 	private HorizontalLayout buttonBar = new DefaultHorizontalLayout();
 
-	//
+	// the relations to fetch when displaying a single entity
 	private FetchJoinInformation[] detailJoins;
 
 	// the property used to determine when to draw a divider row

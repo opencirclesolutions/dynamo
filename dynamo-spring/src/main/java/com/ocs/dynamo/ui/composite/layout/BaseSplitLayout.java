@@ -110,7 +110,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	@Override
 	public void attach() {
 		super.attach();
-		init();
+		buildFilter();
 		build();
 	}
 
@@ -367,7 +367,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	 * Perform any required initialization (e.g. load the required items) before attaching the
 	 * screen
 	 */
-	protected abstract void init();
+	protected abstract void buildFilter();
 
 	/**
 	 * Indicates whether the panel is in horizontal mode
@@ -451,4 +451,5 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	public TextField getQuickSearchField() {
 		return quickSearchField;
 	}
+
 }

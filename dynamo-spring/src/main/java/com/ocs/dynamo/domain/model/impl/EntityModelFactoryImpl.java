@@ -779,9 +779,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 				model.setWeek(true);
 			}
 
-			if (!StringUtils.isEmpty(attribute.allowedExtensions())) {
-				String[] extensions = attribute.allowedExtensions().split(",");
-				Set<String> hashSet = Sets.newHashSet(extensions);
+			if (attribute.allowedExtensions() != null && attribute.allowedExtensions().length > 0) {
+				Set<String> hashSet = Sets.newHashSet(attribute.allowedExtensions());
 				model.setAllowedExtensions(hashSet);
 			}
 

@@ -37,6 +37,7 @@ import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Layout;
+import com.vaadin.ui.VerticalLayout;
 
 /**
  * A search form that is constructed based on the metadata model
@@ -132,19 +133,6 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 		buttonBar.addComponent(constructSearchButton());
 		buttonBar.addComponent(constructClearButton());
 		buttonBar.addComponent(constructToggleButton());
-	}
-
-	/**
-	 * Creates a custom field - override in subclasses if needed
-	 * 
-	 * @param entityModel
-	 *            the entity model of the entity to search for
-	 * @param attributeModel
-	 *            the attribute model the attribute model of the property that is bound to the field
-	 * @return
-	 */
-	protected Field<?> constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel) {
-		return null;
 	}
 
 	/**
@@ -372,7 +360,7 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 	}
 
 	@Override
-	protected void postProcessLayout() {
+	protected void postProcessLayout(VerticalLayout layout) {
 		postProcessFilterGroups(groups);
 	}
 

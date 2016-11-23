@@ -59,6 +59,7 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 
 	private static final int PAGE_LENGTH = 15;
 
+	// the add button
 	private Button addButton;
 
 	private Button cancelButton;
