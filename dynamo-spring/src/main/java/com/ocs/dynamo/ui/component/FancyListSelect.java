@@ -21,6 +21,7 @@ import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
+import com.ocs.dynamo.ui.Refreshable;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.sort.SortOrder;
 import com.vaadin.data.util.BeanItemContainer;
@@ -47,7 +48,7 @@ import com.vaadin.ui.VerticalLayout;
  *            the type of the value (can be a single object or a collection)
  */
 public class FancyListSelect<ID extends Serializable, T extends AbstractEntity<ID>> extends
-        QuickAddEntityField<ID, T, Object> {
+        QuickAddEntityField<ID, T, Object> implements Refreshable {
 
 	private static final long serialVersionUID = 8129335343598146079L;
 
@@ -143,16 +144,16 @@ public class FancyListSelect<ID extends Serializable, T extends AbstractEntity<I
 		setValue(new HashSet<>(values));
 	}
 
+	public Button getClearButton() {
+		return clearButton;
+	}
+
 	public EntityComboBox<ID, T> getComboBox() {
 		return comboBox;
 	}
 
 	public ListSelect getListSelect() {
 		return listSelect;
-	}
-
-	public Button getClearButton() {
-		return clearButton;
 	}
 
 	public Button getRemoveButton() {
@@ -258,6 +259,13 @@ public class FancyListSelect<ID extends Serializable, T extends AbstractEntity<I
 		layout.addComponent(listSelect);
 
 		return layout;
+	}
+
+	@Override
+	public void refresh() {
+		if (comboBox != null) {
+			comboBox.refresh();
+		}
 	}
 
 	/**

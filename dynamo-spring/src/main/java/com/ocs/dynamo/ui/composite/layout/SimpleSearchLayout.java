@@ -31,13 +31,14 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.Field;
 
 /**
- * A simple page that contains a search form and a table with search results
+ * A composite component that contains a search form and a results table, along with the option to
+ * navigate to a detail screen for adding/editing
  * 
  * @author bas.rutten
  * @param <ID>
- *            type of the primary key
+ *            type of the primary key of the entity to search for
  * @param <T>
- *            type of the entity
+ *            type of the entity to search for
  */
 public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntity<ID>> extends
         AbstractSearchLayout<ID, T> {
@@ -97,10 +98,11 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 	}
 
 	/**
-	 * Lazily constructs the search form
+	 * Constructs the search form
 	 * 
-	 * @return
+	 * @return the search form
 	 */
+	@Override
 	protected ModelBasedSearchForm<ID, T> constructSearchForm() {
 		// by default, do not pass a searchable object, in order to prevent an unnecessary and
 		// potentially unfiltered search

@@ -134,7 +134,7 @@ public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractE
         }
         searchLayout.setMultiSelect(multiSelect);
 
-        // add double click listener
+        // add double click listener for quickly selecting item and closing the dialog
         searchLayout.getTableWrapper().getTable().addItemClickListener(new ItemClickListener() {
 
             private static final long serialVersionUID = -6261614659335513455L;
@@ -177,6 +177,10 @@ public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractE
         return searchLayout;
     }
 
+    /**
+     * Select one or more items in the table
+     * @param selectedItems
+     */
     @SuppressWarnings("unchecked")
     public void select(Object selectedItems) {
         if (selectedItems instanceof Collection) {

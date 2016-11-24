@@ -450,11 +450,6 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 						});
 
 						postProcessTableField(propertyId, field);
-
-						// focus if necessary
-						if (attributeModel.isDetailFocus()) {
-							field.focus();
-						}
 					}
 				}
 				return field;

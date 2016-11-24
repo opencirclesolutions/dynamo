@@ -113,6 +113,11 @@ public class FlexibleSearchLayout<ID extends Serializable, T extends AbstractEnt
 		};
 		result.setFieldEntityModels(getFieldEntityModels());
 		result.build();
+
+		for (AttributeModel am : getEntityModel().getRequiredForSearchingAttributeModels()) {
+			result.addFilter(am, result.getDefaultFilterType(am), null, null);
+		}
+
 		return result;
 	}
 
@@ -129,6 +134,7 @@ public class FlexibleSearchLayout<ID extends Serializable, T extends AbstractEnt
 	 * @param value
 	 *            the desired value
 	 */
+	@Override
 	public void setSearchValue(String propertyId, Object value) {
 		getSearchForm().addFilter(getEntityModel().getAttributeModel(propertyId), FlexibleFilterType.EQUALS, value,
 		        null);
@@ -144,6 +150,7 @@ public class FlexibleSearchLayout<ID extends Serializable, T extends AbstractEnt
 	 * @param auxValue
 	 *            the value of the upper bound
 	 */
+	@Override
 	public void setSearchValue(String propertyId, Object value, Object auxValue) {
 		getSearchForm().addFilter(getEntityModel().getAttributeModel(propertyId), FlexibleFilterType.BETWEEN, value,
 		        auxValue);

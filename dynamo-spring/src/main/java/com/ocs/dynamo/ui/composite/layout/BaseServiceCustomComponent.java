@@ -66,7 +66,7 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 							try {
 								doDelete();
 							} catch (OCSValidationException ex) {
-								Notification.show(ex.getErrors().get(0), Notification.Type.ERROR_MESSAGE);
+								showNotifification(ex.getErrors().get(0), Notification.Type.ERROR_MESSAGE);
 							}
 						}
 

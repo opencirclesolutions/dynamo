@@ -107,19 +107,30 @@ public @interface Attribute {
 	/** replacement search path */
 	String replacementSearchPath() default "";
 
-	/** */
+	/**
+	 * 
+	 * @return whether the attribute is required
+	 */
 	boolean required() default false;
 
-	/** whether the field is searchable */
+	/**
+	 * @return whether the attribute is required when performing a search
+	 */
+	boolean requiredForSearching() default false;
+
+	/** @return whether the field is searchable */
 	boolean searchable() default false;
 
-	/** case sensitive search */
+	/** @return whether searching is case-sensitive */
 	boolean searchCaseSensitive() default false;
 
-	/** whether to search by single value (for integer or date fields) */
+	/**
+	 * @return whether to search for an exact match rather than an interval (for integer or date
+	 *         fields)
+	 */
 	boolean searchForExactValue() default false;
 
-	/** search prefix only */
+	/** @return whether to match on prefix only */
 	boolean searchPrefixOnly() default false;
 
 	/** determines which selection component to use in search mode */

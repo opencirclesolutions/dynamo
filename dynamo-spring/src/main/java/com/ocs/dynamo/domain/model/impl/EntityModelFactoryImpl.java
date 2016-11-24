@@ -755,6 +755,10 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 				model.setSearchable(true);
 			}
 
+			if (attribute.requiredForSearching() && !nested) {
+				model.setRequiredForSearching(true);
+			}
+
 			if (!attribute.sortable()) {
 				model.setSortable(false);
 			}
@@ -790,10 +794,6 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 
 			if (!StringUtils.isEmpty(attribute.falseRepresentation())) {
 				model.setFalseRepresentation(attribute.falseRepresentation());
-			}
-
-			if (attribute.detailFocus()) {
-				model.setDetailFocus(true);
 			}
 
 			if (attribute.percentage()) {
@@ -950,6 +950,11 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 			model.setSearchable(Boolean.valueOf(msg));
 		}
 
+		msg = getAttributeMessage(entityModel, model, EntityModel.REQUIRED_FOR_SEARCHING);
+		if (!StringUtils.isEmpty(msg)) {
+			model.setRequiredForSearching(Boolean.valueOf(msg));
+		}
+
 		msg = getAttributeMessage(entityModel, model, EntityModel.SORTABLE);
 		if (!StringUtils.isEmpty(msg)) {
 			model.setSortable(Boolean.valueOf(msg));
@@ -995,11 +1000,6 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 		msg = getAttributeMessage(entityModel, model, EntityModel.FALSE_REPRESENTATION);
 		if (!StringUtils.isEmpty(msg)) {
 			model.setFalseRepresentation(msg);
-		}
-
-		msg = getAttributeMessage(entityModel, model, EntityModel.DETAIL_FOCUS);
-		if (!StringUtils.isEmpty(msg)) {
-			model.setDetailFocus(Boolean.valueOf(msg));
 		}
 
 		msg = getAttributeMessage(entityModel, model, EntityModel.PERCENTAGE);

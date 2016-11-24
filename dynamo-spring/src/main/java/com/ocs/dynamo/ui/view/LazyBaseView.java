@@ -27,6 +27,9 @@ public abstract class LazyBaseView extends BaseView {
 
 	private Layout lazy = null;
 
+	/**
+	 * Method that is called when the view is entered - lazily constructs the layout
+	 */
 	@Override
 	public final void enter(ViewChangeEvent event) {
 		if (lazy == null) {

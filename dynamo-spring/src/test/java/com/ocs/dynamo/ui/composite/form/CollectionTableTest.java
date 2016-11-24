@@ -22,6 +22,7 @@ import com.google.common.collect.Sets;
 import com.ocs.dynamo.test.BaseIntegrationTest;
 
 public class CollectionTableTest extends BaseIntegrationTest {
+	
 	@Test
 	public void testViewMode() {
 		FormOptions fo = new FormOptions();

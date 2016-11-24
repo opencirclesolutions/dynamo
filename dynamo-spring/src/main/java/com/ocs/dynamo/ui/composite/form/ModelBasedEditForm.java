@@ -234,7 +234,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 						replaceLabel(fileNameFieldName);
 					}
 				} else {
-					Notification.show(message("ocs.modelbasededitform.upload.format.invalid"),
+					showNotifification(message("ocs.modelbasededitform.upload.format.invalid"),
 					        Notification.Type.ERROR_MESSAGE);
 				}
 			}
@@ -768,7 +768,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 					entity = service.save(entity);
 					setEntity(service.fetchById(entity.getId(), getDetailJoins()));
-					Notification.show(message("ocs.changes.saved"), Notification.Type.TRAY_NOTIFICATION);
+					showNotifification(message("ocs.changes.saved"), Notification.Type.TRAY_NOTIFICATION);
 
 					// set to viewmode, load the view mode screen, and fill the
 					// details

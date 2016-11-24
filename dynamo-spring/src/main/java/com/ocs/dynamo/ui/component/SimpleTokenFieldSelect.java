@@ -13,6 +13,7 @@
  */
 package com.ocs.dynamo.ui.component;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -20,10 +21,17 @@ import java.util.List;
 import com.explicatis.ext_token_field.ExtTokenField;
 import com.explicatis.ext_token_field.SimpleTokenizable;
 import com.explicatis.ext_token_field.Tokenizable;
+import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
+import com.ocs.dynamo.domain.model.EntityModel;
+import com.ocs.dynamo.filter.FilterConverter;
+import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.MessageService;
+import com.ocs.dynamo.ui.Refreshable;
 import com.ocs.dynamo.ui.ServiceLocator;
+import com.ocs.dynamo.utils.SortUtil;
 import com.vaadin.data.Container;
+import com.vaadin.data.Container.Filter;
 import com.vaadin.data.sort.SortOrder;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.util.IndexedContainer;
@@ -34,7 +42,8 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
 
-public class SimpleTokenFieldSelect<T extends Comparable<T>> extends CustomField<Collection<T>> {
+public class SimpleTokenFieldSelect<ID extends Serializable, S extends AbstractEntity<ID>, T extends Comparable<T>>
+        extends CustomField<Collection<T>> implements Refreshable {
 
 	private class SimpleItemSorter implements ItemSorter {
 
@@ -92,25 +101,48 @@ public class SimpleTokenFieldSelect<T extends Comparable<T>> extends CustomField
 
 	private GenericTokenFieldUtil.TokenizableFactory<T> tokenizableFactory;
 
+	private BaseService<ID, S> service;
+
+	private EntityModel<S> entityModel;
+
+	private Filter fieldFilter;
+
+	private String distinctField;
+
+	private SortOrder[] sortOrders;
+
+	private Class<T> elementType;
+
 	/**
 	 * Constructor
 	 *
 	 * @param attributeModel
+	 *            the attribute model
 	 * @param items
+	 *            the list of items to display
 	 * @param elementType
+	 *            the type of the items to display
 	 * @param sortOrders
+	 *            sort orders to apply
 	 */
-	public SimpleTokenFieldSelect(AttributeModel attributeModel, List<T> items, Class<T> elementType,
+	public SimpleTokenFieldSelect(BaseService<ID, S> service, EntityModel<S> entityModel,
+	        AttributeModel attributeModel, Filter fieldFilter, String distinctField, Class<T> elementType,
 	        SortOrder... sortOrders) {
 		messageService = ServiceLocator.getMessageService();
+		this.service = service;
+		this.entityModel = entityModel;
+		this.fieldFilter = fieldFilter;
+		this.distinctField = distinctField;
+		this.sortOrders = sortOrders;
+		this.elementType = elementType;
 
 		setCaption(attributeModel.getDisplayName());
 
 		extTokenField = new ExtTokenField();
 
 		comboBox = new ComboBox();
-		comboBox.addItems(items);
 		comboBox.setFilteringMode(FilteringMode.CONTAINS);
+		fillComboBox();
 
 		sortProperties = new ArrayList<>();
 		sortOrdering = new ArrayList<>();
@@ -204,6 +236,20 @@ public class SimpleTokenFieldSelect<T extends Comparable<T>> extends CustomField
 	public void setValue(Collection<T> values) {
 		super.setValue(values);
 		setInternalValue(values);
+	}
+
+	@Override
+	public void refresh() {
+		if (comboBox != null) {
+			fillComboBox();
+		}
+	}
+
+	private void fillComboBox() {
+		List<T> items = (List<T>) service.findDistinct(new FilterConverter(entityModel).convert(fieldFilter),
+		        distinctField, elementType, SortUtil.translate(sortOrders));
+		comboBox.removeAllItems();
+		comboBox.addItems(items);
 	}
 
 }

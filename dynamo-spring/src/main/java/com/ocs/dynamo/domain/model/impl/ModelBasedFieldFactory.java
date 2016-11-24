@@ -243,11 +243,8 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 			field = this.createField(attributeModel.getPath(), fieldEntityModel);
 		}
 
-		// mark the field as required (this is skipped for search fields since
-		// making search fields required makes no sense)
-		if (!search) {
-			field.setRequired(attributeModel.isRequired());
-		}
+		// Is it a required field?
+		field.setRequired(search ? attributeModel.isRequiredForSearching() : attributeModel.isRequired());
 
 		//
 		if (field instanceof AbstractComponent) {
@@ -386,7 +383,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	private <ID extends Serializable, S extends AbstractEntity<ID>, O extends Comparable<O>> SimpleTokenFieldSelect<O> constructSimpleTokenField(
+	private <ID extends Serializable, S extends AbstractEntity<ID>, O extends Comparable<O>> SimpleTokenFieldSelect<ID, S, O> constructSimpleTokenField(
 	        EntityModel<?> entityModel, AttributeModel attributeModel, String distinctField, Filter fieldFilter) {
 		BaseService<ID, S> service = (BaseService<ID, S>) ServiceLocator.getServiceForEntity(entityModel
 		        .getEntityClass());
@@ -398,10 +395,8 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 			sos = new SortOrder[] { new SortOrder(distinctField, SortDirection.ASCENDING) };
 		}
 
-		// perform the query to look for the distinct values
-		List<O> items = (List<O>) service.findDistinct(new FilterConverter(entityModel).convert(fieldFilter),
-		        distinctField, SortUtil.translate(sos));
-		return new SimpleTokenFieldSelect<>(attributeModel, items, (Class<O>) attributeModel.getType(), sos);
+		return new SimpleTokenFieldSelect<>(service, (EntityModel<S>) entityModel, attributeModel, fieldFilter,
+		        distinctField, (Class<O>) attributeModel.getType(), sos);
 	}
 
 	/**

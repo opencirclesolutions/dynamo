@@ -203,14 +203,6 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	/**
 	 * 
 	 * 
-	 * @return Whether this attribute must get focus when creating a new row inside a
-	 *         DetailsEditTable
-	 */
-	boolean isDetailFocus();
-
-	/**
-	 * 
-	 * 
 	 * @return Whether the attribute is an email address
 	 */
 	boolean isEmail();
@@ -266,6 +258,13 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	 * @return
 	 */
 	boolean isRequired();
+
+	/**
+	 * Indicates whether the field is required when searching
+	 * 
+	 * @return
+	 */
+	boolean isRequiredForSearching();
 
 	/**
 	 * Indicates whether it is possible to search on this attribute

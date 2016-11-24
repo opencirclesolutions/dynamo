@@ -26,6 +26,7 @@ import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
+import com.ocs.dynamo.ui.Refreshable;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.composite.form.AbstractModelBasedSearchForm;
 import com.ocs.dynamo.ui.composite.form.FormOptions;
@@ -59,7 +60,7 @@ import com.vaadin.ui.VerticalLayout;
  *            the type of the entity to search for
  */
 public abstract class AbstractSearchLayout<ID extends Serializable, T extends AbstractEntity<ID>> extends
-        BaseCollectionLayout<ID, T> {
+        BaseCollectionLayout<ID, T> implements Refreshable {
 
 	private static final long serialVersionUID = 366639924823921266L;
 
@@ -611,10 +612,11 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	/**
 	 * Refreshes all lookup components
 	 */
+	@Override
 	public void refresh() {
 		getSearchForm().refresh();
 	}
-	
+
 	/**
 	 * Reloads the details view only
 	 */

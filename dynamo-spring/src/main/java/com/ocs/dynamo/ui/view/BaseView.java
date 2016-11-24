@@ -36,6 +36,8 @@ public abstract class BaseView extends CustomComponent implements View {
 
 	private static final long serialVersionUID = 8340448520371840427L;
 
+	private UI ui = UI.getCurrent();
+
 	@Autowired
 	private EntityModelFactory modelFactory;
 
@@ -50,8 +52,8 @@ public abstract class BaseView extends CustomComponent implements View {
 	 * Returns the current screen mode
 	 */
 	protected String getScreenMode() {
-		if (UI.getCurrent() instanceof BaseUI) {
-			BaseUI b = (BaseUI) UI.getCurrent();
+		if (ui instanceof BaseUI) {
+			BaseUI b = (BaseUI) ui;
 			return b.getScreenMode();
 		}
 		return null;
@@ -64,7 +66,7 @@ public abstract class BaseView extends CustomComponent implements View {
 	 *            the ID of the desired view
 	 */
 	protected void navigate(String viewId) {
-		UI.getCurrent().getNavigator().navigateTo(viewId);
+		ui.getNavigator().navigateTo(viewId);
 	}
 
 	/**
@@ -89,10 +91,6 @@ public abstract class BaseView extends CustomComponent implements View {
 	 */
 	protected String message(String key, Object... args) {
 		return messageService.getMessage(key, args);
-	}
-
-	public void setModelFactory(EntityModelFactory modelFactory) {
-		this.modelFactory = modelFactory;
 	}
 
 	/**

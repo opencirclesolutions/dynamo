@@ -44,6 +44,7 @@ import com.vaadin.data.Property;
 import com.vaadin.data.util.NestedMethodProperty;
 import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.data.util.converter.StringToBooleanConverter;
+import com.vaadin.server.Page;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomComponent;
@@ -185,19 +186,19 @@ public abstract class BaseCustomComponent extends CustomComponent implements Bui
 		if (ex instanceof OCSValidationException) {
 			// validation exception
 			LOG.error(ex.getMessage(), ex);
-			Notification.show(((OCSValidationException) ex).getErrors().get(0), Notification.Type.ERROR_MESSAGE);
+			showNotifification(((OCSValidationException) ex).getErrors().get(0), Notification.Type.ERROR_MESSAGE);
 		} else if (ex instanceof OCSRuntimeException) {
 			// any other OCS runtime exception
 			LOG.error(ex.getMessage(), ex);
-			Notification.show(ex.getMessage(), Notification.Type.ERROR_MESSAGE);
+			showNotifification(ex.getMessage(), Notification.Type.ERROR_MESSAGE);
 		} else if (ex instanceof OptimisticLockException) {
 			// optimistic lock
 			LOG.error(ex.getMessage(), ex);
-			Notification.show(message("ocs.optimistic.lock"), Notification.Type.ERROR_MESSAGE);
+			showNotifification(message("ocs.optimistic.lock"), Notification.Type.ERROR_MESSAGE);
 		} else {
 			// any other save exception
 			LOG.error(ex.getMessage(), ex);
-			Notification.show(message("ocs.error.occurred"), Notification.Type.ERROR_MESSAGE);
+			showNotifification(message("ocs.error.occurred"), Notification.Type.ERROR_MESSAGE);
 		}
 	}
 
@@ -223,5 +224,20 @@ public abstract class BaseCustomComponent extends CustomComponent implements Bui
 	 */
 	protected String message(String key, Object... args) {
 		return getMessageService().getMessage(key, args);
+	}
+
+	/**
+	 * Shows a notification message - this method will check for the availability of a Vaadin Page
+	 * object and if this is not present, write the notification to the log instead
+	 * 
+	 * @param message
+	 * @param type
+	 */
+	protected void showNotifification(String message, Notification.Type type) {
+		if (Page.getCurrent() != null) {
+			Notification.show(message("ocs.modelbasededitform.upload.format.invalid"), Notification.Type.ERROR_MESSAGE);
+		} else {
+			LOG.info(message);
+		}
 	}
 }

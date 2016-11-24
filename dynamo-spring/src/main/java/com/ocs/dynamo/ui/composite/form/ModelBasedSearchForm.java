@@ -367,6 +367,7 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 	/**
 	 * Refreshes any fields that are susceptible to this
 	 */
+	@Override
 	public void refresh() {
 		for (FilterGroup group : getGroups().values()) {
 			if (group.getField() instanceof Refreshable) {

@@ -250,7 +250,7 @@ public interface BaseService<ID, T extends AbstractEntity<ID>> {
 	 *            the sort info
 	 * @return
 	 */
-	List<? extends Object> findDistinct(Filter filter, String distinctField, SortOrder... orders);
+	<S> List<S> findDistinct(Filter filter, String distinctField, Class<S> resultType, SortOrder... orders);
 
 	/**
 	 * Returns the IDS of the entities that match the provided filter

@@ -24,6 +24,7 @@ import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.impl.ModelBasedFieldFactory;
 import com.ocs.dynamo.filter.listener.FilterChangeEvent;
 import com.ocs.dynamo.filter.listener.FilterListener;
+import com.ocs.dynamo.ui.Refreshable;
 import com.ocs.dynamo.ui.Searchable;
 import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
@@ -52,7 +53,7 @@ import com.vaadin.ui.VerticalLayout;
  *            the type of the entity
  */
 public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T extends AbstractEntity<ID>> extends
-        AbstractModelBasedForm<ID, T> implements FilterListener, Button.ClickListener {
+        AbstractModelBasedForm<ID, T> implements FilterListener, Button.ClickListener, Refreshable {
 
 	private static final long serialVersionUID = 2146875385041665280L;
 
@@ -330,6 +331,35 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	}
 
 	/**
+	 * Searching is allowed when there are no required attributes or all required attributes are in
+	 * the composite filter.
+	 * 
+	 * @return
+	 */
+	private boolean isSearchAllowed() {
+
+		// Get the required attributes.
+		List<AttributeModel> requiredAttributes = getEntityModel().getRequiredForSearchingAttributeModels();
+		if (requiredAttributes.isEmpty()) {
+			return true;
+		}
+
+		if (currentFilters.isEmpty()) {
+			return false;
+		}
+
+		int found = 0;
+		for (AttributeModel model : requiredAttributes) {
+			for (Filter filter : currentFilters) {
+				if (filter.appliesToProperty(model.getPath())) {
+					found++;
+				}
+			}
+		}
+		return found == requiredAttributes.size();
+	}
+
+	/**
 	 * Responds to a filter change
 	 */
 	@Override
@@ -338,6 +368,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 		if (event.getNewFilter() != null) {
 			currentFilters.add(event.getNewFilter());
 		}
+		searchButton.setEnabled(isSearchAllowed());
 	}
 
 	/**
@@ -374,14 +405,17 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	 * Refreshes any filter groups that support being refreshed (updating any lookup lists in the
 	 * process)
 	 */
+	@Override
 	public void refresh() {
 		// override in subclass
 	}
 
-	/**
-	 * Trigger the actual search
-	 */
 	public boolean search() {
+
+		if (!isSearchAllowed()) {
+			return false;
+		}
+
 		if (searchable != null) {
 			searchable.search(extractFilter());
 			return true;

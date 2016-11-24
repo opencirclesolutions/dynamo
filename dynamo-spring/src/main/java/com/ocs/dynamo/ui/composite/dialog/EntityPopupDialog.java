@@ -14,6 +14,7 @@
 package com.ocs.dynamo.ui.composite.dialog;
 
 import java.io.Serializable;
+import java.util.List;
 
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
@@ -38,27 +39,48 @@ import com.vaadin.ui.Layout;
  * @param <T>
  *            the type of the entity
  */
-public abstract class EntityPopupDialog<ID extends Serializable, T extends AbstractEntity<ID>> extends BaseModalDialog {
+public class EntityPopupDialog<ID extends Serializable, T extends AbstractEntity<ID>> extends BaseModalDialog {
 
 	private static final long serialVersionUID = -2012972894321597214L;
 
 	private MessageService messageService = ServiceLocator.getMessageService();
 
+	/**
+	 * The entity model
+	 */
 	private EntityModel<T> entityModel;
 
+	/**
+	 * The layout used to create/modify the entity
+	 */
 	private SimpleEditLayout<ID, T> layout;
 
+	/**
+	 * The service used to query the database
+	 */
 	private BaseService<ID, T> service;
 
+	/**
+	 * The form options
+	 */
 	private FormOptions formOptions;
 
+	/**
+	 * The entity to add/modify
+	 */
 	private T entity;
 
 	/**
-	 * Constructor
+	 * The OK button used to close the dialog in readonly mode
+	 */
+	private Button okButton;
+
+	/**
 	 * 
 	 * @param service
+	 * @param entity
 	 * @param entityModel
+	 * @param formOptions
 	 */
 	public EntityPopupDialog(BaseService<ID, T> service, T entity, EntityModel<T> entityModel, FormOptions formOptions) {
 		this.service = service;
@@ -77,7 +99,9 @@ public abstract class EntityPopupDialog<ID extends Serializable, T extends Abstr
 	 * @param entity
 	 *            the entity that was being edited
 	 */
-	public abstract void afterEditDone(boolean cancel, boolean newEntity, T entity);
+	public void afterEditDone(boolean cancel, boolean newEntity, T entity) {
+		// override in subclasses
+	}
 
 	/**
 	 * Creates a new entity
@@ -91,6 +115,7 @@ public abstract class EntityPopupDialog<ID extends Serializable, T extends Abstr
 	@Override
 	protected void doBuild(Layout parent) {
 
+		// cancel button makes no sense in a popup
 		formOptions.setHideCancelButton(false);
 
 		layout = new SimpleEditLayout<ID, T>(entity, service, entityModel, formOptions) {
@@ -110,6 +135,11 @@ public abstract class EntityPopupDialog<ID extends Serializable, T extends Abstr
 			}
 
 			@Override
+			protected void postProcessButtonBar(HorizontalLayout buttonBar, boolean viewMode) {
+				EntityPopupDialog.this.postProcessButtonBar(buttonBar, viewMode);
+			}
+
+			@Override
 			protected void postProcessEditFields(ModelBasedEditForm<ID, T> editForm) {
 				EntityPopupDialog.this.postProcessEditFields(editForm);
 			}
@@ -123,7 +153,7 @@ public abstract class EntityPopupDialog<ID extends Serializable, T extends Abstr
 		// in read-only mode, display only an "OK" button that closes the dialog
 		buttonBar.setVisible(formOptions.isReadOnly());
 		if (formOptions.isReadOnly()) {
-			Button okButton = new Button(messageService.getMessage("ocs.ok"));
+			okButton = new Button(messageService.getMessage("ocs.ok"));
 			okButton.addClickListener(new Button.ClickListener() {
 
 				private static final long serialVersionUID = 1889018073135108348L;
@@ -142,13 +172,29 @@ public abstract class EntityPopupDialog<ID extends Serializable, T extends Abstr
 		return layout.getEntity();
 	}
 
+	public List<Button> getSaveButtons() {
+		return layout.getEditForm().getSaveButtons();
+	}
+
 	@Override
 	protected String getTitle() {
 		return entityModel.getDisplayName();
 	}
 
+	protected void postProcessButtonBar(HorizontalLayout buttonBar, boolean viewMode) {
+		// overwrite in subclasses when needed
+	}
+
 	protected void postProcessEditFields(ModelBasedEditForm<ID, T> editForm) {
 		// overwrite in subclasses when needed
+	}
+
+	public SimpleEditLayout<ID, T> getLayout() {
+		return layout;
+	}
+
+	public Button getOkButton() {
+		return okButton;
 	}
 
 }
