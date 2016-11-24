@@ -274,4 +274,12 @@ public abstract class BaseServiceImpl<ID, T extends AbstractEntity<ID>> implemen
 			throw new OCSNonUniqueException(messageService.getMessage(getEntityClass().getSimpleName() + ".not.unique"));
 		}
 	}
+
+	@Override
+	@Transactional
+	public void update(List<T> toUpdate, List<T> toAdd, List<T> toDelete) {
+		save(toUpdate);
+		save(toAdd);
+		delete(toDelete);
+	}
 }

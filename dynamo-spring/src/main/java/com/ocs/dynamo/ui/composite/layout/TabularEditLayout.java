@@ -40,6 +40,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.Table.ColumnGenerator;
 import com.vaadin.ui.VerticalLayout;
 
 /**
@@ -59,23 +60,44 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 
 	private static final int PAGE_LENGTH = 15;
 
-	// the add button
+	/**
+	 * The add button
+	 */
 	private Button addButton;
 
+	/**
+	 * The cancel button
+	 */
 	private Button cancelButton;
 
+	/**
+	 * The edit button
+	 */
 	private Button editButton;
 
+	/**
+	 * The filter that is applied to limit the search results
+	 */
 	private Filter filter;
 
+	/**
+	 * The main layout
+	 */
 	private VerticalLayout mainLayout;
 
+	/**
+	 * The page length (number of visible rows)
+	 */
 	private int pageLength = PAGE_LENGTH;
 
-	private Button removeButton;
-
+	/**
+	 * The save button
+	 */
 	private Button saveButton;
 
+	/**
+	 * Whether the screen is in view mode
+	 */
 	private boolean viewmode;
 
 	/**
@@ -134,7 +156,34 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 			setViewmode(!isEditAllowed() || getFormOptions().isOpenInViewMode());
 			mainLayout = new DefaultVerticalLayout(true, true);
 
-			initTable();
+			constructTable();
+
+			// inline remove button (one per row)
+			if (getFormOptions().isShowRemoveButton()) {
+
+				final String removeMsg = getMessageService().getMessage("ocs.remove");
+				getTableWrapper().getTable().addGeneratedColumn(removeMsg, new ColumnGenerator() {
+
+					@Override
+					public Object generateCell(final Table source, final Object itemId, Object columnId) {
+
+						// in view mode return nothing
+						if (isViewmode()) {
+							return null;
+						}
+
+						RemoveButton rb = new RemoveButton() {
+
+							@Override
+							protected void doDelete() {
+								source.removeItem(itemId);
+								getContainer().commit();
+							}
+						};
+						return rb;
+					}
+				});
+			}
 
 			mainLayout.addComponent(getButtonBar());
 
@@ -154,24 +203,6 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 			});
 			getButtonBar().addComponent(addButton);
 			addButton.setVisible(!getFormOptions().isHideAddButton() && isEditAllowed() && !isViewmode());
-
-			// remove button
-			removeButton = new RemoveButton() {
-
-				@Override
-				protected void doDelete() {
-					if (getSelectedItem() != null) {
-						doRemove();
-
-						getContainer().commit();
-						setSelectedItem(null);
-						afterRemove();
-					}
-				}
-			};
-			getButtonBar().addComponent(removeButton);
-			removeButton.setVisible(!isViewmode() && getFormOptions().isShowRemoveButton());
-			registerButton(removeButton);
 
 			// save button
 			saveButton = new Button(message("ocs.save"));
@@ -234,7 +265,7 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 	 * 
 	 * @param entity
 	 *            the newly created entity that has to be initialized
-	 * @return
+	 * @return the modified entity
 	 */
 	protected T constructEntity(T entity) {
 		return entity;
@@ -256,23 +287,57 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 		        getJoins()) {
 
 			@Override
-			protected void onSelect(Object selected) {
-				setSelectedItems(selected);
-				checkButtonState(getSelectedItem());
+			protected void doConstructContainer(Container container) {
+				TabularEditLayout.this.doConstructContainer(container);
 			}
 
 			@Override
-			protected void doConstructContainer(Container container) {
-				TabularEditLayout.this.doConstructContainer(container);
+			protected void onSelect(Object selected) {
+				setSelectedItems(selected);
+				checkButtonState(getSelectedItem());
 			}
 		};
 		tableWrapper.build();
 		return tableWrapper;
 	}
 
+	/**
+	 * This method does not work for this component since the creation of a new instance is
+	 * delegated to the container - use constructEntity instead
+	 */
+	@Override
+	protected T createEntity() {
+		throw new UnsupportedOperationException(
+		        "This method is not supported for this component - use constructEntity instead");
+	}
+
+	@Override
+	protected void detailsMode(T entity) {
+		// not needed
+	}
+
+	/**
+	 * Method that is called to remove an item
+	 */
+	protected void doRemove() {
+		getTableWrapper().getTable().removeItem(getSelectedItem().getId());
+	}
+
+	public Button getAddButton() {
+		return addButton;
+	}
+
+	public Button getCancelButton() {
+		return cancelButton;
+	}
+
 	@SuppressWarnings("unchecked")
 	protected ServiceContainer<ID, T> getContainer() {
 		return (ServiceContainer<ID, T>) getTableWrapper().getContainer();
+	}
+
+	public Button getEditButton() {
+		return editButton;
 	}
 
 	/**
@@ -294,7 +359,7 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 	/**
 	 * Initializes the table
 	 */
-	protected void initTable() {
+	protected void constructTable() {
 
 		final Table table = getTableWrapper().getTable();
 
@@ -415,7 +480,6 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 		getTableWrapper().getTable().setEditable(!isViewmode() && isEditAllowed());
 		saveButton.setVisible(!isViewmode());
 		addButton.setVisible(!isViewmode() && !getFormOptions().isHideAddButton() && isEditAllowed());
-		removeButton.setVisible(!isViewmode() && getFormOptions().isShowRemoveButton() && isEditAllowed());
 		editButton.setVisible(isViewmode() && getFormOptions().isShowEditButton() && isEditAllowed());
 		cancelButton.setVisible(!isViewmode());
 
@@ -426,33 +490,4 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 			((ModelBasedTable<ID, T>) getTableWrapper().getTable()).addGeneratedColumns();
 		}
 	}
-
-	@Override
-	protected void detailsMode(T entity) {
-		// not needed
-	}
-
-	/**
-	 * Method that is called to remove an item
-	 */
-	protected void doRemove() {
-		getTableWrapper().getTable().removeItem(getSelectedItem().getId());
-	}
-
-	public Button getAddButton() {
-		return addButton;
-	}
-
-	public Button getCancelButton() {
-		return cancelButton;
-	}
-
-	public Button getEditButton() {
-		return editButton;
-	}
-
-	public Button getRemoveButton() {
-		return removeButton;
-	}
-
 }

@@ -61,7 +61,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	 * Any filters that will always be applied to any search query (use these to restrict the result
 	 * set beforehand)
 	 */
-	private List<Filter> additionalFilters = new ArrayList<>();
+	private List<Filter> defaultFilters = new ArrayList<>();
 
 	/**
 	 * Button to clear the search form
@@ -118,15 +118,15 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	 * @param searchable
 	 * @param entityModel
 	 * @param formOptions
-	 * @param additionalFilters
+	 * @param defaultFilters
 	 * @param fieldFilters
 	 */
 	public AbstractModelBasedSearchForm(Searchable searchable, EntityModel<T> entityModel, FormOptions formOptions,
-	        List<Filter> additionalFilters, Map<String, Filter> fieldFilters) {
+	        List<Filter> defaultFilters, Map<String, Filter> fieldFilters) {
 		super(formOptions, fieldFilters, entityModel);
 		this.fieldFactory = ModelBasedFieldFactory.getSearchInstance(entityModel, getMessageService());
-		this.additionalFilters = additionalFilters == null ? new ArrayList<Filter>() : additionalFilters;
-		this.currentFilters.addAll(this.additionalFilters);
+		this.defaultFilters = defaultFilters == null ? new ArrayList<Filter>() : defaultFilters;
+		this.currentFilters.addAll(this.defaultFilters);
 		this.searchable = searchable;
 	}
 
@@ -224,13 +224,14 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	 */
 	protected void clear() {
 		currentFilters.clear();
-		currentFilters.addAll(getAdditionalFilters());
+		currentFilters.addAll(getDefaultFilters());
 	}
 
 	/**
 	 * Creates buttons and adds them to the button bar
 	 * 
-	 * @param buttonBar
+	 * @param buttonBart
+	 *            the button bar
 	 */
 	protected abstract void constructButtonBar(Layout buttonBar);
 
@@ -298,8 +299,8 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 		return null;
 	}
 
-	public List<Filter> getAdditionalFilters() {
-		return additionalFilters;
+	public List<Filter> getDefaultFilters() {
+		return defaultFilters;
 	}
 
 	public HorizontalLayout getButtonBar() {

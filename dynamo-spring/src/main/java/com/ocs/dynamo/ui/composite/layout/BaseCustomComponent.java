@@ -235,7 +235,7 @@ public abstract class BaseCustomComponent extends CustomComponent implements Bui
 	 */
 	protected void showNotifification(String message, Notification.Type type) {
 		if (Page.getCurrent() != null) {
-			Notification.show(message("ocs.modelbasededitform.upload.format.invalid"), Notification.Type.ERROR_MESSAGE);
+			Notification.show(message, Notification.Type.ERROR_MESSAGE);
 		} else {
 			LOG.info(message);
 		}

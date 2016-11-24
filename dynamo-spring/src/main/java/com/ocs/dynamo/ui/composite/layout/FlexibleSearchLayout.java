@@ -59,7 +59,7 @@ public class FlexibleSearchLayout<ID extends Serializable, T extends AbstractEnt
 	 *            the form options
 	 * @param fieldFilters
 	 *            field filters for filtering lookup components
-	 * @param additionalFilters
+	 * @param defaultFilters
 	 *            additional/default filters
 	 * @param sortOrder
 	 *            sort order
@@ -67,9 +67,9 @@ public class FlexibleSearchLayout<ID extends Serializable, T extends AbstractEnt
 	 *            relations to fetch
 	 */
 	public FlexibleSearchLayout(BaseService<ID, T> service, EntityModel<T> entityModel, QueryType queryType,
-	        FormOptions formOptions, Map<String, Filter> fieldFilters, List<Filter> additionalFilters,
+	        FormOptions formOptions, Map<String, Filter> fieldFilters, List<Filter> defaultFilters,
 	        SortOrder sortOrder, FetchJoinInformation[] joins) {
-		super(service, entityModel, queryType, formOptions, fieldFilters, additionalFilters, sortOrder, joins);
+		super(service, entityModel, queryType, formOptions, fieldFilters, defaultFilters, sortOrder, joins);
 	}
 
 	/**
@@ -96,7 +96,7 @@ public class FlexibleSearchLayout<ID extends Serializable, T extends AbstractEnt
 	@Override
 	protected AbstractModelBasedSearchForm<ID, T> constructSearchForm() {
 		ModelBasedFlexibleSearchForm<ID, T> result = new ModelBasedFlexibleSearchForm<ID, T>(null, getEntityModel(),
-		        getFormOptions(), this.getAdditionalFilters(), this.getFieldFilters()) {
+		        getFormOptions(), this.getDefaultFilters(), this.getFieldFilters()) {
 
 			private static final long serialVersionUID = 8929442625027442714L;
 

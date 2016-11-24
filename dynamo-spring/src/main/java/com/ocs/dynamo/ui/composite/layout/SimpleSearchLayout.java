@@ -63,7 +63,7 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 	 *            form options that governs which buttons and options to show
 	 * @param fieldFilters
 	 *            filters that are applied to individual search fields
-	 * @param additionalFilters
+	 * @param defaultFilters
 	 *            search filters that are added to every query
 	 * @param sortOrder
 	 *            the default sort order
@@ -71,9 +71,9 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 	 *            the joins to include in the query
 	 */
 	public SimpleSearchLayout(BaseService<ID, T> service, EntityModel<T> entityModel, QueryType queryType,
-	        FormOptions formOptions, Map<String, Filter> fieldFilters, List<Filter> additionalFilters,
+	        FormOptions formOptions, Map<String, Filter> fieldFilters, List<Filter> defaultFilters,
 	        SortOrder sortOrder, FetchJoinInformation... joins) {
-		super(service, entityModel, queryType, formOptions, fieldFilters, additionalFilters, sortOrder, joins);
+		super(service, entityModel, queryType, formOptions, fieldFilters, defaultFilters, sortOrder, joins);
 	}
 
 	/**
@@ -107,7 +107,7 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 		// by default, do not pass a searchable object, in order to prevent an unnecessary and
 		// potentially unfiltered search
 		ModelBasedSearchForm<ID, T> result = new ModelBasedSearchForm<ID, T>(null, getEntityModel(), getFormOptions(),
-		        this.getAdditionalFilters(), this.getFieldFilters()) {
+		        this.getDefaultFilters(), this.getFieldFilters()) {
 
 			private static final long serialVersionUID = 8929442625027442714L;
 

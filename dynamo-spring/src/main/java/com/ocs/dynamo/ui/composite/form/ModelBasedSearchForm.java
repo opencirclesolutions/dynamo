@@ -106,14 +106,14 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 	 *            the entity model
 	 * @param formOptions
 	 *            the form options
-	 * @param additionalFilters
+	 * @param defaultFilters
 	 *            the additional filters to apply to every search action
 	 * @param fieldFilters
 	 *            a map of filters to apply to the individual fields
 	 */
 	public ModelBasedSearchForm(Searchable searchable, EntityModel<T> entityModel, FormOptions formOptions,
-	        List<Filter> additionalFilters, Map<String, Filter> fieldFilters) {
-		super(searchable, entityModel, formOptions, additionalFilters, fieldFilters);
+	        List<Filter> defaultFilters, Map<String, Filter> fieldFilters) {
+		super(searchable, entityModel, formOptions, defaultFilters, fieldFilters);
 	}
 
 	/**

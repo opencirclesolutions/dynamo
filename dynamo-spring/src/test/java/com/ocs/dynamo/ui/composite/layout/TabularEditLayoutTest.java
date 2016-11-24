@@ -47,7 +47,6 @@ public class TabularEditLayoutTest extends BaseIntegrationTest {
 		Assert.assertFalse(layout.getEditButton().isVisible());
 		Assert.assertFalse(layout.getCancelButton().isVisible());
 		Assert.assertTrue(layout.getAddButton().isVisible());
-		Assert.assertFalse(layout.getRemoveButton().isVisible());
 
 		Assert.assertEquals(2, layout.getTableWrapper().getTable().size());
 
@@ -80,25 +79,6 @@ public class TabularEditLayoutTest extends BaseIntegrationTest {
 	}
 
 	@Test
-	public void testCreateWithRemoveButton() {
-		FormOptions fo = new FormOptions().setShowRemoveButton(true);
-		TabularEditLayout<Integer, TestEntity> layout = new TabularEditLayout<Integer, TestEntity>(testEntityService,
-		        entityModelFactory.getModel(TestEntity.class), fo, null);
-		layout.build();
-
-		// open in edit mode by default
-		Assert.assertFalse(layout.isViewmode());
-		Assert.assertTrue(layout.getRemoveButton().isVisible());
-
-		Assert.assertEquals(2, layout.getTableWrapper().getTable().size());
-
-		// delete a row
-		layout.getTableWrapper().getTable().select(e1.getId());
-		layout.getRemoveButton().click();
-		Assert.assertEquals(1, layout.getTableWrapper().getTable().size());
-	}
-
-	@Test
 	public void testCreateInViewMode() {
 		FormOptions fo = new FormOptions().setOpenInViewMode(true).setShowEditButton(true);
 		TabularEditLayout<Integer, TestEntity> layout = new TabularEditLayout<Integer, TestEntity>(testEntityService,
@@ -110,7 +90,6 @@ public class TabularEditLayoutTest extends BaseIntegrationTest {
 		Assert.assertTrue(layout.getEditButton().isVisible());
 		Assert.assertFalse(layout.getCancelButton().isVisible());
 		Assert.assertFalse(layout.getAddButton().isVisible());
-		Assert.assertFalse(layout.getRemoveButton().isVisible());
 
 		Assert.assertEquals(2, layout.getTableWrapper().getTable().size());
 
@@ -120,7 +99,6 @@ public class TabularEditLayoutTest extends BaseIntegrationTest {
 		Assert.assertFalse(layout.getEditButton().isVisible());
 		Assert.assertTrue(layout.getCancelButton().isVisible());
 		Assert.assertTrue(layout.getAddButton().isVisible());
-		Assert.assertFalse(layout.getRemoveButton().isVisible());
 
 		// switch back
 		layout.getCancelButton().click();
@@ -128,7 +106,5 @@ public class TabularEditLayoutTest extends BaseIntegrationTest {
 		Assert.assertTrue(layout.getEditButton().isVisible());
 		Assert.assertFalse(layout.getCancelButton().isVisible());
 		Assert.assertFalse(layout.getAddButton().isVisible());
-		Assert.assertFalse(layout.getRemoveButton().isVisible());
-
 	}
 }

@@ -70,9 +70,9 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	private Button addButton;
 
 	/**
-	 * Any additional filters to be applied to the query
+	 * The default filters that are always apply to any query
 	 */
-	private List<Filter> additionalFilters;
+	private List<Filter> defaultFilters;
 
 	/**
 	 * The edit button
@@ -137,16 +137,16 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	 * @param queryType
 	 * @param formOptions
 	 * @param fieldFilters
-	 * @param additionalFilters
+	 * @param defaultFilters
 	 * @param sortOrder
 	 * @param joins
 	 */
 	public AbstractSearchLayout(BaseService<ID, T> service, EntityModel<T> entityModel, QueryType queryType,
-	        FormOptions formOptions, Map<String, Filter> fieldFilters, List<Filter> additionalFilters,
+	        FormOptions formOptions, Map<String, Filter> fieldFilters, List<Filter> defaultFilters,
 	        SortOrder sortOrder, FetchJoinInformation... joins) {
 		super(service, entityModel, formOptions, sortOrder, joins);
 		this.queryType = queryType;
-		this.additionalFilters = additionalFilters;
+		this.defaultFilters = defaultFilters;
 		setFieldFilters(fieldFilters);
 	}
 
@@ -577,8 +577,8 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 		return addButton;
 	}
 
-	protected List<Filter> getAdditionalFilters() {
-		return additionalFilters;
+	protected List<Filter> getDefaultFilters() {
+		return defaultFilters;
 	}
 
 	public Button getEditButton() {
@@ -705,8 +705,8 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 		}
 	}
 
-	public void setAdditionalFilters(List<Filter> additionalFilters) {
-		this.additionalFilters = additionalFilters;
+	public void setDefaultFilters(List<Filter> defaultFilters) {
+		this.defaultFilters = defaultFilters;
 	}
 
 	public void setQueryType(QueryType queryType) {

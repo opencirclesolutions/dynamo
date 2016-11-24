@@ -32,6 +32,14 @@ import com.ocs.dynamo.filter.Filter;
 public interface BaseService<ID, T extends AbstractEntity<ID>> {
 
 	/**
+	 * Updates, adds, and deletes 
+	 * @param toUpdate
+	 * @param toAdd
+	 * @param toDelete
+	 */
+	void update(List<T> toUpdate, List<T> toAdd, List<T> toDelete);
+	
+	/**
 	 * Returns the total number of entities of this type
 	 * 
 	 * @return
