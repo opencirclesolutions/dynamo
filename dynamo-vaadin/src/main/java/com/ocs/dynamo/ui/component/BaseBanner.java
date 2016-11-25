@@ -53,7 +53,7 @@ public class BaseBanner extends DefaultHorizontalLayout {
         image = new Image(null, new ThemeResource(imagePath));
         image.setWidth(null);
         addComponent(image);
-        setComponentAlignment(image, Alignment.MIDDLE_LEFT);
+        setComponentAlignment(image, Alignment.MIDDLE_CENTER);
     }
 
     public Image getImage() {

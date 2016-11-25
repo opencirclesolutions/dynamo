@@ -337,7 +337,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	 * 
 	 * @return
 	 */
-	private boolean isSearchAllowed() {
+	public boolean isSearchAllowed() {
 
 		// Get the required attributes.
 		List<AttributeModel> requiredAttributes = getEntityModel().getRequiredForSearchingAttributeModels();

@@ -28,6 +28,7 @@ import org.vaadin.addons.lazyquerycontainer.NestingBeanItem;
 import org.vaadin.dialogs.ConfirmDialog;
 
 import com.ocs.dynamo.constants.DynamoConstants;
+import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.ui.container.pivot.PivotItem;
 import com.ocs.dynamo.ui.converter.BigDecimalConverter;
@@ -36,6 +37,7 @@ import com.ocs.dynamo.utils.SystemPropertyUtils;
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanItem;
+import com.vaadin.data.util.converter.Converter;
 import com.vaadin.data.util.converter.StringToIntegerConverter;
 import com.vaadin.data.util.converter.StringToLongConverter;
 import com.vaadin.server.Page;
@@ -455,6 +457,17 @@ public final class VaadinUtils {
 		BigDecimalConverter converter = ConverterFactory.createBigDecimalConverter(currency, percentage, useGrouping,
 		        precision, VaadinUtils.getCurrencySymbol());
 		return converter.convertToModel(value, BigDecimal.class, locale);
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T> String numberToString(AttributeModel attributeModel, Class<?> type, T value, boolean grouping,
+	        Locale locale) {
+		Converter<String, T> cv = (Converter<String, T>) ConverterFactory.createConverterFor(type, attributeModel,
+		        grouping);
+		if (cv != null) {
+			return cv.convertToPresentation(value, String.class, locale);
+		}
+		return null;
 	}
 
 	/**

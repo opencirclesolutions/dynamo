@@ -119,13 +119,11 @@ public abstract class BaseCustomComponent extends CustomComponent implements Bui
 				fieldLabel.setConverter(ConverterFactory.createBigDecimalConverter(attributeModel.isCurrency(),
 				        attributeModel.isPercentage(), attributeModel.isUseThousandsGrouping(),
 				        attributeModel.getPrecision(), VaadinUtils.getCurrencySymbol()));
-			} else if (Integer.class.equals(type)) {
-				property = new ObjectProperty<Integer>((Integer) value);
-				fieldLabel
-				        .setConverter(ConverterFactory.createIntegerConverter(attributeModel.isUseThousandsGrouping()));
-			} else if (Long.class.equals(type)) {
-				property = new ObjectProperty<Long>((Long) value);
-				fieldLabel.setConverter(ConverterFactory.createLongConverter(attributeModel.isUseThousandsGrouping()));
+			} else if (Number.class.isAssignableFrom(type)) {
+				// other number types
+				property = new ObjectProperty<Number>((Number) value);
+				fieldLabel.setConverter(ConverterFactory.createConverterFor(type, attributeModel,
+				        attributeModel.isUseThousandsGrouping()));
 			} else if (AbstractEntity.class.isAssignableFrom(type)) {
 				// another entity - use the value of the "displayProperty"
 				EntityModel<?> model = getEntityModelFactory().getModel(type);
@@ -148,7 +146,8 @@ public abstract class BaseCustomComponent extends CustomComponent implements Bui
 				}
 			} else if (Iterable.class.isAssignableFrom(attributeModel.getType())) {
 				// collection of entities
-				String str = TableUtils.formatEntityCollection(getEntityModelFactory(), (Iterable<?>) value);
+				String str = TableUtils.formatEntityCollection(getEntityModelFactory(), attributeModel,
+				        (Iterable<?>) value);
 				property = new ObjectProperty<String>(str);
 				fieldLabel.setPropertyDataSource(property);
 			}

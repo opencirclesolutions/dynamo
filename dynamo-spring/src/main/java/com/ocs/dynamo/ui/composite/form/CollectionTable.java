@@ -18,12 +18,14 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.ui.ServiceLocator;
 import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.converter.ConverterFactory;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
+import com.ocs.dynamo.utils.SystemPropertyUtils;
 import com.vaadin.data.Container;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.IndexedContainer;
@@ -57,14 +59,14 @@ public class CollectionTable<T extends Serializable> extends CustomField<Collect
 	private static final String VALUE = "value";
 
 	/**
-	 * The class of the elements of the collection being managed
-	 */
-	private Class<T> elementClass;
-
-	/**
 	 * Button for adding new items to the table
 	 */
 	private Button addButton;
+
+	/**
+	 * The attribute model
+	 */
+	private AttributeModel attributeModel;
 
 	/**
 	 * Form options that determine which buttons and functionalities are available
@@ -121,15 +123,16 @@ public class CollectionTable<T extends Serializable> extends CustomField<Collect
 	 * @param formOptions
 	 *            FormOptions parameter object that can be used to govern how the component behaves
 	 */
-	public CollectionTable(boolean viewMode, FormOptions formOptions, Class<T> elementClass) {
+	public CollectionTable(AttributeModel attributeModel, boolean viewMode, FormOptions formOptions) {
 		this.messageService = ServiceLocator.getMessageService();
 		this.viewMode = viewMode;
 		this.formOptions = formOptions;
-		this.elementClass = elementClass;
+		this.attributeModel = attributeModel;
 
 		// set up a very basic table with one column
 		table = new Table("");
-		table.addContainerProperty(VALUE, elementClass, null);
+		table.addContainerProperty(VALUE, attributeModel.getNormalizedType(), null);
+		table.setVisibleColumns(VALUE);
 	}
 
 	/**
@@ -239,7 +242,6 @@ public class CollectionTable<T extends Serializable> extends CustomField<Collect
 		table.setPageLength(pageLength);
 		table.setColumnCollapsingAllowed(false);
 		table.setSizeFull();
-
 		table.setTableFieldFactory(new DefaultFieldFactory() {
 
 			@Override
@@ -250,10 +252,8 @@ public class CollectionTable<T extends Serializable> extends CustomField<Collect
 					TextField tf = (TextField) f;
 					tf.setNullRepresentation("");
 					tf.setSizeFull();
-
-					if (Integer.class.equals(elementClass)) {
-						tf.setConverter(ConverterFactory.createIntegerConverter(false));
-					}
+					tf.setConverter(ConverterFactory.createConverterFor(attributeModel.getNormalizedType(),
+					        attributeModel, SystemPropertyUtils.useThousandsGroupingInEditMode()));
 				}
 
 				// add a validator that checks for the maximum length
@@ -315,7 +315,6 @@ public class CollectionTable<T extends Serializable> extends CustomField<Collect
 
 						@Override
 						public void buttonClick(ClickEvent event) {
-
 							table.removeItem(itemId);
 							setValue(extractValues());
 							setSelectedItem(null);
@@ -371,7 +370,7 @@ public class CollectionTable<T extends Serializable> extends CustomField<Collect
 			// that cannot be removed - so instead unfortunately we have to
 			// recreate the container
 			table.setContainerDataSource(new IndexedContainer());
-			table.addContainerProperty(VALUE, elementClass, null);
+			table.addContainerProperty(VALUE, attributeModel.getNormalizedType(), null);
 
 			if (newValue != null) {
 				for (T t : newValue) {

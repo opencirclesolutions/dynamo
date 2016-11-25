@@ -22,7 +22,7 @@ import com.vaadin.data.sort.SortOrder;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.Table;
 
-public class SimpleSearchLayoutTest extends BaseIntegrationTest {
+public class FlexibleSearchLayoutTest extends BaseIntegrationTest {
 
 	@Inject
 	private EntityModelFactory entityModelFactory;
@@ -45,8 +45,8 @@ public class SimpleSearchLayoutTest extends BaseIntegrationTest {
 	}
 
 	@Test
-	public void testSimpleSearchLayout() {
-		SimpleSearchLayout<Integer, TestEntity> layout = createLayout(new FormOptions());
+	public void testFlexibleSearchLayout() {
+		FlexibleSearchLayout<Integer, TestEntity> layout = createLayout(new FormOptions());
 		layout.build();
 
 		Assert.assertTrue(layout.getAddButton().isVisible());
@@ -68,8 +68,8 @@ public class SimpleSearchLayoutTest extends BaseIntegrationTest {
 	}
 
 	@Test
-	public void testSimpleSearchLayout_AddButton() {
-		SimpleSearchLayout<Integer, TestEntity> layout = createLayout(new FormOptions());
+	public void testFlexibleSearchLayout_AddButton() {
+		FlexibleSearchLayout<Integer, TestEntity> layout = createLayout(new FormOptions());
 		layout.build();
 
 		// click the add button and verify that a new item is added
@@ -78,11 +78,11 @@ public class SimpleSearchLayoutTest extends BaseIntegrationTest {
 	}
 
 	@Test
-	public void testSimpleSearchLayout_EditButton() {
+	public void testFlexibleSearchLayout_EditButton() {
 		FormOptions options = new FormOptions();
 		options.setShowEditButton(true);
 
-		SimpleSearchLayout<Integer, TestEntity> layout = createLayout(options);
+		FlexibleSearchLayout<Integer, TestEntity> layout = createLayout(options);
 		layout.build();
 
 		Assert.assertTrue(layout.getEditButton().isVisible());
@@ -97,8 +97,8 @@ public class SimpleSearchLayoutTest extends BaseIntegrationTest {
 	 * Test the user of a filter
 	 */
 	@Test
-	public void testSimpleSearchLayout_Filter() {
-		SimpleSearchLayout<Integer, TestEntity> layout = createLayout(new FormOptions());
+	public void testFlexibleSearchLayout_Filter() {
+		FlexibleSearchLayout<Integer, TestEntity> layout = createLayout(new FormOptions());
 
 		List<Filter> filters = new ArrayList<>();
 		filters.add(new com.vaadin.data.util.filter.Compare.Equal("name", "Bob"));
@@ -117,8 +117,8 @@ public class SimpleSearchLayoutTest extends BaseIntegrationTest {
 	 * Test the selection of an item (single item)
 	 */
 	@Test
-	public void testSimpleSearchLayout_Select() {
-		SimpleSearchLayout<Integer, TestEntity> layout = createLayout(new FormOptions());
+	public void testFlexibleSearchLayout_Select() {
+		FlexibleSearchLayout<Integer, TestEntity> layout = createLayout(new FormOptions());
 		layout.build();
 
 		Integer id = e1.getId();
@@ -128,8 +128,8 @@ public class SimpleSearchLayoutTest extends BaseIntegrationTest {
 	}
 
 	@Test
-	public void testSimpleSearchLayout_SelectCollection() {
-		SimpleSearchLayout<Integer, TestEntity> layout = createLayout(new FormOptions());
+	public void testFlexibleSearchLayout_SelectCollection() {
+		FlexibleSearchLayout<Integer, TestEntity> layout = createLayout(new FormOptions());
 		layout.build();
 
 		Integer id = e1.getId();
@@ -142,11 +142,11 @@ public class SimpleSearchLayoutTest extends BaseIntegrationTest {
 	 * Test the selection of an item (single item)
 	 */
 	@Test
-	public void testSimpleSearchLayout_Remove() {
+	public void testFlexibleSearchLayout_Remove() {
 		FormOptions options = new FormOptions();
 		options.setShowRemoveButton(true);
 
-		SimpleSearchLayout<Integer, TestEntity> layout = createLayout(options);
+		FlexibleSearchLayout<Integer, TestEntity> layout = createLayout(options);
 		layout.build();
 
 		Assert.assertTrue(layout.getRemoveButton().isVisible());
@@ -165,19 +165,41 @@ public class SimpleSearchLayoutTest extends BaseIntegrationTest {
 	 * Test setting a pre-defined search value
 	 */
 	@Test
-	public void testSimpleSearchLayout_setSearchValue() {
-		SimpleSearchLayout<Integer, TestEntity> layout = createLayout(new FormOptions());
+	public void testFlexibleSearchLayout_setSearchValue() {
+		FlexibleSearchLayout<Integer, TestEntity> layout = createLayout(new FormOptions());
 		layout.build();
 
 		layout.setSearchValue("age", "13", "15");
 		layout.search();
-		
+
+		// verify that this creates a filter
+		Assert.assertTrue(layout.getSearchForm().hasFilter(
+		        entityModelFactory.getModel(TestEntity.class).getAttributeModel("age")));
+
 		Assert.assertEquals(1, layout.getTableWrapper().getTable().size());
+	}
+
+	/**
+	 * Test the functionality for making search fields required
+	 */
+	@Test
+	public void testFlexibleSearchLayout_Mandatory() {
+		FlexibleSearchLayout<Integer, TestEntity> layout = createLayout("TestEntitySearchRequired", new FormOptions());
+		layout.build();
+
+		Assert.assertFalse(layout.getSearchForm().isSearchAllowed());
+		layout.setSearchValue("name", "abc");
+		Assert.assertTrue(layout.getSearchForm().isSearchAllowed());
+	}
+
+	private FlexibleSearchLayout<Integer, TestEntity> createLayout(FormOptions fo) {
+		return new FlexibleSearchLayout<>(testEntityService, entityModelFactory.getModel(TestEntity.class),
+		        QueryType.ID_BASED, fo, new SortOrder("name", SortDirection.ASCENDING));
 
 	}
-	
-	private SimpleSearchLayout<Integer, TestEntity> createLayout(FormOptions fo) {
-		return new SimpleSearchLayout<>(testEntityService, entityModelFactory.getModel(TestEntity.class),
+
+	private FlexibleSearchLayout<Integer, TestEntity> createLayout(String reference, FormOptions fo) {
+		return new FlexibleSearchLayout<>(testEntityService, entityModelFactory.getModel(reference, TestEntity.class),
 		        QueryType.ID_BASED, fo, new SortOrder("name", SortDirection.ASCENDING));
 
 	}

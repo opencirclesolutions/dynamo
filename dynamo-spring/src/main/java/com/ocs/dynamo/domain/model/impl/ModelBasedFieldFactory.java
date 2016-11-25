@@ -33,7 +33,6 @@ import com.ocs.dynamo.domain.model.AttributeTextFieldMode;
 import com.ocs.dynamo.domain.model.AttributeType;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.exception.OCSRuntimeException;
-import com.ocs.dynamo.filter.FilterConverter;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.ui.ServiceLocator;
@@ -54,7 +53,6 @@ import com.ocs.dynamo.ui.converter.ConverterFactory;
 import com.ocs.dynamo.ui.converter.WeekCodeConverter;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.ui.validator.URLValidator;
-import com.ocs.dynamo.utils.SortUtil;
 import com.ocs.dynamo.utils.SystemPropertyUtils;
 import com.vaadin.data.Container;
 import com.vaadin.data.Container.Filter;
@@ -534,16 +532,19 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 			FormOptions fo = new FormOptions();
 			fo.setShowRemoveButton(true);
 			if (String.class.equals(attributeModel.getMemberType())) {
-				CollectionTable<String> table = new CollectionTable<>(false, fo, String.class);
+				CollectionTable<String> table = new CollectionTable<>(attributeModel, false, fo);
 				table.setMinLength(attributeModel.getMinLength());
 				table.setMaxLength(attributeModel.getMaxLength());
 				field = table;
 			} else if (Integer.class.equals(attributeModel.getMemberType())) {
-				CollectionTable<Integer> table = new CollectionTable<>(false, fo, Integer.class);
-				field = table;
+				field = new CollectionTable<>(attributeModel, false, fo);
+			} else if (Long.class.equals(attributeModel.getMemberType())) {
+				field = new CollectionTable<>(attributeModel, false, fo);
+			} else if (BigDecimal.class.equals(attributeModel.getMemberType())) {
+				field = new CollectionTable<>(attributeModel, false, fo);
 			} else {
 				// other types not supported for now
-				throw new OCSRuntimeException();
+				throw new OCSRuntimeException("Element collections of this type are currently not supported");
 			}
 		} else if (Collection.class.isAssignableFrom(attributeModel.getType())) {
 			// render a multiple select component for a collection

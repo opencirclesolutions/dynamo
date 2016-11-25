@@ -69,7 +69,7 @@ public class TestEntity extends AbstractTreeEntity<Integer, TestEntity> {
 
 	private BigDecimal discount;
 
-	@Attribute(percentage = true)
+	@Attribute(percentage = true, searchable = true)
 	private BigDecimal rate;
 
 	@Attribute(displayFormat = "dd/MM/yyyy")
@@ -112,6 +112,12 @@ public class TestEntity extends AbstractTreeEntity<Integer, TestEntity> {
 
 	@Attribute(quickAddPropertyName = "name")
 	private TestDomain testDomain;
+
+	@ElementCollection
+	private Set<Integer> intTags = new HashSet<>();
+
+	@ElementCollection
+	private Set<Long> longTags = new HashSet<>();
 
 	public TestEntity() {
 	}
@@ -294,6 +300,22 @@ public class TestEntity extends AbstractTreeEntity<Integer, TestEntity> {
 
 	public void setTestDomain(TestDomain testDomain) {
 		this.testDomain = testDomain;
+	}
+
+	public Set<Integer> getIntTags() {
+		return intTags;
+	}
+
+	public void setIntTags(Set<Integer> intTags) {
+		this.intTags = intTags;
+	}
+
+	public Set<Long> getLongTags() {
+		return longTags;
+	}
+
+	public void setLongTags(Set<Long> longTags) {
+		this.longTags = longTags;
 	}
 
 }

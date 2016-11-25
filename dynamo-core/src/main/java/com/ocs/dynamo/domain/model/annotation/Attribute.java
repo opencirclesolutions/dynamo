@@ -51,9 +51,6 @@ public @interface Attribute {
 	/** textual description */
 	String description() default "";
 
-	/** should the field get focus in a detail table */
-	boolean detailFocus() default false;
-
 	/** the display format (useful in case of dates) */
 	String displayFormat() default "";
 

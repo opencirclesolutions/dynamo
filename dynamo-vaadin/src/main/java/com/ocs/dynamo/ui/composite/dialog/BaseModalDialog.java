@@ -13,6 +13,8 @@
  */
 package com.ocs.dynamo.ui.composite.dialog;
 
+import org.apache.log4j.Logger;
+
 import com.ocs.dynamo.ui.Buildable;
 import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
@@ -32,6 +34,8 @@ import com.vaadin.ui.Window;
  * @author bas.rutten
  */
 public abstract class BaseModalDialog extends Window implements Buildable {
+
+	private static final Logger LOG = Logger.getLogger(BaseModalDialog.class);
 
 	private static final long serialVersionUID = -2265149201475495504L;
 
@@ -89,4 +93,20 @@ public abstract class BaseModalDialog extends Window implements Buildable {
 	 */
 	protected abstract String getTitle();
 
+	/**
+	 * Shows a notification message - this method will check for the availability of a Vaadin Page
+	 * object and if this is not present, write the notification to the log instead
+	 * 
+	 * @param message
+	 *            the message
+	 * @param type
+	 *            the type of the message
+	 */
+	protected void showNotifification(String message, Notification.Type type) {
+		if (Page.getCurrent() != null) {
+			Notification.show(message, Notification.Type.ERROR_MESSAGE);
+		} else {
+			LOG.info(message);
+		}
+	}
 }
