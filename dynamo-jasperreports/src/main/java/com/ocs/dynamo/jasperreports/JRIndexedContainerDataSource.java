@@ -106,4 +106,8 @@ public class JRIndexedContainerDataSource implements JRRewindableDataSource, Ind
 	public int getRecordIndex() {
 		return container.indexOfId(currentItemId);
 	}
+
+	public Container.Indexed getContainer() {
+		return container;
+	}
 }
