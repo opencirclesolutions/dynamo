@@ -120,7 +120,7 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 	 * Clears all filters then performs a fresh search
 	 */
 	@Override
-	protected void clear() {
+	public void clear() {
 		// Clear all filter groups
 		for (FilterGroup group : groups.values()) {
 			group.reset();

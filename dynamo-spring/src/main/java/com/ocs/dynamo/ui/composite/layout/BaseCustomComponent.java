@@ -230,11 +230,13 @@ public abstract class BaseCustomComponent extends CustomComponent implements Bui
 	 * object and if this is not present, write the notification to the log instead
 	 * 
 	 * @param message
+	 *            the message
 	 * @param type
+	 *            the type of the message (error, warning, tray etc.)
 	 */
 	protected void showNotifification(String message, Notification.Type type) {
 		if (Page.getCurrent() != null) {
-			Notification.show(message, Notification.Type.ERROR_MESSAGE);
+			Notification.show(message, type);
 		} else {
 			LOG.info(message);
 		}

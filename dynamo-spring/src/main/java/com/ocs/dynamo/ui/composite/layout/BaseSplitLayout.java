@@ -20,7 +20,6 @@ import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
-import com.ocs.dynamo.ui.Reloadable;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.composite.form.FormOptions;
 import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
@@ -49,7 +48,7 @@ import com.vaadin.ui.VerticalLayout;
  */
 @SuppressWarnings("serial")
 public abstract class BaseSplitLayout<ID extends Serializable, T extends AbstractEntity<ID>> extends
-        BaseCollectionLayout<ID, T> implements Reloadable {
+        BaseCollectionLayout<ID, T> {
 
 	private static final long serialVersionUID = 4606800218149558500L;
 
@@ -379,6 +378,11 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	}
 
 	@Override
+	public void refresh() {
+		// override in subclasses
+	}
+
+	@Override
 	public void reload() {
 		// replace the header layout (if there is one)
 		Component component = constructHeaderLayout();
@@ -397,10 +401,11 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 			quickSearchField.setValue("");
 		}
 
-		// refresh the details
-		if (getSelectedItem() != null) {
-			detailsMode(getSelectedItem());
-		}
+		getTableWrapper().reloadContainer();
+
+		// clear the details
+		setSelectedItem(null);
+		emptyDetailView();
 	}
 
 	/**

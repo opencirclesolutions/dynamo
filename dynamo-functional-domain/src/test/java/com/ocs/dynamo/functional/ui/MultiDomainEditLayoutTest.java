@@ -3,6 +3,9 @@ package com.ocs.dynamo.functional.ui;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -25,6 +28,25 @@ import com.vaadin.ui.Layout;
  */
 public class MultiDomainEditLayoutTest extends BaseIntegrationTest {
 
+	@PersistenceContext
+	private EntityManager em;
+
+	private Country country;
+
+	private Region region;
+
+	@org.junit.Before
+	public void setup() {
+
+		region = new Region("EUR", "Europe");
+		em.persist(region);
+
+		country = new Country("NLD", "Netherlands");
+		country.setRegion(region);
+		em.persist(country);
+		Assert.assertNotNull(country.getId());
+	}
+
 	@Test
 	@SuppressWarnings("unchecked")
 	public void testCreate() {
@@ -37,6 +59,8 @@ public class MultiDomainEditLayoutTest extends BaseIntegrationTest {
 		Assert.assertEquals(Country.class, layout.getSelectedDomain());
 		Assert.assertTrue(layout.isDeleteAllowed(Country.class));
 
+		Assert.assertNull(layout.getSelectedItem());
+
 		BaseSplitLayout<?, ?> splitLayout = layout.getSplitLayout();
 		Assert.assertNotNull(splitLayout);
 		splitLayout.build();
@@ -45,8 +69,12 @@ public class MultiDomainEditLayoutTest extends BaseIntegrationTest {
 		Assert.assertNotNull(splitLayout.getAddButton());
 		Assert.assertTrue(splitLayout.getAddButton().isVisible());
 
+		Assert.assertTrue(splitLayout.getRemoveButton().isVisible());
+		Assert.assertFalse(splitLayout.getRemoveButton().isEnabled());
+
 		// test reload
 		splitLayout.reload();
+
 	}
 
 	@Test

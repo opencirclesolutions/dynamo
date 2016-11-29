@@ -304,6 +304,9 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 	 */
 	public void setEntity(T entity) {
 		this.entity = entity;
+		if (this.entity == null) {
+			entity = createEntity();
+		}
 		editForm.setEntity(entity);
 	}
 

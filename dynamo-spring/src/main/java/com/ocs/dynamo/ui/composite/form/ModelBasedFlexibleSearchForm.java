@@ -651,7 +651,7 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 	}
 
 	@Override
-	protected void clear() {
+	public void clear() {
 		// remove any non-required filter regions and clear the rest
 		Iterator<FilterRegion> it = regions.iterator();
 		for (; it.hasNext();) {

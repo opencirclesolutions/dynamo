@@ -54,7 +54,7 @@ import com.vaadin.ui.VerticalLayout;
  */
 @SuppressWarnings("serial")
 public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity<ID>> extends
-        BaseCollectionLayout<ID, T> implements Reloadable {
+        BaseCollectionLayout<ID, T> {
 
 	private static final long serialVersionUID = 4606800218149558500L;
 
@@ -435,6 +435,11 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 	 */
 	protected void postProcessField(Object propertyId, Field<?> field) {
 		// overwrite in subclass
+	}
+
+	@Override
+	public void refresh() {
+		// override in subclasses
 	}
 
 	@Override

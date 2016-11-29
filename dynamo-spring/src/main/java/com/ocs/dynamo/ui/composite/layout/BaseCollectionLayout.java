@@ -27,6 +27,8 @@ import com.ocs.dynamo.dao.query.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
+import com.ocs.dynamo.ui.Refreshable;
+import com.ocs.dynamo.ui.Reloadable;
 import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
 import com.ocs.dynamo.ui.composite.form.FormOptions;
 import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
@@ -53,7 +55,7 @@ import com.vaadin.ui.Table.CellStyleGenerator;
  *            the type of the entity
  */
 public abstract class BaseCollectionLayout<ID extends Serializable, T extends AbstractEntity<ID>> extends
-        BaseServiceCustomComponent<ID, T> {
+        BaseServiceCustomComponent<ID, T> implements Reloadable, Refreshable {
 
 	private static final long serialVersionUID = -2864711994829582000L;
 

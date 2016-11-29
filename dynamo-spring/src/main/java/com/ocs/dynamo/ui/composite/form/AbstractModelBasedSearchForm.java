@@ -222,7 +222,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	/**
 	 * Clears any search filters (and re-applies the default filters afterwards)
 	 */
-	protected void clear() {
+	public void clear() {
 		currentFilters.clear();
 		currentFilters.addAll(getDefaultFilters());
 	}
@@ -399,15 +399,6 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	 *            the layout
 	 */
 	protected void preProcessLayout(VerticalLayout layout) {
-		// override in subclass
-	}
-
-	/**
-	 * Refreshes any filter groups that support being refreshed (updating any lookup lists in the
-	 * process)
-	 */
-	@Override
-	public void refresh() {
 		// override in subclass
 	}
 

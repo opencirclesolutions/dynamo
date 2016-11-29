@@ -96,6 +96,8 @@ public class FancyListSelectTest extends BaseMockitoTest {
 
         col = (Collection<TestEntity>) select.getValue();
         Assert.assertTrue(col.isEmpty());
+        
+        select.refresh();
     }
 
     /**
