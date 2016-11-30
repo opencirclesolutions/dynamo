@@ -14,8 +14,6 @@
 package com.ocs.dynamo.ui.composite.table;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import com.ocs.dynamo.domain.AbstractEntity;
@@ -47,33 +45,24 @@ public class ServiceResultsTreeTableWrapper<ID extends Serializable, T extends A
 
 	private static final long serialVersionUID = -9054619694421055983L;
 
+	/**
+	 * The list of services (ordered by level, highest level first)
+	 */
 	private List<BaseService<?, ?>> services;
 
 	/**
 	 * Constructor
 	 * 
+	 * @param services
+	 *            the list of services (ordered by level, highest level first)
 	 * @param rootEntityModel
+	 *            the root entity model
 	 * @param queryType
-	 * @param order
+	 *            the query type
+	 * @param sortOrders
+	 *            the sorders
 	 * @param joins
-	 * @param services
-	 */
-	@SuppressWarnings("unchecked")
-	public ServiceResultsTreeTableWrapper(EntityModel<T> rootEntityModel, QueryType queryType,
-	        List<SortOrder> sortOrders, HierarchicalFetchJoinInformation[] joins, BaseService<?, ?>... services) {
-		super((BaseService<ID, T>) services[0], rootEntityModel, queryType, null, sortOrders, true, joins);
-		this.services = new ArrayList<>();
-		this.services.addAll(Arrays.asList(services));
-	}
-
-	/**
-	 * Constructor
-	 * 
-	 * @param services
-	 * @param entityModel
-	 * @param queryType
-	 * @param order
-	 * @param joins
+	 *            the relations to fetch
 	 */
 	@SuppressWarnings("unchecked")
 	public ServiceResultsTreeTableWrapper(List<BaseService<?, ?>> services, EntityModel<T> rootEntityModel,
@@ -94,9 +83,6 @@ public class ServiceResultsTreeTableWrapper<ID extends Serializable, T extends A
 		return c;
 	}
 
-	/**
-     * 
-     */
 	@SuppressWarnings("unchecked")
 	@Override
 	public ModelBasedHierarchicalContainer<T> getContainer() {

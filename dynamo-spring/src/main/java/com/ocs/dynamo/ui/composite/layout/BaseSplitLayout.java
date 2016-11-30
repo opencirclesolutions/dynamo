@@ -109,7 +109,6 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	@Override
 	public void attach() {
 		super.attach();
-		buildFilter();
 		build();
 	}
 
@@ -118,6 +117,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	 */
 	@Override
 	public void build() {
+		buildFilter();
 		if (mainLayout == null) {
 			mainLayout = new DefaultVerticalLayout(true, true);
 

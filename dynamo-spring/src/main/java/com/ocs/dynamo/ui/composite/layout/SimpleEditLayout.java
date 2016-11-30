@@ -22,6 +22,7 @@ import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
+import com.ocs.dynamo.ui.CanAssignEntity;
 import com.ocs.dynamo.ui.Reloadable;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.composite.form.FormOptions;
@@ -43,7 +44,7 @@ import com.vaadin.ui.VerticalLayout;
  */
 @SuppressWarnings("serial")
 public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<ID>> extends
-        BaseServiceCustomComponent<ID, T> implements Reloadable {
+        BaseServiceCustomComponent<ID, T> implements Reloadable, CanAssignEntity<ID, T> {
 
 	private static final long serialVersionUID = -7935358582100755140L;
 
@@ -104,6 +105,11 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 			// new entity
 			back();
 		}
+	}
+
+	@Override
+	public void assignEntity(T t) {
+		setEntity(t);
 	}
 
 	@Override
@@ -253,6 +259,15 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 	}
 
 	/**
+	 * Check if the layout is in edit mode
+	 * 
+	 * @return
+	 */
+	public boolean isViewMode() {
+		return editForm.isViewMode();
+	}
+
+	/**
 	 * Callback method that can be used to add additional buttons to the button bar (at both the top
 	 * and the bottom of the screen)
 	 * 
@@ -305,9 +320,9 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 	public void setEntity(T entity) {
 		this.entity = entity;
 		if (this.entity == null) {
-			entity = createEntity();
+			this.entity = createEntity();
 		}
-		editForm.setEntity(entity);
+		editForm.setEntity(this.entity);
 	}
 
 	public void setFieldFilters(Map<String, Filter> fieldFilters) {
@@ -316,14 +331,5 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 
 	public void setJoins(FetchJoinInformation[] joins) {
 		this.joins = joins;
-	}
-
-	/**
-	 * Check if the layout is in edit mode
-	 * 
-	 * @return
-	 */
-	public boolean isViewMode() {
-		return editForm.isViewMode();
 	}
 }

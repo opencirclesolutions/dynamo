@@ -11,17 +11,21 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-package com.ocs.jasperreports;
+package com.ocs.dynamo.ui;
 
-import net.sf.jasperreports.web.util.WebHtmlResourceHandler;
+import com.ocs.dynamo.domain.AbstractEntity;
 
-public class UniqueWebHtmlResourceHandler extends WebHtmlResourceHandler {
-	public UniqueWebHtmlResourceHandler(String path) {
-		super(path);
-	}
+/**
+ * Marker interface for components that support the direct setting of an entity
+ * 
+ * @author bas.rutten
+ *
+ * @param <ID>
+ *            the type of the primary key of the entity
+ * @param <T>
+ *            the type of the entity
+ */
+public interface CanAssignEntity<ID, T extends AbstractEntity<ID>> {
 
-	@Override
-	public String getResourcePath(String id) {
-		return super.getResourcePath(id) + "&time=" + System.nanoTime();
-	}
+	void assignEntity(T t);
 }

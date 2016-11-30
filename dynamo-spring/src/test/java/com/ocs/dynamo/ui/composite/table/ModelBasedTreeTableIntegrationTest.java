@@ -23,7 +23,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.TestEntity2;
@@ -93,6 +92,9 @@ public class ModelBasedTreeTableIntegrationTest extends BaseIntegrationTest {
 		Assert.assertEquals("Bob", name);
 		Assert.assertEquals(3, table.getVisibleColumns().length);
 
+		Assert.assertNotNull(table.getActionHideAll());
+		Assert.assertNotNull(table.getActionExpandAll());
+
 		// call the expand action
 		Assert.assertEquals(2, table.getActions(null, null).length);
 
@@ -113,6 +115,9 @@ public class ModelBasedTreeTableIntegrationTest extends BaseIntegrationTest {
 		table.select(firstItemId);
 		table.handleAction(table.getActions(null, null)[0], table, table);
 		Assert.assertFalse(table.isCollapsed(firstItemId));
+
+		table.setExpandAndHideAllowed(false);
+		Assert.assertEquals(0, table.getActions(null, null).length);
 	}
 
 	@Test

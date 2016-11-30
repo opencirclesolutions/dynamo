@@ -18,6 +18,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.ocs.dynamo.domain.AbstractEntity;
+import com.ocs.dynamo.ui.CanAssignEntity;
 import com.ocs.dynamo.ui.Reloadable;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.vaadin.ui.Component;
@@ -167,6 +168,7 @@ public abstract class LazyTabLayout<ID extends Serializable, T extends AbstractE
 	 * @param selectedTab
 	 *            the currently selected tab
 	 */
+	@SuppressWarnings("unchecked")
 	private void initOrReload(Component selectedTab) {
 		Tab tab = tabs.getTab(selectedTab);
 
@@ -185,6 +187,10 @@ public abstract class LazyTabLayout<ID extends Serializable, T extends AbstractE
 			Layout layout = (Layout) selectedTab;
 			Component next = layout.iterator().next();
 			if (next instanceof Reloadable) {
+
+				if (next instanceof CanAssignEntity) {
+					((CanAssignEntity<?, T>) next).assignEntity(getEntity());
+				}
 				beforeReload(getTabIndex(tab.getCaption()), next);
 				((Reloadable) next).reload();
 			}

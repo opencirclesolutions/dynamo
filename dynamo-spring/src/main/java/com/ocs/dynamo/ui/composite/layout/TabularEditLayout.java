@@ -22,7 +22,6 @@ import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.impl.ModelBasedFieldFactory;
 import com.ocs.dynamo.service.BaseService;
-import com.ocs.dynamo.ui.Reloadable;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.component.URLField;
 import com.ocs.dynamo.ui.composite.form.FormOptions;

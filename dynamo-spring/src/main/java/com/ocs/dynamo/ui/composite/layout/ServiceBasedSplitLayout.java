@@ -92,7 +92,7 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
 	}
 
 	@Override
-	protected void buildFilter() {
+	protected final void buildFilter() {
 		filter = constructFilter();
 	}
 

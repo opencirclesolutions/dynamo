@@ -22,6 +22,18 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
+import net.sf.jasperreports.charts.util.ChartHyperlinkProvider;
+import net.sf.jasperreports.charts.util.SvgChartRendererFactory;
+import net.sf.jasperreports.engine.JRAbstractChartCustomizer;
+import net.sf.jasperreports.engine.JRChart;
+import net.sf.jasperreports.engine.JRChartCustomizer;
+import net.sf.jasperreports.engine.JRPrintHyperlink;
+import net.sf.jasperreports.engine.JRRuntimeException;
+import net.sf.jasperreports.engine.JasperReportsContext;
+import net.sf.jasperreports.engine.base.JRBasePrintHyperlink;
+import net.sf.jasperreports.engine.type.HyperlinkTypeEnum;
+import net.sf.jasperreports.renderers.Renderable;
+
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.annotations.Annotation;
 import org.jfree.chart.entity.ChartEntity;
@@ -38,18 +50,6 @@ import org.jfree.ui.TextAnchor;
 import org.jfree.ui.VerticalAlignment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import net.sf.jasperreports.charts.util.ChartHyperlinkProvider;
-import net.sf.jasperreports.charts.util.SvgChartRendererFactory;
-import net.sf.jasperreports.engine.JRAbstractChartCustomizer;
-import net.sf.jasperreports.engine.JRChart;
-import net.sf.jasperreports.engine.JRChartCustomizer;
-import net.sf.jasperreports.engine.JRPrintHyperlink;
-import net.sf.jasperreports.engine.JRRuntimeException;
-import net.sf.jasperreports.engine.JasperReportsContext;
-import net.sf.jasperreports.engine.base.JRBasePrintHyperlink;
-import net.sf.jasperreports.engine.type.HyperlinkTypeEnum;
-import net.sf.jasperreports.renderers.Renderable;
 
 /**
  * Chart customizer that adds several enhancements to charts: draw labels, quadrants and markers.
@@ -403,7 +403,7 @@ public class ChartCustomizer<T extends Plot> extends JRAbstractChartCustomizer {
 
 		try {
 			// Paint labels for the rows when defined for this chart
-			if ((Boolean) getVariableValue(key + LABELS)) {
+			if (Boolean.TRUE.equals((Boolean) getVariableValue(key + LABELS))) {
 				chartCustomizer.setLabels(plot);
 			}
 		} catch (JRRuntimeException e) {

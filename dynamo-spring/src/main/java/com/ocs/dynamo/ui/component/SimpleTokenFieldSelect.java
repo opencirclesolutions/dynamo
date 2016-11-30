@@ -42,6 +42,18 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
 
+/**
+ * A token field that displays the distinct values for a basic property of an entity
+ * 
+ * @author bas.rutten
+ *
+ * @param <ID>
+ *            the type of the primary key
+ * @param <S>
+ *            the type of the entity
+ * @param <T>
+ *            the type of the basic property
+ */
 public class SimpleTokenFieldSelect<ID extends Serializable, S extends AbstractEntity<ID>, T extends Comparable<T>>
         extends CustomField<Collection<T>> implements Refreshable {
 
@@ -176,6 +188,13 @@ public class SimpleTokenFieldSelect<ID extends Serializable, S extends AbstractE
 		valueChangeListeners.add(listener);
 	}
 
+	private void fillComboBox() {
+		List<T> items = (List<T>) service.findDistinct(new FilterConverter(entityModel).convert(fieldFilter),
+		        distinctField, elementType, SortUtil.translate(sortOrders));
+		comboBox.removeAllItems();
+		comboBox.addItems(items);
+	}
+
 	public ComboBox getComboBox() {
 		return comboBox;
 	}
@@ -216,6 +235,13 @@ public class SimpleTokenFieldSelect<ID extends Serializable, S extends AbstractE
 	}
 
 	@Override
+	public void refresh() {
+		if (comboBox != null) {
+			fillComboBox();
+		}
+	}
+
+	@Override
 	protected void setInternalValue(Collection<T> values) {
 		super.setInternalValue(values);
 
@@ -236,20 +262,6 @@ public class SimpleTokenFieldSelect<ID extends Serializable, S extends AbstractE
 	public void setValue(Collection<T> values) {
 		super.setValue(values);
 		setInternalValue(values);
-	}
-
-	@Override
-	public void refresh() {
-		if (comboBox != null) {
-			fillComboBox();
-		}
-	}
-
-	private void fillComboBox() {
-		List<T> items = (List<T>) service.findDistinct(new FilterConverter(entityModel).convert(fieldFilter),
-		        distinctField, elementType, SortUtil.translate(sortOrders));
-		comboBox.removeAllItems();
-		comboBox.addItems(items);
 	}
 
 }
