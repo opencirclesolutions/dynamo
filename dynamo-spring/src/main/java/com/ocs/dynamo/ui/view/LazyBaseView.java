@@ -36,6 +36,7 @@ public abstract class LazyBaseView extends BaseView {
 			lazy = initLayout();
 			lazy.addComponent(build());
 			setCompositionRoot(lazy);
+			afterBuild();
 		} else {
 			refresh();
 		}
@@ -53,5 +54,9 @@ public abstract class LazyBaseView extends BaseView {
 	 */
 	protected void refresh() {
 		// override in subclasses
+	}
+	
+	protected void afterBuild() {
+		
 	}
 }

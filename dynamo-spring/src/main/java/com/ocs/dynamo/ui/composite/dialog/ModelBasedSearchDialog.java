@@ -14,6 +14,7 @@
 package com.ocs.dynamo.ui.composite.dialog;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -90,7 +91,7 @@ public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractE
 	/**
 	 * The sort order
 	 */
-	private SortOrder sortOrder;
+	private List<SortOrder> sortOrders = new ArrayList<>();
 
 	/**
 	 * Constructor
@@ -106,11 +107,11 @@ public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractE
 	 * @param joins
 	 */
 	public ModelBasedSearchDialog(BaseService<ID, T> service, EntityModel<T> entityModel, List<Filter> filters,
-	        SortOrder sortOrder, boolean multiSelect, boolean searchImmediately, FetchJoinInformation... joins) {
+	        List<SortOrder> sortOrders, boolean multiSelect, boolean searchImmediately, FetchJoinInformation... joins) {
 		super(true);
 		this.service = service;
 		this.entityModel = entityModel;
-		this.sortOrder = sortOrder;
+		this.sortOrders = sortOrders != null ? sortOrders : new ArrayList<SortOrder>();
 		this.filters = filters;
 		this.multiSelect = multiSelect;
 		this.joins = joins;
@@ -127,7 +128,10 @@ public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractE
 		parent.addComponent(wrapper);
 
 		searchLayout = new SimpleSearchLayout<ID, T>(service, entityModel, QueryType.ID_BASED, formOptions, null,
-		        filters, sortOrder, joins);
+		        filters, null, joins);
+		for (SortOrder order : sortOrders) {
+			searchLayout.addSortOrder(order);
+		}
 		if (pageLength != null) {
 			searchLayout.setPageLength(pageLength);
 		}

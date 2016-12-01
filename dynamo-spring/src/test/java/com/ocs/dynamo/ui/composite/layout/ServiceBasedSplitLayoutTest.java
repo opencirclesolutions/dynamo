@@ -156,5 +156,7 @@ public class ServiceBasedSplitLayoutTest extends BaseIntegrationTest {
 		Assert.assertEquals(1, layout.getTableWrapper().getTable().size());
 		Assert.assertEquals(e1, layout.getParentEntity());
 		Assert.assertNotNull(layout.getFilter());
+		
+		layout.reload();
 	}
 }

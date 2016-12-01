@@ -332,7 +332,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 		SortOrder[] sos = constructSortOrder(entityModel);
 		return new EntityLookupField<ID, S>(service, (EntityModel<S>) entityModel, attributeModel,
 		        fieldFilter == null ? null : Lists.newArrayList(fieldFilter), search, multiSelect,
-		        sos.length == 0 ? null : sos[0]);
+		        sos.length == 0 ? null : Lists.newArrayList(sos));
 	}
 
 	/**

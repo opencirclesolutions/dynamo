@@ -130,75 +130,80 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 	 */
 	@Override
 	public void build() {
-		main = new DefaultVerticalLayout(true, true);
+		if (main == null) {
+			main = new DefaultVerticalLayout(true, true);
 
-		// create new entity if it does not exist yet
-		if (entity == null) {
-			entity = createEntity();
+			// create new entity if it does not exist yet
+			if (entity == null) {
+				entity = createEntity();
+			}
+
+			// there is just one component here, so the screen mode is always
+			// vertical
+			getFormOptions().setScreenMode(ScreenMode.VERTICAL);
+
+			editForm = new ModelBasedEditForm<ID, T>(entity, getService(), getEntityModel(), getFormOptions(),
+			        fieldFilters) {
+				@Override
+				protected void afterEditDone(boolean cancel, boolean newObject, T entity) {
+					setEntity(entity);
+					SimpleEditLayout.this.afterEditDone(cancel, newObject, entity);
+				}
+
+				@Override
+				protected void afterModeChanged(boolean viewMode) {
+					SimpleEditLayout.this.afterModeChanged(viewMode, editForm);
+				}
+
+				@Override
+				protected void back() {
+					SimpleEditLayout.this.back();
+				}
+
+				@Override
+				protected Field<?> constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel,
+				        boolean viewMode) {
+					return SimpleEditLayout.this.constructCustomField(entityModel, attributeModel, viewMode, false);
+				}
+
+				@Override
+				protected String getParentGroup(String childGroup) {
+					return SimpleEditLayout.this.getParentGroup(childGroup);
+				}
+
+				@Override
+				protected String[] getParentGroupHeaders() {
+					return SimpleEditLayout.this.getParentGroupHeaders();
+				}
+
+				@Override
+				protected boolean isEditAllowed() {
+					return SimpleEditLayout.this.isEditAllowed();
+				}
+
+				@Override
+				protected void postProcessButtonBar(HorizontalLayout buttonBar, boolean viewMode) {
+					SimpleEditLayout.this.postProcessButtonBar(buttonBar, viewMode);
+				}
+
+				@Override
+				protected void postProcessEditFields() {
+					SimpleEditLayout.this.postProcessEditFields(editForm);
+				}
+
+			};
+
+			editForm.setFieldEntityModels(getFieldEntityModels());
+			editForm.build();
+
+			main.addComponent(editForm);
+
+			checkButtonState(getEntity());
+
+			setCompositionRoot(main);
+		} else {
+
 		}
-
-		// there is just one component here, so the screen mode is always
-		// vertical
-		getFormOptions().setScreenMode(ScreenMode.VERTICAL);
-
-		editForm = new ModelBasedEditForm<ID, T>(entity, getService(), getEntityModel(), getFormOptions(), fieldFilters) {
-			@Override
-			protected void afterEditDone(boolean cancel, boolean newObject, T entity) {
-				setEntity(entity);
-				SimpleEditLayout.this.afterEditDone(cancel, newObject, entity);
-			}
-
-			@Override
-			protected void afterModeChanged(boolean viewMode) {
-				SimpleEditLayout.this.afterModeChanged(viewMode, editForm);
-			}
-
-			@Override
-			protected void back() {
-				SimpleEditLayout.this.back();
-			}
-
-			@Override
-			protected Field<?> constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel,
-			        boolean viewMode) {
-				return SimpleEditLayout.this.constructCustomField(entityModel, attributeModel, viewMode, false);
-			}
-
-			@Override
-			protected String getParentGroup(String childGroup) {
-				return SimpleEditLayout.this.getParentGroup(childGroup);
-			}
-
-			@Override
-			protected String[] getParentGroupHeaders() {
-				return SimpleEditLayout.this.getParentGroupHeaders();
-			}
-
-			@Override
-			protected boolean isEditAllowed() {
-				return SimpleEditLayout.this.isEditAllowed();
-			}
-
-			@Override
-			protected void postProcessButtonBar(HorizontalLayout buttonBar, boolean viewMode) {
-				SimpleEditLayout.this.postProcessButtonBar(buttonBar, viewMode);
-			}
-
-			@Override
-			protected void postProcessEditFields() {
-				SimpleEditLayout.this.postProcessEditFields(editForm);
-			}
-
-		};
-
-		editForm.setFieldEntityModels(getFieldEntityModels());
-		editForm.build();
-
-		main.addComponent(editForm);
-
-		checkButtonState(getEntity());
-
-		setCompositionRoot(main);
 	}
 
 	/**

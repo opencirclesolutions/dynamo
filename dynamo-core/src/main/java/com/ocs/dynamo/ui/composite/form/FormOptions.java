@@ -115,6 +115,11 @@ public class FormOptions implements Serializable {
 	private boolean showToggleButton;
 
 	/**
+	 * Whether to preserve the last selected tab when reopening a screen
+	 */
+	private boolean preserveSelectedTab;
+
+	/**
 	 * Indicates whether table export is allowed (false by default)
 	 */
 	private boolean tableExportAllowed = false;
@@ -281,6 +286,15 @@ public class FormOptions implements Serializable {
 
 	public FormOptions setTableExportAllowed(boolean tableExportAllowed) {
 		this.tableExportAllowed = tableExportAllowed;
+		return this;
+	}
+
+	public boolean isPreserveSelectedTab() {
+		return preserveSelectedTab;
+	}
+
+	public FormOptions setPreserveSelectedTab(boolean preserveSelectedTab) {
+		this.preserveSelectedTab = preserveSelectedTab;
 		return this;
 	}
 

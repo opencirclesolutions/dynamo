@@ -307,6 +307,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 	private Map<Boolean, Label> titleLabels = new HashMap<>();
 
+	private Map<Boolean, TabSheet> tabSheets = new HashMap<>();
+
 	/**
 	 * Whether to display the component in view mode
 	 */
@@ -474,9 +476,12 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 				postProcessEditFields();
 			}
+
 			setCompositionRoot(mainEditLayout);
 		}
-
+		if (tabSheets.get(isViewMode()) != null && !getFormOptions().isPreserveSelectedTab()) {
+			tabSheets.get(isViewMode()).setSelectedTab(0);
+		}
 	}
 
 	/**
@@ -516,17 +521,18 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		if (!entityModel.usesDefaultGroupOnly()) {
 			// display the attributes in groups
 
-			TabSheet tabSheet = null;
 			boolean tabs = AttributeGroupMode.TABSHEET.equals(getFormOptions().getAttributeGroupMode());
 			if (tabs) {
-				tabSheet = new TabSheet();
+				TabSheet tabSheet = new TabSheet();
+				tabSheets.put(isViewMode(), tabSheet);
 				form.addComponent(tabSheet);
 			}
 
 			if (getParentGroupHeaders() != null && getParentGroupHeaders().length > 0) {
 				// extra layer of grouping
 				for (String parentGroupHeader : getParentGroupHeaders()) {
-					Layout innerForm = constructAttributeGroupLayout(form, tabs, tabSheet, parentGroupHeader, false);
+					Layout innerForm = constructAttributeGroupLayout(form, tabs, tabSheets.get(isViewMode()),
+					        parentGroupHeader, false);
 
 					// add a tab sheet on the inner level if needed
 					TabSheet innerTabSheet = null;
@@ -545,7 +551,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 				// just one layer of attribute groups
 				for (String attributeGroup : entityModel.getAttributeGroups()) {
 					if (entityModel.isAttributeGroupVisible(attributeGroup, viewMode)) {
-						Layout innerForm = constructAttributeGroupLayout(form, tabs, tabSheet,
+						Layout innerForm = constructAttributeGroupLayout(form, tabs, tabSheets.get(isViewMode()),
 						        getAttributeGroupCaption(attributeGroup), true);
 
 						for (AttributeModel attributeModel : entityModel.getAttributeModelsForGroup(attributeGroup)) {
