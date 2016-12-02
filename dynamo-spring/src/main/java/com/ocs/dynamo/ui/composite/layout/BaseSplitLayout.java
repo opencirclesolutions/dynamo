@@ -265,8 +265,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 			detailFormLayout = new DefaultVerticalLayout(false, false);
 
 			// canceling is not needed in the inline view
-			getFormOptions().setHideCancelButton(true);
-
+			getFormOptions().setHideCancelButton(true).setPreserveSelectedTab(true);
 			editForm = new ModelBasedEditForm<ID, T>(entity, getService(), getEntityModel(), getFormOptions(),
 			        getFieldFilters()) {
 

@@ -108,4 +108,18 @@ public class DateUtilsTest {
 		Assert.assertEquals(2015, DateUtils.getYearFromDate(DateUtils.createDate("31122015")).intValue());
 		Assert.assertEquals(2016, DateUtils.getYearFromDate(DateUtils.createDate("01012016")).intValue());
 	}
+
+	@Test
+	public void testGetQuarter() {
+		Assert.assertEquals(-1, DateUtils.getQuarter(null));
+
+		Assert.assertEquals(1, DateUtils.getQuarter(DateUtils.createDate("01012016")));
+		Assert.assertEquals(1, DateUtils.getQuarter(DateUtils.createDate("31032016")));
+		Assert.assertEquals(2, DateUtils.getQuarter(DateUtils.createDate("01042016")));
+		Assert.assertEquals(2, DateUtils.getQuarter(DateUtils.createDate("30062016")));
+		Assert.assertEquals(3, DateUtils.getQuarter(DateUtils.createDate("01072016")));
+		Assert.assertEquals(3, DateUtils.getQuarter(DateUtils.createDate("30092016")));
+		Assert.assertEquals(4, DateUtils.getQuarter(DateUtils.createDate("01102016")));
+		Assert.assertEquals(4, DateUtils.getQuarter(DateUtils.createDate("31122016")));
+	}
 }
