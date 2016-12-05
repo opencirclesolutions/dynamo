@@ -229,8 +229,8 @@ public interface EntityModel<T> {
 
 	/**
 	 * Adds a new attribute model on the position of the given existing attribute model. The
-	 * existing model will shift a position backwards. When the existing model is not found the
-	 * attribute will added on the end of the list.
+	 * existing model will shift one position to the back of the list. When the existing model is
+	 * not found the attribute will added on the end of the list.
 	 * 
 	 * @param attributeGroup
 	 *            The group to which the attribute model should be registered
