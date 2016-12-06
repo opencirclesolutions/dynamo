@@ -16,8 +16,10 @@ import com.ocs.dynamo.functional.domain.Country;
 import com.ocs.dynamo.functional.domain.Currency;
 import com.ocs.dynamo.functional.domain.Domain;
 import com.ocs.dynamo.functional.domain.Region;
+import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.test.BaseMockitoTest;
+import com.ocs.dynamo.test.MockUtil;
 
 public class DomainUtilsTest extends BaseMockitoTest {
 
@@ -25,6 +27,9 @@ public class DomainUtilsTest extends BaseMockitoTest {
 	private MessageService messageService;
 
 	private Set<Domain> domains;
+
+	@Mock
+	private BaseService<Integer, Country> service;
 
 	@Override
 	public void setUp() throws Exception {
@@ -96,6 +101,32 @@ public class DomainUtilsTest extends BaseMockitoTest {
 		res = DomainUtil.getDomainDescriptions(messageService, DomainUtil.filterDomains(Currency.class, domains));
 
 		Assert.assertEquals("Danish Crown, Dollar, Euro and 2 others", res);
+	}
+
+	@Test
+	public void testCreateIfNotExists_Create() {
+		MockUtil.mockServiceSave(service, Country.class);
+
+		Country country = DomainUtil.createIfNotExists(service, Country.class, "SomeName", true);
+		Assert.assertNotNull(country);
+
+		// verify that a country is saved
+		Mockito.verify(service).save(Matchers.any(Country.class));
+	}
+
+	@Test
+	public void testCreateIfNotExists_DoNotCreate() {
+		Country existing = new Country();
+		existing.setName("SomeName");
+		existing.setId(44);
+		Mockito.when(service.findByUniqueProperty(Domain.NAME, "SomeName", true)).thenReturn(existing);
+
+		Country country = DomainUtil.createIfNotExists(service, Country.class, "SomeName", true);
+		Assert.assertNotNull(country);
+		Assert.assertEquals(existing.getId(), country.getId());
+
+		// verify that a country is saved
+		Mockito.verify(service, Mockito.times(0)).save(Matchers.any(Country.class));
 	}
 
 }

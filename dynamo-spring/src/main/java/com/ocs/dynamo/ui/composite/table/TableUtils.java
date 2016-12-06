@@ -166,9 +166,8 @@ public final class TableUtils {
 					// in case of a date field, use the entered display format
 					SimpleDateFormat format = new SimpleDateFormat(model.getDisplayFormat());
 
-					// ignore time zones for a pure date field (since it is not
-					// clear what the time zone is anyway)
-					if (!AttributeDateType.TIME.equals(model.getDateType())) {
+					// set time zone for a time stamp field
+					if (AttributeDateType.TIMESTAMP.equals(model.getDateType())) {
 						format.setTimeZone(VaadinUtils.getTimeZone(UI.getCurrent()));
 					}
 					return format.format((Date) value);

@@ -1,7 +1,7 @@
-Bas;1;2.40;abc;M;1.5;true
-;2;;desx;M;2.50;true
-Endy;-3;;ghi;M;3.50;true
-Ward;4;;jkl;M;4.50;true
-Michiel;5;;mno;M;5.50;true
-Chris;6;;pqr;M;6.50;true
-Wouter;7;;stu;M;7.50;true
+Bas;1;2.40;abc;M;1.5;TRUE;12-11-2014;
+;2;;desx;M;2.50;TRUE;13-12-2015;
+Endy;-3;;ghi;M;3.50;TRUE;;
+Ward;4;;jkl;M;4.50;TRUE;;
+Michiel;5;;mno;M;5.50;TRUE;;
+Chris;6;;pqr;M;6.50;TRUE;;
+Wouter;7;;stu;M;7.50;TRUE;;

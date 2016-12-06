@@ -16,6 +16,7 @@ package com.ocs.dynamo.importer.impl;
 import java.beans.PropertyDescriptor;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Date;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.util.StringUtils;
@@ -65,6 +66,18 @@ public abstract class BaseImporter<R, U> {
 	protected abstract Boolean getBooleanValueWithDefault(U unit, ImportField field);
 
 	/**
+	 * Retrieves a date value from the input and falls back to a default if the value is empty or
+	 * not defined
+	 * 
+	 * @param unit
+	 *            the field value to process
+	 * @param field
+	 *            the field definition
+	 * @return
+	 */
+	protected abstract Date getDateValueWithDefault(U unit, ImportField field);
+
+	/**
 	 * Retrieves a value from a field
 	 * 
 	 * @param d
@@ -95,7 +108,6 @@ public abstract class BaseImporter<R, U> {
 					        + " cannot be translated to a valid enumeration value", ex);
 				}
 			}
-
 		} else if (isNumeric(d.getPropertyType())) {
 			// numeric field
 
@@ -134,6 +146,8 @@ public abstract class BaseImporter<R, U> {
 			}
 		} else if (Boolean.class.isAssignableFrom(d.getPropertyType())) {
 			return getBooleanValueWithDefault(unit, field);
+		} else if (Date.class.isAssignableFrom(d.getPropertyType())) {
+			return getDateValueWithDefault(unit, field);
 		}
 		return obj;
 	}
@@ -155,7 +169,9 @@ public abstract class BaseImporter<R, U> {
 	 * defined
 	 * 
 	 * @param unit
+	 *            the input unit
 	 * @param field
+	 *            the field definition
 	 * @return
 	 */
 	protected abstract String getStringValueWithDefault(U unit, ImportField field);

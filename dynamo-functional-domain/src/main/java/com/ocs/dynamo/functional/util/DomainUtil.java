@@ -23,7 +23,9 @@ import java.util.Set;
 import com.google.common.collect.Lists;
 import com.ocs.dynamo.domain.comparator.AttributeComparator;
 import com.ocs.dynamo.functional.domain.Domain;
+import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.MessageService;
+import com.ocs.dynamo.utils.ClassUtils;
 
 /**
  * Utility methods for dealing with domains
@@ -36,6 +38,30 @@ public final class DomainUtil {
 	private static final int MAX_DESCRIPTION_ITEMS = 3;
 
 	private DomainUtil() {
+	}
+
+	/**
+	 * Creates a new item if it does not exist. Otherwise, returns the existing item
+	 * 
+	 * @param service
+	 *            the service used to retrieve the item
+	 * @param clazz
+	 *            the domain class
+	 * @param value
+	 *            the value of the "name" attribute
+	 * @param caseSensitive
+	 *            whether to check for case-sensitive values
+	 * @return 
+	 */
+	public static <T extends Domain> T createIfNotExists(BaseService<?, T> service, Class<T> clazz, String value,
+	        boolean caseSensitive) {
+		T t = service.findByUniqueProperty(Domain.NAME, value, caseSensitive);
+		if (t == null) {
+			t = ClassUtils.instantiateClass(clazz);
+			t.setName(value);
+			t = service.save(t);
+		}
+		return t;
 	}
 
 	/**
@@ -58,31 +84,6 @@ public final class DomainUtil {
 			}
 		}
 		return result;
-	}
-
-	/**
-	 * Updates a certain category of domain items, removing all current values and replacing them by
-	 * the new ones
-	 * 
-	 * @param clazz
-	 *            the domain type
-	 * @param domains
-	 *            all current domain values
-	 * @param newValues
-	 *            the set of new values
-	 */
-	public static <T extends Domain> void updateDomains(Class<T> clazz, Set<Domain> domains, Set<T> newValues) {
-		Iterator<Domain> it = domains.iterator();
-		while (it.hasNext()) {
-			Domain domain = it.next();
-			if (domain.getClass().isAssignableFrom(clazz)) {
-				it.remove();
-			}
-		}
-
-		if (newValues != null) {
-			domains.addAll(newValues);
-		}
 	}
 
 	/**
@@ -113,4 +114,30 @@ public final class DomainUtil {
 
 		return result.toString();
 	}
+
+	/**
+	 * Updates a certain category of domain items, removing all current values and replacing them by
+	 * the new ones
+	 * 
+	 * @param clazz
+	 *            the domain type
+	 * @param domains
+	 *            all current domain values
+	 * @param newValues
+	 *            the set of new values
+	 */
+	public static <T extends Domain> void updateDomains(Class<T> clazz, Set<Domain> domains, Set<T> newValues) {
+		Iterator<Domain> it = domains.iterator();
+		while (it.hasNext()) {
+			Domain domain = it.next();
+			if (domain.getClass().isAssignableFrom(clazz)) {
+				it.remove();
+			}
+		}
+
+		if (newValues != null) {
+			domains.addAll(newValues);
+		}
+	}
+
 }

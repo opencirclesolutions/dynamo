@@ -104,9 +104,13 @@ public abstract class BaseCustomComponent extends CustomComponent implements Bui
 					// knowing it!)
 					fieldLabel
 					        .setConverter(new FormattedStringToDateConverter(null, attributeModel.getDisplayFormat()));
-				} else {
+				} else if (AttributeDateType.TIMESTAMP.equals(attributeModel.getDateType())) {
 					fieldLabel.setConverter(new FormattedStringToDateConverter(
 					        VaadinUtils.getTimeZone(UI.getCurrent()), attributeModel.getDisplayFormat()));
+				} else {
+					// just a date
+					fieldLabel
+					        .setConverter(new FormattedStringToDateConverter(null, attributeModel.getDisplayFormat()));
 				}
 			} else if (attributeModel.getType().isEnum()) {
 				String msg = getMessageService().getEnumMessage((Class<Enum<?>>) attributeModel.getType(),
