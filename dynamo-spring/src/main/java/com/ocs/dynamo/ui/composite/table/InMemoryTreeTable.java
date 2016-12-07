@@ -67,7 +67,7 @@ import com.vaadin.ui.UI;
  *            type of the parent entity
  */
 @SuppressWarnings({ "serial", "unchecked" })
-public abstract class CustomTreeTable<ID, U extends AbstractEntity<ID>, ID2, V extends AbstractEntity<ID2>> extends
+public abstract class InMemoryTreeTable<ID, U extends AbstractEntity<ID>, ID2, V extends AbstractEntity<ID2>> extends
         TreeTable implements Buildable {
 
 	// the prefix that is added to the key of a child row
@@ -76,15 +76,19 @@ public abstract class CustomTreeTable<ID, U extends AbstractEntity<ID>, ID2, V e
 	// the prefix that is added to the key of a parent row
 	public static final String PREFIX_PARENTROW = "p";
 
+	// the property ID of the column on which the user performed a right-click
 	private String clickedColumn;
 
+	// the message service
 	private MessageService messageService;
 
+	// whether to propagate changes (disabled during screen building)
 	private boolean propagateChanges = true;
 
+	// whether the screen is in view mode
 	private boolean viewMode;
 
-	public CustomTreeTable() {
+	public InMemoryTreeTable() {
 		this.messageService = ServiceLocator.getMessageService();
 	}
 
@@ -112,7 +116,7 @@ public abstract class CustomTreeTable<ID, U extends AbstractEntity<ID>, ID2, V e
 			@Override
 			public String getStyle(Table source, Object itemId, Object propertyId) {
 				if (itemId.toString().startsWith(PREFIX_PARENTROW)) {
-					return "parentRow";
+					return DynamoConstants.CSS_PARENT_ROW;
 				} else {
 					return getCustomStyle(itemId, propertyId);
 				}
@@ -289,7 +293,7 @@ public abstract class CustomTreeTable<ID, U extends AbstractEntity<ID>, ID2, V e
 						for (V v : parentCollection) {
 							for (U u : getRowCollection(v)) {
 								if (!targetRow.equals(PREFIX_CHILDROW + i)) {
-									CustomTreeTable.this.handleChange(PREFIX_CHILDROW + i, clickedColumn,
+									InMemoryTreeTable.this.handleChange(PREFIX_CHILDROW + i, clickedColumn,
 									        value == null ? null : convertToString(toBigDecimal(value), clickedColumn));
 								}
 								i++;
@@ -304,7 +308,7 @@ public abstract class CustomTreeTable<ID, U extends AbstractEntity<ID>, ID2, V e
 						int i = 0;
 						for (V v : parentCollection) {
 							for (U u : getRowCollection(v)) {
-								CustomTreeTable.this.handleChange(PREFIX_CHILDROW + i, clickedColumn, null);
+								InMemoryTreeTable.this.handleChange(PREFIX_CHILDROW + i, clickedColumn, null);
 								i++;
 							}
 						}
@@ -354,7 +358,9 @@ public abstract class CustomTreeTable<ID, U extends AbstractEntity<ID>, ID2, V e
 	 * Converts a numeric value from its BigDecimal representation to its native form
 	 * 
 	 * @param value
+	 *            the value
 	 * @param propertyId
+	 *            the ID of the property
 	 * @return
 	 */
 	protected Number convertNumber(BigDecimal value, String propertyId) {
@@ -410,7 +416,7 @@ public abstract class CustomTreeTable<ID, U extends AbstractEntity<ID>, ID2, V e
 				for (U u : getRowCollection(v)) {
 					Object value = getItem(PREFIX_CHILDROW + i).getItemProperty(sourceColumnId).getValue();
 					if (value instanceof Number || value == null) {
-						CustomTreeTable.this.handleChange(PREFIX_CHILDROW + i, targetColumnId, value == null ? null
+						InMemoryTreeTable.this.handleChange(PREFIX_CHILDROW + i, targetColumnId, value == null ? null
 						        : convertToString(toBigDecimal((Number) value), targetColumnId));
 					}
 					i++;
@@ -475,7 +481,7 @@ public abstract class CustomTreeTable<ID, U extends AbstractEntity<ID>, ID2, V e
 	protected abstract void fillParentRow(Object[] row, V entity);
 
 	/**
-	 * @return
+	 * @return any additional actions to add to the context menu
 	 */
 	protected List<Action> getAdditionalActions() {
 		return Lists.newArrayList();
@@ -525,6 +531,10 @@ public abstract class CustomTreeTable<ID, U extends AbstractEntity<ID>, ID2, V e
 	 */
 	protected abstract String getKeyPropertyId();
 
+	/**
+	 * 
+	 * @return
+	 */
 	public MessageService getMessageService() {
 		return messageService;
 	}
@@ -544,6 +554,7 @@ public abstract class CustomTreeTable<ID, U extends AbstractEntity<ID>, ID2, V e
 	 * Returns the offset (row counter) of a certain row ID
 	 * 
 	 * @param rowId
+	 *            the row ID
 	 * @return
 	 */
 	private int getOffset(String rowId) {
@@ -561,12 +572,13 @@ public abstract class CustomTreeTable<ID, U extends AbstractEntity<ID>, ID2, V e
 	 * Returns the previous column ID given a certain column ID
 	 * 
 	 * @param columnId
+	 *            the column ID
 	 * @return
 	 */
 	protected abstract String getPreviousColumnId(String columnId);
 
 	/**
-	 * @return
+	 * @return the title of the report that can be exported
 	 */
 	protected abstract String getReportTitle();
 
@@ -600,11 +612,14 @@ public abstract class CustomTreeTable<ID, U extends AbstractEntity<ID>, ID2, V e
 	}
 
 	/**
-	 * Handles the changing of the value in a text field
+	 * Handles a change
 	 * 
-	 * @param tf
+	 * @param rowId
+	 *            the ID of the row in which a value changes
 	 * @param propertyId
+	 *            the ID of the column in which a value changes
 	 * @param value
+	 *            the new value
 	 */
 	public void handleChange(String rowId, String propertyId, String value) {
 
@@ -685,6 +700,16 @@ public abstract class CustomTreeTable<ID, U extends AbstractEntity<ID>, ID2, V e
 	protected abstract Number handleChange(String propertyId, String rowId, String parentRowId, String childKey,
 	        String parentKey, Object newValue);
 
+	/**
+	 * Handles the change of a text field
+	 * 
+	 * @param tf
+	 *            the text field
+	 * @param propertyId
+	 *            the name of the property that is changed
+	 * @param value
+	 *            the new value
+	 */
 	private void handleChange(TextField tf, String propertyId, String value) {
 		handleChange((String) tf.getData(), propertyId, value);
 	}
@@ -781,7 +806,9 @@ public abstract class CustomTreeTable<ID, U extends AbstractEntity<ID>, ID2, V e
 	 * Sets the value for a certain field
 	 * 
 	 * @param rowId
+	 *            the row ID
 	 * @param propertyId
+	 *            the property ID
 	 * @param value
 	 *            the string representation of the value
 	 */
@@ -798,6 +825,7 @@ public abstract class CustomTreeTable<ID, U extends AbstractEntity<ID>, ID2, V e
 	 * Converts a numeric value to a BigDecimal
 	 * 
 	 * @param value
+	 *            the value to convert
 	 * @return
 	 */
 	protected BigDecimal toBigDecimal(Number value) {

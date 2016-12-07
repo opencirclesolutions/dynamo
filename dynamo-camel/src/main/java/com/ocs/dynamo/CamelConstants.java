@@ -19,7 +19,10 @@ package com.ocs.dynamo;
  * @author bas.rutten
  *
  */
-public class CamelConstants {
+public final class CamelConstants {
 
 	public static final String HEADER_ERROR_LIST = "header_error_list";
+
+	private CamelConstants() {
+	}
 }

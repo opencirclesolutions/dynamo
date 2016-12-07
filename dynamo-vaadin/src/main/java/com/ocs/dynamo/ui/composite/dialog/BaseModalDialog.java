@@ -15,6 +15,7 @@ package com.ocs.dynamo.ui.composite.dialog;
 
 import org.apache.log4j.Logger;
 
+import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.ui.Buildable;
 import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
@@ -50,6 +51,9 @@ public abstract class BaseModalDialog extends Window implements Buildable {
 		constructLayout();
 	}
 
+	/**
+	 * Constructs the layout
+	 */
 	private void constructLayout() {
 		this.setModal(true);
 		this.setResizable(false);
@@ -61,7 +65,7 @@ public abstract class BaseModalDialog extends Window implements Buildable {
 		this.setContent(panel);
 
 		VerticalLayout main = new DefaultVerticalLayout();
-		main.setStyleName("ocsDialog");
+		main.setStyleName(DynamoConstants.CSS_OCS_DIALOG);
 		panel.setContent(main);
 
 		doBuild(main);
@@ -76,6 +80,7 @@ public abstract class BaseModalDialog extends Window implements Buildable {
 	 * Constructs the actual contents of the window
 	 * 
 	 * @param parent
+	 *            the parent layout to which to add the specific components
 	 */
 	protected abstract void doBuild(Layout parent);
 
@@ -83,11 +88,12 @@ public abstract class BaseModalDialog extends Window implements Buildable {
 	 * Constructs the button bar
 	 * 
 	 * @param buttonBar
+	 *            the button bar
 	 */
 	protected abstract void doBuildButtonBar(HorizontalLayout buttonBar);
 
 	/**
-	 * Returns the title
+	 * Returns the title of the dialog
 	 * 
 	 * @return
 	 */
@@ -104,7 +110,7 @@ public abstract class BaseModalDialog extends Window implements Buildable {
 	 */
 	protected void showNotifification(String message, Notification.Type type) {
 		if (Page.getCurrent() != null) {
-			Notification.show(message, Notification.Type.ERROR_MESSAGE);
+			Notification.show(message, type);
 		} else {
 			LOG.info(message);
 		}

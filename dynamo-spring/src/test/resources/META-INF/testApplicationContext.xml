@@ -24,7 +24,7 @@
 		prevent the need for an persistence.xml -->
 	<bean id="jpaVendorAdapter"
 		class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
-		<property name="showSql" value="true" />
+		<property name="showSql" value="false" />
 	</bean>
 	<bean id="entityManagerFactory"
 		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">

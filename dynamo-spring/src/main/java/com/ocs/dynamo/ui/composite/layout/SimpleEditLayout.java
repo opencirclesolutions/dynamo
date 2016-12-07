@@ -84,6 +84,10 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 		this.joins = joins;
 	}
 
+	protected void afterEntitySelected(ModelBasedEditForm<ID, T> editForm, T entity) {
+		// override in subclass
+	}
+
 	/**
 	 * Method that is called after the user has completed (or cancelled) an edit action
 	 * 
@@ -198,11 +202,10 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 
 			main.addComponent(editForm);
 
+			afterEntitySelected(editForm, getEntity());
 			checkButtonState(getEntity());
 
 			setCompositionRoot(main);
-		} else {
-
 		}
 	}
 
@@ -328,6 +331,7 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 			this.entity = createEntity();
 		}
 		editForm.setEntity(this.entity);
+		afterEntitySelected(editForm, this.entity);
 	}
 
 	public void setFieldFilters(Map<String, Filter> fieldFilters) {

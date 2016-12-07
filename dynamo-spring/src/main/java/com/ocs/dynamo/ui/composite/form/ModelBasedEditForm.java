@@ -243,10 +243,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 	private static final long serialVersionUID = 2201140375797069148L;
 
-	/**
-	 * Indicates whether the fields have been post processed
-	 */
-	private boolean fieldsProcessed;
+	private Map<Boolean, Map<String, Component>> attributeGroups = new HashMap<>();
 
 	/**
 	 * The back button
@@ -254,14 +251,16 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	private Button backButton;
 
 	/**
-	 * Indicates whether all details tables for editing complex fields are valid
-	 */
-	private Map<SignalsParent, Boolean> detailTablesValid = new HashMap<>();
-
-	/**
 	 * The cancel button
 	 */
 	private Button cancelButton;
+
+	private FetchJoinInformation[] detailJoins;
+
+	/**
+	 * Indicates whether all details tables for editing complex fields are valid
+	 */
+	private Map<SignalsParent, Boolean> detailTablesValid = new HashMap<>();
 
 	/**
 	 * The edit button
@@ -279,11 +278,16 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	private ModelBasedFieldFactory<T> fieldFactory;
 
 	/**
+	 * Indicates whether the fields have been post processed
+	 */
+	private boolean fieldsProcessed;
+
+	/**
 	 * The field that must receive focus
 	 */
 	private Field<?> firstField;
 
-	private FetchJoinInformation[] detailJoins;
+	private Map<Boolean, BeanFieldGroup<T>> groups = new HashMap<>();
 
 	/**
 	 * A map containing all the labels that were added - used to replace the label values as the
@@ -295,19 +299,17 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 	private VerticalLayout mainViewLayout;
 
-	private Map<Boolean, BeanFieldGroup<T>> groups = new HashMap<>();
-
 	private List<Button> saveButtons = new ArrayList<>();
-
-	private Map<Boolean, HorizontalLayout> titleBars = new HashMap<>();
 
 	private BaseService<ID, T> service;
 
-	private Map<Boolean, Map<AttributeModel, Component>> uploads = new HashMap<>();
+	private Map<Boolean, TabSheet> tabSheets = new HashMap<>();
+
+	private Map<Boolean, HorizontalLayout> titleBars = new HashMap<>();
 
 	private Map<Boolean, Label> titleLabels = new HashMap<>();
 
-	private Map<Boolean, TabSheet> tabSheets = new HashMap<>();
+	private Map<Boolean, Map<AttributeModel, Component>> uploads = new HashMap<>();
 
 	/**
 	 * Whether to display the component in view mode
@@ -355,6 +357,9 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		group.setBuffered(false);
 		groups.put(Boolean.TRUE, group);
 
+		// init panel maps
+		attributeGroups.put(Boolean.TRUE, new HashMap<String, Component>());
+		attributeGroups.put(Boolean.FALSE, new HashMap<String, Component>());
 	}
 
 	/**
@@ -474,7 +479,10 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 				mainEditLayout = buildMainLayout(getEntityModel());
 
-				postProcessEditFields();
+				if (!fieldsProcessed) {
+					postProcessEditFields();
+					fieldsProcessed = true;
+				}
 			}
 
 			setCompositionRoot(mainEditLayout);
@@ -629,12 +637,15 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 		if (tabs) {
 			tabSheet.addTab(innerLayout, caption);
+			attributeGroups.get(isViewMode()).put(caption, innerLayout);
 		} else {
 			Panel panel = new Panel();
 			panel.setStyleName("attributePanel");
 			panel.setCaption(caption);
 			panel.setContent(innerLayout);
 			parent.addComponent(panel);
+
+			attributeGroups.get(isViewMode()).put(caption, panel);
 		}
 		return innerLayout;
 	}
@@ -853,6 +864,10 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		return cancelButton;
 	}
 
+	public FetchJoinInformation[] getDetailJoins() {
+		return detailJoins;
+	}
+
 	public Button getEditButton() {
 		return editButton;
 	}
@@ -1013,6 +1028,29 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		}
 	}
 
+	/**
+	 * Shows/hides an attribute group
+	 * 
+	 * @param caption
+	 *            the caption of the attribute group
+	 * @param visible
+	 *            whether to show/hide the group
+	 */
+	public void setAttributeGroupVisible(String caption, boolean visible) {
+		Component c = attributeGroups.get(false).get(caption);
+		if (c != null) {
+			c.setVisible(visible);
+		}
+		c = attributeGroups.get(true).get(caption);
+		if (c != null) {
+			c.setVisible(visible);
+		}
+	}
+
+	public void setDetailJoins(FetchJoinInformation[] detailJoins) {
+		this.detailJoins = detailJoins;
+	}
+
 	public void setEntity(T entity) {
 		this.entity = entity;
 		afterEntitySet(entity);
@@ -1111,13 +1149,4 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		detailTablesValid.put(component, valid);
 		checkSaveButtonState();
 	}
-
-	public FetchJoinInformation[] getDetailJoins() {
-		return detailJoins;
-	}
-
-	public void setDetailJoins(FetchJoinInformation[] detailJoins) {
-		this.detailJoins = detailJoins;
-	}
-
 }
