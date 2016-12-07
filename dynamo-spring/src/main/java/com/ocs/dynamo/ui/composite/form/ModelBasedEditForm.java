@@ -68,6 +68,7 @@ import com.vaadin.ui.Layout;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.Upload;
 import com.vaadin.ui.Upload.Receiver;
 import com.vaadin.ui.Upload.SucceededEvent;
@@ -243,7 +244,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 	private static final long serialVersionUID = 2201140375797069148L;
 
-	private Map<Boolean, Map<String, Component>> attributeGroups = new HashMap<>();
+	private Map<Boolean, Map<String, Object>> attributeGroups = new HashMap<>();
 
 	/**
 	 * The back button
@@ -358,8 +359,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		groups.put(Boolean.TRUE, group);
 
 		// init panel maps
-		attributeGroups.put(Boolean.TRUE, new HashMap<String, Component>());
-		attributeGroups.put(Boolean.FALSE, new HashMap<String, Component>());
+		attributeGroups.put(Boolean.TRUE, new HashMap<String, Object>());
+		attributeGroups.put(Boolean.FALSE, new HashMap<String, Object>());
 	}
 
 	/**
@@ -636,8 +637,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		}
 
 		if (tabs) {
-			tabSheet.addTab(innerLayout, caption);
-			attributeGroups.get(isViewMode()).put(caption, innerLayout);
+			Tab added = tabSheet.addTab(innerLayout, caption);
+			attributeGroups.get(isViewMode()).put(caption, added);
 		} else {
 			Panel panel = new Panel();
 			panel.setStyleName("attributePanel");
@@ -1037,13 +1038,27 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	 *            whether to show/hide the group
 	 */
 	public void setAttributeGroupVisible(String caption, boolean visible) {
-		Component c = attributeGroups.get(false).get(caption);
-		if (c != null) {
-			c.setVisible(visible);
-		}
+		Object c = attributeGroups.get(false).get(caption);
+		setComponentVisible(c, visible);
 		c = attributeGroups.get(true).get(caption);
+		setComponentVisible(c, visible);
+	}
+
+	/**
+	 * Hides/shows a component
+	 * 
+	 * @param c
+	 *            the component
+	 * @param visible
+	 *            whether to set the component to visible
+	 */
+	private void setComponentVisible(Object c, boolean visible) {
 		if (c != null) {
-			c.setVisible(visible);
+			if (c instanceof Component) {
+				((Component) c).setVisible(visible);
+			} else if (c instanceof Tab) {
+				((Tab) c).setVisible(visible);
+			}
 		}
 	}
 
