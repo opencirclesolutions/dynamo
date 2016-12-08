@@ -231,7 +231,8 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 				// simple token field (for distinct string values)
 				field = constructSimpleTokenField(
 				        fieldEntityModel != null ? fieldEntityModel : attributeModel.getEntityModel(), attributeModel,
-				        attributeModel.getPath().substring(attributeModel.getPath().lastIndexOf(".") + 1), fieldFilter);
+				        attributeModel.getPath().substring(attributeModel.getPath().lastIndexOf(".") + 1), false,
+				        fieldFilter);
 			} else {
 				// detail relationship, render a multiple select
 				field = this.constructCollectionSelect(fieldEntityModel, attributeModel, fieldFilter, true, search);
@@ -382,7 +383,8 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 	 */
 	@SuppressWarnings("unchecked")
 	private <ID extends Serializable, S extends AbstractEntity<ID>, O extends Comparable<O>> SimpleTokenFieldSelect<ID, S, O> constructSimpleTokenField(
-	        EntityModel<?> entityModel, AttributeModel attributeModel, String distinctField, Filter fieldFilter) {
+	        EntityModel<?> entityModel, AttributeModel attributeModel, String distinctField, boolean elementCollection,
+	        Filter fieldFilter) {
 		BaseService<ID, S> service = (BaseService<ID, S>) ServiceLocator.getServiceForEntity(entityModel
 		        .getEntityClass());
 
@@ -394,7 +396,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 		}
 
 		return new SimpleTokenFieldSelect<>(service, (EntityModel<S>) entityModel, attributeModel, fieldFilter,
-		        distinctField, (Class<O>) attributeModel.getType(), sos);
+		        distinctField, (Class<O>) attributeModel.getNormalizedType(), elementCollection, sos);
 	}
 
 	/**
@@ -518,7 +520,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 			// simple token field (for distinct string values)
 			field = constructSimpleTokenField(
 			        fieldEntityModel != null ? fieldEntityModel : attributeModel.getEntityModel(), attributeModel,
-			        propertyId.substring(propertyId.lastIndexOf(".") + 1), null);
+			        propertyId.substring(propertyId.lastIndexOf(".") + 1), false, null);
 
 		} else if (search && attributeModel.getType().equals(Boolean.class)) {
 			// in a search screen, we need to offer the true, false, and
@@ -528,23 +530,29 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 			// lookup or combo field for an entity
 			field = constructSelectField(attributeModel, fieldEntityModel, null);
 		} else if (AttributeType.ELEMENT_COLLECTION.equals(attributeModel.getAttributeType())) {
-			// use a "collection table" for an element collection
-			FormOptions fo = new FormOptions();
-			fo.setShowRemoveButton(true);
-			if (String.class.equals(attributeModel.getMemberType())) {
-				CollectionTable<String> table = new CollectionTable<>(attributeModel, false, fo);
-				table.setMinLength(attributeModel.getMinLength());
-				table.setMaxLength(attributeModel.getMaxLength());
-				field = table;
-			} else if (Integer.class.equals(attributeModel.getMemberType())) {
-				field = new CollectionTable<>(attributeModel, false, fo);
-			} else if (Long.class.equals(attributeModel.getMemberType())) {
-				field = new CollectionTable<>(attributeModel, false, fo);
-			} else if (BigDecimal.class.equals(attributeModel.getMemberType())) {
-				field = new CollectionTable<>(attributeModel, false, fo);
+			if (!search) {
+				// use a "collection table" for an element collection
+				FormOptions fo = new FormOptions();
+				fo.setShowRemoveButton(true);
+				if (String.class.equals(attributeModel.getMemberType())) {
+					CollectionTable<String> table = new CollectionTable<>(attributeModel, false, fo);
+					table.setMinLength(attributeModel.getMinLength());
+					table.setMaxLength(attributeModel.getMaxLength());
+					field = table;
+				} else if (Integer.class.equals(attributeModel.getMemberType())) {
+					field = new CollectionTable<>(attributeModel, false, fo);
+				} else if (Long.class.equals(attributeModel.getMemberType())) {
+					field = new CollectionTable<>(attributeModel, false, fo);
+				} else if (BigDecimal.class.equals(attributeModel.getMemberType())) {
+					field = new CollectionTable<>(attributeModel, false, fo);
+				} else {
+					// other types not supported for now
+					throw new OCSRuntimeException("Element collections of this type are currently not supported");
+				}
 			} else {
-				// other types not supported for now
-				throw new OCSRuntimeException("Element collections of this type are currently not supported");
+				field = constructSimpleTokenField(
+				        fieldEntityModel != null ? fieldEntityModel : attributeModel.getEntityModel(), attributeModel,
+				        propertyId.substring(propertyId.lastIndexOf(".") + 1), true, null);
 			}
 		} else if (Collection.class.isAssignableFrom(attributeModel.getType())) {
 			// render a multiple select component for a collection

@@ -36,6 +36,10 @@ public class AttributeModelImpl implements AttributeModel {
 
 	private AttributeType attributeType;
 
+	private String collectionTableFieldName;
+
+	private String collectionTableName;
+
 	private boolean complexEditable;
 
 	private boolean currency;
@@ -137,6 +141,16 @@ public class AttributeModelImpl implements AttributeModel {
 	@Override
 	public AttributeType getAttributeType() {
 		return attributeType;
+	}
+
+	@Override
+	public String getCollectionTableFieldName() {
+		return collectionTableFieldName;
+	}
+
+	@Override
+	public String getCollectionTableName() {
+		return collectionTableName;
 	}
 
 	@Override
@@ -392,6 +406,14 @@ public class AttributeModelImpl implements AttributeModel {
 
 	public void setAttributeType(AttributeType attributeType) {
 		this.attributeType = attributeType;
+	}
+
+	public void setCollectionTableFieldName(String collectionTableFieldName) {
+		this.collectionTableFieldName = collectionTableFieldName;
+	}
+
+	public void setCollectionTableName(String collectionTableName) {
+		this.collectionTableName = collectionTableName;
 	}
 
 	public void setComplexEditable(boolean complexEditable) {

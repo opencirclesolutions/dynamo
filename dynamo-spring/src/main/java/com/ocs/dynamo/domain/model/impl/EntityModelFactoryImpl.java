@@ -30,6 +30,8 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import javax.persistence.CollectionTable;
+import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Embedded;
 import javax.persistence.Id;
@@ -540,6 +542,20 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 				} else if (ClassUtils.getAnnotation(parentClass, name, ElementCollection.class) != null) {
 					result = AttributeType.ELEMENT_COLLECTION;
 					model.setMemberType(ClassUtils.getResolvedType(parentClass, model.getName(), 0));
+					model.setCollectionTableName(model.getName());
+					model.setCollectionTableFieldName(model.getName());
+
+					// override table name
+					CollectionTable table = ClassUtils.getAnnotation(parentClass, name, CollectionTable.class);
+					if (table != null && table.name() != null) {
+						model.setCollectionTableName(table.name());
+					}
+					// override field name
+					Column col = ClassUtils.getAnnotation(parentClass, name, Column.class);
+					if (col != null && col.name() != null) {
+						model.setCollectionTableFieldName(col.name());
+					}
+
 				} else if (AbstractEntity.class.isAssignableFrom(model.getType())) {
 					// not a collection but a reference to another object
 					result = AttributeType.MASTER;

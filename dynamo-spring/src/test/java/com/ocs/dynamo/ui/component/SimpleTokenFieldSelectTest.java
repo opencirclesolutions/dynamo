@@ -40,7 +40,7 @@ public class SimpleTokenFieldSelectTest extends BaseMockitoTest {
 		AttributeModel am = em.getAttributeModel("name");
 
 		SimpleTokenFieldSelect<Integer, TestEntity, String> select = new SimpleTokenFieldSelect<Integer, TestEntity, String>(
-		        service, em, am, null, "name", String.class, order);
+		        service, em, am, null, "name", String.class, false, order);
 		select.initContent();
 
 		// select an item and verify it is added as a token
@@ -68,7 +68,7 @@ public class SimpleTokenFieldSelectTest extends BaseMockitoTest {
 		EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
 		AttributeModel am = em.getAttributeModel("name");
 		SimpleTokenFieldSelect<Integer, TestEntity, String> select = new SimpleTokenFieldSelect<Integer, TestEntity, String>(
-		        service, em, am, null, "name", String.class, order);
+		        service, em, am, null, "name", String.class, false, order);
 		select.initContent();
 
 		// select two values and verify that they are added as tokens and removed from the combo box
@@ -78,4 +78,25 @@ public class SimpleTokenFieldSelectTest extends BaseMockitoTest {
 		Assert.assertEquals(1, select.getComboBox().getContainerDataSource().size());
 	}
 
+	@Test
+	public void testElementCollection() {
+
+		com.vaadin.data.sort.SortOrder order = new com.vaadin.data.sort.SortOrder("name", SortDirection.ASCENDING);
+		List<String> items = Lists.newArrayList("Kevin", "Stuart", "Bob");
+		Mockito.when(
+		        service.findDistinctInCollectionTable(Matchers.anyString(), Matchers.anyString(), 
+		        		Matchers.eq(String.class))).thenReturn(items);
+
+		EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
+		AttributeModel am = em.getAttributeModel("name");
+		SimpleTokenFieldSelect<Integer, TestEntity, String> select = new SimpleTokenFieldSelect<Integer, TestEntity, String>(
+		        service, em, am, null, "name", String.class, true, order);
+		select.initContent();
+
+		// select two values and verify that they are added as tokens and removed from the combo box
+		select.getComboBox().setValue("Kevin");
+		select.getComboBox().setValue("Bob");
+		Assert.assertEquals(2, select.getTokenField().getValue().size());
+		Assert.assertEquals(1, select.getComboBox().getContainerDataSource().size());
+	}
 }

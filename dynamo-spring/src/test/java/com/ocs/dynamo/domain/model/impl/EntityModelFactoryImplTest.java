@@ -490,6 +490,8 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 
 		AttributeModel am = model.getAttributeModel("elements");
 		Assert.assertEquals(AttributeType.ELEMENT_COLLECTION, am.getAttributeType());
+		Assert.assertEquals("element_table", am.getCollectionTableName());
+		Assert.assertEquals("element", am.getCollectionTableFieldName());
 	}
 
 	private class Entity1 {
@@ -836,6 +838,8 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 	private class Entity9 {
 
 		@ElementCollection
+		@CollectionTable(name = "element_table")
+		@Column(name = "element")
 		private Set<String> elements = new HashSet<>();
 
 		public Set<String> getElements() {

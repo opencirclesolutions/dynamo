@@ -456,6 +456,7 @@ public final class FilterUtil {
 	 */
 	private static void replaceMasterDetailFilter(com.ocs.dynamo.filter.Filter filter, AttributeModel am) {
 		if (AttributeType.DETAIL.equals(am.getAttributeType())
+		        || AttributeType.ELEMENT_COLLECTION.equals(am.getAttributeType())
 		        || ((AttributeType.MASTER.equals(am.getAttributeType()) || AttributeType.BASIC.equals(am
 		                .getAttributeType())) && am.isMultipleSearch())) {
 			com.ocs.dynamo.filter.Filter detailFilter = FilterUtil.extractFilter(filter, am.getPath());
@@ -464,7 +465,8 @@ public final class FilterUtil {
 				String prop = am.getReplacementSearchPath() != null ? am.getReplacementSearchPath() : am.getPath();
 
 				com.ocs.dynamo.filter.Compare.Equal bf = (com.ocs.dynamo.filter.Compare.Equal) detailFilter;
-				if (AttributeType.DETAIL.equals(am.getAttributeType())) {
+				if (AttributeType.DETAIL.equals(am.getAttributeType())
+				        || AttributeType.ELEMENT_COLLECTION.equals(am.getAttributeType())) {
 					if (bf.getValue() instanceof Collection) {
 						// multiple values supplied - construct an OR filter
 						Collection<?> col = (Collection<?>) bf.getValue();

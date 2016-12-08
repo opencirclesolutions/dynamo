@@ -187,6 +187,8 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 				filterType = FilterType.BOOLEAN;
 			} else if (attributeModel.getType().isEnum()) {
 				filterType = FilterType.ENUM;
+			} else if (AttributeType.ELEMENT_COLLECTION.equals(attributeModel.getAttributeType())) {
+				filterType = FilterType.EQUAL;
 			} else if (AbstractEntity.class.isAssignableFrom(attributeModel.getType())
 			        || AttributeType.DETAIL.equals(attributeModel.getAttributeType())) {
 				// search for an entity

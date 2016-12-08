@@ -97,7 +97,11 @@ public class SimpleTokenFieldSelect<ID extends Serializable, S extends AbstractE
 
 	private static final long serialVersionUID = -1490179285573442827L;
 
+	private AttributeModel attributeModel;
+
 	private final ExtTokenField extTokenField;
+
+	private final boolean elementCollection;
 
 	private final ComboBox comboBox;
 
@@ -139,7 +143,7 @@ public class SimpleTokenFieldSelect<ID extends Serializable, S extends AbstractE
 	 */
 	public SimpleTokenFieldSelect(BaseService<ID, S> service, EntityModel<S> entityModel,
 	        AttributeModel attributeModel, Filter fieldFilter, String distinctField, Class<T> elementType,
-	        SortOrder... sortOrders) {
+	        boolean elementCollection, SortOrder... sortOrders) {
 		messageService = ServiceLocator.getMessageService();
 		this.service = service;
 		this.entityModel = entityModel;
@@ -147,6 +151,8 @@ public class SimpleTokenFieldSelect<ID extends Serializable, S extends AbstractE
 		this.distinctField = distinctField;
 		this.sortOrders = sortOrders;
 		this.elementType = elementType;
+		this.elementCollection = elementCollection;
+		this.attributeModel = attributeModel;
 
 		setCaption(attributeModel.getDisplayName());
 
@@ -154,7 +160,7 @@ public class SimpleTokenFieldSelect<ID extends Serializable, S extends AbstractE
 
 		comboBox = new ComboBox();
 		comboBox.setFilteringMode(FilteringMode.CONTAINS);
-		fillComboBox();
+		fillComboBox(this.elementCollection);
 
 		sortProperties = new ArrayList<>();
 		sortOrdering = new ArrayList<>();
@@ -188,9 +194,15 @@ public class SimpleTokenFieldSelect<ID extends Serializable, S extends AbstractE
 		valueChangeListeners.add(listener);
 	}
 
-	private void fillComboBox() {
-		List<T> items = (List<T>) service.findDistinct(new FilterConverter(entityModel).convert(fieldFilter),
-		        distinctField, elementType, SortUtil.translate(sortOrders));
+	private void fillComboBox(boolean elementCollection) {
+		List<T> items = null;
+		if (elementCollection) {
+			items = (List<T>) service.findDistinctInCollectionTable(attributeModel.getCollectionTableName(),
+			        attributeModel.getCollectionTableFieldName(), elementType);
+		} else {
+			items = (List<T>) service.findDistinct(new FilterConverter(entityModel).convert(fieldFilter),
+			        distinctField, elementType, SortUtil.translate(sortOrders));
+		}
 		comboBox.removeAllItems();
 		comboBox.addItems(items);
 	}
@@ -237,7 +249,7 @@ public class SimpleTokenFieldSelect<ID extends Serializable, S extends AbstractE
 	@Override
 	public void refresh() {
 		if (comboBox != null) {
-			fillComboBox();
+			fillComboBox(elementCollection);
 		}
 	}
 

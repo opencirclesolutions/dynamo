@@ -37,6 +37,18 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 
 	/**
 	 * 
+	 * @return the name of the field in the collection table
+	 */
+	String getCollectionTableFieldName();
+
+	/**
+	 * 
+	 * @return the name of the collection table (in case of an element collection)
+	 */
+	String getCollectionTableName();
+
+	/**
+	 * 
 	 * @return The date type (date, time, or timestamp) of the attribute
 	 */
 	AttributeDateType getDateType();
@@ -101,13 +113,6 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	Integer getMinLength();
 
 	/**
-	 * @return The normalized type of the attribute (this is the same as the <code>type</code> in
-	 *         case of a singular attribute, and the member type of the collection case of
-	 *         collection attribute
-	 */
-	Class<?> getNormalizedType();
-
-	/**
 	 * 
 	 * @return The name/identifier of the attribute
 	 */
@@ -118,6 +123,13 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	 * @return The nested entity model for this attribute
 	 */
 	EntityModel<?> getNestedEntityModel();
+
+	/**
+	 * @return The normalized type of the attribute (this is the same as the <code>type</code> in
+	 *         case of a singular attribute, and the member type of the collection case of
+	 *         collection attribute
+	 */
+	Class<?> getNormalizedType();
 
 	/**
 	 * 

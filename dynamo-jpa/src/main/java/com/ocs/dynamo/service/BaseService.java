@@ -32,14 +32,6 @@ import com.ocs.dynamo.filter.Filter;
 public interface BaseService<ID, T extends AbstractEntity<ID>> {
 
 	/**
-	 * Updates, adds, and deletes 
-	 * @param toUpdate
-	 * @param toAdd
-	 * @param toDelete
-	 */
-	void update(List<T> toUpdate, List<T> toAdd, List<T> toDelete);
-	
-	/**
 	 * Returns the total number of entities of this type
 	 * 
 	 * @return
@@ -261,6 +253,19 @@ public interface BaseService<ID, T extends AbstractEntity<ID>> {
 	<S> List<S> findDistinct(Filter filter, String distinctField, Class<S> resultType, SortOrder... orders);
 
 	/**
+	 * Finds distinct elements in a collection table
+	 * 
+	 * @param tableName
+	 *            the name of the table
+	 * @param distinctField
+	 *            the name of the field
+	 * @param elementType
+	 *            the element type
+	 * @return
+	 */
+	<S> List<S> findDistinctInCollectionTable(String tableName, String distinctField, Class<S> elementType);
+
+	/**
 	 * Returns the IDS of the entities that match the provided filter
 	 * 
 	 * @param filter
@@ -295,4 +300,16 @@ public interface BaseService<ID, T extends AbstractEntity<ID>> {
 	 * @return
 	 */
 	T save(T entity);
+
+	/**
+	 * Updates, adds, and deletes
+	 * 
+	 * @param toUpdate
+	 *            to update
+	 * @param toAdd
+	 *            to add
+	 * @param toDelete
+	 *            to delete
+	 */
+	void update(List<T> toUpdate, List<T> toAdd, List<T> toDelete);
 }

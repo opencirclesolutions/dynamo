@@ -345,6 +345,13 @@ public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements B
 
 	@Override
 	@SuppressWarnings("unchecked")
+	public <S> List<S> findDistinctInCollectionTable(String tableName, String distinctField, Class<S> elementType) {
+		String query = "select distinct " + distinctField + " from " + tableName;
+		return (List<S>) getEntityManager().createNativeQuery(query).getResultList();
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
 	public List<ID> findIds(Filter filter, SortOrder... sortOrders) {
 		CriteriaQuery<Tuple> cq = JpaQueryBuilder.createIdQuery(entityManager, getEntityClass(), filter, sortOrders);
 
