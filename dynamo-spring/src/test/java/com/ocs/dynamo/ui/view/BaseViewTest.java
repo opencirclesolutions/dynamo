@@ -10,7 +10,7 @@ import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.test.BaseMockitoTest;
 import com.ocs.dynamo.test.MockUtil;
 import com.ocs.dynamo.ui.BaseUI;
-import com.vaadin.navigator.Navigator;
+import com.ocs.dynamo.ui.navigator.CustomNavigator;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 
 public class BaseViewTest extends BaseMockitoTest {
@@ -31,7 +31,7 @@ public class BaseViewTest extends BaseMockitoTest {
 	private BaseUI ui;
 
 	@Mock
-	private Navigator navigator;
+	private CustomNavigator navigator;
 
 	@Override
 	public void setUp() throws Exception {

@@ -13,6 +13,7 @@
  */
 package com.ocs.dynamo.ui;
 
+import com.ocs.dynamo.ui.navigator.CustomNavigator;
 import com.vaadin.annotations.Widgetset;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.ViewProvider;
@@ -37,7 +38,7 @@ public abstract class BaseUI extends UI {
 	/**
 	 * The navigator
 	 */
-	private Navigator navigator;
+	private CustomNavigator navigator;
 
 	public Integer getSelectedTab() {
 		return selectedTab;
@@ -59,24 +60,27 @@ public abstract class BaseUI extends UI {
 	 * Initializes the startup view
 	 * 
 	 * @param startView
+	 * @param alwaysReload
+	 *            indicates whether the view must always be reloaded (even when navigating from the
+	 *            view to the same view)
 	 */
-	protected void initNavigation(ViewProvider viewProvider, SingleComponentContainer container, String startView) {
+	protected void initNavigation(ViewProvider viewProvider, SingleComponentContainer container, String startView,
+	        boolean alwaysReload) {
 
 		// create the navigator
-		navigator = new Navigator(this, new Navigator.SingleComponentContainerViewDisplay(container));
+		navigator = new CustomNavigator(this, new Navigator.SingleComponentContainerViewDisplay(container));
+		navigator.setAlwaysReload(alwaysReload);
 
 		UI.getCurrent().setNavigator(navigator);
 		navigator.addProvider(viewProvider);
 		navigator.navigateTo(startView);
 	}
 
-	@Override
-	public Navigator getNavigator() {
+	public CustomNavigator getNavigator() {
 		return navigator;
 	}
 
-	@Override
-	public void setNavigator(Navigator navigator) {
+	public void setNavigator(CustomNavigator navigator) {
 		this.navigator = navigator;
 	}
 
