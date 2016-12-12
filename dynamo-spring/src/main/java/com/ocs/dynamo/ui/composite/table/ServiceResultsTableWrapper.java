@@ -81,6 +81,11 @@ public class ServiceResultsTableWrapper<ID extends Serializable, T extends Abstr
 		return filter;
 	}
 
+	@SuppressWarnings("unchecked")
+	public ModelBasedTable<ID, T> getModelBasedTable() {
+		return (ModelBasedTable<ID, T>) super.getTable();
+	}
+
 	@Override
 	@SuppressWarnings("unchecked")
 	protected void initSortingAndFiltering() {

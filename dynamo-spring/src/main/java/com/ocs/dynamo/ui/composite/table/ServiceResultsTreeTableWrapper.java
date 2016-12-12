@@ -29,7 +29,6 @@ import com.ocs.dynamo.ui.container.hierarchical.ModelBasedHierarchicalContainer.
 import com.vaadin.data.Container;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.sort.SortOrder;
-import com.vaadin.ui.Table;
 
 /**
  * Simple search of hierarchical information presented in tree table. Uses
@@ -90,7 +89,7 @@ public class ServiceResultsTreeTableWrapper<ID extends Serializable, T extends A
 	}
 
 	@Override
-	protected Table constructTable() {
+	protected ModelBasedTreeTable<ID, T> constructTable() {
 		return new ModelBasedTreeTable<ID, T>(getContainer(), getEntityModelFactory());
 	}
 

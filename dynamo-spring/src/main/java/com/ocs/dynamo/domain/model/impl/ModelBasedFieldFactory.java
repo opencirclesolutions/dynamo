@@ -522,7 +522,8 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 			        fieldEntityModel != null ? fieldEntityModel : attributeModel.getEntityModel(), attributeModel,
 			        propertyId.substring(propertyId.lastIndexOf(".") + 1), false, null);
 
-		} else if (search && attributeModel.getType().equals(Boolean.class)) {
+		} else if (search
+		        && (attributeModel.getType().equals(Boolean.class) || attributeModel.getType().equals(boolean.class))) {
 			// in a search screen, we need to offer the true, false, and
 			// undefined options
 			field = constructSearchBooleanComboBox(attributeModel);
