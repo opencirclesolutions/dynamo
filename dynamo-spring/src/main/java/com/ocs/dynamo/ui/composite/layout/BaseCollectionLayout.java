@@ -131,18 +131,6 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	}
 
 	/**
-	 * Method that is called after the user selects an entity to view in Details mode
-	 * 
-	 * @param editForm
-	 *            the edit form which displays the entity
-	 * @param entity
-	 *            the selected entity
-	 */
-	protected void afterDetailSelected(ModelBasedEditForm<ID, T> editForm, T entity) {
-		// override in subclass
-	}
-
-	/**
 	 * Method that is called after the setEntity method is called. Can be used to fetch additional
 	 * data if required. This method is called before the "afterDetailSelected" method is called
 	 * 

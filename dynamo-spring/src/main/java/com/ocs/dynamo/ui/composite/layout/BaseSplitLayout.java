@@ -322,7 +322,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 		}
 
 		checkButtonState(getSelectedItem());
-		afterDetailSelected(editForm, entity);
+		afterEntitySelected(editForm, entity);
 
 		detailLayout.replaceComponent(selectedDetailLayout, detailFormLayout);
 		selectedDetailLayout = detailFormLayout;

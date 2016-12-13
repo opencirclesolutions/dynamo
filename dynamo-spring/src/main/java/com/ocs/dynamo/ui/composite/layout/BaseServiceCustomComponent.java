@@ -137,12 +137,24 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	public final void addFieldEntityModel(String path, String reference) {
 		fieldEntityModels.put(path, reference);
 	}
+	
+	/**
+	 * Method that is called after the user selects an entity to view in Details mode
+	 * 
+	 * @param editForm
+	 *            the edit form which displays the entity
+	 * @param entity
+	 *            the selected entity
+	 */
+	protected void afterEntitySelected(ModelBasedEditForm<ID, T> editForm, T entity) {
+		// override in subclass
+	}
 
 	/**
 	 * Method that is called after the mode is changed (from editable to read only or vice versa)
 	 * 
 	 * @param viewMode
-	 *            the new view mode
+	 *            whether the component is now in view mode (after the change)
 	 * @param editForm
 	 *            the edit form
 	 */

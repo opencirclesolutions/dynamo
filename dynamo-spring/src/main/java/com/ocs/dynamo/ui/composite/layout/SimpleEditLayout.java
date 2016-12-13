@@ -84,10 +84,6 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 		this.joins = joins;
 	}
 
-	protected void afterEntitySelected(ModelBasedEditForm<ID, T> editForm, T entity) {
-		// override in subclass
-	}
-
 	/**
 	 * Method that is called after the user has completed (or cancelled) an edit action
 	 * 

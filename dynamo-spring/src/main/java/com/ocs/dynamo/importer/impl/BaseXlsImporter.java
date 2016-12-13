@@ -89,11 +89,25 @@ public class BaseXlsImporter extends BaseImporter<Row, Cell> {
 	 * @param bytes
 	 *            the content of the file
 	 * @param cacheSize
-	 *            the cache size
+	 *            the size of the cache
 	 * @return
 	 */
 	public StreamingReader createReader(byte[] bytes, int cacheSize) {
-		return StreamingReader.builder().rowCacheSize(cacheSize).sheetIndex(0).read(new ByteArrayInputStream(bytes));
+		return createReader(bytes, 0, cacheSize);
+	}
+
+	/**
+	 * Creates a reader for processing an Excel file using streaming
+	 * 
+	 * @param bytes
+	 *            the content of the file
+	 * @param cacheSize
+	 *            the cache size
+	 * @return
+	 */
+	public StreamingReader createReader(byte[] bytes, int sheetIndex, int cacheSize) {
+		return StreamingReader.builder().rowCacheSize(cacheSize).sheetIndex(sheetIndex)
+		        .read(new ByteArrayInputStream(bytes));
 	}
 
 	/**

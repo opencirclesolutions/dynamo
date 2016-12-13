@@ -1003,6 +1003,39 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	}
 
 	/**
+	 * Shows or hides the component for a certain property - this will work regardless of the view
+	 * 
+	 * @param propertyName
+	 *            the name of the property for which to show/hide the property
+	 * @param visible
+	 */
+	public void setComponentVisible(String propertyName, boolean visible) {
+		setLabelVisible(propertyName, visible);
+		Field<?> field = getField(propertyName);
+		if (field != null) {
+			field.setVisible(visible);
+		}
+	}
+
+	/**
+	 * Shows or hides a label
+	 * 
+	 * @param propertyName
+	 *            the name of the property for which to show/hide the label
+	 * @param visible
+	 *            whether to show the label
+	 */
+	public void setLabelVisible(String propertyName, boolean visible) {
+		AttributeModel am = getEntityModel().getAttributeModel(propertyName);
+		if (am != null) {
+			Component label = labels.get(isViewMode()).get(am);
+			if (label != null) {
+				label.setVisible(visible);
+			}
+		}
+	}
+
+	/**
 	 * Replaces an existing label by a label with the provided value
 	 * 
 	 * @param propertyName
