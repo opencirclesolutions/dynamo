@@ -767,7 +767,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		}
 
 		// store a reference to the first field so we can give it focus
-		if (count == 0) {
+		if (firstField == null) {
 			firstField = field;
 		}
 	}
@@ -1178,6 +1178,11 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		if (!isViewMode() && !fieldsProcessed) {
 			postProcessEditFields();
 			fieldsProcessed = true;
+		}
+		
+		// focus first field
+		if (!isViewMode() && firstField != null) {
+			firstField.focus();
 		}
 
 		if (oldMode != this.viewMode) {

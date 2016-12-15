@@ -39,6 +39,8 @@ public final class DateUtils {
 
 	private static final int FIRST_WEEK_NUMBER = 1;
 
+	private static final int LAST_WEEK_NUMBER = 53;
+
 	private DateUtils() {
 	}
 
@@ -208,6 +210,7 @@ public final class DateUtils {
 	 * Converts a date to its corresponding week code
 	 * 
 	 * @param date
+	 *            the date
 	 * @return
 	 */
 	public static String toWeekCode(Date date) {
@@ -222,6 +225,11 @@ public final class DateUtils {
 			// then we have an "overflow"
 			if (week == FIRST_WEEK_NUMBER && month == Calendar.DECEMBER) {
 				year++;
+			}
+
+			// if the week number is 53 but we are in January, then reduce the year by one
+			if ((week == LAST_WEEK_NUMBER || week == LAST_WEEK_NUMBER - 1) && month == Calendar.JANUARY) {
+				year--;
 			}
 
 			return year + "-" + StringUtils.leftPad(Integer.toString(week), 2, "0");
