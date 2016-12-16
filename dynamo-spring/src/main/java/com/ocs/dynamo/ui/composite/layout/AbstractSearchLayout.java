@@ -403,7 +403,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 
 				@Override
 				public void itemClick(ItemClickEvent event) {
-					if (event.isDoubleClick()) {
+					if (event.isDoubleClick() && getFormOptions().isDoubleClickSelectAllowed()) {
 						select(event.getItem().getItemProperty(DynamoConstants.ID).getValue());
 						doEdit();
 					}

@@ -124,6 +124,8 @@ public class FormOptions implements Serializable {
 	 */
 	private boolean tableExportAllowed = false;
 
+	private boolean doubleClickSelectAllowed = true;
+
 	public AttributeGroupMode getAttributeGroupMode() {
 		return attributeGroupMode;
 	}
@@ -295,6 +297,15 @@ public class FormOptions implements Serializable {
 
 	public FormOptions setPreserveSelectedTab(boolean preserveSelectedTab) {
 		this.preserveSelectedTab = preserveSelectedTab;
+		return this;
+	}
+
+	public boolean isDoubleClickSelectAllowed() {
+		return doubleClickSelectAllowed;
+	}
+
+	public FormOptions setDoubleClickSelectAllowed(boolean doubleClickSelectAllowed) {
+		this.doubleClickSelectAllowed = doubleClickSelectAllowed;
 		return this;
 	}
 
