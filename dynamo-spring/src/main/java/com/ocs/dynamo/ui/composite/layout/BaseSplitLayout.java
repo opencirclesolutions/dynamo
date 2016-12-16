@@ -99,12 +99,14 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	}
 
 	/**
-	 * Perform any actions after the screen reloads after a save. This is usually used to reselect
-	 * the item that was selected before
+	 * Perform any actions after the screen reloads after an entity was saved. Override in
+	 * subclasses if needed
 	 * 
 	 * @param entity
 	 */
-	protected abstract void afterReload(T entity);
+	protected void afterReload(T entity) {
+		// override in subclass
+	}
 
 	@Override
 	public void attach() {
@@ -207,7 +209,8 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	public abstract void setSelectedItems(Object selectedItems);
 
 	/**
-	 * Constructs a header layout (displayed above the actual tabular content)
+	 * Constructs a header layout (displayed above the actual tabular content). By defualt this is
+	 * empty, overwrite in subclasses if you want to modify this
 	 * 
 	 * @return
 	 */
@@ -275,6 +278,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 					// again
 					setSelectedItem(entity);
 					reload();
+					reselect(entity);
 					afterReload(entity);
 				}
 
@@ -425,6 +429,16 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 		setSelectedItem(null);
 		emptyDetailView();
 		reload();
+	}
+
+	/**
+	 * Reselects the entity
+	 * 
+	 * @param t
+	 */
+	protected void reselect(T t) {
+		getTableWrapper().getTable().select(t == null ? null : t.getId());
+		detailsMode(t);
 	}
 
 	/**

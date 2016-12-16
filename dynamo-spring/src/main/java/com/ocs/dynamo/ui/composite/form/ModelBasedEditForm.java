@@ -1030,7 +1030,36 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		if (am != null) {
 			Component label = labels.get(isViewMode()).get(am);
 			if (label != null) {
-				label.setVisible(visible);
+				if (ClassUtils.getFieldValue(entity, propertyName) != null) {
+					label.setVisible(visible);
+					label.setCaption(am.getDisplayName());
+				} else {
+					label.setVisible(false);
+					label.setCaption(null);
+				}
+			}
+
+		}
+	}
+
+	/**
+	 * Reconstructs all labels are a change of the view mode or the selected entity
+	 */
+	private void reconstructLabels() {
+		// reconstruct all labels (since they cannot be bound automatically)
+		if (labels.get(isViewMode()) != null) {
+			for (Entry<AttributeModel, Component> e : labels.get(isViewMode()).entrySet()) {
+				Component newLabel = constructLabel(entity, e.getKey());
+
+				// label is displayed in view mode or when its an existing entity
+				newLabel.setVisible(entity.getId() != null || isViewMode());
+
+				// replace all existing labels with new labels
+				HasComponents hc = e.getValue().getParent();
+				if (hc instanceof Layout) {
+					((Layout) hc).replaceComponent(e.getValue(), newLabel);
+					labels.get(isViewMode()).put(e.getKey(), newLabel);
+				}
 			}
 		}
 	}
@@ -1101,7 +1130,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 	public void setEntity(T entity) {
 		this.entity = entity;
-		afterEntitySet(entity);
+		afterEntitySet(this.entity);
 
 		setViewMode(getFormOptions().isOpenInViewMode() && entity.getId() != null);
 
@@ -1112,20 +1141,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		// "rebuild" so that the correct layout is displayed
 		build();
 
-		// reconstruct all labels (since they cannot be bound automatically)
-		for (Entry<AttributeModel, Component> e : labels.get(isViewMode()).entrySet()) {
-			Component newLabel = constructLabel(entity, e.getKey());
-
-			// label is displayed in view mode or when its an existing entity
-			newLabel.setVisible(entity.getId() != null || isViewMode());
-
-			// replace all existing labels with new labels
-			HasComponents hc = e.getValue().getParent();
-			if (hc instanceof Layout) {
-				((Layout) hc).replaceComponent(e.getValue(), newLabel);
-				labels.get(isViewMode()).put(e.getKey(), newLabel);
-			}
-		}
+		reconstructLabels();
 
 		// refresh the upload components
 		for (Entry<AttributeModel, Component> e : uploads.get(isViewMode()).entrySet()) {
@@ -1171,6 +1187,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		groups.get(isViewMode()).setItemDataSource(beanItem);
 
 		constructTitleLabel();
+		reconstructLabels();
 		build();
 
 		// if this is the first time in edit mode, post process the editable
@@ -1179,7 +1196,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			postProcessEditFields();
 			fieldsProcessed = true;
 		}
-		
+
 		// focus first field
 		if (!isViewMode() && firstField != null) {
 			firstField.focus();

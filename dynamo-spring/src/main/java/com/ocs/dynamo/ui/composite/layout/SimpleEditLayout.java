@@ -328,6 +328,7 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 		}
 		editForm.setEntity(this.entity);
 		afterEntitySelected(editForm, this.entity);
+		checkButtonState(getEntity());
 	}
 
 	public void setFieldFilters(Map<String, Filter> fieldFilters) {

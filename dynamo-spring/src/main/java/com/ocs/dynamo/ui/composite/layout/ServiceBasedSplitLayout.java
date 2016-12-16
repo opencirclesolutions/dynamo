@@ -82,15 +82,6 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
 		super(service, entityModel, formOptions, sortOrder, joins);
 	}
 
-	/**
-	 * Method that is called after the layout is reloaded
-	 */
-	@Override
-	protected void afterReload(T t) {
-		// in a lazy query container, the entity ID is used as the key
-		getTableWrapper().getTable().select(t == null ? null : t.getId());
-	}
-
 	@Override
 	protected final void buildFilter() {
 		filter = constructFilter();
