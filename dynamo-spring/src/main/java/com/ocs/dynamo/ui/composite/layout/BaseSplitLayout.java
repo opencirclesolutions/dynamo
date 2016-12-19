@@ -325,6 +325,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 			editForm.setEntity(entity);
 		}
 
+		setSelectedItem(entity);
 		checkButtonState(getSelectedItem());
 		afterEntitySelected(editForm, entity);
 
@@ -435,10 +436,11 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	 * Reselects the entity
 	 * 
 	 * @param t
+	 *            entity to reselect
 	 */
 	protected void reselect(T t) {
-		getTableWrapper().getTable().select(t == null ? null : t.getId());
 		detailsMode(t);
+		getTableWrapper().getTable().select(t == null ? null : t.getId());
 	}
 
 	/**

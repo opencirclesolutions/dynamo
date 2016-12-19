@@ -35,6 +35,7 @@ import com.ocs.dynamo.dao.SortOrder;
 import com.ocs.dynamo.dao.query.DataSetIterator;
 import com.ocs.dynamo.dao.query.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
+import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.filter.Filter;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
@@ -56,6 +57,14 @@ import com.ocs.dynamo.ui.utils.VaadinUtils;
 public abstract class ExportPivotTemplate<ID extends Serializable, T extends AbstractEntity<ID>, ID2 extends Serializable, U extends AbstractEntity<ID2>>
         extends BaseExportTemplate<ID, T> {
 
+	/**
+	 * The attribute model to be used for the pivoted column
+	 */
+	private AttributeModel attributeModel;
+
+	/**
+	 * The list of captions of the non-pivoted columns
+	 */
 	private final List<String> captions;
 
 	/**
@@ -77,9 +86,10 @@ public abstract class ExportPivotTemplate<ID extends Serializable, T extends Abs
 	 *            the joins used when fetching search results
 	 */
 	public ExportPivotTemplate(BaseService<ID, T> service, SortOrder[] sortOrders, Filter filter,
-	        List<String> captions, String title, boolean intThousandsGrouping,
+	        AttributeModel attributeModel, List<String> captions, String title, boolean intThousandsGrouping,
 	        CustomXlsStyleGenerator<ID, T> customGenerator, FetchJoinInformation... joins) {
 		super(service, sortOrders, filter, title, intThousandsGrouping, customGenerator, joins);
+		this.attributeModel = attributeModel;
 		this.captions = captions;
 	}
 
@@ -278,8 +288,8 @@ public abstract class ExportPivotTemplate<ID extends Serializable, T extends Abs
 			} else {
 				Object value = getValue(entity);
 				if (value != null) {
-					Cell cell = createCell(row, colIndex, entity, value, null);
-					writeCellValue(cell, value, entity, null, null);
+					Cell cell = createCell(row, colIndex, entity, value, attributeModel);
+					writeCellValue(cell, value, entity, null, attributeModel);
 
 					if (value instanceof BigDecimal) {
 						rowSum += ((BigDecimal) value).intValue();

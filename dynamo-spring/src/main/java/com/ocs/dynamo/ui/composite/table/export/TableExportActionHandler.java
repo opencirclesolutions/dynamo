@@ -320,6 +320,11 @@ public class TableExportActionHandler implements Handler {
 		private CellStyle normal;
 
 		/**
+		 * Does the totals row contains percentages
+		 */
+		private boolean totalsRowPercentage;
+
+		/**
 		 * Constructor
 		 * 
 		 * @param table
@@ -423,11 +428,11 @@ public class TableExportActionHandler implements Handler {
 							// percentages in the application are just numbers,
 							// but in Excel they are fractions that
 							// are displayed as percentages -> so, divide by 100
-							double temp = ((BigDecimal) value)
-							        .divide(HUNDRED, DynamoConstants.INTERMEDIATE_PRECISION, RoundingMode.HALF_UP)
-							        .setScale(am.getPrecision() + 2, RoundingMode.HALF_UP).doubleValue();
+							double temp = convertPercentageValue(am, value);
 							sheetCell.setCellValue(temp);
 							standard = bigDecimalPercentageStyle;
+
+							totalsRowPercentage = true;
 						} else {
 							// just display as a number
 							sheetCell.setCellValue(((BigDecimal) value).setScale(SCALE, RoundingMode.HALF_UP)
@@ -566,7 +571,7 @@ public class TableExportActionHandler implements Handler {
 						if (Integer.class.equals(propType)) {
 							cell.setCellStyle(integerStyle);
 						} else if (BigDecimal.class.equals(propType)) {
-							cell.setCellStyle(bigDecimalStyle);
+							cell.setCellStyle(isTotalsRowPercentage() ? bigDecimalPercentageStyle : bigDecimalStyle);
 						}
 
 						cra = new CellRangeAddress(startRow, currentRow - 1, col, col);
@@ -651,8 +656,19 @@ public class TableExportActionHandler implements Handler {
 			return Number.class.isAssignableFrom(propType);
 		}
 
+		private double convertPercentageValue(AttributeModel am, Object value) {
+			double temp = ((BigDecimal) value)
+			        .divide(HUNDRED, DynamoConstants.INTERMEDIATE_PRECISION, RoundingMode.HALF_UP)
+			        .setScale(am.getPrecision() + 2, RoundingMode.HALF_UP).doubleValue();
+			return temp;
+		}
+
 		private boolean isStreaming() {
 			return workbook instanceof SXSSFWorkbook;
+		}
+
+		private boolean isTotalsRowPercentage() {
+			return totalsRowPercentage;
 		}
 
 		/**
@@ -827,7 +843,12 @@ public class TableExportActionHandler implements Handler {
 	protected AttributeModel findAttributeModel(Object propId) {
 		if (entityModels != null) {
 			for (EntityModel<?> em : entityModels) {
-				AttributeModel am = em.getAttributeModel(propId.toString());
+				String prop = propId.toString();
+				int p = prop.indexOf("_");
+				if (p >= 0) {
+					prop = prop.substring(p + 1);
+				}
+				AttributeModel am = em.getAttributeModel(prop);
 				if (am != null) {
 					return am;
 				}
