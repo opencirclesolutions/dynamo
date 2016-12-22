@@ -37,6 +37,8 @@ public class AttributeModelImpl implements AttributeModel {
 
 	private Set<String> allowedExtensions = new HashSet<>();
 
+	private boolean alreadyGrouped;
+
 	private AttributeType attributeType;
 
 	private String collectionTableFieldName;
@@ -57,8 +59,6 @@ public class AttributeModelImpl implements AttributeModel {
 
 	private String displayName;
 
-	private List<String> groupTogetherWith = new ArrayList<>();
-
 	private boolean email;
 
 	private EntityModel<?> entityModel;
@@ -66,6 +66,8 @@ public class AttributeModelImpl implements AttributeModel {
 	private String falseRepresentation;
 
 	private String fileNameProperty;
+
+	private List<String> groupTogetherWith = new ArrayList<>();
 
 	private boolean image;
 
@@ -130,8 +132,13 @@ public class AttributeModelImpl implements AttributeModel {
 	private boolean visible;
 
 	private boolean visibleInTable;
-
+	
 	private boolean week;
+
+	@Override
+	public void addGroupTogetherWith(String path) {
+		groupTogetherWith.add(path);
+	}
 
 	@Override
 	public int compareTo(AttributeModel o) {
@@ -196,6 +203,11 @@ public class AttributeModelImpl implements AttributeModel {
 	@Override
 	public String getFileNameProperty() {
 		return fileNameProperty;
+	}
+
+	@Override
+	public List<String> getGroupTogetherWith() {
+		return Collections.unmodifiableList(groupTogetherWith);
 	}
 
 	@Override
@@ -288,6 +300,10 @@ public class AttributeModelImpl implements AttributeModel {
 	@Override
 	public Class<?> getType() {
 		return type;
+	}
+
+	public boolean isAlreadyGrouped() {
+		return alreadyGrouped;
 	}
 
 	@Override
@@ -407,6 +423,10 @@ public class AttributeModelImpl implements AttributeModel {
 
 	public void setAllowedExtensions(Set<String> allowedExtensions) {
 		this.allowedExtensions = allowedExtensions;
+	}
+
+	public void setAlreadyGrouped(boolean alreadyGrouped) {
+		this.alreadyGrouped = alreadyGrouped;
 	}
 
 	public void setAttributeType(AttributeType attributeType) {
@@ -601,15 +621,5 @@ public class AttributeModelImpl implements AttributeModel {
 	@Override
 	public String toString() {
 		return ReflectionToStringBuilder.toStringExclude(this, "entityModel");
-	}
-
-	@Override
-	public void addGroupTogetherWith(String path) {
-		groupTogetherWith.add(path);
-	}
-
-	@Override
-	public List<String> getGroupTogetherWith() {
-		return Collections.unmodifiableList(groupTogetherWith);
 	}
 }

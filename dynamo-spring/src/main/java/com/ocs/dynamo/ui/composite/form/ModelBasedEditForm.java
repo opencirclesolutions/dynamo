@@ -381,7 +381,9 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	 * @param parent
 	 *            the layout to which to add the field
 	 * @param entityModel
+	 *            the entity model
 	 * @param attributeModel
+	 *            the attribute model
 	 */
 	private void addField(Layout parent, EntityModel<T> entityModel, AttributeModel attributeModel, int count) {
 		AttributeType type = attributeModel.getAttributeType();

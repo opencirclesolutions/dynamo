@@ -27,6 +27,13 @@ import java.util.Set;
 public interface AttributeModel extends Comparable<AttributeModel> {
 
 	/**
+	 * Adds a "group together with" attribute
+	 * 
+	 * @param path
+	 */
+	void addGroupTogetherWith(String path);
+
+	/**
 	 * @return The allowed extensions for a LOB attribute
 	 */
 	Set<String> getAllowedExtensions();
@@ -94,6 +101,13 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	 * @return The name of the property in which to store the file name of an uploaded file
 	 */
 	String getFileNameProperty();
+
+	/**
+	 * 
+	 * @return the names of/paths to the other attributes that must be appear on the same line in an
+	 *         edit form
+	 */
+	List<String> getGroupTogetherWith();
 
 	/**
 	 * 
@@ -199,6 +213,8 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	 * @return The Java type of the property
 	 */
 	Class<?> getType();
+
+	public boolean isAlreadyGrouped();
 
 	/**
 	 * 
@@ -349,7 +365,7 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	 * @return
 	 */
 	boolean isWeek();
-
+	
 	/**
 	 * Marks the attribute as the main attribute
 	 * 
@@ -358,19 +374,5 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	 * @return
 	 */
 	void setMainAttribute(boolean main);
-
-	/**
-	 * Adds a "group together with" attribute
-	 * 
-	 * @param path
-	 */
-	void addGroupTogetherWith(String path);
-
-	/**
-	 * 
-	 * @return the names of/paths to the other attributes that must be appear on the same line in an
-	 *         edit form
-	 */
-	List<String> getGroupTogetherWith();
 
 }

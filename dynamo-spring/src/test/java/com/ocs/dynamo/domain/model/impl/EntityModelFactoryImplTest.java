@@ -13,31 +13,51 @@
  */
 package com.ocs.dynamo.domain.model.impl;
 
-import com.ocs.dynamo.domain.model.*;
-import com.ocs.dynamo.domain.model.annotation.*;
-import com.ocs.dynamo.domain.validator.Email;
-import com.ocs.dynamo.service.MessageService;
-import com.ocs.dynamo.service.impl.MessageServiceImpl;
-import com.ocs.dynamo.test.BaseMockitoTest;
-
-import junitx.util.PrivateAccessor;
-
-import org.hibernate.metamodel.source.annotations.entity.EntityClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.springframework.context.support.ResourceBundleMessageSource;
-
-import javax.persistence.*;
-import javax.validation.constraints.AssertTrue;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import javax.persistence.Basic;
+import javax.persistence.CollectionTable;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.Embeddable;
+import javax.persistence.Embedded;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.Lob;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.validation.constraints.AssertTrue;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
+import junitx.util.PrivateAccessor;
+
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.springframework.context.support.ResourceBundleMessageSource;
+
+import com.ocs.dynamo.domain.model.AttributeDateType;
+import com.ocs.dynamo.domain.model.AttributeModel;
+import com.ocs.dynamo.domain.model.AttributeSelectMode;
+import com.ocs.dynamo.domain.model.AttributeType;
+import com.ocs.dynamo.domain.model.EntityModel;
+import com.ocs.dynamo.domain.model.VisibilityType;
+import com.ocs.dynamo.domain.model.annotation.Attribute;
+import com.ocs.dynamo.domain.model.annotation.AttributeGroup;
+import com.ocs.dynamo.domain.model.annotation.AttributeGroups;
+import com.ocs.dynamo.domain.model.annotation.AttributeOrder;
+import com.ocs.dynamo.domain.model.annotation.Model;
+import com.ocs.dynamo.domain.validator.Email;
+import com.ocs.dynamo.service.MessageService;
+import com.ocs.dynamo.service.impl.MessageServiceImpl;
+import com.ocs.dynamo.test.BaseMockitoTest;
 
 @SuppressWarnings("unused")
 public class EntityModelFactoryImplTest extends BaseMockitoTest {
@@ -506,9 +526,16 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 	/**
 	 * "group together with" attributes are in the wrong order
 	 */
-	@Test(expected = IllegalStateException.class)
+	@Test
 	public void testGroupTogetherWithWrongOrder() {
 		EntityModel<Entity11> model = factory.getModel(Entity11.class);
+
+		AttributeModel am = model.getAttributeModel("attribute2");
+		Assert.assertEquals(1, am.getGroupTogetherWith().size());
+		Assert.assertEquals("attribute1", am.getGroupTogetherWith().get(0));
+
+		AttributeModel am1 = model.getAttributeModel("attribute1");
+		Assert.assertTrue(am1.isAlreadyGrouped());
 	}
 
 	private class Entity1 {
@@ -898,7 +925,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 
 		private String attribute1;
 
-		@Attribute(groupTogetherWith = "attribute2")
+		@Attribute(groupTogetherWith = "attribute1")
 		private String attribute2;
 
 		public String getAttribute1() {

@@ -12,6 +12,7 @@ import com.ocs.dynamo.domain.comparator.AttributeComparator;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.domain.model.impl.EntityModelFactoryImpl;
+import com.ocs.dynamo.service.TestEntityService;
 import com.ocs.dynamo.test.BaseMockitoTest;
 import com.ocs.dynamo.test.MockUtil;
 import com.ocs.dynamo.ui.composite.dialog.ModelBasedSearchDialog;
@@ -27,6 +28,9 @@ public class DetailsEditTableTest extends BaseMockitoTest {
     private TestEntity e1;
 
     private TestEntity e2;
+    
+    @Mock
+    private TestEntityService service;
 
     @Override
     public void setUp() throws Exception {
@@ -69,6 +73,7 @@ public class DetailsEditTableTest extends BaseMockitoTest {
         DetailsEditTable<Integer, TestEntity> table = createTable(em, false, true,
                 new FormOptions().setShowSearchDialogButton(true));
         table.setTableReadOnly(true);
+        table.setService(service);
 
         // adding is not possible
         Assert.assertFalse(table.getAddButton().isVisible());

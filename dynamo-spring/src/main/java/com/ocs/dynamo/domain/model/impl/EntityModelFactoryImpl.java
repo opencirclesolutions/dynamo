@@ -47,6 +47,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -88,6 +89,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 	private static final String VERSION = "version";
 
 	private static final int RECURSIVE_MODEL_DEPTH = 3;
+
+	private static final Logger LOG = Logger.getLogger(EntityModelFactoryImpl.class);
 
 	@Autowired(required = false)
 	private MessageService messageService;
@@ -315,11 +318,11 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 				if (!m.getGroupTogetherWith().isEmpty()) {
 					for (String together : m.getGroupTogetherWith()) {
 						if (already.contains(together)) {
-							throw new IllegalStateException(
-							        "You cannot include attribute '"
-							                + together
-							                + "' in the 'groupTogetherWith' list since it already occurs before the attribute ' "
-							                + m.getName() + "'");
+							AttributeModel other = model.getAttributeModel(together);
+							if (together != null) {
+								((AttributeModelImpl) other).setAlreadyGrouped(true);
+								LOG.warn("Incorrect groupTogetherWith found: " + m.getName() + " refers to " + together);
+							}
 						}
 					}
 				}
