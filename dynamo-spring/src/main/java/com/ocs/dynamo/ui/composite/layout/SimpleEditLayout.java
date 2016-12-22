@@ -110,6 +110,9 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 	@Override
 	public void assignEntity(T t) {
 		setEntity(t);
+		if (editForm != null) {
+			editForm.resetTab();
+		}
 	}
 
 	@Override
@@ -301,6 +304,7 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 
 		if (entity.getId() != null) {
 			setEntity(getService().fetchById(entity.getId(), getJoins()));
+			editForm.resetTab();
 		}
 	}
 
@@ -338,4 +342,9 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 	public void setJoins(FetchJoinInformation[] joins) {
 		this.joins = joins;
 	}
+
+	public void resetTab() {
+		editForm.resetTab();
+	}
+
 }

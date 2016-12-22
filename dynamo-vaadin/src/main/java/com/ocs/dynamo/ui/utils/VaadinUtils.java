@@ -44,6 +44,8 @@ import com.vaadin.server.Page;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Field;
+import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.UI;
 
@@ -269,6 +271,27 @@ public final class VaadinUtils {
 			return VaadinSession.getCurrent().getLocale();
 		}
 		return new Locale(SystemPropertyUtils.getDefaultLocale());
+	}
+
+	/**
+	 * Returns the tab index (zero based) of the tab with the specified caption
+	 * 
+	 * @param tabs
+	 *            the tab sheet
+	 * @param caption
+	 *            the caption
+	 * @return
+	 */
+	public static int getTabIndex(TabSheet tabs, String caption) {
+		int index = 0;
+		for (int i = 0; i < tabs.getComponentCount(); i++) {
+			Tab t = tabs.getTab(i);
+			if (t.getCaption().equals(caption)) {
+				index = i;
+				break;
+			}
+		}
+		return index;
 	}
 
 	/**

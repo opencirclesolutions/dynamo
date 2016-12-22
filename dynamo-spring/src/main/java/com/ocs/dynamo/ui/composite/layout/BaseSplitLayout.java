@@ -323,6 +323,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 			// reset the form's view mode if needed
 			editForm.setViewMode(getFormOptions().isOpenInViewMode());
 			editForm.setEntity(entity);
+			editForm.resetTab();
 		}
 
 		setSelectedItem(entity);

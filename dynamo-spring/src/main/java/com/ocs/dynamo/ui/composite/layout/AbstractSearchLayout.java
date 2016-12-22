@@ -540,6 +540,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 		} else {
 			editForm.setViewMode(getFormOptions().isOpenInViewMode());
 			editForm.setEntity(entity);
+			editForm.resetTab();
 		}
 
 		checkButtonState(getSelectedItem());

@@ -273,6 +273,7 @@ public interface EntityModel<T> {
 	 * Returns the attribute models for a certain group
 	 * 
 	 * @param group
+	 *            the caption of the group
 	 * @return
 	 */
 	List<AttributeModel> getAttributeModelsForGroup(String group);
@@ -364,6 +365,7 @@ public interface EntityModel<T> {
 	 * Indicates whether an attribute group should be visible
 	 * 
 	 * @param group
+	 *            the attribute group
 	 * @return
 	 */
 	boolean isAttributeGroupVisible(String group, boolean readOnly);

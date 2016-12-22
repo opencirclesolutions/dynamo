@@ -47,6 +47,7 @@ import com.ocs.dynamo.ui.component.QuickAddListSelect;
 import com.ocs.dynamo.ui.component.URLField;
 import com.ocs.dynamo.ui.composite.type.AttributeGroupMode;
 import com.ocs.dynamo.ui.composite.type.ScreenMode;
+import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.utils.ClassUtils;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Property;
@@ -497,9 +498,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 			setCompositionRoot(mainEditLayout);
 		}
-		if (tabSheets.get(isViewMode()) != null && !getFormOptions().isPreserveSelectedTab()) {
-			tabSheets.get(isViewMode()).setSelectedTab(0);
-		}
+
 	}
 
 	/**
@@ -1088,17 +1087,18 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	        TabSheet innerTabSheet, int startCount) {
 		int count = 0;
 
+		// display a group if it is not the default group
 		for (String attributeGroup : getEntityModel().getAttributeGroups()) {
-			if (getEntityModel().isAttributeGroupVisible(attributeGroup, viewMode)) {
-				if (getParentGroup(attributeGroup).equals(parentGroupHeader)) {
-					Layout innerLayout2 = constructAttributeGroupLayout(innerForm, innerTabs, innerTabSheet,
-					        getAttributeGroupCaption(attributeGroup), true);
-					for (AttributeModel attributeModel : getEntityModel().getAttributeModelsForGroup(attributeGroup)) {
-						addField(innerLayout2, getEntityModel(), attributeModel, startCount + count);
-						count++;
-					}
-
+			if ((!EntityModel.DEFAULT_GROUP.equals(attributeGroup) || getEntityModel().isAttributeGroupVisible(
+			        attributeGroup, isViewMode()))
+			        && getParentGroup(attributeGroup).equals(parentGroupHeader)) {
+				Layout innerLayout2 = constructAttributeGroupLayout(innerForm, innerTabs, innerTabSheet,
+				        getAttributeGroupCaption(attributeGroup), true);
+				for (AttributeModel attributeModel : getEntityModel().getAttributeModelsForGroup(attributeGroup)) {
+					addField(innerLayout2, getEntityModel(), attributeModel, startCount + count);
+					count++;
 				}
+
 			}
 		}
 		return count;
@@ -1309,6 +1309,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	 * Switches the form from or to view mode
 	 * 
 	 * @param viewMode
+	 *            the new view mode
 	 */
 	public void setViewMode(boolean viewMode) {
 		boolean oldMode = this.viewMode;
@@ -1335,6 +1336,13 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			firstField.focus();
 		}
 
+		// preserve tab index when switching
+		if (tabSheets.get(oldMode) != null) {
+			Component c = tabSheets.get(oldMode).getSelectedTab();
+			int index = VaadinUtils.getTabIndex(tabSheets.get(oldMode), tabSheets.get(oldMode).getTab(c).getCaption());
+			tabSheets.get(this.viewMode).setSelectedTab(index);
+		}
+
 		if (oldMode != this.viewMode) {
 			afterModeChanged(isViewMode());
 		}
@@ -1351,5 +1359,14 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	public void signalDetailsTableValid(SignalsParent component, boolean valid) {
 		detailTablesValid.put(component, valid);
 		checkSaveButtonState();
+	}
+
+	/**
+	 * Resets the selected tab index
+	 */
+	public void resetTab() {
+		if (tabSheets.get(isViewMode()) != null && !getFormOptions().isPreserveSelectedTab()) {
+			tabSheets.get(isViewMode()).setSelectedTab(0);
+		}
 	}
 }
