@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -305,6 +306,23 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 				}
 
 				model.addAttributeModel(group, attributeModel);
+			}
+
+			Set<String> already = new HashSet<>();
+			// check if there aren't any illegal "group together" settings
+			for (AttributeModel m : model.getAttributeModels()) {
+				already.add(m.getName());
+				if (!m.getGroupTogetherWith().isEmpty()) {
+					for (String together : m.getGroupTogetherWith()) {
+						if (already.contains(together)) {
+							throw new IllegalStateException(
+							        "You cannot include attribute '"
+							                + together
+							                + "' in the 'groupTogetherWith' list since it already occurs before the attribute ' "
+							                + m.getName() + "'");
+						}
+					}
+				}
 			}
 
 			if (!mainAttributeFound && !nested) {
@@ -804,6 +822,12 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 				model.setAllowedExtensions(hashSet);
 			}
 
+			if (attribute.groupTogetherWith() != null && attribute.groupTogetherWith().length > 0) {
+				for (String s : attribute.groupTogetherWith()) {
+					model.addGroupTogetherWith(s);
+				}
+			}
+
 			if (!StringUtils.isEmpty(attribute.trueRepresentation())) {
 				model.setTrueRepresentation(attribute.trueRepresentation());
 			}
@@ -1006,6 +1030,14 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 			String[] extensions = msg.split(",");
 			Set<String> hashSet = Sets.newHashSet(extensions);
 			model.setAllowedExtensions(hashSet);
+		}
+
+		msg = getAttributeMessage(entityModel, model, EntityModel.GROUP_TOGETHER_WITH);
+		if (!StringUtils.isEmpty(msg)) {
+			String[] extensions = msg.split(",");
+			for (String s : extensions) {
+				model.addGroupTogetherWith(s);
+			}
 		}
 
 		msg = getAttributeMessage(entityModel, model, EntityModel.TRUE_REPRESENTATION);

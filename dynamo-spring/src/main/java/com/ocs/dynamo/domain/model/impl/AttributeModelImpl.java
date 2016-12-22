@@ -13,7 +13,10 @@
  */
 package com.ocs.dynamo.domain.model.impl;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
@@ -53,6 +56,8 @@ public class AttributeModelImpl implements AttributeModel {
 	private String displayFormat;
 
 	private String displayName;
+
+	private List<String> groupTogetherWith = new ArrayList<>();
 
 	private boolean email;
 
@@ -596,5 +601,15 @@ public class AttributeModelImpl implements AttributeModel {
 	@Override
 	public String toString() {
 		return ReflectionToStringBuilder.toStringExclude(this, "entityModel");
+	}
+
+	@Override
+	public void addGroupTogetherWith(String path) {
+		groupTogetherWith.add(path);
+	}
+
+	@Override
+	public List<String> getGroupTogetherWith() {
+		return Collections.unmodifiableList(groupTogetherWith);
 	}
 }

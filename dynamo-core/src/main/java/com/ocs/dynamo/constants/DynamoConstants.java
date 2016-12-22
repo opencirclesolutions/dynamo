@@ -53,6 +53,11 @@ public final class DynamoConstants {
 	public static final String CSS_DIVIDER = "divider";
 
 	/**
+	 * The CSS class used to indicate that an element is the first child element
+	 */
+	public static final String CSS_FIRST = "first";
+
+	/**
 	 * The CSS class for the last visited main menu item
 	 */
 	public static final String CSS_LAST_VISITED = "lastVisited";
@@ -62,6 +67,9 @@ public final class DynamoConstants {
 	 */
 	public static final String CSS_NUMERICAL = "numerical";
 
+	/**
+	 * The CSS class
+	 */
 	public static final String CSS_NESTED = "nested";
 
 	/**
@@ -73,7 +81,12 @@ public final class DynamoConstants {
 	 * The CSS class for the parent row
 	 */
 	public static final String CSS_PARENT_ROW = "parentRow";
-	
+
+	/**
+	 * The CSS class for a field that must be marked as "required"
+	 */
+	public static final String CSS_REQUIRED = "required";
+
 	/**
 	 * Currency symbol
 	 */

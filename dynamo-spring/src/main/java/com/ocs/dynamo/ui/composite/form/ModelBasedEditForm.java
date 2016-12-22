@@ -22,9 +22,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.commons.io.FilenameUtils;
 
@@ -56,6 +58,7 @@ import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
 import com.vaadin.ui.Embedded;
@@ -288,6 +291,9 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	 */
 	private Field<?> firstField;
 
+	/**
+	 * Groups for data binding (one for each view mode)
+	 */
 	private Map<Boolean, BeanFieldGroup<T>> groups = new HashMap<>();
 
 	/**
@@ -311,6 +317,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	private Map<Boolean, Label> titleLabels = new HashMap<>();
 
 	private Map<Boolean, Map<AttributeModel, Component>> uploads = new HashMap<>();
+
+	private Map<Boolean, Set<String>> alreadyBound = new HashMap<>();
 
 	/**
 	 * Whether to display the component in view mode
@@ -361,18 +369,23 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		// init panel maps
 		attributeGroups.put(Boolean.TRUE, new HashMap<String, Object>());
 		attributeGroups.put(Boolean.FALSE, new HashMap<String, Object>());
+
+		alreadyBound.put(Boolean.TRUE, new HashSet<String>());
+		alreadyBound.put(Boolean.FALSE, new HashSet<String>());
 	}
 
 	/**
 	 * Adds a field for a certain attribute
 	 * 
 	 * @param parent
+	 *            the layout to which to add the field
 	 * @param entityModel
 	 * @param attributeModel
 	 */
 	private void addField(Layout parent, EntityModel<T> entityModel, AttributeModel attributeModel, int count) {
 		AttributeType type = attributeModel.getAttributeType();
-		if (attributeModel.isVisible()
+		if (!alreadyBound.get(isViewMode()).contains(attributeModel.getPath())
+		        && attributeModel.isVisible()
 		        && (AttributeType.BASIC.equals(type) || AttributeType.LOB.equals(type) || attributeModel
 		                .isComplexEditable())) {
 			if (attributeModel.isReadOnly() || isViewMode()) {
@@ -386,16 +399,11 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 						// a details edit table must be displayed
 						constructField(parent, entityModel, attributeModel, true, count);
 					} else {
-						// otherwise display a label
-						Component label = constructLabel(entity, attributeModel);
-						labels.get(isViewMode()).put(attributeModel, label);
-						parent.addComponent(label);
+						constructLabel(parent, entityModel, attributeModel, count);
 					}
 				} else {
 					// otherwise display a label
-					Component label = constructLabel(entity, attributeModel);
-					labels.get(isViewMode()).put(attributeModel, label);
-					parent.addComponent(label);
+					constructLabel(parent, entityModel, attributeModel, count);
 				}
 			} else {
 				// display an editable field
@@ -410,6 +418,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 					uploads.get(isViewMode()).put(attributeModel, uploadForm);
 				}
 			}
+			alreadyBound.get(isViewMode()).add(attributeModel.getPath());
 		}
 	}
 
@@ -725,12 +734,17 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	/**
 	 * Constructs a field for a certain attribute
 	 * 
-	 * @param form
+	 * @param parent
+	 *            the parent layout to which to add the field
 	 * @param entityModel
+	 *            the entity model
 	 * @param attributeModel
+	 *            the attribute model
+	 * @param viewMode
+	 *            whether the screen is in view mode
 	 */
 	@SuppressWarnings("unchecked")
-	private void constructField(Layout form, EntityModel<T> entityModel, AttributeModel attributeModel,
+	private void constructField(Layout parent, EntityModel<T> entityModel, AttributeModel attributeModel,
 	        boolean viewMode, int count) {
 
 		EntityModel<?> em = getFieldEntityModel(attributeModel);
@@ -758,7 +772,34 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		if (field != null) {
 			groups.get(viewMode).bind(field, attributeModel.getName());
 			field.setSizeFull();
-			form.addComponent(field);
+
+			if (!attributeModel.getGroupTogetherWith().isEmpty()) {
+				// multiple fields behind each other
+				HorizontalLayout horizontal = constructRowLayout(attributeModel, attributeModel.isRequired(),
+				        !(field instanceof CheckBox));
+				parent.addComponent(horizontal);
+
+				// add the first field (without caption)
+				if (!(field instanceof CheckBox)) {
+					field.setCaption("");
+				}
+
+				FormLayout fl = constructNestedFormLayout(true);
+				fl.addComponent(field);
+				horizontal.addComponent(fl);
+
+				// add any "together with" attributes on the same line
+				for (String path : attributeModel.getGroupTogetherWith()) {
+					AttributeModel am = getEntityModel().getAttributeModel(path);
+					if (am != null) {
+						FormLayout fl2 = constructNestedFormLayout(false);
+						horizontal.addComponent(fl2);
+						addField(fl2, entityModel, am, count);
+					}
+				}
+			} else {
+				parent.addComponent(field);
+			}
 		}
 
 		// set the default value for new objects
@@ -767,9 +808,90 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		}
 
 		// store a reference to the first field so we can give it focus
-		if (firstField == null) {
+		if (firstField == null && field.isEnabled()) {
 			firstField = field;
 		}
+	}
+
+	/**
+	 * Constructs a label
+	 * 
+	 * @param parent
+	 *            the parent component to which the label must be added
+	 * @param entityModel
+	 *            the entity model
+	 * @param attributeModel
+	 *            the attribute model for the attribute for which to create a label
+	 * @param count
+	 *            the number of components added so far
+	 */
+	private void constructLabel(Layout parent, EntityModel<T> entityModel, AttributeModel attributeModel, int count) {
+		Component label = constructLabel(entity, attributeModel);
+		labels.get(isViewMode()).put(attributeModel, label);
+
+		if (!attributeModel.getGroupTogetherWith().isEmpty()) {
+			HorizontalLayout horizontal = constructRowLayout(attributeModel, false, true);
+			parent.addComponent(horizontal);
+
+			label.setCaption("");
+
+			FormLayout fl = constructNestedFormLayout(true);
+			fl.addComponent(label);
+			horizontal.addComponent(fl);
+
+			for (String path : attributeModel.getGroupTogetherWith()) {
+				AttributeModel am = entityModel.getAttributeModel(path);
+				if (am != null) {
+					FormLayout fl2 = constructNestedFormLayout(false);
+					horizontal.addComponent(fl2);
+					addField(fl2, getEntityModel(), am, count);
+				}
+			}
+
+		} else {
+			parent.addComponent(label);
+		}
+	}
+
+	/**
+	 * Constructs a form layout that is nested inside a horizontal layout when displaying multiple
+	 * attributes in the same row
+	 * 
+	 * @param first
+	 *            whether this is the layout for the first component
+	 * @return
+	 */
+	private FormLayout constructNestedFormLayout(boolean first) {
+		FormLayout fl = new FormLayout();
+		if (first) {
+			fl.setStyleName(DynamoConstants.CSS_FIRST, true);
+		}
+		fl.setMargin(false);
+		return fl;
+	}
+
+	/**
+	 * Constructs a layout that serves as the basis for displaying multiple input components in a
+	 * single row
+	 * 
+	 * @param attributeModel
+	 *            the attribute model for the first attribute
+	 * @param required
+	 *            whether to mark the first field as required
+	 * 
+	 * @return
+	 */
+	private HorizontalLayout constructRowLayout(AttributeModel attributeModel, boolean required, boolean setCaption) {
+		HorizontalLayout horizontal = new DefaultHorizontalLayout(false, true, true);
+		if (setCaption) {
+			horizontal.setCaption(attributeModel.getDisplayName());
+		}
+		horizontal.setStyleName(DynamoConstants.CSS_NESTED, true);
+		if (required) {
+			horizontal.setStyleName(DynamoConstants.CSS_REQUIRED, true);
+		}
+
+		return horizontal;
 	}
 
 	/**
@@ -850,6 +972,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	}
 
 	/**
+	 * Gets the caption for an attribute gorup
+	 * 
 	 * @param attributeGroup
 	 * @return
 	 */
@@ -973,10 +1097,41 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 						addField(innerLayout2, getEntityModel(), attributeModel, startCount + count);
 						count++;
 					}
+
 				}
 			}
 		}
 		return count;
+	}
+
+	/**
+	 * Reconstructs all labels are a change of the view mode or the selected entity
+	 */
+	private void reconstructLabels() {
+		// reconstruct all labels (since they cannot be bound automatically)
+		if (labels.get(isViewMode()) != null) {
+			for (Entry<AttributeModel, Component> e : labels.get(isViewMode()).entrySet()) {
+				Component newLabel = constructLabel(entity, e.getKey());
+
+				// label is displayed in view mode or when its an existing entity
+				newLabel.setVisible(entity.getId() != null || isViewMode());
+
+				// replace all existing labels with new labels
+				HasComponents hc = e.getValue().getParent();
+				if (hc instanceof Layout) {
+					((Layout) hc).replaceComponent(e.getValue(), newLabel);
+					labels.get(isViewMode()).put(e.getKey(), newLabel);
+				}
+
+				// hide caption for first label in a row
+				if (newLabel.getParent() instanceof FormLayout) {
+					FormLayout fl = (FormLayout) newLabel.getParent();
+					if (fl.getStyleName().contains("first")) {
+						newLabel.setCaption("");
+					}
+				}
+			}
+		}
 	}
 
 	/**
@@ -998,68 +1153,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			if (hc instanceof Layout) {
 				((Layout) hc).replaceComponent(oldLabel, replacement);
 				labels.get(isViewMode()).put(am, replacement);
-			}
-		}
-	}
-
-	/**
-	 * Shows or hides the component for a certain property - this will work regardless of the view
-	 * 
-	 * @param propertyName
-	 *            the name of the property for which to show/hide the property
-	 * @param visible
-	 */
-	public void setComponentVisible(String propertyName, boolean visible) {
-		setLabelVisible(propertyName, visible);
-		Field<?> field = getField(propertyName);
-		if (field != null) {
-			field.setVisible(visible);
-		}
-	}
-
-	/**
-	 * Shows or hides a label
-	 * 
-	 * @param propertyName
-	 *            the name of the property for which to show/hide the label
-	 * @param visible
-	 *            whether to show the label
-	 */
-	public void setLabelVisible(String propertyName, boolean visible) {
-		AttributeModel am = getEntityModel().getAttributeModel(propertyName);
-		if (am != null) {
-			Component label = labels.get(isViewMode()).get(am);
-			if (label != null) {
-				if (ClassUtils.getFieldValue(entity, propertyName) != null) {
-					label.setVisible(visible);
-					label.setCaption(am.getDisplayName());
-				} else {
-					label.setVisible(false);
-					label.setCaption(null);
-				}
-			}
-
-		}
-	}
-
-	/**
-	 * Reconstructs all labels are a change of the view mode or the selected entity
-	 */
-	private void reconstructLabels() {
-		// reconstruct all labels (since they cannot be bound automatically)
-		if (labels.get(isViewMode()) != null) {
-			for (Entry<AttributeModel, Component> e : labels.get(isViewMode()).entrySet()) {
-				Component newLabel = constructLabel(entity, e.getKey());
-
-				// label is displayed in view mode or when its an existing entity
-				newLabel.setVisible(entity.getId() != null || isViewMode());
-
-				// replace all existing labels with new labels
-				HasComponents hc = e.getValue().getParent();
-				if (hc instanceof Layout) {
-					((Layout) hc).replaceComponent(e.getValue(), newLabel);
-					labels.get(isViewMode()).put(e.getKey(), newLabel);
-				}
 			}
 		}
 	}
@@ -1101,26 +1194,23 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	 */
 	public void setAttributeGroupVisible(String caption, boolean visible) {
 		Object c = attributeGroups.get(false).get(caption);
-		setComponentVisible(c, visible);
+		setGroupVisible(c, visible);
 		c = attributeGroups.get(true).get(caption);
-		setComponentVisible(c, visible);
+		setGroupVisible(c, visible);
 	}
 
 	/**
-	 * Hides/shows a component
+	 * Shows or hides the component for a certain property - this will work regardless of the view
 	 * 
-	 * @param c
-	 *            the component
+	 * @param propertyName
+	 *            the name of the property for which to show/hide the property
 	 * @param visible
-	 *            whether to set the component to visible
 	 */
-	private void setComponentVisible(Object c, boolean visible) {
-		if (c != null) {
-			if (c instanceof Component) {
-				((Component) c).setVisible(visible);
-			} else if (c instanceof Tab) {
-				((Tab) c).setVisible(visible);
-			}
+	public void setComponentVisible(String propertyName, boolean visible) {
+		setLabelVisible(propertyName, visible);
+		Field<?> field = getField(propertyName);
+		if (field != null) {
+			field.setVisible(visible);
 		}
 	}
 
@@ -1170,6 +1260,49 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		titleBars.get(isViewMode()).replaceComponent(titleLabels.get(isViewMode()), newTitleLabel);
 		titleLabels.put(isViewMode(), newTitleLabel);
 
+	}
+
+	/**
+	 * Hides/shows a group of components
+	 * 
+	 * @param c
+	 *            the parent component of the group
+	 * @param visible
+	 *            whether to set the component to visible
+	 */
+	private void setGroupVisible(Object c, boolean visible) {
+		if (c != null) {
+			if (c instanceof Component) {
+				((Component) c).setVisible(visible);
+			} else if (c instanceof Tab) {
+				((Tab) c).setVisible(visible);
+			}
+		}
+	}
+
+	/**
+	 * Shows or hides a label
+	 * 
+	 * @param propertyName
+	 *            the name of the property for which to show/hide the label
+	 * @param visible
+	 *            whether to show the label
+	 */
+	public void setLabelVisible(String propertyName, boolean visible) {
+		AttributeModel am = getEntityModel().getAttributeModel(propertyName);
+		if (am != null) {
+			Component label = labels.get(isViewMode()).get(am);
+			if (label != null) {
+				if (ClassUtils.getFieldValue(entity, propertyName) != null) {
+					label.setVisible(visible);
+					label.setCaption(am.getDisplayName());
+				} else {
+					label.setVisible(false);
+					label.setCaption(null);
+				}
+			}
+
+		}
 	}
 
 	/**

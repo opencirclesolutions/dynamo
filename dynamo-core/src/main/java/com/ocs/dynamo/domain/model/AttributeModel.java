@@ -13,6 +13,7 @@
  */
 package com.ocs.dynamo.domain.model;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -350,11 +351,26 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	boolean isWeek();
 
 	/**
-	 * Marks this attribute as the main attribute
+	 * Marks the attribute as the main attribute
 	 * 
 	 * @param main
+	 *            whether the attribute is the main attribute
 	 * @return
 	 */
 	void setMainAttribute(boolean main);
+
+	/**
+	 * Adds a "group together with" attribute
+	 * 
+	 * @param path
+	 */
+	void addGroupTogetherWith(String path);
+
+	/**
+	 * 
+	 * @return the names of/paths to the other attributes that must be appear on the same line in an
+	 *         edit form
+	 */
+	List<String> getGroupTogetherWith();
 
 }

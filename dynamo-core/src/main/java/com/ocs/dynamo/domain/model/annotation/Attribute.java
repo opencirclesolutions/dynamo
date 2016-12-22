@@ -68,6 +68,13 @@ public @interface Attribute {
 	/** the name of the property in which to store the file name (after an upload) */
 	String fileNameProperty() default "";
 
+	/**
+	 * Names of other attributes that appear on the same line as this attribute inside an eedit form
+	 * 
+	 * @return
+	 */
+	String[] groupTogetherWith() default {};
+
 	/** whether the component should be represented as an image */
 	boolean image() default false;
 

@@ -107,6 +107,11 @@ public interface EntityModel<T> {
 	String FALSE_REPRESENTATION = "falseRepresentation";
 
 	/**
+	 * Names of other attributes that must appear on the same line inside an edit form
+	 */
+	String GROUP_TOGETHER_WITH = "groupTogetherWith";
+
+	/**
 	 * Whether a field represents an image
 	 */
 	String IMAGE = "image";
