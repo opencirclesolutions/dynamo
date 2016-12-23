@@ -14,7 +14,7 @@
 package com.ocs.dynamo.domain.model;
 
 /**
- * Notes the types of attributes that are supported
+ * Indicates the main attribute types in the entity model
  * 
  * @author bas.rutten
  */

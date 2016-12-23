@@ -283,26 +283,22 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 		if (AttributeSelectMode.LOOKUP.equals(mode)) {
 			// lookup field - take care to NOT use the nested model here!
 			return constructLookupField((EntityModel<S>) fieldEntityModel, attributeModel, fieldFilter, search, true);
-		} else if (AttributeSelectMode.TOKEN.equals(mode)) {
-			// token field
-			return new TokenFieldSelect<ID, S>((EntityModel<S>) em, attributeModel, service, fieldFilter, search, sos);
 		} else if (AttributeSelectMode.FANCY_LIST.equals(mode)) {
 			// fancy list select
 			FancyListSelect<ID, S> listSelect = new FancyListSelect<ID, S>(service, (EntityModel<S>) em,
 			        attributeModel, fieldFilter, search, sos);
 			listSelect.setRows(SystemPropertyUtils.getDefaultListSelectRows());
 			return listSelect;
-		} else if (attributeModel.isQuickAddAllowed() && !search) {
-			// quick add list select when adding is allowed an not in search mode
-			return new QuickAddListSelect<ID, S>((EntityModel<S>) em, attributeModel, service, fieldFilter,
-			        multipleSelect, SystemPropertyUtils.getDefaultListSelectRows(), sos);
-		} else {
+		} else if (AttributeSelectMode.LIST.equals(mode)) {
 			// simple list select if everything else fails or is not applicable
 			EntityListSelect<ID, S> listSelect = new EntityListSelect<ID, S>((EntityModel<S>) em, attributeModel,
 			        service, fieldFilter, sos);
 			listSelect.setMultiSelect(multipleSelect);
 			listSelect.setRows(SystemPropertyUtils.getDefaultListSelectRows());
 			return listSelect;
+		} else {
+			// by default, use a token field
+			return new TokenFieldSelect<ID, S>((EntityModel<S>) em, attributeModel, service, fieldFilter, search, sos);
 		}
 	}
 

@@ -460,8 +460,8 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		// default
 		AttributeModel am2 = model.getAttributeModel("entity5");
 		Assert.assertEquals(AttributeSelectMode.COMBO, am2.getSelectMode());
-		// multiple search, defaults to fancy list
-		Assert.assertEquals(AttributeSelectMode.FANCY_LIST, am2.getSearchSelectMode());
+		// multiple search, defaults to token
+		Assert.assertEquals(AttributeSelectMode.TOKEN, am2.getSearchSelectMode());
 
 		// overwritten search mode
 		AttributeModel am3 = model.getAttributeModel("entity52");
