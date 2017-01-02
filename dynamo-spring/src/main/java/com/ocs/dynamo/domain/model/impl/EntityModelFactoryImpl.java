@@ -1077,7 +1077,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 		msg = getAttributeMessage(entityModel, model, EntityModel.MULTIPLE_SEARCH);
 		if (!StringUtils.isEmpty(msg)) {
 			model.setMultipleSearch(Boolean.valueOf(msg));
-			model.setSearchSelectMode(AttributeSelectMode.FANCY_LIST);
+			model.setSearchSelectMode(AttributeSelectMode.TOKEN);
 		}
 
 		// set the select mode (also sets the search select mode to the same value)

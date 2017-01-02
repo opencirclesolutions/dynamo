@@ -144,6 +144,14 @@ public class FancyListSelect<ID extends Serializable, T extends AbstractEntity<I
 		setValue(new HashSet<>(values));
 	}
 
+	@Override
+	public void focus() {
+		super.focus();
+		if (comboBox != null) {
+			comboBox.focus();
+		}
+	}
+
 	public Button getClearButton() {
 		return clearButton;
 	}

@@ -72,6 +72,8 @@ import com.vaadin.ui.Layout;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
+import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
 import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.Upload;
 import com.vaadin.ui.Upload.Receiver;
@@ -260,6 +262,9 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	 */
 	private Button cancelButton;
 
+	/**
+	 * The relations to fetch when selecting a single detail relation
+	 */
 	private FetchJoinInformation[] detailJoins;
 
 	/**
@@ -286,11 +291,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	 * Indicates whether the fields have been post processed
 	 */
 	private boolean fieldsProcessed;
-
-	/**
-	 * The field that must receive focus
-	 */
-	private Field<?> firstField;
 
 	/**
 	 * Groups for data binding (one for each view mode)
@@ -320,6 +320,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	private Map<Boolean, Map<AttributeModel, Component>> uploads = new HashMap<>();
 
 	private Map<Boolean, Set<String>> alreadyBound = new HashMap<>();
+
+	private Map<Integer, Field<?>> firstFields = new HashMap<>();
 
 	/**
 	 * Whether to display the component in view mode
@@ -375,6 +377,21 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		alreadyBound.put(Boolean.FALSE, new HashSet<String>());
 	}
 
+	private void addTabChangeListener(TabSheet tabSheet) {
+		tabSheet.addSelectedTabChangeListener(new SelectedTabChangeListener() {
+
+			@Override
+			public void selectedTabChange(SelectedTabChangeEvent event) {
+				Component c = event.getTabSheet().getSelectedTab();
+				int index = VaadinUtils.getTabIndex(tabSheets.get(isViewMode()), tabSheets.get(isViewMode()).getTab(c)
+				        .getCaption());
+				if (firstFields.get(index) != null) {
+					firstFields.get(index).focus();
+				}
+			}
+		});
+	}
+
 	/**
 	 * Adds a field for a certain attribute
 	 * 
@@ -385,7 +402,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	 * @param attributeModel
 	 *            the attribute model
 	 */
-	private void addField(Layout parent, EntityModel<T> entityModel, AttributeModel attributeModel, int count) {
+	private void addField(Layout parent, EntityModel<T> entityModel, AttributeModel attributeModel, int tabIndex) {
 		AttributeType type = attributeModel.getAttributeType();
 		if (!alreadyBound.get(isViewMode()).contains(attributeModel.getPath())
 		        && attributeModel.isVisible()
@@ -395,24 +412,24 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 				if (attributeModel.isUrl()
 				        || (AttributeType.ELEMENT_COLLECTION.equals(type) && attributeModel.isComplexEditable())) {
 					// display a complex component in read-only mode
-					constructField(parent, entityModel, attributeModel, true, count);
+					constructField(parent, entityModel, attributeModel, true, tabIndex);
 				} else if (AttributeType.DETAIL.equals(type) && attributeModel.isComplexEditable()) {
 					Field<?> f = constructCustomField(entityModel, attributeModel, viewMode);
 					if (f instanceof DetailsEditTable) {
 						// a details edit table must be displayed
-						constructField(parent, entityModel, attributeModel, true, count);
+						constructField(parent, entityModel, attributeModel, true, tabIndex);
 					} else {
-						constructLabel(parent, entityModel, attributeModel, count);
+						constructLabel(parent, entityModel, attributeModel, tabIndex);
 					}
 				} else {
 					// otherwise display a label
-					constructLabel(parent, entityModel, attributeModel, count);
+					constructLabel(parent, entityModel, attributeModel, tabIndex);
 				}
 			} else {
 				// display an editable field
 				if (AttributeType.BASIC.equals(type) || AttributeType.MASTER.equals(type)
 				        || AttributeType.DETAIL.equals(type) || AttributeType.ELEMENT_COLLECTION.equals(type)) {
-					constructField(parent, entityModel, attributeModel, false, count);
+					constructField(parent, entityModel, attributeModel, false, tabIndex);
 				} else if (AttributeType.LOB.equals(type)) {
 					// for a LOB field we need to construct a rather
 					// elaborate upload component
@@ -536,7 +553,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			form.setStyleName(DynamoConstants.CSS_CLASS_HALFSCREEN);
 		}
 
-		int count = 0;
 		if (!entityModel.usesDefaultGroupOnly()) {
 			// display the attributes in groups
 
@@ -545,10 +561,14 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 				TabSheet tabSheet = new TabSheet();
 				tabSheets.put(isViewMode(), tabSheet);
 				form.addComponent(tabSheet);
+
+				// focus first field after tab change
+				addTabChangeListener(tabSheet);
 			}
 
 			if (getParentGroupHeaders() != null && getParentGroupHeaders().length > 0) {
-				// extra layer of grouping
+				// extra layer of grouping (always tabs)
+				int tabIndex = 0;
 				for (String parentGroupHeader : getParentGroupHeaders()) {
 					Layout innerForm = constructAttributeGroupLayout(form, tabs, tabSheets.get(isViewMode()),
 					        parentGroupHeader, false);
@@ -562,20 +582,23 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 					}
 
 					// add all appropriate inner groups
-					int tempCount = processParentHeaderGroup(parentGroupHeader, innerForm, innerTabs, innerTabSheet,
-					        count);
-					count += tempCount;
+					processParentHeaderGroup(parentGroupHeader, innerForm, innerTabs, innerTabSheet, tabIndex);
+					tabIndex++;
 				}
 			} else {
 				// just one layer of attribute groups
+				int tabIndex = 0;
 				for (String attributeGroup : entityModel.getAttributeGroups()) {
+
 					if (entityModel.isAttributeGroupVisible(attributeGroup, viewMode)) {
 						Layout innerForm = constructAttributeGroupLayout(form, tabs, tabSheets.get(isViewMode()),
 						        getAttributeGroupCaption(attributeGroup), true);
 
 						for (AttributeModel attributeModel : entityModel.getAttributeModelsForGroup(attributeGroup)) {
-							addField(innerForm, entityModel, attributeModel, count);
-							count++;
+							addField(innerForm, entityModel, attributeModel, tabIndex);
+						}
+						if (AttributeGroupMode.TABSHEET.equals(getFormOptions().getAttributeGroupMode())) {
+							tabIndex++;
 						}
 					}
 				}
@@ -584,15 +607,14 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			// iterate over the attributes and add them to the form (without any
 			// grouping)
 			for (AttributeModel attributeModel : entityModel.getAttributeModels()) {
-				addField(form, entityModel, attributeModel, count);
-				count++;
+				addField(form, entityModel, attributeModel, 0);
 			}
 		}
 
 		layout.addComponent(form);
 
-		if (firstField != null) {
-			firstField.focus();
+		if (firstFields.get(0) != null) {
+			firstFields.get(0).focus();
 		}
 
 		buttonBar = constructButtonBar();
@@ -746,7 +768,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	 */
 	@SuppressWarnings("unchecked")
 	private void constructField(Layout parent, EntityModel<T> entityModel, AttributeModel attributeModel,
-	        boolean viewMode, int count) {
+	        boolean viewMode, int tabIndex) {
 
 		EntityModel<?> em = getFieldEntityModel(attributeModel);
 		// allow the user to override the construction of a field
@@ -795,7 +817,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 					if (am != null) {
 						FormLayout fl2 = constructNestedFormLayout(false);
 						horizontal.addComponent(fl2);
-						addField(fl2, entityModel, am, count);
+						addField(fl2, entityModel, am, tabIndex);
 					}
 				}
 			} else {
@@ -809,8 +831,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		}
 
 		// store a reference to the first field so we can give it focus
-		if (firstField == null && field.isEnabled()) {
-			firstField = field;
+		if (!isViewMode() && firstFields.get(tabIndex) == null && field.isEnabled() && !(field instanceof CheckBox)) {
+			firstFields.put(tabIndex, field);
 		}
 	}
 
@@ -826,7 +848,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	 * @param count
 	 *            the number of components added so far
 	 */
-	private void constructLabel(Layout parent, EntityModel<T> entityModel, AttributeModel attributeModel, int count) {
+	private void constructLabel(Layout parent, EntityModel<T> entityModel, AttributeModel attributeModel, int tabIndex) {
 		Component label = constructLabel(entity, attributeModel);
 		labels.get(isViewMode()).put(attributeModel, label);
 
@@ -845,7 +867,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 				if (am != null) {
 					FormLayout fl2 = constructNestedFormLayout(false);
 					horizontal.addComponent(fl2);
-					addField(fl2, getEntityModel(), am, count);
+					addField(fl2, getEntityModel(), am, tabIndex);
 				}
 			}
 
@@ -1083,11 +1105,9 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	 * @param innerTabSheet
 	 *            the tab sheet to which to add the fields
 	 * @param startCount
-	 * @return
 	 */
-	private int processParentHeaderGroup(String parentGroupHeader, Layout innerForm, boolean innerTabs,
-	        TabSheet innerTabSheet, int startCount) {
-		int count = 0;
+	private void processParentHeaderGroup(String parentGroupHeader, Layout innerForm, boolean innerTabs,
+	        TabSheet innerTabSheet, int tabIndex) {
 
 		// display a group if it is not the default group
 		for (String attributeGroup : getEntityModel().getAttributeGroups()) {
@@ -1097,13 +1117,10 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 				Layout innerLayout2 = constructAttributeGroupLayout(innerForm, innerTabs, innerTabSheet,
 				        getAttributeGroupCaption(attributeGroup), true);
 				for (AttributeModel attributeModel : getEntityModel().getAttributeModelsForGroup(attributeGroup)) {
-					addField(innerLayout2, getEntityModel(), attributeModel, startCount + count);
-					count++;
+					addField(innerLayout2, getEntityModel(), attributeModel, tabIndex);
 				}
-
 			}
 		}
-		return count;
 	}
 
 	/**
@@ -1253,9 +1270,9 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			}
 		}
 
-		if (!isViewMode() && firstField != null) {
-			firstField.focus();
-		}
+		// if (!isViewMode() && firstField != null) {
+		// firstField.focus();
+		// }
 
 		// update the title label
 		Label newTitleLabel = constructTitleLabel();
@@ -1333,16 +1350,18 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			fieldsProcessed = true;
 		}
 
-		// focus first field
-		if (!isViewMode() && firstField != null) {
-			firstField.focus();
-		}
-
 		// preserve tab index when switching
 		if (tabSheets.get(oldMode) != null) {
 			Component c = tabSheets.get(oldMode).getSelectedTab();
 			int index = VaadinUtils.getTabIndex(tabSheets.get(oldMode), tabSheets.get(oldMode).getTab(c).getCaption());
 			tabSheets.get(this.viewMode).setSelectedTab(index);
+
+			// focus first field
+			if (!isViewMode() && firstFields.get(index) != null) {
+				firstFields.get(index).focus();
+			}
+		} else if (firstFields.get(0) != null) {
+			firstFields.get(0).focus();
 		}
 
 		if (oldMode != this.viewMode) {

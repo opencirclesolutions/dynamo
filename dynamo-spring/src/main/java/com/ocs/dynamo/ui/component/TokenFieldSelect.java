@@ -289,4 +289,12 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
 			comboBox.refresh();
 		}
 	}
+
+	@Override
+	public void focus() {
+		super.focus();
+		if (comboBox != null) {
+			comboBox.focus();
+		}
+	}
 }

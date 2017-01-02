@@ -84,11 +84,10 @@ public class ModelBasedFieldFactoryIntegrationTest extends BaseIntegrationTest {
 	}
 
 	/**
-	 * Test that a fancy list select is created for a multiple search field
+	 * Test that a token select is created
 	 */
-	@SuppressWarnings("unchecked")
 	@Test
-	public void testCreateListSelectFancyForMultiSearch() {
+	public void testCreateTokenSelect() {
 
 		EntityModel<TestEntity2> model = entityModelFactory.getModel("TestEntity2ListSelectFancy", TestEntity2.class);
 		AttributeModel am = model.getAttributeModel("testEntity");
@@ -97,10 +96,7 @@ public class ModelBasedFieldFactoryIntegrationTest extends BaseIntegrationTest {
 		ModelBasedFieldFactory<TestEntity2> factory = new ModelBasedFieldFactory<>(model, messageService, false, true);
 
 		Field<?> field = factory.createField(am.getName());
-		Assert.assertTrue(field instanceof FancyListSelect);
-
-		FancyListSelect<Integer, TestEntity> f = (FancyListSelect<Integer, TestEntity>) field;
-		Assert.assertEquals(new com.vaadin.data.sort.SortOrder("name", SortDirection.ASCENDING), f.getSortOrders()[0]);
+		Assert.assertTrue(field instanceof TokenFieldSelect);
 	}
 
 	/**

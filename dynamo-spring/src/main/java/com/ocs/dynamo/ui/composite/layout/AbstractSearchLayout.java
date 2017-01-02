@@ -471,6 +471,8 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 			FormOptions options = new FormOptions();
 			options.setOpenInViewMode(getFormOptions().isOpenInViewMode());
 			options.setScreenMode(ScreenMode.VERTICAL);
+			options.setAttributeGroupMode(getFormOptions().getAttributeGroupMode());
+			options.setPreserveSelectedTab(getFormOptions().isPreserveSelectedTab());
 
 			if (options.isOpenInViewMode()) {
 				options.setShowBackButton(true).setShowEditButton(true);

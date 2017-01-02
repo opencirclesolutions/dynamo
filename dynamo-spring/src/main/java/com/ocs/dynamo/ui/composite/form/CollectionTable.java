@@ -128,11 +128,7 @@ public class CollectionTable<T extends Serializable> extends CustomField<Collect
 		this.viewMode = viewMode;
 		this.formOptions = formOptions;
 		this.attributeModel = attributeModel;
-
-		// set up a very basic table with one column
 		table = new Table("");
-		table.addContainerProperty(VALUE, attributeModel.getNormalizedType(), null);
-		table.setVisibleColumns(VALUE);
 	}
 
 	/**
@@ -234,11 +230,13 @@ public class CollectionTable<T extends Serializable> extends CustomField<Collect
 	 */
 	@Override
 	protected Component initContent() {
-
+		// set up a very basic table with one column
+		table.addContainerProperty(VALUE, attributeModel.getNormalizedType(), null);
 		table.setColumnHeader(VALUE, messageService.getMessage("ocs.value"));
 
 		table.setEditable(!isViewMode());
 		table.setMultiSelect(false);
+
 		table.setPageLength(pageLength);
 		table.setColumnCollapsingAllowed(false);
 		table.setSizeFull();
@@ -289,9 +287,6 @@ public class CollectionTable<T extends Serializable> extends CustomField<Collect
 			}
 		});
 
-		VerticalLayout layout = new DefaultVerticalLayout(false, true);
-		layout.addComponent(table);
-
 		// add a change listener (to make sure the buttons are correctly
 		// enabled/disabled)
 		table.addValueChangeListener(new Property.ValueChangeListener() {
@@ -304,26 +299,10 @@ public class CollectionTable<T extends Serializable> extends CustomField<Collect
 		});
 
 		// add a remove button directly in the table
-		if (!isViewMode() && formOptions.isShowRemoveButton()) {
-			final String removeMsg = messageService.getMessage("ocs.remove");
-			table.addGeneratedColumn(removeMsg, new ColumnGenerator() {
+		constructRemoveColumn();
 
-				@Override
-				public Object generateCell(Table source, final Object itemId, Object columnId) {
-					Button remove = new Button(removeMsg);
-					remove.addClickListener(new Button.ClickListener() {
-
-						@Override
-						public void buttonClick(ClickEvent event) {
-							table.removeItem(itemId);
-							setValue(extractValues());
-							setSelectedItem(null);
-						}
-					});
-					return remove;
-				}
-			});
-		}
+		VerticalLayout layout = new DefaultVerticalLayout(false, true);
+		layout.addComponent(table);
 
 		// add the buttons
 		constructButtonBar(layout);
@@ -360,6 +339,33 @@ public class CollectionTable<T extends Serializable> extends CustomField<Collect
 		this.formOptions = formOptions;
 	}
 
+	/**
+	 * Constructs the column that holds the "remove" button
+	 */
+	private void constructRemoveColumn() {
+		// add a remove button directly in the table
+		if (!isViewMode() && formOptions.isShowRemoveButton()) {
+			final String removeMsg = messageService.getMessage("ocs.remove");
+			table.addGeneratedColumn(removeMsg, new ColumnGenerator() {
+
+				@Override
+				public Object generateCell(Table source, final Object itemId, Object columnId) {
+					Button remove = new Button(removeMsg);
+					remove.addClickListener(new Button.ClickListener() {
+
+						@Override
+						public void buttonClick(ClickEvent event) {
+							table.removeItem(itemId);
+							setValue(extractValues());
+							setSelectedItem(null);
+						}
+					});
+					return remove;
+				}
+			});
+		}
+	}
+
 	@Override
 	@SuppressWarnings("unchecked")
 	protected void setInternalValue(Collection<T> newValue) {
@@ -371,6 +377,10 @@ public class CollectionTable<T extends Serializable> extends CustomField<Collect
 			// recreate the container
 			table.setContainerDataSource(new IndexedContainer());
 			table.addContainerProperty(VALUE, attributeModel.getNormalizedType(), null);
+
+			if (table.removeGeneratedColumn(messageService.getMessage("ocs.remove"))) {
+				constructRemoveColumn();
+			}
 
 			if (newValue != null) {
 				for (T t : newValue) {
