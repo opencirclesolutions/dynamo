@@ -283,6 +283,7 @@ public abstract class BaseServiceImpl<ID, T extends AbstractEntity<ID>> implemen
 		delete(toDelete);
 	}
 
+	@Override
 	public <S> List<S> findDistinctInCollectionTable(String tableName, String distinctField, Class<S> elementType) {
 		return getDao().findDistinctInCollectionTable(tableName, distinctField, elementType);
 	}

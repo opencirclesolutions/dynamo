@@ -688,6 +688,14 @@ public class TableExportActionHandler implements Handler {
 				LOG.error(e.getMessage(), e);
 				return false;
 			} finally {
+				if (workbook != null) {
+					try {
+						workbook.close();
+					} catch (IOException ex) {
+						// do nothing
+					}
+				}
+
 				if (tempFile != null) {
 					tempFile.deleteOnExit();
 				}

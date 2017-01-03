@@ -127,9 +127,19 @@ public interface EntityModel<T> {
 	String MAX_LENGTH = "maxLength";
 
 	/**
+	 * The maximum value of the items inside an element collection
+	 */
+	String MAX_VALUE = "maxValue";
+
+	/**
 	 * The minimum length of the items inside an element collection
 	 */
 	String MIN_LENGTH = "minLength";
+
+	/**
+	 * The minimum value of the items inside an element collection
+	 */
+	String MIN_VALUE = "minValue";
 
 	/**
 	 * Whether to allow searching for multiple values in case of a MASTER attribute

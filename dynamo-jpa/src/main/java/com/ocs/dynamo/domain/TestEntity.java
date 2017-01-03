@@ -117,6 +117,7 @@ public class TestEntity extends AbstractTreeEntity<Integer, TestEntity> {
 	private Set<Integer> intTags = new HashSet<>();
 
 	@ElementCollection
+	@Attribute(minValue = 34)
 	private Set<Long> longTags = new HashSet<>();
 
 	public TestEntity() {

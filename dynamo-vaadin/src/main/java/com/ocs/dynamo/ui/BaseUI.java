@@ -76,6 +76,7 @@ public abstract class BaseUI extends UI {
 		navigator.navigateTo(startView);
 	}
 
+	@Override
 	public CustomNavigator getNavigator() {
 		return navigator;
 	}

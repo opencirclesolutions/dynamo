@@ -207,119 +207,127 @@ public abstract class ExportPivotTemplate<ID extends Serializable, T extends Abs
 	@Override
 	protected byte[] generateXls(DataSetIterator<ID, T> iterator) throws IOException {
 		setWorkbook(createWorkbook(iterator.size()));
-		Sheet sheet = getWorkbook().createSheet(getTitle());
-		setGenerator(createGenerator(getWorkbook()));
 
-		boolean resize = !(getWorkbook() instanceof SXSSFWorkbook);
-		ByteArrayOutputStream stream = new ByteArrayOutputStream();
+		try {
+			Sheet sheet = getWorkbook().createSheet(getTitle());
+			setGenerator(createGenerator(getWorkbook()));
 
-		// add header row
-		Row titleRow = sheet.createRow(0);
-		titleRow.setHeightInPoints(TITLE_ROW_HEIGHT);
+			boolean resize = !(getWorkbook() instanceof SXSSFWorkbook);
+			ByteArrayOutputStream stream = new ByteArrayOutputStream();
 
-		for (int i = 0; i < getCaptions().size(); i++) {
-			if (!resize) {
-				sheet.setColumnWidth(i, FIXED_COLUMN_WIDTH);
-			}
-			Cell cell = titleRow.createCell(i);
-			cell.setCellStyle(getGenerator().getHeaderStyle(i));
-			cell.setCellValue(getCaptions().get(i));
-		}
+			// add header row
+			Row titleRow = sheet.createRow(0);
+			titleRow.setHeightInPoints(TITLE_ROW_HEIGHT);
 
-		List<U> columns = getColumns();
-
-		// add headers for the columns
-		int j = 0;
-		for (U u : getColumns()) {
-			Cell cell = titleRow.createCell(getCaptions().size() + j);
-			cell.setCellStyle(getGenerator().getHeaderStyle(getCaptions().size() + j));
-			cell.setCellValue(getColumnHeader(u));
-			j++;
-		}
-
-		// caption for the totals row
-		String rowTotalCaption = getRowTotalCaption();
-
-		int lastColumnIndex = getCaptions().size() + columns.size();
-		if (rowTotalCaption != null) {
-			Cell totalCell = titleRow.createCell(lastColumnIndex);
-			totalCell.setCellStyle(getGenerator().getHeaderStyle(lastColumnIndex));
-			totalCell.setCellValue(rowTotalCaption);
-		}
-
-		Object prevRowId = null;
-		int index = 0;
-		Row row = null;
-		int rowSum = 0;
-		int valueCount = 0;
-		BigDecimal rowAverage = BigDecimal.ZERO;
-
-		T entity = iterator.next();
-		while (entity != null) {
-
-			Object rowId = getRowId(entity);
-			if (!ObjectUtils.equals(prevRowId, rowId)) {
-				// time to move to a new row
-
-				// add empty cells add the end
-				writeEmptyCells(row, index, lastColumnIndex);
-
-				// add row total
-				writeXlsRowTotal(row, lastColumnIndex, rowSum, rowAverage, valueCount);
-
-				// add a new row if the combination of store and product
-				// changes
-				row = sheet.createRow(sheet.getLastRowNum() + 1);
-
-				// add the first values
-				setXlsCellValues(row, entity);
-
-				rowSum = 0;
-				rowAverage = BigDecimal.ZERO;
-				index = 0;
-				valueCount = 0;
-			}
-
-			int colIndex = getCaptions().size() + index;
-			U column = getColumns().get(index);
-			if (!columnValueMatches(entity, column)) {
-				// write empty cell
-				createCell(row, colIndex, null, null, null);
-			} else {
-				Object value = getValue(entity);
-				if (value != null) {
-					Cell cell = createCell(row, colIndex, entity, value, attributeModel);
-					writeCellValue(cell, value, entity, null, attributeModel);
-
-					if (value instanceof BigDecimal) {
-						rowSum += ((BigDecimal) value).intValue();
-						rowAverage = rowAverage.add((BigDecimal) value);
-					} else if (value instanceof Number) {
-						rowSum += ((Number) value).intValue();
-						rowAverage = rowAverage.add(BigDecimal.valueOf(((Number) value).doubleValue()));
-					}
-					valueCount++;
-				} else {
-					// create empty cell
-					createCell(row, colIndex, entity, null, null);
+			for (int i = 0; i < getCaptions().size(); i++) {
+				if (!resize) {
+					sheet.setColumnWidth(i, FIXED_COLUMN_WIDTH);
 				}
-				entity = iterator.next();
+				Cell cell = titleRow.createCell(i);
+				cell.setCellStyle(getGenerator().getHeaderStyle(i));
+				cell.setCellValue(getCaptions().get(i));
 			}
 
-			index++;
-			prevRowId = rowId;
+			List<U> columns = getColumns();
+
+			// add headers for the columns
+			int j = 0;
+			for (U u : getColumns()) {
+				Cell cell = titleRow.createCell(getCaptions().size() + j);
+				cell.setCellStyle(getGenerator().getHeaderStyle(getCaptions().size() + j));
+				cell.setCellValue(getColumnHeader(u));
+				j++;
+			}
+
+			// caption for the totals row
+			String rowTotalCaption = getRowTotalCaption();
+
+			int lastColumnIndex = getCaptions().size() + columns.size();
+			if (rowTotalCaption != null) {
+				Cell totalCell = titleRow.createCell(lastColumnIndex);
+				totalCell.setCellStyle(getGenerator().getHeaderStyle(lastColumnIndex));
+				totalCell.setCellValue(rowTotalCaption);
+			}
+
+			Object prevRowId = null;
+			int index = 0;
+			Row row = null;
+			int rowSum = 0;
+			int valueCount = 0;
+			BigDecimal rowAverage = BigDecimal.ZERO;
+
+			T entity = iterator.next();
+			while (entity != null) {
+
+				Object rowId = getRowId(entity);
+				if (!ObjectUtils.equals(prevRowId, rowId)) {
+					// time to move to a new row
+
+					// add empty cells add the end
+					writeEmptyCells(row, index, lastColumnIndex);
+
+					// add row total
+					writeXlsRowTotal(row, lastColumnIndex, rowSum, rowAverage, valueCount);
+
+					// add a new row if the combination of store and product
+					// changes
+					row = sheet.createRow(sheet.getLastRowNum() + 1);
+
+					// add the first values
+					setXlsCellValues(row, entity);
+
+					rowSum = 0;
+					rowAverage = BigDecimal.ZERO;
+					index = 0;
+					valueCount = 0;
+				}
+
+				int colIndex = getCaptions().size() + index;
+				U column = getColumns().get(index);
+				if (!columnValueMatches(entity, column)) {
+					// write empty cell
+					createCell(row, colIndex, null, null, null);
+				} else {
+					Object value = getValue(entity);
+					if (value != null) {
+						Cell cell = createCell(row, colIndex, entity, value, attributeModel);
+						writeCellValue(cell, value, entity, null, attributeModel);
+
+						if (value instanceof BigDecimal) {
+							rowSum += ((BigDecimal) value).intValue();
+							rowAverage = rowAverage.add((BigDecimal) value);
+						} else if (value instanceof Number) {
+							rowSum += ((Number) value).intValue();
+							rowAverage = rowAverage.add(BigDecimal.valueOf(((Number) value).doubleValue()));
+						}
+						valueCount++;
+					} else {
+						// create empty cell
+						createCell(row, colIndex, entity, null, null);
+					}
+					entity = iterator.next();
+				}
+
+				index++;
+				prevRowId = rowId;
+			}
+
+			// add the last row total
+			writeEmptyCells(row, index, lastColumnIndex);
+			writeXlsRowTotal(row, lastColumnIndex, rowSum, rowAverage, valueCount);
+
+			// auto-resize if possible
+			resizeColumns(sheet);
+
+			// produce output
+			getWorkbook().write(stream);
+
+			return stream.toByteArray();
+		} finally {
+			if (getWorkbook() != null) {
+				getWorkbook().close();
+			}
 		}
-
-		// add the last row total
-		writeEmptyCells(row, index, lastColumnIndex);
-		writeXlsRowTotal(row, lastColumnIndex, rowSum, rowAverage, valueCount);
-
-		// auto-resize if possible
-		resizeColumns(sheet);
-
-		// produce output
-		getWorkbook().write(stream);
-		return stream.toByteArray();
 	}
 
 	public List<String> getCaptions() {

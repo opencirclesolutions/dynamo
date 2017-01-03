@@ -130,12 +130,9 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
 					String text = event.getText();
 					if (!StringUtils.isEmpty(text)) {
 						Filter quickFilter = constructQuickSearchFilter(text);
-						if (quickFilter == null) {
-							// fall back to main attribute is no custom filter has been created
-							if (getEntityModel().getMainAttributeModel() != null) {
-								quickFilter = new Like(getEntityModel().getMainAttributeModel().getPath(), "%" + text
-								        + "%", false);
-							}
+						if (quickFilter == null && getEntityModel().getMainAttributeModel() != null) {
+							quickFilter = new Like(getEntityModel().getMainAttributeModel().getPath(),
+							        "%" + text + "%", false);
 						}
 
 						Filter temp = quickFilter;

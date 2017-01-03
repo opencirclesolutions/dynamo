@@ -33,82 +33,94 @@ import com.ocs.dynamo.domain.model.VisibilityType;
 @Target({ ElementType.FIELD, ElementType.METHOD })
 public @interface Attribute {
 
-	/** the allowed extensions in case a file upload is used to edit the attribute */
+	/** @return the allowed extensions in case a file upload is used to edit the attribute */
 	String[] allowedExtensions() default {};
 
-	/** whether a complex attribute is directly editable */
+	/** @return whether a complex attribute is directly editable */
 	boolean complexEditable() default false;
 
-	/** is this a currency field? */
+	/** @return is this a currency field? */
 	boolean currency() default false;
 
-	/** date type */
+	/** @return the date type (date, time, or timestamp) */
 	AttributeDateType dateType() default AttributeDateType.INHERIT;
 
-	/** the default value (represented as a string - use "." as the decimal separator) */
+	/** @return the default value (represented as a string - use "." as the decimal separator) */
 	String defaultValue() default "";
 
-	/** textual description */
+	/** @return the description (appears as a tooltip) */
 	String description() default "";
 
-	/** the display format (useful in case of dates) */
+	/** @return the display format (useful in case of dates) */
 	String displayFormat() default "";
 
-	/** the display name */
+	/** @return the display name */
 	String displayName() default "";
 
 	/**
-	 * Can be used to mark an attribute as embedded
+	 * @return whether the attribute is embedded
 	 */
 	boolean embedded() default false;
 
-	/** the representation to use instead of "false" */
+	/** @return the representation to use instead of "false" */
 	String falseRepresentation() default "";
 
-	/** the name of the property in which to store the file name (after an upload) */
+	/** @return the name of the property in which to store the file name (after an upload) */
 	String fileNameProperty() default "";
 
 	/**
-	 * Names of other attributes that appear on the same line as this attribute inside an eedit form
-	 * 
-	 * @return
+	 * @return the names of other attributes that appear on the same line as this attribute inside
+	 *         an edit form
 	 */
 	String[] groupTogetherWith() default {};
 
-	/** whether the component should be represented as an image */
+	/** @return whether the component is meant for uploading/displaying images */
 	boolean image() default false;
 
-	/** whether this field is the main attribute */
+	/** @return whether this field is the main attribute */
 	boolean main() default false;
 
-	/** the maximum element length (-1 indicates no value) */
+	/** @return the maximum element length (-1 indicates no value) */
 	int maxLength() default -1;
 
-	/** the type of the members in a detail collection - needed in very specific cases */
+	/**
+	 * @return the maximum allowed value of an element in a collection table
+	 */
+	long maxValue() default Long.MAX_VALUE;
+
+	/** @return the type of the members in a detail collection - needed in very specific cases */
 	Class<?> memberType() default Object.class;
 
-	/** the minimum element length (-1 indicates no value) */
+	/** @return the minimum element length (-1 indicates no value) */
 	int minLength() default -1;
+	
+	/** @return the minimum element length (-1 indicates no value) */
+	long minValue() default Long.MIN_VALUE;
 
-	/** whether this attribute allows search for multiple values (only for MASTER attributes) */
+	/** @return whether this attribute allows search for multiple values (only for MASTER attributes) */
 	boolean multipleSearch() default false;
 
-	/** is the numeric field a percentage */
+	/** @return is the numeric field a percentage */
 	boolean percentage() default false;
 
-	/** decimal precision */
+	/** @return the desired decimap precision */
 	int precision() default -1;
 
-	/** prompt value to use in input fields */
+	/** @return the prompt value to use in input fields */
 	String prompt() default "";
 
-	/** */
+	/**
+	 * @return the name of the property to set when using "quick add" functionality
+	 */
 	String quickAddPropertyName() default "";
 
-	/** whether the field is readonly (i.e. does not appear in edit forms) */
+	/** @return whether the field is read-only (i.e. does not appear in edit forms) */
 	boolean readOnly() default false;
 
-	/** replacement search path */
+	/**
+	 * @return the replacement search path to be used when the property does not directly map to a
+	 *         JPA property
+	 */
 	String replacementSearchPath() default "";
 
 	/**
@@ -137,19 +149,19 @@ public @interface Attribute {
 	/** @return whether to match on prefix only */
 	boolean searchPrefixOnly() default false;
 
-	/** determines which selection component to use in search mode */
+	/** @return the selection component to use in search mode */
 	AttributeSelectMode searchSelectMode() default AttributeSelectMode.INHERIT;
 
-	/** determines which selection component to use in edit mode */
+	/** @return the selection component to use in edit mode */
 	AttributeSelectMode selectMode() default AttributeSelectMode.INHERIT;
 
-	/** whether the field shows up in a table */
+	/** @return whether the field shows up in a table */
 	VisibilityType showInTable() default VisibilityType.INHERIT;
 
-	/** whether a table can be sorted on this field */
+	/** @return whether a table can be sorted on this field */
 	boolean sortable() default true;
 
-	/** whether to display a text attribute as a text field or a text area */
+	/** @return whether to display a text attribute as a text field or a text area */
 	AttributeTextFieldMode textFieldMode() default AttributeTextFieldMode.INHERIT;
 
 	/** the representation to use instead of "true" */

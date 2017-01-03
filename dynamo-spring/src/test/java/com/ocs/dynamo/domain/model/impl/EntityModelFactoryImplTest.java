@@ -512,6 +512,11 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		Assert.assertEquals(AttributeType.ELEMENT_COLLECTION, am.getAttributeType());
 		Assert.assertEquals("element_table", am.getCollectionTableName());
 		Assert.assertEquals("element", am.getCollectionTableFieldName());
+
+		AttributeModel am2 = model.getAttributeModel("longElements");
+		Assert.assertEquals(AttributeType.ELEMENT_COLLECTION, am2.getAttributeType());
+		Assert.assertEquals(100L, am2.getMinValue().longValue());
+		Assert.assertEquals(500L, am2.getMaxValue().longValue());
 	}
 
 	@Test
@@ -886,6 +891,12 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		@Column(name = "element")
 		private Set<String> elements = new HashSet<>();
 
+		@ElementCollection
+		@CollectionTable(name = "long_element_table")
+		@Column(name = "element")
+		@Attribute(minValue = 100, maxValue = 500)
+		private Set<Long> longElements = new HashSet<>();
+
 		public Set<String> getElements() {
 			return elements;
 		}
@@ -893,6 +904,15 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		public void setElements(Set<String> elements) {
 			this.elements = elements;
 		}
+
+		public Set<Long> getLongElements() {
+			return longElements;
+		}
+
+		public void setLongElements(Set<Long> longElements) {
+			this.longElements = longElements;
+		}
+
 	}
 
 	private class Entity10 {

@@ -75,9 +75,13 @@ public class AttributeModelImpl implements AttributeModel {
 
 	private Integer maxLength;
 
+	private Long maxValue;
+
 	private Class<?> memberType;
 
 	private Integer minLength;
+
+	private Long minValue;
 
 	private boolean multipleSearch;
 
@@ -132,7 +136,7 @@ public class AttributeModelImpl implements AttributeModel {
 	private boolean visible;
 
 	private boolean visibleInTable;
-	
+
 	private boolean week;
 
 	@Override
@@ -216,6 +220,11 @@ public class AttributeModelImpl implements AttributeModel {
 	}
 
 	@Override
+	public Long getMaxValue() {
+		return maxValue;
+	}
+
+	@Override
 	public Class<?> getMemberType() {
 		return memberType;
 	}
@@ -223,6 +232,11 @@ public class AttributeModelImpl implements AttributeModel {
 	@Override
 	public Integer getMinLength() {
 		return minLength;
+	}
+
+	@Override
+	public Long getMinValue() {
+		return minValue;
 	}
 
 	@Override
@@ -302,6 +316,7 @@ public class AttributeModelImpl implements AttributeModel {
 		return type;
 	}
 
+	@Override
 	public boolean isAlreadyGrouped() {
 		return alreadyGrouped;
 	}
@@ -498,12 +513,20 @@ public class AttributeModelImpl implements AttributeModel {
 		this.maxLength = maxLength;
 	}
 
+	public void setMaxValue(Long maxValue) {
+		this.maxValue = maxValue;
+	}
+
 	public void setMemberType(Class<?> memberType) {
 		this.memberType = memberType;
 	}
 
 	public void setMinLength(Integer minLength) {
 		this.minLength = minLength;
+	}
+
+	public void setMinValue(Long minValue) {
+		this.minValue = minValue;
 	}
 
 	public void setMultipleSearch(boolean multipleSearch) {
@@ -622,4 +645,5 @@ public class AttributeModelImpl implements AttributeModel {
 	public String toString() {
 		return ReflectionToStringBuilder.toStringExclude(this, "entityModel");
 	}
+
 }

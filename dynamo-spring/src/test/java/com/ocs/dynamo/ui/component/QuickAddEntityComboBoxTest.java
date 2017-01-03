@@ -119,6 +119,9 @@ public class QuickAddEntityComboBoxTest extends BaseMockitoTest {
 		Assert.assertEquals(3, select.getComboBox().getContainerDataSource().size());
 	}
 	
+	/**
+	 * Try to add an item that is too long
+	 */
 	@Test
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void testAddLongItem() {

@@ -887,8 +887,16 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 				model.setMinLength(attribute.minLength());
 			}
 
+			if (attribute.minValue() > Long.MIN_VALUE) {
+				model.setMinValue(attribute.minValue());
+			}
+
 			if (attribute.maxLength() > -1) {
 				model.setMaxLength(attribute.maxLength());
+			}
+
+			if (attribute.maxValue() < Long.MAX_VALUE) {
+				model.setMaxValue(attribute.maxValue());
 			}
 
 			if (attribute.url()) {
@@ -1118,9 +1126,19 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 			model.setMinLength(Integer.parseInt(msg));
 		}
 
+		msg = getAttributeMessage(entityModel, model, EntityModel.MIN_VALUE);
+		if (!StringUtils.isEmpty(msg)) {
+			model.setMinValue(Long.parseLong(msg));
+		}
+
 		msg = getAttributeMessage(entityModel, model, EntityModel.MAX_LENGTH);
 		if (!StringUtils.isEmpty(msg)) {
 			model.setMaxLength(Integer.parseInt(msg));
+		}
+
+		msg = getAttributeMessage(entityModel, model, EntityModel.MAX_VALUE);
+		if (!StringUtils.isEmpty(msg)) {
+			model.setMaxValue(Long.parseLong(msg));
 		}
 
 		msg = getAttributeMessage(entityModel, model, EntityModel.URL);

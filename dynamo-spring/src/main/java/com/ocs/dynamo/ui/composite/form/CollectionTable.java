@@ -29,6 +29,7 @@ import com.ocs.dynamo.utils.SystemPropertyUtils;
 import com.vaadin.data.Container;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.IndexedContainer;
+import com.vaadin.data.validator.RangeValidator;
 import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -74,16 +75,6 @@ public class CollectionTable<T extends Serializable> extends CustomField<Collect
 	private FormOptions formOptions;
 
 	/**
-	 * The maximum length of the fields
-	 */
-	private Integer maxLength;
-
-	/**
-	 * The minimum length of the fields
-	 */
-	private Integer minLength;
-
-	/**
 	 * The message service
 	 */
 	private MessageService messageService;
@@ -98,6 +89,9 @@ public class CollectionTable<T extends Serializable> extends CustomField<Collect
 	 */
 	private ModelBasedEditForm<?, ?> parentForm;
 
+	/**
+	 * Whether to propagate change events (disabled during construction)
+	 */
 	private boolean propagateChanges = true;
 
 	/**
@@ -196,14 +190,6 @@ public class CollectionTable<T extends Serializable> extends CustomField<Collect
 		return formOptions;
 	}
 
-	public Integer getMaxLength() {
-		return maxLength;
-	}
-
-	public Integer getMinLength() {
-		return minLength;
-	}
-
 	public int getPageLength() {
 		return pageLength;
 	}
@@ -243,6 +229,7 @@ public class CollectionTable<T extends Serializable> extends CustomField<Collect
 		table.setTableFieldFactory(new DefaultFieldFactory() {
 
 			@Override
+			@SuppressWarnings("rawtypes")
 			public Field<?> createField(Container container, Object itemId, Object propertyId, Component uiContext) {
 
 				Field<?> f = super.createField(container, itemId, propertyId, uiContext);
@@ -255,15 +242,27 @@ public class CollectionTable<T extends Serializable> extends CustomField<Collect
 				}
 
 				// add a validator that checks for the maximum length
-				if (maxLength != null) {
-					f.addValidator(new StringLengthValidator(messageService.getMessage("ocs.value.too.long"), 0,
-					        maxLength, true));
+				if (attributeModel.getMaxLength() != null) {
+					f.addValidator(new StringLengthValidator(messageService.getMessage("ocs.value.too.long",
+					        attributeModel.getMaxLength()), 0, attributeModel.getMaxLength(), true));
 				}
 
 				// add a validator that checks for the minimum length
-				if (minLength != null) {
-					f.addValidator(new StringLengthValidator(messageService.getMessage("ocs.value.too.short"),
-					        minLength, Integer.MAX_VALUE, true));
+				if (attributeModel.getMinLength() != null) {
+					f.addValidator(new StringLengthValidator(messageService.getMessage("ocs.value.too.short",
+					        attributeModel.getMinLength()), attributeModel.getMinLength(), Integer.MAX_VALUE, true));
+				}
+
+				if (attributeModel.getMinValue() != null) {
+					f.addValidator(new RangeValidator(messageService.getMessage("ocs.value.too.low",
+					        attributeModel.getMinValue()), attributeModel.getNormalizedType(), attributeModel
+					        .getMinValue(), null));
+				}
+
+				if (attributeModel.getMaxValue() != null) {
+					f.addValidator(new RangeValidator(messageService.getMessage("ocs.value.too.high",
+					        attributeModel.getMaxValue()), attributeModel.getNormalizedType(), null, attributeModel
+					        .getMaxValue()));
 				}
 
 				// value change listener that makes sure the validity of the
@@ -393,14 +392,6 @@ public class CollectionTable<T extends Serializable> extends CustomField<Collect
 		super.setInternalValue(newValue);
 	}
 
-	public void setMaxLength(Integer maxLength) {
-		this.maxLength = maxLength;
-	}
-
-	public void setMinLength(Integer minLength) {
-		this.minLength = minLength;
-	}
-
 	public void setPageLength(int pageLength) {
 		this.pageLength = pageLength;
 	}
@@ -423,6 +414,22 @@ public class CollectionTable<T extends Serializable> extends CustomField<Collect
 
 	public void setViewMode(boolean viewMode) {
 		this.viewMode = viewMode;
+	}
+
+	public Integer getMaxLength() {
+		return attributeModel.getMaxLength();
+	}
+
+	public Long getMaxValue() {
+		return attributeModel.getMaxValue();
+	}
+
+	public Integer getMinLength() {
+		return attributeModel.getMinLength();
+	}
+
+	public Long getMinValue() {
+		return attributeModel.getMinValue();
 	}
 
 }

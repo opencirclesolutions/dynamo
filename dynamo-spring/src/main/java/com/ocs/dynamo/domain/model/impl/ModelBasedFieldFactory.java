@@ -518,8 +518,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 			        fieldEntityModel != null ? fieldEntityModel : attributeModel.getEntityModel(), attributeModel,
 			        propertyId.substring(propertyId.lastIndexOf(".") + 1), false, null);
 
-		} else if (search
-		        && (attributeModel.getType().equals(Boolean.class))) {
+		} else if (search && (attributeModel.getType().equals(Boolean.class))) {
 			// in a search screen, we need to offer the true, false, and
 			// undefined options
 			field = constructSearchBooleanComboBox(attributeModel);
@@ -532,10 +531,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 				FormOptions fo = new FormOptions();
 				fo.setShowRemoveButton(true);
 				if (String.class.equals(attributeModel.getMemberType())) {
-					CollectionTable<String> table = new CollectionTable<>(attributeModel, false, fo);
-					table.setMinLength(attributeModel.getMinLength());
-					table.setMaxLength(attributeModel.getMaxLength());
-					field = table;
+					field = new CollectionTable<>(attributeModel, false, fo);
 				} else if (Integer.class.equals(attributeModel.getMemberType())) {
 					field = new CollectionTable<>(attributeModel, false, fo);
 				} else if (Long.class.equals(attributeModel.getMemberType())) {

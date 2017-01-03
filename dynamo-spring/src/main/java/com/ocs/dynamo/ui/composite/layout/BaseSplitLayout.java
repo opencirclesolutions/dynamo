@@ -139,10 +139,8 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 			quickSearchField = constructSearchField();
 
 			// additional quick search field
-			if (!isHorizontalMode()) {
-				if (quickSearchField != null) {
-					mainLayout.addComponent(quickSearchField);
-				}
+			if (!isHorizontalMode() && quickSearchField != null) {
+				mainLayout.addComponent(quickSearchField);
 			}
 
 			// table init

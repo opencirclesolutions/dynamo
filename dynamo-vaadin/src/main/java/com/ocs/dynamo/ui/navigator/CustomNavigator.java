@@ -17,6 +17,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.vaadin.navigator.NavigationStateManager;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
@@ -73,6 +74,7 @@ public class CustomNavigator extends Navigator {
 		this(ui, new UriFragmentManager(ui.getPage()), display);
 	}
 
+	@Override
 	public void addProvider(ViewProvider provider) {
 		if (provider == null) {
 			throw new IllegalArgumentException("Cannot add a null view provider");
@@ -103,6 +105,7 @@ public class CustomNavigator extends Navigator {
 	 * @param navigationState
 	 *            the name of the view
 	 */
+	@Override
 	public void navigateTo(String navigationState) {
 		ViewProvider longestViewNameProvider = getViewProvider(navigationState);
 		String longestViewName = longestViewNameProvider == null ? null : longestViewNameProvider
@@ -139,6 +142,7 @@ public class CustomNavigator extends Navigator {
 		}
 	}
 
+	@Override
 	public void removeProvider(ViewProvider provider) {
 		providers.remove(provider);
 	}
@@ -152,6 +156,7 @@ public class CustomNavigator extends Navigator {
 	 * @param viewName
 	 *            name of the view to remove
 	 */
+	@Override
 	public void removeView(String viewName) {
 		Iterator<ViewProvider> it = providers.iterator();
 		while (it.hasNext()) {
@@ -170,6 +175,7 @@ public class CustomNavigator extends Navigator {
 		}
 	}
 
+	@Override
 	protected void revertNavigation() {
 		if (currentNavigationState != null) {
 			getStateManager().setState(currentNavigationState);
@@ -184,6 +190,7 @@ public class CustomNavigator extends Navigator {
 		errorProvider = provider;
 	}
 
+	@Override
 	public void setErrorView(final Class<? extends View> viewClass) {
 		setErrorProvider(new ViewProvider() {
 
@@ -194,7 +201,7 @@ public class CustomNavigator extends Navigator {
 				try {
 					return viewClass.newInstance();
 				} catch (Exception e) {
-					throw new RuntimeException(e);
+					throw new OCSRuntimeException(e.getMessage());
 				}
 			}
 
@@ -205,6 +212,7 @@ public class CustomNavigator extends Navigator {
 		});
 	}
 
+	@Override
 	public void setErrorView(final View view) {
 		setErrorProvider(new ViewProvider() {
 
@@ -222,6 +230,7 @@ public class CustomNavigator extends Navigator {
 		});
 	}
 
+	@Override
 	protected void updateNavigationState(ViewChangeEvent event) {
 		String viewName = event.getViewName();
 		String parameters = event.getParameters();

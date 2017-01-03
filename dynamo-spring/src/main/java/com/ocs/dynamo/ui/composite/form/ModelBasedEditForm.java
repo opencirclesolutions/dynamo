@@ -1270,10 +1270,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			}
 		}
 
-		// if (!isViewMode() && firstField != null) {
-		// firstField.focus();
-		// }
-
 		// update the title label
 		Label newTitleLabel = constructTitleLabel();
 		titleBars.get(isViewMode()).replaceComponent(titleLabels.get(isViewMode()), newTitleLabel);

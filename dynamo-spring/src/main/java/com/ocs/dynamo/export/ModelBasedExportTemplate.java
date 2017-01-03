@@ -86,51 +86,57 @@ public abstract class ModelBasedExportTemplate<ID extends Serializable, T extend
 	@Override
 	protected byte[] generateXls(DataSetIterator<ID, T> iterator) throws IOException {
 		setWorkbook(createWorkbook(iterator.size()));
-		Sheet sheet = getWorkbook().createSheet(getTitle());
-		setGenerator(createGenerator(getWorkbook()));
+		try {
+			Sheet sheet = getWorkbook().createSheet(getTitle());
+			setGenerator(createGenerator(getWorkbook()));
 
-		boolean resize = canResize();
-		ByteArrayOutputStream stream = new ByteArrayOutputStream();
+			boolean resize = canResize();
+			ByteArrayOutputStream stream = new ByteArrayOutputStream();
 
-		// add header row
-		Row titleRow = sheet.createRow(0);
-		titleRow.setHeightInPoints(TITLE_ROW_HEIGHT);
+			// add header row
+			Row titleRow = sheet.createRow(0);
+			titleRow.setHeightInPoints(TITLE_ROW_HEIGHT);
 
-		int i = 0;
-		for (AttributeModel am : entityModel.getAttributeModels()) {
-			if (show(am)) {
-				if (!resize) {
-					sheet.setColumnWidth(i, FIXED_COLUMN_WIDTH);
-				}
-				Cell cell = titleRow.createCell(i);
-				cell.setCellStyle(getGenerator().getHeaderStyle(i));
-				cell.setCellValue(am.getDisplayName());
-				i++;
-			}
-		}
-
-		// iterate over the rows
-		int rowIndex = 1;
-		T entity = iterator.next();
-		while (entity != null) {
-			Row row = sheet.createRow(rowIndex);
-
-			int colIndex = 0;
+			int i = 0;
 			for (AttributeModel am : entityModel.getAttributeModels()) {
-				if (am != null && show(am)) {
-					Object value = ClassUtils.getFieldValue(entity, am.getPath());
-					Cell cell = createCell(row, colIndex, entity, value, am);
-					writeCellValue(cell, value, entity, entityModel, am);
-					colIndex++;
+				if (show(am)) {
+					if (!resize) {
+						sheet.setColumnWidth(i, FIXED_COLUMN_WIDTH);
+					}
+					Cell cell = titleRow.createCell(i);
+					cell.setCellStyle(getGenerator().getHeaderStyle(i));
+					cell.setCellValue(am.getDisplayName());
+					i++;
 				}
 			}
-			rowIndex++;
-			entity = iterator.next();
-		}
-		resizeColumns(sheet);
 
-		getWorkbook().write(stream);
-		return stream.toByteArray();
+			// iterate over the rows
+			int rowIndex = 1;
+			T entity = iterator.next();
+			while (entity != null) {
+				Row row = sheet.createRow(rowIndex);
+
+				int colIndex = 0;
+				for (AttributeModel am : entityModel.getAttributeModels()) {
+					if (am != null && show(am)) {
+						Object value = ClassUtils.getFieldValue(entity, am.getPath());
+						Cell cell = createCell(row, colIndex, entity, value, am);
+						writeCellValue(cell, value, entity, entityModel, am);
+						colIndex++;
+					}
+				}
+				rowIndex++;
+				entity = iterator.next();
+			}
+			resizeColumns(sheet);
+
+			getWorkbook().write(stream);
+			return stream.toByteArray();
+		} finally {
+			if (getWorkbook() != null) {
+				getWorkbook().close();
+			}
+		}
 	}
 
 	/**

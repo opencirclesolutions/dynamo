@@ -30,6 +30,7 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	 * Adds a "group together with" attribute
 	 * 
 	 * @param path
+	 *            the path to the attribute to group with
 	 */
 	void addGroupTogetherWith(String path);
 
@@ -111,9 +112,15 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 
 	/**
 	 * 
-	 * @return The maximum allowed length of the attribute
+	 * @return The maximum allowed length of the attribute (inside a collection table)
 	 */
 	Integer getMaxLength();
+
+	/**
+	 * 
+	 * @return the maximum allowed value of the attribute (inside a collection table)
+	 */
+	Long getMaxValue();
 
 	/**
 	 * 
@@ -123,9 +130,15 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 
 	/**
 	 * 
-	 * @return the minimum allowed length of the attribute
+	 * @return the minimum allowed length of the attribute (inside a collection table)
 	 */
 	Integer getMinLength();
+
+	/**
+	 * 
+	 * @return the minimum allowed value of the attribute (inside a collection table)
+	 */
+	Long getMinValue();
 
 	/**
 	 * 
@@ -365,7 +378,7 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	 * @return
 	 */
 	boolean isWeek();
-	
+
 	/**
 	 * Marks the attribute as the main attribute
 	 * 
