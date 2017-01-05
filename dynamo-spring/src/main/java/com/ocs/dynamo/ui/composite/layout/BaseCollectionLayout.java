@@ -27,6 +27,8 @@ import com.ocs.dynamo.dao.query.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
+import com.ocs.dynamo.ui.Refreshable;
+import com.ocs.dynamo.ui.Reloadable;
 import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
 import com.ocs.dynamo.ui.composite.form.FormOptions;
 import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
@@ -53,7 +55,7 @@ import com.vaadin.ui.Table.CellStyleGenerator;
  *            the type of the entity
  */
 public abstract class BaseCollectionLayout<ID extends Serializable, T extends AbstractEntity<ID>> extends
-        BaseServiceCustomComponent<ID, T> {
+        BaseServiceCustomComponent<ID, T> implements Reloadable, Refreshable {
 
 	private static final long serialVersionUID = -2864711994829582000L;
 
@@ -63,7 +65,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	// the button bar
 	private HorizontalLayout buttonBar = new DefaultHorizontalLayout();
 
-	//
+	// the relations to fetch when displaying a single entity
 	private FetchJoinInformation[] detailJoins;
 
 	// the property used to determine when to draw a divider row
@@ -126,18 +128,6 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	 */
 	public final void addSortOrder(SortOrder sortOrder) {
 		this.sortOrders.add(sortOrder);
-	}
-
-	/**
-	 * Method that is called after the user selects an entity to view in Details mode
-	 * 
-	 * @param editForm
-	 *            the edit form which displays the entity
-	 * @param entity
-	 *            the selected entity
-	 */
-	protected void afterDetailSelected(ModelBasedEditForm<ID, T> editForm, T entity) {
-		// override in subclass
 	}
 
 	/**

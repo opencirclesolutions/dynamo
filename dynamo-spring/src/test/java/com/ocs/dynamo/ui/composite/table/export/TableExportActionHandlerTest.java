@@ -45,7 +45,7 @@ import com.ocs.dynamo.importer.impl.BaseXlsImporter;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.test.BaseMockitoTest;
 import com.ocs.dynamo.test.MockUtil;
-import com.ocs.dynamo.ui.composite.table.CustomTreeTable;
+import com.ocs.dynamo.ui.composite.table.InMemoryTreeTable;
 import com.ocs.dynamo.ui.composite.table.Department;
 import com.ocs.dynamo.ui.composite.table.ModelBasedTable;
 import com.ocs.dynamo.ui.composite.table.Person;
@@ -392,7 +392,7 @@ public class TableExportActionHandlerTest extends BaseMockitoTest {
 		department.setName("Special ops");
 		department.setEmployees(Sets.newHashSet(person1, person2));
 
-		CustomTreeTable<Integer, Person, Integer, Department> table = new CustomTreeTable<Integer, Person, Integer, Department>() {
+		InMemoryTreeTable<Integer, Person, Integer, Department> table = new InMemoryTreeTable<Integer, Person, Integer, Department>() {
 
 			private static final long serialVersionUID = -6428315820101615753L;
 

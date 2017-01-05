@@ -31,6 +31,7 @@ import com.vaadin.data.Container;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.sort.SortOrder;
 import com.vaadin.data.util.filter.And;
+import com.vaadin.data.util.filter.Like;
 import com.vaadin.event.FieldEvents.TextChangeEvent;
 import com.vaadin.event.FieldEvents.TextChangeListener;
 import com.vaadin.ui.TextField;
@@ -81,17 +82,25 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
 		super(service, entityModel, formOptions, sortOrder, joins);
 	}
 
-	/**
-	 * Method that is called after the layout is reloaded
-	 */
 	@Override
-	protected void afterReload(T t) {
-		// in a lazy query container, the entity ID is used as the key
-		getTableWrapper().getTable().select(t == null ? null : t.getId());
+	protected final void buildFilter() {
+		filter = constructFilter();
 	}
 
 	/**
-	 * Constructs the quick search filter
+	 * Creates the main search filter - overwrite in subclass if you need to actually filter the
+	 * data
+	 * 
+	 * @return
+	 */
+	protected Filter constructFilter() {
+		// overwrite in subclass
+		return null;
+	}
+
+	/**
+	 * Constructs the quick search filter - override if you need a custom filter when searching for
+	 * the main attribute is not sufficient
 	 * 
 	 * @param value
 	 *            the value to search for
@@ -103,7 +112,10 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
 	}
 
 	/**
-	 * Constructs a quick search field
+	 * Constructs a quick search field - this method will only be called if the
+	 * "showQuickSearchField" form option is enabled. It will then look for a custom filter returned
+	 * by the constructQuickSearchFilter method, and if that method returns null it will construct a
+	 * filter based on the main attribute
 	 */
 	@Override
 	protected TextField constructSearchField() {
@@ -117,13 +129,17 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
 				public void textChange(TextChangeEvent event) {
 					String text = event.getText();
 					if (!StringUtils.isEmpty(text)) {
-						Filter extra = constructQuickSearchFilter(text);
-
-						Filter f = extra;
-						if (getFilter() != null) {
-							f = new And(extra, getFilter());
+						Filter quickFilter = constructQuickSearchFilter(text);
+						if (quickFilter == null && getEntityModel().getMainAttributeModel() != null) {
+							quickFilter = new Like(getEntityModel().getMainAttributeModel().getPath(),
+							        "%" + text + "%", false);
 						}
-						getContainer().search(f);
+
+						Filter temp = quickFilter;
+						if (getFilter() != null) {
+							temp = new And(quickFilter, getFilter());
+						}
+						getContainer().search(temp);
 					} else {
 						getContainer().search(filter);
 					}
@@ -140,6 +156,11 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
 		        getQueryType(), filter, getSortOrders(), getFormOptions().isTableExportAllowed(), getJoins()) {
 
 			@Override
+			protected void doConstructContainer(Container container) {
+				ServiceBasedSplitLayout.this.doConstructContainer(container);
+			}
+
+			@Override
 			protected void onSelect(Object selected) {
 				setSelectedItems(selected);
 				checkButtonState(getSelectedItem());
@@ -147,25 +168,9 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
 					detailsMode(getSelectedItem());
 				}
 			}
-
-			@Override
-			protected void doConstructContainer(Container container) {
-				ServiceBasedSplitLayout.this.doConstructContainer(container);
-			}
 		};
 		tw.build();
 		return tw;
-	}
-
-	/**
-	 * Creates the main search filter - overwrite in subclass if you need to actually filter the
-	 * data
-	 * 
-	 * @return
-	 */
-	protected Filter constructFilter() {
-		// overwrite in subclass
-		return null;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -177,19 +182,24 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
 		return filter;
 	}
 
-	@Override
-	protected void init() {
-		filter = constructFilter();
+	public QueryType getQueryType() {
+		return queryType;
 	}
 
+	@Override
+	public ServiceResultsTableWrapper<ID, T> getTableWrapper() {
+		return (ServiceResultsTableWrapper<ID, T>) super.getTableWrapper();
+	}
+
+	/**
+	 * Reloads the component - this will first rebuild the filter and then reload the container
+	 * using that filter
+	 */
 	@Override
 	public void reload() {
+		buildFilter();
 		super.reload();
-		getTableWrapper().reloadContainer();
-	}
-
-	public void setFilter(Filter filter) {
-		this.filter = filter;
+		getTableWrapper().setFilter(filter);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -207,17 +217,9 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
 				setSelectedItem(getService().fetchById(id, getDetailJoinsFallBack()));
 			}
 		} else {
+			// nothing selected
 			setSelectedItem(null);
 			emptyDetailView();
 		}
 	}
-
-	public QueryType getQueryType() {
-		return queryType;
-	}
-
-	public void setQueryType(QueryType queryType) {
-		this.queryType = queryType;
-	}
-
 }

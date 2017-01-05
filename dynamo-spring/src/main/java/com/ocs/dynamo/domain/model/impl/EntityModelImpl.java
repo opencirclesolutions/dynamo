@@ -153,6 +153,28 @@ public class EntityModelImpl<T> implements EntityModel<T> {
     }
 
     @Override
+    public List<AttributeModel> getRequiredAttributeModels() {
+        List<AttributeModel> requiredModels = new ArrayList<AttributeModel>();
+        for (AttributeModel model : getAttributeModels()) {
+            if (model.isRequired()) {
+                requiredModels.add(model);
+            }
+        }
+        return requiredModels;
+    }
+
+    @Override
+    public List<AttributeModel> getRequiredForSearchingAttributeModels() {
+        List<AttributeModel> requiredModels = new ArrayList<AttributeModel>();
+        for (AttributeModel model : getAttributeModels()) {
+            if (model.isSearchable() && model.isRequiredForSearching()) {
+                requiredModels.add(model);
+            }
+        }
+        return requiredModels;
+    }
+
+    @Override
     public List<AttributeModel> getAttributeModelsForGroup(String group) {
         return Collections.unmodifiableList(attributeModels.get(group));
     }

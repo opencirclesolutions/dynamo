@@ -278,14 +278,27 @@ public class TestEntityDaoTest extends BaseIntegrationTest {
 		save("Bob", 11L);
 		save("Bob", 11L);
 
-		List<? extends Object> names = dao.findDistinct(null, "name", new SortOrder("name"));
+		List<? extends Object> names = dao.findDistinct(null, "name", String.class, new SortOrder("name"));
 		Assert.assertEquals(2, names.size());
 		Assert.assertEquals("Bob", names.get(0));
 		Assert.assertEquals("Kevin", names.get(1));
 
-		List<? extends Object> ages = dao.findDistinct(null, "age", new SortOrder("age"));
+		List<? extends Object> ages = dao.findDistinct(null, "age", String.class, new SortOrder("age"));
 		Assert.assertEquals(1, ages.size());
 		Assert.assertEquals(11L, ages.get(0));
+	}
+
+	@Test
+	public void testFindDistinctForCollectionTable() {
+		save("Kevin", 11L);
+		save("Bob", 11L);
+		save("Bob", 11L);
+
+		List<String> names = dao.findDistinctInCollectionTable("test_entity", "name", String.class);
+		Assert.assertEquals(2, names.size());
+		
+		List<Long> ages = dao.findDistinctInCollectionTable("test_entity", "age", Long.class);
+		Assert.assertEquals(1, ages.size());
 	}
 
 	private TestEntity save(String name, long age) {

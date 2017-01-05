@@ -23,65 +23,67 @@ import org.junit.Test;
 
 import com.ocs.dynamo.exception.OCSImportException;
 import com.ocs.dynamo.importer.impl.PersonDTO.Gender;
+import com.ocs.dynamo.utils.DateUtils;
 
 public class BaseCsvImporterTest {
 
-    BaseCsvImporter importer = new BaseCsvImporter();
+	BaseCsvImporter importer = new BaseCsvImporter();
 
-    @Test
-    public void testCountRows() throws IOException {
-        byte[] bytes = readFile("importertest.csv");
-        int rows = importer.countRows(bytes, 0, 0);
-        Assert.assertEquals(7, rows);
-    }
+	@Test
+	public void testCountRows() throws IOException {
+		byte[] bytes = readFile("importertest.csv");
+		int rows = importer.countRows(bytes, 0, 0);
+		Assert.assertEquals(7, rows);
+	}
 
-    /**
-     * Test the import of a (correct) CSV file
-     * 
-     * @throws IOException
-     */
-    @Test
-    public void testReadFile() throws IOException {
-        byte[] bytes = readFile("importertest.csv");
-        List<String[]> lines = importer.readCsvFile(bytes, ";", "'");
+	/**
+	 * Test the import of a (correct) CSV file
+	 * 
+	 * @throws IOException
+	 */
+	@Test
+	public void testReadFile() throws IOException {
+		byte[] bytes = readFile("importertest.csv");
+		List<String[]> lines = importer.readCsvFile(bytes, ";", "'");
 
-        PersonDTO dto = importer.processRow(0, lines.get(0), PersonDTO.class);
-        Assert.assertNotNull(dto);
-        Assert.assertEquals("Bas", dto.getName());
-        Assert.assertEquals(1, dto.getNumber().intValue());
-        Assert.assertEquals(2.4, dto.getFactor().doubleValue(), 0.001);
-        Assert.assertEquals("abc", dto.getRandom());
-        Assert.assertEquals(Gender.M, dto.getGender());
-        Assert.assertEquals(1.50, dto.getPercentage().doubleValue(), 0.001);
+		PersonDTO dto = importer.processRow(0, lines.get(0), PersonDTO.class);
+		Assert.assertNotNull(dto);
+		Assert.assertEquals("Bas", dto.getName());
+		Assert.assertEquals(1, dto.getNumber().intValue());
+		Assert.assertEquals(2.4, dto.getFactor().doubleValue(), 0.001);
+		Assert.assertEquals("abc", dto.getRandom());
+		Assert.assertEquals(Gender.M, dto.getGender());
+		Assert.assertEquals(1.50, dto.getPercentage().doubleValue(), 0.001);
 
-        // check that default values are set
-        dto = importer.processRow(1, lines.get(1), PersonDTO.class);
-        Assert.assertNotNull(dto);
-        Assert.assertEquals("Unknown", dto.getName());
-        Assert.assertEquals(2, dto.getNumber().intValue());
-        Assert.assertEquals(1.0, dto.getFactor().doubleValue(), 0.001);
+		// check that default values are set
+		dto = importer.processRow(1, lines.get(1), PersonDTO.class);
+		Assert.assertNotNull(dto);
+		Assert.assertEquals("Unknown", dto.getName());
+		Assert.assertEquals(2, dto.getNumber().intValue());
+		Assert.assertEquals(1.0, dto.getFactor().doubleValue(), 0.001);
 
-        // check negative values
-        dto = importer.processRow(1, lines.get(2), PersonDTO.class);
-        Assert.assertNotNull(dto);
-        Assert.assertEquals("Endy", dto.getName());
-        Assert.assertEquals(-3, dto.getNumber().intValue());
-    }
+		// check negative values and default dates
+		dto = importer.processRow(1, lines.get(2), PersonDTO.class);
+		Assert.assertNotNull(dto);
+		Assert.assertEquals("Endy", dto.getName());
+		Assert.assertEquals(-3, dto.getNumber().intValue());
+		Assert.assertEquals(DateUtils.createDate("01012015"), dto.getDate());
+	}
 
-    @Test
-    public void testReadFile_NotNumeric() throws IOException {
-        try {
-            byte[] bytes = readFile("importertest_wrongnumeric.csv");
-            List<String[]> lines = importer.readCsvFile(bytes, ";", "'");
+	@Test
+	public void testReadFile_NotNumeric() throws IOException {
+		try {
+			byte[] bytes = readFile("importertest_wrongnumeric.csv");
+			List<String[]> lines = importer.readCsvFile(bytes, ";", "'");
 
-            importer.processRow(0, lines.get(0), PersonDTO.class);
-            Assert.fail();
-        } catch (OCSImportException ex) {
-            Assert.assertEquals("abc cannot be converted to a number", ex.getMessage());
-        }
-    }
+			importer.processRow(0, lines.get(0), PersonDTO.class);
+			Assert.fail();
+		} catch (OCSImportException ex) {
+			Assert.assertEquals("abc cannot be converted to a number", ex.getMessage());
+		}
+	}
 
-    private byte[] readFile(String fileName) throws IOException {
-        return FileUtils.readFileToByteArray(new File("src/test/resources/" + fileName));
-    }
+	private byte[] readFile(String fileName) throws IOException {
+		return FileUtils.readFileToByteArray(new File("src/test/resources/" + fileName));
+	}
 }

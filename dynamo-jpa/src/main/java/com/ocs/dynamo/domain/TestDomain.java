@@ -16,6 +16,7 @@ package com.ocs.dynamo.domain;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.validation.constraints.Size;
 
 import com.ocs.dynamo.domain.model.annotation.Model;
 
@@ -29,6 +30,7 @@ public class TestDomain extends AbstractEntity<Integer> {
 	@Id
 	private Integer id;
 
+	@Size(max = 25)
 	private String name;
 
 	public TestDomain(String name) {

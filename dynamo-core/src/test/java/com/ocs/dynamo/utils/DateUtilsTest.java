@@ -75,6 +75,11 @@ public class DateUtilsTest {
 	@Test
 	public void testToWeekCode() {
 
+		Assert.assertEquals("2015-53", DateUtils.toWeekCode(DateUtils.createDate("01012016")));
+		Assert.assertEquals("2015-53", DateUtils.toWeekCode(DateUtils.createDate("02012016")));
+		Assert.assertEquals("2015-53", DateUtils.toWeekCode(DateUtils.createDate("03012016")));
+		Assert.assertEquals("2016-01", DateUtils.toWeekCode(DateUtils.createDate("04012016")));
+		
 		Assert.assertEquals("2013-51", DateUtils.toWeekCode(DateUtils.createDate("16122013")));
 		Assert.assertEquals("2013-52", DateUtils.toWeekCode(DateUtils.createDate("23122013")));
 		Assert.assertEquals("2014-01", DateUtils.toWeekCode(DateUtils.createDate("30122013")));
@@ -84,6 +89,14 @@ public class DateUtilsTest {
 		Assert.assertEquals("2015-53", DateUtils.toWeekCode(DateUtils.createDate("28122015")));
 		Assert.assertEquals("2016-01", DateUtils.toWeekCode(DateUtils.createDate("04012016")));
 		Assert.assertEquals("2016-02", DateUtils.toWeekCode(DateUtils.createDate("11012016")));
+		
+		Assert.assertEquals("2016-52", DateUtils.toWeekCode(DateUtils.createDate("31122016")));
+		Assert.assertEquals("2016-52", DateUtils.toWeekCode(DateUtils.createDate("01012017")));
+		Assert.assertEquals("2017-01", DateUtils.toWeekCode(DateUtils.createDate("02012017")));
+		Assert.assertEquals("2017-01", DateUtils.toWeekCode(DateUtils.createDate("03012017")));
+		
+		Assert.assertEquals("2017-52", DateUtils.toWeekCode(DateUtils.createDate("31122017")));
+		Assert.assertEquals("2018-01", DateUtils.toWeekCode(DateUtils.createDate("01012018")));
 	}
 
 	@Test
@@ -107,5 +120,19 @@ public class DateUtilsTest {
 
 		Assert.assertEquals(2015, DateUtils.getYearFromDate(DateUtils.createDate("31122015")).intValue());
 		Assert.assertEquals(2016, DateUtils.getYearFromDate(DateUtils.createDate("01012016")).intValue());
+	}
+
+	@Test
+	public void testGetQuarter() {
+		Assert.assertEquals(-1, DateUtils.getQuarter(null));
+
+		Assert.assertEquals(1, DateUtils.getQuarter(DateUtils.createDate("01012016")));
+		Assert.assertEquals(1, DateUtils.getQuarter(DateUtils.createDate("31032016")));
+		Assert.assertEquals(2, DateUtils.getQuarter(DateUtils.createDate("01042016")));
+		Assert.assertEquals(2, DateUtils.getQuarter(DateUtils.createDate("30062016")));
+		Assert.assertEquals(3, DateUtils.getQuarter(DateUtils.createDate("01072016")));
+		Assert.assertEquals(3, DateUtils.getQuarter(DateUtils.createDate("30092016")));
+		Assert.assertEquals(4, DateUtils.getQuarter(DateUtils.createDate("01102016")));
+		Assert.assertEquals(4, DateUtils.getQuarter(DateUtils.createDate("31122016")));
 	}
 }

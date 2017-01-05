@@ -13,6 +13,7 @@
  */
 package com.ocs.dynamo.domain.model;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -26,6 +27,14 @@ import java.util.Set;
 public interface AttributeModel extends Comparable<AttributeModel> {
 
 	/**
+	 * Adds a "group together with" attribute
+	 * 
+	 * @param path
+	 *            the path to the attribute to group with
+	 */
+	void addGroupTogetherWith(String path);
+
+	/**
 	 * @return The allowed extensions for a LOB attribute
 	 */
 	Set<String> getAllowedExtensions();
@@ -34,6 +43,18 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	 * @return The attribute type (e.g. BASIC, MASTER, DETAIL) of the attribute
 	 */
 	AttributeType getAttributeType();
+
+	/**
+	 * 
+	 * @return the name of the field in the collection table
+	 */
+	String getCollectionTableFieldName();
+
+	/**
+	 * 
+	 * @return the name of the collection table (in case of an element collection)
+	 */
+	String getCollectionTableName();
 
 	/**
 	 * 
@@ -84,9 +105,22 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 
 	/**
 	 * 
-	 * @return The maximum allowed length of the attribute
+	 * @return the names of/paths to the other attributes that must be appear on the same line in an
+	 *         edit form
+	 */
+	List<String> getGroupTogetherWith();
+
+	/**
+	 * 
+	 * @return The maximum allowed length of the attribute (inside a collection table)
 	 */
 	Integer getMaxLength();
+
+	/**
+	 * 
+	 * @return the maximum allowed value of the attribute (inside a collection table)
+	 */
+	Long getMaxValue();
 
 	/**
 	 * 
@@ -96,16 +130,15 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 
 	/**
 	 * 
-	 * @return the minimum allowed length of the attribute
+	 * @return the minimum allowed length of the attribute (inside a collection table)
 	 */
 	Integer getMinLength();
 
 	/**
-	 * @return The normalized type of the attribute (this is the same as the <code>type</code> in
-	 *         case of a singular attribute, and the member type of the collection case of
-	 *         collection attribute
+	 * 
+	 * @return the minimum allowed value of the attribute (inside a collection table)
 	 */
-	Class<?> getNormalizedType();
+	Long getMinValue();
 
 	/**
 	 * 
@@ -118,6 +151,13 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	 * @return The nested entity model for this attribute
 	 */
 	EntityModel<?> getNestedEntityModel();
+
+	/**
+	 * @return The normalized type of the attribute (this is the same as the <code>type</code> in
+	 *         case of a singular attribute, and the member type of the collection case of
+	 *         collection attribute
+	 */
+	Class<?> getNormalizedType();
 
 	/**
 	 * 
@@ -187,6 +227,8 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	 */
 	Class<?> getType();
 
+	public boolean isAlreadyGrouped();
+
 	/**
 	 * 
 	 * @return Whether the property is present inside an edit form. By default this is switched off
@@ -199,14 +241,6 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	 * @return Whether this property represents a currency
 	 */
 	boolean isCurrency();
-
-	/**
-	 * 
-	 * 
-	 * @return Whether this attribute must get focus when creating a new row inside a
-	 *         DetailsEditTable
-	 */
-	boolean isDetailFocus();
 
 	/**
 	 * 
@@ -266,6 +300,13 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	 * @return
 	 */
 	boolean isRequired();
+
+	/**
+	 * Indicates whether the field is required when searching
+	 * 
+	 * @return
+	 */
+	boolean isRequiredForSearching();
 
 	/**
 	 * Indicates whether it is possible to search on this attribute
@@ -339,9 +380,10 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	boolean isWeek();
 
 	/**
-	 * Marks this attribute as the main attribute
+	 * Marks the attribute as the main attribute
 	 * 
 	 * @param main
+	 *            whether the attribute is the main attribute
 	 * @return
 	 */
 	void setMainAttribute(boolean main);

@@ -21,7 +21,6 @@ import com.ocs.dynamo.filter.Filter;
 import com.ocs.dynamo.service.TestEntityService;
 import com.ocs.dynamo.test.BaseMockitoTest;
 import com.ocs.dynamo.test.MockUtil;
-import com.vaadin.event.ListenerMethod.MethodException;
 import com.vaadin.ui.UI;
 
 public class FancyListSelectTest extends BaseMockitoTest {
@@ -97,6 +96,8 @@ public class FancyListSelectTest extends BaseMockitoTest {
 
         col = (Collection<TestEntity>) select.getValue();
         Assert.assertTrue(col.isEmpty());
+        
+        select.refresh();
     }
 
     /**
@@ -124,7 +125,7 @@ public class FancyListSelectTest extends BaseMockitoTest {
     /**
      * Test the addition of a new value that is too long (will result in an exception)
      */
-    @Test(expected = MethodException.class)
+    @Test
     public void testAddTooLong() {
         EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
         AttributeModel am = em.getAttributeModel("testDomain");
@@ -136,8 +137,10 @@ public class FancyListSelectTest extends BaseMockitoTest {
 
         Assert.assertEquals(3, select.getComboBox().getContainerDataSource().size());
 
-        // bring up the add dialog
+        // bring up the add dialog and add a value that is too long
         addNewValue(select, "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+        
+        Assert.assertEquals(3, select.getComboBox().getContainerDataSource().size());
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })

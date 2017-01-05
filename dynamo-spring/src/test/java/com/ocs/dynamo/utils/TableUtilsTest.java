@@ -18,6 +18,10 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 
+import javax.persistence.ElementCollection;
+
+import junitx.util.PrivateAccessor;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,6 +34,7 @@ import com.ocs.dynamo.domain.TestEntity.TestEnum;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
+import com.ocs.dynamo.domain.model.annotation.Attribute;
 import com.ocs.dynamo.domain.model.annotation.Model;
 import com.ocs.dynamo.domain.model.impl.EntityModelFactoryImpl;
 import com.ocs.dynamo.service.MessageService;
@@ -37,8 +42,6 @@ import com.ocs.dynamo.test.BaseMockitoTest;
 import com.ocs.dynamo.test.MockUtil;
 import com.ocs.dynamo.ui.composite.table.TableUtils;
 import com.vaadin.ui.Table;
-
-import junitx.util.PrivateAccessor;
 
 public class TableUtilsTest extends BaseMockitoTest {
 
@@ -168,8 +171,38 @@ public class TableUtilsTest extends BaseMockitoTest {
 		Entity3 e3 = new Entity3();
 		e3.setEntities(Sets.newHashSet(t1, t2, t3));
 
-		String result = TableUtils.formatEntityCollection(factory, e3.getEntities());
+		String result = TableUtils.formatEntityCollection(factory, null, e3.getEntities());
 		Assert.assertEquals("a1, a2, a3", result);
+	}
+
+	/**
+	 * Test the formatting of the elements inside an element collection
+	 */
+	@Test
+	public void testFormatEntityCollection_ElementCollection() {
+
+		Entity4 e = new Entity4();
+		e.setDecimals(Sets.newHashSet(BigDecimal.valueOf(5), BigDecimal.valueOf(6)));
+
+		String result = TableUtils.formatEntityCollection(factory,
+		        factory.getModel(Entity4.class).getAttributeModel("decimals"), e.getDecimals());
+		Assert.assertTrue(result.contains("5,00"));
+		Assert.assertTrue(result.contains("6,00"));
+	}
+
+	/**
+	 * Test the formatting of the elements inside an element collection (of percentages)
+	 */
+	@Test
+	public void testFormatEntityCollection_ElementCollectionPercentage() {
+
+		Entity4 e = new Entity4();
+		e.setDecimalPercentages(Sets.newHashSet(BigDecimal.valueOf(5), BigDecimal.valueOf(6)));
+
+		String result = TableUtils.formatEntityCollection(factory,
+		        factory.getModel(Entity4.class).getAttributeModel("decimalPercentages"), e.getDecimalPercentages());
+		Assert.assertTrue(result.contains("5,00%"));
+		Assert.assertTrue(result.contains("6,00%"));
 	}
 
 	@Model(displayProperty = "name")
@@ -256,5 +289,45 @@ public class TableUtilsTest extends BaseMockitoTest {
 		public void setEntities(Set<Entity1> entities) {
 			this.entities = entities;
 		}
+	}
+
+	class Entity4 extends AbstractEntity<Integer> {
+
+		private Integer id;
+
+		@Override
+		public Integer getId() {
+			return id;
+		}
+
+		@Override
+		public void setId(Integer id) {
+			this.id = id;
+
+		}
+
+		@ElementCollection
+		private Set<BigDecimal> decimals = new HashSet<>();
+
+		@ElementCollection
+		@Attribute(percentage = true)
+		private Set<BigDecimal> decimalPercentages = new HashSet<>();
+
+		public Set<BigDecimal> getDecimals() {
+			return decimals;
+		}
+
+		public void setDecimals(Set<BigDecimal> decimals) {
+			this.decimals = decimals;
+		}
+
+		public Set<BigDecimal> getDecimalPercentages() {
+			return decimalPercentages;
+		}
+
+		public void setDecimalPercentages(Set<BigDecimal> decimalPercentages) {
+			this.decimalPercentages = decimalPercentages;
+		}
+
 	}
 }

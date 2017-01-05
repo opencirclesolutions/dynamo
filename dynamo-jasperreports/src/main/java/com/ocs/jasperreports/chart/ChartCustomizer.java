@@ -22,20 +22,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
-import org.jfree.chart.JFreeChart;
-import org.jfree.chart.annotations.Annotation;
-import org.jfree.chart.entity.ChartEntity;
-import org.jfree.chart.entity.XYAnnotationEntity;
-import org.jfree.chart.plot.CategoryPlot;
-import org.jfree.chart.plot.Marker;
-import org.jfree.chart.plot.Plot;
-import org.jfree.chart.plot.ValueMarker;
-import org.jfree.chart.plot.XYPlot;
-import org.jfree.ui.RectangleAnchor;
-import org.jfree.ui.TextAnchor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import net.sf.jasperreports.charts.util.ChartHyperlinkProvider;
 import net.sf.jasperreports.charts.util.SvgChartRendererFactory;
 import net.sf.jasperreports.engine.JRAbstractChartCustomizer;
@@ -48,12 +34,29 @@ import net.sf.jasperreports.engine.base.JRBasePrintHyperlink;
 import net.sf.jasperreports.engine.type.HyperlinkTypeEnum;
 import net.sf.jasperreports.renderers.Renderable;
 
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.annotations.Annotation;
+import org.jfree.chart.entity.ChartEntity;
+import org.jfree.chart.entity.XYAnnotationEntity;
+import org.jfree.chart.plot.CategoryPlot;
+import org.jfree.chart.plot.Marker;
+import org.jfree.chart.plot.Plot;
+import org.jfree.chart.plot.ValueMarker;
+import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.title.LegendTitle;
+import org.jfree.ui.HorizontalAlignment;
+import org.jfree.ui.RectangleAnchor;
+import org.jfree.ui.TextAnchor;
+import org.jfree.ui.VerticalAlignment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Chart customizer that adds several enhancements to charts: draw labels, quadrants and markers.
  *
  * @author Patrick Deenen (patrick@opencircle.solutions)
  */
-public class ChartCustomizer extends JRAbstractChartCustomizer {
+public class ChartCustomizer<T extends Plot> extends JRAbstractChartCustomizer {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ChartCustomizer.class);
 
 	private static final String ANNOTATION = ".Annotation";
@@ -62,6 +65,25 @@ public class ChartCustomizer extends JRAbstractChartCustomizer {
 	private static final String MARKER_DOMAIN = ".MarkerDomain";
 	private static final String QUADRANT = ".Quadrant";
 	private static final String STROKE_TYPE = ".StrokeType";
+	private static final String LEGEND = ".Legend";
+
+	/**
+	 * Class to override settings of the legend
+	 */
+	public static class LegendOptions {
+		private Integer border;
+		private HorizontalAlignment horizontalAlignment;
+		private VerticalAlignment verticalAlignment;
+
+		public LegendOptions(Integer border, HorizontalAlignment horizontalAlignment,
+				VerticalAlignment verticalAlignment) {
+			super();
+			this.border = border;
+			this.horizontalAlignment = horizontalAlignment;
+			this.verticalAlignment = verticalAlignment;
+		}
+
+	}
 
 	@SuppressWarnings("serial")
 	public static class ChartHyperlinkProviderDecorator implements ChartHyperlinkProvider {
@@ -286,6 +308,7 @@ public class ChartCustomizer extends JRAbstractChartCustomizer {
 	 * (where re should be replaced with the name of the reporting element) to mark a category in the
 	 * graph.
 	 */
+	@SuppressWarnings({ "serial", "rawtypes" })
 	public static class CategoryMarker extends org.jfree.chart.plot.CategoryMarker {
 
 		public CategoryMarker(Comparable key) {
@@ -329,9 +352,34 @@ public class ChartCustomizer extends JRAbstractChartCustomizer {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public void customize(JFreeChart chart, JRChart jasperChart) {
-		final Plot plot = chart.getPlot();
+		final T plot = (T) chart.getPlot();
 		String key = jasperChart.getKey();
 
+		try {
+			// Adjust the legend in the chart when defined for this chart
+			Object v = getVariableValue(key + LEGEND);
+			if (v instanceof LegendTitle) {
+				chart.removeLegend();
+				chart.addLegend((LegendTitle) v);
+			}
+			if (v instanceof LegendOptions) {
+				LegendOptions lo = (LegendOptions) v;
+				LegendTitle legend = chart.getLegend();
+				if (lo.border != null) {
+					legend.setBorder(lo.border, lo.border, lo.border, lo.border);
+				}
+				if (lo.horizontalAlignment != null) {
+					legend.setHorizontalAlignment(lo.horizontalAlignment);
+				}
+				if (lo.verticalAlignment != null) {
+					legend.setVerticalAlignment(lo.verticalAlignment);
+				}
+			}
+		} catch (JRRuntimeException e) {
+			// No legend defined and needed
+		}
+
+		// All customizations for which a plot customizer is needed
 		CustomChartCustomizer chartCustomizer = null;
 
 		if (plot instanceof XYPlot) {
@@ -339,7 +387,7 @@ public class ChartCustomizer extends JRAbstractChartCustomizer {
 		} else if (plot instanceof CategoryPlot) {
 			chartCustomizer = new CategoryChartCustomizer();
 		} else {
-			LOGGER.info("no implementation available to customize");
+			LOGGER.info("No implementation available to customize");
 			return;
 		}
 
@@ -355,7 +403,7 @@ public class ChartCustomizer extends JRAbstractChartCustomizer {
 
 		try {
 			// Paint labels for the rows when defined for this chart
-			if ((Boolean) getVariableValue(key + LABELS)) {
+			if (Boolean.TRUE.equals((Boolean) getVariableValue(key + LABELS))) {
 				chartCustomizer.setLabels(plot);
 			}
 		} catch (JRRuntimeException e) {
@@ -402,7 +450,7 @@ public class ChartCustomizer extends JRAbstractChartCustomizer {
 	}
 
 	@SuppressWarnings("unchecked")
-	private void addStrokeTypes(CustomChartCustomizer chartCustomizer, Plot plot, Object strokeTypes) {
+	private void addStrokeTypes(CustomChartCustomizer<T> chartCustomizer, T plot, Object strokeTypes) {
 		Collection<StrokeType> sts = Collections.emptyList();
 		if (strokeTypes instanceof Collection<?>) {
 			sts = (Collection<StrokeType>) strokeTypes;
@@ -416,7 +464,7 @@ public class ChartCustomizer extends JRAbstractChartCustomizer {
 	}
 
 	@SuppressWarnings("unchecked")
-	protected void addMarkers(CustomChartCustomizer customChartCustomizer, Plot plot,
+	protected void addMarkers(CustomChartCustomizer<T> customChartCustomizer, T plot,
 							  Object markers, boolean range) {
 		Collection<Marker> mks = null;
 		if (markers instanceof Collection<?>) {
@@ -433,8 +481,7 @@ public class ChartCustomizer extends JRAbstractChartCustomizer {
 		}
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	protected void addMarker(CustomChartCustomizer customChartCustomizer, Plot plot, Marker marker,
+	protected void addMarker(CustomChartCustomizer<T> customChartCustomizer, T plot, Marker marker,
 							 boolean range) {
 		if (marker != null) {
 			if (range) {
@@ -451,8 +498,8 @@ public class ChartCustomizer extends JRAbstractChartCustomizer {
 		}
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	protected void addAnnotations(CustomChartCustomizer customChartCustomizer, Plot plot, Object annotations) {
+	@SuppressWarnings("unchecked")
+	protected void addAnnotations(CustomChartCustomizer<T> customChartCustomizer, T plot, Object annotations) {
 		Collection<Annotation> ans = null;
 		if (annotations instanceof Collection<?>) {
 			ans = (Collection<Annotation>) annotations;
@@ -468,8 +515,7 @@ public class ChartCustomizer extends JRAbstractChartCustomizer {
 		}
 	}
 
-	@SuppressWarnings("rawtypes")
-	protected void addAnnotation(CustomChartCustomizer customChartCustomizer, Plot plot, Annotation annotation) {
+	protected void addAnnotation(CustomChartCustomizer<T> customChartCustomizer, T plot, Annotation annotation) {
 		if (annotation != null) {
 			customChartCustomizer.addAnnotationToPlot(plot, annotation);
 		}

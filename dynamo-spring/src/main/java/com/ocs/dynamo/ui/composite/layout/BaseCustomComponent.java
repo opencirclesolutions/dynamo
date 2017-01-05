@@ -44,6 +44,7 @@ import com.vaadin.data.Property;
 import com.vaadin.data.util.NestedMethodProperty;
 import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.data.util.converter.StringToBooleanConverter;
+import com.vaadin.server.Page;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomComponent;
@@ -103,9 +104,13 @@ public abstract class BaseCustomComponent extends CustomComponent implements Bui
 					// knowing it!)
 					fieldLabel
 					        .setConverter(new FormattedStringToDateConverter(null, attributeModel.getDisplayFormat()));
-				} else {
+				} else if (AttributeDateType.TIMESTAMP.equals(attributeModel.getDateType())) {
 					fieldLabel.setConverter(new FormattedStringToDateConverter(
 					        VaadinUtils.getTimeZone(UI.getCurrent()), attributeModel.getDisplayFormat()));
+				} else {
+					// just a date
+					fieldLabel
+					        .setConverter(new FormattedStringToDateConverter(null, attributeModel.getDisplayFormat()));
 				}
 			} else if (attributeModel.getType().isEnum()) {
 				String msg = getMessageService().getEnumMessage((Class<Enum<?>>) attributeModel.getType(),
@@ -118,13 +123,11 @@ public abstract class BaseCustomComponent extends CustomComponent implements Bui
 				fieldLabel.setConverter(ConverterFactory.createBigDecimalConverter(attributeModel.isCurrency(),
 				        attributeModel.isPercentage(), attributeModel.isUseThousandsGrouping(),
 				        attributeModel.getPrecision(), VaadinUtils.getCurrencySymbol()));
-			} else if (Integer.class.equals(type)) {
-				property = new ObjectProperty<Integer>((Integer) value);
-				fieldLabel
-				        .setConverter(ConverterFactory.createIntegerConverter(attributeModel.isUseThousandsGrouping()));
-			} else if (Long.class.equals(type)) {
-				property = new ObjectProperty<Long>((Long) value);
-				fieldLabel.setConverter(ConverterFactory.createLongConverter(attributeModel.isUseThousandsGrouping()));
+			} else if (Number.class.isAssignableFrom(type)) {
+				// other number types
+				property = new ObjectProperty<Number>((Number) value);
+				fieldLabel.setConverter(ConverterFactory.createConverterFor(type, attributeModel,
+				        attributeModel.isUseThousandsGrouping()));
 			} else if (AbstractEntity.class.isAssignableFrom(type)) {
 				// another entity - use the value of the "displayProperty"
 				EntityModel<?> model = getEntityModelFactory().getModel(type);
@@ -147,7 +150,8 @@ public abstract class BaseCustomComponent extends CustomComponent implements Bui
 				}
 			} else if (Iterable.class.isAssignableFrom(attributeModel.getType())) {
 				// collection of entities
-				String str = TableUtils.formatEntityCollection(getEntityModelFactory(), (Iterable<?>) value);
+				String str = TableUtils.formatEntityCollection(getEntityModelFactory(), attributeModel,
+				        (Iterable<?>) value);
 				property = new ObjectProperty<String>(str);
 				fieldLabel.setPropertyDataSource(property);
 			}
@@ -185,19 +189,19 @@ public abstract class BaseCustomComponent extends CustomComponent implements Bui
 		if (ex instanceof OCSValidationException) {
 			// validation exception
 			LOG.error(ex.getMessage(), ex);
-			Notification.show(((OCSValidationException) ex).getErrors().get(0), Notification.Type.ERROR_MESSAGE);
+			showNotifification(((OCSValidationException) ex).getErrors().get(0), Notification.Type.ERROR_MESSAGE);
 		} else if (ex instanceof OCSRuntimeException) {
 			// any other OCS runtime exception
 			LOG.error(ex.getMessage(), ex);
-			Notification.show(ex.getMessage(), Notification.Type.ERROR_MESSAGE);
+			showNotifification(ex.getMessage(), Notification.Type.ERROR_MESSAGE);
 		} else if (ex instanceof OptimisticLockException) {
 			// optimistic lock
 			LOG.error(ex.getMessage(), ex);
-			Notification.show(message("ocs.optimistic.lock"), Notification.Type.ERROR_MESSAGE);
+			showNotifification(message("ocs.optimistic.lock"), Notification.Type.ERROR_MESSAGE);
 		} else {
 			// any other save exception
 			LOG.error(ex.getMessage(), ex);
-			Notification.show(message("ocs.error.occurred"), Notification.Type.ERROR_MESSAGE);
+			showNotifification(message("ocs.error.occurred"), Notification.Type.ERROR_MESSAGE);
 		}
 	}
 
@@ -223,5 +227,22 @@ public abstract class BaseCustomComponent extends CustomComponent implements Bui
 	 */
 	protected String message(String key, Object... args) {
 		return getMessageService().getMessage(key, args);
+	}
+
+	/**
+	 * Shows a notification message - this method will check for the availability of a Vaadin Page
+	 * object and if this is not present, write the notification to the log instead
+	 * 
+	 * @param message
+	 *            the message
+	 * @param type
+	 *            the type of the message (error, warning, tray etc.)
+	 */
+	protected void showNotifification(String message, Notification.Type type) {
+		if (Page.getCurrent() != null) {
+			Notification.show(message, type);
+		} else {
+			LOG.info(message);
+		}
 	}
 }

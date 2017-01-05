@@ -19,6 +19,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.test.BaseIntegrationTest;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.ui.MenuBar;
@@ -57,6 +58,10 @@ public class MenuServiceTest extends BaseIntegrationTest {
 		NavigateCommand command = (NavigateCommand) firstSub.getCommand();
 		Assert.assertEquals("Destination 1.1", command.getDestination());
 		Assert.assertEquals("3", command.getSelectedTab());
+
+		// check that the last visited item becomes highlighted
+		menuService.setLastVisited(bar, "Destination 1.1");
+		Assert.assertEquals(DynamoConstants.CSS_LAST_VISITED, first.getStyleName());
 	}
 
 	/**

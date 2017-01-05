@@ -156,4 +156,14 @@ public class LazyEntityModelWrapper<T> implements EntityModel<T> {
 		return getDelegate().getSortOrder();
 	}
 
+	@Override
+	public List<AttributeModel> getRequiredAttributeModels() {
+		return getDelegate().getRequiredAttributeModels();
+	}
+
+	@Override
+	public List<AttributeModel> getRequiredForSearchingAttributeModels() {
+		return getDelegate().getRequiredForSearchingAttributeModels();
+	}
+
 }

@@ -17,18 +17,20 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.dao.query.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
+import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.Searchable;
 import com.ocs.dynamo.ui.composite.layout.BaseCustomComponent;
 import com.ocs.dynamo.ui.container.QueryType;
 import com.vaadin.data.Container;
-import com.vaadin.data.Property;
 import com.vaadin.data.Container.Filter;
+import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.sort.SortOrder;
 import com.vaadin.shared.data.sort.SortDirection;
@@ -250,6 +252,20 @@ public abstract class BaseTableWrapper<ID extends Serializable, T extends Abstra
 	protected void initSortingAndFiltering() {
 		if (getSortOrders() != null && !getSortOrders().isEmpty()) {
 			table.sort(getSortProperties(), getSortDirections());
+		} else if (getEntityModel().getSortOrder() != null && !getEntityModel().getSortOrder().keySet().isEmpty()) {
+			// sort based on the entity model
+			Set<AttributeModel> keySet = getEntityModel().getSortOrder().keySet();
+
+			Object[] properties = new Object[keySet.size()];
+			boolean[] dirs = new boolean[keySet.size()];
+
+			int i = 0;
+			for (AttributeModel am : entityModel.getSortOrder().keySet()) {
+				properties[i] = am.getName();
+				dirs[i] = entityModel.getSortOrder().get(am);
+				i++;
+			}
+			table.sort(properties, dirs);
 		}
 	}
 

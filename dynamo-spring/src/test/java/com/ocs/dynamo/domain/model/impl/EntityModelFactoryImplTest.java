@@ -13,31 +13,51 @@
  */
 package com.ocs.dynamo.domain.model.impl;
 
-import com.ocs.dynamo.domain.model.*;
-import com.ocs.dynamo.domain.model.annotation.*;
-import com.ocs.dynamo.domain.validator.Email;
-import com.ocs.dynamo.service.MessageService;
-import com.ocs.dynamo.service.impl.MessageServiceImpl;
-import com.ocs.dynamo.test.BaseMockitoTest;
-
-import junitx.util.PrivateAccessor;
-
-import org.hibernate.metamodel.source.annotations.entity.EntityClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.springframework.context.support.ResourceBundleMessageSource;
-
-import javax.persistence.*;
-import javax.validation.constraints.AssertTrue;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import javax.persistence.Basic;
+import javax.persistence.CollectionTable;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.Embeddable;
+import javax.persistence.Embedded;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.Lob;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.validation.constraints.AssertTrue;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
+import junitx.util.PrivateAccessor;
+
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.springframework.context.support.ResourceBundleMessageSource;
+
+import com.ocs.dynamo.domain.model.AttributeDateType;
+import com.ocs.dynamo.domain.model.AttributeModel;
+import com.ocs.dynamo.domain.model.AttributeSelectMode;
+import com.ocs.dynamo.domain.model.AttributeType;
+import com.ocs.dynamo.domain.model.EntityModel;
+import com.ocs.dynamo.domain.model.VisibilityType;
+import com.ocs.dynamo.domain.model.annotation.Attribute;
+import com.ocs.dynamo.domain.model.annotation.AttributeGroup;
+import com.ocs.dynamo.domain.model.annotation.AttributeGroups;
+import com.ocs.dynamo.domain.model.annotation.AttributeOrder;
+import com.ocs.dynamo.domain.model.annotation.Model;
+import com.ocs.dynamo.domain.validator.Email;
+import com.ocs.dynamo.service.MessageService;
+import com.ocs.dynamo.service.impl.MessageServiceImpl;
+import com.ocs.dynamo.test.BaseMockitoTest;
 
 @SuppressWarnings("unused")
 public class EntityModelFactoryImplTest extends BaseMockitoTest {
@@ -324,7 +344,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		// check on demand constrution of model
 		EntityModel<EntityChild> child2 = factory.getModel("EntityChild.parent.children", EntityChild.class);
 		Assert.assertNotNull(child2);
-		
+
 		// check that the nested model attribute is not searchable...
 		EntityModel<EntityChild> childModel = factory.getModel("EntityChild.parent", EntityChild.class);
 		Assert.assertNotNull(childModel);
@@ -440,8 +460,8 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		// default
 		AttributeModel am2 = model.getAttributeModel("entity5");
 		Assert.assertEquals(AttributeSelectMode.COMBO, am2.getSelectMode());
-		// multiple search, defaults to fancy list
-		Assert.assertEquals(AttributeSelectMode.FANCY_LIST, am2.getSearchSelectMode());
+		// multiple search, defaults to token
+		Assert.assertEquals(AttributeSelectMode.TOKEN, am2.getSearchSelectMode());
 
 		// overwritten search mode
 		AttributeModel am3 = model.getAttributeModel("entity52");
@@ -490,6 +510,37 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 
 		AttributeModel am = model.getAttributeModel("elements");
 		Assert.assertEquals(AttributeType.ELEMENT_COLLECTION, am.getAttributeType());
+		Assert.assertEquals("element_table", am.getCollectionTableName());
+		Assert.assertEquals("element", am.getCollectionTableFieldName());
+
+		AttributeModel am2 = model.getAttributeModel("longElements");
+		Assert.assertEquals(AttributeType.ELEMENT_COLLECTION, am2.getAttributeType());
+		Assert.assertEquals(100L, am2.getMinValue().longValue());
+		Assert.assertEquals(500L, am2.getMaxValue().longValue());
+	}
+
+	@Test
+	public void testGroupTogetherWith() {
+		EntityModel<Entity10> model = factory.getModel(Entity10.class);
+
+		AttributeModel am = model.getAttributeModel("attribute1");
+		Assert.assertEquals(1, am.getGroupTogetherWith().size());
+		Assert.assertEquals("attribute2", am.getGroupTogetherWith().get(0));
+	}
+
+	/**
+	 * "group together with" attributes are in the wrong order
+	 */
+	@Test
+	public void testGroupTogetherWithWrongOrder() {
+		EntityModel<Entity11> model = factory.getModel(Entity11.class);
+
+		AttributeModel am = model.getAttributeModel("attribute2");
+		Assert.assertEquals(1, am.getGroupTogetherWith().size());
+		Assert.assertEquals("attribute1", am.getGroupTogetherWith().get(0));
+
+		AttributeModel am1 = model.getAttributeModel("attribute1");
+		Assert.assertTrue(am1.isAlreadyGrouped());
 	}
 
 	private class Entity1 {
@@ -836,7 +887,15 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 	private class Entity9 {
 
 		@ElementCollection
+		@CollectionTable(name = "element_table")
+		@Column(name = "element")
 		private Set<String> elements = new HashSet<>();
+
+		@ElementCollection
+		@CollectionTable(name = "long_element_table")
+		@Column(name = "element")
+		@Attribute(minValue = 100, maxValue = 500)
+		private Set<Long> longElements = new HashSet<>();
 
 		public Set<String> getElements() {
 			return elements;
@@ -844,6 +903,65 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 
 		public void setElements(Set<String> elements) {
 			this.elements = elements;
+		}
+
+		public Set<Long> getLongElements() {
+			return longElements;
+		}
+
+		public void setLongElements(Set<Long> longElements) {
+			this.longElements = longElements;
+		}
+
+	}
+
+	private class Entity10 {
+
+		@Attribute(groupTogetherWith = "attribute2")
+		private String attribute1;
+
+		private String attribute2;
+
+		public String getAttribute1() {
+			return attribute1;
+		}
+
+		public void setAttribute1(String attribute1) {
+			this.attribute1 = attribute1;
+		}
+
+		public String getAttribute2() {
+			return attribute2;
+		}
+
+		public void setAttribute2(String attribute2) {
+			this.attribute2 = attribute2;
+		}
+
+	}
+
+	@AttributeOrder(attributeNames = { "attribute1", "attribute2" })
+	private class Entity11 {
+
+		private String attribute1;
+
+		@Attribute(groupTogetherWith = "attribute1")
+		private String attribute2;
+
+		public String getAttribute1() {
+			return attribute1;
+		}
+
+		public void setAttribute1(String attribute1) {
+			this.attribute1 = attribute1;
+		}
+
+		public String getAttribute2() {
+			return attribute2;
+		}
+
+		public void setAttribute2(String attribute2) {
+			this.attribute2 = attribute2;
 		}
 
 	}
@@ -856,7 +974,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 
 		@Lob
 		@Basic(fetch = FetchType.LAZY)
-		@Attribute(image = true, allowedExtensions = "gif,bmp")
+		@Attribute(image = true, allowedExtensions = { "gif", "bmp" })
 		private byte[] logo;
 
 		public byte[] getLogo() {

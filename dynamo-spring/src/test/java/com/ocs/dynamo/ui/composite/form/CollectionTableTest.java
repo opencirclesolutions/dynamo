@@ -17,15 +17,25 @@ import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.collect.Sets;
+import com.ocs.dynamo.domain.TestEntity;
+import com.ocs.dynamo.domain.model.EntityModel;
+import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.test.BaseIntegrationTest;
 
 public class CollectionTableTest extends BaseIntegrationTest {
+
+	@Autowired
+	private EntityModelFactory emf;
+
 	@Test
 	public void testViewMode() {
+		EntityModel<TestEntity> em = emf.getModel(TestEntity.class);
+
 		FormOptions fo = new FormOptions();
-		CollectionTable<String> table = new CollectionTable<>(true, fo, String.class);
+		CollectionTable<String> table = new CollectionTable<String>(em.getAttributeModel("tags"), true, fo);
 
 		table.initContent();
 
@@ -34,12 +44,45 @@ public class CollectionTableTest extends BaseIntegrationTest {
 		Assert.assertFalse(table.getTable().isEditable());
 	}
 
+	/**
+	 * Test the creation of a table for integers
+	 */
+	@Test
+	public void testTableOfIntegers() {
+		EntityModel<TestEntity> em = emf.getModel(TestEntity.class);
+
+		FormOptions fo = new FormOptions();
+		CollectionTable<Integer> table = new CollectionTable<Integer>(em.getAttributeModel("intTags"), false, fo);
+		table.initContent();
+
+		table.getAddButton().click();
+
+		table.setValue(Sets.newHashSet(4, 5));
+		Assert.assertEquals(2, table.getTable().getItemIds().size());
+	}
+
+	@Test
+	public void testTableOfLongs() {
+		EntityModel<TestEntity> em = emf.getModel(TestEntity.class);
+
+		FormOptions fo = new FormOptions();
+		CollectionTable<Long> table = new CollectionTable<Long>(em.getAttributeModel("longTags"), false, fo);
+		table.initContent();
+
+		table.getAddButton().click();
+
+		table.setValue(Sets.newHashSet(4L, 5L));
+		Assert.assertEquals(2, table.getTable().getItemIds().size());
+	}
+
 	@Test
 	public void testEditMode() {
+		EntityModel<TestEntity> em = emf.getModel(TestEntity.class);
+
 		FormOptions fo = new FormOptions();
 		fo.setShowRemoveButton(true);
 
-		CollectionTable<String> table = new CollectionTable<String>(false, fo, String.class);
+		CollectionTable<String> table = new CollectionTable<String>(em.getAttributeModel("tags"), false, fo);
 
 		table.initContent();
 

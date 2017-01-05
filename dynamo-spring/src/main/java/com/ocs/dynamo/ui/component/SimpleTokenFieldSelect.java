@@ -13,6 +13,7 @@
  */
 package com.ocs.dynamo.ui.component;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -20,10 +21,17 @@ import java.util.List;
 import com.explicatis.ext_token_field.ExtTokenField;
 import com.explicatis.ext_token_field.SimpleTokenizable;
 import com.explicatis.ext_token_field.Tokenizable;
+import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
+import com.ocs.dynamo.domain.model.EntityModel;
+import com.ocs.dynamo.filter.FilterConverter;
+import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.MessageService;
+import com.ocs.dynamo.ui.Refreshable;
 import com.ocs.dynamo.ui.ServiceLocator;
+import com.ocs.dynamo.utils.SortUtil;
 import com.vaadin.data.Container;
+import com.vaadin.data.Container.Filter;
 import com.vaadin.data.sort.SortOrder;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.util.IndexedContainer;
@@ -34,7 +42,20 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
 
-public class SimpleTokenFieldSelect<T extends Comparable<T>> extends CustomField<Collection<T>> {
+/**
+ * A token field that displays the distinct values for a basic property of an entity
+ * 
+ * @author bas.rutten
+ *
+ * @param <ID>
+ *            the type of the primary key
+ * @param <S>
+ *            the type of the entity
+ * @param <T>
+ *            the type of the basic property
+ */
+public class SimpleTokenFieldSelect<ID extends Serializable, S extends AbstractEntity<ID>, T extends Comparable<T>>
+        extends CustomField<Collection<T>> implements Refreshable {
 
 	private class SimpleItemSorter implements ItemSorter {
 
@@ -76,7 +97,11 @@ public class SimpleTokenFieldSelect<T extends Comparable<T>> extends CustomField
 
 	private static final long serialVersionUID = -1490179285573442827L;
 
+	private AttributeModel attributeModel;
+
 	private final ExtTokenField extTokenField;
+
+	private final boolean elementCollection;
 
 	private final ComboBox comboBox;
 
@@ -92,25 +117,50 @@ public class SimpleTokenFieldSelect<T extends Comparable<T>> extends CustomField
 
 	private GenericTokenFieldUtil.TokenizableFactory<T> tokenizableFactory;
 
+	private BaseService<ID, S> service;
+
+	private EntityModel<S> entityModel;
+
+	private Filter fieldFilter;
+
+	private String distinctField;
+
+	private SortOrder[] sortOrders;
+
+	private Class<T> elementType;
+
 	/**
 	 * Constructor
 	 *
 	 * @param attributeModel
+	 *            the attribute model
 	 * @param items
+	 *            the list of items to display
 	 * @param elementType
+	 *            the type of the items to display
 	 * @param sortOrders
+	 *            sort orders to apply
 	 */
-	public SimpleTokenFieldSelect(AttributeModel attributeModel, List<T> items, Class<T> elementType,
-	        SortOrder... sortOrders) {
+	public SimpleTokenFieldSelect(BaseService<ID, S> service, EntityModel<S> entityModel,
+	        AttributeModel attributeModel, Filter fieldFilter, String distinctField, Class<T> elementType,
+	        boolean elementCollection, SortOrder... sortOrders) {
 		messageService = ServiceLocator.getMessageService();
+		this.service = service;
+		this.entityModel = entityModel;
+		this.fieldFilter = fieldFilter;
+		this.distinctField = distinctField;
+		this.sortOrders = sortOrders;
+		this.elementType = elementType;
+		this.elementCollection = elementCollection;
+		this.attributeModel = attributeModel;
 
 		setCaption(attributeModel.getDisplayName());
 
 		extTokenField = new ExtTokenField();
 
 		comboBox = new ComboBox();
-		comboBox.addItems(items);
 		comboBox.setFilteringMode(FilteringMode.CONTAINS);
+		fillComboBox(this.elementCollection);
 
 		sortProperties = new ArrayList<>();
 		sortOrdering = new ArrayList<>();
@@ -142,6 +192,19 @@ public class SimpleTokenFieldSelect<T extends Comparable<T>> extends CustomField
 	@Override
 	public void addValueChangeListener(final ValueChangeListener listener) {
 		valueChangeListeners.add(listener);
+	}
+
+	private void fillComboBox(boolean elementCollection) {
+		List<T> items = null;
+		if (elementCollection) {
+			items = (List<T>) service.findDistinctInCollectionTable(attributeModel.getCollectionTableName(),
+			        attributeModel.getCollectionTableFieldName(), elementType);
+		} else {
+			items = (List<T>) service.findDistinct(new FilterConverter(entityModel).convert(fieldFilter),
+			        distinctField, elementType, SortUtil.translate(sortOrders));
+		}
+		comboBox.removeAllItems();
+		comboBox.addItems(items);
 	}
 
 	public ComboBox getComboBox() {
@@ -181,6 +244,13 @@ public class SimpleTokenFieldSelect<T extends Comparable<T>> extends CustomField
 				        // nothing to do
 			        }
 		        }, tokenizableFactory);
+	}
+
+	@Override
+	public void refresh() {
+		if (comboBox != null) {
+			fillComboBox(elementCollection);
+		}
 	}
 
 	@Override

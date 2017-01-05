@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -30,6 +31,8 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import javax.persistence.CollectionTable;
+import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Embedded;
 import javax.persistence.Id;
@@ -44,6 +47,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -85,6 +89,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 	private static final String VERSION = "version";
 
 	private static final int RECURSIVE_MODEL_DEPTH = 3;
+
+	private static final Logger LOG = Logger.getLogger(EntityModelFactoryImpl.class);
 
 	@Autowired(required = false)
 	private MessageService messageService;
@@ -303,6 +309,23 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 				}
 
 				model.addAttributeModel(group, attributeModel);
+			}
+
+			Set<String> already = new HashSet<>();
+			// check if there aren't any illegal "group together" settings
+			for (AttributeModel m : model.getAttributeModels()) {
+				already.add(m.getName());
+				if (!m.getGroupTogetherWith().isEmpty()) {
+					for (String together : m.getGroupTogetherWith()) {
+						if (already.contains(together)) {
+							AttributeModel other = model.getAttributeModel(together);
+							if (together != null) {
+								((AttributeModelImpl) other).setAlreadyGrouped(true);
+								LOG.warn("Incorrect groupTogetherWith found: " + m.getName() + " refers to " + together);
+							}
+						}
+					}
+				}
 			}
 
 			if (!mainAttributeFound && !nested) {
@@ -540,6 +563,20 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 				} else if (ClassUtils.getAnnotation(parentClass, name, ElementCollection.class) != null) {
 					result = AttributeType.ELEMENT_COLLECTION;
 					model.setMemberType(ClassUtils.getResolvedType(parentClass, model.getName(), 0));
+					model.setCollectionTableName(model.getName());
+					model.setCollectionTableFieldName(model.getName());
+
+					// override table name
+					CollectionTable table = ClassUtils.getAnnotation(parentClass, name, CollectionTable.class);
+					if (table != null && table.name() != null) {
+						model.setCollectionTableName(table.name());
+					}
+					// override field name
+					Column col = ClassUtils.getAnnotation(parentClass, name, Column.class);
+					if (col != null && col.name() != null) {
+						model.setCollectionTableFieldName(col.name());
+					}
+
 				} else if (AbstractEntity.class.isAssignableFrom(model.getType())) {
 					// not a collection but a reference to another object
 					result = AttributeType.MASTER;
@@ -755,6 +792,10 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 				model.setSearchable(true);
 			}
 
+			if (attribute.requiredForSearching() && !nested) {
+				model.setRequiredForSearching(true);
+			}
+
 			if (!attribute.sortable()) {
 				model.setSortable(false);
 			}
@@ -779,10 +820,15 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 				model.setWeek(true);
 			}
 
-			if (!StringUtils.isEmpty(attribute.allowedExtensions())) {
-				String[] extensions = attribute.allowedExtensions().split(",");
-				Set<String> hashSet = Sets.newHashSet(extensions);
+			if (attribute.allowedExtensions() != null && attribute.allowedExtensions().length > 0) {
+				Set<String> hashSet = Sets.newHashSet(attribute.allowedExtensions());
 				model.setAllowedExtensions(hashSet);
+			}
+
+			if (attribute.groupTogetherWith() != null && attribute.groupTogetherWith().length > 0) {
+				for (String s : attribute.groupTogetherWith()) {
+					model.addGroupTogetherWith(s);
+				}
 			}
 
 			if (!StringUtils.isEmpty(attribute.trueRepresentation())) {
@@ -791,10 +837,6 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 
 			if (!StringUtils.isEmpty(attribute.falseRepresentation())) {
 				model.setFalseRepresentation(attribute.falseRepresentation());
-			}
-
-			if (attribute.detailFocus()) {
-				model.setDetailFocus(true);
 			}
 
 			if (attribute.percentage()) {
@@ -822,8 +864,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 			// set multiple search
 			if (attribute.multipleSearch()) {
 				model.setMultipleSearch(true);
-				// by default, use a fancy list for multiple search
-				model.setSearchSelectMode(AttributeSelectMode.FANCY_LIST);
+				// by default, use a token for multiple select
+				model.setSearchSelectMode(AttributeSelectMode.TOKEN);
 			}
 
 			if (!AttributeSelectMode.INHERIT.equals(attribute.searchSelectMode())) {
@@ -845,8 +887,16 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 				model.setMinLength(attribute.minLength());
 			}
 
+			if (attribute.minValue() > Long.MIN_VALUE) {
+				model.setMinValue(attribute.minValue());
+			}
+
 			if (attribute.maxLength() > -1) {
 				model.setMaxLength(attribute.maxLength());
+			}
+
+			if (attribute.maxValue() < Long.MAX_VALUE) {
+				model.setMaxValue(attribute.maxValue());
 			}
 
 			if (attribute.url()) {
@@ -951,6 +1001,11 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 			model.setSearchable(Boolean.valueOf(msg));
 		}
 
+		msg = getAttributeMessage(entityModel, model, EntityModel.REQUIRED_FOR_SEARCHING);
+		if (!StringUtils.isEmpty(msg)) {
+			model.setRequiredForSearching(Boolean.valueOf(msg));
+		}
+
 		msg = getAttributeMessage(entityModel, model, EntityModel.SORTABLE);
 		if (!StringUtils.isEmpty(msg)) {
 			model.setSortable(Boolean.valueOf(msg));
@@ -988,6 +1043,14 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 			model.setAllowedExtensions(hashSet);
 		}
 
+		msg = getAttributeMessage(entityModel, model, EntityModel.GROUP_TOGETHER_WITH);
+		if (!StringUtils.isEmpty(msg)) {
+			String[] extensions = msg.split(",");
+			for (String s : extensions) {
+				model.addGroupTogetherWith(s);
+			}
+		}
+
 		msg = getAttributeMessage(entityModel, model, EntityModel.TRUE_REPRESENTATION);
 		if (!StringUtils.isEmpty(msg)) {
 			model.setTrueRepresentation(msg);
@@ -996,11 +1059,6 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 		msg = getAttributeMessage(entityModel, model, EntityModel.FALSE_REPRESENTATION);
 		if (!StringUtils.isEmpty(msg)) {
 			model.setFalseRepresentation(msg);
-		}
-
-		msg = getAttributeMessage(entityModel, model, EntityModel.DETAIL_FOCUS);
-		if (!StringUtils.isEmpty(msg)) {
-			model.setDetailFocus(Boolean.valueOf(msg));
 		}
 
 		msg = getAttributeMessage(entityModel, model, EntityModel.PERCENTAGE);
@@ -1027,7 +1085,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 		msg = getAttributeMessage(entityModel, model, EntityModel.MULTIPLE_SEARCH);
 		if (!StringUtils.isEmpty(msg)) {
 			model.setMultipleSearch(Boolean.valueOf(msg));
-			model.setSearchSelectMode(AttributeSelectMode.FANCY_LIST);
+			model.setSearchSelectMode(AttributeSelectMode.TOKEN);
 		}
 
 		// set the select mode (also sets the search select mode to the same value)
@@ -1068,9 +1126,19 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 			model.setMinLength(Integer.parseInt(msg));
 		}
 
+		msg = getAttributeMessage(entityModel, model, EntityModel.MIN_VALUE);
+		if (!StringUtils.isEmpty(msg)) {
+			model.setMinValue(Long.parseLong(msg));
+		}
+
 		msg = getAttributeMessage(entityModel, model, EntityModel.MAX_LENGTH);
 		if (!StringUtils.isEmpty(msg)) {
 			model.setMaxLength(Integer.parseInt(msg));
+		}
+
+		msg = getAttributeMessage(entityModel, model, EntityModel.MAX_VALUE);
+		if (!StringUtils.isEmpty(msg)) {
+			model.setMaxValue(Long.parseLong(msg));
 		}
 
 		msg = getAttributeMessage(entityModel, model, EntityModel.URL);

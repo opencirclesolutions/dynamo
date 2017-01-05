@@ -161,6 +161,15 @@ public class MenuService {
 		}
 	}
 
+	/**
+	 * Checks if the provided menu item has a child item with the provided destination
+	 * 
+	 * @param item
+	 *            the item
+	 * @param destination
+	 *            the destination
+	 * @return
+	 */
 	private boolean hasChildWithDestination(MenuItem item, String destination) {
 		if (item.getChildren() != null && !item.getChildren().isEmpty()) {
 			boolean found = false;
@@ -213,8 +222,10 @@ public class MenuService {
 	 * Highlights a certain menu item (adds the "highlight" style) to mark it as the last visited
 	 * main menu item
 	 * 
-	 * @param item
+	 * @param menuBar
+	 *            the menu bar
 	 * @param destination
+	 *            the last visited destination
 	 */
 	public void setLastVisited(MenuBar menuBar, String destination) {
 		for (MenuItem item : menuBar.getItems()) {

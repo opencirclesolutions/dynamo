@@ -28,6 +28,7 @@ import org.vaadin.addons.lazyquerycontainer.NestingBeanItem;
 import org.vaadin.dialogs.ConfirmDialog;
 
 import com.ocs.dynamo.constants.DynamoConstants;
+import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.ui.container.pivot.PivotItem;
 import com.ocs.dynamo.ui.converter.BigDecimalConverter;
@@ -36,12 +37,15 @@ import com.ocs.dynamo.utils.SystemPropertyUtils;
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanItem;
+import com.vaadin.data.util.converter.Converter;
 import com.vaadin.data.util.converter.StringToIntegerConverter;
 import com.vaadin.data.util.converter.StringToLongConverter;
 import com.vaadin.server.Page;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Field;
+import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.UI;
 
@@ -270,6 +274,27 @@ public final class VaadinUtils {
 	}
 
 	/**
+	 * Returns the tab index (zero based) of the tab with the specified caption
+	 * 
+	 * @param tabs
+	 *            the tab sheet
+	 * @param caption
+	 *            the caption
+	 * @return
+	 */
+	public static int getTabIndex(TabSheet tabs, String caption) {
+		int index = 0;
+		for (int i = 0; i < tabs.getComponentCount(); i++) {
+			Tab t = tabs.getTab(i);
+			if (t.getCaption().equals(caption)) {
+				index = i;
+				break;
+			}
+		}
+		return index;
+	}
+
+	/**
 	 * Returns the first parent component of the specified component that is a subclass of the
 	 * specified class
 	 * 
@@ -455,6 +480,17 @@ public final class VaadinUtils {
 		BigDecimalConverter converter = ConverterFactory.createBigDecimalConverter(currency, percentage, useGrouping,
 		        precision, VaadinUtils.getCurrencySymbol());
 		return converter.convertToModel(value, BigDecimal.class, locale);
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T> String numberToString(AttributeModel attributeModel, Class<?> type, T value, boolean grouping,
+	        Locale locale) {
+		Converter<String, T> cv = (Converter<String, T>) ConverterFactory.createConverterFor(type, attributeModel,
+		        grouping);
+		if (cv != null) {
+			return cv.convertToPresentation(value, String.class, locale);
+		}
+		return null;
 	}
 
 	/**

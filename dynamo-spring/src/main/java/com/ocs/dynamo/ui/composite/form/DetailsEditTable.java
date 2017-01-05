@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.common.collect.Lists;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
@@ -162,6 +163,9 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 	 */
 	private List<Button> toUpdate = new ArrayList<>();
 
+	/**
+	 * The UI
+	 */
 	private UI ui = UI.getCurrent();
 
 	/**
@@ -278,7 +282,7 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 			public void buttonClick(ClickEvent event) {
 				ModelBasedSearchDialog<ID, T> dialog = new ModelBasedSearchDialog<ID, T>(service,
 				        searchDialogEntityModel != null ? searchDialogEntityModel : entityModel, searchDialogFilters,
-				        searchDialogSortOrder, true, true) {
+				        searchDialogSortOrder == null ? null : Lists.newArrayList(searchDialogSortOrder), true, true) {
 					@Override
 					protected boolean doClose() {
 
@@ -450,11 +454,6 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 						});
 
 						postProcessTableField(propertyId, field);
-
-						// focus if necessary
-						if (attributeModel.isDetailFocus()) {
-							field.focus();
-						}
 					}
 				}
 				return field;

@@ -27,12 +27,16 @@ public abstract class LazyBaseView extends BaseView {
 
 	private Layout lazy = null;
 
+	/**
+	 * Method that is called when the view is entered - lazily constructs the layout
+	 */
 	@Override
 	public final void enter(ViewChangeEvent event) {
 		if (lazy == null) {
 			lazy = initLayout();
 			lazy.addComponent(build());
 			setCompositionRoot(lazy);
+			afterBuild();
 		} else {
 			refresh();
 		}
@@ -50,5 +54,9 @@ public abstract class LazyBaseView extends BaseView {
 	 */
 	protected void refresh() {
 		// override in subclasses
+	}
+	
+	protected void afterBuild() {
+		
 	}
 }

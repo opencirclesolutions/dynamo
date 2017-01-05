@@ -18,15 +18,18 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.ui.ServiceLocator;
 import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.converter.ConverterFactory;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
+import com.ocs.dynamo.utils.SystemPropertyUtils;
 import com.vaadin.data.Container;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.IndexedContainer;
+import com.vaadin.data.validator.RangeValidator;
 import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -57,29 +60,19 @@ public class CollectionTable<T extends Serializable> extends CustomField<Collect
 	private static final String VALUE = "value";
 
 	/**
-	 * The class of the elements of the collection being managed
-	 */
-	private Class<T> elementClass;
-
-	/**
 	 * Button for adding new items to the table
 	 */
 	private Button addButton;
 
 	/**
+	 * The attribute model
+	 */
+	private AttributeModel attributeModel;
+
+	/**
 	 * Form options that determine which buttons and functionalities are available
 	 */
 	private FormOptions formOptions;
-
-	/**
-	 * The maximum length of the fields
-	 */
-	private Integer maxLength;
-
-	/**
-	 * The minimum length of the fields
-	 */
-	private Integer minLength;
 
 	/**
 	 * The message service
@@ -96,6 +89,9 @@ public class CollectionTable<T extends Serializable> extends CustomField<Collect
 	 */
 	private ModelBasedEditForm<?, ?> parentForm;
 
+	/**
+	 * Whether to propagate change events (disabled during construction)
+	 */
 	private boolean propagateChanges = true;
 
 	/**
@@ -121,15 +117,12 @@ public class CollectionTable<T extends Serializable> extends CustomField<Collect
 	 * @param formOptions
 	 *            FormOptions parameter object that can be used to govern how the component behaves
 	 */
-	public CollectionTable(boolean viewMode, FormOptions formOptions, Class<T> elementClass) {
+	public CollectionTable(AttributeModel attributeModel, boolean viewMode, FormOptions formOptions) {
 		this.messageService = ServiceLocator.getMessageService();
 		this.viewMode = viewMode;
 		this.formOptions = formOptions;
-		this.elementClass = elementClass;
-
-		// set up a very basic table with one column
+		this.attributeModel = attributeModel;
 		table = new Table("");
-		table.addContainerProperty(VALUE, elementClass, null);
 	}
 
 	/**
@@ -197,14 +190,6 @@ public class CollectionTable<T extends Serializable> extends CustomField<Collect
 		return formOptions;
 	}
 
-	public Integer getMaxLength() {
-		return maxLength;
-	}
-
-	public Integer getMinLength() {
-		return minLength;
-	}
-
 	public int getPageLength() {
 		return pageLength;
 	}
@@ -231,18 +216,20 @@ public class CollectionTable<T extends Serializable> extends CustomField<Collect
 	 */
 	@Override
 	protected Component initContent() {
-
+		// set up a very basic table with one column
+		table.addContainerProperty(VALUE, attributeModel.getNormalizedType(), null);
 		table.setColumnHeader(VALUE, messageService.getMessage("ocs.value"));
 
 		table.setEditable(!isViewMode());
 		table.setMultiSelect(false);
+
 		table.setPageLength(pageLength);
 		table.setColumnCollapsingAllowed(false);
 		table.setSizeFull();
-
 		table.setTableFieldFactory(new DefaultFieldFactory() {
 
 			@Override
+			@SuppressWarnings({"rawtypes", "unchecked"})
 			public Field<?> createField(Container container, Object itemId, Object propertyId, Component uiContext) {
 
 				Field<?> f = super.createField(container, itemId, propertyId, uiContext);
@@ -250,22 +237,32 @@ public class CollectionTable<T extends Serializable> extends CustomField<Collect
 					TextField tf = (TextField) f;
 					tf.setNullRepresentation("");
 					tf.setSizeFull();
-
-					if (Integer.class.equals(elementClass)) {
-						tf.setConverter(ConverterFactory.createIntegerConverter(false));
-					}
+					tf.setConverter(ConverterFactory.createConverterFor(attributeModel.getNormalizedType(),
+					        attributeModel, SystemPropertyUtils.useThousandsGroupingInEditMode()));
 				}
 
 				// add a validator that checks for the maximum length
-				if (maxLength != null) {
-					f.addValidator(new StringLengthValidator(messageService.getMessage("ocs.value.too.long"), 0,
-					        maxLength, true));
+				if (attributeModel.getMaxLength() != null) {
+					f.addValidator(new StringLengthValidator(messageService.getMessage("ocs.value.too.long",
+					        attributeModel.getMaxLength()), 0, attributeModel.getMaxLength(), true));
 				}
 
 				// add a validator that checks for the minimum length
-				if (minLength != null) {
-					f.addValidator(new StringLengthValidator(messageService.getMessage("ocs.value.too.short"),
-					        minLength, Integer.MAX_VALUE, true));
+				if (attributeModel.getMinLength() != null) {
+					f.addValidator(new StringLengthValidator(messageService.getMessage("ocs.value.too.short",
+					        attributeModel.getMinLength()), attributeModel.getMinLength(), Integer.MAX_VALUE, true));
+				}
+
+				if (attributeModel.getMinValue() != null) {
+					f.addValidator(new RangeValidator(messageService.getMessage("ocs.value.too.low",
+					        attributeModel.getMinValue()), attributeModel.getNormalizedType(), attributeModel
+					        .getMinValue(), null));
+				}
+
+				if (attributeModel.getMaxValue() != null) {
+					f.addValidator(new RangeValidator(messageService.getMessage("ocs.value.too.high",
+					        attributeModel.getMaxValue()), attributeModel.getNormalizedType(), null, attributeModel
+					        .getMaxValue()));
 				}
 
 				// value change listener that makes sure the validity of the
@@ -289,9 +286,6 @@ public class CollectionTable<T extends Serializable> extends CustomField<Collect
 			}
 		});
 
-		VerticalLayout layout = new DefaultVerticalLayout(false, true);
-		layout.addComponent(table);
-
 		// add a change listener (to make sure the buttons are correctly
 		// enabled/disabled)
 		table.addValueChangeListener(new Property.ValueChangeListener() {
@@ -304,27 +298,10 @@ public class CollectionTable<T extends Serializable> extends CustomField<Collect
 		});
 
 		// add a remove button directly in the table
-		if (!isViewMode() && formOptions.isShowRemoveButton()) {
-			final String removeMsg = messageService.getMessage("ocs.remove");
-			table.addGeneratedColumn(removeMsg, new ColumnGenerator() {
+		constructRemoveColumn();
 
-				@Override
-				public Object generateCell(Table source, final Object itemId, Object columnId) {
-					Button remove = new Button(removeMsg);
-					remove.addClickListener(new Button.ClickListener() {
-
-						@Override
-						public void buttonClick(ClickEvent event) {
-
-							table.removeItem(itemId);
-							setValue(extractValues());
-							setSelectedItem(null);
-						}
-					});
-					return remove;
-				}
-			});
-		}
+		VerticalLayout layout = new DefaultVerticalLayout(false, true);
+		layout.addComponent(table);
 
 		// add the buttons
 		constructButtonBar(layout);
@@ -361,6 +338,33 @@ public class CollectionTable<T extends Serializable> extends CustomField<Collect
 		this.formOptions = formOptions;
 	}
 
+	/**
+	 * Constructs the column that holds the "remove" button
+	 */
+	private void constructRemoveColumn() {
+		// add a remove button directly in the table
+		if (!isViewMode() && formOptions.isShowRemoveButton()) {
+			final String removeMsg = messageService.getMessage("ocs.remove");
+			table.addGeneratedColumn(removeMsg, new ColumnGenerator() {
+
+				@Override
+				public Object generateCell(Table source, final Object itemId, Object columnId) {
+					Button remove = new Button(removeMsg);
+					remove.addClickListener(new Button.ClickListener() {
+
+						@Override
+						public void buttonClick(ClickEvent event) {
+							table.removeItem(itemId);
+							setValue(extractValues());
+							setSelectedItem(null);
+						}
+					});
+					return remove;
+				}
+			});
+		}
+	}
+
 	@Override
 	@SuppressWarnings("unchecked")
 	protected void setInternalValue(Collection<T> newValue) {
@@ -371,7 +375,11 @@ public class CollectionTable<T extends Serializable> extends CustomField<Collect
 			// that cannot be removed - so instead unfortunately we have to
 			// recreate the container
 			table.setContainerDataSource(new IndexedContainer());
-			table.addContainerProperty(VALUE, elementClass, null);
+			table.addContainerProperty(VALUE, attributeModel.getNormalizedType(), null);
+
+			if (table.removeGeneratedColumn(messageService.getMessage("ocs.remove"))) {
+				constructRemoveColumn();
+			}
 
 			if (newValue != null) {
 				for (T t : newValue) {
@@ -382,14 +390,6 @@ public class CollectionTable<T extends Serializable> extends CustomField<Collect
 
 		}
 		super.setInternalValue(newValue);
-	}
-
-	public void setMaxLength(Integer maxLength) {
-		this.maxLength = maxLength;
-	}
-
-	public void setMinLength(Integer minLength) {
-		this.minLength = minLength;
 	}
 
 	public void setPageLength(int pageLength) {
@@ -414,6 +414,22 @@ public class CollectionTable<T extends Serializable> extends CustomField<Collect
 
 	public void setViewMode(boolean viewMode) {
 		this.viewMode = viewMode;
+	}
+
+	public Integer getMaxLength() {
+		return attributeModel.getMaxLength();
+	}
+
+	public Long getMaxValue() {
+		return attributeModel.getMaxValue();
+	}
+
+	public Integer getMinLength() {
+		return attributeModel.getMinLength();
+	}
+
+	public Long getMinValue() {
+		return attributeModel.getMinValue();
 	}
 
 }

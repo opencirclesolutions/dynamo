@@ -19,10 +19,10 @@ import java.util.List;
 
 import org.apache.commons.io.input.CharSequenceReader;
 
+import au.com.bytecode.opencsv.CSVReader;
+
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.exception.OCSImportException;
-
-import au.com.bytecode.opencsv.CSVReader;
 
 /**
  * Base class for importing CSV files
@@ -31,29 +31,30 @@ import au.com.bytecode.opencsv.CSVReader;
  */
 public class BaseCsvImporter extends BaseTextImporter {
 
-    /**
-     * Counts the number of rows in the file
-     */
-    @Override
-    public int countRows(byte[] bytes, int row, int column) {
-        List<String[]> lines = readCsvFile(bytes, ";", "'");
-        return lines.size();
-    }
+	/**
+	 * Counts the number of rows in the file
+	 */
+	@Override
+	public int countRows(byte[] bytes, int row, int column) {
+		List<String[]> lines = readCsvFile(bytes, ";", "'");
+		return lines.size();
+	}
 
-    /**
-     * Reads a byte array into a CSV file
-     * 
-     * @param bytes
-     *            the byte array
-     * @return
-     * @throws IOException
-     */
-    protected List<String[]> readCsvFile(byte[] bytes, String separator, String quote) {
-        try (CSVReader reader = new CSVReader(new CharSequenceReader(new String(bytes,
-                Charset.forName(DynamoConstants.UTF_8))), separator.charAt(0), quote.charAt(0))) {
-            return reader.readAll();
-        } catch (IOException ex) {
-            throw new OCSImportException(ex.getMessage(), ex);
-        }
-    }
+	/**
+	 * Reads a byte array into a CSV file
+	 * 
+	 * @param bytes
+	 *            the byte array
+	 * @return
+	 * @throws IOException
+	 */
+	protected List<String[]> readCsvFile(byte[] bytes, String separator, String quote) {
+		try (CSVReader reader = new CSVReader(new CharSequenceReader(new String(bytes,
+		        Charset.forName(DynamoConstants.UTF_8))), separator.charAt(0), quote.charAt(0))) {
+			return reader.readAll();
+		} catch (IOException ex) {
+			throw new OCSImportException(ex.getMessage(), ex);
+		}
+	}
+
 }

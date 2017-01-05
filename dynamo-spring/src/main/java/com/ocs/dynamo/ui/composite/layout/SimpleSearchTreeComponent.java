@@ -69,15 +69,15 @@ public class SimpleSearchTreeComponent<ID extends Serializable, T extends Abstra
 	 * @param queryType
 	 * @param formOptions
 	 * @param fieldFilters
-	 * @param additionalFilters
+	 * @param defaultFilters
 	 * @param joins
 	 */
 	@SuppressWarnings("unchecked")
 	public SimpleSearchTreeComponent(List<BaseService<?, ?>> services, EntityModel<T> entityModel, QueryType queryType,
-	        FormOptions formOptions, Map<String, Filter> fieldFilters, List<Filter> additionalFilters,
+	        FormOptions formOptions, Map<String, Filter> fieldFilters, List<Filter> defaultFilters,
 	        FetchJoinInformation[] joins) {
-		super((BaseService<ID, T>) services.get(0), entityModel, queryType, formOptions, fieldFilters,
-		        additionalFilters, null, joins);
+		super((BaseService<ID, T>) services.get(0), entityModel, queryType, formOptions, fieldFilters, defaultFilters,
+		        null, joins);
 		this.services = services;
 	}
 
@@ -106,7 +106,7 @@ public class SimpleSearchTreeComponent<ID extends Serializable, T extends Abstra
 		ModelBasedHierarchicalContainer<T> c = (ModelBasedHierarchicalContainer<T>) getTableWrapper().getContainer();
 		ModelBasedHierarchicalDefinition def = c.getHierarchicalDefinition(0);
 		ModelBasedSearchForm<ID, T> result = new ModelBasedSearchForm<ID, T>(getTableWrapper(), def.getEntityModel(),
-		        getFormOptions(), getAdditionalFilters(), getFieldFilters());
+		        getFormOptions(), getDefaultFilters(), getFieldFilters());
 		result.build();
 		return result;
 	}

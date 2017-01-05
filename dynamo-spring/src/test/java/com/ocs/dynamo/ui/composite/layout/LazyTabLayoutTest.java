@@ -47,12 +47,23 @@ public class LazyTabLayoutTest extends BaseIntegrationTest {
 				default:
 					return null;
 				}
-
 			}
 
 			@Override
 			protected String[] getTabCaptions() {
 				return new String[] { "tab1", "tab2" };
+			}
+
+			@Override
+			protected String getTabDescription(int index) {
+				switch (index) {
+				case 0:
+					return "tab1 description";
+				case 1:
+					return "tab2 description";
+				default:
+					return null;
+				}
 			}
 
 			@Override
@@ -65,6 +76,8 @@ public class LazyTabLayoutTest extends BaseIntegrationTest {
 		Assert.assertTrue(layout.getTab(0).getComponent() instanceof VerticalLayout);
 		VerticalLayout vl = (VerticalLayout) layout.getTab(0).getComponent();
 		Assert.assertEquals(1, vl.getComponentCount());
+		Assert.assertEquals("tab1", layout.getTab(0).getCaption());
+		Assert.assertEquals("tab1 description", layout.getTab(0).getDescription());
 
 		// second tab has not been created yet
 		VerticalLayout vl2 = (VerticalLayout) layout.getTab(1).getComponent();
@@ -73,6 +86,8 @@ public class LazyTabLayoutTest extends BaseIntegrationTest {
 		// select the second tab, this will lazily create it
 		layout.selectTab(1);
 		vl2 = (VerticalLayout) layout.getTab(1).getComponent();
+		Assert.assertEquals("tab2", layout.getTab(1).getCaption());
+		Assert.assertEquals("tab2 description", layout.getTab(1).getDescription());
 		Assert.assertEquals(1, vl2.getComponentCount());
 
 		// select the tab again (triggers a reload)

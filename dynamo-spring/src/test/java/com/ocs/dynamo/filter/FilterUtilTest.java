@@ -312,7 +312,7 @@ public class FilterUtilTest {
 	public void testReplaceMasterAndDetailFilters1() {
 		EntityModel<TestEntity> model = emf.getModel(TestEntity.class);
 
-		And and = new And(new Compare.Equal("testEntities", Lists.newArrayList(new TestEntity2())));
+		And and = new And(new Compare.Equal("tags", Lists.newArrayList("abc")));
 
 		// check that the equals filter is replaced by an Or-filter that consists of "contains"
 		// clauses
@@ -321,13 +321,17 @@ public class FilterUtilTest {
 		Assert.assertTrue(replaced instanceof Or);
 		Or or = (Or) replaced;
 		Assert.assertTrue(or.getFilters().get(0) instanceof Contains);
+		Contains ct = (Contains) or.getFilters().get(0);
+		Assert.assertEquals("abc", ct.getValue());
 
 		// now once more but now without the intermediate OR filter
-		and = new And(new Compare.Equal("testEntities", new TestEntity2()));
+		and = new And(new Compare.Equal("tags", "def"));
 
 		FilterUtil.replaceMasterAndDetailFilters(and, model);
 		replaced = and.getFilters().get(0);
 		Assert.assertTrue(replaced instanceof Contains);
+		ct = (Contains) replaced;
+		Assert.assertEquals("def", ct.getValue());
 
 	}
 
@@ -336,6 +340,26 @@ public class FilterUtilTest {
 	 */
 	@Test
 	public void testReplaceMasterAndDetailFilters2() {
+		EntityModel<TestEntity2> model = emf.getModel(TestEntity2.class);
+
+		And and = new And(new Compare.Equal("testEntity", Lists.newArrayList(new TestEntity(), new TestEntity())));
+
+		// check that the equals filter is replaced by an "in" filter
+		FilterUtil.replaceMasterAndDetailFilters(and, model);
+		Filter replaced = and.getFilters().get(0);
+		Assert.assertTrue(replaced instanceof In);
+		In in = (In) replaced;
+		Assert.assertEquals(2, in.getValues().size());
+
+		// if there is just one value then no replacement is needed
+		and = new And(new Compare.Equal("testEntity", new TestEntity()));
+		FilterUtil.replaceMasterAndDetailFilters(and, model);
+		replaced = and.getFilters().get(0);
+		Assert.assertTrue(replaced instanceof Compare.Equal);
+	}
+
+	@Test
+	public void testReplaceMasterAndDetailFilters3() {
 		EntityModel<TestEntity2> model = emf.getModel(TestEntity2.class);
 
 		And and = new And(new Compare.Equal("testEntity", Lists.newArrayList(new TestEntity(), new TestEntity())));

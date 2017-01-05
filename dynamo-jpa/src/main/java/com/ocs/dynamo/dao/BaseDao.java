@@ -31,249 +31,248 @@ import com.ocs.dynamo.filter.Filter;
  */
 public interface BaseDao<ID, T extends AbstractEntity<ID>> {
 
-    /**
-     * Returns the total number of entities of this type
-     * 
-     * @return
-     */
-    long count();
+	/**
+	 * Returns the total number of entities of this type
+	 * 
+	 * @return
+	 */
+	long count();
 
-    /**
-     * Returns the number of entities that match the provided filter
-     * 
-     * @param filter
-     *            the filter
-     * @param distinct
-     *            whether to return only distinct results
-     * @return
-     */
-    long count(Filter filter, boolean distinct);
+	/**
+	 * Returns the number of entities that match the provided filter
+	 * 
+	 * @param filter
+	 *            the filter
+	 * @param distinct
+	 *            whether to return only distinct results
+	 * @return
+	 */
+	long count(Filter filter, boolean distinct);
 
-    /**
-     * Returns the number of entities that match the provided predicate
-     * 
-     * @param predicate
-     *            the predicate
-     * @return
-     */
-    long count(Predicate predicate);
+	/**
+	 * Returns the number of entities that match the provided predicate
+	 * 
+	 * @param predicate
+	 *            the predicate
+	 * @return
+	 */
+	long count(Predicate predicate);
 
-    /**
-     * Deletes all entities in the provided list
-     * 
-     * @param list
-     *            the list of entities to delete
-     */
-    void delete(List<T> list);
+	/**
+	 * Deletes all entities in the provided list
+	 * 
+	 * @param list
+	 *            the list of entities to delete
+	 */
+	void delete(List<T> list);
 
-    /**
-     * Deletes the provided entity
-     * 
-     * @param entity
-     *            the entity to delete
-     */
-    void delete(T entity);
+	/**
+	 * Deletes the provided entity
+	 * 
+	 * @param entity
+	 *            the entity to delete
+	 */
+	void delete(T entity);
 
-    /**
-     * Fetches entities that match the provided filter
-     * 
-     * @param filter
-     *            the filter
-     * @param joins
-     *            the desired relations to fetch
-     * @return
-     */
-    List<T> fetch(Filter filter, FetchJoinInformation... joins);
+	/**
+	 * Fetches entities that match the provided filter
+	 * 
+	 * @param filter
+	 *            the filter
+	 * @param joins
+	 *            the desired relations to fetch
+	 * @return
+	 */
+	List<T> fetch(Filter filter, FetchJoinInformation... joins);
 
-    /**
-     * Fetches entities that match the provided filter
-     * 
-     * @param filter
-     *            the filter
-     * @param pageable
-     *            the page info
-     * @param joins
-     *            the desired relations to fetch
-     * @return
-     */
-    List<T> fetch(Filter filter, Pageable pageable, FetchJoinInformation... joins);
+	/**
+	 * Fetches entities that match the provided filter
+	 * 
+	 * @param filter
+	 *            the filter
+	 * @param pageable
+	 *            the page info
+	 * @param joins
+	 *            the desired relations to fetch
+	 * @return
+	 */
+	List<T> fetch(Filter filter, Pageable pageable, FetchJoinInformation... joins);
 
-    /**
-     * Fetches entities that match the provided filter
-     * 
-     * @param filter
-     *            the filter
-     * @param pageable
-     *            the page info
-     * @param joins
-     *            the desired relations to fetch
-     * @return
-     */
-    List<T> fetch(Filter filter, SortOrders orders, FetchJoinInformation... joins);
+	/**
+	 * Fetches entities that match the provided filter
+	 * 
+	 * @param filter
+	 *            the filter
+	 * @param pageable
+	 *            the page info
+	 * @param joins
+	 *            the desired relations to fetch
+	 * @return
+	 */
+	List<T> fetch(Filter filter, SortOrders orders, FetchJoinInformation... joins);
 
-    /**
-     * Fetches an entity (and its relations) based on its ID
-     * 
-     * @param id
-     *            the ID of the entity
-     * @param joins
-     *            the desired relations to fetch
-     * @return
-     */
-    T fetchById(ID id, FetchJoinInformation... joins);
+	/**
+	 * Fetches an entity (and its relations) based on its ID
+	 * 
+	 * @param id
+	 *            the ID of the entity
+	 * @param joins
+	 *            the desired relations to fetch
+	 * @return
+	 */
+	T fetchById(ID id, FetchJoinInformation... joins);
 
-    /**
-     * Fetches the entities identified by the provided IDs
-     * 
-     * @param ids
-     *            the IDs of the entities to fetch
-     * @param sort
-     *            the sort order
-     * @param joins
-     *            the desired relations to fetch
-     * @return
-     */
-    List<T> fetchByIds(List<ID> ids, SortOrders sortOrders, FetchJoinInformation... joins);
+	/**
+	 * Fetches the entities identified by the provided IDs
+	 * 
+	 * @param ids
+	 *            the IDs of the entities to fetch
+	 * @param sort
+	 *            the sort order
+	 * @param joins
+	 *            the desired relations to fetch
+	 * @return
+	 */
+	List<T> fetchByIds(List<ID> ids, SortOrders sortOrders, FetchJoinInformation... joins);
 
-    /**
-     * Fetches an entity based on a unique property
-     * 
-     * @param propertyName
-     *            the name of the property
-     * @param value
-     *            the value of the property
-     * @param caseSensitive
-     *            indicates whether the value is case sensitive
-     * @param joins
-     *            the desired relations to fetch
-     * 
-     * @return
-     */
-    T fetchByUniqueProperty(String propertyName, Object value, boolean caseSensitive,
-            FetchJoinInformation... joins);
+	/**
+	 * Fetches an entity based on a unique property
+	 * 
+	 * @param propertyName
+	 *            the name of the property
+	 * @param value
+	 *            the value of the property
+	 * @param caseSensitive
+	 *            indicates whether the value is case sensitive
+	 * @param joins
+	 *            the desired relations to fetch
+	 * 
+	 * @return
+	 */
+	T fetchByUniqueProperty(String propertyName, Object value, boolean caseSensitive, FetchJoinInformation... joins);
 
-    /**
-     * Returns all entities that match the provided filter
-     * 
-     * @param filter
-     *            the filter
-     * @return
-     */
-    List<T> find(Filter filter);
+	/**
+	 * Returns all entities that match the provided filter
+	 * 
+	 * @param filter
+	 *            the filter
+	 * @return
+	 */
+	List<T> find(Filter filter);
 
-    /**
-     * Returns all entities that match the provided filter
-     * 
-     * @param filter
-     *            the filter
-     * @param sort
-     *            the sort info
-     * @return
-     */
-    List<T> find(Filter filter, SortOrder... orders);
+	/**
+	 * Returns all entities that match the provided filter
+	 * 
+	 * @param filter
+	 *            the filter
+	 * @param sort
+	 *            the sort info
+	 * @return
+	 */
+	List<T> find(Filter filter, SortOrder... orders);
 
-    /**
-     * Returns all entities that match a certain predicate
-     * 
-     * @param predicate
-     *            the predicate
-     * @return
-     */
-    List<T> find(Predicate predicate);
+	/**
+	 * Returns all entities that match a certain predicate
+	 * 
+	 * @param predicate
+	 *            the predicate
+	 * @return
+	 */
+	List<T> find(Predicate predicate);
 
-    /**
-     * Finds the entities that match a certain predicate
-     * 
-     * @param predicate
-     *            the predicate
-     * @param firstIndex
-     *            the index of the first result
-     * @param maxResults
-     *            the maximum number of results
-     * @param sorts
-     *            the sort order information
-     * @return
-     */
-    List<T> find(Predicate predicate, int firstIndex, int maxResults, SortOrder... sorts);
+	/**
+	 * Finds the entities that match a certain predicate
+	 * 
+	 * @param predicate
+	 *            the predicate
+	 * @param firstIndex
+	 *            the index of the first result
+	 * @param maxResults
+	 *            the maximum number of results
+	 * @param sorts
+	 *            the sort order information
+	 * @return
+	 */
+	List<T> find(Predicate predicate, int firstIndex, int maxResults, SortOrder... sorts);
 
-    /**
-     * Returns a list of all entities. Use with caution
-     * 
-     * @return
-     */
-    List<T> findAll();
+	/**
+	 * Returns a list of all entities. Use with caution
+	 * 
+	 * @return
+	 */
+	List<T> findAll();
 
-    /**
-     * Returns a list of all entities. Use with caution
-     * 
-     * @param sort
-     *            the desired sorting information
-     * @return
-     */
-    List<T> findAll(SortOrder... sortOrders);
+	/**
+	 * Returns a list of all entities. Use with caution
+	 * 
+	 * @param sort
+	 *            the desired sorting information
+	 * @return
+	 */
+	List<T> findAll(SortOrder... sortOrders);
 
-    /**
-     * Finds an object based on its ID
-     * 
-     * @param id
-     *            the ID
-     * @return the object identified by the ID, or <code>null</code> if it cannot be found
-     */
-    T findById(ID id);
+	/**
+	 * Finds an object based on its ID
+	 * 
+	 * @param id
+	 *            the ID
+	 * @return the object identified by the ID, or <code>null</code> if it cannot be found
+	 */
+	T findById(ID id);
 
-    /**
-     * Finds an object based on a unique property value
-     * 
-     * @param propertyName
-     *            the name of the property
-     * @param value
-     *            the desired value of the property
-     * @param caseSensitive
-     *            whether the match is case sensitive
-     * @return
-     */
-    T findByUniqueProperty(String propertyName, Object value, boolean caseSensitive);
+	/**
+	 * Finds an object based on a unique property value
+	 * 
+	 * @param propertyName
+	 *            the name of the property
+	 * @param value
+	 *            the desired value of the property
+	 * @param caseSensitive
+	 *            whether the match is case sensitive
+	 * @return
+	 */
+	T findByUniqueProperty(String propertyName, Object value, boolean caseSensitive);
 
-    /**
-     * Returns the IDS of the entities that match the provided filter
-     * 
-     * @param filter
-     *            the filter
-     * @param sort
-     *            the desired sorting
-     * @return
-     */
-    List<ID> findIds(Filter filter, SortOrder... orders);
+	/**
+	 * Returns the IDS of the entities that match the provided filter
+	 * 
+	 * @param filter
+	 *            the filter
+	 * @param sort
+	 *            the desired sorting
+	 * @return
+	 */
+	List<ID> findIds(Filter filter, SortOrder... orders);
 
-    /**
-     * Flushes and clears the entity manager (useful after an explicit update or delete)
-     */
-    void flushAndClear();
+	/**
+	 * Flushes and clears the entity manager (useful after an explicit update or delete)
+	 */
+	void flushAndClear();
 
-    /**
-     * Returns the class of the entity managed by this DAO
-     * 
-     * @return
-     */
-    Class<T> getEntityClass();
+	/**
+	 * Returns the class of the entity managed by this DAO
+	 * 
+	 * @return
+	 */
+	Class<T> getEntityClass();
 
-    /**
-     * Saves the provide list of entities
-     * 
-     * @param list
-     *            the list of entities
-     * @return
-     */
-    List<T> save(List<T> list);
+	/**
+	 * Saves the provide list of entities
+	 * 
+	 * @param list
+	 *            the list of entities
+	 * @return
+	 */
+	List<T> save(List<T> list);
 
-    /**
-     * Saves the provided entity
-     * 
-     * @param entity
-     *            the entity to save
-     * @return
-     */
-    T save(T entity);
+	/**
+	 * Saves the provided entity
+	 * 
+	 * @param entity
+	 *            the entity to save
+	 * @return
+	 */
+	T save(T entity);
 
 	/**
 	 * Returns all entities that match the provided filter and apply a distinct on the given column
@@ -286,5 +285,18 @@ public interface BaseDao<ID, T extends AbstractEntity<ID>> {
 	 *            the sort info
 	 * @return
 	 */
-	List<? extends Object> findDistinct(Filter filter, String distinctField, SortOrder... orders);
+	<S> List<S> findDistinct(Filter filter, String distinctField, Class<S> elementType, SortOrder... orders);
+
+	/**
+	 * Returns all distinct values in a collection table
+	 * 
+	 * @param tableName
+	 *            the table name
+	 * @param distinctField
+	 *            the distinct field
+	 * @param elementType
+	 *            the element type
+	 * @return
+	 */
+	<S> List<S> findDistinctInCollectionTable(String tableName, String distinctField, Class<S> elementType);
 }

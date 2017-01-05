@@ -22,6 +22,7 @@ import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
+import com.ocs.dynamo.ui.CanAssignEntity;
 import com.ocs.dynamo.ui.Reloadable;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.composite.form.FormOptions;
@@ -43,7 +44,7 @@ import com.vaadin.ui.VerticalLayout;
  */
 @SuppressWarnings("serial")
 public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<ID>> extends
-        BaseServiceCustomComponent<ID, T> implements Reloadable {
+        BaseServiceCustomComponent<ID, T> implements Reloadable, CanAssignEntity<ID, T> {
 
 	private static final long serialVersionUID = -7935358582100755140L;
 
@@ -107,6 +108,14 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 	}
 
 	@Override
+	public void assignEntity(T t) {
+		setEntity(t);
+		if (editForm != null) {
+			editForm.resetTab();
+		}
+	}
+
+	@Override
 	public void attach() {
 		super.attach();
 		build();
@@ -124,75 +133,79 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 	 */
 	@Override
 	public void build() {
-		main = new DefaultVerticalLayout(true, true);
+		if (main == null) {
+			main = new DefaultVerticalLayout(true, true);
 
-		// create new entity if it does not exist yet
-		if (entity == null) {
-			entity = createEntity();
+			// create new entity if it does not exist yet
+			if (entity == null) {
+				entity = createEntity();
+			}
+
+			// there is just one component here, so the screen mode is always
+			// vertical
+			getFormOptions().setScreenMode(ScreenMode.VERTICAL);
+
+			editForm = new ModelBasedEditForm<ID, T>(entity, getService(), getEntityModel(), getFormOptions(),
+			        fieldFilters) {
+				@Override
+				protected void afterEditDone(boolean cancel, boolean newObject, T entity) {
+					setEntity(entity);
+					SimpleEditLayout.this.afterEditDone(cancel, newObject, entity);
+				}
+
+				@Override
+				protected void afterModeChanged(boolean viewMode) {
+					SimpleEditLayout.this.afterModeChanged(viewMode, editForm);
+				}
+
+				@Override
+				protected void back() {
+					SimpleEditLayout.this.back();
+				}
+
+				@Override
+				protected Field<?> constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel,
+				        boolean viewMode) {
+					return SimpleEditLayout.this.constructCustomField(entityModel, attributeModel, viewMode, false);
+				}
+
+				@Override
+				protected String getParentGroup(String childGroup) {
+					return SimpleEditLayout.this.getParentGroup(childGroup);
+				}
+
+				@Override
+				protected String[] getParentGroupHeaders() {
+					return SimpleEditLayout.this.getParentGroupHeaders();
+				}
+
+				@Override
+				protected boolean isEditAllowed() {
+					return SimpleEditLayout.this.isEditAllowed();
+				}
+
+				@Override
+				protected void postProcessButtonBar(HorizontalLayout buttonBar, boolean viewMode) {
+					SimpleEditLayout.this.postProcessButtonBar(buttonBar, viewMode);
+				}
+
+				@Override
+				protected void postProcessEditFields() {
+					SimpleEditLayout.this.postProcessEditFields(editForm);
+				}
+
+			};
+
+			editForm.setFieldEntityModels(getFieldEntityModels());
+			editForm.build();
+
+			main.addComponent(editForm);
+
+			afterEntitySelected(editForm, getEntity());
+			checkButtonState(getEntity());
+
+			setCompositionRoot(main);
 		}
-
-		// there is just one component here, so the screen mode is always
-		// vertical
-		getFormOptions().setScreenMode(ScreenMode.VERTICAL);
-
-		editForm = new ModelBasedEditForm<ID, T>(entity, getService(), getEntityModel(), getFormOptions(), fieldFilters) {
-			@Override
-			protected void afterEditDone(boolean cancel, boolean newObject, T entity) {
-				setEntity(entity);
-				SimpleEditLayout.this.afterEditDone(cancel, newObject, entity);
-			}
-
-			@Override
-			protected void afterModeChanged(boolean viewMode) {
-				SimpleEditLayout.this.afterModeChanged(viewMode, editForm);
-			}
-
-			@Override
-			protected void back() {
-				SimpleEditLayout.this.back();
-			}
-
-			@Override
-			protected Field<?> constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel,
-			        boolean viewMode) {
-				return SimpleEditLayout.this.constructCustomField(entityModel, attributeModel, viewMode, false);
-			}
-
-			@Override
-			protected String getParentGroup(String childGroup) {
-				return SimpleEditLayout.this.getParentGroup(childGroup);
-			}
-
-			@Override
-			protected String[] getParentGroupHeaders() {
-				return SimpleEditLayout.this.getParentGroupHeaders();
-			}
-
-			@Override
-			protected boolean isEditAllowed() {
-				return SimpleEditLayout.this.isEditAllowed();
-			}
-
-			@Override
-			protected void postProcessButtonBar(HorizontalLayout buttonBar, boolean viewMode) {
-				SimpleEditLayout.this.postProcessButtonBar(buttonBar, viewMode);
-			}
-
-			@Override
-			protected void postProcessEditFields() {
-				SimpleEditLayout.this.postProcessEditFields(editForm);
-			}
-
-		};
-
-		editForm.setFieldEntityModels(getFieldEntityModels());
-		editForm.build();
-
-		main.addComponent(editForm);
-
-		checkButtonState(getEntity());
-
-		setCompositionRoot(main);
 	}
 
 	/**
@@ -253,6 +266,15 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 	}
 
 	/**
+	 * Check if the layout is in edit mode
+	 * 
+	 * @return
+	 */
+	public boolean isViewMode() {
+		return editForm.isViewMode();
+	}
+
+	/**
 	 * Callback method that can be used to add additional buttons to the button bar (at both the top
 	 * and the bottom of the screen)
 	 * 
@@ -282,6 +304,7 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 
 		if (entity.getId() != null) {
 			setEntity(getService().fetchById(entity.getId(), getJoins()));
+			editForm.resetTab();
 		}
 	}
 
@@ -304,7 +327,12 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 	 */
 	public void setEntity(T entity) {
 		this.entity = entity;
-		editForm.setEntity(entity);
+		if (this.entity == null) {
+			this.entity = createEntity();
+		}
+		editForm.setEntity(this.entity);
+		afterEntitySelected(editForm, this.entity);
+		checkButtonState(getEntity());
 	}
 
 	public void setFieldFilters(Map<String, Filter> fieldFilters) {
@@ -315,12 +343,8 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 		this.joins = joins;
 	}
 
-	/**
-	 * Check if the layout is in edit mode
-	 * 
-	 * @return
-	 */
-	public boolean isViewMode() {
-		return editForm.isViewMode();
+	public void resetTab() {
+		editForm.resetTab();
 	}
+
 }

@@ -77,6 +77,15 @@ public class ServiceResultsTableWrapper<ID extends Serializable, T extends Abstr
 		return container;
 	}
 
+	protected Filter getFilter() {
+		return filter;
+	}
+
+	@SuppressWarnings("unchecked")
+	public ModelBasedTable<ID, T> getModelBasedTable() {
+		return (ModelBasedTable<ID, T>) super.getTable();
+	}
+
 	@Override
 	@SuppressWarnings("unchecked")
 	protected void initSortingAndFiltering() {
@@ -100,11 +109,13 @@ public class ServiceResultsTableWrapper<ID extends Serializable, T extends Abstr
 		}
 	}
 
-	protected Filter getFilter() {
-		return filter;
-	}
-
-	protected void setFilter(Filter filter) {
+	/**
+	 * Sets the provided filter as the component filter and then refreshes the container
+	 * 
+	 * @param filter
+	 */
+	public void setFilter(Filter filter) {
 		this.filter = filter;
+		search(filter);
 	}
 }

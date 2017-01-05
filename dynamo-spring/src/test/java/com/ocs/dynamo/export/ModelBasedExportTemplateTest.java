@@ -73,8 +73,6 @@ public class ModelBasedExportTemplateTest extends BaseIntegrationTest {
 			Sheet sheet = wb.getSheetAt(0);
 			Assert.assertEquals("Sheet name", wb.getSheetName(0));
 
-			FileUtils.writeByteArrayToFile(new File("c:\\temp.xlsx"), bytes);
-
 			// check the header row
 			Assert.assertEquals("Age", sheet.getRow(0).getCell(0).getStringCellValue());
 			Assert.assertEquals("Birth Date", sheet.getRow(0).getCell(1).getStringCellValue());

@@ -12,45 +12,67 @@ import com.ocs.dynamo.test.BaseMockitoTest;
 
 public class DefaultServiceImplTest extends BaseMockitoTest {
 
-    @Mock
-    private BaseDao<Integer, TestEntity> dao;
+	@Mock
+	private BaseDao<Integer, TestEntity> dao;
 
-    private DefaultServiceImpl<Integer, TestEntity> service;
+	private DefaultServiceImpl<Integer, TestEntity> service;
 
-    @Test
-    public void testConstructWithDao() {
-        service = new DefaultServiceImpl<>(dao);
-        Assert.assertNull(service.getUniquePropertyId());
+	@Test
+	public void testConstructWithDao() {
+		service = new DefaultServiceImpl<>(dao);
+		Assert.assertNull(service.getUniquePropertyId());
 
-        TestEntity te = new TestEntity();
-        te.setName("Kevin");
-        service.findIdenticalEntity(te);
+		TestEntity te = new TestEntity();
+		te.setName("Kevin");
+		service.findIdenticalEntity(te);
 
-        // no unique property known, no query for unique entity
-        Mockito.verifyZeroInteractions(dao);
-    }
+		// no unique property known, no query for unique entity
+		Mockito.verifyZeroInteractions(dao);
+	}
 
-    @Test
-    public void testConstructWithDaoAndUniqueProperty() {
-        service = new DefaultServiceImpl<>(dao, "name");
-        Assert.assertEquals("name", service.getUniquePropertyId());
+	@Test
+	public void testConstructWithDaoAndUniqueProperty() {
+		service = new DefaultServiceImpl<>(dao, "name");
+		Assert.assertEquals("name", service.getUniquePropertyId());
+		Assert.assertFalse(service.isUniqueCaseSensitive());
 
-        TestEntity te = new TestEntity();
-        te.setName("Kevin");
-        service.findIdenticalEntity(te);
+		TestEntity te = new TestEntity();
+		te.setName("Kevin");
+		service.findIdenticalEntity(te);
 
-        Mockito.verify(dao).findByUniqueProperty("name", "Kevin", false);
-    }
+		Mockito.verify(dao).findByUniqueProperty("name", "Kevin", false);
+	}
 
-    @Test
-    public void testConstructWithDslAndClass() {
-        service = new DefaultServiceImpl<>(QTestEntity.testEntity, TestEntity.class);
-        Assert.assertNull(service.getUniquePropertyId());
-    }
+	@Test
+	public void testConstructWithDaoAndUniquePropertyCaseSensitive() {
+		service = new DefaultServiceImpl<>(dao, "name", true);
+		Assert.assertEquals("name", service.getUniquePropertyId());
+		Assert.assertTrue(service.isUniqueCaseSensitive());
 
-    @Test
-    public void testConstructWithDslAndClassAndProperty() {
-        service = new DefaultServiceImpl<>(QTestEntity.testEntity, TestEntity.class, "name");
-        Assert.assertEquals("name", service.getUniquePropertyId());
-    }
+		TestEntity te = new TestEntity();
+		te.setName("Kevin");
+		service.findIdenticalEntity(te);
+
+		Mockito.verify(dao).findByUniqueProperty("name", "Kevin", true);
+	}
+
+	@Test
+	public void testConstructWithDslAndClass() {
+		service = new DefaultServiceImpl<>(QTestEntity.testEntity, TestEntity.class);
+		Assert.assertNull(service.getUniquePropertyId());
+	}
+
+	@Test
+	public void testConstructWithDslAndClassAndProperty() {
+		service = new DefaultServiceImpl<>(QTestEntity.testEntity, TestEntity.class, "name");
+		Assert.assertEquals("name", service.getUniquePropertyId());
+		Assert.assertFalse(service.isUniqueCaseSensitive());
+	}
+
+	@Test
+	public void testConstructWithDslAndClassAndPropertyCaseSensitive() {
+		service = new DefaultServiceImpl<>(QTestEntity.testEntity, TestEntity.class, "name", true);
+		Assert.assertEquals("name", service.getUniquePropertyId());
+		Assert.assertTrue(service.isUniqueCaseSensitive());
+	}
 }
