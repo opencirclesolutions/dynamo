@@ -57,6 +57,8 @@ public final class DynamoConstants {
 	 */
 	public static final String CSS_FIRST = "first";
 
+	public static final String CSS_ADDITIONAL = "additional";
+	
 	/**
 	 * The CSS class for the last visited main menu item
 	 */

@@ -755,7 +755,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	}
 
 	/**
-	 * Constructs a field for a certain attribute
+	 * Constructs a field or label for a certain attribute
 	 * 
 	 * @param parent
 	 *            the parent layout to which to add the field
@@ -888,6 +888,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		FormLayout fl = new FormLayout();
 		if (first) {
 			fl.setStyleName(DynamoConstants.CSS_FIRST, true);
+		} else {
+			fl.setStyleName(DynamoConstants.CSS_ADDITIONAL, true);
 		}
 		fl.setMargin(false);
 		return fl;

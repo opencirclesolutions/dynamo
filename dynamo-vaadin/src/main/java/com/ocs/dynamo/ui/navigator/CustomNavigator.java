@@ -186,6 +186,7 @@ public class CustomNavigator extends Navigator {
 		this.alwaysReload = alwaysReload;
 	}
 
+	@Override
 	public void setErrorProvider(ViewProvider provider) {
 		errorProvider = provider;
 	}

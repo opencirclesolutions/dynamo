@@ -13,6 +13,7 @@
  */
 package com.ocs.dynamo.importer.impl;
 
+import java.beans.PropertyDescriptor;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.text.ParseException;
@@ -27,6 +28,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.beans.BeanUtils;
 import org.springframework.util.StringUtils;
 
 import com.monitorjbl.xlsx.StreamingReader;
@@ -34,6 +36,8 @@ import com.ocs.dynamo.exception.OCSImportException;
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.exception.OCSValidationException;
 import com.ocs.dynamo.importer.ImportField;
+import com.ocs.dynamo.importer.dto.AbstractDTO;
+import com.ocs.dynamo.utils.ClassUtils;
 import com.ocs.dynamo.utils.SystemPropertyUtils;
 
 /**
@@ -360,5 +364,44 @@ public class BaseXlsImporter extends BaseImporter<Row, Cell> {
 	@Override
 	protected boolean isWithinRange(Row row, ImportField field) {
 		return row.getFirstCellNum() + field.index() < row.getLastCellNum();
+	}
+
+	/**
+	 * Processes a number of consecutive rows and translates them into a record
+	 * 
+	 * @param firstRowNum
+	 *            the row number of the first row
+	 * @param clazz
+	 *            the class of the record
+	 * @return
+	 */
+	public <T extends AbstractDTO> T processRows(Sheet sheet, int firstRowIndex, int colIndex, Class<T> clazz) {
+		T t = ClassUtils.instantiateClass(clazz);
+
+		PropertyDescriptor[] descriptors = BeanUtils.getPropertyDescriptors(clazz);
+		for (PropertyDescriptor d : descriptors) {
+			ImportField field = ClassUtils.getAnnotation(clazz, d.getName(), ImportField.class);
+			if (field != null) {
+				int rowNum = firstRowIndex + field.index();
+				if (rowNum <= sheet.getLastRowNum()) {
+					Row row = sheet.getRow(rowNum);
+
+					Cell unit = row.getCell(colIndex);
+
+					Object obj = getFieldValue(d, unit, field);
+					if (obj != null) {
+						ClassUtils.setFieldValue(t, d.getName(), obj);
+					} else if (field.required()) {
+						// a required value is missing!
+						throw new OCSImportException("Required value for field '" + d.getName() + "' is missing");
+					}
+
+				} else {
+					throw new OCSImportException("Input doesn't have enoug rows: row " + rowNum + " does not exist");
+				}
+			}
+		}
+
+		return t;
 	}
 }

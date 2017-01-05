@@ -89,7 +89,7 @@ public abstract class BaseImporter<R, U> {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	private Object getFieldValue(PropertyDescriptor d, U unit, ImportField field) {
+	protected Object getFieldValue(PropertyDescriptor d, U unit, ImportField field) {
 		Object obj = null;
 		if (String.class.equals(d.getPropertyType())) {
 			String value = getStringValueWithDefault(unit, field);
@@ -217,6 +217,7 @@ public abstract class BaseImporter<R, U> {
 	 * Processes a single row from the input and turns it into an object
 	 * 
 	 * @param rowNum
+	 *            the row number
 	 * @param row
 	 * @param clazz
 	 * @return

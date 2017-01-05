@@ -51,7 +51,7 @@ public final class DomainUtil {
 	 *            the value of the "name" attribute
 	 * @param caseSensitive
 	 *            whether to check for case-sensitive values
-	 * @return 
+	 * @return
 	 */
 	public static <T extends Domain> T createIfNotExists(BaseService<?, T> service, Class<T> clazz, String value,
 	        boolean caseSensitive) {
@@ -130,7 +130,7 @@ public final class DomainUtil {
 		Iterator<Domain> it = domains.iterator();
 		while (it.hasNext()) {
 			Domain domain = it.next();
-			if (domain.getClass().isAssignableFrom(clazz)) {
+			if (domain != null && domain.getClass().isAssignableFrom(clazz)) {
 				it.remove();
 			}
 		}

@@ -229,7 +229,7 @@ public class CollectionTable<T extends Serializable> extends CustomField<Collect
 		table.setTableFieldFactory(new DefaultFieldFactory() {
 
 			@Override
-			@SuppressWarnings("rawtypes")
+			@SuppressWarnings({"rawtypes", "unchecked"})
 			public Field<?> createField(Container container, Object itemId, Object propertyId, Component uiContext) {
 
 				Field<?> f = super.createField(container, itemId, propertyId, uiContext);
