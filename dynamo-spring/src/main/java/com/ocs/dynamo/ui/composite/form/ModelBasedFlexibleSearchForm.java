@@ -593,7 +593,7 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 	}
 
 	/**
-	 * Programmatically add
+	 * Programmatically add a search filter
 	 * 
 	 * @param attributeModel
 	 *            the attribute model to base the filter on
