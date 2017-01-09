@@ -25,11 +25,13 @@ import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.converter.ConverterFactory;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
+import com.ocs.dynamo.utils.NumberUtils;
 import com.ocs.dynamo.utils.SystemPropertyUtils;
 import com.vaadin.data.Container;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.IndexedContainer;
-import com.vaadin.data.validator.RangeValidator;
+import com.vaadin.data.validator.IntegerRangeValidator;
+import com.vaadin.data.validator.LongRangeValidator;
 import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -229,7 +231,6 @@ public class CollectionTable<T extends Serializable> extends CustomField<Collect
 		table.setTableFieldFactory(new DefaultFieldFactory() {
 
 			@Override
-			@SuppressWarnings({"rawtypes", "unchecked"})
 			public Field<?> createField(Container container, Object itemId, Object propertyId, Component uiContext) {
 
 				Field<?> f = super.createField(container, itemId, propertyId, uiContext);
@@ -254,15 +255,23 @@ public class CollectionTable<T extends Serializable> extends CustomField<Collect
 				}
 
 				if (attributeModel.getMinValue() != null) {
-					f.addValidator(new RangeValidator(messageService.getMessage("ocs.value.too.low",
-					        attributeModel.getMinValue()), attributeModel.getNormalizedType(), attributeModel
-					        .getMinValue(), null));
+					if (NumberUtils.isInteger(attributeModel.getNormalizedType())) {
+						f.addValidator(new IntegerRangeValidator(messageService.getMessage("ocs.value.too.low",
+						        attributeModel.getMinValue()), attributeModel.getMinValue().intValue(), null));
+					} else if (NumberUtils.isLong(attributeModel.getNormalizedType())) {
+						f.addValidator(new LongRangeValidator(messageService.getMessage("ocs.value.too.low",
+						        attributeModel.getMinValue()), attributeModel.getMinValue(), null));
+					}
 				}
 
 				if (attributeModel.getMaxValue() != null) {
-					f.addValidator(new RangeValidator(messageService.getMessage("ocs.value.too.high",
-					        attributeModel.getMaxValue()), attributeModel.getNormalizedType(), null, attributeModel
-					        .getMaxValue()));
+					if (NumberUtils.isInteger(attributeModel.getNormalizedType())) {
+						f.addValidator(new IntegerRangeValidator(messageService.getMessage("ocs.value.too.high",
+						        attributeModel.getMaxValue()), null, attributeModel.getMaxValue().intValue()));
+					} else if (NumberUtils.isLong(attributeModel.getNormalizedType())) {
+						f.addValidator(new LongRangeValidator(messageService.getMessage("ocs.value.too.high",
+						        attributeModel.getMaxValue()), null, attributeModel.getMaxValue()));
+					}
 				}
 
 				// value change listener that makes sure the validity of the

@@ -593,6 +593,9 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 					if (entityModel.isAttributeGroupVisible(attributeGroup, viewMode)) {
 						Layout innerForm = constructAttributeGroupLayout(form, tabs, tabSheets.get(isViewMode()),
 						        getAttributeGroupCaption(attributeGroup), true);
+						if (ScreenMode.VERTICAL.equals(getFormOptions().getScreenMode())) {
+							innerForm.setStyleName(DynamoConstants.CSS_CLASS_HALFSCREEN);
+						}
 
 						for (AttributeModel attributeModel : entityModel.getAttributeModelsForGroup(attributeGroup)) {
 							addField(innerForm, entityModel, attributeModel, tabIndex);

@@ -32,4 +32,20 @@ public class NumberUtilsTest extends BaseMockitoTest {
 		Assert.assertEquals(formatNumber("4,23"), NumberUtils.format(BigDecimal.valueOf(4.23)));
 		Assert.assertEquals(formatNumber("2,04"), NumberUtils.format(2.04f));
 	}
+
+	@Test
+	public void testIsLong() {
+		Assert.assertTrue(NumberUtils.isLong(Long.class));
+		Assert.assertTrue(NumberUtils.isLong(long.class));
+
+		Assert.assertFalse(NumberUtils.isLong(Integer.class));
+	}
+
+	@Test
+	public void testIsInteger() {
+		Assert.assertTrue(NumberUtils.isInteger(Integer.class));
+		Assert.assertTrue(NumberUtils.isInteger(int.class));
+
+		Assert.assertFalse(NumberUtils.isInteger(Long.class));
+	}
 }

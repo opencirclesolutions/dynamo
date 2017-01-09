@@ -243,4 +243,11 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 		this.filter = filter;
 	}
 
+	public Filter getFilter() {
+		return filter;
+	}
+
+	public void setFilter(Filter filter) {
+		this.filter = filter;
+	}
 }
