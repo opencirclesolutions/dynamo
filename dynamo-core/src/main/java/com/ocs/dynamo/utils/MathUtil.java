@@ -51,8 +51,19 @@ public final class MathUtil {
 		return first.multiply(HUNDRED).divide(second, scale, RoundingMode.HALF_UP);
 	}
 
+	/**
+	 * Divides the first argument by the second argument, then converts to a percentage
+	 * 
+	 * @param first
+	 *            the first argument
+	 * @param second
+	 *            the second argument
+	 * @param scale
+	 *            the desired scale
+	 * @return
+	 */
 	public static BigDecimal dividePercentage(Integer first, Integer second, int scale) {
-		return dividePercentage(first == null ? null : new BigDecimal(first), second == null ? null : new BigDecimal(
-		        second), scale);
+		return dividePercentage(first == null ? BigDecimal.ZERO : new BigDecimal(first), second == null ? null
+		        : new BigDecimal(second), scale);
 	}
 }
