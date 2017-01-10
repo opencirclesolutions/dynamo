@@ -150,6 +150,12 @@ public final class DynamoConstants {
 	public static final String SP_DEFAULT_LOCALE = "ocs.default.locale";
 
 	/**
+	 * Name of the system property that is used to set the locale used for month names 
+	 * in date components
+	 */
+	public static final String SP_DATE_LOCALE = "ocs.date.locale";
+	
+	/**
 	 * Name of the system property that is used to determine the default currency symbol
 	 */
 	public static final String SP_DEFAULT_CURRENCY_SYMBOL = "ocs.default.currency.symbol";

@@ -16,7 +16,9 @@ package com.ocs.dynamo.domain.model.impl;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -42,7 +44,6 @@ import com.ocs.dynamo.ui.component.EntityListSelect;
 import com.ocs.dynamo.ui.component.EntityLookupField;
 import com.ocs.dynamo.ui.component.FancyListSelect;
 import com.ocs.dynamo.ui.component.QuickAddEntityComboBox;
-import com.ocs.dynamo.ui.component.QuickAddListSelect;
 import com.ocs.dynamo.ui.component.SimpleTokenFieldSelect;
 import com.ocs.dynamo.ui.component.TimeField;
 import com.ocs.dynamo.ui.component.TokenFieldSelect;
@@ -570,6 +571,12 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 			// just a regular field
 			field = createField(attributeModel.getType(), Field.class);
 		}
+
+		if (field instanceof DateField) {
+			DateField df = (DateField) field;
+			df.setLocale(new Locale(SystemPropertyUtils.getDateLocale()));
+		}
+
 		field.setCaption(attributeModel.getDisplayName());
 
 		postProcessField(field, attributeModel);

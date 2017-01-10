@@ -13,6 +13,8 @@
  */
 package com.ocs.dynamo.utils;
 
+import java.util.Locale;
+
 import com.ocs.dynamo.constants.DynamoConstants;
 
 /**
@@ -103,12 +105,21 @@ public final class SystemPropertyUtils {
     }
 
     /**
-     * The default locale
+     * The default locale - this is used mainly for number formatting
      * 
      * @return
      */
     public static String getDefaultLocale() {
-        return System.getProperty(DynamoConstants.SP_DEFAULT_LOCALE, "en");
+        return System.getProperty(DynamoConstants.SP_DEFAULT_LOCALE, "de");
+    }
+    
+    /**
+     * The locale used for determining month names inside date components
+     * 
+     * @return
+     */
+    public static String getDateLocale() {
+        return System.getProperty(DynamoConstants.SP_DATE_LOCALE, "en");
     }
 
     /**
