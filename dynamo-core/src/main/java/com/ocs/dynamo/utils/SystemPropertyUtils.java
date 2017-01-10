@@ -108,7 +108,7 @@ public final class SystemPropertyUtils {
      * @return
      */
     public static String getDefaultLocale() {
-        return System.getProperty(DynamoConstants.SP_DEFAULT_LOCALE, "de");
+        return System.getProperty(DynamoConstants.SP_DEFAULT_LOCALE, "en");
     }
 
     /**
