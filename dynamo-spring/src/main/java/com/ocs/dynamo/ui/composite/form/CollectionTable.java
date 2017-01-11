@@ -84,7 +84,7 @@ public class CollectionTable<T extends Serializable> extends CustomField<Collect
 	/**
 	 * The number of rows to display
 	 */
-	private int pageLength = 3;
+	private int pageLength = SystemPropertyUtils.getDefaultListSelectRows();
 
 	/**
 	 * The parent form in which this component is embedded

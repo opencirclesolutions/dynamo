@@ -74,6 +74,8 @@ public class AttributeModelImpl implements AttributeModel {
 	private boolean mainAttribute;
 
 	private Integer maxLength;
+	
+	private Integer maxLengthInTable;
 
 	private Long maxValue;
 
@@ -217,6 +219,11 @@ public class AttributeModelImpl implements AttributeModel {
 	@Override
 	public Integer getMaxLength() {
 		return maxLength;
+	}
+
+	@Override
+	public Integer getMaxLengthInTable() {
+		return maxLengthInTable;
 	}
 
 	@Override
@@ -511,6 +518,10 @@ public class AttributeModelImpl implements AttributeModel {
 
 	public void setMaxLength(Integer maxLength) {
 		this.maxLength = maxLength;
+	}
+
+	public void setMaxLengthInTable(Integer maxLengthInTable) {
+		this.maxLengthInTable = maxLengthInTable;
 	}
 
 	public void setMaxValue(Long maxValue) {

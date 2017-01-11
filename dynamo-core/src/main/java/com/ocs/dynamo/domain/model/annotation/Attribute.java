@@ -84,6 +84,12 @@ public @interface Attribute {
 	int maxLength() default -1;
 
 	/**
+	 * 
+	 * @return the maximum length of the text representation in a table
+	 */
+	int maxLengthInTable() default -1;
+
+	/**
 	 * @return the maximum allowed value of an element in a collection table
 	 */
 	long maxValue() default Long.MAX_VALUE;
@@ -93,7 +99,7 @@ public @interface Attribute {
 
 	/** @return the minimum element length (-1 indicates no value) */
 	int minLength() default -1;
-	
+
 	/** @return the minimum element length (-1 indicates no value) */
 	long minValue() default Long.MIN_VALUE;
 

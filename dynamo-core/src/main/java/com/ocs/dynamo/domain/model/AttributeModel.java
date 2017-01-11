@@ -117,6 +117,13 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	Integer getMaxLength();
 
 	/**
+	 * The maximum length of the text representation inside a table
+	 * 
+	 * @return
+	 */
+	Integer getMaxLengthInTable();
+
+	/**
 	 * 
 	 * @return the maximum allowed value of the attribute (inside a collection table)
 	 */
@@ -162,7 +169,7 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	/**
 	 * 
 	 * 
-	 * @return Ther order number (used to internally order the attribute models)
+	 * @return The order number (used to internally order the attribute models)
 	 */
 	Integer getOrder();
 
@@ -227,7 +234,11 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	 */
 	Class<?> getType();
 
-	public boolean isAlreadyGrouped();
+	/**
+	 * 
+	 * @return true if the attribute is already included in a "groupTogetherWith" clause
+	 */
+	boolean isAlreadyGrouped();
 
 	/**
 	 * 

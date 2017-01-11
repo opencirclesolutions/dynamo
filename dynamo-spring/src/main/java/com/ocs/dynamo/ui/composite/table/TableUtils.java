@@ -176,17 +176,17 @@ public final class TableUtils {
 					return VaadinUtils.bigDecimalToString(model.isCurrency(), model.isPercentage(),
 					        model.isUseThousandsGrouping(), model.getPrecision(), (BigDecimal) value, locale, cs);
 				} else if (Number.class.isAssignableFrom(model.getType())) {
-					// generic functionality for all numbers
+					// generic functionality for all other numbers
 					return VaadinUtils.numberToString(model, model.getType(), value, model.isUseThousandsGrouping(),
 					        locale);
 				} else if (model.getType().isEnum()) {
-					// in case of an enum, look it up in the message bundle
+					// in case of an enumeration, look it up in the message bundle
 					String msg = messageService.getEnumMessage((Class<Enum<?>>) model.getType(), (Enum<?>) value);
 					if (msg != null) {
 						return msg;
 					}
 				} else if (value instanceof Iterable) {
-					return formatEntityCollection(entityModelFactory, model, value);
+					return restrictToMaxLength(formatEntityCollection(entityModelFactory, model, value), model);
 				} else if (AbstractEntity.class.isAssignableFrom(model.getType())) {
 					// check for a nested model first. If it is not there, fall
 					// back to the default
@@ -199,15 +199,14 @@ public final class TableUtils {
 						throw new OCSRuntimeException("No displayProperty set for entity "
 						        + detailEntityModel.getEntityClass());
 					}
-
 					return formatPropertyValue(table, entityModelFactory, detailEntityModel, messageService,
 					        displayProperty, ClassUtils.getFieldValue(value, displayProperty), locale);
 				} else if (value instanceof AbstractEntity) {
 					Object result = ClassUtils.getFieldValue(value, colId.toString());
-					return result != null ? result.toString() : null;
+					return restrictToMaxLength(result != null ? result.toString() : null, model);
 				} else {
 					// Use string value
-					return value.toString();
+					return restrictToMaxLength(value.toString(), model);
 				}
 			}
 		}
@@ -286,5 +285,12 @@ public final class TableUtils {
 			cs = VaadinUtils.getCurrencySymbol();
 		}
 		return cs;
+	}
+
+	private static String restrictToMaxLength(String input, AttributeModel am) {
+		if (am.getMaxLengthInTable() != null && input != null && input.length() > am.getMaxLengthInTable()) {
+			return input.substring(0, am.getMaxLengthInTable()) + "...";
+		}
+		return input;
 	}
 }

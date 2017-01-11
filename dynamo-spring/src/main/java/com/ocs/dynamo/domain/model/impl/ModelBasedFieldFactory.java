@@ -16,7 +16,6 @@ package com.ocs.dynamo.domain.model.impl;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -78,6 +77,7 @@ import com.vaadin.ui.Field;
 import com.vaadin.ui.TableFieldFactory;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
+import com.vaadin.ui.UI;
 
 /**
  * Extension of the standard Vaadin field factory for creating custom fields
@@ -532,13 +532,13 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 				FormOptions fo = new FormOptions();
 				fo.setShowRemoveButton(true);
 				if (String.class.equals(attributeModel.getMemberType())) {
-					field = new CollectionTable<>(attributeModel, false, fo);
+					field = new CollectionTable<>(attributeModel, true, fo);
 				} else if (Integer.class.equals(attributeModel.getMemberType())) {
-					field = new CollectionTable<>(attributeModel, false, fo);
+					field = new CollectionTable<>(attributeModel, true, fo);
 				} else if (Long.class.equals(attributeModel.getMemberType())) {
-					field = new CollectionTable<>(attributeModel, false, fo);
+					field = new CollectionTable<>(attributeModel, true, fo);
 				} else if (BigDecimal.class.equals(attributeModel.getMemberType())) {
-					field = new CollectionTable<>(attributeModel, false, fo);
+					field = new CollectionTable<>(attributeModel, true, fo);
 				} else {
 					// other types not supported for now
 					throw new OCSRuntimeException("Element collections of this type are currently not supported");
@@ -575,6 +575,9 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 		if (field instanceof DateField) {
 			DateField df = (DateField) field;
 			df.setLocale(new Locale(SystemPropertyUtils.getDateLocale()));
+			if (UI.getCurrent() != null) {
+				df.setTimeZone(VaadinUtils.getTimeZone(UI.getCurrent()));
+			}
 		}
 
 		field.setCaption(attributeModel.getDisplayName());

@@ -127,6 +127,11 @@ public interface EntityModel<T> {
 	String MAX_LENGTH = "maxLength";
 
 	/**
+	 * The maximum string length of the textual representation inside a table
+	 */
+	String MAX_LENGTH_IN_TABLE = "maxLengthInTable";
+
+	/**
 	 * The maximum value of the items inside an element collection
 	 */
 	String MAX_VALUE = "maxValue";
