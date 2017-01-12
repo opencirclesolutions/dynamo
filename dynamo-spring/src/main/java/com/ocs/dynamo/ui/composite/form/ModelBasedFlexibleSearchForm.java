@@ -19,9 +19,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
@@ -318,11 +320,17 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 			switch (am.getAttributeType()) {
 			case BASIC:
 				if (String.class.equals(am.getType())) {
-					result.add(FlexibleFilterType.NOT_EQUAL);
-					result.add(FlexibleFilterType.CONTAINS);
-					result.add(FlexibleFilterType.STARTS_WITH);
-					result.add(FlexibleFilterType.NOT_CONTAINS);
-					result.add(FlexibleFilterType.NOT_STARTS_WITH);
+					if (basicStringFilterProperties.contains(am.getPath())) {
+						result.add(FlexibleFilterType.CONTAINS);
+						result.add(FlexibleFilterType.STARTS_WITH);
+					} else {
+						result.add(FlexibleFilterType.NOT_EQUAL);
+						result.add(FlexibleFilterType.CONTAINS);
+						result.add(FlexibleFilterType.STARTS_WITH);
+						result.add(FlexibleFilterType.NOT_CONTAINS);
+						result.add(FlexibleFilterType.NOT_STARTS_WITH);
+					}
+
 				} else if (Enum.class.isAssignableFrom(am.getType())) {
 					result.add(FlexibleFilterType.NOT_EQUAL);
 				} else if (Number.class.isAssignableFrom(am.getType())) {
@@ -554,6 +562,8 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 	 * The filter regions
 	 */
 	private List<FilterRegion> regions = new ArrayList<>();
+
+	private Set<String> basicStringFilterProperties = new HashSet<>();
 
 	/**
 	 * Constructor
@@ -813,4 +823,14 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 
 		}
 	}
+
+	public Set<String> getBasicStringFilterProperties() {
+		return basicStringFilterProperties;
+	}
+
+	public void setBasicStringFilterProperties(Set<String> basicStringFilterProperties) {
+		this.basicStringFilterProperties = basicStringFilterProperties;
+	}
+
+
 }

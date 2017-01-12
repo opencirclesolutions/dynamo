@@ -14,8 +14,10 @@
 package com.ocs.dynamo.ui.composite.layout;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.ocs.dynamo.dao.query.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
@@ -45,6 +47,12 @@ public class FlexibleSearchLayout<ID extends Serializable, T extends AbstractEnt
         AbstractSearchLayout<ID, T> {
 
 	private static final long serialVersionUID = -6179979286298244161L;
+
+	/**
+	 * Paths of the properties for which to offer only basic String filter functionality (equal,
+	 * contains, and starts)
+	 */
+	private Set<String> basicStringFilterProperties = new HashSet<>();
 
 	/**
 	 * Constructor
@@ -112,6 +120,7 @@ public class FlexibleSearchLayout<ID extends Serializable, T extends AbstractEnt
 
 		};
 		result.setFieldEntityModels(getFieldEntityModels());
+		result.setBasicStringFilterProperties(basicStringFilterProperties);
 		result.build();
 
 		for (AttributeModel am : getEntityModel().getRequiredForSearchingAttributeModels()) {
