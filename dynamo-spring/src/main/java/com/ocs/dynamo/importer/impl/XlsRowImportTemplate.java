@@ -137,25 +137,34 @@ public abstract class XlsRowImportTemplate<ID, T extends AbstractDTO> {
 			while (i <= sheet.getLastRowNum()) {
 				if (i >= firstRowNumber) {
 					try {
-						T t = importer.processRows(sheet, i, colIndex, clazz);
-						ID key = extractKey(t);
-
-						// in case of a string, compare by lower case
-						if (key instanceof String) {
-							key = (ID) ((String) key).toLowerCase();
-						}
-
-						if (checkForDuplicates) {
-							if (!keys.contains(key)) {
-								keys.add(key);
-								results.add(t);
-							} else {
-								errors.add(messageService.getMessage("ocs.duplicate.row", i + 1, key));
-							}
+						// check for non-empty separator row
+						if (importer.isRowEmpty(sheet.getRow(i))) {
+							break;
 						} else {
-							results.add(t);
+							i++;
 						}
 
+						T t = importer.processRows(sheet, i, colIndex, clazz);
+
+						if (t != null && extractKey(t) != null) {
+							ID key = extractKey(t);
+
+							// in case of a string, compare by lower case
+							if (key instanceof String) {
+								key = (ID) ((String) key).toLowerCase();
+							}
+
+							if (checkForDuplicates) {
+								if (!keys.contains(key)) {
+									keys.add(key);
+									results.add(t);
+								} else {
+									errors.add(messageService.getMessage("ocs.duplicate.row", i + 1, key));
+								}
+							} else {
+								results.add(t);
+							}
+						}
 					} catch (OCSImportException ex) {
 						// catch errors on a record by record level
 						errors.add(String.format("Row %d: %s", i + 1, ex.getMessage()));

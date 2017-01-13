@@ -378,26 +378,34 @@ public class BaseXlsImporter extends BaseImporter<Row, Cell> {
 	public <T extends AbstractDTO> T processRows(Sheet sheet, int firstRowIndex, int colIndex, Class<T> clazz) {
 		T t = ClassUtils.instantiateClass(clazz);
 
-		PropertyDescriptor[] descriptors = BeanUtils.getPropertyDescriptors(clazz);
-		for (PropertyDescriptor d : descriptors) {
-			ImportField field = ClassUtils.getAnnotation(clazz, d.getName(), ImportField.class);
-			if (field != null) {
-				int rowNum = firstRowIndex + field.index();
-				if (rowNum <= sheet.getLastRowNum()) {
-					Row row = sheet.getRow(rowNum);
+		Object firstCellValue = null;
+		try {
+			firstCellValue = sheet.getRow(firstRowIndex).getCell(colIndex).getStringCellValue();
+		} catch (Exception ex) {
+			// do nothing
+		}
 
-					Cell unit = row.getCell(colIndex);
+		if (firstCellValue != null && !firstCellValue.toString().equals("")) {
+			PropertyDescriptor[] descriptors = BeanUtils.getPropertyDescriptors(clazz);
+			for (PropertyDescriptor d : descriptors) {
+				ImportField field = ClassUtils.getAnnotation(clazz, d.getName(), ImportField.class);
+				if (field != null) {
+					int rowNum = firstRowIndex + field.index();
+					if (rowNum <= sheet.getLastRowNum()) {
+						Row row = sheet.getRow(rowNum);
 
-					Object obj = getFieldValue(d, unit, field);
-					if (obj != null) {
-						ClassUtils.setFieldValue(t, d.getName(), obj);
-					} else if (field.required()) {
-						// a required value is missing!
-						throw new OCSImportException("Required value for field '" + d.getName() + "' is missing");
+						Cell unit = row.getCell(colIndex);
+
+						Object obj = getFieldValue(d, unit, field);
+						if (obj != null) {
+							ClassUtils.setFieldValue(t, d.getName(), obj);
+						} else if (field.required()) {
+							// a required value is missing!
+							throw new OCSImportException("Required value for field '" + d.getName() + "' is missing");
+						}
+					} else {
+						throw new OCSImportException("Input doesn't have enoug rows: row " + rowNum + " does not exist");
 					}
-
-				} else {
-					throw new OCSImportException("Input doesn't have enoug rows: row " + rowNum + " does not exist");
 				}
 			}
 		}

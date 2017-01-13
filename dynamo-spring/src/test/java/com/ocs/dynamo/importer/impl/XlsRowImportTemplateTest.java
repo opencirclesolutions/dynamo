@@ -35,11 +35,11 @@ public class XlsRowImportTemplateTest extends BaseMockitoTest {
 		List<String> errors = new ArrayList<>();
 
 		XlsRowImportTemplate<String, PersonDTO> template = new XlsRowImportTemplate<String, PersonDTO>(importer,
-		        messageService, bytes, errors, PersonDTO.class, 0, 1, 1, 9, false) {
+		        messageService, bytes, errors, PersonDTO.class, 0, 0, 1, 8, false) {
 
 			@Override
 			protected String extractKey(PersonDTO record) {
-				return null;
+				return record.getName();
 			}
 		};
 		List<PersonDTO> result = template.execute();
@@ -66,18 +66,15 @@ public class XlsRowImportTemplateTest extends BaseMockitoTest {
 		List<String> errors = new ArrayList<>();
 
 		XlsRowImportTemplate<String, PersonDTO> template = new XlsRowImportTemplate<String, PersonDTO>(importer,
-		        messageService, bytes, errors, PersonDTO.class, 0, 1, 1, 9, false) {
+		        messageService, bytes, errors, PersonDTO.class, 0, 0, 1, 8, false) {
 
 			@Override
 			protected String extractKey(PersonDTO record) {
-				return null;
+				return record.getName();
 			}
 		};
 		List<PersonDTO> result = template.execute();
 		Assert.assertEquals(2, result.size());
-
-		// incomplete record
-		Assert.assertEquals(1, errors.size());
 
 	}
 
@@ -91,7 +88,7 @@ public class XlsRowImportTemplateTest extends BaseMockitoTest {
 		List<String> errors = new ArrayList<>();
 
 		XlsRowImportTemplate<String, PersonDTO> template = new XlsRowImportTemplate<String, PersonDTO>(importer,
-		        messageService, bytes, errors, PersonDTO.class, 0, 1, 1, 9, true) {
+		        messageService, bytes, errors, PersonDTO.class, 0, 0, 1, 8, true) {
 
 			@Override
 			protected String extractKey(PersonDTO record) {
@@ -104,6 +101,28 @@ public class XlsRowImportTemplateTest extends BaseMockitoTest {
 		// duplicate record
 		Assert.assertEquals(1, errors.size());
 		Assert.assertEquals("ocs.duplicate.row", errors.get(0));
+
+	}
+
+	@Test
+	public void test4_Missing() throws IOException {
+		byte[] bytes = readFile("importer_rows4.xlsx");
+		List<String> errors = new ArrayList<>();
+
+		XlsRowImportTemplate<String, PersonDTO> template = new XlsRowImportTemplate<String, PersonDTO>(importer,
+		        messageService, bytes, errors, PersonDTO.class, 0, 0, 1, 8, true) {
+
+			@Override
+			protected String extractKey(PersonDTO record) {
+				return record.getName();
+			}
+		};
+		List<PersonDTO> result = template.execute();
+		Assert.assertEquals(1, result.size());
+
+		// duplicate record
+		Assert.assertEquals(1, errors.size());
+		Assert.assertTrue(errors.get(0).contains("Required value for field 'number' is missing"));
 
 	}
 
