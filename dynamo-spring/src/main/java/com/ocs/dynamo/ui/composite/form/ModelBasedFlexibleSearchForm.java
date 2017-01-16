@@ -809,6 +809,8 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 			FilterRegion region = new FilterRegion(this);
 			region.restoring = true;
 			region.attributeFilterComboBox.setValue(def.getAttributeModel());
+			region.filterAttributeChange(def.getAttributeModel(), true);
+
 			region.typeFilterCombo.setValue(def.getFlexibleFilterType());
 
 			region.mainValueComponent.setValue(ConvertUtil.convertToPresentationValue(def.getAttributeModel(),
@@ -831,6 +833,5 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 	public void setBasicStringFilterProperties(Set<String> basicStringFilterProperties) {
 		this.basicStringFilterProperties = basicStringFilterProperties;
 	}
-
 
 }

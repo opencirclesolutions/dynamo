@@ -200,20 +200,38 @@ public class MenuService {
 	}
 
 	/**
-	 * Sets the visibility of a certain item identified by its destination
+	 * Sets the visibility of a certain item item based on its destination (and regardless of screen
+	 * mode)
+	 * 
+	 * @param menu
+	 *            the menu
+	 * @param destination
+	 *            the logical name of the destination
+	 * @param visible
+	 *            whether to set the item to visible
+	 */
+	public void setVisible(MenuBar menu, String destination, boolean visible) {
+		setVisible(menu, destination, null, visible);
+	}
+
+	/**
+	 * Sets the visibility of a certain item identified by its destination and mode
 	 * 
 	 * @param menu
 	 *            the menu bar
 	 * @param destination
 	 *            the destination
+	 * @param mode
+	 *            the screen mode
+	 * 
 	 * @param visible
 	 *            the desired visibility
 	 */
-	public void setVisible(MenuBar menu, String destination, boolean visible) {
+	public void setVisible(MenuBar menu, String destination, String mode, boolean visible) {
 
 		List<MenuItem> items = menu.getItems();
 		for (MenuItem item : items) {
-			setVisible(item, destination, visible);
+			setVisible(item, destination, mode, visible);
 		}
 		hideRecursively(menu);
 	}
@@ -246,11 +264,11 @@ public class MenuService {
 	 * @param visible
 	 *            the desired visibility of the item
 	 */
-	private void setVisible(MenuItem item, String destination, boolean visible) {
+	private void setVisible(MenuItem item, String destination, String mode, boolean visible) {
 
 		if (item.getCommand() instanceof NavigateCommand) {
 			NavigateCommand command = (NavigateCommand) item.getCommand();
-			if (command.getDestination().equals(destination)) {
+			if (command.getDestination().equals(destination) && (mode == null || mode.equals(command.getMode()))) {
 				item.setVisible(visible);
 			}
 		}
@@ -258,7 +276,7 @@ public class MenuService {
 		if (item.getChildren() != null) {
 			// recursively process children
 			for (MenuItem child : item.getChildren()) {
-				setVisible(child, destination, visible);
+				setVisible(child, destination, mode, visible);
 			}
 		}
 	}
