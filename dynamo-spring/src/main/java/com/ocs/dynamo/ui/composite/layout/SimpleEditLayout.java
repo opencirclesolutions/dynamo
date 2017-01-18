@@ -31,6 +31,7 @@ import com.ocs.dynamo.ui.composite.type.ScreenMode;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Layout;
 import com.vaadin.ui.VerticalLayout;
 
 /**
@@ -203,6 +204,8 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 
 			afterEntitySelected(editForm, getEntity());
 			checkButtonState(getEntity());
+			
+			postProcessLayout(main);
 
 			setCompositionRoot(main);
 		}
@@ -294,6 +297,17 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 		// do nothing by default - override in subclasses
 	}
 
+	/**
+	 * Method that is called after the entire layout has been constructed. Use this to e.g. add
+	 * additional components to the bottom of the layout or to modify the table
+	 * 
+	 * @param main
+	 *            the main layout
+	 */
+	protected void postProcessLayout(Layout main) {
+		// overwrite in subclass
+	}
+	
 	@Override
 	public void reload() {
 

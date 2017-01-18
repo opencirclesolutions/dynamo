@@ -1138,7 +1138,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 				// label is displayed in view mode or when its an existing entity
 				newLabel.setVisible(entity.getId() != null || isViewMode());
-				
+
 				// copy custom style name (if any)
 				if (e.getValue().getStyleName() != null) {
 					newLabel.setStyleName(e.getValue().getStyleName());
@@ -1223,8 +1223,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	public void styleLabel(String propertyName, String className) {
 		AttributeModel am = getEntityModel().getAttributeModel(propertyName);
 		if (am != null) {
-			Component editLabel = labels.get(false).get(am);
-			Component viewLabel = labels.get(true).get(am);
+			Component editLabel = labels.get(false) == null ? null : labels.get(false).get(am);
+			Component viewLabel = labels.get(true) == null ? null : labels.get(true).get(am);
 
 			if (editLabel != null) {
 				editLabel.addStyleName(className);
