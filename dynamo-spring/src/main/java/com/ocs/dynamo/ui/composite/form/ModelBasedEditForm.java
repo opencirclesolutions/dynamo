@@ -1207,6 +1207,22 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		}
 	}
 
+	public void styleLabel(String propertyName, String className){
+		AttributeModel am = getEntityModel().getAttributeModel(propertyName);
+		if (am != null) {
+			Component editLabel = labels.get(false).get(am); // false here means the viewmode is false (programme in edit mode)
+			Component viewLabel = labels.get(true).get(am);
+
+			if(editLabel != null){
+				editLabel.addStyleName(className);
+			}
+
+			if(viewLabel != null){
+				viewLabel.addStyleName(className);
+			}
+		}
+	}
+
 	/**
 	 * Shows/hides an attribute group
 	 * 
