@@ -280,9 +280,13 @@ public class JRReportViewer<T> extends BaseCustomComponent {
 		String path = getFullPath(rd);
 		jasperReport = reportGenerator.loadTemplate(path);
 
-		// Set parameters
+		// Set parameters from filter
 		Map<String, Object> params = JRUtils.createParametersFromFilter(jasperReport, filter);
+		// Add ReportDefinitionName
+		params.put(ReportDefinition.class.getSimpleName(), rd.toString());
+		// Overwrite with current
 		params.putAll(currentParameters);
+		// Then add to current
 		currentParameters.putAll(params);
 
 		// Set datasource
