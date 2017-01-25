@@ -37,29 +37,27 @@ import com.ocs.dynamo.functional.domain.QDomainChild;
 @Repository("domainDao")
 public class DomainDaoImpl extends DefaultDaoImpl<Integer, Domain> implements DomainDao {
 
-    public DomainDaoImpl() {
-        super(QDomain.domain, Domain.class);
-    }
+	public DomainDaoImpl() {
+		super(QDomain.domain, Domain.class);
+	}
 
-    public DomainDaoImpl(EntityPathBase<Domain> dslRoot, Class<Domain> entityClass) {
-        super(dslRoot, entityClass);
-    }
+	public DomainDaoImpl(EntityPathBase<Domain> dslRoot, Class<Domain> entityClass) {
+		super(dslRoot, entityClass);
+	}
 
-    @SuppressWarnings("rawtypes")
-    @Override
-    public List<DomainChild<? extends DomainParent>> findChildren(
-            DomainParent<? extends DomainChild> parent) {
-        QDomainChild qDH = QDomainChild.domainChild;
-        JPAQuery query = new JPAQuery(getEntityManager()).from(qDH);
-        query.where(qDH.parent.eq(parent));
-        return query.list(qDH);
-    }
+	@SuppressWarnings("rawtypes")
+	@Override
+	public List<DomainChild<? extends DomainParent>> findChildren(DomainParent<? extends DomainChild> parent) {
+		QDomainChild qDH = QDomainChild.domainChild;
+		JPAQuery query = new JPAQuery(getEntityManager()).from(qDH);
+		query.where(qDH.parent.eq(parent));
+		return query.list(qDH);
+	}
 
-    @Override
-    public List<? extends Domain> findAllByType(Class<? extends Domain> type) {
-        CriteriaQuery<? extends Domain> cq = getEntityManager().getCriteriaBuilder().createQuery(
-                type);
-        cq.from(type);
-        return getEntityManager().createQuery(cq).getResultList();
-    }
+	@Override
+	public List<? extends Domain> findAllByType(Class<? extends Domain> type) {
+		CriteriaQuery<? extends Domain> cq = getEntityManager().getCriteriaBuilder().createQuery(type);
+		cq.from(type);
+		return getEntityManager().createQuery(cq).getResultList();
+	}
 }

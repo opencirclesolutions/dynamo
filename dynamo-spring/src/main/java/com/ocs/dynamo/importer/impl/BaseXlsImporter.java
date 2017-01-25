@@ -168,7 +168,8 @@ public class BaseXlsImporter extends BaseImporter<Row, Cell> {
 	 * @return
 	 */
 	protected Date getDateValue(Cell cell) {
-		if (cell != null && Cell.CELL_TYPE_NUMERIC == cell.getCellType()) {
+		if (cell != null
+		        && (Cell.CELL_TYPE_NUMERIC == cell.getCellType() || Cell.CELL_TYPE_BLANK == cell.getCellType())) {
 			try {
 				Date date = cell.getDateCellValue();
 				return date;
@@ -183,7 +184,7 @@ public class BaseXlsImporter extends BaseImporter<Row, Cell> {
 	@Override
 	protected Date getDateValueWithDefault(Cell cell, ImportField field) {
 		Date value = getDateValue(cell);
-		if (value == null && field.defaultValue() != null) {
+		if (value == null && field.defaultValue() != null && !"".equals(field.defaultValue())) {
 			try {
 				value = new SimpleDateFormat(SystemPropertyUtils.getDefaultDateFormat()).parse(field.defaultValue());
 			} catch (ParseException e) {
