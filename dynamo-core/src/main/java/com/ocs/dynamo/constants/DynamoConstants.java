@@ -212,6 +212,8 @@ public final class DynamoConstants {
 	 */
 	public static final String USER = "user";
 
+	public static final String USER_ROLES = "user_roles";
+	
 	/**
 	 * The name of the variable that is used to store the user name in the session
 	 */

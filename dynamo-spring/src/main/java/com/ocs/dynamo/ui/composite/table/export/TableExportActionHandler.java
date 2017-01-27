@@ -223,7 +223,8 @@ public class TableExportActionHandler implements Handler {
 					AttributeModel am = findAttributeModel(propId);
 					if (am != null) {
 						value = TableUtils.formatPropertyValue(entityModelFactory,
-						        onlyModel != null ? onlyModel : am.getEntityModel(), messageService, propId, value);
+						        onlyModel != null ? onlyModel : am.getEntityModel(), messageService, am.getPath(),
+						        value);
 					}
 					if (value instanceof String) {
 						value = StringUtil.replaceHtmlBreaks(value.toString());
@@ -852,6 +853,10 @@ public class TableExportActionHandler implements Handler {
 		if (entityModels != null) {
 			for (EntityModel<?> em : entityModels) {
 				String prop = propId.toString();
+				int p = prop.indexOf("_");
+				if (p >= 0) {
+					prop = prop.substring(p + 1);
+				}
 				AttributeModel am = em.getAttributeModel(prop);
 				if (am != null) {
 					return am;
