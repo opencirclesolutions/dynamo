@@ -16,10 +16,12 @@ package com.ocs.dynamo.ui.component;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
+import com.ocs.dynamo.exception.OCSCalculationException;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.StreamResource;
 import com.vaadin.server.StreamResource.StreamSource;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Notification;
 
 /**
  * A button that starts a file download process when clicked
@@ -28,61 +30,66 @@ import com.vaadin.ui.Button;
  */
 public abstract class DownloadButton extends Button {
 
-    private static final long serialVersionUID = -7163648327567831406L;
+	private static final long serialVersionUID = -7163648327567831406L;
 
-    private StreamResource resource;
+	private StreamResource resource;
 
-    /**
-     * Constructor
-     * 
-     * @param caption
-     *            the caption of the button
-     * @param fileName
-     *            the name of the file to download
-     */
-    public DownloadButton(String caption) {
-        super(caption);
-        resource = new StreamResource(new StreamSource() {
+	/**
+	 * Constructor
+	 * 
+	 * @param caption
+	 *            the caption of the button
+	 * @param fileName
+	 *            the name of the file to download
+	 */
+	public DownloadButton(String caption) {
+		super(caption);
+		resource = new StreamResource(new StreamSource() {
 
-            private static final long serialVersionUID = -4870779918745663459L;
+			private static final long serialVersionUID = -4870779918745663459L;
 
-            @Override
-            public InputStream getStream() {
-                byte[] content = doCreateContent();
-                if (content != null) {
-                    return new ByteArrayInputStream(content);
-                }
-                return null;
-            }
+			@Override
+			public InputStream getStream() {
+				try {
+					byte[] content = doCreateContent();
+					if (content != null) {
+						return new ByteArrayInputStream(content);
+					}
+					return null;
+				} catch (OCSCalculationException ex) {
+					Notification.show(ex.getMessage(), Notification.Type.ERROR_MESSAGE);
+					return null;
+				}
+			}
 
-        }, doCreateFileName());
+		}, doCreateFileName());
 
-        FileDownloader downloader = new FileDownloader(resource);
-        downloader.extend(this);
+		FileDownloader downloader = new FileDownloader(resource);
+		downloader.extend(this);
 
-    }
+	}
 
-    /**
-     * Creates the file content (as a byte array)
-     * 
-     * @return
-     */
-    protected abstract byte[] doCreateContent();
+	/**
+	 * Creates the file content (as a byte array)
+	 * 
+	 * @return
+	 */
+	protected abstract byte[] doCreateContent();
 
-    /**
-     * Creates the file name
-     * 
-     * @return
-     */
-    protected abstract String doCreateFileName();
+	/**
+	 * Creates the file name
+	 * 
+	 * @return
+	 */
+	protected abstract String doCreateFileName();
 
-    /**
-     * Sets the file name
-     * 
-     * @param fileName
-     */
-    public void setFileName(String fileName) {
-        resource.setFilename(fileName);
-    }
+	/**
+	 * Sets the file name
+	 * 
+	 * @param fileName
+	 */
+	public void setFileName(String fileName) {
+		resource.setFilename(fileName);
+	}
 
 }
