@@ -223,7 +223,8 @@ public class TableExportActionHandler implements Handler {
 					AttributeModel am = findAttributeModel(propId);
 					if (am != null) {
 						value = TableUtils.formatPropertyValue(entityModelFactory,
-						        onlyModel != null ? onlyModel : am.getEntityModel(), messageService, propId, value);
+						        onlyModel != null ? onlyModel : am.getEntityModel(), messageService, am.getPath(),
+						        value);
 					}
 					if (value instanceof String) {
 						value = StringUtil.replaceHtmlBreaks(value.toString());

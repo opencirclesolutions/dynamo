@@ -89,6 +89,9 @@ public final class FilterUtil {
 			if (between.getPropertyId().equals(propertyId)) {
 				return between;
 			}
+		} else if (filter instanceof Not) {
+			Not not = (Not) filter;
+			return extractFilter(not.getFilter(), propertyId);
 		}
 		return null;
 
@@ -137,7 +140,7 @@ public final class FilterUtil {
 			if (between.getPropertyId().equals(propertyId)) {
 				return between;
 			}
-		}
+		} 
 		return null;
 	}
 

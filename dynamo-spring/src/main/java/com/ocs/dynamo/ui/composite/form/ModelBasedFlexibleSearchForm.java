@@ -347,6 +347,10 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 					result.add(FlexibleFilterType.GREATER_THAN);
 				}
 				break;
+			case MASTER:
+			case DETAIL:
+				// also support "not equal" for entities
+				result.add(FlexibleFilterType.NOT_EQUAL);
 			default:
 				break;
 			}
