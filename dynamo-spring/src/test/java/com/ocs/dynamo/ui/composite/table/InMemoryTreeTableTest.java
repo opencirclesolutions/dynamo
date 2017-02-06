@@ -91,14 +91,18 @@ public class InMemoryTreeTableTest extends BaseIntegrationTest {
 						break;
 					}
 				}
-				ClassUtils.setFieldValue(found, propertyId, toInt(newValue));
 
-				int x1 = found.getValue() == null ? 0 : found.getValue();
-				int x2 = found.getValue2() == null ? 0 : found.getValue2();
+				if (found != null) {
+					ClassUtils.setFieldValue(found, propertyId, toInt(newValue));
 
-				found.setValueSum(x1 + x2);
+					int x1 = found.getValue() == null ? 0 : found.getValue();
+					int x2 = found.getValue2() == null ? 0 : found.getValue2();
 
-				return toInt(newValue);
+					found.setValueSum(x1 + x2);
+
+					return toInt(newValue);
+				}
+				return 0;
 			}
 
 			@Override
