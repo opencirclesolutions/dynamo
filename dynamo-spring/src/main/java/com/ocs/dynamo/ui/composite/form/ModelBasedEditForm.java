@@ -383,10 +383,12 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			@Override
 			public void selectedTabChange(SelectedTabChangeEvent event) {
 				Component c = event.getTabSheet().getSelectedTab();
-				int index = VaadinUtils.getTabIndex(tabSheets.get(isViewMode()), tabSheets.get(isViewMode()).getTab(c)
-				        .getCaption());
-				if (firstFields.get(index) != null) {
-					firstFields.get(index).focus();
+				if (tabSheets.get(isViewMode()) != null && tabSheets.get(isViewMode()).getTab(c) != null) {
+					int index = VaadinUtils.getTabIndex(tabSheets.get(isViewMode()), tabSheets.get(isViewMode())
+					        .getTab(c).getCaption());
+					if (firstFields.get(index) != null) {
+						firstFields.get(index).focus();
+					}
 				}
 			}
 		});
