@@ -333,8 +333,6 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 			}
 		});
 
-		// show button if editing is allowed or if detail screen opens in view mode
-		eb.setVisible(getFormOptions().isShowEditButton() && (isEditAllowed() || getFormOptions().isOpenInViewMode()));
 		return eb;
 	}
 
@@ -395,21 +393,18 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 			}
 		});
 
-		// double click listener - opens the detail view when the user double clicks on a row
-		if (getFormOptions().isShowEditButton()) {
-			getTableWrapper().getTable().addItemClickListener(new ItemClickListener() {
+		getTableWrapper().getTable().addItemClickListener(new ItemClickListener() {
 
-				private static final long serialVersionUID = 7947905411214073660L;
+			private static final long serialVersionUID = 7947905411214073660L;
 
-				@Override
-				public void itemClick(ItemClickEvent event) {
-					if (event.isDoubleClick() && getFormOptions().isDoubleClickSelectAllowed()) {
-						select(event.getItem().getItemProperty(DynamoConstants.ID).getValue());
-						doEdit();
-					}
+			@Override
+			public void itemClick(ItemClickEvent event) {
+				if (event.isDoubleClick() && getFormOptions().isDoubleClickSelectAllowed()) {
+					select(event.getItem().getItemProperty(DynamoConstants.ID).getValue());
+					doEdit();
 				}
-			});
-		}
+			}
+		});
 
 		// table dividers
 		constructTableDividers();
@@ -475,7 +470,11 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 			options.setPreserveSelectedTab(getFormOptions().isPreserveSelectedTab());
 
 			if (options.isOpenInViewMode()) {
-				options.setShowBackButton(true).setShowEditButton(true);
+				options.setShowBackButton(true);
+			}
+
+			if (!getFormOptions().isReadOnly()) {
+				options.setShowEditButton(true);
 			}
 
 			editForm = new ModelBasedEditForm<ID, T>(entity, getService(), getEntityModel(), options, getFieldFilters()) {

@@ -161,7 +161,7 @@ public final class TableUtils {
 					} else if (!StringUtils.isEmpty(model.getFalseRepresentation()) && Boolean.FALSE.equals(value)) {
 						return model.getFalseRepresentation();
 					}
-					return null;
+					return Boolean.toString(Boolean.TRUE.equals(value));
 				} else if (Date.class.equals(model.getType())) {
 					// in case of a date field, use the entered display format
 					SimpleDateFormat format = new SimpleDateFormat(model.getDisplayFormat());
