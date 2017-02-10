@@ -853,10 +853,6 @@ public class TableExportActionHandler implements Handler {
 		if (entityModels != null) {
 			for (EntityModel<?> em : entityModels) {
 				String prop = propId.toString();
-				int p = prop.indexOf("_");
-				if (p >= 0) {
-					prop = prop.substring(p + 1);
-				}
 				AttributeModel am = em.getAttributeModel(prop);
 				if (am != null) {
 					return am;
