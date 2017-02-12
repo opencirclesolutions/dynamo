@@ -1,6 +1,8 @@
 package com.ocs.dynamo.ui.composite.form;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -13,6 +15,7 @@ import com.ocs.dynamo.domain.TestEntity.TestEnum;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
+import com.ocs.dynamo.filter.FlexibleFilterDefinition;
 import com.ocs.dynamo.service.TestEntityService;
 import com.ocs.dynamo.test.BaseIntegrationTest;
 import com.ocs.dynamo.ui.composite.table.ServiceResultsTableWrapper;
@@ -189,6 +192,30 @@ public class ModelBasedFlexibleSearchFormTest extends BaseIntegrationTest {
 		form.addFilter(am, FlexibleFilterType.GREATER_OR_EQUAL, "4", null);
 		form.search();
 		Assert.assertEquals(1, wrapper.getTable().getContainerDataSource().size());
+	}
+
+	@Test
+	public void testRestoreDefinitions() {
+
+		List<FlexibleFilterDefinition> definitions = new ArrayList<>();
+
+		FlexibleFilterDefinition def1 = new FlexibleFilterDefinition();
+		def1.setAttributeModel(em.getAttributeModel("rate"));
+		def1.setFlexibleFilterType(FlexibleFilterType.EQUALS);
+		def1.setValue(BigDecimal.valueOf(45));
+		definitions.add(def1);
+
+		FlexibleFilterDefinition def2 = new FlexibleFilterDefinition();
+		def2.setAttributeModel(em.getAttributeModel("age"));
+		def2.setFlexibleFilterType(FlexibleFilterType.BETWEEN);
+		def2.setValue(77L);
+		def2.setValueTo(80L);
+		definitions.add(def2);
+
+		form.restoreFilterDefinitions(definitions);
+
+		Assert.assertTrue(form.hasFilter(em.getAttributeModel("rate")));
+		Assert.assertTrue(form.hasFilter(em.getAttributeModel("age")));
 	}
 
 	private void build(EntityModel<TestEntity> em) {

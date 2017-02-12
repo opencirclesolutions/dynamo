@@ -13,6 +13,10 @@
  */
 package com.ocs.dynamo.showcase.movies;
 
+import java.util.List;
+
+import javax.inject.Inject;
+
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
@@ -28,13 +32,7 @@ import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.Field;
-import com.vaadin.ui.Layout;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-import java.util.List;
+import com.vaadin.ui.VerticalLayout;
 
 /**
  * A tabular display of the Movies table
@@ -42,53 +40,41 @@ import java.util.List;
  * @author bas.rutten
  *
  */
-@UIScope // To preserve UI scope place this annotation above @SpringView.
 @SpringView(name = Views.TABULAR_MOVIES_VIEW)
+@UIScope
 @SuppressWarnings("serial")
 public class TabularMoviesView extends BaseView {
 
-    /** Logger for {@link TabularMoviesView}. */
-    private static final Logger LOG = LoggerFactory.getLogger(TabularMoviesView.class);
+	/** Vaadin vertical layout. */
+	private VerticalLayout mainLayout;
 
-    /** The Tabular Movies View is using the {@link MovieService} for data access. */
-    @Inject
-    private MovieService movieService;
+	/** The Movies View is using the MovieService for data access. */
+	@Inject
+	private MovieService movieService;
 
-    @Inject
-    private BaseService<Integer, Country> countryService;
+	@Inject
+	private BaseService<Integer, Country> countryService;
 
-    private List<Country> allCountries;
+	private List<Country> allCountries;
 
-    /**
-     * Construct view.
-     */
-    @PostConstruct
-    void init() {
-        LOG.debug("Initialize View - {}.", this.getClass().getSimpleName());
+	@Override
+	public void enter(ViewChangeEvent event) {
 
-        Layout mainLayout = super.initLayout();
+		// Apply Vaadin Layout.
+		mainLayout = new DefaultVerticalLayout(true, true);
 
-        // Set form options by convention.
-        FormOptions fo = new FormOptions();
+		// Set form options by convention.
+		FormOptions fo = new FormOptions().setOpenInViewMode(true).setShowRemoveButton(true).setShowEditButton(true);
 
-        // retrieve the country list just once
-        allCountries = countryService.findAll();
+		// retrieve the country list just once
+		allCountries = countryService.findAll();
 
-        // Add a remove button.
-        fo.setShowRemoveButton(true);
+		// custom entity model for this screen. See the "entitymodel.properties" file for specifics
+		EntityModel<Movie> em = getModelFactory().getModel("MoviesTable", Movie.class);
 
-        // Add an edit button.
-        fo.setShowEditButton(true);
-
-        // retrieve the country list just once
-        allCountries = countryService.findAll();
-
-        // custom entity model for this screen. See the "entitymodel.properties" file for specifics
-        EntityModel<Movie> em = getModelFactory().getModel("MoviesTable", Movie.class);
-
-        // A SplitLayout is a component that displays a search screen and an edit form
-        TabularEditLayout<Integer, Movie> movieLayout = new TabularEditLayout<Integer, Movie>(
-                movieService, em, fo, new SortOrder("title", SortDirection.ASCENDING)) {
+		// A SplitLayout is a component that displays a search screen and an edit form
+		TabularEditLayout<Integer, Movie> movieLayout = new TabularEditLayout<Integer, Movie>(movieService, em, fo,
+		        new SortOrder("title", SortDirection.ASCENDING)) {
 
 			@Override
 			protected Field<?> constructCustomField(EntityModel<Movie> entityModel, AttributeModel attributeModel,
@@ -101,17 +87,9 @@ public class TabularMoviesView extends BaseView {
 			}
 		};
 
-        movieLayout.setPageLength(25);
+		movieLayout.setPageLength(25);
 
-        // Add layout.
-        mainLayout.addComponent(movieLayout);
-    }
-    /*
-     * (non-Javadoc)
-     *
-     * @see com.vaadin.navigator.View#enter(com.vaadin.navigator.ViewChangeListener.ViewChangeEvent)
-     */
-    public void enter(ViewChangeEvent event) {
-        LOG.debug("Update View - {}.", this.getClass().getSimpleName());
-    }
+		mainLayout.addComponent(movieLayout);
+		setCompositionRoot(mainLayout);
+	}
 }

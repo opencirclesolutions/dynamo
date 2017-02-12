@@ -297,6 +297,35 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
 		}
 	}
 
+	/**
+	 * Sets the visibility of a column. This can only be used to show/hide columns that would show
+	 * up in the table based on the entity model
+	 * 
+	 * @param propertyId
+	 *            the ID of the column.
+	 * @param visible
+	 *            whether the column must be visible
+	 */
+	public void setColumnVisible(Object propertyId, boolean visible) {
+		Object[] visibleCols = getVisibleColumns();
+		List<Object> temp = new ArrayList<>();
+
+		boolean alreadyVisible = false;
+		for (Object o : visibleCols) {
+			if (!o.equals(propertyId) || visible) {
+				temp.add(o);
+			}
+			alreadyVisible |= o.equals(propertyId);
+		}
+
+		// add column if not already visible
+		if (!alreadyVisible && visible) {
+			temp.add(propertyId);
+		}
+
+		setVisibleColumns(temp.toArray(new Object[0]));
+	}
+
 	public void setCurrencySymbol(String currencySymbol) {
 		this.currencySymbol = currencySymbol;
 	}

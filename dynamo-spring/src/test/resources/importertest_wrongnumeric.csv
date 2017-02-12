@@ -1,7 +1,7 @@
-Bas;1;abc;abc;M;1.5;TRUE
-;2;;desx;M;2.50;FALSE
-Endy;-3;;ghi;M;3.50;FALSE
-Ward;4;;jkl;M;4.50;FALSE
-Michiel;5;;mno;M;5.50;FALSE
-Chris;6;;pqr;M;6.50;FALSE
-Wouter;7;;stu;M;7.50;FALSE
+Bas;1;abc;abc;M;1.5;TRUE;
+;2;;desx;M;2.50;FALSE;
+Endy;-3;;ghi;M;3.50;FALSE;
+Ward;4;;jkl;M;4.50;FALSE;
+Michiel;5;;mno;M;5.50;FALSE;
+Chris;6;;pqr;M;6.50;FALSE;
+Wouter;7;;stu;M;7.50;FALSE;

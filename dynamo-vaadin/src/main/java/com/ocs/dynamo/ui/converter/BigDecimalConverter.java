@@ -31,75 +31,74 @@ import com.vaadin.data.util.converter.StringToBigDecimalConverter;
  */
 public class BigDecimalConverter extends StringToBigDecimalConverter {
 
-    private static final long serialVersionUID = -6491010958762673241L;
+	private static final long serialVersionUID = -6491010958762673241L;
 
-    private DecimalFormat decimalFormat;
+	private DecimalFormat decimalFormat;
 
-    private String pattern;
+	private String pattern;
 
-    private boolean useGrouping;
+	private boolean useGrouping;
 
-    private int precision;
+	private int precision;
 
-    /**
-     * Constructor - for use with a pattern
-     * 
-     * @param pattern
-     *            will be applied to the decimalFormat of this converter.
-     */
-    public BigDecimalConverter(final String pattern) {
-        this.pattern = pattern;
-    }
+	/**
+	 * Constructor - for use with a pattern
+	 * 
+	 * @param pattern
+	 *            will be applied to the decimalFormat of this converter.
+	 */
+	public BigDecimalConverter(final String pattern) {
+		this.pattern = pattern;
+	}
 
-    /**
-     * Constructor - for use with a precision and grouping setting
-     */
-    public BigDecimalConverter(int precision, boolean useGrouping) {
-        this.precision = precision;
-        this.useGrouping = useGrouping;
-    }
+	/**
+	 * Constructor - for use with a precision and grouping setting
+	 */
+	public BigDecimalConverter(int precision, boolean useGrouping) {
+		this.precision = precision;
+		this.useGrouping = useGrouping;
+	}
 
-    @Override
-    public BigDecimal convertToModel(String value, Class<? extends BigDecimal> targetType,
-            Locale locale) {
-        // the original Vaadin code curiously returns a Double here and casts
-        // that to a BigDecimal.
-        // That is not correct, so we use this additional step here
-        Number number = convertToNumber(value, BigDecimal.class, locale);
-        return number == null ? null : BigDecimal.valueOf(number.doubleValue()).setScale(precision,
-                RoundingMode.HALF_UP);
-    }
+	@Override
+	public BigDecimal convertToModel(String value, Class<? extends BigDecimal> targetType, Locale locale) {
+		// the original Vaadin code curiously returns a Double here and casts
+		// that to a BigDecimal.
+		// That is not correct, so we use this additional step here
+		Number number = convertToNumber(value, BigDecimal.class, locale);
+		return number == null ? null : BigDecimal.valueOf(number.doubleValue()).setScale(precision,
+		        RoundingMode.HALF_UP);
+	}
 
-    @Override
-    protected NumberFormat getFormat(Locale locale) {
-        return getDecimalFormat(locale);
-    }
+	@Override
+	protected NumberFormat getFormat(Locale locale) {
+		return getDecimalFormat(locale);
+	}
 
-    /**
-     * @param locale
-     * @return
-     */
-    public DecimalFormat getDecimalFormat(Locale locale) {
-        locale = locale != null ? locale : VaadinUtils.getLocale();
-        decimalFormat = constructFormat(locale);
+	/**
+	 * @param locale
+	 * @return
+	 */
+	public DecimalFormat getDecimalFormat(Locale locale) {
+		locale = locale != null ? locale : VaadinUtils.getLocale();
+		decimalFormat = constructFormat(locale);
 
-        if (!StringUtils.isEmpty(pattern)) {
-            decimalFormat.applyPattern(pattern);
-        } else {
-            decimalFormat.setGroupingUsed(useGrouping);
-            decimalFormat.setMaximumFractionDigits(precision);
-            decimalFormat.setMinimumFractionDigits(precision);
-        }
-        return decimalFormat;
-    }
+		if (!StringUtils.isEmpty(pattern)) {
+			decimalFormat.applyPattern(pattern);
+		} else {
+			decimalFormat.setGroupingUsed(useGrouping);
+			decimalFormat.setMaximumFractionDigits(precision);
+			decimalFormat.setMinimumFractionDigits(precision);
+		}
+		return decimalFormat;
+	}
 
-    /**
-     * Constructs the number format - overwrite in subclasses if needed
-     * 
-     * @param locale
-     * @return
-     */
-    protected DecimalFormat constructFormat(Locale locale) {
-        return (DecimalFormat) DecimalFormat.getInstance(locale);
-    }
+	/**
+	 * Constructs the number format - overwrite in subclasses if needed
+	 * 
+	 * @param locale
+	 * @return
+	 */
+	protected DecimalFormat constructFormat(Locale locale) {
+		return (DecimalFormat) DecimalFormat.getInstance(locale);
+	}
 }

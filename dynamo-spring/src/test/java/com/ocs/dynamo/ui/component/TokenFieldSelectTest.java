@@ -44,7 +44,7 @@ public class TokenFieldSelectTest extends BaseMockitoTest {
 	private TestEntity t3;
 
 	@Before
-	public void setUp() throws Exception {
+	public void setUp() {
 		t1 = new TestEntity(1, "Kevin", 12L);
 		t2 = new TestEntity(2, "Bob", 13L);
 		t3 = new TestEntity(3, "Stewart", 14L);

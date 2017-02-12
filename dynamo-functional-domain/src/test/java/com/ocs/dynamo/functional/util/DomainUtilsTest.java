@@ -27,7 +27,7 @@ public class DomainUtilsTest extends BaseMockitoTest {
 	private Set<Domain> domains;
 
 	@Override
-	public void setUp() throws Exception {
+	public void setUp() {
 		super.setUp();
 
 		Currency c1 = new Currency("EUR", "Euro");

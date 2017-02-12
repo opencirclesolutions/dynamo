@@ -19,6 +19,11 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.sf.jasperreports.engine.JRField;
+import net.sf.jasperreports.engine.JRParameter;
+import net.sf.jasperreports.engine.JRPropertiesMap;
+import net.sf.jasperreports.engine.JasperReport;
+
 import org.apache.commons.beanutils.BeanUtilsBean;
 import org.apache.commons.lang.StringUtils;
 
@@ -28,11 +33,6 @@ import com.vaadin.data.Container;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.util.AbstractBeanContainer;
 
-import net.sf.jasperreports.engine.JRField;
-import net.sf.jasperreports.engine.JRParameter;
-import net.sf.jasperreports.engine.JRPropertiesMap;
-import net.sf.jasperreports.engine.JasperReport;
-
 /**
  * Utility methods for JasperReports with Dynamo.
  *
@@ -40,18 +40,21 @@ import net.sf.jasperreports.engine.JasperReport;
  */
 public final class JRUtils {
 
-	static final String CONTAINER_PROPERTY_NAME = "com.ocs.dynamo.containerPropertyName";
+	public static final String CONTAINER_PROPERTY_NAME = "com.ocs.dynamo.containerPropertyName";
 
-	static final String FILTER_PROPERTY_NAME = "com.ocs.dynamo.filterPropertyName";
-	static final String PROPERTY_NESTED_NAME = "com.ocs.dynamo.propertyNestedName";
-	static final String FILTER_TYPE = "com.ocs.dynamo.filterType";
+	public static final String FILTER_PROPERTY_NAME = "com.ocs.dynamo.filterPropertyName";
+
+	public static final String FILTER_TYPE = "com.ocs.dynamo.filterType";
+
+	public static final String PROPERTY_NESTED_NAME = "com.ocs.dynamo.propertyNestedName";
 
 	private JRUtils() {
+		// default constructor
 	}
 
 	/**
-	 * Add all fields as a container property to given container using the type of the field when the field has property
-	 * CONTAINER_PROPERTY_NAME defined.
+	 * Add all fields as a container property to given container using the type of the field when
+	 * the field has property CONTAINER_PROPERTY_NAME defined.
 	 *
 	 * @param container
 	 * @param jasperReport
@@ -76,13 +79,16 @@ public final class JRUtils {
 	}
 
 	/**
-	 * Create report parameters based on a filter value to defined report parameter when the parameter has the name of
-	 * the filterproperty defined as a property.
+	 * Create report parameters based on a filter value to defined report parameter when the
+	 * parameter has the name of the filterproperty defined as a property.
 	 *
-	 * @param jasperReport The report
-	 * @param filter       The (composite) filter
+	 * @param jasperReport
+	 *            The report
+	 * @param filter
+	 *            The (composite) filter
 	 * @return a parameter map with the parameter values defined
 	 */
+	@SuppressWarnings("unchecked")
 	public static Map<String, Object> createParametersFromFilter(JasperReport jasperReport, Filter filter) {
 		Map<String, Object> fillParameters = new HashMap<>();
 		if (jasperReport != null && filter != null) {
@@ -105,7 +111,7 @@ public final class JRUtils {
 							if (StringUtils.isNotBlank(nestedPropertyName)) {
 								if (result instanceof Collection) {
 									result = getPropertyNestedValue(fillParameters, parameterName, nestedPropertyName,
-											(Collection) result);
+									        (Collection<?>) result);
 								} else {
 									result = getNestedProperty(nestedPropertyName, result);
 								}
@@ -119,37 +125,19 @@ public final class JRUtils {
 		return fillParameters;
 	}
 
-	private static Collection<?> getPropertyNestedValue(Map<String, Object> fillParameters, String parameterName,
-			String nestedPropertyName, Collection result) {
-		Collection resultCollection = (Collection) fillParameters.remove(parameterName);
-
-		if (resultCollection == null) {
-			resultCollection = new ArrayList();
-		}
-		for (Object o : result) {
-			resultCollection.add(getNestedProperty(nestedPropertyName, o));
-		}
-		return resultCollection;
-	}
-
-	private static Object getNestedProperty(String prop, Object bean) {
-		try {
-			return BeanUtilsBean.getInstance().getPropertyUtils().getNestedProperty(bean, prop);
-		} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-			throw new OCSRuntimeException("Failed to get bean property", e);
-		}
-	}
-
 	/**
 	 * Find a parameter which has a parameter property with a specific value.
 	 *
-	 * @param jasperReport  the report
-	 * @param propertyName  the property name to search for
-	 * @param propertyValue the property value to search for
+	 * @param jasperReport
+	 *            the report
+	 * @param propertyName
+	 *            the property name to search for
+	 * @param propertyValue
+	 *            the property value to search for
 	 * @return the parameter or null
 	 */
 	public static JRParameter findParameterWithPropertyValue(JasperReport jasperReport, String propertyName,
-			Object propertyValue) {
+	        Object propertyValue) {
 		JRParameter result = null;
 		if (jasperReport != null && propertyName != null && !"".equals(propertyName) && propertyValue != null) {
 			for (JRParameter p : jasperReport.getParameters()) {
@@ -162,4 +150,27 @@ public final class JRUtils {
 		}
 		return result;
 	}
+
+	private static Object getNestedProperty(String prop, Object bean) {
+		try {
+			return BeanUtilsBean.getInstance().getPropertyUtils().getNestedProperty(bean, prop);
+		} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+			throw new OCSRuntimeException("Failed to get bean property", e);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private static Collection<?> getPropertyNestedValue(Map<String, Object> fillParameters, String parameterName,
+	        String nestedPropertyName, Collection<?> result) {
+		Collection<Object> resultCollection = (Collection<Object>) fillParameters.remove(parameterName);
+
+		if (resultCollection == null) {
+			resultCollection = new ArrayList<>();
+		}
+		for (Object o : result) {
+			resultCollection.add(getNestedProperty(nestedPropertyName, o));
+		}
+		return resultCollection;
+	}
+
 }

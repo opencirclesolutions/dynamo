@@ -1,0 +1,28 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+Dynamo Framework - Jasperreports,com.ocs.jasperreports,UniqueWebHtmlResourceHandler,13,4,0,0,1,2,1,1,1,1
+Dynamo Framework - Jasperreports,com.ocs.jasperreports,ReportGenerator,148,147,17,3,32,38,14,7,4,7
+Dynamo Framework - Jasperreports,com.ocs.jasperreports,ReportGenerator.Format,5,43,0,0,0,2,1,3,1,3
+Dynamo Framework - Jasperreports,com.ocs.jasperreports,ReportGenerator.new Object() {...},2,17,0,0,0,1,0,1,0,1
+Dynamo Framework - Jasperreports,com.ocs.jasperreports.chart,XYChartCustomizer.TextAnnotation,27,0,0,0,9,0,3,0,3,0
+Dynamo Framework - Jasperreports,com.ocs.jasperreports.chart,ChartCustomizer.LegendOptions,12,0,0,0,5,0,1,0,1,0
+Dynamo Framework - Jasperreports,com.ocs.jasperreports.chart,XYChartCustomizer.XYLabelGenerator,23,3,6,0,5,1,4,1,1,1
+Dynamo Framework - Jasperreports,com.ocs.jasperreports.chart,ChartCustomizer.ChartHyperlinkProviderDecorator,38,0,2,0,12,0,4,0,3,0
+Dynamo Framework - Jasperreports,com.ocs.jasperreports.chart,AbstractChartCustomizer,99,3,10,0,20,1,8,1,3,1
+Dynamo Framework - Jasperreports,com.ocs.jasperreports.chart,FullWidthCategoryDomainAxis,19,0,0,0,6,0,4,0,4,0
+Dynamo Framework - Jasperreports,com.ocs.jasperreports.chart,ChartCustomizer.Quadrant,76,0,4,0,28,0,12,0,10,0
+Dynamo Framework - Jasperreports,com.ocs.jasperreports.chart,ChartCustomizer.Action,28,0,0,0,2,0,4,0,4,0
+Dynamo Framework - Jasperreports,com.ocs.jasperreports.chart,CategoryChartCustomizer.CategoryLabelGenerator,23,0,4,0,5,0,4,0,2,0
+Dynamo Framework - Jasperreports,com.ocs.jasperreports.chart,ChartCustomizer.XYMarker,66,0,0,0,23,0,6,0,6,0
+Dynamo Framework - Jasperreports,com.ocs.jasperreports.chart,CategoryChartCustomizer,112,0,8,0,30,0,11,0,7,0
+Dynamo Framework - Jasperreports,com.ocs.jasperreports.chart,ChartCustomizer.SvgChartRenderableFactoryDecorator,13,0,0,0,2,0,2,0,2,0
+Dynamo Framework - Jasperreports,com.ocs.jasperreports.chart,ChartCustomizer,203,179,38,16,56,44,28,7,3,5
+Dynamo Framework - Jasperreports,com.ocs.jasperreports.chart,XYChartCustomizer,203,54,12,2,34,13,12,4,5,4
+Dynamo Framework - Jasperreports,com.ocs.jasperreports.chart,ChartCustomizer.StrokeType,15,0,0,0,6,0,3,0,3,0
+Dynamo Framework - Jasperreports,com.ocs.jasperreports.chart,ChartCustomizer.BigDecimalLabelWrapper,11,0,0,0,4,0,2,0,2,0
+Dynamo Framework - Jasperreports,com.ocs.jasperreports.chart,ChartCustomizer.CategoryMarker,19,0,0,0,6,0,3,0,3,0
+Dynamo Framework - Jasperreports,com.ocs.dynamo.ui.composite,JRReportViewer.new StreamResource.StreamSource() {...},58,0,2,0,9,0,3,0,2,0
+Dynamo Framework - Jasperreports,com.ocs.dynamo.ui.composite,JRReportViewer.new Property.ValueChangeListener() {...},16,0,2,0,4,0,3,0,2,0
+Dynamo Framework - Jasperreports,com.ocs.dynamo.ui.composite,JRReportViewer,513,0,26,0,114,0,36,0,23,0
+Dynamo Framework - Jasperreports,com.ocs.dynamo.jasperreports,JRContainerDataSource,6,69,6,6,2,15,6,3,0,3
+Dynamo Framework - Jasperreports,com.ocs.dynamo.jasperreports,JRUtils,98,141,26,20,22,30,21,8,3,3
+Dynamo Framework - Jasperreports,com.ocs.dynamo.jasperreports,JRIndexedContainerDataSource,13,106,4,16,4,25,5,11,1,5

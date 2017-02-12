@@ -18,6 +18,7 @@ import java.io.Serializable;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
+import com.ocs.dynamo.ui.CanAssignEntity;
 import com.ocs.dynamo.ui.composite.form.FormOptions;
 import com.vaadin.data.sort.SortOrder;
 
@@ -37,7 +38,7 @@ import com.vaadin.data.sort.SortOrder;
  *            the type of the parent entity
  */
 public abstract class FixedDetailLayout<ID extends Serializable, T extends AbstractEntity<ID>, ID2 extends Serializable, Q extends AbstractEntity<ID2>>
-        extends FixedSplitLayout<ID, T> {
+        extends FixedSplitLayout<ID, T> implements CanAssignEntity<ID2, Q> {
 
 	private static final long serialVersionUID = 4606800218149558500L;
 
@@ -81,4 +82,8 @@ public abstract class FixedDetailLayout<ID extends Serializable, T extends Abstr
 		return parentService;
 	}
 
+	@Override
+	public void assignEntity(Q parentEntity) {
+		setParentEntity(parentEntity);
+	}
 }

@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="nl"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>XYChartCustomizer.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Dynamo Framework - Jasperreports</a> &gt; <a href="index.source.html" class="el_package">com.ocs.jasperreports.chart</a> &gt; <span class="el_source">XYChartCustomizer.java</span></div><h1>XYChartCustomizer.java</h1><pre class="source lang-java linenums">/*
+   Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+package com.ocs.jasperreports.chart;
+
+import java.awt.Paint;
+import java.awt.Stroke;
+import java.awt.geom.Point2D;
+import java.text.MessageFormat;
+import java.util.Collection;
+import java.util.Locale;
+
+import org.jfree.chart.annotations.Annotation;
+import org.jfree.chart.annotations.XYAnnotation;
+import org.jfree.chart.annotations.XYBoxAnnotation;
+import org.jfree.chart.annotations.XYTextAnnotation;
+import org.jfree.chart.axis.ValueAxis;
+import org.jfree.chart.labels.BubbleXYItemLabelGenerator;
+import org.jfree.chart.plot.Marker;
+import org.jfree.chart.plot.XYPlot;
+import org.jfree.data.xy.XYDataset;
+import org.jfree.data.xy.XYZDataset;
+import org.jfree.ui.Layer;
+
+<span class="fc" id="L35">public class XYChartCustomizer extends AbstractChartCustomizer implements CustomChartCustomizer&lt;XYPlot&gt; {</span>
+
+	/**
+	 * Define an instance (or collection of instances) of this class in a report variable with the
+	 * name &quot;re.Quadrant&quot; (where re should be replaced with the name of the reporting element) to
+	 * draw an annotation in the graph. Be sure to configure the applicable
+	 * XXXChartRenderableDecorator (in jasper.properties).
+	 */
+	@SuppressWarnings(&quot;serial&quot;)
+	public static class TextAnnotation extends XYTextAnnotation {
+
+		public TextAnnotation(String text, double x, double y) {
+<span class="nc" id="L47">			super(text, x, y);</span>
+<span class="nc" id="L48">		}</span>
+
+		public TextAnnotation(String text, double x, double y, String url) {
+<span class="nc" id="L51">			super(text, x, y);</span>
+<span class="nc" id="L52">			setURL(url);</span>
+<span class="nc" id="L53">		}</span>
+
+		public TextAnnotation(String text, double x, double y, String url, String tooltip) {
+<span class="nc" id="L56">			super(text, x, y);</span>
+<span class="nc" id="L57">			setURL(url);</span>
+<span class="nc" id="L58">			setToolTipText(tooltip);</span>
+<span class="nc" id="L59">		}</span>
+
+	}
+
+	@Override
+	public void setLabels(XYPlot plot) {
+<span class="fc" id="L65">		plot.getRenderer().setBaseItemLabelGenerator(new XYChartCustomizer.XYLabelGenerator());</span>
+<span class="fc" id="L66">		plot.getRenderer().setBaseItemLabelsVisible(true);</span>
+<span class="fc" id="L67">	}</span>
+
+	@Override
+	public void addRangeMarkerToPlot(XYPlot plot, Marker marker) {
+<span class="nc" id="L71">		final ChartCustomizer.XYMarker rangeMarker = (ChartCustomizer.XYMarker) marker;</span>
+<span class="nc" id="L72">		final ValueAxis rangeAxis = plot.getRangeAxis();</span>
+
+<span class="nc" id="L74">		expandRange(rangeMarker, rangeAxis);</span>
+
+<span class="nc" id="L76">		plot.addRangeMarker(marker, Layer.FOREGROUND);</span>
+<span class="nc" id="L77">	}</span>
+
+	@Override
+	public void addDomainMarkerToPlot(XYPlot plot, Marker marker) {
+<span class="nc" id="L81">		final ChartCustomizer.XYMarker rangeMarker = (ChartCustomizer.XYMarker) marker;</span>
+<span class="nc" id="L82">		final ValueAxis domainAxis = plot.getDomainAxis();</span>
+
+<span class="nc" id="L84">		expandRange(rangeMarker, domainAxis);</span>
+
+<span class="nc" id="L86">		plot.addDomainMarker(marker, Layer.FOREGROUND);</span>
+<span class="nc" id="L87">	}</span>
+
+	@Override
+	public void addQuadrant(XYPlot plot, ChartCustomizer.Quadrant quadrant) {
+		// Define the quadrant
+<span class="fc" id="L92">		Point2D pointQuadOrigin = new Point2D.Double(quadrant.getqOx(), quadrant.getqOy());</span>
+<span class="fc" id="L93">		plot.setQuadrantOrigin(pointQuadOrigin);</span>
+
+		// Set the colors
+<span class="fc" id="L96">		plot.setQuadrantPaint(0, quadrant.getqClt());</span>
+<span class="fc" id="L97">		plot.setQuadrantPaint(1, quadrant.getqCrt());</span>
+<span class="fc" id="L98">		plot.setQuadrantPaint(2, quadrant.getqClb());</span>
+<span class="fc" id="L99">		plot.setQuadrantPaint(3, quadrant.getqCrb());</span>
+
+		// Set the annotations when needed
+<span class="pc bpc" id="L102" title="2 of 4 branches missed.">		if (quadrant.getUrlMessageFormat() != null || quadrant.getTooltipMessageFormat() != null) {</span>
+			// Determine extremes
+<span class="nc" id="L104">			ValueAxis xAxis = plot.getDomainAxis();</span>
+<span class="nc" id="L105">			ValueAxis yAxis = plot.getRangeAxis();</span>
+
+			// Create LT annotation
+<span class="nc" id="L108">			addXYBoxAnnotation(plot, xAxis.getLowerBound(), quadrant.getqOy(), quadrant.getqOx(),</span>
+<span class="nc" id="L109">			        yAxis.getUpperBound(), quadrant.getUrlMessageFormat(), quadrant.getTooltipMessageFormat());</span>
+			// Create RT annotation
+<span class="nc" id="L111">			addXYBoxAnnotation(plot, quadrant.getqOx(), quadrant.getqOy(), xAxis.getUpperBound(),</span>
+<span class="nc" id="L112">			        yAxis.getUpperBound(), quadrant.getUrlMessageFormat(), quadrant.getTooltipMessageFormat());</span>
+			// Create LB annotation
+<span class="nc" id="L114">			addXYBoxAnnotation(plot, xAxis.getLowerBound(), yAxis.getLowerBound(), quadrant.getqOx(),</span>
+<span class="nc" id="L115">			        quadrant.getqOy(), quadrant.getUrlMessageFormat(), quadrant.getTooltipMessageFormat());</span>
+			// Create RB annotation
+<span class="nc" id="L117">			addXYBoxAnnotation(plot, quadrant.getqOx(), yAxis.getLowerBound(), xAxis.getUpperBound(),</span>
+<span class="nc" id="L118">			        quadrant.getqOy(), quadrant.getUrlMessageFormat(), quadrant.getTooltipMessageFormat());</span>
+		}
+<span class="fc" id="L120">	}</span>
+
+	public void addXYBoxAnnotation(XYPlot plot, double minx, double miny, double maxx, double maxy,
+	        String urlMessageFormat, String tooltipMessageFormat) {
+<span class="nc" id="L124">		addXYBoxAnnotation(plot, minx, miny, maxx, maxy, null, null, urlMessageFormat, tooltipMessageFormat);</span>
+<span class="nc" id="L125">	}</span>
+
+	public void addXYBoxAnnotation(XYPlot plot, double minx, double miny, double maxx, double maxy, Stroke stroke,
+	        Paint paint, String urlMessageFormat, String tooltipMessageFormat) {
+		// Does the annotation area fit to visible area?
+<span class="nc bnc" id="L130" title="All 4 branches missed.">		if (minx &lt; maxx &amp;&amp; miny &lt; maxy) {</span>
+			// Create LT annotation
+<span class="nc" id="L132">			XYBoxAnnotation annotation = new XYBoxAnnotation(minx, miny, maxx, maxy, stroke, paint, null);</span>
+<span class="nc bnc" id="L133" title="All 2 branches missed.">			if (urlMessageFormat != null) {</span>
+<span class="nc" id="L134">				MessageFormat mf = new MessageFormat(urlMessageFormat, Locale.ENGLISH);</span>
+<span class="nc" id="L135">				annotation.setURL(mf.format(new Object[] { minx, miny, maxx, maxy }));</span>
+			}
+<span class="nc bnc" id="L137" title="All 2 branches missed.">			if (tooltipMessageFormat != null) {</span>
+<span class="nc" id="L138">				annotation.setToolTipText(MessageFormat.format(tooltipMessageFormat, minx, miny, maxx, maxy));</span>
+			}
+			// Add annotation
+<span class="nc" id="L141">			plot.getRenderer().addAnnotation(annotation, Layer.BACKGROUND);</span>
+		}
+<span class="nc" id="L143">	}</span>
+
+	@Override
+	public void setStrokeTypes(XYPlot plot, Collection&lt;ChartCustomizer.StrokeType&gt; sts) {
+		// TODO not implemented yet
+<span class="fc" id="L148">	}</span>
+
+	@SuppressWarnings(&quot;serial&quot;)
+<span class="fc" id="L151">	private static class XYLabelGenerator extends BubbleXYItemLabelGenerator {</span>
+		@Override
+		public String generateLabel(XYDataset dataset, int series, int item) {
+<span class="nc bnc" id="L154" title="All 2 branches missed.">			if (dataset instanceof XYZDataset) {</span>
+<span class="nc" id="L155">				Number z = ((XYZDataset) dataset).getZ(series, item);</span>
+<span class="nc bnc" id="L156" title="All 4 branches missed.">				if (z != null &amp;&amp; z instanceof ChartCustomizer.BigDecimalLabelWrapper) {</span>
+<span class="nc" id="L157">					return ((ChartCustomizer.BigDecimalLabelWrapper) z).getLabel();</span>
+				}
+			}
+<span class="nc" id="L160">			return String.valueOf(dataset.getSeriesKey(series));</span>
+		}
+	}
+
+	@Override
+	public void addAnnotationToPlot(XYPlot plot, Annotation annotation) {
+<span class="nc bnc" id="L166" title="All 2 branches missed.">		if (annotation instanceof XYAnnotation) {</span>
+<span class="nc" id="L167">			plot.addAnnotation((XYAnnotation) annotation);</span>
+		}
+<span class="nc" id="L169">	}</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

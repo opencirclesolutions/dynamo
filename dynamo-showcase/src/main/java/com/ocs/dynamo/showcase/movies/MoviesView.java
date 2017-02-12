@@ -13,7 +13,10 @@
  */
 package com.ocs.dynamo.showcase.movies;
 
+import javax.inject.Inject;
+
 import com.ocs.dynamo.showcase.Views;
+import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.composite.form.FormOptions;
 import com.ocs.dynamo.ui.composite.layout.SimpleSearchLayout;
 import com.ocs.dynamo.ui.container.QueryType;
@@ -22,63 +25,47 @@ import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.spring.annotation.UIScope;
-import com.vaadin.ui.Layout;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
+import com.vaadin.ui.VerticalLayout;
 
 /**
  * Dynamo contains a Abstract View class wich essentially is a Vaadin View Custom Component that has
  * access to the Dynamo Entity Model Factory and supports the Vaadin Navigation.
  */
-@UIScope // To preserve UI scope place this annotation above @SpringView.
 @SpringView(name = Views.MOVIES_VIEW)
+@UIScope
 @SuppressWarnings("serial")
 public class MoviesView extends BaseView {
 
-    /** Logger for {@link MoviesView}. */
-    private static final Logger LOG = LoggerFactory.getLogger(MoviesView.class);
+	/** Vaadin vertical layout. */
+	private VerticalLayout mainLayout;
 
-    /** The Movies View is using the {@link MovieService} for data access. */
-    @Inject
-    private MovieService movieService;
+	/** The Movies View is using the MovieService for data access. */
+	@Inject
+	private MovieService movieService;
 
-    /**
-     * Construct view.
-     */
-    @PostConstruct
-    void init() {
-        LOG.debug("Initialize View - {}.", this.getClass().getSimpleName());
+	@Override
+	public void enter(ViewChangeEvent event) {
 
-        Layout mainLayout = super.initLayout();
+		// Apply Vaadin Layout.
+		mainLayout = new DefaultVerticalLayout(true, true);
 
-        // Set form options by convention.
-        FormOptions fo = new FormOptions();
+		// Set form options by convention.
+		FormOptions fo = new FormOptions();
 
-        // Add a remove button and edit button
-        fo.setShowRemoveButton(true).setShowEditButton(true);
+		// Add a remove button.
+		fo.setShowRemoveButton(true);
 
-        // This is where the magic happens. The Simple Search layout uses the Dynamo Entity
-        // Model Factory to define a Simple Search Screen with sorting, filtering and lazy loading
-        // of data.
-        SimpleSearchLayout<Integer, Movie> movieLayout = new SimpleSearchLayout<Integer, Movie>(
-                movieService, getModelFactory().getModel(Movie.class), QueryType.ID_BASED, fo,
-                new com.vaadin.data.sort.SortOrder("id", SortDirection.ASCENDING)) {
-        };
+		// Add an edit button.
+		fo.setShowEditButton(true);
 
-        // Add layout.
-        mainLayout.addComponent(movieLayout);
-    }
+		// This is where the magic happens. The Simple Search layout uses the Dynamo Entity
+		// Model Factory to define a Simple Search Screen with sorting, filtering and lazy loading
+		// of data.
+		SimpleSearchLayout<Integer, Movie> movieLayout = new SimpleSearchLayout<>(movieService, getModelFactory()
+		        .getModel(Movie.class), QueryType.ID_BASED, fo, new com.vaadin.data.sort.SortOrder("id",
+		        SortDirection.ASCENDING));
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see com.vaadin.navigator.View#enter(com.vaadin.navigator.ViewChangeListener.ViewChangeEvent)
-     */
-    public void enter(ViewChangeEvent event) {
-        LOG.debug("Update View - {}.", this.getClass().getSimpleName());
-    }
-
+		mainLayout.addComponent(movieLayout);
+		setCompositionRoot(mainLayout);
+	}
 }

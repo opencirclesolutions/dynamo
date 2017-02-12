@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<checkstyle version="6.11.2">
+<file name="C:\jbossworkspace\dynamo\dynamo-jasperreports\src\main\java\com\ocs\dynamo\jasperreports\JRContainerDataSource.java">
+</file>
+<file name="C:\jbossworkspace\dynamo\dynamo-jasperreports\src\main\java\com\ocs\dynamo\jasperreports\JRIndexedContainerDataSource.java">
+</file>
+<file name="C:\jbossworkspace\dynamo\dynamo-jasperreports\src\main\java\com\ocs\dynamo\jasperreports\JRUtils.java">
+</file>
+<file name="C:\jbossworkspace\dynamo\dynamo-jasperreports\src\main\java\com\ocs\dynamo\ui\composite\JRReportViewer.java">
+<error line="64" severity="warning" message="Type Javadoc comment is missing an @param &lt;T&gt; tag." source="com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocTypeCheck"/>
+</file>
+<file name="C:\jbossworkspace\dynamo\dynamo-jasperreports\src\main\java\com\ocs\jasperreports\chart\AbstractChartCustomizer.java">
+<error line="19" severity="warning" message="Missing a Javadoc comment." source="com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocTypeCheck"/>
+</file>
+<file name="C:\jbossworkspace\dynamo\dynamo-jasperreports\src\main\java\com\ocs\jasperreports\chart\CategoryChartCustomizer.java">
+<error line="0" severity="warning" message="File does not end with a newline." source="com.puppycrawl.tools.checkstyle.checks.NewlineAtEndOfFileCheck"/>
+<error line="29" severity="warning" message="Missing a Javadoc comment." source="com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocTypeCheck"/>
+<error line="87" severity="warning" message="Missing a Javadoc comment." source="com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocTypeCheck"/>
+</file>
+<file name="C:\jbossworkspace\dynamo\dynamo-jasperreports\src\main\java\com\ocs\jasperreports\chart\ChartCustomizer.java">
+<error line="59" severity="warning" message="Type Javadoc comment is missing an @param &lt;T&gt; tag." source="com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocTypeCheck"/>
+<error line="88" severity="warning" message="Missing a Javadoc comment." source="com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocTypeCheck"/>
+<error line="118" severity="warning" message="Missing a Javadoc comment." source="com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocTypeCheck"/>
+<error line="155" severity="warning" message="Missing a Javadoc comment." source="com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocTypeCheck"/>
+<error line="155" column="16" severity="warning" message="Redundant &apos;static&apos; modifier." source="com.puppycrawl.tools.checkstyle.checks.modifier.RedundantModifierCheck"/>
+<error line="208" column="24" severity="warning" message="More than 7 parameters (found 8)." source="com.puppycrawl.tools.checkstyle.checks.sizes.ParameterNumberCheck"/>
+<error line="328" severity="warning" message="Missing a Javadoc comment." source="com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocTypeCheck"/>
+</file>
+<file name="C:\jbossworkspace\dynamo\dynamo-jasperreports\src\main\java\com\ocs\jasperreports\chart\CustomChartCustomizer.java">
+</file>
+<file name="C:\jbossworkspace\dynamo\dynamo-jasperreports\src\main\java\com\ocs\jasperreports\chart\FullWidthCategoryDomainAxis.java">
+</file>
+<file name="C:\jbossworkspace\dynamo\dynamo-jasperreports\src\main\java\com\ocs\jasperreports\chart\XYChartCustomizer.java">
+<error line="35" severity="warning" message="Missing a Javadoc comment." source="com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocTypeCheck"/>
+<error line="127" column="21" severity="warning" message="More than 7 parameters (found 9)." source="com.puppycrawl.tools.checkstyle.checks.sizes.ParameterNumberCheck"/>
+<error line="150" severity="warning" message="Missing a Javadoc comment." source="com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocTypeCheck"/>
+</file>
+<file name="C:\jbossworkspace\dynamo\dynamo-jasperreports\src\main\java\com\ocs\jasperreports\ReportGenerator.java">
+<error line="66" severity="warning" message="Missing a Javadoc comment." source="com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocTypeCheck"/>
+</file>
+<file name="C:\jbossworkspace\dynamo\dynamo-jasperreports\src\main\java\com\ocs\jasperreports\UniqueWebHtmlResourceHandler.java">
+<error line="18" severity="warning" message="Missing a Javadoc comment." source="com.puppycrawl.tools.checkstyle.checks.javadoc.JavadocTypeCheck"/>
+</file>
+</checkstyle>

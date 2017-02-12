@@ -214,6 +214,10 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
 		return (Domain) splitLayout.getSelectedItem();
 	}
 
+	/**
+	 * 
+	 * @return the currently selected split layout
+	 */
 	public ServiceBasedSplitLayout<?, ?> getSplitLayout() {
 		return splitLayout;
 	}

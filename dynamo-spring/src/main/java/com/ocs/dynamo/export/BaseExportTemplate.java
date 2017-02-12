@@ -41,7 +41,6 @@ import com.ocs.dynamo.filter.Filter;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.ServiceLocator;
 import com.ocs.dynamo.ui.composite.table.TableUtils;
-import com.ocs.dynamo.utils.SystemPropertyUtils;
 
 /**
  * Base class for
@@ -305,9 +304,7 @@ public abstract class BaseExportTemplate<ID extends Serializable, T extends Abst
 				// are displayed as percentages -> so, divide by 100
 				double temp = ((BigDecimal) value)
 				        .divide(BigDecimal.valueOf(100), DynamoConstants.INTERMEDIATE_PRECISION, RoundingMode.HALF_UP)
-				        .setScale(
-				                (am != null ? am.getPrecision() : SystemPropertyUtils.getDefaultDecimalPrecision()) + 2,
-				                RoundingMode.HALF_UP).doubleValue();
+				        .setScale(am.getPrecision() + 2, RoundingMode.HALF_UP).doubleValue();
 				cell.setCellValue(temp);
 			} else {
 				cell.setCellValue(((BigDecimal) value).setScale(am == null ? 2 : am.getPrecision(),

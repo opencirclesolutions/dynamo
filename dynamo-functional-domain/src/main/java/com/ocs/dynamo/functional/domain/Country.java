@@ -33,49 +33,50 @@ import com.ocs.dynamo.domain.model.annotation.Model;
 @Model(displayNamePlural = "Countries", displayProperty = "name", sortOrder = "name asc")
 public class Country extends DomainChild<Region> {
 
-    private static final long serialVersionUID = 1410771214783677106L;
+	private static final long serialVersionUID = 1410771214783677106L;
 
-    public Country() {
-    }
+	public Country() {
+		// default constructor
+	}
 
-    public Country(String code, String name) {
-        super(code, name);
-    }
+	public Country(String code, String name) {
+		super(code, name);
+	}
 
-    public void setRegion(Region region) {
-        setParent(region);
-    }
+	public void setRegion(Region region) {
+		setParent(region);
+	}
 
-    /**
-     * The region - note that this is not a JPA attribute and you must use "parent" instead in
-     * queries
-     * 
-     * @return
-     */
-    public Region getRegion() {
-        return getParent();
-    }
+	/**
+	 * The region - note that this is not a JPA attribute and you must use "parent" instead in
+	 * queries
+	 * 
+	 * @return
+	 */
+	public Region getRegion() {
+		return getParent();
+	}
 
-    /**
-     * Overridden so we can modify the attribute model
-     */
-    @Override
-    @Attribute(complexEditable = true, displayName = "Region", showInTable = VisibilityType.SHOW, replacementSearchPath = "parent")
-    public Region getParent() {
-        return super.getParent();
-    }
+	/**
+	 * Overridden so we can modify the attribute model
+	 */
+	@Override
+	@Attribute(complexEditable = true, displayName = "Region", showInTable = VisibilityType.SHOW, replacementSearchPath = "parent")
+	public Region getParent() {
+		return super.getParent();
+	}
 
-    /**
-     * Overridden so we can modify the attribute model
-     */
-    @Override
-    @Attribute(visible = VisibilityType.SHOW, required = true)
-    public String getCode() {
-        return super.getCode();
-    }
+	/**
+	 * Overridden so we can modify the attribute model
+	 */
+	@Override
+	@Attribute(visible = VisibilityType.SHOW, required = true)
+	public String getCode() {
+		return super.getCode();
+	}
 
-    @Override
-    public String toString() {
-        return ReflectionToStringBuilder.toStringExclude(this, new String[] { "parent", "region" });
-    }
+	@Override
+	public String toString() {
+		return ReflectionToStringBuilder.toStringExclude(this, new String[] { "parent", "region" });
+	}
 }

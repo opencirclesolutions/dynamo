@@ -36,6 +36,7 @@ public class TestDomain extends AbstractEntity<Integer> {
 	}
 
 	public TestDomain() {
+		// default constructor
 	}
 
 	@Override

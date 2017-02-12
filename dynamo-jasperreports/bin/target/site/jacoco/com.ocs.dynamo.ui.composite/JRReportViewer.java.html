@@ -1,0 +1,379 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="nl"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>JRReportViewer.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Dynamo Framework - Jasperreports</a> &gt; <a href="index.source.html" class="el_package">com.ocs.dynamo.ui.composite</a> &gt; <span class="el_source">JRReportViewer.java</span></div><h1>JRReportViewer.java</h1><pre class="source lang-java linenums">/*
+   Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+package com.ocs.dynamo.ui.composite;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.util.Map;
+
+import org.apache.commons.lang.StringUtils;
+
+import com.ocs.dynamo.domain.model.EntityModel;
+import com.ocs.dynamo.domain.model.impl.ModelBasedFieldFactory;
+import com.ocs.dynamo.jasperreports.JRContainerDataSource;
+import com.ocs.dynamo.jasperreports.JRIndexedContainerDataSource;
+import com.ocs.dynamo.jasperreports.JRUtils;
+import com.ocs.dynamo.ui.composite.layout.BaseCustomComponent;
+import com.ocs.dynamo.ui.utils.VaadinUtils;
+import com.ocs.jasperreports.ReportGenerator;
+import com.ocs.jasperreports.ReportGenerator.Format;
+import com.vaadin.data.Container;
+import com.vaadin.data.Container.Filter;
+import com.vaadin.data.Container.Indexed;
+import com.vaadin.data.Property;
+import com.vaadin.server.FileDownloader;
+import com.vaadin.server.StreamResource;
+import com.vaadin.server.StreamResource.StreamSource;
+import com.vaadin.server.VaadinSession;
+import com.vaadin.server.WrappedHttpSession;
+import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.ui.AbstractSelect;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.ComponentContainer;
+import com.vaadin.ui.FormLayout;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.HorizontalSplitPanel;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.VerticalLayout;
+
+import net.sf.jasperreports.engine.JRDataSource;
+import net.sf.jasperreports.engine.JasperReport;
+
+/**
+ * Custom component to render HTML versions of JasperReports and export to other formats
+ * 
+ * @author Patrick Deenen (patrick@opencircle.solutions)
+ *
+ */
+public class JRReportViewer&lt;T&gt; extends BaseCustomComponent {
+
+	/**
+	 * 
+	 * @author bas.rutten
+	 *
+	 */
+	public interface ReportDefinition {
+		/**
+		 * @return the name of the report template
+		 */
+		String getReportTemplateName();
+
+		/**
+		 * @return whether a direct datasource connection needs to be loaded
+		 */
+		boolean requiresDatabaseConnection();
+
+		/**
+		 * @return whether an external script needs to be loaded
+		 */
+		boolean requiresExternalScript();
+	}
+
+	protected static final String NO_DATA_FOUND_KEY = &quot;ocs.no.data.found&quot;;
+
+	protected static final String REPORT_AREA_ID = &quot;reportArea&quot;;
+
+	protected static final String REPORT_EXTENSION = &quot;.jasper&quot;;
+
+	protected static final String REPORT_NA_KEY = &quot;ocs.report.not.available&quot;;
+
+	private static final long serialVersionUID = 6981827314136814213L;
+	/**
+	 * Indicates whether external script has already been loaded (currently only works for one
+	 * external script!)
+	 */
+<span class="nc" id="L101">	private boolean alreadyLoaded = false;</span>
+	private Container container;
+	private Map&lt;String, Object&gt; currentParameters;
+	private EntityModel&lt;T&gt; entityModel;
+	private Button exportPDF;
+	private JasperReport jasperReport;
+	private JRDataSource jrDataSource;
+	private ComponentContainer main;
+	private Label reportArea;
+	private Enum&lt;? extends ReportDefinition&gt; reportDefinition;
+	private ReportGenerator reportGenerator;
+	private AbstractSelect reportSelection;
+	private CheckBox showMargins;
+	private String templatePath;
+	private Component toolbar;
+<span class="nc" id="L116">	private boolean splitlayout = false;</span>
+
+	/**
+	 * Constructor
+	 * 
+	 * @param reportGenerator
+	 * @param reportDefinition
+	 * @param entityModel
+	 * @param templatePath
+	 */
+	public JRReportViewer(ReportGenerator reportGenerator, Enum&lt;? extends ReportDefinition&gt; reportDefinition,
+<span class="nc" id="L127">	        EntityModel&lt;T&gt; entityModel, String templatePath) {</span>
+<span class="nc" id="L128">		this.reportGenerator = reportGenerator;</span>
+<span class="nc" id="L129">		this.reportDefinition = reportDefinition;</span>
+<span class="nc" id="L130">		this.entityModel = entityModel;</span>
+<span class="nc" id="L131">		this.templatePath = templatePath;</span>
+<span class="nc" id="L132">	}</span>
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see nl.ocs.ui.Buildable#build()
+	 */
+	@Override
+	public void build() {
+<span class="nc" id="L141">		this.setId(this.getClass().getSimpleName());</span>
+<span class="nc" id="L142">		toolbar = buildToolbar();</span>
+<span class="nc" id="L143">		reportArea = buildReportArea();</span>
+
+<span class="nc" id="L145">		main = buildMain();</span>
+<span class="nc" id="L146">		setCompositionRoot(main);</span>
+<span class="nc" id="L147">	}</span>
+
+	protected ComponentContainer buildMain() {
+<span class="nc" id="L150">		ComponentContainer main = null;</span>
+<span class="nc bnc" id="L151" title="All 2 branches missed.">		if (isSplitlayout()) {</span>
+			// Create split layout for reports
+<span class="nc" id="L153">			HorizontalSplitPanel sp = new HorizontalSplitPanel(toolbar, reportArea);</span>
+<span class="nc" id="L154">			sp.setSizeFull();</span>
+<span class="nc" id="L155">			sp.setSplitPosition(30, Unit.PERCENTAGE);</span>
+<span class="nc" id="L156">			main = sp;</span>
+<span class="nc" id="L157">		} else {</span>
+<span class="nc" id="L158">			VerticalLayout vl = new VerticalLayout();</span>
+<span class="nc" id="L159">			vl.setMargin(true);</span>
+<span class="nc" id="L160">			vl.setSpacing(true);</span>
+<span class="nc" id="L161">			vl.addComponent(toolbar);</span>
+<span class="nc" id="L162">			vl.addComponent(reportArea);</span>
+<span class="nc" id="L163">			main = vl;</span>
+		}
+<span class="nc" id="L165">		return main;</span>
+	}
+
+	protected Component buildExportSelection() {
+		// TODO These links should become a drop down menu for multiple formats
+<span class="nc" id="L170">		HorizontalLayout exportbar = new HorizontalLayout();</span>
+<span class="nc" id="L171">		exportbar.setSpacing(true);</span>
+<span class="nc" id="L172">		exportPDF = new Button(&quot;Export as PDF&quot;);</span>
+<span class="nc" id="L173">		exportPDF.setEnabled(false);</span>
+<span class="nc" id="L174">		FileDownloader downloader = new FileDownloader(createResourceForExport(Format.PDF));</span>
+<span class="nc" id="L175">		downloader.extend(exportPDF);</span>
+<span class="nc" id="L176">		exportbar.addComponent(exportPDF);</span>
+
+		// TODO Export in other formats
+<span class="nc" id="L179">		return exportbar;</span>
+	}
+
+	protected Label buildReportArea() {
+<span class="nc" id="L183">		Label label = new Label(getMessageService().getMessage(REPORT_NA_KEY));</span>
+<span class="nc" id="L184">		label.setContentMode(ContentMode.HTML);</span>
+<span class="nc" id="L185">		label.setId(REPORT_AREA_ID);</span>
+<span class="nc" id="L186">		return label;</span>
+	}
+
+	protected Component buildReportOptions() {
+<span class="nc" id="L190">		showMargins = new CheckBox(&quot;Show margins&quot;, false);</span>
+<span class="nc" id="L191">		return showMargins;</span>
+	}
+
+	protected Component buildReportSelection() {
+<span class="nc" id="L195">		FormLayout content = new FormLayout();</span>
+<span class="nc" id="L196">		content.setSpacing(true);</span>
+		// Create reporting selection
+<span class="nc" id="L198">		reportSelection = ModelBasedFieldFactory.getInstance(entityModel, getMessageService()).createEnumCombo(</span>
+<span class="nc" id="L199">		        reportDefinition.getClass(), ComboBox.class);</span>
+<span class="nc" id="L200">		reportSelection.setCaption(getMessageService().getMessage(</span>
+<span class="nc" id="L201">		        entityModel.getReference() + &quot;.&quot; + reportDefinition.getClass().getSimpleName()));</span>
+<span class="nc" id="L202">		reportSelection.setNullSelectionAllowed(false);</span>
+<span class="nc" id="L203">		reportSelection.setRequired(true);</span>
+<span class="nc" id="L204">		reportSelection.select(reportSelection.getItemIds().iterator().next());</span>
+<span class="nc" id="L205">		reportSelection.setSizeFull();</span>
+<span class="nc" id="L206">		reportSelection.addValueChangeListener(new Property.ValueChangeListener() {</span>
+			private static final long serialVersionUID = -3358229370015557129L;
+
+			@Override
+			public void valueChange(Property.ValueChangeEvent event) {
+<span class="nc bnc" id="L211" title="All 2 branches missed.">				if (exportPDF != null) {</span>
+<span class="nc" id="L212">					exportPDF.setEnabled(false);</span>
+				}
+<span class="nc" id="L214">			}</span>
+		});
+		// Add combo
+<span class="nc" id="L217">		content.addComponent(reportSelection);</span>
+<span class="nc bnc" id="L218" title="All 2 branches missed.">		if (reportDefinition.getClass().getEnumConstants().length &lt;= 1) {</span>
+<span class="nc" id="L219">			reportSelection.setVisible(false);</span>
+		}
+<span class="nc" id="L221">		return content;</span>
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	protected Component buildToolbar() {
+		// TODO add custom component with previous/next page buttons and export pdf
+<span class="nc" id="L230">		HorizontalLayout content = new HorizontalLayout();</span>
+<span class="nc" id="L231">		content.setSizeFull();</span>
+<span class="nc" id="L232">		content.setSpacing(true);</span>
+<span class="nc" id="L233">		content.addComponent(buildReportSelection());</span>
+<span class="nc" id="L234">		content.addComponent(buildExportSelection());</span>
+<span class="nc" id="L235">		content.addComponent(buildReportOptions());</span>
+<span class="nc" id="L236">		Panel panel = new Panel();</span>
+<span class="nc" id="L237">		panel.setContent(content);</span>
+<span class="nc" id="L238">		return panel;</span>
+	}
+
+	public void clear() {
+<span class="nc" id="L242">		reportArea.setValue(getMessageService().getMessage(REPORT_NA_KEY));</span>
+<span class="nc" id="L243">	}</span>
+
+	/**
+	 * Transforms the report into a StreamResource for downloading
+	 * 
+	 * @param format
+	 * @return
+	 */
+	protected StreamResource createResourceForExport(final Format format) {
+<span class="nc" id="L252">		return new StreamResource(new StreamSource() {</span>
+			private static final long serialVersionUID = -5207351556320212325L;
+
+			@Override
+			public InputStream getStream() {
+<span class="nc bnc" id="L257" title="All 2 branches missed.">				if (jasperReport != null) {</span>
+<span class="nc" id="L258">					ByteArrayOutputStream os = new ByteArrayOutputStream();</span>
+<span class="nc" id="L259">					reportGenerator.setShowMargins(showMargins.getValue());</span>
+<span class="nc" id="L260">					reportGenerator.executeReport(jasperReport, currentParameters, jrDataSource, format,</span>
+<span class="nc" id="L261">					        ((WrappedHttpSession) VaadinSession.getCurrent().getSession()).getHttpSession(),</span>
+<span class="nc" id="L262">					        VaadinSession.getCurrent().getLocale(), os);</span>
+<span class="nc" id="L263">					return new ByteArrayInputStream(os.toByteArray());</span>
+				} else {
+<span class="nc" id="L265">					return null;</span>
+				}
+			}
+
+<span class="nc" id="L269">		}, &quot;report.&quot; + format.name());</span>
+	}
+
+	public void displayReport(Filter filter, Map&lt;String, Object&gt; parameters) {
+		// TODO make the report generation asynchronous and display the first page when it is ready
+		// and not after last
+		// page is ready
+<span class="nc" id="L276">		currentParameters = parameters;</span>
+
+		// Load template
+<span class="nc" id="L279">		ReportDefinition rd = (ReportDefinition) getReportSelection().getValue();</span>
+<span class="nc" id="L280">		String path = getFullPath(rd);</span>
+<span class="nc" id="L281">		jasperReport = reportGenerator.loadTemplate(path);</span>
+
+		// Set parameters from filter
+<span class="nc" id="L284">		Map&lt;String, Object&gt; params = JRUtils.createParametersFromFilter(jasperReport, filter);</span>
+		// Add ReportDefinitionName
+<span class="nc" id="L286">		params.put(ReportDefinition.class.getSimpleName(), rd.toString());</span>
+		// Overwrite with current
+<span class="nc" id="L288">		params.putAll(currentParameters);</span>
+		// Then add to current
+<span class="nc" id="L290">		currentParameters.putAll(params);</span>
+
+		// Set datasource
+<span class="nc" id="L293">		jrDataSource = null;</span>
+<span class="nc bnc" id="L294" title="All 2 branches missed.">		if (!rd.requiresDatabaseConnection()) {</span>
+<span class="nc bnc" id="L295" title="All 2 branches missed.">			if (container instanceof Indexed) {</span>
+<span class="nc" id="L296">				jrDataSource = new JRIndexedContainerDataSource((Indexed) container);</span>
+			} else {
+<span class="nc" id="L298">				jrDataSource = new JRContainerDataSource(container);</span>
+			}
+		}
+
+		// Generate report
+<span class="nc" id="L303">		reportGenerator.setShowMargins(showMargins.getValue());</span>
+<span class="nc" id="L304">		String html = reportGenerator.executeReportAsHtml(jasperReport, params, jrDataSource,</span>
+<span class="nc" id="L305">		        ((WrappedHttpSession) VaadinSession.getCurrent().getSession()).getHttpSession(), VaadinSession</span>
+<span class="nc" id="L306">		                .getCurrent().getLocale());</span>
+<span class="nc bnc" id="L307" title="All 8 branches missed.">		if (html == null || &quot;&quot;.equals(html) || (container != null &amp;&amp; container.size() &lt;= 0)) {</span>
+<span class="nc" id="L308">			reportArea.setValue(getMessageService().getMessage(NO_DATA_FOUND_KEY));</span>
+<span class="nc" id="L309">			exportPDF.setEnabled(false);</span>
+		} else {
+<span class="nc bnc" id="L311" title="All 2 branches missed.">			if (rd.requiresExternalScript()) {</span>
+<span class="nc" id="L312">				VaadinUtils.loadScript(REPORT_AREA_ID, html, rd.requiresExternalScript(), alreadyLoaded);</span>
+
+				// only load external script for the map
+<span class="nc" id="L315">				alreadyLoaded = true;</span>
+			} else {
+<span class="nc" id="L317">				reportArea.setValue(html);</span>
+			}
+<span class="nc" id="L319">			exportPDF.setEnabled(true);</span>
+		}
+<span class="nc" id="L321">	}</span>
+
+	public Button getExportPDF() {
+<span class="nc" id="L324">		return exportPDF;</span>
+	}
+
+	protected String getFullPath(ReportDefinition rd) {
+<span class="nc bnc" id="L328" title="All 2 branches missed.">		return (StringUtils.isEmpty(templatePath) ? &quot;&quot; : templatePath) + rd.getReportTemplateName() + REPORT_EXTENSION;</span>
+	}
+
+	public ComponentContainer getMain() {
+<span class="nc" id="L332">		return main;</span>
+	}
+
+	public Component getReportArea() {
+<span class="nc" id="L336">		return reportArea;</span>
+	}
+
+	public Enum&lt;? extends ReportDefinition&gt; getReportDefinition() {
+<span class="nc" id="L340">		return reportDefinition;</span>
+	}
+
+	public AbstractSelect getReportSelection() {
+<span class="nc" id="L344">		return reportSelection;</span>
+	}
+
+	public ReportDefinition getReportSelectionValue() {
+<span class="nc" id="L348">		return (ReportDefinition) getReportSelection().getValue();</span>
+	}
+
+	public CheckBox getShowMargins() {
+<span class="nc" id="L352">		return showMargins;</span>
+	}
+
+	public Component getToolbar() {
+<span class="nc" id="L356">		return toolbar;</span>
+	}
+
+	public void setContainer(Container container, boolean defineProperties) {
+<span class="nc" id="L360">		this.container = container;</span>
+<span class="nc bnc" id="L361" title="All 2 branches missed.">		if (defineProperties) {</span>
+			// Prepare the container by adding all properties needed for the reports
+<span class="nc bnc" id="L363" title="All 2 branches missed.">			for (ReportDefinition type : (ReportDefinition[]) reportDefinition.getClass().getEnumConstants()) {</span>
+<span class="nc bnc" id="L364" title="All 2 branches missed.">				if (!type.requiresDatabaseConnection()) {</span>
+<span class="nc" id="L365">					JRUtils.addContainerPropertiesFromReport(container, reportGenerator.loadTemplate(getFullPath(type)));</span>
+				}
+			}
+		}
+<span class="nc" id="L369">	}</span>
+
+	public boolean isSplitlayout() {
+<span class="nc" id="L372">		return splitlayout;</span>
+	}
+
+	public void setSplitlayout(boolean splitlayout) {
+<span class="nc" id="L376">		this.splitlayout = splitlayout;</span>
+<span class="nc" id="L377">	}</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

@@ -45,8 +45,8 @@ import com.ocs.dynamo.importer.impl.BaseXlsImporter;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.test.BaseMockitoTest;
 import com.ocs.dynamo.test.MockUtil;
-import com.ocs.dynamo.ui.composite.table.CustomTreeTable;
 import com.ocs.dynamo.ui.composite.table.Department;
+import com.ocs.dynamo.ui.composite.table.InMemoryTreeTable;
 import com.ocs.dynamo.ui.composite.table.ModelBasedTable;
 import com.ocs.dynamo.ui.composite.table.Person;
 import com.vaadin.addon.tableexport.TemporaryFileDownloadResource;
@@ -82,11 +82,15 @@ public class TableExportActionHandlerTest extends BaseMockitoTest {
 	private Page page;
 
 	@Override
-	public void setUp() throws Exception {
+	public void setUp() {
 		super.setUp();
 		MockUtil.mockMessageService(messageService);
 		Mockito.when(ui.getPage()).thenReturn(page);
-		PrivateAccessor.setField(entityModelFactory, "messageService", messageService);
+		try {
+			PrivateAccessor.setField(entityModelFactory, "messageService", messageService);
+		} catch (NoSuchFieldException e) {
+			Assert.fail();
+		}
 
 		// set the default values for the system properties
 		System.setProperty(DynamoConstants.SP_EXPORT_CSV_SEPARATOR, ";");
@@ -392,7 +396,7 @@ public class TableExportActionHandlerTest extends BaseMockitoTest {
 		department.setName("Special ops");
 		department.setEmployees(Sets.newHashSet(person1, person2));
 
-		CustomTreeTable<Integer, Person, Integer, Department> table = new CustomTreeTable<Integer, Person, Integer, Department>() {
+		InMemoryTreeTable<Integer, Person, Integer, Department> table = new InMemoryTreeTable<Integer, Person, Integer, Department>() {
 
 			private static final long serialVersionUID = -6428315820101615753L;
 

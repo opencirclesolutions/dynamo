@@ -47,11 +47,15 @@ public class ModelBasedTableTest extends BaseMockitoTest {
 	private TestEntityService service;
 
 	@Override
-	public void setUp() throws Exception {
+	public void setUp() {
 		super.setUp();
 		Mockito.when(service.getEntityClass()).thenReturn(TestEntity.class);
 		MockUtil.mockMessageService(messageService);
-		PrivateAccessor.setField(entityModelFactory, "messageService", messageService);
+		try {
+			PrivateAccessor.setField(entityModelFactory, "messageService", messageService);
+		} catch (NoSuchFieldException e) {
+			Assert.fail();
+		}
 	}
 
 	@Test

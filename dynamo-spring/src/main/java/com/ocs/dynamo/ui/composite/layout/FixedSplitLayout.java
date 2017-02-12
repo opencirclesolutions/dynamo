@@ -69,6 +69,14 @@ public abstract class FixedSplitLayout<ID extends Serializable, T extends Abstra
 		getTableWrapper().getTable().select(t);
 	}
 
+	/**
+	 * The initialization consists of retrieving the required items
+	 */
+	@Override
+	public void buildFilter() {
+		this.items = loadItems();
+	}
+
 	@Override
 	protected final TextField constructSearchField() {
 		// do nothing - not supported for this component
@@ -80,17 +88,17 @@ public abstract class FixedSplitLayout<ID extends Serializable, T extends Abstra
 		FixedTableWrapper<ID, T> tw = new FixedTableWrapper<ID, T>(getService(), getEntityModel(), getItems(),
 		        getSortOrders(), getFormOptions().isTableExportAllowed()) {
 			@Override
+			protected void doConstructContainer(Container container) {
+				FixedSplitLayout.this.doConstructContainer(container);
+			}
+
+			@Override
 			protected void onSelect(Object selected) {
 				setSelectedItems(selected);
 				checkButtonState(getSelectedItem());
 				if (getSelectedItem() != null) {
 					detailsMode(getSelectedItem());
 				}
-			}
-
-			@Override
-			protected void doConstructContainer(Container container) {
-				FixedSplitLayout.this.doConstructContainer(container);
 			}
 		};
 		tw.build();
@@ -99,14 +107,6 @@ public abstract class FixedSplitLayout<ID extends Serializable, T extends Abstra
 
 	public Collection<T> getItems() {
 		return items;
-	}
-
-	/**
-	 * The initialization consists of retrieving the required items
-	 */
-	@Override
-	public void init() {
-		this.items = loadItems();
 	}
 
 	/**
@@ -120,8 +120,8 @@ public abstract class FixedSplitLayout<ID extends Serializable, T extends Abstra
 	@Override
 	@SuppressWarnings("unchecked")
 	public void reload() {
+		buildFilter();
 		super.reload();
-		init();
 		// remove all items from the container and add the new ones
 		BeanItemContainer<T> beanContainer = (BeanItemContainer<T>) getTableWrapper().getContainer();
 		beanContainer.removeAllItems();

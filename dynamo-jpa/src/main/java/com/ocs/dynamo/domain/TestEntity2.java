@@ -28,66 +28,96 @@ import com.ocs.dynamo.domain.model.annotation.Model;
 @Model(displayProperty = "name")
 public class TestEntity2 extends AbstractEntity<Integer> {
 
-    private static final long serialVersionUID = 3481759712992449747L;
+	private static final long serialVersionUID = 3481759712992449747L;
 
-    @Id
-    @GeneratedValue
-    private Integer id;
+	@Id
+	@GeneratedValue
+	private Integer id;
 
-    private String name;
+	private String name;
 
-    @ManyToOne
-    @Attribute(selectMode = AttributeSelectMode.LOOKUP, multipleSearch = true)
-    private TestEntity testEntity;
+	private Integer value;
 
-    @ManyToOne
-    @Attribute(selectMode = AttributeSelectMode.COMBO)
-    private TestEntity testEntityAlt;
+	private Integer value2;
 
-    @ManyToOne
-    @Attribute(selectMode = AttributeSelectMode.LIST)
-    private TestEntity testEntityAlt2;
+	private Integer valueSum;
 
-    @Override
-    public Integer getId() {
-        return id;
-    }
+	@ManyToOne
+	@Attribute(selectMode = AttributeSelectMode.LOOKUP, multipleSearch = true)
+	private TestEntity testEntity;
 
-    @Override
-    public void setId(Integer id) {
-        this.id = id;
-    }
+	@ManyToOne
+	@Attribute(selectMode = AttributeSelectMode.COMBO)
+	private TestEntity testEntityAlt;
 
-    public String getName() {
-        return name;
-    }
+	@ManyToOne
+	@Attribute(selectMode = AttributeSelectMode.LIST)
+	private TestEntity testEntityAlt2;
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	@Override
+	public Integer getId() {
+		return id;
+	}
 
-    public TestEntity getTestEntity() {
-        return testEntity;
-    }
+	@Override
+	public void setId(Integer id) {
+		this.id = id;
+	}
 
-    public void setTestEntity(TestEntity testEntity) {
-        this.testEntity = testEntity;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public TestEntity getTestEntityAlt() {
-        return testEntityAlt;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public void setTestEntityAlt(TestEntity testEntityAlt) {
-        this.testEntityAlt = testEntityAlt;
-    }
+	public TestEntity getTestEntity() {
+		return testEntity;
+	}
 
-    public TestEntity getTestEntityAlt2() {
-        return testEntityAlt2;
-    }
+	public void setTestEntity(TestEntity testEntity) {
+		this.testEntity = testEntity;
+	}
 
-    public void setTestEntityAlt2(TestEntity testEntityAlt2) {
-        this.testEntityAlt2 = testEntityAlt2;
-    }
+	public TestEntity getTestEntityAlt() {
+		return testEntityAlt;
+	}
+
+	public void setTestEntityAlt(TestEntity testEntityAlt) {
+		this.testEntityAlt = testEntityAlt;
+	}
+
+	public TestEntity getTestEntityAlt2() {
+		return testEntityAlt2;
+	}
+
+	public void setTestEntityAlt2(TestEntity testEntityAlt2) {
+		this.testEntityAlt2 = testEntityAlt2;
+	}
+
+	public Integer getValue() {
+		return value;
+	}
+
+	public void setValue(Integer value) {
+		this.value = value;
+	}
+
+	public Integer getValue2() {
+		return value2;
+	}
+
+	public void setValue2(Integer value2) {
+		this.value2 = value2;
+	}
+
+	public Integer getValueSum() {
+		return valueSum;
+	}
+
+	public void setValueSum(Integer valueSum) {
+		this.valueSum = valueSum;
+	}
 
 }

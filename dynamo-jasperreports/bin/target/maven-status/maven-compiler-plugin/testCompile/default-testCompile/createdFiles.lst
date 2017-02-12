@@ -1,0 +1,7 @@
+com\ocs\dynamo\jasperreports\Customer.class
+com\ocs\dynamo\jasperreports\Person.class
+com\ocs\jasperreports\chart\JasperCompiler.class
+com\ocs\dynamo\jasperreports\JRContainerDataSourceTest.class
+com\ocs\dynamo\jasperreports\JRIndexedContainerDataSourceTest.class
+com\ocs\jasperreports\ReportGeneratorTest.class
+com\ocs\jasperreports\chart\ChartCustomizerTest.class

@@ -73,7 +73,8 @@ public final class TableUtils {
 	 * @param collection
 	 * @return
 	 */
-	public static String formatEntityCollection(EntityModelFactory entityModelFactory, Object collection) {
+	public static String formatEntityCollection(EntityModelFactory entityModelFactory, AttributeModel attributeModel,
+	        Object collection) {
 		StringBuilder builder = new StringBuilder();
 		Iterable<?> col = (Iterable<?>) collection;
 		Iterator<?> it = col.iterator();
@@ -92,7 +93,13 @@ public final class TableUtils {
 					builder.append(next.toString());
 				}
 			} else {
-				builder.append(next);
+				// custom formatting for numbers
+				if (next instanceof Number) {
+					builder.append(VaadinUtils.numberToString(attributeModel, attributeModel.getNormalizedType(), next,
+					        true, VaadinUtils.getLocale()));
+				} else {
+					builder.append(next);
+				}
 			}
 		}
 		return builder.toString();
@@ -108,8 +115,9 @@ public final class TableUtils {
 	 *            the property
 	 * @return
 	 */
-	public static String formatEntityCollection(EntityModelFactory entityModelFactory, Property<?> property) {
-		return formatEntityCollection(entityModelFactory, property.getValue());
+	public static String formatEntityCollection(EntityModelFactory entityModelFactory, AttributeModel attributeModel,
+	        Property<?> property) {
+		return formatEntityCollection(entityModelFactory, attributeModel, property.getValue());
 	}
 
 	/**
@@ -153,14 +161,13 @@ public final class TableUtils {
 					} else if (!StringUtils.isEmpty(model.getFalseRepresentation()) && Boolean.FALSE.equals(value)) {
 						return model.getFalseRepresentation();
 					}
-					return null;
+					return Boolean.toString(Boolean.TRUE.equals(value));
 				} else if (Date.class.equals(model.getType())) {
 					// in case of a date field, use the entered display format
 					SimpleDateFormat format = new SimpleDateFormat(model.getDisplayFormat());
 
-					// ignore time zones for a pure date field (since it is not
-					// clear what the time zone is anyway)
-					if (!AttributeDateType.TIME.equals(model.getDateType())) {
+					// set time zone for a time stamp field
+					if (AttributeDateType.TIMESTAMP.equals(model.getDateType())) {
 						format.setTimeZone(VaadinUtils.getTimeZone(UI.getCurrent()));
 					}
 					return format.format((Date) value);
@@ -168,18 +175,18 @@ public final class TableUtils {
 					String cs = getCurrencySymbol(table);
 					return VaadinUtils.bigDecimalToString(model.isCurrency(), model.isPercentage(),
 					        model.isUseThousandsGrouping(), model.getPrecision(), (BigDecimal) value, locale, cs);
-				} else if (Integer.class.equals(model.getType())) {
-					return VaadinUtils.integerToString(model.isUseThousandsGrouping(), (Integer) value, locale);
-				} else if (Long.class.equals(model.getType())) {
-					return VaadinUtils.longToString(model.isUseThousandsGrouping(), (Long) value, locale);
+				} else if (Number.class.isAssignableFrom(model.getType())) {
+					// generic functionality for all other numbers
+					return VaadinUtils.numberToString(model, model.getType(), value, model.isUseThousandsGrouping(),
+					        locale);
 				} else if (model.getType().isEnum()) {
-					// in case of an enum, look it up in the message bundle
+					// in case of an enumeration, look it up in the message bundle
 					String msg = messageService.getEnumMessage((Class<Enum<?>>) model.getType(), (Enum<?>) value);
 					if (msg != null) {
 						return msg;
 					}
 				} else if (value instanceof Iterable) {
-					return formatEntityCollection(entityModelFactory, value);
+					return restrictToMaxLength(formatEntityCollection(entityModelFactory, model, value), model);
 				} else if (AbstractEntity.class.isAssignableFrom(model.getType())) {
 					// check for a nested model first. If it is not there, fall
 					// back to the default
@@ -192,15 +199,14 @@ public final class TableUtils {
 						throw new OCSRuntimeException("No displayProperty set for entity "
 						        + detailEntityModel.getEntityClass());
 					}
-
 					return formatPropertyValue(table, entityModelFactory, detailEntityModel, messageService,
 					        displayProperty, ClassUtils.getFieldValue(value, displayProperty), locale);
 				} else if (value instanceof AbstractEntity) {
 					Object result = ClassUtils.getFieldValue(value, colId.toString());
-					return result != null ? result.toString() : null;
+					return restrictToMaxLength(result != null ? result.toString() : null, model);
 				} else {
 					// Use string value
-					return value.toString();
+					return restrictToMaxLength(value.toString(), model);
 				}
 			}
 		}
@@ -223,7 +229,7 @@ public final class TableUtils {
 	 * @param colId
 	 *            the column ID
 	 * @param property
-	 *            the nameo fot he property
+	 *            the name of the property
 	 * @return
 	 */
 	public static <T> String formatPropertyValue(Table table, EntityModelFactory entityModelFactory,
@@ -279,5 +285,12 @@ public final class TableUtils {
 			cs = VaadinUtils.getCurrencySymbol();
 		}
 		return cs;
+	}
+
+	private static String restrictToMaxLength(String input, AttributeModel am) {
+		if (am.getMaxLengthInTable() != null && input != null && input.length() > am.getMaxLengthInTable()) {
+			return input.substring(0, am.getMaxLengthInTable()) + "...";
+		}
+		return input;
 	}
 }

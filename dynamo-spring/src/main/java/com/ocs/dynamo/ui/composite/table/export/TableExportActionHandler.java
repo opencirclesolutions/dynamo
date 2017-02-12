@@ -179,7 +179,7 @@ public class TableExportActionHandler implements Handler {
 			List<String> headers = new ArrayList<>();
 			for (int col = 0; col < getPropIds().size(); col++) {
 				propId = getPropIds().get(col);
-				String value = getTableHolder().getColumnHeader(propId).toString();
+				String value = getTableHolder().getColumnHeader(propId);
 				headers.add(value == null ? "" : value.trim());
 			}
 			writer.writeNext(headers.toArray(new String[0]));
@@ -223,7 +223,8 @@ public class TableExportActionHandler implements Handler {
 					AttributeModel am = findAttributeModel(propId);
 					if (am != null) {
 						value = TableUtils.formatPropertyValue(entityModelFactory,
-						        onlyModel != null ? onlyModel : am.getEntityModel(), messageService, propId, value);
+						        onlyModel != null ? onlyModel : am.getEntityModel(), messageService, am.getPath(),
+						        value);
 					}
 					if (value instanceof String) {
 						value = StringUtil.replaceHtmlBreaks(value.toString());
@@ -318,6 +319,11 @@ public class TableExportActionHandler implements Handler {
 		private CellStyle integerStyle;
 
 		private CellStyle normal;
+
+		/**
+		 * Does the totals row contains percentages
+		 */
+		private boolean totalsRowPercentage;
 
 		/**
 		 * Constructor
@@ -423,11 +429,11 @@ public class TableExportActionHandler implements Handler {
 							// percentages in the application are just numbers,
 							// but in Excel they are fractions that
 							// are displayed as percentages -> so, divide by 100
-							double temp = ((BigDecimal) value)
-							        .divide(HUNDRED, DynamoConstants.INTERMEDIATE_PRECISION, RoundingMode.HALF_UP)
-							        .setScale(am.getPrecision() + 2, RoundingMode.HALF_UP).doubleValue();
+							double temp = convertPercentageValue(am, value);
 							sheetCell.setCellValue(temp);
 							standard = bigDecimalPercentageStyle;
+
+							totalsRowPercentage = true;
 						} else {
 							// just display as a number
 							sheetCell.setCellValue(((BigDecimal) value).setScale(SCALE, RoundingMode.HALF_UP)
@@ -566,7 +572,7 @@ public class TableExportActionHandler implements Handler {
 						if (Integer.class.equals(propType)) {
 							cell.setCellStyle(integerStyle);
 						} else if (BigDecimal.class.equals(propType)) {
-							cell.setCellStyle(bigDecimalStyle);
+							cell.setCellStyle(isTotalsRowPercentage() ? bigDecimalPercentageStyle : bigDecimalStyle);
 						}
 
 						cra = new CellRangeAddress(startRow, currentRow - 1, col, col);
@@ -651,8 +657,19 @@ public class TableExportActionHandler implements Handler {
 			return Number.class.isAssignableFrom(propType);
 		}
 
+		private double convertPercentageValue(AttributeModel am, Object value) {
+			double temp = ((BigDecimal) value)
+			        .divide(HUNDRED, DynamoConstants.INTERMEDIATE_PRECISION, RoundingMode.HALF_UP)
+			        .setScale(am.getPrecision() + 2, RoundingMode.HALF_UP).doubleValue();
+			return temp;
+		}
+
 		private boolean isStreaming() {
 			return workbook instanceof SXSSFWorkbook;
+		}
+
+		private boolean isTotalsRowPercentage() {
+			return totalsRowPercentage;
 		}
 
 		/**
@@ -672,6 +689,14 @@ public class TableExportActionHandler implements Handler {
 				LOG.error(e.getMessage(), e);
 				return false;
 			} finally {
+				if (workbook != null) {
+					try {
+						workbook.close();
+					} catch (IOException ex) {
+						// do nothing
+					}
+				}
+
 				if (tempFile != null) {
 					tempFile.deleteOnExit();
 				}
@@ -827,7 +852,12 @@ public class TableExportActionHandler implements Handler {
 	protected AttributeModel findAttributeModel(Object propId) {
 		if (entityModels != null) {
 			for (EntityModel<?> em : entityModels) {
-				AttributeModel am = em.getAttributeModel(propId.toString());
+				String prop = propId.toString();
+				int p = prop.indexOf('_');
+				if (p >= 0) {
+					prop = prop.substring(p + 1);
+				}
+				AttributeModel am = em.getAttributeModel(prop);
 				if (am != null) {
 					return am;
 				}
@@ -918,7 +948,7 @@ public class TableExportActionHandler implements Handler {
 				} else {
 					ExcelExport export = new ModelExcelExport(table, wb);
 					export.setReportTitle(reportTitle);
-					export.setRowHeaders(true);
+					export.setRowHeaders(false);
 					if (table instanceof TreeTable) {
 						export.getTableHolder().setHierarchical(true);
 						// a model based tree table has multiple levels - the

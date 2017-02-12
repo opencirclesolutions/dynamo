@@ -16,6 +16,7 @@ package com.ocs.dynamo.importer.impl;
 import java.beans.PropertyDescriptor;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Date;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.util.StringUtils;
@@ -65,6 +66,18 @@ public abstract class BaseImporter<R, U> {
 	protected abstract Boolean getBooleanValueWithDefault(U unit, ImportField field);
 
 	/**
+	 * Retrieves a date value from the input and falls back to a default if the value is empty or
+	 * not defined
+	 * 
+	 * @param unit
+	 *            the field value to process
+	 * @param field
+	 *            the field definition
+	 * @return
+	 */
+	protected abstract Date getDateValueWithDefault(U unit, ImportField field);
+
+	/**
 	 * Retrieves a value from a field
 	 * 
 	 * @param d
@@ -76,7 +89,7 @@ public abstract class BaseImporter<R, U> {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	private Object getFieldValue(PropertyDescriptor d, U unit, ImportField field) {
+	protected Object getFieldValue(PropertyDescriptor d, U unit, ImportField field) {
 		Object obj = null;
 		if (String.class.equals(d.getPropertyType())) {
 			String value = getStringValueWithDefault(unit, field);
@@ -95,7 +108,6 @@ public abstract class BaseImporter<R, U> {
 					        + " cannot be translated to a valid enumeration value", ex);
 				}
 			}
-
 		} else if (isNumeric(d.getPropertyType())) {
 			// numeric field
 
@@ -114,26 +126,23 @@ public abstract class BaseImporter<R, U> {
 					throw new OCSImportException("Negative value " + value + " found for field '" + d.getName() + "'");
 				}
 
+				// round to the nearest integer, then use intValue() or longValue()
 				BigDecimal rounded = BigDecimal.valueOf(value.doubleValue()).setScale(0, RoundingMode.HALF_UP);
-
-				if (Integer.class.equals(d.getPropertyType())) {
+				Class<?> pType = d.getPropertyType();
+				if (Integer.class.equals(pType) || int.class.equals(pType)) {
 					obj = rounded.intValue();
-				} else if (Long.class.equals(d.getPropertyType())) {
+				} else if (Long.class.equals(pType) || long.class.equals(pType)) {
 					obj = rounded.longValue();
-				} else if (Float.class.equals(d.getPropertyType())) {
+				} else if (Float.class.equals(pType) || float.class.equals(pType)) {
 					obj = Float.valueOf(value.floatValue());
-				} else if (BigDecimal.class.equals(d.getPropertyType())) {
+				} else if (BigDecimal.class.equals(pType)) {
 					obj = BigDecimal.valueOf(value.doubleValue());
-				} else if (int.class.equals(d.getPropertyType())) {
-					obj = rounded.intValue();
-				} else if (long.class.equals(d.getPropertyType())) {
-					obj = rounded.longValue();
-				} else if (float.class.equals(d.getPropertyType())) {
-					obj = value.floatValue();
 				}
 			}
 		} else if (Boolean.class.isAssignableFrom(d.getPropertyType())) {
 			return getBooleanValueWithDefault(unit, field);
+		} else if (Date.class.isAssignableFrom(d.getPropertyType())) {
+			return getDateValueWithDefault(unit, field);
 		}
 		return obj;
 	}
@@ -155,7 +164,9 @@ public abstract class BaseImporter<R, U> {
 	 * defined
 	 * 
 	 * @param unit
+	 *            the input unit
 	 * @param field
+	 *            the field definition
 	 * @return
 	 */
 	protected abstract String getStringValueWithDefault(U unit, ImportField field);
@@ -201,6 +212,7 @@ public abstract class BaseImporter<R, U> {
 	 * Processes a single row from the input and turns it into an object
 	 * 
 	 * @param rowNum
+	 *            the row number
 	 * @param row
 	 * @param clazz
 	 * @return

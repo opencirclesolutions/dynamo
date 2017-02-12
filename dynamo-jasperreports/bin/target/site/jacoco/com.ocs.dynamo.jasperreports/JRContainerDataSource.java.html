@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="nl"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>JRContainerDataSource.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Dynamo Framework - Jasperreports</a> &gt; <a href="index.source.html" class="el_package">com.ocs.dynamo.jasperreports</a> &gt; <span class="el_source">JRContainerDataSource.java</span></div><h1>JRContainerDataSource.java</h1><pre class="source lang-java linenums">/*
+   Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+package com.ocs.dynamo.jasperreports;
+
+import java.util.Iterator;
+
+import net.sf.jasperreports.engine.JRDataSource;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRField;
+
+import com.vaadin.data.Container;
+import com.vaadin.data.Item;
+import com.vaadin.data.Property;
+
+/**
+ * JasperReports datasource implementation which uses a Vaadin container as
+ * source.
+ * 
+ * Assumes that nested properties are named with underscores in the report, e.g.
+ * an property in the vaadin container &quot;customer.name&quot; is referenced by
+ * &quot;customer_name&quot; in jasperreports.
+ * 
+ * @author Patrick Deenen (patrick@opencircle.solutions)
+ *
+ */
+public class JRContainerDataSource implements JRDataSource {
+
+	private Container container;
+
+	private Object currentItemId;
+
+	private Item currentItem;
+
+	private Iterator&lt;?&gt; ids;
+
+	/**
+	 * Construct the datasource using a Vaadin Indexed container
+	 * 
+	 * @param container
+	 */
+<span class="fc" id="L52">	public JRContainerDataSource(Container container) {</span>
+<span class="fc" id="L53">		this.container = container;</span>
+<span class="fc" id="L54">		ids = container.getItemIds().iterator();</span>
+<span class="pc bpc" id="L55" title="2 of 4 branches missed.">		if (ids != null &amp;&amp; ids.hasNext()) {</span>
+<span class="fc" id="L56">			currentItemId = ids.next();</span>
+<span class="fc" id="L57">			currentItem = container.getItem(currentItemId);</span>
+		}
+<span class="fc" id="L59">	}</span>
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * net.sf.jasperreports.engine.JRDataSource#getFieldValue(net.sf.jasperreports
+	 * .engine.JRField)
+	 */
+	@Override
+	public Object getFieldValue(JRField field) throws JRException {
+<span class="pc bpc" id="L70" title="1 of 2 branches missed.">		if (currentItemId != null) {</span>
+<span class="fc" id="L71">			String fieldName = field.getName().replaceAll(&quot;_&quot;, &quot;.&quot;);</span>
+<span class="fc" id="L72">			Property&lt;?&gt; p = currentItem.getItemProperty(fieldName);</span>
+<span class="pc bpc" id="L73" title="1 of 2 branches missed.">			return p == null ? null : p.getValue();</span>
+		}
+<span class="nc" id="L75">		return null;</span>
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see net.sf.jasperreports.engine.JRDataSource#next()
+	 */
+	@Override
+	public boolean next() throws JRException {
+<span class="pc bpc" id="L85" title="2 of 4 branches missed.">		if (ids != null &amp;&amp; ids.hasNext()) {</span>
+<span class="fc" id="L86">			currentItemId = ids.next();</span>
+<span class="fc" id="L87">			currentItem = container.getItem(currentItemId);</span>
+<span class="fc" id="L88">			return true;</span>
+		}
+<span class="nc" id="L90">		return false;</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.4.201502262128</span></div></body></html>

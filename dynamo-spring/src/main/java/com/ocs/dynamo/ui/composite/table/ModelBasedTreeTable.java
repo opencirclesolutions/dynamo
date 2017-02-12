@@ -50,12 +50,24 @@ public class ModelBasedTreeTable<ID extends Serializable, T extends AbstractEnti
 
 	private static final long serialVersionUID = -2011675569709594136L;
 
+	/**
+	 * The action that is used to expand all nodes
+	 */
 	private Action actionExpandAll;
 
-	private Action actionHideAll;
+	/**
+	 * The action that is used to collapse all nodes
+	 */
+	private Action actionCollapseAll;
 
+	/**
+	 * The entity model factory
+	 */
 	private EntityModelFactory entityModelFactory;
 
+	/**
+	 * The message service
+	 */
 	private MessageService messageService;
 
 	/**
@@ -95,7 +107,7 @@ public class ModelBasedTreeTable<ID extends Serializable, T extends AbstractEnti
 		generateColumns(container, rootEntityModel);
 
 		actionExpandAll = new Action(messageService.getMessage("ocs.expandAll"));
-		actionHideAll = new Action(messageService.getMessage("ocs.hideAll"));
+		actionCollapseAll = new Action(messageService.getMessage("ocs.hideAll"));
 		addActionHandler(this);
 		if (SystemPropertyUtils.allowTableExport()) {
 			addActionHandler(new TableExportActionHandler(UI.getCurrent(), getEntityModels(),
@@ -125,9 +137,7 @@ public class ModelBasedTreeTable<ID extends Serializable, T extends AbstractEnti
 		if (scpId != null) {
 			AttributeModel attributeModel = def.getEntityModel().getAttributeModel(scpId.toString());
 			if (attributeModel != null) {
-				if (aModel == null) {
-					aModel = attributeModel;
-				}
+				aModel = attributeModel;
 				if (!lazyContainer.getContainerPropertyIds().contains(attributeModel.getName())) {
 					lazyContainer.addContainerProperty(attributeModel.getName(), attributeModel.getType(),
 					        attributeModel.getDefaultValue(), attributeModel.isReadOnly(), attributeModel.isSortable());
@@ -191,8 +201,11 @@ public class ModelBasedTreeTable<ID extends Serializable, T extends AbstractEnti
 			if (rootAttributeModel == null) {
 				rootAttributeModel = aModel;
 			}
-			propertyNames.add(propId);
-			headerNames.add(rootAttributeModel.getDisplayName());
+
+			if (rootAttributeModel != null) {
+				propertyNames.add(propId);
+				headerNames.add(rootAttributeModel.getDisplayName());
+			}
 			propIndex++;
 		}
 
@@ -202,12 +215,24 @@ public class ModelBasedTreeTable<ID extends Serializable, T extends AbstractEnti
 		setColumnHeaders(headerNames.toArray(new String[0]));
 	}
 
+	public Action getActionExpandAll() {
+		return actionExpandAll;
+	}
+
+	public Action getActionHideAll() {
+		return actionCollapseAll;
+	}
+
 	@Override
 	public Action[] getActions(Object target, Object sender) {
 		if (isExpandAndHideAllowed()) {
-			return new Action[] { actionExpandAll, actionHideAll };
+			return new Action[] { actionExpandAll, actionCollapseAll };
 		}
 		return new Action[0];
+	}
+
+	public String getCurrencySymbol() {
+		return currencySymbol;
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -227,12 +252,15 @@ public class ModelBasedTreeTable<ID extends Serializable, T extends AbstractEnti
 	 * Handles an action
 	 * 
 	 * @param action
+	 *            the action
 	 * @param sender
+	 *            the sender of the action
 	 * @param target
+	 *            the target of the action
 	 */
 	@Override
 	public void handleAction(Action action, Object sender, Object target) {
-		if (action == actionExpandAll || action == actionHideAll) {
+		if (action == actionExpandAll || action == actionCollapseAll) {
 			boolean expand = action == actionExpandAll;
 
 			// When there are rows selected collapse them
@@ -257,8 +285,13 @@ public class ModelBasedTreeTable<ID extends Serializable, T extends AbstractEnti
 		}
 	}
 
+	public boolean isExpandAndHideAllowed() {
+		return expandAndHideAllowed;
+	}
+
 	/**
-	 * Recursively sets the collapsed state of the item identified by the provided ID
+	 * Recursively sets the collapsed state of the item identified by the provided ID and all of its
+	 * children
 	 * 
 	 * @param itemId
 	 *            the ID of the item
@@ -277,24 +310,8 @@ public class ModelBasedTreeTable<ID extends Serializable, T extends AbstractEnti
 		}
 	}
 
-	public Action getActionExpandAll() {
-		return actionExpandAll;
-	}
-
-	public Action getActionHideAll() {
-		return actionHideAll;
-	}
-
-	public String getCurrencySymbol() {
-		return currencySymbol;
-	}
-
 	public void setCurrencySymbol(String currencySymbol) {
 		this.currencySymbol = currencySymbol;
-	}
-
-	public boolean isExpandAndHideAllowed() {
-		return expandAndHideAllowed;
 	}
 
 	public void setExpandAndHideAllowed(boolean expandAndHideAllowed) {

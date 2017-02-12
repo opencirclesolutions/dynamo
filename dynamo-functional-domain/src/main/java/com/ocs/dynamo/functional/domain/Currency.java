@@ -21,6 +21,7 @@ import com.ocs.dynamo.domain.model.annotation.Attribute;
 import com.ocs.dynamo.domain.model.annotation.Model;
 
 /**
+ * A currency identified by an ISO currency code
  * 
  * @author bas.rutten
  *
@@ -30,32 +31,35 @@ import com.ocs.dynamo.domain.model.annotation.Model;
 @Model(displayNamePlural = "Currencies", displayProperty = "codeAndName", sortOrder = "name asc")
 public class Currency extends Domain {
 
-    private static final long serialVersionUID = 3270223599926941961L;
+	private static final long serialVersionUID = 3270223599926941961L;
 
-    public Currency() {
-    }
+	public Currency() {
+		// default constructor
+	}
 
-    /**
-     * Constructor
-     * 
-     * @param code
-     * @param name
-     */
-    public Currency(String code, String name) {
-        super(code, name);
-    }
+	/**
+	 * Constructor
+	 * 
+	 * @param code
+	 *            the code of the currency
+	 * @param name
+	 *            the name of the currency
+	 */
+	public Currency(String code, String name) {
+		super(code, name);
+	}
 
-    /**
-     * Overridden so we can modify the attribute model
-     */
-    @Override
-    @Attribute(visible = VisibilityType.SHOW, required = true)
-    public String getCode() {
-        return super.getCode();
-    }
+	/**
+	 * Overridden so we can modify the attribute model
+	 */
+	@Override
+	@Attribute(visible = VisibilityType.SHOW, required = true)
+	public String getCode() {
+		return super.getCode();
+	}
 
-    @Attribute(visible = VisibilityType.HIDE)
-    public String getCodeAndName() {
-        return getCode() + " - " + getName();
-    }
+	@Attribute(visible = VisibilityType.HIDE)
+	public String getCodeAndName() {
+		return getCode() + " - " + getName();
+	}
 }

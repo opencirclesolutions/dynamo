@@ -167,8 +167,8 @@ public abstract class BaseServiceImpl<ID, T extends AbstractEntity<ID>> implemen
 	}
 
 	@Override
-	public List<? extends Object> findDistinct(Filter filter, String distinctField, SortOrder... orders) {
-		return getDao().findDistinct(filter, distinctField, orders);
+	public <S> List<S> findDistinct(Filter filter, String distinctField, Class<S> elementType, SortOrder... orders) {
+		return getDao().findDistinct(filter, distinctField, elementType, orders);
 	}
 
 	@Override
@@ -273,5 +273,18 @@ public abstract class BaseServiceImpl<ID, T extends AbstractEntity<ID>> implemen
 		if (identicalEntityExists(t)) {
 			throw new OCSNonUniqueException(messageService.getMessage(getEntityClass().getSimpleName() + ".not.unique"));
 		}
+	}
+
+	@Override
+	@Transactional
+	public void update(List<T> toUpdate, List<T> toAdd, List<T> toDelete) {
+		save(toUpdate);
+		save(toAdd);
+		delete(toDelete);
+	}
+
+	@Override
+	public <S> List<S> findDistinctInCollectionTable(String tableName, String distinctField, Class<S> elementType) {
+		return getDao().findDistinctInCollectionTable(tableName, distinctField, elementType);
 	}
 }

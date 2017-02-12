@@ -24,6 +24,7 @@ public class OCSNonUniqueException extends OCSRuntimeException {
     private static final long serialVersionUID = -6263372299801009820L;
 
     public OCSNonUniqueException() {
+    	// default constructor
     }
 
     public OCSNonUniqueException(String message) {

@@ -28,120 +28,114 @@ import com.vaadin.ui.Table;
 
 public class PasteTemplateTest extends BaseMockitoTest {
 
-    @Mock
-    private TextChangeEvent event;
+	@Mock
+	private TextChangeEvent event;
 
-    private PasteTemplate template;
+	private PasteTemplate template;
 
-    private Locale locale = new Locale("nl");
+	private Locale locale = new Locale("nl");
 
-    private Table table = new Table();
+	private Table table = new Table();
 
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
+	/**
+	 * Test that nothing happens for a single value
+	 */
+	@Test
+	public void testIgnoreForSingleValue() {
+		Mockito.when(event.getText()).thenReturn("3");
+		final List<String> values = new ArrayList<>();
 
-    }
+		template = new PasteTemplate(locale, table, event) {
 
-    /**
-     * Test that nothing happens for a single value
-     */
-    @Test
-    public void testIgnoreForSingleValue() {
-        Mockito.when(event.getText()).thenReturn("3");
-        final List<String> values = new ArrayList<>();
+			@Override
+			protected void process(int index, String value) {
+				values.add(value);
+			}
 
-        template = new PasteTemplate(locale, table, event) {
+			@Override
+			protected void clearSourceField(TextChangeEvent event) {
+				// do nothing
+			}
+		};
 
-            @Override
-            protected void process(int index, String value) {
-                values.add(value);
-            }
+		template.execute();
+		Assert.assertEquals(0, values.size());
+	}
 
-            @Override
-            protected void clearSourceField(TextChangeEvent event) {
-                // do nothing
-            }
-        };
+	@Test
+	public void testMultipleValues() {
+		Mockito.when(event.getText()).thenReturn("3 4 5");
+		final List<String> values = new ArrayList<>();
 
-        template.execute();
-        Assert.assertEquals(0, values.size());
-    }
+		template = new PasteTemplate(locale, table, event) {
 
-    @Test
-    public void testMultipleValues() {
-        Mockito.when(event.getText()).thenReturn("3 4 5");
-        final List<String> values = new ArrayList<>();
+			@Override
+			protected void process(int index, String value) {
+				values.add(value);
+			}
 
-        template = new PasteTemplate(locale, table, event) {
+			@Override
+			protected void clearSourceField(TextChangeEvent event) {
+				// do nothing
+			}
+		};
 
-            @Override
-            protected void process(int index, String value) {
-                values.add(value);
-            }
+		template.execute();
+		Assert.assertEquals(3, values.size());
+		Assert.assertEquals("3", values.get(0));
+		Assert.assertEquals("4", values.get(1));
+		Assert.assertEquals("5", values.get(2));
+	}
 
-            @Override
-            protected void clearSourceField(TextChangeEvent event) {
-                // do nothing
-            }
-        };
+	@Test
+	public void testMultipleValuesWithTabs() {
+		Mockito.when(event.getText()).thenReturn("3\t4\t5");
+		final List<String> values = new ArrayList<>();
 
-        template.execute();
-        Assert.assertEquals(3, values.size());
-        Assert.assertEquals("3", values.get(0));
-        Assert.assertEquals("4", values.get(1));
-        Assert.assertEquals("5", values.get(2));
-    }
+		template = new PasteTemplate(locale, table, event) {
 
-    @Test
-    public void testMultipleValuesWithTabs() {
-        Mockito.when(event.getText()).thenReturn("3\t4\t5");
-        final List<String> values = new ArrayList<>();
+			@Override
+			protected void process(int index, String value) {
+				values.add(value);
+			}
 
-        template = new PasteTemplate(locale, table, event) {
+			@Override
+			protected void clearSourceField(TextChangeEvent event) {
+				// do nothing
+			}
+		};
 
-            @Override
-            protected void process(int index, String value) {
-                values.add(value);
-            }
+		template.execute();
+		Assert.assertEquals(3, values.size());
+		Assert.assertEquals("3", values.get(0));
+		Assert.assertEquals("4", values.get(1));
+		Assert.assertEquals("5", values.get(2));
+	}
 
-            @Override
-            protected void clearSourceField(TextChangeEvent event) {
-                // do nothing
-            }
-        };
+	/**
+	 * Tests that the decimal separator is correctly translated to the correct locale first
+	 */
+	@Test
+	public void testSeparatorReplace() {
+		Mockito.when(event.getText()).thenReturn("4.2 5.2");
+		final List<String> values = new ArrayList<>();
 
-        template.execute();
-        Assert.assertEquals(3, values.size());
-        Assert.assertEquals("3", values.get(0));
-        Assert.assertEquals("4", values.get(1));
-        Assert.assertEquals("5", values.get(2));
-    }
+		template = new PasteTemplate(locale, table, event) {
 
-    /**
-     * Tests that the decimal separator is correctly translated to the correct locale first
-     */
-    @Test
-    public void testSeparatorReplace() {
-        Mockito.when(event.getText()).thenReturn("4.2 5.2");
-        final List<String> values = new ArrayList<>();
+			@Override
+			protected void process(int index, String value) {
+				values.add(value);
+			}
 
-        template = new PasteTemplate(locale, table, event) {
+			@Override
+			protected void clearSourceField(TextChangeEvent event) {
+				// do nothing
+			}
+		};
 
-            @Override
-            protected void process(int index, String value) {
-                values.add(value);
-            }
-
-            @Override
-            protected void clearSourceField(TextChangeEvent event) {
-                // do nothing
-            }
-        };
-
-        template.execute();
-        Assert.assertEquals(2, values.size());
-        Assert.assertEquals("4,2", values.get(0));
-        Assert.assertEquals("5,2", values.get(1));
-    }
+		template.execute();
+		Assert.assertEquals(2, values.size());
+		Assert.assertEquals("4,2", values.get(0));
+		Assert.assertEquals("5,2", values.get(1));
+	}
 }

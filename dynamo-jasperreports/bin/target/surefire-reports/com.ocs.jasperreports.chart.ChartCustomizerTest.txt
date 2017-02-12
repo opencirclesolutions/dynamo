@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.ocs.jasperreports.chart.ChartCustomizerTest
+-------------------------------------------------------------------------------
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 1, Time elapsed: 1.069 sec

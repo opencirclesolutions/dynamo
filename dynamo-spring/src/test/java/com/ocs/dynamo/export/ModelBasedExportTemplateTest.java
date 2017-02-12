@@ -73,8 +73,6 @@ public class ModelBasedExportTemplateTest extends BaseIntegrationTest {
 			Sheet sheet = wb.getSheetAt(0);
 			Assert.assertEquals("Sheet name", wb.getSheetName(0));
 
-			FileUtils.writeByteArrayToFile(File.createTempFile("testExcel",""), bytes);
-
 			// check the header row
 			Assert.assertEquals("Age", sheet.getRow(0).getCell(0).getStringCellValue());
 			Assert.assertEquals("Birth Date", sheet.getRow(0).getCell(1).getStringCellValue());
@@ -100,7 +98,7 @@ public class ModelBasedExportTemplateTest extends BaseIntegrationTest {
 			Assert.assertEquals(34, row.getCell(3).getNumericCellValue(), 0.001);
 			Assert.assertEquals("Bob", row.getCell(4).getStringCellValue());
 			Assert.assertEquals(0.04, row.getCell(6).getNumericCellValue(), 0.001);
-			Assert.assertEquals(false, row.getCell(7).getBooleanCellValue());
+			Assert.assertEquals("false", row.getCell(7).getStringCellValue());
 			Assert.assertEquals("On", row.getCell(8).getStringCellValue());
 			Assert.assertEquals("Value A", row.getCell(9).getStringCellValue());
 			Assert.assertEquals(1234, row.getCell(10).getNumericCellValue(), 0.001);
@@ -127,7 +125,7 @@ public class ModelBasedExportTemplateTest extends BaseIntegrationTest {
 		        "\"Age\";\"Birth Date\";\"Birth Week\";\"Discount\";\"Name\";\"Parent\";\"Rate\";\"Some Boolean\";\"Some Boolean2\";\"Some Enum\";\"Some Int\";\"Some String\";\"Some Text Area\";\"Some Time\";\"Test Domain\";\"Url\"",
 		        lines[0]);
 		Assert.assertEquals(
-		        "\"11\";\"01/04/2014\";\"2014-14\";\"34,00\";\"Bob\";;\"4,00%\";;\"On\";\"Value A\";\"1.234\";;\"abab\";\"12:13:14\";;\"http://www.google.nl\"",
+		        "\"11\";\"01/04/2014\";\"2014-14\";\"34,00\";\"Bob\";;\"4,00%\";\"false\";\"On\";\"Value A\";\"1.234\";;\"abab\";\"12:13:14\";;\"http://www.google.nl\"",
 		        lines[1]);
 	}
 }

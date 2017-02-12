@@ -37,6 +37,7 @@ import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Layout;
+import com.vaadin.ui.VerticalLayout;
 
 /**
  * A search form that is constructed based on the metadata model
@@ -105,21 +106,21 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 	 *            the entity model
 	 * @param formOptions
 	 *            the form options
-	 * @param additionalFilters
+	 * @param defaultFilters
 	 *            the additional filters to apply to every search action
 	 * @param fieldFilters
 	 *            a map of filters to apply to the individual fields
 	 */
 	public ModelBasedSearchForm(Searchable searchable, EntityModel<T> entityModel, FormOptions formOptions,
-	        List<Filter> additionalFilters, Map<String, Filter> fieldFilters) {
-		super(searchable, entityModel, formOptions, additionalFilters, fieldFilters);
+	        List<Filter> defaultFilters, Map<String, Filter> fieldFilters) {
+		super(searchable, entityModel, formOptions, defaultFilters, fieldFilters);
 	}
 
 	/**
 	 * Clears all filters then performs a fresh search
 	 */
 	@Override
-	protected void clear() {
+	public void clear() {
 		// Clear all filter groups
 		for (FilterGroup group : groups.values()) {
 			group.reset();
@@ -132,19 +133,6 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 		buttonBar.addComponent(constructSearchButton());
 		buttonBar.addComponent(constructClearButton());
 		buttonBar.addComponent(constructToggleButton());
-	}
-
-	/**
-	 * Creates a custom field - override in subclasses if needed
-	 * 
-	 * @param entityModel
-	 *            the entity model of the entity to search for
-	 * @param attributeModel
-	 *            the attribute model the attribute model of the property that is bound to the field
-	 * @return
-	 */
-	protected Field<?> constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel) {
-		return null;
 	}
 
 	/**
@@ -199,6 +187,8 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 				filterType = FilterType.BOOLEAN;
 			} else if (attributeModel.getType().isEnum()) {
 				filterType = FilterType.ENUM;
+			} else if (AttributeType.ELEMENT_COLLECTION.equals(attributeModel.getAttributeType())) {
+				filterType = FilterType.EQUAL;
 			} else if (AbstractEntity.class.isAssignableFrom(attributeModel.getType())
 			        || AttributeType.DETAIL.equals(attributeModel.getAttributeType())) {
 				// search for an entity
@@ -372,13 +362,14 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 	}
 
 	@Override
-	protected void postProcessLayout() {
+	protected void postProcessLayout(VerticalLayout layout) {
 		postProcessFilterGroups(groups);
 	}
 
 	/**
 	 * Refreshes any fields that are susceptible to this
 	 */
+	@Override
 	public void refresh() {
 		for (FilterGroup group : getGroups().values()) {
 			if (group.getField() instanceof Refreshable) {

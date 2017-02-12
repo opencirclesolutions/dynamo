@@ -13,6 +13,8 @@
  */
 package com.ocs.dynamo.showcase.movies;
 
+import javax.inject.Inject;
+
 import com.ocs.dynamo.showcase.Views;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.composite.form.FormOptions;
@@ -25,36 +27,30 @@ import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.spring.annotation.UIScope;
-import com.vaadin.ui.Layout;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.vaadin.ui.VerticalLayout;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-
-/**
- * Master-detail horizontal split view of the Movies table.
- */
-@UIScope // To preserve UI scope place this annotation above @SpringView.
 @SpringView(name = Views.HORIZONTAL_MOVIES_SPLIT_VIEW)
+@UIScope
 @SuppressWarnings("serial")
 public class HorizontalMoviesSplitView extends BaseView {
 
-    /** Logger for {@link HorizontalMoviesSplitView}. */
-    private static final Logger LOG = LoggerFactory.getLogger(HorizontalMoviesSplitView.class);
+    /** Vaadin vertical layout. */
+    private VerticalLayout mainLayout;
 
-    /** The Horizontal Movies Split View is using the MovieService for data access. */
+    /** The Movies View is using the MovieService for data access. */
     @Inject
     private MovieService movieService;
 
-    /**
-     * Construct view.
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.vaadin.navigator.View#enter(com.vaadin.navigator.ViewChangeListener.ViewChangeEvent)
      */
-    @PostConstruct
-    void init() {
-        LOG.debug("Initialize View - {}.", this.getClass().getSimpleName());
+    @Override
+    public void enter(ViewChangeEvent event) {
 
-        Layout mainLayout = super.initLayout();
+        // Apply Vaadin Layout.
+        mainLayout = new DefaultVerticalLayout(true, true);
 
         // Set form options by convention.
         FormOptions fo = new FormOptions();
@@ -79,17 +75,8 @@ public class HorizontalMoviesSplitView extends BaseView {
             }
         };
 
-        // Add layout.
+        // Some plumbing.
         mainLayout.addComponent(movieLayout);
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see com.vaadin.navigator.View#enter(com.vaadin.navigator.ViewChangeListener.ViewChangeEvent)
-     */
-    @Override
-    public void enter(ViewChangeEvent event) {
-        LOG.debug("Update View - {}.", this.getClass().getSimpleName());
+        setCompositionRoot(mainLayout);
     }
 }

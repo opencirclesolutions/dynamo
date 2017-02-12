@@ -51,33 +51,23 @@ public class SimpleSearchTreeComponent<ID extends Serializable, T extends Abstra
 	private Object selectedItem;
 
 	/**
-	 * @param service
+	 * Constructor
+	 * 
+	 * @param services
+	 *            the services used to query the database (one for each layer)
 	 * @param entityModel
+	 *            the entity model (for the top level)
 	 * @param queryType
+	 *            the desired query type
 	 * @param formOptions
+	 *            the form options that determine how the component behaves
+	 * @param joins
+	 *            the fetch joins
 	 */
 	@SuppressWarnings("unchecked")
 	public SimpleSearchTreeComponent(List<BaseService<?, ?>> services, EntityModel<T> entityModel, QueryType queryType,
 	        FormOptions formOptions, FetchJoinInformation... joins) {
 		super((BaseService<ID, T>) services.get(0), entityModel, queryType, formOptions, null, joins);
-		this.services = services;
-	}
-
-	/**
-	 * @param service
-	 * @param entityModel
-	 * @param queryType
-	 * @param formOptions
-	 * @param fieldFilters
-	 * @param additionalFilters
-	 * @param joins
-	 */
-	@SuppressWarnings("unchecked")
-	public SimpleSearchTreeComponent(List<BaseService<?, ?>> services, EntityModel<T> entityModel, QueryType queryType,
-	        FormOptions formOptions, Map<String, Filter> fieldFilters, List<Filter> additionalFilters,
-	        FetchJoinInformation[] joins) {
-		super((BaseService<ID, T>) services.get(0), entityModel, queryType, formOptions, fieldFilters,
-		        additionalFilters, null, joins);
 		this.services = services;
 	}
 
@@ -106,7 +96,7 @@ public class SimpleSearchTreeComponent<ID extends Serializable, T extends Abstra
 		ModelBasedHierarchicalContainer<T> c = (ModelBasedHierarchicalContainer<T>) getTableWrapper().getContainer();
 		ModelBasedHierarchicalDefinition def = c.getHierarchicalDefinition(0);
 		ModelBasedSearchForm<ID, T> result = new ModelBasedSearchForm<ID, T>(getTableWrapper(), def.getEntityModel(),
-		        getFormOptions(), getAdditionalFilters(), getFieldFilters());
+		        getFormOptions(), getDefaultFilters(), getFieldFilters());
 		result.build();
 		return result;
 	}

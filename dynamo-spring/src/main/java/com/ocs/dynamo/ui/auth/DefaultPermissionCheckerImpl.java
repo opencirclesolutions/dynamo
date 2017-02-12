@@ -33,114 +33,119 @@ import com.ocs.dynamo.service.UserDetailsService;
 import com.vaadin.spring.annotation.SpringView;
 
 /**
- * Permission checker - checks if the user has the correct role to access a view
+ * Default permission checker - checks if the user has the correct role to access a view
  * 
  * @author bas.rutten
  */
 public class DefaultPermissionCheckerImpl implements PermissionChecker {
 
-    private static final Logger LOG = Logger.getLogger(DefaultPermissionCheckerImpl.class);
+	private static final Logger LOG = Logger.getLogger(DefaultPermissionCheckerImpl.class);
 
-    @Inject
-    private UserDetailsService userDetailsService;
+	@Inject
+	private UserDetailsService userDetailsService;
 
-    private Map<String, List<String>> permissions = new HashMap<>();
+	/**
+	 * Map from view name to list of roles that are allowed to access the view
+	 */
+	private Map<String, List<String>> permissions = new HashMap<>();
 
-    // map indicating whether a certain view is an "edit only" view that may be
-    // hidden if the user has no edit rights
-    private Map<String, Boolean> editOnly = new HashMap<>();
+	// map indicating whether a certain view is an "edit only" view that may be
+	// hidden if the user has no edit rights
+	private Map<String, Boolean> editOnly = new HashMap<>();
 
-    private String basePackage;
+	/**
+	 * The base package to scan for views
+	 */
+	private String basePackage;
 
-    /**
-     * Constructor
-     * 
-     * @param basePackage
-     */
-    public DefaultPermissionCheckerImpl(String basePackage) {
-        this.basePackage = basePackage;
-    }
+	/**
+	 * Constructor
+	 * 
+	 * @param basePackage
+	 *            the base package to scan for views
+	 */
+	public DefaultPermissionCheckerImpl(String basePackage) {
+		this.basePackage = basePackage;
+	}
 
-    @PostConstruct
-    public void postConstruct() {
+	/**
+	 * Returns a list of all view names
+	 * 
+	 * @return
+	 */
+	@Override
+	public List<String> getViewNames() {
+		return Collections.unmodifiableList(new ArrayList<String>(permissions.keySet()));
+	}
 
-        // scan the class path for all classes annotated with @SpringView
-        ClassPathScanningCandidateComponentProvider provider = new ClassPathScanningCandidateComponentProvider(
-                true);
-        provider.addIncludeFilter(new AnnotationTypeFilter(SpringView.class));
+	/**
+	 * Checks if the user is allowed to access a certain view
+	 * 
+	 * @param viewName
+	 *            the name of the view
+	 * @return
+	 */
+	@Override
+	public boolean isAccessAllowed(String viewName) {
+		List<String> roles = permissions.get(viewName);
+		if (roles == null) {
+			// if no roles are defined on the view, everybody has access
+			return true;
+		} else {
+			for (String s : roles) {
+				if (userDetailsService.isUserInRole(s)) {
+					return true;
+				}
+			}
+			return false;
+		}
+	}
 
-        Set<BeanDefinition> views = provider.findCandidateComponents(basePackage);
-        for (BeanDefinition d : views) {
-            try {
-                Class<?> clazz = Class.forName(d.getBeanClassName());
+	/**
+	 * Checks whether the view is an "edit only" view that can be hidden if the user doesn't have
+	 * certain edit rights
+	 * 
+	 * @param viewName
+	 *            the name of the view
+	 * @return
+	 */
+	@Override
+	public boolean isEditOnly(String viewName) {
+		if (!editOnly.containsKey(viewName)) {
+			return false;
+		}
+		return editOnly.get(viewName);
+	}
 
-                SpringView view = clazz.getAnnotation(SpringView.class);
+	@PostConstruct
+	public void postConstruct() {
 
-                // store the permissions both under the bean name and the view
-                // name - unfortunately these
-                // don't always have to match but there is no way to tell this
-                // to the authentication framework!
-                Authorized auth = clazz.getAnnotation(Authorized.class);
-                if (auth != null && auth.roles().length > 0) {
-                    int p = d.getBeanClassName().lastIndexOf(".");
-                    permissions.put(d.getBeanClassName().substring(p + 1),
-                            Arrays.asList(auth.roles()));
-                    editOnly.put(d.getBeanClassName().substring(p + 1), auth.editOnly());
+		// scan the class path for all classes annotated with @SpringView
+		ClassPathScanningCandidateComponentProvider provider = new ClassPathScanningCandidateComponentProvider(true);
+		provider.addIncludeFilter(new AnnotationTypeFilter(SpringView.class));
 
-                    permissions.put(view.name(), Arrays.asList(auth.roles()));
-                    editOnly.put(view.name(), auth.editOnly());
-                }
-            } catch (ClassNotFoundException e) {
-                LOG.error(e.getMessage(), e);
-            }
-        }
-    }
+		Set<BeanDefinition> views = provider.findCandidateComponents(basePackage);
+		for (BeanDefinition d : views) {
+			try {
+				Class<?> clazz = Class.forName(d.getBeanClassName());
 
-    /**
-     * Checks if the user is allowed to access a certain view
-     * 
-     * @param viewName
-     * @return
-     */
-    @Override
-    public boolean isAccessAllowed(String viewName) {
-        List<String> roles = permissions.get(viewName);
-        if (roles == null) {
-            // if no roles are defined on the view, everybody has access
-            return true;
-        } else {
-            for (String s : roles) {
-                if (userDetailsService.isUserInRole(s)) {
-                    return true;
-                }
-            }
-            return false;
-        }
-    }
+				SpringView view = clazz.getAnnotation(SpringView.class);
 
-    /**
-     * Returns a list of all view names
-     * 
-     * @return
-     */
-    @Override
-    public List<String> getViewNames() {
-        return Collections.unmodifiableList(new ArrayList<String>(permissions.keySet()));
-    }
-
-    /**
-     * Checks whether the view is an "edit only" view that can be hidden if the user doesn't have
-     * certain edit rights
-     * 
-     * @param viewName
-     *            the name of the view
-     * @return
-     */
-    @Override
-    public boolean isEditOnly(String viewName) {
-        if (!editOnly.containsKey(viewName)) {
-            return false;
-        }
-        return editOnly.get(viewName);
-    }
+				// store the permissions both under the bean name and the view
+				// name - unfortunately these
+				// don't always have to match but there is no way to tell this
+				// to the authentication framework!
+				Authorized auth = clazz.getAnnotation(Authorized.class);
+				if (auth != null && auth.roles().length > 0) {
+					int p = d.getBeanClassName().lastIndexOf('.');
+					permissions.put(d.getBeanClassName().substring(p + 1), Arrays.asList(auth.roles()));
+					editOnly.put(d.getBeanClassName().substring(p + 1), auth.editOnly());
+					permissions.put(view.name(), Arrays.asList(auth.roles()));
+					editOnly.put(view.name(), auth.editOnly());
+				}
+			} catch (ClassNotFoundException e) {
+				LOG.error(e.getMessage(), e);
+			}
+		}
+	}
 }

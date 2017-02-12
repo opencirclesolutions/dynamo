@@ -20,7 +20,6 @@ import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
-import com.ocs.dynamo.ui.Reloadable;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.composite.form.FormOptions;
 import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
@@ -49,7 +48,7 @@ import com.vaadin.ui.VerticalLayout;
  */
 @SuppressWarnings("serial")
 public abstract class BaseSplitLayout<ID extends Serializable, T extends AbstractEntity<ID>> extends
-        BaseCollectionLayout<ID, T> implements Reloadable {
+        BaseCollectionLayout<ID, T> {
 
 	private static final long serialVersionUID = 4606800218149558500L;
 
@@ -100,17 +99,18 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	}
 
 	/**
-	 * Perform any actions after the screen reloads after a save. This is usually used to reselect
-	 * the item that was selected before
+	 * Perform any actions after the screen reloads after an entity was saved. Override in
+	 * subclasses if needed
 	 * 
 	 * @param entity
 	 */
-	protected abstract void afterReload(T entity);
+	protected void afterReload(T entity) {
+		// override in subclass
+	}
 
 	@Override
 	public void attach() {
 		super.attach();
-		init();
 		build();
 	}
 
@@ -119,6 +119,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	 */
 	@Override
 	public void build() {
+		buildFilter();
 		if (mainLayout == null) {
 			mainLayout = new DefaultVerticalLayout(true, true);
 
@@ -138,10 +139,8 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 			quickSearchField = constructSearchField();
 
 			// additional quick search field
-			if (!isHorizontalMode()) {
-				if (quickSearchField != null) {
-					mainLayout.addComponent(quickSearchField);
-				}
+			if (!isHorizontalMode() && quickSearchField != null) {
+				mainLayout.addComponent(quickSearchField);
 			}
 
 			// table init
@@ -208,7 +207,8 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	public abstract void setSelectedItems(Object selectedItems);
 
 	/**
-	 * Constructs a header layout (displayed above the actual tabular content)
+	 * Constructs a header layout (displayed above the actual tabular content). By defualt this is
+	 * empty, overwrite in subclasses if you want to modify this
 	 * 
 	 * @return
 	 */
@@ -266,8 +266,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 			detailFormLayout = new DefaultVerticalLayout(false, false);
 
 			// canceling is not needed in the inline view
-			getFormOptions().setHideCancelButton(true);
-
+			getFormOptions().setHideCancelButton(true).setPreserveSelectedTab(true);
 			editForm = new ModelBasedEditForm<ID, T>(entity, getService(), getEntityModel(), getFormOptions(),
 			        getFieldFilters()) {
 
@@ -277,6 +276,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 					// again
 					setSelectedItem(entity);
 					reload();
+					reselect(entity);
 					afterReload(entity);
 				}
 
@@ -313,7 +313,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 
 			};
 
-			editForm.setDetailJoins(getDetailJoins());
+			editForm.setDetailJoins(getDetailJoinsFallBack());
 			editForm.setFieldEntityModels(getFieldEntityModels());
 			editForm.build();
 			detailFormLayout.addComponent(editForm);
@@ -321,10 +321,12 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 			// reset the form's view mode if needed
 			editForm.setViewMode(getFormOptions().isOpenInViewMode());
 			editForm.setEntity(entity);
+			editForm.resetTab();
 		}
 
+		setSelectedItem(entity);
 		checkButtonState(getSelectedItem());
-		afterDetailSelected(editForm, entity);
+		afterEntitySelected(editForm, entity);
 
 		detailLayout.replaceComponent(selectedDetailLayout, detailFormLayout);
 		selectedDetailLayout = detailFormLayout;
@@ -367,7 +369,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	 * Perform any required initialization (e.g. load the required items) before attaching the
 	 * screen
 	 */
-	protected abstract void init();
+	protected abstract void buildFilter();
 
 	/**
 	 * Indicates whether the panel is in horizontal mode
@@ -376,6 +378,11 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	 */
 	protected boolean isHorizontalMode() {
 		return ScreenMode.HORIZONTAL.equals(getFormOptions().getScreenMode());
+	}
+
+	@Override
+	public void refresh() {
+		// override in subclasses
 	}
 
 	@Override
@@ -397,17 +404,18 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 			quickSearchField.setValue("");
 		}
 
-		// refresh the details
-		if (getSelectedItem() != null) {
-			detailsMode(getSelectedItem());
-		}
+		getTableWrapper().reloadContainer();
+
+		// clear the details
+		setSelectedItem(null);
+		emptyDetailView();
 	}
 
 	/**
 	 * Reloads the details view only
 	 */
 	public void reloadDetails() {
-		this.setSelectedItem(getService().fetchById(this.getSelectedItem().getId(), getDetailJoins()));
+		this.setSelectedItem(getService().fetchById(this.getSelectedItem().getId(), getDetailJoinsFallBack()));
 		detailsMode(getSelectedItem());
 		getTableWrapper().reloadContainer();
 	}
@@ -421,6 +429,17 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 		setSelectedItem(null);
 		emptyDetailView();
 		reload();
+	}
+
+	/**
+	 * Reselects the entity
+	 * 
+	 * @param t
+	 *            entity to reselect
+	 */
+	protected void reselect(T t) {
+		detailsMode(t);
+		getTableWrapper().getTable().select(t == null ? null : t.getId());
 	}
 
 	/**
@@ -451,4 +470,5 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	public TextField getQuickSearchField() {
 		return quickSearchField;
 	}
+
 }
