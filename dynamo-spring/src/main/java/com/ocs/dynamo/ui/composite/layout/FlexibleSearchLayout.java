@@ -94,6 +94,11 @@ public class FlexibleSearchLayout<ID extends Serializable, T extends AbstractEnt
 			protected void postProcessButtonBar(Layout buttonBar) {
 				FlexibleSearchLayout.this.postProcessSearchButtonBar(buttonBar);
 			}
+			
+			@Override
+			protected void validateBeforeSearch() {
+				FlexibleSearchLayout.this.validateBeforeSearch();
+			}
 
 		};
 		result.setFieldEntityModels(getFieldEntityModels());

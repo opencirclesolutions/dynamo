@@ -311,7 +311,8 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 				}
 			}
 		});
-
+		// hide button inside popup window
+		eb.setVisible(!getFormOptions().isPopup());
 		return eb;
 	}
 
@@ -590,6 +591,17 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	}
 
 	/**
+	 * Checks if a filter is set for a certain attribute
+	 * 
+	 * @param path
+	 *            the path to the attribute
+	 * @return
+	 */
+	public boolean isFilterSet(String path) {
+		return getSearchForm().isFilterSet(path);
+	}
+
+	/**
 	 * Post-processes the button bar for the search form
 	 * 
 	 * @param buttonBar
@@ -735,4 +747,10 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	 */
 	public abstract void setSearchValue(String propertyId, Object value, Object auxValue);
 
+	/**
+	 * Validate before a search is carried out
+	 */
+	public void validateBeforeSearch() {
+		// overwrite in subclasses
+	}
 }

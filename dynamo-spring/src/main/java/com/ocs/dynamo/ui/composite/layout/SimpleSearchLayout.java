@@ -105,6 +105,12 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 			protected void postProcessButtonBar(Layout buttonBar) {
 				SimpleSearchLayout.this.postProcessSearchButtonBar(buttonBar);
 			}
+
+			@Override
+			protected void validateBeforeSearch() {
+				SimpleSearchLayout.this.validateBeforeSearch();
+			}
+
 		};
 		result.setNrOfColumns(getNrOfColumns());
 		result.setFieldEntityModels(getFieldEntityModels());

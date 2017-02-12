@@ -1276,7 +1276,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 			VisibilityType other = VisibilityType.valueOf(msg);
 			return VisibilityType.SHOW.equals(other);
 		} catch (IllegalArgumentException ex) {
-			LOG.error(ex.getMessage(), ex);
+			// do nothing
 		}
 		return Boolean.valueOf(msg);
 	}
