@@ -99,18 +99,13 @@ public abstract class BaseCustomComponent extends CustomComponent implements Bui
 				fieldLabel.setContentMode(ContentMode.HTML);
 			} else if (Date.class.equals(type)) {
 				property = new ObjectProperty<Date>((Date) value);
-				if (AttributeDateType.TIME.equals(attributeModel.getDateType())) {
-					// for a time, do not include a time zone (we have no way of
-					// knowing it!)
+				if (AttributeDateType.TIME.equals(attributeModel.getDateType())
+				        || AttributeDateType.DATE.equals(attributeModel.getDateType())) {
 					fieldLabel
 					        .setConverter(new FormattedStringToDateConverter(null, attributeModel.getDisplayFormat()));
 				} else if (AttributeDateType.TIMESTAMP.equals(attributeModel.getDateType())) {
 					fieldLabel.setConverter(new FormattedStringToDateConverter(
 					        VaadinUtils.getTimeZone(UI.getCurrent()), attributeModel.getDisplayFormat()));
-				} else {
-					// just a date
-					fieldLabel
-					        .setConverter(new FormattedStringToDateConverter(null, attributeModel.getDisplayFormat()));
 				}
 			} else if (attributeModel.getType().isEnum()) {
 				String msg = getMessageService().getEnumMessage((Class<Enum<?>>) attributeModel.getType(),

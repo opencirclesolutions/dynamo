@@ -179,7 +179,7 @@ public class TableExportActionHandler implements Handler {
 			List<String> headers = new ArrayList<>();
 			for (int col = 0; col < getPropIds().size(); col++) {
 				propId = getPropIds().get(col);
-				String value = getTableHolder().getColumnHeader(propId).toString();
+				String value = getTableHolder().getColumnHeader(propId);
 				headers.add(value == null ? "" : value.trim());
 			}
 			writer.writeNext(headers.toArray(new String[0]));
@@ -853,7 +853,7 @@ public class TableExportActionHandler implements Handler {
 		if (entityModels != null) {
 			for (EntityModel<?> em : entityModels) {
 				String prop = propId.toString();
-				int p = prop.indexOf("_");
+				int p = prop.indexOf('_');
 				if (p >= 0) {
 					prop = prop.substring(p + 1);
 				}

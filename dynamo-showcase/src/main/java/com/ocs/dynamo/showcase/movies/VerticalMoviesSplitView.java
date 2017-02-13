@@ -35,46 +35,45 @@ import com.vaadin.ui.VerticalLayout;
 @SuppressWarnings("serial")
 public class VerticalMoviesSplitView extends BaseView {
 
-    /** Vaadin vertical layout. */
-    private VerticalLayout mainLayout;
+	/** Vaadin vertical layout. */
+	private VerticalLayout mainLayout;
 
-    /** The Movies View is using the MovieService for data access. */
-    @Inject
-    private MovieService movieService;
+	/** The Movies View is using the MovieService for data access. */
+	@Inject
+	private MovieService movieService;
 
-    @Override
-    public void enter(ViewChangeEvent event) {
+	@Override
+	public void enter(ViewChangeEvent event) {
 
-        // Apply Vaadin Layout.
-        mainLayout = new DefaultVerticalLayout(true, true);
+		// Apply Vaadin Layout.
+		mainLayout = new DefaultVerticalLayout(true, true);
 
-        // Set form options by convention.
-        FormOptions fo = new FormOptions();
-        fo.setOpenInViewMode(true);
+		// Set form options by convention.
+		FormOptions fo = new FormOptions();
+		fo.setOpenInViewMode(true);
 
-        // Add a remove button.
-        fo.setShowRemoveButton(true);
+		// Add a remove button.
+		fo.setShowRemoveButton(true);
 
-        // Add an edit button.
-        fo.setShowEditButton(true);
-        fo.setShowQuickSearchField(true);
-        fo.setScreenMode(ScreenMode.VERTICAL);
+		// Add an edit button.
+		fo.setShowEditButton(true);
+		fo.setShowQuickSearchField(true);
+		fo.setScreenMode(ScreenMode.VERTICAL);
 
-        // A SplitLayout is a component that displays a search screen and an edit form
-        ServiceBasedSplitLayout<Integer, Movie> movieLayout = new ServiceBasedSplitLayout<Integer, Movie>(
-                movieService, getModelFactory().getModel(Movie.class), fo, new SortOrder("title",
-                        SortDirection.ASCENDING)) {
+		// A SplitLayout is a component that displays a search screen and an edit form
+		ServiceBasedSplitLayout<Integer, Movie> movieLayout = new ServiceBasedSplitLayout<Integer, Movie>(movieService,
+		        getModelFactory().getModel(Movie.class), fo, new SortOrder("title", SortDirection.ASCENDING)) {
 
-            @Override
-            protected Filter constructQuickSearchFilter(String value) {
-                // quick search field
-                return new SimpleStringFilter("title", value, true, false);
-            }
-        };
-        movieLayout.setPageLength(10);
+			@Override
+			protected Filter constructQuickSearchFilter(String value) {
+				// quick search field
+				return new SimpleStringFilter("title", value, true, false);
+			}
+		};
+		movieLayout.setPageLength(10);
 
-        // Some plumbing.
-        mainLayout.addComponent(movieLayout);
-        setCompositionRoot(mainLayout);
-    }
+		// Some plumbing.
+		mainLayout.addComponent(movieLayout);
+		setCompositionRoot(mainLayout);
+	}
 }

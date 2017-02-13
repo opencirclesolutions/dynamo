@@ -161,12 +161,11 @@ public class BaseXlsStyleGenerator<ID extends Serializable, T extends AbstractEn
 			return thousandsGrouping ? numberStyle : numberSimpleStyle;
 		} else if (value instanceof Date) {
 			if (attributeModel == null || !attributeModel.isWeek()) {
-				if (attributeModel == null) {
+				if (attributeModel == null || AttributeDateType.DATE.equals(attributeModel.getDateType())) {
+					// date style is the default
 					return dateStyle;
 				} else if (AttributeDateType.TIMESTAMP.equals(attributeModel.getDateType())) {
 					return dateTimeStyle;
-				} else if (AttributeDateType.DATE.equals(attributeModel.getDateType())) {
-					return dateStyle;
 				} else if (AttributeDateType.TIME.equals(attributeModel.getDateType())) {
 					return timeStyle;
 				}
@@ -191,6 +190,12 @@ public class BaseXlsStyleGenerator<ID extends Serializable, T extends AbstractEn
 	 */
 	@Override
 	public CellStyle getHeaderStyle(int index) {
+		if (index == 0) {
+			return titleStyle;
+		}
+		if (headerStyle == null) {
+			return headerStyle;
+		}
 		return headerStyle;
 	}
 

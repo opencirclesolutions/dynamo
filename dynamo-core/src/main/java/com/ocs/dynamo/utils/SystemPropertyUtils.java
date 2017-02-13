@@ -130,6 +130,10 @@ public final class SystemPropertyUtils {
 	public static String getDefaultTimeFormat() {
 		return System.getProperty(DynamoConstants.SP_DEFAULT_TIME_FORMAT, "HH:mm:ss");
 	}
+	
+    public static String getDefaultCaptionFormat() {
+        return System.getProperty(DynamoConstants.SP_DEFAULT_CAPTION_FORMAT, DynamoConstants.SP_DEFAULT_CAPTION_FORMAT_VAADIN);
+    }
 
 	/**
 	 * The default maximum number of items to display in an entity lookup field when it is in

@@ -15,7 +15,6 @@ package com.ocs.dynamo.ui.composite.layout;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.Map;
 
 import com.ocs.dynamo.dao.query.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
@@ -25,10 +24,10 @@ import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.composite.form.FormOptions;
 import com.ocs.dynamo.ui.composite.form.ModelBasedSearchForm;
 import com.ocs.dynamo.ui.container.QueryType;
-import com.vaadin.data.Container.Filter;
 import com.vaadin.data.sort.SortOrder;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Field;
+import com.vaadin.ui.Layout;
 
 /**
  * A composite component that contains a search form and a results table, along with the option to
@@ -43,38 +42,14 @@ import com.vaadin.ui.Field;
 public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntity<ID>> extends
         AbstractSearchLayout<ID, T> {
 
+	private static final int DEFAULT_NR_COLUMNS = 1;
+
 	private static final long serialVersionUID = 4606800218149558500L;
 
 	/**
 	 * The number of columns in the search form
 	 */
-	private int nrOfColumns = 1;
-
-	/**
-	 * Constructor - all fields
-	 * 
-	 * @param service
-	 *            the service that is used to query the database
-	 * @param entityModel
-	 *            the entity model of the entities to search for
-	 * @param queryType
-	 *            the type of the query
-	 * @param formOptions
-	 *            form options that governs which buttons and options to show
-	 * @param fieldFilters
-	 *            filters that are applied to individual search fields
-	 * @param defaultFilters
-	 *            search filters that are added to every query
-	 * @param sortOrder
-	 *            the default sort order
-	 * @param joins
-	 *            the joins to include in the query
-	 */
-	public SimpleSearchLayout(BaseService<ID, T> service, EntityModel<T> entityModel, QueryType queryType,
-	        FormOptions formOptions, Map<String, Filter> fieldFilters, List<Filter> defaultFilters,
-	        SortOrder sortOrder, FetchJoinInformation... joins) {
-		super(service, entityModel, queryType, formOptions, fieldFilters, defaultFilters, sortOrder, joins);
-	}
+	private int nrOfColumns = DEFAULT_NR_COLUMNS;
 
 	/**
 	 * Constructor - only the most important attributes
@@ -125,6 +100,17 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 			protected List<Component> constructExtraSearchFields() {
 				return SimpleSearchLayout.this.constructExtraSearchFields();
 			}
+
+			@Override
+			protected void postProcessButtonBar(Layout buttonBar) {
+				SimpleSearchLayout.this.postProcessSearchButtonBar(buttonBar);
+			}
+
+			@Override
+			protected void validateBeforeSearch() {
+				SimpleSearchLayout.this.validateBeforeSearch();
+			}
+
 		};
 		result.setNrOfColumns(getNrOfColumns());
 		result.setFieldEntityModels(getFieldEntityModels());

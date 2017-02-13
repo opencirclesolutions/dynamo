@@ -199,10 +199,10 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 		        .getEntityClass());
 		SortOrder[] sos = constructSortOrder(entityModel);
 		if (attributeModel != null && attributeModel.isQuickAddAllowed() && !search) {
-			return new QuickAddEntityComboBox<ID, S>((EntityModel<S>) entityModel, attributeModel, service,
+			return new QuickAddEntityComboBox<>((EntityModel<S>) entityModel, attributeModel, service,
 			        SelectMode.FILTERED, filter, null, sos);
 		} else {
-			return new EntityComboBox<ID, S>((EntityModel<S>) entityModel, attributeModel, service, filter, sos);
+			return new EntityComboBox<>((EntityModel<S>) entityModel, attributeModel, service, filter, sos);
 		}
 	}
 
@@ -232,7 +232,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 				// simple token field (for distinct string values)
 				field = constructSimpleTokenField(
 				        fieldEntityModel != null ? fieldEntityModel : attributeModel.getEntityModel(), attributeModel,
-				        attributeModel.getPath().substring(attributeModel.getPath().lastIndexOf(".") + 1), false,
+				        attributeModel.getPath().substring(attributeModel.getPath().lastIndexOf('.') + 1), false,
 				        fieldFilter);
 			} else {
 				// detail relationship, render a multiple select
@@ -286,20 +286,20 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 			return constructLookupField((EntityModel<S>) fieldEntityModel, attributeModel, fieldFilter, search, true);
 		} else if (AttributeSelectMode.FANCY_LIST.equals(mode)) {
 			// fancy list select
-			FancyListSelect<ID, S> listSelect = new FancyListSelect<ID, S>(service, (EntityModel<S>) em,
+			FancyListSelect<ID, S> listSelect = new FancyListSelect<>(service, (EntityModel<S>) em,
 			        attributeModel, fieldFilter, search, sos);
 			listSelect.setRows(SystemPropertyUtils.getDefaultListSelectRows());
 			return listSelect;
 		} else if (AttributeSelectMode.LIST.equals(mode)) {
 			// simple list select if everything else fails or is not applicable
-			EntityListSelect<ID, S> listSelect = new EntityListSelect<ID, S>((EntityModel<S>) em, attributeModel,
+			EntityListSelect<ID, S> listSelect = new EntityListSelect<>((EntityModel<S>) em, attributeModel,
 			        service, fieldFilter, sos);
 			listSelect.setMultiSelect(multipleSelect);
 			listSelect.setRows(SystemPropertyUtils.getDefaultListSelectRows());
 			return listSelect;
 		} else {
 			// by default, use a token field
-			return new TokenFieldSelect<ID, S>((EntityModel<S>) em, attributeModel, service, fieldFilter, search, sos);
+			return new TokenFieldSelect<>((EntityModel<S>) em, attributeModel, service, fieldFilter, search, sos);
 		}
 	}
 
@@ -328,7 +328,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 		BaseService<ID, S> service = (BaseService<ID, S>) ServiceLocator.getServiceForEntity(attributeModel
 		        .getMemberType() != null ? attributeModel.getMemberType() : entityModel.getEntityClass());
 		SortOrder[] sos = constructSortOrder(entityModel);
-		return new EntityLookupField<ID, S>(service, (EntityModel<S>) entityModel, attributeModel,
+		return new EntityLookupField<>(service, (EntityModel<S>) entityModel, attributeModel,
 		        fieldFilter == null ? null : Lists.newArrayList(fieldFilter), search, multiSelect,
 		        sos.length == 0 ? null : Lists.newArrayList(sos));
 	}
@@ -517,7 +517,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 			// simple token field (for distinct string values)
 			field = constructSimpleTokenField(
 			        fieldEntityModel != null ? fieldEntityModel : attributeModel.getEntityModel(), attributeModel,
-			        propertyId.substring(propertyId.lastIndexOf(".") + 1), false, null);
+			        propertyId.substring(propertyId.lastIndexOf('.') + 1), false, null);
 
 		} else if (search
 		        && (attributeModel.getType().equals(Boolean.class) || attributeModel.getType().equals(boolean.class))) {
@@ -532,13 +532,10 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 				// use a "collection table" for an element collection
 				FormOptions fo = new FormOptions();
 				fo.setShowRemoveButton(true);
-				if (String.class.equals(attributeModel.getMemberType())) {
-					field = new CollectionTable<>(attributeModel, true, fo);
-				} else if (Integer.class.equals(attributeModel.getMemberType())) {
-					field = new CollectionTable<>(attributeModel, true, fo);
-				} else if (Long.class.equals(attributeModel.getMemberType())) {
-					field = new CollectionTable<>(attributeModel, true, fo);
-				} else if (BigDecimal.class.equals(attributeModel.getMemberType())) {
+				if (String.class.equals(attributeModel.getMemberType())
+				        || Integer.class.equals(attributeModel.getMemberType())
+				        || Long.class.equals(attributeModel.getMemberType())
+				        || BigDecimal.class.equals(attributeModel.getMemberType())) {
 					field = new CollectionTable<>(attributeModel, true, fo);
 				} else {
 					// other types not supported for now
@@ -547,7 +544,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 			} else {
 				field = constructSimpleTokenField(
 				        fieldEntityModel != null ? fieldEntityModel : attributeModel.getEntityModel(), attributeModel,
-				        propertyId.substring(propertyId.lastIndexOf(".") + 1), true, null);
+				        propertyId.substring(propertyId.lastIndexOf('.') + 1), true, null);
 			}
 		} else if (Collection.class.isAssignableFrom(attributeModel.getType())) {
 			// render a multiple select component for a collection

@@ -121,6 +121,7 @@ public class TestEntity extends AbstractTreeEntity<Integer, TestEntity> {
 	private Set<Long> longTags = new HashSet<>();
 
 	public TestEntity() {
+		// default constructor
 	}
 
 	public TestEntity(int id, String name, Long age) {

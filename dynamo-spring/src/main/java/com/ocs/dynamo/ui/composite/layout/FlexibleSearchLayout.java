@@ -15,8 +15,6 @@ package com.ocs.dynamo.ui.composite.layout;
 
 import java.io.Serializable;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import com.ocs.dynamo.dao.query.FetchJoinInformation;
@@ -29,9 +27,9 @@ import com.ocs.dynamo.ui.composite.form.FlexibleFilterType;
 import com.ocs.dynamo.ui.composite.form.FormOptions;
 import com.ocs.dynamo.ui.composite.form.ModelBasedFlexibleSearchForm;
 import com.ocs.dynamo.ui.container.QueryType;
-import com.vaadin.data.Container.Filter;
 import com.vaadin.data.sort.SortOrder;
 import com.vaadin.ui.Field;
+import com.vaadin.ui.Layout;
 
 /**
  * A search layout that allows a user to click together the search criteria
@@ -56,32 +54,6 @@ public class FlexibleSearchLayout<ID extends Serializable, T extends AbstractEnt
 
 	/**
 	 * Constructor
-	 * 
-	 * @param service
-	 *            the service used to retrieve the entities
-	 * @param entityModel
-	 *            the entity model
-	 * @param queryType
-	 *            the query type
-	 * @param formOptions
-	 *            the form options
-	 * @param fieldFilters
-	 *            field filters for filtering lookup components
-	 * @param defaultFilters
-	 *            additional/default filters
-	 * @param sortOrder
-	 *            sort order
-	 * @param joins
-	 *            relations to fetch
-	 */
-	public FlexibleSearchLayout(BaseService<ID, T> service, EntityModel<T> entityModel, QueryType queryType,
-	        FormOptions formOptions, Map<String, Filter> fieldFilters, List<Filter> defaultFilters,
-	        SortOrder sortOrder, FetchJoinInformation[] joins) {
-		super(service, entityModel, queryType, formOptions, fieldFilters, defaultFilters, sortOrder, joins);
-	}
-
-	/**
-	 * Constructor (basic parameters only)
 	 * 
 	 * @param service
 	 *            the service used to retrieve the entities
@@ -116,6 +88,16 @@ public class FlexibleSearchLayout<ID extends Serializable, T extends AbstractEnt
 			@Override
 			protected Field<?> constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel) {
 				return FlexibleSearchLayout.this.constructCustomField(entityModel, attributeModel, false, true);
+			}
+
+			@Override
+			protected void postProcessButtonBar(Layout buttonBar) {
+				FlexibleSearchLayout.this.postProcessSearchButtonBar(buttonBar);
+			}
+			
+			@Override
+			protected void validateBeforeSearch() {
+				FlexibleSearchLayout.this.validateBeforeSearch();
 			}
 
 		};

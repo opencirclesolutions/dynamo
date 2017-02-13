@@ -24,6 +24,7 @@ public class OCSRuntimeException extends RuntimeException {
     private static final long serialVersionUID = -6263372299801009820L;
 
     public OCSRuntimeException() {
+    	// default constructor
     }
 
     public OCSRuntimeException(String message) {

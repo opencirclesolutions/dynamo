@@ -126,22 +126,17 @@ public abstract class BaseImporter<R, U> {
 					throw new OCSImportException("Negative value " + value + " found for field '" + d.getName() + "'");
 				}
 
+				// round to the nearest integer, then use intValue() or longValue()
 				BigDecimal rounded = BigDecimal.valueOf(value.doubleValue()).setScale(0, RoundingMode.HALF_UP);
-
-				if (Integer.class.equals(d.getPropertyType())) {
+				Class<?> pType = d.getPropertyType();
+				if (Integer.class.equals(pType) || int.class.equals(pType)) {
 					obj = rounded.intValue();
-				} else if (Long.class.equals(d.getPropertyType())) {
+				} else if (Long.class.equals(pType) || long.class.equals(pType)) {
 					obj = rounded.longValue();
-				} else if (Float.class.equals(d.getPropertyType())) {
+				} else if (Float.class.equals(pType) || float.class.equals(pType)) {
 					obj = Float.valueOf(value.floatValue());
-				} else if (BigDecimal.class.equals(d.getPropertyType())) {
+				} else if (BigDecimal.class.equals(pType)) {
 					obj = BigDecimal.valueOf(value.doubleValue());
-				} else if (int.class.equals(d.getPropertyType())) {
-					obj = rounded.intValue();
-				} else if (long.class.equals(d.getPropertyType())) {
-					obj = rounded.longValue();
-				} else if (float.class.equals(d.getPropertyType())) {
-					obj = value.floatValue();
 				}
 			}
 		} else if (Boolean.class.isAssignableFrom(d.getPropertyType())) {

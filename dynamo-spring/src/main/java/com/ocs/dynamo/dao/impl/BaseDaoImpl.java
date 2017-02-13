@@ -25,6 +25,8 @@ import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaQuery;
 
+import org.apache.commons.lang.StringEscapeUtils;
+
 import com.mysema.query.jpa.impl.JPADeleteClause;
 import com.mysema.query.jpa.impl.JPAQuery;
 import com.mysema.query.jpa.impl.JPAUpdateClause;
@@ -84,7 +86,7 @@ public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements B
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void addSorting(JPAQuery query, SortOrder... sorts) {
-		PathBuilder<T> builder = new PathBuilder<T>(getDslRoot().getType(), getDslRoot().getMetadata());
+		PathBuilder<T> builder = new PathBuilder<>(getDslRoot().getType(), getDslRoot().getMetadata());
 
 		for (SortOrder s : sorts) {
 			if (s != null && s.getProperty() != null) {
@@ -210,7 +212,7 @@ public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements B
 	@Override
 	public List<T> fetchByIds(List<ID> ids, SortOrders sortOrders, FetchJoinInformation... joins) {
 		if (ids.isEmpty()) {
-			return new ArrayList<T>();
+			return new ArrayList<>();
 		}
 
 		CriteriaQuery<T> cq = JpaQueryBuilder.createFetchQuery(entityManager, getEntityClass(), ids, sortOrders,
@@ -346,7 +348,8 @@ public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements B
 	@Override
 	@SuppressWarnings("unchecked")
 	public <S> List<S> findDistinctInCollectionTable(String tableName, String distinctField, Class<S> elementType) {
-		String query = "select distinct " + distinctField + " from " + tableName;
+		String query = "select distinct " + StringEscapeUtils.escapeSql(distinctField) + " from "
+		        + StringEscapeUtils.escapeSql(tableName);
 		return (List<S>) getEntityManager().createNativeQuery(query).getResultList();
 	}
 

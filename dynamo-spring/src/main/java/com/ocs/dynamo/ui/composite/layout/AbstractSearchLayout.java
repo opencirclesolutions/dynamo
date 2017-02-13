@@ -17,7 +17,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 import com.google.common.collect.Lists;
 import com.ocs.dynamo.constants.DynamoConstants;
@@ -46,6 +45,7 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Layout;
 import com.vaadin.ui.VerticalLayout;
 
 /**
@@ -127,27 +127,6 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	 * Indicates whether the search layout has been constructed yet
 	 */
 	private boolean searchLayoutConstructed;
-
-	/**
-	 * Constructor
-	 * 
-	 * @param service
-	 * @param entityModel
-	 * @param queryType
-	 * @param formOptions
-	 * @param fieldFilters
-	 * @param defaultFilters
-	 * @param sortOrder
-	 * @param joins
-	 */
-	public AbstractSearchLayout(BaseService<ID, T> service, EntityModel<T> entityModel, QueryType queryType,
-	        FormOptions formOptions, Map<String, Filter> fieldFilters, List<Filter> defaultFilters,
-	        SortOrder sortOrder, FetchJoinInformation... joins) {
-		super(service, entityModel, formOptions, sortOrder, joins);
-		this.queryType = queryType;
-		this.defaultFilters = defaultFilters;
-		setFieldFilters(fieldFilters);
-	}
 
 	/**
 	 * Constructor - only the most important attributes
@@ -320,7 +299,8 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	 * @return
 	 */
 	protected Button constructEditButton() {
-		Button eb = new Button(getFormOptions().isOpenInViewMode() ? message("ocs.view") : message("ocs.edit"));
+		Button eb = new Button((!getFormOptions().isShowEditButton() || !isEditAllowed()) ? message("ocs.view")
+		        : message("ocs.edit"));
 		eb.addClickListener(new Button.ClickListener() {
 
 			private static final long serialVersionUID = -2800434669444928287L;
@@ -332,7 +312,8 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 				}
 			}
 		});
-
+		// hide button inside popup window
+		eb.setVisible(!getFormOptions().isPopup());
 		return eb;
 	}
 
@@ -469,12 +450,17 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 			options.setAttributeGroupMode(getFormOptions().getAttributeGroupMode());
 			options.setPreserveSelectedTab(getFormOptions().isPreserveSelectedTab());
 
-			if (options.isOpenInViewMode()) {
-				options.setShowBackButton(true);
+			if (getFormOptions().isShowEditButton()) {
+				// editing in form must be possible
+				options.setShowEditButton(true);
+			} else {
+				// read-only mode
+				options.setOpenInViewMode(true);
+				options.setShowEditButton(false);
 			}
 
-			if (!getFormOptions().isReadOnly()) {
-				options.setShowEditButton(true);
+			if (options.isOpenInViewMode() || !isEditAllowed()) {
+				options.setShowBackButton(true);
 			}
 
 			editForm = new ModelBasedEditForm<ID, T>(entity, getService(), getEntityModel(), options, getFieldFilters()) {
@@ -608,6 +594,27 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 
 	public Collection<T> getSelectedItems() {
 		return selectedItems;
+	}
+
+	/**
+	 * Checks if a filter is set for a certain attribute
+	 * 
+	 * @param path
+	 *            the path to the attribute
+	 * @return
+	 */
+	public boolean isFilterSet(String path) {
+		return getSearchForm().isFilterSet(path);
+	}
+
+	/**
+	 * Post-processes the button bar for the search form
+	 * 
+	 * @param buttonBar
+	 *            the button bar
+	 */
+	public void postProcessSearchButtonBar(Layout buttonBar) {
+		// overwrite in subclasses
 	}
 
 	/**
@@ -746,4 +753,10 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	 */
 	public abstract void setSearchValue(String propertyId, Object value, Object auxValue);
 
+	/**
+	 * Validate before a search is carried out
+	 */
+	public void validateBeforeSearch() {
+		// overwrite in subclasses
+	}
 }

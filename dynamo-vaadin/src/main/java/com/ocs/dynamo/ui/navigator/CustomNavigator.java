@@ -202,7 +202,7 @@ public class CustomNavigator extends Navigator {
 				try {
 					return viewClass.newInstance();
 				} catch (Exception e) {
-					throw new OCSRuntimeException(e.getMessage());
+					throw new OCSRuntimeException(e.getMessage(), e);
 				}
 			}
 

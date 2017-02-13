@@ -140,7 +140,7 @@ public final class FilterUtil {
 			if (between.getPropertyId().equals(propertyId)) {
 				return between;
 			}
-		} 
+		}
 		return null;
 	}
 

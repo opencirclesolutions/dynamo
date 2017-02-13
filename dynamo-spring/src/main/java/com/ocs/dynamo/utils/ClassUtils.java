@@ -63,7 +63,7 @@ public final class ClassUtils {
      */
     public static boolean canSetProperty(Object obj, String fieldName) {
         try {
-            int p = fieldName.indexOf(".");
+            int p = fieldName.indexOf('.');
             if (p >= 0) {
                 String firstProperty = fieldName.substring(0, p);
                 Object first = MethodUtils.invokeMethod(obj,
@@ -91,7 +91,7 @@ public final class ClassUtils {
      */
     public static void clearFieldValue(Object obj, String fieldName, Class<?> argType) {
         try {
-            int p = fieldName.indexOf(".");
+            int p = fieldName.indexOf('.');
             if (p >= 0) {
                 String firstProperty = fieldName.substring(0, p);
                 Object first = MethodUtils.invokeMethod(obj,
@@ -331,7 +331,7 @@ public final class ClassUtils {
      */
     public static Object getFieldValue(Object obj, String fieldName) {
         try {
-            int p = fieldName.indexOf(".");
+            int p = fieldName.indexOf('.');
             if (p >= 0) {
                 String firstProperty = fieldName.substring(0, p);
                 Object first = MethodUtils.invokeMethod(obj,
@@ -505,7 +505,7 @@ public final class ClassUtils {
      */
     public static void setFieldValue(Object obj, String fieldName, Object value) {
         try {
-            int p = fieldName.indexOf(".");
+            int p = fieldName.indexOf('.');
             if (p >= 0) {
                 String firstProperty = fieldName.substring(0, p);
                 Object first = MethodUtils.invokeMethod(obj,

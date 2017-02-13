@@ -170,7 +170,7 @@ public class PivotContainer implements Container, ItemSetChangeListener, Indexed
 	public Class<?> getType(Object propertyId) {
 		Class<?> type = sourceContainer.getType(propertyId);
 		String pid = propertyId.toString();
-		int i = pid.lastIndexOf("_");
+		int i = pid.lastIndexOf('_');
 		if (type == null && i >= 0 && i < pid.length()) {
 			type = sourceContainer.getType(pid.substring(i + 1));
 		}

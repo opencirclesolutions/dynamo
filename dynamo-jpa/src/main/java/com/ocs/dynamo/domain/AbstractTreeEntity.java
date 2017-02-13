@@ -45,7 +45,7 @@ public abstract class AbstractTreeEntity<ID, P extends AbstractTreeEntity>
     private P parent;
 
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<P> children = new ArrayList<P>();
+    private List<P> children = new ArrayList<>();
 
     /**
      * @return the parent

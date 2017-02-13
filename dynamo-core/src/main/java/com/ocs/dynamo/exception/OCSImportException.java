@@ -23,6 +23,7 @@ public class OCSImportException extends OCSRuntimeException {
     private static final long serialVersionUID = -8031113801985156724L;
 
     public OCSImportException() {
+    	// default constructor
     }
 
     public OCSImportException(String message) {

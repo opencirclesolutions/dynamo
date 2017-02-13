@@ -330,16 +330,9 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 						result.add(FlexibleFilterType.NOT_CONTAINS);
 						result.add(FlexibleFilterType.NOT_STARTS_WITH);
 					}
-
 				} else if (Enum.class.isAssignableFrom(am.getType())) {
 					result.add(FlexibleFilterType.NOT_EQUAL);
-				} else if (Number.class.isAssignableFrom(am.getType())) {
-					result.add(FlexibleFilterType.BETWEEN);
-					result.add(FlexibleFilterType.LESS_THAN);
-					result.add(FlexibleFilterType.LESS_OR_EQUAL);
-					result.add(FlexibleFilterType.GREATER_OR_EQUAL);
-					result.add(FlexibleFilterType.GREATER_THAN);
-				} else if (Date.class.isAssignableFrom(am.getType())) {
+				} else if (Number.class.isAssignableFrom(am.getType()) || Date.class.isAssignableFrom(am.getType())) {
 					result.add(FlexibleFilterType.BETWEEN);
 					result.add(FlexibleFilterType.LESS_THAN);
 					result.add(FlexibleFilterType.LESS_OR_EQUAL);
@@ -351,6 +344,7 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 			case DETAIL:
 				// also support "not equal" for entities
 				result.add(FlexibleFilterType.NOT_EQUAL);
+				break;
 			default:
 				break;
 			}
@@ -742,11 +736,10 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 				return FlexibleFilterType.CONTAINS;
 			} else if (Enum.class.isAssignableFrom(am.getType())) {
 				return FlexibleFilterType.EQUALS;
-			} else if (Number.class.isAssignableFrom(am.getType())) {
-				return FlexibleFilterType.BETWEEN;
-			} else if (Date.class.isAssignableFrom(am.getType())) {
+			} else if (Number.class.isAssignableFrom(am.getType()) || Date.class.isAssignableFrom(am.getType())) {
 				return FlexibleFilterType.BETWEEN;
 			}
+			return FlexibleFilterType.EQUALS;
 		default:
 			return FlexibleFilterType.EQUALS;
 		}

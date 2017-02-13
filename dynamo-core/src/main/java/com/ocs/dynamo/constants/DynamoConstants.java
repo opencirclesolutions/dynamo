@@ -27,6 +27,8 @@ public final class DynamoConstants {
 	 */
 	public static final int CACHE_SIZE = 10000;
 
+	public static final String CSS_ADDITIONAL = "additional";
+
 	/**
 	 * CSS style for button bar components
 	 */
@@ -56,8 +58,6 @@ public final class DynamoConstants {
 	 * The CSS class used to indicate that an element is the first child element
 	 */
 	public static final String CSS_FIRST = "first";
-
-	public static final String CSS_ADDITIONAL = "additional";
 	
 	/**
 	 * The CSS class for the last visited main menu item
@@ -65,14 +65,14 @@ public final class DynamoConstants {
 	public static final String CSS_LAST_VISITED = "lastVisited";
 
 	/**
-	 * The CSS class that is assigned to numerical cells in a table
-	 */
-	public static final String CSS_NUMERICAL = "numerical";
-
-	/**
 	 * The CSS class
 	 */
 	public static final String CSS_NESTED = "nested";
+
+	/**
+	 * The CSS class that is assigned to numerical cells in a table
+	 */
+	public static final String CSS_NUMERICAL = "numerical";
 
 	/**
 	 * The CSS class for popup dialogs
@@ -109,6 +109,8 @@ public final class DynamoConstants {
 	 */
 	public static final String ID = "id";
 
+	public static final int INTERMEDIATE_PRECISION = 10;
+
 	/**
 	 * The default page size for the lazy query container.
 	 */
@@ -130,30 +132,22 @@ public final class DynamoConstants {
 	public static final String SP_ALLOW_TABLE_EXPORT = "ocs.allow.table.export";
 
 	/**
-	 * Name of the system property that is used as the CSV separator when exporting
+	 * Name of the system property that is used to set the locale used for month names 
+	 * in date components
 	 */
-	public static final String SP_EXPORT_CSV_SEPARATOR = "ocs.export.csv.separator";
-
-	/**
-	 * Name of the system property that is used as the CSV quote char when exporting
-	 */
-	public static final String SP_EXPORT_CSV_QUOTE = "ocs.export.csv.quote";
+	public static final String SP_DATE_LOCALE = "ocs.date.locale";
 
 	/**
 	 * Name of the system property that is used to determine the default decimal precision
 	 */
 	public static final String SP_DECIMAL_PRECISION = "ocs.default.decimal.precision";
 
-	/**
-	 * Name of the system property that is used to set the default locale
-	 */
-	public static final String SP_DEFAULT_LOCALE = "ocs.default.locale";
+	public static final String SP_DEFAULT_CAPTION_FORMAT = "ocs.default.caption.format";
 
 	/**
-	 * Name of the system property that is used to set the locale used for month names 
-	 * in date components
+	 * Use Vaadin for formatting properties.
 	 */
-	public static final String SP_DATE_LOCALE = "ocs.date.locale";
+	public static final String SP_DEFAULT_CAPTION_FORMAT_VAADIN = "vaadin";
 	
 	/**
 	 * Name of the system property that is used to determine the default currency symbol
@@ -182,9 +176,24 @@ public final class DynamoConstants {
 	public static final String SP_DEFAULT_LISTSELECT_ROWS = "ocs.default.listselect.rows";
 
 	/**
+	 * Name of the system property that is used to set the default locale
+	 */
+	public static final String SP_DEFAULT_LOCALE = "ocs.default.locale";
+
+	/**
 	 * Name of the system property that is used to determine the default time format
 	 */
 	public static final String SP_DEFAULT_TIME_FORMAT = "ocs.default.time.format";
+
+	/**
+	 * Name of the system property that is used as the CSV quote char when exporting
+	 */
+	public static final String SP_EXPORT_CSV_QUOTE = "ocs.export.csv.quote";
+
+	/**
+	 * Name of the system property that is used as the CSV separator when exporting
+	 */
+	public static final String SP_EXPORT_CSV_SEPARATOR = "ocs.export.csv.separator";
 
 	/**
 	 * Name of the system property that indicates the maximum number of items to display in an
@@ -192,26 +201,26 @@ public final class DynamoConstants {
 	 */
 	public static final String SP_LOOKUP_FIELD_MAX_ITEMS = "ocs.default.lookupfield.max.items";
 
-	/**
-	 * System property that indicates whether to use the thousands grouping separator in edit mode
-	 */
-	public static final String SP_THOUSAND_GROUPING = "ocs.edit.thousands.grouping";
-
-	/**
+	   /**
 	 * System property that indicates that maximum allowed number of rows in a non-streaming export
 	 */
 	public static final String SP_MAX_ROWS_NON_STREAMING = "ocs.max.rows.non.streaming";
 
-	/**
-	 * System property that indicates that maximum allowed number of rows in a streaming export
-	 */
-	public static final String SP_MAX_ROWS_STREAMING = "ocs.max.rows.streaming";
-
+	    /**
+		 * System property that indicates that maximum allowed number of rows in a streaming export
+		 */
+		public static final String SP_MAX_ROWS_STREAMING = "ocs.max.rows.streaming";
+	
 	/**
 	 * System property that indicates that maximum allowed number of rows in a streaming export of a
 	 * pivoted data set
 	 */
 	public static final String SP_MAX_ROWS_STREAMING_PIVOTED = "ocs.max.rows.streaming.pivot";
+
+	/**
+	 * System property that indicates whether to use the thousands grouping separator in edit mode
+	 */
+	public static final String SP_THOUSAND_GROUPING = "ocs.edit.thousands.grouping";
 
 	/**
 	 * The name of the variable that is used to store the user
@@ -227,8 +236,6 @@ public final class DynamoConstants {
 	 * The UTF-8 character set
 	 */
 	public static final String UTF_8 = "UTF-8";
-
-	public static final int INTERMEDIATE_PRECISION = 10;
 
 	/**
 	 * Constructor for OCSConstants.

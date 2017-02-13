@@ -41,16 +41,19 @@ public class BaseCsvImporter extends BaseTextImporter {
 	}
 
 	/**
-	 * Reads a byte array into a CSV file
+	 * Reads a CSV file into a List of String arrays
 	 * 
 	 * @param bytes
-	 *            the byte array
+	 *            the raw content of the CSV file
+	 * @param separator
+	 *            the record separator
+	 * @param quote
+	 *            the quote char
 	 * @return
-	 * @throws IOException
 	 */
 	protected List<String[]> readCsvFile(byte[] bytes, String separator, String quote) {
-		try (CSVReader reader = new CSVReader(new CharSequenceReader(new String(bytes,
-		        Charset.forName(DynamoConstants.UTF_8))), separator.charAt(0), quote.charAt(0))) {
+		try (CharSequenceReader seq = new CharSequenceReader(new String(bytes, Charset.forName(DynamoConstants.UTF_8)));
+		        CSVReader reader = new CSVReader(seq, separator.charAt(0), quote.charAt(0))) {
 			return reader.readAll();
 		} catch (IOException ex) {
 			throw new OCSImportException(ex.getMessage(), ex);

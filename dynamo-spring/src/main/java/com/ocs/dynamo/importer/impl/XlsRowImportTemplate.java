@@ -82,7 +82,7 @@ public abstract class XlsRowImportTemplate<ID, T extends AbstractDTO> {
 	/**
 	 * Keys of the records processed so far
 	 */
-	private Set<ID> keys = new HashSet<ID>();
+	private Set<ID> keys = new HashSet<>();
 
 	/**
 	 * The message service
@@ -101,7 +101,9 @@ public abstract class XlsRowImportTemplate<ID, T extends AbstractDTO> {
 	 *            the XLS importer that is used to do the actual reading from the file
 	 * @param messageService
 	 * @param bytes
+	 *            the raw content to process
 	 * @param errors
+	 *            list of errors
 	 * @param clazz
 	 * @param sheetIndex
 	 * @param firstRowNumber

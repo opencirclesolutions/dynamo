@@ -137,9 +137,7 @@ public class ModelBasedTreeTable<ID extends Serializable, T extends AbstractEnti
 		if (scpId != null) {
 			AttributeModel attributeModel = def.getEntityModel().getAttributeModel(scpId.toString());
 			if (attributeModel != null) {
-				if (aModel == null) {
-					aModel = attributeModel;
-				}
+				aModel = attributeModel;
 				if (!lazyContainer.getContainerPropertyIds().contains(attributeModel.getName())) {
 					lazyContainer.addContainerProperty(attributeModel.getName(), attributeModel.getType(),
 					        attributeModel.getDefaultValue(), attributeModel.isReadOnly(), attributeModel.isSortable());
@@ -203,8 +201,11 @@ public class ModelBasedTreeTable<ID extends Serializable, T extends AbstractEnti
 			if (rootAttributeModel == null) {
 				rootAttributeModel = aModel;
 			}
-			propertyNames.add(propId);
-			headerNames.add(rootAttributeModel.getDisplayName());
+
+			if (rootAttributeModel != null) {
+				propertyNames.add(propId);
+				headerNames.add(rootAttributeModel.getDisplayName());
+			}
 			propIndex++;
 		}
 

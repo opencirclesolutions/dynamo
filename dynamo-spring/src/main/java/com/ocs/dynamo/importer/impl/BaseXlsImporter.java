@@ -386,7 +386,7 @@ public class BaseXlsImporter extends BaseImporter<Row, Cell> {
 			// do nothing
 		}
 
-		if (firstCellValue != null && !firstCellValue.toString().equals("")) {
+		if (firstCellValue != null && !"".equals(firstCellValue.toString())) {
 			PropertyDescriptor[] descriptors = BeanUtils.getPropertyDescriptors(clazz);
 			for (PropertyDescriptor d : descriptors) {
 				ImportField field = ClassUtils.getAnnotation(clazz, d.getName(), ImportField.class);

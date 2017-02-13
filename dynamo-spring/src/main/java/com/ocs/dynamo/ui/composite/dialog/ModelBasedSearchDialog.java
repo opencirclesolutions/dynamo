@@ -97,13 +97,17 @@ public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractE
 	 * Constructor
 	 * 
 	 * @param service
-	 *            the service used to retrieve entities
+	 *            the service used to query the database
 	 * @param entityModel
-	 *            the entity model of the displayed entities
+	 *            the entity model
 	 * @param filters
-	 *            the filters to apply to the search
-	 * @param sortOrder
+	 *            the search filters
+	 * @param sortOrders
+	 *            the sort orders
 	 * @param multiSelect
+	 *            whether multiple selection is allowed
+	 * @param searchImmediately
+	 *            whether to search immediately after the screen is openend
 	 * @param joins
 	 */
 	public ModelBasedSearchDialog(BaseService<ID, T> service, EntityModel<T> entityModel, List<Filter> filters,
@@ -120,15 +124,15 @@ public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractE
 
 	@Override
 	protected void doBuild(Layout parent) {
-		FormOptions formOptions = new FormOptions().setHideAddButton(true).setPopup(true)
+		FormOptions formOptions = new FormOptions().setReadOnly(true).setPopup(true)
 		        .setSearchImmediately(searchImmediately);
 
 		VerticalLayout wrapper = new DefaultVerticalLayout(false, false);
 		wrapper.setStyleName("searchDialogWrapper");
 		parent.addComponent(wrapper);
 
-		searchLayout = new SimpleSearchLayout<ID, T>(service, entityModel, QueryType.ID_BASED, formOptions, null,
-		        filters, null, joins);
+		searchLayout = new SimpleSearchLayout<ID, T>(service, entityModel, QueryType.ID_BASED, formOptions, null, joins);
+		searchLayout.setDefaultFilters(filters);
 		for (SortOrder order : sortOrders) {
 			searchLayout.addSortOrder(order);
 		}
