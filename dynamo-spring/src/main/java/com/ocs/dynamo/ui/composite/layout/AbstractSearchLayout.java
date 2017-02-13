@@ -299,7 +299,8 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	 * @return
 	 */
 	protected Button constructEditButton() {
-		Button eb = new Button(getFormOptions().isOpenInViewMode() ? message("ocs.view") : message("ocs.edit"));
+		Button eb = new Button((!getFormOptions().isShowEditButton() || !isEditAllowed()) ? message("ocs.view")
+		        : message("ocs.edit"));
 		eb.addClickListener(new Button.ClickListener() {
 
 			private static final long serialVersionUID = -2800434669444928287L;
@@ -449,12 +450,16 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 			options.setAttributeGroupMode(getFormOptions().getAttributeGroupMode());
 			options.setPreserveSelectedTab(getFormOptions().isPreserveSelectedTab());
 
-			if (options.isOpenInViewMode()) {
-				options.setShowBackButton(true);
+			if (getFormOptions().isShowEditButton()) {
+				// editing in form must be possible
+				options.setShowEditButton(true);
+			} else {
+				options.setOpenInViewMode(true);
+				options.setShowEditButton(false);
 			}
 
-			if (!getFormOptions().isReadOnly()) {
-				options.setShowEditButton(true);
+			if (options.isOpenInViewMode() || !isEditAllowed()) {
+				options.setShowBackButton(true);
 			}
 
 			editForm = new ModelBasedEditForm<ID, T>(entity, getService(), getEntityModel(), options, getFieldFilters()) {
