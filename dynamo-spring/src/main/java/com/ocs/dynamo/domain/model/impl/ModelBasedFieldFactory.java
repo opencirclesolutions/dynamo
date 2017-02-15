@@ -286,14 +286,14 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 			return constructLookupField((EntityModel<S>) fieldEntityModel, attributeModel, fieldFilter, search, true);
 		} else if (AttributeSelectMode.FANCY_LIST.equals(mode)) {
 			// fancy list select
-			FancyListSelect<ID, S> listSelect = new FancyListSelect<>(service, (EntityModel<S>) em,
-			        attributeModel, fieldFilter, search, sos);
+			FancyListSelect<ID, S> listSelect = new FancyListSelect<>(service, (EntityModel<S>) em, attributeModel,
+			        fieldFilter, search, sos);
 			listSelect.setRows(SystemPropertyUtils.getDefaultListSelectRows());
 			return listSelect;
 		} else if (AttributeSelectMode.LIST.equals(mode)) {
 			// simple list select if everything else fails or is not applicable
-			EntityListSelect<ID, S> listSelect = new EntityListSelect<>((EntityModel<S>) em, attributeModel,
-			        service, fieldFilter, sos);
+			EntityListSelect<ID, S> listSelect = new EntityListSelect<>((EntityModel<S>) em, attributeModel, service,
+			        fieldFilter, sos);
 			listSelect.setMultiSelect(multipleSelect);
 			listSelect.setRows(SystemPropertyUtils.getDefaultListSelectRows());
 			return listSelect;
@@ -657,10 +657,10 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 			field = this.constructCollectionSelect(fieldEntityModel, attributeModel, fieldFilter, true, search);
 		} else if (AttributeSelectMode.COMBO.equals(selectMode)) {
 			// combo box
-			field = (Field<?>) constructComboBox(fieldEntityModel, attributeModel, fieldFilter, search);
+			field = constructComboBox(fieldEntityModel, attributeModel, fieldFilter, search);
 		} else if (AttributeSelectMode.LOOKUP.equals(selectMode)) {
 			// single select lookup field
-			field = (Field<?>) constructLookupField(fieldEntityModel, attributeModel, fieldFilter, search, false);
+			field = constructLookupField(fieldEntityModel, attributeModel, fieldFilter, search, false);
 		} else {
 			// list select (single select)
 			field = this.constructCollectionSelect(fieldEntityModel, attributeModel, fieldFilter, false, search);

@@ -95,9 +95,9 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 	@Autowired(required = false)
 	private MessageService messageService;
 
-	private ConcurrentMap<String, EntityModel<?>> cache = new ConcurrentHashMap<String, EntityModel<?>>();
+	private ConcurrentMap<String, EntityModel<?>> cache = new ConcurrentHashMap<>();
 
-	private ConcurrentMap<String, Class<?>> alreadyProcessed = new ConcurrentHashMap<String, Class<?>>();
+	private ConcurrentMap<String, Class<?>> alreadyProcessed = new ConcurrentHashMap<>();
 
 	/**
 	 * Constructs an attribute model for a property
@@ -117,7 +117,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 	 */
 	private <T> List<AttributeModel> constructAttributeModel(PropertyDescriptor descriptor,
 	        EntityModelImpl<T> entityModel, Class<?> parentClass, boolean nested, String prefix) {
-		List<AttributeModel> result = new ArrayList<AttributeModel>();
+		List<AttributeModel> result = new ArrayList<>();
 
 		// validation methods annotated with @AssertTrue or @AssertFalse have to
 		// be ignored
@@ -253,7 +253,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 	private synchronized <T> EntityModel<T> constructModel(String reference, Class<T> entityClass) {
 		EntityModel<T> result = (EntityModel<T>) cache.get(reference);
 		if (result == null) {
-			boolean nested = reference.indexOf('.') > 0;
+			boolean nested = reference.indexOf('.') >= 0;
 
 			// construct the basic model
 			EntityModelImpl<T> model = constructModelInner(entityClass, reference);
@@ -537,7 +537,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 	private AttributeType determineAttributeType(Class<?> parentClass, AttributeModelImpl model) {
 		AttributeType result = null;
 		String name = model.getName();
-		int p = name.lastIndexOf(".");
+		int p = name.lastIndexOf('.');
 		if (p > 0) {
 			name = name.substring(p + 1);
 		}
@@ -1041,14 +1041,14 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 		}
 
 		msg = getAttributeMessage(entityModel, model, EntityModel.ALLOWED_EXTENSIONS);
-		if (!StringUtils.isEmpty(msg)) {
+		if (msg != null && !StringUtils.isEmpty(msg)) {
 			String[] extensions = msg.split(",");
 			Set<String> hashSet = Sets.newHashSet(extensions);
 			model.setAllowedExtensions(hashSet);
 		}
 
 		msg = getAttributeMessage(entityModel, model, EntityModel.GROUP_TOGETHER_WITH);
-		if (!StringUtils.isEmpty(msg)) {
+		if (msg != null && !StringUtils.isEmpty(msg)) {
 			String[] extensions = msg.split(",");
 			for (String s : extensions) {
 				model.addGroupTogetherWith(s);

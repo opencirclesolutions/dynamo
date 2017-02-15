@@ -295,6 +295,16 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 				        boolean viewMode) {
 					return BaseSplitLayout.this.constructCustomField(entityModel, attributeModel, viewMode, false);
 				}
+				
+				@Override
+				protected String getParentGroup(String childGroup) {
+					return BaseSplitLayout.this.getParentGroup(childGroup);
+				}
+
+				@Override
+				protected String[] getParentGroupHeaders() {
+					return BaseSplitLayout.this.getParentGroupHeaders();
+				}				
 
 				@Override
 				protected boolean isEditAllowed() {

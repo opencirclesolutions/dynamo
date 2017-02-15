@@ -94,8 +94,8 @@ public final class JpaQueryBuilder {
 	 *            the criteria query
 	 * @param root
 	 *            the query root
-	 * @param sortOrder
-	 *            the sort object
+	 * @param sortOrders
+	 *            the sort orders
 	 * @return
 	 */
 	private static <T, R> CriteriaQuery<R> addSortInformation(CriteriaBuilder builder, CriteriaQuery<R> cq,
@@ -103,7 +103,7 @@ public final class JpaQueryBuilder {
 		if (sortOrders != null && sortOrders.length > 0) {
 			List<javax.persistence.criteria.Order> orders = new ArrayList<>();
 			for (SortOrder sortOrder : sortOrders) {
-				Expression<?> property = (Expression<?>) getPropertyPath(root, sortOrder.getProperty());
+				Expression<?> property = getPropertyPath(root, sortOrder.getProperty());
 				orders.add(sortOrder.isAscending() ? builder.asc(property) : builder.desc(property));
 			}
 			cq.orderBy(orders);
@@ -143,8 +143,11 @@ public final class JpaQueryBuilder {
 	 * Creates a predicate based on a "Compare" filter
 	 * 
 	 * @param builder
+	 *            the criteria builder
 	 * @param root
+	 *            the query root
 	 * @param filter
+	 *            the Compare filter
 	 * @return
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -215,6 +218,36 @@ public final class JpaQueryBuilder {
 			cq.where(p);
 		}
 		return cq;
+	}
+
+	/**
+	 * Creates a distinct query
+	 * 
+	 * @param filter
+	 * @param entityManager
+	 * @param entityClass
+	 * @param distinctField
+	 * @param sortOrders
+	 * @return
+	 */
+	public static <T> CriteriaQuery<Tuple> createDistinctQuery(Filter filter, EntityManager entityManager,
+	        Class<T> entityClass, String distinctField, SortOrder... sortOrders) {
+		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+		CriteriaQuery<Tuple> cq = builder.createTupleQuery();
+		Root<T> root = cq.from(entityClass);
+
+		// select only the distinctField
+		cq.multiselect(root.get(distinctField));
+
+		// Set where clause
+		Predicate p = createPredicate(filter, builder, root);
+		if (p != null) {
+			cq.where(p);
+		}
+		cq.distinct(true);
+
+		// add order clause
+		return addSortInformation(builder, cq, root, sortOrders);
 	}
 
 	/**
@@ -531,6 +564,7 @@ public final class JpaQueryBuilder {
 	 * Indicates whether at least one of the specified fetches is a fetch that fetches a collection
 	 * 
 	 * @param parent
+	 *            the fetch parent
 	 * @return
 	 */
 	private static boolean isCollectionFetch(FetchParent<?, ?> parent) {
@@ -545,33 +579,4 @@ public final class JpaQueryBuilder {
 		return result;
 	}
 
-	/**
-	 * Creates a distinct query
-	 * 
-	 * @param filter
-	 * @param entityManager
-	 * @param entityClass
-	 * @param distinctField
-	 * @param sortOrders
-	 * @return
-	 */
-	public static <T> CriteriaQuery<Tuple> createDistinctQuery(Filter filter, EntityManager entityManager,
-	        Class<T> entityClass, String distinctField, SortOrder... sortOrders) {
-		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-		CriteriaQuery<Tuple> cq = builder.createTupleQuery();
-		Root<T> root = cq.from(entityClass);
-
-		// select only the distinctField
-		cq.multiselect(root.get(distinctField));
-
-		// Set where clause
-		Predicate p = createPredicate(filter, builder, root);
-		if (p != null) {
-			cq.where(p);
-		}
-		cq.distinct(true);
-
-		// add order clause
-		return addSortInformation(builder, cq, root, sortOrders);
-	}
 }

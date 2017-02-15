@@ -57,12 +57,17 @@ public abstract class BaseUI extends UI {
 	}
 
 	/**
-	 * Initializes the startup view
+	 * Inits the navigator
 	 * 
+	 * @param viewProvider
+	 *            the Vaadin view provider
+	 * @param container
+	 *            the container that holds the view
 	 * @param startView
+	 *            the starting view
 	 * @param alwaysReload
-	 *            indicates whether the view must always be reloaded (even when navigating from the
-	 *            view to the same view)
+	 *            whether to always reload the page (even when navigating from a page to the same
+	 *            page)
 	 */
 	protected void initNavigation(ViewProvider viewProvider, SingleComponentContainer container, String startView,
 	        boolean alwaysReload) {
@@ -73,7 +78,9 @@ public abstract class BaseUI extends UI {
 
 		UI.getCurrent().setNavigator(navigator);
 		navigator.addProvider(viewProvider);
-		navigator.navigateTo(startView);
+		if (startView != null) {
+			navigator.navigateTo(startView);
+		}
 	}
 
 	@Override

@@ -194,14 +194,20 @@ public class SimpleTokenFieldSelect<ID extends Serializable, S extends AbstractE
 		valueChangeListeners.add(listener);
 	}
 
+	/**
+	 * Fills the selection combo box by querying the database
+	 * 
+	 * @param elementCollection
+	 *            indicates whether the field to search for is an element collection
+	 */
 	private void fillComboBox(boolean elementCollection) {
 		List<T> items = null;
 		if (elementCollection) {
-			items = (List<T>) service.findDistinctInCollectionTable(attributeModel.getCollectionTableName(),
+			items = service.findDistinctInCollectionTable(attributeModel.getCollectionTableName(),
 			        attributeModel.getCollectionTableFieldName(), elementType);
 		} else {
-			items = (List<T>) service.findDistinct(new FilterConverter(entityModel).convert(fieldFilter),
-			        distinctField, elementType, SortUtil.translate(sortOrders));
+			items = service.findDistinct(new FilterConverter(entityModel).convert(fieldFilter), distinctField,
+			        elementType, SortUtil.translate(sortOrders));
 		}
 		comboBox.removeAllItems();
 		comboBox.addItems(items);

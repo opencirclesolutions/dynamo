@@ -77,11 +77,14 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	// the joins to use when fetching data
 	private FetchJoinInformation[] joins;
 
-	// the value from the previous row used when drawing divider rows
-	private Object previousDividerValue;
+	// whether the selection of multiple values is allowed
+	private boolean multiSelect = false;
 
 	// the page length (number of rows that is displayed in the table)
 	private int pageLength = PAGE_LENGTH;
+
+	// the value from the previous row used when drawing divider rows
+	private Object previousDividerValue;
 
 	// the currently selected item
 	private T selectedItem;
@@ -94,9 +97,6 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 
 	// the table wrapper
 	private BaseTableWrapper<ID, T> tableWrapper;
-
-	// whether the selection of multiple values is allowed
-	private boolean multiSelect = false;
 
 	/**
 	 * Constructor
@@ -244,8 +244,20 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 		return buttonBar;
 	}
 
+	public FetchJoinInformation[] getDetailJoins() {
+		return detailJoins;
+	}
+
+	public FetchJoinInformation[] getDetailJoinsFallBack() {
+		return (detailJoins == null || detailJoins.length == 0) ? getJoins() : detailJoins;
+	}
+
 	public String getDividerProperty() {
 		return dividerProperty;
+	}
+
+	public Map<String, Filter> getFieldFilters() {
+		return fieldFilters;
 	}
 
 	public FetchJoinInformation[] getJoins() {
@@ -254,6 +266,30 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 
 	public int getPageLength() {
 		return pageLength;
+	}
+
+	/**
+	 * Returns the parent group (which must be returned by the getParentGroupHeaders method) to
+	 * which a certain child group belongs
+	 * 
+	 * @param childGroup
+	 *            the name of the child group
+	 * @return
+	 */
+	protected String getParentGroup(String childGroup) {
+		// overwrite in subclasses if needed
+		return null;
+	}
+
+	/**
+	 * Returns a list of additional group headers that can be used to add an extra nesting layer to
+	 * the layout
+	 * 
+	 * @return
+	 */
+	protected String[] getParentGroupHeaders() {
+		// overwrite in subclasses if needed
+		return null;
 	}
 
 	public T getSelectedItem() {
@@ -350,8 +386,16 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 		// overwrite in subclasses when needed
 	}
 
+	public void setDetailJoins(FetchJoinInformation[] detailJoins) {
+		this.detailJoins = detailJoins;
+	}
+
 	public void setDividerProperty(String dividerProperty) {
 		this.dividerProperty = dividerProperty;
+	}
+
+	public void setFieldFilters(Map<String, Filter> fieldFilters) {
+		this.fieldFilters = fieldFilters;
 	}
 
 	public void setMultiSelect(boolean multiSelect) {
@@ -369,25 +413,5 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 
 	public void setSortEnabled(boolean sortEnabled) {
 		this.sortEnabled = sortEnabled;
-	}
-
-	public FetchJoinInformation[] getDetailJoins() {
-		return detailJoins;
-	}
-
-	public void setDetailJoins(FetchJoinInformation[] detailJoins) {
-		this.detailJoins = detailJoins;
-	}
-
-	public Map<String, Filter> getFieldFilters() {
-		return fieldFilters;
-	}
-
-	public void setFieldFilters(Map<String, Filter> fieldFilters) {
-		this.fieldFilters = fieldFilters;
-	}
-
-	public FetchJoinInformation[] getDetailJoinsFallBack() {
-		return (detailJoins == null || detailJoins.length == 0) ? getJoins() : detailJoins;
 	}
 }

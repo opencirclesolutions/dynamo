@@ -374,18 +374,21 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 			}
 		});
 
-		getTableWrapper().getTable().addItemClickListener(new ItemClickListener() {
+		// select item by double clicking on row
+		if (!getFormOptions().isPopup() && getFormOptions().isDoubleClickSelectAllowed()) {
+			getTableWrapper().getTable().addItemClickListener(new ItemClickListener() {
 
-			private static final long serialVersionUID = 7947905411214073660L;
+				private static final long serialVersionUID = 7947905411214073660L;
 
-			@Override
-			public void itemClick(ItemClickEvent event) {
-				if (event.isDoubleClick() && getFormOptions().isDoubleClickSelectAllowed()) {
-					select(event.getItem().getItemProperty(DynamoConstants.ID).getValue());
-					doEdit();
+				@Override
+				public void itemClick(ItemClickEvent event) {
+					if (event.isDoubleClick()) {
+						select(event.getItem().getItemProperty(DynamoConstants.ID).getValue());
+						doEdit();
+					}
 				}
-			}
-		});
+			});
+		}
 
 		// table dividers
 		constructTableDividers();
@@ -502,6 +505,16 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 				protected Field<?> constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel,
 				        boolean viewMode) {
 					return AbstractSearchLayout.this.constructCustomField(entityModel, attributeModel, viewMode, false);
+				}
+
+				@Override
+				protected String getParentGroup(String childGroup) {
+					return AbstractSearchLayout.this.getParentGroup(childGroup);
+				}
+
+				@Override
+				protected String[] getParentGroupHeaders() {
+					return AbstractSearchLayout.this.getParentGroupHeaders();
 				}
 
 				@Override

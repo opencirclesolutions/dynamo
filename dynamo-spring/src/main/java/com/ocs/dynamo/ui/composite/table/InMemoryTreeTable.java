@@ -672,7 +672,7 @@ public abstract class InMemoryTreeTable<ID, U extends AbstractEntity<ID>, ID2, V
 				propagateChanges = true;
 			} else {
 				// update a single value
-				Number change = handleChange(propertyId.toString(), rowId, parentId, childKey, parentKey, value);
+				Number change = handleChange(propertyId, rowId, parentId, childKey, parentKey, value);
 				if (hasValueChanged(change)) {
 					updateDependentFields(rowId, parentId, propertyId, toBigDecimal(change));
 					setValue(rowId, propertyId, value);
@@ -757,21 +757,6 @@ public abstract class InMemoryTreeTable<ID, U extends AbstractEntity<ID>, ID2, V
 
 	public boolean isViewMode() {
 		return viewMode;
-	}
-
-	/**
-	 * @param value
-	 * @return
-	 */
-	protected Number nvl(Number value) {
-		if (value instanceof BigDecimal) {
-			return value == null ? BigDecimal.ZERO : value;
-		} else if (value instanceof Long) {
-			return value == null ? 0L : value;
-		} else if (value instanceof Integer) {
-			return value == null ? 0 : value;
-		}
-		return value;
 	}
 
 	/**
