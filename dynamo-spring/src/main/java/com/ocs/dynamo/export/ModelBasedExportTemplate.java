@@ -120,7 +120,7 @@ public abstract class ModelBasedExportTemplate<ID extends Serializable, T extend
 				if (am != null && show(am)) {
 					Object value = ClassUtils.getFieldValue(entity, am.getPath());
 					Cell cell = createCell(row, colIndex, entity, value, am);
-					writeCellValue(cell, value, entity, entityModel, am);
+					writeCellValue(cell, value, entityModel, am);
 					colIndex++;
 				}
 			}

@@ -50,11 +50,6 @@ public class QuickAddListSelect<ID extends Serializable, T extends AbstractEntit
 	private EntityListSelect<ID, T> listSelect;
 
 	/**
-	 * The button for adding new entries
-	 */
-	private Button addButton;
-
-	/**
 	 * Whether the component is in view mode
 	 */
 	private boolean viewMode;
@@ -122,7 +117,7 @@ public class QuickAddListSelect<ID extends Serializable, T extends AbstractEntit
 		bar.addComponent(listSelect);
 
 		if (!viewMode) {
-			addButton = constructAddButton();
+			Button addButton = constructAddButton();
 			bar.addComponent(addButton);
 		}
 

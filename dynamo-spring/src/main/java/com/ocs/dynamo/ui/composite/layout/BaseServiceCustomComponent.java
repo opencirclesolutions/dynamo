@@ -118,7 +118,7 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	 * @param entityModel
 	 *            the entity model
 	 * @param formOptions
-	 *            the form options
+	 *            the form options that govern how the component behaves
 	 */
 	public BaseServiceCustomComponent(BaseService<ID, T> service, EntityModel<T> entityModel, FormOptions formOptions) {
 		this.service = service;
@@ -127,7 +127,8 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	}
 
 	/**
-	 * Adds a field entity model reference
+	 * Adds a field entity model - this can be used to overwrite the default entity model that is
+	 * used for rendering complex selection components (lookup dialogs)
 	 * 
 	 * @param path
 	 *            the path to the field
@@ -137,7 +138,7 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	public final void addFieldEntityModel(String path, String reference) {
 		fieldEntityModels.put(path, reference);
 	}
-	
+
 	/**
 	 * Method that is called after the user selects an entity to view in Details mode
 	 * 

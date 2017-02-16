@@ -21,9 +21,9 @@ package com.ocs.dynamo.functional;
  */
 public final class DomainConstants {
 
-	private DomainConstants() {
-
-	}
-
 	public static final int MAX_NAME_LENGTH = 255;
+
+	private DomainConstants() {
+		// default constructor
+	}
 }

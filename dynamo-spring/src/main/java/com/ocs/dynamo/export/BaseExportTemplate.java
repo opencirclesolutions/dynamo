@@ -290,7 +290,7 @@ public abstract class BaseExportTemplate<ID extends Serializable, T extends Abst
 		this.workbook = workbook;
 	}
 
-	protected void writeCellValue(Cell cell, Object value, T entity, EntityModel<T> em, AttributeModel am) {
+	protected void writeCellValue(Cell cell, Object value, EntityModel<T> em, AttributeModel am) {
 		if (value instanceof Integer || value instanceof Long) {
 			// integer or long numbers
 			cell.setCellValue(((Number) value).doubleValue());

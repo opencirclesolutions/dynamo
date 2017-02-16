@@ -192,9 +192,19 @@ public interface EntityModel<T> {
 	String SEARCH_CASE_SENSITIVE = "searchCaseSensitive";
 
 	/**
+	 * Whether to search for exact values (in case of numbers and dates)
+	 */
+	String SEARCH_EXACT_VALUE = "searchForExactValue";
+
+	/**
      * 
      */
 	String SEARCH_PREFIX_ONLY = "searchPrefixOnly";
+
+	/**
+	 * The select mode in a search screen
+	 */
+	String SEARCH_SELECT_MODE = "searchSelectMode";
 
 	/**
 	 * Whether the field is searchable
@@ -202,20 +212,10 @@ public interface EntityModel<T> {
 	String SEARCHABLE = "searchable";
 
 	/**
-	 * Whether to search for exact values (in case of numbers and dates)
-	 */
-	String SEARCH_EXACT_VALUE = "searchForExactValue";
-
-	/**
 	 * Indicates that a lookup field (rather than a combo box) must be used when selecting the
 	 * component
 	 */
 	String SELECT_MODE = "selectMode";
-
-	/**
-	 * The select mode in a search screen
-	 */
-	String SEARCH_SELECT_MODE = "searchSelectMode";
 
 	String SHOW_IN_TABLE = "showInTable";
 
@@ -224,6 +224,11 @@ public interface EntityModel<T> {
 	String SORTABLE = "sortable";
 
 	String TEXTFIELD_MODE = "textFieldMode";
+
+	/**
+	 * Indicates whether to use thousand grouping characters
+	 */
+	String THOUSANDS_GROUPING = "thousandsGrouping";
 
 	String TRUE_REPRESENTATION = "trueRepresentation";
 
@@ -241,11 +246,6 @@ public interface EntityModel<T> {
 	 * Indicates whether to format a date field as a week code
 	 */
 	String WEEK = "week";
-
-	/**
-	 * Indicates whether to use thousand grouping characters
-	 */
-	String THOUSANDS_GROUPING = "thousandsGrouping";
 
 	/**
 	 * Adds a new attribute model on the position of the given existing attribute model. The
@@ -326,8 +326,8 @@ public interface EntityModel<T> {
 	String getDisplayNamePlural();
 
 	/**
-	 * The name of the property that is used when displaying the object in a select component (like
-	 * a combobox) or a table
+	 * The name of the property that is used when displaying the entity inside a select component
+	 * (like a combo box) or a table
 	 * 
 	 * @return
 	 */
@@ -346,26 +346,26 @@ public interface EntityModel<T> {
 	AttributeModel getIdAttributeModel();
 
 	/**
-	 * Returns the primary attribute
+	 * Returns the main attribute
 	 * 
 	 * @return
 	 */
 	AttributeModel getMainAttributeModel();
 
 	/**
-     * 
-     */
+	 * @retun the full reference of this attribute model
+	 */
 	String getReference();
 
 	/**
 	 * 
-	 * @return
+	 * @return all attribute models that are required (value must be entered before saving)
 	 */
 	List<AttributeModel> getRequiredAttributeModels();
 
 	/**
 	 * 
-	 * @return
+	 * @return all attribute models for all attributes that are required for searching
 	 */
 	List<AttributeModel> getRequiredForSearchingAttributeModels();
 
@@ -386,7 +386,7 @@ public interface EntityModel<T> {
 	boolean isAttributeGroupVisible(String group, boolean readOnly);
 
 	/**
-	 * @return
+	 * @return whether only the default attribute gorup is used
 	 */
 	boolean usesDefaultGroupOnly();
 }

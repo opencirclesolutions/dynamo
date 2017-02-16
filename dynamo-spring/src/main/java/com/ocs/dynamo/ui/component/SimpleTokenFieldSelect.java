@@ -168,7 +168,7 @@ public class SimpleTokenFieldSelect<ID extends Serializable, S extends AbstractE
 
 		((IndexedContainer) comboBox.getContainerDataSource()).setItemSorter(new SimpleItemSorter());
 
-		container = new BeanItemContainer<T>(elementType);
+		container = new BeanItemContainer<>(elementType);
 		valueChangeListeners = new ArrayList<>();
 
 		tokenizableFactory = new GenericTokenFieldUtil.TokenizableFactory<T>() {
@@ -197,11 +197,11 @@ public class SimpleTokenFieldSelect<ID extends Serializable, S extends AbstractE
 	private void fillComboBox(boolean elementCollection) {
 		List<T> items = null;
 		if (elementCollection) {
-			items = (List<T>) service.findDistinctInCollectionTable(attributeModel.getCollectionTableName(),
+			items = service.findDistinctInCollectionTable(attributeModel.getCollectionTableName(),
 			        attributeModel.getCollectionTableFieldName(), elementType);
 		} else {
-			items = (List<T>) service.findDistinct(new FilterConverter(entityModel).convert(fieldFilter),
-			        distinctField, elementType, SortUtil.translate(sortOrders));
+			items = service.findDistinct(new FilterConverter(entityModel).convert(fieldFilter), distinctField,
+			        elementType, SortUtil.translate(sortOrders));
 		}
 		comboBox.removeAllItems();
 		comboBox.addItems(items);

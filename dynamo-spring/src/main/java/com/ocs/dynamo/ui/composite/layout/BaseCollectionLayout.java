@@ -125,6 +125,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	 * Adds an additional sort order
 	 * 
 	 * @param sortOrder
+	 *            the sort order to add
 	 */
 	public final void addSortOrder(SortOrder sortOrder) {
 		this.sortOrders.add(sortOrder);
@@ -149,7 +150,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	}
 
 	/**
-	 * Constructs the "Add"-button
+	 * Constructs the "Add"-button that is used to open the form in "new entity" mode
 	 * 
 	 * @return
 	 */
@@ -169,7 +170,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	}
 
 	/**
-	 * Set up the code for adding table dividers
+	 * Add divider rows to the table based on the value of the "dividerProperty"
 	 */
 	protected final void constructTableDividers() {
 		if (dividerProperty != null) {
@@ -258,6 +259,32 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 
 	public T getSelectedItem() {
 		return selectedItem;
+	}
+
+	/**
+	 * Returns the parent group (which must be returned by the getParentGroupHeaders method) to
+	 * which a certain child group belongs
+	 * 
+	 * @param childGroup
+	 *            the name of the child group
+	 * @return
+	 */
+	protected String getParentGroup(String childGroup) {
+		// overwrite in subclasses if needed
+		return null;
+	}
+
+	/**
+	 * Returns a list of additional group headers that can be used to add an extra attribute group layer to
+	 * the layout. By default this method returns null which means that no extra layer will be used. If you return
+	 * a non-empty String array, then the values in this array will be used as additional attribute group header. Use
+	 * the "getParentGroup" method to determine which "regular" attribute group to place inside which parent group.
+	 * 
+	 * @return
+	 */
+	protected String[] getParentGroupHeaders() {
+		// overwrite in subclasses if needed
+		return null;
 	}
 
 	/**

@@ -291,7 +291,7 @@ public abstract class ExportPivotTemplate<ID extends Serializable, T extends Abs
 					Object value = getValue(entity);
 					if (value != null) {
 						Cell cell = createCell(row, colIndex, entity, value, attributeModel);
-						writeCellValue(cell, value, entity, null, attributeModel);
+						writeCellValue(cell, value, null, attributeModel);
 
 						if (value instanceof BigDecimal) {
 							rowSum += ((BigDecimal) value).intValue();

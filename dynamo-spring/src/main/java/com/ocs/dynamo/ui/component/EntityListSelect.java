@@ -140,7 +140,7 @@ public class EntityListSelect<ID extends Serializable, T extends AbstractEntity<
 			this.setCaption(attributeModel.getDisplayName());
 		}
 
-		BeanItemContainer<T> container = new BeanItemContainer<T>(targetEntityModel.getEntityClass());
+		BeanItemContainer<T> container = new BeanItemContainer<>(targetEntityModel.getEntityClass());
 		this.setContainerDataSource(container);
 
 		if (SelectMode.ALL.equals(mode)) {

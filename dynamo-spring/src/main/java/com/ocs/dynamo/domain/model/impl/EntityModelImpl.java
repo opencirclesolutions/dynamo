@@ -170,7 +170,7 @@ public class EntityModelImpl<T> implements EntityModel<T> {
 				}
 			}
 		}
-		return result;
+		return Collections.unmodifiableList(result);
 	}
 
 	@Override
@@ -222,13 +222,13 @@ public class EntityModelImpl<T> implements EntityModel<T> {
 
 	@Override
 	public List<AttributeModel> getRequiredAttributeModels() {
-		List<AttributeModel> requiredModels = new ArrayList<>();
+		List<AttributeModel> result = new ArrayList<>();
 		for (AttributeModel model : getAttributeModels()) {
 			if (model.isRequired()) {
-				requiredModels.add(model);
+				result.add(model);
 			}
 		}
-		return requiredModels;
+		return Collections.unmodifiableList(result);
 	}
 
 	@Override
@@ -238,8 +238,15 @@ public class EntityModelImpl<T> implements EntityModel<T> {
 			if (model.isSearchable() && model.isRequiredForSearching()) {
 				requiredModels.add(model);
 			}
+
+			// add nested models
+			if (model.getNestedEntityModel() != null) {
+				List<AttributeModel> nested = model.getNestedEntityModel().getRequiredForSearchingAttributeModels();
+				requiredModels.addAll(nested);
+			}
 		}
-		return requiredModels;
+
+		return Collections.unmodifiableList(requiredModels);
 	}
 
 	@Override
@@ -263,12 +270,6 @@ public class EntityModelImpl<T> implements EntityModel<T> {
 		return false;
 	}
 
-	/**
-	 * Set the attribute model of the id
-	 * 
-	 * @param idAttributeModel
-	 *            the idAttributeModel to set
-	 */
 	void setIdAttributeModel(AttributeModel idAttributeModel) {
 		this.idAttributeModel = idAttributeModel;
 	}

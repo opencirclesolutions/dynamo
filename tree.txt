@@ -1,0 +1,723 @@
+[INFO] Scanning for projects...
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Build Order:
+[INFO] 
+[INFO] Dynamo Framework
+[INFO] Dynamo Framework - Core
+[INFO] Dynamo Framework - JPA
+[INFO] Dynamo Framework - Supporting test classes
+[INFO] Dynamo Framework - Camel
+[INFO] Dynamo Framework - Vaadin
+[INFO] Dynamo Framework - Spring
+[INFO] Dynamo Framework - Functional extension - Domain
+[INFO] Dynamo Framework - JasperReports fixes
+[INFO] Dynamo Framework - Jasperreports
+[INFO] Dynamo Maven Archetype
+[INFO] Dynamo Maven Archetype (Modules)
+[INFO] Dynamo Show Case
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building Dynamo Framework 1.0.1-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-dependency-plugin:2.8:tree (default-cli) @ dynamo-parent ---
+[INFO] org.dynamoframework:dynamo-parent:pom:1.0.1-SNAPSHOT
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building Dynamo Framework - Core 1.0.1-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-dependency-plugin:2.8:tree (default-cli) @ dynamo-core ---
+[INFO] org.dynamoframework:dynamo-core:jar:1.0.1-SNAPSHOT
+[INFO] +- org.slf4j:slf4j-api:jar:1.7.5:compile
+[INFO] +- org.slf4j:slf4j-log4j12:jar:1.7.5:compile
+[INFO] +- log4j:log4j:jar:1.2.17:compile
+[INFO] +- commons-lang:commons-lang:jar:2.6:compile
+[INFO] +- javax.validation:validation-api:jar:1.0.0.GA:provided
+[INFO] +- junit:junit:jar:4.12:test
+[INFO] |  \- org.hamcrest:hamcrest-core:jar:1.3:test
+[INFO] \- com.h2database:h2:jar:1.4.187:test
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building Dynamo Framework - JPA 1.0.1-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-dependency-plugin:2.8:tree (default-cli) @ dynamo-jpa ---
+[INFO] org.dynamoframework:dynamo-jpa:jar:1.0.1-SNAPSHOT
+[INFO] +- org.dynamoframework:dynamo-core:jar:1.0.1-SNAPSHOT:compile
+[INFO] |  +- org.slf4j:slf4j-api:jar:1.7.5:compile
+[INFO] |  +- org.slf4j:slf4j-log4j12:jar:1.7.5:compile
+[INFO] |  +- log4j:log4j:jar:1.2.17:compile
+[INFO] |  \- commons-lang:commons-lang:jar:2.6:compile
+[INFO] +- org.hibernate:hibernate-core:jar:4.3.1.Final:provided
+[INFO] |  +- org.jboss.logging:jboss-logging:jar:3.1.3.GA:provided
+[INFO] |  +- org.jboss.logging:jboss-logging-annotations:jar:1.2.0.Beta1:provided
+[INFO] |  +- org.jboss.spec.javax.transaction:jboss-transaction-api_1.2_spec:jar:1.0.0.Final:provided
+[INFO] |  +- dom4j:dom4j:jar:1.6.1:provided
+[INFO] |  +- org.hibernate.common:hibernate-commons-annotations:jar:4.0.4.Final:provided
+[INFO] |  +- org.hibernate.javax.persistence:hibernate-jpa-2.1-api:jar:1.0.0.Final:provided
+[INFO] |  +- org.javassist:javassist:jar:3.18.1-GA:provided
+[INFO] |  +- antlr:antlr:jar:2.7.7:provided
+[INFO] |  \- org.jboss:jandex:jar:1.1.0.Final:provided
+[INFO] +- org.hibernate:hibernate-entitymanager:jar:4.3.1.Final:provided
+[INFO] +- org.hibernate:hibernate-validator:jar:4.3.2.Final:provided
+[INFO] |  \- javax.validation:validation-api:jar:1.0.0.GA:provided
+[INFO] +- com.mysema.querydsl:querydsl-core:jar:3.6.3:compile
+[INFO] |  +- com.google.guava:guava:jar:18.0:compile
+[INFO] |  +- com.google.code.findbugs:jsr305:jar:1.3.9:compile
+[INFO] |  +- com.mysema.commons:mysema-commons-lang:jar:0.2.4:compile
+[INFO] |  \- com.infradna.tool:bridge-method-annotation:jar:1.13:compile
+[INFO] +- com.mysema.querydsl:querydsl-jpa:jar:3.6.3:compile
+[INFO] \- com.mysema.querydsl:querydsl-apt:jar:3.6.3:compile
+[INFO]    \- com.mysema.querydsl:querydsl-codegen:jar:3.6.3:compile
+[INFO]       +- com.mysema.codegen:codegen:jar:0.6.6:compile
+[INFO]       |  \- org.eclipse.jdt.core.compiler:ecj:jar:4.3.1:compile
+[INFO]       \- javax.inject:javax.inject:jar:1:compile
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building Dynamo Framework - Supporting test classes 1.0.1-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-dependency-plugin:2.8:tree (default-cli) @ dynamo-test ---
+[INFO] org.dynamoframework:dynamo-test:jar:1.0.1-SNAPSHOT
+[INFO] +- org.dynamoframework:dynamo-core:jar:1.0.1-SNAPSHOT:compile
+[INFO] |  +- org.slf4j:slf4j-api:jar:1.7.5:compile
+[INFO] |  +- org.slf4j:slf4j-log4j12:jar:1.7.5:compile
+[INFO] |  \- commons-lang:commons-lang:jar:2.6:compile
+[INFO] +- org.dynamoframework:dynamo-jpa:jar:1.0.1-SNAPSHOT:compile
+[INFO] |  +- com.mysema.querydsl:querydsl-core:jar:3.6.3:compile
+[INFO] |  |  +- com.google.guava:guava:jar:18.0:compile
+[INFO] |  |  +- com.google.code.findbugs:jsr305:jar:1.3.9:compile
+[INFO] |  |  +- com.mysema.commons:mysema-commons-lang:jar:0.2.4:compile
+[INFO] |  |  \- com.infradna.tool:bridge-method-annotation:jar:1.13:compile
+[INFO] |  +- com.mysema.querydsl:querydsl-jpa:jar:3.6.3:compile
+[INFO] |  \- com.mysema.querydsl:querydsl-apt:jar:3.6.3:compile
+[INFO] |     \- com.mysema.querydsl:querydsl-codegen:jar:3.6.3:compile
+[INFO] |        +- com.mysema.codegen:codegen:jar:0.6.6:compile
+[INFO] |        |  \- org.eclipse.jdt.core.compiler:ecj:jar:4.3.1:compile
+[INFO] |        \- javax.inject:javax.inject:jar:1:compile
+[INFO] +- org.hibernate:hibernate-core:jar:4.3.1.Final:provided
+[INFO] |  +- org.jboss.logging:jboss-logging:jar:3.1.3.GA:provided
+[INFO] |  +- org.jboss.logging:jboss-logging-annotations:jar:1.2.0.Beta1:provided
+[INFO] |  +- org.jboss.spec.javax.transaction:jboss-transaction-api_1.2_spec:jar:1.0.0.Final:provided
+[INFO] |  +- dom4j:dom4j:jar:1.6.1:provided
+[INFO] |  +- org.hibernate.common:hibernate-commons-annotations:jar:4.0.4.Final:provided
+[INFO] |  +- org.hibernate.javax.persistence:hibernate-jpa-2.1-api:jar:1.0.0.Final:provided
+[INFO] |  +- org.javassist:javassist:jar:3.18.1-GA:provided
+[INFO] |  +- antlr:antlr:jar:2.7.7:provided
+[INFO] |  \- org.jboss:jandex:jar:1.1.0.Final:provided
+[INFO] +- junit:junit:jar:4.12:compile
+[INFO] |  \- org.hamcrest:hamcrest-core:jar:1.3:compile
+[INFO] +- junit-addons:junit-addons:jar:1.4:compile
+[INFO] |  +- xerces:xercesImpl:jar:2.6.2:compile
+[INFO] |  \- xerces:xmlParserAPIs:jar:2.6.2:compile
+[INFO] +- org.mockito:mockito-all:jar:1.10.19:compile
+[INFO] +- org.springframework:spring-context:jar:4.1.6.RELEASE:compile
+[INFO] |  +- org.springframework:spring-aop:jar:4.1.6.RELEASE:compile
+[INFO] |  |  \- aopalliance:aopalliance:jar:1.0:compile
+[INFO] |  +- org.springframework:spring-beans:jar:4.1.6.RELEASE:compile
+[INFO] |  +- org.springframework:spring-core:jar:4.1.6.RELEASE:compile
+[INFO] |  |  \- commons-logging:commons-logging:jar:1.2:compile
+[INFO] |  \- org.springframework:spring-expression:jar:4.1.6.RELEASE:compile
+[INFO] +- log4j:log4j:jar:1.2.17:compile
+[INFO] \- org.springframework:spring-test:jar:4.1.6.RELEASE:compile
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building Dynamo Framework - Camel 1.0.1-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-dependency-plugin:2.8:tree (default-cli) @ dynamo-camel ---
+[INFO] org.dynamoframework:dynamo-camel:jar:1.0.1-SNAPSHOT
+[INFO] +- org.dynamoframework:dynamo-core:jar:1.0.1-SNAPSHOT:compile
+[INFO] |  +- org.slf4j:slf4j-api:jar:1.7.5:compile
+[INFO] |  +- org.slf4j:slf4j-log4j12:jar:1.7.5:compile
+[INFO] |  +- log4j:log4j:jar:1.2.17:compile
+[INFO] |  \- commons-lang:commons-lang:jar:2.6:compile
+[INFO] +- org.dynamoframework:dynamo-test:jar:1.0.1-SNAPSHOT:compile
+[INFO] |  +- org.dynamoframework:dynamo-jpa:jar:1.0.1-SNAPSHOT:compile
+[INFO] |  |  +- com.mysema.querydsl:querydsl-core:jar:3.6.3:compile
+[INFO] |  |  |  +- com.google.guava:guava:jar:18.0:compile
+[INFO] |  |  |  +- com.google.code.findbugs:jsr305:jar:1.3.9:compile
+[INFO] |  |  |  +- com.mysema.commons:mysema-commons-lang:jar:0.2.4:compile
+[INFO] |  |  |  \- com.infradna.tool:bridge-method-annotation:jar:1.13:compile
+[INFO] |  |  +- com.mysema.querydsl:querydsl-jpa:jar:3.6.3:compile
+[INFO] |  |  \- com.mysema.querydsl:querydsl-apt:jar:3.6.3:compile
+[INFO] |  |     \- com.mysema.querydsl:querydsl-codegen:jar:3.6.3:compile
+[INFO] |  |        +- com.mysema.codegen:codegen:jar:0.6.6:compile
+[INFO] |  |        |  \- org.eclipse.jdt.core.compiler:ecj:jar:4.3.1:compile
+[INFO] |  |        \- javax.inject:javax.inject:jar:1:compile
+[INFO] |  +- junit:junit:jar:4.12:test
+[INFO] |  |  \- org.hamcrest:hamcrest-core:jar:1.3:test
+[INFO] |  +- junit-addons:junit-addons:jar:1.4:test
+[INFO] |  |  +- xerces:xercesImpl:jar:2.6.2:test
+[INFO] |  |  \- xerces:xmlParserAPIs:jar:2.6.2:test
+[INFO] |  +- org.springframework:spring-context:jar:4.1.6.RELEASE:compile
+[INFO] |  |  +- org.springframework:spring-beans:jar:4.1.6.RELEASE:compile
+[INFO] |  |  \- org.springframework:spring-expression:jar:4.1.6.RELEASE:compile
+[INFO] |  \- org.springframework:spring-test:jar:4.1.6.RELEASE:compile
+[INFO] +- org.springframework:spring-core:jar:4.1.6.RELEASE:compile
+[INFO] |  \- commons-logging:commons-logging:jar:1.2:compile
+[INFO] +- org.apache.camel:camel-core:jar:2.15.6:compile
+[INFO] |  +- com.sun.xml.bind:jaxb-core:jar:2.2.11:compile
+[INFO] |  \- com.sun.xml.bind:jaxb-impl:jar:2.2.11:compile
+[INFO] +- org.apache.camel:camel-spring:jar:2.15.6:compile
+[INFO] |  +- org.springframework:spring-aop:jar:4.1.6.RELEASE:compile
+[INFO] |  |  \- aopalliance:aopalliance:jar:1.0:compile
+[INFO] |  \- org.springframework:spring-tx:jar:4.1.6.RELEASE:compile
+[INFO] +- org.mockito:mockito-all:jar:1.10.19:provided
+[INFO] \- com.h2database:h2:jar:1.4.187:test
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building Dynamo Framework - Vaadin 1.0.1-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-dependency-plugin:2.8:tree (default-cli) @ dynamo-vaadin ---
+[INFO] org.dynamoframework:dynamo-vaadin:jar:1.0.1-SNAPSHOT
+[INFO] +- org.dynamoframework:dynamo-core:jar:1.0.1-SNAPSHOT:compile
+[INFO] |  +- org.slf4j:slf4j-api:jar:1.7.5:compile
+[INFO] |  +- org.slf4j:slf4j-log4j12:jar:1.7.5:compile
+[INFO] |  +- log4j:log4j:jar:1.2.17:compile
+[INFO] |  \- commons-lang:commons-lang:jar:2.6:compile
+[INFO] +- javax.servlet:javax.servlet-api:jar:3.0.1:provided
+[INFO] +- com.vaadin:vaadin-server:jar:7.7.3:compile
+[INFO] |  +- com.vaadin:vaadin-sass-compiler:jar:0.9.13:compile
+[INFO] |  |  +- org.w3c.css:sac:jar:1.3:compile
+[INFO] |  |  \- com.vaadin.external.flute:flute:jar:1.3.0.gg2:compile
+[INFO] |  +- com.vaadin:vaadin-shared:jar:7.7.3:compile
+[INFO] |  \- org.jsoup:jsoup:jar:1.8.3:compile
+[INFO] +- com.vaadin:vaadin-client-compiled:jar:7.7.3:compile
+[INFO] +- com.vaadin:vaadin-themes:jar:7.7.3:compile
+[INFO] +- org.vaadin.addons.lazyquerycontainer:vaadin-lazyquerycontainer:jar:7.4.0.1:compile
+[INFO] +- org.vaadin.addon:tableexport-for-vaadin:jar:1.5.1.5:compile
+[INFO] |  +- commons-io:commons-io:jar:2.4:compile
+[INFO] |  \- org.apache.poi:poi:jar:3.13:compile
+[INFO] |     \- commons-codec:commons-codec:jar:1.9:compile
+[INFO] +- org.vaadin.addon:confirmdialog:jar:2.1.3:compile
+[INFO] +- org.vaadin.addons:extended-token-field:jar:0.2.0:compile
+[INFO] +- com.vaadin:vaadin-client-compiler:jar:7.7.3:provided
+[INFO] |  \- com.vaadin.external.gwt:gwt-dev:jar:2.7.0.vaadin4:provided
+[INFO] |     +- org.ow2.asm:asm:jar:5.0.3:provided
+[INFO] |     +- org.ow2.asm:asm-util:jar:5.0.3:provided
+[INFO] |     |  \- org.ow2.asm:asm-tree:jar:5.0.3:provided
+[INFO] |     \- org.ow2.asm:asm-commons:jar:5.0.3:provided
+[INFO] +- com.vaadin:vaadin-client:jar:7.7.3:provided
+[INFO] |  \- com.vaadin.external.gwt:gwt-elemental:jar:2.7.0.vaadin4:provided
+[INFO] |     \- com.vaadin.external.gwt:gwt-user:jar:2.7.0.vaadin4:provided
+[INFO] |        +- javax.validation:validation-api:jar:1.0.0.GA:provided
+[INFO] |        \- javax.validation:validation-api:jar:sources:1.0.0.GA:provided
+[INFO] \- com.vaadin.external.google:guava:jar:16.0.1.vaadin1:compile
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building Dynamo Framework - Spring 1.0.1-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-dependency-plugin:2.8:tree (default-cli) @ dynamo-spring ---
+[INFO] org.dynamoframework:dynamo-spring:jar:1.0.1-SNAPSHOT
+[INFO] +- org.dynamoframework:dynamo-core:jar:1.0.1-SNAPSHOT:compile
+[INFO] |  +- org.slf4j:slf4j-api:jar:1.7.5:compile
+[INFO] |  +- org.slf4j:slf4j-log4j12:jar:1.7.5:compile
+[INFO] |  \- log4j:log4j:jar:1.2.17:compile
+[INFO] +- org.dynamoframework:dynamo-vaadin:jar:1.0.1-SNAPSHOT:compile
+[INFO] |  +- com.vaadin:vaadin-client-compiled:jar:7.7.3:compile
+[INFO] |  +- com.vaadin:vaadin-themes:jar:7.7.3:compile
+[INFO] |  +- org.vaadin.addons.lazyquerycontainer:vaadin-lazyquerycontainer:jar:7.4.0.1:compile
+[INFO] |  +- org.vaadin.addon:tableexport-for-vaadin:jar:1.5.1.5:compile
+[INFO] |  +- org.vaadin.addon:confirmdialog:jar:2.1.3:compile
+[INFO] |  \- com.vaadin.external.google:guava:jar:16.0.1.vaadin1:compile
+[INFO] +- org.dynamoframework:dynamo-jpa:jar:1.0.1-SNAPSHOT:compile
+[INFO] +- org.dynamoframework:dynamo-test:jar:1.0.1-SNAPSHOT:test
+[INFO] +- javax.servlet:javax.servlet-api:jar:3.0.1:provided
+[INFO] +- com.vaadin:vaadin-spring:jar:1.0.0.beta3:compile
+[INFO] +- com.vaadin:vaadin-server:jar:7.7.3:compile
+[INFO] |  +- com.vaadin:vaadin-sass-compiler:jar:0.9.13:compile
+[INFO] |  |  +- org.w3c.css:sac:jar:1.3:compile
+[INFO] |  |  \- com.vaadin.external.flute:flute:jar:1.3.0.gg2:compile
+[INFO] |  +- com.vaadin:vaadin-shared:jar:7.7.3:compile
+[INFO] |  \- org.jsoup:jsoup:jar:1.8.3:compile
+[INFO] +- org.vaadin.addons:extended-token-field:jar:0.2.0:compile
+[INFO] +- org.springframework:spring-web:jar:4.1.6.RELEASE:compile
+[INFO] |  +- org.springframework:spring-beans:jar:4.1.6.RELEASE:compile
+[INFO] |  \- org.springframework:spring-core:jar:4.1.6.RELEASE:compile
+[INFO] |     \- commons-logging:commons-logging:jar:1.2:compile
+[INFO] +- org.springframework:spring-expression:jar:4.1.6.RELEASE:compile
+[INFO] +- org.springframework:spring-context:jar:4.1.6.RELEASE:compile
+[INFO] +- org.springframework:spring-tx:jar:4.1.6.RELEASE:compile
+[INFO] +- org.springframework:spring-aop:jar:4.1.6.RELEASE:compile
+[INFO] |  \- aopalliance:aopalliance:jar:1.0:compile
+[INFO] +- org.springframework:spring-orm:jar:4.1.6.RELEASE:compile
+[INFO] |  \- org.springframework:spring-jdbc:jar:4.1.6.RELEASE:compile
+[INFO] +- org.springframework:spring-test:jar:4.1.6.RELEASE:compile
+[INFO] +- org.aspectj:aspectjrt:jar:1.6.12:compile
+[INFO] +- org.aspectj:aspectjweaver:jar:1.6.12:compile
+[INFO] +- org.hibernate:hibernate-core:jar:4.3.1.Final:provided
+[INFO] |  +- org.jboss.logging:jboss-logging:jar:3.1.3.GA:provided
+[INFO] |  +- org.jboss.logging:jboss-logging-annotations:jar:1.2.0.Beta1:provided
+[INFO] |  +- org.jboss.spec.javax.transaction:jboss-transaction-api_1.2_spec:jar:1.0.0.Final:provided
+[INFO] |  +- dom4j:dom4j:jar:1.6.1:provided
+[INFO] |  +- org.hibernate.common:hibernate-commons-annotations:jar:4.0.4.Final:provided
+[INFO] |  +- org.hibernate.javax.persistence:hibernate-jpa-2.1-api:jar:1.0.0.Final:provided
+[INFO] |  +- org.javassist:javassist:jar:3.18.1-GA:provided
+[INFO] |  +- antlr:antlr:jar:2.7.7:provided
+[INFO] |  \- org.jboss:jandex:jar:1.1.0.Final:provided
+[INFO] +- org.hibernate:hibernate-entitymanager:jar:4.3.1.Final:provided
+[INFO] +- org.hibernate:hibernate-validator:jar:4.3.2.Final:provided
+[INFO] |  \- javax.validation:validation-api:jar:1.0.0.GA:provided
+[INFO] +- com.mysema.querydsl:querydsl-core:jar:3.6.3:compile
+[INFO] |  +- com.google.guava:guava:jar:18.0:compile
+[INFO] |  +- com.google.code.findbugs:jsr305:jar:1.3.9:compile
+[INFO] |  +- com.mysema.commons:mysema-commons-lang:jar:0.2.4:compile
+[INFO] |  \- com.infradna.tool:bridge-method-annotation:jar:1.13:compile
+[INFO] +- com.mysema.querydsl:querydsl-jpa:jar:3.6.3:compile
+[INFO] +- com.mysema.querydsl:querydsl-apt:jar:3.6.3:compile
+[INFO] |  \- com.mysema.querydsl:querydsl-codegen:jar:3.6.3:compile
+[INFO] |     +- com.mysema.codegen:codegen:jar:0.6.6:compile
+[INFO] |     |  \- org.eclipse.jdt.core.compiler:ecj:jar:4.3.1:compile
+[INFO] |     \- javax.inject:javax.inject:jar:1:compile
+[INFO] +- org.apache.poi:poi:jar:3.13:compile
+[INFO] |  \- commons-codec:commons-codec:jar:1.9:compile
+[INFO] +- com.monitorjbl:xlsx-streamer:jar:0.2.9:compile
+[INFO] |  \- org.apache.poi:poi-ooxml:jar:3.13:compile
+[INFO] |     \- org.apache.poi:poi-ooxml-schemas:jar:3.13:compile
+[INFO] |        \- org.apache.xmlbeans:xmlbeans:jar:2.6.0:compile
+[INFO] |           \- stax:stax-api:jar:1.0.1:compile
+[INFO] +- net.sf.opencsv:opencsv:jar:2.3:compile
+[INFO] +- commons-lang:commons-lang:jar:2.6:compile
+[INFO] +- commons-io:commons-io:jar:2.4:compile
+[INFO] +- junit:junit:jar:4.12:test
+[INFO] |  \- org.hamcrest:hamcrest-core:jar:1.3:test
+[INFO] +- junit-addons:junit-addons:jar:1.4:test
+[INFO] |  +- xerces:xercesImpl:jar:2.6.2:test
+[INFO] |  \- xerces:xmlParserAPIs:jar:2.6.2:test
+[INFO] +- org.mockito:mockito-all:jar:1.10.19:test
+[INFO] \- com.h2database:h2:jar:1.4.187:test
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building Dynamo Framework - Functional extension - Domain 1.0.1-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-dependency-plugin:2.8:tree (default-cli) @ dynamo-functional-domain ---
+[INFO] org.dynamoframework:dynamo-functional-domain:jar:1.0.1-SNAPSHOT
+[INFO] +- org.dynamoframework:dynamo-core:jar:1.0.1-SNAPSHOT:compile
+[INFO] |  +- org.slf4j:slf4j-api:jar:1.7.5:compile
+[INFO] |  +- org.slf4j:slf4j-log4j12:jar:1.7.5:compile
+[INFO] |  +- log4j:log4j:jar:1.2.17:compile
+[INFO] |  \- commons-lang:commons-lang:jar:2.6:compile
+[INFO] +- org.dynamoframework:dynamo-jpa:jar:1.0.1-SNAPSHOT:compile
+[INFO] +- org.dynamoframework:dynamo-spring:jar:1.0.1-SNAPSHOT:compile
+[INFO] |  +- com.vaadin:vaadin-spring:jar:1.0.0.beta3:compile
+[INFO] |  +- org.vaadin.addons:extended-token-field:jar:0.2.0:compile
+[INFO] |  +- org.springframework:spring-web:jar:4.1.6.RELEASE:compile
+[INFO] |  +- org.springframework:spring-expression:jar:4.1.6.RELEASE:compile
+[INFO] |  +- org.springframework:spring-aop:jar:4.1.6.RELEASE:compile
+[INFO] |  |  \- aopalliance:aopalliance:jar:1.0:compile
+[INFO] |  +- org.springframework:spring-orm:jar:4.1.6.RELEASE:compile
+[INFO] |  |  \- org.springframework:spring-jdbc:jar:4.1.6.RELEASE:compile
+[INFO] |  +- org.springframework:spring-test:jar:4.1.6.RELEASE:compile
+[INFO] |  +- org.aspectj:aspectjrt:jar:1.6.12:compile
+[INFO] |  +- org.aspectj:aspectjweaver:jar:1.6.12:compile
+[INFO] |  +- org.apache.poi:poi:jar:3.13:compile
+[INFO] |  |  \- commons-codec:commons-codec:jar:1.9:compile
+[INFO] |  +- com.monitorjbl:xlsx-streamer:jar:0.2.9:compile
+[INFO] |  |  \- org.apache.poi:poi-ooxml:jar:3.13:compile
+[INFO] |  |     \- org.apache.poi:poi-ooxml-schemas:jar:3.13:compile
+[INFO] |  |        \- org.apache.xmlbeans:xmlbeans:jar:2.6.0:compile
+[INFO] |  |           \- stax:stax-api:jar:1.0.1:compile
+[INFO] |  +- net.sf.opencsv:opencsv:jar:2.3:compile
+[INFO] |  \- commons-io:commons-io:jar:2.4:compile
+[INFO] +- org.dynamoframework:dynamo-vaadin:jar:1.0.1-SNAPSHOT:compile
+[INFO] |  +- com.vaadin:vaadin-client-compiled:jar:7.7.3:compile
+[INFO] |  +- com.vaadin:vaadin-themes:jar:7.7.3:compile
+[INFO] |  +- org.vaadin.addons.lazyquerycontainer:vaadin-lazyquerycontainer:jar:7.4.0.1:compile
+[INFO] |  +- org.vaadin.addon:tableexport-for-vaadin:jar:1.5.1.5:compile
+[INFO] |  +- org.vaadin.addon:confirmdialog:jar:2.1.3:compile
+[INFO] |  \- com.vaadin.external.google:guava:jar:16.0.1.vaadin1:compile
+[INFO] +- org.hibernate:hibernate-core:jar:4.3.1.Final:provided
+[INFO] |  +- org.jboss.logging:jboss-logging:jar:3.1.3.GA:provided
+[INFO] |  +- org.jboss.logging:jboss-logging-annotations:jar:1.2.0.Beta1:provided
+[INFO] |  +- org.jboss.spec.javax.transaction:jboss-transaction-api_1.2_spec:jar:1.0.0.Final:provided
+[INFO] |  +- dom4j:dom4j:jar:1.6.1:provided
+[INFO] |  +- org.hibernate.common:hibernate-commons-annotations:jar:4.0.4.Final:provided
+[INFO] |  +- org.hibernate.javax.persistence:hibernate-jpa-2.1-api:jar:1.0.0.Final:provided
+[INFO] |  +- org.javassist:javassist:jar:3.18.1-GA:provided
+[INFO] |  +- antlr:antlr:jar:2.7.7:provided
+[INFO] |  \- org.jboss:jandex:jar:1.1.0.Final:provided
+[INFO] +- org.hibernate:hibernate-entitymanager:jar:4.3.1.Final:provided
+[INFO] +- org.hibernate:hibernate-validator:jar:4.3.2.Final:provided
+[INFO] |  \- javax.validation:validation-api:jar:1.0.0.GA:provided
+[INFO] +- org.springframework:spring-context:jar:4.1.6.RELEASE:compile
+[INFO] |  +- org.springframework:spring-beans:jar:4.1.6.RELEASE:compile
+[INFO] |  \- org.springframework:spring-core:jar:4.1.6.RELEASE:compile
+[INFO] |     \- commons-logging:commons-logging:jar:1.2:compile
+[INFO] +- org.springframework:spring-tx:jar:4.1.6.RELEASE:compile
+[INFO] +- com.vaadin:vaadin-server:jar:7.7.3:compile
+[INFO] |  +- com.vaadin:vaadin-sass-compiler:jar:0.9.13:compile
+[INFO] |  |  +- org.w3c.css:sac:jar:1.3:compile
+[INFO] |  |  \- com.vaadin.external.flute:flute:jar:1.3.0.gg2:compile
+[INFO] |  +- com.vaadin:vaadin-shared:jar:7.7.3:compile
+[INFO] |  \- org.jsoup:jsoup:jar:1.8.3:compile
+[INFO] +- com.mysema.querydsl:querydsl-core:jar:3.6.3:compile
+[INFO] |  +- com.google.guava:guava:jar:18.0:compile
+[INFO] |  +- com.google.code.findbugs:jsr305:jar:1.3.9:compile
+[INFO] |  +- com.mysema.commons:mysema-commons-lang:jar:0.2.4:compile
+[INFO] |  \- com.infradna.tool:bridge-method-annotation:jar:1.13:compile
+[INFO] +- com.mysema.querydsl:querydsl-jpa:jar:3.6.3:compile
+[INFO] +- com.mysema.querydsl:querydsl-apt:jar:3.6.3:compile
+[INFO] |  \- com.mysema.querydsl:querydsl-codegen:jar:3.6.3:compile
+[INFO] |     +- com.mysema.codegen:codegen:jar:0.6.6:compile
+[INFO] |     |  \- org.eclipse.jdt.core.compiler:ecj:jar:4.3.1:compile
+[INFO] |     \- javax.inject:javax.inject:jar:1:compile
+[INFO] +- javax.servlet:javax.servlet-api:jar:3.0.1:provided
+[INFO] +- org.dynamoframework:dynamo-test:jar:1.0.1-SNAPSHOT:test
+[INFO] |  +- junit-addons:junit-addons:jar:1.4:test
+[INFO] |  |  +- xerces:xercesImpl:jar:2.6.2:test
+[INFO] |  |  \- xerces:xmlParserAPIs:jar:2.6.2:test
+[INFO] |  \- org.mockito:mockito-all:jar:1.10.19:test
+[INFO] +- junit:junit:jar:4.12:test
+[INFO] |  \- org.hamcrest:hamcrest-core:jar:1.3:test
+[INFO] \- com.h2database:h2:jar:1.4.187:test
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building Dynamo Framework - JasperReports fixes 1.0.1-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-dependency-plugin:2.10:tree (default-cli) @ dynamo-jasperreports-fixes ---
+[INFO] org.dynamoframework:dynamo-jasperreports-fixes:jar:1.0.1-SNAPSHOT
+[INFO] +- commons-beanutils:commons-beanutils:jar:1.9.0:compile
+[INFO] +- commons-collections:commons-collections:jar:3.2.2:compile
+[INFO] +- commons-digester:commons-digester:jar:2.1:compile
+[INFO] +- commons-logging:commons-logging:jar:1.1.1:compile
+[INFO] +- org.hibernate:hibernate-core:jar:3.3.2.GA:compile
+[INFO] |  +- dom4j:dom4j:jar:1.6.1:compile
+[INFO] |  \- org.slf4j:slf4j-api:jar:1.7.5:compile
+[INFO] +- com.lowagie:itext:jar:2.1.7.js5:compile
+[INFO] |  +- bouncycastle:bcmail-jdk14:jar:138:compile
+[INFO] |  +- bouncycastle:bcprov-jdk14:jar:138:compile
+[INFO] |  \- org.bouncycastle:bctsp-jdk14:jar:1.38:compile
+[INFO] |     +- org.bouncycastle:bcprov-jdk14:jar:1.38:compile
+[INFO] |     \- org.bouncycastle:bcmail-jdk14:jar:1.38:compile
+[INFO] +- com.adobe.xmp:xmpcore:jar:5.1.1:compile
+[INFO] +- org.jfree:jcommon:jar:1.0.23:compile
+[INFO] +- org.jfree:jfreechart:jar:1.0.19:compile
+[INFO] +- org.apache.poi:poi:jar:3.10.1:compile
+[INFO] |  \- commons-codec:commons-codec:jar:1.5:compile
+[INFO] +- javax.servlet:servlet-api:jar:2.4:provided
+[INFO] +- xalan:xalan:jar:2.7.2:provided
+[INFO] |  \- xalan:serializer:jar:2.7.2:provided
+[INFO] +- org.eclipse.jdt.core.compiler:ecj:jar:4.3.1:compile
+[INFO] +- org.codehaus.groovy:groovy-all:jar:2.4.5:compile
+[INFO] +- org.mozilla:rhino:jar:1.7.6:compile
+[INFO] +- org.apache.ant:ant:jar:1.7.1:compile
+[INFO] |  \- org.apache.ant:ant-launcher:jar:1.7.1:compile
+[INFO] +- net.sourceforge.jexcelapi:jxl:jar:2.6.10:compile
+[INFO] +- commons-javaflow:commons-javaflow:jar:20060411:compile
+[INFO] +- mondrian:mondrian:jar:3.1.1.12687:compile
+[INFO] |  +- commons-dbcp:commons-dbcp:jar:1.2:compile
+[INFO] |  +- commons-pool:commons-pool:jar:1.3:compile
+[INFO] |  +- commons-math:commons-math:jar:1.0:compile
+[INFO] |  |  \- commons-discovery:commons-discovery:jar:0.2:compile
+[INFO] |  +- commons-vfs:commons-vfs:jar:1.0:compile
+[INFO] |  +- javacup:javacup:jar:0.10k:compile
+[INFO] |  +- eigenbase:eigenbase-properties:jar:1.1.0.10924:compile
+[INFO] |  +- eigenbase:eigenbase-resgen:jar:1.3.0.11873:compile
+[INFO] |  \- eigenbase:eigenbase-xom:jar:1.3.0.11999:compile
+[INFO] +- javax.persistence:persistence-api:jar:1.0:compile
+[INFO] +- antlr:antlr:jar:2.7.5:compile
+[INFO] +- javax.xml.soap:saaj-api:jar:1.3:runtime
+[INFO] +- jaxen:jaxen:jar:1.1.1:compile
+[INFO] |  +- jdom:jdom:jar:1.0:compile
+[INFO] |  +- xml-apis:xml-apis:jar:1.3.02:compile
+[INFO] |  +- xerces:xercesImpl:jar:2.6.2:compile
+[INFO] |  \- xom:xom:jar:1.0:compile
+[INFO] |     \- xerces:xmlParserAPIs:jar:2.6.2:compile
+[INFO] +- org.beanshell:bsh:jar:2.0b4:compile
+[INFO] +- org.apache.xmlgraphics:batik-bridge:jar:1.8:compile
+[INFO] |  +- org.apache.xmlgraphics:batik-anim:jar:1.8:compile
+[INFO] |  +- org.apache.xmlgraphics:batik-awt-util:jar:1.8:compile
+[INFO] |  +- org.apache.xmlgraphics:batik-css:jar:1.8:compile
+[INFO] |  +- org.apache.xmlgraphics:batik-dom:jar:1.8:compile
+[INFO] |  +- org.apache.xmlgraphics:batik-ext:jar:1.8:compile
+[INFO] |  +- org.apache.xmlgraphics:batik-gvt:jar:1.8:compile
+[INFO] |  +- org.apache.xmlgraphics:batik-parser:jar:1.8:compile
+[INFO] |  +- org.apache.xmlgraphics:batik-script:jar:1.8:compile
+[INFO] |  +- org.apache.xmlgraphics:batik-svg-dom:jar:1.8:compile
+[INFO] |  +- org.apache.xmlgraphics:batik-util:jar:1.8:compile
+[INFO] |  +- org.apache.xmlgraphics:batik-xml:jar:1.8:compile
+[INFO] |  \- xml-apis:xml-apis-ext:jar:1.3.04:compile
+[INFO] +- org.apache.xmlgraphics:batik-svggen:jar:1.8:compile
+[INFO] +- org.springframework:spring-core:jar:2.5:compile
+[INFO] +- org.springframework:spring-beans:jar:2.5:compile
+[INFO] +- net.sf.barcode4j:barcode4j:jar:2.1:compile
+[INFO] |  +- avalon-framework:avalon-framework-impl:jar:4.2.0:compile
+[INFO] |  \- commons-cli:commons-cli:jar:1.0:compile
+[INFO] +- net.sourceforge.barbecue:barbecue:jar:1.5-beta1:compile
+[INFO] +- org.codehaus.castor:castor-xml:jar:1.3.3:compile
+[INFO] |  +- org.codehaus.castor:castor-core:jar:1.3.3:compile
+[INFO] |  +- commons-lang:commons-lang:jar:2.6:compile
+[INFO] |  +- javax.inject:javax.inject:jar:1:compile
+[INFO] |  +- stax:stax:jar:1.2.0:compile
+[INFO] |  |  \- stax:stax-api:jar:1.0.1:compile
+[INFO] |  +- javax.xml.stream:stax-api:jar:1.0-2:compile
+[INFO] |  \- org.springframework:spring-context:jar:4.1.6.RELEASE:compile
+[INFO] |     +- org.springframework:spring-aop:jar:4.1.6.RELEASE:compile
+[INFO] |     |  \- aopalliance:aopalliance:jar:1.0:compile
+[INFO] |     \- org.springframework:spring-expression:jar:4.1.6.RELEASE:compile
+[INFO] +- org.apache.velocity:velocity:jar:1.7:compile
+[INFO] +- org.apache.poi:poi-ooxml:jar:3.10.1:compile
+[INFO] |  \- org.apache.poi:poi-ooxml-schemas:jar:3.10.1:compile
+[INFO] |     \- org.apache.xmlbeans:xmlbeans:jar:2.6.0:compile
+[INFO] +- com.fasterxml.jackson.core:jackson-core:jar:2.1.4:compile
+[INFO] +- com.fasterxml.jackson.core:jackson-databind:jar:2.1.4:compile
+[INFO] +- com.fasterxml.jackson.core:jackson-annotations:jar:2.1.4:compile
+[INFO] +- org.testng:testng:jar:6.8.1:test
+[INFO] |  +- junit:junit:jar:4.12:test
+[INFO] |  |  \- org.hamcrest:hamcrest-core:jar:1.3:test
+[INFO] |  +- com.beust:jcommander:jar:1.27:test
+[INFO] |  \- org.yaml:snakeyaml:jar:1.6:test
+[INFO] +- log4j:log4j:jar:1.2.17:test
+[INFO] +- net.sf.jasperreports:jasperreports-fonts:jar:4.0.0:test
+[INFO] +- net.sf.jasperreports:jasperreports:jar:6.3.0:provided
+[INFO] +- org.apache.lucene:lucene-core:jar:4.5.1:compile
+[INFO] +- org.apache.lucene:lucene-analyzers-common:jar:4.5.1:compile
+[INFO] +- org.apache.lucene:lucene-queryparser:jar:4.5.1:compile
+[INFO] |  +- org.apache.lucene:lucene-queries:jar:4.5.1:compile
+[INFO] |  \- org.apache.lucene:lucene-sandbox:jar:4.5.1:compile
+[INFO] |     \- jakarta-regexp:jakarta-regexp:jar:1.4:compile
+[INFO] +- org.olap4j:olap4j:jar:0.9.7.309-JS-3:compile
+[INFO] +- org.apache.httpcomponents:httpclient:jar:4.3.4:compile
+[INFO] |  \- org.apache.httpcomponents:httpcore:jar:4.3.2:compile
+[INFO] +- com.google.zxing:core:jar:2.3.0:compile
+[INFO] \- com.ibm.icu:icu4j:jar:57.1:compile
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building Dynamo Framework - Jasperreports 1.0.1-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-dependency-plugin:2.8:tree (default-cli) @ dynamo-jasperreports ---
+[INFO] org.dynamoframework:dynamo-jasperreports:jar:1.0.1-SNAPSHOT
+[INFO] +- org.dynamoframework:dynamo-core:jar:1.0.1-SNAPSHOT:compile
+[INFO] |  +- org.slf4j:slf4j-api:jar:1.7.5:compile
+[INFO] |  +- org.slf4j:slf4j-log4j12:jar:1.7.5:compile
+[INFO] |  +- log4j:log4j:jar:1.2.17:compile
+[INFO] |  \- commons-lang:commons-lang:jar:2.6:compile
+[INFO] +- org.dynamoframework:dynamo-jpa:jar:1.0.1-SNAPSHOT:compile
+[INFO] |  +- com.mysema.querydsl:querydsl-core:jar:3.6.3:compile
+[INFO] |  |  +- com.google.guava:guava:jar:18.0:compile
+[INFO] |  |  +- com.google.code.findbugs:jsr305:jar:1.3.9:compile
+[INFO] |  |  +- com.mysema.commons:mysema-commons-lang:jar:0.2.4:compile
+[INFO] |  |  \- com.infradna.tool:bridge-method-annotation:jar:1.13:compile
+[INFO] |  +- com.mysema.querydsl:querydsl-jpa:jar:3.6.3:compile
+[INFO] |  \- com.mysema.querydsl:querydsl-apt:jar:3.6.3:compile
+[INFO] |     \- com.mysema.querydsl:querydsl-codegen:jar:3.6.3:compile
+[INFO] |        \- com.mysema.codegen:codegen:jar:0.6.6:compile
+[INFO] +- org.dynamoframework:dynamo-spring:jar:1.0.1-SNAPSHOT:compile
+[INFO] |  +- com.vaadin:vaadin-spring:jar:1.0.0.beta3:compile
+[INFO] |  +- com.vaadin:vaadin-server:jar:7.7.3:compile
+[INFO] |  |  +- com.vaadin:vaadin-sass-compiler:jar:0.9.13:compile
+[INFO] |  |  |  +- org.w3c.css:sac:jar:1.3:compile
+[INFO] |  |  |  \- com.vaadin.external.flute:flute:jar:1.3.0.gg2:compile
+[INFO] |  |  +- com.vaadin:vaadin-shared:jar:7.7.3:compile
+[INFO] |  |  \- org.jsoup:jsoup:jar:1.8.3:compile
+[INFO] |  +- org.vaadin.addons:extended-token-field:jar:0.2.0:compile
+[INFO] |  +- org.springframework:spring-web:jar:4.1.6.RELEASE:compile
+[INFO] |  |  +- org.springframework:spring-beans:jar:4.1.6.RELEASE:compile
+[INFO] |  |  \- org.springframework:spring-core:jar:4.1.6.RELEASE:compile
+[INFO] |  +- org.springframework:spring-expression:jar:4.1.6.RELEASE:compile
+[INFO] |  +- org.springframework:spring-context:jar:4.1.6.RELEASE:compile
+[INFO] |  +- org.springframework:spring-tx:jar:4.1.6.RELEASE:compile
+[INFO] |  +- org.springframework:spring-aop:jar:4.1.6.RELEASE:compile
+[INFO] |  |  \- aopalliance:aopalliance:jar:1.0:compile
+[INFO] |  +- org.springframework:spring-orm:jar:4.1.6.RELEASE:compile
+[INFO] |  |  \- org.springframework:spring-jdbc:jar:4.1.6.RELEASE:compile
+[INFO] |  +- org.springframework:spring-test:jar:4.1.6.RELEASE:compile
+[INFO] |  +- org.aspectj:aspectjrt:jar:1.6.12:compile
+[INFO] |  +- org.aspectj:aspectjweaver:jar:1.6.12:compile
+[INFO] |  +- org.apache.poi:poi:jar:3.13:compile
+[INFO] |  |  \- commons-codec:commons-codec:jar:1.9:compile
+[INFO] |  +- com.monitorjbl:xlsx-streamer:jar:0.2.9:compile
+[INFO] |  |  \- org.apache.poi:poi-ooxml:jar:3.13:compile
+[INFO] |  |     \- org.apache.poi:poi-ooxml-schemas:jar:3.13:compile
+[INFO] |  |        \- org.apache.xmlbeans:xmlbeans:jar:2.6.0:compile
+[INFO] |  +- net.sf.opencsv:opencsv:jar:2.3:compile
+[INFO] |  \- commons-io:commons-io:jar:2.4:compile
+[INFO] +- org.dynamoframework:dynamo-vaadin:jar:1.0.1-SNAPSHOT:compile
+[INFO] |  +- com.vaadin:vaadin-client-compiled:jar:7.7.3:compile
+[INFO] |  +- com.vaadin:vaadin-themes:jar:7.7.3:compile
+[INFO] |  +- org.vaadin.addons.lazyquerycontainer:vaadin-lazyquerycontainer:jar:7.4.0.1:compile
+[INFO] |  +- org.vaadin.addon:tableexport-for-vaadin:jar:1.5.1.5:compile
+[INFO] |  +- org.vaadin.addon:confirmdialog:jar:2.1.3:compile
+[INFO] |  \- com.vaadin.external.google:guava:jar:16.0.1.vaadin1:compile
+[INFO] +- org.dynamoframework:dynamo-jasperreports-fixes:jar:1.0.1-SNAPSHOT:compile
+[INFO] |  +- commons-beanutils:commons-beanutils:jar:1.9.0:compile
+[INFO] |  +- commons-collections:commons-collections:jar:3.2.2:compile
+[INFO] |  +- commons-digester:commons-digester:jar:2.1:compile
+[INFO] |  +- commons-logging:commons-logging:jar:1.1.1:compile
+[INFO] |  +- com.lowagie:itext:jar:2.1.7.js5:compile
+[INFO] |  |  +- bouncycastle:bcmail-jdk14:jar:138:compile
+[INFO] |  |  +- bouncycastle:bcprov-jdk14:jar:138:compile
+[INFO] |  |  \- org.bouncycastle:bctsp-jdk14:jar:1.38:compile
+[INFO] |  |     +- org.bouncycastle:bcprov-jdk14:jar:1.38:compile
+[INFO] |  |     \- org.bouncycastle:bcmail-jdk14:jar:1.38:compile
+[INFO] |  +- org.jfree:jcommon:jar:1.0.23:compile
+[INFO] |  +- org.jfree:jfreechart:jar:1.0.19:compile
+[INFO] |  +- org.eclipse.jdt.core.compiler:ecj:jar:4.3.1:compile
+[INFO] |  +- org.codehaus.castor:castor-xml:jar:1.3.3:compile
+[INFO] |  |  +- org.codehaus.castor:castor-core:jar:1.3.3:compile
+[INFO] |  |  +- javax.inject:javax.inject:jar:1:compile
+[INFO] |  |  +- stax:stax:jar:1.2.0:compile
+[INFO] |  |  |  \- stax:stax-api:jar:1.0.1:compile
+[INFO] |  |  \- javax.xml.stream:stax-api:jar:1.0-2:compile
+[INFO] |  +- com.fasterxml.jackson.core:jackson-core:jar:2.1.4:compile
+[INFO] |  +- com.fasterxml.jackson.core:jackson-databind:jar:2.1.4:compile
+[INFO] |  +- com.fasterxml.jackson.core:jackson-annotations:jar:2.1.4:compile
+[INFO] |  +- org.apache.lucene:lucene-core:jar:4.5.1:compile
+[INFO] |  +- org.apache.lucene:lucene-analyzers-common:jar:4.5.1:compile
+[INFO] |  +- org.apache.lucene:lucene-queryparser:jar:4.5.1:compile
+[INFO] |  |  +- org.apache.lucene:lucene-queries:jar:4.5.1:compile
+[INFO] |  |  \- org.apache.lucene:lucene-sandbox:jar:4.5.1:compile
+[INFO] |  |     \- jakarta-regexp:jakarta-regexp:jar:1.4:compile
+[INFO] |  +- org.olap4j:olap4j:jar:0.9.7.309-JS-3:compile
+[INFO] |  +- com.google.zxing:core:jar:2.3.0:compile
+[INFO] |  \- com.ibm.icu:icu4j:jar:57.1:compile
+[INFO] +- net.sf.jasperreports:jasperreports:jar:6.3.0:provided
+[INFO] +- net.sf.jasperreports:jasperreports-functions:jar:6.3.0:compile
+[INFO] |  \- joda-time:joda-time:jar:2.1:compile
+[INFO] +- org.apache.xmlgraphics:batik-dom:jar:1.8:compile
+[INFO] |  +- org.apache.xmlgraphics:batik-css:jar:1.8:compile
+[INFO] |  +- org.apache.xmlgraphics:batik-ext:jar:1.8:compile
+[INFO] |  +- org.apache.xmlgraphics:batik-util:jar:1.8:compile
+[INFO] |  +- org.apache.xmlgraphics:batik-xml:jar:1.8:compile
+[INFO] |  +- xml-apis:xml-apis:jar:1.3.04:compile
+[INFO] |  \- xml-apis:xml-apis-ext:jar:1.3.04:compile
+[INFO] +- org.apache.xmlgraphics:batik-svggen:jar:1.8:compile
+[INFO] |  \- org.apache.xmlgraphics:batik-awt-util:jar:1.8:compile
+[INFO] +- org.apache.xmlgraphics:batik-bridge:jar:1.8:compile
+[INFO] |  +- org.apache.xmlgraphics:batik-anim:jar:1.8:compile
+[INFO] |  +- org.apache.xmlgraphics:batik-gvt:jar:1.8:compile
+[INFO] |  +- org.apache.xmlgraphics:batik-parser:jar:1.8:compile
+[INFO] |  +- org.apache.xmlgraphics:batik-script:jar:1.8:compile
+[INFO] |  \- org.apache.xmlgraphics:batik-svg-dom:jar:1.8:compile
+[INFO] +- org.apache.xmlgraphics:xmlgraphics-commons:jar:2.1:compile
+[INFO] +- org.dynamoframework:dynamo-test:jar:1.0.1-SNAPSHOT:test
+[INFO] |  +- junit-addons:junit-addons:jar:1.4:test
+[INFO] |  |  +- xerces:xercesImpl:jar:2.6.2:test
+[INFO] |  |  \- xerces:xmlParserAPIs:jar:2.6.2:test
+[INFO] |  \- org.mockito:mockito-all:jar:1.10.19:test
+[INFO] +- junit:junit:jar:4.12:test
+[INFO] |  \- org.hamcrest:hamcrest-core:jar:1.3:test
+[INFO] +- com.h2database:h2:jar:1.4.187:test
+[INFO] \- javax.servlet:javax.servlet-api:jar:3.0.1:provided
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building Dynamo Maven Archetype 1.0.1-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-dependency-plugin:2.8:tree (default-cli) @ dynamo-spring-archetype ---
+[INFO] org.dynamoframework:dynamo-spring-archetype:maven-archetype:1.0.1-SNAPSHOT
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building Dynamo Maven Archetype (Modules) 1.0.1-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-dependency-plugin:2.8:tree (default-cli) @ dynamo-spring-archetype-modules ---
+[INFO] org.dynamoframework:dynamo-spring-archetype-modules:maven-archetype:1.0.1-SNAPSHOT
+[INFO]                                                                         
+[INFO] ------------------------------------------------------------------------
+[INFO] Building Dynamo Show Case 1.0.1-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] 
+[INFO] --- maven-dependency-plugin:2.8:tree (default-cli) @ dynamo-showcase ---
+[INFO] org.dynamoframework:dynamo-showcase:war:1.0.1-SNAPSHOT
+[INFO] +- org.dynamoframework:dynamo-spring:jar:1.0.1-SNAPSHOT:compile
+[INFO] |  +- org.dynamoframework:dynamo-core:jar:1.0.1-SNAPSHOT:compile
+[INFO] |  |  +- org.slf4j:slf4j-api:jar:1.7.5:compile
+[INFO] |  |  +- org.slf4j:slf4j-log4j12:jar:1.7.5:compile
+[INFO] |  |  \- log4j:log4j:jar:1.2.17:compile
+[INFO] |  +- org.dynamoframework:dynamo-vaadin:jar:1.0.1-SNAPSHOT:compile
+[INFO] |  |  +- com.vaadin:vaadin-client-compiled:jar:7.7.3:compile
+[INFO] |  |  +- com.vaadin:vaadin-themes:jar:7.7.3:compile
+[INFO] |  |  +- org.vaadin.addons.lazyquerycontainer:vaadin-lazyquerycontainer:jar:7.4.0.1:compile
+[INFO] |  |  +- org.vaadin.addon:tableexport-for-vaadin:jar:1.5.1.5:compile
+[INFO] |  |  +- org.vaadin.addon:confirmdialog:jar:2.1.3:compile
+[INFO] |  |  \- com.vaadin.external.google:guava:jar:16.0.1.vaadin1:compile
+[INFO] |  +- org.dynamoframework:dynamo-jpa:jar:1.0.1-SNAPSHOT:compile
+[INFO] |  +- com.vaadin:vaadin-spring:jar:1.0.0.beta3:compile
+[INFO] |  +- com.vaadin:vaadin-server:jar:7.7.3:compile
+[INFO] |  |  +- com.vaadin:vaadin-sass-compiler:jar:0.9.13:compile
+[INFO] |  |  |  +- org.w3c.css:sac:jar:1.3:compile
+[INFO] |  |  |  \- com.vaadin.external.flute:flute:jar:1.3.0.gg2:compile
+[INFO] |  |  +- com.vaadin:vaadin-shared:jar:7.7.3:compile
+[INFO] |  |  \- org.jsoup:jsoup:jar:1.8.3:compile
+[INFO] |  +- org.vaadin.addons:extended-token-field:jar:0.2.0:compile
+[INFO] |  +- org.springframework:spring-web:jar:4.1.6.RELEASE:compile
+[INFO] |  |  +- org.springframework:spring-beans:jar:4.1.6.RELEASE:compile
+[INFO] |  |  \- org.springframework:spring-core:jar:4.1.6.RELEASE:compile
+[INFO] |  |     \- commons-logging:commons-logging:jar:1.2:compile
+[INFO] |  +- org.springframework:spring-expression:jar:4.1.6.RELEASE:compile
+[INFO] |  +- org.springframework:spring-context:jar:4.1.6.RELEASE:compile
+[INFO] |  +- org.springframework:spring-tx:jar:4.1.6.RELEASE:compile
+[INFO] |  +- org.springframework:spring-aop:jar:4.1.6.RELEASE:compile
+[INFO] |  |  \- aopalliance:aopalliance:jar:1.0:compile
+[INFO] |  +- org.springframework:spring-orm:jar:4.1.6.RELEASE:compile
+[INFO] |  |  \- org.springframework:spring-jdbc:jar:4.1.6.RELEASE:compile
+[INFO] |  +- org.springframework:spring-test:jar:4.1.6.RELEASE:compile
+[INFO] |  +- org.aspectj:aspectjrt:jar:1.6.12:compile
+[INFO] |  +- org.aspectj:aspectjweaver:jar:1.6.12:compile
+[INFO] |  +- com.mysema.querydsl:querydsl-core:jar:3.6.3:compile
+[INFO] |  |  +- com.google.guava:guava:jar:18.0:compile
+[INFO] |  |  +- com.google.code.findbugs:jsr305:jar:1.3.9:compile
+[INFO] |  |  +- com.mysema.commons:mysema-commons-lang:jar:0.2.4:compile
+[INFO] |  |  \- com.infradna.tool:bridge-method-annotation:jar:1.13:compile
+[INFO] |  +- com.mysema.querydsl:querydsl-jpa:jar:3.6.3:compile
+[INFO] |  +- com.mysema.querydsl:querydsl-apt:jar:3.6.3:compile
+[INFO] |  |  \- com.mysema.querydsl:querydsl-codegen:jar:3.6.3:compile
+[INFO] |  |     +- com.mysema.codegen:codegen:jar:0.6.6:compile
+[INFO] |  |     |  \- org.eclipse.jdt.core.compiler:ecj:jar:4.3.1:compile
+[INFO] |  |     \- javax.inject:javax.inject:jar:1:compile
+[INFO] |  +- org.apache.poi:poi:jar:3.13:compile
+[INFO] |  |  \- commons-codec:commons-codec:jar:1.9:compile
+[INFO] |  +- com.monitorjbl:xlsx-streamer:jar:0.2.9:compile
+[INFO] |  |  \- org.apache.poi:poi-ooxml:jar:3.13:compile
+[INFO] |  |     \- org.apache.poi:poi-ooxml-schemas:jar:3.13:compile
+[INFO] |  |        \- org.apache.xmlbeans:xmlbeans:jar:2.6.0:compile
+[INFO] |  |           \- stax:stax-api:jar:1.0.1:compile
+[INFO] |  +- net.sf.opencsv:opencsv:jar:2.3:compile
+[INFO] |  +- commons-lang:commons-lang:jar:2.6:compile
+[INFO] |  \- commons-io:commons-io:jar:2.4:compile
+[INFO] +- org.hibernate:hibernate-core:jar:4.3.1.Final:compile
+[INFO] |  +- org.jboss.logging:jboss-logging:jar:3.1.3.GA:compile
+[INFO] |  +- org.jboss.logging:jboss-logging-annotations:jar:1.2.0.Beta1:compile
+[INFO] |  +- org.jboss.spec.javax.transaction:jboss-transaction-api_1.2_spec:jar:1.0.0.Final:compile
+[INFO] |  +- dom4j:dom4j:jar:1.6.1:compile
+[INFO] |  +- org.hibernate.common:hibernate-commons-annotations:jar:4.0.4.Final:compile
+[INFO] |  +- org.hibernate.javax.persistence:hibernate-jpa-2.1-api:jar:1.0.0.Final:compile
+[INFO] |  +- org.javassist:javassist:jar:3.18.1-GA:compile
+[INFO] |  +- antlr:antlr:jar:2.7.7:compile
+[INFO] |  \- org.jboss:jandex:jar:1.1.0.Final:compile
+[INFO] +- org.hibernate:hibernate-entitymanager:jar:4.3.1.Final:compile
+[INFO] +- org.hibernate:hibernate-validator:jar:4.3.2.Final:compile
+[INFO] +- javax.validation:validation-api:jar:1.0.0.GA:compile
+[INFO] +- javax.servlet:javax.servlet-api:jar:3.0.1:provided
+[INFO] \- com.h2database:h2:jar:1.4.187:runtime
+[INFO] ------------------------------------------------------------------------
+[INFO] Reactor Summary:
+[INFO] 
+[INFO] Dynamo Framework ................................... SUCCESS [  0.641 s]
+[INFO] Dynamo Framework - Core ............................ SUCCESS [  0.086 s]
+[INFO] Dynamo Framework - JPA ............................. SUCCESS [  0.117 s]
+[INFO] Dynamo Framework - Supporting test classes ......... SUCCESS [  0.066 s]
+[INFO] Dynamo Framework - Camel ........................... SUCCESS [  0.097 s]
+[INFO] Dynamo Framework - Vaadin .......................... SUCCESS [  0.097 s]
+[INFO] Dynamo Framework - Spring .......................... SUCCESS [  0.109 s]
+[INFO] Dynamo Framework - Functional extension - Domain ... SUCCESS [  0.062 s]
+[INFO] Dynamo Framework - JasperReports fixes ............. SUCCESS [  0.650 s]
+[INFO] Dynamo Framework - Jasperreports ................... SUCCESS [  0.090 s]
+[INFO] Dynamo Maven Archetype ............................. SUCCESS [  0.235 s]
+[INFO] Dynamo Maven Archetype (Modules) ................... SUCCESS [  0.005 s]
+[INFO] Dynamo Show Case ................................... SUCCESS [  0.050 s]
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 2.778 s
+[INFO] Finished at: 2017-02-16T09:18:36+01:00
+[INFO] Final Memory: 31M/438M
+[INFO] ------------------------------------------------------------------------

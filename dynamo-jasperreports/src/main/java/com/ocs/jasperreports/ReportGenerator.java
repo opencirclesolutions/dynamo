@@ -148,13 +148,11 @@ public class ReportGenerator {
 		// Fill report
 		final JasperPrint jasperPrint = fillReport(jasperReport, copyParameters, jrDataSource);
 		// Export report
-		switch (format) {
-		case HTML:
+		if (Format.HTML.equals(format)) {
 			return exportReportToHTML(jasperPrint, session);
-		default:
+		} else {
 			// Other formats
 			exportReport(jasperPrint, format, outputStream);
-			break;
 		}
 		return null;
 	}
@@ -212,14 +210,10 @@ public class ReportGenerator {
 	public void exportReport(JasperPrint jasperPrint, Format format, OutputStream outputStream) {
 		try {
 			Exporter exporter = null;
-			switch (format) {
-			case EXCEL:
+			if (Format.EXCEL.equals(format)) {
 				exporter = new JRXlsExporter();
-				break;
-			default:
-				// PDF
+			} else {
 				exporter = new JRPdfExporter();
-				break;
 			}
 			exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
 			exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(outputStream));

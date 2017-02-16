@@ -131,7 +131,7 @@ public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractE
 		wrapper.setStyleName("searchDialogWrapper");
 		parent.addComponent(wrapper);
 
-		searchLayout = new SimpleSearchLayout<ID, T>(service, entityModel, QueryType.ID_BASED, formOptions, null, joins);
+		searchLayout = new SimpleSearchLayout<>(service, entityModel, QueryType.ID_BASED, formOptions, null, joins);
 		searchLayout.setDefaultFilters(filters);
 		for (SortOrder order : sortOrders) {
 			searchLayout.addSortOrder(order);

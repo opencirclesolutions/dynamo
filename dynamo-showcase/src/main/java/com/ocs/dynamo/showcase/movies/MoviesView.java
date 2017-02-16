@@ -36,9 +36,6 @@ import com.vaadin.ui.VerticalLayout;
 @SuppressWarnings("serial")
 public class MoviesView extends BaseView {
 
-	/** Vaadin vertical layout. */
-	private VerticalLayout mainLayout;
-
 	/** The Movies View is using the MovieService for data access. */
 	@Inject
 	private MovieService movieService;
@@ -47,16 +44,10 @@ public class MoviesView extends BaseView {
 	public void enter(ViewChangeEvent event) {
 
 		// Apply Vaadin Layout.
-		mainLayout = new DefaultVerticalLayout(true, true);
+		VerticalLayout mainLayout = new DefaultVerticalLayout(true, true);
 
 		// Set form options by convention.
-		FormOptions fo = new FormOptions();
-
-		// Add a remove button.
-		fo.setShowRemoveButton(true);
-
-		// Add an edit button.
-		fo.setShowEditButton(true);
+		FormOptions fo = new FormOptions().setShowRemoveButton(true).setShowEditButton(true);
 
 		// This is where the magic happens. The Simple Search layout uses the Dynamo Entity
 		// Model Factory to define a Simple Search Screen with sorting, filtering and lazy loading

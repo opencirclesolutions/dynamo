@@ -110,7 +110,7 @@
 		<commons.io.version>2.4</commons.io.version>
 		<commons.lang.version>2.6</commons.lang.version>
 		<h2.version>1.4.187</h2.version>
-		<poi.version>3.12</poi.version>
+		<poi.version>3.13</poi.version>
 		<opencsv.version>2.3</opencsv.version>
 		<javax.servlet.api.version>3.0.1</javax.servlet.api.version>
 		<javax.validation.api.version>1.0.0.GA</javax.validation.api.version>

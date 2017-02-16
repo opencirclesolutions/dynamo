@@ -54,11 +54,6 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
 	private final List<Class<? extends Domain>> domainClasses;
 
 	/**
-	 * The combo box for selecting the domain
-	 */
-	private ComboBox domainCombo;
-
-	/**
 	 * The form options (these are passed directly to the split layout)
 	 */
 	private FormOptions formOptions;
@@ -115,7 +110,7 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
 			mainLayout.addComponent(form);
 
 			// combo box for selecting domain
-			domainCombo = new ComboBox(message("ocs.select.domain"));
+			ComboBox domainCombo = new ComboBox(message("ocs.select.domain"));
 			for (Class<? extends Domain> clazz : getDomainClasses()) {
 				domainCombo.addItem(clazz);
 				domainCombo.setItemCaption(clazz, getEntityModelFactory().getModel(clazz).getDisplayName());

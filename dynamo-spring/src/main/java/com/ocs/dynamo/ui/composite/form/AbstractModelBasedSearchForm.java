@@ -73,7 +73,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	/**
 	 * The list of currently active search filters
 	 */
-	private List<Filter> currentFilters = new ArrayList<Filter>();
+	private List<Filter> currentFilters = new ArrayList<>();
 
 	/**
 	 * Field factory used for constructing search fields

@@ -31,6 +31,7 @@ import org.apache.commons.lang.StringUtils;
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
+import com.ocs.dynamo.domain.model.AttributeType;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.filter.FlexibleFilterDefinition;
 import com.ocs.dynamo.filter.listener.FilterChangeEvent;
@@ -730,8 +731,7 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 	 *            the attribute model
 	 */
 	public FlexibleFilterType getDefaultFilterType(AttributeModel am) {
-		switch (am.getAttributeType()) {
-		case BASIC:
+		if (AttributeType.BASIC.equals(am.getAttributeType())) {
 			if (String.class.equals(am.getType())) {
 				return FlexibleFilterType.CONTAINS;
 			} else if (Enum.class.isAssignableFrom(am.getType())) {
@@ -740,7 +740,7 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 				return FlexibleFilterType.BETWEEN;
 			}
 			return FlexibleFilterType.EQUALS;
-		default:
+		} else {
 			return FlexibleFilterType.EQUALS;
 		}
 	}

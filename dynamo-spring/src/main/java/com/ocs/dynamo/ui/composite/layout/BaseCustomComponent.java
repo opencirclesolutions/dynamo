@@ -87,18 +87,18 @@ public abstract class BaseCustomComponent extends CustomComponent implements Bui
 			Property<?> property = null;
 			if (attributeModel.isWeek()) {
 				// week code
-				property = new ObjectProperty<Date>((Date) value);
+				property = new ObjectProperty<>((Date) value);
 				fieldLabel.setConverter(new WeekCodeConverter());
 				fieldLabel.setPropertyDataSource(property);
 			} else if (String.class.equals(type)) {
 				// String
 				String str = (String) value;
 				str = str.replace("\n", StringUtil.getHtmlLineBreak());
-				property = new ObjectProperty<String>(str);
+				property = new ObjectProperty<>(str);
 				fieldLabel.setPropertyDataSource(property);
 				fieldLabel.setContentMode(ContentMode.HTML);
 			} else if (Date.class.equals(type)) {
-				property = new ObjectProperty<Date>((Date) value);
+				property = new ObjectProperty<>((Date) value);
 				if (AttributeDateType.TIME.equals(attributeModel.getDateType())
 				        || AttributeDateType.DATE.equals(attributeModel.getDateType())) {
 					fieldLabel
@@ -114,20 +114,20 @@ public abstract class BaseCustomComponent extends CustomComponent implements Bui
 					fieldLabel.setValue(msg);
 				}
 			} else if (BigDecimal.class.equals(type)) {
-				property = new ObjectProperty<BigDecimal>((BigDecimal) value);
+				property = new ObjectProperty<>((BigDecimal) value);
 				fieldLabel.setConverter(ConverterFactory.createBigDecimalConverter(attributeModel.isCurrency(),
 				        attributeModel.isPercentage(), attributeModel.isUseThousandsGrouping(),
 				        attributeModel.getPrecision(), VaadinUtils.getCurrencySymbol()));
 			} else if (Number.class.isAssignableFrom(type)) {
 				// other number types
-				property = new ObjectProperty<Number>((Number) value);
+				property = new ObjectProperty<>((Number) value);
 				fieldLabel.setConverter(ConverterFactory.createConverterFor(type, attributeModel,
 				        attributeModel.isUseThousandsGrouping()));
 			} else if (AbstractEntity.class.isAssignableFrom(type)) {
 				// another entity - use the value of the "displayProperty"
 				EntityModel<?> model = getEntityModelFactory().getModel(type);
 				String displayProperty = model.getDisplayProperty();
-				property = new NestedMethodProperty<String>(value, displayProperty);
+				property = new NestedMethodProperty<>(value, displayProperty);
 			} else if (attributeModel.isImage()) {
 				// create image preview
 				final byte[] bytes = ClassUtils.getBytes(entity, attributeModel.getName());
@@ -136,18 +136,18 @@ public abstract class BaseCustomComponent extends CustomComponent implements Bui
 				return image;
 			} else if (Boolean.class.equals(attributeModel.getType()) || boolean.class.equals(attributeModel.getType())) {
 				if (!StringUtils.isEmpty(attributeModel.getTrueRepresentation()) && Boolean.TRUE.equals(value)) {
-					property = new ObjectProperty<String>(attributeModel.getTrueRepresentation());
+					property = new ObjectProperty<>(attributeModel.getTrueRepresentation());
 				} else if (!StringUtils.isEmpty(attributeModel.getFalseRepresentation()) && Boolean.FALSE.equals(value)) {
 					property = new ObjectProperty<String>(attributeModel.getFalseRepresentation());
 				} else {
-					property = new ObjectProperty<Boolean>((Boolean) value);
+					property = new ObjectProperty<>((Boolean) value);
 					fieldLabel.setConverter(new StringToBooleanConverter());
 				}
 			} else if (Iterable.class.isAssignableFrom(attributeModel.getType())) {
 				// collection of entities
 				String str = TableUtils.formatEntityCollection(getEntityModelFactory(), attributeModel,
 				        (Iterable<?>) value);
-				property = new ObjectProperty<String>(str);
+				property = new ObjectProperty<>(str);
 				fieldLabel.setPropertyDataSource(property);
 			}
 

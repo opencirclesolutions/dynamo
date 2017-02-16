@@ -35,9 +35,6 @@ import com.vaadin.ui.VerticalLayout;
 @SuppressWarnings("serial")
 public class VerticalMoviesSplitView extends BaseView {
 
-	/** Vaadin vertical layout. */
-	private VerticalLayout mainLayout;
-
 	/** The Movies View is using the MovieService for data access. */
 	@Inject
 	private MovieService movieService;
@@ -46,19 +43,11 @@ public class VerticalMoviesSplitView extends BaseView {
 	public void enter(ViewChangeEvent event) {
 
 		// Apply Vaadin Layout.
-		mainLayout = new DefaultVerticalLayout(true, true);
+		VerticalLayout mainLayout = new DefaultVerticalLayout(true, true);
 
 		// Set form options by convention.
-		FormOptions fo = new FormOptions();
-		fo.setOpenInViewMode(true);
-
-		// Add a remove button.
-		fo.setShowRemoveButton(true);
-
-		// Add an edit button.
-		fo.setShowEditButton(true);
-		fo.setShowQuickSearchField(true);
-		fo.setScreenMode(ScreenMode.VERTICAL);
+		FormOptions fo = new FormOptions().setOpenInViewMode(true).setShowRemoveButton(true).setShowEditButton(true)
+		        .setShowQuickSearchField(true).setScreenMode(ScreenMode.VERTICAL);
 
 		// A SplitLayout is a component that displays a search screen and an edit form
 		ServiceBasedSplitLayout<Integer, Movie> movieLayout = new ServiceBasedSplitLayout<Integer, Movie>(movieService,

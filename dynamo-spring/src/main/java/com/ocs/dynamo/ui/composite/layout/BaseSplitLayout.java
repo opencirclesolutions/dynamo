@@ -297,6 +297,16 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 				}
 
 				@Override
+				protected String getParentGroup(String childGroup) {
+					return BaseSplitLayout.this.getParentGroup(childGroup);
+				}
+
+				@Override
+				protected String[] getParentGroupHeaders() {
+					return BaseSplitLayout.this.getParentGroupHeaders();
+				}					
+				
+				@Override
 				protected boolean isEditAllowed() {
 					return BaseSplitLayout.this.isEditAllowed();
 				}

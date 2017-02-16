@@ -33,12 +33,16 @@ public class BigDecimalConverter extends StringToBigDecimalConverter {
 
 	private static final long serialVersionUID = -6491010958762673241L;
 
-	private DecimalFormat decimalFormat;
-
 	private String pattern;
 
+	/**
+	 * Whether to usea thousands grouping separator
+	 */
 	private boolean useGrouping;
 
+	/**
+	 * The desired decimal precision
+	 */
 	private int precision;
 
 	/**
@@ -75,12 +79,15 @@ public class BigDecimalConverter extends StringToBigDecimalConverter {
 	}
 
 	/**
+	 * Constructs the DecimalFormat to use for formatting the values
+	 * 
 	 * @param locale
+	 *            the desired locale to use for the formatting
 	 * @return
 	 */
 	public DecimalFormat getDecimalFormat(Locale locale) {
 		locale = locale != null ? locale : VaadinUtils.getLocale();
-		decimalFormat = constructFormat(locale);
+		DecimalFormat decimalFormat = constructFormat(locale);
 
 		if (!StringUtils.isEmpty(pattern)) {
 			decimalFormat.applyPattern(pattern);

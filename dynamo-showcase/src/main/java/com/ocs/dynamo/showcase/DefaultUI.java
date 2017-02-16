@@ -47,77 +47,78 @@ import com.vaadin.ui.VerticalLayout;
 @UIScope
 public class DefaultUI extends BaseUI {
 
-    private MenuBar menu;
+	private MenuBar menu;
 
-    @Autowired
-    private MenuService menuService;
+	@Autowired
+	private MenuService menuService;
 
-    /**
-     * 'Marker class' to initialize the Vaadin Web Context.
-     */
-    @WebServlet(value = "/*", asyncSupported = true)
-    @VaadinServletConfiguration(productionMode = false, ui = DefaultUI.class)
-    public static class Servlet extends SpringVaadinServlet {
-    }
+	/**
+	 * 'Marker class' to initialize the Vaadin Web Context.
+	 */
+	@WebServlet(value = "/*", asyncSupported = true)
+	@VaadinServletConfiguration(productionMode = false, ui = DefaultUI.class)
+	public static class Servlet extends SpringVaadinServlet {
+	}
 
-    /**
-     * 'Marker class' to initialize the Spring Context.
-     */
-    @WebListener
-    public static class MyContextLoaderListener extends ContextLoaderListener {
-    }
+	/**
+	 * 'Marker class' to initialize the Spring Context.
+	 */
+	@WebListener
+	public static class MyContextLoaderListener extends ContextLoaderListener {
+	}
 
-    /**
-     * 'Marker class' to setup the Spring Context within the Vaadin Web Context.
-     */
-    @EnableVaadin
-    @Configuration
-    public static class MyConfiguration {
-    }
+	/**
+	 * 'Marker class' to setup the Spring Context within the Vaadin Web Context.
+	 */
+	@EnableVaadin
+	@Configuration
+	public static class MyConfiguration {
+	}
 
-    @Inject
-    private SpringViewProvider viewProvider;
+	@Inject
+	private SpringViewProvider viewProvider;
 
-    private Panel viewPanel;
+	private Panel viewPanel;
 
-    private Navigator navigator;
+	private Navigator navigator;
 
-    /**
-     * Main method - sets up the application
-     */
-    @Override
-    protected void init(VaadinRequest request) {
+	/**
+	 * Main method - sets up the application
+	 */
+	@Override
+	protected void init(VaadinRequest request) {
 
-        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Creating UI Instance - initializing.");
+		// Create the content root layout for the UI
+		VerticalLayout content = new VerticalLayout();
+		setContent(content);
 
-        // Create the content root layout for the UI
-        VerticalLayout content = new VerticalLayout();
-        setContent(content);
+		// navigator part
+		VerticalLayout viewLayout = new VerticalLayout();
+		viewPanel = new Panel();
+		viewPanel.setImmediate(Boolean.TRUE);
+		viewPanel.setContent(viewLayout);
 
-        // navigator part
-        VerticalLayout viewLayout = new VerticalLayout();
-        viewPanel = new Panel();
-        viewPanel.setImmediate(Boolean.TRUE);
-        viewPanel.setContent(viewLayout);
+		// create a state manager and set its default view
+		// this is done to circumvent a bug with the view being created twice if
+		// navigator.navigateTo is called directly
+		Navigator.UriFragmentManager stateManager = new com.vaadin.navigator.Navigator.UriFragmentManager(
+		        this.getPage());
+		stateManager.setState(Views.MOVIES_VIEW);
 
-        // create a state manager and set its default view
-        // this is done to circumvent a bug with the view being created twice if
-        // navigator.navigateTo is called directly
-        Navigator.UriFragmentManager stateManager = new com.vaadin.navigator.Navigator.UriFragmentManager(
-                this.getPage());
-        stateManager.setState(Views.MOVIES_VIEW);
+		// create the navigator
+		navigator = new Navigator(this, stateManager, new Navigator.SingleComponentContainerViewDisplay(viewPanel));
+		UI.getCurrent().setNavigator(navigator);
+		navigator.addProvider(viewProvider);
+		navigator.setErrorView(new ErrorView());
 
-        // create the navigator
-        navigator = new Navigator(this, stateManager,
-                new Navigator.SingleComponentContainerViewDisplay(viewPanel));
-        UI.getCurrent().setNavigator(navigator);
-        navigator.addProvider(viewProvider);
-        navigator.setErrorView(new ErrorView());
+		menu = menuService.constructMenu("movies.menu", navigator);
+		content.addComponent(menu);
 
-        menu = menuService.constructMenu("movies.menu", navigator);
-        content.addComponent(menu);
+		// Display the greeting
+		content.addComponent(viewPanel);
+	}
 
-        // Display the greeting
-        content.addComponent(viewPanel);
-    }
+	public MenuBar getMenu() {
+		return menu;
+	}
 }

@@ -71,8 +71,7 @@ public class DetailsEditTableTest extends BaseMockitoTest {
 		EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
 
 		DetailsEditTable<Integer, TestEntity> table = createTable(em, false, true,
-		        new FormOptions().setShowSearchDialogButton(true));
-		table.setTableReadOnly(true);
+		        new FormOptions().setDetailsTableSearchMode(true));
 		table.setService(service);
 
 		// adding is not possible
@@ -99,6 +98,11 @@ public class DetailsEditTableTest extends BaseMockitoTest {
 
 	private DetailsEditTable<Integer, TestEntity> createTable(EntityModel<TestEntity> em, boolean viewMode,
 	        boolean tableReadOnly, FormOptions fo) {
+
+		if (tableReadOnly) {
+			fo.setReadOnly(true);
+		}
+
 		DetailsEditTable<Integer, TestEntity> table = new DetailsEditTable<Integer, TestEntity>(Lists.newArrayList(e1,
 		        e2), em, viewMode, fo) {
 
@@ -115,7 +119,6 @@ public class DetailsEditTableTest extends BaseMockitoTest {
 			}
 		};
 		MockUtil.injectUI(table, ui);
-		table.setTableReadOnly(tableReadOnly);
 		table.initContent();
 		table.setComparator(new AttributeComparator<TestEntity>("name"));
 		return table;

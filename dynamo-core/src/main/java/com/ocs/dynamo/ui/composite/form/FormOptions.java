@@ -107,7 +107,7 @@ public class FormOptions implements Serializable {
 	/**
 	 * Whether to display a button for opening a search dialog
 	 */
-	private boolean showSearchDialogButton;
+	private boolean detailsTableSearchMode;
 
 	/**
 	 * Whether to display a button for toggling search fields
@@ -182,8 +182,8 @@ public class FormOptions implements Serializable {
 		return showRemoveButton;
 	}
 
-	public boolean isShowSearchDialogButton() {
-		return showSearchDialogButton;
+	public boolean isDetailsTableSearchMode() {
+		return detailsTableSearchMode;
 	}
 
 	public boolean isShowToggleButton() {
@@ -276,8 +276,8 @@ public class FormOptions implements Serializable {
 		return this;
 	}
 
-	public FormOptions setShowSearchDialogButton(boolean showSearchDialogButton) {
-		this.showSearchDialogButton = showSearchDialogButton;
+	public FormOptions setDetailsTableSearchMode(boolean detailsTableSearchMode) {
+		this.detailsTableSearchMode = detailsTableSearchMode;
 		return this;
 	}
 

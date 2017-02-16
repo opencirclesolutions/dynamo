@@ -103,7 +103,7 @@ public final class JpaQueryBuilder {
 		if (sortOrders != null && sortOrders.length > 0) {
 			List<javax.persistence.criteria.Order> orders = new ArrayList<>();
 			for (SortOrder sortOrder : sortOrders) {
-				Expression<?> property = (Expression<?>) getPropertyPath(root, sortOrder.getProperty());
+				Expression<?> property =  getPropertyPath(root, sortOrder.getProperty());
 				orders.add(sortOrder.isAscending() ? builder.asc(property) : builder.desc(property));
 			}
 			cq.orderBy(orders);

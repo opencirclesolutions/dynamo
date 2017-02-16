@@ -27,6 +27,7 @@ import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.impl.ModelBasedFieldFactory;
+import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.ui.ServiceLocator;
@@ -52,12 +53,15 @@ import com.vaadin.ui.VerticalLayout;
 
 /**
  * A complex table component for the in-place editing of a one-to-many relation. It can also be used
- * to manage a many-to-many relation but in this case the "tableReadOnly" must be set to true. You
- * can then use the setSearchXXX methods to configure the behaviour of the search dialog that can be
- * used to modify the values If you need a component like this, you should override the
- * constructCustomField method and use it to construct a subclass of this component Note that a
- * separate instance of this component is generated for both the view mode and the edit mode of the
- * form it appears in, so this component does not contain logic for switching between the modes
+ * to manage a many-to-many relation but in this case the "setDetailsTableSearchMode" on the
+ * FormOptions must be set to true. You can then use the setSearchXXX methods to configure the
+ * behaviour of the search dialog that can be used to modify the values If you need a component like
+ * this, you should override the constructCustomField method and use it to construct a subclass of
+ * this component
+ * 
+ * Note that a separate instance of this component is generated for both the view mode and the edit
+ * mode of the form it appears in, so this component does not contain logic for switching between
+ * the modes
  * 
  * @author bas.rutten
  * @param <ID>
@@ -71,6 +75,9 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 
 	private static final long serialVersionUID = -1203245694503350276L;
 
+	/**
+	 * The button that can be used to add rows to the table
+	 */
 	private Button addButton;
 
 	/**
@@ -154,11 +161,6 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 	private ModelBasedTable<ID, T> table;
 
 	/**
-	 * Indicates whether the table is always read only (regardless of the actual form mode)
-	 */
-	private boolean tableReadOnly;
-
-	/**
 	 * List of buttons to update after a detail is selected
 	 */
 	private List<Button> toUpdate = new ArrayList<>();
@@ -218,6 +220,7 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 	 * Constructs the button that is used for adding new items
 	 * 
 	 * @param buttonBar
+	 *            the button bar
 	 */
 	protected void constructAddButton(Layout buttonBar) {
 		addButton = new Button(messageService.getMessage("ocs.add"));
@@ -274,12 +277,19 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 	 * @param buttonBar
 	 */
 	protected void constructSearchButton(Layout buttonBar) {
+
 		searchDialogButton = new Button(messageService.getMessage("ocs.search"));
 		searchDialogButton.setDescription(messageService.getMessage("ocs.search.description"));
 		searchDialogButton.addClickListener(new Button.ClickListener() {
 
 			@Override
 			public void buttonClick(ClickEvent event) {
+
+				// service must be specified
+				if (service == null) {
+					throw new OCSRuntimeException(messageService.getMessage("ocs.no.service.specified"));
+				}
+
 				ModelBasedSearchDialog<ID, T> dialog = new ModelBasedSearchDialog<ID, T>(service,
 				        searchDialogEntityModel != null ? searchDialogEntityModel : entityModel, searchDialogFilters,
 				        searchDialogSortOrder == null ? null : Lists.newArrayList(searchDialogSortOrder), true, true) {
@@ -301,7 +311,7 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 				ui.addWindow(dialog);
 			}
 		});
-		searchDialogButton.setVisible(!viewMode && formOptions.isShowSearchDialogButton());
+		searchDialogButton.setVisible(!viewMode && formOptions.isDetailsTableSearchMode());
 		buttonBar.addComponent(searchDialogButton);
 	}
 
@@ -378,10 +388,10 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 	 */
 	@Override
 	protected Component initContent() {
-		container = new BeanItemContainer<T>(entityModel.getEntityClass());
+		container = new BeanItemContainer<>(entityModel.getEntityClass());
 		container.addAll(items);
 
-		table = new ModelBasedTable<ID, T>(container, entityModel, false);
+		table = new ModelBasedTable<>(container, entityModel, false);
 
 		// add a remove button directly in the table
 		if (!isViewMode() && formOptions.isShowRemoveButton()) {
@@ -425,8 +435,7 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 					Filter filter = fieldFilters == null ? null : fieldFilters.get(attributeModel.getName());
 					if (filter != null) {
 						// create a filtered combo box
-						field = (Field<?>) constructComboBox(attributeModel.getNestedEntityModel(), attributeModel,
-						        filter, false);
+						field = constructComboBox(attributeModel.getNestedEntityModel(), attributeModel, filter, false);
 					} else {
 						// delegate to the field factory
 						field = super.createField(propertyId, fieldEntityModel);
@@ -499,11 +508,7 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 	 * @return
 	 */
 	private boolean isTableEditEnabled() {
-		return !viewMode && !tableReadOnly;
-	}
-
-	public boolean isTableReadOnly() {
-		return tableReadOnly;
+		return !viewMode && !formOptions.isDetailsTableSearchMode() && !formOptions.isReadOnly();
 	}
 
 	public boolean isViewMode() {
@@ -591,7 +596,7 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 	 */
 	public void setItems(Collection<T> items) {
 
-		List<T> list = new ArrayList<T>();
+		List<T> list = new ArrayList<>();
 		list.addAll(items);
 		if (comparator != null) {
 			Collections.sort(list, comparator);
@@ -641,10 +646,6 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 
 	public void setService(BaseService<ID, T> service) {
 		this.service = service;
-	}
-
-	public void setTableReadOnly(boolean tableReadOnly) {
-		this.tableReadOnly = tableReadOnly;
 	}
 
 	@Override

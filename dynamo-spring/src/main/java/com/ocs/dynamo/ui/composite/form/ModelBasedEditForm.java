@@ -357,14 +357,14 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		this.viewMode = !isEditAllowed() || (formOptions.isOpenInViewMode() && entity.getId() != null);
 
 		// set up a bean field group for automatic binding and validation
-		BeanItem<T> beanItem = new BeanItem<T>(entity);
-		BeanFieldGroup<T> group = new BeanFieldGroup<T>(clazz);
+		BeanItem<T> beanItem = new BeanItem<>(entity);
+		BeanFieldGroup<T> group = new BeanFieldGroup<>(clazz);
 		group.setItemDataSource(beanItem);
 		group.setBuffered(false);
 		groups.put(Boolean.FALSE, group);
 
-		beanItem = new BeanItem<T>(entity);
-		group = new BeanFieldGroup<T>(clazz);
+		beanItem = new BeanItem<>(entity);
+		group = new BeanFieldGroup<>(clazz);
 		group.setItemDataSource(beanItem);
 		group.setBuffered(false);
 		groups.put(Boolean.TRUE, group);
@@ -804,6 +804,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 				// multiple fields behind each other
 				HorizontalLayout horizontal = constructRowLayout(attributeModel, attributeModel.isRequired(),
 				        !(field instanceof CheckBox));
+				horizontal.setSizeFull();
+
 				parent.addComponent(horizontal);
 
 				// add the first field (without caption)
@@ -811,11 +813,12 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 					field.setCaption("");
 				}
 
+				// form layout for holding first field
 				FormLayout fl = constructNestedFormLayout(true);
 				fl.addComponent(field);
 				horizontal.addComponent(fl);
 
-				// add any "together with" attributes on the same line
+				// form layout for any of the other fields
 				for (String path : attributeModel.getGroupTogetherWith()) {
 					AttributeModel am = getEntityModel().getAttributeModel(path);
 					if (am != null) {
@@ -824,6 +827,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 						addField(fl2, entityModel, am, tabIndex);
 					}
 				}
+
 			} else {
 				parent.addComponent(field);
 			}
@@ -1279,7 +1283,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		setViewMode(getFormOptions().isOpenInViewMode() && entity.getId() != null);
 
 		// recreate the group
-		BeanItem<T> beanItem = new BeanItem<T>(entity);
+		BeanItem<T> beanItem = new BeanItem<>(entity);
 		groups.get(isViewMode()).setItemDataSource(beanItem);
 
 		// "rebuild" so that the correct layout is displayed
@@ -1367,7 +1371,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		// check what the new view mode must become and adapt the screen
 		this.viewMode = !isEditAllowed() || viewMode;
 
-		BeanItem<T> beanItem = new BeanItem<T>(entity);
+		BeanItem<T> beanItem = new BeanItem<>(entity);
 		groups.get(isViewMode()).setItemDataSource(beanItem);
 
 		constructTitleLabel();

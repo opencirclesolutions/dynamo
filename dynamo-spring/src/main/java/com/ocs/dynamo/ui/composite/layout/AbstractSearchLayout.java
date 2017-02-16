@@ -49,7 +49,9 @@ import com.vaadin.ui.Layout;
 import com.vaadin.ui.VerticalLayout;
 
 /**
- * Abstract classes for search layout
+ * Base class for search layouts. A search layout consists of a search form with a results table
+ * below it. From the result table the user can select an entity and then navigate to a detail
+ * screen for managing that entity
  * 
  * @author bas.rutten
  *
@@ -129,7 +131,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	private boolean searchLayoutConstructed;
 
 	/**
-	 * Constructor - only the most important attributes
+	 * Constructor
 	 * 
 	 * @param service
 	 *            the service that is used to query the database
@@ -211,7 +213,6 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 
 			// listen to a click on the clear button
 			mainSearchLayout.addComponent(getSearchForm());
-
 			if (getSearchForm().getClearButton() != null) {
 				getSearchForm().getClearButton().addClickListener(new Button.ClickListener() {
 
@@ -256,7 +257,8 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 							searchLayoutConstructed = true;
 							search();
 						} else {
-							// otherwise, only fire the callback method
+							// otherwise, only fire the callback method (the actual search is
+							// already carried out elsewhere)
 							afterSearchPerformed();
 						}
 					}
@@ -265,28 +267,23 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 
 			// add button
 			addButton = constructAddButton();
-			if (addButton != null) {
-				getButtonBar().addComponent(addButton);
-			}
+			getButtonBar().addComponent(addButton);
 
 			// edit/view button
 			editButton = constructEditButton();
-			if (editButton != null) {
-				registerButton(editButton);
-				getButtonBar().addComponent(editButton);
-			}
+			registerButton(editButton);
+			getButtonBar().addComponent(editButton);
 
 			// remove button
 			removeButton = constructRemoveButton();
-			if (removeButton != null) {
-				registerButton(removeButton);
-				getButtonBar().addComponent(removeButton);
-			}
+			registerButton(removeButton);
+			getButtonBar().addComponent(removeButton);
 
 			// callback for adding additional buttons
 			postProcessButtonBar(getButtonBar());
 			mainSearchLayout.addComponent(getButtonBar());
 
+			// post process the layout
 			postProcessLayout(mainSearchLayout);
 		}
 		setCompositionRoot(mainSearchLayout);
@@ -374,18 +371,21 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 			}
 		});
 
-		getTableWrapper().getTable().addItemClickListener(new ItemClickListener() {
+		// select item by double clicking on row (disable this inside popup windows)
+		if (!getFormOptions().isPopup() && getFormOptions().isDoubleClickSelectAllowed()) {
+			getTableWrapper().getTable().addItemClickListener(new ItemClickListener() {
 
-			private static final long serialVersionUID = 7947905411214073660L;
+				private static final long serialVersionUID = 7947905411214073660L;
 
-			@Override
-			public void itemClick(ItemClickEvent event) {
-				if (event.isDoubleClick() && getFormOptions().isDoubleClickSelectAllowed()) {
-					select(event.getItem().getItemProperty(DynamoConstants.ID).getValue());
-					doEdit();
+				@Override
+				public void itemClick(ItemClickEvent event) {
+					if (event.isDoubleClick()) {
+						select(event.getItem().getItemProperty(DynamoConstants.ID).getValue());
+						doEdit();
+					}
 				}
-			}
-		});
+			});
+		}
 
 		// table dividers
 		constructTableDividers();
@@ -454,6 +454,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 				// editing in form must be possible
 				options.setShowEditButton(true);
 			} else {
+				// read-only mode
 				options.setOpenInViewMode(true);
 				options.setShowEditButton(false);
 			}
@@ -501,6 +502,16 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 				protected Field<?> constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel,
 				        boolean viewMode) {
 					return AbstractSearchLayout.this.constructCustomField(entityModel, attributeModel, viewMode, false);
+				}
+
+				@Override
+				protected String getParentGroup(String childGroup) {
+					return AbstractSearchLayout.this.getParentGroup(childGroup);
+				}
+
+				@Override
+				protected String[] getParentGroupHeaders() {
+					return AbstractSearchLayout.this.getParentGroupHeaders();
 				}
 
 				@Override
@@ -753,7 +764,8 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	public abstract void setSearchValue(String propertyId, Object value, Object auxValue);
 
 	/**
-	 * Validate before a search is carried out
+	 * Validate before a search is carried out - if the search criteria are not correctly set, throw
+	 * an OCSValidationException to abort the search process
 	 */
 	public void validateBeforeSearch() {
 		// overwrite in subclasses
