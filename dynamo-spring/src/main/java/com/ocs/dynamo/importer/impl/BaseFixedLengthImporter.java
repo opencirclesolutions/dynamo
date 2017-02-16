@@ -36,14 +36,12 @@ public class BaseFixedLengthImporter extends BaseTextImporter {
 	 * Counts the number of rows in the file
 	 * 
 	 * @param bytes
-	 *            the content of the file
-	 * @param row
-	 *            ignored for this type of file
-	 * @param column
-	 *            ignored for this type of file
+	 *            the byte content of the file
+	 * @param sheetIndex
+	 *            the index of the sheet (ignored)
 	 */
 	@Override
-	public int countRows(byte[] bytes, int row, int column) {
+	public int countRows(byte[] bytes, int sheetIndex) {
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(bytes)))) {
 			int count = 0;
 

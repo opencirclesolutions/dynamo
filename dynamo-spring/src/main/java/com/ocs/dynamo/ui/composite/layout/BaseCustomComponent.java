@@ -138,7 +138,7 @@ public abstract class BaseCustomComponent extends CustomComponent implements Bui
 				if (!StringUtils.isEmpty(attributeModel.getTrueRepresentation()) && Boolean.TRUE.equals(value)) {
 					property = new ObjectProperty<>(attributeModel.getTrueRepresentation());
 				} else if (!StringUtils.isEmpty(attributeModel.getFalseRepresentation()) && Boolean.FALSE.equals(value)) {
-					property = new ObjectProperty<String>(attributeModel.getFalseRepresentation());
+					property = new ObjectProperty<>(attributeModel.getFalseRepresentation());
 				} else {
 					property = new ObjectProperty<>((Boolean) value);
 					fieldLabel.setConverter(new StringToBooleanConverter());

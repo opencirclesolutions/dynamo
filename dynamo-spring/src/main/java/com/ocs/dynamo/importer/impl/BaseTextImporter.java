@@ -31,7 +31,7 @@ import com.ocs.dynamo.utils.SystemPropertyUtils;
 public abstract class BaseTextImporter extends BaseImporter<String[], String> {
 
 	/**
-	 * Gets a boolean value from a String
+	 * Tries to convert a String value to a Boolean
 	 * 
 	 * @param unit
 	 *            the String
@@ -45,6 +45,25 @@ public abstract class BaseTextImporter extends BaseImporter<String[], String> {
 		return Boolean.valueOf(value);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected Boolean getBooleanValueWithDefault(String unit, ImportField field) {
+		Boolean result = getBooleanValue(unit);
+		if (result == null && !StringUtils.isEmpty(field.defaultValue())) {
+			return Boolean.valueOf(field.defaultValue());
+		}
+		return result;
+	}
+
+	/**
+	 * Tries to convert a String value to a Date
+	 * 
+	 * @param unit
+	 *            the String value to convert
+	 * @return
+	 */
 	protected Date getDateValue(String unit) {
 		String value = unit;
 		if (!StringUtils.isEmpty(value)) {
@@ -57,6 +76,9 @@ public abstract class BaseTextImporter extends BaseImporter<String[], String> {
 		return null;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected Date getDateValueWithDefault(String unit, ImportField field) {
 		Date value = getDateValue(unit);
@@ -70,19 +92,11 @@ public abstract class BaseTextImporter extends BaseImporter<String[], String> {
 		return value;
 	}
 
-	@Override
-	protected Boolean getBooleanValueWithDefault(String unit, ImportField field) {
-		Boolean result = getBooleanValue(unit);
-		if (result == null && !StringUtils.isEmpty(field.defaultValue())) {
-			return Boolean.valueOf(field.defaultValue());
-		}
-		return result;
-	}
-
 	/**
-	 * Reads a numeric value form a unit (i.e. a single string or a single cell)
+	 * Tries to convert a String to a numeric value
 	 * 
 	 * @param unit
+	 *            the String value to convert
 	 * @return
 	 */
 	protected Double getNumericValue(String unit) {
@@ -98,12 +112,7 @@ public abstract class BaseTextImporter extends BaseImporter<String[], String> {
 	}
 
 	/**
-	 * Reads a numeric value from a unit (and falls back to a default if needed)
-	 * 
-	 * @param unit
-	 *            the unit (cell or string value) to read from
-	 * @param field
-	 *            the field definition (contains a default value)
+	 * {@inheritDoc}
 	 */
 	@Override
 	protected Double getNumericValueWithDefault(String unit, ImportField field) {
@@ -115,12 +124,7 @@ public abstract class BaseTextImporter extends BaseImporter<String[], String> {
 	}
 
 	/**
-	 * Reads a String value from a unit (and falls back to a default if needed)
-	 * 
-	 * @param unit
-	 *            the unit (cell or string value) to read from
-	 * @param field
-	 *            the field definition (contains a default value)
+	 * {@inheritDoc}
 	 */
 	@Override
 	protected String getStringValueWithDefault(String unit, ImportField field) {
@@ -132,25 +136,23 @@ public abstract class BaseTextImporter extends BaseImporter<String[], String> {
 	}
 
 	/**
-	 * Retrieves the unit (single string value) from a row or line
+	 * {@inheritDoc}
 	 */
 	@Override
 	protected String getUnit(String[] row, ImportField field) {
 		return row[field.index()];
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean isPercentageCorrectionSupported() {
 		return false;
 	}
 
 	/**
-	 * Checks whether a certain field's index is within range for a certain row
-	 * 
-	 * @param row
-	 *            the row
-	 * @param field
-	 *            the field
+	 * {@inheritDoc}
 	 */
 	@Override
 	protected boolean isWithinRange(String[] row, ImportField field) {

@@ -35,7 +35,7 @@ public class BaseCsvImporter extends BaseTextImporter {
 	 * Counts the number of rows in the file
 	 */
 	@Override
-	public int countRows(byte[] bytes, int row, int column) {
+	public int countRows(byte[] bytes, int sheetIndex) {
 		List<String[]> lines = readCsvFile(bytes, ";", "'");
 		return lines.size();
 	}

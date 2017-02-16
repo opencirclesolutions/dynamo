@@ -78,10 +78,6 @@ public class DefaultUI extends BaseUI {
 	@Inject
 	private SpringViewProvider viewProvider;
 
-	private Panel viewPanel;
-
-	private Navigator navigator;
-
 	/**
 	 * Main method - sets up the application
 	 */
@@ -94,7 +90,7 @@ public class DefaultUI extends BaseUI {
 
 		// navigator part
 		VerticalLayout viewLayout = new VerticalLayout();
-		viewPanel = new Panel();
+		Panel viewPanel = new Panel();
 		viewPanel.setImmediate(Boolean.TRUE);
 		viewPanel.setContent(viewLayout);
 
@@ -106,7 +102,8 @@ public class DefaultUI extends BaseUI {
 		stateManager.setState(Views.MOVIES_VIEW);
 
 		// create the navigator
-		navigator = new Navigator(this, stateManager, new Navigator.SingleComponentContainerViewDisplay(viewPanel));
+		Navigator navigator = new Navigator(this, stateManager, new Navigator.SingleComponentContainerViewDisplay(
+		        viewPanel));
 		UI.getCurrent().setNavigator(navigator);
 		navigator.addProvider(viewProvider);
 		navigator.setErrorView(new ErrorView());

@@ -64,7 +64,7 @@ public class FixedTableWrapper<ID extends Serializable, T extends AbstractEntity
 
 	@Override
 	protected Container constructContainer() {
-		BeanItemContainer<T> container = new BeanItemContainer<T>(getService().getEntityClass());
+		BeanItemContainer<T> container = new BeanItemContainer<>(getService().getEntityClass());
 		doConstructContainer(container);
 		container.addAll(items);
 		return container;

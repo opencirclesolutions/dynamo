@@ -25,6 +25,7 @@ import com.ocs.dynamo.exception.OCSImportException;
 import com.ocs.dynamo.importer.ImportField;
 import com.ocs.dynamo.importer.dto.AbstractDTO;
 import com.ocs.dynamo.utils.ClassUtils;
+import com.ocs.dynamo.utils.NumberUtils;
 
 /**
  * Base class for smart upload functionality
@@ -45,13 +46,11 @@ public abstract class BaseImporter<R, U> {
 	 * 
 	 * @param bytes
 	 *            the byte representation of the input file
-	 * @param row
-	 *            the optional row index of the cell that contains the total row count
-	 * @param column
-	 *            the optional column index of the cell that contains the total row count
+	 * @param index
+	 *            the index of the sheet (if appropriate)
 	 * @return
 	 */
-	public abstract int countRows(byte[] bytes, int row, int column);
+	public abstract int countRows(byte[] bytes, int sheetIndex);
 
 	/**
 	 * Retrieves a boolean value from the input and falls back to a default if the value is empty or
@@ -104,13 +103,11 @@ public abstract class BaseImporter<R, U> {
 				try {
 					obj = Enum.valueOf(d.getPropertyType().asSubclass(Enum.class), value.toUpperCase());
 				} catch (IllegalArgumentException ex) {
-					throw new OCSImportException("Value " + value
-					        + " cannot be translated to a valid enumeration value", ex);
+					throw new OCSImportException("Value " + value + " cannot be translated to an enumeration value", ex);
 				}
 			}
 		} else if (isNumeric(d.getPropertyType())) {
 			// numeric field
-
 			Double value = getNumericValueWithDefault(unit, field);
 			if (value != null) {
 
@@ -129,11 +126,11 @@ public abstract class BaseImporter<R, U> {
 				// round to the nearest integer, then use intValue() or longValue()
 				BigDecimal rounded = BigDecimal.valueOf(value.doubleValue()).setScale(0, RoundingMode.HALF_UP);
 				Class<?> pType = d.getPropertyType();
-				if (Integer.class.equals(pType) || int.class.equals(pType)) {
+				if (NumberUtils.isInteger(pType)) {
 					obj = rounded.intValue();
-				} else if (Long.class.equals(pType) || long.class.equals(pType)) {
+				} else if (NumberUtils.isLong(pType)) {
 					obj = rounded.longValue();
-				} else if (Float.class.equals(pType) || float.class.equals(pType)) {
+				} else if (NumberUtils.isFloat(pType)) {
 					obj = Float.valueOf(value.floatValue());
 				} else if (BigDecimal.class.equals(pType)) {
 					obj = BigDecimal.valueOf(value.doubleValue());
@@ -175,7 +172,9 @@ public abstract class BaseImporter<R, U> {
 	 * Retrieves a unit (a single cell or field) from a row
 	 * 
 	 * @param row
+	 *            the row
 	 * @param field
+	 *            the field definition
 	 * @return
 	 */
 	protected abstract U getUnit(R row, ImportField field);
@@ -200,10 +199,12 @@ public abstract class BaseImporter<R, U> {
 	public abstract boolean isPercentageCorrectionSupported();
 
 	/**
-	 * Checks whether a field index is within the range of available collumns
+	 * Checks whether a field index is within the range of available columns
 	 * 
 	 * @param row
+	 *            the row to check
 	 * @param field
+	 *            the field definition
 	 * @return
 	 */
 	protected abstract boolean isWithinRange(R row, ImportField field);
@@ -214,7 +215,9 @@ public abstract class BaseImporter<R, U> {
 	 * @param rowNum
 	 *            the row number
 	 * @param row
+	 *            the row
 	 * @param clazz
+	 *            the class of the object that must be created
 	 * @return
 	 */
 	public <T extends AbstractDTO> T processRow(int rowNum, R row, Class<T> clazz) {
@@ -240,7 +243,6 @@ public abstract class BaseImporter<R, U> {
 				}
 			}
 		}
-
 		return t;
 	}
 }

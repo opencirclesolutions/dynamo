@@ -47,6 +47,8 @@ import com.ocs.dynamo.utils.SystemPropertyUtils;
  */
 public class BaseXlsImporter extends BaseImporter<Row, Cell> {
 
+	private static final int CACHE_SIZE = 500;
+
 	/**
 	 * Checks if any cell in the row contains a certain (String) value
 	 * 
@@ -67,21 +69,33 @@ public class BaseXlsImporter extends BaseImporter<Row, Cell> {
 				try {
 					found = value.equalsIgnoreCase(row.getCell(i).getStringCellValue());
 				} catch (Exception ex) {
-					// do nothing
+					// exception when there is not a String in the cell - nothing can be done about
+					// this
 				}
 			}
 		}
 		return found;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	public int countRows(byte[] bytes, int row, int column) {
-		Workbook wb = createWorkbook(bytes);
-		if (wb.getNumberOfSheets() == 0) {
-			return 0;
-		} else {
-			Sheet sheet = wb.getSheetAt(0);
-			return sheet.getLastRowNum() - sheet.getFirstRowNum() + 1;
+	public int countRows(byte[] bytes, int sheetIndex) {
+		int count = 0;
+		try (StreamingReader reader = createReader(bytes, sheetIndex, CACHE_SIZE)) {
+			Iterator<Row> it = reader.iterator();
+			while (it.hasNext()) {
+				Row r = it.next();
+
+				// if a row in the middle of the sheet is empty, we assume
+				// everything else is empty
+				if (isRowEmpty(r)) {
+					break;
+				}
+				count++;
+			}
+			return count;
 		}
 	}
 
@@ -90,19 +104,8 @@ public class BaseXlsImporter extends BaseImporter<Row, Cell> {
 	 * 
 	 * @param bytes
 	 *            the content of the file
-	 * @param cacheSize
-	 *            the size of the cache
-	 * @return
-	 */
-	public StreamingReader createReader(byte[] bytes, int cacheSize) {
-		return createReader(bytes, 0, cacheSize);
-	}
-
-	/**
-	 * Creates a reader for processing an Excel file using streaming
-	 * 
-	 * @param bytes
-	 *            the content of the file
+	 * @param the
+	 *            index of the sheet to read from
 	 * @param cacheSize
 	 *            the cache size
 	 * @return
@@ -116,12 +119,13 @@ public class BaseXlsImporter extends BaseImporter<Row, Cell> {
 	 * Creates a workbook from an array of bytes
 	 * 
 	 * @param bytes
+	 *            the byte content of the file
 	 * @return
 	 */
 	public Workbook createWorkbook(byte[] bytes) {
 		Workbook workbook = null;
 		try {
-			// first, try to check if it's an original (old) Excel file
+			// first, try to check if it's an old Excel file
 			workbook = new HSSFWorkbook(new ByteArrayInputStream(bytes));
 		} catch (OfficeXmlFileException ex) {
 			try {
@@ -139,7 +143,7 @@ public class BaseXlsImporter extends BaseImporter<Row, Cell> {
 	 * Extracts a boolean value from a cell
 	 * 
 	 * @param cell
-	 *            the cell
+	 *            the cell to extract the value from
 	 * @return
 	 */
 	protected Boolean getBooleanValue(Cell cell) {
@@ -151,6 +155,9 @@ public class BaseXlsImporter extends BaseImporter<Row, Cell> {
 		return Boolean.FALSE;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected Boolean getBooleanValueWithDefault(Cell unit, ImportField field) {
 		Boolean b = getBooleanValue(unit);
@@ -164,15 +171,14 @@ public class BaseXlsImporter extends BaseImporter<Row, Cell> {
 	 * Retrieves a date value from a cell
 	 * 
 	 * @param cell
-	 *            the cell
+	 *            the cell to extract the value from
 	 * @return
 	 */
 	protected Date getDateValue(Cell cell) {
 		if (cell != null
 		        && (Cell.CELL_TYPE_NUMERIC == cell.getCellType() || Cell.CELL_TYPE_BLANK == cell.getCellType())) {
 			try {
-				Date date = cell.getDateCellValue();
-				return date;
+				return cell.getDateCellValue();
 			} catch (NullPointerException nex) {
 				// horrible code throws NPE in case of empty cell
 				return null;
@@ -181,6 +187,9 @@ public class BaseXlsImporter extends BaseImporter<Row, Cell> {
 		return null;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected Date getDateValueWithDefault(Cell cell, ImportField field) {
 		Date value = getDateValue(cell);
@@ -226,11 +235,11 @@ public class BaseXlsImporter extends BaseImporter<Row, Cell> {
 	}
 
 	/**
-	 * Retrieves the numeric value of a cell, or falls back to a suitable default if the cell is
-	 * empty and the default is defined
+	 * Retrieves the numeric value of a cell, or falls back to a suitable default value if the cell
+	 * is empty and a default value has been specified
 	 * 
 	 * @param cell
-	 *            the cell
+	 *            the cell to extract the value from
 	 * @param field
 	 *            the field definition
 	 * @return
@@ -248,7 +257,7 @@ public class BaseXlsImporter extends BaseImporter<Row, Cell> {
 	 * Returns a date value from a cell. Throws an exception if the cell is empty
 	 * 
 	 * @param cell
-	 *            the cell
+	 *            the cell to extract the value from
 	 * @return
 	 */
 	protected Date getRequiredDateValue(Cell cell) {
@@ -260,10 +269,10 @@ public class BaseXlsImporter extends BaseImporter<Row, Cell> {
 	}
 
 	/**
-	 * Extracts a String value from a cell and throw an exception if this value is empty
+	 * Extracts a numeric value from a cell and throw an exception if this value is empty
 	 * 
 	 * @param cell
-	 *            the cell
+	 *            the cell to extract the value from
 	 * @return
 	 */
 	protected Double getRequiredNumericValue(Cell cell) {
@@ -278,7 +287,7 @@ public class BaseXlsImporter extends BaseImporter<Row, Cell> {
 	 * Extracts a String value from a cell and throw an exception if this value is empty
 	 * 
 	 * @param cell
-	 *            the cell
+	 *            the cell to extract the value from
 	 * @return
 	 */
 	protected String getRequiredStringValue(Cell cell) {
@@ -294,7 +303,7 @@ public class BaseXlsImporter extends BaseImporter<Row, Cell> {
 	 * contain a string
 	 * 
 	 * @param cell
-	 *            the cell
+	 *            the cell to extract the value from
 	 * @return
 	 */
 	protected String getStringValue(Cell cell) {
@@ -311,11 +320,11 @@ public class BaseXlsImporter extends BaseImporter<Row, Cell> {
 	}
 
 	/**
-	 * Retrieves the value of a cell as a string, or falls back to the default if the value is empty
-	 * and a suitable default is defined
+	 * Retrieves the value of a cell as a String, or falls back to a default value if the value is
+	 * empty and a suitable default value is defined
 	 * 
 	 * @param cell
-	 *            the cell
+	 *            the cell to extract the value from
 	 * @param field
 	 *            the field definition
 	 * @return
@@ -343,6 +352,7 @@ public class BaseXlsImporter extends BaseImporter<Row, Cell> {
 	 * Check if the specified row is completely empty
 	 * 
 	 * @param row
+	 *            the row to check
 	 * @return
 	 */
 	public boolean isRowEmpty(Row row) {
@@ -362,18 +372,25 @@ public class BaseXlsImporter extends BaseImporter<Row, Cell> {
 		return true;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected boolean isWithinRange(Row row, ImportField field) {
 		return row.getFirstCellNum() + field.index() < row.getLastCellNum();
 	}
 
 	/**
-	 * Processes a number of consecutive rows and translates them into a record
+	 * Processes a number of consecutive rows and translates them into a DTO
 	 * 
-	 * @param firstRowNum
-	 *            the row number of the first row
+	 * @param sheet
+	 *            the sheet to read the values from
+	 * @param firstRowIndex
+	 *            the index of the first row to start reading from
+	 * @param colIndex
+	 *            the index of the column that contains the values
 	 * @param clazz
-	 *            the class of the record
+	 *            the class
 	 * @return
 	 */
 	public <T extends AbstractDTO> T processRows(Sheet sheet, int firstRowIndex, int colIndex, Class<T> clazz) {
@@ -383,7 +400,7 @@ public class BaseXlsImporter extends BaseImporter<Row, Cell> {
 		try {
 			firstCellValue = sheet.getRow(firstRowIndex).getCell(colIndex).getStringCellValue();
 		} catch (Exception ex) {
-			// do nothing
+			// do nothing - not a String value
 		}
 
 		if (firstCellValue != null && !"".equals(firstCellValue.toString())) {
@@ -394,9 +411,7 @@ public class BaseXlsImporter extends BaseImporter<Row, Cell> {
 					int rowNum = firstRowIndex + field.index();
 					if (rowNum <= sheet.getLastRowNum()) {
 						Row row = sheet.getRow(rowNum);
-
 						Cell unit = row.getCell(colIndex);
-
 						Object obj = getFieldValue(d, unit, field);
 						if (obj != null) {
 							ClassUtils.setFieldValue(t, d.getName(), obj);
@@ -410,7 +425,6 @@ public class BaseXlsImporter extends BaseImporter<Row, Cell> {
 				}
 			}
 		}
-
 		return t;
 	}
 }

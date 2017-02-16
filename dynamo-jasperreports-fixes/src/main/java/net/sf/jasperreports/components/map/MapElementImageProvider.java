@@ -53,13 +53,14 @@ import net.sf.jasperreports.renderers.util.RendererUtil;
  * 
  * @author sanda zaharia (shertage@users.sourceforge.net)
  */
-public class MapElementImageProvider {
+public final class MapElementImageProvider {
 	/**
 	 * The character count limit for a static map URL request
 	 */
 	private static final Integer MAX_URL_LENGTH = 2048;
 
 	private MapElementImageProvider() {
+		// default constructor
 	}
 
 	@SuppressWarnings("unchecked")

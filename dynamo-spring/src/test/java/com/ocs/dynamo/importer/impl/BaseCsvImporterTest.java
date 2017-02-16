@@ -32,7 +32,7 @@ public class BaseCsvImporterTest {
 	@Test
 	public void testCountRows() throws IOException {
 		byte[] bytes = readFile("importertest.csv");
-		int rows = importer.countRows(bytes, 0, 0);
+		int rows = importer.countRows(bytes, 0);
 		Assert.assertEquals(7, rows);
 	}
 

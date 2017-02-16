@@ -105,11 +105,17 @@ public abstract class XlsRowImportTemplate<ID, T extends AbstractDTO> {
 	 * @param errors
 	 *            list of errors
 	 * @param clazz
+	 *            the class
 	 * @param sheetIndex
+	 *            the index of the sheet to read from
 	 * @param firstRowNumber
+	 *            the index of the first row to read from
 	 * @param colIndex
+	 *            the index of the column to read from
 	 * @param recordLength
+	 *            the length (number of lines) of a single record
 	 * @param checkForDuplicates
+	 *            whether to check for duplicates
 	 */
 	public XlsRowImportTemplate(BaseXlsImporter importer, MessageService messageService, byte[] bytes,
 	        List<String> errors, Class<T> clazz, int sheetIndex, int firstRowNumber, int colIndex, int recordLength,

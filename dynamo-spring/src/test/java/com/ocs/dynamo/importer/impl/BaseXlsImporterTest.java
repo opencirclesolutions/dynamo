@@ -41,7 +41,7 @@ public class BaseXlsImporterTest {
 	@Test
 	public void testCountRows() throws IOException {
 		byte[] bytes = readFile("importertest.xlsx");
-		int rows = importer.countRows(bytes, 0, 0);
+		int rows = importer.countRows(bytes, 0);
 		Assert.assertEquals(7, rows);
 	}
 
@@ -173,7 +173,7 @@ public class BaseXlsImporterTest {
 	@Test
 	public void testCreateReader() throws IOException {
 		byte[] bytes = readFile("importertest.xlsx");
-		StreamingReader reader = importer.createReader(bytes, 100);
+		StreamingReader reader = importer.createReader(bytes, 0, 100);
 
 		// "hasNext" has to be called to actually populate the iterator
 		Iterator<Row> it = reader.iterator();

@@ -291,7 +291,7 @@ public class TableExportActionHandler implements Handler {
 				return false;
 			} finally {
 				if (tempFile != null) {
-					tempFile.deleteOnExit();
+					tempFile.delete();
 				}
 				try {
 					writer.close();
@@ -698,7 +698,7 @@ public class TableExportActionHandler implements Handler {
 				}
 
 				if (tempFile != null) {
-					tempFile.deleteOnExit();
+					tempFile.delete();
 				}
 			}
 		}

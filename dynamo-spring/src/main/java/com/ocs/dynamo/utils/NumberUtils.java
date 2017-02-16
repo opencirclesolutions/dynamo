@@ -18,6 +18,7 @@ import java.math.BigDecimal;
 public final class NumberUtils {
 
 	private NumberUtils() {
+		// default constructor
 	}
 
 	/**
@@ -41,6 +42,17 @@ public final class NumberUtils {
 		}
 
 		return value.toString();
+	}
+
+	/**
+	 * Checks if a class is a float (either wrapper or primitive)
+	 * 
+	 * @param clazz
+	 *            the class to check
+	 * @return
+	 */
+	public static boolean isFloat(Class<?> clazz) {
+		return Float.class.equals(clazz) || float.class.equals(clazz);
 	}
 
 	/**
@@ -77,5 +89,4 @@ public final class NumberUtils {
 		        || int.class.isAssignableFrom(clazz) || long.class.isAssignableFrom(clazz)
 		        || byte.class.isAssignableFrom(clazz) || short.class.isAssignableFrom(clazz);
 	}
-
 }

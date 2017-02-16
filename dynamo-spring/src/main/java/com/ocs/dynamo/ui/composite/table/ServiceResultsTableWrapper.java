@@ -69,7 +69,7 @@ public class ServiceResultsTableWrapper<ID extends Serializable, T extends Abstr
 	@Override
 	@SuppressWarnings("unchecked")
 	protected Container constructContainer() {
-		ServiceContainer<ID, T> container = new ServiceContainer<ID, T>(getService(), true, DynamoConstants.PAGE_SIZE,
+		ServiceContainer<ID, T> container = new ServiceContainer<>(getService(), true, DynamoConstants.PAGE_SIZE,
 		        getQueryType(), getJoins());
 		((ServiceQueryDefinition<ID, T>) container.getQueryView().getQueryDefinition())
 		        .setEntityModel(getEntityModel());

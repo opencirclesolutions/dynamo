@@ -95,7 +95,7 @@ public class SimpleSearchTreeComponent<ID extends Serializable, T extends Abstra
 	protected ModelBasedSearchForm<ID, T> constructSearchForm() {
 		ModelBasedHierarchicalContainer<T> c = (ModelBasedHierarchicalContainer<T>) getTableWrapper().getContainer();
 		ModelBasedHierarchicalDefinition def = c.getHierarchicalDefinition(0);
-		ModelBasedSearchForm<ID, T> result = new ModelBasedSearchForm<ID, T>(getTableWrapper(), def.getEntityModel(),
+		ModelBasedSearchForm<ID, T> result = new ModelBasedSearchForm<>(getTableWrapper(), def.getEntityModel(),
 		        getFormOptions(), getDefaultFilters(), getFieldFilters());
 		result.build();
 		return result;
