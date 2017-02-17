@@ -50,6 +50,11 @@ public class ServiceResultsTreeTableWrapper<ID extends Serializable, T extends A
 	private List<BaseService<?, ?>> services;
 
 	/**
+	 * Whether exporting is allowed
+	 */
+	private boolean allowExport;
+
+	/**
 	 * Constructor
 	 * 
 	 * @param services
@@ -65,9 +70,11 @@ public class ServiceResultsTreeTableWrapper<ID extends Serializable, T extends A
 	 */
 	@SuppressWarnings("unchecked")
 	public ServiceResultsTreeTableWrapper(List<BaseService<?, ?>> services, EntityModel<T> rootEntityModel,
-	        QueryType queryType, List<SortOrder> sortOrders, HierarchicalFetchJoinInformation... joins) {
+	        QueryType queryType, List<SortOrder> sortOrders, boolean allowExport,
+	        HierarchicalFetchJoinInformation... joins) {
 		super((BaseService<ID, T>) services.get(0), rootEntityModel, queryType, null, sortOrders, true, joins);
 		this.services = services;
+		this.allowExport = allowExport;
 	}
 
 	/**
@@ -90,7 +97,7 @@ public class ServiceResultsTreeTableWrapper<ID extends Serializable, T extends A
 
 	@Override
 	protected ModelBasedTreeTable<ID, T> constructTable() {
-		return new ModelBasedTreeTable<>(getContainer(), getEntityModelFactory());
+		return new ModelBasedTreeTable<>(getContainer(), getEntityModelFactory(), allowExport);
 	}
 
 	@Override

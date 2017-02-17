@@ -16,7 +16,6 @@ package com.ocs.dynamo.ui.composite.layout;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 import org.vaadin.addons.lazyquerycontainer.CompositeItem;
 
@@ -32,8 +31,8 @@ import com.ocs.dynamo.ui.container.QueryType;
 import com.ocs.dynamo.ui.container.hierarchical.HierarchicalFetchJoinInformation;
 import com.ocs.dynamo.ui.container.hierarchical.ModelBasedHierarchicalContainer;
 import com.ocs.dynamo.ui.container.hierarchical.ModelBasedHierarchicalContainer.ModelBasedHierarchicalDefinition;
-import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Container;
+import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanItem;
 
@@ -74,7 +73,7 @@ public class SimpleSearchTreeComponent<ID extends Serializable, T extends Abstra
 	@Override
 	public ServiceResultsTableWrapper<ID, T> constructTableWrapper() {
 		ServiceResultsTableWrapper<ID, T> result = new ServiceResultsTreeTableWrapper<ID, T>(services,
-		        getEntityModel(), getQueryType(), null, getJoins()) {
+		        getEntityModel(), getQueryType(), null, getFormOptions().isTableExportAllowed(), getJoins()) {
 
 			@Override
 			protected void doConstructContainer(Container container) {

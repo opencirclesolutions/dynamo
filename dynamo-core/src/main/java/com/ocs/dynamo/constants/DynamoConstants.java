@@ -58,7 +58,7 @@ public final class DynamoConstants {
 	 * The CSS class used to indicate that an element is the first child element
 	 */
 	public static final String CSS_FIRST = "first";
-	
+
 	/**
 	 * The CSS class for the last visited main menu item
 	 */
@@ -132,8 +132,8 @@ public final class DynamoConstants {
 	public static final String SP_ALLOW_TABLE_EXPORT = "ocs.allow.table.export";
 
 	/**
-	 * Name of the system property that is used to set the locale used for month names 
-	 * in date components
+	 * Name of the system property that is used to set the locale used for month names in date
+	 * components
 	 */
 	public static final String SP_DATE_LOCALE = "ocs.date.locale";
 
@@ -142,13 +142,16 @@ public final class DynamoConstants {
 	 */
 	public static final String SP_DECIMAL_PRECISION = "ocs.default.decimal.precision";
 
+	/**
+	 * Default caption format
+	 */
 	public static final String SP_DEFAULT_CAPTION_FORMAT = "ocs.default.caption.format";
 
 	/**
 	 * Use Vaadin for formatting properties.
 	 */
 	public static final String SP_DEFAULT_CAPTION_FORMAT_VAADIN = "vaadin";
-	
+
 	/**
 	 * Name of the system property that is used to determine the default currency symbol
 	 */
@@ -201,16 +204,16 @@ public final class DynamoConstants {
 	 */
 	public static final String SP_LOOKUP_FIELD_MAX_ITEMS = "ocs.default.lookupfield.max.items";
 
-	   /**
+	/**
 	 * System property that indicates that maximum allowed number of rows in a non-streaming export
 	 */
 	public static final String SP_MAX_ROWS_NON_STREAMING = "ocs.max.rows.non.streaming";
 
-	    /**
-		 * System property that indicates that maximum allowed number of rows in a streaming export
-		 */
-		public static final String SP_MAX_ROWS_STREAMING = "ocs.max.rows.streaming";
-	
+	/**
+	 * System property that indicates that maximum allowed number of rows in a streaming export
+	 */
+	public static final String SP_MAX_ROWS_STREAMING = "ocs.max.rows.streaming";
+
 	/**
 	 * System property that indicates that maximum allowed number of rows in a streaming export of a
 	 * pivoted data set

@@ -29,7 +29,6 @@ import com.ocs.dynamo.ui.ServiceLocator;
 import com.ocs.dynamo.ui.component.URLField;
 import com.ocs.dynamo.ui.composite.table.export.TableExportActionHandler;
 import com.ocs.dynamo.ui.composite.table.export.TableExportMode;
-import com.ocs.dynamo.utils.SystemPropertyUtils;
 import com.vaadin.data.Container;
 import com.vaadin.data.Property;
 import com.vaadin.ui.Table;
@@ -48,8 +47,19 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
 
 	private static final long serialVersionUID = 6946260934644731038L;
 
+	/**
+	 * The container that hold the data for the table
+	 */
 	private Container container;
 
+	/**
+	 * Custom currency symbol to be used for this table
+	 */
+	private String currencySymbol;
+
+	/**
+	 * The entity model of the entities to display in the table
+	 */
 	private EntityModel<T> entityModel;
 
 	/**
@@ -58,19 +68,14 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
 	private EntityModelFactory entityModelFactory;
 
 	/**
-	 * The message service
-	 */
-	private MessageService messageService;
-
-	/**
-	 * Custom currency symbol to be used for this table
-	 */
-	private String currencySymbol;
-
-	/**
 	 * Indicated whether table export is allowed
 	 */
 	private boolean exportAllowed;
+
+	/**
+	 * The message service
+	 */
+	private MessageService messageService;
 
 	/**
 	 * Constructor
@@ -98,8 +103,8 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
 
 		generateColumns(container, model);
 
-		if (SystemPropertyUtils.allowTableExport() || isExportAllowed()) {
-			// add export functionality
+		// add export functionality
+		if (isExportAllowed()) {
 			List<EntityModel<?>> list = new ArrayList<>();
 			list.add(model);
 			addActionHandler(new TableExportActionHandler(UI.getCurrent(), list, model.getDisplayNamePlural(), null,
@@ -110,6 +115,7 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
 			        false, TableExportMode.CSV, null));
 		}
 
+		// update the table caption to reflect the number of items
 		addItemSetChangeListener(new ItemSetChangeListener() {
 
 			private static final long serialVersionUID = 3035240490920769456L;
@@ -125,7 +131,7 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
 	 * Adds a column to the table
 	 * 
 	 * @param attributeModel
-	 *            the (possibly nested) attribute model
+	 *            the (possibly nested) attribute model for which to add a column
 	 * @param propertyNames
 	 *            the properties to be added
 	 * @param headerNames
@@ -213,7 +219,6 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
 	 */
 	@Override
 	protected String formatPropertyValue(Object rowId, Object colId, Property<?> property) {
-
 		String result = TableUtils.formatPropertyValue(this, entityModelFactory, entityModel, messageService, rowId,
 		        colId, property);
 		if (result != null) {
@@ -240,6 +245,7 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
 	 * Generates the columns of the table based on a select number of attribute models
 	 * 
 	 * @param attributeModels
+	 *            the attribute models for which to generate columns
 	 */
 	protected void generateColumns(List<AttributeModel> attributeModels) {
 		List<Object> propertyNames = new ArrayList<>();
@@ -328,10 +334,6 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
 
 	public void setCurrencySymbol(String currencySymbol) {
 		this.currencySymbol = currencySymbol;
-	}
-
-	public void setExportAllowed(boolean exportAllowed) {
-		this.exportAllowed = exportAllowed;
 	}
 
 	/**

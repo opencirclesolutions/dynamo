@@ -18,9 +18,9 @@ public class SystemPropertyUtilsTest {
 		Assert.assertEquals("\"", SystemPropertyUtils.getExportCsvQuoteChar());
 		Assert.assertEquals(";", SystemPropertyUtils.getExportCsvSeparator());
 
-		Assert.assertEquals(15000, SystemPropertyUtils.getMaximumExportRowsNonStreaming());
-		Assert.assertEquals(10000, SystemPropertyUtils.getMaximumExportRowsStreaming());
-		Assert.assertEquals(30000, SystemPropertyUtils.getMaximumExportRowsStreamingPivot());
+		Assert.assertEquals(15_000, SystemPropertyUtils.getMaximumExportRowsNonStreaming());
+		Assert.assertEquals(100_000, SystemPropertyUtils.getMaximumExportRowsStreaming());
+		Assert.assertEquals(30_000, SystemPropertyUtils.getMaximumExportRowsStreamingPivot());
 
 		Assert.assertEquals(false, SystemPropertyUtils.useThousandsGroupingInEditMode());
 

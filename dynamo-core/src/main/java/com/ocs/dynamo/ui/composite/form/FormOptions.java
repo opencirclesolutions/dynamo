@@ -17,6 +17,7 @@ import java.io.Serializable;
 
 import com.ocs.dynamo.ui.composite.type.AttributeGroupMode;
 import com.ocs.dynamo.ui.composite.type.ScreenMode;
+import com.ocs.dynamo.utils.SystemPropertyUtils;
 
 /**
  * Parameter object that can be passed along when creating a page - this object uses smart defaults
@@ -120,9 +121,9 @@ public class FormOptions implements Serializable {
 	private boolean preserveSelectedTab;
 
 	/**
-	 * Indicates whether table export is allowed (false by default)
+	 * Indicates whether table export is allowed (read from system property)
 	 */
-	private boolean tableExportAllowed = false;
+	private boolean tableExportAllowed = SystemPropertyUtils.allowTableExport();
 
 	private boolean doubleClickSelectAllowed = true;
 

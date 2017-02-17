@@ -30,12 +30,15 @@ public final class SystemPropertyUtils {
 	private static final int DEFAULT_LOOKUP_FIELD_MAX_ITEMS = 3;
 
 	private SystemPropertyUtils() {
+		// default constructor
 	}
 
 	/**
-	 * Whether to allow data export from tables
 	 * 
-	 * @return
+	 * 
+	 * @return whether export to Excel or CSV is allowed for all tables. If set to
+	 *         <code>false</code> it will disable exporting for all tables. You can selectively
+	 *         enable it for somet tables using the FormOptions object
 	 */
 	public static boolean allowTableExport() {
 		return Boolean.getBoolean(DynamoConstants.SP_ALLOW_TABLE_EXPORT);
@@ -130,52 +133,47 @@ public final class SystemPropertyUtils {
 	public static String getDefaultTimeFormat() {
 		return System.getProperty(DynamoConstants.SP_DEFAULT_TIME_FORMAT, "HH:mm:ss");
 	}
-	
-    public static String getDefaultCaptionFormat() {
-        return System.getProperty(DynamoConstants.SP_DEFAULT_CAPTION_FORMAT, DynamoConstants.SP_DEFAULT_CAPTION_FORMAT_VAADIN);
-    }
+
+	public static String getDefaultCaptionFormat() {
+		return System.getProperty(DynamoConstants.SP_DEFAULT_CAPTION_FORMAT,
+		        DynamoConstants.SP_DEFAULT_CAPTION_FORMAT_VAADIN);
+	}
 
 	/**
-	 * The default maximum number of items to display in an entity lookup field when it is in
-	 * multiple select mode
-	 * 
-	 * @return
+	 * @return the maximum number of selected items to display in a lookup field description
 	 */
 	public static int getLookupFieldMaxItems() {
 		return Integer.getInteger(DynamoConstants.SP_LOOKUP_FIELD_MAX_ITEMS, DEFAULT_LOOKUP_FIELD_MAX_ITEMS);
 	}
 
 	/**
-	 * Maximum number of rows in a non-streaming export
 	 * 
-	 * @return
+	 * @return number of rows in a non-streaming export
 	 */
 	public static int getMaximumExportRowsNonStreaming() {
 		return Integer.getInteger(DynamoConstants.SP_MAX_ROWS_NON_STREAMING, 15000);
 	}
 
 	/**
-	 * Maximum number of rows in a streaming export
 	 * 
-	 * @return
+	 * 
+	 * @return maximum number of rows in a streaming export
 	 */
 	public static int getMaximumExportRowsStreaming() {
-		return Integer.getInteger(DynamoConstants.SP_MAX_ROWS_STREAMING, 10000);
+		return Integer.getInteger(DynamoConstants.SP_MAX_ROWS_STREAMING, 100_000);
 	}
 
 	/**
-	 * Maximum number of rows in a streaming export of a pivoted data set
 	 * 
-	 * @return
+	 * 
+	 * @return maximum number of rows to include in a streaming pivoted export
 	 */
 	public static int getMaximumExportRowsStreamingPivot() {
 		return Integer.getInteger(DynamoConstants.SP_MAX_ROWS_STREAMING_PIVOTED, 30000);
 	}
 
 	/**
-	 * Whether to include thousands groupings in edit mode
-	 * 
-	 * @return
+	 * @return whether to include thousands grouping separators in edit mode
 	 */
 	public static boolean useThousandsGroupingInEditMode() {
 		return Boolean.getBoolean(DynamoConstants.SP_THOUSAND_GROUPING);

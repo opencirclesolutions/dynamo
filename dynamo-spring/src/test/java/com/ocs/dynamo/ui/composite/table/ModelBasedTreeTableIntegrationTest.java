@@ -81,7 +81,7 @@ public class ModelBasedTreeTableIntegrationTest extends BaseIntegrationTest {
 		        messageService, model, services, null);
 
 		ModelBasedTreeTable<Integer, TestEntity> table = new ModelBasedTreeTable<Integer, TestEntity>(container,
-		        entityModelFactory);
+		        entityModelFactory, true);
 
 		Assert.assertEquals(1, table.getContainerDataSource().size());
 
@@ -129,7 +129,7 @@ public class ModelBasedTreeTableIntegrationTest extends BaseIntegrationTest {
 		services.add(testEntity2Service);
 
 		ServiceResultsTreeTableWrapper<Integer, TestEntity> wrapper = new ServiceResultsTreeTableWrapper<>(services,
-		        model, QueryType.PAGING, null, new HierarchicalFetchJoinInformation[0]);
+		        model, QueryType.PAGING, null, true, new HierarchicalFetchJoinInformation[0]);
 		wrapper.build();
 
 		Assert.assertNotNull(wrapper.getContainer());
@@ -148,7 +148,7 @@ public class ModelBasedTreeTableIntegrationTest extends BaseIntegrationTest {
 		services.add(testEntity2Service);
 
 		ServiceResultsTreeTableWrapper<Integer, TestEntity> wrapper = new ServiceResultsTreeTableWrapper<>(services,
-		        model, QueryType.PAGING, Lists.newArrayList(new SortOrder("name", SortDirection.ASCENDING)),
+		        model, QueryType.PAGING, Lists.newArrayList(new SortOrder("name", SortDirection.ASCENDING)), true,
 		        new HierarchicalFetchJoinInformation[0]);
 		wrapper.build();
 

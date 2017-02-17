@@ -88,8 +88,17 @@ public abstract class InMemoryTreeTable<ID, U extends AbstractEntity<ID>, ID2, V
 	// whether the screen is in view mode
 	private boolean viewMode;
 
-	public InMemoryTreeTable() {
+	// whether exporting is allowed
+	private boolean exportAllowed;
+
+	/**
+	 * Constructor
+	 * 
+	 * @param exportAllowed
+	 */
+	public InMemoryTreeTable(boolean exportAllowed) {
 		this.messageService = ServiceLocator.getMessageService();
+		this.exportAllowed = exportAllowed;
 	}
 
 	/**
@@ -136,7 +145,6 @@ public abstract class InMemoryTreeTable<ID, U extends AbstractEntity<ID>, ID2, V
 					tf.setData(itemId);
 					tf.setNullRepresentation("");
 					tf.setNullSettingAllowed(true);
-					// set the appropriate converter
 					tf.setConverter(createConverter(propertyId.toString()));
 					tf.addFocusListener(new FocusListener() {
 
@@ -151,7 +159,7 @@ public abstract class InMemoryTreeTable<ID, U extends AbstractEntity<ID>, ID2, V
 					tf.addValueChangeListener(new Property.ValueChangeListener() {
 
 						@Override
-						public void valueChange(com.vaadin.data.Property.ValueChangeEvent event) {
+						public void valueChange(Property.ValueChangeEvent event) {
 							if (propagateChanges) {
 								handleChange(tf, propertyId.toString(), (String) event.getProperty().getValue());
 							}
@@ -323,7 +331,7 @@ public abstract class InMemoryTreeTable<ID, U extends AbstractEntity<ID>, ID2, V
 		});
 
 		// Add export functionality
-		if (SystemPropertyUtils.allowTableExport()) {
+		if (exportAllowed) {
 			addActionHandler(new TableExportActionHandler(UI.getCurrent(), null, getReportTitle(), true,
 			        TableExportMode.EXCEL, null));
 			addActionHandler(new TableExportActionHandler(UI.getCurrent(), null, getReportTitle(), true,
@@ -434,13 +442,15 @@ public abstract class InMemoryTreeTable<ID, U extends AbstractEntity<ID>, ID2, V
 	 */
 	protected Converter<String, ?> createConverter(String propertyId) {
 		Class<?> clazz = getEditablePropertyClass(propertyId);
+		boolean grouping = SystemPropertyUtils.useThousandsGroupingInEditMode();
+
 		if (clazz.equals(Integer.class)) {
-			return ConverterFactory.createIntegerConverter(useThousandsGrouping());
+			return ConverterFactory.createIntegerConverter(grouping);
 		} else if (clazz.equals(Long.class)) {
-			return ConverterFactory.createLongConverter(useThousandsGrouping());
+			return ConverterFactory.createLongConverter(grouping);
 		} else if (clazz.equals(BigDecimal.class)) {
-			return ConverterFactory.createBigDecimalConverter(false, false, useThousandsGrouping(),
-			        getDefaultPrecision(), null);
+			return ConverterFactory.createBigDecimalConverter(false, false, grouping,
+			        SystemPropertyUtils.getDefaultDecimalPrecision(), null);
 		}
 		return null;
 	}
@@ -727,6 +737,15 @@ public abstract class InMemoryTreeTable<ID, U extends AbstractEntity<ID>, ID2, V
 	 */
 	protected abstract boolean isEditable(String propertyId);
 
+	/**
+	 * Indicates whether is is allowed to edit this component
+	 * 
+	 * @return
+	 */
+	protected boolean isEditAllowed() {
+		return true;
+	}
+
 	public boolean isPropagateChanges() {
 		return propagateChanges;
 	}
@@ -881,7 +900,7 @@ public abstract class InMemoryTreeTable<ID, U extends AbstractEntity<ID>, ID2, V
 	 * @param propertyId
 	 *            the property ID
 	 * @param delta
-	 *            the change
+	 *            the delta between the old and new value
 	 */
 	private void updateTableField(String rowId, String propertyId, BigDecimal delta) {
 		Number value = (Number) getItem(rowId).getItemProperty(propertyId).getValue();
@@ -890,31 +909,4 @@ public abstract class InMemoryTreeTable<ID, U extends AbstractEntity<ID>, ID2, V
 		getItem(rowId).getItemProperty(propertyId).setValue(convertNumber(bd, propertyId));
 	}
 
-	/**
-	 * Indicates whether to use the thousands separator in edit fields
-	 * 
-	 * @return
-	 */
-	private boolean useThousandsGrouping() {
-		return Boolean.getBoolean(DynamoConstants.SP_THOUSAND_GROUPING);
-	}
-
-	/**
-	 * Indicates whether is is allowed to edit this component
-	 * 
-	 * @return
-	 */
-	protected boolean isEditAllowed() {
-		return true;
-	}
-
-	/**
-	 * Returns the default precision
-	 * 
-	 * @return
-	 */
-	protected int getDefaultPrecision() {
-		Integer i = Integer.getInteger(DynamoConstants.SP_DECIMAL_PRECISION);
-		return i == null ? SystemPropertyUtils.getDefaultDecimalPrecision() : i;
-	}
 }

@@ -94,7 +94,7 @@ public class FlexibleSearchLayout<ID extends Serializable, T extends AbstractEnt
 			protected void postProcessButtonBar(Layout buttonBar) {
 				FlexibleSearchLayout.this.postProcessSearchButtonBar(buttonBar);
 			}
-			
+
 			@Override
 			protected void validateBeforeSearch() {
 				FlexibleSearchLayout.this.validateBeforeSearch();
@@ -110,6 +110,16 @@ public class FlexibleSearchLayout<ID extends Serializable, T extends AbstractEnt
 		}
 
 		return result;
+	}
+
+	/**
+	 * Adds a property to the set of properties for which only basic String filters will be
+	 * supported
+	 * 
+	 * @param property the property
+	 */
+	public void addBasicStringFilterProperty(String property) {
+		basicStringFilterProperties.add(property);
 	}
 
 	@Override

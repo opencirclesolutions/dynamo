@@ -628,7 +628,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	}
 
 	/**
-	 * Refreshes all lookup components
+	 * Refreshes all lookup components but otherwise does not update the state of the screen
 	 */
 	@Override
 	public void refresh() {

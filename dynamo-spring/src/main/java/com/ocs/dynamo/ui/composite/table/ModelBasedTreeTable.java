@@ -32,7 +32,6 @@ import com.ocs.dynamo.ui.composite.table.export.TableExportMode;
 import com.ocs.dynamo.ui.container.hierarchical.HierarchicalContainer.HierarchicalDefinition;
 import com.ocs.dynamo.ui.container.hierarchical.ModelBasedHierarchicalContainer;
 import com.ocs.dynamo.ui.container.hierarchical.ModelBasedHierarchicalContainer.ModelBasedHierarchicalDefinition;
-import com.ocs.dynamo.utils.SystemPropertyUtils;
 import com.vaadin.data.Property;
 import com.vaadin.event.Action;
 import com.vaadin.ui.Notification;
@@ -81,6 +80,11 @@ public class ModelBasedTreeTable<ID extends Serializable, T extends AbstractEnti
 	private boolean expandAndHideAllowed = true;
 
 	/**
+	 * Whether exporting is allowed
+	 */
+	private boolean exportAllowed;
+
+	/**
 	 * Constructor
 	 * 
 	 * @param container
@@ -91,10 +95,13 @@ public class ModelBasedTreeTable<ID extends Serializable, T extends AbstractEnti
 	 *            the message service
 	 */
 	@SuppressWarnings("unchecked")
-	public ModelBasedTreeTable(ModelBasedHierarchicalContainer<T> container, EntityModelFactory entityModelFactory) {
+	public ModelBasedTreeTable(ModelBasedHierarchicalContainer<T> container, EntityModelFactory entityModelFactory,
+	        boolean exportAllowed) {
 		super("", container);
 		this.messageService = ServiceLocator.getMessageService();
 		this.entityModelFactory = entityModelFactory;
+		this.exportAllowed = exportAllowed;
+
 		EntityModel<T> rootEntityModel = (EntityModel<T>) container.getHierarchicalDefinition(0).getEntityModel();
 		TableUtils.defaultInitialization(this);
 
@@ -109,7 +116,7 @@ public class ModelBasedTreeTable<ID extends Serializable, T extends AbstractEnti
 		actionExpandAll = new Action(messageService.getMessage("ocs.expandAll"));
 		actionCollapseAll = new Action(messageService.getMessage("ocs.hideAll"));
 		addActionHandler(this);
-		if (SystemPropertyUtils.allowTableExport()) {
+		if (exportAllowed) {
 			addActionHandler(new TableExportActionHandler(UI.getCurrent(), getEntityModels(),
 			        rootEntityModel.getDisplayNamePlural(), null, true, TableExportMode.EXCEL, null));
 			addActionHandler(new TableExportActionHandler(UI.getCurrent(), getEntityModels(),
@@ -316,6 +323,10 @@ public class ModelBasedTreeTable<ID extends Serializable, T extends AbstractEnti
 
 	public void setExpandAndHideAllowed(boolean expandAndHideAllowed) {
 		this.expandAndHideAllowed = expandAndHideAllowed;
+	}
+
+	public boolean isExportAllowed() {
+		return exportAllowed;
 	}
 
 }

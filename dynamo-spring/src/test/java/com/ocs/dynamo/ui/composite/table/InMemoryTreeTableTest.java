@@ -58,7 +58,8 @@ public class InMemoryTreeTableTest extends BaseIntegrationTest {
 		final List<TestEntity> parents = Lists.newArrayList(e1, e2);
 		final List<TestEntity2> children = Lists.newArrayList(child1, child2);
 
-		InMemoryTreeTable<Integer, TestEntity2, Integer, TestEntity> table = new InMemoryTreeTable<Integer, TestEntity2, Integer, TestEntity>() {
+		InMemoryTreeTable<Integer, TestEntity2, Integer, TestEntity> table = new InMemoryTreeTable<Integer, TestEntity2, Integer, TestEntity>(
+		        true) {
 
 			private static final long serialVersionUID = -3834741496353866628L;
 
@@ -91,14 +92,17 @@ public class InMemoryTreeTableTest extends BaseIntegrationTest {
 						break;
 					}
 				}
-				ClassUtils.setFieldValue(found, propertyId, toInt(newValue));
 
-				int x1 = found.getValue() == null ? 0 : found.getValue();
-				int x2 = found.getValue2() == null ? 0 : found.getValue2();
+				if (found != null) {
+					ClassUtils.setFieldValue(found, propertyId, toInt(newValue));
+					int x1 = found.getValue() == null ? 0 : found.getValue();
+					int x2 = found.getValue2() == null ? 0 : found.getValue2();
 
-				found.setValueSum(x1 + x2);
+					found.setValueSum(x1 + x2);
 
-				return toInt(newValue);
+					return toInt(newValue);
+				}
+				return null;
 			}
 
 			@Override

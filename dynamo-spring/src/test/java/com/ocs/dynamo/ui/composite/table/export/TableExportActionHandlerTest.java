@@ -396,7 +396,8 @@ public class TableExportActionHandlerTest extends BaseMockitoTest {
 		department.setName("Special ops");
 		department.setEmployees(Sets.newHashSet(person1, person2));
 
-		InMemoryTreeTable<Integer, Person, Integer, Department> table = new InMemoryTreeTable<Integer, Person, Integer, Department>() {
+		InMemoryTreeTable<Integer, Person, Integer, Department> table = new InMemoryTreeTable<Integer, Person, Integer, Department>(
+		        true) {
 
 			private static final long serialVersionUID = -6428315820101615753L;
 
