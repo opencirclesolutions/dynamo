@@ -41,6 +41,11 @@ public class FormOptions implements Serializable {
 	private boolean confirmClear;
 
 	/**
+	 * Indicates whether it is allowed to select a row by double clicking
+	 */
+	private boolean doubleClickSelectAllowed = true;
+
+	/**
 	 * Whether to hide the add button
 	 */
 	private boolean hideAddButton;
@@ -65,6 +70,11 @@ public class FormOptions implements Serializable {
 	 * appropriate
 	 */
 	private boolean popup;
+
+	/**
+	 * Whether to preserve the last selected tab when reopening a screen
+	 */
+	private boolean preserveSelectedTab;
 
 	/**
 	 * Whether to display the screen in complete read-only mode. Settings readOnly to true will
@@ -95,6 +105,11 @@ public class FormOptions implements Serializable {
 	private boolean showEditButton;
 
 	/**
+	 * Whether to display a "next" button
+	 */
+	private boolean showNextButton = false;
+
+	/**
 	 * Whether to include an quick search field
 	 */
 	private boolean showQuickSearchField;
@@ -115,16 +130,9 @@ public class FormOptions implements Serializable {
 	private boolean showToggleButton;
 
 	/**
-	 * Whether to preserve the last selected tab when reopening a screen
-	 */
-	private boolean preserveSelectedTab;
-
-	/**
 	 * Indicates whether table export is allowed (false by default)
 	 */
 	private boolean tableExportAllowed = false;
-
-	private boolean doubleClickSelectAllowed = true;
 
 	public AttributeGroupMode getAttributeGroupMode() {
 		return attributeGroupMode;
@@ -136,6 +144,10 @@ public class FormOptions implements Serializable {
 
 	public boolean isConfirmClear() {
 		return confirmClear;
+	}
+
+	public boolean isDoubleClickSelectAllowed() {
+		return doubleClickSelectAllowed;
 	}
 
 	public boolean isHideAddButton() {
@@ -158,6 +170,10 @@ public class FormOptions implements Serializable {
 		return popup;
 	}
 
+	public boolean isPreserveSelectedTab() {
+		return preserveSelectedTab;
+	}
+
 	public boolean isReadOnly() {
 		return readOnly;
 	}
@@ -172,6 +188,10 @@ public class FormOptions implements Serializable {
 
 	public boolean isShowEditButton() {
 		return showEditButton;
+	}
+
+	public boolean isShowNextButton() {
+		return showNextButton;
 	}
 
 	public boolean isShowQuickSearchField() {
@@ -204,6 +224,11 @@ public class FormOptions implements Serializable {
 		return this;
 	}
 
+	public FormOptions setDoubleClickSelectAllowed(boolean doubleClickSelectAllowed) {
+		this.doubleClickSelectAllowed = doubleClickSelectAllowed;
+		return this;
+	}
+
 	public FormOptions setHideAddButton(boolean hideAddButton) {
 		this.hideAddButton = hideAddButton;
 		return this;
@@ -226,6 +251,11 @@ public class FormOptions implements Serializable {
 
 	public FormOptions setPopup(boolean popup) {
 		this.popup = popup;
+		return this;
+	}
+
+	public FormOptions setPreserveSelectedTab(boolean preserveSelectedTab) {
+		this.preserveSelectedTab = preserveSelectedTab;
 		return this;
 	}
 
@@ -266,6 +296,11 @@ public class FormOptions implements Serializable {
 		return this;
 	}
 
+	public FormOptions setShowNextButton(boolean showNextButton) {
+		this.showNextButton = showNextButton;
+		return this;
+	}
+
 	public FormOptions setShowQuickSearchField(boolean showQuickSearchField) {
 		this.showQuickSearchField = showQuickSearchField;
 		return this;
@@ -288,24 +323,6 @@ public class FormOptions implements Serializable {
 
 	public FormOptions setTableExportAllowed(boolean tableExportAllowed) {
 		this.tableExportAllowed = tableExportAllowed;
-		return this;
-	}
-
-	public boolean isPreserveSelectedTab() {
-		return preserveSelectedTab;
-	}
-
-	public FormOptions setPreserveSelectedTab(boolean preserveSelectedTab) {
-		this.preserveSelectedTab = preserveSelectedTab;
-		return this;
-	}
-
-	public boolean isDoubleClickSelectAllowed() {
-		return doubleClickSelectAllowed;
-	}
-
-	public FormOptions setDoubleClickSelectAllowed(boolean doubleClickSelectAllowed) {
-		this.doubleClickSelectAllowed = doubleClickSelectAllowed;
 		return this;
 	}
 

@@ -452,6 +452,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 			options.setScreenMode(ScreenMode.VERTICAL);
 			options.setAttributeGroupMode(getFormOptions().getAttributeGroupMode());
 			options.setPreserveSelectedTab(getFormOptions().isPreserveSelectedTab());
+			options.setShowNextButton(getFormOptions().isShowNextButton());
 
 			if (getFormOptions().isShowEditButton()) {
 				// editing in form must be possible
@@ -518,6 +519,11 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 				}
 
 				@Override
+				protected T getNextEntity(T current) {
+					return AbstractSearchLayout.this.getNextEntity(current);
+				}
+
+				@Override
 				protected boolean isEditAllowed() {
 					return AbstractSearchLayout.this.isEditAllowed();
 				}
@@ -533,6 +539,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 				}
 
 			};
+			editForm.setSupportsNextButton(true);
 			editForm.setDetailJoins(getDetailJoinsFallBack());
 			editForm.setFieldEntityModels(getFieldEntityModels());
 			editForm.build();
@@ -546,6 +553,19 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 		checkButtonState(getSelectedItem());
 		afterEntitySelected(editForm, entity);
 		setCompositionRoot(mainEditLayout);
+	}
+
+	@SuppressWarnings("unchecked")
+	protected T getNextEntity(T current) {
+		if (current != null) {
+			ID id = (ID) getTableWrapper().getTable().nextItemId(current.getId());
+			if (id != null) {
+				T next = getService().fetchById(id, getDetailJoinsFallBack());
+				getTableWrapper().getTable().select(next.getId());
+				return next;
+			}
+		}
+		return null;
 	}
 
 	/**

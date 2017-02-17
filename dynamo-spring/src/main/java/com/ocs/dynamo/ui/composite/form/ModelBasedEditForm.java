@@ -278,6 +278,11 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	private Button editButton;
 
 	/**
+	 * The next button
+	 */
+	private Button nextButton;
+
+	/**
 	 * The selected entity
 	 */
 	private T entity;
@@ -322,6 +327,11 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	private Map<Boolean, Set<String>> alreadyBound = new HashMap<>();
 
 	private Map<Integer, Field<?>> firstFields = new HashMap<>();
+
+	/**
+	 * Whether to support a "next" button
+	 */
+	private boolean supportsNextButton;
 
 	/**
 	 * Whether to display the component in view mode
@@ -377,23 +387,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		alreadyBound.put(Boolean.FALSE, new HashSet<String>());
 	}
 
-	private void addTabChangeListener(TabSheet tabSheet) {
-		tabSheet.addSelectedTabChangeListener(new SelectedTabChangeListener() {
-
-			@Override
-			public void selectedTabChange(SelectedTabChangeEvent event) {
-				Component c = event.getTabSheet().getSelectedTab();
-				if (tabSheets.get(isViewMode()) != null && tabSheets.get(isViewMode()).getTab(c) != null) {
-					int index = VaadinUtils.getTabIndex(tabSheets.get(isViewMode()), tabSheets.get(isViewMode())
-					        .getTab(c).getCaption());
-					if (firstFields.get(index) != null) {
-						firstFields.get(index).focus();
-					}
-				}
-			}
-		});
-	}
-
 	/**
 	 * Adds a field for a certain attribute
 	 * 
@@ -441,6 +434,23 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			}
 			alreadyBound.get(isViewMode()).add(attributeModel.getPath());
 		}
+	}
+
+	private void addTabChangeListener(TabSheet tabSheet) {
+		tabSheet.addSelectedTabChangeListener(new SelectedTabChangeListener() {
+
+			@Override
+			public void selectedTabChange(SelectedTabChangeEvent event) {
+				Component c = event.getTabSheet().getSelectedTab();
+				if (tabSheets.get(isViewMode()) != null && tabSheets.get(isViewMode()).getTab(c) != null) {
+					int index = VaadinUtils.getTabIndex(tabSheets.get(isViewMode()), tabSheets.get(isViewMode())
+					        .getTab(c).getCaption());
+					if (firstFields.get(index) != null) {
+						firstFields.get(index).focus();
+					}
+				}
+			}
+		});
 	}
 
 	/**
@@ -737,6 +747,21 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		});
 		buttonBar.addComponent(editButton);
 		editButton.setVisible(isViewMode() && getFormOptions().isShowEditButton() && isEditAllowed());
+
+		// button for moving to the next record
+		nextButton = new Button(message("ocs.next"));
+		nextButton.addClickListener(new Button.ClickListener() {
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				T next = getNextEntity(getEntity());
+				if (next != null) {
+					setEntity(next);
+				}
+			}
+		});
+		buttonBar.addComponent(nextButton);
+		nextButton.setVisible(isSupportsNextButton() && getFormOptions().isShowNextButton() && entity.getId() != null);
 
 		postProcessButtonBar(buttonBar, isViewMode());
 
@@ -1043,6 +1068,18 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	}
 
 	/**
+	 * Method that is called to select the next entity in a data set
+	 * 
+	 * @param current
+	 *            the currently selected entity
+	 * @return
+	 */
+	protected T getNextEntity(T current) {
+		// overwrite in subclass
+		return null;
+	}
+
+	/**
 	 * Indicates which parent group a certain child group belongs to. The parent group must be
 	 * mentioned in the result of the <code>getParentGroupHeaders</code> method. The childGroup must
 	 * be the name of an attribute group from the entity model
@@ -1075,6 +1112,10 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	 */
 	protected boolean isEditAllowed() {
 		return true;
+	}
+
+	public boolean isSupportsNextButton() {
+		return supportsNextButton;
 	}
 
 	public boolean isViewMode() {
@@ -1215,26 +1256,11 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	}
 
 	/**
-	 * Apply styling to a label
-	 * 
-	 * @param propertyName
-	 *            the name of the property
-	 * @param className
-	 *            the name of the CSS class to add
+	 * Resets the selected tab index
 	 */
-	public void styleLabel(String propertyName, String className) {
-		AttributeModel am = getEntityModel().getAttributeModel(propertyName);
-		if (am != null) {
-			Component editLabel = labels.get(false) == null ? null : labels.get(false).get(am);
-			Component viewLabel = labels.get(true) == null ? null : labels.get(true).get(am);
-
-			if (editLabel != null) {
-				editLabel.addStyleName(className);
-			}
-
-			if (viewLabel != null) {
-				viewLabel.addStyleName(className);
-			}
+	public void resetTab() {
+		if (tabSheets.get(isViewMode()) != null && !getFormOptions().isPreserveSelectedTab()) {
+			tabSheets.get(isViewMode()).setSelectedTab(0);
 		}
 	}
 
@@ -1286,6 +1312,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		build();
 
 		reconstructLabels();
+		nextButton.setVisible(isSupportsNextButton() && getFormOptions().isShowNextButton() && entity.getId() != null);
 
 		// refresh the upload components
 		for (Entry<AttributeModel, Component> e : uploads.get(isViewMode()).entrySet()) {
@@ -1355,6 +1382,10 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		}
 	}
 
+	public void setSupportsNextButton(boolean supportsNextButton) {
+		this.supportsNextButton = supportsNextButton;
+	}
+
 	/**
 	 * Switches the form from or to view mode
 	 * 
@@ -1414,11 +1445,27 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	}
 
 	/**
-	 * Resets the selected tab index
+	 * Apply styling to a label
+	 * 
+	 * @param propertyName
+	 *            the name of the property
+	 * @param className
+	 *            the name of the CSS class to add
 	 */
-	public void resetTab() {
-		if (tabSheets.get(isViewMode()) != null && !getFormOptions().isPreserveSelectedTab()) {
-			tabSheets.get(isViewMode()).setSelectedTab(0);
+	public void styleLabel(String propertyName, String className) {
+		AttributeModel am = getEntityModel().getAttributeModel(propertyName);
+		if (am != null) {
+			Component editLabel = labels.get(false) == null ? null : labels.get(false).get(am);
+			Component viewLabel = labels.get(true) == null ? null : labels.get(true).get(am);
+
+			if (editLabel != null) {
+				editLabel.addStyleName(className);
+			}
+
+			if (viewLabel != null) {
+				viewLabel.addStyleName(className);
+			}
 		}
 	}
+
 }
