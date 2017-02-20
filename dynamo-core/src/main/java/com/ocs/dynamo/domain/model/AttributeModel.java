@@ -105,8 +105,8 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 
 	/**
 	 * 
-	 * @return the names of/paths to the other attributes that must be appear on the same line in an
-	 *         edit form
+	 * @return the paths to the other attributes that must be appear on the same line in an edit
+	 *         form
 	 */
 	List<String> getGroupTogetherWith();
 
@@ -295,7 +295,7 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	boolean isPercentage();
 
 	/**
-	 * Indicates whether "quick edit" functionality is allowed. Quick edit functionality allows for
+	 * @ return whether "quick edit" functionality is allowed. Quick edit functionality allows for
 	 * the inline addition of simple domain values
 	 */
 	boolean isQuickAddAllowed();
@@ -306,52 +306,45 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	boolean isReadOnly();
 
 	/**
-	 * Indicates whether this is a required attribute
-	 * 
-	 * @return
+	 * @return whether the attribute is a required attribute (entity can only be saved if values for
+	 *         all required attributes have been provided)
 	 */
 	boolean isRequired();
 
 	/**
-	 * Indicates whether the field is required when searching
 	 * 
-	 * @return
+	 * @return whether it is required to fill in a value for this attribute before you can carry out
+	 *         a search
 	 */
 	boolean isRequiredForSearching();
 
 	/**
-	 * Indicates whether it is possible to search on this attribute
-	 * 
-	 * @return
+	 * @return whether it is possible to search on this attribute
 	 */
 	boolean isSearchable();
 
 	/**
-	 * Indicates whether searching on this fields is case sensitive
-	 * 
-	 * @return
+	 * @return whether searching on this attribute is case sensitive (only applies if this is a
+	 *         String attribute)
 	 */
 	boolean isSearchCaseSensitive();
 
 	/**
-	 * Indicates whether searching for this value is by exact match (rather than using a range).
-	 * Only applicable to numerical and date field
-	 * 
-	 * @return
+	 * @return whether searching for this value is by exact match (rather than using a range). Only
+	 *         applicable to numerical and date field
 	 */
 	boolean isSearchForExactValue();
 
 	/**
-	 * Indicates whether to only match the prefix when performing a search
 	 * 
-	 * @return
+	 * 
+	 * @return whether searching should only match on prefixes rather than on a substring occurring
+	 *         anywhere
 	 */
 	boolean isSearchPrefixOnly();
 
 	/**
-	 * Indicates whether the attribute is sortable
-	 * 
-	 * @return
+	 * @return whether the attribute is sortable
 	 */
 	boolean isSortable();
 

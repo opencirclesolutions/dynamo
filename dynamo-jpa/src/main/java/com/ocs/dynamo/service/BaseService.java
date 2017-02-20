@@ -76,7 +76,7 @@ public interface BaseService<ID, T extends AbstractEntity<ID>> {
 	 * Fetches entities that match the provided filter
 	 * 
 	 * @param filter
-	 *            the filter
+	 *            the filter ot match
 	 * @param joins
 	 *            the desired relations to fetch
 	 * @return
@@ -116,12 +116,12 @@ public interface BaseService<ID, T extends AbstractEntity<ID>> {
 	List<T> fetch(Filter filter, int pageNumber, int pageSize, SortOrders sortOrders, FetchJoinInformation... joins);
 
 	/**
-	 * Fetches entities that match the provided filter
+	 * Fetches a list of entities that match the provided filter
 	 * 
 	 * @param filter
 	 *            the filter
-	 * @param pageable
-	 *            the page info
+	 * @param order
+	 *            the sort orders to apply
 	 * @param joins
 	 *            the desired relations to fetch
 	 * @return
@@ -155,8 +155,8 @@ public interface BaseService<ID, T extends AbstractEntity<ID>> {
 	 * 
 	 * @param ids
 	 *            the IDs of the entities to fetch
-	 * @param sort
-	 *            the sort order
+	 * @param sortOrders
+	 *            the sort orders to apply
 	 * @param joins
 	 *            the desired relations to fetch
 	 * @return
@@ -245,9 +245,11 @@ public interface BaseService<ID, T extends AbstractEntity<ID>> {
 	 * @param filter
 	 *            the filter
 	 * @param distinctField
-	 *            the field used to remove duplicate rows
+	 *            the field for which to return the distinct values
+	 * @param resultType
+	 *            the type of the distinct values
 	 * @param orders
-	 *            the sort info
+	 *            the sort orders to apply
 	 * @return
 	 */
 	<S> List<S> findDistinct(Filter filter, String distinctField, Class<S> resultType, SortOrder... orders);
@@ -260,13 +262,13 @@ public interface BaseService<ID, T extends AbstractEntity<ID>> {
 	 * @param distinctField
 	 *            the name of the field
 	 * @param elementType
-	 *            the element type
+	 *            the type of the values to return
 	 * @return
 	 */
 	<S> List<S> findDistinctInCollectionTable(String tableName, String distinctField, Class<S> elementType);
 
 	/**
-	 * Returns the IDS of the entities that match the provided filter
+	 * Returns the IDs of the entities that match the provided filter
 	 * 
 	 * @param filter
 	 *            the filter

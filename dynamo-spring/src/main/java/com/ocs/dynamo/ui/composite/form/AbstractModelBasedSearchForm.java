@@ -350,6 +350,14 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	}
 
 	/**
+	 * 
+	 * @return the number of filters
+	 */
+	public int getFilterCount() {
+		return currentFilters.size();
+	}
+
+	/**
 	 * Searching is allowed when there are no required attributes or all required attributes are in
 	 * the composite filter.
 	 * 

@@ -46,7 +46,7 @@ public interface EntityModel<T> {
 	String ATTRIBUTE_ORDER = "attributeOrder";
 
 	/**
-	 * Whether a complex entity shows up inside an edit form
+	 * Whether the attribute (of type MASTER, DETAIL or ELEMENT_TABLE) can be edited in an edit form
 	 */
 	String COMPLEX_EDITABLE = "complexEditable";
 
@@ -56,7 +56,7 @@ public interface EntityModel<T> {
 	String CURRENCY = "currency";
 
 	/**
-	 * The data type (date, time, or timestamp)
+	 * The date type (date, time, or time stamp) of a value of type java.util.Date
 	 */
 	String DATE_TYPE = "dateType";
 
@@ -76,7 +76,7 @@ public interface EntityModel<T> {
 	String DESCRIPTION = "description";
 
 	/**
-	 * Display format for dates and times
+	 * Display format for date, time, or time stamp fields
 	 */
 	String DISPLAY_FORMAT = "displayFormat";
 
@@ -132,12 +132,12 @@ public interface EntityModel<T> {
 	String MAX_LENGTH_IN_TABLE = "maxLengthInTable";
 
 	/**
-	 * The maximum value of the items inside an element collection
+	 * The maximum value of the numeric items inside an element collection
 	 */
 	String MAX_VALUE = "maxValue";
 
 	/**
-	 * The minimum length of the items inside an element collection
+	 * The minimum length of the numeric items inside an element collection
 	 */
 	String MIN_LENGTH = "minLength";
 
@@ -197,7 +197,7 @@ public interface EntityModel<T> {
 	String SEARCH_EXACT_VALUE = "searchForExactValue";
 
 	/**
-     * 
+     * Whether to only search on prefix values
      */
 	String SEARCH_PREFIX_ONLY = "searchPrefixOnly";
 
@@ -217,19 +217,35 @@ public interface EntityModel<T> {
 	 */
 	String SELECT_MODE = "selectMode";
 
+	/**
+	 * Whether to show an attribute inside a table
+	 */
 	String SHOW_IN_TABLE = "showInTable";
 
+	/**
+	 * Default sort order for an entity
+	 */
 	String SORT_ORDER = "sortOrder";
 
+	/**
+	 * Whether it is possible to sort on an attribute
+	 */
 	String SORTABLE = "sortable";
 
+	/**
+	 * The text field mode - indicates whether to use a text field or text area for editing a String
+	 * field
+	 */
 	String TEXTFIELD_MODE = "textFieldMode";
 
 	/**
-	 * Indicates whether to use thousand grouping characters
+	 * Indicates whether to use thousand grouping characters in view mode
 	 */
 	String THOUSANDS_GROUPING = "thousandsGrouping";
 
+	/**
+	 * The textual representation of the boolean "TRUE" value
+	 */
 	String TRUE_REPRESENTATION = "trueRepresentation";
 
 	/**
