@@ -188,6 +188,10 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 				constructButtonBar(buttonBar);
 				// add custom buttons
 				postProcessButtonBar(buttonBar);
+			} else {
+				buttonBar = new DefaultHorizontalLayout();
+				main.addComponent(buttonBar);
+				postProcessButtonBar(buttonBar);
 			}
 
 			// add any custom functionality
