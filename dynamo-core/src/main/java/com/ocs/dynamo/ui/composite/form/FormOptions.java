@@ -66,8 +66,7 @@ public class FormOptions implements Serializable {
 	private boolean openInViewMode;
 
 	/**
-	 * Whether the form is shown as part of a popup - this is normally set by the framework when
-	 * appropriate
+	 * Whether the form is shown as part of a popup - set by the framework when appropriate
 	 */
 	private boolean popup;
 
