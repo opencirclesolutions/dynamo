@@ -20,8 +20,14 @@ import java.util.Map;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
+import com.ocs.dynamo.exception.OCSRuntimeException;
+import com.ocs.dynamo.ui.component.Cascadable;
 import com.ocs.dynamo.ui.composite.layout.BaseCustomComponent;
 import com.vaadin.data.Container.Filter;
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.Property.ValueChangeListener;
+import com.vaadin.data.util.filter.Compare;
+import com.vaadin.ui.Field;
 
 /**
  * Abstract base class for model based forms
@@ -66,24 +72,8 @@ public abstract class AbstractModelBasedForm<ID extends Serializable, T extends 
 		this.entityModel = entityModel;
 	}
 
-	public static long getSerialversionuid() {
-		return serialVersionUID;
-	}
-
 	public EntityModel<T> getEntityModel() {
 		return entityModel;
-	}
-
-	public Map<String, String> getFieldEntityModels() {
-		return fieldEntityModels;
-	}
-
-	public Map<String, Filter> getFieldFilters() {
-		return fieldFilters;
-	}
-
-	public FormOptions getFormOptions() {
-		return formOptions;
 	}
 
 	/**
@@ -99,12 +89,24 @@ public abstract class AbstractModelBasedForm<ID extends Serializable, T extends 
 		        attributeModel.getNormalizedType());
 	}
 
-	public void setFieldEntityModels(Map<String, String> fieldEntityModels) {
-		this.fieldEntityModels = fieldEntityModels;
+	public Map<String, String> getFieldEntityModels() {
+		return fieldEntityModels;
+	}
+
+	public Map<String, Filter> getFieldFilters() {
+		return fieldFilters;
+	}
+
+	public FormOptions getFormOptions() {
+		return formOptions;
 	}
 
 	public void setEntityModel(EntityModel<T> entityModel) {
 		this.entityModel = entityModel;
+	}
+
+	public void setFieldEntityModels(Map<String, String> fieldEntityModels) {
+		this.fieldEntityModels = fieldEntityModels;
 	}
 
 	public void setFieldFilters(Map<String, Filter> fieldFilters) {

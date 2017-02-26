@@ -15,8 +15,10 @@ package com.ocs.dynamo.domain.model.impl;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
@@ -26,6 +28,7 @@ import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.AttributeSelectMode;
 import com.ocs.dynamo.domain.model.AttributeTextFieldMode;
 import com.ocs.dynamo.domain.model.AttributeType;
+import com.ocs.dynamo.domain.model.CascadeMode;
 import com.ocs.dynamo.domain.model.EntityModel;
 
 /**
@@ -36,6 +39,10 @@ import com.ocs.dynamo.domain.model.EntityModel;
 public class AttributeModelImpl implements AttributeModel {
 
 	private Set<String> allowedExtensions = new HashSet<>();
+
+	private Map<String, String> cascadeAttributes = new HashMap<>();
+
+	private Map<String, CascadeMode> cascadeModes = new HashMap<>();
 
 	private boolean alreadyGrouped;
 
@@ -74,7 +81,7 @@ public class AttributeModelImpl implements AttributeModel {
 	private boolean mainAttribute;
 
 	private Integer maxLength;
-	
+
 	private Integer maxLengthInTable;
 
 	private Long maxValue;
@@ -142,6 +149,12 @@ public class AttributeModelImpl implements AttributeModel {
 	private boolean week;
 
 	@Override
+	public void addCascade(String cascadeTo, String filterPath, CascadeMode mode) {
+		this.cascadeAttributes.put(cascadeTo, filterPath);
+		this.cascadeModes.put(cascadeTo, mode);
+	}
+
+	@Override
 	public void addGroupTogetherWith(String path) {
 		groupTogetherWith.add(path);
 	}
@@ -159,6 +172,21 @@ public class AttributeModelImpl implements AttributeModel {
 	@Override
 	public AttributeType getAttributeType() {
 		return attributeType;
+	}
+
+	@Override
+	public String getCascadeFilterPath(String cascadeTo) {
+		return this.cascadeAttributes.get(cascadeTo);
+	}
+
+	@Override
+	public CascadeMode getCascadeMode(String cascadeTo) {
+		return this.cascadeModes.get(cascadeTo);
+	}
+
+	@Override
+	public Set<String> getCascadeAttributes() {
+		return cascadeAttributes.keySet();
 	}
 
 	@Override

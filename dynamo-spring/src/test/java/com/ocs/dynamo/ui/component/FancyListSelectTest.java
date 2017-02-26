@@ -108,7 +108,8 @@ public class FancyListSelectTest extends BaseMockitoTest {
 		EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
 		AttributeModel am = em.getAttributeModel("testDomain");
 
-		FancyListSelect<Integer, TestEntity> select = new FancyListSelect<>(service, em, am, null, false);
+		FancyListSelect<Integer, TestEntity> select = new FancyListSelect<>(service,
+		        factory.getModel(TestEntity.class), am, null, false);
 		select.initContent();
 		MockUtil.injectUI(select, ui);
 

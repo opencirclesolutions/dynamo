@@ -36,6 +36,9 @@ public @interface Attribute {
 	/** @return the allowed extensions in case a file upload is used to edit the attribute */
 	String[] allowedExtensions() default {};
 
+	/** @return the properties to cascade to  **/
+	Cascade[] cascade() default {};
+
 	/** @return whether a complex attribute is directly editable */
 	boolean complexEditable() default false;
 

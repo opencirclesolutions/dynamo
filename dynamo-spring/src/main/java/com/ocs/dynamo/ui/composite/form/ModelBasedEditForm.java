@@ -35,11 +35,14 @@ import com.ocs.dynamo.dao.query.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.AttributeType;
+import com.ocs.dynamo.domain.model.CascadeMode;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.impl.ModelBasedFieldFactory;
 import com.ocs.dynamo.domain.model.util.EntityModelUtil;
+import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.Refreshable;
+import com.ocs.dynamo.ui.component.Cascadable;
 import com.ocs.dynamo.ui.component.DefaultEmbedded;
 import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
@@ -52,8 +55,10 @@ import com.ocs.dynamo.utils.ClassUtils;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.data.util.BeanItem;
+import com.vaadin.data.util.filter.Compare;
 import com.vaadin.server.StreamResource;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Button;
@@ -377,23 +382,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		alreadyBound.put(Boolean.FALSE, new HashSet<String>());
 	}
 
-	private void addTabChangeListener(TabSheet tabSheet) {
-		tabSheet.addSelectedTabChangeListener(new SelectedTabChangeListener() {
-
-			@Override
-			public void selectedTabChange(SelectedTabChangeEvent event) {
-				Component c = event.getTabSheet().getSelectedTab();
-				if (tabSheets.get(isViewMode()) != null && tabSheets.get(isViewMode()).getTab(c) != null) {
-					int index = VaadinUtils.getTabIndex(tabSheets.get(isViewMode()), tabSheets.get(isViewMode())
-					        .getTab(c).getCaption());
-					if (firstFields.get(index) != null) {
-						firstFields.get(index).focus();
-					}
-				}
-			}
-		});
-	}
-
 	/**
 	 * Adds a field for a certain attribute
 	 * 
@@ -441,6 +429,23 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			}
 			alreadyBound.get(isViewMode()).add(attributeModel.getPath());
 		}
+	}
+
+	private void addTabChangeListener(TabSheet tabSheet) {
+		tabSheet.addSelectedTabChangeListener(new SelectedTabChangeListener() {
+
+			@Override
+			public void selectedTabChange(SelectedTabChangeEvent event) {
+				Component c = event.getTabSheet().getSelectedTab();
+				if (tabSheets.get(isViewMode()) != null && tabSheets.get(isViewMode()).getTab(c) != null) {
+					int index = VaadinUtils.getTabIndex(tabSheets.get(isViewMode()), tabSheets.get(isViewMode())
+					        .getTab(c).getCaption());
+					if (firstFields.get(index) != null) {
+						firstFields.get(index).focus();
+					}
+				}
+			}
+		});
 	}
 
 	/**
@@ -615,6 +620,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			}
 		}
 
+		constructCascadeListeners();
 		layout.addComponent(form);
 
 		if (firstFields.get(0) != null) {
@@ -741,6 +747,44 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		postProcessButtonBar(buttonBar, isViewMode());
 
 		return buttonBar;
+	}
+
+	/**
+	 * Adds any value change listeners for taking care of cascading search
+	 */
+	private void constructCascadeListeners() {
+		for (final AttributeModel am : getEntityModel().getCascadeAttributeModels()) {
+			Field<?> field = groups.get(isViewMode()).getField(am.getPath());
+			if (field != null) {
+				field.addValueChangeListener(new ValueChangeListener() {
+
+					private static final long serialVersionUID = -756705572024043514L;
+
+					@Override
+					public void valueChange(ValueChangeEvent event) {
+						for (String cascadePath : am.getCascadeAttributes()) {
+							CascadeMode cm = am.getCascadeMode(cascadePath);
+							if (CascadeMode.BOTH.equals(cm) || CascadeMode.EDIT.equals(cm)) {
+								Field<?> cascadeField = groups.get(isViewMode()).getField(cascadePath);
+								if (cascadeField instanceof Cascadable) {
+									Cascadable ca = (Cascadable) cascadeField;
+									if (event.getProperty().getValue() == null) {
+										ca.clearAdditionalFilter();
+									} else {
+										ca.setAdditionalFilter(new Compare.Equal(am.getCascadeFilterPath(cascadePath),
+										        event.getProperty().getValue()));
+									}
+								} else {
+									// field not found or does not support cascading
+									throw new OCSRuntimeException("Cannot setup cascading from " + am.getPath()
+									        + " to " + cascadePath);
+								}
+							}
+						}
+					}
+				});
+			}
+		}
 	}
 
 	/**
@@ -1219,26 +1263,11 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	}
 
 	/**
-	 * Apply styling to a label
-	 * 
-	 * @param propertyName
-	 *            the name of the property
-	 * @param className
-	 *            the name of the CSS class to add
+	 * Resets the selected tab index
 	 */
-	public void styleLabel(String propertyName, String className) {
-		AttributeModel am = getEntityModel().getAttributeModel(propertyName);
-		if (am != null) {
-			Component editLabel = labels.get(false) == null ? null : labels.get(false).get(am);
-			Component viewLabel = labels.get(true) == null ? null : labels.get(true).get(am);
-
-			if (editLabel != null) {
-				editLabel.addStyleName(className);
-			}
-
-			if (viewLabel != null) {
-				viewLabel.addStyleName(className);
-			}
+	public void resetTab() {
+		if (tabSheets.get(isViewMode()) != null && !getFormOptions().isPreserveSelectedTab()) {
+			tabSheets.get(isViewMode()).setSelectedTab(0);
 		}
 	}
 
@@ -1418,11 +1447,26 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	}
 
 	/**
-	 * Resets the selected tab index
+	 * Apply styling to a label
+	 * 
+	 * @param propertyName
+	 *            the name of the property
+	 * @param className
+	 *            the name of the CSS class to add
 	 */
-	public void resetTab() {
-		if (tabSheets.get(isViewMode()) != null && !getFormOptions().isPreserveSelectedTab()) {
-			tabSheets.get(isViewMode()).setSelectedTab(0);
+	public void styleLabel(String propertyName, String className) {
+		AttributeModel am = getEntityModel().getAttributeModel(propertyName);
+		if (am != null) {
+			Component editLabel = labels.get(false) == null ? null : labels.get(false).get(am);
+			Component viewLabel = labels.get(true) == null ? null : labels.get(true).get(am);
+
+			if (editLabel != null) {
+				editLabel.addStyleName(className);
+			}
+
+			if (viewLabel != null) {
+				viewLabel.addStyleName(className);
+			}
 		}
 	}
 }

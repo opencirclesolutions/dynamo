@@ -25,6 +25,7 @@ import com.ocs.dynamo.ui.Refreshable;
 import com.ocs.dynamo.utils.SortUtil;
 import com.vaadin.data.sort.SortOrder;
 import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.data.util.filter.And;
 import com.vaadin.ui.ListSelect;
 
 /**
@@ -37,7 +38,11 @@ import com.vaadin.ui.ListSelect;
  *            type of the entity
  */
 public class EntityListSelect<ID extends Serializable, T extends AbstractEntity<ID>> extends ListSelect implements
-        Refreshable {
+        Refreshable, Cascadable {
+
+	public enum SelectMode {
+		ALL, FILTERED, FIXED;
+	}
 
 	private static final long serialVersionUID = 3041574615271340579L;
 
@@ -59,42 +64,11 @@ public class EntityListSelect<ID extends Serializable, T extends AbstractEntity<
 	private BaseService<ID, T> service;
 
 	/**
-	 * The searc filter to use in filtered mode
+	 * The search filter to use in filtered mode
 	 */
 	private Filter filter;
 
-	public enum SelectMode {
-		ALL, FILTERED, FIXED;
-	}
-
-	/**
-	 * Constructor - for the "ALL" mode
-	 * 
-	 * @param targetEntityModel
-	 *            the entity model of the entities that are to be displayed
-	 * @param attributeModel
-	 *            the attribute model for the property that is bound to this component
-	 * @param service
-	 *            the service used to retrieve entities
-	 */
-	public EntityListSelect(EntityModel<T> targetEntityModel, AttributeModel attributeModel,
-	        BaseService<ID, T> service, SortOrder... sortOrder) {
-		this(targetEntityModel, attributeModel, service, SelectMode.ALL, null, null, sortOrder);
-	}
-
-	/**
-	 * Constructor - for the "FIXED" mode
-	 * 
-	 * @param targetEntityModel
-	 *            the entity model of the entities that are to be displayed
-	 * @param attributeModel
-	 *            the attribute model for the property that is bound to this component
-	 * @param items
-	 *            the list of entities to display
-	 */
-	public EntityListSelect(EntityModel<T> targetEntityModel, AttributeModel attributeModel, List<T> items) {
-		this(targetEntityModel, attributeModel, null, SelectMode.FIXED, null, items);
-	}
+	private Filter originalFilter;
 
 	/**
 	 * Constructor - for the "FILTERED" mode
@@ -159,16 +133,55 @@ public class EntityListSelect<ID extends Serializable, T extends AbstractEntity<
 		setSizeFull();
 	}
 
+	/**
+	 * Constructor - for the "ALL" mode
+	 * 
+	 * @param targetEntityModel
+	 *            the entity model of the entities that are to be displayed
+	 * @param attributeModel
+	 *            the attribute model for the property that is bound to this component
+	 * @param service
+	 *            the service used to retrieve entities
+	 */
+	public EntityListSelect(EntityModel<T> targetEntityModel, AttributeModel attributeModel,
+	        BaseService<ID, T> service, SortOrder... sortOrder) {
+		this(targetEntityModel, attributeModel, service, SelectMode.ALL, null, null, sortOrder);
+	}
+
+	/**
+	 * Constructor - for the "FIXED" mode
+	 * 
+	 * @param targetEntityModel
+	 *            the entity model of the entities that are to be displayed
+	 * @param attributeModel
+	 *            the attribute model for the property that is bound to this component
+	 * @param items
+	 *            the list of entities to display
+	 */
+	public EntityListSelect(EntityModel<T> targetEntityModel, AttributeModel attributeModel, List<T> items) {
+		this(targetEntityModel, attributeModel, null, SelectMode.FIXED, null, items);
+	}
+
+	@Override
+	public void clearAdditionalFilter() {
+		this.filter = originalFilter;
+		refresh();
+	}
+
+	public AttributeModel getAttributeModel() {
+		return attributeModel;
+	}
+
+	public Filter getFilter() {
+		return filter;
+	}
+
 	public SelectMode getSelectMode() {
 		return selectMode;
 	}
 
 	public SortOrder[] getSortOrders() {
 		return sortOrders;
-	}
-
-	public AttributeModel getAttributeModel() {
-		return attributeModel;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -185,4 +198,17 @@ public class EntityListSelect<ID extends Serializable, T extends AbstractEntity<
 			((BeanItemContainer<T>) getContainerDataSource()).addAll(list);
 		}
 	}
+
+	public void refresh(Filter filter) {
+		this.originalFilter = filter;
+		this.filter = filter;
+		refresh();
+	}
+
+	@Override
+	public void setAdditionalFilter(Filter additionalFilter) {
+		this.filter = originalFilter == null ? additionalFilter : new And(originalFilter, additionalFilter);
+		refresh();
+	}
+
 }

@@ -328,9 +328,8 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 		BaseService<ID, S> service = (BaseService<ID, S>) ServiceLocator.getServiceForEntity(attributeModel
 		        .getMemberType() != null ? attributeModel.getMemberType() : entityModel.getEntityClass());
 		SortOrder[] sos = constructSortOrder(entityModel);
-		return new EntityLookupField<>(service, (EntityModel<S>) entityModel, attributeModel,
-		        fieldFilter == null ? null : Lists.newArrayList(fieldFilter), search, multiSelect,
-		        sos.length == 0 ? null : Lists.newArrayList(sos));
+		return new EntityLookupField<>(service, (EntityModel<S>) entityModel, attributeModel, fieldFilter, search,
+		        multiSelect, sos.length == 0 ? null : Lists.newArrayList(sos));
 	}
 
 	/**

@@ -309,7 +309,7 @@ public class ModelBasedFieldFactoryTest extends BaseMockitoTest {
 		f = ff.constructField(model.getAttributeModel("testEntity"), null, null);
 		Assert.assertTrue(f instanceof EntityLookupField);
 		EntityLookupField<Integer, TestEntity> lf = (EntityLookupField<Integer, TestEntity>) f;
-		Assert.assertNull(lf.getFilters());
+		Assert.assertNull(lf.getFilter());
 
 		// field filter is propagated
 		Map<String, com.vaadin.data.Container.Filter> fieldFilters = new HashMap<>();
@@ -318,7 +318,7 @@ public class ModelBasedFieldFactoryTest extends BaseMockitoTest {
 		f = ff.constructField(model.getAttributeModel("testEntity"), fieldFilters, null);
 		Assert.assertTrue(f instanceof EntityLookupField);
 		lf = (EntityLookupField<Integer, TestEntity>) f;
-		Assert.assertEquals(1, lf.getFilters().size());
+		Assert.assertNotNull(lf.getFilter());
 
 		fieldFilters = new HashMap<>();
 		fieldFilters.put("testEntityAlt", new Compare.Equal("name", "John"));

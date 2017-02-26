@@ -25,6 +25,7 @@ import com.ocs.dynamo.ui.component.EntityComboBox.SelectMode;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.sort.SortOrder;
 import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.data.util.filter.And;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
@@ -68,7 +69,7 @@ public class QuickAddEntityComboBox<ID extends Serializable, T extends AbstractE
 	 */
 	public QuickAddEntityComboBox(EntityModel<T> entityModel, AttributeModel attributeModel,
 	        BaseService<ID, T> service, SelectMode mode, Filter filter, List<T> items, SortOrder... sortOrder) {
-		super(service, entityModel, attributeModel);
+		super(service, entityModel, attributeModel, filter);
 		comboBox = new EntityComboBox<>(entityModel, attributeModel, service, mode, filter, items, sortOrder);
 	}
 
@@ -79,6 +80,13 @@ public class QuickAddEntityComboBox<ID extends Serializable, T extends AbstractE
 		BeanItemContainer<T> container = (BeanItemContainer<T>) comboBox.getContainerDataSource();
 		container.addBean(entity);
 		comboBox.setValue(entity);
+	}
+
+	@Override
+	public void clearAdditionalFilter() {
+		if (comboBox != null) {
+			comboBox.refresh(getFilter());
+		}
 	}
 
 	public EntityComboBox<ID, T> getComboBox() {
@@ -127,6 +135,21 @@ public class QuickAddEntityComboBox<ID extends Serializable, T extends AbstractE
 	public void refresh() {
 		if (comboBox != null) {
 			comboBox.refresh();
+		}
+	}
+
+	@Override
+	public void refresh(Filter filter) {
+		setFilter(filter);
+		if (comboBox != null) {
+			comboBox.refresh(filter);
+		}
+	}
+
+	@Override
+	public void setAdditionalFilter(Filter additionalFilter) {
+		if (comboBox != null) {
+			comboBox.refresh(getFilter() == null ? additionalFilter : new And(getFilter(), additionalFilter));
 		}
 	}
 

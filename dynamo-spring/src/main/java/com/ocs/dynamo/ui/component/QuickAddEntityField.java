@@ -19,6 +19,7 @@ import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
+import com.vaadin.data.Container.Filter;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.UI;
@@ -36,78 +37,80 @@ import com.vaadin.ui.UI;
  * @param <U>
  *            the type of the value of the component (can be an entity, or a collection of entities)
  */
-public abstract class QuickAddEntityField<ID extends Serializable, T extends AbstractEntity<ID>, U>
-        extends CustomEntityField<ID, T, U> {
+public abstract class QuickAddEntityField<ID extends Serializable, T extends AbstractEntity<ID>, U> extends
+        CustomEntityField<ID, T, U> {
 
-    private UI ui = UI.getCurrent();
+	private UI ui = UI.getCurrent();
 
-    private static final long serialVersionUID = 7118578276952170818L;
+	private static final long serialVersionUID = 7118578276952170818L;
 
-    /**
-     * The button that brings up the dialog for adding a new entity
-     */
-    private Button addButton;
+	/**
+	 * The button that brings up the dialog for adding a new entity
+	 */
+	private Button addButton;
 
-    /**
-     * Constructor
-     * 
-     * @param service
-     *            the service used to interact with the storage
-     * @param entityModel
-     *            the entity model of the entity that is being displayed
-     * @param attributeModel
-     *            the attribute model
-     */
-    public QuickAddEntityField(BaseService<ID, T> service, EntityModel<T> entityModel,
-            AttributeModel attributeModel) {
-        super(service, entityModel, attributeModel);
-    }
+	/**
+	 * Constructor
+	 * 
+	 * @param service
+	 *            the service used to interact with the storage
+	 * @param entityModel
+	 *            the entity model of the entity that is being displayed
+	 * @param attributeModel
+	 *            the attribute model
+	 * @param filter
+	 *            the search filter
+	 */
+	public QuickAddEntityField(BaseService<ID, T> service, EntityModel<T> entityModel, AttributeModel attributeModel,
+	        Filter filter) {
+		super(service, entityModel, attributeModel, filter);
+	}
 
-    /**
-     * Method that is called after a new entity has been successfully created. Use this to add the
-     * new entity to the component and select it
-     * 
-     * @param entity
-     */
-    protected abstract void afterNewEntityAdded(T entity);
+	/**
+	 * Method that is called after a new entity has been successfully created. Use this to add the
+	 * new entity to the component and select it
+	 * 
+	 * @param entity
+	 */
+	protected abstract void afterNewEntityAdded(T entity);
 
-    /**
-     * Constructs the button that brings up the dialog that allows the user to add a new item
-     * 
-     * @return
-     */
-    protected Button constructAddButton() {
-        addButton = new Button(getMessageService().getMessage("ocs.add"));
-        addButton.addClickListener(new Button.ClickListener() {
+	/**
+	 * Constructs the button that brings up the dialog that allows the user to add a new item
+	 * 
+	 * @return
+	 */
+	protected Button constructAddButton() {
+		addButton = new Button(getMessageService().getMessage("ocs.add"));
+		addButton.addClickListener(new Button.ClickListener() {
 
-            private static final long serialVersionUID = 4074804834729142520L;
+			private static final long serialVersionUID = 4074804834729142520L;
 
-            @Override
-            public void buttonClick(ClickEvent event) {
-                AddNewValueDialog<ID, T> dialog = new AddNewValueDialog<ID, T>(getEntityModel(),
-                        getAttributeModel(), getService(), getMessageService()) {
+			@Override
+			public void buttonClick(ClickEvent event) {
+				AddNewValueDialog<ID, T> dialog = new AddNewValueDialog<ID, T>(getEntityModel(), getAttributeModel(),
+				        getService(), getMessageService()) {
 
-                    private static final long serialVersionUID = 2040216794358094524L;
+					private static final long serialVersionUID = 2040216794358094524L;
 
-                    @Override
-                    protected void afterNewEntityAdded(T entity) {
-                        QuickAddEntityField.this.afterNewEntityAdded(entity);
-                    }
+					@Override
+					protected void afterNewEntityAdded(T entity) {
+						QuickAddEntityField.this.afterNewEntityAdded(entity);
+					}
 
-                };
-                dialog.build();
-                ui.addWindow(dialog);
-            }
-        });
-        return addButton;
-    }
+				};
+				dialog.build();
+				ui.addWindow(dialog);
+			}
+		});
+		return addButton;
+	}
 
-    public Button getAddButton() {
-        return addButton;
-    }
+	public Button getAddButton() {
+		return addButton;
+	}
 
-    public UI getUi() {
-        return ui;
-    }
+	public UI getUi() {
+		return ui;
+	}
 
 }

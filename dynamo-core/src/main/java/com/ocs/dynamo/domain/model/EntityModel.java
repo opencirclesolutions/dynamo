@@ -51,6 +51,21 @@ public interface EntityModel<T> {
 	String COMPLEX_EDITABLE = "complexEditable";
 
 	/**
+	 * Cascade attribute
+	 */
+	String CASCADE = "cascade";
+
+	/**
+	 * Cascade filter path (what to filter to receving end of the cascade on)
+	 */
+	String CASCADE_FILTER_PATH = "cascadeFilterPath";
+
+	/**
+	 * Cascade mode (when to apply cascading - search, edit, or both)
+	 */
+	String CASCADE_MODE = "cascadeMode";
+
+	/**
 	 * Whether an amount represents a currency
 	 */
 	String CURRENCY = "currency";
@@ -197,8 +212,8 @@ public interface EntityModel<T> {
 	String SEARCH_EXACT_VALUE = "searchForExactValue";
 
 	/**
-     * Whether to only search on prefix values
-     */
+	 * Whether to only search on prefix values
+	 */
 	String SEARCH_PREFIX_ONLY = "searchPrefixOnly";
 
 	/**
@@ -319,6 +334,12 @@ public interface EntityModel<T> {
 	 * @return
 	 */
 	List<AttributeModel> getAttributeModelsForType(AttributeType attributeType, Class<?> type);
+
+	/**
+	 * 
+	 * @return the attribute models for which cascading has been defined
+	 */
+	List<AttributeModel> getCascadeAttributeModels();
 
 	/**
 	 * Textual description of the entity

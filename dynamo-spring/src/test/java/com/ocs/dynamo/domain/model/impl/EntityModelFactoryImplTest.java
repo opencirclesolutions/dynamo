@@ -47,12 +47,14 @@ import com.ocs.dynamo.domain.model.AttributeDateType;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.AttributeSelectMode;
 import com.ocs.dynamo.domain.model.AttributeType;
+import com.ocs.dynamo.domain.model.CascadeMode;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.VisibilityType;
 import com.ocs.dynamo.domain.model.annotation.Attribute;
 import com.ocs.dynamo.domain.model.annotation.AttributeGroup;
 import com.ocs.dynamo.domain.model.annotation.AttributeGroups;
 import com.ocs.dynamo.domain.model.annotation.AttributeOrder;
+import com.ocs.dynamo.domain.model.annotation.Cascade;
 import com.ocs.dynamo.domain.model.annotation.Model;
 import com.ocs.dynamo.domain.validator.Email;
 import com.ocs.dynamo.service.MessageService;
@@ -543,6 +545,30 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		Assert.assertTrue(am1.isAlreadyGrouped());
 	}
 
+	/**
+	 * Test cascading
+	 */
+	@Test
+	public void testCascade() {
+		EntityModel<Entity12> model = factory.getModel(Entity12.class);
+		AttributeModel am = model.getAttributeModel("attribute1");
+		Assert.assertTrue(am.getCascadeAttributes().contains("attribute2"));
+		Assert.assertEquals("somePath", am.getCascadeFilterPath("attribute2"));
+		Assert.assertEquals(CascadeMode.BOTH, am.getCascadeMode("attribute2"));
+	}
+
+	/**
+	 * Test cascading defined in message bundle
+	 */
+	@Test
+	public void testCascadeMessageBundle() {
+		EntityModel<Entity13> model = factory.getModel(Entity13.class);
+		AttributeModel am = model.getAttributeModel("attribute1");
+		Assert.assertTrue(am.getCascadeAttributes().contains("attribute2"));
+		Assert.assertEquals("somePath", am.getCascadeFilterPath("attribute2"));
+		Assert.assertEquals(CascadeMode.EDIT, am.getCascadeMode("attribute2"));
+	}
+
 	private class Entity1 {
 
 		@Size(max = 55)
@@ -946,6 +972,61 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		private String attribute1;
 
 		@Attribute(groupTogetherWith = "attribute1")
+		private String attribute2;
+
+		public String getAttribute1() {
+			return attribute1;
+		}
+
+		public void setAttribute1(String attribute1) {
+			this.attribute1 = attribute1;
+		}
+
+		public String getAttribute2() {
+			return attribute2;
+		}
+
+		public void setAttribute2(String attribute2) {
+			this.attribute2 = attribute2;
+		}
+
+	}
+
+	private class Entity12 {
+
+		@Attribute(cascade = @Cascade(cascadeTo = "attribute2", filterPath = "somePath"))
+		private String attribute1;
+
+		private String attribute2;
+
+		public String getAttribute1() {
+			return attribute1;
+		}
+
+		public void setAttribute1(String attribute1) {
+			this.attribute1 = attribute1;
+		}
+
+		public String getAttribute2() {
+			return attribute2;
+		}
+
+		public void setAttribute2(String attribute2) {
+			this.attribute2 = attribute2;
+		}
+
+	}
+
+	/**
+	 * Cascading in message bundle
+	 * 
+	 * @author bas.rutten
+	 *
+	 */
+	private class Entity13 {
+
+		private String attribute1;
+
 		private String attribute2;
 
 		public String getAttribute1() {

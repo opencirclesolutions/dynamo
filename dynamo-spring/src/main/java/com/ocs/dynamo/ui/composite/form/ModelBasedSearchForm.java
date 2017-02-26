@@ -23,13 +23,19 @@ import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.AttributeType;
+import com.ocs.dynamo.domain.model.CascadeMode;
 import com.ocs.dynamo.domain.model.EntityModel;
+import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.filter.listener.FilterListener;
 import com.ocs.dynamo.ui.Refreshable;
 import com.ocs.dynamo.ui.Searchable;
+import com.ocs.dynamo.ui.component.Cascadable;
 import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.vaadin.data.Container.Filter;
+import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.Property.ValueChangeListener;
+import com.vaadin.data.util.filter.Compare;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Field;
@@ -133,6 +139,46 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 		buttonBar.addComponent(constructSearchButton());
 		buttonBar.addComponent(constructClearButton());
 		buttonBar.addComponent(constructToggleButton());
+	}
+
+	/**
+	 * Adds any value change listeners for taking care of cascading search
+	 */
+	protected void constructCascadeListeners() {
+		for (final AttributeModel am : getEntityModel().getCascadeAttributeModels()) {
+			if (am.isSearchable()) {
+				Field<?> field = groups.get(am.getPath()).getField();
+				if (field != null) {
+					field.addValueChangeListener(new ValueChangeListener() {
+
+						private static final long serialVersionUID = -756705572024043514L;
+
+						@Override
+						public void valueChange(ValueChangeEvent event) {
+							for (String cascadePath : am.getCascadeAttributes()) {
+								CascadeMode cm = am.getCascadeMode(cascadePath);
+								if (CascadeMode.BOTH.equals(cm) || CascadeMode.SEARCH.equals(cm)) {
+									Field<?> cascadeField = groups.get(cascadePath).getField();
+									if (cascadeField instanceof Cascadable) {
+										Cascadable ca = (Cascadable) cascadeField;
+										if (event.getProperty().getValue() == null) {
+											ca.clearAdditionalFilter();
+										} else {
+											ca.setAdditionalFilter(new Compare.Equal(am
+											        .getCascadeFilterPath(cascadePath), event.getProperty().getValue()));
+										}
+									} else {
+										// field not found or does not support cascading
+										throw new OCSRuntimeException("Cannot setup cascading from " + am.getPath()
+										        + " to " + cascadePath);
+									}
+								}
+							}
+						}
+					});
+				}
+			}
+		}
 	}
 
 	/**
@@ -262,6 +308,7 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 
 		// iterate over the searchable attributes and add a field for each
 		iterate(getEntityModel().getAttributeModels());
+		constructCascadeListeners();
 
 		DefaultVerticalLayout margin = new DefaultVerticalLayout(true, false);
 		margin.addComponent(form);
@@ -352,7 +399,7 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 	}
 
 	/**
-	 * Callback method that allows the user to modify the various filter groups
+	 * Callback method that allows the you to modify the various filter groups
 	 * 
 	 * @param groups
 	 *            the filter groups
@@ -361,6 +408,13 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 		// overwrite in subclasses
 	}
 
+	/**
+	 * Callback method that is called once the processing of the layout is complete. Allows you to
+	 * modify the layout or add extra components at the end
+	 * 
+	 * @param layout
+	 *            the main layout
+	 */
 	@Override
 	protected void postProcessLayout(VerticalLayout layout) {
 		postProcessFilterGroups(groups);
