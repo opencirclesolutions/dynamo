@@ -66,9 +66,9 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 	private Button clearButton;
 
 	/**
-	 * The filters to apply to the search dialog
+	 * Additional filter for cascading
 	 */
-	private List<Filter> filters;
+	private Filter additionalFilter;
 
 	/**
 	 * The joins to apply to the search in the search dialog
@@ -119,11 +119,10 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 	 *            the joins to use when fetching data when filling the popop dialog
 	 */
 	public EntityLookupField(BaseService<ID, T> service, EntityModel<T> entityModel, AttributeModel attributeModel,
-	        List<Filter> filters, boolean search, boolean multiSelect, List<SortOrder> sortOrders,
+	        Filter filter, boolean search, boolean multiSelect, List<SortOrder> sortOrders,
 	        FetchJoinInformation... joins) {
-		super(service, entityModel, attributeModel);
+		super(service, entityModel, attributeModel, filter);
 		this.sortOrders = sortOrders != null ? sortOrders : new ArrayList<SortOrder>();
-		this.filters = filters;
 		this.joins = joins;
 		this.multiSelect = multiSelect;
 		this.addAllowed = !search && (attributeModel != null && attributeModel.isQuickAddAllowed());
@@ -159,10 +158,6 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 
 	public Button getClearButton() {
 		return clearButton;
-	}
-
-	public List<Filter> getFilters() {
-		return filters;
 	}
 
 	public Integer getPageLength() {
@@ -202,8 +197,16 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 
 			@Override
 			public void buttonClick(ClickEvent event) {
+				List<Filter> filterList = new ArrayList<>();
+				if (getFilter() != null) {
+					filterList.add(getFilter());
+				}
+				if (additionalFilter != null) {
+					filterList.add(additionalFilter);
+				}
+
 				ModelBasedSearchDialog<ID, T> dialog = new ModelBasedSearchDialog<ID, T>(getService(),
-				        getEntityModel(), filters, sortOrders, multiSelect, true, joins) {
+				        getEntityModel(), filterList, sortOrders, multiSelect, true, joins) {
 
 					private static final long serialVersionUID = -3432107069929941520L;
 
@@ -333,6 +336,22 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 			}
 			label.setCaption(caption.replaceAll(",", StringUtil.HTML_LINE_BREAK));
 		}
+	}
+
+	@Override
+	public void refresh(Filter filter) {
+		setFilter(filter);
+	}
+
+	@Override
+	public void setAdditionalFilter(Filter additionalFilter) {
+		setValue(null);
+		this.additionalFilter = additionalFilter;
+	}
+
+	@Override
+	public void clearAdditionalFilter() {
+		this.additionalFilter = null;
 	}
 
 }

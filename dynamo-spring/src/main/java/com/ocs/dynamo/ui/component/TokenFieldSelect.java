@@ -30,9 +30,11 @@ import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.Refreshable;
 import com.ocs.dynamo.utils.ClassUtils;
 import com.vaadin.data.Container;
+import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Property;
 import com.vaadin.data.sort.SortOrder;
 import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.data.util.filter.And;
 import com.vaadin.shared.ui.combobox.FilteringMode;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -110,7 +112,7 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
 	 */
 	public TokenFieldSelect(EntityModel<T> em, AttributeModel attributeModel, BaseService<ID, T> service,
 	        Container.Filter filter, boolean search, SortOrder... sortOrders) {
-		super(service, em, attributeModel);
+		super(service, em, attributeModel, filter);
 		extTokenField = new ExtTokenField();
 		comboBox = new EntityComboBox<>(em, attributeModel, service, filter, sortOrders);
 		container = new BeanItemContainer<>(AbstractEntity.class);
@@ -185,6 +187,14 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
 		});
 	}
 
+	@Override
+	public void clearAdditionalFilter() {
+		if (comboBox != null) {
+			comboBox.refresh(getFilter());
+			extTokenField.setInputField(comboBox);
+		}
+	}
+
 	/**
 	 * Copies the values from the container to the component
 	 */
@@ -194,11 +204,27 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
 	}
 
 	@Override
+	public void focus() {
+		super.focus();
+		if (comboBox != null) {
+			comboBox.focus();
+		}
+	}
+
+	public EntityComboBox<ID, T> getComboBox() {
+		return comboBox;
+	}
+
+	@Override
 	protected List<T> getInternalValue() {
 		if (container.size() == 0) {
 			return null;
 		}
 		return container.getItemIds();
+	}
+
+	public ExtTokenField getTokenField() {
+		return extTokenField;
 	}
 
 	@Override
@@ -246,6 +272,30 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
 	}
 
 	@Override
+	public void refresh() {
+		if (comboBox != null) {
+			comboBox.refresh();
+		}
+	}
+
+	@Override
+	public void refresh(Filter filter) {
+		if (comboBox != null) {
+			comboBox.refresh(filter);
+		}
+	}
+
+	@Override
+	public void setAdditionalFilter(Filter additionalFilter) {
+		if (comboBox != null) {
+			setValue(null);
+			comboBox.setValue(null);
+			comboBox.refresh(getFilter() == null ? additionalFilter : new And(getFilter(), additionalFilter));
+			extTokenField.setInputField(comboBox);
+		}
+	}
+
+	@Override
 	protected void setInternalValue(Collection<T> values) {
 		super.setInternalValue(values);
 		container.removeAllItems();
@@ -273,28 +323,5 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
 	public void setValue(Collection<T> values) {
 		super.setValue(values);
 		setInternalValue(values);
-	}
-
-	public EntityComboBox<ID, T> getComboBox() {
-		return comboBox;
-	}
-
-	public ExtTokenField getTokenField() {
-		return extTokenField;
-	}
-
-	@Override
-	public void refresh() {
-		if (comboBox != null) {
-			comboBox.refresh();
-		}
-	}
-
-	@Override
-	public void focus() {
-		super.focus();
-		if (comboBox != null) {
-			comboBox.focus();
-		}
 	}
 }

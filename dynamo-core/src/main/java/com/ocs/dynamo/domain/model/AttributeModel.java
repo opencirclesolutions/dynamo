@@ -19,7 +19,7 @@ import java.util.Set;
 /**
  * An attribute model represents how a certain attribute of an entity will be behave in the user
  * interface. This includes e.g. whether the attribute is searchable, sortable, what kind of user
- * interface component is used to edit the attribute etc
+ * interface component is used to edit the attribute any many other aspects
  * 
  * @author bas.rutten
  *
@@ -27,7 +27,21 @@ import java.util.Set;
 public interface AttributeModel extends Comparable<AttributeModel> {
 
 	/**
-	 * Adds a "group together with" attribute
+	 * Adds a cascade option
+	 * 
+	 * @param cascadeTo
+	 *            the path to the attribute to cascade to
+	 * @param filterPath
+	 *            the path used to filter on
+	 * @param mode
+	 *            the mode (search, edit, or both)
+	 */
+	void addCascade(String cascadeTo, String filterPath, CascadeMode mode);
+
+	/**
+	 * Adds a "group together with" attribute. These attributes mentioned as the
+	 * "group together with" attributes will be rendered on the same line as the attribute for which
+	 * this model is defined
 	 * 
 	 * @param path
 	 *            the path to the attribute to group with
@@ -46,19 +60,45 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 
 	/**
 	 * 
-	 * @return the name of the field in the collection table
+	 * @return the attributes to cascade to when the value of this attribute changes
+	 */
+	Set<String> getCascadeAttributes();
+
+	/**
+	 * Returns the path to filter on when applying a cascade
+	 * 
+	 * @param cascadeTo
+	 *            the path of the property to which to apply cascading
+	 * @return the path to filter on
+	 */
+	String getCascadeFilterPath(String cascadeTo);
+
+	/**
+	 * Returns the cascade mode
+	 * 
+	 * @param cascadeTo
+	 *            the path of the property to which to apply cascading
+	 * @return when to apply cascading - in search mode, edit mode, or both
+	 */
+	CascadeMode getCascadeMode(String cascadeTo);
+
+	/**
+	 * 
+	 * @return the name of the field in the collection table that is used to search on when building
+	 *         a token search field for values in a collection table
 	 */
 	String getCollectionTableFieldName();
 
 	/**
 	 * 
-	 * @return the name of the collection table (in case of an element collection)
+	 * @return the name of the collection table that is used when building a token search field for
+	 *         values in a collection table
 	 */
 	String getCollectionTableName();
 
 	/**
 	 * 
-	 * @return The date type (date, time, or timestamp) of the attribute
+	 * @return The date type (date, time, or time stamp) of the attribute
 	 */
 	AttributeDateType getDateType();
 
@@ -105,8 +145,8 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 
 	/**
 	 * 
-	 * @return the names of/paths to the other attributes that must be appear on the same line in an
-	 *         edit form
+	 * @return the paths to the other attributes that must be appear on the same line in an edit
+	 *         form
 	 */
 	List<String> getGroupTogetherWith();
 
@@ -295,7 +335,7 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	boolean isPercentage();
 
 	/**
-	 * Indicates whether "quick edit" functionality is allowed. Quick edit functionality allows for
+	 * @ return whether "quick edit" functionality is allowed. Quick edit functionality allows for
 	 * the inline addition of simple domain values
 	 */
 	boolean isQuickAddAllowed();
@@ -306,52 +346,45 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	boolean isReadOnly();
 
 	/**
-	 * Indicates whether this is a required attribute
-	 * 
-	 * @return
+	 * @return whether the attribute is a required attribute (entity can only be saved if values for
+	 *         all required attributes have been provided)
 	 */
 	boolean isRequired();
 
 	/**
-	 * Indicates whether the field is required when searching
 	 * 
-	 * @return
+	 * @return whether it is required to fill in a value for this attribute before you can carry out
+	 *         a search
 	 */
 	boolean isRequiredForSearching();
 
 	/**
-	 * Indicates whether it is possible to search on this attribute
-	 * 
-	 * @return
+	 * @return whether it is possible to search on this attribute
 	 */
 	boolean isSearchable();
 
 	/**
-	 * Indicates whether searching on this fields is case sensitive
-	 * 
-	 * @return
+	 * @return whether searching on this attribute is case sensitive (only applies if this is a
+	 *         String attribute)
 	 */
 	boolean isSearchCaseSensitive();
 
 	/**
-	 * Indicates whether searching for this value is by exact match (rather than using a range).
-	 * Only applicable to numerical and date field
-	 * 
-	 * @return
+	 * @return whether searching for this value is by exact match (rather than using a range). Only
+	 *         applicable to numerical and date field
 	 */
 	boolean isSearchForExactValue();
 
 	/**
-	 * Indicates whether to only match the prefix when performing a search
 	 * 
-	 * @return
+	 * 
+	 * @return whether searching should only match on prefixes rather than on a substring occurring
+	 *         anywhere
 	 */
 	boolean isSearchPrefixOnly();
 
 	/**
-	 * Indicates whether the attribute is sortable
-	 * 
-	 * @return
+	 * @return whether the attribute is sortable
 	 */
 	boolean isSortable();
 

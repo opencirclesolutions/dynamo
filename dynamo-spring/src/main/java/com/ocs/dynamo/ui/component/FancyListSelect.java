@@ -25,6 +25,7 @@ import com.ocs.dynamo.ui.Refreshable;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.sort.SortOrder;
 import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.data.util.filter.And;
 import com.vaadin.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -73,11 +74,6 @@ public class FancyListSelect<ID extends Serializable, T extends AbstractEntity<I
 	private BeanItemContainer<T> container;
 
 	/**
-	 * The filters to apply to the search dialog
-	 */
-	private Filter filter;
-
-	/**
 	 * The ListSelect component that shows the selected values
 	 */
 	private ListSelect listSelect;
@@ -117,14 +113,12 @@ public class FancyListSelect<ID extends Serializable, T extends AbstractEntity<I
 	 */
 	public FancyListSelect(BaseService<ID, T> service, EntityModel<T> entityModel, AttributeModel attributeModel,
 	        Filter filter, boolean search, SortOrder... sortOrders) {
-		super(service, entityModel, attributeModel);
+		super(service, entityModel, attributeModel, filter);
 		this.sortOrders = sortOrders;
-		this.filter = filter;
 		this.addAllowed = !search && (attributeModel != null && attributeModel.isQuickAddAllowed());
-
 		container = new BeanItemContainer<>(getEntityModel().getEntityClass());
 		listSelect = new ListSelect(null, container);
-		comboBox = new EntityComboBox<>(getEntityModel(), getAttributeModel(), getService(), this.filter, sortOrders);
+		comboBox = new EntityComboBox<>(getEntityModel(), getAttributeModel(), getService(), getFilter(), sortOrders);
 	}
 
 	@Override
@@ -132,6 +126,13 @@ public class FancyListSelect<ID extends Serializable, T extends AbstractEntity<I
 		comboBox.addEntity(entity);
 		container.addBean(entity);
 		copyValueFromContainer();
+	}
+
+	@Override
+	public void clearAdditionalFilter() {
+		if (comboBox != null) {
+			comboBox.refresh(getFilter());
+		}
 	}
 
 	/**
@@ -274,6 +275,14 @@ public class FancyListSelect<ID extends Serializable, T extends AbstractEntity<I
 		}
 	}
 
+	@Override
+	public void refresh(Filter filter) {
+		setFilter(filter);
+		if (comboBox != null) {
+			comboBox.refresh(filter);
+		}
+	}
+
 	/**
 	 * Refill the container after a value change
 	 * 
@@ -286,6 +295,14 @@ public class FancyListSelect<ID extends Serializable, T extends AbstractEntity<I
 			if (value != null && value instanceof Collection) {
 				container.addAll((Collection<T>) value);
 			}
+		}
+	}
+
+	@Override
+	public void setAdditionalFilter(Filter additionalFilter) {
+		if (comboBox != null) {
+			comboBox.setValue(null);
+			comboBox.refresh(getFilter() == null ? additionalFilter : new And(getFilter(), additionalFilter));
 		}
 	}
 

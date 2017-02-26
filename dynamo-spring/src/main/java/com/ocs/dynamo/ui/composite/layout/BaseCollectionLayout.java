@@ -224,7 +224,8 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	protected abstract void detailsMode(T entity);
 
 	/**
-	 * The code that is carried out once the add button is clicked
+	 * Method that is called when the Add button is clicked. Can be overridden in order to perform
+	 * your own custom logic
 	 */
 	protected void doAdd() {
 		setSelectedItem(createEntity());
@@ -275,10 +276,11 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	}
 
 	/**
-	 * Returns a list of additional group headers that can be used to add an extra attribute group layer to
-	 * the layout. By default this method returns null which means that no extra layer will be used. If you return
-	 * a non-empty String array, then the values in this array will be used as additional attribute group header. Use
-	 * the "getParentGroup" method to determine which "regular" attribute group to place inside which parent group.
+	 * Returns a list of additional group headers that can be used to add an extra attribute group
+	 * layer to the layout. By default this method returns null which means that no extra layer will
+	 * be used. If you return a non-empty String array, then the values in this array will be used
+	 * as additional attribute group header. Use the "getParentGroup" method to determine which
+	 * "regular" attribute group to place inside which parent group.
 	 * 
 	 * @return
 	 */
@@ -354,7 +356,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	 * @param editForm
 	 */
 	protected void postProcessEditFields(ModelBasedEditForm<ID, T> editForm) {
-		// do nothing by default - override in subclasses
+		// override in subclasses
 	}
 
 	/**
@@ -365,7 +367,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	 *            the main layout
 	 */
 	protected void postProcessLayout(Layout main) {
-		// overwrite in subclass
+		// override in subclasses
 	}
 
 	/**

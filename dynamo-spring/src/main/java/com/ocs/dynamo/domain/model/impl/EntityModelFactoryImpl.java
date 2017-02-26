@@ -58,6 +58,7 @@ import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.AttributeSelectMode;
 import com.ocs.dynamo.domain.model.AttributeTextFieldMode;
 import com.ocs.dynamo.domain.model.AttributeType;
+import com.ocs.dynamo.domain.model.CascadeMode;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.domain.model.LazyEntityModelWrapper;
@@ -66,6 +67,7 @@ import com.ocs.dynamo.domain.model.annotation.Attribute;
 import com.ocs.dynamo.domain.model.annotation.AttributeGroup;
 import com.ocs.dynamo.domain.model.annotation.AttributeGroups;
 import com.ocs.dynamo.domain.model.annotation.AttributeOrder;
+import com.ocs.dynamo.domain.model.annotation.Cascade;
 import com.ocs.dynamo.domain.model.annotation.Model;
 import com.ocs.dynamo.domain.validator.Email;
 import com.ocs.dynamo.exception.OCSRuntimeException;
@@ -741,6 +743,23 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 	}
 
 	/**
+	 * Check whether a message contains a value that marks the attribute as "visible"
+	 * 
+	 * @param msg
+	 *            the message
+	 * @return
+	 */
+	private boolean isVisible(String msg) {
+		try {
+			VisibilityType other = VisibilityType.valueOf(msg);
+			return VisibilityType.SHOW.equals(other);
+		} catch (IllegalArgumentException ex) {
+			// do nothing
+		}
+		return Boolean.valueOf(msg);
+	}
+
+	/**
 	 * Overwrite the default values with annotation values
 	 * 
 	 * @param parentClass
@@ -821,8 +840,14 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 			}
 
 			if (attribute.allowedExtensions() != null && attribute.allowedExtensions().length > 0) {
-				Set<String> hashSet = Sets.newHashSet(attribute.allowedExtensions());
-				model.setAllowedExtensions(hashSet);
+				Set<String> set = Sets.newHashSet(attribute.allowedExtensions());
+				model.setAllowedExtensions(set);
+			}
+
+			if (attribute.cascade() != null && attribute.cascade().length > 0) {
+				for (Cascade cc : attribute.cascade()) {
+					model.addCascade(cc.cascadeTo(), cc.filterPath(), cc.mode());
+				}
 			}
 
 			if (attribute.groupTogetherWith() != null && attribute.groupTogetherWith().length > 0) {
@@ -954,6 +979,34 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 			}
 		} else {
 			model.setDefaultValue(ClassUtils.instantiateClass(model.getType(), defaultValue));
+		}
+	}
+
+	/**
+	 * Reads cascade data for an attribute from the message bundle
+	 * 
+	 * @param entityModel
+	 *            the entity model
+	 * @param model
+	 *            the attribute model
+	 */
+	private void setMessageBundleCascadeOverrides(EntityModel<?> entityModel, AttributeModel model) {
+		int cascadeIndex = 1;
+		String msg = getAttributeMessage(entityModel, model, EntityModel.CASCADE + "." + cascadeIndex);
+		while (msg != null) {
+			String filter = getAttributeMessage(entityModel, model, EntityModel.CASCADE_FILTER_PATH + "."
+			        + cascadeIndex);
+			// optional mode (defaults to BOTH when omitted)
+			String mode = getAttributeMessage(entityModel, model, EntityModel.CASCADE_MODE + "." + cascadeIndex);
+
+			if (filter != null) {
+				model.addCascade(msg, filter, mode == null ? CascadeMode.BOTH : CascadeMode.valueOf(mode));
+			} else {
+				throw new OCSRuntimeException("Incomplete cascade definition for " + model.getPath());
+			}
+
+			cascadeIndex++;
+			msg = getAttributeMessage(entityModel, model, EntityModel.CASCADE + "." + cascadeIndex);
 		}
 	}
 
@@ -1175,6 +1228,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 			model.setSearchForExactValue(Boolean.valueOf(msg));
 		}
 
+		setMessageBundleCascadeOverrides(entityModel, model);
 	}
 
 	/**
@@ -1262,22 +1316,5 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 		default:
 			return null;
 		}
-	}
-
-	/**
-	 * Check whether a message contains a value that marks the attribute as "visible"
-	 * 
-	 * @param msg
-	 *            the message
-	 * @return
-	 */
-	private boolean isVisible(String msg) {
-		try {
-			VisibilityType other = VisibilityType.valueOf(msg);
-			return VisibilityType.SHOW.equals(other);
-		} catch (IllegalArgumentException ex) {
-			// do nothing
-		}
-		return Boolean.valueOf(msg);
 	}
 }

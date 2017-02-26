@@ -34,16 +34,35 @@ import com.vaadin.ui.MenuBar.MenuItem;
  */
 public class MenuService {
 
+	/**
+	 * The destination (name of the view) to navigate to
+	 */
 	public static final String DESTINATION = "destination";
 
+	/**
+	 * The display name
+	 */
 	public static final String DISPLAY_NAME = "displayName";
 
+	/**
+	 * The screen mode. Optional, is stored on the BaseUI
+	 */
 	public static final String MODE = "mode";
 
+	/**
+	 * The tab index of the tab to dipslay. Optional, is stored on the BaseUI and can be retrieved
+	 * from there
+	 */
 	public static final String TAB_INDEX = "tabIndex";
 
+	/**
+	 * Optional tooltip that appears for the menu item
+	 */
 	public static final String DESCRIPTION = "description";
 
+	/**
+	 * Permission checker used for determining if users are allowed to access a page
+	 */
 	@Autowired(required = false)
 	private DefaultPermissionCheckerImpl checker;
 
@@ -192,6 +211,7 @@ public class MenuService {
 	 * Recursively process all menu items and hides the items that have no visible children
 	 * 
 	 * @param bar
+	 *            the menu bar
 	 */
 	private void hideRecursively(MenuBar bar) {
 		for (MenuItem item : bar.getItems()) {
@@ -255,7 +275,8 @@ public class MenuService {
 	}
 
 	/**
-	 * Sets the visibility of a certain item based on its destination
+	 * Sets the visibility of a certain menu item if its destination matches the specified
+	 * destination
 	 * 
 	 * @param menu
 	 *            the main menu bar

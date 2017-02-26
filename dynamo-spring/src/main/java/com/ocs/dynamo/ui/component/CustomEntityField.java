@@ -21,10 +21,11 @@ import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.ui.ServiceLocator;
+import com.vaadin.data.Container.Filter;
 import com.vaadin.ui.CustomField;
 
 /**
- * A custom field that can be used to edit an AbstractEntity or collection of abstract entities
+ * A custom field that can be used to edit an AbstractEntity or collection thereof
  * 
  * @author bas.rutten
  *
@@ -36,60 +37,82 @@ import com.vaadin.ui.CustomField;
  *            the type of the value of the component (can typically be an entity or a collection of
  *            entities)
  */
-public abstract class CustomEntityField<ID extends Serializable, T extends AbstractEntity<ID>, U>
-        extends CustomField<U> {
+public abstract class CustomEntityField<ID extends Serializable, T extends AbstractEntity<ID>, U> extends
+        CustomField<U> implements Cascadable {
 
-    private static final long serialVersionUID = 8898382056620026384L;
+	private static final long serialVersionUID = 8898382056620026384L;
 
-    /**
-     * The service
-     */
-    private final BaseService<ID, T> service;
+	/**
+	 * The filter used to limit the entities to choose from
+	 */
+	private Filter filter;
 
-    /**
-     * The message service
-     */
-    private final MessageService messageService;
+	/**
+	 * The service
+	 */
+	private final BaseService<ID, T> service;
 
-    /**
-     * The entity model of the entities that are displayed in the component
-     */
-    private final EntityModel<T> entityModel;
+	/**
+	 * The message service
+	 */
+	private final MessageService messageService;
 
-    /**
-     * The attribute model used to define the behaviour of the component
-     */
-    private final AttributeModel attributeModel;
+	/**
+	 * The entity model of the entities that are displayed in the component
+	 */
+	private final EntityModel<T> entityModel;
 
-    /**
-     * Constructor
-     * 
-     * @param service
-     * @param entityModel
-     * @param attributeModel
-     */
-    public CustomEntityField(BaseService<ID, T> service, EntityModel<T> entityModel,
-            AttributeModel attributeModel) {
-        this.service = service;
-        this.entityModel = entityModel;
-        this.attributeModel = attributeModel;
-        this.messageService = ServiceLocator.getMessageService();
-    }
+	/**
+	 * The attribute model used to define the behaviour of the component
+	 */
+	private final AttributeModel attributeModel;
 
-    public BaseService<ID, T> getService() {
-        return service;
-    }
+	/**
+	 * Constructor
+	 * 
+	 * @param service
+	 * @param entityModel
+	 * @param attributeModel
+	 */
+	public CustomEntityField(BaseService<ID, T> service, EntityModel<T> entityModel, AttributeModel attributeModel, 
+			Filter filter) {
+		this.service = service;
+		this.entityModel = entityModel;
+		this.attributeModel = attributeModel;
+		this.messageService = ServiceLocator.getMessageService();
+		this.filter = filter;
+	}
 
-    public MessageService getMessageService() {
-        return messageService;
-    }
+	public AttributeModel getAttributeModel() {
+		return attributeModel;
+	}
 
-    public EntityModel<T> getEntityModel() {
-        return entityModel;
-    }
+	public EntityModel<T> getEntityModel() {
+		return entityModel;
+	}
 
-    public AttributeModel getAttributeModel() {
-        return attributeModel;
-    }
+	public Filter getFilter() {
+		return filter;
+	}
+
+	public MessageService getMessageService() {
+		return messageService;
+	}
+
+	public BaseService<ID, T> getService() {
+		return service;
+	}
+
+	/**
+	 * Sets the search filter to the provided filter then updates the lookup list
+	 * 
+	 * @param filter
+	 *            the new filter
+	 */
+	public abstract void refresh(Filter filter);
+
+	public void setFilter(Filter filter) {
+		this.filter = filter;
+	}
 
 }

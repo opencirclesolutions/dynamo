@@ -618,6 +618,14 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	}
 
 	/**
+	 * 
+	 * @return the total number of configured filters
+	 */
+	public int getFilterCount() {
+		return getSearchForm().getFilterCount();
+	}
+
+	/**
 	 * Post-processes the button bar for the search form
 	 * 
 	 * @param buttonBar

@@ -233,20 +233,36 @@ public class EntityModelImpl<T> implements EntityModel<T> {
 
 	@Override
 	public List<AttributeModel> getRequiredForSearchingAttributeModels() {
-		List<AttributeModel> requiredModels = new ArrayList<>();
+		List<AttributeModel> result = new ArrayList<>();
 		for (AttributeModel model : getAttributeModels()) {
 			if (model.isSearchable() && model.isRequiredForSearching()) {
-				requiredModels.add(model);
+				result.add(model);
 			}
 
 			// add nested models
 			if (model.getNestedEntityModel() != null) {
 				List<AttributeModel> nested = model.getNestedEntityModel().getRequiredForSearchingAttributeModels();
-				requiredModels.addAll(nested);
+				result.addAll(nested);
 			}
 		}
+		return Collections.unmodifiableList(result);
+	}
 
-		return Collections.unmodifiableList(requiredModels);
+	@Override
+	public List<AttributeModel> getCascadeAttributeModels() {
+		List<AttributeModel> result = new ArrayList<>();
+		for (AttributeModel model : getAttributeModels()) {
+			if (!model.getCascadeAttributes().isEmpty()) {
+				result.add(model);
+			}
+
+			// add nested models
+			if (model.getNestedEntityModel() != null) {
+				List<AttributeModel> nested = model.getNestedEntityModel().getCascadeAttributeModels();
+				result.addAll(nested);
+			}
+		}
+		return Collections.unmodifiableList(result);
 	}
 
 	@Override
@@ -284,4 +300,5 @@ public class EntityModelImpl<T> implements EntityModel<T> {
 		return attributeModels.keySet().size() == 1
 		        && attributeModels.keySet().iterator().next().equals(EntityModel.DEFAULT_GROUP);
 	}
+
 }

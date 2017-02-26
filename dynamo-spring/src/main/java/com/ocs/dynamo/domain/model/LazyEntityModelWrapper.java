@@ -58,47 +58,14 @@ public class LazyEntityModelWrapper<T> implements EntityModel<T> {
 		this.entityClass = entityClass;
 	}
 
-	private EntityModel<T> getDelegate() {
-		if (delegate == null) {
-			init();
-		}
-		return delegate;
-	}
-
-	private synchronized void init() {
-		if (delegate == null) {
-			delegate = factory.getModel(reference, entityClass);
-		}
+	@Override
+	public void addAttributeModel(String attributeGroup, AttributeModel model, AttributeModel existingModel) {
+		getDelegate().addAttributeModel(attributeGroup, model, existingModel);
 	}
 
 	@Override
-	public String getDisplayName() {
-		return getDelegate().getDisplayName();
-	}
-
-	@Override
-	public String getDisplayNamePlural() {
-		return getDelegate().getDisplayNamePlural();
-	}
-
-	@Override
-	public String getDescription() {
-		return getDelegate().getDescription();
-	}
-
-	@Override
-	public Class<T> getEntityClass() {
-		return getDelegate().getEntityClass();
-	}
-
-	@Override
-	public String getDisplayProperty() {
-		return getDelegate().getDisplayProperty();
-	}
-
-	@Override
-	public List<AttributeModel> getAttributeModels() {
-		return getDelegate().getAttributeModels();
+	public List<String> getAttributeGroups() {
+		return getDelegate().getAttributeGroups();
 	}
 
 	@Override
@@ -107,13 +74,8 @@ public class LazyEntityModelWrapper<T> implements EntityModel<T> {
 	}
 
 	@Override
-	public AttributeModel getMainAttributeModel() {
-		return getDelegate().getMainAttributeModel();
-	}
-
-	@Override
-	public List<String> getAttributeGroups() {
-		return getDelegate().getAttributeGroups();
+	public List<AttributeModel> getAttributeModels() {
+		return getDelegate().getAttributeModels();
 	}
 
 	@Override
@@ -127,23 +89,40 @@ public class LazyEntityModelWrapper<T> implements EntityModel<T> {
 	}
 
 	@Override
-	public boolean isAttributeGroupVisible(String group, boolean readOnly) {
-		return getDelegate().isAttributeGroupVisible(group, readOnly);
+	public List<AttributeModel> getCascadeAttributeModels() {
+		return getDelegate().getCascadeAttributeModels();
+	}
+
+	private EntityModel<T> getDelegate() {
+		if (delegate == null) {
+			init();
+		}
+		return delegate;
 	}
 
 	@Override
-	public boolean usesDefaultGroupOnly() {
-		return getDelegate().usesDefaultGroupOnly();
+	public String getDescription() {
+		return getDelegate().getDescription();
 	}
 
 	@Override
-	public String getReference() {
-		return getDelegate().getReference();
+	public String getDisplayName() {
+		return getDelegate().getDisplayName();
 	}
 
 	@Override
-	public void addAttributeModel(String attributeGroup, AttributeModel model, AttributeModel existingModel) {
-		getDelegate().addAttributeModel(attributeGroup, model, existingModel);
+	public String getDisplayNamePlural() {
+		return getDelegate().getDisplayNamePlural();
+	}
+
+	@Override
+	public String getDisplayProperty() {
+		return getDelegate().getDisplayProperty();
+	}
+
+	@Override
+	public Class<T> getEntityClass() {
+		return getDelegate().getEntityClass();
 	}
 
 	@Override
@@ -152,8 +131,13 @@ public class LazyEntityModelWrapper<T> implements EntityModel<T> {
 	}
 
 	@Override
-	public Map<AttributeModel, Boolean> getSortOrder() {
-		return getDelegate().getSortOrder();
+	public AttributeModel getMainAttributeModel() {
+		return getDelegate().getMainAttributeModel();
+	}
+
+	@Override
+	public String getReference() {
+		return getDelegate().getReference();
 	}
 
 	@Override
@@ -164,6 +148,27 @@ public class LazyEntityModelWrapper<T> implements EntityModel<T> {
 	@Override
 	public List<AttributeModel> getRequiredForSearchingAttributeModels() {
 		return getDelegate().getRequiredForSearchingAttributeModels();
+	}
+
+	@Override
+	public Map<AttributeModel, Boolean> getSortOrder() {
+		return getDelegate().getSortOrder();
+	}
+
+	private synchronized void init() {
+		if (delegate == null) {
+			delegate = factory.getModel(reference, entityClass);
+		}
+	}
+
+	@Override
+	public boolean isAttributeGroupVisible(String group, boolean readOnly) {
+		return getDelegate().isAttributeGroupVisible(group, readOnly);
+	}
+
+	@Override
+	public boolean usesDefaultGroupOnly() {
+		return getDelegate().usesDefaultGroupOnly();
 	}
 
 }

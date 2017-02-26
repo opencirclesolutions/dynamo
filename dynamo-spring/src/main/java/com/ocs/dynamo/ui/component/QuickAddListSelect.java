@@ -23,6 +23,7 @@ import com.ocs.dynamo.ui.Refreshable;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.sort.SortOrder;
 import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.data.util.filter.And;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
@@ -67,7 +68,7 @@ public class QuickAddListSelect<ID extends Serializable, T extends AbstractEntit
 	 */
 	public QuickAddListSelect(EntityModel<T> entityModel, AttributeModel attributeModel, BaseService<ID, T> service,
 	        Filter filter, boolean multiSelect, int rows, SortOrder... sortOrder) {
-		super(service, entityModel, attributeModel);
+		super(service, entityModel, attributeModel, filter);
 		listSelect = new EntityListSelect<ID, T>(entityModel, attributeModel, service, filter, sortOrder);
 		listSelect.setMultiSelect(multiSelect);
 		listSelect.setRows(rows);
@@ -152,6 +153,28 @@ public class QuickAddListSelect<ID extends Serializable, T extends AbstractEntit
 
 	public void setViewMode(boolean viewMode) {
 		this.viewMode = viewMode;
+	}
+
+	@Override
+	public void refresh(Filter filter) {
+		setFilter(filter);
+		if (listSelect != null) {
+			listSelect.refresh(filter);
+		}
+	}
+
+	@Override
+	public void setAdditionalFilter(Filter additionalFilter) {
+		if (listSelect != null) {
+			listSelect.refresh(getFilter() == null ? additionalFilter : new And(getFilter(), additionalFilter));
+		}
+	}
+
+	@Override
+	public void clearAdditionalFilter() {
+		if (listSelect != null) {
+			listSelect.refresh(getFilter());
+		}
 	}
 
 }
