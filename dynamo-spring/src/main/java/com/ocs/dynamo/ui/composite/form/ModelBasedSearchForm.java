@@ -146,8 +146,8 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 	 */
 	protected void constructCascadeListeners() {
 		for (final AttributeModel am : getEntityModel().getCascadeAttributeModels()) {
-			Field<?> field = groups.get(am.getPath()).getField();
-			if (am.isSearchable() && field != null) {
+			if (am.isSearchable()) {
+				Field<?> field = groups.get(am.getPath()).getField();
 				field.addValueChangeListener(new ValueChangeListener() {
 
 					private static final long serialVersionUID = -756705572024043514L;
