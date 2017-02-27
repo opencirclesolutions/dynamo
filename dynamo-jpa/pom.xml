@@ -10,7 +10,7 @@
 	<parent>
 		<groupId>org.dynamoframework</groupId>
 		<artifactId>dynamo-parent</artifactId>
-		<version>1.3-CB1-SNAPSHOT</version>
+		<version>1.0-CB2-SNAPSHOT</version>
     </parent>
 	
 	<organization>
