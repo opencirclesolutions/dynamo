@@ -339,7 +339,7 @@ public abstract class ProgressForm<T> extends BaseCustomComponent implements Pro
 						}
 					});
 					worker.start();
-				} catch (OCSRuntimeException ex) {
+				} catch (Exception ex) {
 					LOGGER.error(ex.getMessage(), ex);
 					// exception during size estimation
 					showNotification(ex.getMessage(), Notification.Type.ERROR_MESSAGE);

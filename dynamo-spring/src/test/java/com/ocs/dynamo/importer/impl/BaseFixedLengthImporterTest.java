@@ -25,7 +25,6 @@ import com.google.common.collect.Lists;
 import com.ocs.dynamo.exception.OCSImportException;
 import com.ocs.dynamo.importer.impl.PersonDTO.Gender;
 import com.ocs.dynamo.utils.DateUtils;
-import com.vaadin.client.ui.calendar.schedule.DateUtil;
 
 public class BaseFixedLengthImporterTest {
 

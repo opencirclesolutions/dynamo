@@ -85,7 +85,7 @@ public class ExportPivotTemplateTest extends BaseMockitoTest {
 
 			@Override
 			protected void setXlsCellValues(Row row, Series entity) {
-				createCell(row, 0, entity, null, null).setCellValue(entity.getUnit());
+				createCell(row, 0, entity, null, null, false).setCellValue(entity.getUnit());
 			}
 
 			@Override
@@ -183,7 +183,7 @@ public class ExportPivotTemplateTest extends BaseMockitoTest {
 
 			@Override
 			protected void setXlsCellValues(Row row, Series entity) {
-				createCell(row, 0, entity, null, null).setCellValue(entity.getUnit());
+				createCell(row, 0, entity, null, null, false).setCellValue(entity.getUnit());
 			}
 
 			@Override
@@ -255,7 +255,7 @@ public class ExportPivotTemplateTest extends BaseMockitoTest {
 		Assert.assertEquals(2, (int) sheet.getRow(1).getCell(2).getNumericCellValue());
 		Assert.assertEquals(3, (int) sheet.getRow(1).getCell(3).getNumericCellValue());
 		Assert.assertEquals(4, (int) sheet.getRow(1).getCell(4).getNumericCellValue());
-		Assert.assertEquals("2,50", sheet.getRow(1).getCell(5).getStringCellValue());
+		Assert.assertEquals(0.025, sheet.getRow(1).getCell(5).getNumericCellValue(), 0.01);
 
 		// check the second row
 		Assert.assertEquals(2, (int) sheet.getRow(2).getCell(0).getNumericCellValue());
@@ -263,7 +263,7 @@ public class ExportPivotTemplateTest extends BaseMockitoTest {
 		Assert.assertEquals(6, (int) sheet.getRow(2).getCell(2).getNumericCellValue());
 		Assert.assertEquals(7, (int) sheet.getRow(2).getCell(3).getNumericCellValue());
 		Assert.assertEquals(8, (int) sheet.getRow(2).getCell(4).getNumericCellValue());
-		Assert.assertEquals("6,50", sheet.getRow(2).getCell(5).getStringCellValue());
+		Assert.assertEquals(0.065, sheet.getRow(2).getCell(5).getNumericCellValue(), 0.01);
 
 		wb.close();
 
@@ -281,7 +281,7 @@ public class ExportPivotTemplateTest extends BaseMockitoTest {
 
 			@Override
 			protected void setXlsCellValues(Row row, Series entity) {
-				createCell(row, 0, entity, null, null).setCellValue(entity.getUnit());
+				createCell(row, 0, entity, null, null, false).setCellValue(entity.getUnit());
 			}
 
 			@Override

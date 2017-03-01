@@ -45,5 +45,6 @@ public interface CustomXlsStyleGenerator<ID extends Serializable, T extends Abst
 	 *            the cell value
 	 * @return
 	 */
-	CellStyle getCustomCellStyle(Workbook workbook, T entity, Object value, AttributeModel am);
+	CellStyle getCustomCellStyle(Workbook workbook, int index, T entity, Object value, AttributeModel am,
+	        boolean totalsColumn);
 }

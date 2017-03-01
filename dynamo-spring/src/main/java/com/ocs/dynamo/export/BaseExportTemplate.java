@@ -45,12 +45,14 @@ import com.ocs.dynamo.utils.MathUtil;
 import com.ocs.dynamo.utils.SystemPropertyUtils;
 
 /**
- * Base class for
+ * Base class for a template used for exporting data to Excel or CSV
  * 
  * @author bas.rutten
  *
  * @param <ID>
+ *            the type of the primary key of the entities to export
  * @param <T>
+ *            the type of the entities to export
  */
 public abstract class BaseExportTemplate<ID extends Serializable, T extends AbstractEntity<ID>> {
 
@@ -150,13 +152,17 @@ public abstract class BaseExportTemplate<ID extends Serializable, T extends Abst
 	 *            the cell value
 	 * @param attributeModel
 	 *            the attribute model used to determine the style
+	 * @param totalColumns
+	 *            whether the value is in a "totals" column at the end of the row
 	 * @return
 	 */
-	protected Cell createCell(Row row, int colIndex, T entity, Object value, AttributeModel attributeModel) {
+	protected Cell createCell(Row row, int colIndex, T entity, Object value, AttributeModel attributeModel,
+	        boolean totalsColumn) {
 		Cell cell = row.createCell(colIndex);
 		cell.setCellStyle(getGenerator().getCellStyle(colIndex, entity, value, attributeModel));
 		if (getCustomGenerator() != null) {
-			CellStyle custom = getCustomGenerator().getCustomCellStyle(workbook, entity, value, attributeModel);
+			CellStyle custom = getCustomGenerator().getCustomCellStyle(workbook, colIndex, entity, value,
+			        attributeModel, totalsColumn);
 			if (custom != null) {
 				cell.setCellStyle(custom);
 			}

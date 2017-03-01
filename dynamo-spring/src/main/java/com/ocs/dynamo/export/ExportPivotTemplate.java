@@ -39,6 +39,7 @@ import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.filter.Filter;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
+import com.ocs.dynamo.utils.MathUtil;
 
 /**
  * Base class for template classes for exporting pivoted data
@@ -286,11 +287,11 @@ public abstract class ExportPivotTemplate<ID extends Serializable, T extends Abs
 				U column = getColumns().get(index);
 				if (!columnValueMatches(entity, column)) {
 					// write empty cell
-					createCell(row, colIndex, null, null, null);
+					createCell(row, colIndex, null, null, null, false);
 				} else {
 					Object value = getValue(entity);
 					if (value != null) {
-						Cell cell = createCell(row, colIndex, entity, value, attributeModel);
+						Cell cell = createCell(row, colIndex, entity, value, attributeModel, false);
 						writeCellValue(cell, value, entity, null, attributeModel);
 
 						if (value instanceof BigDecimal) {
@@ -303,7 +304,7 @@ public abstract class ExportPivotTemplate<ID extends Serializable, T extends Abs
 						valueCount++;
 					} else {
 						// create empty cell
-						createCell(row, colIndex, entity, null, null);
+						createCell(row, colIndex, entity, null, null, false);
 					}
 					entity = iterator.next();
 				}
@@ -452,7 +453,7 @@ public abstract class ExportPivotTemplate<ID extends Serializable, T extends Abs
 		if (row != null) {
 			int colIndex = getCaptions().size() + index;
 			while (colIndex < lastColumnIndex) {
-				createCell(row, colIndex, null, null, null);
+				createCell(row, colIndex, null, null, null, false);
 				colIndex++;
 			}
 		}
@@ -479,13 +480,12 @@ public abstract class ExportPivotTemplate<ID extends Serializable, T extends Abs
 	private void writeXlsRowTotal(Row row, int lastColumnIndex, Integer rowSum, BigDecimal rowAverage, int valueCount) {
 		if (row != null && (createSumColumn() || createAveragesColumn())) {
 			if (createSumColumn()) {
-				createCell(row, lastColumnIndex, null, rowSum, null).setCellValue(rowSum);
+				createCell(row, lastColumnIndex, null, rowSum, attributeModel, true).setCellValue(rowSum);
 			} else if (valueCount > 0) {
 				// average
-				BigDecimal avg = rowAverage.divide(new BigDecimal(valueCount), DynamoConstants.INTERMEDIATE_PRECISION,
-				        RoundingMode.HALF_UP);
-				String s = VaadinUtils.bigDecimalToString(usePercentages(), true, (BigDecimal) avg);
-				createCell(row, lastColumnIndex, null, avg, null).setCellValue(s);
+				BigDecimal avg = rowAverage.divide(new BigDecimal(valueCount).multiply(MathUtil.HUNDRED),
+				        DynamoConstants.INTERMEDIATE_PRECISION, RoundingMode.HALF_UP);
+				createCell(row, lastColumnIndex, null, avg, attributeModel, true).setCellValue(avg.doubleValue());
 			}
 		}
 	}
