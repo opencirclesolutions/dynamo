@@ -13,13 +13,6 @@
  */
 package com.ocs.dynamo.ui.composite;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.util.Map;
-
-import org.apache.commons.lang.StringUtils;
-
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.impl.ModelBasedFieldFactory;
 import com.ocs.dynamo.jasperreports.JRContainerDataSource;
@@ -51,9 +44,14 @@ import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
-
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JasperReport;
+import org.apache.commons.lang.StringUtils;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.util.Map;
 
 /**
  * Custom component to render HTML versions of JasperReports and export to other formats
@@ -276,7 +274,7 @@ public class JRReportViewer<T> extends BaseCustomComponent {
 		currentParameters = parameters;
 
 		// Load template
-		ReportDefinition rd = (ReportDefinition) getReportSelection().getValue();
+		final ReportDefinition rd = getReportSelectionValue();
 		String path = getFullPath(rd);
 		jasperReport = reportGenerator.loadTemplate(path);
 
