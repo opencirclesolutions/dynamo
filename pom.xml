@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version=1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
@@ -718,6 +718,7 @@
 						</executions>
 					</plugin>
 					<!-- Sign artefacts. -->
+					<!--
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-gpg-plugin</artifactId>
@@ -731,8 +732,9 @@
 								</goals>
 							</execution>
 						</executions>
-					</plugin>
+					</plugin> -->
 					<!-- Publish to central repositories. -->
+					<!--
 					<plugin>
 						<groupId>org.sonatype.plugins</groupId>
 						<artifactId>nexus-staging-maven-plugin</artifactId>
@@ -741,11 +743,10 @@
 						<configuration>
 							<serverId>ossrh</serverId>
 							<nexusUrl>https://oss.sonatype.org/</nexusUrl>
-							<!-- Manually inspect the staging repository in the Nexus Repository 
-								Manager and trigger a release of the staging repository -->
 							<autoReleaseAfterClose>false</autoReleaseAfterClose>
 						</configuration>
 					</plugin>
+					-->
 					<!-- Publish to GitHub Releases. -->
 					<plugin>
 						<groupId>de.jutzig</groupId>
