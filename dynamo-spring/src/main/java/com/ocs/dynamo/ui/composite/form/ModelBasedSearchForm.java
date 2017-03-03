@@ -460,7 +460,7 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 	 */
 	public void setSearchValue(String propertyId, Object value, Object auxValue) {
 		FilterGroup group = groups.get(propertyId);
-		group.getField().setValue((Object) value);
+		group.getField().setValue(value);
 		if (group.getAuxField() != null) {
 			group.getAuxField().setValue(auxValue);
 		}

@@ -30,6 +30,7 @@ import com.ocs.dynamo.domain.model.AttributeTextFieldMode;
 import com.ocs.dynamo.domain.model.AttributeType;
 import com.ocs.dynamo.domain.model.CascadeMode;
 import com.ocs.dynamo.domain.model.EntityModel;
+import com.ocs.dynamo.domain.model.NumberSelectMode;
 
 /**
  * Implementation of the AttributeModel interface - simple container for properties
@@ -97,6 +98,8 @@ public class AttributeModelImpl implements AttributeModel {
 	private String name;
 
 	private EntityModel<?> nestedEntityModel;
+
+	private NumberSelectMode numberSelectMode = NumberSelectMode.TEXTFIELD;
 
 	private Integer order;
 
@@ -683,6 +686,14 @@ public class AttributeModelImpl implements AttributeModel {
 	@Override
 	public String toString() {
 		return ReflectionToStringBuilder.toStringExclude(this, "entityModel");
+	}
+
+	public NumberSelectMode getNumberSelectMode() {
+		return numberSelectMode;
+	}
+
+	public void setNumberSelectMode(NumberSelectMode numberSelectMode) {
+		this.numberSelectMode = numberSelectMode;
 	}
 
 }

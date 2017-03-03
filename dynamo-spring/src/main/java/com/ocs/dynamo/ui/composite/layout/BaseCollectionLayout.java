@@ -154,7 +154,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	 * 
 	 * @return
 	 */
-	protected Button constructAddButton() {
+	protected final Button constructAddButton() {
 		Button ab = new Button(message("ocs.add"));
 		ab.addClickListener(new Button.ClickListener() {
 

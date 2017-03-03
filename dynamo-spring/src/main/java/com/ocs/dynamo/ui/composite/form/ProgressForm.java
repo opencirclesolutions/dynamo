@@ -100,22 +100,6 @@ public abstract class ProgressForm<T> extends BaseCustomComponent implements Pro
 	}
 
 	/**
-	 * Constructs the specific part of the layout
-	 * 
-	 * @param main
-	 *            the layout that serves as the container for everything that is being added
-	 */
-	protected abstract void doBuildLayout(Layout main);
-
-	/**
-	 * method that is called after the process completes
-	 */
-	private void done() {
-		afterWorkComplete();
-		formMode();
-	}
-
-	/**
 	 * Constructs a layout with a single button that will start the process when clicked
 	 * 
 	 * @param parent
@@ -141,6 +125,22 @@ public abstract class ProgressForm<T> extends BaseCustomComponent implements Pro
 	}
 
 	/**
+	 * Constructs the specific part of the layout
+	 * 
+	 * @param main
+	 *            the layout that serves as the container for everything that is being added
+	 */
+	protected abstract void doBuildLayout(Layout main);
+
+	/**
+	 * method that is called after the process completes
+	 */
+	private void done() {
+		afterWorkComplete();
+		formMode();
+	}
+
+	/**
 	 * Estimates the current progress - overwrite this method if you want to use a custom mechanism
 	 * for updating the progress
 	 * 
@@ -160,6 +160,13 @@ public abstract class ProgressForm<T> extends BaseCustomComponent implements Pro
 	 */
 	protected abstract int estimateSize(T t);
 
+	/**
+	 * Extracts the OCSRuntimeException from the provided exception
+	 * 
+	 * @param t
+	 *            the exception
+	 * @return
+	 */
 	protected OCSRuntimeException extractRuntimeException(Throwable t) {
 		if (t instanceof OCSRuntimeException) {
 			return (OCSRuntimeException) t;
@@ -167,20 +174,6 @@ public abstract class ProgressForm<T> extends BaseCustomComponent implements Pro
 			return extractRuntimeException(t.getCause());
 		}
 		return null;
-	}
-
-	/**
-	 * Generic handling of an exception - tries to extract the OCSRuntimeException if possible
-	 * 
-	 * @param ex
-	 */
-	protected void handleException(Exception ex) {
-		OCSRuntimeException r = extractRuntimeException(ex);
-		if (r != null) {
-			showNotification(r.getMessage(), Notification.Type.ERROR_MESSAGE);
-		} else {
-			showNotification(ex.getMessage(), Notification.Type.ERROR_MESSAGE);
-		}
 	}
 
 	/**
@@ -224,6 +217,21 @@ public abstract class ProgressForm<T> extends BaseCustomComponent implements Pro
 	protected String getTitle() {
 		// overwrite in subclass if needed
 		return null;
+	}
+
+	/**
+	 * Generic handling of an exception - tries to extract the OCSRuntimeException if possible
+	 * 
+	 * @param ex
+	 *            the exception to handle
+	 */
+	protected void handleException(Exception ex) {
+		OCSRuntimeException r = extractRuntimeException(ex);
+		if (r != null) {
+			showNotification(r.getMessage(), Notification.Type.ERROR_MESSAGE);
+		} else {
+			showNotification(ex.getMessage(), Notification.Type.ERROR_MESSAGE);
+		}
 	}
 
 	/**

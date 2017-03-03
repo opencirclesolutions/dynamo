@@ -33,6 +33,7 @@ import com.ocs.dynamo.domain.model.AttributeSelectMode;
 import com.ocs.dynamo.domain.model.AttributeTextFieldMode;
 import com.ocs.dynamo.domain.model.AttributeType;
 import com.ocs.dynamo.domain.model.EntityModel;
+import com.ocs.dynamo.domain.model.NumberSelectMode;
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.MessageService;
@@ -50,9 +51,12 @@ import com.ocs.dynamo.ui.component.URLField;
 import com.ocs.dynamo.ui.composite.form.CollectionTable;
 import com.ocs.dynamo.ui.composite.form.FormOptions;
 import com.ocs.dynamo.ui.converter.ConverterFactory;
+import com.ocs.dynamo.ui.converter.IntToDoubleConverter;
+import com.ocs.dynamo.ui.converter.LongToDoubleConverter;
 import com.ocs.dynamo.ui.converter.WeekCodeConverter;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.ui.validator.URLValidator;
+import com.ocs.dynamo.utils.NumberUtils;
 import com.ocs.dynamo.utils.SystemPropertyUtils;
 import com.vaadin.data.Container;
 import com.vaadin.data.Container.Filter;
@@ -74,6 +78,7 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.DefaultFieldFactory;
 import com.vaadin.ui.Field;
+import com.vaadin.ui.Slider;
 import com.vaadin.ui.TableFieldFactory;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
@@ -506,6 +511,23 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 		if (AttributeTextFieldMode.TEXTAREA.equals(attributeModel.getTextFieldMode()) && !search) {
 			// text area field
 			field = new TextArea();
+		} else if ((NumberUtils.isLong(attributeModel.getType()) || NumberUtils.isInteger(attributeModel.getType()))
+		        && NumberSelectMode.SLIDER.equals(attributeModel.getNumberSelectMode())) {
+			Slider slider = new Slider(attributeModel.getDisplayName());
+
+			if (NumberUtils.isInteger(attributeModel.getType())) {
+				slider.setConverter(new IntToDoubleConverter());
+			} else {
+				slider.setConverter(new LongToDoubleConverter());
+			}
+
+			if (attributeModel.getMinValue() != null) {
+				slider.setMin(attributeModel.getMinValue());
+			}
+			if (attributeModel.getMaxValue() != null) {
+				slider.setMax(attributeModel.getMaxValue());
+			}
+			field = slider;
 		} else if (attributeModel.isWeek()) {
 			// special case - week field in a table
 			TextField tf = new TextField();

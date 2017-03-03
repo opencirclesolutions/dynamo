@@ -21,6 +21,7 @@ import java.lang.annotation.Target;
 import com.ocs.dynamo.domain.model.AttributeDateType;
 import com.ocs.dynamo.domain.model.AttributeSelectMode;
 import com.ocs.dynamo.domain.model.AttributeTextFieldMode;
+import com.ocs.dynamo.domain.model.NumberSelectMode;
 import com.ocs.dynamo.domain.model.VisibilityType;
 
 /**
@@ -108,6 +109,12 @@ public @interface Attribute {
 
 	/** @return whether this attribute allows search for multiple values (only for MASTER attributes) */
 	boolean multipleSearch() default false;
+
+	/**
+	 * 
+	 * @return
+	 */
+	NumberSelectMode numberSelectMode() default NumberSelectMode.TEXTFIELD;
 
 	/** @return is the numeric field a percentage */
 	boolean percentage() default false;

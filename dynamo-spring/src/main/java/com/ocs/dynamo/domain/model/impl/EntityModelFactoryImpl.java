@@ -956,6 +956,10 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 			if (!StringUtils.isEmpty(attribute.fileNameProperty())) {
 				model.setFileNameProperty(attribute.fileNameProperty());
 			}
+
+			if (attribute.numberSelectMode() != null) {
+				model.setNumberSelectMode(attribute.numberSelectMode());
+			}
 		}
 	}
 
