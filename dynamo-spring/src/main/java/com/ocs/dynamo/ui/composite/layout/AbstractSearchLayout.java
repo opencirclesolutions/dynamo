@@ -295,7 +295,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	 * 
 	 * @return
 	 */
-	protected Button constructEditButton() {
+	protected final Button constructEditButton() {
 		Button eb = new Button((!getFormOptions().isShowEditButton() || !isEditAllowed()) ? message("ocs.view")
 		        : message("ocs.edit"));
 		eb.addClickListener(new Button.ClickListener() {
@@ -315,20 +315,11 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	}
 
 	/**
-	 * Method that is used to construct any extra search fields. These will be added at the front of
-	 * the search form
-	 */
-	protected List<Component> constructExtraSearchFields() {
-		// overwrite in subclasses
-		return new ArrayList<>();
-	}
-
-	/**
 	 * Constructs the remove button
 	 * 
 	 * @return
 	 */
-	protected Button constructRemoveButton() {
+	protected final Button constructRemoveButton() {
 		Button rb = new RemoveButton() {
 
 			private static final long serialVersionUID = -7428844985367616649L;
@@ -353,7 +344,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	/**
 	 * Constructs the search layout
 	 */
-	public void constructSearchLayout() {
+	public final void constructSearchLayout() {
 		// construct table and set properties
 		getTableWrapper().getTable().setPageLength(getPageLength());
 		getTableWrapper().getTable().setSortEnabled(isSortEnabled());
@@ -427,7 +418,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	 * @param root
 	 *            the root component of the custom detail view
 	 */
-	protected void customDetailView(Component root) {
+	protected final void customDetailView(Component root) {
 		setCompositionRoot(root);
 	}
 
@@ -678,9 +669,9 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	 * @param propertyName
 	 *            the name of the property for which to refresh the label
 	 */
-	public void replaceLabel(String propertyName) {
+	public void refreshLabel(String propertyName) {
 		if (editForm != null) {
-			editForm.replaceLabel(propertyName);
+			editForm.refreshLabel(propertyName);
 		}
 	}
 
@@ -760,7 +751,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	public abstract void setSearchValue(String propertyId, Object value);
 
 	/**
-	 * Sets a predefined search value
+	 * Sets a predefined search value (upper and lower bound)
 	 * 
 	 * @param propertyId
 	 *            the name of the property for which to set a value

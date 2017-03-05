@@ -118,31 +118,10 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 		super(service, entityModel, formOptions, sortOrder, joins);
 	}
 
-	/**
-	 * Method that is called after a remove operation has been carried out
-	 */
-	protected void afterRemove() {
-		// do nothing
-	}
-
-	/**
-	 * Callback method that is called after a save operation has been carried out
-	 */
-	protected void afterSave() {
-		// do nothing
-	}
-
 	@Override
 	public void attach() {
 		super.attach();
 		build();
-	}
-
-	/**
-	 * Method that is called before a save operation is carried out
-	 */
-	protected void beforeSave() {
-		// do nothing
 	}
 
 	/**
@@ -196,7 +175,7 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 					// delegate the construction of a new item to the lazy
 					// query container
 					ID id = (ID) getContainer().addItem();
-					constructEntity(getEntityFromTable(id));
+					createEntity(getEntityFromTable(id));
 					getTableWrapper().getTable().setCurrentPageFirstItemId(id);
 				}
 			});
@@ -211,9 +190,7 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 				@Override
 				public void buttonClick(ClickEvent event) {
 					try {
-						beforeSave();
 						getContainer().commit();
-						afterSave();
 						// back to view mode when appropriate
 						if (getFormOptions().isOpenInViewMode()) {
 							toggleViewMode(true);
@@ -259,100 +236,12 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 	}
 
 	/**
-	 * Method that is called after a new row with a fresh entity is added to the table. Use this
-	 * method to perform initialization
-	 * 
-	 * @param entity
-	 *            the newly created entity that has to be initialized
-	 * @return the modified entity
-	 */
-	protected T constructEntity(T entity) {
-		return entity;
-	}
-
-	/**
 	 * Creates the filter used for searching
 	 * 
 	 * @return
 	 */
 	protected Filter constructFilter() {
 		return null;
-	}
-
-	@Override
-	protected BaseTableWrapper<ID, T> constructTableWrapper() {
-		ServiceResultsTableWrapper<ID, T> tableWrapper = new ServiceResultsTableWrapper<ID, T>(getService(),
-		        getEntityModel(), QueryType.ID_BASED, filter, getSortOrders(), getFormOptions().isTableExportAllowed(),
-		        getJoins()) {
-
-			@Override
-			protected void doConstructContainer(Container container) {
-				TabularEditLayout.this.doConstructContainer(container);
-			}
-
-			@Override
-			protected void onSelect(Object selected) {
-				setSelectedItems(selected);
-				checkButtonState(getSelectedItem());
-			}
-		};
-		tableWrapper.build();
-		return tableWrapper;
-	}
-
-	/**
-	 * This method does not work for this component since the creation of a new instance is
-	 * delegated to the container - use constructEntity instead
-	 */
-	@Override
-	protected T createEntity() {
-		throw new UnsupportedOperationException(
-		        "This method is not supported for this component - use constructEntity instead");
-	}
-
-	@Override
-	protected void detailsMode(T entity) {
-		// not needed
-	}
-
-	/**
-	 * Method that is called to remove an item
-	 */
-	protected void doRemove() {
-		getTableWrapper().getTable().removeItem(getSelectedItem().getId());
-	}
-
-	public Button getAddButton() {
-		return addButton;
-	}
-
-	public Button getCancelButton() {
-		return cancelButton;
-	}
-
-	@SuppressWarnings("unchecked")
-	protected ServiceContainer<ID, T> getContainer() {
-		return (ServiceContainer<ID, T>) getTableWrapper().getContainer();
-	}
-
-	public Button getEditButton() {
-		return editButton;
-	}
-
-	/**
-	 * Retrieves an entity with a certain ID from the lazy query container
-	 * 
-	 * @param id
-	 *            the ID of the entity
-	 * @return
-	 */
-	protected T getEntityFromTable(ID id) {
-		return VaadinUtils.getEntityFromContainer(getContainer(), id);
-	}
-
-	@Override
-	public int getPageLength() {
-		return pageLength;
 	}
 
 	/**
@@ -418,6 +307,94 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 			}
 		});
 		mainLayout.addComponent(getTableWrapper());
+	}
+
+	@Override
+	protected BaseTableWrapper<ID, T> constructTableWrapper() {
+		ServiceResultsTableWrapper<ID, T> tableWrapper = new ServiceResultsTableWrapper<ID, T>(getService(),
+		        getEntityModel(), QueryType.ID_BASED, filter, getSortOrders(), getFormOptions().isTableExportAllowed(),
+		        getJoins()) {
+
+			@Override
+			protected void doConstructContainer(Container container) {
+				TabularEditLayout.this.doConstructContainer(container);
+			}
+
+			@Override
+			protected void onSelect(Object selected) {
+				setSelectedItems(selected);
+				checkButtonState(getSelectedItem());
+			}
+		};
+		tableWrapper.build();
+		return tableWrapper;
+	}
+
+	/**
+	 * This method does not work for this component since the creation of a new instance is
+	 * delegated to the container - use constructEntity instead
+	 */
+	@Override
+	protected T createEntity() {
+		throw new UnsupportedOperationException(
+		        "This method is not supported for this component - use the parameterized method instead");
+	}
+
+	/**
+	 * Method that is called after a new row with a fresh entity is added to the table. Use this
+	 * method to perform initialization
+	 * 
+	 * @param entity
+	 *            the newly created entity that has to be initialized
+	 * @return the modified entity
+	 */
+	protected T createEntity(T entity) {
+		return entity;
+	}
+
+	@Override
+	protected void detailsMode(T entity) {
+		// not needed
+	}
+
+	/**
+	 * Method that is called to remove an item
+	 */
+	protected void doRemove() {
+		getTableWrapper().getTable().removeItem(getSelectedItem().getId());
+	}
+
+	public Button getAddButton() {
+		return addButton;
+	}
+
+	public Button getCancelButton() {
+		return cancelButton;
+	}
+
+	@SuppressWarnings("unchecked")
+	protected ServiceContainer<ID, T> getContainer() {
+		return (ServiceContainer<ID, T>) getTableWrapper().getContainer();
+	}
+
+	public Button getEditButton() {
+		return editButton;
+	}
+
+	/**
+	 * Retrieves an entity with a certain ID from the lazy query container
+	 * 
+	 * @param id
+	 *            the ID of the entity
+	 * @return
+	 */
+	protected T getEntityFromTable(ID id) {
+		return VaadinUtils.getEntityFromContainer(getContainer(), id);
+	}
+
+	@Override
+	public int getPageLength() {
+		return pageLength;
 	}
 
 	public boolean isViewmode() {

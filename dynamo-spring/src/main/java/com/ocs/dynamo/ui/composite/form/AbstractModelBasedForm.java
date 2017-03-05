@@ -20,14 +20,8 @@ import java.util.Map;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
-import com.ocs.dynamo.exception.OCSRuntimeException;
-import com.ocs.dynamo.ui.component.Cascadable;
 import com.ocs.dynamo.ui.composite.layout.BaseCustomComponent;
 import com.vaadin.data.Container.Filter;
-import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.data.Property.ValueChangeListener;
-import com.vaadin.data.util.filter.Compare;
-import com.vaadin.ui.Field;
 
 /**
  * Abstract base class for model based forms

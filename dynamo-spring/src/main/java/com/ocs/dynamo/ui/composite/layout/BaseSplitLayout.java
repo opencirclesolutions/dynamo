@@ -219,7 +219,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	/**
 	 * Constructs the remove button
 	 */
-	protected Button constructRemoveButton() {
+	protected final Button constructRemoveButton() {
 		Button rb = new RemoveButton() {
 
 			@Override
@@ -304,8 +304,8 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 				@Override
 				protected String[] getParentGroupHeaders() {
 					return BaseSplitLayout.this.getParentGroupHeaders();
-				}					
-				
+				}
+
 				@Override
 				protected boolean isEditAllowed() {
 					return BaseSplitLayout.this.isEditAllowed();
@@ -354,7 +354,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	 */
 	public void emptyDetailView() {
 		VerticalLayout vLayout = new VerticalLayout();
-		vLayout.addComponent(new Label(message("ocs.inline.select.item")));
+		vLayout.addComponent(new Label(message("ocs.select.item")));
 		detailLayout.replaceComponent(selectedDetailLayout, vLayout);
 		selectedDetailLayout = vLayout;
 	}
@@ -459,9 +459,9 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	 * @param propertyName
 	 *            the name of the property for which to replace the label
 	 */
-	public void replaceLabel(String propertyName) {
+	public void refreshLabel(String propertyName) {
 		if (editForm != null) {
-			editForm.replaceLabel(propertyName);
+			editForm.refreshLabel(propertyName);
 		}
 	}
 
