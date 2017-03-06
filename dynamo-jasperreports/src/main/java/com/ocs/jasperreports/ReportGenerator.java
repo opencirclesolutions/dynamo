@@ -13,21 +13,10 @@
  */
 package com.ocs.jasperreports;
 
-import java.io.File;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-
-import javax.inject.Inject;
-import javax.servlet.http.HttpSession;
-import javax.sql.DataSource;
-
+import com.ocs.dynamo.exception.OCSRuntimeException;
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRParameter;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
@@ -42,10 +31,19 @@ import net.sf.jasperreports.export.SimpleHtmlExporterOutput;
 import net.sf.jasperreports.export.SimpleHtmlReportConfiguration;
 import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
 import net.sf.jasperreports.j2ee.servlets.BaseHttpServlet;
-
 import org.springframework.stereotype.Service;
 
-import com.ocs.dynamo.exception.OCSRuntimeException;
+import javax.inject.Inject;
+import javax.servlet.http.HttpSession;
+import javax.sql.DataSource;
+import java.io.File;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 
 /**
  * Class to support the generation of jasperreports
@@ -144,7 +142,12 @@ public class ReportGenerator {
 		Map<String, Object> copyParameters = new HashMap<>(parameters);
 
 		copyParameters.put(Format.class.getSimpleName(), format.name());
-		copyParameters.put("REPORT_LOCALE", locale);
+
+		// only set when not explicit given earlier
+		if (!copyParameters.containsKey(JRParameter.REPORT_LOCALE)) {
+			copyParameters.put(JRParameter.REPORT_LOCALE, locale);
+		}
+
 		// Fill report
 		final JasperPrint jasperPrint = fillReport(jasperReport, copyParameters, jrDataSource);
 		// Export report
