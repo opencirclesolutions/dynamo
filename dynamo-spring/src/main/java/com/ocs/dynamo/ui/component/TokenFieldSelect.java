@@ -52,6 +52,8 @@ import com.vaadin.ui.HorizontalLayout;
 public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<ID>> extends
         QuickAddEntityField<ID, T, Collection<T>> implements Refreshable {
 
+	private boolean changing = false;
+
 	private final class BeanItemTokenizable implements Tokenizable {
 		private final T item;
 		private final String displayValue;
@@ -247,11 +249,14 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
 
 	@Override
 	protected void setInternalValue(Collection<T> values) {
+		changing = true;
 		super.setInternalValue(values);
+
 		container.removeAllItems();
 		if (values != null) {
 			container.addAll((Collection<T>) values);
 		}
+		changing = false;
 	}
 
 	/**
@@ -264,7 +269,9 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
 
 			@Override
 			public void containerItemSetChange(Container.ItemSetChangeEvent event) {
-				addTokens();
+				if (!changing) {
+					addTokens();
+				}
 			}
 		});
 	}
