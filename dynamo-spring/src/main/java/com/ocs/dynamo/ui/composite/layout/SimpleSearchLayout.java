@@ -125,6 +125,11 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 			protected List<Component> constructExtraSearchFields() {
 				return SimpleSearchLayout.this.constructExtraSearchFields();
 			}
+
+			@Override
+			protected void validateBeforeSearch() {
+				SimpleSearchLayout.this.validateBeforeSearch();
+			}
 		};
 		result.setNrOfColumns(getNrOfColumns());
 		result.setFieldEntityModels(getFieldEntityModels());
@@ -176,5 +181,13 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 	@Override
 	public void setSearchValue(String propertyId, Object value, Object auxValue) {
 		getSearchForm().setSearchValue(propertyId, value, auxValue);
+	}
+
+	/**
+	 * Validate before a search is carried out - if the search criteria are not correctly set, throw
+	 * an OCSValidationException to abort the search process
+	 */
+	public void validateBeforeSearch() {
+		// overwrite in subclasses
 	}
 }

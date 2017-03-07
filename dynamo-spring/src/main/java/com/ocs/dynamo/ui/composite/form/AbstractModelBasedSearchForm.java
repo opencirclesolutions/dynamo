@@ -22,6 +22,7 @@ import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.impl.ModelBasedFieldFactory;
+import com.ocs.dynamo.exception.OCSValidationException;
 import com.ocs.dynamo.filter.listener.FilterChangeEvent;
 import com.ocs.dynamo.filter.listener.FilterListener;
 import com.ocs.dynamo.ui.Refreshable;
@@ -39,6 +40,7 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Layout;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 
@@ -216,7 +218,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 				});
 			} else {
 				clear();
-				search();
+				search(true);
 			}
 		} else if (event.getButton() == toggleButton) {
 			toggle(!wrapperPanel.isVisible());
@@ -336,6 +338,22 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	}
 
 	/**
+	 * Checks whether a filter is set for a certain attribute
+	 * 
+	 * @param path
+	 *            the path to the attribute
+	 * @return
+	 */
+	public boolean isFilterSet(String path) {
+		for (Filter filter : currentFilters) {
+			if (filter.appliesToProperty(path)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
 	 * Searching is allowed when there are no required attributes or all required attributes are in
 	 * the composite filter.
 	 * 
@@ -407,9 +425,22 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	}
 
 	public boolean search() {
+		return search(false);
+	}
+
+	private boolean search(boolean skipValidation) {
 
 		if (!isSearchAllowed()) {
 			return false;
+		}
+
+		if (!skipValidation) {
+			try {
+				validateBeforeSearch();
+			} catch (OCSValidationException ex) {
+				showNotifification(ex.getErrors().get(0), Notification.Type.ERROR_MESSAGE);
+				return false;
+			}
 		}
 
 		if (searchable != null) {
@@ -443,6 +474,10 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 		}
 		wrapperPanel.setVisible(show);
 		afterSearchFieldToggle(wrapperPanel.isVisible());
+	}
+
+	protected void validateBeforeSearch() {
+		// overwrite in subclass
 	}
 
 }

@@ -612,6 +612,17 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	}
 
 	/**
+	 * Checks if a filter is set for a certain attribute
+	 * 
+	 * @param path
+	 *            the path to the attribute
+	 * @return
+	 */
+	public boolean isFilterSet(String path) {
+		return getSearchForm().isFilterSet(path);
+	}
+	
+	/**
 	 * Refreshes all lookup components
 	 */
 	@Override

@@ -274,9 +274,8 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 				protected void afterEditDone(boolean cancel, boolean newObject, T entity) {
 					// update the selected item so master and detail are in sync
 					// again
-					setSelectedItem(entity);
 					reload();
-					reselect(entity);
+					detailsMode(entity);
 					afterReload(entity);
 				}
 
