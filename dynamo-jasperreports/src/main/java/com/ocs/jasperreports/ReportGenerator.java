@@ -14,6 +14,8 @@
 package com.ocs.jasperreports;
 
 import com.ocs.dynamo.exception.OCSRuntimeException;
+import com.ocs.jasperreports.export.ExporterFactory;
+import com.ocs.jasperreports.renderer.HtmlSvgImageFontExporter;
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRParameter;
@@ -21,8 +23,6 @@ import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.export.HtmlExporter;
-import net.sf.jasperreports.engine.export.JRPdfExporter;
-import net.sf.jasperreports.engine.export.JRXlsExporter;
 import net.sf.jasperreports.engine.util.JRLoader;
 import net.sf.jasperreports.export.Exporter;
 import net.sf.jasperreports.export.SimpleExporterInput;
@@ -31,6 +31,7 @@ import net.sf.jasperreports.export.SimpleHtmlExporterOutput;
 import net.sf.jasperreports.export.SimpleHtmlReportConfiguration;
 import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
 import net.sf.jasperreports.j2ee.servlets.BaseHttpServlet;
+import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Service;
 
 import javax.inject.Inject;
@@ -54,16 +55,25 @@ import java.util.Map;
 public class ReportGenerator {
 
 	private DataSource dataSource;
-	private boolean showMargins = false;
 
 	@Inject
 	public ReportGenerator(DataSource dataSource) {
+		this();
 		this.dataSource = dataSource;
 	}
 
 	public enum Format {
-		HTML, PDF, EXCEL;
+		HTML("html"), PDF("pdf"), EXCEL("xlsx"), POWERPOINT("pptx"), DOC("docx");
 
+		private final String extension;
+
+		Format(String extension) {
+			this.extension = extension;
+		}
+
+		public String getExtension() {
+			return extension;
+		}
 	}
 
 	/**
@@ -148,12 +158,14 @@ public class ReportGenerator {
 			copyParameters.put(JRParameter.REPORT_LOCALE, locale);
 		}
 
+		final boolean showMargins = (boolean) ObjectUtils.defaultIfNull(parameters.get("showMargins"), Boolean.TRUE);
+
 		// Fill report
 		final JasperPrint jasperPrint = fillReport(jasperReport, copyParameters, jrDataSource);
 		// Export report
 		switch (format) {
 		case HTML:
-			return exportReportToHTML(jasperPrint, session);
+			return exportReportToHTML(jasperPrint, session, showMargins);
 		default:
 			// Other formats
 			exportReport(jasperPrint, format, outputStream);
@@ -170,17 +182,17 @@ public class ReportGenerator {
 	 * @param session
 	 *            The user session
 	 */
-	public StringBuilder exportReportToHTML(JasperPrint jasperPrint, HttpSession session) {
+	private StringBuilder exportReportToHTML(JasperPrint jasperPrint, HttpSession session, boolean showMargins) {
 		StringBuilder sb = new StringBuilder();
 		try {
-			HtmlExporter exporter = new HtmlExporter();
+			HtmlExporter exporter = new HtmlSvgImageFontExporter();
 			exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
 			SimpleHtmlExporterOutput out = new SimpleHtmlExporterOutput(sb);
 			out.setImageHandler(new UniqueWebHtmlResourceHandler("servlets/image?image={0}"));
 			exporter.setExporterOutput(out);
 
 			SimpleHtmlExporterConfiguration exporterConfig = new SimpleHtmlExporterConfiguration();
-			if (!isShowMargins()) {
+			if (!showMargins) {
 				exporterConfig.setBetweenPagesHtml("");
 				exporterConfig.setHtmlHeader("");
 				exporterConfig.setHtmlFooter("");
@@ -208,36 +220,21 @@ public class ReportGenerator {
 	 *
 	 * @param jasperPrint
 	 *            The jasperPrint
+	 * @param format
+	 *            Format to render
 	 * @param outputStream
 	 *            The output stream to which the report is written
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public void exportReport(JasperPrint jasperPrint, Format format, OutputStream outputStream) {
+	private void exportReport(JasperPrint jasperPrint, Format format, OutputStream outputStream) {
 		try {
-			Exporter exporter = null;
-			switch (format) {
-			case EXCEL:
-				exporter = new JRXlsExporter();
-				break;
-			default:
-				// PDF
-				exporter = new JRPdfExporter();
-				break;
-			}
+			Exporter exporter = ExporterFactory.getExporter(format);
 			exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
 			exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(outputStream));
 			exporter.exportReport();
 		} catch (JRException e) {
 			throw new OCSRuntimeException("Failed to export jasper report to PDF!", e);
 		}
-	}
-
-	public boolean isShowMargins() {
-		return showMargins;
-	}
-
-	public void setShowMargins(boolean showMargins) {
-		this.showMargins = showMargins;
 	}
 
 }
