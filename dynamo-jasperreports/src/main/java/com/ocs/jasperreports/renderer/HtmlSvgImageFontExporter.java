@@ -85,7 +85,7 @@ public class HtmlSvgImageFontExporter extends HtmlExporter {
 			// some browsers need td height so that height: 100% works on the div used for clipped images.
 			// we're using the height without paddings because that's closest to the HTML size model.
 			styleBuffer.append("height: ");
-			styleBuffer.append(toSizeUnit(availableImageHeight));
+			styleBuffer.append(toSizeUnit((float) availableImageHeight));
 			styleBuffer.append("; ");
 		}
 
@@ -314,9 +314,9 @@ public class HtmlSvgImageFontExporter extends HtmlExporter {
 					switch (scaleImage) {
 					case FILL_FRAME: {
 						writer.write(" style=\"width: ");
-						writer.write(toSizeUnit(availableImageWidth));
+						writer.write(toSizeUnit((float) availableImageWidth));
 						writer.write("; height: ");
-						writer.write(toSizeUnit(availableImageHeight));
+						writer.write(toSizeUnit((float) availableImageHeight));
 						writer.write("\"");
 
 						break;
@@ -351,9 +351,9 @@ public class HtmlSvgImageFontExporter extends HtmlExporter {
 						}
 
 						writer.write(" style=\"position: absolute; left:");
-						writer.write(toSizeUnit(positionLeft));
+						writer.write(toSizeUnit((float) positionLeft));
 						writer.write("; top: ");
-						writer.write(toSizeUnit(positionTop));
+						writer.write(toSizeUnit((float) positionTop));
 						// not setting width, height and clip as it doesn't seem needed plus it fixes clip for lazy images
 						writer.write(";\"");
 
@@ -376,11 +376,11 @@ public class HtmlSvgImageFontExporter extends HtmlExporter {
 
 							if (ratio > (double) availableImageWidth / (double) availableImageHeight) {
 								writer.write(" style=\"width: ");
-								writer.write(toSizeUnit(availableImageWidth));
+								writer.write(toSizeUnit((float) availableImageWidth));
 								writer.write("\"");
 							} else {
 								writer.write(" style=\"height: ");
-								writer.write(toSizeUnit(availableImageHeight));
+								writer.write(toSizeUnit((float) availableImageHeight));
 								writer.write("\"");
 							}
 						}
