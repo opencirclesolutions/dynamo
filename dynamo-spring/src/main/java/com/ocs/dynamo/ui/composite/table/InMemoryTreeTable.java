@@ -205,7 +205,13 @@ public abstract class InMemoryTreeTable<ID, U extends AbstractEntity<ID>, ID2, V
 
 				// update the sum columns on the parent level
 				for (String column : sumColumns) {
-					Number value = (Number) this.getItem(childId).getItemProperty(column).getValue();
+					Item item = this.getItem(childId);
+
+					Number value = null;
+					if (item != null) {
+						value = (Number) item.getItemProperty(column).getValue();
+					}
+
 					BigDecimal sum = sumMap.get(column);
 					sumMap.put(column, sum.add(value == null ? BigDecimal.ZERO : toBigDecimal(value)));
 				}
@@ -215,7 +221,10 @@ public abstract class InMemoryTreeTable<ID, U extends AbstractEntity<ID>, ID2, V
 			// set the sum on the parent level and update the grand total
 			for (String s : sumColumns) {
 				BigDecimal sum = sumMap.get(s);
-				this.getItem(parentId).getItemProperty(s).setValue(convertNumber(sum, s));
+				Item item = this.getItem(parentId);
+				if (item != null) {
+					item.getItemProperty(s).setValue(convertNumber(sum, s));
+				}
 				BigDecimal totalSum = totalSumMap.get(s);
 				totalSumMap.put(s, totalSum.add(sum));
 			}
