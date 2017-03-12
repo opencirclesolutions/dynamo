@@ -25,9 +25,9 @@ import com.vaadin.ui.Panel;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
+@UIScope
 @SpringUI()
 @SuppressWarnings("serial")
-@UIScope
 public class ApplicationUI extends UI {
 
      private MenuBar menu;
