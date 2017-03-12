@@ -29,7 +29,6 @@ import net.sf.jasperreports.export.SimpleExporterInput;
 import net.sf.jasperreports.export.SimpleHtmlExporterConfiguration;
 import net.sf.jasperreports.export.SimpleHtmlExporterOutput;
 import net.sf.jasperreports.export.SimpleHtmlReportConfiguration;
-import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
 import net.sf.jasperreports.j2ee.servlets.BaseHttpServlet;
 import org.apache.commons.lang.ObjectUtils;
 import org.springframework.stereotype.Service;
@@ -63,7 +62,7 @@ public class ReportGenerator {
 	}
 
 	public enum Format {
-		HTML("html"), PDF("pdf"), EXCEL("xlsx"), POWERPOINT("pptx"), DOC("docx");
+		HTML("html"), PDF("pdf"), EXCEL("xls"), POWERPOINT("pptx"), DOC("doc");
 
 		private final String extension;
 
@@ -228,9 +227,7 @@ public class ReportGenerator {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void exportReport(JasperPrint jasperPrint, Format format, OutputStream outputStream) {
 		try {
-			Exporter exporter = ExporterFactory.getExporter(format);
-			exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
-			exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(outputStream));
+			Exporter exporter = ExporterFactory.getExporter(format, jasperPrint, outputStream);
 			exporter.exportReport();
 		} catch (JRException e) {
 			throw new OCSRuntimeException("Failed to export jasper report to PDF!", e);

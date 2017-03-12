@@ -2,35 +2,50 @@ package com.ocs.jasperreports.export;
 
 import com.ocs.jasperreports.ReportGenerator;
 import net.sf.jasperreports.engine.DefaultJasperReportsContext;
+import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.export.JRPdfExporter;
-import net.sf.jasperreports.engine.export.ooxml.JRDocxExporter;
+import net.sf.jasperreports.engine.export.JRRtfExporter;
+import net.sf.jasperreports.engine.export.JRXlsExporter;
 import net.sf.jasperreports.engine.export.ooxml.JRPptxExporter;
-import net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter;
 import net.sf.jasperreports.export.Exporter;
-import net.sf.jasperreports.export.SimpleDocxExporterConfiguration;
-import net.sf.jasperreports.export.SimpleDocxReportConfiguration;
+import net.sf.jasperreports.export.SimpleExporterInput;
 import net.sf.jasperreports.export.SimplePdfExporterConfiguration;
 import net.sf.jasperreports.export.SimplePdfReportConfiguration;
 import net.sf.jasperreports.export.SimplePptxExporterConfiguration;
 import net.sf.jasperreports.export.SimplePptxReportConfiguration;
-import net.sf.jasperreports.export.SimpleXlsxExporterConfiguration;
-import net.sf.jasperreports.export.SimpleXlsxReportConfiguration;
+import net.sf.jasperreports.export.SimpleRtfExporterConfiguration;
+import net.sf.jasperreports.export.SimpleRtfReportConfiguration;
+import net.sf.jasperreports.export.SimpleXlsExporterConfiguration;
+import net.sf.jasperreports.export.SimpleXlsReportConfiguration;
+
+import java.io.OutputStream;
 
 public class ExporterFactory {
 
-	public static Exporter getExporter(ReportGenerator.Format format) {
+	@SuppressWarnings("unchecked")
+	public static Exporter getExporter(ReportGenerator.Format format, JasperPrint jasperPrint,
+			OutputStream outputStream) {
+		final Exporter exporter;
 		switch (format) {
 		case EXCEL:
-			return ExporterFactory.getExcelExporter();
+			exporter = ExporterFactory.getExcelExporter();
+			break;
 		case POWERPOINT:
-			return ExporterFactory.getPptxExporter();
+			exporter = ExporterFactory.getPptxExporter();
+			break;
 		case DOC:
-			return ExporterFactory.getDocxExporter();
+			exporter = ExporterFactory.getRtfExporter();
+			break;
 		default:
 			// PDF
-			return ExporterFactory.getPdfExporter();
+			exporter = ExporterFactory.getPdfExporter();
+			break;
 		}
+		exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+		exporter.setExporterOutput(new WriterOutputStreamExporterOutput(outputStream));
+
+		return exporter;
 	}
 
 	private static JRPptxExporter getPptxExporter() {
@@ -46,14 +61,14 @@ public class ExporterFactory {
 		return exporter;
 	}
 
-	private static JRDocxExporter getDocxExporter() {
+	private static JRRtfExporter getRtfExporter() {
 		final JasperReportsContext jasperReportsContext = DefaultJasperReportsContext.getInstance();
-		final JRDocxExporter exporter = new JRDocxExporter(jasperReportsContext);
+		final JRRtfExporter exporter = new JRRtfExporter(jasperReportsContext);
 
-		final SimpleDocxExporterConfiguration exporterConfiguration = new SimpleDocxExporterConfiguration();
+		final SimpleRtfExporterConfiguration exporterConfiguration = new SimpleRtfExporterConfiguration();
 		exporter.setConfiguration(exporterConfiguration);
 
-		final SimpleDocxReportConfiguration reportConfiguration = new SimpleDocxReportConfiguration();
+		final SimpleRtfReportConfiguration reportConfiguration = new SimpleRtfReportConfiguration();
 		exporter.setConfiguration(reportConfiguration);
 
 		return exporter;
@@ -72,14 +87,14 @@ public class ExporterFactory {
 		return exporter;
 	}
 
-	private static JRXlsxExporter getExcelExporter() {
+	private static JRXlsExporter getExcelExporter() {
 		final JasperReportsContext jasperReportsContext = DefaultJasperReportsContext.getInstance();
-		final JRXlsxExporter exporter = new JRXlsxExporter(jasperReportsContext);
+		final JRXlsExporter exporter = new JRXlsExporter(jasperReportsContext);
 
-		final SimpleXlsxExporterConfiguration exporterConfiguration = new SimpleXlsxExporterConfiguration();
+		final SimpleXlsExporterConfiguration exporterConfiguration = new SimpleXlsExporterConfiguration();
 		exporter.setConfiguration(exporterConfiguration);
 
-		final SimpleXlsxReportConfiguration reportConfiguration = new SimpleXlsxReportConfiguration();
+		final SimpleXlsReportConfiguration reportConfiguration = new SimpleXlsReportConfiguration();
 		exporter.setConfiguration(reportConfiguration);
 
 		return exporter;
