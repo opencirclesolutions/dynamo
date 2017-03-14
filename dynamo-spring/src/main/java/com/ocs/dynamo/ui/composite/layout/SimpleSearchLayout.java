@@ -112,6 +112,11 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 			private static final long serialVersionUID = 8929442625027442714L;
 
 			@Override
+			protected void afterSearchPerformed() {
+				SimpleSearchLayout.this.afterSearchPerformed();
+			}
+			
+			@Override
 			protected void afterSearchFieldToggle(boolean visible) {
 				SimpleSearchLayout.this.afterSearchFieldToggle(visible);
 			}
@@ -183,11 +188,5 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 		getSearchForm().setSearchValue(propertyId, value, auxValue);
 	}
 
-	/**
-	 * Validate before a search is carried out - if the search criteria are not correctly set, throw
-	 * an OCSValidationException to abort the search process
-	 */
-	public void validateBeforeSearch() {
-		// overwrite in subclasses
-	}
+
 }

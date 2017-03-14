@@ -25,6 +25,7 @@ import com.ocs.dynamo.dao.query.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
+import com.ocs.dynamo.exception.OCSValidationException;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.composite.form.AbstractModelBasedSearchForm;
@@ -46,6 +47,7 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
 
 /**
@@ -268,17 +270,20 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 					public void buttonClick(ClickEvent event) {
 						if (!searchLayoutConstructed) {
 							// construct search screen if it is not there yet
-							constructSearchLayout();
 
-							searchResultsLayout.addComponent(getTableWrapper());
-							getSearchForm().setSearchable(getTableWrapper());
+							try {
+								validateBeforeSearch();
+								constructSearchLayout();
 
-							searchResultsLayout.removeComponent(noSearchYetLabel);
-							searchLayoutConstructed = true;
-							search();
-						} else {
-							// otherwise, only fire the callback method
-							afterSearchPerformed();
+								searchResultsLayout.addComponent(getTableWrapper());
+								getSearchForm().setSearchable(getTableWrapper());
+
+								searchResultsLayout.removeComponent(noSearchYetLabel);
+								searchLayoutConstructed = true;
+								afterSearchPerformed();
+							} catch (OCSValidationException ex) {
+								showNotifification(ex.getErrors().get(0), Notification.Type.ERROR_MESSAGE);
+							}
 						}
 					}
 				});
@@ -378,6 +383,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	 * Constructs the search layout
 	 */
 	public void constructSearchLayout() {
+
 		// construct table and set properties
 		getTableWrapper().getTable().setPageLength(getPageLength());
 		getTableWrapper().getTable().setSortEnabled(isSortEnabled());
@@ -621,7 +627,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	public boolean isFilterSet(String path) {
 		return getSearchForm().isFilterSet(path);
 	}
-	
+
 	/**
 	 * Refreshes all lookup components
 	 */
@@ -679,7 +685,6 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 		if (searched) {
 			getTableWrapper().getTable().select(null);
 			setSelectedItem(null);
-			afterSearchPerformed();
 		}
 	}
 
@@ -758,4 +763,11 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	 */
 	public abstract void setSearchValue(String propertyId, Object value, Object auxValue);
 
+	/**
+	 * Validate before a search is carried out - if the search criteria are not correctly set, throw
+	 * an OCSValidationException to abort the search process
+	 */
+	public void validateBeforeSearch() {
+		// overwrite in subclasses
+	}
 }

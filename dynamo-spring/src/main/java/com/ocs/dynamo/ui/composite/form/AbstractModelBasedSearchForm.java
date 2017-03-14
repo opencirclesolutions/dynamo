@@ -132,6 +132,10 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 		this.searchable = searchable;
 	}
 
+	protected void afterSearchPerformed() {
+		// overwrite in subclasses
+	}
+
 	/**
 	 * Callback method that is called when the user toggles the visibility of the search form
 	 * 
@@ -352,7 +356,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Searching is allowed when there are no required attributes or all required attributes are in
 	 * the composite filter.
@@ -391,6 +395,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 		if (event.getNewFilter() != null) {
 			currentFilters.add(event.getNewFilter());
 		}
+
 		searchButton.setEnabled(isSearchAllowed());
 	}
 
@@ -428,23 +433,26 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 		return search(false);
 	}
 
-	private boolean search(boolean skipValidation) {
+	public boolean search(boolean skipValidation) {
 
 		if (!isSearchAllowed()) {
 			return false;
 		}
 
-		if (!skipValidation) {
-			try {
-				validateBeforeSearch();
-			} catch (OCSValidationException ex) {
-				showNotifification(ex.getErrors().get(0), Notification.Type.ERROR_MESSAGE);
-				return false;
-			}
-		}
-
 		if (searchable != null) {
+			if (!skipValidation) {
+				try {
+					validateBeforeSearch();
+				} catch (OCSValidationException ex) {
+					showNotifification(ex.getErrors().get(0), Notification.Type.ERROR_MESSAGE);
+					return false;
+				}
+			}
+
 			searchable.search(extractFilter());
+			if (!skipValidation) {
+				afterSearchPerformed();
+			}
 			return true;
 		}
 		return false;

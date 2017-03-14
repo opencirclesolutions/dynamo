@@ -101,6 +101,11 @@ public class FlexibleSearchLayout<ID extends Serializable, T extends AbstractEnt
 			private static final long serialVersionUID = 8929442625027442714L;
 
 			@Override
+			protected void afterSearchPerformed() {
+				FlexibleSearchLayout.this.afterSearchPerformed();
+			}
+
+			@Override
 			protected void afterSearchFieldToggle(boolean visible) {
 				FlexibleSearchLayout.this.afterSearchFieldToggle(visible);
 			}
