@@ -29,6 +29,10 @@ public final class SystemPropertyUtils {
 
 	private static final int DEFAULT_LOOKUP_FIELD_MAX_ITEMS = 3;
 
+	private static final String DEFAULT_TRUE_REPRESENTATION = "true";
+
+	private static final String DEFAULT_FALSE_REPRESENTATION = "false";
+
 	private SystemPropertyUtils() {
 		// default constructor
 	}
@@ -177,6 +181,34 @@ public final class SystemPropertyUtils {
 	 */
 	public static boolean useThousandsGroupingInEditMode() {
 		return Boolean.getBoolean(DynamoConstants.SP_THOUSAND_GROUPING);
+	}
+
+	/**
+	 * @return default true representation
+	 */
+	public static String getDefaultTrueRepresentation(){
+		return System.getProperty(DynamoConstants.SP_DEFAULT_TRUE_REPRESENTATION, DEFAULT_TRUE_REPRESENTATION);
+	}
+
+	/**
+	 * @return default false representation
+	 */
+	public static String getDefaultFalseRepresentation(){
+		return System.getProperty(DynamoConstants.SP_DEFAULT_FALSE_REPRESENTATION, DEFAULT_FALSE_REPRESENTATION);
+	}
+
+	/**
+	 * @return default search case sensitive. False if not specified
+	 */
+	public static boolean getDefaultSearchCaseSensitive(){
+		return Boolean.getBoolean(DynamoConstants.SP_DEFAULT_SEARCH_CASE_SENSITIVE);
+	}
+
+	/**
+	 * @return default search prefix only. False if not specified
+	 */
+	public static boolean getDefaultSearchPrefixOnly(){
+		return Boolean.getBoolean(DynamoConstants.SP_DEFAULT_SEARCH_PREFIX_ONLY);
 	}
 
 }

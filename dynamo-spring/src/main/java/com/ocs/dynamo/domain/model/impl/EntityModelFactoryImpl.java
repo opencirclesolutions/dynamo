@@ -147,8 +147,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 			model.setSortable(true);
 			model.setComplexEditable(false);
 			model.setPrecision(SystemPropertyUtils.getDefaultDecimalPrecision());
-			model.setSearchCaseSensitive(false);
-			model.setSearchPrefixOnly(false);
+			model.setSearchCaseSensitive(SystemPropertyUtils.getDefaultSearchCaseSensitive());
+			model.setSearchPrefixOnly(SystemPropertyUtils.getDefaultSearchPrefixOnly());
 			model.setUrl(false);
 			model.setUseThousandsGrouping(true);
 
@@ -190,8 +190,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 			        && (AttributeType.BASIC.equals(model.getAttributeType())));
 
 			if (getMessageService() != null) {
-				model.setTrueRepresentation(getMessageService().getMessage("ocs.true"));
-				model.setFalseRepresentation(getMessageService().getMessage("ocs.false"));
+				model.setTrueRepresentation(SystemPropertyUtils.getDefaultTrueRepresentation());
+				model.setFalseRepresentation(SystemPropertyUtils.getDefaultFalseRepresentation());
 			}
 
 			// by default, use a combo box to look up
