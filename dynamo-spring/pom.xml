@@ -68,6 +68,10 @@
             <groupId>org.vaadin.addons</groupId>
             <artifactId>extended-token-field</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.vaadin.addons</groupId>
+            <artifactId>stepper</artifactId>
+        </dependency>
 
         <!-- Spring Framework -->
         <dependency>

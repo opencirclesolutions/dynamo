@@ -137,6 +137,7 @@
 		<!-- Make sure you are using the latest version here. -->
 		<org.sonatype.plugins.version>1.6.7</org.sonatype.plugins.version>
 		<vaadin.extended-token-field.version>0.2.0</vaadin.extended-token-field.version>
+		<vaadin.stepper.version>2.3.0</vaadin.stepper.version>
 	</properties>
 
 	<dependencyManagement>
@@ -187,6 +188,11 @@
 				<groupId>org.vaadin.addons</groupId>
 				<artifactId>extended-token-field</artifactId>
 				<version>${vaadin.extended-token-field.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.vaadin.addons</groupId>
+				<artifactId>stepper</artifactId>
+				<version>${vaadin.stepper.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.tltv.gantt</groupId>
