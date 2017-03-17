@@ -20,6 +20,10 @@ public final class MathUtil {
 
 	public static final BigDecimal HUNDRED = new BigDecimal(100);
 
+	private MathUtil() {
+		// hidden constructor
+	}
+	
 	/**
 	 * Divides the first argument by the second argument, then converts the result to a percentage
 	 * 
@@ -80,6 +84,5 @@ public final class MathUtil {
 		return x == null ? 0 : x;
 	}
 
-	private MathUtil() {
-	}
+
 }

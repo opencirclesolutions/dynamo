@@ -688,6 +688,10 @@ public class AttributeModelImpl implements AttributeModel {
 		return ReflectionToStringBuilder.toStringExclude(this, "entityModel");
 	}
 
+<<<<<<< HEAD
+=======
+	@Override
+>>>>>>> master
 	public NumberSelectMode getNumberSelectMode() {
 		return numberSelectMode;
 	}

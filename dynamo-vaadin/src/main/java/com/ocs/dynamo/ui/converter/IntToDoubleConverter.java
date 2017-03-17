@@ -1,9 +1,12 @@
+<<<<<<< HEAD
 package com.ocs.dynamo.ui.converter;
 
 import java.util.Locale;
 
 import com.vaadin.data.util.converter.Converter;
 
+=======
+>>>>>>> master
 /*
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -17,13 +20,26 @@ import com.vaadin.data.util.converter.Converter;
  See the License for the specific language governing permissions and
  limitations under the License.
  */
+<<<<<<< HEAD
+=======
+package com.ocs.dynamo.ui.converter;
+
+import java.util.Locale;
+
+import com.vaadin.data.util.converter.Converter;
+
+>>>>>>> master
 public class IntToDoubleConverter implements Converter<Double, Integer> {
 
 	private static final long serialVersionUID = -7643776654167662622L;
 
 	@Override
+<<<<<<< HEAD
 	public Integer convertToModel(Double value, Class<? extends Integer> targetType, Locale locale)
 	        throws com.vaadin.data.util.converter.Converter.ConversionException {
+=======
+	public Integer convertToModel(Double value, Class<? extends Integer> targetType, Locale locale) {
+>>>>>>> master
 		if (value == null) {
 			return null;
 		}
@@ -31,8 +47,12 @@ public class IntToDoubleConverter implements Converter<Double, Integer> {
 	}
 
 	@Override
+<<<<<<< HEAD
 	public Double convertToPresentation(Integer value, Class<? extends Double> targetType, Locale locale)
 	        throws com.vaadin.data.util.converter.Converter.ConversionException {
+=======
+	public Double convertToPresentation(Integer value, Class<? extends Double> targetType, Locale locale) {
+>>>>>>> master
 		if (value == null) {
 			return null;
 		}

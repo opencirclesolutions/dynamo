@@ -86,6 +86,11 @@ public class FlexibleSearchLayout<ID extends Serializable, T extends AbstractEnt
 			}
 
 			@Override
+			protected void afterSearchPerformed() {
+				FlexibleSearchLayout.this.afterSearchPerformed();
+			}
+			
+			@Override
 			protected Field<?> constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel) {
 				return FlexibleSearchLayout.this.constructCustomField(entityModel, attributeModel, false, true);
 			}

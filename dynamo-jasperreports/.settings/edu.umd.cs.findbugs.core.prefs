@@ -1,5 +1,9 @@
 #FindBugs User Preferences
+<<<<<<< HEAD
 #Sat Feb 25 14:14:26 CET 2017
+=======
+#Fri Mar 17 11:34:45 CET 2017
+>>>>>>> master
 detector_threshold=2
 effort=max
 filter_settings=Medium|BAD_PRACTICE,CORRECTNESS,EXPERIMENTAL,I18N,MALICIOUS_CODE,MT_CORRECTNESS,PERFORMANCE,SECURITY,STYLE|false|15

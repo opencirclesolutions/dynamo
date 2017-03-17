@@ -22,8 +22,12 @@ public class LongToDoubleConverter implements Converter<Double, Long> {
 	private static final long serialVersionUID = 8666806617896024450L;
 
 	@Override
+<<<<<<< HEAD
 	public Long convertToModel(Double value, Class<? extends Long> targetType, Locale locale)
 	        throws com.vaadin.data.util.converter.Converter.ConversionException {
+=======
+	public Long convertToModel(Double value, Class<? extends Long> targetType, Locale locale) {
+>>>>>>> master
 		if (value == null) {
 			return null;
 		}
@@ -31,8 +35,12 @@ public class LongToDoubleConverter implements Converter<Double, Long> {
 	}
 
 	@Override
+<<<<<<< HEAD
 	public Double convertToPresentation(Long value, Class<? extends Double> targetType, Locale locale)
 	        throws com.vaadin.data.util.converter.Converter.ConversionException {
+=======
+	public Double convertToPresentation(Long value, Class<? extends Double> targetType, Locale locale) {
+>>>>>>> master
 		if (value == null) {
 			return null;
 		}

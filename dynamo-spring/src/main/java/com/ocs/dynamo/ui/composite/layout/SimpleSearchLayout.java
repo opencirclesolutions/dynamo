@@ -102,6 +102,11 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 			}
 
 			@Override
+			protected void afterSearchPerformed() {
+				SimpleSearchLayout.this.afterSearchPerformed();
+			}
+			
+			@Override
 			protected Field<?> constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel) {
 				return SimpleSearchLayout.this.constructCustomField(entityModel, attributeModel, false, true);
 			}

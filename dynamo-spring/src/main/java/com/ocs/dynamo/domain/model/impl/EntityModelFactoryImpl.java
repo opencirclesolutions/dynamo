@@ -1006,7 +1006,11 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 
 			if (filter != null) {
 				model.addCascade(msg, filter, mode == null ? CascadeMode.BOTH : CascadeMode.valueOf(mode));
+<<<<<<< HEAD
 			} else if (filter == null) {
+=======
+			} else {
+>>>>>>> master
 				throw new OCSRuntimeException("Incomplete cascade definition for " + model.getPath());
 			}
 

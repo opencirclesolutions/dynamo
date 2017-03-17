@@ -14,7 +14,6 @@
 package com.ocs.dynamo.ui.composite.layout;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -24,6 +23,7 @@ import com.ocs.dynamo.dao.query.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
+import com.ocs.dynamo.exception.OCSValidationException;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.composite.form.AbstractModelBasedSearchForm;
@@ -46,6 +46,7 @@ import com.vaadin.ui.Field;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Layout;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
 
 /**
@@ -248,18 +249,20 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 					public void buttonClick(ClickEvent event) {
 						if (!searchLayoutConstructed) {
 							// construct search screen if it is not there yet
-							constructSearchLayout();
 
-							searchResultsLayout.addComponent(getTableWrapper());
-							getSearchForm().setSearchable(getTableWrapper());
+							try {
+								validateBeforeSearch();
+								constructSearchLayout();
 
-							searchResultsLayout.removeComponent(noSearchYetLabel);
-							searchLayoutConstructed = true;
-							search();
-						} else {
-							// otherwise, only fire the callback method (the actual search is
-							// already carried out elsewhere)
-							afterSearchPerformed();
+								searchResultsLayout.addComponent(getTableWrapper());
+								getSearchForm().setSearchable(getTableWrapper());
+
+								searchResultsLayout.removeComponent(noSearchYetLabel);
+								searchLayoutConstructed = true;
+								afterSearchPerformed();
+							} catch (OCSValidationException ex) {
+								showNotifification(ex.getErrors().get(0), Notification.Type.ERROR_MESSAGE);
+							}
 						}
 					}
 				});
@@ -446,8 +449,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 				options.setShowEditButton(true);
 			} else {
 				// read-only mode
-				options.setOpenInViewMode(true);
-				options.setShowEditButton(false);
+				options.setOpenInViewMode(true).setShowEditButton(false);
 			}
 
 			if (options.isOpenInViewMode() || !isEditAllowed()) {
@@ -683,7 +685,6 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 		if (searched) {
 			getTableWrapper().getTable().select(null);
 			setSelectedItem(null);
-			afterSearchPerformed();
 		}
 	}
 

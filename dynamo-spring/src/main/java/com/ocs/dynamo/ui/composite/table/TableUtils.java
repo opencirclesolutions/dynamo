@@ -13,14 +13,6 @@
  */
 package com.ocs.dynamo.ui.composite.table;
 
-import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.Locale;
-
-import org.springframework.util.StringUtils;
-
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeDateType;
 import com.ocs.dynamo.domain.model.AttributeModel;
@@ -36,6 +28,13 @@ import com.ocs.dynamo.utils.ClassUtils;
 import com.vaadin.data.Property;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.UI;
+import org.springframework.util.StringUtils;
+
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.Locale;
 
 /**
  * Several table related functions to reuse on both Table and TreeTable subclasses.
@@ -130,7 +129,7 @@ public final class TableUtils {
 	 * @param value
 	 * @return
 	 */
-	public static <T> String formatPropertyValue(EntityModelFactory entityModelFactory, EntityModel<T> entityModel,
+	public static String formatPropertyValue(EntityModelFactory entityModelFactory, EntityModel<?> entityModel,
 	        MessageService messageService, Object colId, Object value) {
 		return formatPropertyValue(null, entityModelFactory, entityModel, messageService, colId, value,
 		        VaadinUtils.getLocale());
@@ -147,8 +146,8 @@ public final class TableUtils {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T> String formatPropertyValue(Table table, EntityModelFactory entityModelFactory,
-	        EntityModel<T> entityModel, MessageService messageService, Object colId, Object value, Locale locale) {
+	public static String formatPropertyValue(Table table, EntityModelFactory entityModelFactory,
+	        EntityModel<?> entityModel, MessageService messageService, Object colId, Object value, Locale locale) {
 		if (value != null) {
 			AttributeModel model = entityModel.getAttributeModel((String) colId);
 			if (model != null) {

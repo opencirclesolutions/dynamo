@@ -89,15 +89,14 @@ public class FilterGroup {
 	 * @param auxField
 	 *            the auxiliary filter field
 	 */
-	@SuppressWarnings("unchecked")
 	public FilterGroup(AttributeModel attributeModel, String propertyId, FilterType filterType,
 	        Component filterComponent, Field<?> field, Field<?> auxField) {
 		this.attributeModel = attributeModel;
 		this.propertyId = propertyId;
 		this.filterType = filterType;
 		this.filterComponent = filterComponent;
-		this.field = (Field<Object>) field;
-		this.auxField = (Field<Object>) auxField;
+		this.field = field;
+		this.auxField = auxField;
 
 		// respond to a change of the main field
 		field.addValueChangeListener(new ValueChangeListener() {

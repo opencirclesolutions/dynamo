@@ -133,6 +133,13 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	}
 
 	/**
+	 * Callback method that is called after a successfull search has been performed
+	 */
+	protected void afterSearchPerformed() {
+		// override in subclasses
+	}
+
+	/**
 	 * Callback method that is called when the user toggles the visibility of the search form
 	 * 
 	 * @param visible
@@ -437,22 +444,31 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 		return search(false);
 	}
 
+	/**
+	 * Carries out a search
+	 * 
+	 * @param skipValidation
+	 *            whether to skip validation before searching
+	 * @return
+	 */
 	private boolean search(boolean skipValidation) {
 		if (!isSearchAllowed()) {
 			return false;
 		}
 
-		if (!skipValidation) {
-			try {
-				validateBeforeSearch();
-			} catch (OCSValidationException ex) {
-				showNotifification(ex.getErrors().get(0), Notification.Type.ERROR_MESSAGE);
-				return false;
-			}
-		}
-
 		if (searchable != null) {
+			if (!skipValidation) {
+				try {
+					validateBeforeSearch();
+				} catch (OCSValidationException ex) {
+					showNotifification(ex.getErrors().get(0), Notification.Type.ERROR_MESSAGE);
+					return false;
+				}
+			}
 			searchable.search(extractFilter());
+			if (!skipValidation) {
+				afterSearchPerformed();
+			}
 			return true;
 		}
 		return false;

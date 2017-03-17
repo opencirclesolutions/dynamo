@@ -148,6 +148,7 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 		for (final AttributeModel am : getEntityModel().getCascadeAttributeModels()) {
 			if (am.isSearchable()) {
 				Field<?> field = groups.get(am.getPath()).getField();
+<<<<<<< HEAD
 				if (field != null) {
 					field.addValueChangeListener(new ValueChangeListener() {
 
@@ -177,6 +178,19 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 						}
 					});
 				}
+=======
+				field.addValueChangeListener(new ValueChangeListener() {
+
+					private static final long serialVersionUID = -756705572024043514L;
+
+					@Override
+					public void valueChange(ValueChangeEvent event) {
+						for (String cascadePath : am.getCascadeAttributes()) {
+							handleCascade(event, am, cascadePath);
+						}
+					}
+				});
+>>>>>>> master
 			}
 		}
 	}
@@ -359,6 +373,35 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 
 	public int getNrOfColumns() {
 		return nrOfColumns;
+	}
+
+	/**
+	 * Handles a cascade event
+	 * 
+	 * @param event
+	 *            the event that triggered the cascade
+	 * @param am
+	 *            the attribute model of the property that triggered the cascade
+	 * @param cascadePath
+	 *            the path to the property that is the target of the cascade
+	 */
+	private void handleCascade(ValueChangeEvent event, AttributeModel am, String cascadePath) {
+		CascadeMode cm = am.getCascadeMode(cascadePath);
+		if (CascadeMode.BOTH.equals(cm) || CascadeMode.SEARCH.equals(cm)) {
+			Field<?> cascadeField = groups.get(cascadePath).getField();
+			if (cascadeField instanceof Cascadable) {
+				Cascadable ca = (Cascadable) cascadeField;
+				if (event.getProperty().getValue() == null) {
+					ca.clearAdditionalFilter();
+				} else {
+					ca.setAdditionalFilter(new Compare.Equal(am.getCascadeFilterPath(cascadePath), event.getProperty()
+					        .getValue()));
+				}
+			} else {
+				// field not found or does not support cascading
+				throw new OCSRuntimeException("Cannot setup cascading from " + am.getPath() + " to " + cascadePath);
+			}
+		}
 	}
 
 	/**

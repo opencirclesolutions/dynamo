@@ -34,8 +34,12 @@ public class BigDecimalToDoubleConverter implements Converter<Double, BigDecimal
 	}
 
 	@Override
+<<<<<<< HEAD
 	public BigDecimal convertToModel(Double value, Class<? extends BigDecimal> targetType, Locale locale)
 	        throws com.vaadin.data.util.converter.Converter.ConversionException {
+=======
+	public BigDecimal convertToModel(Double value, Class<? extends BigDecimal> targetType, Locale locale) {
+>>>>>>> master
 		if (value == null) {
 			return null;
 		}
@@ -43,8 +47,12 @@ public class BigDecimalToDoubleConverter implements Converter<Double, BigDecimal
 	}
 
 	@Override
+<<<<<<< HEAD
 	public Double convertToPresentation(BigDecimal value, Class<? extends Double> targetType, Locale locale)
 	        throws com.vaadin.data.util.converter.Converter.ConversionException {
+=======
+	public Double convertToPresentation(BigDecimal value, Class<? extends Double> targetType, Locale locale) {
+>>>>>>> master
 		if (value == null) {
 			return null;
 		}
