@@ -13,16 +13,8 @@
  */
 package com.ocs.dynamo.ui.component;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-
 import com.explicatis.ext_token_field.ExtTokenField;
 import com.explicatis.ext_token_field.Tokenizable;
-import com.explicatis.ext_token_field.events.TokenRemovedEvent;
-import com.explicatis.ext_token_field.events.TokenRemovedListener;
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
@@ -40,6 +32,12 @@ import com.vaadin.shared.ui.combobox.FilteringMode;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
 
 /**
  * A multiple select component that displays tags/tokens to indicate which values are selected
@@ -178,14 +176,11 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
 	 */
 	@SuppressWarnings("unchecked")
 	private void attachTokenFieldValueChange() {
-		extTokenField.addTokenRemovedListener(new TokenRemovedListener() {
-			@Override
-			public void tokenRemovedEvent(TokenRemovedEvent event) {
-				final BeanItemTokenizable tokenizable = (BeanItemTokenizable) event.getTokenizable();
-				container.removeItem(tokenizable.getItem());
-				copyValueFromContainer();
-			}
-		});
+		extTokenField.addTokenRemovedListener(event -> {
+            final BeanItemTokenizable tokenizable = (BeanItemTokenizable) event.getTokenizable();
+            container.removeItem(tokenizable.getItem());
+            copyValueFromContainer();
+        });
 	}
 
 	@Override

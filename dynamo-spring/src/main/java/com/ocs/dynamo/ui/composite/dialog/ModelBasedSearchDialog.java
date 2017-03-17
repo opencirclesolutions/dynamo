@@ -13,11 +13,6 @@
  */
 package com.ocs.dynamo.ui.composite.dialog;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.dao.query.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
@@ -34,6 +29,11 @@ import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.VerticalLayout;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * A dialog that contains a search form based on the Entity Model
@@ -115,7 +115,7 @@ public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractE
 		super(true);
 		this.service = service;
 		this.entityModel = entityModel;
-		this.sortOrders = sortOrders != null ? sortOrders : new ArrayList<SortOrder>();
+		this.sortOrders = sortOrders != null ? sortOrders : new ArrayList<>();
 		this.filters = filters;
 		this.multiSelect = multiSelect;
 		this.joins = joins;

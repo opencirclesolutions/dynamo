@@ -13,16 +13,6 @@
  */
 package com.ocs.dynamo.ui.composite.table;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-
-import junitx.util.PrivateAccessor;
-
-import org.junit.Assert;
-import org.junit.Test;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-
 import com.google.common.collect.Lists;
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
@@ -32,9 +22,16 @@ import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.service.TestEntityService;
 import com.ocs.dynamo.test.BaseMockitoTest;
 import com.ocs.dynamo.test.MockUtil;
-import com.vaadin.data.sort.SortOrder;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.ui.Table;
+import junitx.util.PrivateAccessor;
+import org.junit.Assert;
+import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
 
 public class ModelBasedTableTest extends BaseMockitoTest {
 
@@ -84,8 +81,8 @@ public class ModelBasedTableTest extends BaseMockitoTest {
 		TestEntity entity = new TestEntity();
 
 		EntityModel<TestEntity> model = entityModelFactory.getModel(TestEntity.class);
-		FixedTableWrapper<Integer, TestEntity> wrapper = new FixedTableWrapper<Integer, TestEntity>(service, model,
-		        Lists.newArrayList(entity), new ArrayList<SortOrder>(), false);
+		FixedTableWrapper<Integer, TestEntity> wrapper = new FixedTableWrapper<>(service, model,
+				Lists.newArrayList(entity), new ArrayList<>(), false);
 		wrapper.build();
 
 		Table table = wrapper.getTable();

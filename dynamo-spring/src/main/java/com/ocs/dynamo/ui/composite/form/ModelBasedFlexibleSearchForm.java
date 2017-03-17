@@ -13,21 +13,6 @@
  */
 package com.ocs.dynamo.ui.composite.form;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.StringUtils;
-
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
@@ -56,6 +41,18 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Layout;
+import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * 
@@ -184,13 +181,7 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 
 			// find out which attributes can be search on and sort them in alphabetical name
 			List<AttributeModel> filteredModels = iterate(getEntityModel().getAttributeModels());
-			Collections.sort(filteredModels, new Comparator<AttributeModel>() {
-
-				@Override
-				public int compare(AttributeModel o1, AttributeModel o2) {
-					return o1.getDisplayName().compareToIgnoreCase(o2.getDisplayName());
-				}
-			});
+			filteredModels.sort((o1, o2) -> o1.getDisplayName().compareToIgnoreCase(o2.getDisplayName()));
 
 			for (AttributeModel a : filteredModels) {
 				boolean mayAdd = !a.isRequiredForSearching() || !hasFilter(a);

@@ -1,17 +1,16 @@
 package com.ocs.dynamo.importer.impl.template;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.junit.Assert;
-import org.junit.Test;
-import org.mockito.Mock;
-
 import com.ocs.dynamo.importer.impl.BaseCsvImporter;
 import com.ocs.dynamo.importer.impl.BaseTextImporter;
 import com.ocs.dynamo.importer.template.TextImportTemplate;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.test.BaseMockitoTest;
+import org.junit.Assert;
+import org.junit.Test;
+import org.mockito.Mock;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class TextImportTemplateTest extends BaseMockitoTest {
 
@@ -22,7 +21,7 @@ public class TextImportTemplateTest extends BaseMockitoTest {
 
 	@Test
 	public void testBasic() {
-		List<String[]> lines = new ArrayList<String[]>();
+		List<String[]> lines = new ArrayList<>();
 		lines.add(new String[] { "name", "number" });
 		lines.add(new String[] { "1", "Kevin" });
 		lines.add(new String[] { "2", "Stuart" });
@@ -55,7 +54,7 @@ public class TextImportTemplateTest extends BaseMockitoTest {
 
 	@Test
 	public void testException() {
-		List<String[]> lines = new ArrayList<String[]>();
+		List<String[]> lines = new ArrayList<>();
 		lines.add(new String[] { "name", "number" });
 
 		// first value cannot be converted to a number
@@ -90,7 +89,7 @@ public class TextImportTemplateTest extends BaseMockitoTest {
 
 	@Test
 	public void testDuplicateCheck() {
-		List<String[]> lines = new ArrayList<String[]>();
+		List<String[]> lines = new ArrayList<>();
 		lines.add(new String[] { "name", "number" });
 		lines.add(new String[] { "1", "Kevin" });
 		lines.add(new String[] { "1", "Stuart" });

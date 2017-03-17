@@ -238,12 +238,9 @@ public class SimpleTokenFieldSelect<ID extends Serializable, S extends AbstractE
 	protected Component initContent() {
 		return GenericTokenFieldUtil.initContent(comboBox, messageService, extTokenField, container,
 		        valueChangeListeners, this, sortProperties, sortOrdering,
-		        new GenericTokenFieldUtil.PostProcessLayout() {
-			        @Override
-			        public void postProcessLayout(AbstractOrderedLayout layout) {
-				        // nothing to do
-			        }
-		        }, tokenizableFactory);
+				layout -> {
+                    // nothing to do
+                }, tokenizableFactory);
 	}
 
 	@Override

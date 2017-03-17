@@ -13,12 +13,6 @@
  */
 package com.ocs.dynamo.ui.composite.table;
 
-import javax.inject.Inject;
-
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-
 import com.google.common.collect.Lists;
 import com.ocs.dynamo.dao.query.FetchJoinInformation;
 import com.ocs.dynamo.domain.TestEntity;
@@ -33,6 +27,11 @@ import com.vaadin.data.Item;
 import com.vaadin.data.sort.SortOrder;
 import com.vaadin.data.util.filter.Compare;
 import com.vaadin.shared.data.sort.SortDirection;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
+import javax.inject.Inject;
 
 public class ModelBasedTableIntegrationTest extends BaseIntegrationTest {
 
@@ -117,9 +116,9 @@ public class ModelBasedTableIntegrationTest extends BaseIntegrationTest {
 
 		EntityModel<TestEntity> model = entityModelFactory.getModel(TestEntity.class);
 
-		ServiceResultsTableWrapper<Integer, TestEntity> wrapper = new ServiceResultsTableWrapper<Integer, TestEntity>(
-		        testEntityService, model, QueryType.ID_BASED, null, Lists.newArrayList(new SortOrder("name",
-		                SortDirection.ASCENDING)), false);
+		ServiceResultsTableWrapper<Integer, TestEntity> wrapper = new ServiceResultsTableWrapper<>(
+				testEntityService, model, QueryType.ID_BASED, null, Lists.newArrayList(new SortOrder("name",
+				SortDirection.ASCENDING)), false);
 		wrapper.build();
 
 		Assert.assertNotNull(wrapper.getTable());

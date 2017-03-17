@@ -280,7 +280,7 @@ public final class ClassUtils {
         Assert.notNull(clazz, "[Assertion failed] - clazz argument is required; it must not be null");
         Assert.noNullElements(args, "[Assertion failed] - the args must not contain any null elements");
         Constructor<T> constructor = null;
-        List<Class<?>> types = new ArrayList<Class<?>>();
+        List<Class<?>> types = new ArrayList<>();
         for (Object arg : args) {
             types.add(arg.getClass());
         }

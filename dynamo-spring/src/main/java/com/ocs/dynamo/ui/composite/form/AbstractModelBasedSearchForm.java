@@ -127,7 +127,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	        List<Filter> defaultFilters, Map<String, Filter> fieldFilters) {
 		super(formOptions, fieldFilters, entityModel);
 		this.fieldFactory = ModelBasedFieldFactory.getSearchInstance(entityModel, getMessageService());
-		this.defaultFilters = defaultFilters == null ? new ArrayList<Filter>() : defaultFilters;
+		this.defaultFilters = defaultFilters == null ? new ArrayList<>() : defaultFilters;
 		this.currentFilters.addAll(this.defaultFilters);
 		this.searchable = searchable;
 	}
@@ -211,14 +211,10 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 			search();
 		} else if (event.getButton() == clearButton) {
 			if (getFormOptions().isConfirmClear()) {
-				VaadinUtils.showConfirmDialog(getMessageService(), message("ocs.confirm.clear"), new Runnable() {
-
-					@Override
-					public void run() {
-						clear();
-						search(true);
-					}
-				});
+				VaadinUtils.showConfirmDialog(getMessageService(), message("ocs.confirm.clear"), () -> {
+                    clear();
+                    search(true);
+                });
 			} else {
 				clear();
 				search(true);

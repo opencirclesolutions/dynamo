@@ -1,17 +1,5 @@
 package com.ocs.dynamo.ui.component;
 
-import java.util.List;
-
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Matchers;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
-
 import com.explicatis.ext_token_field.Tokenizable;
 import com.google.common.collect.Lists;
 import com.ocs.dynamo.dao.SortOrder;
@@ -26,6 +14,15 @@ import com.ocs.dynamo.test.BaseMockitoTest;
 import com.ocs.dynamo.test.MockUtil;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.UI;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Matchers;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+
+import java.util.List;
 
 public class TokenFieldSelectTest extends BaseMockitoTest {
 
@@ -54,16 +51,11 @@ public class TokenFieldSelectTest extends BaseMockitoTest {
 		Mockito.when(service.createNewEntity()).thenReturn(new TestEntity());
 
 		// make sure an ID is set on the entity when it is being saved
-		Mockito.when(service.save(Matchers.any(TestEntity.class))).thenAnswer(new Answer<TestEntity>() {
-
-			@Override
-			public TestEntity answer(InvocationOnMock invocation) throws Throwable {
-				TestEntity temp = (TestEntity) invocation.getArguments()[0];
-				temp.setId(1234);
-				return temp;
-			}
-
-		});
+		Mockito.when(service.save(Matchers.any(TestEntity.class))).thenAnswer(invocation -> {
+            TestEntity temp = (TestEntity) invocation.getArguments()[0];
+            temp.setId(1234);
+            return temp;
+        });
 	}
 
 	@Test
@@ -73,8 +65,8 @@ public class TokenFieldSelectTest extends BaseMockitoTest {
 		EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
 		AttributeModel am = em.getAttributeModel("testDomain");
 		com.vaadin.data.sort.SortOrder order = new com.vaadin.data.sort.SortOrder("id", SortDirection.ASCENDING);
-		TokenFieldSelect<Integer, TestEntity> select = new TokenFieldSelect<Integer, TestEntity>(em, am, service, null,
-		        false, order);
+		TokenFieldSelect<Integer, TestEntity> select = new TokenFieldSelect<>(em, am, service, null,
+				false, order);
 		select.initContent();
 		MockUtil.injectUI(select, ui);
 
@@ -111,8 +103,8 @@ public class TokenFieldSelectTest extends BaseMockitoTest {
 		EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
 		AttributeModel am = em.getAttributeModel("testDomain");
 		com.vaadin.data.sort.SortOrder order = new com.vaadin.data.sort.SortOrder("id", SortDirection.ASCENDING);
-		TokenFieldSelect<Integer, TestEntity> select = new TokenFieldSelect<Integer, TestEntity>(em, am, service, null,
-		        true, order);
+		TokenFieldSelect<Integer, TestEntity> select = new TokenFieldSelect<>(em, am, service, null,
+				true, order);
 		select.initContent();
 		MockUtil.injectUI(select, ui);
 
@@ -125,8 +117,8 @@ public class TokenFieldSelectTest extends BaseMockitoTest {
 		EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
 		AttributeModel am = em.getAttributeModel("testDomain");
 		com.vaadin.data.sort.SortOrder order = new com.vaadin.data.sort.SortOrder("id", SortDirection.ASCENDING);
-		TokenFieldSelect<Integer, TestEntity> select = new TokenFieldSelect<Integer, TestEntity>(em, am, service, null,
-		        false, order);
+		TokenFieldSelect<Integer, TestEntity> select = new TokenFieldSelect<>(em, am, service, null,
+				false, order);
 		select.initContent();
 		MockUtil.injectUI(select, ui);
 

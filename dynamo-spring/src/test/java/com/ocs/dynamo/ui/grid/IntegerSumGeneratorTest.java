@@ -13,14 +13,13 @@
  */
 package com.ocs.dynamo.ui.grid;
 
-import java.math.BigDecimal;
-
-import org.junit.Assert;
-import org.junit.Test;
-
 import com.google.common.collect.Lists;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.ui.Table;
+import org.junit.Assert;
+import org.junit.Test;
+
+import java.math.BigDecimal;
 
 public class IntegerSumGeneratorTest {
 
@@ -36,7 +35,7 @@ public class IntegerSumGeneratorTest {
         // this value will NOT be added
         test.setSkip(15);
 
-        BeanItemContainer<TestY> container = new BeanItemContainer<TestY>(TestY.class,
+        BeanItemContainer<TestY> container = new BeanItemContainer<>(TestY.class,
                 Lists.newArrayList(test));
         Table table = new Table("", container);
 

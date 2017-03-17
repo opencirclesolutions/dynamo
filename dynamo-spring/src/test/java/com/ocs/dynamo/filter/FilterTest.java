@@ -13,15 +13,14 @@
  */
 package com.ocs.dynamo.filter;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.junit.Assert;
-import org.junit.Test;
-
 import com.google.common.collect.Lists;
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.TestEntity2;
+import org.junit.Assert;
+import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class FilterTest {
 
@@ -119,7 +118,7 @@ public class FilterTest {
         disjunction = new Compare.Equal("name", "Bert").or(new Compare.Equal("age", 24L));
         Assert.assertTrue(disjunction.evaluate(entity));
 
-        List<Filter> filters = new ArrayList<Filter>();
+        List<Filter> filters = new ArrayList<>();
         filters.add(new Like("name", "%ob%"));
         filters.add(new Compare.Equal("age", 25L));
         disjunction = new Or(filters);

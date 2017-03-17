@@ -13,13 +13,12 @@
  */
 package com.ocs.dynamo.ui.container;
 
-import java.io.Serializable;
-
+import com.ocs.dynamo.domain.AbstractEntity;
 import org.vaadin.addons.lazyquerycontainer.Query;
 import org.vaadin.addons.lazyquerycontainer.QueryDefinition;
 import org.vaadin.addons.lazyquerycontainer.QueryFactory;
 
-import com.ocs.dynamo.domain.AbstractEntity;
+import java.io.Serializable;
 
 /**
  * A factory for creating ServiceQuery objects
@@ -39,10 +38,10 @@ public class ServiceQueryFactory<ID extends Serializable, T extends AbstractEnti
 
         switch (def.getQueryType()) {
         case PAGING:
-            return new PagingServiceQuery<ID, T>((ServiceQueryDefinition<ID, T>) queryDefinition,
+            return new PagingServiceQuery<>((ServiceQueryDefinition<ID, T>) queryDefinition,
                     null);
         case ID_BASED:
-            return new IdBasedServiceQuery<ID, T>((ServiceQueryDefinition<ID, T>) queryDefinition,
+            return new IdBasedServiceQuery<>((ServiceQueryDefinition<ID, T>) queryDefinition,
                     null);
         default:
             return null;

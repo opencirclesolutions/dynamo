@@ -13,13 +13,9 @@
  */
 package com.ocs.dynamo.ui.composite.form;
 
-import java.io.ByteArrayOutputStream;
-import java.io.OutputStream;
-
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.ui.composite.type.ScreenMode;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.Notification;
@@ -27,6 +23,9 @@ import com.vaadin.ui.Upload;
 import com.vaadin.ui.Upload.Receiver;
 import com.vaadin.ui.Upload.SucceededEvent;
 import com.vaadin.ui.Upload.SucceededListener;
+
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
 
 /**
  * A form that contains a file upload component and a progress bar
@@ -130,13 +129,7 @@ public abstract class UploadForm extends ProgressForm<byte[]> {
 
 		if (showCancelButton) {
 			Button cancelButton = new Button(message("ocs.cancel"));
-			cancelButton.addClickListener(new Button.ClickListener() {
-
-				@Override
-				public void buttonClick(ClickEvent event) {
-					cancel();
-				}
-			});
+			cancelButton.addClickListener((Button.ClickListener) event -> cancel());
 			main.addComponent(cancelButton);
 		}
 	}

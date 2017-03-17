@@ -13,23 +13,22 @@
  */
 package com.ocs.dynamo.ui.container.pivot;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import com.google.common.collect.Lists;
+import com.ocs.dynamo.ui.container.EnergyUsage;
+import com.vaadin.data.Property;
+import com.vaadin.data.util.BeanItemContainer;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-
-import com.google.common.collect.Lists;
-import com.ocs.dynamo.ui.container.EnergyUsage;
-import com.vaadin.data.Property;
-import com.vaadin.data.util.BeanItemContainer;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public class PivotContainerTest {
 
@@ -46,7 +45,7 @@ public class PivotContainerTest {
                 new EnergyUsage("DEF", 3, 3), new EnergyUsage("DEF", 4, 4),
                 new EnergyUsage("GHI", 2, 2), new EnergyUsage("GHI", 3, 3),
                 new EnergyUsage("JKL", 4, 4));
-        BeanItemContainer<EnergyUsage> sourceContainer = new BeanItemContainer<EnergyUsage>(
+        BeanItemContainer<EnergyUsage> sourceContainer = new BeanItemContainer<>(
                 EnergyUsage.class, usage);
         pivotContainer = new PivotContainer(sourceContainer, "week", "ean",
                 Lists.newArrayList(1, 2, 3, 4), Lists.newArrayList("test"), 4);

@@ -13,15 +13,6 @@
  */
 package com.ocs.dynamo.ui.composite.form;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.google.common.collect.Lists;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
@@ -37,7 +28,6 @@ import com.ocs.dynamo.ui.composite.dialog.ModelBasedSearchDialog;
 import com.ocs.dynamo.ui.composite.table.ModelBasedTable;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.data.Container.Filter;
-import com.vaadin.data.Property;
 import com.vaadin.data.sort.SortOrder;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.ui.Button;
@@ -46,10 +36,17 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.Layout;
-import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.ColumnGenerator;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A complex table component for the in-place editing of a one-to-many relation. It can also be used
@@ -224,18 +221,14 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 	 */
 	protected void constructAddButton(Layout buttonBar) {
 		addButton = new Button(messageService.getMessage("ocs.add"));
-		addButton.addClickListener(new Button.ClickListener() {
-
-			@Override
-			public void buttonClick(ClickEvent event) {
-				T t = createEntity();
-				container.addBean(t);
-				if (parentForm != null) {
-					parentForm.signalDetailsTableValid(DetailsEditTable.this,
-					        VaadinUtils.allFixedTableFieldsValid(table));
-				}
-			}
-		});
+		addButton.addClickListener((Button.ClickListener) event -> {
+            T t = createEntity();
+            container.addBean(t);
+            if (parentForm != null) {
+                parentForm.signalDetailsTableValid(DetailsEditTable.this,
+                        VaadinUtils.allFixedTableFieldsValid(table));
+            }
+        });
 		addButton.setVisible(isTableEditEnabled() && !formOptions.isHideAddButton());
 		buttonBar.addComponent(addButton);
 	}
@@ -280,37 +273,33 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 
 		searchDialogButton = new Button(messageService.getMessage("ocs.search"));
 		searchDialogButton.setDescription(messageService.getMessage("ocs.search.description"));
-		searchDialogButton.addClickListener(new Button.ClickListener() {
+		searchDialogButton.addClickListener((Button.ClickListener) event -> {
 
-			@Override
-			public void buttonClick(ClickEvent event) {
+            // service must be specified
+            if (service == null) {
+                throw new OCSRuntimeException(messageService.getMessage("ocs.no.service.specified"));
+            }
 
-				// service must be specified
-				if (service == null) {
-					throw new OCSRuntimeException(messageService.getMessage("ocs.no.service.specified"));
-				}
+            ModelBasedSearchDialog<ID, T> dialog = new ModelBasedSearchDialog<ID, T>(service,
+                    searchDialogEntityModel != null ? searchDialogEntityModel : entityModel, searchDialogFilters,
+                    searchDialogSortOrder == null ? null : Lists.newArrayList(searchDialogSortOrder), true, true) {
+                @Override
+                protected boolean doClose() {
 
-				ModelBasedSearchDialog<ID, T> dialog = new ModelBasedSearchDialog<ID, T>(service,
-				        searchDialogEntityModel != null ? searchDialogEntityModel : entityModel, searchDialogFilters,
-				        searchDialogSortOrder == null ? null : Lists.newArrayList(searchDialogSortOrder), true, true) {
-					@Override
-					protected boolean doClose() {
-
-						// add the selected items to the table
-						Collection<T> selected = getSelectedItems();
-						if (selected != null) {
-							afterItemsSelected(selected);
-							for (T t : selected) {
-								container.addBean(t);
-							}
-						}
-						return true;
-					}
-				};
-				dialog.build();
-				ui.addWindow(dialog);
-			}
-		});
+                    // add the selected items to the table
+                    Collection<T> selected = getSelectedItems();
+                    if (selected != null) {
+                        afterItemsSelected(selected);
+                        for (T t : selected) {
+                            container.addBean(t);
+                        }
+                    }
+                    return true;
+                }
+            };
+            dialog.build();
+            ui.addWindow(dialog);
+        });
 		searchDialogButton.setVisible(!viewMode && formOptions.isDetailsTableSearchMode());
 		buttonBar.addComponent(searchDialogButton);
 	}
@@ -396,31 +385,27 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 		// add a remove button directly in the table
 		if (!isViewMode() && formOptions.isShowRemoveButton()) {
 			final String removeMsg = messageService.getMessage("ocs.remove");
-			table.addGeneratedColumn(removeMsg, new ColumnGenerator() {
+			table.addGeneratedColumn(removeMsg, (ColumnGenerator) (source, itemId, columnId) -> {
+                Button remove = new Button(removeMsg);
+                remove.addClickListener(new Button.ClickListener() {
 
-				@Override
-				public Object generateCell(Table source, final Object itemId, Object columnId) {
-					Button remove = new Button(removeMsg);
-					remove.addClickListener(new Button.ClickListener() {
+                    @Override
+                    @SuppressWarnings("unchecked")
+                    public void buttonClick(ClickEvent event) {
+                        container.removeItem(itemId);
+                        items.remove(itemId);
+                        // callback method so the entity can be removed from its
+                        // parent
+                        removeEntity((T) itemId);
+                        if (parentForm != null) {
+                            parentForm.signalDetailsTableValid(DetailsEditTable.this,
+                                    VaadinUtils.allFixedTableFieldsValid(table));
+                        }
 
-						@Override
-						@SuppressWarnings("unchecked")
-						public void buttonClick(ClickEvent event) {
-							container.removeItem(itemId);
-							items.remove(itemId);
-							// callback method so the entity can be removed from its
-							// parent
-							removeEntity((T) itemId);
-							if (parentForm != null) {
-								parentForm.signalDetailsTableValid(DetailsEditTable.this,
-								        VaadinUtils.allFixedTableFieldsValid(table));
-							}
-
-						}
-					});
-					return remove;
-				}
-			});
+                    }
+                });
+                return remove;
+            });
 		}
 
 		// overwrite the field factory to deal with validation
@@ -450,17 +435,12 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 					// adds a value change listener (for updating the save
 					// button)
 					if (!viewMode) {
-						field.addValueChangeListener(new Property.ValueChangeListener() {
-
-							@Override
-							public void valueChange(com.vaadin.data.Property.ValueChangeEvent event) {
-								if (parentForm != null) {
-									parentForm.signalDetailsTableValid(DetailsEditTable.this,
-									        VaadinUtils.allFixedTableFieldsValid(table));
-								}
-							}
-
-						});
+						field.addValueChangeListener((ValueChangeListener) event -> {
+                            if (parentForm != null) {
+                                parentForm.signalDetailsTableValid(DetailsEditTable.this,
+                                        VaadinUtils.allFixedTableFieldsValid(table));
+                            }
+                        });
 
 						postProcessTableField(propertyId, field);
 					}
@@ -479,16 +459,11 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 
 		// add a change listener (to make sure the buttons are correctly
 		// enabled/disabled)
-		table.addValueChangeListener(new Property.ValueChangeListener() {
-
-			@Override
-			@SuppressWarnings("unchecked")
-			public void valueChange(Property.ValueChangeEvent event) {
-				selectedItem = (T) table.getValue();
-				onSelect(table.getValue());
-				checkButtonState(selectedItem);
-			}
-		});
+		table.addValueChangeListener((ValueChangeListener) event -> {
+            selectedItem = (T) table.getValue();
+            onSelect(table.getValue());
+            checkButtonState(selectedItem);
+        });
 		table.updateTableCaption();
 
 		// add the buttons
@@ -599,7 +574,7 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 		List<T> list = new ArrayList<>();
 		list.addAll(items);
 		if (comparator != null) {
-			Collections.sort(list, comparator);
+			list.sort(comparator);
 		}
 
 		this.items = list;

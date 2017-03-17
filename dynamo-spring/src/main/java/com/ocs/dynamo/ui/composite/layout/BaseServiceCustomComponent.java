@@ -13,12 +13,6 @@
  */
 package com.ocs.dynamo.ui.composite.layout;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
@@ -30,6 +24,12 @@ import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.Notification;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Base class for UI components that need/have access to a Service that can read from the database
@@ -55,25 +55,16 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 		@SuppressWarnings("serial")
 		public RemoveButton() {
 			super(message("ocs.remove"));
-			this.addClickListener(new Button.ClickListener() {
-
-				@Override
-				public void buttonClick(ClickEvent event) {
-					Runnable r = new Runnable() {
-
-						@Override
-						public void run() {
-							try {
-								doDelete();
-							} catch (OCSValidationException ex) {
-								showNotifification(ex.getErrors().get(0), Notification.Type.ERROR_MESSAGE);
-							}
-						}
-
-					};
-					VaadinUtils.showConfirmDialog(getMessageService(), message("ocs.delete.confirm"), r);
-				}
-			});
+			this.addClickListener((ClickListener) event -> {
+                Runnable r = () -> {
+                    try {
+                        doDelete();
+                    } catch (OCSValidationException ex) {
+                        showNotifification(ex.getErrors().get(0), Notification.Type.ERROR_MESSAGE);
+                    }
+                };
+                VaadinUtils.showConfirmDialog(getMessageService(), message("ocs.delete.confirm"), r);
+            });
 		}
 
 		/**

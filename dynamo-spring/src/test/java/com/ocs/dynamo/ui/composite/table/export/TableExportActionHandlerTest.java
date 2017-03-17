@@ -383,7 +383,7 @@ public class TableExportActionHandlerTest extends BaseMockitoTest {
 		Person person2 = new Person(2, "Patrick", 44, BigDecimal.valueOf(77.0), BigDecimal.valueOf(15));
 		container.addAll(Lists.newArrayList(person1, person2));
 
-		return new ModelBasedTable<Integer, Person>(container, entityModelFactory.getModel(Person.class), true);
+		return new ModelBasedTable<>(container, entityModelFactory.getModel(Person.class), true);
 	}
 
 	private TreeTable getTreeTable() {

@@ -120,7 +120,7 @@ public class DetailsEditTableTest extends BaseMockitoTest {
 		};
 		MockUtil.injectUI(table, ui);
 		table.initContent();
-		table.setComparator(new AttributeComparator<TestEntity>("name"));
+		table.setComparator(new AttributeComparator<>("name"));
 		return table;
 	}
 }

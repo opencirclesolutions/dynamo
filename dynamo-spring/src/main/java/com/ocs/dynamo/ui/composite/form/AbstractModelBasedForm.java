@@ -13,15 +13,15 @@
  */
 package com.ocs.dynamo.ui.composite.form;
 
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
-
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.ui.composite.layout.BaseCustomComponent;
 import com.vaadin.data.Container.Filter;
+
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Abstract base class for model based forms
@@ -62,7 +62,7 @@ public abstract class AbstractModelBasedForm<ID extends Serializable, T extends 
 	 */
 	public AbstractModelBasedForm(FormOptions formOptions, Map<String, Filter> fieldFilters, EntityModel<T> entityModel) {
 		this.formOptions = formOptions;
-		this.fieldFilters = fieldFilters == null ? new HashMap<String, Filter>() : fieldFilters;
+		this.fieldFilters = fieldFilters == null ? new HashMap<>() : fieldFilters;
 		this.entityModel = entityModel;
 	}
 

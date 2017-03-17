@@ -13,15 +13,14 @@
  */
 package com.ocs.dynamo.dao;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.junit.Assert;
-import org.junit.Test;
-
 import com.google.common.collect.Lists;
 import com.ocs.dynamo.dao.query.DataSetIterator;
 import com.ocs.dynamo.domain.TestEntity;
+import org.junit.Assert;
+import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class DataSetIteratorTest {
 
@@ -40,7 +39,7 @@ public class DataSetIteratorTest {
 
             @Override
             protected List<TestEntity> readPage(List<Integer> ids) {
-                List<TestEntity> result = new ArrayList<TestEntity>();
+                List<TestEntity> result = new ArrayList<>();
                 for (Integer i : ids) {
                     TestEntity entity = new TestEntity();
                     entity.setId(i);
@@ -70,7 +69,7 @@ public class DataSetIteratorTest {
 
             @Override
             protected List<TestEntity> readPage(List<Integer> ids) {
-                List<TestEntity> result = new ArrayList<TestEntity>();
+                List<TestEntity> result = new ArrayList<>();
                 for (Integer i : ids) {
                     TestEntity entity = new TestEntity();
                     entity.setId(i);

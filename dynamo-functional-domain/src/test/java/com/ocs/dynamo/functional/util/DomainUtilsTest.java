@@ -1,16 +1,5 @@
 package com.ocs.dynamo.functional.util;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import org.junit.Assert;
-import org.junit.Test;
-import org.mockito.Matchers;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
-
 import com.google.common.collect.Sets;
 import com.ocs.dynamo.functional.domain.Country;
 import com.ocs.dynamo.functional.domain.Currency;
@@ -18,6 +7,14 @@ import com.ocs.dynamo.functional.domain.Domain;
 import com.ocs.dynamo.functional.domain.Region;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.test.BaseMockitoTest;
+import org.junit.Assert;
+import org.junit.Test;
+import org.mockito.Matchers;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class DomainUtilsTest extends BaseMockitoTest {
 
@@ -34,7 +31,7 @@ public class DomainUtilsTest extends BaseMockitoTest {
 		Currency c2 = new Currency("USD", "Dollar");
 		Country coun1 = new Country("NL", "Netherlands");
 
-		domains = new HashSet<Domain>();
+		domains = new HashSet<>();
 		domains.add(c1);
 		domains.add(c2);
 		domains.add(coun1);
@@ -64,7 +61,7 @@ public class DomainUtilsTest extends BaseMockitoTest {
 		Assert.assertEquals(2, domains.size());
 
 		// remove all currencies
-		DomainUtil.updateDomains(Currency.class, domains, new HashSet<Currency>());
+		DomainUtil.updateDomains(Currency.class, domains, new HashSet<>());
 		Assert.assertEquals(1, domains.size());
 
 		// remove all currencies
@@ -85,13 +82,7 @@ public class DomainUtilsTest extends BaseMockitoTest {
 		domains.add(new Currency("DEK", "Danish Crown"));
 
 		Mockito.when(messageService.getMessage(Matchers.eq("ocs.and.others"), Matchers.anyInt())).thenAnswer(
-		        new Answer<String>() {
-
-			        @Override
-			        public String answer(InvocationOnMock invocation) throws Throwable {
-				        return " and " + invocation.getArguments()[1] + " others";
-			        }
-		        });
+				invocation -> " and " + invocation.getArguments()[1] + " others");
 
 		res = DomainUtil.getDomainDescriptions(messageService, DomainUtil.filterDomains(Currency.class, domains));
 

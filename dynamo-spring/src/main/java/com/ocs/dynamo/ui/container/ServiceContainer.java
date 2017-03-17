@@ -72,7 +72,7 @@ public class ServiceContainer<ID extends Serializable, T extends AbstractEntity<
 	 */
 	public ServiceContainer(BaseService<ID, T> service, boolean compositeItems, int batchSize, QueryType queryType,
 	        FetchJoinInformation[] joins) {
-		super(new ServiceQueryDefinition<ID, T>(service, compositeItems, batchSize, queryType, joins),
+		super(new ServiceQueryDefinition<>(service, compositeItems, batchSize, queryType, joins),
 		        new ServiceQueryFactory<ID, T>());
 	}
 
@@ -86,7 +86,7 @@ public class ServiceContainer<ID extends Serializable, T extends AbstractEntity<
 	 */
 	public ServiceContainer(BaseService<ID, T> service, EntityModelFactory emf, boolean compositeItems, int batchSize,
 	        QueryType queryType, FetchJoinInformation[] joins) {
-		super(new ServiceQueryDefinition<ID, T>(service, compositeItems, batchSize, queryType, joins),
+		super(new ServiceQueryDefinition<>(service, compositeItems, batchSize, queryType, joins),
 		        new ServiceQueryFactory<ID, T>());
 		addContainerProperties(emf.getModel(service.getEntityClass()));
 	}
@@ -101,7 +101,7 @@ public class ServiceContainer<ID extends Serializable, T extends AbstractEntity<
 	 */
 	public ServiceContainer(BaseService<ID, T> service, EntityModel<T> model, boolean compositeItems, int batchSize,
 	        QueryType queryType, FetchJoinInformation[] joins) {
-		super(new ServiceQueryDefinition<ID, T>(service, compositeItems, batchSize, queryType, joins),
+		super(new ServiceQueryDefinition<>(service, compositeItems, batchSize, queryType, joins),
 		        new ServiceQueryFactory<ID, T>());
 		addContainerProperties(model);
 	}

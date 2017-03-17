@@ -13,15 +13,6 @@
  */
 package com.ocs.dynamo.ui.composite.table;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.inject.Inject;
-
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-
 import com.google.common.collect.Lists;
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.domain.TestEntity;
@@ -39,6 +30,13 @@ import com.ocs.dynamo.ui.container.hierarchical.ModelBasedHierarchicalContainer;
 import com.vaadin.data.sort.SortOrder;
 import com.vaadin.data.util.filter.Compare;
 import com.vaadin.shared.data.sort.SortDirection;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
+import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ModelBasedTreeTableIntegrationTest extends BaseIntegrationTest {
 
@@ -77,11 +75,11 @@ public class ModelBasedTreeTableIntegrationTest extends BaseIntegrationTest {
 		services.add(testEntityService);
 		services.add(testEntity2Service);
 
-		ModelBasedHierarchicalContainer<TestEntity> container = new ModelBasedHierarchicalContainer<TestEntity>(
-		        messageService, model, services, null);
+		ModelBasedHierarchicalContainer<TestEntity> container = new ModelBasedHierarchicalContainer<>(
+				messageService, model, services, null);
 
-		ModelBasedTreeTable<Integer, TestEntity> table = new ModelBasedTreeTable<Integer, TestEntity>(container,
-		        entityModelFactory, true);
+		ModelBasedTreeTable<Integer, TestEntity> table = new ModelBasedTreeTable<>(container,
+				entityModelFactory, true);
 
 		Assert.assertEquals(1, table.getContainerDataSource().size());
 

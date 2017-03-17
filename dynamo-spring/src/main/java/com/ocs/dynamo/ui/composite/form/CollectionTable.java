@@ -13,11 +13,6 @@
  */
 package com.ocs.dynamo.ui.composite.form;
 
-import java.io.Serializable;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.ui.ServiceLocator;
@@ -28,7 +23,6 @@ import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.utils.NumberUtils;
 import com.ocs.dynamo.utils.SystemPropertyUtils;
 import com.vaadin.data.Container;
-import com.vaadin.data.Property;
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.data.validator.IntegerRangeValidator;
 import com.vaadin.data.validator.LongRangeValidator;
@@ -44,6 +38,11 @@ import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.ColumnGenerator;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
+
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * A component for editing a property that is annotated as an @ElementCollection
@@ -134,18 +133,14 @@ public class CollectionTable<T extends Serializable> extends CustomField<Collect
 	 */
 	protected void constructAddButton(Layout buttonBar) {
 		addButton = new Button(messageService.getMessage("ocs.add"));
-		addButton.addClickListener(new Button.ClickListener() {
-
-			@Override
-			public void buttonClick(ClickEvent event) {
-				// add a new item then set the validity to false (since an empty
-				// item is never allowed)
-				table.addItem();
-				if (parentForm != null) {
-					parentForm.signalDetailsTableValid(CollectionTable.this, false);
-				}
-			}
-		});
+		addButton.addClickListener((Button.ClickListener) event -> {
+            // add a new item then set the validity to false (since an empty
+            // item is never allowed)
+            table.addItem();
+            if (parentForm != null) {
+                parentForm.signalDetailsTableValid(CollectionTable.this, false);
+            }
+        });
 		buttonBar.addComponent(addButton);
 	}
 
@@ -276,20 +271,16 @@ public class CollectionTable<T extends Serializable> extends CustomField<Collect
 
 				// value change listener that makes sure the validity of the
 				// parent form is correctly set
-				f.addValueChangeListener(new ValueChangeListener() {
-
-					@Override
-					public void valueChange(com.vaadin.data.Property.ValueChangeEvent event) {
-						if (propagateChanges) {
-							propagateChanges = false;
-							Set<T> set = extractValues();
-							setValue(set);
-							parentForm.signalDetailsTableValid(CollectionTable.this,
-							        VaadinUtils.allFixedTableFieldsValid(table));
-							propagateChanges = true;
-						}
-					}
-				});
+				f.addValueChangeListener((ValueChangeListener) event -> {
+                    if (propagateChanges) {
+                        propagateChanges = false;
+                        Set<T> set = extractValues();
+                        setValue(set);
+                        parentForm.signalDetailsTableValid(CollectionTable.this,
+                                VaadinUtils.allFixedTableFieldsValid(table));
+                        propagateChanges = true;
+                    }
+                });
 
 				return f;
 			}
@@ -297,14 +288,10 @@ public class CollectionTable<T extends Serializable> extends CustomField<Collect
 
 		// add a change listener (to make sure the buttons are correctly
 		// enabled/disabled)
-		table.addValueChangeListener(new Property.ValueChangeListener() {
-
-			@Override
-			public void valueChange(Property.ValueChangeEvent event) {
-				selectedItem = table.getValue();
-				onSelect(table.getValue());
-			}
-		});
+		table.addValueChangeListener((ValueChangeListener) event -> {
+            selectedItem = table.getValue();
+            onSelect(table.getValue());
+        });
 
 		// add a remove button directly in the table
 		constructRemoveColumn();
@@ -354,23 +341,19 @@ public class CollectionTable<T extends Serializable> extends CustomField<Collect
 		// add a remove button directly in the table
 		if (!isViewMode() && formOptions.isShowRemoveButton()) {
 			final String removeMsg = messageService.getMessage("ocs.remove");
-			table.addGeneratedColumn(removeMsg, new ColumnGenerator() {
+			table.addGeneratedColumn(removeMsg, (ColumnGenerator) (source, itemId, columnId) -> {
+                Button remove = new Button(removeMsg);
+                remove.addClickListener(new Button.ClickListener() {
 
-				@Override
-				public Object generateCell(Table source, final Object itemId, Object columnId) {
-					Button remove = new Button(removeMsg);
-					remove.addClickListener(new Button.ClickListener() {
-
-						@Override
-						public void buttonClick(ClickEvent event) {
-							table.removeItem(itemId);
-							setValue(extractValues());
-							setSelectedItem(null);
-						}
-					});
-					return remove;
-				}
-			});
+                    @Override
+                    public void buttonClick(ClickEvent event) {
+                        table.removeItem(itemId);
+                        setValue(extractValues());
+                        setSelectedItem(null);
+                    }
+                });
+                return remove;
+            });
 		}
 	}
 

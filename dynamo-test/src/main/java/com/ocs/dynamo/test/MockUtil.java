@@ -13,30 +13,26 @@
  */
 package com.ocs.dynamo.test;
 
-import static org.mockito.Mockito.spy;
-
-import java.lang.reflect.Field;
-import java.util.List;
-import java.util.Locale;
-
-import junitx.util.PrivateAccessor;
-
-import org.mockito.ArgumentCaptor;
-import org.mockito.Matchers;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.context.support.ResourceBundleMessageSource;
-import org.springframework.test.util.ReflectionTestUtils;
-
 import com.ocs.dynamo.dao.BaseDao;
 import com.ocs.dynamo.dao.query.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.MessageService;
+import junitx.util.PrivateAccessor;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Matchers;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.test.util.ReflectionTestUtils;
+
+import java.lang.reflect.Field;
+import java.util.List;
+import java.util.Locale;
+
+import static org.mockito.Mockito.spy;
 
 /**
  * Utility class for registering service and DAO related mock functionality
@@ -190,46 +186,18 @@ public final class MockUtil {
 	@SuppressWarnings("unchecked")
 	public static void mockMessageService(MessageService messageService) {
 		// method without any arguments
-		Mockito.when(messageService.getMessage(Matchers.anyString())).thenAnswer(new Answer<String>() {
-
-			@Override
-			public String answer(InvocationOnMock invocation) throws Throwable {
-				return (String) invocation.getArguments()[0];
-			}
-
-		});
+		Mockito.when(messageService.getMessage(Matchers.anyString())).thenAnswer(invocation -> (String) invocation.getArguments()[0]);
 		// method with varargs
 		Mockito.when(messageService.getMessage(Matchers.anyString(), Matchers.anyVararg())).thenAnswer(
-		        new Answer<String>() {
-
-			        @Override
-			        public String answer(InvocationOnMock invocation) throws Throwable {
-				        return (String) invocation.getArguments()[0];
-			        }
-
-		        });
+				invocation -> (String) invocation.getArguments()[0]);
 
 		// method with locale
 		Mockito.when(messageService.getMessage(Matchers.anyString(), Matchers.any(Locale.class))).thenAnswer(
-		        new Answer<String>() {
-
-			        @Override
-			        public String answer(InvocationOnMock invocation) throws Throwable {
-				        return (String) invocation.getArguments()[0];
-			        }
-
-		        });
+				invocation -> (String) invocation.getArguments()[0]);
 
 		// method for retrieving enum message
 		Mockito.when(messageService.getEnumMessage(Matchers.any(Class.class), Matchers.any(Enum.class))).thenAnswer(
-		        new Answer<String>() {
-
-			        @Override
-			        public String answer(InvocationOnMock invocation) throws Throwable {
-				        return invocation.getArguments()[1].toString();
-			        }
-
-		        });
+				invocation -> invocation.getArguments()[1].toString());
 	}
 
 	/**
@@ -244,14 +212,7 @@ public final class MockUtil {
 	@SuppressWarnings("unchecked")
 	public static <ID, X extends AbstractEntity<ID>> void mockSave(BaseDao<ID, X> dao, Class<X> clazz) {
 		// mock the save behaviour - return the first argument being passed to the method
-		Mockito.when(dao.save(Matchers.any(clazz))).thenAnswer(new Answer<X>() {
-
-			@Override
-			public X answer(InvocationOnMock invocation) throws Throwable {
-				return (X) invocation.getArguments()[0];
-			}
-
-		});
+		Mockito.when(dao.save(Matchers.any(clazz))).thenAnswer(invocation -> (X) invocation.getArguments()[0]);
 	}
 
 	/**
@@ -262,14 +223,7 @@ public final class MockUtil {
 	@SuppressWarnings("unchecked")
 	public static <ID, X extends AbstractEntity<ID>> void mockSaveList(BaseDao<ID, X> dao) {
 		// mock the save behaviour
-		Mockito.when(dao.save(Matchers.any(List.class))).thenAnswer(new Answer<List<X>>() {
-
-			@Override
-			public List<X> answer(InvocationOnMock invocation) throws Throwable {
-				return (List<X>) invocation.getArguments()[0];
-			}
-
-		});
+		Mockito.when(dao.save(Matchers.any(List.class))).thenAnswer(invocation -> (List<X>) invocation.getArguments()[0]);
 	}
 
 	/**
@@ -282,14 +236,7 @@ public final class MockUtil {
 	@SuppressWarnings("unchecked")
 	public static <ID, U extends AbstractEntity<ID>> void mockServiceSave(BaseService<ID, U> service, Class<U> clazz) {
 		// mock the save behaviour
-		Mockito.when(service.save(Matchers.any(clazz))).thenAnswer(new Answer<U>() {
-
-			@Override
-			public U answer(InvocationOnMock invocation) throws Throwable {
-				return (U) invocation.getArguments()[0];
-			}
-
-		});
+		Mockito.when(service.save(Matchers.any(clazz))).thenAnswer(invocation -> (U) invocation.getArguments()[0]);
 	}
 
 	/**

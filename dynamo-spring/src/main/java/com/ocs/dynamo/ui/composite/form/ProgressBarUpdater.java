@@ -13,10 +13,10 @@
  */
 package com.ocs.dynamo.ui.composite.form;
 
-import java.math.BigDecimal;
-
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.ui.UI;
+
+import java.math.BigDecimal;
 
 /**
  * A Runnable that is used to update a progress bar during a long running process
@@ -64,24 +64,20 @@ public class ProgressBarUpdater implements Runnable {
                 // do nothing
             }
 
-            UI.getCurrent().access(new Runnable() {
-
-                @Override
-                public void run() {
-                    if (estimatedSize > 0) {
-                        progress = (float) ((1. * progressable.estimateCurrentProgress()) / (1. * estimatedSize));
-                    } else {
-                        progress = 1.0f;
-                    }
-                    if (progress > 1.0) {
-                        progress = 1.0f;
-                    }
-                    progressable.getProgressBar().setValue(progress);
-
-                    String progressString = VaadinUtils.bigDecimalToString(true, false,
-                            BigDecimal.valueOf(progress * 100));
-                    progressable.getStatusLabel().setValue(progressString + " done");
+            UI.getCurrent().access(() -> {
+                if (estimatedSize > 0) {
+                    progress = (float) ((1. * progressable.estimateCurrentProgress()) / (1. * estimatedSize));
+                } else {
+                    progress = 1.0f;
                 }
+                if (progress > 1.0) {
+                    progress = 1.0f;
+                }
+                progressable.getProgressBar().setValue(progress);
+
+                String progressString = VaadinUtils.bigDecimalToString(true, false,
+                        BigDecimal.valueOf(progress * 100));
+                progressable.getStatusLabel().setValue(progressString + " done");
             });
         }
     }

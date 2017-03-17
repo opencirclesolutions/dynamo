@@ -111,7 +111,7 @@ public abstract class BaseTableWrapper<ID extends Serializable, T extends Abstra
 		this.service = service;
 		this.entityModel = entityModel;
 		this.queryType = queryType;
-		this.sortOrders = sortOrders != null ? sortOrders : new ArrayList<SortOrder>();
+		this.sortOrders = sortOrders != null ? sortOrders : new ArrayList<>();
 		this.joins = joins;
 		this.allowExport = allowExport;
 	}
@@ -142,13 +142,7 @@ public abstract class BaseTableWrapper<ID extends Serializable, T extends Abstra
 		main.addComponent(table);
 
 		// add a change listener that responds to the selection of an item
-		table.addValueChangeListener(new Property.ValueChangeListener() {
-
-			@Override
-			public void valueChange(ValueChangeEvent event) {
-				onSelect(table.getValue());
-			}
-		});
+		table.addValueChangeListener((Property.ValueChangeListener) event -> onSelect(table.getValue()));
 		setCompositionRoot(main);
 	}
 

@@ -13,10 +13,6 @@
  */
 package com.ocs.dynamo.ui.composite.layout;
 
-import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
-
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.ui.CanAssignEntity;
 import com.ocs.dynamo.ui.Reloadable;
@@ -25,9 +21,12 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TabSheet;
-import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
 import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.VerticalLayout;
+
+import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * A layout that contains a tab sheet with tabs that are lazily loaded
@@ -241,13 +240,9 @@ public abstract class LazyTabLayout<ID extends Serializable, T extends AbstractE
 		constructedTabs.add(tabs.getTab(0).getCaption());
 
 		// respond to a tab change by actually loading the sheet
-		tabs.addSelectedTabChangeListener(new TabSheet.SelectedTabChangeListener() {
-
-			@Override
-			public void selectedTabChange(SelectedTabChangeEvent event) {
-				Component component = event.getTabSheet().getSelectedTab();
-				initOrReload(component);
-			}
-		});
+		tabs.addSelectedTabChangeListener((TabSheet.SelectedTabChangeListener) event -> {
+            Component component = event.getTabSheet().getSelectedTab();
+            initOrReload(component);
+        });
 	}
 }

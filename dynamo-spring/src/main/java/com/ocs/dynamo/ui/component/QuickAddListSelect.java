@@ -13,8 +13,6 @@
  */
 package com.ocs.dynamo.ui.component;
 
-import java.io.Serializable;
-
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
@@ -27,6 +25,8 @@ import com.vaadin.data.util.filter.And;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
+
+import java.io.Serializable;
 
 /**
  * 
@@ -69,7 +69,7 @@ public class QuickAddListSelect<ID extends Serializable, T extends AbstractEntit
 	public QuickAddListSelect(EntityModel<T> entityModel, AttributeModel attributeModel, BaseService<ID, T> service,
 	        Filter filter, boolean multiSelect, int rows, SortOrder... sortOrder) {
 		super(service, entityModel, attributeModel, filter);
-		listSelect = new EntityListSelect<ID, T>(entityModel, attributeModel, service, filter, sortOrder);
+		listSelect = new EntityListSelect<>(entityModel, attributeModel, service, filter, sortOrder);
 		listSelect.setMultiSelect(multiSelect);
 		listSelect.setRows(rows);
 	}

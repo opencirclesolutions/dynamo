@@ -13,14 +13,8 @@
  */
 package com.ocs.dynamo.ui.component;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-
 import com.explicatis.ext_token_field.ExtTokenField;
 import com.explicatis.ext_token_field.Tokenizable;
-import com.explicatis.ext_token_field.events.TokenRemovedEvent;
-import com.explicatis.ext_token_field.events.TokenRemovedListener;
 import com.ocs.dynamo.service.MessageService;
 import com.vaadin.data.Container;
 import com.vaadin.data.Property;
@@ -34,6 +28,10 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.HorizontalLayout;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
 
 public final class GenericTokenFieldUtil {
 
@@ -119,19 +117,16 @@ public final class GenericTokenFieldUtil {
 	private static <T> void attachTokenFieldValueChange(ExtTokenField extTokenField,
 	        final BeanItemContainer<T> container, final ComboBox comboBox, final List<Object> sortProperties,
 	        final List<Boolean> sortOrdering, final Field<?> field, final TokenizableFactory<T> tokenizableFactory) {
-		extTokenField.addTokenRemovedListener(new TokenRemovedListener() {
-			@Override
-			public void tokenRemovedEvent(TokenRemovedEvent event) {
-				final Tokenizable tokenizable = event.getTokenizable();
-				tokenizableFactory.removeTokenFromContainer(tokenizable, container);
+		extTokenField.addTokenRemovedListener(event -> {
+            final Tokenizable tokenizable = event.getTokenizable();
+            tokenizableFactory.removeTokenFromContainer(tokenizable, container);
 
-				comboBox.setValue(null);
-				tokenizableFactory.addTokenToComboBox(tokenizable, comboBox);
-				sortComboBox(comboBox, sortProperties, sortOrdering);
+            comboBox.setValue(null);
+            tokenizableFactory.addTokenToComboBox(tokenizable, comboBox);
+            sortComboBox(comboBox, sortProperties, sortOrdering);
 
-				copyValueFromContainer(container, field);
-			}
-		});
+            copyValueFromContainer(container, field);
+        });
 	}
 
 	/**

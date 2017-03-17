@@ -25,7 +25,7 @@ public class DefaultDaoImplTest {
 
     @Test
     public void testCreateWithout() {
-        dao = new DefaultDaoImpl<Integer, TestEntity>(QTestEntity.testEntity, TestEntity.class);
+        dao = new DefaultDaoImpl<>(QTestEntity.testEntity, TestEntity.class);
         Assert.assertEquals(QTestEntity.testEntity, dao.getDslRoot());
         Assert.assertEquals(TestEntity.class, dao.getEntityClass());
 
@@ -35,7 +35,7 @@ public class DefaultDaoImplTest {
 
     @Test
     public void testCreateWithFetch() {
-        dao = new DefaultDaoImpl<Integer, TestEntity>(QTestEntity.testEntity, TestEntity.class,
+        dao = new DefaultDaoImpl<>(QTestEntity.testEntity, TestEntity.class,
                 "testEntities");
         Assert.assertEquals(QTestEntity.testEntity, dao.getDslRoot());
         Assert.assertEquals(TestEntity.class, dao.getEntityClass());

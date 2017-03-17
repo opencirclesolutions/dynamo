@@ -14,7 +14,6 @@
 package com.ocs.dynamo.ui.composite.dialog;
 
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.HorizontalLayout;
 
 /**
@@ -44,27 +43,17 @@ public abstract class SimpleModalDialog extends BaseModalDialog {
     protected void doBuildButtonBar(HorizontalLayout buttonBar) {
         okButton = new Button(com.ocs.dynamo.ui.ServiceLocator.getMessageService().getMessage(
                 "ocs.ok"));
-        okButton.addClickListener(new Button.ClickListener() {
-
-            @Override
-            public void buttonClick(ClickEvent event) {
-                boolean result = doClose();
-                if (result) {
-                    SimpleModalDialog.this.close();
-                }
+        okButton.addClickListener((Button.ClickListener) event -> {
+            boolean result = doClose();
+            if (result) {
+                SimpleModalDialog.this.close();
             }
         });
         buttonBar.addComponent(okButton);
 
         cancelButton = new Button(com.ocs.dynamo.ui.ServiceLocator.getMessageService().getMessage(
                 "ocs.cancel"));
-        cancelButton.addClickListener(new Button.ClickListener() {
-
-            @Override
-            public void buttonClick(ClickEvent event) {
-                SimpleModalDialog.this.close();
-            }
-        });
+        cancelButton.addClickListener((Button.ClickListener) event -> SimpleModalDialog.this.close());
 
         cancelButton.setVisible(showCancelButton);
         buttonBar.addComponent(cancelButton);

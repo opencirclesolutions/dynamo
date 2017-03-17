@@ -1,13 +1,5 @@
 package com.ocs.dynamo.ui.component;
 
-import java.util.List;
-
-import org.junit.Assert;
-import org.junit.Test;
-import org.mockito.Matchers;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-
 import com.explicatis.ext_token_field.Tokenizable;
 import com.google.common.collect.Lists;
 import com.ocs.dynamo.dao.SortOrder;
@@ -20,6 +12,13 @@ import com.ocs.dynamo.filter.Filter;
 import com.ocs.dynamo.service.TestEntityService;
 import com.ocs.dynamo.test.BaseMockitoTest;
 import com.vaadin.shared.data.sort.SortDirection;
+import org.junit.Assert;
+import org.junit.Test;
+import org.mockito.Matchers;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+
+import java.util.List;
 
 public class SimpleTokenFieldSelectTest extends BaseMockitoTest {
 
@@ -39,8 +38,8 @@ public class SimpleTokenFieldSelectTest extends BaseMockitoTest {
 		EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
 		AttributeModel am = em.getAttributeModel("name");
 
-		SimpleTokenFieldSelect<Integer, TestEntity, String> select = new SimpleTokenFieldSelect<Integer, TestEntity, String>(
-		        service, em, am, null, "name", String.class, false, order);
+		SimpleTokenFieldSelect<Integer, TestEntity, String> select = new SimpleTokenFieldSelect<>(
+				service, em, am, null, "name", String.class, false, order);
 		select.initContent();
 
 		// select an item and verify it is added as a token
@@ -67,8 +66,8 @@ public class SimpleTokenFieldSelectTest extends BaseMockitoTest {
 
 		EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
 		AttributeModel am = em.getAttributeModel("name");
-		SimpleTokenFieldSelect<Integer, TestEntity, String> select = new SimpleTokenFieldSelect<Integer, TestEntity, String>(
-		        service, em, am, null, "name", String.class, false, order);
+		SimpleTokenFieldSelect<Integer, TestEntity, String> select = new SimpleTokenFieldSelect<>(
+				service, em, am, null, "name", String.class, false, order);
 		select.initContent();
 
 		// select two values and verify that they are added as tokens and removed from the combo box
@@ -89,8 +88,8 @@ public class SimpleTokenFieldSelectTest extends BaseMockitoTest {
 
 		EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
 		AttributeModel am = em.getAttributeModel("name");
-		SimpleTokenFieldSelect<Integer, TestEntity, String> select = new SimpleTokenFieldSelect<Integer, TestEntity, String>(
-		        service, em, am, null, "name", String.class, true, order);
+		SimpleTokenFieldSelect<Integer, TestEntity, String> select = new SimpleTokenFieldSelect<>(
+				service, em, am, null, "name", String.class, true, order);
 		select.initContent();
 
 		// select two values and verify that they are added as tokens and removed from the combo box

@@ -1,11 +1,5 @@
 package com.ocs.dynamo.ui.composite.layout;
 
-import javax.inject.Inject;
-
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-
 import com.google.common.collect.Lists;
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.TestEntity2;
@@ -18,6 +12,11 @@ import com.vaadin.data.Container.Filter;
 import com.vaadin.data.sort.SortOrder;
 import com.vaadin.data.util.filter.Compare;
 import com.vaadin.shared.data.sort.SortDirection;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
+import javax.inject.Inject;
 
 public class ServiceBasedSplitLayoutTest extends BaseIntegrationTest {
 
@@ -123,9 +122,9 @@ public class ServiceBasedSplitLayoutTest extends BaseIntegrationTest {
 	@Test
 	public void testCreateInViewMode() {
 		FormOptions fo = new FormOptions().setOpenInViewMode(true);
-		ServiceBasedSplitLayout<Integer, TestEntity> layout = new ServiceBasedSplitLayout<Integer, TestEntity>(
-		        testEntityService, entityModelFactory.getModel(TestEntity.class), fo, new SortOrder("name",
-		                SortDirection.ASCENDING));
+		ServiceBasedSplitLayout<Integer, TestEntity> layout = new ServiceBasedSplitLayout<>(
+				testEntityService, entityModelFactory.getModel(TestEntity.class), fo, new SortOrder("name",
+				SortDirection.ASCENDING));
 		layout.buildFilter();
 		layout.build();
 

@@ -13,20 +13,18 @@
  */
 package com.ocs.dynamo.domain.model.impl;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.builder.ReflectionToStringBuilder;
-
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.AttributeType;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.utils.ClassUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.builder.ReflectionToStringBuilder;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * An implementation of an entity model - holds metadata about an entity
@@ -76,7 +74,7 @@ public class EntityModelImpl<T> implements EntityModel<T> {
 
 	public void addAttributeGroup(String attributeGroup) {
 		if (!attributeModels.containsKey(attributeGroup)) {
-			attributeModels.put(attributeGroup, new ArrayList<AttributeModel>());
+			attributeModels.put(attributeGroup, new ArrayList<>());
 		}
 	}
 
@@ -138,14 +136,7 @@ public class EntityModelImpl<T> implements EntityModel<T> {
 		for (List<AttributeModel> list : attributeModels.values()) {
 			result.addAll(list);
 		}
-		Collections.sort(result, new Comparator<AttributeModel>() {
-
-			@Override
-			public int compare(AttributeModel o1, AttributeModel o2) {
-				return o1.getOrder().compareTo(o2.getOrder());
-			}
-
-		});
+		result.sort((o1, o2) -> o1.getOrder().compareTo(o2.getOrder()));
 
 		return Collections.unmodifiableList(result);
 	}

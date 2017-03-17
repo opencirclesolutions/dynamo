@@ -13,10 +13,6 @@
  */
 package com.ocs.dynamo.ui.navigator;
 
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.vaadin.navigator.NavigationStateManager;
 import com.vaadin.navigator.Navigator;
@@ -28,6 +24,10 @@ import com.vaadin.shared.util.SharedUtil;
 import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.SingleComponentContainer;
 import com.vaadin.ui.UI;
+
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Override of the Vaadin navigator class, for making sure that a view is reloaded when the user
@@ -41,7 +41,7 @@ public class CustomNavigator extends Navigator {
 
 	private static final long serialVersionUID = 4919429256404050039L;
 
-	private List<ViewProvider> providers = new LinkedList<ViewProvider>();
+	private List<ViewProvider> providers = new LinkedList<>();
 
 	private String currentNavigationState = null;
 

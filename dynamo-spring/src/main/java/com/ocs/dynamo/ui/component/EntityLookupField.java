@@ -122,7 +122,7 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 	        Filter filter, boolean search, boolean multiSelect, List<SortOrder> sortOrders,
 	        FetchJoinInformation... joins) {
 		super(service, entityModel, attributeModel, filter);
-		this.sortOrders = sortOrders != null ? sortOrders : new ArrayList<SortOrder>();
+		this.sortOrders = sortOrders != null ? sortOrders : new ArrayList<>();
 		this.joins = joins;
 		this.multiSelect = multiSelect;
 		this.addAllowed = !search && (attributeModel != null && attributeModel.isQuickAddAllowed());

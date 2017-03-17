@@ -13,14 +13,6 @@
  */
 package com.ocs.dynamo.ui.composite.table;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang.StringUtils;
-
 import com.google.common.collect.Lists;
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.domain.AbstractEntity;
@@ -35,12 +27,9 @@ import com.ocs.dynamo.utils.PasteUtils;
 import com.ocs.dynamo.utils.SystemPropertyUtils;
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
-import com.vaadin.data.Property;
 import com.vaadin.data.util.converter.Converter;
 import com.vaadin.event.Action;
-import com.vaadin.event.FieldEvents.FocusEvent;
 import com.vaadin.event.FieldEvents.FocusListener;
-import com.vaadin.event.ItemClickEvent;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.shared.MouseEventDetails.MouseButton;
 import com.vaadin.ui.Component;
@@ -50,6 +39,13 @@ import com.vaadin.ui.TableFieldFactory;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.TreeTable;
 import com.vaadin.ui.UI;
+import org.apache.commons.lang.StringUtils;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A custom tree table for displaying a hierarchical data collection. This table allows data
@@ -120,17 +116,13 @@ public abstract class InMemoryTreeTable<ID, U extends AbstractEntity<ID>, ID2, V
 		String[] sumColumns = getSumColumns();
 
 		// adds a style generator that highlights the parent rows in bold
-		setCellStyleGenerator(new CellStyleGenerator() {
-
-			@Override
-			public String getStyle(Table source, Object itemId, Object propertyId) {
-				if (itemId.toString().startsWith(PREFIX_PARENTROW)) {
-					return DynamoConstants.CSS_PARENT_ROW;
-				} else {
-					return getCustomStyle(itemId, propertyId);
-				}
-			}
-		});
+		setCellStyleGenerator((CellStyleGenerator) (source, itemId, propertyId) -> {
+            if (itemId.toString().startsWith(PREFIX_PARENTROW)) {
+                return DynamoConstants.CSS_PARENT_ROW;
+            } else {
+                return getCustomStyle(itemId, propertyId);
+            }
+        });
 
 		// custom field factory for creating editable fields for certain
 		// properties
@@ -146,25 +138,15 @@ public abstract class InMemoryTreeTable<ID, U extends AbstractEntity<ID>, ID2, V
 					tf.setNullRepresentation("");
 					tf.setNullSettingAllowed(true);
 					tf.setConverter(createConverter(propertyId.toString()));
-					tf.addFocusListener(new FocusListener() {
-
-						@Override
-						public void focus(FocusEvent event) {
-							clickedColumn = propertyId.toString();
-						}
-					});
+					tf.addFocusListener((FocusListener) event -> clickedColumn = propertyId.toString());
 
 					// add a value change listener (for responding to paste
 					// events and normal changes)
-					tf.addValueChangeListener(new Property.ValueChangeListener() {
-
-						@Override
-						public void valueChange(Property.ValueChangeEvent event) {
-							if (propagateChanges) {
-								handleChange(tf, propertyId.toString(), (String) event.getProperty().getValue());
-							}
-						}
-					});
+					tf.addValueChangeListener((ValueChangeListener) event -> {
+                        if (propagateChanges) {
+                            handleChange(tf, propertyId.toString(), (String) event.getProperty().getValue());
+                        }
+                    });
 
 					// align all text field to the right
 					tf.setStyleName(DynamoConstants.CSS_NUMERICAL);
@@ -246,15 +228,11 @@ public abstract class InMemoryTreeTable<ID, U extends AbstractEntity<ID>, ID2, V
 		}
 
 		// respond to a click by storing the column ID
-		this.addItemClickListener(new ItemClickListener() {
-
-			@Override
-			public void itemClick(ItemClickEvent event) {
-				if (MouseButton.RIGHT.equals(event.getButton())) {
-					clickedColumn = (String) event.getPropertyId();
-				}
-			}
-		});
+		this.addItemClickListener((ItemClickListener) event -> {
+            if (MouseButton.RIGHT.equals(event.getButton())) {
+                clickedColumn = (String) event.getPropertyId();
+            }
+        });
 
 		if (isShowActionMenu()) {
 			constructActionMenu(parentCollection);

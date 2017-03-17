@@ -13,9 +13,6 @@
  */
 package com.ocs.dynamo.ui.composite.layout;
 
-import java.io.Serializable;
-import java.util.Collection;
-
 import com.ocs.dynamo.dao.query.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
@@ -36,11 +33,13 @@ import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Property;
 import com.vaadin.data.sort.SortOrder;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.ColumnGenerator;
 import com.vaadin.ui.VerticalLayout;
+
+import java.io.Serializable;
+import java.util.Collection;
 
 /**
  * A page for editing items directly in a table - this is built around the lazy query container
@@ -140,91 +139,66 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 			if (getFormOptions().isShowRemoveButton()) {
 
 				final String removeMsg = getMessageService().getMessage("ocs.remove");
-				getTableWrapper().getTable().addGeneratedColumn(removeMsg, new ColumnGenerator() {
+				getTableWrapper().getTable().addGeneratedColumn(removeMsg, (ColumnGenerator) (source, itemId, columnId) -> {
 
-					@Override
-					public Object generateCell(final Table source, final Object itemId, Object columnId) {
+                    // in view mode return nothing
+                    if (isViewmode()) {
+                        return null;
+                    }
 
-						// in view mode return nothing
-						if (isViewmode()) {
-							return null;
-						}
+                    RemoveButton rb = new RemoveButton() {
 
-						RemoveButton rb = new RemoveButton() {
-
-							@Override
-							protected void doDelete() {
-								source.removeItem(itemId);
-								getContainer().commit();
-							}
-						};
-						return rb;
-					}
-				});
+                        @Override
+                        protected void doDelete() {
+                            source.removeItem(itemId);
+                            getContainer().commit();
+                        }
+                    };
+                    return rb;
+                });
 			}
 
 			mainLayout.addComponent(getButtonBar());
 
 			// add button
 			addButton = new Button(message("ocs.add"));
-			addButton.addClickListener(new Button.ClickListener() {
-
-				@Override
-				@SuppressWarnings("unchecked")
-				public void buttonClick(ClickEvent event) {
-					// delegate the construction of a new item to the lazy
-					// query container
-					ID id = (ID) getContainer().addItem();
-					createEntity(getEntityFromTable(id));
-					getTableWrapper().getTable().setCurrentPageFirstItemId(id);
-				}
-			});
+			addButton.addClickListener((Button.ClickListener) event -> {
+                // delegate the construction of a new item to the lazy
+                // query container
+                ID id = (ID) getContainer().addItem();
+                createEntity(getEntityFromTable(id));
+                getTableWrapper().getTable().setCurrentPageFirstItemId(id);
+            });
 			getButtonBar().addComponent(addButton);
 			addButton.setVisible(!getFormOptions().isHideAddButton() && isEditAllowed() && !isViewmode());
 
 			// save button
 			saveButton = new Button(message("ocs.save"));
 			saveButton.setEnabled(false);
-			saveButton.addClickListener(new Button.ClickListener() {
-
-				@Override
-				public void buttonClick(ClickEvent event) {
-					try {
-						getContainer().commit();
-						// back to view mode when appropriate
-						if (getFormOptions().isOpenInViewMode()) {
-							toggleViewMode(true);
-						}
-					} catch (RuntimeException ex) {
-						handleSaveException(ex);
-					}
-				}
-			});
+			saveButton.addClickListener((Button.ClickListener) event -> {
+                try {
+                    getContainer().commit();
+                    // back to view mode when appropriate
+                    if (getFormOptions().isOpenInViewMode()) {
+                        toggleViewMode(true);
+                    }
+                } catch (RuntimeException ex) {
+                    handleSaveException(ex);
+                }
+            });
 			getButtonBar().addComponent(saveButton);
 			saveButton.setVisible(!isViewmode());
 
 			editButton = new Button(message("ocs.edit"));
-			editButton.addClickListener(new Button.ClickListener() {
-
-				@Override
-				public void buttonClick(ClickEvent event) {
-					toggleViewMode(false);
-				}
-
-			});
+			editButton.addClickListener((Button.ClickListener) event -> toggleViewMode(false));
 			editButton.setVisible(isViewmode() && getFormOptions().isShowEditButton());
 			getButtonBar().addComponent(editButton);
 
 			cancelButton = new Button(message("ocs.cancel"));
-			cancelButton.addClickListener(new Button.ClickListener() {
-
-				@Override
-				public void buttonClick(ClickEvent event) {
-					reload();
-					toggleViewMode(true);
-				}
-
-			});
+			cancelButton.addClickListener((Button.ClickListener) event -> {
+                reload();
+                toggleViewMode(true);
+            });
 			cancelButton.setVisible(!isViewmode() && getFormOptions().isOpenInViewMode());
 			getButtonBar().addComponent(cancelButton);
 
@@ -289,17 +263,12 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 				}
 
 				if (field != null && field.isEnabled()) {
-					field.addValueChangeListener(new Property.ValueChangeListener() {
-
-						@Override
-						public void valueChange(Property.ValueChangeEvent event) {
-							if (saveButton != null) {
-								saveButton.setEnabled(VaadinUtils
-								        .allFixedTableFieldsValid(getTableWrapper().getTable()));
-							}
-						}
-
-					});
+					field.addValueChangeListener((Property.ValueChangeListener) event -> {
+                        if (saveButton != null) {
+                            saveButton.setEnabled(VaadinUtils
+                                    .allFixedTableFieldsValid(getTableWrapper().getTable()));
+                        }
+                    });
 					field.setSizeFull();
 					postProcessField(am.getPath(), field);
 				}

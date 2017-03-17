@@ -13,17 +13,16 @@
  */
 package com.ocs.dynamo.ui.composite.form;
 
-import java.util.Set;
-
-import org.junit.Assert;
-import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.google.common.collect.Sets;
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.test.BaseIntegrationTest;
+import org.junit.Assert;
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.Set;
 
 public class CollectionTableTest extends BaseIntegrationTest {
 
@@ -35,7 +34,7 @@ public class CollectionTableTest extends BaseIntegrationTest {
 		EntityModel<TestEntity> em = emf.getModel(TestEntity.class);
 
 		FormOptions fo = new FormOptions();
-		CollectionTable<String> table = new CollectionTable<String>(em.getAttributeModel("tags"), true, fo);
+		CollectionTable<String> table = new CollectionTable<>(em.getAttributeModel("tags"), true, fo);
 
 		table.initContent();
 
@@ -52,7 +51,7 @@ public class CollectionTableTest extends BaseIntegrationTest {
 		EntityModel<TestEntity> em = emf.getModel(TestEntity.class);
 
 		FormOptions fo = new FormOptions();
-		CollectionTable<Integer> table = new CollectionTable<Integer>(em.getAttributeModel("intTags"), false, fo);
+		CollectionTable<Integer> table = new CollectionTable<>(em.getAttributeModel("intTags"), false, fo);
 		table.initContent();
 
 		table.getAddButton().click();
@@ -66,7 +65,7 @@ public class CollectionTableTest extends BaseIntegrationTest {
 		EntityModel<TestEntity> em = emf.getModel(TestEntity.class);
 
 		FormOptions fo = new FormOptions();
-		CollectionTable<Long> table = new CollectionTable<Long>(em.getAttributeModel("longTags"), false, fo);
+		CollectionTable<Long> table = new CollectionTable<>(em.getAttributeModel("longTags"), false, fo);
 		table.initContent();
 
 		table.getAddButton().click();
@@ -82,7 +81,7 @@ public class CollectionTableTest extends BaseIntegrationTest {
 		FormOptions fo = new FormOptions();
 		fo.setShowRemoveButton(true);
 
-		CollectionTable<String> table = new CollectionTable<String>(em.getAttributeModel("tags"), false, fo);
+		CollectionTable<String> table = new CollectionTable<>(em.getAttributeModel("tags"), false, fo);
 
 		table.initContent();
 

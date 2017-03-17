@@ -327,25 +327,21 @@ public abstract class ProgressForm<T> extends BaseCustomComponent implements Pro
 					updateThread.start();
 
 					// the thread that performs the actual work
-					Thread worker = new Thread(new Runnable() {
+					Thread worker = new Thread(() -> {
+                        try {
+                            process(t, estimatedSize);
+                        } finally {
+                            updater.setStopped(true);
 
-						@Override
-						public void run() {
-							try {
-								process(t, estimatedSize);
-							} finally {
-								updater.setStopped(true);
-
-								final VaadinSession session = VaadinSession.getCurrent();
-								session.lock();
-								try {
-									done();
-								} finally {
-									session.unlock();
-								}
-							}
-						}
-					});
+                            final VaadinSession session = VaadinSession.getCurrent();
+                            session.lock();
+                            try {
+                                done();
+                            } finally {
+                                session.unlock();
+                            }
+                        }
+                    });
 					worker.start();
 				} catch (OCSRuntimeException ex) {
 					LOGGER.error(ex.getMessage(), ex);

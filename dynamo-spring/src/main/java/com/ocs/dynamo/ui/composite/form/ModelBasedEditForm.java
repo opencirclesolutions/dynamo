@@ -149,18 +149,14 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 			// a button used to clear the image
 			Button clearButton = new Button(message("ocs.clear"));
-			clearButton.addClickListener(new ClickListener() {
-
-				@Override
-				public void buttonClick(ClickEvent event) {
-					ClassUtils.clearFieldValue(getEntity(), attributeModel.getName(), byte[].class);
-					image.setVisible(false);
-					if (attributeModel.getFileNameProperty() != null) {
-						ClassUtils.clearFieldValue(getEntity(), attributeModel.getFileNameProperty(), String.class);
-						refreshLabel(attributeModel.getFileNameProperty());
-					}
-				}
-			});
+			clearButton.addClickListener((ClickListener) event -> {
+                ClassUtils.clearFieldValue(getEntity(), attributeModel.getName(), byte[].class);
+                image.setVisible(false);
+                if (attributeModel.getFileNameProperty() != null) {
+                    ClassUtils.clearFieldValue(getEntity(), attributeModel.getFileNameProperty(), String.class);
+                    refreshLabel(attributeModel.getFileNameProperty());
+                }
+            });
 			buttons.addComponent(clearButton);
 
 			setCaption(attributeModel.getDisplayName());
@@ -226,13 +222,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 					if (target != null) {
 						target.setVisible(true);
 
-						StreamResource.StreamSource ss = new StreamResource.StreamSource() {
-
-							@Override
-							public InputStream getStream() {
-								return new ByteArrayInputStream(stream.toByteArray());
-							}
-						};
+						StreamResource.StreamSource ss = (StreamResource.StreamSource) () -> new ByteArrayInputStream(stream.toByteArray());
 
 						target.setSource(new StreamResource(ss, System.nanoTime() + ".png"));
 					}
@@ -375,11 +365,11 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		groups.put(Boolean.TRUE, group);
 
 		// init panel maps
-		attributeGroups.put(Boolean.TRUE, new HashMap<String, Object>());
-		attributeGroups.put(Boolean.FALSE, new HashMap<String, Object>());
+		attributeGroups.put(Boolean.TRUE, new HashMap<>());
+		attributeGroups.put(Boolean.FALSE, new HashMap<>());
 
-		alreadyBound.put(Boolean.TRUE, new HashSet<String>());
-		alreadyBound.put(Boolean.FALSE, new HashSet<String>());
+		alreadyBound.put(Boolean.TRUE, new HashSet<>());
+		alreadyBound.put(Boolean.FALSE, new HashSet<>());
 	}
 
 	/**
@@ -432,20 +422,16 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	}
 
 	private void addTabChangeListener(TabSheet tabSheet) {
-		tabSheet.addSelectedTabChangeListener(new SelectedTabChangeListener() {
-
-			@Override
-			public void selectedTabChange(SelectedTabChangeEvent event) {
-				Component c = event.getTabSheet().getSelectedTab();
-				if (tabSheets.get(isViewMode()) != null && tabSheets.get(isViewMode()).getTab(c) != null) {
-					int index = VaadinUtils.getTabIndex(tabSheets.get(isViewMode()), tabSheets.get(isViewMode())
-					        .getTab(c).getCaption());
-					if (firstFields.get(index) != null) {
-						firstFields.get(index).focus();
-					}
-				}
-			}
-		});
+		tabSheet.addSelectedTabChangeListener((SelectedTabChangeListener) event -> {
+            Component c = event.getTabSheet().getSelectedTab();
+            if (tabSheets.get(isViewMode()) != null && tabSheets.get(isViewMode()).getTab(c) != null) {
+                int index = VaadinUtils.getTabIndex(tabSheets.get(isViewMode()), tabSheets.get(isViewMode())
+                        .getTab(c).getCaption());
+                if (firstFields.get(index) != null) {
+                    firstFields.get(index).focus();
+                }
+            }
+        });
 	}
 
 	/**
@@ -699,29 +685,19 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		// button to go back to the main screen when in view mode
 
 		backButton = new Button(message("ocs.back"));
-		backButton.addClickListener(new Button.ClickListener() {
-
-			@Override
-			public void buttonClick(ClickEvent event) {
-				back();
-			}
-		});
+		backButton.addClickListener((ClickListener) event -> back());
 		backButton.setVisible(isViewMode() && getFormOptions().isShowBackButton());
 		buttonBar.addComponent(backButton);
 
 		// in edit mode, display a cancel button
 
 		cancelButton = new Button(message("ocs.cancel"));
-		cancelButton.addClickListener(new Button.ClickListener() {
-
-			@Override
-			public void buttonClick(ClickEvent event) {
-				if (entity.getId() != null) {
-					entity = service.fetchById(entity.getId(), getDetailJoins());
-				}
-				afterEditDone(true, entity.getId() == null, entity);
-			}
-		});
+		cancelButton.addClickListener((ClickListener) event -> {
+            if (entity.getId() != null) {
+                entity = service.fetchById(entity.getId(), getDetailJoins());
+            }
+            afterEditDone(true, entity.getId() == null, entity);
+        });
 		cancelButton.setVisible(!isViewMode() && !getFormOptions().isHideCancelButton());
 		buttonBar.addComponent(cancelButton);
 
@@ -734,13 +710,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 		// create the edit button
 		editButton = new Button(message("ocs.edit"));
-		editButton.addClickListener(new Button.ClickListener() {
-
-			@Override
-			public void buttonClick(ClickEvent event) {
-				setViewMode(false);
-			}
-		});
+		editButton.addClickListener((ClickListener) event -> setViewMode(false));
 		buttonBar.addComponent(editButton);
 		editButton.setVisible(isViewMode() && getFormOptions().isShowEditButton() && isEditAllowed());
 
@@ -976,41 +946,31 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	 */
 	private Button constructSaveButton() {
 		Button saveButton = new Button(message("ocs.save"));
-		saveButton.addClickListener(new Button.ClickListener() {
+		saveButton.addClickListener((ClickListener) event -> {
+            try {
+                boolean isNew = entity.getId() == null;
 
-			@Override
-			public void buttonClick(ClickEvent event) {
-				try {
-					boolean isNew = entity.getId() == null;
+                entity = service.save(entity);
+                setEntity(service.fetchById(entity.getId(), getDetailJoins()));
+                showNotifification(message("ocs.changes.saved"), Notification.Type.TRAY_NOTIFICATION);
 
-					entity = service.save(entity);
-					setEntity(service.fetchById(entity.getId(), getDetailJoins()));
-					showNotifification(message("ocs.changes.saved"), Notification.Type.TRAY_NOTIFICATION);
+                // set to viewmode, load the view mode screen, and fill the
+                // details
+                if (getFormOptions().isOpenInViewMode()) {
+                    viewMode = true;
+                    build();
+                }
 
-					// set to viewmode, load the view mode screen, and fill the
-					// details
-					if (getFormOptions().isOpenInViewMode()) {
-						viewMode = true;
-						build();
-					}
-
-					afterEditDone(false, isNew, getEntity());
-				} catch (RuntimeException ex) {
-					handleSaveException(ex);
-				}
-			}
-		});
+                afterEditDone(false, isNew, getEntity());
+            } catch (RuntimeException ex) {
+                handleSaveException(ex);
+            }
+        });
 
 		// enable/disable save button based on form validity
 		saveButton.setEnabled(groups.get(isViewMode()).isValid());
 		for (Field<?> f : groups.get(isViewMode()).getFields()) {
-			f.addValueChangeListener(new Property.ValueChangeListener() {
-
-				@Override
-				public void valueChange(ValueChangeEvent event) {
-					checkSaveButtonState();
-				}
-			});
+			f.addValueChangeListener((ValueChangeListener) event -> checkSaveButtonState());
 		}
 		return saveButton;
 	}

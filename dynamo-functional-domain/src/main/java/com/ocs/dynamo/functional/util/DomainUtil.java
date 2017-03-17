@@ -13,17 +13,16 @@
  */
 package com.ocs.dynamo.functional.util;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-
 import com.google.common.collect.Lists;
 import com.ocs.dynamo.domain.comparator.AttributeComparator;
 import com.ocs.dynamo.functional.domain.Domain;
 import com.ocs.dynamo.service.MessageService;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Utility methods for dealing with domains
@@ -95,7 +94,7 @@ public final class DomainUtil {
 	 */
 	public static <T extends Domain> String getDomainDescriptions(MessageService messageService, Collection<T> domains) {
 		List<T> sorted = Lists.newArrayList(domains);
-		Collections.sort(sorted, new AttributeComparator<T>("name"));
+		sorted.sort(new AttributeComparator<>("name"));
 
 		StringBuilder result = new StringBuilder();
 		int i = 0;

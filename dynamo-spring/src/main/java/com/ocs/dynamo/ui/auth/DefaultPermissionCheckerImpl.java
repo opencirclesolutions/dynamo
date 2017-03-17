@@ -13,6 +13,15 @@
  */
 package com.ocs.dynamo.ui.auth;
 
+import com.ocs.dynamo.service.UserDetailsService;
+import com.vaadin.spring.annotation.SpringView;
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
+import org.springframework.core.type.filter.AnnotationTypeFilter;
+
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -20,17 +29,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-
-import org.apache.log4j.Logger;
-import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
-import org.springframework.core.type.filter.AnnotationTypeFilter;
-
-import com.ocs.dynamo.service.UserDetailsService;
-import com.vaadin.spring.annotation.SpringView;
 
 /**
  * Default permission checker - checks if the user has the correct role to access a view
@@ -75,7 +73,7 @@ public class DefaultPermissionCheckerImpl implements PermissionChecker {
 	 */
 	@Override
 	public List<String> getViewNames() {
-		return Collections.unmodifiableList(new ArrayList<String>(permissions.keySet()));
+		return Collections.unmodifiableList(new ArrayList<>(permissions.keySet()));
 	}
 
 	/**

@@ -1,11 +1,5 @@
 package com.ocs.dynamo.ui.composite.layout;
 
-import javax.inject.Inject;
-
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.TestEntity2;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
@@ -16,6 +10,11 @@ import com.ocs.dynamo.ui.composite.form.FormOptions;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.util.filter.Compare;
 import com.vaadin.ui.VerticalLayout;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
+import javax.inject.Inject;
 
 public class TabularEditLayoutTest extends BaseIntegrationTest {
 
@@ -54,8 +53,8 @@ public class TabularEditLayoutTest extends BaseIntegrationTest {
 	@Test
 	public void testCreate() {
 		FormOptions fo = new FormOptions();
-		TabularEditLayout<Integer, TestEntity> layout = new TabularEditLayout<Integer, TestEntity>(testEntityService,
-		        entityModelFactory.getModel(TestEntity.class), fo, null);
+		TabularEditLayout<Integer, TestEntity> layout = new TabularEditLayout<>(testEntityService,
+				entityModelFactory.getModel(TestEntity.class), fo, null);
 		layout.build();
 		
 		VerticalLayout parent = new VerticalLayout();
@@ -77,8 +76,8 @@ public class TabularEditLayoutTest extends BaseIntegrationTest {
 	@Test
 	public void testCreateDetailLayout() {
 		FormOptions fo = new FormOptions();
-		TabularDetailEditLayout<Integer, TestEntity2, Integer, TestEntity> layout = new TabularDetailEditLayout<Integer, TestEntity2, Integer, TestEntity>(
-		        testEntity2Service, e1, testEntityService, entityModelFactory.getModel(TestEntity2.class), fo, null);
+		TabularDetailEditLayout<Integer, TestEntity2, Integer, TestEntity> layout = new TabularDetailEditLayout<>(
+				testEntity2Service, e1, testEntityService, entityModelFactory.getModel(TestEntity2.class), fo, null);
 
 		layout.build();
 
@@ -112,8 +111,8 @@ public class TabularEditLayoutTest extends BaseIntegrationTest {
 	@Test
 	public void testCreateInViewMode() {
 		FormOptions fo = new FormOptions().setOpenInViewMode(true).setShowEditButton(true);
-		TabularEditLayout<Integer, TestEntity> layout = new TabularEditLayout<Integer, TestEntity>(testEntityService,
-		        entityModelFactory.getModel(TestEntity.class), fo, null);
+		TabularEditLayout<Integer, TestEntity> layout = new TabularEditLayout<>(testEntityService,
+				entityModelFactory.getModel(TestEntity.class), fo, null);
 		layout.build();
 
 		// open in view mode

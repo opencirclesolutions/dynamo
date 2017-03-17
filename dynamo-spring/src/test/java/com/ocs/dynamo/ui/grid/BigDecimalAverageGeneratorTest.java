@@ -13,14 +13,13 @@
  */
 package com.ocs.dynamo.ui.grid;
 
-import java.math.BigDecimal;
-
-import org.junit.Assert;
-import org.junit.Test;
-
 import com.google.common.collect.Lists;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.ui.Table;
+import org.junit.Assert;
+import org.junit.Test;
+
+import java.math.BigDecimal;
 
 public class BigDecimalAverageGeneratorTest {
 
@@ -34,7 +33,7 @@ public class BigDecimalAverageGeneratorTest {
         test.setWeek4_prop(15);
         test.setSkip(new BigDecimal(20));
 
-        BeanItemContainer<TestZ> container = new BeanItemContainer<TestZ>(TestZ.class,
+        BeanItemContainer<TestZ> container = new BeanItemContainer<>(TestZ.class,
                 Lists.newArrayList(test));
         Table table = new Table("", container);
 

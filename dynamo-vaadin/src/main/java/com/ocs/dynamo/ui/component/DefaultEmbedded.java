@@ -13,12 +13,11 @@
  */
 package com.ocs.dynamo.ui.component;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-
 import com.vaadin.server.StreamResource;
 import com.vaadin.server.StreamResource.StreamSource;
 import com.vaadin.ui.Embedded;
+
+import java.io.ByteArrayInputStream;
 
 /**
  * An embedded component that is initialized using a byte array and that can be used to display an
@@ -42,14 +41,7 @@ public class DefaultEmbedded extends Embedded {
     public DefaultEmbedded(String caption, final byte[] bytes) {
         super(caption);
         if (bytes != null) {
-            setSource(new StreamResource(new StreamSource() {
-
-                @Override
-                public InputStream getStream() {
-                    return new ByteArrayInputStream(bytes);
-                }
-
-            }, System.nanoTime() + ".png"));
+            setSource(new StreamResource((StreamSource) () -> new ByteArrayInputStream(bytes), System.nanoTime() + ".png"));
         }
     }
 

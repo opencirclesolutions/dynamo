@@ -123,28 +123,24 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
 			TextField searchField = new TextField(message("ocs.search"));
 
 			// respond to the user entering a search term
-			searchField.addTextChangeListener(new TextChangeListener() {
+			searchField.addTextChangeListener((TextChangeListener) event -> {
+                String text = event.getText();
+                if (!StringUtils.isEmpty(text)) {
+                    Filter quickFilter = constructQuickSearchFilter(text);
+                    if (quickFilter == null && getEntityModel().getMainAttributeModel() != null) {
+                        quickFilter = new Like(getEntityModel().getMainAttributeModel().getPath(),
+                                "%" + text + "%", false);
+                    }
 
-				@Override
-				public void textChange(TextChangeEvent event) {
-					String text = event.getText();
-					if (!StringUtils.isEmpty(text)) {
-						Filter quickFilter = constructQuickSearchFilter(text);
-						if (quickFilter == null && getEntityModel().getMainAttributeModel() != null) {
-							quickFilter = new Like(getEntityModel().getMainAttributeModel().getPath(),
-							        "%" + text + "%", false);
-						}
-
-						Filter temp = quickFilter;
-						if (getFilter() != null) {
-							temp = new And(quickFilter, getFilter());
-						}
-						getContainer().search(temp);
-					} else {
-						getContainer().search(filter);
-					}
-				}
-			});
+                    Filter temp = quickFilter;
+                    if (getFilter() != null) {
+                        temp = new And(quickFilter, getFilter());
+                    }
+                    getContainer().search(temp);
+                } else {
+                    getContainer().search(filter);
+                }
+            });
 			return searchField;
 		}
 		return null;
