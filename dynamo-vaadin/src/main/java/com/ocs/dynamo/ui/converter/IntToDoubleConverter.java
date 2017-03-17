@@ -3,7 +3,6 @@ package com.ocs.dynamo.ui.converter;
 import java.util.Locale;
 
 import com.vaadin.data.util.converter.Converter;
-import com.vaadin.data.util.converter.Converter.ConversionException;
 
 /*
  Licensed under the Apache License, Version 2.0 (the "License");
