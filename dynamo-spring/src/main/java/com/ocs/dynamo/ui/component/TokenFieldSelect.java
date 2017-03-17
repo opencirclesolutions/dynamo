@@ -245,7 +245,7 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
 
 		comboBox.setInputPrompt(getMessageService().getMessage("ocs.type.to.add"));
 		comboBox.setFilteringMode(FilteringMode.CONTAINS);
-		comboBox.setWidth(25, Unit.PERCENTAGE);
+		// comboBox.setWidth(25, Unit.PERCENTAGE);
 		comboBox.setHeightUndefined();
 
 		extTokenField.setInputField(comboBox);

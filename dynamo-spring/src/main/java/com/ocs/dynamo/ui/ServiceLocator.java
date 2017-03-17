@@ -13,19 +13,17 @@
  */
 package com.ocs.dynamo.ui;
 
-import java.util.Map;
-import java.util.Map.Entry;
-
-import javax.servlet.ServletContext;
-
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
-
 import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.MessageService;
 import com.vaadin.spring.server.SpringVaadinServlet;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
+
+import javax.servlet.ServletContext;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Static class for accessing the Spring container
@@ -101,7 +99,7 @@ public final class ServiceLocator {
      * @return
      */
     @SuppressWarnings("rawtypes")
-    public static <T> BaseService<?, ?> getServiceForEntity(Class<T> entityClass) {
+    public static BaseService<?, ?> getServiceForEntity(Class<?> entityClass) {
         Map<String, BaseService> services = getContext().getBeansOfType(BaseService.class, false,
                 true);
         for (Entry<String, BaseService> e : services.entrySet()) {

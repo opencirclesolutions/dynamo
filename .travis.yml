@@ -5,7 +5,6 @@ sudo: false
 install: true
 
 jdk:
-  - oraclejdk7
   - oraclejdk8
 
 cache:

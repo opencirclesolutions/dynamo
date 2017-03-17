@@ -1243,7 +1243,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	 * @param value
 	 *            the name value
 	 */
-	public void replaceLabel(String propertyName, String value) {
+	public void refreshLabel(String propertyName, String value) {
 		AttributeModel am = getEntityModel().getAttributeModel(propertyName);
 		if (am != null) {
 			Component replacement = new Label(value);
