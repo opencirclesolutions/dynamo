@@ -83,7 +83,6 @@ import com.vaadin.ui.TableFieldFactory;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
-import org.vaadin.risto.stepper.IntStepper;
 
 /**
  * Extension of the standard Vaadin field factory for creating custom fields
@@ -502,8 +501,8 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 		// render a label instead
 		AttributeModel attributeModel = model.getAttributeModel(propertyId);
 		if (attributeModel.isReadOnly()
-				&& (!attributeModel.isUrl() && !AttributeType.DETAIL.equals(attributeModel.getAttributeType()))
-				&& !search) {
+		        && (!attributeModel.isUrl() && !AttributeType.DETAIL.equals(attributeModel.getAttributeType()))
+		        && !search) {
 			return null;
 		}
 
@@ -513,7 +512,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 			// text area field
 			field = new TextArea();
 		} else if ((NumberUtils.isLong(attributeModel.getType()) || NumberUtils.isInteger(attributeModel.getType()))
-				&& NumberSelectMode.SLIDER.equals(attributeModel.getNumberSelectMode())) {
+		        && NumberSelectMode.SLIDER.equals(attributeModel.getNumberSelectMode())) {
 			Slider slider = new Slider(attributeModel.getDisplayName());
 
 			if (NumberUtils.isInteger(attributeModel.getType())) {
@@ -529,21 +528,6 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 				slider.setMax(attributeModel.getMaxValue());
 			}
 			field = slider;
-		} else if (NumberSelectMode.SPINNER.equals(attributeModel.getNumberSelectMode())){
-			IntStepper intStepper = new IntStepper();
-			if(attributeModel.getMinValue() != null){
-				intStepper.setMinValue(attributeModel.getMinValue().intValue());
-			}
-			if(attributeModel.getMaxValue() != null){
-				intStepper.setMaxValue(attributeModel.getMaxValue().intValue());
-			}
-			if (attributeModel.getMinValue() != null){
-			    intStepper.setMinValue(attributeModel.getMinValue().intValue());
-            }
-            if (attributeModel.getMaxValue() != null){
-			    intStepper.setMaxValue(attributeModel.getMaxValue().intValue());
-            }
-			field = intStepper;
 		} else if (attributeModel.isWeek()) {
 			// special case - week field in a table
 			TextField tf = new TextField();

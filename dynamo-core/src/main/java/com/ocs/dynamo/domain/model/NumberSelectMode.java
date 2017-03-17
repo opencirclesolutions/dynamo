@@ -15,5 +15,5 @@ package com.ocs.dynamo.domain.model;
 
 public enum NumberSelectMode {
 
-	TEXTFIELD, SLIDER, SPINNER;
+	TEXTFIELD, SLIDER;
 }
