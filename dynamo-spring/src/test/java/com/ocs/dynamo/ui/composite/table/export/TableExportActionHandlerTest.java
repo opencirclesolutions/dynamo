@@ -13,27 +13,6 @@
  */
 package com.ocs.dynamo.ui.composite.table.export;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-
-import junitx.util.PrivateAccessor;
-
-import org.apache.commons.io.IOUtils;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.DataFormat;
-import org.apache.poi.ss.usermodel.Font;
-import org.apache.poi.ss.usermodel.IndexedColors;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.junit.Assert;
-import org.junit.Test;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Matchers;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.ocs.dynamo.constants.DynamoConstants;
@@ -57,6 +36,26 @@ import com.vaadin.ui.Grid;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TreeTable;
 import com.vaadin.ui.UI;
+import junitx.util.PrivateAccessor;
+import org.apache.commons.io.IOUtils;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.DataFormat;
+import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.junit.Assert;
+import org.junit.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Matchers;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TableExportActionHandlerTest extends BaseMockitoTest {
 
@@ -133,7 +132,7 @@ public class TableExportActionHandlerTest extends BaseMockitoTest {
 		handler.handleAction(handler.getActions(null, null)[0], getTable(), null);
 
 		byte[] bytes = captureSave();
-		List<String> lines = IOUtils.readLines(new ByteArrayInputStream(bytes));
+		List<String> lines = IOUtils.readLines(new ByteArrayInputStream(bytes), Charset.defaultCharset());
 
 		Assert.assertEquals("\"Name\";\"Age\";\"Weight\";\"Percentage\"", lines.get(0));
 		Assert.assertEquals("\"Bas, Bob\";\"35\";\"" + formatNumber("76,00") + "\";\"" + formatNumber("12,00") + "\"",
@@ -152,7 +151,7 @@ public class TableExportActionHandlerTest extends BaseMockitoTest {
 
 		handler.handleAction(handler.getActions(null, null)[0], getTable(), null);
 		byte[] bytes = captureSave();
-		List<String> lines = IOUtils.readLines(new ByteArrayInputStream(bytes));
+		List<String> lines = IOUtils.readLines(new ByteArrayInputStream(bytes), Charset.defaultCharset());
 
 		Assert.assertEquals("\"Name\";\"Age\";\"Weight\";\"Percentage\"", lines.get(0));
 		Assert.assertEquals("\"Bas, Bob\";\"35\";\"" + "76,00" + "\";\"" + "12,00" + "%\"", lines.get(1));
@@ -185,7 +184,7 @@ public class TableExportActionHandlerTest extends BaseMockitoTest {
 		handler.handleAction(handler.getActions(null, null)[0], getTreeTable(), null);
 
 		byte[] bytes = captureSave();
-		List<String> lines = IOUtils.readLines(new ByteArrayInputStream(bytes));
+		List<String> lines = IOUtils.readLines(new ByteArrayInputStream(bytes), Charset.defaultCharset());
 
 		Assert.assertEquals("\"name\";\"age\"", lines.get(0));
 		Assert.assertEquals("\"Special ops\";\"\"", lines.get(1));
@@ -368,7 +367,7 @@ public class TableExportActionHandlerTest extends BaseMockitoTest {
 		handler.handleAction(handler.getActions(null, null)[0], getTable(), null);
 
 		byte[] bytes = captureSave();
-		List<String> lines = IOUtils.readLines(new ByteArrayInputStream(bytes));
+		List<String> lines = IOUtils.readLines(new ByteArrayInputStream(bytes), Charset.defaultCharset());
 
 		Assert.assertEquals("'Name','Age','Weight','Percentage'", lines.get(0));
 		Assert.assertEquals("'Bas, Bob','35','" + formatNumber("76,00") + "','" + formatNumber("12,00") + "'",
