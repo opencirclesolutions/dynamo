@@ -45,10 +45,6 @@ public class ServiceContainer<ID extends Serializable, T extends AbstractEntity<
 
 	private static final long serialVersionUID = 2605988307857731787L;
 
-	protected static final List<String> DEFAULT_EXCLUDE_COLUMNS = Collections.unmodifiableList(Arrays
-	        .asList(new String[] { LazyQueryView.PROPERTY_ID_ITEM_STATUS, LazyQueryView.DEBUG_PROPERTY_ID_BATCH_INDEX,
-	                LazyQueryView.DEBUG_PROPERTY_ID_BATCH_QUERY_TIME, LazyQueryView.DEBUG_PROPERTY_ID_QUERY_INDEX }));
-
 	/**
 	 * Constructs a service container based on a query definition
 	 * 

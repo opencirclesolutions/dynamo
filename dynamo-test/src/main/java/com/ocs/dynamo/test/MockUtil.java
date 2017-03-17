@@ -173,7 +173,7 @@ public final class MockUtil {
 	 * Mocks the "fetchById" method of a DAO by returning the provided entity
 	 */
 	public static <ID, X extends AbstractEntity<ID>> void mockFetchById(BaseDao<ID, X> dao, ID id, X entity) {
-		Mockito.when(dao.fetchById((ID) Matchers.eq(id), (FetchJoinInformation[]) Matchers.anyVararg())).thenReturn(
+		Mockito.when(dao.fetchById(Matchers.eq(id), (FetchJoinInformation[]) Matchers.anyVararg())).thenReturn(
 		        entity);
 	}
 
@@ -186,14 +186,14 @@ public final class MockUtil {
 	@SuppressWarnings("unchecked")
 	public static void mockMessageService(MessageService messageService) {
 		// method without any arguments
-		Mockito.when(messageService.getMessage(Matchers.anyString())).thenAnswer(invocation -> (String) invocation.getArguments()[0]);
+		Mockito.when(messageService.getMessage(Matchers.anyString())).thenAnswer(invocation -> invocation.getArguments()[0]);
 		// method with varargs
 		Mockito.when(messageService.getMessage(Matchers.anyString(), Matchers.anyVararg())).thenAnswer(
-				invocation -> (String) invocation.getArguments()[0]);
+				invocation -> invocation.getArguments()[0]);
 
 		// method with locale
 		Mockito.when(messageService.getMessage(Matchers.anyString(), Matchers.any(Locale.class))).thenAnswer(
-				invocation -> (String) invocation.getArguments()[0]);
+				invocation -> invocation.getArguments()[0]);
 
 		// method for retrieving enum message
 		Mockito.when(messageService.getEnumMessage(Matchers.any(Class.class), Matchers.any(Enum.class))).thenAnswer(
@@ -212,7 +212,7 @@ public final class MockUtil {
 	@SuppressWarnings("unchecked")
 	public static <ID, X extends AbstractEntity<ID>> void mockSave(BaseDao<ID, X> dao, Class<X> clazz) {
 		// mock the save behaviour - return the first argument being passed to the method
-		Mockito.when(dao.save(Matchers.any(clazz))).thenAnswer(invocation -> (X) invocation.getArguments()[0]);
+		Mockito.when(dao.save(Matchers.any(clazz))).thenAnswer(invocation -> invocation.getArguments()[0]);
 	}
 
 	/**
@@ -223,7 +223,7 @@ public final class MockUtil {
 	@SuppressWarnings("unchecked")
 	public static <ID, X extends AbstractEntity<ID>> void mockSaveList(BaseDao<ID, X> dao) {
 		// mock the save behaviour
-		Mockito.when(dao.save(Matchers.any(List.class))).thenAnswer(invocation -> (List<X>) invocation.getArguments()[0]);
+		Mockito.when(dao.save(Matchers.any(List.class))).thenAnswer(invocation -> invocation.getArguments()[0]);
 	}
 
 	/**
@@ -236,7 +236,7 @@ public final class MockUtil {
 	@SuppressWarnings("unchecked")
 	public static <ID, U extends AbstractEntity<ID>> void mockServiceSave(BaseService<ID, U> service, Class<U> clazz) {
 		// mock the save behaviour
-		Mockito.when(service.save(Matchers.any(clazz))).thenAnswer(invocation -> (U) invocation.getArguments()[0]);
+		Mockito.when(service.save(Matchers.any(clazz))).thenAnswer(invocation -> invocation.getArguments()[0]);
 	}
 
 	/**

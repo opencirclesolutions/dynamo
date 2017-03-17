@@ -658,7 +658,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			innerLayout = new FormLayout();
 			((FormLayout) innerLayout).setMargin(true);
 			if (!tabs) {
-				((FormLayout) innerLayout).setStyleName(DynamoConstants.CSS_CLASS_HALFSCREEN);
+				innerLayout.setStyleName(DynamoConstants.CSS_CLASS_HALFSCREEN);
 			}
 		} else {
 			innerLayout = new DefaultVerticalLayout(true, true);

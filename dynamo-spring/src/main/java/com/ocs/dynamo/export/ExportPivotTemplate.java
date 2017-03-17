@@ -431,7 +431,7 @@ public abstract class ExportPivotTemplate<ID extends Serializable, T extends Abs
 				row.add(VaadinUtils.integerToString(true, rowSum));
 			} else if (createAveragesColumn() && valueCount > 0) {
 				BigDecimal avg = rowAverage.divide(new BigDecimal(valueCount));
-				String s = VaadinUtils.bigDecimalToString(usePercentages(), true, (BigDecimal) avg);
+				String s = VaadinUtils.bigDecimalToString(usePercentages(), true, avg);
 				row.add(s);
 			}
 			writer.writeNext(row.toArray(new String[0]));
@@ -484,7 +484,7 @@ public abstract class ExportPivotTemplate<ID extends Serializable, T extends Abs
 				// average
 				BigDecimal avg = rowAverage.divide(new BigDecimal(valueCount), DynamoConstants.INTERMEDIATE_PRECISION,
 				        RoundingMode.HALF_UP);
-				String s = VaadinUtils.bigDecimalToString(usePercentages(), true, (BigDecimal) avg);
+				String s = VaadinUtils.bigDecimalToString(usePercentages(), true, avg);
 				createCell(row, lastColumnIndex, null, avg, null).setCellValue(s);
 			}
 		}

@@ -25,7 +25,6 @@ import com.ocs.dynamo.service.TestEntity2Service;
 import com.ocs.dynamo.service.TestEntityService;
 import com.ocs.dynamo.test.BaseIntegrationTest;
 import com.ocs.dynamo.ui.container.QueryType;
-import com.ocs.dynamo.ui.container.hierarchical.HierarchicalFetchJoinInformation;
 import com.ocs.dynamo.ui.container.hierarchical.ModelBasedHierarchicalContainer;
 import com.vaadin.data.sort.SortOrder;
 import com.vaadin.data.util.filter.Compare;
@@ -127,7 +126,7 @@ public class ModelBasedTreeTableIntegrationTest extends BaseIntegrationTest {
 		services.add(testEntity2Service);
 
 		ServiceResultsTreeTableWrapper<Integer, TestEntity> wrapper = new ServiceResultsTreeTableWrapper<>(services,
-		        model, QueryType.PAGING, null, true, new HierarchicalFetchJoinInformation[0]);
+		        model, QueryType.PAGING, null, true);
 		wrapper.build();
 
 		Assert.assertNotNull(wrapper.getContainer());
@@ -146,8 +145,7 @@ public class ModelBasedTreeTableIntegrationTest extends BaseIntegrationTest {
 		services.add(testEntity2Service);
 
 		ServiceResultsTreeTableWrapper<Integer, TestEntity> wrapper = new ServiceResultsTreeTableWrapper<>(services,
-		        model, QueryType.PAGING, Lists.newArrayList(new SortOrder("name", SortDirection.ASCENDING)), true,
-		        new HierarchicalFetchJoinInformation[0]);
+		        model, QueryType.PAGING, Lists.newArrayList(new SortOrder("name", SortDirection.ASCENDING)), true);
 		wrapper.build();
 
 		Assert.assertNotNull(wrapper.getContainer());

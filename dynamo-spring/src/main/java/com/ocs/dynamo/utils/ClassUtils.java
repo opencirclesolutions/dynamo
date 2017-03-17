@@ -101,7 +101,7 @@ public final class ClassUtils {
                 }
             } else {
                 Method m = obj.getClass().getMethod(SET + StringUtils.capitalize(fieldName),
-                        new Class[] { argType });
+                        argType);
                 m.invoke(obj, new Object[] { null });
             }
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
@@ -372,13 +372,11 @@ public final class ClassUtils {
         if (clazz != null) {
             try {
                 // first, try to find a "get" method
-                method = clazz.getDeclaredMethod(GET + StringUtils.capitalize(fieldName),
-                        new Class[] {});
+                method = clazz.getDeclaredMethod(GET + StringUtils.capitalize(fieldName));
             } catch (NoSuchMethodException | SecurityException ex) {
                 try {
                     // next, try to find an "is" method
-                    method = clazz.getDeclaredMethod(IS + StringUtils.capitalize(fieldName),
-                            new Class[] {});
+                    method = clazz.getDeclaredMethod(IS + StringUtils.capitalize(fieldName));
                 } catch (NoSuchMethodException | SecurityException ex2) {
                     // if that fails, try the superclass
                     if (clazz.getSuperclass() != null) {

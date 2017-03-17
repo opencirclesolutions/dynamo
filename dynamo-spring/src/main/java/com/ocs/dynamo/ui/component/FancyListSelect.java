@@ -176,7 +176,7 @@ public class FancyListSelect<ID extends Serializable, T extends AbstractEntity<I
 	}
 
 	@Override
-	public Class<? extends Object> getType() {
+	public Class<?> getType() {
 		return Object.class;
 	}
 

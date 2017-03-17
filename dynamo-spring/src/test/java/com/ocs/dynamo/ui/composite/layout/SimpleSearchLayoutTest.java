@@ -1,14 +1,5 @@
 package com.ocs.dynamo.ui.composite.layout;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.inject.Inject;
-
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-
 import com.google.common.collect.Lists;
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
@@ -21,6 +12,13 @@ import com.vaadin.data.Container.Filter;
 import com.vaadin.data.sort.SortOrder;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.Table;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
+import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SimpleSearchLayoutTest extends BaseIntegrationTest {
 
@@ -62,7 +60,7 @@ public class SimpleSearchLayoutTest extends BaseIntegrationTest {
 		Assert.assertEquals(3, table.size());
 
 		Object id = table.getItemIds().iterator().next();
-		TestEntity t = (TestEntity) VaadinUtils.getEntityFromContainer(table.getContainerDataSource(), id);
+		TestEntity t = VaadinUtils.getEntityFromContainer(table.getContainerDataSource(), id);
 
 		layout.detailsMode(t);
 	}

@@ -13,9 +13,6 @@
  */
 package com.ocs.dynamo.ui.composite.table;
 
-import java.io.Serializable;
-import java.util.List;
-
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
@@ -29,6 +26,9 @@ import com.ocs.dynamo.ui.container.hierarchical.ModelBasedHierarchicalContainer.
 import com.vaadin.data.Container;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.sort.SortOrder;
+
+import java.io.Serializable;
+import java.util.List;
 
 /**
  * Simple search of hierarchical information presented in tree table. Uses
@@ -125,7 +125,7 @@ public class ServiceResultsTreeTableWrapper<ID extends Serializable, T extends A
 	public void search(Filter filter) {
 		Filter temp = beforeSearchPerformed(filter);
 		if (getContainer() != null && !getContainer().getHierarchy().isEmpty()) {
-			ModelBasedHierarchicalDefinition def = (ModelBasedHierarchicalDefinition) getContainer()
+			ModelBasedHierarchicalDefinition def = getContainer()
 			        .getHierarchicalDefinition(0);
 			if (def.getContainer() instanceof Searchable) {
 				((Searchable) def.getContainer()).search(temp != null ? temp : filter);
