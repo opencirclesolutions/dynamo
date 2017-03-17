@@ -50,6 +50,7 @@ import com.ocs.dynamo.ui.component.TokenFieldSelect;
 import com.ocs.dynamo.ui.component.URLField;
 import com.ocs.dynamo.ui.composite.form.CollectionTable;
 import com.ocs.dynamo.ui.composite.form.FormOptions;
+import com.ocs.dynamo.ui.converter.BigDecimalToDoubleConverter;
 import com.ocs.dynamo.ui.converter.ConverterFactory;
 import com.ocs.dynamo.ui.converter.IntToDoubleConverter;
 import com.ocs.dynamo.ui.converter.LongToDoubleConverter;
@@ -511,14 +512,18 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 		if (AttributeTextFieldMode.TEXTAREA.equals(attributeModel.getTextFieldMode()) && !search) {
 			// text area field
 			field = new TextArea();
-		} else if ((NumberUtils.isLong(attributeModel.getType()) || NumberUtils.isInteger(attributeModel.getType()))
+		} else if ((NumberUtils.isLong(attributeModel.getType()) || NumberUtils.isInteger(attributeModel.getType()) || BigDecimal.class
+		        .equals(attributeModel.getType()))
 		        && NumberSelectMode.SLIDER.equals(attributeModel.getNumberSelectMode())) {
 			Slider slider = new Slider(attributeModel.getDisplayName());
 
 			if (NumberUtils.isInteger(attributeModel.getType())) {
 				slider.setConverter(new IntToDoubleConverter());
-			} else {
+			} else if (NumberUtils.isLong(attributeModel.getType())) {
 				slider.setConverter(new LongToDoubleConverter());
+			} else {
+				slider.setConverter(new BigDecimalToDoubleConverter());
+				slider.setResolution(attributeModel.getPrecision());
 			}
 
 			if (attributeModel.getMinValue() != null) {

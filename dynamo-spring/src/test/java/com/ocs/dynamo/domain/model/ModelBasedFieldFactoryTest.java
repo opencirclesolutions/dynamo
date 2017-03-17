@@ -20,6 +20,8 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import javax.swing.JSpinner;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -52,6 +54,7 @@ import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.Field;
+import com.vaadin.ui.Slider;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 
@@ -137,6 +140,26 @@ public class ModelBasedFieldFactoryTest extends BaseMockitoTest {
 
 		TextField tf = (TextField) obj;
 		Assert.assertEquals(Integer.class, tf.getConverter().getModelType());
+	}
+
+	@Test
+	public void testIntegerSlider() {
+		Object obj = fieldFactory.createField("someIntSlider");
+		Assert.assertTrue(obj instanceof Slider);
+
+		Slider slider = (Slider) obj;
+		Assert.assertEquals(Integer.class, slider.getConverter().getModelType());
+		Assert.assertEquals(99, slider.getMin(), 0.001);
+		Assert.assertEquals(175, slider.getMax(), 0.001);
+	}
+	
+	@Test
+	public void testLongSlider() {
+		Object obj = fieldFactory.createField("someLongSlider");
+		Assert.assertTrue(obj instanceof Slider);
+
+		Slider slider = (Slider) obj;
+		Assert.assertEquals(Long.class, slider.getConverter().getModelType());
 	}
 
 	/**

@@ -186,28 +186,28 @@ public final class SystemPropertyUtils {
 	/**
 	 * @return default true representation
 	 */
-	public static String getDefaultTrueRepresentation(){
+	public static String getDefaultTrueRepresentation() {
 		return System.getProperty(DynamoConstants.SP_DEFAULT_TRUE_REPRESENTATION, DEFAULT_TRUE_REPRESENTATION);
 	}
 
 	/**
 	 * @return default false representation
 	 */
-	public static String getDefaultFalseRepresentation(){
+	public static String getDefaultFalseRepresentation() {
 		return System.getProperty(DynamoConstants.SP_DEFAULT_FALSE_REPRESENTATION, DEFAULT_FALSE_REPRESENTATION);
 	}
 
 	/**
 	 * @return default search case sensitive. False if not specified
 	 */
-	public static boolean getDefaultSearchCaseSensitive(){
+	public static boolean getDefaultSearchCaseSensitive() {
 		return Boolean.getBoolean(DynamoConstants.SP_DEFAULT_SEARCH_CASE_SENSITIVE);
 	}
 
 	/**
 	 * @return default search prefix only. False if not specified
 	 */
-	public static boolean getDefaultSearchPrefixOnly(){
+	public static boolean getDefaultSearchPrefixOnly() {
 		return Boolean.getBoolean(DynamoConstants.SP_DEFAULT_SEARCH_PREFIX_ONLY);
 	}
 

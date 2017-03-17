@@ -93,8 +93,10 @@ public final class ConvertUtil {
 				return VaadinUtils.stringToLong(grouping, (String) input, locale);
 			}
 		} else if (BigDecimal.class.equals(attributeModel.getType())) {
-			return VaadinUtils.stringToBigDecimal(attributeModel.isPercentage(), grouping, attributeModel.isCurrency(),
-			        attributeModel.getPrecision(), (String) input, locale);
+			if (NumberSelectMode.TEXTFIELD.equals(attributeModel.getNumberSelectMode())) {
+				return VaadinUtils.stringToBigDecimal(attributeModel.isPercentage(), grouping,
+				        attributeModel.isCurrency(), attributeModel.getPrecision(), (String) input, locale);
+			}
 		}
 		return input;
 	}
