@@ -13,14 +13,14 @@
  */
 package com.ocs.dynamo.importer.impl;
 
-import java.beans.PropertyDescriptor;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Iterator;
-
+import com.monitorjbl.xlsx.StreamingReader;
+import com.ocs.dynamo.exception.OCSImportException;
+import com.ocs.dynamo.exception.OCSRuntimeException;
+import com.ocs.dynamo.exception.OCSValidationException;
+import com.ocs.dynamo.importer.ImportField;
+import com.ocs.dynamo.importer.dto.AbstractDTO;
+import com.ocs.dynamo.utils.ClassUtils;
+import com.ocs.dynamo.utils.SystemPropertyUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.OfficeXmlFileException;
 import org.apache.poi.ss.usermodel.Cell;
@@ -31,14 +31,12 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.BeanUtils;
 import org.springframework.util.StringUtils;
 
-import com.monitorjbl.xlsx.StreamingReader;
-import com.ocs.dynamo.exception.OCSImportException;
-import com.ocs.dynamo.exception.OCSRuntimeException;
-import com.ocs.dynamo.exception.OCSValidationException;
-import com.ocs.dynamo.importer.ImportField;
-import com.ocs.dynamo.importer.dto.AbstractDTO;
-import com.ocs.dynamo.utils.ClassUtils;
-import com.ocs.dynamo.utils.SystemPropertyUtils;
+import java.beans.PropertyDescriptor;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * Base class for services that can be used to import Excel files.
@@ -101,7 +99,7 @@ public class BaseXlsImporter extends BaseImporter<Row, Cell> {
 	 * 
 	 * @param bytes
 	 *            the content of the file
-	 * @param the
+	 * @param sheetIndex
 	 *            index of the sheet to read from
 	 * @param cacheSize
 	 *            the cache size

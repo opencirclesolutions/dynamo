@@ -32,7 +32,6 @@ import com.vaadin.data.Container.Filter;
 import com.vaadin.data.sort.SortOrder;
 import com.vaadin.data.util.filter.And;
 import com.vaadin.data.util.filter.Like;
-import com.vaadin.event.FieldEvents.TextChangeEvent;
 import com.vaadin.event.FieldEvents.TextChangeListener;
 import com.vaadin.ui.TextField;
 
@@ -71,8 +70,6 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
 	 *            the entity model
 	 * @param formOptions
 	 *            the form options
-	 * @param fieldFilters
-	 *            the field filters
 	 * @param sortOrder
 	 *            the sort order
 	 * @param joins

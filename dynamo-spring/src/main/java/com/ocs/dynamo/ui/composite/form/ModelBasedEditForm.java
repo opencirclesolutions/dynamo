@@ -15,7 +15,6 @@ package com.ocs.dynamo.ui.composite.form;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -53,7 +52,6 @@ import com.ocs.dynamo.ui.composite.type.ScreenMode;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.utils.ClassUtils;
 import com.vaadin.data.Container.Filter;
-import com.vaadin.data.Property;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.fieldgroup.BeanFieldGroup;
@@ -62,7 +60,6 @@ import com.vaadin.data.util.filter.Compare;
 import com.vaadin.server.StreamResource;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Component;
@@ -77,7 +74,6 @@ import com.vaadin.ui.Layout;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TabSheet;
-import com.vaadin.ui.TabSheet.SelectedTabChangeEvent;
 import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
 import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.Upload;
@@ -867,7 +863,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	 *            the entity model
 	 * @param attributeModel
 	 *            the attribute model for the attribute for which to create a label
-	 * @param count
+	 * @param tabIndex
 	 *            the number of components added so far
 	 */
 	private void constructLabel(Layout parent, EntityModel<T> entityModel, AttributeModel attributeModel, int tabIndex) {

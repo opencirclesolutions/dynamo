@@ -37,7 +37,6 @@ import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.data.util.ItemSorter;
 import com.vaadin.shared.ui.combobox.FilteringMode;
-import com.vaadin.ui.AbstractOrderedLayout;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
@@ -132,10 +131,15 @@ public class SimpleTokenFieldSelect<ID extends Serializable, S extends AbstractE
 	/**
 	 * Constructor
 	 *
+	 * @param service
+	 *
+     * @param entityModel
+     *
 	 * @param attributeModel
 	 *            the attribute model
-	 * @param items
+	 * @param fieldFilter
 	 *            the list of items to display
+     * @param distinctField
 	 * @param elementType
 	 *            the type of the items to display
 	 * @param sortOrders

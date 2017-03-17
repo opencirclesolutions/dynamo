@@ -1,11 +1,12 @@
 package com.ocs.dynamo.export;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.math.BigDecimal;
-
-import org.apache.commons.io.FileUtils;
+import com.ocs.dynamo.domain.TestEntity;
+import com.ocs.dynamo.domain.TestEntity.TestEnum;
+import com.ocs.dynamo.domain.model.EntityModelFactory;
+import com.ocs.dynamo.domain.model.impl.EntityModelFactoryImpl;
+import com.ocs.dynamo.service.TestEntityService;
+import com.ocs.dynamo.test.BaseIntegrationTest;
+import com.ocs.dynamo.utils.DateUtils;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -15,13 +16,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.ocs.dynamo.domain.TestEntity;
-import com.ocs.dynamo.domain.TestEntity.TestEnum;
-import com.ocs.dynamo.domain.model.EntityModelFactory;
-import com.ocs.dynamo.domain.model.impl.EntityModelFactoryImpl;
-import com.ocs.dynamo.service.TestEntityService;
-import com.ocs.dynamo.test.BaseIntegrationTest;
-import com.ocs.dynamo.utils.DateUtils;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.math.BigDecimal;
 
 public class ModelBasedExportTemplateTest extends BaseIntegrationTest {
 
