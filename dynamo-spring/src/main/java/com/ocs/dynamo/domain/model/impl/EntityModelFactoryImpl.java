@@ -46,6 +46,7 @@ import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import com.ocs.dynamo.domain.model.NumberSelectMode;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.BeanUtils;
@@ -1154,6 +1155,12 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 		if (msg != null && !StringUtils.isEmpty(msg) && AttributeSelectMode.valueOf(msg) != null) {
 			model.setSelectMode(AttributeSelectMode.valueOf(msg));
 			model.setSearchSelectMode(AttributeSelectMode.valueOf(msg));
+		}
+
+		// set the number select mode
+		msg = getAttributeMessage(entityModel, model, EntityModel.NUMBER_SELECT_MODE);
+		if (msg != null && !StringUtils.isEmpty(msg) && NumberSelectMode.valueOf(msg) != null){
+			model.setNumberSelectMode(NumberSelectMode.valueOf(msg));
 		}
 
 		// explicitly set the search select mode

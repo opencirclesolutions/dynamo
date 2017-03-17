@@ -233,6 +233,11 @@ public interface EntityModel<T> {
 	String SELECT_MODE = "selectMode";
 
 	/**
+	 * Type of number input field to use instead of a text field
+	 */
+	String NUMBER_SELECT_MODE = "numberSelectMode";
+
+	/**
 	 * Whether to show an attribute inside a table
 	 */
 	String SHOW_IN_TABLE = "showInTable";
