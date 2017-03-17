@@ -33,6 +33,7 @@ import com.vaadin.data.util.filter.Compare;
 import com.vaadin.data.util.filter.SimpleStringFilter;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Field;
+import com.vaadin.ui.Slider;
 
 /**
  * Represents one or more search fields used to filter on a single property
@@ -54,7 +55,7 @@ public class FilterGroup {
 	private final Component filterComponent;
 
 	// the main search field
-	private final Field<Object> field;
+	private final Field<?> field;
 
 	// the currently active filter - constructing by composing the main filter
 	// and the aux filter
@@ -64,7 +65,7 @@ public class FilterGroup {
 	private Filter mainFilter;
 
 	// auxiliary field (in case of range searches)
-	private final Field<Object> auxField;
+	private final Field<?> auxField;
 
 	// filter on the auxiliary field
 	private Filter auxFieldFilter;
@@ -88,15 +89,14 @@ public class FilterGroup {
 	 * @param auxField
 	 *            the auxiliary filter field
 	 */
-	@SuppressWarnings("unchecked")
 	public FilterGroup(AttributeModel attributeModel, String propertyId, FilterType filterType,
 	        Component filterComponent, Field<?> field, Field<?> auxField) {
 		this.attributeModel = attributeModel;
 		this.propertyId = propertyId;
 		this.filterType = filterType;
 		this.filterComponent = filterComponent;
-		this.field = (Field<Object>) field;
-		this.auxField = (Field<Object>) auxField;
+		this.field = field;
+		this.auxField = auxField;
 
 		// respond to a change of the main field
 		field.addValueChangeListener(new ValueChangeListener() {
@@ -124,8 +124,8 @@ public class FilterGroup {
 				@Override
 				public void valueChange(ValueChangeEvent event) {
 					try {
-						FilterGroup.this.valueChange(FilterGroup.this.auxField, ConvertUtil
-								.convertSearchValue(FilterGroup.this.attributeModel, event.getProperty().getValue()));
+						FilterGroup.this.valueChange(FilterGroup.this.auxField, ConvertUtil.convertSearchValue(
+						        FilterGroup.this.attributeModel, event.getProperty().getValue()));
 					} catch (ConversionException ex) {
 						// do nothing (this results in a nicer exception being displayed)
 					}
@@ -186,7 +186,7 @@ public class FilterGroup {
 					String valueStr = value.toString();
 					if (StringUtils.isNotEmpty(valueStr)) {
 						filter = new SimpleStringFilter(propertyId, valueStr, !attributeModel.isSearchCaseSensitive(),
-								attributeModel.isSearchPrefixOnly());
+						        attributeModel.isSearchPrefixOnly());
 					}
 				}
 			}
@@ -219,9 +219,20 @@ public class FilterGroup {
 	 * Resets both filters
 	 */
 	public void reset() {
-		field.setValue(null);
+		if (field instanceof Slider) {
+			Slider slider = (Slider) field;
+			slider.setValue(slider.getMin());
+		} else {
+			field.setValue(null);
+		}
+
 		if (auxField != null) {
-			auxField.setValue(null);
+			if (auxField instanceof Slider) {
+				Slider slider = (Slider) auxField;
+				slider.setValue(slider.getMin());
+			} else {
+				auxField.setValue(null);
+			}
 		}
 	}
 
@@ -262,12 +273,14 @@ public class FilterGroup {
 		return filterComponent;
 	}
 
+	@SuppressWarnings("unchecked")
 	public Field<Object> getField() {
-		return field;
+		return (Field<Object>) field;
 	}
 
+	@SuppressWarnings("unchecked")
 	public Field<Object> getAuxField() {
-		return auxField;
+		return (Field<Object>) auxField;
 	}
 
 }

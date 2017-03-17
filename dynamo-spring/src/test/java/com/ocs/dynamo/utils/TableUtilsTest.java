@@ -13,20 +13,6 @@
  */
 package com.ocs.dynamo.utils;
 
-import java.math.BigDecimal;
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.Set;
-
-import javax.persistence.ElementCollection;
-
-import junitx.util.PrivateAccessor;
-
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mock;
-
 import com.google.common.collect.Sets;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.TestEntity;
@@ -42,6 +28,17 @@ import com.ocs.dynamo.test.BaseMockitoTest;
 import com.ocs.dynamo.test.MockUtil;
 import com.ocs.dynamo.ui.composite.table.TableUtils;
 import com.vaadin.ui.Table;
+import junitx.util.PrivateAccessor;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mock;
+
+import javax.persistence.ElementCollection;
+import java.math.BigDecimal;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Set;
 
 public class TableUtilsTest extends BaseMockitoTest {
 
@@ -81,9 +78,9 @@ public class TableUtilsTest extends BaseMockitoTest {
 		        TableUtils.formatPropertyValue(null, factory, model, messageService, "name", "Bob", LOCALE));
 
 		// boolean (without overrides)
-		Assert.assertEquals("ocs.true",
+		Assert.assertEquals("true",
 		        TableUtils.formatPropertyValue(null, factory, model, messageService, "someBoolean", true, LOCALE));
-		Assert.assertEquals("ocs.false",
+		Assert.assertEquals("false",
 		        TableUtils.formatPropertyValue(null, factory, model, messageService, "someBoolean", false, LOCALE));
 
 		// boolean (with overrides)

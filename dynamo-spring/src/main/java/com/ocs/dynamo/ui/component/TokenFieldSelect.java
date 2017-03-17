@@ -23,6 +23,7 @@ import com.explicatis.ext_token_field.ExtTokenField;
 import com.explicatis.ext_token_field.Tokenizable;
 import com.explicatis.ext_token_field.events.TokenRemovedEvent;
 import com.explicatis.ext_token_field.events.TokenRemovedListener;
+import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
@@ -84,7 +85,7 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
 		}
 
 		private long getTokenIdentifier(T entity) {
-			return Long.parseLong(ClassUtils.getFieldValueAsString(entity, "id"));
+			return Long.parseLong(ClassUtils.getFieldValueAsString(entity, DynamoConstants.ID));
 		}
 	}
 

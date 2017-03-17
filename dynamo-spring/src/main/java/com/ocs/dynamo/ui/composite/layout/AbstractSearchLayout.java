@@ -14,7 +14,6 @@
 package com.ocs.dynamo.ui.composite.layout;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -24,6 +23,7 @@ import com.ocs.dynamo.dao.query.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
+import com.ocs.dynamo.exception.OCSValidationException;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.composite.form.AbstractModelBasedSearchForm;
@@ -46,6 +46,7 @@ import com.vaadin.ui.Field;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Layout;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
 
 /**
@@ -248,18 +249,20 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 					public void buttonClick(ClickEvent event) {
 						if (!searchLayoutConstructed) {
 							// construct search screen if it is not there yet
-							constructSearchLayout();
 
-							searchResultsLayout.addComponent(getTableWrapper());
-							getSearchForm().setSearchable(getTableWrapper());
+							try {
+								validateBeforeSearch();
+								constructSearchLayout();
 
-							searchResultsLayout.removeComponent(noSearchYetLabel);
-							searchLayoutConstructed = true;
-							search();
-						} else {
-							// otherwise, only fire the callback method (the actual search is
-							// already carried out elsewhere)
-							afterSearchPerformed();
+								searchResultsLayout.addComponent(getTableWrapper());
+								getSearchForm().setSearchable(getTableWrapper());
+
+								searchResultsLayout.removeComponent(noSearchYetLabel);
+								searchLayoutConstructed = true;
+								afterSearchPerformed();
+							} catch (OCSValidationException ex) {
+								showNotifification(ex.getErrors().get(0), Notification.Type.ERROR_MESSAGE);
+							}
 						}
 					}
 				});
@@ -295,7 +298,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	 * 
 	 * @return
 	 */
-	protected Button constructEditButton() {
+	protected final Button constructEditButton() {
 		Button eb = new Button((!getFormOptions().isShowEditButton() || !isEditAllowed()) ? message("ocs.view")
 		        : message("ocs.edit"));
 		eb.addClickListener(new Button.ClickListener() {
@@ -315,20 +318,11 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	}
 
 	/**
-	 * Method that is used to construct any extra search fields. These will be added at the front of
-	 * the search form
-	 */
-	protected List<Component> constructExtraSearchFields() {
-		// overwrite in subclasses
-		return new ArrayList<>();
-	}
-
-	/**
 	 * Constructs the remove button
 	 * 
 	 * @return
 	 */
-	protected Button constructRemoveButton() {
+	protected final Button constructRemoveButton() {
 		Button rb = new RemoveButton() {
 
 			private static final long serialVersionUID = -7428844985367616649L;
@@ -353,7 +347,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	/**
 	 * Constructs the search layout
 	 */
-	public void constructSearchLayout() {
+	public final void constructSearchLayout() {
 		// construct table and set properties
 		getTableWrapper().getTable().setPageLength(getPageLength());
 		getTableWrapper().getTable().setSortEnabled(isSortEnabled());
@@ -427,7 +421,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	 * @param root
 	 *            the root component of the custom detail view
 	 */
-	protected void customDetailView(Component root) {
+	protected final void customDetailView(Component root) {
 		setCompositionRoot(root);
 	}
 
@@ -455,8 +449,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 				options.setShowEditButton(true);
 			} else {
 				// read-only mode
-				options.setOpenInViewMode(true);
-				options.setShowEditButton(false);
+				options.setOpenInViewMode(true).setShowEditButton(false);
 			}
 
 			if (options.isOpenInViewMode() || !isEditAllowed()) {
@@ -678,9 +671,9 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	 * @param propertyName
 	 *            the name of the property for which to refresh the label
 	 */
-	public void replaceLabel(String propertyName) {
+	public void refreshLabel(String propertyName) {
 		if (editForm != null) {
-			editForm.replaceLabel(propertyName);
+			editForm.refreshLabel(propertyName);
 		}
 	}
 
@@ -692,7 +685,6 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 		if (searched) {
 			getTableWrapper().getTable().select(null);
 			setSelectedItem(null);
-			afterSearchPerformed();
 		}
 	}
 
@@ -760,7 +752,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	public abstract void setSearchValue(String propertyId, Object value);
 
 	/**
-	 * Sets a predefined search value
+	 * Sets a predefined search value (upper and lower bound)
 	 * 
 	 * @param propertyId
 	 *            the name of the property for which to set a value

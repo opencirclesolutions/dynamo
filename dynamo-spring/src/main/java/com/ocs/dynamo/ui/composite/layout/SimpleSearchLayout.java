@@ -14,6 +14,7 @@
 package com.ocs.dynamo.ui.composite.layout;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.ocs.dynamo.dao.query.FetchJoinInformation;
@@ -73,6 +74,15 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 	}
 
 	/**
+	 * Method that is used to construct any extra search fields. These will be added at the front of
+	 * the search form
+	 */
+	protected List<Component> constructExtraSearchFields() {
+		// overwrite in subclasses
+		return new ArrayList<>();
+	}
+	
+	/**
 	 * Constructs the search form
 	 * 
 	 * @return the search form
@@ -91,6 +101,11 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 				SimpleSearchLayout.this.afterSearchFieldToggle(visible);
 			}
 
+			@Override
+			protected void afterSearchPerformed() {
+				SimpleSearchLayout.this.afterSearchPerformed();
+			}
+			
 			@Override
 			protected Field<?> constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel) {
 				return SimpleSearchLayout.this.constructCustomField(entityModel, attributeModel, false, true);

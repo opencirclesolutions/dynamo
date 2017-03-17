@@ -157,7 +157,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 					image.setVisible(false);
 					if (attributeModel.getFileNameProperty() != null) {
 						ClassUtils.clearFieldValue(getEntity(), attributeModel.getFileNameProperty(), String.class);
-						replaceLabel(attributeModel.getFileNameProperty());
+						refreshLabel(attributeModel.getFileNameProperty());
 					}
 				}
 			});
@@ -243,7 +243,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 					// also set the file name if needed
 					if (fileNameFieldName != null) {
 						ClassUtils.setFieldValue(getEntity(), fileNameFieldName, event.getFilename());
-						replaceLabel(fileNameFieldName);
+						refreshLabel(fileNameFieldName);
 					}
 				} else {
 					showNotifification(message("ocs.modelbasededitform.upload.format.invalid"),
@@ -1217,7 +1217,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	 * 
 	 * @param propertyName
 	 */
-	public void replaceLabel(String propertyName) {
+	public void refreshLabel(String propertyName) {
 		AttributeModel am = getEntityModel().getAttributeModel(propertyName);
 		if (am != null) {
 			Component replacement = constructLabel(getEntity(), am);

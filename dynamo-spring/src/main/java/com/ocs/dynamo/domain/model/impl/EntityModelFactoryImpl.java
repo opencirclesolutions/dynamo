@@ -46,6 +46,7 @@ import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import com.ocs.dynamo.domain.model.NumberSelectMode;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.BeanUtils;
@@ -147,8 +148,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 			model.setSortable(true);
 			model.setComplexEditable(false);
 			model.setPrecision(SystemPropertyUtils.getDefaultDecimalPrecision());
-			model.setSearchCaseSensitive(false);
-			model.setSearchPrefixOnly(false);
+			model.setSearchCaseSensitive(SystemPropertyUtils.getDefaultSearchCaseSensitive());
+			model.setSearchPrefixOnly(SystemPropertyUtils.getDefaultSearchPrefixOnly());
 			model.setUrl(false);
 			model.setUseThousandsGrouping(true);
 
@@ -190,8 +191,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 			        && (AttributeType.BASIC.equals(model.getAttributeType())));
 
 			if (getMessageService() != null) {
-				model.setTrueRepresentation(getMessageService().getMessage("ocs.true"));
-				model.setFalseRepresentation(getMessageService().getMessage("ocs.false"));
+				model.setTrueRepresentation(SystemPropertyUtils.getDefaultTrueRepresentation());
+				model.setFalseRepresentation(SystemPropertyUtils.getDefaultFalseRepresentation());
 			}
 
 			// by default, use a combo box to look up
@@ -956,6 +957,10 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 			if (!StringUtils.isEmpty(attribute.fileNameProperty())) {
 				model.setFileNameProperty(attribute.fileNameProperty());
 			}
+
+			if (attribute.numberSelectMode() != null) {
+				model.setNumberSelectMode(attribute.numberSelectMode());
+			}
 		}
 	}
 
@@ -1150,6 +1155,12 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 		if (msg != null && !StringUtils.isEmpty(msg) && AttributeSelectMode.valueOf(msg) != null) {
 			model.setSelectMode(AttributeSelectMode.valueOf(msg));
 			model.setSearchSelectMode(AttributeSelectMode.valueOf(msg));
+		}
+
+		// set the number select mode
+		msg = getAttributeMessage(entityModel, model, EntityModel.NUMBER_SELECT_MODE);
+		if (msg != null && !StringUtils.isEmpty(msg) && NumberSelectMode.valueOf(msg) != null){
+			model.setNumberSelectMode(NumberSelectMode.valueOf(msg));
 		}
 
 		// explicitly set the search select mode

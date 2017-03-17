@@ -204,7 +204,7 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 
 			afterEntitySelected(editForm, getEntity());
 			checkButtonState(getEntity());
-			
+
 			postProcessLayout(main);
 
 			setCompositionRoot(main);
@@ -307,7 +307,7 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 	protected void postProcessLayout(Layout main) {
 		// overwrite in subclass
 	}
-	
+
 	@Override
 	public void reload() {
 
@@ -328,9 +328,9 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 	 * @param propertyName
 	 *            the name of the property for which to refresh the label
 	 */
-	public void replaceLabel(String propertyName) {
+	public void refreshLabel(String propertyName) {
 		if (editForm != null) {
-			editForm.replaceLabel(propertyName);
+			editForm.refreshLabel(propertyName);
 		}
 	}
 
@@ -357,6 +357,9 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 		this.joins = joins;
 	}
 
+	/**
+	 * Resets the tab component (if any) to its first sheet
+	 */
 	public void resetTab() {
 		editForm.resetTab();
 	}

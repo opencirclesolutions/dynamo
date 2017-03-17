@@ -179,6 +179,26 @@ public final class DynamoConstants {
 	public static final String SP_DEFAULT_LISTSELECT_ROWS = "ocs.default.listselect.rows";
 
 	/**
+	 * Name of the system property that is used to determine the representation of the value true
+	 */
+	public static final String SP_DEFAULT_TRUE_REPRESENTATION = "ocs.default.true.representation";
+
+	/**
+	 * Name of the system property that is used to determine the representation of the value false
+	 */
+	public static final String SP_DEFAULT_FALSE_REPRESENTATION = "ocs.default.false.representation";
+
+	/**
+	 * Name of the system property that is used to determine the default case sensitiveness for search
+	 */
+	public static final String SP_DEFAULT_SEARCH_CASE_SENSITIVE = "ocs.default.search.case.sensitive";
+
+	/**
+	 * Name of the system property that is used to determine whether search is prefix only
+	 */
+	public static final String SP_DEFAULT_SEARCH_PREFIX_ONLY = "ocs.default.search.prefix.only";
+
+	/**
 	 * Name of the system property that is used to set the default locale
 	 */
 	public static final String SP_DEFAULT_LOCALE = "ocs.default.locale";

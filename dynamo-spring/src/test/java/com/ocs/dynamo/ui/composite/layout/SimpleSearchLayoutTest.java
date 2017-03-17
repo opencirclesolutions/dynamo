@@ -173,7 +173,6 @@ public class SimpleSearchLayoutTest extends BaseIntegrationTest {
 		layout.search();
 		
 		Assert.assertEquals(1, layout.getTableWrapper().getTable().size());
-
 	}
 	
 	private SimpleSearchLayout<Integer, TestEntity> createLayout(FormOptions fo) {
