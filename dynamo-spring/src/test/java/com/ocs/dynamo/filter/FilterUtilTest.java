@@ -394,7 +394,7 @@ public class FilterUtilTest {
 
 	@Test
 	public void testIsFilterValueSet() {
-		Assert.assertEquals(false, FilterUtil.isFilterValueSet(null, new HashSet<String>()));
+		Assert.assertEquals(false, FilterUtil.isFilterValueSet(null, new HashSet<>()));
 
 		com.vaadin.data.util.filter.Compare.GreaterOrEqual empty = new com.vaadin.data.util.filter.Compare.GreaterOrEqual(
 		        "test", null);

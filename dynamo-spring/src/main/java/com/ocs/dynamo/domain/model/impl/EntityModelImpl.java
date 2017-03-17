@@ -22,6 +22,7 @@ import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -136,7 +137,7 @@ public class EntityModelImpl<T> implements EntityModel<T> {
 		for (List<AttributeModel> list : attributeModels.values()) {
 			result.addAll(list);
 		}
-		result.sort((o1, o2) -> o1.getOrder().compareTo(o2.getOrder()));
+		result.sort(Comparator.comparing(AttributeModel::getOrder));
 
 		return Collections.unmodifiableList(result);
 	}

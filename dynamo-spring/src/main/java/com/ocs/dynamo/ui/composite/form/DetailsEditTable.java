@@ -31,7 +31,6 @@ import com.vaadin.data.Container.Filter;
 import com.vaadin.data.sort.SortOrder;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
 import com.vaadin.ui.Field;
@@ -387,22 +386,17 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 			final String removeMsg = messageService.getMessage("ocs.remove");
 			table.addGeneratedColumn(removeMsg, (ColumnGenerator) (source, itemId, columnId) -> {
                 Button remove = new Button(removeMsg);
-                remove.addClickListener(new Button.ClickListener() {
-
-                    @Override
-                    @SuppressWarnings("unchecked")
-                    public void buttonClick(ClickEvent event) {
-                        container.removeItem(itemId);
-                        items.remove(itemId);
-                        // callback method so the entity can be removed from its
-                        // parent
-                        removeEntity((T) itemId);
-                        if (parentForm != null) {
-                            parentForm.signalDetailsTableValid(DetailsEditTable.this,
-                                    VaadinUtils.allFixedTableFieldsValid(table));
-                        }
-
+                remove.addClickListener((Button.ClickListener) event -> {
+                    container.removeItem(itemId);
+                    items.remove(itemId);
+                    // callback method so the entity can be removed from its
+                    // parent
+                    removeEntity((T) itemId);
+                    if (parentForm != null) {
+                        parentForm.signalDetailsTableValid(DetailsEditTable.this,
+                                VaadinUtils.allFixedTableFieldsValid(table));
                     }
+
                 });
                 return remove;
             });

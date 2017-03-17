@@ -84,10 +84,7 @@ public class BaseXlsImporter extends BaseImporter<Row, Cell> {
 	public int countRows(byte[] bytes, int sheetIndex) {
 		int count = 0;
 		try (StreamingReader reader = createReader(bytes, sheetIndex, CACHE_SIZE)) {
-			Iterator<Row> it = reader.iterator();
-			while (it.hasNext()) {
-				Row r = it.next();
-
+			for (Row r : reader) {
 				// if a row in the middle of the sheet is empty, we assume
 				// everything else is empty
 				if (isRowEmpty(r)) {
@@ -360,9 +357,7 @@ public class BaseXlsImporter extends BaseImporter<Row, Cell> {
 			return true;
 		}
 
-		Iterator<Cell> iterator = row.iterator();
-		while (iterator.hasNext()) {
-			Cell next = iterator.next();
+		for (Cell next : row) {
 			String value = next.getStringCellValue();
 			if (!StringUtils.isEmpty(value)) {
 				return false;

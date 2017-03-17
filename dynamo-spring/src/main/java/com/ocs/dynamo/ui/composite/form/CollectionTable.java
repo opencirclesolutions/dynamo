@@ -28,7 +28,6 @@ import com.vaadin.data.validator.IntegerRangeValidator;
 import com.vaadin.data.validator.LongRangeValidator;
 import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
 import com.vaadin.ui.DefaultFieldFactory;
@@ -343,14 +342,10 @@ public class CollectionTable<T extends Serializable> extends CustomField<Collect
 			final String removeMsg = messageService.getMessage("ocs.remove");
 			table.addGeneratedColumn(removeMsg, (ColumnGenerator) (source, itemId, columnId) -> {
                 Button remove = new Button(removeMsg);
-                remove.addClickListener(new Button.ClickListener() {
-
-                    @Override
-                    public void buttonClick(ClickEvent event) {
-                        table.removeItem(itemId);
-                        setValue(extractValues());
-                        setSelectedItem(null);
-                    }
+                remove.addClickListener((Button.ClickListener) event -> {
+                    table.removeItem(itemId);
+                    setValue(extractValues());
+                    setSelectedItem(null);
                 });
                 return remove;
             });

@@ -54,9 +54,7 @@ public class PivotContainerTest {
     @Test
     public void testPivotIdList() {
 
-        Iterator<?> it = pivotContainer.getItemIds().iterator();
-        while (it.hasNext()) {
-            it.next();
+        for (Object o : pivotContainer.getItemIds()) {
         }
 
         Assert.assertEquals(0, pivotContainer.getPivotIdList().indexOf(0));
