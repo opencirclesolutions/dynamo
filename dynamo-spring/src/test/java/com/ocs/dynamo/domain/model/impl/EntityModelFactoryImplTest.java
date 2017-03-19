@@ -171,13 +171,13 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 
 		Assert.assertEquals(3, model.getAttributeGroups().size());
 		String group1 = model.getAttributeGroups().get(0);
-		Assert.assertEquals("group 1", group1);
+		Assert.assertEquals("group1.key", group1);
 
 		List<AttributeModel> models = model.getAttributeModelsForGroup(group1);
 		Assert.assertEquals("name", models.get(0).getName());
 
 		String group2 = model.getAttributeGroups().get(1);
-		Assert.assertEquals("group 2", group2);
+		Assert.assertEquals("group2.key", group2);
 
 		List<AttributeModel> models2 = model.getAttributeModelsForGroup(group2);
 		Assert.assertEquals("age", models2.get(0).getName());
@@ -686,8 +686,8 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 	}
 
 	@Model(description = "desc", displayName = "dis", displayNamePlural = "diss", displayProperty = "prop")
-	@AttributeGroups(attributeGroups = { @AttributeGroup(displayName = "group 1", attributeNames = { "name" }),
-	        @AttributeGroup(displayName = "group 2", attributeNames = { "age" }) })
+	@AttributeGroups(attributeGroups = { @AttributeGroup(messageKey = "group1.key", attributeNames = { "name" }),
+	        @AttributeGroup(messageKey = "group2.key", attributeNames = { "age" }) })
 	private class Entity3 {
 
 		@Attribute(defaultValue = "Bas", description = "Test", displayName = "Naampje", readOnly = true, prompt = "Prompt", searchable = true, main = true, sortable = false)

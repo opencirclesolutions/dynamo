@@ -276,7 +276,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	}
 
 	/**
-	 * Returns a list of additional group headers that can be used to add an extra attribute group
+	 * Returns a list of keys for the messages that can be used to add an extra attribute group
 	 * layer to the layout. By default this method returns null which means that no extra layer will
 	 * be used. If you return a non-empty String array, then the values in this array will be used
 	 * as additional attribute group header. Use the "getParentGroup" method to determine which

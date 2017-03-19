@@ -78,7 +78,7 @@ public interface EntityModel<T> {
 	/**
 	 * The name of the default group for all attributes for which no explicit group is specified
 	 */
-	String DEFAULT_GROUP = "defaultGroup";
+	String DEFAULT_GROUP = "ocs.default.attribute.group";
 
 	/**
 	 * Default value when creating new entity

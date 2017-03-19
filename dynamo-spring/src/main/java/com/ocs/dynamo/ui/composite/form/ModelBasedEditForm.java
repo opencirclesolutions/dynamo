@@ -563,7 +563,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 				int tabIndex = 0;
 				for (String parentGroupHeader : getParentGroupHeaders()) {
 					Layout innerForm = constructAttributeGroupLayout(form, tabs, tabSheets.get(isViewMode()),
-					        parentGroupHeader, false);
+					        message(parentGroupHeader), false);
 
 					// add a tab sheet on the inner level if needed
 					TabSheet innerTabSheet = null;
@@ -584,7 +584,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 					if (entityModel.isAttributeGroupVisible(attributeGroup, viewMode)) {
 						Layout innerForm = constructAttributeGroupLayout(form, tabs, tabSheets.get(isViewMode()),
-						        getAttributeGroupCaption(attributeGroup), true);
+						        message(attributeGroup), true);
 						if (ScreenMode.VERTICAL.equals(getFormOptions().getScreenMode())) {
 							innerForm.setStyleName(DynamoConstants.CSS_CLASS_HALFSCREEN);
 						}
@@ -1008,16 +1008,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		return new UploadComponent(attributeModel);
 	}
 
-	/**
-	 * Gets the caption for an attribute gorup
-	 * 
-	 * @param attributeGroup
-	 * @return
-	 */
-	private String getAttributeGroupCaption(String attributeGroup) {
-		return EntityModel.DEFAULT_GROUP.equals(attributeGroup) ? message("ocs.default.group.caption") : attributeGroup;
-	}
-
 	public Button getBackButton() {
 		return backButton;
 	}
@@ -1129,7 +1119,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			        attributeGroup, isViewMode()))
 			        && getParentGroup(attributeGroup).equals(parentGroupHeader)) {
 				Layout innerLayout2 = constructAttributeGroupLayout(innerForm, innerTabs, innerTabSheet,
-				        getAttributeGroupCaption(attributeGroup), true);
+				        message(attributeGroup), true);
 				for (AttributeModel attributeModel : getEntityModel().getAttributeModelsForGroup(attributeGroup)) {
 					addField(innerLayout2, getEntityModel(), attributeModel, tabIndex);
 				}

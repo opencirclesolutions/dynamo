@@ -46,7 +46,6 @@ import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-import com.ocs.dynamo.domain.model.NumberSelectMode;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.BeanUtils;
@@ -63,6 +62,7 @@ import com.ocs.dynamo.domain.model.CascadeMode;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.domain.model.LazyEntityModelWrapper;
+import com.ocs.dynamo.domain.model.NumberSelectMode;
 import com.ocs.dynamo.domain.model.VisibilityType;
 import com.ocs.dynamo.domain.model.annotation.Attribute;
 import com.ocs.dynamo.domain.model.annotation.AttributeGroup;
@@ -414,8 +414,9 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 	}
 
 	/**
-	 * Construct a mapping from attribute to its corresponding attribute group
+	 * Constructs the attribute group mapping
 	 * 
+	 * @param model
 	 * @param entityClass
 	 * @return
 	 */
@@ -424,17 +425,17 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 		AttributeGroups groups = entityClass.getAnnotation(AttributeGroups.class);
 		if (groups != null) {
 			for (AttributeGroup g : groups.attributeGroups()) {
-				model.addAttributeGroup(g.displayName());
+				model.addAttributeGroup(g.messageKey());
 				for (String s : g.attributeNames()) {
-					result.put(s, g.displayName());
+					result.put(s, g.messageKey());
 				}
 			}
 		} else {
 			AttributeGroup group = entityClass.getAnnotation(AttributeGroup.class);
 			if (group != null) {
-				model.addAttributeGroup(group.displayName());
+				model.addAttributeGroup(group.messageKey());
 				for (String s : group.attributeNames()) {
-					result.put(s, group.displayName());
+					result.put(s, group.messageKey());
 				}
 			}
 		}
@@ -450,7 +451,6 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 			}
 
 			while (groupName != null) {
-
 				String attributeNames = messageService.getEntityMessage(model.getReference(),
 				        EntityModel.ATTRIBUTE_GROUP + "." + i + "." + EntityModel.ATTRIBUTE_NAMES);
 
@@ -968,12 +968,15 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 	 * Sets the default value on the attribute model (translates a String to the appropriate type)
 	 * 
 	 * @param model
+	 *            the attribute model
 	 * @param defaultValue
+	 *            the default value to set
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void setDefaultValue(AttributeModelImpl model, String defaultValue) {
 		if (model.getType().isEnum()) {
-			model.setDefaultValue(Enum.valueOf(model.getType().asSubclass(Enum.class), defaultValue));
+			Class<? extends Enum> enumType = model.getType().asSubclass(Enum.class);
+			model.setDefaultValue(Enum.valueOf(enumType, defaultValue));
 		} else if (model.getType().equals(Date.class)) {
 			SimpleDateFormat fmt = new SimpleDateFormat(model.getDisplayFormat());
 			try {
@@ -1159,7 +1162,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 
 		// set the number select mode
 		msg = getAttributeMessage(entityModel, model, EntityModel.NUMBER_SELECT_MODE);
-		if (msg != null && !StringUtils.isEmpty(msg) && NumberSelectMode.valueOf(msg) != null){
+		if (msg != null && !StringUtils.isEmpty(msg) && NumberSelectMode.valueOf(msg) != null) {
 			model.setNumberSelectMode(NumberSelectMode.valueOf(msg));
 		}
 

@@ -101,7 +101,8 @@ public abstract class BaseImporter<R, U> {
 			if (value != null) {
 				value = value.trim();
 				try {
-					obj = Enum.valueOf(d.getPropertyType().asSubclass(Enum.class), value.toUpperCase());
+					Class<? extends Enum> enumType = d.getPropertyType().asSubclass(Enum.class);
+					obj = Enum.valueOf(enumType, value.toUpperCase());
 				} catch (IllegalArgumentException ex) {
 					throw new OCSImportException("Value " + value + " cannot be translated to an enumeration value", ex);
 				}
