@@ -27,6 +27,8 @@ import com.ocs.dynamo.importer.dto.AbstractDTO;
 import com.ocs.dynamo.utils.ClassUtils;
 import com.ocs.dynamo.utils.NumberUtils;
 
+import static java.lang.Float.*;
+
 /**
  * Base class for smart upload functionality
  * 
@@ -125,16 +127,16 @@ public abstract class BaseImporter<R, U> {
 				}
 
 				// round to the nearest integer, then use intValue() or longValue()
-				BigDecimal rounded = BigDecimal.valueOf(value.doubleValue()).setScale(0, RoundingMode.HALF_UP);
+				BigDecimal rounded = BigDecimal.valueOf(value).setScale(0, RoundingMode.HALF_UP);
 				Class<?> pType = d.getPropertyType();
 				if (NumberUtils.isInteger(pType)) {
 					obj = rounded.intValue();
 				} else if (NumberUtils.isLong(pType)) {
 					obj = rounded.longValue();
 				} else if (NumberUtils.isFloat(pType)) {
-					obj = Float.valueOf(value.floatValue());
+					obj = valueOf(value.floatValue());
 				} else if (BigDecimal.class.equals(pType)) {
-					obj = BigDecimal.valueOf(value.doubleValue());
+					obj = BigDecimal.valueOf(value);
 				}
 			}
 		} else if (Boolean.class.isAssignableFrom(d.getPropertyType())) {

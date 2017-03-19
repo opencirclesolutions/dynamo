@@ -33,7 +33,6 @@ import org.springframework.util.StringUtils;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.Locale;
 
 /**
@@ -76,13 +75,12 @@ public final class TableUtils {
 	        Object collection) {
 		StringBuilder builder = new StringBuilder();
 		Iterable<?> col = (Iterable<?>) collection;
-		Iterator<?> it = col.iterator();
-		while (it.hasNext()) {
+		for (Object aCol : col) {
 			if (builder.length() > 0) {
 				builder.append(", ");
 			}
 
-			Object next = it.next();
+			Object next = aCol;
 			if (next instanceof AbstractEntity) {
 				EntityModel<?> entityModel = entityModelFactory.getModel(next.getClass());
 				String displayProperty = entityModel.getDisplayProperty();
@@ -95,7 +93,7 @@ public final class TableUtils {
 				// custom formatting for numbers
 				if (next instanceof Number) {
 					builder.append(VaadinUtils.numberToString(attributeModel, attributeModel.getNormalizedType(), next,
-					        true, VaadinUtils.getLocale()));
+							true, VaadinUtils.getLocale()));
 				} else {
 					builder.append(next);
 				}

@@ -13,10 +13,10 @@
  */
 package com.ocs.dynamo.domain.comparator;
 
-import java.util.Comparator;
-
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.utils.ClassUtils;
+
+import java.util.Comparator;
 
 /**
  * A comparator for comparing two entities based on a value of an attribute (using reflection)
@@ -49,7 +49,7 @@ public class AttributeComparator<T extends AbstractEntity<?>> implements Compara
         } else if (v1 instanceof String) {
             return ((String) v1).compareToIgnoreCase((String) v2);
         } else if (v1 instanceof Comparable) {
-            return ((Comparable) v1).compareTo((Comparable) v2);
+            return ((Comparable) v1).compareTo(v2);
         }
         return 0;
 

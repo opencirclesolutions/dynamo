@@ -13,22 +13,21 @@
  */
 package com.ocs.dynamo.ui.container.hierarchical;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-
-import org.junit.Before;
-import org.junit.Test;
-
 import com.google.common.collect.Lists;
 import com.ocs.dynamo.ui.container.EnergyUsage;
 import com.ocs.dynamo.ui.container.hierarchical.HierarchicalContainer.HierarchicalId;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.BeanItem;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class HierarchicalContainerTest {
 
@@ -102,7 +101,7 @@ public class HierarchicalContainerTest {
         List<?> childrenIds = container.getChildren(rid);
         assertNotNull(childrenIds);
         assertEquals(3, childrenIds.size());
-        EnergyUsage eu = (EnergyUsage) ((BeanItem<EnergyUsage>) container
+        EnergyUsage eu = ((BeanItem<EnergyUsage>) container
                 .getItem(childrenIds.get(1))).getBean();
         assertNotNull(eu);
         assertEquals("DEF", eu.getEan());

@@ -212,8 +212,8 @@ public class TableExportActionHandler implements Handler {
 
 			Item item = container.getItem(rootItemId);
 			List<String> fields = new ArrayList<>();
-			for (int col = 0; col < props.size(); col++) {
-				propId = props.get(col);
+			for (Object prop1 : props) {
+				propId = prop1;
 				prop = getProperty(item, rootItemId, propId);
 				value = prop == null ? null : prop.getValue();
 
@@ -221,8 +221,8 @@ public class TableExportActionHandler implements Handler {
 					AttributeModel am = findAttributeModel(propId);
 					if (am != null) {
 						value = TableUtils.formatPropertyValue(entityModelFactory,
-						        onlyModel != null ? onlyModel : am.getEntityModel(), messageService, am.getPath(),
-						        value);
+								onlyModel != null ? onlyModel : am.getEntityModel(), messageService, am.getPath(),
+								value);
 					}
 					if (value instanceof String) {
 						value = StringUtil.replaceHtmlBreaks(value.toString());

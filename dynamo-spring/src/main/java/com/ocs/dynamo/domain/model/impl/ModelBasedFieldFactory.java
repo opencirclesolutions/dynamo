@@ -289,7 +289,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 
 		if (AttributeSelectMode.LOOKUP.equals(mode)) {
 			// lookup field - take care to NOT use the nested model here!
-			return constructLookupField((EntityModel<S>) fieldEntityModel, attributeModel, fieldFilter, search, true);
+			return constructLookupField(fieldEntityModel, attributeModel, fieldFilter, search, true);
 		} else if (AttributeSelectMode.FANCY_LIST.equals(mode)) {
 			// fancy list select
 			FancyListSelect<ID, S> listSelect = new FancyListSelect<>(service, (EntityModel<S>) em, attributeModel,
@@ -450,7 +450,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 			if (AbstractSelect.class.isAssignableFrom(fieldType)) {
 				return createEnumCombo(type, fieldType);
 			} else {
-				ComboBox cb = (ComboBox) createEnumCombo(type, ComboBox.class);
+				ComboBox cb = createEnumCombo(type, ComboBox.class);
 				cb.setFilteringMode(FilteringMode.CONTAINS);
 				return (F) cb;
 			}
@@ -610,7 +610,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 
 		// add a field validator based on JSR-303 bean validation
 		if (validate) {
-			field.addValidator(new BeanValidator(model.getEntityClass(), (String) propertyId));
+			field.addValidator(new BeanValidator(model.getEntityClass(), propertyId));
 			// disable the field if it cannot be edited
 			if (!attributeModel.isUrl()) {
 				field.setEnabled(!attributeModel.isReadOnly());

@@ -296,7 +296,7 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
 		super.setInternalValue(values);
 		container.removeAllItems();
 		if (values != null) {
-			container.addAll((Collection<T>) values);
+			container.addAll(values);
 		}
 	}
 

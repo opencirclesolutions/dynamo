@@ -20,7 +20,6 @@ import com.ocs.dynamo.service.MessageService;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -71,13 +70,7 @@ public final class DomainUtil {
 	 *            the set of new values
 	 */
 	public static <T extends Domain> void updateDomains(Class<T> clazz, Set<Domain> domains, Set<T> newValues) {
-		Iterator<Domain> it = domains.iterator();
-		while (it.hasNext()) {
-			Domain domain = it.next();
-			if (domain.getClass().isAssignableFrom(clazz)) {
-				it.remove();
-			}
-		}
+		domains.removeIf(domain -> domain.getClass().isAssignableFrom(clazz));
 
 		if (newValues != null) {
 			domains.addAll(newValues);

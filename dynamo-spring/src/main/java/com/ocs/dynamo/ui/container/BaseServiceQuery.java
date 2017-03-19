@@ -13,15 +13,6 @@
  */
 package com.ocs.dynamo.ui.container;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import org.vaadin.addons.lazyquerycontainer.AbstractBeanQuery;
-import org.vaadin.addons.lazyquerycontainer.QueryDefinition;
-
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.dao.SortOrder;
 import com.ocs.dynamo.domain.AbstractEntity;
@@ -32,6 +23,13 @@ import com.ocs.dynamo.ui.ServiceLocator;
 import com.ocs.dynamo.utils.ClassUtils;
 import com.vaadin.data.Container;
 import com.vaadin.data.util.filter.And;
+import org.vaadin.addons.lazyquerycontainer.AbstractBeanQuery;
+import org.vaadin.addons.lazyquerycontainer.QueryDefinition;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A lazy container query that retrieves data using a service
@@ -165,13 +163,7 @@ public abstract class BaseServiceQuery<ID extends Serializable, T extends Abstra
 
 		// any beans that have not been persisted before don't actually have to
 		// be removed - remove them from the collection before saving
-		Iterator<T> it = removedBeans.iterator();
-		while (it.hasNext()) {
-			T t = it.next();
-			if (getCustomQueryDefinition().getService().findById(t.getId()) == null) {
-				it.remove();
-			}
-		}
+		removedBeans.removeIf(t -> getCustomQueryDefinition().getService().findById(t.getId()) == null);
 
 		// clear the IDs of the newly added bean and let the database assign
 		// proper ones

@@ -1,13 +1,5 @@
 package com.ocs.dynamo.ui.composite.layout;
 
-import java.util.Collection;
-
-import javax.inject.Inject;
-
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-
 import com.google.common.collect.Lists;
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.TestEntity2;
@@ -16,10 +8,14 @@ import com.ocs.dynamo.service.TestEntity2Service;
 import com.ocs.dynamo.service.TestEntityService;
 import com.ocs.dynamo.test.BaseIntegrationTest;
 import com.ocs.dynamo.ui.composite.form.FormOptions;
-import com.vaadin.data.Container.Filter;
 import com.vaadin.data.sort.SortOrder;
-import com.vaadin.data.util.filter.Compare;
 import com.vaadin.shared.data.sort.SortDirection;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
+import javax.inject.Inject;
+import java.util.Collection;
 
 public class FixedSplitLayoutTest extends BaseIntegrationTest {
 

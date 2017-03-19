@@ -173,7 +173,7 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 	}
 
 	@Override
-	public Class<? extends Object> getType() {
+	public Class<?> getType() {
 		return Object.class;
 	}
 

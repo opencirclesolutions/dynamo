@@ -13,20 +13,6 @@
  */
 package com.ocs.dynamo.domain.model;
 
-import java.math.BigDecimal;
-import java.text.DecimalFormatSymbols;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-
-import javax.swing.JSpinner;
-
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mock;
-
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.TestEntity2;
@@ -57,6 +43,17 @@ import com.vaadin.ui.Field;
 import com.vaadin.ui.Slider;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mock;
+
+import java.math.BigDecimal;
+import java.text.DecimalFormatSymbols;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 
 public class ModelBasedFieldFactoryTest extends BaseMockitoTest {
 

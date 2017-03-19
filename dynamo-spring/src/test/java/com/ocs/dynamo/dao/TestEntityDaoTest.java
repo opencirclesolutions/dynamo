@@ -13,16 +13,6 @@
  */
 package com.ocs.dynamo.dao;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
-import java.util.List;
-
-import javax.inject.Inject;
-
-import org.junit.Assert;
-import org.junit.Test;
-
 import com.google.common.collect.Lists;
 import com.mysema.query.BooleanBuilder;
 import com.ocs.dynamo.dao.SortOrder.Direction;
@@ -33,6 +23,14 @@ import com.ocs.dynamo.filter.And;
 import com.ocs.dynamo.filter.Compare;
 import com.ocs.dynamo.filter.Filter;
 import com.ocs.dynamo.test.BaseIntegrationTest;
+import org.junit.Assert;
+import org.junit.Test;
+
+import javax.inject.Inject;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * A basic integration test for testing the functionality of a DAO
@@ -278,12 +276,12 @@ public class TestEntityDaoTest extends BaseIntegrationTest {
 		save("Bob", 11L);
 		save("Bob", 11L);
 
-		List<? extends Object> names = dao.findDistinct(null, "name", String.class, new SortOrder("name"));
+		List<?> names = dao.findDistinct(null, "name", String.class, new SortOrder("name"));
 		Assert.assertEquals(2, names.size());
 		Assert.assertEquals("Bob", names.get(0));
 		Assert.assertEquals("Kevin", names.get(1));
 
-		List<? extends Object> ages = dao.findDistinct(null, "age", String.class, new SortOrder("age"));
+		List<?> ages = dao.findDistinct(null, "age", String.class, new SortOrder("age"));
 		Assert.assertEquals(1, ages.size());
 		Assert.assertEquals(11L, ages.get(0));
 	}

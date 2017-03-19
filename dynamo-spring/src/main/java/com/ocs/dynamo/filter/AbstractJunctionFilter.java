@@ -16,7 +16,6 @@ package com.ocs.dynamo.filter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -99,13 +98,7 @@ public abstract class AbstractJunctionFilter extends AbstractFilter {
 	 *            the filter to remove
 	 */
 	public void remove(Filter filter) {
-		Iterator<Filter> it = filters.iterator();
-		while (it.hasNext()) {
-			Filter next = it.next();
-			if (next.equals(filter)) {
-				it.remove();
-			}
-		}
+		filters.removeIf(next -> next.equals(filter));
 	}
 
 	/**

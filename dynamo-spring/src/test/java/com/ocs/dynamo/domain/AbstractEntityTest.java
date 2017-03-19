@@ -24,7 +24,7 @@ public class AbstractEntityTest {
         e1.setId(1);
 
         Assert.assertFalse(e1.equals(null));
-        Assert.assertFalse(e1.equals(new Integer(14)));
+        Assert.assertFalse(e1.equals(14));
         Assert.assertTrue(e1.equals(e1));
 
         // objects with the same ID are equal

@@ -13,21 +13,19 @@
  */
 package com.ocs.dynamo.utils;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.List;
-import java.util.Map;
-
-import javax.persistence.Entity;
-import javax.validation.constraints.Size;
-
-import org.junit.Assert;
-import org.junit.Test;
-
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.TestEntity2;
 import com.ocs.dynamo.domain.model.annotation.Attribute;
 import com.ocs.dynamo.exception.OCSRuntimeException;
+import org.junit.Assert;
+import org.junit.Test;
+
+import javax.persistence.Entity;
+import javax.validation.constraints.Size;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.List;
+import java.util.Map;
 
 public class ClassUtilsTest {
 
@@ -188,7 +186,7 @@ public class ClassUtilsTest {
         attribute = ClassUtils.getAnnotationOnField(TestObject.class, "fieldOne", Attribute.class);
         Assert.assertEquals("desc", attribute.description());
 
-        String desc = (String) ClassUtils.getAnnotationAttributeValue(fieldOne, Attribute.class,
+        String desc = ClassUtils.getAnnotationAttributeValue(fieldOne, Attribute.class,
                 "description");
         Assert.assertEquals("desc", desc);
 

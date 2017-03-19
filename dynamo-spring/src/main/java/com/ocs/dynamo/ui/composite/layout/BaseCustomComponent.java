@@ -13,14 +13,6 @@
  */
 package com.ocs.dynamo.ui.composite.layout;
 
-import java.math.BigDecimal;
-import java.util.Date;
-
-import javax.persistence.OptimisticLockException;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeDateType;
@@ -52,6 +44,12 @@ import com.vaadin.ui.Embedded;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+
+import javax.persistence.OptimisticLockException;
+import java.math.BigDecimal;
+import java.util.Date;
 
 /**
  * Base class for custom components - contains convenience methods for getting various often-used
@@ -146,7 +144,7 @@ public abstract class BaseCustomComponent extends CustomComponent implements Bui
 			} else if (Iterable.class.isAssignableFrom(attributeModel.getType())) {
 				// collection of entities
 				String str = TableUtils.formatEntityCollection(getEntityModelFactory(), attributeModel,
-				        (Iterable<?>) value);
+						value);
 				property = new ObjectProperty<>(str);
 				fieldLabel.setPropertyDataSource(property);
 			}
