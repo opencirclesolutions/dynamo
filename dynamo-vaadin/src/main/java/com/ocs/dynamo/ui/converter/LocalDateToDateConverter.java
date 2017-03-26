@@ -13,38 +13,35 @@
  */
 package com.ocs.dynamo.ui.converter;
 
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.Locale;
 
+import com.ocs.dynamo.utils.DateUtils;
 import com.vaadin.data.util.converter.Converter;
 
-public class IntToDoubleConverter implements Converter<Double, Integer> {
+public class LocalDateToDateConverter implements Converter<Date, LocalDate> {
 
-	private static final long serialVersionUID = -7643776654167662622L;
+	private static final long serialVersionUID = -830307549693107753L;
 
 	@Override
-	public Integer convertToModel(Double value, Class<? extends Integer> targetType, Locale locale) {
-		if (value == null) {
-			return null;
-		}
-		return value.intValue();
+	public LocalDate convertToModel(Date value, Class<? extends LocalDate> targetType, Locale locale) {
+		return DateUtils.toLocalDate(value);
 	}
 
 	@Override
-	public Double convertToPresentation(Integer value, Class<? extends Double> targetType, Locale locale) {
-		if (value == null) {
-			return null;
-		}
-		return value.doubleValue();
+	public Date convertToPresentation(LocalDate value, Class<? extends Date> targetType, Locale locale) {
+		return DateUtils.toLegacyDate(value);
 	}
 
 	@Override
-	public Class<Integer> getModelType() {
-		return Integer.class;
+	public Class<LocalDate> getModelType() {
+		return LocalDate.class;
 	}
 
 	@Override
-	public Class<Double> getPresentationType() {
-		return Double.class;
+	public Class<Date> getPresentationType() {
+		return Date.class;
 	}
 
 }

@@ -63,7 +63,7 @@ public class ModelBasedTableIntegrationTest extends BaseIntegrationTest {
 		EntityModel<TestEntity> model = entityModelFactory.getModel(TestEntity.class);
 		ModelBasedTable<Integer, TestEntity> table = new ModelBasedTable<>(container, model, false);
 
-		Assert.assertEquals(14, table.getVisibleColumns().length);
+		Assert.assertEquals(16, table.getVisibleColumns().length);
 
 		// items can be retrieved by their primary key
 		Item item = table.getItem(entity.getId());
@@ -143,7 +143,7 @@ public class ModelBasedTableIntegrationTest extends BaseIntegrationTest {
 		EntityModel<TestEntity> model = entityModelFactory.getModel(TestEntity.class);
 		ModelBasedTable<Integer, TestEntity> table = new ModelBasedTable<>(container, model, false);
 
-		Assert.assertEquals(14, table.getVisibleColumns().length);
+		Assert.assertEquals(16, table.getVisibleColumns().length);
 
 		// items can be retrieved by their primary key
 		Item item = table.getItem(entity.getId());

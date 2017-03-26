@@ -1156,6 +1156,14 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 				}
 			}
 		}
+		
+		// also replace the title label
+		Label titleLabel = titleLabels.get(isViewMode());
+		if (titleLabel != null) {
+			Label newLabel = constructTitleLabel();
+			titleLabels.put(isViewMode(), newLabel);
+			titleBars.get(isViewMode()).replaceComponent(titleLabel, newLabel);
+		}
 	}
 
 	/**

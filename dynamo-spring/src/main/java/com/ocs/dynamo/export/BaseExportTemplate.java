@@ -17,6 +17,8 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -41,14 +43,18 @@ import com.ocs.dynamo.filter.Filter;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.ServiceLocator;
 import com.ocs.dynamo.ui.composite.table.TableUtils;
+import com.ocs.dynamo.utils.DateUtils;
+import com.ocs.dynamo.utils.MathUtil;
 
 /**
- * Base class for
+ * Base class for entity model based exports to Excel or CSV
  * 
  * @author bas.rutten
  *
  * @param <ID>
+ *            the type of the primary key of the entity
  * @param <T>
+ *            the type of the entity
  */
 public abstract class BaseExportTemplate<ID extends Serializable, T extends AbstractEntity<ID>> {
 
@@ -296,6 +302,10 @@ public abstract class BaseExportTemplate<ID extends Serializable, T extends Abst
 			cell.setCellValue(((Number) value).doubleValue());
 		} else if (value instanceof Date && (am == null || !am.isWeek())) {
 			cell.setCellValue((Date) value);
+		} else if (value instanceof LocalDate) {
+			cell.setCellValue(DateUtils.toLegacyDate((LocalDate) value));
+		} else if (value instanceof LocalDateTime) {
+			cell.setCellValue(DateUtils.toLegacyDate((LocalDateTime) value));
 		} else if (value instanceof BigDecimal) {
 			boolean isPercentage = am != null && am.isPercentage();
 			if (isPercentage) {
@@ -303,7 +313,7 @@ public abstract class BaseExportTemplate<ID extends Serializable, T extends Abst
 				// but in Excel they are fractions that
 				// are displayed as percentages -> so, divide by 100
 				double temp = ((BigDecimal) value)
-				        .divide(BigDecimal.valueOf(100), DynamoConstants.INTERMEDIATE_PRECISION, RoundingMode.HALF_UP)
+				        .divide(MathUtil.HUNDRED, DynamoConstants.INTERMEDIATE_PRECISION, RoundingMode.HALF_UP)
 				        .setScale(am.getPrecision() + 2, RoundingMode.HALF_UP).doubleValue();
 				cell.setCellValue(temp);
 			} else {

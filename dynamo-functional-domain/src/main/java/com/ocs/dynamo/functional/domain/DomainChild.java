@@ -27,31 +27,31 @@ import javax.validation.constraints.NotNull;
  * @author Patrick Deenen (patrick@opencircle.solutions)
  * 
  */
-@SuppressWarnings("rawtypes")
 @Entity
-public abstract class DomainChild<P extends DomainParent> extends Domain implements Serializable {
+public abstract class DomainChild<C extends DomainChild<C, P>, P extends DomainParent<C, P>> extends Domain implements
+        Serializable {
 
-    private static final long serialVersionUID = 2615942460028599211L;
+	private static final long serialVersionUID = 2615942460028599211L;
 
-    @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "parent")
-    private P parent;
+	@NotNull
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "parent")
+	private P parent;
 
-    public DomainChild() {
-        super();
-    }
+	public DomainChild() {
+		super();
+	}
 
-    public DomainChild(String code, String name) {
-        super(code, name);
-    }
+	public DomainChild(String code, String name) {
+		super(code, name);
+	}
 
-    public P getParent() {
-        return this.parent;
-    }
+	public P getParent() {
+		return this.parent;
+	}
 
-    public void setParent(P parent) {
-        this.parent = parent;
-    }
+	public void setParent(P parent) {
+		this.parent = parent;
+	}
 
 }

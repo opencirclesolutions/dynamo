@@ -13,6 +13,15 @@
  */
 package com.ocs.dynamo.ui.composite.table;
 
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Date;
+import java.util.Locale;
+
+import org.springframework.util.StringUtils;
+
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeDateType;
 import com.ocs.dynamo.domain.model.AttributeModel;
@@ -25,15 +34,10 @@ import com.ocs.dynamo.ui.container.hierarchical.ModelBasedHierarchicalContainer.
 import com.ocs.dynamo.ui.converter.WeekCodeConverter;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.utils.ClassUtils;
+import com.ocs.dynamo.utils.DateUtils;
 import com.vaadin.data.Property;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.UI;
-import org.springframework.util.StringUtils;
-
-import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
 
 /**
  * Several table related functions to reuse on both Table and TreeTable subclasses.
@@ -93,7 +97,7 @@ public final class TableUtils {
 				// custom formatting for numbers
 				if (next instanceof Number) {
 					builder.append(VaadinUtils.numberToString(attributeModel, attributeModel.getNormalizedType(), next,
-							true, VaadinUtils.getLocale()));
+					        true, VaadinUtils.getLocale()));
 				} else {
 					builder.append(next);
 				}
@@ -168,6 +172,10 @@ public final class TableUtils {
 						format.setTimeZone(VaadinUtils.getTimeZone(UI.getCurrent()));
 					}
 					return format.format((Date) value);
+				} else if (LocalDate.class.equals(model.getType())) {
+					return DateUtils.formatDate((LocalDate) value, model.getDisplayFormat());
+				} else if (LocalDateTime.class.equals(model.getType())) {
+					return DateUtils.formatDateTime((LocalDateTime) value, model.getDisplayFormat());
 				} else if (BigDecimal.class.equals(model.getType())) {
 					String cs = getCurrencySymbol(table);
 					return VaadinUtils.bigDecimalToString(model.isCurrency(), model.isPercentage(),

@@ -31,7 +31,7 @@ import com.ocs.dynamo.domain.model.annotation.Model;
 @Entity
 @DiscriminatorValue("COUNTRY")
 @Model(displayNamePlural = "Countries", displayProperty = "name", sortOrder = "name asc")
-public class Country extends DomainChild<Region> {
+public class Country extends DomainChild<Country, Region> {
 
 	private static final long serialVersionUID = 1410771214783677106L;
 

@@ -13,6 +13,8 @@
  */
 package com.ocs.dynamo.dao;
 
+import java.util.List;
+
 import com.ocs.dynamo.domain.TestEntity;
 
 /**
@@ -22,4 +24,5 @@ import com.ocs.dynamo.domain.TestEntity;
  */
 public interface TestEntityDao extends TreeDao<Integer, TestEntity> {
 
+	public List<TestEntity> findByBirthDateLocal();
 }

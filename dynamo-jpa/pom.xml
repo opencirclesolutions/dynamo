@@ -1,38 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	
+
 	<artifactId>dynamo-jpa</artifactId>
 	<packaging>jar</packaging>
 	<name>Dynamo Framework - JPA</name>
-    <url>https://github.com/opencirclesolutions/dynamo</url>
-	
+	<url>https://github.com/opencirclesolutions/dynamo</url>
+
 	<parent>
 		<groupId>org.dynamoframework</groupId>
 		<artifactId>dynamo-parent</artifactId>
 		<version>1.2-SNAPSHOT</version>
-    </parent>
-	
+	</parent>
+
 	<organization>
-        <name>Open Circle Solutions</name>
-        <url>http://www.opencirclesolutions.nl</url>
-    </organization>
+		<name>Open Circle Solutions</name>
+		<url>http://www.opencirclesolutions.nl</url>
+	</organization>
 
 	<licenses>
-        <license>
-            <name>Apache License Version 2.0</name>
-            <distribution>repo</distribution>
-            <url>http://www.apache.org/licenses/LICENSE-2.0</url>
-        </license>
-    </licenses>
-	
+		<license>
+			<name>Apache License Version 2.0</name>
+			<distribution>repo</distribution>
+			<url>http://www.apache.org/licenses/LICENSE-2.0</url>
+		</license>
+	</licenses>
+
 	<dependencies>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>dynamo-core</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		
+
 		<!-- Hibernate -->
 		<dependency>
 			<groupId>org.hibernate</groupId>
@@ -58,6 +59,8 @@
 			<groupId>com.mysema.querydsl</groupId>
 			<artifactId>querydsl-apt</artifactId>
 		</dependency>
+		<!-- <dependency> <groupId>javax.el</groupId> <artifactId>el-api</artifactId> 
+			</dependency> -->
 	</dependencies>
 	<build>
 		<plugins>

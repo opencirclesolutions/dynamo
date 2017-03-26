@@ -1,2 +1,0 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<BugCollection version='3.0.1' threshold='medium' effort='max'><Error></Error><Project><SrcDir>C:\jbossworkspace\dynamo\dynamo-jasperreports\src\main\java</SrcDir><SrcDir>C:\jbossworkspace\dynamo\dynamo-jasperreports\target\generated-sources\querydsl</SrcDir><SrcDir>C:\jbossworkspace\dynamo\dynamo-jasperreports\target\generated-sources\annotations</SrcDir><SrcDir>C:\jbossworkspace\dynamo\dynamo-jasperreports\src\test\java</SrcDir></Project></BugCollection>

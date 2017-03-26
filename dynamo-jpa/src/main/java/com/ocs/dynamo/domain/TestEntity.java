@@ -14,6 +14,8 @@
 package com.ocs.dynamo.domain;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -76,6 +78,10 @@ public class TestEntity extends AbstractTreeEntity<Integer, TestEntity> {
 
 	@Attribute(displayFormat = "dd/MM/yyyy")
 	private Date birthDate;
+
+	private LocalDate birthDateLocal;
+
+	private LocalDateTime registrationTime;
 
 	@Attribute(week = true)
 	private Date birthWeek;
@@ -342,6 +348,22 @@ public class TestEntity extends AbstractTreeEntity<Integer, TestEntity> {
 
 	public void setSomeLongSlider(Long someLongSlider) {
 		this.someLongSlider = someLongSlider;
+	}
+
+	public LocalDate getBirthDateLocal() {
+		return birthDateLocal;
+	}
+
+	public void setBirthDateLocal(LocalDate birthDateLocal) {
+		this.birthDateLocal = birthDateLocal;
+	}
+
+	public LocalDateTime getRegistrationTime() {
+		return registrationTime;
+	}
+
+	public void setRegistrationTime(LocalDateTime registrationTime) {
+		this.registrationTime = registrationTime;
 	}
 
 }

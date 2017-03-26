@@ -104,7 +104,7 @@ public class DomainServiceTest extends BaseIntegrationTest {
 		Assert.assertTrue(deu instanceof Region);
 		Region eu = (Region) deu;
 		Assert.assertEquals(4, eu.getChildren().size());
-		List<DomainChild<?>> countries = domainService.findChildren(eu);
+		List<Country> countries = domainService.findChildren(eu);
 		Assert.assertEquals(4, countries.size());
 		countries = regionService.findChildren(eu);
 		Assert.assertEquals(4, countries.size());

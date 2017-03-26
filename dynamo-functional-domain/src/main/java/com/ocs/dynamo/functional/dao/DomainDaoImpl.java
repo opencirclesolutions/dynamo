@@ -45,18 +45,17 @@ public class DomainDaoImpl extends DefaultDaoImpl<Integer, Domain> implements Do
 		super(dslRoot, entityClass);
 	}
 
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings({ "unchecked" })
 	@Override
-	public List<DomainChild<? extends DomainParent>> findChildren(DomainParent<? extends DomainChild> parent) {
-		QDomainChild qDH = QDomainChild.domainChild;
-		JPAQuery query = new JPAQuery(getEntityManager()).from(qDH);
-		query.where(qDH.parent.eq(parent));
-		return query.list(qDH);
+	public <C extends DomainChild<C, P>, P extends DomainParent<C, P>> List<C> findChildren(P parent) {
+		JPAQuery query = new JPAQuery(getEntityManager()).from(QDomainChild.domainChild);
+		query.where(QDomainChild.domainChild.parent.eq(parent));
+		return (List<C>) query.list(QDomainChild.domainChild);
 	}
 
 	@Override
-	public List<? extends Domain> findAllByType(Class<? extends Domain> type) {
-		CriteriaQuery<? extends Domain> cq = getEntityManager().getCriteriaBuilder().createQuery(type);
+	public <D extends Domain> List<D> findAllByType(Class<D> type) {
+		CriteriaQuery<D> cq = getEntityManager().getCriteriaBuilder().createQuery(type);
 		cq.from(type);
 		return getEntityManager().createQuery(cq).getResultList();
 	}

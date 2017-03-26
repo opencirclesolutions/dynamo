@@ -16,6 +16,9 @@ package com.ocs.dynamo.domain.model.impl;
 import java.beans.PropertyDescriptor;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -74,12 +77,14 @@ import com.ocs.dynamo.domain.validator.Email;
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.utils.ClassUtils;
+import com.ocs.dynamo.utils.DateUtils;
 import com.ocs.dynamo.utils.SystemPropertyUtils;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.DefaultFieldFactory;
 
 /**
- * Implementation of the entity model factory - creates models that hold metadata about an entity
+ * Implementation of the entity model factory - creates models that hold
+ * metadata about an entity
  * 
  * @author bas.rutten
  */
@@ -110,8 +115,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 	 * @param entityModel
 	 *            the entity model
 	 * @param parentClass
-	 *            the type of the direct parent of the attribute (relevant in case of embedded
-	 *            attributes)
+	 *            the type of the direct parent of the attribute (relevant in
+	 *            case of embedded attributes)
 	 * @param nested
 	 *            whether this is a nested attribute
 	 * @param prefix
@@ -119,7 +124,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 	 * @return
 	 */
 	private <T> List<AttributeModel> constructAttributeModel(PropertyDescriptor descriptor,
-	        EntityModelImpl<T> entityModel, Class<?> parentClass, boolean nested, String prefix) {
+			EntityModelImpl<T> entityModel, Class<?> parentClass, boolean nested, String prefix) {
 		List<AttributeModel> result = new ArrayList<>();
 
 		// validation methods annotated with @AssertTrue or @AssertFalse have to
@@ -187,8 +192,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 			setNestedEntityModel(model);
 
 			// only basic attributes are shown in the table by default
-			model.setVisibleInTable(!nested && model.isVisible()
-			        && (AttributeType.BASIC.equals(model.getAttributeType())));
+			model.setVisibleInTable(
+					!nested && model.isVisible() && (AttributeType.BASIC.equals(model.getAttributeType())));
 
 			if (getMessageService() != null) {
 				model.setTrueRepresentation(SystemPropertyUtils.getDefaultTrueRepresentation());
@@ -223,17 +228,18 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 					String name = embeddedDescriptor.getName();
 					if (!skipAttribute(name)) {
 						List<AttributeModel> embeddedModels = constructAttributeModel(embeddedDescriptor, entityModel,
-						        model.getType(), nested, model.getName());
+								model.getType(), nested, model.getName());
 						result.addAll(embeddedModels);
 					}
 				}
 			}
 
-			// exception if using a multiple select field type for a single select field
-			if ((AttributeSelectMode.TOKEN.equals(model.getSelectMode()) || AttributeSelectMode.FANCY_LIST.equals(model
-			        .getSelectMode()))
-			        && !AttributeType.DETAIL.equals(model.getAttributeType())
-			        && !AttributeType.BASIC.equals(model.getAttributeType())) {
+			// exception if using a multiple select field type for a single
+			// select field
+			if ((AttributeSelectMode.TOKEN.equals(model.getSelectMode())
+					|| AttributeSelectMode.FANCY_LIST.equals(model.getSelectMode()))
+					&& !AttributeType.DETAIL.equals(model.getAttributeType())
+					&& !AttributeType.BASIC.equals(model.getAttributeType())) {
 				throw new OCSRuntimeException("Token or Fancy List field not allowed for field " + model.getName());
 			}
 
@@ -266,9 +272,11 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 
 			alreadyProcessed.put(reference, entityClass);
 
-			// keep track of main attributes - if no main attribute is defined, mark
+			// keep track of main attributes - if no main attribute is defined,
+			// mark
 			// either the
-			// first string attribute or the first searchable attribute as the main
+			// first string attribute or the first searchable attribute as the
+			// main
 			boolean mainAttributeFound = false;
 			AttributeModel firstStringAttribute = null;
 			AttributeModel firstSearchableAttribute = null;
@@ -279,7 +287,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 			for (PropertyDescriptor descriptor : descriptors) {
 				if (!skipAttribute(descriptor.getName())) {
 					List<AttributeModel> attributeModels = constructAttributeModel(descriptor, model,
-					        model.getEntityClass(), nested, null);
+							model.getEntityClass(), nested, null);
 
 					for (AttributeModel attributeModel : attributeModels) {
 
@@ -324,7 +332,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 							AttributeModel other = model.getAttributeModel(together);
 							if (together != null) {
 								((AttributeModelImpl) other).setAlreadyGrouped(true);
-								LOG.warn("Incorrect groupTogetherWith found: " + m.getName() + " refers to " + together);
+								LOG.warn(
+										"Incorrect groupTogetherWith found: " + m.getName() + " refers to " + together);
 							}
 						}
 					}
@@ -410,7 +419,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 		}
 
 		return new EntityModelImpl<>(entityClass, reference, displayName, displayNamePlural, description,
-		        selectDisplayProperty);
+				selectDisplayProperty);
 	}
 
 	/**
@@ -443,8 +452,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 		// look for message bundle overwrites
 		int i = 1;
 		if (messageService != null) {
-			String groupName = messageService.getEntityMessage(model.getReference(), EntityModel.ATTRIBUTE_GROUP + "."
-			        + i + "." + EntityModel.DISPLAY_NAME);
+			String groupName = messageService.getEntityMessage(model.getReference(),
+					EntityModel.ATTRIBUTE_GROUP + "." + i + "." + EntityModel.DISPLAY_NAME);
 
 			if (groupName != null) {
 				result.clear();
@@ -452,7 +461,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 
 			while (groupName != null) {
 				String attributeNames = messageService.getEntityMessage(model.getReference(),
-				        EntityModel.ATTRIBUTE_GROUP + "." + i + "." + EntityModel.ATTRIBUTE_NAMES);
+						EntityModel.ATTRIBUTE_GROUP + "." + i + "." + EntityModel.ATTRIBUTE_NAMES);
 
 				if (attributeNames != null) {
 					model.addAttributeGroup(groupName);
@@ -462,17 +471,18 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 				}
 
 				i++;
-				groupName = messageService.getEntityMessage(model.getReference(), EntityModel.ATTRIBUTE_GROUP + "." + i
-				        + "." + EntityModel.DISPLAY_NAME);
+				groupName = messageService.getEntityMessage(model.getReference(),
+						EntityModel.ATTRIBUTE_GROUP + "." + i + "." + EntityModel.DISPLAY_NAME);
 			}
 		}
 		return result;
 	}
 
 	/**
-	 * Determines the order of the attributes - this will first pick up any attributes that are
-	 * mentioned in the @AttributeOrder annotation (in the order in which they occur) and then add
-	 * any attributes that are not explicitly mentioned
+	 * Determines the order of the attributes - this will first pick up any
+	 * attributes that are mentioned in the @AttributeOrder annotation (in the
+	 * order in which they occur) and then add any attributes that are not
+	 * explicitly mentioned
 	 * 
 	 * @param entityClass
 	 * @param reference
@@ -480,7 +490,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 	 * @return
 	 */
 	private <T> void determineAttributeOrder(Class<T> entityClass, String reference,
-	        List<AttributeModel> attributeModels) {
+			List<AttributeModel> attributeModels) {
 
 		List<String> explicitAttributeNames = new ArrayList<>();
 		List<String> additionalNames = new ArrayList<>();
@@ -492,8 +502,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 		}
 
 		// overwrite by message bundle (if present)
-		String msg = messageService == null ? null : messageService.getEntityMessage(reference,
-		        EntityModel.ATTRIBUTE_ORDER);
+		String msg = messageService == null ? null
+				: messageService.getEntityMessage(reference, EntityModel.ATTRIBUTE_ORDER);
 		if (msg != null) {
 			explicitAttributeNames = Arrays.asList(msg.replaceAll("\\s+", "").split(","));
 		}
@@ -545,7 +555,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 			name = name.substring(p + 1);
 		}
 
-		if (!BeanUtils.isSimpleValueType(model.getType())) {
+		if (!BeanUtils.isSimpleValueType(model.getType()) && !DateUtils.isJava8DateType(model.getType())) {
 			// No relation type set in view model definition, hence derive
 			// defaults
 			Embedded embedded = ClassUtils.getAnnotation(parentClass, name, Embedded.class);
@@ -555,12 +565,13 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 				result = AttributeType.EMBEDDED;
 			} else if (Collection.class.isAssignableFrom(model.getType())) {
 
-				if (attribute != null && attribute.memberType() != null && !attribute.memberType().equals(Object.class)) {
+				if (attribute != null && attribute.memberType() != null
+						&& !attribute.memberType().equals(Object.class)) {
 					// if a member type is explicitly set, use that type
 					result = AttributeType.DETAIL;
 					model.setMemberType(attribute.memberType());
 				} else if (ClassUtils.getAnnotation(parentClass, name, ManyToMany.class) != null
-				        || ClassUtils.getAnnotation(parentClass, name, OneToMany.class) != null) {
+						|| ClassUtils.getAnnotation(parentClass, name, OneToMany.class) != null) {
 					result = AttributeType.DETAIL;
 					model.setMemberType(ClassUtils.getResolvedType(parentClass, model.getName(), 0));
 				} else if (ClassUtils.getAnnotation(parentClass, name, ElementCollection.class) != null) {
@@ -610,31 +621,35 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 			Attribute attribute = ClassUtils.getAnnotation(entityClass, fieldName, Attribute.class);
 
 			final boolean customAttributeDateTypeSet = attribute != null
-			        && attribute.dateType() != AttributeDateType.INHERIT;
+					&& attribute.dateType() != AttributeDateType.INHERIT;
 			if (temporal != null && !customAttributeDateTypeSet) {
-				// use the @Temporal annotation when available and not overridden by Attribute
+				// use the @Temporal annotation when available and not
+				// overridden by Attribute
 				return translateDateType(temporal.value());
 			} else {
 				if (customAttributeDateTypeSet) {
 					return attribute.dateType();
 				}
-
 				// by default use date
 				return AttributeDateType.DATE;
 			}
+		} else if (LocalDate.class.equals(modelType)) {
+			return AttributeDateType.DATE;
+		} else if (LocalDateTime.class.equals(modelType)) {
+			return AttributeDateType.TIMESTAMP;
+		} else if (LocalTime.class.equals(modelType)) {
+			return AttributeDateType.TIME;
 		}
 		return null;
 	}
 
 	/**
-	 * Determines the display format on a property
+	 * Determines the default format to use for a date or time property
 	 * 
 	 * @param type
-	 *            the java type
-	 * @param entityClass
-	 *            the class on which the property is defined
-	 * @param fieldName
+	 *            the type of the property
 	 * @param dateType
+	 *            the date type
 	 * @return
 	 */
 	private String determineDefaultDisplayFormat(Class<?> type, AttributeDateType dateType) {
@@ -651,6 +666,12 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 				// by default use a date
 				format = SystemPropertyUtils.getDefaultDateFormat();
 			}
+		} else if (LocalDate.class.isAssignableFrom(type)) {
+			format = SystemPropertyUtils.getDefaultDateFormat();
+		} else if (LocalDateTime.class.isAssignableFrom(type)) {
+			format = SystemPropertyUtils.getDefaultDateTimeFormat();
+		} else if (LocalTime.class.isAssignableFrom(type)) {
+			format = SystemPropertyUtils.getDefaultTimeFormat();
 		}
 		return format;
 	}
@@ -730,7 +751,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 	private boolean hasEntityModel(Class<?> type, String reference) {
 		for (Entry<String, Class<?>> e : alreadyProcessed.entrySet()) {
 			if (reference.equals(e.getKey()) && e.getValue().equals(type)) {
-				// only check for starting reference in order to prevent recursive looping between
+				// only check for starting reference in order to prevent
+				// recursive looping between
 				// two-sided relations
 				return true;
 			}
@@ -744,7 +766,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 	}
 
 	/**
-	 * Check whether a message contains a value that marks the attribute as "visible"
+	 * Check whether a message contains a value that marks the attribute as
+	 * "visible"
 	 * 
 	 * @param msg
 	 *            the message
@@ -768,7 +791,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 	 * @param descriptor
 	 */
 	private void setAnnotationOverrides(Class<?> parentClass, AttributeModelImpl model, PropertyDescriptor descriptor,
-	        boolean nested) {
+			boolean nested) {
 		Attribute attribute = ClassUtils.getAnnotation(parentClass, descriptor.getName(), Attribute.class);
 
 		// overwrite with annotation values
@@ -802,7 +825,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 				model.setReadOnly(true);
 			}
 
-			// set visibility (but not for nested attributes - these are hidden by default)
+			// set visibility (but not for nested attributes - these are hidden
+			// by default)
 			if (attribute.visible() != null && !VisibilityType.INHERIT.equals(attribute.visible()) && !nested) {
 				model.setVisible(VisibilityType.SHOW.equals(attribute.visible()));
 				model.setVisibleInTable(model.isVisible());
@@ -881,7 +905,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 				model.setDateType(attribute.dateType());
 			}
 
-			// overrule select mode - by default, this overrules the search select mode as well
+			// overrule select mode - by default, this overrules the search
+			// select mode as well
 			if (attribute.selectMode() != null && !AttributeSelectMode.INHERIT.equals(attribute.selectMode())) {
 				model.setSelectMode(attribute.selectMode());
 				model.setSearchSelectMode(attribute.selectMode());
@@ -901,7 +926,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 			model.setSearchCaseSensitive(attribute.searchCaseSensitive());
 			model.setSearchPrefixOnly(attribute.searchPrefixOnly());
 
-			if (attribute.textFieldMode() != null && !AttributeTextFieldMode.INHERIT.equals(attribute.textFieldMode())) {
+			if (attribute.textFieldMode() != null
+					&& !AttributeTextFieldMode.INHERIT.equals(attribute.textFieldMode())) {
 				model.setTextFieldMode(attribute.textFieldMode());
 			}
 
@@ -965,7 +991,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 	}
 
 	/**
-	 * Sets the default value on the attribute model (translates a String to the appropriate type)
+	 * Sets the default value on the attribute model (translates a String to the
+	 * appropriate type)
 	 * 
 	 * @param model
 	 *            the attribute model
@@ -983,7 +1010,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 				model.setDefaultValue(fmt.parseObject(defaultValue));
 			} catch (ParseException e) {
 				throw new OCSRuntimeException("Cannot parse default date value: " + defaultValue + " with format: "
-				        + model.getDisplayFormat());
+						+ model.getDisplayFormat());
 			}
 		} else {
 			model.setDefaultValue(ClassUtils.instantiateClass(model.getType(), defaultValue));
@@ -1002,8 +1029,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 		int cascadeIndex = 1;
 		String msg = getAttributeMessage(entityModel, model, EntityModel.CASCADE + "." + cascadeIndex);
 		while (msg != null) {
-			String filter = getAttributeMessage(entityModel, model, EntityModel.CASCADE_FILTER_PATH + "."
-			        + cascadeIndex);
+			String filter = getAttributeMessage(entityModel, model,
+					EntityModel.CASCADE_FILTER_PATH + "." + cascadeIndex);
 			// optional mode (defaults to BOTH when omitted)
 			String mode = getAttributeMessage(entityModel, model, EntityModel.CASCADE_MODE + "." + cascadeIndex);
 
@@ -1146,14 +1173,16 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 			model.setCurrency(Boolean.valueOf(msg));
 		}
 
-		// set multiple search (also overwrites the search select mode and sets it to fancy list)
+		// set multiple search (also overwrites the search select mode and sets
+		// it to fancy list)
 		msg = getAttributeMessage(entityModel, model, EntityModel.MULTIPLE_SEARCH);
 		if (msg != null && !StringUtils.isEmpty(msg)) {
 			model.setMultipleSearch(Boolean.valueOf(msg));
 			model.setSearchSelectMode(AttributeSelectMode.TOKEN);
 		}
 
-		// set the select mode (also sets the search select mode to the same value)
+		// set the select mode (also sets the search select mode to the same
+		// value)
 		msg = getAttributeMessage(entityModel, model, EntityModel.SELECT_MODE);
 		if (msg != null && !StringUtils.isEmpty(msg) && AttributeSelectMode.valueOf(msg) != null) {
 			model.setSelectMode(AttributeSelectMode.valueOf(msg));
@@ -1246,7 +1275,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 	}
 
 	/**
-	 * Calculates the entity model for a nested property, recursively up till a certain depth
+	 * Calculates the entity model for a nested property, recursively up till a
+	 * certain depth
 	 * 
 	 * @param model
 	 *            the attribute model
@@ -1293,18 +1323,18 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 			for (String token : tokens) {
 				String[] sd = token.trim().split(" ");
 				if (sd.length > 0 && !StringUtils.isEmpty(sd[0]) && model.getAttributeModel(sd[0]) != null) {
-					model.getSortOrder()
-					        .put(model.getAttributeModel(sd[0]),
-					                (sd.length > 1 && ("DESC".equalsIgnoreCase(sd[1]) || "DSC".equalsIgnoreCase(sd[1]))) ? false
-					                        : true);
+					model.getSortOrder().put(model.getAttributeModel(sd[0]),
+							(sd.length > 1 && ("DESC".equalsIgnoreCase(sd[1]) || "DSC".equalsIgnoreCase(sd[1]))) ? false
+									: true);
 				}
 			}
 		}
 	}
 
 	/**
-	 * Indicates whether to skip an attribute since it does not constitute an actual property but
-	 * rather a generic or technical field that all entities have
+	 * Indicates whether to skip an attribute since it does not constitute an
+	 * actual property but rather a generic or technical field that all entities
+	 * have
 	 * 
 	 * @param name
 	 * @return

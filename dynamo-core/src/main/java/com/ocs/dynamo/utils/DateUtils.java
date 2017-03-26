@@ -15,6 +15,12 @@ package com.ocs.dynamo.utils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -35,13 +41,82 @@ public final class DateUtils {
 
 	private static final String DATE_FORMAT = "ddMMyyyy";
 
+	private static final String DATE_TIME_FORMAT = "ddMMyyyy HHmmss";
+
 	private static final String TIME_FORMAT = "HHmmss";
 
 	private static final int FIRST_WEEK_NUMBER = 1;
 
 	private static final int LAST_WEEK_NUMBER = 53;
 
-	private DateUtils() {
+	/**
+	 * Creates a java.util.Date based on a String representation
+	 * 
+	 * @param dateStr
+	 *            the string (in the format ddMMyyyy)
+	 * @return
+	 */
+	public static Date createDate(String dateStr) {
+		return toLegacyDate(createLocalDate(dateStr));
+	}
+
+	/**
+	 * Creates a java.util.Date based on a String representation
+	 * 
+	 * @param dateTimeStr
+	 *            the STring (in the format ddMMyyyy HHmmss)
+	 * @return
+	 */
+	public static Date createDateTime(String dateTimeStr) {
+		return toLegacyDate(createLocalDateTime(dateTimeStr));
+	}
+
+	/**
+	 * Creates a java.time.LocalTime based on a String representation
+	 * 
+	 * @param dateStr
+	 *            the string (in the format ddMMyyyy)
+	 * @return
+	 */
+	public static LocalDate createLocalDate(String dateStr) {
+		if (dateStr == null) {
+			return null;
+		}
+		DateTimeFormatter fmt = new DateTimeFormatterBuilder().appendPattern(DATE_FORMAT).toFormatter();
+		return LocalDate.from(fmt.parse(dateStr));
+	}
+
+	/**
+	 * Creates a java.time.LocalDateTime based on a String representation
+	 * 
+	 * @param dateTimeStr
+	 * @return
+	 */
+	public static LocalDateTime createLocalDateTime(String dateTimeStr) {
+		if (dateTimeStr == null) {
+			return null;
+		}
+		DateTimeFormatter fmt = new DateTimeFormatterBuilder().appendPattern(DATE_TIME_FORMAT).toFormatter();
+		return LocalDateTime.from(fmt.parse(dateTimeStr));
+	}
+
+	/**
+	 * Creates a date that holds a time stamp
+	 * 
+	 * @param timeStr
+	 *            the time string
+	 * @return
+	 */
+	public static Date createTime(String timeStr) {
+		if (timeStr == null) {
+			return null;
+		}
+		SimpleDateFormat format = new SimpleDateFormat(TIME_FORMAT);
+		try {
+			return format.parse(timeStr);
+		} catch (ParseException e) {
+			throw new OCSRuntimeException(e.getMessage(), e);
+		}
 	}
 
 	/**
@@ -54,54 +129,70 @@ public final class DateUtils {
 	 * @return
 	 */
 	public static String formatDate(Date date, String format) {
+		return formatDate(toLocalDate(date), format);
+	}
+
+	/**
+	 * Formats a LocalDate according to the specified format
+	 * 
+	 * @param date
+	 *            the date
+	 * @param format
+	 *            the format
+	 * @return
+	 */
+	public static String formatDate(LocalDate date, String format) {
 		if (date == null || format == null) {
 			return null;
 		}
-
-		SimpleDateFormat df = new SimpleDateFormat(format);
-		return df.format(date);
+		DateTimeFormatter fmt = new DateTimeFormatterBuilder().appendPattern(format).toFormatter();
+		return date.format(fmt);
 	}
 
 	/**
-	 * Creates a java.util.Date based on a string representation
+	 * Formats a Java 8 date/time/datetime
 	 * 
-	 * @param dateStr
-	 *            the string (in the format ddMMyyyy)
+	 * @param clazz
+	 * @param value
+	 * @param format
 	 * @return
 	 */
-	public static Date createDate(String dateStr) {
-		if (dateStr == null) {
-			return null;
+	public static String formatJava8Date(Class<?> clazz, Object value, String format) {
+		if (LocalDate.class.equals(clazz)) {
+			return formatDate((LocalDate) value, format);
+		} else if (LocalDateTime.class.equals(clazz)) {
+			return formatDateTime((LocalDateTime) value, format);
+		} else if (LocalTime.class.equals(clazz)) {
+			return formatTime((LocalTime) value, format);
 		}
-
-		SimpleDateFormat format = new SimpleDateFormat(DATE_FORMAT);
-		try {
-			return format.parse(dateStr);
-		} catch (ParseException e) {
-			throw new OCSRuntimeException(e.getMessage(), e);
-		}
+		return null;
 	}
 
 	/**
+	 * Formats a LocalDateTime according to the specified format
 	 * 
-	 * @param timeStr
+	 * @param date
+	 * @param format
 	 * @return
 	 */
-	public static Date createTime(String timeStr) {
-		if (timeStr == null) {
+	public static String formatDateTime(LocalDateTime date, String format) {
+		if (date == null || format == null) {
 			return null;
 		}
+		DateTimeFormatter fmt = new DateTimeFormatterBuilder().appendPattern(format).toFormatter();
+		return date.format(fmt);
+	}
 
-		SimpleDateFormat format = new SimpleDateFormat(TIME_FORMAT);
-		try {
-			return format.parse(timeStr);
-		} catch (ParseException e) {
-			throw new OCSRuntimeException(e.getMessage(), e);
+	public static String formatTime(LocalTime time, String format) {
+		if (time == null || format == null) {
+			return null;
 		}
+		DateTimeFormatter fmt = new DateTimeFormatterBuilder().appendPattern(format).toFormatter();
+		return time.format(fmt);
 	}
 
 	/**
-	 * Gets the number of the last week of a year
+	 * Return the week nuymber (1 - 53) of the last week of the specified year
 	 * 
 	 * @param year
 	 *            the year
@@ -126,6 +217,7 @@ public final class DateUtils {
 	 * Returns the next week code given an existing week code
 	 * 
 	 * @param weekCode
+	 *            the week code
 	 * @return
 	 */
 	public static String getNextWeekCode(String weekCode) {
@@ -142,6 +234,67 @@ public final class DateUtils {
 		} else {
 			return (year + 1) + "-" + "01";
 		}
+	}
+
+	/**
+	 * Returns the quarter of the year of a date, as an integer (1 to 4).
+	 * Returns -1 in case the argument passed to this function is null
+	 * 
+	 * @param date
+	 *            the date
+	 * @return
+	 */
+	public static int getQuarter(Date date) {
+		return getQuarter(toLocalDate(date));
+	}
+
+	/**
+	 * Returns the quarter of the year of a date, as an integer (1 to 4).
+	 * Returns -1 in case the argument passed to this function is null
+	 * 
+	 * @param date
+	 *            the date
+	 * @return
+	 */
+	public static int getQuarter(LocalDate date) {
+		if (date == null) {
+			return -1;
+		}
+		return 1 + date.getMonth().ordinal() / 3;
+	}
+
+	private static int getWeekFromWeekCode(String weekCode) {
+		return Integer.parseInt(weekCode.substring(5));
+	}
+
+	/**
+	 * Retrieves the date from a year
+	 * 
+	 * @param date
+	 * @return
+	 */
+	public static Integer getYearFromDate(Date date) {
+		if (date == null) {
+			return null;
+		}
+
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(date);
+		return calendar.get(Calendar.YEAR);
+	}
+
+	private static int getYearFromWeekCode(String weekCode) {
+		return Integer.parseInt(weekCode.substring(0, 4));
+	}
+
+	/**
+	 * Çhecks whether a class represents a Java 8 date or time type
+	 * 
+	 * @param clazz
+	 * @return
+	 */
+	public static boolean isJava8DateType(Class<?> clazz) {
+		return LocalDate.class.equals(clazz) || LocalDateTime.class.equals(clazz) || LocalTime.class.equals(clazz);
 	}
 
 	/**
@@ -169,29 +322,100 @@ public final class DateUtils {
 	}
 
 	/**
-	 * Returns the quarter of the year of a date, as an integer
+	 * Converts a java.time.LocalDate to a java.util.Date
 	 * 
-	 * @param date
+	 * @param d
+	 *            the date
 	 * @return
 	 */
-	public static int getQuarter(Date date) {
-		if (date == null) {
-			return -1;
+	public static Date toLegacyDate(LocalDate d) {
+		if (d == null) {
+			return null;
 		}
-		Calendar calendar = new GregorianCalendar(DynamoConstants.DEFAULT_LOCALE);
-		calendar.setTime(date);
-		return 1 + calendar.get(Calendar.MONTH) / 3;
+		return Date.from(d.atStartOfDay(ZoneId.systemDefault()).toInstant());
 	}
 
 	/**
-	 * Translates a week code (yyyy-ww) to the starting day (this is taken to be a Monday) of that
-	 * week
+	 * Converts a java.time.LocalDateTime to a java.util.Date
+	 * 
+	 * @param d
+	 * @return
+	 */
+	public static Date toLegacyDate(LocalDateTime d) {
+		if (d == null) {
+			return null;
+		}
+		return Date.from(d.atZone(ZoneId.systemDefault()).toInstant());
+	}
+
+	/**
+	 * 
+	 * @param d
+	 * @return
+	 */
+	public static Date toLegacyTime(LocalTime d) {
+		if (d == null) {
+			return null;
+		}
+		return Date.from(d.atDate(createLocalDate("01012000")).atZone(ZoneId.systemDefault()).toInstant());
+	}
+
+	/**
+	 * Converts a java.util.Date to a LocalDate
+	 * 
+	 * @param d
+	 *            the date to convert
+	 * @return
+	 */
+	public static LocalDate toLocalDate(Date d) {
+		if (d == null) {
+			return null;
+		}
+		return d.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+	}
+
+	/**
+	 * Converts a java.util.Date to a LocalDateTime
+	 * 
+	 * @param d
+	 *            the date
+	 * @return
+	 */
+	public static LocalDateTime toLocalDateTime(Date d) {
+		if (d == null) {
+			return null;
+		}
+		return d.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+	}
+
+	public static LocalTime toLocalTime(Date d) {
+		if (d == null) {
+			return null;
+		}
+		return d.toInstant().atZone(ZoneId.systemDefault()).toLocalTime();
+	}
+
+	/**
+	 * Creates a LocalDate that represents the first day of the week
+	 * corresponding to the provided week code
+	 * 
+	 * @param weekCode
+	 *            the week code
+	 * @return
+	 */
+	public static LocalDate toStartDateOfWeek(String weekCode) {
+		return toLocalDate(toStartDateOfWeekLegacy(weekCode));
+	}
+
+	/**
+	 * Translates a week code (yyyy-ww) to the starting day (this is taken to be
+	 * a Monday) of that week
 	 * 
 	 * @param weekCode
 	 *            the week code
 	 * @return the date
 	 */
-	public static Date getStartDateOfWeek(String weekCode) {
+	public static Date toStartDateOfWeekLegacy(String weekCode) {
 		if (weekCode != null && weekCode.matches(WEEK_CODE_PATTERN)) {
 			int year = getYearFromWeekCode(weekCode);
 			int week = getWeekFromWeekCode(weekCode);
@@ -200,7 +424,6 @@ public final class DateUtils {
 			calendar.set(Calendar.YEAR, year);
 			calendar.set(Calendar.WEEK_OF_YEAR, week);
 			calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
-
 			return truncate(calendar).getTime();
 		}
 		return null;
@@ -227,7 +450,8 @@ public final class DateUtils {
 				year++;
 			}
 
-			// if the week number is 53 but we are in January, then reduce the year by one
+			// if the week number is 53 but we are in January, then reduce the
+			// year by one
 			if ((week == LAST_WEEK_NUMBER || week == LAST_WEEK_NUMBER - 1) && month == Calendar.JANUARY) {
 				year--;
 			}
@@ -251,27 +475,7 @@ public final class DateUtils {
 		return calendar;
 	}
 
-	/**
-	 * Retrieves the date from a year
-	 * 
-	 * @param date
-	 * @return
-	 */
-	public static Integer getYearFromDate(Date date) {
-		if (date == null) {
-			return null;
-		}
-
-		Calendar calendar = Calendar.getInstance();
-		calendar.setTime(date);
-		return calendar.get(Calendar.YEAR);
-	}
-
-	private static int getYearFromWeekCode(String weekCode) {
-		return Integer.parseInt(weekCode.substring(0, 4));
-	}
-
-	private static int getWeekFromWeekCode(String weekCode) {
-		return Integer.parseInt(weekCode.substring(5));
+	private DateUtils() {
+		// hidden constructor
 	}
 }

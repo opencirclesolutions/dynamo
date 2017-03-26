@@ -40,7 +40,7 @@ public class WeekCodeConverter implements Converter<String, Date> {
         if (StringUtils.isEmpty(value)) {
             return null;
         }
-        return DateUtils.getStartDateOfWeek(value);
+        return DateUtils.toStartDateOfWeekLegacy(value);
     }
 
     /**
