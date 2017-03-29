@@ -49,6 +49,8 @@ public final class DateUtils {
 
 	private static final int LAST_WEEK_NUMBER = 53;
 
+	private static final int YEAR_STRING_LENGTH = 4;
+
 	/**
 	 * Creates a java.util.Date based on a String representation
 	 * 
@@ -64,7 +66,7 @@ public final class DateUtils {
 	 * Creates a java.util.Date based on a String representation
 	 * 
 	 * @param dateTimeStr
-	 *            the STring (in the format ddMMyyyy HHmmss)
+	 *            the String (in the format ddMMyyyy HHmmss)
 	 * @return
 	 */
 	public static Date createDateTime(String dateTimeStr) {
@@ -82,7 +84,7 @@ public final class DateUtils {
 		if (dateStr == null) {
 			return null;
 		}
-		DateTimeFormatter fmt = new DateTimeFormatterBuilder().appendPattern(DATE_FORMAT).toFormatter();
+		DateTimeFormatter fmt = new DateTimeFormatterBuilder().appendPattern(DATE_FORMAT).parseStrict().toFormatter();
 		return LocalDate.from(fmt.parse(dateStr));
 	}
 
@@ -90,21 +92,38 @@ public final class DateUtils {
 	 * Creates a java.time.LocalDateTime based on a String representation
 	 * 
 	 * @param dateTimeStr
+	 *            the String representation (ddMMyyyy HHmmss)
 	 * @return
 	 */
 	public static LocalDateTime createLocalDateTime(String dateTimeStr) {
 		if (dateTimeStr == null) {
 			return null;
 		}
-		DateTimeFormatter fmt = new DateTimeFormatterBuilder().appendPattern(DATE_TIME_FORMAT).toFormatter();
+		DateTimeFormatter fmt = new DateTimeFormatterBuilder().appendPattern(DATE_TIME_FORMAT).parseStrict()
+				.toFormatter();
 		return LocalDateTime.from(fmt.parse(dateTimeStr));
 	}
 
 	/**
-	 * Creates a date that holds a time stamp
+	 * Creates a java.time.LocalTime based on a String representation
 	 * 
 	 * @param timeStr
-	 *            the time string
+	 *            the String representation
+	 * @return
+	 */
+	public static LocalTime createLocalTime(String timeStr) {
+		if (timeStr == null) {
+			return null;
+		}
+		DateTimeFormatter fmt = new DateTimeFormatterBuilder().appendPattern(TIME_FORMAT).parseStrict().toFormatter();
+		return LocalTime.from(fmt.parse(timeStr));
+	}
+
+	/**
+	 * Creates a Date that hold a time based on a String representation
+	 * 
+	 * @param timeStr
+	 *            the String representation (HHmmss)
 	 * @return
 	 */
 	public static Date createTime(String timeStr) {
@@ -112,6 +131,7 @@ public final class DateUtils {
 			return null;
 		}
 		SimpleDateFormat format = new SimpleDateFormat(TIME_FORMAT);
+		format.setLenient(false);
 		try {
 			return format.parse(timeStr);
 		} catch (ParseException e) {
@@ -150,11 +170,31 @@ public final class DateUtils {
 	}
 
 	/**
-	 * Formats a Java 8 date/time/datetime
+	 * Formats a LocalDateTime according to the specified format
+	 * 
+	 * @param dateTime
+	 *            the DateTime to format
+	 * @param format
+	 *            the desired format
+	 * @return
+	 */
+	public static String formatDateTime(LocalDateTime dateTime, String format) {
+		if (dateTime == null || format == null) {
+			return null;
+		}
+		DateTimeFormatter fmt = new DateTimeFormatterBuilder().appendPattern(format).toFormatter();
+		return dateTime.format(fmt);
+	}
+
+	/**
+	 * Formats a Java 8 date/time/datetime based on the specified format
 	 * 
 	 * @param clazz
+	 *            the class of the object to format
 	 * @param value
+	 *            the value
 	 * @param format
+	 *            the desired foratm
 	 * @return
 	 */
 	public static String formatJava8Date(Class<?> clazz, Object value, String format) {
@@ -169,20 +209,14 @@ public final class DateUtils {
 	}
 
 	/**
-	 * Formats a LocalDateTime according to the specified format
+	 * Formats a java.time.LocalTime according to the specified format
 	 * 
-	 * @param date
+	 * @param time
+	 *            the objec to format
 	 * @param format
+	 *            the desired format
 	 * @return
 	 */
-	public static String formatDateTime(LocalDateTime date, String format) {
-		if (date == null || format == null) {
-			return null;
-		}
-		DateTimeFormatter fmt = new DateTimeFormatterBuilder().appendPattern(format).toFormatter();
-		return date.format(fmt);
-	}
-
 	public static String formatTime(LocalTime time, String format) {
 		if (time == null || format == null) {
 			return null;
@@ -271,26 +305,32 @@ public final class DateUtils {
 	 * Retrieves the date from a year
 	 * 
 	 * @param date
+	 *            the date
 	 * @return
 	 */
 	public static Integer getYearFromDate(Date date) {
 		if (date == null) {
 			return null;
 		}
-
-		Calendar calendar = Calendar.getInstance();
-		calendar.setTime(date);
-		return calendar.get(Calendar.YEAR);
+		return toLocalDate(date).getYear();
 	}
 
+	/**
+	 * Retrieves the year part from a week code (yyyy-ww)
+	 * 
+	 * @param weekCode
+	 *            the week code
+	 * @return
+	 */
 	private static int getYearFromWeekCode(String weekCode) {
-		return Integer.parseInt(weekCode.substring(0, 4));
+		return Integer.parseInt(weekCode.substring(0, YEAR_STRING_LENGTH));
 	}
 
 	/**
 	 * Çhecks whether a class represents a Java 8 date or time type
 	 * 
 	 * @param clazz
+	 *            the class
 	 * @return
 	 */
 	public static boolean isJava8DateType(Class<?> clazz) {
@@ -298,7 +338,8 @@ public final class DateUtils {
 	}
 
 	/**
-	 * Checks if a string represents a valid week code (yyyy-ww)
+	 * Checks if a string represents a valid week code (yyyy-ww). An empty
+	 * String is considered valid
 	 * 
 	 * @param weekCode
 	 *            the week code
@@ -339,6 +380,7 @@ public final class DateUtils {
 	 * Converts a java.time.LocalDateTime to a java.util.Date
 	 * 
 	 * @param d
+	 *            the LocalDatetime to convert
 	 * @return
 	 */
 	public static Date toLegacyDate(LocalDateTime d) {

@@ -59,8 +59,10 @@
 			<groupId>com.mysema.querydsl</groupId>
 			<artifactId>querydsl-apt</artifactId>
 		</dependency>
-		<!-- <dependency> <groupId>javax.el</groupId> <artifactId>el-api</artifactId> 
-			</dependency> -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>

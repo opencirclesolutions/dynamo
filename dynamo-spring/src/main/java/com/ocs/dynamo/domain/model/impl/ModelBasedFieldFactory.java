@@ -16,6 +16,7 @@ package com.ocs.dynamo.domain.model.impl;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
@@ -54,6 +55,7 @@ import com.ocs.dynamo.ui.composite.form.FormOptions;
 import com.ocs.dynamo.ui.converter.BigDecimalToDoubleConverter;
 import com.ocs.dynamo.ui.converter.ConverterFactory;
 import com.ocs.dynamo.ui.converter.IntToDoubleConverter;
+import com.ocs.dynamo.ui.converter.LocalDateTimeToDateConverter;
 import com.ocs.dynamo.ui.converter.LocalDateToDateConverter;
 import com.ocs.dynamo.ui.converter.LocalTimeToDateConverter;
 import com.ocs.dynamo.ui.converter.LongToDoubleConverter;
@@ -593,7 +595,12 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 			DateField df = new DateField();
 			df.setConverter(new LocalDateToDateConverter());
 			field = df;
+		} else if (LocalDateTime.class.equals(attributeModel.getType())) {
+			DateField df = new DateField();
+			df.setConverter(new LocalDateTimeToDateConverter());
+			field = df;
 		} else if (AttributeDateType.TIME.equals(attributeModel.getDateType())) {
+			// use custom time field, potentially with Java 8 date converter
 			TimeField tf = new TimeField();
 			tf.setResolution(Resolution.MINUTE);
 			tf.setLocale(VaadinSession.getCurrent() == null ? DynamoConstants.DEFAULT_LOCALE

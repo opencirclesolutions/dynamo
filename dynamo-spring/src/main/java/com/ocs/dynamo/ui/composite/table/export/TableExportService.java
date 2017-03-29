@@ -13,6 +13,8 @@
  */
 package com.ocs.dynamo.ui.composite.table.export;
 
+import org.springframework.stereotype.Service;
+
 import com.vaadin.addon.tableexport.TableExport;
 
 /**
@@ -20,6 +22,7 @@ import com.vaadin.addon.tableexport.TableExport;
  * 
  * @author bas.rutten
  */
+@Service("tableExportService")
 public class TableExportService {
 
 	/**

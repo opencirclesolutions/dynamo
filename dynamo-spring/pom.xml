@@ -157,9 +157,6 @@
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
 		</dependency>
-		<!-- <dependency> <groupId>javax.el</groupId> <artifactId>el-api</artifactId> 
-			</dependency> <dependency> <groupId>javax.el</groupId> <artifactId>el-impl</artifactId> 
-			</dependency> -->
 		<!-- Test -->
 		<dependency>
 			<groupId>junit</groupId>

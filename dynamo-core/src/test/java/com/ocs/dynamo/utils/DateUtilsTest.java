@@ -13,12 +13,16 @@
  */
 package com.ocs.dynamo.utils;
 
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Date;
 
 import org.junit.Assert;
 import org.junit.Test;
+
+import com.ocs.dynamo.exception.OCSRuntimeException;
 
 public class DateUtilsTest {
 
@@ -39,7 +43,7 @@ public class DateUtilsTest {
 		Assert.assertEquals("Thu Jan 01 07:08:09 CET 2015", d.toString());
 
 		d = DateUtils.createDateTime("29022012 070809");
-		Assert.assertEquals("Wed Feb 29 07:08:09 CET 2012", d.toString());
+		Assert.assertTrue(d.toString().startsWith("Wed Feb 29 07:08:09"));
 	}
 
 	@Test
@@ -65,6 +69,31 @@ public class DateUtilsTest {
 	}
 
 	@Test
+	public void testCreateLocalTime() {
+		Assert.assertNull(DateUtils.createLocalTime(null));
+
+		LocalTime lt = DateUtils.createLocalTime("121314");
+		Assert.assertEquals("12:13:14", lt.toString());
+
+		lt = DateUtils.createLocalTime("151617");
+		Assert.assertEquals("15:16:17", lt.toString());
+	}
+
+	@Test
+	public void testCreateTime() {
+		Assert.assertNull(DateUtils.createTime(null));
+		Assert.assertTrue(DateUtils.createTime("041234").toString().contains("04:12:34"));
+
+		// invalid time
+		try {
+			DateUtils.createTime("256374").toString();
+			Assert.fail();
+		} catch (OCSRuntimeException ex) {
+			// expected
+		}
+	}
+
+	@Test
 	public void testFormatDate() {
 		Date date = DateUtils.createDate("01042015");
 
@@ -73,6 +102,31 @@ public class DateUtilsTest {
 
 		Assert.assertEquals("01-04-2015", DateUtils.formatDate(date, "dd-MM-yyyy"));
 		Assert.assertEquals("01/04/15", DateUtils.formatDate(date, "dd/MM/yy"));
+	}
+
+	@Test
+	public void testFormatDateTime() {
+		LocalDateTime date = DateUtils.createLocalDateTime("01122013 111415");
+
+		Assert.assertNull(DateUtils.formatDateTime(null, "dd-MM-yyyy"));
+		Assert.assertNull(DateUtils.formatDateTime(date, null));
+
+		Assert.assertEquals("01-12-2013 11:14:15", DateUtils.formatDateTime(date, "dd-MM-yyyy HH:mm:ss"));
+		Assert.assertEquals("01/12/2013 11:14:15", DateUtils.formatDateTime(date, "dd/MM/yyyy HH:mm:ss"));
+	}
+
+	@Test
+	public void testFormatJava8Date() {
+		Assert.assertEquals("31-03-2014",
+				DateUtils.formatJava8Date(LocalDate.class, DateUtils.createLocalDate("31032014"), "dd-MM-yyyy"));
+
+		Assert.assertEquals("31-03-2014 05:06:07", DateUtils.formatJava8Date(LocalDateTime.class,
+				DateUtils.createLocalDateTime("31032014 050607"), "dd-MM-yyyy HH:mm:ss"));
+
+		Assert.assertEquals("05:06:07",
+				DateUtils.formatJava8Date(LocalTime.class, DateUtils.createLocalTime("050607"), "HH:mm:ss"));
+
+		Assert.assertNull(DateUtils.formatJava8Date(Date.class, DateUtils.createDate("31032014"), "dd-MM-yyyy"));
 	}
 
 	@Test
@@ -87,21 +141,29 @@ public class DateUtilsTest {
 	}
 
 	@Test
+	public void testFormatTime() {
+		LocalTime t = DateUtils.createLocalTime("111415");
+		Assert.assertNull(DateUtils.formatTime(null, "dd-MM-yyyy"));
+		Assert.assertNull(DateUtils.formatTime(t, null));
+		Assert.assertEquals("11:14:15", DateUtils.formatTime(t, "HH:mm:ss"));
+		Assert.assertEquals("11.14.15", DateUtils.formatTime(t, "HH.mm.ss"));
+	}
+
+	@Test
+	public void testGetLastWeekOfYear() {
+		Assert.assertEquals(52, DateUtils.getLastWeekOfYear(2017));
+		Assert.assertEquals(52, DateUtils.getLastWeekOfYear(2016));
+		Assert.assertEquals(53, DateUtils.getLastWeekOfYear(2015));
+		Assert.assertEquals(53, DateUtils.getLastWeekOfYear(2009));
+	}
+
+	@Test
 	public void testGetNextWeekCode() {
 		Assert.assertEquals("2015-02", DateUtils.getNextWeekCode("2015-01"));
 		Assert.assertEquals("2015-03", DateUtils.getNextWeekCode("2015-02"));
 		Assert.assertEquals("2015-53", DateUtils.getNextWeekCode("2015-52"));
 		Assert.assertEquals("2016-01", DateUtils.getNextWeekCode("2015-53"));
 		Assert.assertEquals("2017-01", DateUtils.getNextWeekCode("2016-52"));
-	}
-
-	@Test
-	public void testGetLastWeekOfYear() {
-
-		Assert.assertEquals(52, DateUtils.getLastWeekOfYear(2017));
-		Assert.assertEquals(52, DateUtils.getLastWeekOfYear(2016));
-		Assert.assertEquals(53, DateUtils.getLastWeekOfYear(2015));
-		Assert.assertEquals(53, DateUtils.getLastWeekOfYear(2009));
 	}
 
 	@Test
@@ -119,6 +181,8 @@ public class DateUtilsTest {
 		Assert.assertEquals(4, quarter);
 
 		quarter = DateUtils.getQuarter(DateUtils.createLocalDate("01012014"));
+		Assert.assertEquals(1, quarter);
+		quarter = DateUtils.getQuarter(DateUtils.createLocalDate("31032014"));
 		Assert.assertEquals(1, quarter);
 		quarter = DateUtils.getQuarter(DateUtils.createLocalDate("01042014"));
 		Assert.assertEquals(2, quarter);
@@ -149,6 +213,17 @@ public class DateUtilsTest {
 	}
 
 	@Test
+	public void testIsJava8DateType() {
+		Assert.assertTrue(DateUtils.isJava8DateType(LocalDate.class));
+		Assert.assertTrue(DateUtils.isJava8DateType(LocalTime.class));
+		Assert.assertTrue(DateUtils.isJava8DateType(LocalDateTime.class));
+
+		Assert.assertFalse(DateUtils.isJava8DateType(Date.class));
+		Assert.assertFalse(DateUtils.isJava8DateType(java.sql.Date.class));
+		Assert.assertFalse(DateUtils.isJava8DateType(Timestamp.class));
+	}
+
+	@Test
 	public void testIsValidWeekCode() {
 
 		Assert.assertTrue(DateUtils.isValidWeekCode(null));
@@ -168,6 +243,23 @@ public class DateUtilsTest {
 		Assert.assertTrue(DateUtils.isValidWeekCode("2015-53"));
 		Assert.assertFalse(DateUtils.isValidWeekCode("2015-54"));
 	}
+
+	@Test
+	public void testToLegacyDate1() {
+		Assert.assertNull(DateUtils.toLegacyDate((LocalDate) null));
+
+		LocalDate ld = DateUtils.createLocalDate("14102015");
+		Assert.assertEquals(DateUtils.createDate("14102015"), DateUtils.toLegacyDate(ld));
+	}
+	
+	@Test
+	public void testToLegacyDate2() {
+		Assert.assertNull(DateUtils.toLegacyDate((LocalDateTime) null));
+
+		LocalDateTime ldt = DateUtils.createLocalDateTime("14102015 170323");
+		Assert.assertEquals(DateUtils.createDateTime("14102015 170323"), DateUtils.toLegacyDate(ldt));
+	}
+
 
 	@Test
 	public void testToLocalDate() {

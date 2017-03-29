@@ -14,6 +14,9 @@
 package com.ocs.dynamo.domain.model.impl;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -36,8 +39,7 @@ import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-import junitx.util.PrivateAccessor;
-
+import org.hibernate.type.DateType;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -60,6 +62,8 @@ import com.ocs.dynamo.domain.validator.Email;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.service.impl.MessageServiceImpl;
 import com.ocs.dynamo.test.BaseMockitoTest;
+
+import junitx.util.PrivateAccessor;
 
 @SuppressWarnings("unused")
 public class EntityModelFactoryImplTest extends BaseMockitoTest {
@@ -333,7 +337,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		attributeModel = parent.getAttributeModel("calculatedChildren");
 		Assert.assertNotNull(attributeModel);
 		EntityModel<EntityGrandChild> grandChild = (EntityModel<EntityGrandChild>) attributeModel
-		        .getNestedEntityModel();
+				.getNestedEntityModel();
 		Assert.assertNotNull(grandChild);
 		Assert.assertEquals("EntityParent.calculatedChildren", grandChild.getReference());
 		Assert.assertEquals(EntityGrandChild.class, attributeModel.getMemberType());
@@ -569,6 +573,25 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		Assert.assertEquals(CascadeMode.EDIT, am.getCascadeMode("attribute2"));
 	}
 
+	@Test
+	public void testJava8DateTypes() {
+		EntityModel<Entity14> model = factory.getModel(Entity14.class);
+		AttributeModel am1 = model.getAttributeModel("localDate");
+		Assert.assertNotNull(am1);
+		Assert.assertEquals("dd/MM/yyyy", am1.getDisplayFormat());
+		Assert.assertEquals(AttributeDateType.DATE, am1.getDateType());
+
+		AttributeModel am2 = model.getAttributeModel("localTime");
+		Assert.assertNotNull(am2);
+		Assert.assertEquals("HH-mm-ss", am2.getDisplayFormat());
+		Assert.assertEquals(AttributeDateType.TIME, am2.getDateType());
+
+		AttributeModel am3 = model.getAttributeModel("localDateTime");
+		Assert.assertNotNull(am3);
+		Assert.assertEquals("dd/MM/yyyy HH-mm-ss", am3.getDisplayFormat());
+		Assert.assertEquals(AttributeDateType.TIMESTAMP, am3.getDateType());
+	}
+
 	private class Entity1 {
 
 		@Size(max = 55)
@@ -687,7 +710,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 
 	@Model(description = "desc", displayName = "dis", displayNamePlural = "diss", displayProperty = "prop")
 	@AttributeGroups(attributeGroups = { @AttributeGroup(messageKey = "group1.key", attributeNames = { "name" }),
-	        @AttributeGroup(messageKey = "group2.key", attributeNames = { "age" }) })
+			@AttributeGroup(messageKey = "group2.key", attributeNames = { "age" }) })
 	private class Entity3 {
 
 		@Attribute(defaultValue = "Bas", description = "Test", displayName = "Naampje", readOnly = true, prompt = "Prompt", searchable = true, main = true, sortable = false)
@@ -1043,6 +1066,43 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 
 		public void setAttribute2(String attribute2) {
 			this.attribute2 = attribute2;
+		}
+
+	}
+
+	private class Entity14 {
+
+		@Attribute(displayFormat = "dd/MM/yyyy")
+		private LocalDate localDate;
+
+		@Attribute(displayFormat = "dd/MM/yyyy HH-mm-ss")
+		private LocalDateTime localDateTime;
+
+		@Attribute(displayFormat = "HH-mm-ss")
+		private LocalTime localTime;
+
+		public LocalDate getLocalDate() {
+			return localDate;
+		}
+
+		public void setLocalDate(LocalDate localDate) {
+			this.localDate = localDate;
+		}
+
+		public LocalDateTime getLocalDateTime() {
+			return localDateTime;
+		}
+
+		public void setLocalDateTime(LocalDateTime localDateTime) {
+			this.localDateTime = localDateTime;
+		}
+
+		public LocalTime getLocalTime() {
+			return localTime;
+		}
+
+		public void setLocalTime(LocalTime localTime) {
+			this.localTime = localTime;
 		}
 
 	}

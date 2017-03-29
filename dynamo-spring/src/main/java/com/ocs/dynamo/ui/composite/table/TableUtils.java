@@ -15,8 +15,6 @@ package com.ocs.dynamo.ui.composite.table;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Locale;
 
@@ -40,7 +38,8 @@ import com.vaadin.ui.Table;
 import com.vaadin.ui.UI;
 
 /**
- * Several table related functions to reuse on both Table and TreeTable subclasses.
+ * Several table related functions to reuse on both Table and TreeTable
+ * subclasses.
  * 
  * @author Patrick Deenen (patrick.deenen@opencirclesolutions.nl)
  */
@@ -68,15 +67,15 @@ public final class TableUtils {
 	}
 
 	/**
-	 * Formats a collection of entities (turns it into a comma-separated string based on the value
-	 * of the "displayProperty")
+	 * Formats a collection of entities (turns it into a comma-separated string
+	 * based on the value of the "displayProperty")
 	 * 
 	 * @param entityModelFactory
 	 * @param collection
 	 * @return
 	 */
 	public static String formatEntityCollection(EntityModelFactory entityModelFactory, AttributeModel attributeModel,
-	        Object collection) {
+			Object collection) {
 		StringBuilder builder = new StringBuilder();
 		Iterable<?> col = (Iterable<?>) collection;
 		for (Object aCol : col) {
@@ -97,7 +96,7 @@ public final class TableUtils {
 				// custom formatting for numbers
 				if (next instanceof Number) {
 					builder.append(VaadinUtils.numberToString(attributeModel, attributeModel.getNormalizedType(), next,
-					        true, VaadinUtils.getLocale()));
+							true, VaadinUtils.getLocale()));
 				} else {
 					builder.append(next);
 				}
@@ -107,8 +106,8 @@ public final class TableUtils {
 	}
 
 	/**
-	 * Formats a collection of entities into a comma-separated string that displays the meaningful
-	 * representations of the entities
+	 * Formats a collection of entities into a comma-separated string that
+	 * displays the meaningful representations of the entities
 	 * 
 	 * @param entityModelFactory
 	 *            the entity model factory
@@ -117,7 +116,7 @@ public final class TableUtils {
 	 * @return
 	 */
 	public static String formatEntityCollection(EntityModelFactory entityModelFactory, AttributeModel attributeModel,
-	        Property<?> property) {
+			Property<?> property) {
 		return formatEntityCollection(entityModelFactory, attributeModel, property.getValue());
 	}
 
@@ -132,9 +131,9 @@ public final class TableUtils {
 	 * @return
 	 */
 	public static String formatPropertyValue(EntityModelFactory entityModelFactory, EntityModel<?> entityModel,
-	        MessageService messageService, Object colId, Object value) {
+			MessageService messageService, Object colId, Object value) {
 		return formatPropertyValue(null, entityModelFactory, entityModel, messageService, colId, value,
-		        VaadinUtils.getLocale());
+				VaadinUtils.getLocale());
 	}
 
 	/**
@@ -149,7 +148,7 @@ public final class TableUtils {
 	 */
 	@SuppressWarnings("unchecked")
 	public static String formatPropertyValue(Table table, EntityModelFactory entityModelFactory,
-	        EntityModel<?> entityModel, MessageService messageService, Object colId, Object value, Locale locale) {
+			EntityModel<?> entityModel, MessageService messageService, Object colId, Object value, Locale locale) {
 		if (value != null) {
 			AttributeModel model = entityModel.getAttributeModel((String) colId);
 			if (model != null) {
@@ -172,20 +171,19 @@ public final class TableUtils {
 						format.setTimeZone(VaadinUtils.getTimeZone(UI.getCurrent()));
 					}
 					return format.format((Date) value);
-				} else if (LocalDate.class.equals(model.getType())) {
-					return DateUtils.formatDate((LocalDate) value, model.getDisplayFormat());
-				} else if (LocalDateTime.class.equals(model.getType())) {
-					return DateUtils.formatDateTime((LocalDateTime) value, model.getDisplayFormat());
+				} else if (DateUtils.isJava8DateType(model.getType())) {
+					return DateUtils.formatJava8Date(model.getType(), value, model.getDisplayFormat());
 				} else if (BigDecimal.class.equals(model.getType())) {
 					String cs = getCurrencySymbol(table);
 					return VaadinUtils.bigDecimalToString(model.isCurrency(), model.isPercentage(),
-					        model.isUseThousandsGrouping(), model.getPrecision(), (BigDecimal) value, locale, cs);
+							model.isUseThousandsGrouping(), model.getPrecision(), (BigDecimal) value, locale, cs);
 				} else if (Number.class.isAssignableFrom(model.getType())) {
 					// generic functionality for all other numbers
 					return VaadinUtils.numberToString(model, model.getType(), value, model.isUseThousandsGrouping(),
-					        locale);
+							locale);
 				} else if (model.getType().isEnum()) {
-					// in case of an enumeration, look it up in the message bundle
+					// in case of an enumeration, look it up in the message
+					// bundle
 					String msg = messageService.getEnumMessage((Class<Enum<?>>) model.getType(), (Enum<?>) value);
 					if (msg != null) {
 						return msg;
@@ -201,11 +199,11 @@ public final class TableUtils {
 					}
 					String displayProperty = detailEntityModel.getDisplayProperty();
 					if (displayProperty == null) {
-						throw new OCSRuntimeException("No displayProperty set for entity "
-						        + detailEntityModel.getEntityClass());
+						throw new OCSRuntimeException(
+								"No displayProperty set for entity " + detailEntityModel.getEntityClass());
 					}
 					return formatPropertyValue(table, entityModelFactory, detailEntityModel, messageService,
-					        displayProperty, ClassUtils.getFieldValue(value, displayProperty), locale);
+							displayProperty, ClassUtils.getFieldValue(value, displayProperty), locale);
 				} else if (value instanceof AbstractEntity) {
 					Object result = ClassUtils.getFieldValue(value, colId.toString());
 					return restrictToMaxLength(result != null ? result.toString() : null, model);
@@ -238,9 +236,10 @@ public final class TableUtils {
 	 * @return
 	 */
 	public static <T> String formatPropertyValue(Table table, EntityModelFactory entityModelFactory,
-	        EntityModel<T> entityModel, MessageService messageService, Object rowId, Object colId, Property<?> property) {
+			EntityModel<T> entityModel, MessageService messageService, Object rowId, Object colId,
+			Property<?> property) {
 		return formatPropertyValue(table, entityModelFactory, entityModel, messageService, rowId, colId, property,
-		        VaadinUtils.getLocale());
+				VaadinUtils.getLocale());
 	}
 
 	/**
@@ -258,22 +257,22 @@ public final class TableUtils {
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static <T> String formatPropertyValue(Table table, EntityModelFactory entityModelFactory,
-	        EntityModel<T> entityModel, MessageService messageService, Object rowId, Object colId,
-	        Property<?> property, Locale locale) {
+			EntityModel<T> entityModel, MessageService messageService, Object rowId, Object colId, Property<?> property,
+			Locale locale) {
 		if (table.getContainerDataSource() instanceof ModelBasedHierarchicalContainer) {
 			ModelBasedHierarchicalContainer<?> c = (ModelBasedHierarchicalContainer<?>) table.getContainerDataSource();
 			ModelBasedHierarchicalDefinition def = c.getHierarchicalDefinitionByItemId(rowId);
 			return TableUtils.formatPropertyValue(table, entityModelFactory, def.getEntityModel(), messageService,
-			        c.unmapProperty(def, colId), property.getValue(), locale);
+					c.unmapProperty(def, colId), property.getValue(), locale);
 		}
 		return formatPropertyValue(table, entityModelFactory, entityModel, messageService, colId, property.getValue(),
-		        locale);
+				locale);
 	}
 
 	/**
-	 * Returns the currency symbol to be used in a certain table. This will return the custom
-	 * currency symbol for a certain table, or the default currency symbol if no custmo currency
-	 * symbol is set
+	 * Returns the currency symbol to be used in a certain table. This will
+	 * return the custom currency symbol for a certain table, or the default
+	 * currency symbol if no custmo currency symbol is set
 	 * 
 	 * @param table
 	 *            the table

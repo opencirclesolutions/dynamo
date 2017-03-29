@@ -20,7 +20,7 @@ import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
 
 /**
- * For converting java.time.LocalDate to java.sql.Date
+ * Attribute converter for converting java.time.LocalDate to java.sql.Date
  * 
  * @author bas.rutten
  *
