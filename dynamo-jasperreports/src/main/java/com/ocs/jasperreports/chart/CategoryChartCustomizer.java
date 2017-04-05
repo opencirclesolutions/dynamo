@@ -28,78 +28,78 @@ import org.jfree.ui.Layer;
 
 public class CategoryChartCustomizer extends AbstractChartCustomizer implements CustomChartCustomizer<CategoryPlot> {
 
-	@Override
-	public void setLabels(CategoryPlot plot) {
-		plot.getRenderer().setBaseItemLabelGenerator(new CategoryLabelGenerator());
-		plot.getRenderer().setBaseItemLabelsVisible(true);
-	}
+    @Override
+    public void setLabels(CategoryPlot plot) {
+        plot.getRenderer().setBaseItemLabelGenerator(new CategoryLabelGenerator());
+        plot.getRenderer().setBaseItemLabelsVisible(true);
+    }
 
-	@Override
-	public void addRangeMarkerToPlot(CategoryPlot plot, Marker marker) {
-		final ChartCustomizer.XYMarker rangeMarker = (ChartCustomizer.XYMarker) marker;
-		final ValueAxis rangeAxis = plot.getRangeAxis();
+    @Override
+    public void addRangeMarkerToPlot(CategoryPlot plot, Marker marker) {
+        final ChartCustomizer.XYMarker rangeMarker = (ChartCustomizer.XYMarker) marker;
+        final ValueAxis rangeAxis = plot.getRangeAxis();
 
-		expandRange(rangeMarker, rangeAxis);
+        expandRange(rangeMarker, rangeAxis);
 
-		plot.addRangeMarker(marker, Layer.FOREGROUND);
-	}
+        plot.addRangeMarker(marker, Layer.FOREGROUND);
+    }
 
-	@Override
-	public void addDomainMarkerToPlot(CategoryPlot plot, Marker marker) {
-		final CategoryAxis domainAxis = plot.getDomainAxis();
-		if (!(domainAxis instanceof FullWidthCategoryDomainAxis)) {
-			final FullWidthCategoryDomainAxis categoryColoredDomainAxis = new FullWidthCategoryDomainAxis(domainAxis);
+    @Override
+    public void addDomainMarkerToPlot(CategoryPlot plot, Marker marker) {
+        final CategoryAxis domainAxis = plot.getDomainAxis();
+        if (!(domainAxis instanceof FullWidthCategoryDomainAxis)) {
+            final FullWidthCategoryDomainAxis categoryColoredDomainAxis = new FullWidthCategoryDomainAxis(domainAxis);
 
-			plot.setDomainAxis(categoryColoredDomainAxis);
-		}
+            plot.setDomainAxis(categoryColoredDomainAxis);
+        }
 
-		plot.addDomainMarker((CategoryMarker) marker, Layer.BACKGROUND);
-	}
+        plot.addDomainMarker((CategoryMarker) marker, Layer.BACKGROUND);
+    }
 
-	@Override
-	public void addQuadrant(CategoryPlot plot, ChartCustomizer.Quadrant quadrant) {
-		throw new UnsupportedOperationException("addQuadrant is unsupported for Category charts");
-	}
+    @Override
+    public void addQuadrant(CategoryPlot plot, ChartCustomizer.Quadrant quadrant) {
+        throw new UnsupportedOperationException("addQuadrant is unsupported for Category charts");
+    }
 
-	@Override
-	public void setStrokeTypes(CategoryPlot plot, Collection<ChartCustomizer.StrokeType> sts) {
-		for (ChartCustomizer.StrokeType st : sts) {
-			final int seriesIndex = st.getSeriesIndex();
-			final Stroke stroke = st.getStroke();
+    @Override
+    public void setStrokeTypes(CategoryPlot plot, Collection<ChartCustomizer.StrokeType> sts) {
+        for (ChartCustomizer.StrokeType st : sts) {
+            final int seriesIndex = st.getSeriesIndex();
+            final Stroke stroke = st.getStroke();
 
-			final int datasetCount = plot.getDatasetCount();
-			int totalSeries = 0;
-			for (int i = 0; i < datasetCount; i++) {
-				final CategoryDataset dataset = plot.getDataset(i);
-				final int rowCount = dataset.getRowCount();
+            final int datasetCount = plot.getDatasetCount();
+            int totalSeries = 0;
+            for (int i = 0; i < datasetCount; i++) {
+                final CategoryDataset dataset = plot.getDataset(i);
+                final int rowCount = dataset.getRowCount();
 
-				// selected serie is in this dataset (multi axis chart can have multiple datasets)
-				if (totalSeries + rowCount >= seriesIndex) {
-					// dataset and renders are synchronized in counting (?)
-					plot.getRenderer(i).setSeriesStroke(seriesIndex - totalSeries - 1, stroke);
-				} else {
-					totalSeries += rowCount;
-				}
-			}
-		}
-	}
+                // selected serie is in this dataset (multi axis chart can have multiple datasets)
+                if (totalSeries + rowCount >= seriesIndex) {
+                    // dataset and renders are synchronized in counting (?)
+                    plot.getRenderer(i).setSeriesStroke(seriesIndex - totalSeries - 1, stroke);
+                } else {
+                    totalSeries += rowCount;
+                }
+            }
+        }
+    }
 
-	@SuppressWarnings("serial")
-	static class CategoryLabelGenerator extends StandardCategoryItemLabelGenerator {
-		@Override
-		public String generateLabel(CategoryDataset dataset, int row, int column) {
-			final Number value = dataset.getValue(row, column);
-			if (value != null && value instanceof ChartCustomizer.BigDecimalLabelWrapper) {
-				return ((ChartCustomizer.BigDecimalLabelWrapper) value).getLabel();
-			}
+    @SuppressWarnings("serial")
+    static class CategoryLabelGenerator extends StandardCategoryItemLabelGenerator {
+        @Override
+        public String generateLabel(CategoryDataset dataset, int row, int column) {
+            final Number value = dataset.getValue(row, column);
+            if (value != null && value instanceof ChartCustomizer.BigDecimalLabelWrapper) {
+                return ((ChartCustomizer.BigDecimalLabelWrapper) value).getLabel();
+            }
 
-			return super.generateLabel(dataset, row, column);
-		}
-	}
+            return super.generateLabel(dataset, row, column);
+        }
+    }
 
-	@Override
-	public void addAnnotationToPlot(CategoryPlot plot, Annotation annotation) {
-		// TODO not implemented yet
-	}
+    @Override
+    public void addAnnotationToPlot(CategoryPlot plot, Annotation annotation) {
+        // TODO not implemented yet
+    }
 
 }

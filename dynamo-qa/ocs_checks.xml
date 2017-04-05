@@ -124,4 +124,7 @@
 		<property name="ignoreLines" value="3" />
 		<property name="fileExtensions" value="java" />
 	</module>
+	<module name="SuppressionFilter">
+	    <property name="file" value="dynamo-qa/suppressions.xml"/>
+	</module>	
 </module>

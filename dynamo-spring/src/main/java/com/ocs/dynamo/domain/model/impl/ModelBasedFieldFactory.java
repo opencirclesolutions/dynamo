@@ -42,7 +42,6 @@ import com.ocs.dynamo.ui.component.EntityListSelect;
 import com.ocs.dynamo.ui.component.EntityLookupField;
 import com.ocs.dynamo.ui.component.FancyListSelect;
 import com.ocs.dynamo.ui.component.QuickAddEntityComboBox;
-import com.ocs.dynamo.ui.component.QuickAddListSelect;
 import com.ocs.dynamo.ui.component.SimpleTokenFieldSelect;
 import com.ocs.dynamo.ui.component.TimeField;
 import com.ocs.dynamo.ui.component.TokenFieldSelect;
