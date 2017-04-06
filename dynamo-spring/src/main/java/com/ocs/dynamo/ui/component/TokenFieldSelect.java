@@ -49,259 +49,269 @@ import com.vaadin.ui.HorizontalLayout;
  *            the type of the entity
  * 
  */
-public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<ID>> extends
-        QuickAddEntityField<ID, T, Collection<T>> implements Refreshable {
+public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<ID>>
+        extends QuickAddEntityField<ID, T, Collection<T>> implements Refreshable {
 
-	private boolean changing = false;
+    private boolean changing = false;
 
-	private final class BeanItemTokenizable implements Tokenizable {
-		private final T item;
-		private final String displayValue;
-		private final Long id;
+    private final class BeanItemTokenizable implements Tokenizable {
+        private final T item;
+        private final String displayValue;
+        private final Long id;
 
-		private BeanItemTokenizable(T item, String captionPropertyId) {
-			this.item = item;
-			this.id = getTokenIdentifier(item);
-			this.displayValue = getTokenDisplayName(item, captionPropertyId);
-		}
+        private BeanItemTokenizable(T item, String captionPropertyId) {
+            this.item = item;
+            this.id = getTokenIdentifier(item);
+            this.displayValue = getTokenDisplayName(item, captionPropertyId);
+        }
 
-		@Override
-		public long getIdentifier() {
-			return id;
-		}
+        @Override
+        public long getIdentifier() {
+            return id;
+        }
 
-		public T getItem() {
-			return item;
-		}
+        public T getItem() {
+            return item;
+        }
 
-		@Override
-		public String getStringValue() {
-			return displayValue;
-		}
+        @Override
+        public String getStringValue() {
+            return displayValue;
+        }
 
-		private String getTokenDisplayName(T entity, String captionPropertyId) {
-			return ClassUtils.getFieldValueAsString(entity, captionPropertyId);
-		}
+        private String getTokenDisplayName(T entity, String captionPropertyId) {
+            return ClassUtils.getFieldValueAsString(entity, captionPropertyId);
+        }
 
-		private long getTokenIdentifier(T entity) {
-			return Long.parseLong(ClassUtils.getFieldValueAsString(entity, "id"));
-		}
-	}
+        private long getTokenIdentifier(T entity) {
+            return Long.parseLong(ClassUtils.getFieldValueAsString(entity, "id"));
+        }
+    }
 
-	private static final long serialVersionUID = -1490179285573442827L;
+    private static final long serialVersionUID = -1490179285573442827L;
 
-	private final ExtTokenField extTokenField;
+    private final ExtTokenField extTokenField;
 
-	private final EntityComboBox<ID, T> comboBox;
+    private final EntityComboBox<ID, T> comboBox;
 
-	private final BeanItemContainer<T> container;
+    private final BeanItemContainer<T> container;
 
-	private final Collection<ValueChangeListener> valueChangeListeners;
+    private final Collection<ValueChangeListener> valueChangeListeners;
 
-	private boolean addAllowed = false;
+    private boolean addAllowed = false;
 
-	/**
-	 * Constructor
-	 * 
-	 * @param em
-	 * @param attributeModel
-	 * @param service
-	 * @param filter
-	 * @param search
-	 * @param sortOrders
-	 */
-	public TokenFieldSelect(EntityModel<T> em, AttributeModel attributeModel, BaseService<ID, T> service,
-	        Container.Filter filter, boolean search, SortOrder... sortOrders) {
-		super(service, em, attributeModel);
-		extTokenField = new ExtTokenField();
-		comboBox = new EntityComboBox<>(em, attributeModel, service, filter, sortOrders);
-		container = new BeanItemContainer<>(AbstractEntity.class);
-		valueChangeListeners = new ArrayList<>();
-		this.addAllowed = !search && (attributeModel != null && attributeModel.isQuickAddAllowed());
-	}
+    /**
+     * Constructor
+     * 
+     * @param em
+     * @param attributeModel
+     * @param service
+     * @param filter
+     * @param search
+     * @param sortOrders
+     */
+    public TokenFieldSelect(EntityModel<T> em, AttributeModel attributeModel, BaseService<ID, T> service,
+            Container.Filter filter, boolean search, SortOrder... sortOrders) {
+        super(service, em, attributeModel);
+        extTokenField = new ExtTokenField();
+        comboBox = new EntityComboBox<>(em, attributeModel, service, filter, sortOrders);
+        container = new BeanItemContainer<>(AbstractEntity.class);
+        valueChangeListeners = new ArrayList<>();
+        this.addAllowed = !search && (attributeModel != null && attributeModel.isQuickAddAllowed());
+    }
 
-	/**
-	 * Adds a token for every selected item
-	 */
-	private void addTokens() {
-		extTokenField.clear();
-		if (container.size() > 0) {
-			for (T item : container.getItemIds()) {
-				Tokenizable token = new BeanItemTokenizable(item, (String) comboBox.getItemCaptionPropertyId());
-				extTokenField.addTokenizable(token);
-			}
-		}
-		for (ValueChangeListener valueChangeListener : valueChangeListeners) {
-			valueChangeListener.valueChange(new ValueChangeEvent(TokenFieldSelect.this));
-		}
-	}
+    /**
+     * Adds a token for every selected item
+     */
+    private void addTokens() {
+        extTokenField.clear();
+        if (container.size() > 0) {
+            for (T item : container.getItemIds()) {
+                Tokenizable token = new BeanItemTokenizable(item, (String) comboBox.getItemCaptionPropertyId());
+                extTokenField.addTokenizable(token);
+            }
+        }
+        for (ValueChangeListener valueChangeListener : valueChangeListeners) {
+            valueChangeListener.valueChange(new ValueChangeEvent(TokenFieldSelect.this));
+        }
+    }
 
-	@Override
-	public void addValueChangeListener(final ValueChangeListener listener) {
-		valueChangeListeners.add(listener);
-	}
+    @Override
+    public void addValueChangeListener(final ValueChangeListener listener) {
+        valueChangeListeners.add(listener);
+    }
 
-	@Override
-	protected void afterNewEntityAdded(T entity) {
-		comboBox.addEntity(entity);
-		container.addBean(entity);
-		copyValueFromContainer();
-	}
+    @Override
+    protected void afterNewEntityAdded(T entity) {
+        comboBox.addEntity(entity);
+        container.addBean(entity);
+        copyValueFromContainer();
+    }
 
-	/**
-	 * Set up a listener to respond to a combo box selection change
-	 */
-	@SuppressWarnings("unchecked")
-	private void attachComboBoxValueChange() {
-		comboBox.addValueChangeListener(new ValueChangeListener() {
+    /**
+     * Set up a listener to respond to a combo box selection change
+     */
+    @SuppressWarnings("unchecked")
+    private void attachComboBoxValueChange() {
+        comboBox.addValueChangeListener(new ValueChangeListener() {
 
-			private static final long serialVersionUID = -1734818761735064248L;
+            private static final long serialVersionUID = -1734818761735064248L;
 
-			@Override
-			public void valueChange(Property.ValueChangeEvent event) {
-				Object selectedObject = event.getProperty().getValue();
-				if (selectedObject != null) {
-					T abstractEntity = (T) selectedObject;
-					container.addBean(abstractEntity);
+            @Override
+            public void valueChange(Property.ValueChangeEvent event) {
+                Object selectedObject = event.getProperty().getValue();
+                if (selectedObject != null) {
+                    T abstractEntity = (T) selectedObject;
+                    container.addBean(abstractEntity);
 
-					// reset the combo box
-					comboBox.setValue(null);
-					copyValueFromContainer();
-				}
-			}
-		});
-	}
+                    // reset the combo box
+                    comboBox.setValue(null);
+                    copyValueFromContainer();
+                }
+            }
+        });
+    }
 
-	/**
-	 * Respond to a token removal by also removing the corresponding value from the container
-	 */
-	@SuppressWarnings("unchecked")
-	private void attachTokenFieldValueChange() {
-		extTokenField.addTokenRemovedListener(new TokenRemovedListener() {
-			@Override
-			public void tokenRemovedEvent(TokenRemovedEvent event) {
-				final BeanItemTokenizable tokenizable = (BeanItemTokenizable) event.getTokenizable();
-				container.removeItem(tokenizable.getItem());
-				copyValueFromContainer();
-			}
-		});
-	}
+    /**
+     * Respond to a token removal by also removing the corresponding value from the container
+     */
+    @SuppressWarnings("unchecked")
+    private void attachTokenFieldValueChange() {
+        extTokenField.addTokenRemovedListener(new TokenRemovedListener() {
+            @Override
+            public void tokenRemovedEvent(TokenRemovedEvent event) {
+                final BeanItemTokenizable tokenizable = (BeanItemTokenizable) event.getTokenizable();
+                container.removeItem(tokenizable.getItem());
+                copyValueFromContainer();
+            }
+        });
+    }
 
-	/**
-	 * Copies the values from the container to the component
-	 */
-	private void copyValueFromContainer() {
-		Collection<T> values = container.getItemIds();
-		setValue(new HashSet<>(values));
-	}
+    private void setComboBoxWidth() {
+        // if selection is empty, set combo box to full width
+        if (container.size() > 0) {
+            comboBox.setWidth(25, Unit.PERCENTAGE);
+        } else {
+            comboBox.setWidth(100, Unit.PERCENTAGE);
+        }
+    }
 
-	@Override
-	protected List<T> getInternalValue() {
-		if (container.size() == 0) {
-			return null;
-		}
-		return container.getItemIds();
-	}
+    /**
+     * Copies the values from the container to the component
+     */
+    private void copyValueFromContainer() {
+        Collection<T> values = container.getItemIds();
+        setValue(new HashSet<>(values));
+        setComboBoxWidth();
+    }
 
-	@Override
-	@SuppressWarnings("unchecked")
-	public Class<Collection<T>> getType() {
-		return (Class<Collection<T>>) (Object) Collection.class;
-	}
+    @Override
+    protected List<T> getInternalValue() {
+        if (container.size() == 0) {
+            return null;
+        }
+        return container.getItemIds();
+    }
 
-	@Override
-	public List<T> getValue() {
-		return getInternalValue();
-	}
+    @Override
+    @SuppressWarnings("unchecked")
+    public Class<Collection<T>> getType() {
+        return (Class<Collection<T>>) (Object) Collection.class;
+    }
 
-	@Override
-	protected Component initContent() {
-		HorizontalLayout layout = new DefaultHorizontalLayout(false, true, false);
+    @Override
+    public List<T> getValue() {
+        return getInternalValue();
+    }
 
-		comboBox.setInputPrompt(getMessageService().getMessage("ocs.type.to.add"));
-		comboBox.setFilteringMode(FilteringMode.CONTAINS);
-		comboBox.setWidth(25, Unit.PERCENTAGE);
-		comboBox.setHeightUndefined();
+    @Override
+    protected Component initContent() {
+        HorizontalLayout layout = new DefaultHorizontalLayout(false, true, false);
 
-		extTokenField.setInputField(comboBox);
-		extTokenField.setEnableDefaultDeleteTokenAction(true);
+        comboBox.setInputPrompt(getMessageService().getMessage("ocs.type.to.add"));
+        comboBox.setFilteringMode(FilteringMode.CONTAINS);
+        comboBox.setWidth(100, Unit.PERCENTAGE);
+        comboBox.setHeightUndefined();
 
-		attachComboBoxValueChange();
-		attachTokenFieldValueChange();
-		setupContainerFieldSync();
+        extTokenField.setInputField(comboBox);
+        extTokenField.setEnableDefaultDeleteTokenAction(true);
 
-		layout.addComponent(extTokenField);
+        attachComboBoxValueChange();
+        attachTokenFieldValueChange();
+        setupContainerFieldSync();
 
-		if (addAllowed) {
-			Button addButton = constructAddButton();
-			layout.addComponent(addButton);
-			layout.setExpandRatio(extTokenField, 0.90f);
-			layout.setExpandRatio(addButton, 0.10f);
-		}
+        layout.addComponent(extTokenField);
 
-		// initial filling of the field
-		addTokens();
+        if (addAllowed) {
+            Button addButton = constructAddButton();
+            layout.addComponent(addButton);
+            layout.setExpandRatio(extTokenField, 0.90f);
+            layout.setExpandRatio(addButton, 0.10f);
+        }
 
-		layout.setSizeFull();
+        // initial filling of the field
+        addTokens();
 
-		return layout;
-	}
+        layout.setSizeFull();
 
-	@Override
-	protected void setInternalValue(Collection<T> values) {
-		changing = true;
-		super.setInternalValue(values);
+        return layout;
+    }
 
-		container.removeAllItems();
-		if (values != null) {
-			container.addAll((Collection<T>) values);
-		}
-		changing = false;
-	}
+    @Override
+    protected void setInternalValue(Collection<T> values) {
+        changing = true;
+        super.setInternalValue(values);
 
-	/**
-	 * Update token selections
-	 */
-	private void setupContainerFieldSync() {
-		container.addItemSetChangeListener(new Container.ItemSetChangeListener() {
+        container.removeAllItems();
+        if (values != null) {
+            container.addAll((Collection<T>) values);
+        }
+        changing = false;
+    }
 
-			private static final long serialVersionUID = -2171389796068112560L;
+    /**
+     * Update token selections
+     */
+    private void setupContainerFieldSync() {
+        container.addItemSetChangeListener(new Container.ItemSetChangeListener() {
 
-			@Override
-			public void containerItemSetChange(Container.ItemSetChangeEvent event) {
-				if (!changing) {
-					addTokens();
-				}
-			}
-		});
-	}
+            private static final long serialVersionUID = -2171389796068112560L;
 
-	@Override
-	public void setValue(Collection<T> values) {
-		super.setValue(values);
-		setInternalValue(values);
-	}
+            @Override
+            public void containerItemSetChange(Container.ItemSetChangeEvent event) {
+                if (!changing) {
+                    addTokens();
+                }
+            }
+        });
+    }
 
-	public EntityComboBox<ID, T> getComboBox() {
-		return comboBox;
-	}
+    @Override
+    public void setValue(Collection<T> values) {
+        super.setValue(values);
+        setInternalValue(values);
+    }
 
-	public ExtTokenField getTokenField() {
-		return extTokenField;
-	}
+    public EntityComboBox<ID, T> getComboBox() {
+        return comboBox;
+    }
 
-	@Override
-	public void refresh() {
-		if (comboBox != null) {
-			comboBox.refresh();
-		}
-	}
+    public ExtTokenField getTokenField() {
+        return extTokenField;
+    }
 
-	@Override
-	public void focus() {
-		super.focus();
-		if (comboBox != null) {
-			comboBox.focus();
-		}
-	}
+    @Override
+    public void refresh() {
+        if (comboBox != null) {
+            comboBox.refresh();
+        }
+    }
+
+    @Override
+    public void focus() {
+        super.focus();
+        if (comboBox != null) {
+            comboBox.focus();
+        }
+    }
 }
