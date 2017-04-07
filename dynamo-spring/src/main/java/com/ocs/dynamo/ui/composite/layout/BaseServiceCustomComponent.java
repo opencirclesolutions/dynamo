@@ -52,7 +52,6 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 
 		private static final long serialVersionUID = -942298948585447203L;
 
-		@SuppressWarnings("serial")
 		public RemoveButton() {
 			super(message("ocs.remove"));
 			this.addClickListener((ClickListener) event -> {

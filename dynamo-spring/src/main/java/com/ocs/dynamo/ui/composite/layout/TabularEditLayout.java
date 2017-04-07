@@ -126,7 +126,8 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 	/**
 	 * Lazily builds the actual layout
 	 */
-	@Override
+	@SuppressWarnings("unchecked")
+    @Override
 	public void build() {
 		this.filter = constructFilter();
 		if (mainLayout == null) {

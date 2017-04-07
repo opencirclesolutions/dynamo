@@ -27,6 +27,9 @@ public final class DynamoConstants {
 	 */
 	public static final int CACHE_SIZE = 10000;
 
+	/**
+	 * CSS style for additional colums
+	 */
 	public static final String CSS_ADDITIONAL = "additional";
 
 	/**

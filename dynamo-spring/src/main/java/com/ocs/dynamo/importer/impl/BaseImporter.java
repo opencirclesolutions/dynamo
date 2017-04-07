@@ -13,6 +13,8 @@
  */
 package com.ocs.dynamo.importer.impl;
 
+import static java.lang.Float.valueOf;
+
 import java.beans.PropertyDescriptor;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -26,8 +28,6 @@ import com.ocs.dynamo.importer.ImportField;
 import com.ocs.dynamo.importer.dto.AbstractDTO;
 import com.ocs.dynamo.utils.ClassUtils;
 import com.ocs.dynamo.utils.NumberUtils;
-
-import static java.lang.Float.*;
 
 /**
  * Base class for smart upload functionality
@@ -103,7 +103,8 @@ public abstract class BaseImporter<R, U> {
 			if (value != null) {
 				value = value.trim();
 				try {
-					Class<? extends Enum> enumType = d.getPropertyType().asSubclass(Enum.class);
+					@SuppressWarnings("rawtypes")
+                    Class<? extends Enum> enumType = d.getPropertyType().asSubclass(Enum.class);
 					obj = Enum.valueOf(enumType, value.toUpperCase());
 				} catch (IllegalArgumentException ex) {
 					throw new OCSImportException("Value " + value + " cannot be translated to an enumeration value", ex);

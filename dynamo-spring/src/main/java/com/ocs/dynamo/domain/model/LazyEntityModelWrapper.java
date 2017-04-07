@@ -25,150 +25,145 @@ import java.util.Map;
  */
 public class LazyEntityModelWrapper<T> implements EntityModel<T> {
 
-	private EntityModelFactory factory;
+    private EntityModelFactory factory;
 
-	/**
-	 * The entity model to which to delegate the actual functionality
-	 */
-	private EntityModel<T> delegate;
+    /**
+     * The entity model to which to delegate the actual functionality
+     */
+    private EntityModel<T> delegate;
 
-	/**
-	 * The unique reference for this entity model
-	 */
-	private String reference;
+    /**
+     * The unique reference for this entity model
+     */
+    private String reference;
 
-	/**
-	 * The entity class
-	 */
-	private Class<T> entityClass;
+    /**
+     * The entity class
+     */
+    private Class<T> entityClass;
 
-	/**
-	 * Constructor
-	 * 
-	 * @param factory
-	 *            the entity model factory
-	 * @param reference
-	 *            the reference (unique name of the model)
-	 * @param entityClass
-	 *            the entity class
-	 */
-	public LazyEntityModelWrapper(EntityModelFactory factory, String reference, Class<T> entityClass) {
-		this.reference = reference;
-		this.factory = factory;
-		this.entityClass = entityClass;
-	}
+    /**
+     * Constructor
+     * 
+     * @param factory
+     *            the entity model factory
+     * @param reference
+     *            the reference (unique name of the model)
+     * @param entityClass
+     *            the entity class
+     */
+    public LazyEntityModelWrapper(EntityModelFactory factory, String reference, Class<T> entityClass) {
+        this.reference = reference;
+        this.factory = factory;
+        this.entityClass = entityClass;
+    }
 
-	@Override
-	public void addAttributeModel(String attributeGroup, AttributeModel model, AttributeModel existingModel) {
-		getDelegate().addAttributeModel(attributeGroup, model, existingModel);
-	}
+    @Override
+    public void addAttributeModel(String attributeGroup, AttributeModel model, AttributeModel existingModel) {
+        getDelegate().addAttributeModel(attributeGroup, model, existingModel);
+    }
 
-	@Override
-	public List<String> getAttributeGroups() {
-		return getDelegate().getAttributeGroups();
-	}
+    @Override
+    public List<String> getAttributeGroups() {
+        return getDelegate().getAttributeGroups();
+    }
 
-	@Override
-	public AttributeModel getAttributeModel(String attributeName) {
-		return getDelegate().getAttributeModel(attributeName);
-	}
+    @Override
+    public AttributeModel getAttributeModel(String attributeName) {
+        return getDelegate().getAttributeModel(attributeName);
+    }
 
-	@Override
-	public List<AttributeModel> getAttributeModels() {
-		return getDelegate().getAttributeModels();
-	}
+    @Override
+    public List<AttributeModel> getAttributeModels() {
+        return getDelegate().getAttributeModels();
+    }
 
-	@Override
-	public List<AttributeModel> getAttributeModelsForGroup(String group) {
-		return getDelegate().getAttributeModelsForGroup(group);
-	}
+    @Override
+    public List<AttributeModel> getAttributeModelsForGroup(String group) {
+        return getDelegate().getAttributeModelsForGroup(group);
+    }
 
-	@Override
-	public List<AttributeModel> getAttributeModelsForType(AttributeType attributeType, Class<?> type) {
-		return getDelegate().getAttributeModelsForType(attributeType, type);
-	}
+    @Override
+    public List<AttributeModel> getAttributeModelsForType(AttributeType attributeType, Class<?> type) {
+        return getDelegate().getAttributeModelsForType(attributeType, type);
+    }
 
-	@Override
-	public List<AttributeModel> getCascadeAttributeModels() {
-		return getDelegate().getCascadeAttributeModels();
-	}
+    @Override
+    public List<AttributeModel> getCascadeAttributeModels() {
+        return getDelegate().getCascadeAttributeModels();
+    }
 
-	private EntityModel<T> getDelegate() {
-		if (delegate == null) {
-			init();
-		}
-		return delegate;
-	}
+    private EntityModel<T> getDelegate() {
+        if (delegate == null) {
+            init();
+        }
+        return delegate;
+    }
 
-	@Override
-	public String getDescription() {
-		return getDelegate().getDescription();
-	}
+    @Override
+    public String getDescription() {
+        return getDelegate().getDescription();
+    }
 
-	@Override
-	public String getDisplayName() {
-		return getDelegate().getDisplayName();
-	}
+    @Override
+    public String getDisplayName() {
+        return getDelegate().getDisplayName();
+    }
 
-	@Override
-	public String getDisplayNamePlural() {
-		return getDelegate().getDisplayNamePlural();
-	}
+    @Override
+    public String getDisplayNamePlural() {
+        return getDelegate().getDisplayNamePlural();
+    }
 
-	@Override
-	public String getDisplayProperty() {
-		return getDelegate().getDisplayProperty();
-	}
+    @Override
+    public String getDisplayProperty() {
+        return getDelegate().getDisplayProperty();
+    }
 
-	@Override
-	public Class<T> getEntityClass() {
-		return getDelegate().getEntityClass();
-	}
+    @Override
+    public Class<T> getEntityClass() {
+        return getDelegate().getEntityClass();
+    }
 
-	@Override
-	public AttributeModel getIdAttributeModel() {
-		return getDelegate().getIdAttributeModel();
-	}
+    @Override
+    public AttributeModel getIdAttributeModel() {
+        return getDelegate().getIdAttributeModel();
+    }
 
-	@Override
-	public AttributeModel getMainAttributeModel() {
-		return getDelegate().getMainAttributeModel();
-	}
+    @Override
+    public AttributeModel getMainAttributeModel() {
+        return getDelegate().getMainAttributeModel();
+    }
 
-	@Override
-	public String getReference() {
-		return getDelegate().getReference();
-	}
+    @Override
+    public String getReference() {
+        return getDelegate().getReference();
+    }
 
-	@Override
-	public List<AttributeModel> getRequiredAttributeModels() {
-		return getDelegate().getRequiredAttributeModels();
-	}
+    @Override
+    public List<AttributeModel> getRequiredForSearchingAttributeModels() {
+        return getDelegate().getRequiredForSearchingAttributeModels();
+    }
 
-	@Override
-	public List<AttributeModel> getRequiredForSearchingAttributeModels() {
-		return getDelegate().getRequiredForSearchingAttributeModels();
-	}
+    @Override
+    public Map<AttributeModel, Boolean> getSortOrder() {
+        return getDelegate().getSortOrder();
+    }
 
-	@Override
-	public Map<AttributeModel, Boolean> getSortOrder() {
-		return getDelegate().getSortOrder();
-	}
+    private synchronized void init() {
+        if (delegate == null) {
+            delegate = factory.getModel(reference, entityClass);
+        }
+    }
 
-	private synchronized void init() {
-		if (delegate == null) {
-			delegate = factory.getModel(reference, entityClass);
-		}
-	}
+    @Override
+    public boolean isAttributeGroupVisible(String group, boolean readOnly) {
+        return getDelegate().isAttributeGroupVisible(group, readOnly);
+    }
 
-	@Override
-	public boolean isAttributeGroupVisible(String group, boolean readOnly) {
-		return getDelegate().isAttributeGroupVisible(group, readOnly);
-	}
-
-	@Override
-	public boolean usesDefaultGroupOnly() {
-		return getDelegate().usesDefaultGroupOnly();
-	}
+    @Override
+    public boolean usesDefaultGroupOnly() {
+        return getDelegate().usesDefaultGroupOnly();
+    }
 
 }

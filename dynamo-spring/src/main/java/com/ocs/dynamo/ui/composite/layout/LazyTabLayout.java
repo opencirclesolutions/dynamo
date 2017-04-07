@@ -37,7 +37,6 @@ import java.util.Set;
  * @param <T>
  *            type of the entity
  */
-@SuppressWarnings("serial")
 public abstract class LazyTabLayout<ID extends Serializable, T extends AbstractEntity<ID>> extends BaseCustomComponent
         implements Reloadable {
 

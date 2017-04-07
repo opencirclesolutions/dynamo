@@ -374,7 +374,8 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 	/**
 	 * Constructs the actual component
 	 */
-	@Override
+	@SuppressWarnings("unchecked")
+    @Override
 	protected Component initContent() {
 		container = new BeanItemContainer<>(entityModel.getEntityClass());
 		container.addAll(items);

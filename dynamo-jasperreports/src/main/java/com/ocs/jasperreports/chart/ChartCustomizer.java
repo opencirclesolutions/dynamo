@@ -53,415 +53,417 @@ import org.slf4j.LoggerFactory;
  * @author Patrick Deenen (patrick@opencircle.solutions)
  */
 public class ChartCustomizer extends JRAbstractChartCustomizer {
-	private static final Logger LOGGER = LoggerFactory.getLogger(ChartCustomizer.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ChartCustomizer.class);
 
-	private static final String ANNOTATION = ".Annotation";
-	private static final String LABELS = ".Labels";
-	private static final String MARKER_RANGE = ".MarkerRange";
-	private static final String MARKER_DOMAIN = ".MarkerDomain";
-	private static final String QUADRANT = ".Quadrant";
-	private static final String STROKE_TYPE = ".StrokeType";
+    private static final String ANNOTATION = ".Annotation";
+    private static final String LABELS = ".Labels";
+    private static final String MARKER_RANGE = ".MarkerRange";
+    private static final String MARKER_DOMAIN = ".MarkerDomain";
+    private static final String QUADRANT = ".Quadrant";
+    private static final String STROKE_TYPE = ".StrokeType";
 
-	@SuppressWarnings("serial")
-	public static class ChartHyperlinkProviderDecorator implements ChartHyperlinkProvider {
+    @SuppressWarnings("serial")
+    public static class ChartHyperlinkProviderDecorator implements ChartHyperlinkProvider {
 
-		private ChartHyperlinkProvider chartHyperlinkProvider;
+        private ChartHyperlinkProvider chartHyperlinkProvider;
 
-		public ChartHyperlinkProviderDecorator(ChartHyperlinkProvider chartHyperlinkProvider) {
-			super();
-			this.chartHyperlinkProvider = chartHyperlinkProvider;
-		}
+        public ChartHyperlinkProviderDecorator(ChartHyperlinkProvider chartHyperlinkProvider) {
+            super();
+            this.chartHyperlinkProvider = chartHyperlinkProvider;
+        }
 
-		@Override
-		public JRPrintHyperlink getEntityHyperlink(ChartEntity entity) {
-			if (entity instanceof XYAnnotationEntity) {
-				XYAnnotationEntity e = (XYAnnotationEntity) entity;
-				JRBasePrintHyperlink link = new JRBasePrintHyperlink();
-				link.setHyperlinkType(HyperlinkTypeEnum.REFERENCE);
-				link.setHyperlinkReference(e.getURLText());
-				link.setHyperlinkTooltip(e.getToolTipText());
-				return link;
-			}
-			return chartHyperlinkProvider.getEntityHyperlink(entity);
-		}
+        @Override
+        public JRPrintHyperlink getEntityHyperlink(ChartEntity entity) {
+            if (entity instanceof XYAnnotationEntity) {
+                XYAnnotationEntity e = (XYAnnotationEntity) entity;
+                JRBasePrintHyperlink link = new JRBasePrintHyperlink();
+                link.setHyperlinkType(HyperlinkTypeEnum.REFERENCE);
+                link.setHyperlinkReference(e.getURLText());
+                link.setHyperlinkTooltip(e.getToolTipText());
+                return link;
+            }
+            return chartHyperlinkProvider.getEntityHyperlink(entity);
+        }
 
-		@Override
-		public boolean hasHyperlinks() {
-			return chartHyperlinkProvider.hasHyperlinks();
-		}
+        @Override
+        public boolean hasHyperlinks() {
+            return chartHyperlinkProvider.hasHyperlinks();
+        }
 
-	}
+    }
 
-	public static class SvgChartRenderableFactoryDecorator extends SvgChartRendererFactory {
+    public static class SvgChartRenderableFactoryDecorator extends SvgChartRendererFactory {
 
-		@Override
-		public Renderable getRenderable(JasperReportsContext jasperReportsContext, JFreeChart chart,
-				ChartHyperlinkProvider chartHyperlinkProvider, Rectangle2D rectangle) {
-			return super.getRenderable(jasperReportsContext, chart,
-					new ChartHyperlinkProviderDecorator(chartHyperlinkProvider), rectangle);
-		}
+        @Override
+        public Renderable getRenderable(JasperReportsContext jasperReportsContext, JFreeChart chart,
+                ChartHyperlinkProvider chartHyperlinkProvider, Rectangle2D rectangle) {
+            return super.getRenderable(jasperReportsContext, chart,
+                    new ChartHyperlinkProviderDecorator(chartHyperlinkProvider), rectangle);
+        }
 
-	}
+    }
 
-	/**
-	 * Use this class to add support for labels for individual rows in charts which only support
-	 * this for the series key, for example the Bubble chart only support series labels.
-	 */
-	@SuppressWarnings("serial")
-	public static class BigDecimalLabelWrapper extends BigDecimal {
+    /**
+     * Use this class to add support for labels for individual rows in charts which only support
+     * this for the series key, for example the Bubble chart only support series labels.
+     */
+    @SuppressWarnings("serial")
+    public static class BigDecimalLabelWrapper extends BigDecimal {
 
-		private String label;
+        private String label;
 
-		/**
-		 * Default constructor
-		 *
-		 * @param value The actual BigDecimal
-		 * @param label
-		 */
-		public BigDecimalLabelWrapper(BigDecimal value, String label) {
-			super(value.doubleValue());
-			this.label = label;
-		}
+        /**
+         * Default constructor
+         *
+         * @param value
+         *            The actual BigDecimal
+         * @param label
+         */
+        public BigDecimalLabelWrapper(BigDecimal value, String label) {
+            super(value.doubleValue());
+            this.label = label;
+        }
 
-		public String getLabel() {
-			return label;
-		}
+        public String getLabel() {
+            return label;
+        }
 
-	}
+    }
 
-	/**
-	 * Define an instance (or collection of instances) of this class in a report variable with the name "re.Quadrant"
-	 * (where re should be replaced with the name of the reporting element) to draw a quadrant in the graph.
-	 */
-	public static class Quadrant {
+    /**
+     * Define an instance (or collection of instances) of this class in a report variable with the
+     * name "re.Quadrant" (where re should be replaced with the name of the reporting element) to
+     * draw a quadrant in the graph.
+     */
+    public static class Quadrant {
 
-		private double qOx;
-		private double qOy;
-		private Color qClt;
-		private Color qCrt;
-		private Color qClb;
-		private Color qCrb;
-		private String urlMessageFormat;
-		private String tooltipMessageFormat;
+        private double qOx;
+        private double qOy;
+        private Color qClt;
+        private Color qCrt;
+        private Color qClb;
+        private Color qCrb;
+        private String urlMessageFormat;
+        private String tooltipMessageFormat;
 
-		/**
-		 * Define a quadrant with applicable colors for each quadrent.
-		 * 
-		 * @param qOx
-		 * @param qOy
-		 * @param qClt
-		 * @param qCrt
-		 * @param qClb
-		 * @param qCrb
-		 */
-		public Quadrant(double qOx, double qOy, Color qClt, Color qCrt, Color qClb, Color qCrb) {
-			super();
-			this.qOx = qOx;
-			this.qOy = qOy;
-			this.qClt = qClt;
-			this.qCrt = qCrt;
-			this.qClb = qClb;
-			this.qCrb = qCrb;
-		}
+        /**
+         * Define a quadrant with applicable colors for each quadrent.
+         * 
+         * @param qOx
+         * @param qOy
+         * @param qClt
+         * @param qCrt
+         * @param qClb
+         * @param qCrb
+         */
+        public Quadrant(double qOx, double qOy, Color qClt, Color qCrt, Color qClb, Color qCrb) {
+            super();
+            this.qOx = qOx;
+            this.qOy = qOy;
+            this.qClt = qClt;
+            this.qCrt = qCrt;
+            this.qClb = qClb;
+            this.qCrb = qCrb;
+        }
 
-		/**
-		 * Define a quadrant with applicable colors for each quadrant. When action is ZOOM then each visible quadrant
-		 * can be selected. The url and tooltip will be assigned to each quadrant using 4 parameters: 0=min x, 1=min y,
-		 * 2=max x, 3=max y.
-		 * 
-		 * @param qOx
-		 * @param qOy
-		 * @param qClt
-		 * @param qCrt
-		 * @param qClb
-		 * @param qCrb
-		 * @param urlMessageFormat
-		 * @param tooltipMessageFormat
-		 */
-		public Quadrant(double qOx, double qOy, Color qClt, Color qCrt, Color qClb, Color qCrb,
-				String urlMessageFormat, String tooltipMessageFormat) {
-			super();
-			this.qOx = qOx;
-			this.qOy = qOy;
-			this.qClt = qClt;
-			this.qCrt = qCrt;
-			this.qClb = qClb;
-			this.qCrb = qCrb;
-			if (urlMessageFormat != null) {
-				this.urlMessageFormat = urlMessageFormat;
-			}
-			if (tooltipMessageFormat != null) {
-				this.tooltipMessageFormat = tooltipMessageFormat;
-			}
-		}
+        /**
+         * Define a quadrant with applicable colors for each quadrant. When action is ZOOM then each
+         * visible quadrant can be selected. The url and tooltip will be assigned to each quadrant
+         * using 4 parameters: 0=min x, 1=min y, 2=max x, 3=max y.
+         * 
+         * @param qOx
+         * @param qOy
+         * @param qClt
+         * @param qCrt
+         * @param qClb
+         * @param qCrb
+         * @param urlMessageFormat
+         * @param tooltipMessageFormat
+         */
+        public Quadrant(double qOx, double qOy, Color qClt, Color qCrt, Color qClb, Color qCrb, String urlMessageFormat,
+                String tooltipMessageFormat) {
+            super();
+            this.qOx = qOx;
+            this.qOy = qOy;
+            this.qClt = qClt;
+            this.qCrt = qCrt;
+            this.qClb = qClb;
+            this.qCrb = qCrb;
+            if (urlMessageFormat != null) {
+                this.urlMessageFormat = urlMessageFormat;
+            }
+            if (tooltipMessageFormat != null) {
+                this.tooltipMessageFormat = tooltipMessageFormat;
+            }
+        }
 
-		public double getqOx() {
-			return qOx;
-		}
+        public double getqOx() {
+            return qOx;
+        }
 
-		public double getqOy() {
-			return qOy;
-		}
+        public double getqOy() {
+            return qOy;
+        }
 
-		public Color getqClt() {
-			return qClt;
-		}
+        public Color getqClt() {
+            return qClt;
+        }
 
-		public Color getqCrt() {
-			return qCrt;
-		}
+        public Color getqCrt() {
+            return qCrt;
+        }
 
-		public Color getqClb() {
-			return qClb;
-		}
+        public Color getqClb() {
+            return qClb;
+        }
 
-		public Color getqCrb() {
-			return qCrb;
-		}
+        public Color getqCrb() {
+            return qCrb;
+        }
 
-		public String getUrlMessageFormat() {
-			return urlMessageFormat;
-		}
+        public String getUrlMessageFormat() {
+            return urlMessageFormat;
+        }
 
-		public String getTooltipMessageFormat() {
-			return tooltipMessageFormat;
-		}
-	}
+        public String getTooltipMessageFormat() {
+            return tooltipMessageFormat;
+        }
+    }
 
-	/**
-	 * Define an instance of this class in a report variable with the name "re.Marker[Range|Domain]"
-	 * (where re should be replaced with the name of the reporting element) to draw a marker in the
-	 * graph. When "Range" is specified the marker will be drawn on the range axis otherwise the
-	 * domain axis.
-	 */
-	@SuppressWarnings("serial")
-	public static class XYMarker extends ValueMarker {
-		private boolean expandAxis;
+    /**
+     * Define an instance of this class in a report variable with the name "re.Marker[Range|Domain]"
+     * (where re should be replaced with the name of the reporting element) to draw a marker in the
+     * graph. When "Range" is specified the marker will be drawn on the range axis otherwise the
+     * domain axis.
+     */
+    @SuppressWarnings("serial")
+    public static class XYMarker extends ValueMarker {
+        private boolean expandAxis;
 
-		public XYMarker(double value, Color color, String label, boolean expandAxis) {
-			super(value);
-			this.expandAxis = expandAxis;
-			setPaint(color);
-			setLabel(label);
-		}
+        public XYMarker(double value, Color color, String label, boolean expandAxis) {
+            super(value);
+            this.expandAxis = expandAxis;
+            setPaint(color);
+            setLabel(label);
+        }
 
-		public XYMarker(double value, Color color, String label, float alpha, Color labelColor, boolean expandAxis) {
-			super(value);
-			this.expandAxis = expandAxis;
-			setPaint(color);
-			setLabel(label);
-			setAlpha(alpha);
-			setLabelPaint(labelColor);
-			setLabelBackgroundColor(Color.white);
-		}
+        public XYMarker(double value, Color color, String label, float alpha, Color labelColor, boolean expandAxis) {
+            super(value);
+            this.expandAxis = expandAxis;
+            setPaint(color);
+            setLabel(label);
+            setAlpha(alpha);
+            setLabelPaint(labelColor);
+            setLabelBackgroundColor(Color.white);
+        }
 
-		public XYMarker(double value, Paint paint, Stroke stroke, Paint outlinePaint, Stroke outlineStroke, float alpha,
-				boolean expandAxis) {
-			super(value, paint, stroke, outlinePaint, outlineStroke, alpha);
-			this.expandAxis = expandAxis;
-		}
+        public XYMarker(double value, Paint paint, Stroke stroke, Paint outlinePaint, Stroke outlineStroke, float alpha,
+                boolean expandAxis) {
+            super(value, paint, stroke, outlinePaint, outlineStroke, alpha);
+            this.expandAxis = expandAxis;
+        }
 
-		public XYMarker(double value, Paint paint, Stroke stroke, boolean expandAxis) {
-			super(value, paint, stroke);
-			this.expandAxis = expandAxis;
-		}
+        public XYMarker(double value, Paint paint, Stroke stroke, boolean expandAxis) {
+            super(value, paint, stroke);
+            this.expandAxis = expandAxis;
+        }
 
-		public XYMarker(double value, boolean expandAxis) {
-			super(value);
-			this.expandAxis = expandAxis;
-		}
+        public XYMarker(double value, boolean expandAxis) {
+            super(value);
+            this.expandAxis = expandAxis;
+        }
 
-		public boolean isExpandAxis() {
-			return expandAxis;
-		}
-	}
+        public boolean isExpandAxis() {
+            return expandAxis;
+        }
+    }
 
-	/**
-	 * Define an instance of this class in a report variable with the name "re.MarkerDomain"
-	 * (where re should be replaced with the name of the reporting element) to mark a category in the
-	 * graph.
-	 */
-	public static class CategoryMarker extends org.jfree.chart.plot.CategoryMarker {
+    /**
+     * Define an instance of this class in a report variable with the name "re.MarkerDomain" (where
+     * re should be replaced with the name of the reporting element) to mark a category in the
+     * graph.
+     */
+    public static class CategoryMarker extends org.jfree.chart.plot.CategoryMarker {
 
-		public CategoryMarker(Comparable key) {
-			super(key);
-		}
+        private static final long serialVersionUID = 4825325674770149929L;
 
-		public CategoryMarker(Comparable key, Paint paint, Stroke stroke) {
-			super(key, paint, stroke);
-		}
+        public CategoryMarker(Comparable key) {
+            super(key);
+        }
 
-		public CategoryMarker(Comparable key, Paint paint, Stroke stroke, Paint outlinePaint,
-							  Stroke outlineStroke, float alpha) {
-			super(key, paint, stroke, outlinePaint, outlineStroke, alpha);
-		}
-	}
+        public CategoryMarker(Comparable key, Paint paint, Stroke stroke) {
+            super(key, paint, stroke);
+        }
 
-	public static class StrokeType {
-		private final int seriesIndex;
-		private final Stroke stroke;
+        public CategoryMarker(Comparable key, Paint paint, Stroke stroke, Paint outlinePaint, Stroke outlineStroke,
+                float alpha) {
+            super(key, paint, stroke, outlinePaint, outlineStroke, alpha);
+        }
+    }
 
-		public StrokeType(int seriesIndex, Stroke stroke) {
-			this.seriesIndex = seriesIndex;
-			this.stroke = stroke;
-		}
+    public static class StrokeType {
+        private final int seriesIndex;
+        private final Stroke stroke;
 
-		public int getSeriesIndex() {
-			return seriesIndex;
-		}
+        public StrokeType(int seriesIndex, Stroke stroke) {
+            this.seriesIndex = seriesIndex;
+            this.stroke = stroke;
+        }
 
-		public Stroke getStroke() {
-			return stroke;
-		}
-	}
+        public int getSeriesIndex() {
+            return seriesIndex;
+        }
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see net.sf.jasperreports.engine.JRChartCustomizer#customize(org.jfree.chart.JFreeChart,
-	 * net.sf.jasperreports.engine.JRChart)
-	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	@Override
-	public void customize(JFreeChart chart, JRChart jasperChart) {
-		final Plot plot = chart.getPlot();
-		String key = jasperChart.getKey();
+        public Stroke getStroke() {
+            return stroke;
+        }
+    }
 
-		CustomChartCustomizer chartCustomizer = null;
+    /*
+     * (non-Javadoc)
+     *
+     * @see net.sf.jasperreports.engine.JRChartCustomizer#customize(org.jfree.chart.JFreeChart,
+     * net.sf.jasperreports.engine.JRChart)
+     */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @Override
+    public void customize(JFreeChart chart, JRChart jasperChart) {
+        final Plot plot = chart.getPlot();
+        String key = jasperChart.getKey();
 
-		if (plot instanceof XYPlot) {
-			chartCustomizer = new XYChartCustomizer();
-		} else if (plot instanceof CategoryPlot) {
-			chartCustomizer = new CategoryChartCustomizer();
-		} else {
-			LOGGER.info("no implementation available to customize");
-			return;
-		}
+        CustomChartCustomizer chartCustomizer = null;
 
-		// Paint a quadrant in the chart when defined for this chart
-		try {
-			Quadrant q = (Quadrant) getVariableValue(key + QUADRANT);
-			if (q != null) {
-				chartCustomizer.addQuadrant(plot, q);
-			}
-		} catch (JRRuntimeException e) {
-			// No quadrant defined and needed
-		}
+        if (plot instanceof XYPlot) {
+            chartCustomizer = new XYChartCustomizer();
+        } else if (plot instanceof CategoryPlot) {
+            chartCustomizer = new CategoryChartCustomizer();
+        } else {
+            LOGGER.info("no implementation available to customize");
+            return;
+        }
 
-		try {
-			// Paint labels for the rows when defined for this chart
-			if ((Boolean) getVariableValue(key + LABELS)) {
-				chartCustomizer.setLabels(plot);
-			}
-		} catch (JRRuntimeException e) {
-			// No markers defined and needed
-		}
+        // Paint a quadrant in the chart when defined for this chart
+        try {
+            Quadrant q = (Quadrant) getVariableValue(key + QUADRANT);
+            if (q != null) {
+                chartCustomizer.addQuadrant(plot, q);
+            }
+        } catch (JRRuntimeException e) {
+            // No quadrant defined and needed
+        }
 
-		// Paint Range markers when defined for this chart
-		try {
-			Object markers = getVariableValue(key + MARKER_RANGE);
-			addMarkers(chartCustomizer, plot, markers, true);
-		} catch (JRRuntimeException e) {
-			// No markers defined and needed
-		}
+        try {
+            // Paint labels for the rows when defined for this chart
+            if ((Boolean) getVariableValue(key + LABELS)) {
+                chartCustomizer.setLabels(plot);
+            }
+        } catch (JRRuntimeException e) {
+            // No markers defined and needed
+        }
 
-		// Paint Domain markers when defined for this chart
-		try {
-			Object markers = getVariableValue(key + MARKER_DOMAIN);
-			addMarkers(chartCustomizer, plot, markers, false);
-		} catch (JRRuntimeException e) {
-			// No markers defined and needed
-		}
+        // Paint Range markers when defined for this chart
+        try {
+            Object markers = getVariableValue(key + MARKER_RANGE);
+            addMarkers(chartCustomizer, plot, markers, true);
+        } catch (JRRuntimeException e) {
+            // No markers defined and needed
+        }
 
-		try {
-			Object strokeTypes = getVariableValue(key + STROKE_TYPE);
-			addStrokeTypes(chartCustomizer, plot, strokeTypes);
-		} catch (JRRuntimeException e) {
-			// no stroke types defined
-		}
+        // Paint Domain markers when defined for this chart
+        try {
+            Object markers = getVariableValue(key + MARKER_DOMAIN);
+            addMarkers(chartCustomizer, plot, markers, false);
+        } catch (JRRuntimeException e) {
+            // No markers defined and needed
+        }
 
-		try {
-			// Paint annotations for the rows when defined for this chart
-			Object annotations = getVariableValue(key + ANNOTATION);
-			if (annotations != null) {
-				addAnnotations(chartCustomizer, plot, annotations);
-			}
-		} catch (JRRuntimeException e) {
-			// No annotations defined and needed
-		}
-	}
+        try {
+            Object strokeTypes = getVariableValue(key + STROKE_TYPE);
+            addStrokeTypes(chartCustomizer, plot, strokeTypes);
+        } catch (JRRuntimeException e) {
+            // no stroke types defined
+        }
 
-	@SuppressWarnings("unchecked")
-	private void addStrokeTypes(CustomChartCustomizer chartCustomizer, Plot plot, Object strokeTypes) {
-		Collection<StrokeType> sts = Collections.emptyList();
-		if (strokeTypes instanceof Collection<?>) {
-			sts = (Collection<StrokeType>) strokeTypes;
-		} else if (strokeTypes instanceof StrokeType[]) {
-			sts = Arrays.asList((StrokeType[]) strokeTypes);
-		} else if (strokeTypes instanceof StrokeType) {
-			sts = Collections.singleton((StrokeType) strokeTypes);
-		}
+        try {
+            // Paint annotations for the rows when defined for this chart
+            Object annotations = getVariableValue(key + ANNOTATION);
+            if (annotations != null) {
+                addAnnotations(chartCustomizer, plot, annotations);
+            }
+        } catch (JRRuntimeException e) {
+            // No annotations defined and needed
+        }
+    }
 
-		chartCustomizer.setStrokeTypes(plot, sts);
-	}
+    @SuppressWarnings("unchecked")
+    private void addStrokeTypes(CustomChartCustomizer chartCustomizer, Plot plot, Object strokeTypes) {
+        Collection<StrokeType> sts = Collections.emptyList();
+        if (strokeTypes instanceof Collection<?>) {
+            sts = (Collection<StrokeType>) strokeTypes;
+        } else if (strokeTypes instanceof StrokeType[]) {
+            sts = Arrays.asList((StrokeType[]) strokeTypes);
+        } else if (strokeTypes instanceof StrokeType) {
+            sts = Collections.singleton((StrokeType) strokeTypes);
+        }
 
-	@SuppressWarnings("unchecked")
-	protected void addMarkers(CustomChartCustomizer customChartCustomizer, Plot plot,
-							  Object markers, boolean range) {
-		Collection<Marker> mks = null;
-		if (markers instanceof Collection<?>) {
-			mks = (Collection<Marker>) markers;
-		} else if (markers instanceof Marker[]) {
-			mks = Arrays.asList((Marker[]) markers);
-		}
-		if (mks != null) {
-			for (Marker m : mks) {
-				addMarker(customChartCustomizer, plot, m, range);
-			}
-		} else if (markers instanceof Marker) {
-			addMarker(customChartCustomizer, plot, (Marker) markers, range);
-		}
-	}
+        chartCustomizer.setStrokeTypes(plot, sts);
+    }
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	protected void addMarker(CustomChartCustomizer customChartCustomizer, Plot plot, Marker marker,
-							 boolean range) {
-		if (marker != null) {
-			if (range) {
-				marker.setLabelAnchor(RectangleAnchor.TOP_RIGHT);
-				marker.setLabelTextAnchor(TextAnchor.BOTTOM_RIGHT);
+    @SuppressWarnings("unchecked")
+    protected void addMarkers(CustomChartCustomizer customChartCustomizer, Plot plot, Object markers, boolean range) {
+        Collection<Marker> mks = null;
+        if (markers instanceof Collection<?>) {
+            mks = (Collection<Marker>) markers;
+        } else if (markers instanceof Marker[]) {
+            mks = Arrays.asList((Marker[]) markers);
+        }
+        if (mks != null) {
+            for (Marker m : mks) {
+                addMarker(customChartCustomizer, plot, m, range);
+            }
+        } else if (markers instanceof Marker) {
+            addMarker(customChartCustomizer, plot, (Marker) markers, range);
+        }
+    }
 
-				customChartCustomizer.addRangeMarkerToPlot(plot, marker);
-			} else {
-				marker.setLabelAnchor(RectangleAnchor.TOP_RIGHT);
-				marker.setLabelTextAnchor(TextAnchor.TOP_LEFT);
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    protected void addMarker(CustomChartCustomizer customChartCustomizer, Plot plot, Marker marker, boolean range) {
+        if (marker != null) {
+            if (range) {
+                marker.setLabelAnchor(RectangleAnchor.TOP_RIGHT);
+                marker.setLabelTextAnchor(TextAnchor.BOTTOM_RIGHT);
 
-				customChartCustomizer.addDomainMarkerToPlot(plot, marker);
-			}
-		}
-	}
+                customChartCustomizer.addRangeMarkerToPlot(plot, marker);
+            } else {
+                marker.setLabelAnchor(RectangleAnchor.TOP_RIGHT);
+                marker.setLabelTextAnchor(TextAnchor.TOP_LEFT);
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	protected void addAnnotations(CustomChartCustomizer customChartCustomizer, Plot plot, Object annotations) {
-		Collection<Annotation> ans = null;
-		if (annotations instanceof Collection<?>) {
-			ans = (Collection<Annotation>) annotations;
-		} else if (annotations instanceof Annotation[]) {
-			ans = Arrays.asList((Annotation[]) annotations);
-		}
-		if (ans != null) {
-			for (Annotation a : ans) {
-				addAnnotation(customChartCustomizer, plot, a);
-			}
-		} else if (annotations instanceof Annotation) {
-			addAnnotation(customChartCustomizer, plot, (Annotation) annotations);
-		}
-	}
+                customChartCustomizer.addDomainMarkerToPlot(plot, marker);
+            }
+        }
+    }
 
-	@SuppressWarnings("rawtypes")
-	protected void addAnnotation(CustomChartCustomizer customChartCustomizer, Plot plot, Annotation annotation) {
-		if (annotation != null) {
-			customChartCustomizer.addAnnotationToPlot(plot, annotation);
-		}
-	}
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    protected void addAnnotations(CustomChartCustomizer customChartCustomizer, Plot plot, Object annotations) {
+        Collection<Annotation> ans = null;
+        if (annotations instanceof Collection<?>) {
+            ans = (Collection<Annotation>) annotations;
+        } else if (annotations instanceof Annotation[]) {
+            ans = Arrays.asList((Annotation[]) annotations);
+        }
+        if (ans != null) {
+            for (Annotation a : ans) {
+                addAnnotation(customChartCustomizer, plot, a);
+            }
+        } else if (annotations instanceof Annotation) {
+            addAnnotation(customChartCustomizer, plot, (Annotation) annotations);
+        }
+    }
+
+    @SuppressWarnings("rawtypes")
+    protected void addAnnotation(CustomChartCustomizer customChartCustomizer, Plot plot, Annotation annotation) {
+        if (annotation != null) {
+            customChartCustomizer.addAnnotationToPlot(plot, annotation);
+        }
+    }
 }

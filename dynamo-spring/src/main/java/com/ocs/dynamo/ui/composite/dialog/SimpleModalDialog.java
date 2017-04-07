@@ -21,7 +21,6 @@ import com.vaadin.ui.HorizontalLayout;
  * 
  * @author bas.rutten
  */
-@SuppressWarnings("serial")
 public abstract class SimpleModalDialog extends BaseModalDialog {
 
     private static final long serialVersionUID = -2265149201475495504L;

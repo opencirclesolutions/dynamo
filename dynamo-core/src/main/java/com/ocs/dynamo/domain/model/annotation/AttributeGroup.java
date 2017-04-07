@@ -28,17 +28,18 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface AttributeGroup {
 
-	/**
-	 * The message key that contains the name of the group
-	 * 
-	 * @return
-	 */
-	String messageKey();
+    /**
+     * The names/paths of the attributes that appear in the group
+     * 
+     * @return
+     */
+    String[] attributeNames() default {};
 
-	/**
-	 * The names/paths of the attributes that appear in the group
-	 * 
-	 * @return
-	 */
-	String[] attributeNames() default {};
+    /**
+     * The message key that is used as the identifier of the group
+     * 
+     * @return
+     */
+    String messageKey();
+
 }

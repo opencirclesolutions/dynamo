@@ -45,7 +45,6 @@ import java.util.Set;
  * @param <T>
  *            type of the entity
  */
-@SuppressWarnings("serial")
 public abstract class BaseTableWrapper<ID extends Serializable, T extends AbstractEntity<ID>> extends
         BaseCustomComponent implements Searchable {
 

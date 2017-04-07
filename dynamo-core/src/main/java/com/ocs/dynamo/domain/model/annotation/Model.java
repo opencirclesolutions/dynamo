@@ -27,18 +27,35 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface Model {
 
-    // the display name
+    /**
+     * 
+     * @return the display name of the entity
+     */
     String displayName() default "";
 
-    // the display name (plural form)
+    /**
+     * 
+     * @return the display name (plural form) of the entity
+     */
     String displayNamePlural() default "";
 
-    // the description
+    /**
+     * 
+     * @return the textual description, will be used in tool tips
+     */
     String description() default "";
 
-    // the property to use when displaying this item in a select component (like a combobox)
+    /**
+     * 
+     * @return the path of the property that will be used to describe the entity inside lookup
+     *         components
+     */
     String displayProperty() default "";
 
-    // the default sort order for this entity
+    /**
+     * 
+     * @return the default sort order (property name followed by option asc/desc, use commas to
+     *         separate)
+     */
     String sortOrder() default "";
 }

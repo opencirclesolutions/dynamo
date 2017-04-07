@@ -13,15 +13,17 @@
  */
 package com.ocs.dynamo.functional.util;
 
-import com.google.common.collect.Lists;
-import com.ocs.dynamo.domain.comparator.AttributeComparator;
-import com.ocs.dynamo.functional.domain.Domain;
-import com.ocs.dynamo.service.MessageService;
-
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import com.google.common.collect.Lists;
+import com.ocs.dynamo.domain.comparator.AttributeComparator;
+import com.ocs.dynamo.functional.domain.Domain;
+import com.ocs.dynamo.service.BaseService;
+import com.ocs.dynamo.service.MessageService;
+import com.ocs.dynamo.utils.ClassUtils;
 
 /**
  * Utility methods for dealing with domains
@@ -36,6 +38,30 @@ public final class DomainUtil {
 	private DomainUtil() {
 	}
 
+	   /**
+     * Creates a new item if it does not exist. Otherwise, returns the existing item
+     * 
+     * @param service
+     *            the service used to retrieve the item
+     * @param clazz
+     *            the domain class
+     * @param value
+     *            the value of the "name" attribute
+     * @param caseSensitive
+     *            whether to check for case-sensitive values
+     * @return
+     */
+    public static <T extends Domain> T createIfNotExists(BaseService<?, T> service, Class<T> clazz, String value,
+            boolean caseSensitive) {
+        T t = service.findByUniqueProperty(Domain.NAME, value, caseSensitive);
+        if (t == null) {
+            t = ClassUtils.instantiateClass(clazz);
+            t.setName(value);
+            t = service.save(t);
+        }
+        return t;
+    }
+	
 	/**
 	 * Returns all domain value that match the specified type
 	 * 

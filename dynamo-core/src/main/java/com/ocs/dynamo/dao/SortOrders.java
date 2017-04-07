@@ -24,52 +24,47 @@ import java.util.List;
  */
 public class SortOrders {
 
-	private List<SortOrder> orders = new ArrayList<>();
+    private List<SortOrder> orders = new ArrayList<>();
 
-	/**
-	 * Constructor
-	 */
-	public SortOrders(SortOrder... orders) {
-		if (orders != null) {
-			for (SortOrder o : orders) {
-				if (o != null && o.getProperty() != null) {
-					addSortOrder(o);
-				}
-			}
-		}
-	}
+    /**
+     * Constructor
+     */
+    public SortOrders(SortOrder... orders) {
+        if (orders != null) {
+            for (SortOrder o : orders) {
+                if (o != null && o.getProperty() != null) {
+                    addSortOrder(o);
+                }
+            }
+        }
+    }
 
-	/**
-	 * Adds a sort order
-	 * 
-	 * @param order
-	 *            the sort order to add
-	 * @return
-	 */
-	public SortOrders addSortOrder(SortOrder order) {
-		if (order != null && order.getProperty() != null) {
-			this.orders.add(order);
-		}
-		return this;
-	}
+    /**
+     * Adds a sort order
+     * 
+     * @param order
+     *            the sort order to add
+     * @return
+     */
+    public SortOrders addSortOrder(SortOrder order) {
+        if (order != null && order.getProperty() != null) {
+            this.orders.add(order);
+        }
+        return this;
+    }
 
-	/**
-	 * Returns the first sort order for the specified property
-	 * 
-	 * @param property
-	 *            the property
-	 * @return
-	 */
-	public SortOrder getOrderFor(String property) {
-		for (SortOrder order : orders) {
-			if (order.getProperty().equals(property)) {
-				return order;
-			}
-		}
-		return null;
-	}
+    /**
+     * Returns the first sort order for the specified property
+     * 
+     * @param property
+     *            the property
+     * @return
+     */
+    public SortOrder getOrderFor(String property) {
+        return orders.stream().filter(o -> o.getProperty().equals(property)).findAny().orElse(null);
+    }
 
-	public SortOrder[] toArray() {
-		return orders.toArray(new SortOrder[0]);
-	}
+    public SortOrder[] toArray() {
+        return orders.toArray(new SortOrder[0]);
+    }
 }
