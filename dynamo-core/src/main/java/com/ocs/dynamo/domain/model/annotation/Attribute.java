@@ -114,7 +114,7 @@ public @interface Attribute {
 
     /**
      * 
-     * @return
+     * @return the number select mode (indicates which component to use for editing numbers)
      */
     NumberSelectMode numberSelectMode() default NumberSelectMode.TEXTFIELD;
 

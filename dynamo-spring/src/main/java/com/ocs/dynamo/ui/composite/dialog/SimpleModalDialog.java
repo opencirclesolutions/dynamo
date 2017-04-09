@@ -40,18 +40,15 @@ public abstract class SimpleModalDialog extends BaseModalDialog {
 
     @Override
     protected void doBuildButtonBar(HorizontalLayout buttonBar) {
-        okButton = new Button(com.ocs.dynamo.ui.ServiceLocator.getMessageService().getMessage(
-                "ocs.ok"));
+        okButton = new Button(com.ocs.dynamo.ui.ServiceLocator.getMessageService().getMessage("ocs.ok"));
         okButton.addClickListener((Button.ClickListener) event -> {
-            boolean result = doClose();
-            if (result) {
+            if (doClose()) {
                 SimpleModalDialog.this.close();
             }
         });
         buttonBar.addComponent(okButton);
 
-        cancelButton = new Button(com.ocs.dynamo.ui.ServiceLocator.getMessageService().getMessage(
-                "ocs.cancel"));
+        cancelButton = new Button(com.ocs.dynamo.ui.ServiceLocator.getMessageService().getMessage("ocs.cancel"));
         cancelButton.addClickListener((Button.ClickListener) event -> SimpleModalDialog.this.close());
 
         cancelButton.setVisible(showCancelButton);

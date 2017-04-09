@@ -55,84 +55,84 @@ import java.util.Set;
 @SuppressWarnings("serial")
 public class CollectionTable<T extends Serializable> extends CustomField<Collection<T>> implements SignalsParent {
 
-	private static final long serialVersionUID = -1203245694503350276L;
+    private static final long serialVersionUID = -1203245694503350276L;
 
-	private static final String VALUE = "value";
+    private static final String VALUE = "value";
 
-	/**
-	 * Button for adding new items to the table
-	 */
-	private Button addButton;
+    /**
+     * Button for adding new items to the table
+     */
+    private Button addButton;
 
-	/**
-	 * The attribute model
-	 */
-	private AttributeModel attributeModel;
+    /**
+     * The attribute model
+     */
+    private AttributeModel attributeModel;
 
-	/**
-	 * Form options that determine which buttons and functionalities are available
-	 */
-	private FormOptions formOptions;
+    /**
+     * Form options that determine which buttons and functionalities are available
+     */
+    private FormOptions formOptions;
 
-	/**
-	 * The message service
-	 */
-	private MessageService messageService;
+    /**
+     * The message service
+     */
+    private MessageService messageService;
 
-	/**
-	 * The number of rows to display
-	 */
-	private int pageLength = SystemPropertyUtils.getDefaultListSelectRows();
+    /**
+     * The number of rows to display
+     */
+    private int pageLength = SystemPropertyUtils.getDefaultListSelectRows();
 
-	/**
-	 * The parent form in which this component is embedded
-	 */
-	private ModelBasedEditForm<?, ?> parentForm;
+    /**
+     * The parent form in which this component is embedded
+     */
+    private ModelBasedEditForm<?, ?> parentForm;
 
-	/**
-	 * Whether to propagate change events (disabled during construction)
-	 */
-	private boolean propagateChanges = true;
+    /**
+     * Whether to propagate change events (disabled during construction)
+     */
+    private boolean propagateChanges = true;
 
-	/**
-	 * the currently selected item in the table
-	 */
-	private Object selectedItem;
+    /**
+     * the currently selected item in the table
+     */
+    private Object selectedItem;
 
-	/**
-	 * The table for displaying the actual items
-	 */
-	private Table table;
+    /**
+     * The table for displaying the actual items
+     */
+    private Table table;
 
-	/**
-	 * Whether the table is in view mode. If this is the case, editing is not allowed
-	 */
-	private boolean viewMode;
+    /**
+     * Whether the table is in view mode. If this is the case, editing is not allowed
+     */
+    private boolean viewMode;
 
-	/**
-	 * Constructor
-	 * 
-	 * @param viewMode
-	 *            whether to display the component in view (read-only) mode
-	 * @param formOptions
-	 *            FormOptions parameter object that can be used to govern how the component behaves
-	 */
-	public CollectionTable(AttributeModel attributeModel, boolean viewMode, FormOptions formOptions) {
-		this.messageService = ServiceLocator.getMessageService();
-		this.viewMode = viewMode;
-		this.formOptions = formOptions;
-		this.attributeModel = attributeModel;
-		table = new Table("");
-	}
+    /**
+     * Constructor
+     * 
+     * @param viewMode
+     *            whether to display the component in view (read-only) mode
+     * @param formOptions
+     *            FormOptions parameter object that can be used to govern how the component behaves
+     */
+    public CollectionTable(AttributeModel attributeModel, boolean viewMode, FormOptions formOptions) {
+        this.messageService = ServiceLocator.getMessageService();
+        this.viewMode = viewMode;
+        this.formOptions = formOptions;
+        this.attributeModel = attributeModel;
+        table = new Table("");
+    }
 
-	/**
-	 * Constructs the button that is used for adding new items
-	 * 
-	 * @param buttonBar
-	 */
-	protected void constructAddButton(Layout buttonBar) {
-		addButton = new Button(messageService.getMessage("ocs.add"));
-		addButton.addClickListener((Button.ClickListener) event -> {
+    /**
+     * Constructs the button that is used for adding new items
+     * 
+     * @param buttonBar
+     */
+    protected void constructAddButton(Layout buttonBar) {
+        addButton = new Button(messageService.getMessage("ocs.add"));
+        addButton.addClickListener((Button.ClickListener) event -> {
             // add a new item then set the validity to false (since an empty
             // item is never allowed)
             table.addItem();
@@ -140,207 +140,35 @@ public class CollectionTable<T extends Serializable> extends CustomField<Collect
                 parentForm.signalDetailsTableValid(CollectionTable.this, false);
             }
         });
-		buttonBar.addComponent(addButton);
-	}
+        buttonBar.addComponent(addButton);
+    }
 
-	/**
-	 * Constructs the button bar
-	 * 
-	 * @param parent
-	 *            the parent layout
-	 */
-	protected void constructButtonBar(Layout parent) {
-		Layout buttonBar = new DefaultHorizontalLayout();
-		parent.addComponent(buttonBar);
+    /**
+     * Constructs the button bar
+     * 
+     * @param parent
+     *            the parent layout
+     */
+    protected void constructButtonBar(Layout parent) {
+        Layout buttonBar = new DefaultHorizontalLayout();
+        parent.addComponent(buttonBar);
 
-		// button for adding a row
-		if (!viewMode && !formOptions.isHideAddButton()) {
-			constructAddButton(buttonBar);
-		}
+        // button for adding a row
+        if (!viewMode && !formOptions.isHideAddButton()) {
+            constructAddButton(buttonBar);
+        }
 
-		postProcessButtonBar(buttonBar);
-	}
+        postProcessButtonBar(buttonBar);
+    }
 
-	/**
-	 * Extracts the values from the table and returns them as a set of Strings
-	 * 
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	private Set<T> extractValues() {
-		Set<T> set = new HashSet<>();
-		for (Object o : table.getItemIds()) {
-			T t = (T) table.getItem(o).getItemProperty(VALUE).getValue();
-			if (t != null) {
-				set.add(t);
-			}
-		}
-		return set;
-	}
-
-	public Button getAddButton() {
-		return addButton;
-	}
-
-	public FormOptions getFormOptions() {
-		return formOptions;
-	}
-
-	public int getPageLength() {
-		return pageLength;
-	}
-
-	public Object getSelectedItem() {
-		return selectedItem;
-	}
-
-	public Table getTable() {
-		return table;
-	}
-
-	/**
-	 * Returns the type of the field (inherited form CustomField)
-	 */
-	@Override
-	@SuppressWarnings("unchecked")
-	public Class<? extends Collection<T>> getType() {
-		return (Class<Collection<T>>) (Class<?>) Collection.class;
-	}
-
-	/**
-	 * Constructs the actual component
-	 */
-	@Override
-	protected Component initContent() {
-		// set up a very basic table with one column
-		table.addContainerProperty(VALUE, attributeModel.getNormalizedType(), null);
-		table.setColumnHeader(VALUE, messageService.getMessage("ocs.value"));
-
-		table.setEditable(!isViewMode());
-		table.setMultiSelect(false);
-
-		table.setPageLength(pageLength);
-		table.setColumnCollapsingAllowed(false);
-		table.setSizeFull();
-		table.setTableFieldFactory(new DefaultFieldFactory() {
-
-			@Override
-			public Field<?> createField(Container container, Object itemId, Object propertyId, Component uiContext) {
-
-				Field<?> f = super.createField(container, itemId, propertyId, uiContext);
-				if (f instanceof TextField) {
-					TextField tf = (TextField) f;
-					tf.setNullRepresentation("");
-					tf.setSizeFull();
-					tf.setConverter(ConverterFactory.createConverterFor(attributeModel.getNormalizedType(),
-					        attributeModel, SystemPropertyUtils.useThousandsGroupingInEditMode()));
-				}
-
-				// add a validator that checks for the maximum length
-				if (attributeModel.getMaxLength() != null) {
-					f.addValidator(new StringLengthValidator(messageService.getMessage("ocs.value.too.long",
-					        attributeModel.getMaxLength()), 0, attributeModel.getMaxLength(), true));
-				}
-
-				// add a validator that checks for the minimum length
-				if (attributeModel.getMinLength() != null) {
-					f.addValidator(new StringLengthValidator(messageService.getMessage("ocs.value.too.short",
-					        attributeModel.getMinLength()), attributeModel.getMinLength(), Integer.MAX_VALUE, true));
-				}
-
-				if (attributeModel.getMinValue() != null) {
-					if (NumberUtils.isInteger(attributeModel.getNormalizedType())) {
-						f.addValidator(new IntegerRangeValidator(messageService.getMessage("ocs.value.too.low",
-						        attributeModel.getMinValue()), attributeModel.getMinValue().intValue(), null));
-					} else if (NumberUtils.isLong(attributeModel.getNormalizedType())) {
-						f.addValidator(new LongRangeValidator(messageService.getMessage("ocs.value.too.low",
-						        attributeModel.getMinValue()), attributeModel.getMinValue(), null));
-					}
-				}
-
-				if (attributeModel.getMaxValue() != null) {
-					if (NumberUtils.isInteger(attributeModel.getNormalizedType())) {
-						f.addValidator(new IntegerRangeValidator(messageService.getMessage("ocs.value.too.high",
-						        attributeModel.getMaxValue()), null, attributeModel.getMaxValue().intValue()));
-					} else if (NumberUtils.isLong(attributeModel.getNormalizedType())) {
-						f.addValidator(new LongRangeValidator(messageService.getMessage("ocs.value.too.high",
-						        attributeModel.getMaxValue()), null, attributeModel.getMaxValue()));
-					}
-				}
-
-				// value change listener that makes sure the validity of the
-				// parent form is correctly set
-				f.addValueChangeListener((ValueChangeListener) event -> {
-                    if (propagateChanges) {
-                        propagateChanges = false;
-                        Set<T> set = extractValues();
-                        setValue(set);
-                        parentForm.signalDetailsTableValid(CollectionTable.this,
-                                VaadinUtils.allFixedTableFieldsValid(table));
-                        propagateChanges = true;
-                    }
-                });
-
-				return f;
-			}
-		});
-
-		// add a change listener (to make sure the buttons are correctly
-		// enabled/disabled)
-		table.addValueChangeListener((ValueChangeListener) event -> {
-            selectedItem = table.getValue();
-            onSelect(table.getValue());
-        });
-
-		// add a remove button directly in the table
-		constructRemoveColumn();
-
-		VerticalLayout layout = new DefaultVerticalLayout(false, true);
-		layout.addComponent(table);
-
-		// add the buttons
-		constructButtonBar(layout);
-
-		// set the reference to the parent so the status of the save button can
-		// be set correctly
-		ModelBasedEditForm<?, ?> parent = VaadinUtils.getParentOfClass(this, ModelBasedEditForm.class);
-		setParentForm(parent);
-
-		return layout;
-	}
-
-	public boolean isViewMode() {
-		return viewMode;
-	}
-
-	/**
-	 * Respond to a selection of an item in the table
-	 */
-	protected void onSelect(Object selected) {
-		// overwrite in subclass if needed
-	}
-
-	/**
-	 * Add additional buttons to the button bar
-	 * 
-	 * @param buttonBar
-	 */
-	protected void postProcessButtonBar(Layout buttonBar) {
-		// overwrite in subclass if needed
-	}
-
-	public void setFormOptions(FormOptions formOptions) {
-		this.formOptions = formOptions;
-	}
-
-	/**
-	 * Constructs the column that holds the "remove" button
-	 */
-	private void constructRemoveColumn() {
-		// add a remove button directly in the table
-		if (!isViewMode() && formOptions.isShowRemoveButton()) {
-			final String removeMsg = messageService.getMessage("ocs.remove");
-			table.addGeneratedColumn(removeMsg, (ColumnGenerator) (source, itemId, columnId) -> {
+    /**
+     * Constructs the column that holds the "remove" button
+     */
+    private void constructRemoveColumn() {
+        // add a remove button directly in the table
+        if (!isViewMode() && formOptions.isShowRemoveButton()) {
+            final String removeMsg = messageService.getMessage("ocs.remove");
+            table.addGeneratedColumn(removeMsg, (ColumnGenerator) (source, itemId, columnId) -> {
                 Button remove = new Button(removeMsg);
                 remove.addClickListener((Button.ClickListener) event -> {
                     table.removeItem(itemId);
@@ -349,74 +177,255 @@ public class CollectionTable<T extends Serializable> extends CustomField<Collect
                 });
                 return remove;
             });
-		}
-	}
+        }
+    }
 
-	@Override
-	@SuppressWarnings("unchecked")
-	protected void setInternalValue(Collection<T> newValue) {
-		if (propagateChanges && table != null) {
+    /**
+     * Extracts the values from the table and returns them as a set of Strings
+     * 
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    private Set<T> extractValues() {
+        Set<T> set = new HashSet<>();
+        for (Object o : table.getItemIds()) {
+            T t = (T) table.getItem(o).getItemProperty(VALUE).getValue();
+            if (t != null) {
+                set.add(t);
+            }
+        }
+        return set;
+    }
 
-			// simply cleaning the container does not work since Vaadin keeps a
-			// reference to a selected item
-			// that cannot be removed - so instead unfortunately we have to
-			// recreate the container
-			table.setContainerDataSource(new IndexedContainer());
-			table.addContainerProperty(VALUE, attributeModel.getNormalizedType(), null);
+    public Button getAddButton() {
+        return addButton;
+    }
 
-			if (table.removeGeneratedColumn(messageService.getMessage("ocs.remove"))) {
-				constructRemoveColumn();
-			}
+    public FormOptions getFormOptions() {
+        return formOptions;
+    }
 
-			if (newValue != null) {
-				for (T t : newValue) {
-					Object o = table.addItem();
-					table.getItem(o).getItemProperty(VALUE).setValue(t);
-				}
-			}
+    public Integer getMaxLength() {
+        return attributeModel.getMaxLength();
+    }
 
-		}
-		super.setInternalValue(newValue);
-	}
+    public Long getMaxValue() {
+        return attributeModel.getMaxValue();
+    }
 
-	public void setPageLength(int pageLength) {
-		this.pageLength = pageLength;
-	}
+    public Integer getMinLength() {
+        return attributeModel.getMinLength();
+    }
 
-	/**
-	 * This method is called to store a reference to the parent form
-	 * 
-	 * @param parentForm
-	 */
-	private void setParentForm(ModelBasedEditForm<?, ?> parentForm) {
-		this.parentForm = parentForm;
-		if (parentForm != null) {
-			parentForm.signalDetailsTableValid(this, VaadinUtils.allFixedTableFieldsValid(table));
-		}
-	}
+    public Long getMinValue() {
+        return attributeModel.getMinValue();
+    }
 
-	public void setSelectedItem(String selectedItem) {
-		this.selectedItem = selectedItem;
-	}
+    public int getPageLength() {
+        return pageLength;
+    }
 
-	public void setViewMode(boolean viewMode) {
-		this.viewMode = viewMode;
-	}
+    public ModelBasedEditForm<?, ?> getParentForm() {
+        return parentForm;
+    }
 
-	public Integer getMaxLength() {
-		return attributeModel.getMaxLength();
-	}
+    public Object getSelectedItem() {
+        return selectedItem;
+    }
 
-	public Long getMaxValue() {
-		return attributeModel.getMaxValue();
-	}
+    public Table getTable() {
+        return table;
+    }
 
-	public Integer getMinLength() {
-		return attributeModel.getMinLength();
-	}
+    /**
+     * Returns the type of the field (inherited form CustomField)
+     */
+    @Override
+    @SuppressWarnings("unchecked")
+    public Class<? extends Collection<T>> getType() {
+        return (Class<Collection<T>>) (Class<?>) Collection.class;
+    }
 
-	public Long getMinValue() {
-		return attributeModel.getMinValue();
-	}
+    /**
+     * Constructs the actual component
+     */
+    @Override
+    protected Component initContent() {
+        // set up a very basic table with one column
+        table.addContainerProperty(VALUE, attributeModel.getNormalizedType(), null);
+        table.setColumnHeader(VALUE, messageService.getMessage("ocs.value"));
+
+        table.setEditable(!isViewMode());
+        table.setMultiSelect(false);
+
+        table.setPageLength(pageLength);
+        table.setColumnCollapsingAllowed(false);
+        table.setSizeFull();
+        table.setTableFieldFactory(new DefaultFieldFactory() {
+
+            @Override
+            public Field<?> createField(Container container, Object itemId, Object propertyId, Component uiContext) {
+
+                Field<?> f = super.createField(container, itemId, propertyId, uiContext);
+                if (f instanceof TextField) {
+                    TextField tf = (TextField) f;
+                    tf.setNullRepresentation("");
+                    tf.setSizeFull();
+                    tf.setConverter(ConverterFactory.createConverterFor(attributeModel.getNormalizedType(),
+                            attributeModel, SystemPropertyUtils.useThousandsGroupingInEditMode()));
+                }
+
+                // add a validator that checks for the maximum length
+                if (attributeModel.getMaxLength() != null) {
+                    f.addValidator(new StringLengthValidator(
+                            messageService.getMessage("ocs.value.too.long", attributeModel.getMaxLength()), 0,
+                            attributeModel.getMaxLength(), true));
+                }
+
+                // add a validator that checks for the minimum length
+                if (attributeModel.getMinLength() != null) {
+                    f.addValidator(new StringLengthValidator(
+                            messageService.getMessage("ocs.value.too.short", attributeModel.getMinLength()),
+                            attributeModel.getMinLength(), Integer.MAX_VALUE, true));
+                }
+
+                if (attributeModel.getMinValue() != null) {
+                    if (NumberUtils.isInteger(attributeModel.getNormalizedType())) {
+                        f.addValidator(new IntegerRangeValidator(
+                                messageService.getMessage("ocs.value.too.low", attributeModel.getMinValue()),
+                                attributeModel.getMinValue().intValue(), null));
+                    } else if (NumberUtils.isLong(attributeModel.getNormalizedType())) {
+                        f.addValidator(new LongRangeValidator(
+                                messageService.getMessage("ocs.value.too.low", attributeModel.getMinValue()),
+                                attributeModel.getMinValue(), null));
+                    }
+                }
+
+                if (attributeModel.getMaxValue() != null) {
+                    if (NumberUtils.isInteger(attributeModel.getNormalizedType())) {
+                        f.addValidator(new IntegerRangeValidator(
+                                messageService.getMessage("ocs.value.too.high", attributeModel.getMaxValue()), null,
+                                attributeModel.getMaxValue().intValue()));
+                    } else if (NumberUtils.isLong(attributeModel.getNormalizedType())) {
+                        f.addValidator(new LongRangeValidator(
+                                messageService.getMessage("ocs.value.too.high", attributeModel.getMaxValue()), null,
+                                attributeModel.getMaxValue()));
+                    }
+                }
+
+                // value change listener that makes sure the validity of the
+                // parent form is correctly set
+                f.addValueChangeListener((ValueChangeListener) event -> {
+                    if (propagateChanges) {
+                        propagateChanges = false;
+                        setValue(extractValues());
+                        parentForm.signalDetailsTableValid(CollectionTable.this,
+                                VaadinUtils.allFixedTableFieldsValid(table));
+                        propagateChanges = true;
+                    }
+                });
+
+                return f;
+            }
+        });
+
+        // add a change listener (to make sure the buttons are correctly
+        // enabled/disabled)
+        table.addValueChangeListener((ValueChangeListener) event -> {
+            selectedItem = table.getValue();
+            onSelect(table.getValue());
+        });
+
+        // add a remove button directly in the table
+        constructRemoveColumn();
+
+        VerticalLayout layout = new DefaultVerticalLayout(false, true);
+        layout.addComponent(table);
+
+        // add the buttons
+        constructButtonBar(layout);
+
+        // set the reference to the parent so the status of the save button can
+        // be set correctly
+        ModelBasedEditForm<?, ?> parent = VaadinUtils.getParentOfClass(this, ModelBasedEditForm.class);
+        setParentForm(parent);
+
+        return layout;
+    }
+
+    public boolean isViewMode() {
+        return viewMode;
+    }
+
+    /**
+     * Respond to a selection of an item in the table
+     */
+    protected void onSelect(Object selected) {
+        // overwrite in subclass if needed
+    }
+
+    /**
+     * Add additional buttons to the button bar
+     * 
+     * @param buttonBar
+     */
+    protected void postProcessButtonBar(Layout buttonBar) {
+        // overwrite in subclass if needed
+    }
+
+    public void setFormOptions(FormOptions formOptions) {
+        this.formOptions = formOptions;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    protected void setInternalValue(Collection<T> newValue) {
+        if (propagateChanges && table != null) {
+
+            // simply cleaning the container does not work since Vaadin keeps a
+            // reference to a selected item
+            // that cannot be removed - so instead unfortunately we have to
+            // recreate the container
+            table.setContainerDataSource(new IndexedContainer());
+            table.addContainerProperty(VALUE, attributeModel.getNormalizedType(), null);
+
+            if (table.removeGeneratedColumn(messageService.getMessage("ocs.remove"))) {
+                constructRemoveColumn();
+            }
+
+            if (newValue != null) {
+                for (T t : newValue) {
+                    Object o = table.addItem();
+                    table.getItem(o).getItemProperty(VALUE).setValue(t);
+                }
+            }
+
+        }
+        super.setInternalValue(newValue);
+    }
+
+    public void setPageLength(int pageLength) {
+        this.pageLength = pageLength;
+    }
+
+    /**
+     * This method is called to store a reference to the parent form
+     * 
+     * @param parentForm
+     */
+    private void setParentForm(ModelBasedEditForm<?, ?> parentForm) {
+        this.parentForm = parentForm;
+        if (parentForm != null) {
+            parentForm.signalDetailsTableValid(this, VaadinUtils.allFixedTableFieldsValid(table));
+        }
+    }
+
+    public void setSelectedItem(String selectedItem) {
+        this.selectedItem = selectedItem;
+    }
+
+    public void setViewMode(boolean viewMode) {
+        this.viewMode = viewMode;
+    }
 
 }

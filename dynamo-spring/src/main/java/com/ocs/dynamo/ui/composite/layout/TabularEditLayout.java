@@ -192,7 +192,7 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 
 			editButton = new Button(message("ocs.edit"));
 			editButton.addClickListener((Button.ClickListener) event -> toggleViewMode(false));
-			editButton.setVisible(isViewmode() && getFormOptions().isShowEditButton());
+			editButton.setVisible(isViewmode() && getFormOptions().isEditAllowed());
 			getButtonBar().addComponent(editButton);
 
 			cancelButton = new Button(message("ocs.cancel"));
@@ -431,7 +431,7 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 		getTableWrapper().getTable().setEditable(!isViewmode() && isEditAllowed());
 		saveButton.setVisible(!isViewmode());
 		addButton.setVisible(!isViewmode() && !getFormOptions().isHideAddButton() && isEditAllowed());
-		editButton.setVisible(isViewmode() && getFormOptions().isShowEditButton() && isEditAllowed());
+		editButton.setVisible(isViewmode() && getFormOptions().isEditAllowed() && isEditAllowed());
 		cancelButton.setVisible(!isViewmode());
 
 		// create or remove any generated columns for correctly dealing with URL fields

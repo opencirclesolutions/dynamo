@@ -83,7 +83,7 @@ public class DateUtilsTest {
 
         lt = DateUtils.createLocalTime("151617");
         Assert.assertEquals("15:16:17", lt.toString());
-        
+
         lt = DateUtils.createLocalTime("15:16:17", "HH:mm:ss");
         Assert.assertEquals("15:16:17", lt.toString());
     }
@@ -100,6 +100,22 @@ public class DateUtilsTest {
         } catch (OCSRuntimeException ex) {
             // expected
         }
+    }
+
+    @Test
+    public void testCreateJava8Date() {
+        Assert.assertNull(DateUtils.createJava8Date(LocalDate.class, null, "dd-MM-yyyy"));
+        Assert.assertNull(DateUtils.createJava8Date(Date.class, "01-01-1980", "dd-MM-yyyy"));
+
+        LocalDate d = DateUtils.createJava8Date(LocalDate.class, "01-01-1980", "dd-MM-yyyy");
+        Assert.assertEquals("1980-01-01", d.toString());
+
+        LocalTime lt = DateUtils.createJava8Date(LocalTime.class, "14:15:16", "HH:mm:ss");
+        Assert.assertEquals("14:15:16", lt.toString());
+
+        LocalDateTime ldt = DateUtils.createJava8Date(LocalDateTime.class, "01-02-1981 14:15:16",
+                "dd-MM-yyyy HH:mm:ss");
+        Assert.assertEquals("1981-02-01T14:15:16", ldt.toString());
     }
 
     @Test
@@ -297,6 +313,24 @@ public class DateUtilsTest {
         date = DateUtils.createDateTime("01042010 222324");
         ld = DateUtils.toLocalDateTime(date);
         Assert.assertEquals("2010-04-01T22:23:24", ld.toString());
+    }
+
+    @Test
+    public void testToLegacyTime() {
+        Assert.assertNull(DateUtils.toLegacyTime(null));
+
+        LocalTime lt = DateUtils.createLocalTime("111213");
+        Date d = DateUtils.toLegacyTime(lt);
+        Assert.assertTrue(d.toString().contains("11:12:13"));
+    }
+
+    @Test
+    public void testToLocalTime() {
+        Assert.assertNull(DateUtils.toLocalTime(null));
+
+        Date date = DateUtils.createTime("161718");
+        LocalTime lt = DateUtils.toLocalTime(date);
+        Assert.assertEquals("16:17:18", lt.toString());
     }
 
     @Test

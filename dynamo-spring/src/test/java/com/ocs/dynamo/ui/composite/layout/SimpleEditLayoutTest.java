@@ -68,7 +68,7 @@ public class SimpleEditLayoutTest extends BaseIntegrationTest {
 	@Test
 	public void testSimpleEditLayout_ViewMode() {
 		SimpleEditLayout<Integer, TestEntity> layout = createLayout(e1, new FormOptions().setOpenInViewMode(true)
-		        .setShowEditButton(true));
+		        .setEditAllowed(true));
 		layout.build();
 
 		Assert.assertNotNull(layout.getEditForm());

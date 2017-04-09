@@ -34,45 +34,39 @@ import com.vaadin.ui.VerticalLayout;
 @SuppressWarnings("serial")
 public class HorizontalMoviesSplitView extends BaseView {
 
-	/** The Movies View is using the MovieService for data access. */
-	@Inject
-	private MovieService movieService;
+    /** The Movies View is using the MovieService for data access. */
+    @Inject
+    private MovieService movieService;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.vaadin.navigator.View#enter(com.vaadin.navigator.ViewChangeListener.ViewChangeEvent)
-	 */
-	@Override
-	public void enter(ViewChangeEvent event) {
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.vaadin.navigator.View#enter(com.vaadin.navigator.ViewChangeListener.ViewChangeEvent)
+     */
+    @Override
+    public void enter(ViewChangeEvent event) {
 
-		// Apply Vaadin Layout.
-		VerticalLayout mainLayout = new DefaultVerticalLayout(true, true);
+        // Apply Vaadin Layout.
+        VerticalLayout mainLayout = new DefaultVerticalLayout(true, true);
 
-		// Set form options by convention.
-		FormOptions fo = new FormOptions();
-		fo.setOpenInViewMode(true);
+        // Set form options by convention.
+        FormOptions fo = new FormOptions();
+        fo.setOpenInViewMode(true).setOpenInViewMode(true).setShowRemoveButton(true).setEditAllowed(true)
+                .setShowQuickSearchField(true);
 
-		// Add a remove button.
-		fo.setShowRemoveButton(true);
+        // A SplitLayout is a component that displays a search screen and an edit form
+        ServiceBasedSplitLayout<Integer, Movie> movieLayout = new ServiceBasedSplitLayout<Integer, Movie>(movieService,
+                getModelFactory().getModel(Movie.class), fo, new SortOrder("title", SortDirection.ASCENDING)) {
 
-		// Add an edit button.
-		fo.setShowEditButton(true);
-		fo.setShowQuickSearchField(true);
+            @Override
+            protected Filter constructQuickSearchFilter(String value) {
+                // quick search field
+                return new SimpleStringFilter("title", value, true, false);
+            }
+        };
 
-		// A SplitLayout is a component that displays a search screen and an edit form
-		ServiceBasedSplitLayout<Integer, Movie> movieLayout = new ServiceBasedSplitLayout<Integer, Movie>(movieService,
-		        getModelFactory().getModel(Movie.class), fo, new SortOrder("title", SortDirection.ASCENDING)) {
-
-			@Override
-			protected Filter constructQuickSearchFilter(String value) {
-				// quick search field
-				return new SimpleStringFilter("title", value, true, false);
-			}
-		};
-
-		// Some plumbing.
-		mainLayout.addComponent(movieLayout);
-		setCompositionRoot(mainLayout);
-	}
+        // Some plumbing.
+        mainLayout.addComponent(movieLayout);
+        setCompositionRoot(mainLayout);
+    }
 }

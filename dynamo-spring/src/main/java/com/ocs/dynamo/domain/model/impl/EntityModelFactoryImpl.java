@@ -317,7 +317,6 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
                 if (StringUtils.isEmpty(group)) {
                     group = EntityModel.DEFAULT_GROUP;
                 }
-
                 model.addAttributeModel(group, attributeModel);
             }
 
@@ -980,7 +979,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
             if (attribute.numberSelectMode() != null) {
                 model.setNumberSelectMode(attribute.numberSelectMode());
             }
-            
+
             if (!StringUtils.isEmpty(attribute.defaultValue())) {
                 String defaultValue = attribute.defaultValue();
                 setDefaultValue(model, defaultValue);

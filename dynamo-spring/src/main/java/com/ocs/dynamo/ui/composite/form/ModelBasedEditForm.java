@@ -59,7 +59,6 @@ import com.vaadin.data.util.filter.Compare;
 import com.vaadin.server.StreamResource;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
@@ -73,7 +72,6 @@ import com.vaadin.ui.Layout;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TabSheet;
-import com.vaadin.ui.TabSheet.SelectedTabChangeListener;
 import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.Upload;
 import com.vaadin.ui.Upload.Receiver;
@@ -144,7 +142,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
             // a button used to clear the image
             Button clearButton = new Button(message("ocs.clear"));
-            clearButton.addClickListener((ClickListener) event -> {
+            clearButton.addClickListener(event -> {
                 ClassUtils.clearFieldValue(getEntity(), attributeModel.getName(), byte[].class);
                 image.setVisible(false);
                 if (attributeModel.getFileNameProperty() != null) {
@@ -417,7 +415,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
     }
 
     private void addTabChangeListener(TabSheet tabSheet) {
-        tabSheet.addSelectedTabChangeListener((SelectedTabChangeListener) event -> {
+        tabSheet.addSelectedTabChangeListener(event -> {
             Component c = event.getTabSheet().getSelectedTab();
             if (tabSheets.get(isViewMode()) != null && tabSheets.get(isViewMode()).getTab(c) != null) {
                 int index = VaadinUtils.getTabIndex(tabSheets.get(isViewMode()),
@@ -680,14 +678,14 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
         // button to go back to the main screen when in view mode
 
         backButton = new Button(message("ocs.back"));
-        backButton.addClickListener((ClickListener) event -> back());
+        backButton.addClickListener(event -> back());
         backButton.setVisible(isViewMode() && getFormOptions().isShowBackButton());
         buttonBar.addComponent(backButton);
 
         // in edit mode, display a cancel button
 
         cancelButton = new Button(message("ocs.cancel"));
-        cancelButton.addClickListener((ClickListener) event -> {
+        cancelButton.addClickListener(event -> {
             if (entity.getId() != null) {
                 entity = service.fetchById(entity.getId(), getDetailJoins());
             }
@@ -705,9 +703,9 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
         // create the edit button
         editButton = new Button(message("ocs.edit"));
-        editButton.addClickListener((ClickListener) event -> setViewMode(false));
+        editButton.addClickListener(event -> setViewMode(false));
         buttonBar.addComponent(editButton);
-        editButton.setVisible(isViewMode() && getFormOptions().isShowEditButton() && isEditAllowed());
+        editButton.setVisible(isViewMode() && getFormOptions().isEditAllowed() && isEditAllowed());
 
         postProcessButtonBar(buttonBar, isViewMode());
 
@@ -937,7 +935,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
      */
     private Button constructSaveButton() {
         Button saveButton = new Button(message("ocs.save"));
-        saveButton.addClickListener((ClickListener) event -> {
+        saveButton.addClickListener(event -> {
             try {
                 boolean isNew = entity.getId() == null;
 

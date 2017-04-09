@@ -433,23 +433,25 @@ public final class DateUtils {
      *            the LocalDatetime to convert
      * @return
      */
-    public static Date toLegacyDate(LocalDateTime d) {
-        if (d == null) {
+    public static Date toLegacyDate(LocalDateTime ldt) {
+        if (ldt == null) {
             return null;
         }
-        return Date.from(d.atZone(ZoneId.systemDefault()).toInstant());
+        return Date.from(ldt.atZone(ZoneId.systemDefault()).toInstant());
     }
 
     /**
+     * Converts a java.time.LocalTime to a legacy date
      * 
-     * @param d
+     * @param lt
+     *            the LocalTime to convert
      * @return
      */
-    public static Date toLegacyTime(LocalTime d) {
-        if (d == null) {
+    public static Date toLegacyTime(LocalTime lt) {
+        if (lt == null) {
             return null;
         }
-        return Date.from(d.atDate(createLocalDate("01012000")).atZone(ZoneId.systemDefault()).toInstant());
+        return Date.from(lt.atDate(createLocalDate("01012000")).atZone(ZoneId.systemDefault()).toInstant());
     }
 
     /**
