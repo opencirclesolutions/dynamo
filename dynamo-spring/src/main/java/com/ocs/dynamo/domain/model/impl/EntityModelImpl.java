@@ -106,7 +106,7 @@ public class EntityModelImpl<T> implements EntityModel<T> {
     }
 
     private Stream<AttributeModel> constructAttributeModelStream() {
-        return attributeModels.values().stream().flatMap(a -> a.stream())
+        return attributeModels.values().stream().flatMap(List::stream)
                 .sorted(Comparator.comparing(AttributeModel::getOrder));
     }
 
@@ -164,8 +164,8 @@ public class EntityModelImpl<T> implements EntityModel<T> {
     public List<AttributeModel> getAttributeModelsForType(AttributeType attributeType, Class<?> type) {
         return filterAttributeModels(model -> {
             Class<?> rt = ClassUtils.getResolvedType(getEntityClass(), model.getName(), 0);
-            return ((attributeType == null || attributeType.equals(model.getAttributeType())) && (type == null
-                    || type.isAssignableFrom(model.getType()) || (rt != null && type.isAssignableFrom(rt))));
+            return (attributeType == null || attributeType.equals(model.getAttributeType())) && (type == null
+                    || type.isAssignableFrom(model.getType()) || (rt != null && type.isAssignableFrom(rt)));
         });
     }
 
@@ -218,7 +218,7 @@ public class EntityModelImpl<T> implements EntityModel<T> {
 
     @Override
     public AttributeModel getMainAttributeModel() {
-        return findAttributeModel(m -> m.isMainAttribute());
+        return findAttributeModel(AttributeModel::isMainAttribute);
     }
 
     @Override
@@ -239,7 +239,7 @@ public class EntityModelImpl<T> implements EntityModel<T> {
                 list.addAll(nested);
             }
             return list;
-        }).flatMap(li -> li.stream()).collect(Collectors.toList());
+        }).flatMap(List::stream).collect(Collectors.toList());
         return Collections.unmodifiableList(result);
     }
 

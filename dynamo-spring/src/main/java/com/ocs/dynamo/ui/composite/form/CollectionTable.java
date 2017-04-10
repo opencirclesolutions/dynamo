@@ -13,6 +13,11 @@
  */
 package com.ocs.dynamo.ui.composite.form;
 
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.ui.ServiceLocator;
@@ -34,14 +39,8 @@ import com.vaadin.ui.DefaultFieldFactory;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.Table;
-import com.vaadin.ui.Table.ColumnGenerator;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
-
-import java.io.Serializable;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * A component for editing a property that is annotated as an @ElementCollection
@@ -57,6 +56,9 @@ public class CollectionTable<T extends Serializable> extends CustomField<Collect
 
     private static final long serialVersionUID = -1203245694503350276L;
 
+    /**
+     * The property of the "value" column
+     */
     private static final String VALUE = "value";
 
     /**
@@ -168,9 +170,9 @@ public class CollectionTable<T extends Serializable> extends CustomField<Collect
         // add a remove button directly in the table
         if (!isViewMode() && formOptions.isShowRemoveButton()) {
             final String removeMsg = messageService.getMessage("ocs.remove");
-            table.addGeneratedColumn(removeMsg, (ColumnGenerator) (source, itemId, columnId) -> {
+            table.addGeneratedColumn(removeMsg, (source, itemId, columnId) -> {
                 Button remove = new Button(removeMsg);
-                remove.addClickListener((Button.ClickListener) event -> {
+                remove.addClickListener(event -> {
                     table.removeItem(itemId);
                     setValue(extractValues());
                     setSelectedItem(null);
@@ -181,19 +183,15 @@ public class CollectionTable<T extends Serializable> extends CustomField<Collect
     }
 
     /**
-     * Extracts the values from the table and returns them as a set of Strings
+     * Extracts the values from the table and returns them as a Set
      * 
      * @return
      */
     @SuppressWarnings("unchecked")
     private Set<T> extractValues() {
         Set<T> set = new HashSet<>();
-        for (Object o : table.getItemIds()) {
-            T t = (T) table.getItem(o).getItemProperty(VALUE).getValue();
-            if (t != null) {
-                set.add(t);
-            }
-        }
+        table.getItemIds().stream().map(o -> table.getItem(o).getItemProperty(VALUE).getValue()).filter(t -> t != null)
+                .forEach(t -> set.add((T) t));
         return set;
     }
 
@@ -315,7 +313,7 @@ public class CollectionTable<T extends Serializable> extends CustomField<Collect
 
                 // value change listener that makes sure the validity of the
                 // parent form is correctly set
-                f.addValueChangeListener((ValueChangeListener) event -> {
+                f.addValueChangeListener(event -> {
                     if (propagateChanges) {
                         propagateChanges = false;
                         setValue(extractValues());

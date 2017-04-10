@@ -239,6 +239,9 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
     private static final long serialVersionUID = 2201140375797069148L;
 
+    /**
+     * For keeping track of attribute groups per view mode
+     */
     private Map<Boolean, Map<String, Object>> attributeGroups = new HashMap<>();
 
     /**
@@ -556,7 +559,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
                 int tabIndex = 0;
                 for (String parentGroupHeader : getParentGroupHeaders()) {
                     Layout innerForm = constructAttributeGroupLayout(form, tabs, tabSheets.get(isViewMode()),
-                            message(parentGroupHeader), false);
+                            parentGroupHeader, false);
 
                     // add a tab sheet on the inner level if needed
                     TabSheet innerTabSheet = null;
@@ -577,7 +580,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
                     if (entityModel.isAttributeGroupVisible(attributeGroup, viewMode)) {
                         Layout innerForm = constructAttributeGroupLayout(form, tabs, tabSheets.get(isViewMode()),
-                                message(attributeGroup), true);
+                                attributeGroup, true);
                         if (ScreenMode.VERTICAL.equals(getFormOptions().getScreenMode())) {
                             innerForm.setStyleName(DynamoConstants.CSS_CLASS_HALFSCREEN);
                         }
@@ -644,7 +647,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
      *            indicates whether this is the lowest level
      * @return
      */
-    private Layout constructAttributeGroupLayout(Layout parent, boolean tabs, TabSheet tabSheet, String caption,
+    private Layout constructAttributeGroupLayout(Layout parent, boolean tabs, TabSheet tabSheet, String messageKey,
             boolean lowest) {
         Layout innerLayout = null;
         if (lowest) {
@@ -658,16 +661,16 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
         }
 
         if (tabs) {
-            Tab added = tabSheet.addTab(innerLayout, caption);
-            attributeGroups.get(isViewMode()).put(caption, added);
+            Tab added = tabSheet.addTab(innerLayout, message(messageKey));
+            attributeGroups.get(isViewMode()).put(messageKey, added);
         } else {
             Panel panel = new Panel();
             panel.setStyleName("attributePanel");
-            panel.setCaption(caption);
+            panel.setCaption(message(messageKey));
             panel.setContent(innerLayout);
             parent.addComponent(panel);
 
-            attributeGroups.get(isViewMode()).put(caption, panel);
+            attributeGroups.get(isViewMode()).put(messageKey, panel);
         }
         return innerLayout;
     }
@@ -1057,12 +1060,42 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
     }
 
     /**
+     * Check whether a certain attribute group is visible
+     * 
+     * @param key
+     *            the message key by which the group is identifier
+     * @return
+     */
+    public boolean isAttributeGroupVisible(String key) {
+        Object c = attributeGroups.get(false).get(key);
+        return c == null ? false : isGroupVisible(c);
+    }
+
+    /**
      * Indicates whether it is allowed to edit this component
      * 
      * @return
      */
     protected boolean isEditAllowed() {
         return true;
+    }
+
+    /**
+     * Check if a certain attribute group is visible
+     * 
+     * @param c
+     *            the component representing the attribute group
+     * @return
+     */
+    private boolean isGroupVisible(Object c) {
+        if (c != null) {
+            if (c instanceof Component) {
+                return ((Component) c).isVisible();
+            } else if (c instanceof Tab) {
+                return ((Tab) c).isVisible();
+            }
+        }
+        return false;
     }
 
     public boolean isViewMode() {
@@ -1108,8 +1141,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
             if ((!EntityModel.DEFAULT_GROUP.equals(attributeGroup)
                     || getEntityModel().isAttributeGroupVisible(attributeGroup, isViewMode()))
                     && getParentGroup(attributeGroup).equals(parentGroupHeader)) {
-                Layout innerLayout2 = constructAttributeGroupLayout(innerForm, innerTabs, innerTabSheet,
-                        message(attributeGroup), true);
+                Layout innerLayout2 = constructAttributeGroupLayout(innerForm, innerTabs, innerTabSheet, attributeGroup,
+                        true);
                 for (AttributeModel attributeModel : getEntityModel().getAttributeModelsForGroup(attributeGroup)) {
                     addField(innerLayout2, getEntityModel(), attributeModel, tabIndex);
                 }
@@ -1223,14 +1256,14 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
      * Shows/hides an attribute group
      * 
      * @param caption
-     *            the caption of the attribute group
+     *            the message key by which the group is identified
      * @param visible
      *            whether to show/hide the group
      */
-    public void setAttributeGroupVisible(String caption, boolean visible) {
-        Object c = attributeGroups.get(false).get(caption);
+    public void setAttributeGroupVisible(String key, boolean visible) {
+        Object c = attributeGroups.get(false).get(key);
         setGroupVisible(c, visible);
-        c = attributeGroups.get(true).get(caption);
+        c = attributeGroups.get(true).get(key);
         setGroupVisible(c, visible);
     }
 
