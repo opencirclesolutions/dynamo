@@ -1,5 +1,5 @@
 #FindBugs User Preferences
-#Fri Apr 07 16:41:56 CEST 2017
+#Mon Apr 10 16:50:42 CEST 2017
 detector_threshold=2
 effort=max
 filter_settings=Medium|BAD_PRACTICE,CORRECTNESS,EXPERIMENTAL,I18N,MALICIOUS_CODE,MT_CORRECTNESS,PERFORMANCE,SECURITY,STYLE|false|15

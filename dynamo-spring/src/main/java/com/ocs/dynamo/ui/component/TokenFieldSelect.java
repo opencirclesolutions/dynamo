@@ -113,8 +113,6 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
 
     private boolean addAllowed = false;
 
-    private boolean changing = false;
-
     /**
      * Constructor
      * 
@@ -315,13 +313,11 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
 
     @Override
     protected void setInternalValue(Collection<T> values) {
-        changing = true;
         super.setInternalValue(values);
         container.removeAllItems();
         if (values != null) {
             container.addAll(values);
         }
-        changing = false;
     }
 
     /**
@@ -329,9 +325,7 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
      */
     private void setupContainerFieldSync() {
         container.addItemSetChangeListener(e -> {
-            if (!changing) {
-                addTokens();
-            }
+            addTokens();
         });
     }
 
