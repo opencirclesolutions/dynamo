@@ -276,7 +276,7 @@ public class JRReportViewer<T> extends BaseCustomComponent {
 		currentParameters = parameters;
 
 		// Load template
-		ReportDefinition rd = (ReportDefinition) getReportSelection().getValue();
+		ReportDefinition rd = getReportSelectionValue();
 		String path = getFullPath(rd);
 		jasperReport = reportGenerator.loadTemplate(path);
 
