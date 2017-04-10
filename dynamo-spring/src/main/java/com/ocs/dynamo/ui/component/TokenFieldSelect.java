@@ -88,8 +88,6 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
 
     private static final long serialVersionUID = -1490179285573442827L;
 
-    private boolean changing = false;
-
     private final ExtTokenField extTokenField;
 
     private final EntityComboBox<ID, T> comboBox;
@@ -286,14 +284,11 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
 
     @Override
     protected void setInternalValue(Collection<T> values) {
-        changing = true;
         super.setInternalValue(values);
-
         container.removeAllItems();
         if (values != null) {
             container.addAll((Collection<T>) values);
         }
-        changing = false;
     }
 
     /**
@@ -306,9 +301,7 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
 
             @Override
             public void containerItemSetChange(Container.ItemSetChangeEvent event) {
-                if (!changing) {
-                    addTokens();
-                }
+                addTokens();
             }
         });
     }

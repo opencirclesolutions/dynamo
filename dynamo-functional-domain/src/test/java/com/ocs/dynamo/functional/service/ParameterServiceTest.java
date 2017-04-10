@@ -14,54 +14,53 @@ import javax.inject.Inject;
  */
 public class ParameterServiceTest extends BaseIntegrationTest {
 
-	@Inject
-	ParameterServiceImpl parameterServiceImpl;
+    @Inject
+    ParameterServiceImpl parameterServiceImpl;
 
-	private Parameter maxPrograms;
-	private Parameter showMargins;
-	private Parameter insufficientFunds;
+    private Parameter maxPrograms;
+    private Parameter showMargins;
+    private Parameter insufficientFunds;
 
+    @Before
+    public void setup() {
+        maxPrograms = new Parameter();
+        maxPrograms.setName("maximumPrograms");
+        maxPrograms.setParameterType(ParameterType.INTEGER);
+        maxPrograms.setValue("12");
+        getEntityManager().persist(maxPrograms);
 
-	@Before
-	public void setup(){
-		maxPrograms = new Parameter();
-		maxPrograms.setName("maximumPrograms");
-		maxPrograms.setParameterType(ParameterType.INTEGER);
-		maxPrograms.setValue("12");
-		getEntityManager().persist(maxPrograms);
+        showMargins = new Parameter();
+        showMargins.setName("showMargins");
+        showMargins.setParameterType(ParameterType.BOOLEAN);
+        showMargins.setValue("true");
+        getEntityManager().persist(showMargins);
 
-		showMargins = new Parameter();
-		showMargins.setName("showMargins");
-		showMargins.setParameterType(ParameterType.BOOLEAN);
-		showMargins.setValue("true");
-		getEntityManager().persist(showMargins);
+        insufficientFunds = new Parameter();
+        insufficientFunds.setName("insufficientFunds");
+        insufficientFunds.setParameterType(ParameterType.STRING);
+        insufficientFunds.setValue("Insufficient funds");
+        getEntityManager().persist(insufficientFunds);
+    }
 
-		insufficientFunds = new Parameter();
-		insufficientFunds.setName("insufficientFunds");
-		insufficientFunds.setParameterType(ParameterType.STRING);
-		insufficientFunds.setValue("Insufficient funds");
-		getEntityManager().persist(insufficientFunds);
-	}
+    @Test
+    public void returnNullWhenIncorrectValue() {
+        Assert.assertNull(parameterServiceImpl.getValueAsString("showMargins"));
+        Assert.assertNull(parameterServiceImpl.getValueAsInteger("insufficientFunds"));
+        Assert.assertEquals(Boolean.FALSE, parameterServiceImpl.getValueAsBoolean("maximumPrograms"));
+    }
 
-	@Test
-	public void returnNullWhenIncorrectValue(){
-		Assert.assertEquals(null, parameterServiceImpl.getValueAsString("showMargins"));
-		Assert.assertEquals(null, parameterServiceImpl.getValueAsInteger("insufficientFunds"));
-		Assert.assertEquals(null, parameterServiceImpl.getValueAsBoolean("maximumPrograms"));
-	}
+    @Test
+    public void returnCorrectValueAndType() {
+        Assert.assertEquals(Integer.valueOf(12), parameterServiceImpl.getValueAsInteger("maximumPrograms"));
+        Assert.assertEquals(Boolean.valueOf(true), parameterServiceImpl.getValueAsBoolean("showMargins"));
+        Assert.assertEquals("Insufficient funds", parameterServiceImpl.getValueAsString("insufficientFunds"));
+    }
 
-	@Test
-	public void returnCorrectValueAndType(){
-		Assert.assertEquals(Integer.valueOf(12), parameterServiceImpl.getValueAsInteger("maximumPrograms"));
-		Assert.assertEquals(Boolean.valueOf(true), parameterServiceImpl.getValueAsBoolean("showMargins"));
-		Assert.assertEquals("Insufficient funds", parameterServiceImpl.getValueAsString("insufficientFunds"));
-	}
-
-	@Test
-	public void returnNullWhenNoParameterFound(){
-		Assert.assertEquals(null, parameterServiceImpl.getValueAsString("maverick"));
-		Assert.assertEquals(null, parameterServiceImpl.getValueAsInteger("maverick"));
-		Assert.assertEquals(null, parameterServiceImpl.getValueAsBoolean("maverick"));
-	}
+    @Test
+    public void returnNullWhenNoParameterFound() {
+        Assert.assertNull(parameterServiceImpl.getValueAsString("maverick"));
+        Assert.assertNull(parameterServiceImpl.getValueAsInteger("maverick"));
+        Assert.assertEquals(Boolean.FALSE, parameterServiceImpl.getValueAsBoolean("maverick"));
+    }
 
 }
