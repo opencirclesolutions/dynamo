@@ -29,9 +29,6 @@ public final class SystemPropertyUtils {
 
 	private static final int DEFAULT_LOOKUP_FIELD_MAX_ITEMS = 3;
 
-	private SystemPropertyUtils() {
-	}
-
 	/**
 	 * Whether to allow data export from tables
 	 * 
@@ -42,20 +39,17 @@ public final class SystemPropertyUtils {
 	}
 
 	/**
+	 * The locale used for determining month names inside date components
 	 * 
-	 * @return the CSV separator character
+	 * @return
 	 */
-	public static String getExportCsvSeparator() {
-		return System.getProperty(DynamoConstants.SP_EXPORT_CSV_SEPARATOR, ";");
+	public static String getDateLocale() {
+		return System.getProperty(DynamoConstants.SP_DATE_LOCALE, "en");
 	}
 
-	/**
-	 * 
-	 * @return the CSV quote character
-	 */
-	public static String getExportCsvQuoteChar() {
-		return System.getProperty(DynamoConstants.SP_EXPORT_CSV_QUOTE, "\"");
-	}
+	public static String getDefaultCaptionFormat() {
+        return System.getProperty(DynamoConstants.SP_DEFAULT_CAPTION_FORMAT, DynamoConstants.SP_DEFAULT_CAPTION_FORMAT_VAADIN);
+    }
 
 	/**
 	 * The default currency symbol
@@ -114,15 +108,6 @@ public final class SystemPropertyUtils {
 	}
 
 	/**
-	 * The locale used for determining month names inside date components
-	 * 
-	 * @return
-	 */
-	public static String getDateLocale() {
-		return System.getProperty(DynamoConstants.SP_DATE_LOCALE, "en");
-	}
-
-	/**
 	 * The default date/time format
 	 * 
 	 * @return
@@ -130,10 +115,26 @@ public final class SystemPropertyUtils {
 	public static String getDefaultTimeFormat() {
 		return System.getProperty(DynamoConstants.SP_DEFAULT_TIME_FORMAT, "HH:mm:ss");
 	}
+
+	/**
+	 * 
+	 * @return the CSV quote character
+	 */
+	public static String getExportCsvQuoteChar() {
+		return System.getProperty(DynamoConstants.SP_EXPORT_CSV_QUOTE, "\"");
+	}
+
+	/**
+	 * 
+	 * @return the CSV separator character
+	 */
+	public static String getExportCsvSeparator() {
+		return System.getProperty(DynamoConstants.SP_EXPORT_CSV_SEPARATOR, ";");
+	}
 	
-    public static String getDefaultCaptionFormat() {
-        return System.getProperty(DynamoConstants.SP_DEFAULT_CAPTION_FORMAT, DynamoConstants.SP_DEFAULT_CAPTION_FORMAT_VAADIN);
-    }
+    public static int getDefaultFormTitleWidth() {
+	    return Integer.getInteger(DynamoConstants.SP_FORM_TITLE_WIDTH, 0);
+	}
 
 	/**
 	 * The default maximum number of items to display in an entity lookup field when it is in
@@ -181,4 +182,7 @@ public final class SystemPropertyUtils {
 		return Boolean.getBoolean(DynamoConstants.SP_THOUSAND_GROUPING);
 	}
 
+	private SystemPropertyUtils() {
+	}
+	
 }
