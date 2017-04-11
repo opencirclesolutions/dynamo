@@ -283,6 +283,11 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	private Button nextButton;
 
 	/**
+	 * The previous button
+	 */
+	private Button prevButton;
+
+	/**
 	 * The selected entity
 	 */
 	private T entity;
@@ -332,6 +337,11 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	 * Whether to support a "next" button
 	 */
 	private boolean supportsNextButton;
+
+	/**
+	 * Whether to support a "previous" button
+	 */
+	private boolean supportsPrevButton;
 
 	/**
 	 * Whether to display the component in view mode
@@ -748,6 +758,19 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		buttonBar.addComponent(editButton);
 		editButton.setVisible(isViewMode() && getFormOptions().isShowEditButton() && isEditAllowed());
 
+		// button for moving to the previous record
+		prevButton = new Button(message("ocs.previous"));
+		prevButton.addClickListener(new Button.ClickListener() {
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				T prev = getPrevEntity(getEntity());
+				if (prev != null) {
+					setEntity(prev);
+				}
+			}
+		});
+
 		// button for moving to the next record
 		nextButton = new Button(message("ocs.next"));
 		nextButton.addClickListener(new Button.ClickListener() {
@@ -760,8 +783,12 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 				}
 			}
 		});
+
+		buttonBar.addComponent(prevButton);
 		buttonBar.addComponent(nextButton);
+		prevButton.setVisible(isSupportsPrevButton() && getFormOptions().isShowNextButton() && entity.getId() != null);
 		nextButton.setVisible(isSupportsNextButton() && getFormOptions().isShowNextButton() && entity.getId() != null);
+
 
 		postProcessButtonBar(buttonBar, isViewMode());
 
@@ -1080,6 +1107,18 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	}
 
 	/**
+	 * Method that is called to select the previous entity in a data set
+	 *
+	 * @param current
+	 *            the currently selected entity
+	 * @return
+	 */
+	protected T getPrevEntity(T current) {
+		// overwrite in subclass
+		return null;
+	}
+
+	/**
 	 * Indicates which parent group a certain child group belongs to. The parent group must be
 	 * mentioned in the result of the <code>getParentGroupHeaders</code> method. The childGroup must
 	 * be the name of an attribute group from the entity model
@@ -1116,6 +1155,10 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 	public boolean isSupportsNextButton() {
 		return supportsNextButton;
+	}
+
+	public boolean isSupportsPrevButton() {
+		return supportsPrevButton;
 	}
 
 	public boolean isViewMode() {
@@ -1322,6 +1365,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 		reconstructLabels();
 		nextButton.setVisible(isSupportsNextButton() && getFormOptions().isShowNextButton() && entity.getId() != null);
+		prevButton.setVisible(isSupportsPrevButton() && getFormOptions().isShowPrevButton() && entity.getId() != null);
 
 		// refresh the upload components
 		for (Entry<AttributeModel, Component> e : uploads.get(isViewMode()).entrySet()) {
@@ -1391,8 +1435,13 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		}
 	}
 
+	//TODO RC: Setiterative button (prev and next)
 	public void setSupportsNextButton(boolean supportsNextButton) {
 		this.supportsNextButton = supportsNextButton;
+	}
+
+	public void setSupportsPrevButton(boolean supportsPrevButton) {
+		this.supportsPrevButton = supportsPrevButton;
 	}
 
 	/**

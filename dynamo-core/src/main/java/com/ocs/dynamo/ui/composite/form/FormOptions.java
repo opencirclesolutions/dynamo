@@ -109,6 +109,11 @@ public class FormOptions implements Serializable {
 	private boolean showNextButton = false;
 
 	/**
+	 * Whether to display a "previous" button
+	 */
+	private boolean showPrevButton = false;
+
+	/**
 	 * Whether to include an quick search field
 	 */
 	private boolean showQuickSearchField;
@@ -187,6 +192,10 @@ public class FormOptions implements Serializable {
 
 	public boolean isShowEditButton() {
 		return showEditButton;
+	}
+
+	public boolean isShowPrevButton() {
+		return showPrevButton;
 	}
 
 	public boolean isShowNextButton() {
@@ -297,6 +306,11 @@ public class FormOptions implements Serializable {
 
 	public FormOptions setShowNextButton(boolean showNextButton) {
 		this.showNextButton = showNextButton;
+		return this;
+	}
+
+	public FormOptions setShowPrevButton(boolean showPrevButton) {
+		this.showPrevButton = showPrevButton;
 		return this;
 	}
 

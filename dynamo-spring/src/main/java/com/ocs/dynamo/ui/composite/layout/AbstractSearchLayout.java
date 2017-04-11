@@ -524,6 +524,11 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 				}
 
 				@Override
+				protected T getPrevEntity(T current) {
+					return AbstractSearchLayout.this.getPrevEntity(current);
+				}
+
+				@Override
 				protected boolean isEditAllowed() {
 					return AbstractSearchLayout.this.isEditAllowed();
 				}
@@ -540,6 +545,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 
 			};
 			editForm.setSupportsNextButton(true);
+			editForm.setSupportsPrevButton(true);
 			editForm.setDetailJoins(getDetailJoinsFallBack());
 			editForm.setFieldEntityModels(getFieldEntityModels());
 			editForm.build();
@@ -563,6 +569,19 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 				T next = getService().fetchById(id, getDetailJoinsFallBack());
 				getTableWrapper().getTable().select(next.getId());
 				return next;
+			}
+		}
+		return null;
+	}
+
+	@SuppressWarnings("unchecked")
+	protected T getPrevEntity(T current) {
+		if (current != null) {
+			ID id = (ID) getTableWrapper().getTable().prevItemId(current.getId());
+			if (id != null) {
+				T prev = getService().fetchById(id, getDetailJoinsFallBack());
+				getTableWrapper().getTable().select(prev.getId());
+				return prev;
 			}
 		}
 		return null;
@@ -791,5 +810,9 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	 */
 	public void validateBeforeSearch() {
 		// overwrite in subclasses
+	}
+
+	public ModelBasedEditForm<ID, T> getEditForm() {
+		return editForm;
 	}
 }
