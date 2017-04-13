@@ -37,8 +37,8 @@ import com.ocs.dynamo.utils.ClassUtils;
  */
 public final class EntityModelUtil {
 
-    private static final Set<String> ALWAYS_IGNORE = Sets.newHashSet("createdOn", "createdBy",
-            "changedBy", "changedOn");
+    private static final Set<String> ALWAYS_IGNORE = Sets.newHashSet("createdOn", "createdBy", "changedBy",
+            "changedOn");
 
     private EntityModelUtil() {
         // private constructor
@@ -72,26 +72,25 @@ public final class EntityModelUtil {
         String noValue = messageService.getMessage("ocs.no.value");
 
         for (AttributeModel am : model.getAttributeModels()) {
-            if ((AttributeType.BASIC.equals(am.getAttributeType()) || AttributeType.MASTER
-                    .equals(am.getAttributeType())) && !toIgnore.contains(am.getName())) {
+            if ((AttributeType.BASIC.equals(am.getAttributeType())
+                    || AttributeType.MASTER.equals(am.getAttributeType())) && !toIgnore.contains(am.getName())) {
 
-                Object oldValue = ClassUtils.getFieldValue(oldEntity, am.getName());
-                Object newValue = ClassUtils.getFieldValue(newEntity, am.getName());
+                Object oldValue = oldEntity == null ? null : ClassUtils.getFieldValue(oldEntity, am.getName());
+                Object newValue = newEntity == null ? null : ClassUtils.getFieldValue(newEntity, am.getName());
 
                 if (!ObjectUtils.equals(oldValue, newValue)) {
-                    String oldValueStr = TableUtils.formatPropertyValue(entityModelFactory, model,
-                            messageService, am.getName(), oldValue);
-                    String newValueStr = TableUtils.formatPropertyValue(entityModelFactory, model,
-                            messageService, am.getName(), newValue);
+                    String oldValueStr = TableUtils.formatPropertyValue(entityModelFactory, model, messageService,
+                            am.getName(), oldValue);
+                    String newValueStr = TableUtils.formatPropertyValue(entityModelFactory, model, messageService,
+                            am.getName(), newValue);
                     results.add(messageService.getMessage("ocs.value.changed", am.getDisplayName(),
-                            oldValue == null ? noValue : oldValueStr, newValue == null ? noValue
-                                    : newValueStr));
+                            oldValue == null ? noValue : oldValueStr, newValue == null ? noValue : newValueStr));
                 }
             } else if (AttributeType.DETAIL.equals(am.getAttributeType())) {
-                Collection<?> ocol = (Collection<?>) ClassUtils.getFieldValue(oldEntity,
-                        am.getName());
-                Collection<?> ncol = (Collection<?>) ClassUtils.getFieldValue(newEntity,
-                        am.getName());
+                Collection<?> ocol = oldEntity == null ? new ArrayList<>()
+                        : (Collection<?>) ClassUtils.getFieldValue(oldEntity, am.getName());
+                Collection<?> ncol = newEntity == null ? new ArrayList<>()
+                        : (Collection<?>) ClassUtils.getFieldValue(newEntity, am.getName());
 
                 for (Object o : ncol) {
                     if (!ocol.contains(o)) {
@@ -110,8 +109,8 @@ public final class EntityModelUtil {
                 for (Object o : ocol) {
                     for (Object o2 : ncol) {
                         if (o.equals(o2)) {
-                            List<String> nested = compare(o, o2, am.getNestedEntityModel(),
-                                    entityModelFactory, messageService, ignore);
+                            List<String> nested = compare(o, o2, am.getNestedEntityModel(), entityModelFactory,
+                                    messageService, ignore);
                             results.addAll(nested);
                         }
                     }
@@ -131,8 +130,7 @@ public final class EntityModelUtil {
      *            the target entity
      * @param model
      */
-    public static <T> void copySimpleAttributes(T source, T target, EntityModel<T> model,
-            String... ignore) {
+    public static <T> void copySimpleAttributes(T source, T target, EntityModel<T> model, String... ignore) {
         Set<String> toIgnore = new HashSet<>();
         if (ignore != null) {
             toIgnore = Sets.newHashSet(ignore);
@@ -140,8 +138,8 @@ public final class EntityModelUtil {
         toIgnore.addAll(ALWAYS_IGNORE);
 
         for (AttributeModel am : model.getAttributeModels()) {
-            if ((AttributeType.BASIC.equals(am.getAttributeType()) || AttributeType.LOB.equals(am
-                    .getAttributeType())) && !toIgnore.contains(am.getName())) {
+            if ((AttributeType.BASIC.equals(am.getAttributeType()) || AttributeType.LOB.equals(am.getAttributeType()))
+                    && !toIgnore.contains(am.getName())) {
                 if (!DynamoConstants.ID.equals(am.getName())) {
                     Object value = ClassUtils.getFieldValue(source, am.getName());
                     if (ClassUtils.canSetProperty(target, am.getName())) {
@@ -185,8 +183,8 @@ public final class EntityModelUtil {
      *            message service
      * @return
      */
-    public static <T> String getDisplayPropertyValue(Collection<T> entities, EntityModel<T> model,
-            int maxItems, MessageService messageService) {
+    public static <T> String getDisplayPropertyValue(Collection<T> entities, EntityModel<T> model, int maxItems,
+            MessageService messageService) {
         String property = model.getDisplayProperty();
         StringBuilder result = new StringBuilder();
 
@@ -199,8 +197,7 @@ public final class EntityModelUtil {
             if (i < maxItems) {
                 result.append(ClassUtils.getFieldValueAsString(t, property));
             } else {
-                result.append(messageService.getMessage("ocs.and.others", entities.size()
-                        - maxItems));
+                result.append(messageService.getMessage("ocs.and.others", entities.size() - maxItems));
                 break;
             }
             i++;
