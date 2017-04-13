@@ -1106,6 +1106,14 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
         return EntityModel.DEFAULT_GROUP.equals(attributeGroup) ? message("ocs.default.group.caption") : attributeGroup;
     }
 
+    public List<Button> getPreviousButtons() {
+        return filterButtons(PREV_BUTTON_DATA);
+    }
+
+    public List<Button> getNextButtons() {
+        return filterButtons(NEXT_BUTTON_DATA);
+    }
+
     public List<Button> getBackButtons() {
         return filterButtons(BACK_BUTTON_DATA);
     }
