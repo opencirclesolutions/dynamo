@@ -320,7 +320,7 @@ public class FormOptions implements Serializable {
      * @param show
      * @return
      */
-    public FormOptions setShowIterationButtions(boolean show) {
+    public FormOptions setShowIterationButtons(boolean show) {
         this.setShowPrevButton(show);
         this.setShowNextButton(show);
         return this;
