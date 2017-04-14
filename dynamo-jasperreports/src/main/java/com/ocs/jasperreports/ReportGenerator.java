@@ -53,185 +53,186 @@ import java.util.Map;
 @Service
 public class ReportGenerator {
 
-	private DataSource dataSource;
+    private DataSource dataSource;
 
-	@Inject
-	public ReportGenerator(DataSource dataSource) {
-		this();
-		this.dataSource = dataSource;
-	}
+    @Inject
+    public ReportGenerator(DataSource dataSource) {
+        this();
+        this.dataSource = dataSource;
+    }
 
-	public enum Format {
-		HTML("html"), PDF("pdf"), EXCEL("xls"), POWERPOINT("pptx"), DOC("doc");
+    public enum Format {
+        HTML("html"), PDF("pdf"), EXCEL("xls"), POWERPOINT("pptx"), DOC("doc");
 
-		private final String extension;
+        private final String extension;
 
-		Format(String extension) {
-			this.extension = extension;
-		}
+        Format(String extension) {
+            this.extension = extension;
+        }
 
-		public String getExtension() {
-			return extension;
-		}
-	}
+        public String getExtension() {
+            return extension;
+        }
+    }
 
-	/**
-	 * Create instance for report creation
-	 */
-	public ReportGenerator() {
-		setTempFolder(null);
-	}
+    /**
+     * Create instance for report creation
+     */
+    public ReportGenerator() {
+        setTempFolder(null);
+    }
 
-	/**
-	 * Set temporary folder for compiling reports
-	 *
-	 * @param tempFolder
-	 */
-	private void setTempFolder(String tempFolder) {
-		if (tempFolder == null || !new File(tempFolder).isDirectory()) {
-			System.setProperty("jasper.reports.compile.temp", System.getProperty("java.io.tmpdir"));
-		} else {
-			System.setProperty("jasper.reports.compile.temp", tempFolder);
-		}
-	}
+    /**
+     * Set temporary folder for compiling reports
+     *
+     * @param tempFolder
+     */
+    private void setTempFolder(String tempFolder) {
+        if (tempFolder == null || !new File(tempFolder).isDirectory()) {
+            System.setProperty("jasper.reports.compile.temp", System.getProperty("java.io.tmpdir"));
+        } else {
+            System.setProperty("jasper.reports.compile.temp", tempFolder);
+        }
+    }
 
-	/**
-	 * Load the template (defined by templatePath) and return a JasperDesign object representing the
-	 * template
-	 *
-	 * @return JasperDesign
-	 */
-	public JasperReport loadTemplate(String templatePath) {
-		try {
-			InputStream in = JRLoader.getLocationInputStream(templatePath);
-			return (JasperReport) JRLoader.loadObject(in);
-		} catch (JRException e) {
-			throw new OCSRuntimeException("Failed to find jasper report template!", e);
-		}
+    /**
+     * Load the template (defined by templatePath) and return a JasperDesign object representing the
+     * template
+     *
+     * @return JasperDesign
+     */
+    public JasperReport loadTemplate(String templatePath) {
+        try {
+            InputStream in = JRLoader.getLocationInputStream(templatePath);
+            return (JasperReport) JRLoader.loadObject(in);
+        } catch (JRException e) {
+            throw new OCSRuntimeException("Failed to find jasper report template!", e);
+        }
 
-	}
+    }
 
-	public JasperPrint fillReport(JasperReport jasperReport, Map<String, Object> parameters, JRDataSource jrDataSource) {
-		try {
-			if (jrDataSource != null) {
-				return JasperFillManager.fillReport(jasperReport, parameters, jrDataSource);
-			} else {
-				try (Connection connection = dataSource.getConnection()) {
-					return JasperFillManager.fillReport(jasperReport, parameters, connection);
-				}
-			}
-		} catch (SQLException | JRException e) {
-			throw new OCSRuntimeException("Failed to fill jasper report!", e);
-		}
-	}
+    public JasperPrint fillReport(JasperReport jasperReport, Map<String, Object> parameters,
+            JRDataSource jrDataSource) {
+        try {
+            if (jrDataSource != null) {
+                return JasperFillManager.fillReport(jasperReport, parameters, jrDataSource);
+            } else {
+                try (Connection connection = dataSource.getConnection()) {
+                    return JasperFillManager.fillReport(jasperReport, parameters, connection);
+                }
+            }
+        } catch (SQLException | JRException e) {
+            throw new OCSRuntimeException("Failed to fill jasper report!", e);
+        }
+    }
 
-	/**
-	 * Convenience method which loads, fills and executes the report as HTML in a string
-	 *
-	 * @return The HTML report
-	 */
-	public String executeReportAsHtml(JasperReport jasperReport, Map<String, Object> parameters,
-	        JRDataSource jrDataSource, HttpSession session, Locale locale) {
-		// Start execution
-		StringBuilder sb = executeReport(jasperReport, parameters, jrDataSource, Format.HTML, session, locale, null);
-		return sb.toString();
-	}
+    /**
+     * Convenience method which loads, fills and executes the report as HTML in a string
+     *
+     * @return The HTML report
+     */
+    public String executeReportAsHtml(JasperReport jasperReport, Map<String, Object> parameters,
+            JRDataSource jrDataSource, HttpSession session, Locale locale) {
+        // Start execution
+        StringBuilder sb = executeReport(jasperReport, parameters, jrDataSource, Format.HTML, session, locale, null);
+        return sb.toString();
+    }
 
-	/**
-	 * Convenience method which loads, fills and executes the report
-	 *
-	 *
-	 * @param locale
-	 * @param outputStream
-	 * @throws JRException
-	 */
-	public StringBuilder executeReport(JasperReport jasperReport, Map<String, Object> parameters,
-	        JRDataSource jrDataSource, Format format, HttpSession session, Locale locale, OutputStream outputStream) {
-		// Add format to parameters
-		Map<String, Object> copyParameters = new HashMap<>(parameters);
+    /**
+     * Convenience method which loads, fills and executes the report
+     *
+     *
+     * @param locale
+     * @param outputStream
+     * @throws JRException
+     */
+    public StringBuilder executeReport(JasperReport jasperReport, Map<String, Object> parameters,
+            JRDataSource jrDataSource, Format format, HttpSession session, Locale locale, OutputStream outputStream) {
+        // Add format to parameters
+        Map<String, Object> copyParameters = new HashMap<>(parameters);
 
-		copyParameters.put(Format.class.getSimpleName(), format.name());
+        copyParameters.put(Format.class.getSimpleName(), format.name());
 
-		// only set when not explicit given earlier
-		if (!copyParameters.containsKey(JRParameter.REPORT_LOCALE)) {
-			copyParameters.put(JRParameter.REPORT_LOCALE, locale);
-		}
+        // only set when not explicit given earlier
+        if (!copyParameters.containsKey(JRParameter.REPORT_LOCALE)) {
+            copyParameters.put(JRParameter.REPORT_LOCALE, locale);
+        }
 
-		final boolean showMargins = (boolean) ObjectUtils.defaultIfNull(parameters.get("showMargins"), Boolean.TRUE);
+        final boolean showMargins = (boolean) ObjectUtils.defaultIfNull(parameters.get("showMargins"), Boolean.TRUE);
 
-		// Fill report
-		final JasperPrint jasperPrint = fillReport(jasperReport, copyParameters, jrDataSource);
-		// Export report
-		switch (format) {
-		case HTML:
-			return exportReportToHTML(jasperPrint, session, showMargins);
-		default:
-			// Other formats
-			exportReport(jasperPrint, format, outputStream);
-			break;
-		}
-		return null;
-	}
+        // Fill report
+        final JasperPrint jasperPrint = fillReport(jasperReport, copyParameters, jrDataSource);
+        // Export report
+        switch (format) {
+        case HTML:
+            return exportReportToHTML(jasperPrint, session, showMargins);
+        default:
+            // Other formats
+            exportReport(jasperPrint, format, outputStream);
+            break;
+        }
+        return null;
+    }
 
-	/**
-	 * Export the current report results to HTML
-	 *
-	 * @param jasperPrint
-	 *            The jasperPrint
-	 * @param session
-	 *            The user session
-	 */
-	private StringBuilder exportReportToHTML(JasperPrint jasperPrint, HttpSession session, boolean showMargins) {
-		StringBuilder sb = new StringBuilder();
-		try {
-			HtmlExporter exporter = new HtmlSvgImageFontExporter();
-			exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
-			SimpleHtmlExporterOutput out = new SimpleHtmlExporterOutput(sb);
-			out.setImageHandler(new UniqueWebHtmlResourceHandler("servlets/image?image={0}"));
-			exporter.setExporterOutput(out);
+    /**
+     * Export the current report results to HTML
+     *
+     * @param jasperPrint
+     *            The jasperPrint
+     * @param session
+     *            The user session
+     */
+    private StringBuilder exportReportToHTML(JasperPrint jasperPrint, HttpSession session, boolean showMargins) {
+        StringBuilder sb = new StringBuilder();
+        try {
+            HtmlExporter exporter = new HtmlSvgImageFontExporter();
+            exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+            SimpleHtmlExporterOutput out = new SimpleHtmlExporterOutput(sb);
+            out.setImageHandler(new UniqueWebHtmlResourceHandler("servlets/image?image={0}"));
+            exporter.setExporterOutput(out);
 
-			SimpleHtmlExporterConfiguration exporterConfig = new SimpleHtmlExporterConfiguration();
-			if (!showMargins) {
-				exporterConfig.setBetweenPagesHtml("");
-				exporterConfig.setHtmlHeader("");
-				exporterConfig.setHtmlFooter("");
-			}
-			exporter.setConfiguration(exporterConfig);
+            SimpleHtmlExporterConfiguration exporterConfig = new SimpleHtmlExporterConfiguration();
+            if (!showMargins) {
+                exporterConfig.setBetweenPagesHtml("");
+                exporterConfig.setHtmlHeader("");
+                exporterConfig.setHtmlFooter("");
+            }
+            exporter.setConfiguration(exporterConfig);
 
-			final SimpleHtmlReportConfiguration reportConfiguration = new SimpleHtmlReportConfiguration();
-			reportConfiguration.setEmbeddedSvgUseFonts(true);
-			reportConfiguration.setIgnoreHyperlink(false);
-			reportConfiguration.setIgnorePageMargins(true);
-			exporter.setConfiguration(reportConfiguration);
+            final SimpleHtmlReportConfiguration reportConfiguration = new SimpleHtmlReportConfiguration();
+            reportConfiguration.setEmbeddedSvgUseFonts(true);
+            reportConfiguration.setIgnoreHyperlink(false);
+            reportConfiguration.setIgnorePageMargins(true);
+            exporter.setConfiguration(reportConfiguration);
 
-			// FIXME The communication through a session object is not scalable
-			session.setAttribute(BaseHttpServlet.DEFAULT_JASPER_PRINT_SESSION_ATTRIBUTE, jasperPrint);
+            // FIXME The communication through a session object is not scalable
+            session.setAttribute(BaseHttpServlet.DEFAULT_JASPER_PRINT_SESSION_ATTRIBUTE, jasperPrint);
 
-			exporter.exportReport();
-		} catch (JRException e) {
-			throw new OCSRuntimeException("Failed to export jasper report to HTML!", e);
-		}
-		return sb;
-	}
+            exporter.exportReport();
+        } catch (JRException e) {
+            throw new OCSRuntimeException("Failed to export jasper report to HTML!", e);
+        }
+        return sb;
+    }
 
-	/**
-	 * Export the current report results to an specified format
-	 *
-	 * @param jasperPrint
-	 *            The jasperPrint
-	 * @param format
-	 *            Format to render
-	 * @param outputStream
-	 *            The output stream to which the report is written
-	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private void exportReport(JasperPrint jasperPrint, Format format, OutputStream outputStream) {
-		try {
-			Exporter exporter = ExporterFactory.getExporter(format, jasperPrint, outputStream);
-			exporter.exportReport();
-		} catch (JRException e) {
-			throw new OCSRuntimeException("Failed to export jasper report to PDF!", e);
-		}
-	}
+    /**
+     * Export the current report results to an specified format
+     *
+     * @param jasperPrint
+     *            The jasperPrint
+     * @param format
+     *            Format to render
+     * @param outputStream
+     *            The output stream to which the report is written
+     */
+    @SuppressWarnings({ "rawtypes" })
+    private void exportReport(JasperPrint jasperPrint, Format format, OutputStream outputStream) {
+        try {
+            Exporter exporter = ExporterFactory.getExporter(format, jasperPrint, outputStream);
+            exporter.exportReport();
+        } catch (JRException e) {
+            throw new OCSRuntimeException("Failed to export jasper report to PDF!", e);
+        }
+    }
 
 }

@@ -154,7 +154,7 @@ public class ChartCustomizer<T extends Plot> extends JRAbstractChartCustomizer {
 
 	}
 
-	public static enum Action {
+	public enum Action {
 		ZOOM
 	}
 

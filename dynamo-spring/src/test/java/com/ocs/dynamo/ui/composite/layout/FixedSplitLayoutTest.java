@@ -16,9 +16,7 @@ import com.ocs.dynamo.service.TestEntity2Service;
 import com.ocs.dynamo.service.TestEntityService;
 import com.ocs.dynamo.test.BaseIntegrationTest;
 import com.ocs.dynamo.ui.composite.form.FormOptions;
-import com.vaadin.data.Container.Filter;
 import com.vaadin.data.sort.SortOrder;
-import com.vaadin.data.util.filter.Compare;
 import com.vaadin.shared.data.sort.SortDirection;
 
 public class FixedSplitLayoutTest extends BaseIntegrationTest {
