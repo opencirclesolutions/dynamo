@@ -89,22 +89,22 @@ public class SimpleEditLayoutTest extends BaseIntegrationTest {
         modeChanged = false;
 
         // click the edit button
-        Assert.assertFalse(layout.getEditForm().getCancelButton().isVisible());
-        Assert.assertTrue(layout.getEditForm().getEditButton().isVisible());
-        Assert.assertFalse(layout.getEditForm().getBackButton().isVisible());
-        layout.getEditForm().getEditButton().click();
+        Assert.assertFalse(layout.getEditForm().getCancelButtons().get(0).isVisible());
+        Assert.assertTrue(layout.getEditForm().getEditButtons().get(0).isVisible());
+        Assert.assertFalse(layout.getEditForm().getBackButtons().get(0).isVisible());
+        layout.getEditForm().getEditButtons().get(0).click();
 
         // check that we are now in edit mode
         Assert.assertFalse(layout.getEditForm().isViewMode());
-        Assert.assertTrue(layout.getEditForm().getCancelButton().isVisible());
-        Assert.assertFalse(layout.getEditForm().getEditButton().isVisible());
+        Assert.assertTrue(layout.getEditForm().getCancelButtons().get(0).isVisible());
+        Assert.assertFalse(layout.getEditForm().getEditButtons().get(0).isVisible());
         Assert.assertTrue(modeChanged);
 
         // back to view mode
-        layout.getEditForm().getCancelButton().click();
+        layout.getEditForm().getCancelButtons().get(0).click();
         Assert.assertTrue(layout.getEditForm().isViewMode());
 
-        layout.getEditForm().getEditButton().click();
+        layout.getEditForm().getEditButtons().get(0).click();
         Assert.assertFalse(layout.getEditForm().isViewMode());
 
         // after a reload we go back to the view mode

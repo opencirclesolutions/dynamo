@@ -31,19 +31,19 @@ import com.ocs.dynamo.domain.model.AttributeModel;
  * @param <T>
  *            the type of the entity
  */
-
+@FunctionalInterface
 public interface CustomXlsStyleGenerator<ID extends Serializable, T extends AbstractEntity<ID>> {
 
-	/**
-	 * Returns the cell style for a certain cell
-	 * 
-	 * @param workbook
-	 *            the workbook
-	 * @param entity
-	 *            the entity that is displayed in the row
-	 * @param value
-	 *            the cell value
-	 * @return
-	 */
-	CellStyle getCustomCellStyle(Workbook workbook, T entity, Object value, AttributeModel am);
+    /**
+     * Returns the cell style for a certain cell
+     * 
+     * @param workbook
+     *            the workbook
+     * @param entity
+     *            the entity that is displayed in the row
+     * @param value
+     *            the cell value
+     * @return
+     */
+    CellStyle getCustomCellStyle(Workbook workbook, T entity, Object value, AttributeModel am);
 }

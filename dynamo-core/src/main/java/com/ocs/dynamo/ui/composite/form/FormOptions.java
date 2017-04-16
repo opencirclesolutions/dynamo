@@ -96,6 +96,16 @@ public class FormOptions implements Serializable {
     private boolean editAllowed;
 
     /**
+     * Whether to display a "next" button
+     */
+    private boolean showNextButton = false;
+
+    /**
+     * Whether to display a "previous" button
+     */
+    private boolean showPrevButton = false;
+
+    /**
      * Whether to include an quick search field
      */
     private boolean showQuickSearchField;
@@ -290,6 +300,28 @@ public class FormOptions implements Serializable {
         return this;
     }
 
+    /**
+     * Shorthand method for showing/hiding the previous and next buttons
+     * 
+     * @param show
+     * @return
+     */
+    public FormOptions setShowIterationButtons(boolean show) {
+        this.setShowPrevButton(show);
+        this.setShowNextButton(show);
+        return this;
+    }
+
+    public FormOptions setShowNextButton(boolean showNextButton) {
+        this.showNextButton = showNextButton;
+        return this;
+    }
+
+    public FormOptions setShowPrevButton(boolean showPrevButton) {
+        this.showPrevButton = showPrevButton;
+        return this;
+    }
+
     public FormOptions setShowQuickSearchField(boolean showQuickSearchField) {
         this.showQuickSearchField = showQuickSearchField;
         return this;
@@ -308,6 +340,14 @@ public class FormOptions implements Serializable {
     public FormOptions setTableExportAllowed(boolean tableExportAllowed) {
         this.tableExportAllowed = tableExportAllowed;
         return this;
+    }
+
+    public boolean isShowNextButton() {
+        return showNextButton;
+    }
+
+    public boolean isShowPrevButton() {
+        return showPrevButton;
     }
 
 }

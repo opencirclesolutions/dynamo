@@ -101,6 +101,11 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
     private List<Button> toUpdate = new ArrayList<>();
 
     /**
+     * The width of the title caption above the form (in pixels)
+     */
+    private Integer formTitleWidth;
+
+    /**
      * Constructor
      * 
      * @param service
@@ -237,4 +242,13 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
     public void setService(BaseService<ID, T> service) {
         this.service = service;
     }
+
+    public Integer getFormTitleWidth() {
+        return formTitleWidth;
+    }
+
+    public void setFormTitleWidth(Integer formTitleWidth) {
+        this.formTitleWidth = formTitleWidth;
+    }
+
 }

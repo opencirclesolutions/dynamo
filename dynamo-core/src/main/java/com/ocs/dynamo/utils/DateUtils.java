@@ -51,6 +51,10 @@ public final class DateUtils {
 
     private static final int YEAR_STRING_LENGTH = 4;
 
+    private DateUtils() {
+        // hidden constructor
+    }
+    
     /**
      * Creates a java.util.Date based on a String representation
      * 
@@ -569,7 +573,5 @@ public final class DateUtils {
         return calendar;
     }
 
-    private DateUtils() {
-        // hidden constructor
-    }
+
 }

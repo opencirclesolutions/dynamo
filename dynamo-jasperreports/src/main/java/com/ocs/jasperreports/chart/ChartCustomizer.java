@@ -410,7 +410,8 @@ public class ChartCustomizer extends JRAbstractChartCustomizer {
     }
 
     @SuppressWarnings("unchecked")
-    protected void addMarkers(CustomChartCustomizer customChartCustomizer, Plot plot, Object markers, boolean range) {
+    protected void addMarkers(CustomChartCustomizer<?> customChartCustomizer, Plot plot, Object markers,
+            boolean range) {
         Collection<Marker> mks = null;
         if (markers instanceof Collection<?>) {
             mks = (Collection<Marker>) markers;

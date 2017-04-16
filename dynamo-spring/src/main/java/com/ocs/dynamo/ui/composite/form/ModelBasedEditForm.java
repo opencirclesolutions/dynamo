@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
 
@@ -51,6 +52,7 @@ import com.ocs.dynamo.ui.composite.type.AttributeGroupMode;
 import com.ocs.dynamo.ui.composite.type.ScreenMode;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.utils.ClassUtils;
+import com.ocs.dynamo.utils.SystemPropertyUtils;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.fieldgroup.BeanFieldGroup;
@@ -133,12 +135,12 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
             UploadReceiver receiver = new UploadReceiver(image, attributeModel.getName(),
                     attributeModel.getFileNameProperty(), attributeModel.getAllowedExtensions().toArray(new String[0]));
 
-            HorizontalLayout buttons = new DefaultHorizontalLayout(false, true, true);
-            main.addComponent(buttons);
+            HorizontalLayout buttonBar = new DefaultHorizontalLayout(false, true, true);
+            main.addComponent(buttonBar);
 
             Upload upload = new Upload(null, receiver);
             upload.addSucceededListener(receiver);
-            buttons.addComponent(upload);
+            buttonBar.addComponent(upload);
 
             // a button used to clear the image
             Button clearButton = new Button(message("ocs.clear"));
@@ -150,8 +152,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
                     refreshLabel(attributeModel.getFileNameProperty());
                 }
             });
-            buttons.addComponent(clearButton);
-
+            buttonBar.addComponent(clearButton);
             setCaption(attributeModel.getDisplayName());
 
             return main;
@@ -214,10 +215,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
                     // set the image source
                     if (target != null) {
                         target.setVisible(true);
-
                         StreamResource.StreamSource ss = (StreamResource.StreamSource) () -> new ByteArrayInputStream(
                                 stream.toByteArray());
-
                         target.setSource(new StreamResource(ss, System.nanoTime() + ".png"));
                     }
 
@@ -239,20 +238,22 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
     private static final long serialVersionUID = 2201140375797069148L;
 
+    private static final String EDIT_BUTTON_DATA = "editButton";
+
+    private static final String SAVE_BUTTON_DATA = "saveButton";
+
+    private static final String BACK_BUTTON_DATA = "backButton";
+
+    private static final String CANCEL_BUTTON_DATA = "cancelButton";
+
+    private static final String NEXT_BUTTON_DATA = "nextButton";
+
+    private static final String PREV_BUTTON_DATA = "prevButton";
+
     /**
      * For keeping track of attribute groups per view mode
      */
     private Map<Boolean, Map<String, Object>> attributeGroups = new HashMap<>();
-
-    /**
-     * The back button
-     */
-    private Button backButton;
-
-    /**
-     * The cancel button
-     */
-    private Button cancelButton;
 
     /**
      * The relations to fetch when selecting a single detail relation
@@ -263,11 +264,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
      * Indicates whether all details tables for editing complex fields are valid
      */
     private Map<SignalsParent, Boolean> detailTablesValid = new HashMap<>();
-
-    /**
-     * The edit button
-     */
-    private Button editButton;
 
     /**
      * The selected entity
@@ -299,7 +295,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
     private VerticalLayout mainViewLayout;
 
-    private List<Button> saveButtons = new ArrayList<>();
+    private Map<Boolean, List<Button>> buttons = new HashMap<>();
 
     private BaseService<ID, T> service;
 
@@ -314,6 +310,16 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
     private Map<Boolean, Set<String>> alreadyBound = new HashMap<>();
 
     private Map<Integer, Field<?>> firstFields = new HashMap<>();
+
+    /**
+     * The width of the title caption above the form (in pixels)
+     */
+    private Integer formTitleWidth;
+
+    /**
+     * Whether the component supports iteration over the records
+     */
+    private boolean supportsIteration;
 
     /**
      * Whether to display the component in view mode
@@ -367,6 +373,9 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
         alreadyBound.put(Boolean.TRUE, new HashSet<>());
         alreadyBound.put(Boolean.FALSE, new HashSet<>());
+
+        buttons.put(Boolean.TRUE, new ArrayList<>());
+        buttons.put(Boolean.FALSE, new ArrayList<>());
     }
 
     /**
@@ -618,17 +627,45 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
     }
 
     /**
+     * Checks the state of the iteration (prev/next) buttons. These will be shown in view mode or if
+     * the form only supports an edit mode
+     * 
+     * @param checkEnabled
+     *            whether to check if the buttons should be enabled
+     */
+    private void checkIterationButtonState(boolean checkEnabled) {
+        for (Button b : filterButtons(NEXT_BUTTON_DATA)) {
+            b.setVisible(isSupportsIteration() && getFormOptions().isShowNextButton() && entity.getId() != null);
+            if (checkEnabled && b.isVisible() && (isViewMode() || !getFormOptions().isOpenInViewMode())) {
+                b.setEnabled(hasNextEntity(entity));
+            } else {
+                b.setEnabled(false);
+            }
+        }
+        for (Button b : filterButtons(PREV_BUTTON_DATA)) {
+            b.setVisible(isSupportsIteration() && getFormOptions().isShowPrevButton() && entity.getId() != null);
+            if (checkEnabled && b.isVisible() && (isViewMode() || !getFormOptions().isOpenInViewMode())) {
+                b.setEnabled(hasPrevEntity(entity));
+            } else {
+                b.setEnabled(false);
+            }
+        }
+    }
+
+    /**
      * Sets the state (enabled/disabled) of the save button. The button is enabled if the from is
      * valid and all of its detail tables are as well
      */
     private void checkSaveButtonState() {
-        for (Button saveButton : saveButtons) {
-            boolean valid = groups.get(isViewMode()).isValid();
+        for (Button saveButton : buttons.get(isViewMode())) {
+            if (SAVE_BUTTON_DATA.equals(saveButton.getData())) {
+                boolean valid = groups.get(isViewMode()).isValid();
 
-            for (Boolean b : detailTablesValid.values()) {
-                valid &= b;
+                for (Boolean b : detailTablesValid.values()) {
+                    valid &= b;
+                }
+                saveButton.setEnabled(valid);
             }
-            saveButton.setEnabled(valid);
         }
     }
 
@@ -679,15 +716,15 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
         HorizontalLayout buttonBar = new DefaultHorizontalLayout();
 
         // button to go back to the main screen when in view mode
-
-        backButton = new Button(message("ocs.back"));
+        Button backButton = new Button(message("ocs.back"));
         backButton.addClickListener(event -> back());
         backButton.setVisible(isViewMode() && getFormOptions().isShowBackButton());
+        backButton.setData(BACK_BUTTON_DATA);
         buttonBar.addComponent(backButton);
+        buttons.get(isViewMode()).add(backButton);
 
         // in edit mode, display a cancel button
-
-        cancelButton = new Button(message("ocs.cancel"));
+        Button cancelButton = new Button(message("ocs.cancel"));
         cancelButton.addClickListener(event -> {
             if (entity.getId() != null) {
                 entity = service.fetchById(entity.getId(), getDetailJoins());
@@ -695,20 +732,52 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
             afterEditDone(true, entity.getId() == null, entity);
         });
         cancelButton.setVisible(!isViewMode() && !getFormOptions().isHideCancelButton());
+        cancelButton.setData(CANCEL_BUTTON_DATA);
         buttonBar.addComponent(cancelButton);
+        buttons.get(isViewMode()).add(cancelButton);
 
         // create the save button
         if (!isViewMode()) {
             Button saveButton = constructSaveButton();
             buttonBar.addComponent(saveButton);
-            saveButtons.add(saveButton);
+            buttons.get(isViewMode()).add(saveButton);
+
         }
 
         // create the edit button
-        editButton = new Button(message("ocs.edit"));
+        Button editButton = new Button(message("ocs.edit"));
         editButton.addClickListener(event -> setViewMode(false));
         buttonBar.addComponent(editButton);
+        buttons.get(isViewMode()).add(editButton);
+        editButton.setData(EDIT_BUTTON_DATA);
         editButton.setVisible(isViewMode() && getFormOptions().isEditAllowed() && isEditAllowed());
+
+        // button for moving to the previous record
+        Button prevButton = new Button(message("ocs.previous"));
+        prevButton.addClickListener(e -> {
+            T prev = getPrevEntity(getEntity());
+            if (prev != null) {
+                setEntity(prev, true);
+            }
+        });
+        prevButton.setData(PREV_BUTTON_DATA);
+        buttons.get(isViewMode()).add(prevButton);
+        buttonBar.addComponent(prevButton);
+
+        // button for moving to the next record
+        Button nextButton = new Button(message("ocs.next"));
+        nextButton.addClickListener(e -> {
+            T next = getNextEntity(getEntity());
+            if (next != null) {
+                setEntity(next, true);
+            }
+        });
+        nextButton.setData(NEXT_BUTTON_DATA);
+        buttons.get(isViewMode()).add(nextButton);
+
+        buttonBar.addComponent(nextButton);
+        prevButton.setVisible(isSupportsIteration() && getFormOptions().isShowPrevButton() && entity.getId() != null);
+        nextButton.setVisible(isSupportsIteration() && getFormOptions().isShowNextButton() && entity.getId() != null);
 
         postProcessButtonBar(buttonBar, isViewMode());
 
@@ -960,6 +1029,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
         });
 
         // enable/disable save button based on form validity
+        saveButton.setData(SAVE_BUTTON_DATA);
         saveButton.setEnabled(groups.get(isViewMode()).isValid());
         for (Field<?> f : groups.get(isViewMode()).getFields()) {
             f.addValueChangeListener((ValueChangeListener) event -> checkSaveButtonState());
@@ -988,6 +1058,13 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
                         ContentMode.HTML);
             }
         }
+
+        if (getFormTitleWidth() != null) {
+            label.setWidth(getFormTitleWidth(), Unit.PIXELS);
+        } else if (SystemPropertyUtils.getDefaultFormTitleWidth() > 0) {
+            label.setWidth(SystemPropertyUtils.getDefaultFormTitleWidth(), Unit.PIXELS);
+        }
+
         return label;
     }
 
@@ -1001,20 +1078,25 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
         return new UploadComponent(attributeModel);
     }
 
-    public Button getBackButton() {
-        return backButton;
+    private List<Button> filterButtons(String data) {
+        return Collections.unmodifiableList(
+                buttons.get(isViewMode()).stream().filter(b -> data.equals(b.getData())).collect(Collectors.toList()));
     }
 
-    public Button getCancelButton() {
-        return cancelButton;
+    public List<Button> getBackButtons() {
+        return filterButtons(BACK_BUTTON_DATA);
+    }
+
+    public List<Button> getCancelButtons() {
+        return filterButtons(CANCEL_BUTTON_DATA);
     }
 
     public FetchJoinInformation[] getDetailJoins() {
         return detailJoins;
     }
 
-    public Button getEditButton() {
-        return editButton;
+    public List<Button> getEditButtons() {
+        return filterButtons(EDIT_BUTTON_DATA);
     }
 
     public T getEntity() {
@@ -1025,11 +1107,31 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
         return groups.get(isViewMode()).getField(propertyName);
     }
 
+    public Integer getFormTitleWidth() {
+        return formTitleWidth;
+    }
+
     public Label getLabel(String propertyName) {
         AttributeModel am = getEntityModel().getAttributeModel(propertyName);
         if (am != null) {
             return (Label) labels.get(isViewMode()).get(am);
         }
+        return null;
+    }
+
+    public List<Button> getNextButtons() {
+        return filterButtons(NEXT_BUTTON_DATA);
+    }
+
+    /**
+     * Method that is called to select the next entity in a data set
+     * 
+     * @param current
+     *            the currently selected entity
+     * @return
+     */
+    protected T getNextEntity(T current) {
+        // overwrite in subclass
         return null;
     }
 
@@ -1055,8 +1157,32 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
         return null;
     }
 
+    /**
+     * Method that is called to select the previous entity in a data set
+     *
+     * @param current
+     *            the currently selected entity
+     * @return
+     */
+    protected T getPrevEntity(T current) {
+        // overwrite in subclass
+        return null;
+    }
+
+    public List<Button> getPreviousButtons() {
+        return filterButtons(PREV_BUTTON_DATA);
+    }
+
     public List<Button> getSaveButtons() {
-        return Collections.unmodifiableList(saveButtons);
+        return filterButtons(SAVE_BUTTON_DATA);
+    }
+
+    protected boolean hasNextEntity(T current) {
+        return false;
+    }
+
+    protected boolean hasPrevEntity(T current) {
+        return false;
     }
 
     /**
@@ -1096,6 +1222,10 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
             }
         }
         return false;
+    }
+
+    public boolean isSupportsIteration() {
+        return supportsIteration;
     }
 
     public boolean isViewMode() {
@@ -1287,10 +1417,14 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
     }
 
     public void setEntity(T entity) {
+        setEntity(entity, entity.getId() != null);
+    }
+
+    private void setEntity(T entity, boolean checkIterationButtons) {
         this.entity = entity;
         afterEntitySet(this.entity);
 
-        setViewMode(getFormOptions().isOpenInViewMode() && entity.getId() != null);
+        setViewMode(getFormOptions().isOpenInViewMode() && entity.getId() != null, checkIterationButtons);
 
         // recreate the group
         BeanItem<T> beanItem = new BeanItem<>(entity);
@@ -1298,13 +1432,11 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
         // "rebuild" so that the correct layout is displayed
         build();
-
         reconstructLabels();
 
         // refresh the upload components
         for (Entry<AttributeModel, Component> e : uploads.get(isViewMode()).entrySet()) {
             Component uc = constructUploadField(e.getKey());
-
             HasComponents hc = e.getValue().getParent();
             if (hc instanceof Layout) {
                 ((Layout) hc).replaceComponent(e.getValue(), uc);
@@ -1324,6 +1456,10 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
         titleBars.get(isViewMode()).replaceComponent(titleLabels.get(isViewMode()), newTitleLabel);
         titleLabels.put(isViewMode(), newTitleLabel);
 
+    }
+
+    public void setFormTitleWidth(Integer formTitleWidth) {
+        this.formTitleWidth = formTitleWidth;
     }
 
     /**
@@ -1369,13 +1505,21 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
         }
     }
 
+    public void setSupportsIteration(boolean supportsIteration) {
+        this.supportsIteration = supportsIteration;
+    }
+
+    public void setViewMode(boolean viewMode) {
+        setViewMode(viewMode, true);
+    }
+
     /**
      * Switches the form from or to view mode
      * 
      * @param viewMode
      *            the new view mode
      */
-    public void setViewMode(boolean viewMode) {
+    private void setViewMode(boolean viewMode, boolean checkIterationButtons) {
         boolean oldMode = this.viewMode;
 
         // check what the new view mode must become and adapt the screen
@@ -1387,6 +1531,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
         constructTitleLabel();
         reconstructLabels();
         build();
+
+        checkIterationButtonState(checkIterationButtons);
 
         // if this is the first time in edit mode, post process the editable
         // fields
@@ -1450,4 +1596,5 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
             }
         }
     }
+
 }

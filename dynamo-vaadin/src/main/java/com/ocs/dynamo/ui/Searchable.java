@@ -20,6 +20,7 @@ import com.vaadin.data.Container.Filter;
  * 
  * @author bas.rutten
  */
+@FunctionalInterface
 public interface Searchable {
 
     /**

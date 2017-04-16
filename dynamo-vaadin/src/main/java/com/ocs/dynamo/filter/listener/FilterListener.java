@@ -20,6 +20,7 @@ import java.io.Serializable;
  * 
  * @author bas.rutten
  */
+@FunctionalInterface
 public interface FilterListener extends Serializable {
 
     /**
@@ -29,6 +30,5 @@ public interface FilterListener extends Serializable {
      *            the filter change event
      */
     void onFilterChange(FilterChangeEvent event);
-    
-    
+
 }

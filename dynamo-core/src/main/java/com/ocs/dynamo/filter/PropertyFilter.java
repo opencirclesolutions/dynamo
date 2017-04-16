@@ -18,6 +18,7 @@ package com.ocs.dynamo.filter;
  * 
  * @author bas.rutten
  */
+@FunctionalInterface
 public interface PropertyFilter {
 
     /**

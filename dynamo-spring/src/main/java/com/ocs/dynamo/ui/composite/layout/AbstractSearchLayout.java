@@ -443,6 +443,8 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
             options.setScreenMode(ScreenMode.VERTICAL);
             options.setAttributeGroupMode(getFormOptions().getAttributeGroupMode());
             options.setPreserveSelectedTab(getFormOptions().isPreserveSelectedTab());
+            options.setShowNextButton(getFormOptions().isShowNextButton());
+            options.setShowPrevButton(getFormOptions().isShowPrevButton());
 
             if (getFormOptions().isEditAllowed()) {
                 // editing in form must be possible
@@ -473,7 +475,10 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
                         }
                     } else {
                         // otherwise go back to the main screen
-                        back();
+                        if (cancel || newObject
+                                || (!getFormOptions().isShowNextButton() && !getFormOptions().isShowPrevButton())) {
+                            back();
+                        }
                     }
                 }
 
@@ -499,6 +504,11 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
                 }
 
                 @Override
+                protected T getNextEntity(T current) {
+                    return AbstractSearchLayout.this.getNextEntity(current);
+                }
+
+                @Override
                 protected String getParentGroup(String childGroup) {
                     return AbstractSearchLayout.this.getParentGroup(childGroup);
                 }
@@ -506,6 +516,21 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
                 @Override
                 protected String[] getParentGroupHeaders() {
                     return AbstractSearchLayout.this.getParentGroupHeaders();
+                }
+
+                @Override
+                protected T getPrevEntity(T current) {
+                    return AbstractSearchLayout.this.getPrevEntity(current);
+                }
+
+                @Override
+                protected boolean hasNextEntity(T current) {
+                    return AbstractSearchLayout.this.hasNextEntity(current);
+                }
+
+                @Override
+                protected boolean hasPrevEntity(T current) {
+                    return AbstractSearchLayout.this.hasPrevEntity(current);
                 }
 
                 @Override
@@ -524,6 +549,8 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
                 }
 
             };
+            editForm.setFormTitleWidth(getFormTitleWidth());
+            editForm.setSupportsIteration(true);
             editForm.setDetailJoins(getDetailJoinsFallBack());
             editForm.setFieldEntityModels(getFieldEntityModels());
             editForm.build();
@@ -576,6 +603,58 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
         return editButton;
     }
 
+    public ModelBasedEditForm<ID, T> getEditForm() {
+        return editForm;
+    }
+
+    /**
+     * 
+     * @return the total number of configured filters
+     */
+    public int getFilterCount() {
+        return getSearchForm().getFilterCount();
+    }
+
+    /**
+     * Returns the next entity in the container
+     * 
+     * @param current
+     *            the currently selected entity
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    protected T getNextEntity(T current) {
+        if (current != null) {
+            ID id = (ID) getTableWrapper().getTable().nextItemId(current.getId());
+            if (id != null) {
+                T next = getService().fetchById(id, getDetailJoinsFallBack());
+                getTableWrapper().getTable().select(next.getId());
+                return next;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Returns the previous entity in the container
+     * 
+     * @param current
+     *            the currently selected entity
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    protected T getPrevEntity(T current) {
+        if (current != null) {
+            ID id = (ID) getTableWrapper().getTable().prevItemId(current.getId());
+            if (id != null) {
+                T prev = getService().fetchById(id, getDetailJoinsFallBack());
+                getTableWrapper().getTable().select(prev.getId());
+                return prev;
+            }
+        }
+        return null;
+    }
+
     public QueryType getQueryType() {
         return queryType;
     }
@@ -600,6 +679,20 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
         return selectedItems;
     }
 
+    protected boolean hasNextEntity(T current) {
+        if (current != null) {
+            return getTableWrapper().getTable().nextItemId(current.getId()) != null;
+        }
+        return false;
+    }
+
+    protected boolean hasPrevEntity(T current) {
+        if (current != null) {
+            return getTableWrapper().getTable().prevItemId(current.getId()) != null;
+        }
+        return false;
+    }
+
     /**
      * Checks if a filter is set for a certain attribute
      * 
@@ -609,14 +702,6 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
      */
     public boolean isFilterSet(String path) {
         return getSearchForm().isFilterSet(path);
-    }
-
-    /**
-     * 
-     * @return the total number of configured filters
-     */
-    public int getFilterCount() {
-        return getSearchForm().getFilterCount();
     }
 
     /**
@@ -635,6 +720,18 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
     @Override
     public void refresh() {
         getSearchForm().refresh();
+    }
+
+    /**
+     * Refreshes the contents of a label
+     * 
+     * @param propertyName
+     *            the name of the property for which to refresh the label
+     */
+    public void refreshLabel(String propertyName) {
+        if (editForm != null) {
+            editForm.refreshLabel(propertyName);
+        }
     }
 
     /**
@@ -664,18 +761,6 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
         // there
         setSelectedItem(null);
         search();
-    }
-
-    /**
-     * Refreshes the contents of a label
-     * 
-     * @param propertyName
-     *            the name of the property for which to refresh the label
-     */
-    public void refreshLabel(String propertyName) {
-        if (editForm != null) {
-            editForm.refreshLabel(propertyName);
-        }
     }
 
     /**
@@ -771,4 +856,5 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
     public void validateBeforeSearch() {
         // overwrite in subclasses
     }
+
 }

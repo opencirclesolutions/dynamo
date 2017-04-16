@@ -324,9 +324,7 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
      * Update token selections
      */
     private void setupContainerFieldSync() {
-        container.addItemSetChangeListener(e -> {
-            addTokens();
-        });
+        container.addItemSetChangeListener(e -> addTokens());
     }
 
     @Override
