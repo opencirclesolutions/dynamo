@@ -138,7 +138,7 @@ public final class DynamoConstants {
      * Name of the system property that is used to set the locale used for month names in date
      * components
      */
-    public static final String SP_DATE_LOCALE = "ocs.date.locale";
+    public static final String SP_DATE_LOCALE = "ocs.default.date.locale";
 
     /**
      * Name of the system property that is used to determine the default decimal precision
@@ -258,6 +258,11 @@ public final class DynamoConstants {
      * The name of the variable that is used to store the user name in the session
      */
     public static final String USER_NAME = "userName";
+    
+    /**
+     * 
+     */
+    public static final String DATE_LOCALE = "dateLocale";
 
     /**
      * The UTF-8 character set

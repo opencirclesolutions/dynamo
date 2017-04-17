@@ -36,7 +36,7 @@ public final class SystemPropertyUtils {
     private SystemPropertyUtils() {
         // default constructor
     }
-    
+
     /**
      * 
      * 
@@ -49,14 +49,17 @@ public final class SystemPropertyUtils {
     }
 
     /**
-     * The locale used for determining month names inside date components
+     * 
+     * @return the locale used for the month names inside date picker components
+     */
+    public static String getDefaultDateLocale() {
+        return System.getProperty(DynamoConstants.SP_DATE_LOCALE, getDefaultLocale());
+    }
+
+    /**
      * 
      * @return
      */
-    public static String getDateLocale() {
-        return System.getProperty(DynamoConstants.SP_DATE_LOCALE, "en");
-    }
-
     public static String getDefaultCaptionFormat() {
         return System.getProperty(DynamoConstants.SP_DEFAULT_CAPTION_FORMAT,
                 DynamoConstants.SP_DEFAULT_CAPTION_FORMAT_VAADIN);
@@ -130,7 +133,7 @@ public final class SystemPropertyUtils {
      * @return
      */
     public static String getDefaultLocale() {
-        return System.getProperty(DynamoConstants.SP_DEFAULT_LOCALE, "de");
+        return System.getProperty(DynamoConstants.SP_DEFAULT_LOCALE, DynamoConstants.DEFAULT_LOCALE.toString());
     }
 
     /**
@@ -218,7 +221,4 @@ public final class SystemPropertyUtils {
     public static boolean useThousandsGroupingInEditMode() {
         return Boolean.getBoolean(DynamoConstants.SP_THOUSAND_GROUPING);
     }
-
-
-
 }

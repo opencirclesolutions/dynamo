@@ -13,15 +13,16 @@
  */
 package com.ocs.dynamo.service.impl;
 
-import com.ocs.dynamo.domain.model.AttributeModel;
-import com.ocs.dynamo.service.MessageService;
-import com.vaadin.server.VaadinSession;
+import java.util.Locale;
+
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.NoSuchMessageException;
 
-import javax.inject.Inject;
-import java.util.Locale;
+import com.ocs.dynamo.domain.model.AttributeModel;
+import com.ocs.dynamo.service.MessageService;
+import com.ocs.dynamo.ui.utils.VaadinUtils;
 
 /**
  * Implementation of the simple message service
@@ -34,16 +35,14 @@ public class MessageServiceImpl implements MessageService {
 
     private static final Logger LOG = Logger.getLogger(MessageServiceImpl.class);
 
-    @Inject
+    @Autowired
     private MessageSource source;
 
     @Override
-    public String getAttributeMessage(String reference, AttributeModel attributeModel,
-            String propertyName) {
+    public String getAttributeMessage(String reference, AttributeModel attributeModel, String propertyName) {
         if (source != null) {
             try {
-                String messageName = reference + "." + attributeModel.getName() + "."
-                        + propertyName;
+                String messageName = reference + "." + attributeModel.getName() + "." + propertyName;
                 return source.getMessage(messageName, null, getLocale());
             } catch (NoSuchMessageException ex) {
                 // do nothing
@@ -73,11 +72,7 @@ public class MessageServiceImpl implements MessageService {
     }
 
     private Locale getLocale() {
-        VaadinSession session = VaadinSession.getCurrent();
-        if (session != null) {
-            return session.getLocale();
-        }
-        return Locale.getDefault();
+        return VaadinUtils.getLocale();
     }
 
     @Override

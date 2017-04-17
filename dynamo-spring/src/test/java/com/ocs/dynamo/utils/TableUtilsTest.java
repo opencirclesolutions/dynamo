@@ -14,6 +14,7 @@
 package com.ocs.dynamo.utils;
 
 import com.google.common.collect.Sets;
+import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.TestEntity.TestEnum;
@@ -31,6 +32,7 @@ import com.vaadin.ui.Table;
 import junitx.util.PrivateAccessor;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mock;
 
@@ -49,6 +51,11 @@ public class TableUtilsTest extends BaseMockitoTest {
     @Mock
     private MessageService messageService;
 
+    @BeforeClass
+    public static void beforeClass() {
+        System.setProperty(DynamoConstants.SP_DEFAULT_LOCALE, "de");
+    }
+    
     @Before
     public void setupTableUtilsTest() throws NoSuchFieldException {
         MockUtil.mockMessageService(messageService);

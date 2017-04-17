@@ -76,6 +76,7 @@ import com.ocs.dynamo.domain.model.annotation.Model;
 import com.ocs.dynamo.domain.validator.Email;
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.service.MessageService;
+import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.utils.ClassUtils;
 import com.ocs.dynamo.utils.DateUtils;
 import com.ocs.dynamo.utils.SystemPropertyUtils;
@@ -706,11 +707,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
     }
 
     protected Locale getLocale() {
-        VaadinSession session = VaadinSession.getCurrent();
-        if (session != null) {
-            return session.getLocale();
-        }
-        return Locale.getDefault();
+        return VaadinUtils.getLocale();
     }
 
     @Override
