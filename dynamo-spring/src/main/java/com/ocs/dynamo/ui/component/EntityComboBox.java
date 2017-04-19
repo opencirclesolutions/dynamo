@@ -30,8 +30,8 @@ import com.vaadin.shared.ui.combobox.FilteringMode;
 /**
  * Combo box for displaying a list of entities. This component supports filtering
  */
-public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID>> extends
-        ComboBoxFixed implements Refreshable {
+public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID>> extends ComboBoxFixed
+        implements Refreshable {
 
     private static final long serialVersionUID = 3041574615271340579L;
 
@@ -74,8 +74,8 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
      * @param service
      *            the service used to retrieve the entities
      */
-    public EntityComboBox(EntityModel<T> targetEntityModel, AttributeModel attributeModel,
-            BaseService<ID, T> service, SortOrder... sortOrder) {
+    public EntityComboBox(EntityModel<T> targetEntityModel, AttributeModel attributeModel, BaseService<ID, T> service,
+            SortOrder... sortOrder) {
         this(targetEntityModel, attributeModel, service, SelectMode.ALL, null, null, sortOrder);
     }
 
@@ -89,8 +89,7 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
      * @param items
      *            the list of entities to display
      */
-    public EntityComboBox(EntityModel<T> targetEntityModel, AttributeModel attributeModel,
-            List<T> items) {
+    public EntityComboBox(EntityModel<T> targetEntityModel, AttributeModel attributeModel, List<T> items) {
         this(targetEntityModel, attributeModel, null, SelectMode.FIXED, null, items);
     }
 
@@ -103,10 +102,9 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
      * @param filter
      * @param sortOrder
      */
-    public EntityComboBox(EntityModel<T> targetEntityModel, AttributeModel attributeModel,
-            BaseService<ID, T> service, Filter filter, SortOrder... sortOrder) {
-        this(targetEntityModel, attributeModel, service, SelectMode.FILTERED, filter, null,
-                sortOrder);
+    public EntityComboBox(EntityModel<T> targetEntityModel, AttributeModel attributeModel, BaseService<ID, T> service,
+            Filter filter, SortOrder... sortOrder) {
+        this(targetEntityModel, attributeModel, service, SelectMode.FILTERED, filter, null, sortOrder);
     }
 
     /**
@@ -129,9 +127,8 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
      * @param sortOrder
      *            the sort order(s) to apply
      */
-    public EntityComboBox(EntityModel<T> targetEntityModel, AttributeModel attributeModel,
-            BaseService<ID, T> service, SelectMode mode, Filter filter, List<T> items,
-            SortOrder... sortOrder) {
+    public EntityComboBox(EntityModel<T> targetEntityModel, AttributeModel attributeModel, BaseService<ID, T> service,
+            SelectMode mode, Filter filter, List<T> items, SortOrder... sortOrder) {
 
         this.service = service;
         this.selectMode = mode;
@@ -145,8 +142,7 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 
         setFilteringMode(FilteringMode.CONTAINS);
 
-        BeanItemContainer<T> container = new BeanItemContainer<T>(
-                targetEntityModel.getEntityClass());
+        BeanItemContainer<T> container = new BeanItemContainer<>(targetEntityModel.getEntityClass());
         this.setContainerDataSource(container);
 
         if (SelectMode.ALL.equals(mode)) {
@@ -156,8 +152,7 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
             }
         } else if (SelectMode.FILTERED.equals(mode)) {
             // add a filtered selection of items
-            items = service.find(new FilterConverter(null).convert(filter),
-                    SortUtil.translate(sortOrder));
+            items = service.find(new FilterConverter(null).convert(filter), SortUtil.translate(sortOrder));
             container.addAll(items);
         } else if (SelectMode.FIXED.equals(mode)) {
             container.addAll(items);
@@ -196,13 +191,11 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
         if (SelectMode.ALL.equals(selectMode)) {
             // add all items (but sorted)
             getContainerDataSource().removeAllItems();
-            ((BeanItemContainer<T>) getContainerDataSource()).addAll(service.findAll(SortUtil
-                    .translate(sortOrder)));
+            ((BeanItemContainer<T>) getContainerDataSource()).addAll(service.findAll(SortUtil.translate(sortOrder)));
         } else if (SelectMode.FILTERED.equals(selectMode)) {
             // add a filtered selection of items
             getContainerDataSource().removeAllItems();
-            List<T> list = service.find(new FilterConverter(null).convert(filter),
-                    SortUtil.translate(sortOrder));
+            List<T> list = service.find(new FilterConverter(null).convert(filter), SortUtil.translate(sortOrder));
             ((BeanItemContainer<T>) getContainerDataSource()).addAll(list);
         }
     }
@@ -227,15 +220,11 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 
         if (null != filterString && !"".equals(filterString)) {
             switch (filteringMode) {
-            case OFF:
-                break;
             case STARTSWITH:
-                ft = new IgnoreDiacriticsStringFilter(getItemCaptionPropertyId(), filterString,
-                        true, true);
+                ft = new IgnoreDiacriticsStringFilter(getItemCaptionPropertyId(), filterString, true, true);
                 break;
             case CONTAINS:
-                ft = new IgnoreDiacriticsStringFilter(getItemCaptionPropertyId(), filterString,
-                        true, false);
+                ft = new IgnoreDiacriticsStringFilter(getItemCaptionPropertyId(), filterString, true, false);
                 break;
             default:
                 break;
@@ -244,11 +233,11 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
         return ft;
     }
 
-	public Filter getFilter() {
-		return filter;
-	}
+    public Filter getFilter() {
+        return filter;
+    }
 
-	public void setFilter(Filter filter) {
-		this.filter = filter;
-	}
+    public void setFilter(Filter filter) {
+        this.filter = filter;
+    }
 }

@@ -37,7 +37,7 @@ public final class Not extends AbstractFilter {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == null || !getClass().equals(obj.getClass())) {
+        if (!(obj instanceof Not)) {
             return false;
         }
         return filter.equals(((Not) obj).getFilter());

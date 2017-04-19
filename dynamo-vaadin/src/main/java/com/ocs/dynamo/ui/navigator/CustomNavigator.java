@@ -39,212 +39,212 @@ import com.vaadin.ui.UI;
  */
 public class CustomNavigator extends Navigator {
 
-	private static final long serialVersionUID = 4919429256404050039L;
+    private static final long serialVersionUID = 4919429256404050039L;
 
-	private List<ViewProvider> providers = new LinkedList<ViewProvider>();
+    private List<ViewProvider> providers = new LinkedList<>();
 
-	private String currentNavigationState = null;
+    private String currentNavigationState = null;
 
-	/**
-	 * The error provider
-	 */
-	private ViewProvider errorProvider;
+    /**
+     * The error provider
+     */
+    private ViewProvider errorProvider;
 
-	/**
-	 * Whether to always reload the current view (even when navigating from a view to the same view)
-	 */
-	private boolean alwaysReload = true;
+    /**
+     * Whether to always reload the current view (even when navigating from a view to the same view)
+     */
+    private boolean alwaysReload = true;
 
-	protected CustomNavigator() {
-	}
+    protected CustomNavigator() {
+    }
 
-	public CustomNavigator(UI ui, ComponentContainer container) {
-		this(ui, new ComponentContainerViewDisplay(container));
-	}
+    public CustomNavigator(UI ui, ComponentContainer container) {
+        this(ui, new ComponentContainerViewDisplay(container));
+    }
 
-	public CustomNavigator(UI ui, NavigationStateManager stateManager, ViewDisplay display) {
-		init(ui, stateManager, display);
-	}
+    public CustomNavigator(UI ui, NavigationStateManager stateManager, ViewDisplay display) {
+        init(ui, stateManager, display);
+    }
 
-	public CustomNavigator(UI ui, SingleComponentContainer container) {
-		this(ui, new SingleComponentContainerViewDisplay(container));
-	}
+    public CustomNavigator(UI ui, SingleComponentContainer container) {
+        this(ui, new SingleComponentContainerViewDisplay(container));
+    }
 
-	public CustomNavigator(UI ui, ViewDisplay display) {
-		this(ui, new UriFragmentManager(ui.getPage()), display);
-	}
+    public CustomNavigator(UI ui, ViewDisplay display) {
+        this(ui, new UriFragmentManager(ui.getPage()), display);
+    }
 
-	@Override
-	public void addProvider(ViewProvider provider) {
-		if (provider == null) {
-			throw new IllegalArgumentException("Cannot add a null view provider");
-		}
-		providers.add(provider);
-	}
+    @Override
+    public void addProvider(ViewProvider provider) {
+        if (provider == null) {
+            throw new IllegalArgumentException("Cannot add a null view provider");
+        }
+        providers.add(provider);
+    }
 
-	private ViewProvider getViewProvider(String state) {
-		String longestViewName = null;
-		ViewProvider longestViewNameProvider = null;
-		for (ViewProvider provider : providers) {
-			String viewName = provider.getViewName(state);
-			if (null != viewName && (longestViewName == null || viewName.length() > longestViewName.length())) {
-				longestViewName = viewName;
-				longestViewNameProvider = provider;
-			}
-		}
-		return longestViewNameProvider;
-	}
+    private ViewProvider getViewProvider(String state) {
+        String longestViewName = null;
+        ViewProvider longestViewNameProvider = null;
+        for (ViewProvider provider : providers) {
+            String viewName = provider.getViewName(state);
+            if (null != viewName && (longestViewName == null || viewName.length() > longestViewName.length())) {
+                longestViewName = viewName;
+                longestViewNameProvider = provider;
+            }
+        }
+        return longestViewNameProvider;
+    }
 
-	public boolean isAlwaysReload() {
-		return alwaysReload;
-	}
+    public boolean isAlwaysReload() {
+        return alwaysReload;
+    }
 
-	/**
-	 * Navigate to a certain view
-	 * 
-	 * @param navigationState
-	 *            the name of the view
-	 */
-	@Override
-	public void navigateTo(String navigationState) {
-		ViewProvider longestViewNameProvider = getViewProvider(navigationState);
-		String longestViewName = longestViewNameProvider == null ? null : longestViewNameProvider
-		        .getViewName(navigationState);
-		View viewWithLongestName = null;
+    /**
+     * Navigate to a certain view
+     * 
+     * @param navigationState
+     *            the name of the view
+     */
+    @Override
+    public void navigateTo(String navigationState) {
+        ViewProvider longestViewNameProvider = getViewProvider(navigationState);
+        String longestViewName = longestViewNameProvider == null ? null
+                : longestViewNameProvider.getViewName(navigationState);
+        View viewWithLongestName = null;
 
-		if (longestViewName != null) {
-			viewWithLongestName = longestViewNameProvider.getView(longestViewName);
-		}
+        if (longestViewName != null) {
+            viewWithLongestName = longestViewNameProvider.getView(longestViewName);
+        }
 
-		if (viewWithLongestName == null && errorProvider != null) {
-			longestViewName = errorProvider.getViewName(navigationState);
-			viewWithLongestName = errorProvider.getView(longestViewName);
-		}
+        if (viewWithLongestName == null && errorProvider != null) {
+            longestViewName = errorProvider.getViewName(navigationState);
+            viewWithLongestName = errorProvider.getView(longestViewName);
+        }
 
-		if (viewWithLongestName == null) {
-			throw new IllegalArgumentException("Trying to navigate to an unknown state '" + navigationState
-			        + "' and an error view provider not present");
-		}
+        if (viewWithLongestName == null) {
+            throw new IllegalArgumentException("Trying to navigate to an unknown state '" + navigationState
+                    + "' and an error view provider not present");
+        }
 
-		String parameters = "";
-		if (navigationState.length() > longestViewName.length() + 1) {
-			parameters = navigationState.substring(longestViewName.length() + 1);
-		} else if (navigationState.endsWith("/")) {
-			navigationState = navigationState.substring(0, navigationState.length() - 1);
-		}
+        String parameters = "";
+        if (navigationState.length() > longestViewName.length() + 1) {
+            parameters = navigationState.substring(longestViewName.length() + 1);
+        } else if (navigationState.endsWith("/")) {
+            navigationState = navigationState.substring(0, navigationState.length() - 1);
+        }
 
-		if (isAlwaysReload() || getCurrentView() == null || !SharedUtil.equals(getCurrentView(), viewWithLongestName)
-		        || !SharedUtil.equals(currentNavigationState, navigationState)) {
-			navigateTo(viewWithLongestName, longestViewName, parameters);
-		} else {
-			updateNavigationState(new ViewChangeEvent(this, getCurrentView(), viewWithLongestName, longestViewName,
-			        parameters));
-		}
-	}
+        if (isAlwaysReload() || getCurrentView() == null || !SharedUtil.equals(getCurrentView(), viewWithLongestName)
+                || !SharedUtil.equals(currentNavigationState, navigationState)) {
+            navigateTo(viewWithLongestName, longestViewName, parameters);
+        } else {
+            updateNavigationState(
+                    new ViewChangeEvent(this, getCurrentView(), viewWithLongestName, longestViewName, parameters));
+        }
+    }
 
-	@Override
-	public void removeProvider(ViewProvider provider) {
-		providers.remove(provider);
-	}
+    @Override
+    public void removeProvider(ViewProvider provider) {
+        providers.remove(provider);
+    }
 
-	/**
-	 * Removes a view from navigator.
-	 * <p>
-	 * This method only applies to views registered using {@link #addView(String, View)} or
-	 * {@link #addView(String, Class)}.
-	 *
-	 * @param viewName
-	 *            name of the view to remove
-	 */
-	@Override
-	public void removeView(String viewName) {
-		Iterator<ViewProvider> it = providers.iterator();
-		while (it.hasNext()) {
-			ViewProvider provider = it.next();
-			if (provider instanceof StaticViewProvider) {
-				StaticViewProvider staticProvider = (StaticViewProvider) provider;
-				if (staticProvider.getViewName().equals(viewName)) {
-					it.remove();
-				}
-			} else if (provider instanceof ClassBasedViewProvider) {
-				ClassBasedViewProvider classBasedProvider = (ClassBasedViewProvider) provider;
-				if (classBasedProvider.getViewName().equals(viewName)) {
-					it.remove();
-				}
-			}
-		}
-	}
+    /**
+     * Removes a view from navigator.
+     * <p>
+     * This method only applies to views registered using {@link #addView(String, View)} or
+     * {@link #addView(String, Class)}.
+     *
+     * @param viewName
+     *            name of the view to remove
+     */
+    @Override
+    public void removeView(String viewName) {
+        Iterator<ViewProvider> it = providers.iterator();
+        while (it.hasNext()) {
+            ViewProvider provider = it.next();
+            if (provider instanceof StaticViewProvider) {
+                StaticViewProvider staticProvider = (StaticViewProvider) provider;
+                if (staticProvider.getViewName().equals(viewName)) {
+                    it.remove();
+                }
+            } else if (provider instanceof ClassBasedViewProvider) {
+                ClassBasedViewProvider classBasedProvider = (ClassBasedViewProvider) provider;
+                if (classBasedProvider.getViewName().equals(viewName)) {
+                    it.remove();
+                }
+            }
+        }
+    }
 
-	@Override
-	protected void revertNavigation() {
-		if (currentNavigationState != null) {
-			getStateManager().setState(currentNavigationState);
-		}
-	}
+    @Override
+    protected void revertNavigation() {
+        if (currentNavigationState != null) {
+            getStateManager().setState(currentNavigationState);
+        }
+    }
 
-	public void setAlwaysReload(boolean alwaysReload) {
-		this.alwaysReload = alwaysReload;
-	}
+    public void setAlwaysReload(boolean alwaysReload) {
+        this.alwaysReload = alwaysReload;
+    }
 
-	@Override
-	public void setErrorProvider(ViewProvider provider) {
-		errorProvider = provider;
-	}
+    @Override
+    public void setErrorProvider(ViewProvider provider) {
+        errorProvider = provider;
+    }
 
-	@Override
-	public void setErrorView(final Class<? extends View> viewClass) {
-		setErrorProvider(new ViewProvider() {
+    @Override
+    public void setErrorView(final Class<? extends View> viewClass) {
+        setErrorProvider(new ViewProvider() {
 
-			private static final long serialVersionUID = 2848938026523077039L;
+            private static final long serialVersionUID = 2848938026523077039L;
 
-			@Override
-			public View getView(String viewName) {
-				try {
-					return viewClass.newInstance();
-				} catch (Exception e) {
-					throw new OCSRuntimeException(e.getMessage(), e);
-				}
-			}
+            @Override
+            public View getView(String viewName) {
+                try {
+                    return viewClass.newInstance();
+                } catch (Exception e) {
+                    throw new OCSRuntimeException(e.getMessage(), e);
+                }
+            }
 
-			@Override
-			public String getViewName(String navigationState) {
-				return navigationState;
-			}
-		});
-	}
+            @Override
+            public String getViewName(String navigationState) {
+                return navigationState;
+            }
+        });
+    }
 
-	@Override
-	public void setErrorView(final View view) {
-		setErrorProvider(new ViewProvider() {
+    @Override
+    public void setErrorView(final View view) {
+        setErrorProvider(new ViewProvider() {
 
-			private static final long serialVersionUID = -3641455197804342745L;
+            private static final long serialVersionUID = -3641455197804342745L;
 
-			@Override
-			public View getView(String viewName) {
-				return view;
-			}
+            @Override
+            public View getView(String viewName) {
+                return view;
+            }
 
-			@Override
-			public String getViewName(String navigationState) {
-				return navigationState;
-			}
-		});
-	}
+            @Override
+            public String getViewName(String navigationState) {
+                return navigationState;
+            }
+        });
+    }
 
-	@Override
-	protected void updateNavigationState(ViewChangeEvent event) {
-		String viewName = event.getViewName();
-		String parameters = event.getParameters();
-		if (null != viewName && getStateManager() != null) {
-			String navigationState = viewName;
-			if (!parameters.isEmpty()) {
-				navigationState += "/" + parameters;
-			}
-			if (!navigationState.equals(getStateManager().getState())) {
-				getStateManager().setState(navigationState);
-			}
-			currentNavigationState = navigationState;
-		}
-	}
+    @Override
+    protected void updateNavigationState(ViewChangeEvent event) {
+        String viewName = event.getViewName();
+        String parameters = event.getParameters();
+        if (null != viewName && getStateManager() != null) {
+            String navigationState = viewName;
+            if (!parameters.isEmpty()) {
+                navigationState += "/" + parameters;
+            }
+            if (!navigationState.equals(getStateManager().getState())) {
+                getStateManager().setState(navigationState);
+            }
+            currentNavigationState = navigationState;
+        }
+    }
 
 }
