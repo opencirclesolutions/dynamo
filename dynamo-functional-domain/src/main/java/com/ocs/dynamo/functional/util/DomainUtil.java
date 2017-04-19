@@ -55,7 +55,7 @@ public final class DomainUtil {
 	 */
 	public static <T extends Domain> T createIfNotExists(BaseService<?, T> service, Class<T> clazz, String value,
 	        boolean caseSensitive) {
-		T t = service.findByUniqueProperty(Domain.NAME, value, caseSensitive);
+		T t = service.findByUniqueProperty(Domain.ATTRIBUTE_NAME, value, caseSensitive);
 		if (t == null) {
 			t = ClassUtils.instantiateClass(clazz);
 			t.setName(value);

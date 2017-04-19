@@ -63,9 +63,6 @@ public class Parameter extends AbstractAuditableEntity<Integer> {
     @Attribute(maxLength = 50)
     private String value;
 
-    public Parameter() {
-    }
-
     public ParameterType getParameterType() {
         return parameterType;
     }

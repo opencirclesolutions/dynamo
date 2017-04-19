@@ -23,7 +23,6 @@ import com.ocs.dynamo.ui.Refreshable;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.sort.SortOrder;
 import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 
@@ -48,11 +47,6 @@ public class QuickAddListSelect<ID extends Serializable, T extends AbstractEntit
      * The list select component
      */
     private EntityListSelect<ID, T> listSelect;
-
-    /**
-     * The button for adding new entries
-     */
-    private Button addButton;
 
     /**
      * Whether the component is in view mode
@@ -122,8 +116,7 @@ public class QuickAddListSelect<ID extends Serializable, T extends AbstractEntit
         bar.addComponent(listSelect);
 
         if (!viewMode) {
-            addButton = constructAddButton();
-            bar.addComponent(addButton);
+            bar.addComponent(constructAddButton());
         }
 
         return bar;

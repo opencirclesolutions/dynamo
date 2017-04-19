@@ -43,98 +43,98 @@ import com.ocs.dynamo.functional.DomainConstants;
 @Model(displayProperty = "name", sortOrder = "name asc")
 public abstract class Domain extends AbstractEntity<Integer> {
 
-	public static final String NAME = "name";
+    public static final String ATTRIBUTE_NAME = "name";
 
-	public static final String CODE = "code";
+    public static final String ATTRIBUTE_CODE = "code";
 
-	private static final long serialVersionUID = 1598343469161718498L;
+    private static final long serialVersionUID = 1598343469161718498L;
 
-	@Id
-	@SequenceGenerator(name = "DOMAIN_ID_GENERATOR", sequenceName = "DOMAIN_ID_SEQ")
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "DOMAIN_ID_GENERATOR")
-	private Integer id;
+    @Id
+    @SequenceGenerator(name = "DOMAIN_ID_GENERATOR", sequenceName = "DOMAIN_ID_SEQ")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "DOMAIN_ID_GENERATOR")
+    private Integer id;
 
-	/**
-	 * By default, we only use "name" so the code is hidden
-	 */
-	@Attribute(visible = VisibilityType.HIDE)
-	private String code;
+    /**
+     * By default, we only use "name" so the code is hidden
+     */
+    @Attribute(visible = VisibilityType.HIDE)
+    private String code;
 
-	@NotNull
-	@Attribute(main = true, maxLength = DomainConstants.MAX_NAME_LENGTH, searchable = true)
-	private String name;
+    @NotNull
+    @Attribute(main = true, maxLength = DomainConstants.MAX_NAME_LENGTH, searchable = true)
+    private String name;
 
-	public Domain() {
-	}
+    public Domain() {
+    }
 
-	/**
-	 * Constructor
-	 * 
-	 * @param code
-	 * @param name
-	 */
-	public Domain(String code, String name) {
-		this.code = code;
-		this.name = name;
-	}
+    /**
+     * Constructor
+     * 
+     * @param code
+     * @param name
+     */
+    public Domain(String code, String name) {
+        this.code = code;
+        this.name = name;
+    }
 
-	@Override
-	public Integer getId() {
-		return this.id;
-	}
+    @Override
+    public Integer getId() {
+        return this.id;
+    }
 
-	@Override
-	public void setId(Integer id) {
-		this.id = id;
-	}
+    @Override
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
-	public String getCode() {
-		return this.code;
-	}
+    public String getCode() {
+        return this.code;
+    }
 
-	public void setCode(String code) {
-		this.code = code;
-	}
+    public void setCode(String code) {
+        this.code = code;
+    }
 
-	public String getName() {
-		return this.name;
-	}
+    public String getName() {
+        return this.name;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	@Override
-	public int hashCode() {
-		return ObjectUtils.hashCode(id);
-	}
+    @Override
+    public int hashCode() {
+        return ObjectUtils.hashCode(id);
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (!(obj instanceof Domain)) {
-			return false;
-		}
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof Domain)) {
+            return false;
+        }
 
-		if (!this.getClass().equals(obj.getClass())) {
-			return false;
-		}
+        if (!this.getClass().equals(obj.getClass())) {
+            return false;
+        }
 
-		Domain other = (Domain) obj;
-		if (this.id != null && other.id != null) {
-			// first, check if the IDs match
-			return ObjectUtils.equals(this.id, other.id);
-		} else {
-			// if this is not the case, check for code and type
-			return ObjectUtils.equals(this.code, other.code);
-		}
+        Domain other = (Domain) obj;
+        if (this.id != null && other.id != null) {
+            // first, check if the IDs match
+            return ObjectUtils.equals(this.id, other.id);
+        } else {
+            // if this is not the case, check for code and type
+            return ObjectUtils.equals(this.code, other.code);
+        }
 
-	}
+    }
 
-	@Override
-	public String toString() {
-		return ReflectionToStringBuilder.toStringExclude(this, "parent");
-	}
+    @Override
+    public String toString() {
+        return ReflectionToStringBuilder.toStringExclude(this, "parent");
+    }
 }

@@ -13,7 +13,6 @@
  */
 package com.ocs.dynamo.ui.container.hierarchical;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
