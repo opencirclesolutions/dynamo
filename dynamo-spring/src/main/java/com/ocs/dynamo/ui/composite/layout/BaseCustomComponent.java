@@ -127,7 +127,7 @@ public abstract class BaseCustomComponent extends CustomComponent implements Bui
                 // another entity - use the value of the "displayProperty"
                 EntityModel<?> model = getEntityModelFactory().getModel(type);
                 String displayProperty = model.getDisplayProperty();
-                property = new NestedMethodProperty<String>(value, displayProperty);
+                property = new NestedMethodProperty<>(value, displayProperty);
             } else if (attributeModel.isImage()) {
                 // create image preview
                 final byte[] bytes = ClassUtils.getBytes(entity, attributeModel.getName());

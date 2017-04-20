@@ -80,7 +80,7 @@ public final class MapElementImageProvider {
         String mapScale = (String) element.getParameterValue(MapComponent.ATTRIBUTE_MAP_SCALE);
         String mapFormat = (String) element.getParameterValue(MapComponent.ATTRIBUTE_IMAGE_TYPE);
         String reqParams = (String) element.getParameterValue(MapComponent.PARAMETER_REQ_PARAMS);
-        String markers = "";
+        StringBuilder markers = new StringBuilder();
 
         List<Map<String, Object>> markerList = (List<Map<String, Object>>) element
                 .getParameterValue(MapComponent.PARAMETER_MARKERS);
@@ -131,7 +131,7 @@ public final class MapElementImageProvider {
                     i++;
                 }
                 if (markers.length() + 248 < MAX_URL_LENGTH) {
-                    markers += currentMarkers.toString();
+                    markers.append(currentMarkers.toString());
                 } else {
                     break;
                 }
@@ -211,9 +211,9 @@ public final class MapElementImageProvider {
 
         // a static map url is limited to 2048 characters
         imageLocation += imageLocation.length() + markers.length() + currentPaths.length()
-                + params.length() < MAX_URL_LENGTH ? markers + currentPaths.toString() + params
+                + params.length() < MAX_URL_LENGTH ? markers.toString() + currentPaths.toString() + params
                         : imageLocation.length() + markers.length() + params.length() < MAX_URL_LENGTH
-                                ? markers + params : params;
+                                ? markers.toString() + params : params;
         JRBasePrintImage printImage = new JRBasePrintImage(element.getDefaultStyleProvider());
 
         printImage.setUUID(element.getUUID());

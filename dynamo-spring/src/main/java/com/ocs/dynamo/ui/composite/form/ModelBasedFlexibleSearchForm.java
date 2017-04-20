@@ -662,7 +662,7 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
     public void clear() {
         // remove any non-required filter regions and clear the rest
         Iterator<FilterRegion> it = regions.iterator();
-        for (; it.hasNext();) {
+        while (it.hasNext()) {
             FilterRegion fr = it.next();
             if (fr.am == null || !fr.am.isRequiredForSearching()) {
                 getFilterLayout().removeComponent(fr.getLayout());

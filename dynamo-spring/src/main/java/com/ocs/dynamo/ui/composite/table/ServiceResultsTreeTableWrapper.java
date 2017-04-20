@@ -90,7 +90,7 @@ public class ServiceResultsTreeTableWrapper<ID extends Serializable, T extends A
 
     @Override
     protected ModelBasedTreeTable<ID, T> constructTable() {
-        return new ModelBasedTreeTable<ID, T>(getContainer(), getEntityModelFactory());
+        return new ModelBasedTreeTable<>(getContainer(), getEntityModelFactory());
     }
 
     @Override

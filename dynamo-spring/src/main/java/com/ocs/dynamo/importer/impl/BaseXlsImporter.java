@@ -171,8 +171,7 @@ public class BaseXlsImporter extends BaseImporter<Row, Cell> {
 		if (cell != null
 		        && (Cell.CELL_TYPE_NUMERIC == cell.getCellType() || Cell.CELL_TYPE_BLANK == cell.getCellType())) {
 			try {
-				Date date = cell.getDateCellValue();
-				return date;
+				return cell.getDateCellValue();
 			} catch (NullPointerException nex) {
 				// horrible code throws NPE in case of empty cell
 				return null;
