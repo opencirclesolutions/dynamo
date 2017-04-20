@@ -66,8 +66,8 @@ public final class ClassUtils {
             int p = fieldName.indexOf('.');
             if (p >= 0) {
                 String firstProperty = fieldName.substring(0, p);
-                Object first = MethodUtils.invokeMethod(obj,
-                        GET + StringUtils.capitalize(firstProperty), new Object[] {});
+                Object first = MethodUtils.invokeMethod(obj, GET + StringUtils.capitalize(firstProperty),
+                        new Object[] {});
                 if (first != null) {
                     return canSetProperty(first, fieldName.substring(p + 1));
                 }
@@ -94,14 +94,13 @@ public final class ClassUtils {
             int p = fieldName.indexOf('.');
             if (p >= 0) {
                 String firstProperty = fieldName.substring(0, p);
-                Object first = MethodUtils.invokeMethod(obj,
-                        GET + StringUtils.capitalize(firstProperty), new Object[] {});
+                Object first = MethodUtils.invokeMethod(obj, GET + StringUtils.capitalize(firstProperty),
+                        new Object[] {});
                 if (first != null) {
                     clearFieldValue(first, fieldName.substring(p + 1), argType);
                 }
             } else {
-                Method m = obj.getClass().getMethod(SET + StringUtils.capitalize(fieldName),
-                        new Class[] { argType });
+                Method m = obj.getClass().getMethod(SET + StringUtils.capitalize(fieldName), new Class[] { argType });
                 m.invoke(obj, new Object[] { null });
             }
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
@@ -140,8 +139,7 @@ public final class ClassUtils {
      *            the annotation class to look for
      * @return
      */
-    public static <T extends Annotation> T getAnnotation(Class<?> clazz, String fieldName,
-            Class<T> annotationClass) {
+    public static <T extends Annotation> T getAnnotation(Class<?> clazz, String fieldName, Class<T> annotationClass) {
         T t = getAnnotationOnMethod(clazz, fieldName, annotationClass);
         if (t == null) {
             t = getAnnotationOnField(clazz, fieldName, annotationClass);
@@ -161,8 +159,8 @@ public final class ClassUtils {
      * @return the value of the field of the annotation or null when not found
      */
     @SuppressWarnings("unchecked")
-    public static <T extends Annotation, R> R getAnnotationAttributeValue(Field field,
-            Class<T> annotationClass, String attributeName) {
+    public static <T extends Annotation, R> R getAnnotationAttributeValue(Field field, Class<T> annotationClass,
+            String attributeName) {
         R result = null;
         Annotation annotation = getAnnotationOnField(field, annotationClass);
         if (annotation != null) {
@@ -201,8 +199,7 @@ public final class ClassUtils {
      * @return
      */
     @SuppressWarnings("unchecked")
-    public static <T extends Annotation> T getAnnotationOnField(Field field,
-            Class<T> annotationClass) {
+    public static <T extends Annotation> T getAnnotationOnField(Field field, Class<T> annotationClass) {
         T result = null;
         if (field != null) {
             for (Annotation a : field.getDeclaredAnnotations()) {
@@ -244,8 +241,7 @@ public final class ClassUtils {
      * @return
      */
     @SuppressWarnings("unchecked")
-    public static <T extends Annotation> T getAnnotationOnMethod(Method method,
-            Class<T> annotationClass) {
+    public static <T extends Annotation> T getAnnotationOnMethod(Method method, Class<T> annotationClass) {
         T result = null;
         if (method != null) {
             for (Annotation a : method.getDeclaredAnnotations()) {
@@ -280,7 +276,7 @@ public final class ClassUtils {
         Assert.notNull(clazz);
         Assert.noNullElements(args);
         Constructor<T> constructor = null;
-        List<Class<?>> types = new ArrayList<Class<?>>();
+        List<Class<?>> types = new ArrayList<>();
         for (Object arg : args) {
             types.add(arg.getClass());
         }
@@ -334,18 +330,16 @@ public final class ClassUtils {
             int p = fieldName.indexOf('.');
             if (p >= 0) {
                 String firstProperty = fieldName.substring(0, p);
-                Object first = MethodUtils.invokeMethod(obj,
-                        GET + StringUtils.capitalize(firstProperty), new Object[] {});
+                Object first = MethodUtils.invokeMethod(obj, GET + StringUtils.capitalize(firstProperty),
+                        new Object[] {});
                 return getFieldValue(first, fieldName.substring(p + 1));
             } else {
                 if (hasMethod(obj, GET + StringUtils.capitalize(fieldName))) {
                     // first check for a getter
-                    return MethodUtils.invokeMethod(obj, GET + StringUtils.capitalize(fieldName),
-                            new Object[] {});
+                    return MethodUtils.invokeMethod(obj, GET + StringUtils.capitalize(fieldName), new Object[] {});
                 } else {
                     // next, check for an "is" method in case of a boolean
-                    return MethodUtils.invokeMethod(obj, IS + StringUtils.capitalize(fieldName),
-                            new Object[] {});
+                    return MethodUtils.invokeMethod(obj, IS + StringUtils.capitalize(fieldName), new Object[] {});
                 }
             }
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
@@ -372,13 +366,11 @@ public final class ClassUtils {
         if (clazz != null) {
             try {
                 // first, try to find a "get" method
-                method = clazz.getDeclaredMethod(GET + StringUtils.capitalize(fieldName),
-                        new Class[] {});
+                method = clazz.getDeclaredMethod(GET + StringUtils.capitalize(fieldName), new Class[] {});
             } catch (NoSuchMethodException | SecurityException ex) {
                 try {
                     // next, try to find an "is" method
-                    method = clazz.getDeclaredMethod(IS + StringUtils.capitalize(fieldName),
-                            new Class[] {});
+                    method = clazz.getDeclaredMethod(IS + StringUtils.capitalize(fieldName), new Class[] {});
                 } catch (NoSuchMethodException | SecurityException ex2) {
                     // if that fails, try the superclass
                     if (clazz.getSuperclass() != null) {
@@ -414,8 +406,7 @@ public final class ClassUtils {
      *            the name of the property
      * @return
      */
-    public static PropertyDescriptor getPropertyDescriptorForNestedProperty(Class<?> clazz,
-            String property) {
+    public static PropertyDescriptor getPropertyDescriptorForNestedProperty(Class<?> clazz, String property) {
         PropertyDescriptor pd = null;
         if (clazz != null && !StringUtils.isEmpty(property)) {
             String[] props = property.split("\\.", 2);
@@ -508,14 +499,13 @@ public final class ClassUtils {
             int p = fieldName.indexOf('.');
             if (p >= 0) {
                 String firstProperty = fieldName.substring(0, p);
-                Object first = MethodUtils.invokeMethod(obj,
-                        GET + StringUtils.capitalize(firstProperty), new Object[] {});
+                Object first = MethodUtils.invokeMethod(obj, GET + StringUtils.capitalize(firstProperty),
+                        new Object[] {});
                 if (first != null) {
                     setFieldValue(first, fieldName.substring(p + 1), value);
                 }
             } else {
-                MethodUtils.invokeMethod(obj, SET + StringUtils.capitalize(fieldName),
-                        new Object[] { value });
+                MethodUtils.invokeMethod(obj, SET + StringUtils.capitalize(fieldName), new Object[] { value });
             }
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
             LOG.error(e.getMessage(), e);
@@ -523,28 +513,28 @@ public final class ClassUtils {
         }
     }
 
-	public static <T, S extends T> void copyFields(T from, S to) {
-		try {
-			Class<?> aClass = from.getClass();
-			final Field[] declaredFields = aClass.getDeclaredFields();
-			copyFields(from, to, declaredFields);
+    public static <T, S extends T> void copyFields(T from, S to) {
+        try {
+            Class<?> aClass = from.getClass();
+            final Field[] declaredFields = aClass.getDeclaredFields();
+            copyFields(from, to, declaredFields);
 
-			while ((aClass = aClass.getSuperclass()) != null) {
-				copyFields(from, to, aClass.getFields());
-			}
-		} catch (Exception e) {
-			LOG.error(e.getMessage(), e);
-			throw new OCSRuntimeException(e.getMessage(), e);
-		}
-	}
+            while ((aClass = aClass.getSuperclass()) != null) {
+                copyFields(from, to, aClass.getFields());
+            }
+        } catch (Exception e) {
+            LOG.error(e.getMessage(), e);
+            throw new OCSRuntimeException(e.getMessage(), e);
+        }
+    }
 
-	private static <T, S extends T> void copyFields(T from, S to, Field[] fields) throws IllegalAccessException {
-		for (Field field : fields) {
-			final int fieldModifiers = field.getModifiers();
-			if (!Modifier.isFinal(fieldModifiers) && !Modifier.isStatic(fieldModifiers)) {
-				final Object value = FieldUtils.readField(field, from, true);
-				FieldUtils.writeField(field, to, value, true);
-			}
-		}
-	}
+    private static <T, S extends T> void copyFields(T from, S to, Field[] fields) throws IllegalAccessException {
+        for (Field field : fields) {
+            final int fieldModifiers = field.getModifiers();
+            if (!Modifier.isFinal(fieldModifiers) && !Modifier.isStatic(fieldModifiers)) {
+                final Object value = FieldUtils.readField(field, from, true);
+                FieldUtils.writeField(field, to, value, true);
+            }
+        }
+    }
 }

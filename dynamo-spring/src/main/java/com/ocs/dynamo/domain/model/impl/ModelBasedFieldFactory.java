@@ -198,10 +198,10 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
                 .getServiceForEntity(entityModel.getEntityClass());
         SortOrder[] sos = constructSortOrder(entityModel);
         if (attributeModel != null && attributeModel.isQuickAddAllowed() && !search) {
-            return new QuickAddEntityComboBox<ID, S>((EntityModel<S>) entityModel, attributeModel, service,
+            return new QuickAddEntityComboBox<>((EntityModel<S>) entityModel, attributeModel, service,
                     SelectMode.FILTERED, filter, null, sos);
         } else {
-            return new EntityComboBox<ID, S>((EntityModel<S>) entityModel, attributeModel, service, filter, sos);
+            return new EntityComboBox<>((EntityModel<S>) entityModel, attributeModel, service, filter, sos);
         }
     }
 
@@ -285,20 +285,20 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
             return constructLookupField((EntityModel<S>) fieldEntityModel, attributeModel, fieldFilter, search, true);
         } else if (AttributeSelectMode.FANCY_LIST.equals(mode)) {
             // fancy list select
-            FancyListSelect<ID, S> listSelect = new FancyListSelect<ID, S>(service, (EntityModel<S>) em, attributeModel,
+            FancyListSelect<ID, S> listSelect = new FancyListSelect<>(service, (EntityModel<S>) em, attributeModel,
                     fieldFilter, search, sos);
             listSelect.setRows(SystemPropertyUtils.getDefaultListSelectRows());
             return listSelect;
         } else if (AttributeSelectMode.LIST.equals(mode)) {
             // simple list select if everything else fails or is not applicable
-            EntityListSelect<ID, S> listSelect = new EntityListSelect<ID, S>((EntityModel<S>) em, attributeModel,
-                    service, fieldFilter, sos);
+            EntityListSelect<ID, S> listSelect = new EntityListSelect<>((EntityModel<S>) em, attributeModel, service,
+                    fieldFilter, sos);
             listSelect.setMultiSelect(multipleSelect);
             listSelect.setRows(SystemPropertyUtils.getDefaultListSelectRows());
             return listSelect;
         } else {
             // by default, use a token field
-            return new TokenFieldSelect<ID, S>((EntityModel<S>) em, attributeModel, service, fieldFilter, search, sos);
+            return new TokenFieldSelect<>((EntityModel<S>) em, attributeModel, service, fieldFilter, search, sos);
         }
     }
 

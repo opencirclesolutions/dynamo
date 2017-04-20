@@ -113,8 +113,8 @@ public class TimeField extends CustomField<Date> {
     public void setHours(int hours) {
 
         if (hours < minHours || hours > maxHours) {
-            throw new IllegalArgumentException("Value '" + hours + "' is outside bounds '"
-                    + minHours + "' - '" + maxHours + "'");
+            throw new IllegalArgumentException(
+                    "Value '" + hours + "' is outside bounds '" + minHours + "' - '" + maxHours + "'");
         }
 
         hourSelect.setValue(hours);
@@ -133,8 +133,8 @@ public class TimeField extends CustomField<Date> {
      */
     public void setMinutes(int minutes) {
         if (minutes % intervalMinutes != 0) {
-            throw new IllegalArgumentException("Value '" + minutes
-                    + "' is not compatible with interval '" + intervalMinutes + "'");
+            throw new IllegalArgumentException(
+                    "Value '" + minutes + "' is not compatible with interval '" + intervalMinutes + "'");
         }
         minuteSelect.setValue(minutes);
     }
@@ -175,7 +175,7 @@ public class TimeField extends CustomField<Date> {
         for (int i = 0; i < 60; i++) {
             if (i % intervalMinutes == 0) {
                 minuteSelect.addItem(i);
-                minuteSelect.setItemCaption(i, i < 10 ? "0" + i : i + "");
+                minuteSelect.setItemCaption(i, i < 10 ? "0" + i : Integer.toString(i));
             }
         }
     }
@@ -185,7 +185,7 @@ public class TimeField extends CustomField<Date> {
         secondSelect.removeAllItems();
         for (int i = 0; i < 60; i++) {
             secondSelect.addItem(i);
-            secondSelect.setItemCaption(i, i < 10 ? "0" + i : i + "");
+            secondSelect.setItemCaption(i, i < 10 ? "0" + i : Integer.toString(i));
         }
     }
 
@@ -338,8 +338,7 @@ public class TimeField extends CustomField<Date> {
         DateFormat df = DateFormat.getTimeInstance(DateFormat.SHORT, givenLocale);
         String time = df.format(new Date());
 
-        if (time.contains("am") || time.contains("AM") || time.contains("pm")
-                || time.contains("PM")) {
+        if (time.contains("am") || time.contains("AM") || time.contains("pm") || time.contains("PM")) {
             use24HourClock = false;
         } else {
             use24HourClock = true;

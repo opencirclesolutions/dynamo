@@ -347,7 +347,10 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
             if (!StringUtils.isEmpty(sortOrderMsg)) {
                 sortOrder = sortOrderMsg;
             }
-            setSortOrder(model, sortOrder);
+
+            if (sortOrder != null) {
+                setSortOrder(model, sortOrder);
+            }
             cache.put(reference, model);
             result = model;
         }
