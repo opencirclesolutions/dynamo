@@ -14,11 +14,8 @@
 package com.ocs.dynamo.ui.container;
 
 import java.io.Serializable;
-import java.util.Arrays;
-import java.util.List;
 
 import org.vaadin.addons.lazyquerycontainer.LazyQueryContainer;
-import org.vaadin.addons.lazyquerycontainer.LazyQueryView;
 
 import com.ocs.dynamo.dao.query.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
@@ -43,10 +40,6 @@ public class ServiceContainer<ID extends Serializable, T extends AbstractEntity<
         implements Searchable {
 
     private static final long serialVersionUID = 2605988307857731787L;
-
-    public static final List<String> DEFAULT_EXCLUDE_COLUMNS = Arrays
-            .asList(new String[] { LazyQueryView.PROPERTY_ID_ITEM_STATUS, LazyQueryView.DEBUG_PROPERTY_ID_BATCH_INDEX,
-                    LazyQueryView.DEBUG_PROPERTY_ID_BATCH_QUERY_TIME, LazyQueryView.DEBUG_PROPERTY_ID_QUERY_INDEX });
 
     /**
      * Constructs a service container based on a query definition
