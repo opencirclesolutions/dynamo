@@ -34,9 +34,6 @@ import com.vaadin.ui.VerticalLayout;
 @SuppressWarnings("serial")
 public class HorizontalMoviesSplitView extends BaseView {
 
-    /** Vaadin vertical layout. */
-    private VerticalLayout mainLayout;
-
     /** The Movies View is using the MovieService for data access. */
     @Inject
     private MovieService movieService;
@@ -50,23 +47,15 @@ public class HorizontalMoviesSplitView extends BaseView {
     public void enter(ViewChangeEvent event) {
 
         // Apply Vaadin Layout.
-        mainLayout = new DefaultVerticalLayout(true, true);
+        VerticalLayout mainLayout = new DefaultVerticalLayout(true, true);
 
         // Set form options by convention.
         FormOptions fo = new FormOptions();
-        fo.setOpenInViewMode(true);
-
-        // Add a remove button.
-        fo.setShowRemoveButton(true);
-
-        // Add an edit button.
-        fo.setShowEditButton(true);
-        fo.setShowQuickSearchField(true);
+        fo.setOpenInViewMode(true).setShowRemoveButton(true).setShowEditButton(true).setShowQuickSearchField(true);
 
         // A SplitLayout is a component that displays a search screen and an edit form
-        ServiceBasedSplitLayout<Integer, Movie> movieLayout = new ServiceBasedSplitLayout<Integer, Movie>(
-                movieService, getModelFactory().getModel(Movie.class), fo, new SortOrder("title",
-                        SortDirection.ASCENDING)) {
+        ServiceBasedSplitLayout<Integer, Movie> movieLayout = new ServiceBasedSplitLayout<Integer, Movie>(movieService,
+                getModelFactory().getModel(Movie.class), fo, new SortOrder("title", SortDirection.ASCENDING)) {
 
             @Override
             protected Filter constructQuickSearchFilter(String value) {

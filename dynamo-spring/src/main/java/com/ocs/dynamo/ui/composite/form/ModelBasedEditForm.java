@@ -136,12 +136,12 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
             UploadReceiver receiver = new UploadReceiver(image, attributeModel.getName(),
                     attributeModel.getFileNameProperty(), attributeModel.getAllowedExtensions().toArray(new String[0]));
 
-            HorizontalLayout buttons = new DefaultHorizontalLayout(false, true, true);
-            main.addComponent(buttons);
+            HorizontalLayout buttonBar = new DefaultHorizontalLayout(false, true, true);
+            main.addComponent(buttonBar);
 
             Upload upload = new Upload(null, receiver);
             upload.addSucceededListener(receiver);
-            buttons.addComponent(upload);
+            buttonBar.addComponent(upload);
 
             // a button used to clear the image
             Button clearButton = new Button(message("ocs.clear"));
@@ -157,7 +157,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
                     }
                 }
             });
-            buttons.addComponent(clearButton);
+            buttonBar.addComponent(clearButton);
             setCaption(attributeModel.getDisplayName());
             return main;
         }

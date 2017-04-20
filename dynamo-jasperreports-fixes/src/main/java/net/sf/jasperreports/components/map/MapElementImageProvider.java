@@ -119,20 +119,19 @@ public final class MapElementImageProvider {
             }
 
             // Then add the markers to string list
-            String currentMarkers = "";
+            StringBuilder currentMarkers = new StringBuilder();
             for (Object style : groupedMarkers.keySet().toArray()) {
-                currentMarkers = "&markers=" + style;
+                currentMarkers.append("&markers=" + style);
                 int i = 0;
                 for (String cm : groupedMarkers.get(style)) {
                     if (i > 0) {
-                        currentMarkers += "%7C";
+                        currentMarkers.append("%7C");
                     }
-                    currentMarkers += cm;
-
+                    currentMarkers.append(cm);
                     i++;
                 }
                 if (markers.length() + 248 < MAX_URL_LENGTH) {
-                    markers += currentMarkers;
+                    markers += currentMarkers.toString();
                 } else {
                     break;
                 }

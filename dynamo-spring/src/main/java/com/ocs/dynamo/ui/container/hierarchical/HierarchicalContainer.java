@@ -944,7 +944,6 @@ public class HierarchicalContainer
     }
 
     @Override
-    @Deprecated
     public void addListener(ItemSetChangeListener listener) {
         throw new UnsupportedOperationException();
     }
@@ -955,7 +954,6 @@ public class HierarchicalContainer
     }
 
     @Override
-    @Deprecated
     public void removeListener(ItemSetChangeListener listener) {
         throw new UnsupportedOperationException();
     }

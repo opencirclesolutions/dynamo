@@ -36,36 +36,27 @@ import com.vaadin.ui.VerticalLayout;
 @SuppressWarnings("serial")
 public class MoviesView extends BaseView {
 
-	/** Vaadin vertical layout. */
-	private VerticalLayout mainLayout;
+    /** The Movies View is using the MovieService for data access. */
+    @Inject
+    private MovieService movieService;
 
-	/** The Movies View is using the MovieService for data access. */
-	@Inject
-	private MovieService movieService;
+    @Override
+    public void enter(ViewChangeEvent event) {
 
-	@Override
-	public void enter(ViewChangeEvent event) {
+        // Apply Vaadin Layout.
+        VerticalLayout mainLayout = new DefaultVerticalLayout(true, true);
 
-		// Apply Vaadin Layout.
-		mainLayout = new DefaultVerticalLayout(true, true);
+        // Set form options by convention.
+        FormOptions fo = new FormOptions().setShowRemoveButton(true).setShowEditButton(true);
 
-		// Set form options by convention.
-		FormOptions fo = new FormOptions();
+        // This is where the magic happens. The Simple Search layout uses the Dynamo Entity
+        // Model Factory to define a Simple Search Screen with sorting, filtering and lazy loading
+        // of data.
+        SimpleSearchLayout<Integer, Movie> movieLayout = new SimpleSearchLayout<>(movieService,
+                getModelFactory().getModel(Movie.class), QueryType.ID_BASED, fo,
+                new com.vaadin.data.sort.SortOrder("id", SortDirection.ASCENDING));
 
-		// Add a remove button.
-		fo.setShowRemoveButton(true);
-
-		// Add an edit button.
-		fo.setShowEditButton(true);
-
-		// This is where the magic happens. The Simple Search layout uses the Dynamo Entity
-		// Model Factory to define a Simple Search Screen with sorting, filtering and lazy loading
-		// of data.
-		SimpleSearchLayout<Integer, Movie> movieLayout = new SimpleSearchLayout<>(movieService, getModelFactory()
-		        .getModel(Movie.class), QueryType.ID_BASED, fo, new com.vaadin.data.sort.SortOrder("id",
-		        SortDirection.ASCENDING));
-
-		mainLayout.addComponent(movieLayout);
-		setCompositionRoot(mainLayout);
-	}
+        mainLayout.addComponent(movieLayout);
+        setCompositionRoot(mainLayout);
+    }
 }

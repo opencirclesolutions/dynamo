@@ -45,9 +45,6 @@ import com.vaadin.ui.VerticalLayout;
 @SuppressWarnings("serial")
 public class TabularMoviesView extends BaseView {
 
-    /** Vaadin vertical layout. */
-    private VerticalLayout mainLayout;
-
     /** The Movies View is using the MovieService for data access. */
     @Inject
     private MovieService movieService;
@@ -60,8 +57,7 @@ public class TabularMoviesView extends BaseView {
     @Override
     public void enter(ViewChangeEvent event) {
 
-        // Apply Vaadin Layout.
-        mainLayout = new DefaultVerticalLayout(true, true);
+        VerticalLayout mainLayout = new DefaultVerticalLayout(true, true);
 
         // Set form options by convention.
         FormOptions fo = new FormOptions().setOpenInViewMode(true).setShowRemoveButton(true).setShowEditButton(true);
