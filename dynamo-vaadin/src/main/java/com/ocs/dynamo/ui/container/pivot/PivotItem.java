@@ -66,12 +66,7 @@ public class PivotItem implements Item {
                 if (columns.containsKey(ids[0])) {
                     result = columns.get(ids[0]).getItemProperty(ids[1]);
                 } else {
-                    // TODO create new column when not exist
-                    // Workaround for now: When result is empty create
-                    // ObjectProperty with null value
-                    if (result == null) {
-                        result = new ObjectProperty(null, pivotContainer.getType(ids[1]));
-                    }
+                    result = new ObjectProperty(null, pivotContainer.getType(ids[1]));
                 }
             } else if (ids.length > 0 && pivotContainer.getPropertyIds().contains(id)) {
                 // Row?

@@ -69,13 +69,12 @@ public class Contains extends AbstractFilter implements PropertyFilter {
     @Override
     public boolean equals(Object obj) {
         // Only objects of the same class can be equal
-        if (obj == null || !getClass().equals(obj.getClass())) {
+        if (!(obj instanceof Contains)) {
             return false;
         }
         Contains c = (Contains) obj;
 
-        return ObjectUtils.equals(propertyId, c.getPropertyId())
-                && ObjectUtils.equals(value, c.getValue());
+        return ObjectUtils.equals(propertyId, c.getPropertyId()) && ObjectUtils.equals(value, c.getValue());
     }
 
     @Override

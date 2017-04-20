@@ -174,8 +174,7 @@ public abstract class Compare extends AbstractFilter implements PropertyFilter {
             return otherValue == value;
         } else if (value == otherValue) {
             return true;
-        } else if (value instanceof Comparable
-                && otherValue.getClass().isAssignableFrom(getValue().getClass())) {
+        } else if (value instanceof Comparable && otherValue.getClass().isAssignableFrom(getValue().getClass())) {
             return ((Comparable<Object>) value).compareTo(otherValue) == 0;
         } else {
             return value.equals(otherValue);
@@ -188,19 +187,17 @@ public abstract class Compare extends AbstractFilter implements PropertyFilter {
             return null == value1 ? 0 : -1;
         } else if (null == value1) {
             return 1;
-        } else if (getValue() instanceof Comparable
-                && value1.getClass().isAssignableFrom(getValue().getClass())) {
+        } else if (getValue() instanceof Comparable && value1.getClass().isAssignableFrom(getValue().getClass())) {
             return -((Comparable) getValue()).compareTo(value1);
         }
-        throw new IllegalArgumentException(
-                "Could not compare the arguments: " + value1 + ", " + getValue());
+        throw new IllegalArgumentException("Could not compare the arguments: " + value1 + ", " + getValue());
     }
 
     @Override
     public boolean equals(Object obj) {
 
         // Only objects of the same class can be equal
-        if (obj == null || !getClass().equals(obj.getClass())) {
+        if (obj == null || !(obj instanceof Compare) || !getClass().equals(obj.getClass())) {
             return false;
         }
         final Compare o = (Compare) obj;

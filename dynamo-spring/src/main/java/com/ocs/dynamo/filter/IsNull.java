@@ -44,7 +44,7 @@ public final class IsNull extends AbstractFilter implements PropertyFilter {
     @Override
     public boolean equals(Object obj) {
         // Only objects of the same class can be equal
-        if (obj == null || !getClass().equals(obj.getClass())) {
+        if (!(obj instanceof IsNull)) {
             return false;
         }
         final IsNull o = (IsNull) obj;

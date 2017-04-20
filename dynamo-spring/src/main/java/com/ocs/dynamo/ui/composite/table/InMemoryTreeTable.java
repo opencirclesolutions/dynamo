@@ -770,21 +770,6 @@ public abstract class InMemoryTreeTable<ID, U extends AbstractEntity<ID>, ID2, V
     }
 
     /**
-     * @param value
-     * @return
-     */
-    protected Number nvl(Number value) {
-        if (value instanceof BigDecimal) {
-            return value == null ? BigDecimal.ZERO : value;
-        } else if (value instanceof Long) {
-            return value == null ? 0L : value;
-        } else if (value instanceof Integer) {
-            return value == null ? 0 : value;
-        }
-        return value;
-    }
-
-    /**
      * Post process an editable field
      * 
      * @param propertyId

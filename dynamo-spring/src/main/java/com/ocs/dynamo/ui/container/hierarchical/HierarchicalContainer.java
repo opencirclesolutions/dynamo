@@ -57,8 +57,8 @@ import com.vaadin.data.Property;
  * @author Patrick Deenen (patrick.deenen@opencirclesolutions.nl)
  */
 @SuppressWarnings("serial")
-public class HierarchicalContainer implements Hierarchical, Ordered, ItemSetChangeNotifier, ItemSetChangeListener,
-        Sortable {
+public class HierarchicalContainer
+        implements Hierarchical, Ordered, ItemSetChangeNotifier, ItemSetChangeListener, Sortable {
 
     public class HierarchicalDefinition {
         private Indexed container;
@@ -434,10 +434,8 @@ public class HierarchicalContainer implements Hierarchical, Ordered, ItemSetChan
      */
     public void addDefinition(Indexed container, int level, Object itemPropertyId, Object itemPropertyIdParent,
             Object... propertyIds) {
-        getHierarchy().put(
-                level,
-                new HierarchicalDefinition(container, level, itemPropertyId, itemPropertyIdParent, Arrays
-                        .asList(propertyIds)));
+        getHierarchy().put(level, new HierarchicalDefinition(container, level, itemPropertyId, itemPropertyIdParent,
+                Arrays.asList(propertyIds)));
         if (container instanceof ItemSetChangeNotifier) {
             ((ItemSetChangeNotifier) container).addItemSetChangeListener(this);
         }
@@ -629,8 +627,8 @@ public class HierarchicalContainer implements Hierarchical, Ordered, ItemSetChan
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    protected int searchIndexByPropertyValue(Indexed container, Object propertyId, Object parentIdValue,
-            int startIndex, boolean first) {
+    protected int searchIndexByPropertyValue(Indexed container, Object propertyId, Object parentIdValue, int startIndex,
+            boolean first) {
         // Binary search
         int ll = startIndex;
         int ul = container.size() - 1;
@@ -947,7 +945,6 @@ public class HierarchicalContainer implements Hierarchical, Ordered, ItemSetChan
     }
 
     @Override
-    @Deprecated
     public void addListener(ItemSetChangeListener listener) {
         throw new UnsupportedOperationException();
     }
@@ -958,7 +955,6 @@ public class HierarchicalContainer implements Hierarchical, Ordered, ItemSetChan
     }
 
     @Override
-    @Deprecated
     public void removeListener(ItemSetChangeListener listener) {
         throw new UnsupportedOperationException();
     }

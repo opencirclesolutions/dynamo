@@ -530,9 +530,8 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
                 // use a "collection table" for an element collection
                 FormOptions fo = new FormOptions();
                 fo.setShowRemoveButton(true);
-                if (String.class.equals(attributeModel.getMemberType())) {
-                    field = new CollectionTable<>(attributeModel, false, fo);
-                } else if (Integer.class.equals(attributeModel.getMemberType())
+                if (String.class.equals(attributeModel.getMemberType())
+                        || Integer.class.equals(attributeModel.getMemberType())
                         || Long.class.equals(attributeModel.getMemberType())
                         || BigDecimal.class.equals(attributeModel.getMemberType())) {
                     field = new CollectionTable<>(attributeModel, false, fo);

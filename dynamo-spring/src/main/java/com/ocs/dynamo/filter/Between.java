@@ -74,20 +74,18 @@ public class Between extends AbstractFilter implements PropertyFilter {
     @Override
     public boolean equals(Object obj) {
         // Only objects of the same class can be equal
-        if (obj == null || !getClass().equals(obj.getClass())) {
+        if (!(obj instanceof Between)) {
             return false;
         }
         final Between o = (Between) obj;
 
-        return ObjectUtils.equals(propertyId, o.getPropertyId())
-                && ObjectUtils.equals(startValue, o.getStartValue())
+        return ObjectUtils.equals(propertyId, o.getPropertyId()) && ObjectUtils.equals(startValue, o.getStartValue())
                 && ObjectUtils.equals(endValue, o.getEndValue());
     }
 
     @Override
     public String toString() {
-        return getPropertyId() + " " + super.toString() + " " + getStartValue() + " and "
-                + getEndValue();
+        return getPropertyId() + " " + super.toString() + " " + getStartValue() + " and " + getEndValue();
     }
 
 }
