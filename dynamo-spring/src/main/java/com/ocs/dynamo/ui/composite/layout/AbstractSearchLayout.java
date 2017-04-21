@@ -34,13 +34,8 @@ import com.ocs.dynamo.ui.composite.type.ScreenMode;
 import com.ocs.dynamo.ui.container.QueryType;
 import com.vaadin.data.Container;
 import com.vaadin.data.Container.Filter;
-import com.vaadin.data.Property;
-import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.sort.SortOrder;
-import com.vaadin.event.ItemClickEvent;
-import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.HorizontalLayout;
@@ -87,11 +82,6 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
     private ModelBasedEditForm<ID, T> editForm;
 
     /**
-     * Label used to indicate that there are no search results yet
-     */
-    private Label noSearchYetLabel;
-
-    /**
      * The main layout (in edit mode)
      */
     private VerticalLayout mainEditLayout;
@@ -100,11 +90,6 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
      * The main layout (in search mode)
      */
     private VerticalLayout mainSearchLayout;
-
-    /**
-     * The layout that contains the search results table
-     */
-    private VerticalLayout searchResultsLayout;
 
     /**
      * The query type
@@ -215,18 +200,10 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
             // listen to a click on the clear button
             mainSearchLayout.addComponent(getSearchForm());
             if (getSearchForm().getClearButton() != null) {
-                getSearchForm().getClearButton().addClickListener(new Button.ClickListener() {
-
-                    private static final long serialVersionUID = -2415598554878464948L;
-
-                    @Override
-                    public void buttonClick(ClickEvent event) {
-                        afterClear();
-                    }
-                });
+                getSearchForm().getClearButton().addClickListener(e -> afterClear());
             }
 
-            searchResultsLayout = new DefaultVerticalLayout(false, false);
+            VerticalLayout searchResultsLayout = new DefaultVerticalLayout(false, false);
             mainSearchLayout.addComponent(searchResultsLayout);
 
             if (getFormOptions().isSearchImmediately()) {
@@ -234,35 +211,28 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
                 searchResultsLayout.addComponent(getTableWrapper());
             } else {
                 // do not construct the search results table yet
-                noSearchYetLabel = new Label(message("ocs.no.search.yet"));
+                Label noSearchYetLabel = new Label(message("ocs.no.search.yet"));
                 searchResultsLayout.addComponent(noSearchYetLabel);
 
                 // set up a click listener that will construct the table when needed in case of a
                 // deferred search
                 // set up a click listener that will set the searchable when
                 // needed
-                getSearchForm().getSearchButton().addClickListener(new Button.ClickListener() {
+                getSearchForm().getSearchButton().addClickListener(e -> {
+                    if (!searchLayoutConstructed) {
+                        // construct search screen if it is not there yet
+                        try {
+                            validateBeforeSearch();
+                            constructSearchLayout();
 
-                    private static final long serialVersionUID = -156650492974447814L;
+                            searchResultsLayout.addComponent(getTableWrapper());
+                            getSearchForm().setSearchable(getTableWrapper());
 
-                    @Override
-                    public void buttonClick(ClickEvent event) {
-                        if (!searchLayoutConstructed) {
-                            // construct search screen if it is not there yet
-
-                            try {
-                                validateBeforeSearch();
-                                constructSearchLayout();
-
-                                searchResultsLayout.addComponent(getTableWrapper());
-                                getSearchForm().setSearchable(getTableWrapper());
-
-                                searchResultsLayout.removeComponent(noSearchYetLabel);
-                                searchLayoutConstructed = true;
-                                afterSearchPerformed();
-                            } catch (OCSValidationException ex) {
-                                showNotifification(ex.getErrors().get(0), Notification.Type.ERROR_MESSAGE);
-                            }
+                            searchResultsLayout.removeComponent(noSearchYetLabel);
+                            searchLayoutConstructed = true;
+                            afterSearchPerformed();
+                        } catch (OCSValidationException ex) {
+                            showNotifification(ex.getErrors().get(0), Notification.Type.ERROR_MESSAGE);
                         }
                     }
                 });
@@ -301,15 +271,9 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
     protected final Button constructEditButton() {
         Button eb = new Button(
                 (!getFormOptions().isEditAllowed() || !isEditAllowed()) ? message("ocs.view") : message("ocs.edit"));
-        eb.addClickListener(new Button.ClickListener() {
-
-            private static final long serialVersionUID = -2800434669444928287L;
-
-            @Override
-            public void buttonClick(ClickEvent event) {
-                if (getSelectedItem() != null) {
-                    doEdit();
-                }
+        eb.addClickListener(e -> {
+            if (getSelectedItem() != null) {
+                doEdit();
             }
         });
         // hide button inside popup window
@@ -354,29 +318,17 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
         getTableWrapper().getTable().setMultiSelect(isMultiSelect());
 
         // add a listener to respond to the selection of an item
-        getTableWrapper().getTable().addValueChangeListener(new Property.ValueChangeListener() {
-
-            private static final long serialVersionUID = 7181225125947489648L;
-
-            @Override
-            public void valueChange(ValueChangeEvent event) {
-                select(getTableWrapper().getTable().getValue());
-                checkButtonState(getSelectedItem());
-            }
+        getTableWrapper().getTable().addValueChangeListener(e -> {
+            select(getTableWrapper().getTable().getValue());
+            checkButtonState(getSelectedItem());
         });
 
         // select item by double clicking on row (disable this inside popup windows)
         if (!getFormOptions().isPopup() && getFormOptions().isDoubleClickSelectAllowed()) {
-            getTableWrapper().getTable().addItemClickListener(new ItemClickListener() {
-
-                private static final long serialVersionUID = 7947905411214073660L;
-
-                @Override
-                public void itemClick(ItemClickEvent event) {
-                    if (event.isDoubleClick()) {
-                        select(event.getItem().getItemProperty(DynamoConstants.ID).getValue());
-                        doEdit();
-                    }
+            getTableWrapper().getTable().addItemClickListener(event -> {
+                if (event.isDoubleClick()) {
+                    select(event.getItem().getItemProperty(DynamoConstants.ID).getValue());
+                    doEdit();
                 }
             });
         }
@@ -679,6 +631,13 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
         return selectedItems;
     }
 
+    /**
+     * Check whether the container contains a next entity
+     * 
+     * @param current
+     *            the currently selected entity
+     * @return
+     */
     protected boolean hasNextEntity(T current) {
         if (current != null) {
             return getTableWrapper().getTable().nextItemId(current.getId()) != null;
@@ -686,6 +645,13 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
         return false;
     }
 
+    /**
+     * Check whether the container contains a previous entity
+     * 
+     * @param current
+     *            the currently selected entity
+     * @return
+     */
     protected boolean hasPrevEntity(T current) {
         if (current != null) {
             return getTableWrapper().getTable().prevItemId(current.getId()) != null;

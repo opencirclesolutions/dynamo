@@ -88,6 +88,7 @@ public class ProgressBarUpdater implements Runnable {
                 MessageService ms = ServiceLocator.getMessageService();
                 progressable.getStatusLabel().setValue(ms.getMessage("ocs.progress.done", progressString));
             });
+
         }
     }
 }

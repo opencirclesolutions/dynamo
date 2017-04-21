@@ -34,15 +34,13 @@ import com.ocs.dynamo.ui.composite.form.FormOptions;
 import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
 import com.ocs.dynamo.ui.composite.table.BaseTableWrapper;
 import com.vaadin.data.Container;
-import com.vaadin.data.Property;
 import com.vaadin.data.Container.Filter;
+import com.vaadin.data.Property;
 import com.vaadin.data.sort.SortOrder;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.Table;
-import com.vaadin.ui.Table.CellStyleGenerator;
 
 /**
  * A base class for a composite layout that displays a collection of data (rather than an single
@@ -54,369 +52,355 @@ import com.vaadin.ui.Table.CellStyleGenerator;
  * @param <T>
  *            the type of the entity
  */
-public abstract class BaseCollectionLayout<ID extends Serializable, T extends AbstractEntity<ID>> extends
-        BaseServiceCustomComponent<ID, T> implements Reloadable, Refreshable {
+public abstract class BaseCollectionLayout<ID extends Serializable, T extends AbstractEntity<ID>>
+        extends BaseServiceCustomComponent<ID, T> implements Reloadable, Refreshable {
 
-	private static final long serialVersionUID = -2864711994829582000L;
+    private static final long serialVersionUID = -2864711994829582000L;
 
-	// the default page length
-	private static final int PAGE_LENGTH = 20;
+    // the default page length
+    private static final int PAGE_LENGTH = 15;
 
-	// the button bar
-	private HorizontalLayout buttonBar = new DefaultHorizontalLayout();
+    // the button bar
+    private HorizontalLayout buttonBar = new DefaultHorizontalLayout();
 
-	// the relations to fetch when displaying a single entity
-	private FetchJoinInformation[] detailJoins;
+    // the relations to fetch when displaying a single entity
+    private FetchJoinInformation[] detailJoins;
 
-	// the property used to determine when to draw a divider row
-	private String dividerProperty;
+    // the property used to determine when to draw a divider row
+    private String dividerProperty;
 
-	// filters to apply to individual search fields
-	private Map<String, Filter> fieldFilters = new HashMap<>();
+    // filters to apply to individual search fields
+    private Map<String, Filter> fieldFilters = new HashMap<>();
 
-	// the joins to use when fetching data
-	private FetchJoinInformation[] joins;
+    // the joins to use when fetching data
+    private FetchJoinInformation[] joins;
 
-	// the value from the previous row used when drawing divider rows
-	private Object previousDividerValue;
+    // the value from the previous row used when drawing divider rows
+    private Object previousDividerValue;
 
-	// the page length (number of rows that is displayed in the table)
-	private int pageLength = PAGE_LENGTH;
+    // the page length (number of rows that is displayed in the table)
+    private int pageLength = PAGE_LENGTH;
 
-	// the currently selected item
-	private T selectedItem;
+    // the currently selected item
+    private T selectedItem;
 
-	// whether the table can manually be sorted
-	private boolean sortEnabled = true;
+    // whether the table can manually be sorted
+    private boolean sortEnabled = true;
 
-	// the sort orders
-	private List<SortOrder> sortOrders = new ArrayList<>();
+    // the sort orders
+    private List<SortOrder> sortOrders = new ArrayList<>();
 
-	// the table wrapper
-	private BaseTableWrapper<ID, T> tableWrapper;
+    // the table wrapper
+    private BaseTableWrapper<ID, T> tableWrapper;
 
-	// whether the selection of multiple values is allowed
-	private boolean multiSelect = false;
+    // whether the selection of multiple values is allowed
+    private boolean multiSelect = false;
 
-	/**
-	 * Constructor
-	 * 
-	 * @param service
-	 *            the service
-	 * @param entityModel
-	 *            the entity model
-	 * @param formOptions
-	 *            the form options
-	 * @param sortOrder
-	 *            the sort order
-	 * @param joins
-	 *            the joins to use when fetching data
-	 */
-	public BaseCollectionLayout(BaseService<ID, T> service, EntityModel<T> entityModel, FormOptions formOptions,
-	        SortOrder sortOrder, FetchJoinInformation... joins) {
-		super(service, entityModel, formOptions);
-		this.joins = joins;
-		if (sortOrder != null) {
-			sortOrders.add(sortOrder);
-		}
-	}
+    /**
+     * Constructor
+     * 
+     * @param service
+     *            the service
+     * @param entityModel
+     *            the entity model
+     * @param formOptions
+     *            the form options
+     * @param sortOrder
+     *            the sort order
+     * @param joins
+     *            the joins to use when fetching data
+     */
+    public BaseCollectionLayout(BaseService<ID, T> service, EntityModel<T> entityModel, FormOptions formOptions,
+            SortOrder sortOrder, FetchJoinInformation... joins) {
+        super(service, entityModel, formOptions);
+        this.joins = joins;
+        if (sortOrder != null) {
+            sortOrders.add(sortOrder);
+        }
+    }
 
-	/**
-	 * Adds an additional sort order
-	 * 
-	 * @param sortOrder
-	 *            the sort order to add
-	 */
-	public final void addSortOrder(SortOrder sortOrder) {
-		this.sortOrders.add(sortOrder);
-	}
+    /**
+     * Adds an additional sort order
+     * 
+     * @param sortOrder
+     *            the sort order to add
+     */
+    public final void addSortOrder(SortOrder sortOrder) {
+        this.sortOrders.add(sortOrder);
+    }
 
-	/**
-	 * Method that is called after the setEntity method is called. Can be used to fetch additional
-	 * data if required. This method is called before the "afterDetailSelected" method is called
-	 * 
-	 * @param entity
-	 *            the entity
-	 */
-	protected void afterEntitySet(T entity) {
-		// override in subclass
-	}
+    /**
+     * Method that is called after the setEntity method is called. Can be used to fetch additional
+     * data if required. This method is called before the "afterDetailSelected" method is called
+     * 
+     * @param entity
+     *            the entity
+     */
+    protected void afterEntitySet(T entity) {
+        // override in subclass
+    }
 
-	/**
-	 * Removes all sort orders
-	 */
-	public void clearSortOrders() {
-		this.sortOrders.clear();
-	}
+    /**
+     * Removes all sort orders
+     */
+    public void clearSortOrders() {
+        this.sortOrders.clear();
+    }
 
-	/**
-	 * Constructs the "Add"-button that is used to open the form in "new entity" mode
-	 * 
-	 * @return
-	 */
-	protected final Button constructAddButton() {
-		Button ab = new Button(message("ocs.add"));
-		ab.addClickListener(new Button.ClickListener() {
+    /**
+     * Constructs the "Add"-button that is used to open the form in "new entity" mode
+     * 
+     * @return
+     */
+    protected final Button constructAddButton() {
+        Button ab = new Button(message("ocs.add"));
+        ab.addClickListener(e -> doAdd());
+        ab.setVisible(!getFormOptions().isHideAddButton() && isEditAllowed());
+        return ab;
+    }
 
-			private static final long serialVersionUID = -5005648144833272606L;
+    /**
+     * Add divider rows to the table based on the value of the "dividerProperty"
+     */
+    protected final void constructTableDividers() {
+        if (dividerProperty != null) {
+            getTableWrapper().getTable().setStyleName(DynamoConstants.CSS_DIVIDER);
+            getTableWrapper().getTable().setCellStyleGenerator((Table source, Object itemId, Object propertyId) -> {
+                String result = null;
+                if (itemId != null) {
+                    Property<?> prop = source.getItem(itemId).getItemProperty(dividerProperty);
+                    if (prop != null) {
+                        Object obj = prop.getValue();
+                        if (!ObjectUtils.equals(obj, previousDividerValue)) {
+                            result = DynamoConstants.CSS_DIVIDER;
+                        }
+                        previousDividerValue = obj;
+                    }
+                }
+                return result;
+            });
+        }
+    }
 
-			@Override
-			public void buttonClick(ClickEvent event) {
-				doAdd();
-			}
-		});
-		ab.setVisible(!getFormOptions().isHideAddButton() && isEditAllowed());
-		return ab;
-	}
+    /**
+     * Lazily constructs the table wrapper - implement in subclasses in order to create the right
+     * type of wrapper
+     * 
+     * @return
+     */
+    protected abstract BaseTableWrapper<ID, T> constructTableWrapper();
 
-	/**
-	 * Add divider rows to the table based on the value of the "dividerProperty"
-	 */
-	protected final void constructTableDividers() {
-		if (dividerProperty != null) {
-			getTableWrapper().getTable().setStyleName(DynamoConstants.CSS_DIVIDER);
-			getTableWrapper().getTable().setCellStyleGenerator(new CellStyleGenerator() {
+    /**
+     * Creates a new entity - override in subclass if needed
+     * 
+     * @return
+     */
+    protected T createEntity() {
+        return getService().createNewEntity();
+    }
 
-				private static final long serialVersionUID = -943390318671601151L;
+    /**
+     * Switches to the detail mode (which displays the attributes of a single entity)
+     * 
+     * @param entity
+     *            the entity to display
+     */
+    protected abstract void detailsMode(T entity);
 
-				@Override
-				public String getStyle(Table source, Object itemId, Object propertyId) {
-					String result = null;
-					if (itemId != null) {
-						Property<?> prop = source.getItem(itemId).getItemProperty(dividerProperty);
-						if (prop != null) {
-							Object obj = prop.getValue();
-							if (!ObjectUtils.equals(obj, previousDividerValue)) {
-								result = DynamoConstants.CSS_DIVIDER;
-							}
-							previousDividerValue = obj;
-						}
-					}
-					return result;
-				}
-			});
-		}
-	}
+    /**
+     * Method that is called when the Add button is clicked. Can be overridden in order to perform
+     * your own custom logic
+     */
+    protected void doAdd() {
+        setSelectedItem(createEntity());
+        detailsMode(getSelectedItem());
+    }
 
-	/**
-	 * Lazily constructs the table wrapper - implement in subclasses in order to create the right
-	 * type of wrapper
-	 * 
-	 * @return
-	 */
-	protected abstract BaseTableWrapper<ID, T> constructTableWrapper();
+    /**
+     * Method that is called after the search results container has been constructed. Use this to
+     * modify the container if needed
+     * 
+     * @param container
+     */
+    protected void doConstructContainer(Container container) {
+        // overwrite in subclasses
+    }
 
-	/**
-	 * Creates a new entity - override in subclass if needed
-	 * 
-	 * @return
-	 */
-	protected T createEntity() {
-		return getService().createNewEntity();
-	}
+    public HorizontalLayout getButtonBar() {
+        return buttonBar;
+    }
 
-	/**
-	 * Switches to the detail mode (which displays the attributes of a single entity)
-	 * 
-	 * @param entity
-	 *            the entity to display
-	 */
-	protected abstract void detailsMode(T entity);
+    public String getDividerProperty() {
+        return dividerProperty;
+    }
 
-	/**
-	 * Method that is called when the Add button is clicked. Can be overridden in order to perform
-	 * your own custom logic
-	 */
-	protected void doAdd() {
-		setSelectedItem(createEntity());
-		detailsMode(getSelectedItem());
-	}
+    public FetchJoinInformation[] getJoins() {
+        return joins;
+    }
 
-	/**
-	 * Method that is called after the search results container has been constructed. Use this to
-	 * modify the container if needed
-	 * 
-	 * @param container
-	 */
-	protected void doConstructContainer(Container container) {
-		// overwrite in subclasses
-	}
+    public int getPageLength() {
+        return pageLength;
+    }
 
-	public HorizontalLayout getButtonBar() {
-		return buttonBar;
-	}
+    public T getSelectedItem() {
+        return selectedItem;
+    }
 
-	public String getDividerProperty() {
-		return dividerProperty;
-	}
+    /**
+     * Returns the parent group (which must be returned by the getParentGroupHeaders method) to
+     * which a certain child group belongs
+     * 
+     * @param childGroup
+     *            the name of the child group
+     * @return
+     */
+    protected String getParentGroup(String childGroup) {
+        // overwrite in subclasses if needed
+        return null;
+    }
 
-	public FetchJoinInformation[] getJoins() {
-		return joins;
-	}
+    /**
+     * Returns a list of keys for the messages that can be used to add an extra attribute group
+     * layer to the layout. By default this method returns null which means that no extra layer will
+     * be used. If you return a non-empty String array, then the values in this array will be used
+     * as additional attribute group header. Use the "getParentGroup" method to determine which
+     * "regular" attribute group to place inside which parent group.
+     * 
+     * @return
+     */
+    protected String[] getParentGroupHeaders() {
+        // overwrite in subclasses if needed
+        return null;
+    }
 
-	public int getPageLength() {
-		return pageLength;
-	}
+    /**
+     * 
+     * @return the currently configured sort orders
+     */
+    public List<SortOrder> getSortOrders() {
+        return Collections.unmodifiableList(sortOrders);
+    }
 
-	public T getSelectedItem() {
-		return selectedItem;
-	}
+    /**
+     * 
+     * @return the table wrapper
+     */
+    public BaseTableWrapper<ID, T> getTableWrapper() {
+        if (tableWrapper == null) {
+            tableWrapper = constructTableWrapper();
+            postProcessTableWrapper(tableWrapper);
+        }
+        return tableWrapper;
+    }
 
-	/**
-	 * Returns the parent group (which must be returned by the getParentGroupHeaders method) to
-	 * which a certain child group belongs
-	 * 
-	 * @param childGroup
-	 *            the name of the child group
-	 * @return
-	 */
-	protected String getParentGroup(String childGroup) {
-		// overwrite in subclasses if needed
-		return null;
-	}
+    /**
+     * Indicates whether editing is allowed. This defaults to TRUE but you can overwrite it in
+     * subclasses if needed
+     * 
+     * @return
+     */
+    protected boolean isEditAllowed() {
+        return true;
+    }
 
-	/**
-	 * Returns a list of keys for the messages that can be used to add an extra attribute group
-	 * layer to the layout. By default this method returns null which means that no extra layer will
-	 * be used. If you return a non-empty String array, then the values in this array will be used
-	 * as additional attribute group header. Use the "getParentGroup" method to determine which
-	 * "regular" attribute group to place inside which parent group.
-	 * 
-	 * @return
-	 */
-	protected String[] getParentGroupHeaders() {
-		// overwrite in subclasses if needed
-		return null;
-	}
+    public boolean isMultiSelect() {
+        return multiSelect;
+    }
 
-	/**
-	 * 
-	 * @return the currently configured sort orders
-	 */
-	public List<SortOrder> getSortOrders() {
-		return Collections.unmodifiableList(sortOrders);
-	}
+    public boolean isSortEnabled() {
+        return sortEnabled;
+    }
 
-	/**
-	 * 
-	 * @return the table wrapper
-	 */
-	public BaseTableWrapper<ID, T> getTableWrapper() {
-		if (tableWrapper == null) {
-			tableWrapper = constructTableWrapper();
-			postProcessTableWrapper(tableWrapper);
-		}
-		return tableWrapper;
-	}
+    /**
+     * Adds additional buttons to the main button bar (that appears below the results table)
+     * 
+     * @param buttonBar
+     *            the button bar
+     */
+    protected void postProcessButtonBar(Layout buttonBar) {
+        // overwrite in subclass if needed
+    }
 
-	/**
-	 * Indicates whether editing is allowed. This defaults to TRUE but you can overwrite it in
-	 * subclasses if needed
-	 * 
-	 * @return
-	 */
-	protected boolean isEditAllowed() {
-		return true;
-	}
+    /**
+     * Adds additional buttons to the button bar above/below the detail screen
+     * 
+     * @param buttonBar
+     *            the button bar
+     * @param viewMode
+     *            indicates whether the form is in view mode
+     */
+    protected void postProcessDetailButtonBar(Layout buttonBar, boolean viewMode) {
+        // overwrite in subclass if needed
+    }
 
-	public boolean isMultiSelect() {
-		return multiSelect;
-	}
+    /**
+     * Post processes the edit fields. This method is called once, just before the screen is
+     * displayed in edit mode for the first time. Use this method to e.g. set up change listeners
+     * 
+     * @param editForm
+     */
+    protected void postProcessEditFields(ModelBasedEditForm<ID, T> editForm) {
+        // override in subclasses
+    }
 
-	public boolean isSortEnabled() {
-		return sortEnabled;
-	}
+    /**
+     * Method that is called after the entire layout has been constructed. Use this to e.g. add
+     * additional components to the bottom of the layout or to modify button captions
+     * 
+     * @param main
+     *            the main layout
+     */
+    protected void postProcessLayout(Layout main) {
+        // override in subclasses
+    }
 
-	/**
-	 * Adds additional buttons to the button bar
-	 * 
-	 * @param buttonBar
-	 *            the button bar
-	 */
-	protected void postProcessButtonBar(Layout buttonBar) {
-		// overwrite in subclass if needed
-	}
+    /**
+     * Method that is called after the table wrapper has been constructed
+     * 
+     * @param wrapper
+     */
+    protected void postProcessTableWrapper(BaseTableWrapper<ID, T> wrapper) {
+        // overwrite in subclasses when needed
+    }
 
-	/**
-	 * Adds additional buttons to the button bar above/below the detail screen
-	 * 
-	 * @param buttonBar
-	 *            the button bar
-	 * @param viewMode
-	 *            indicates whether the form is in view mode
-	 */
-	protected void postProcessDetailButtonBar(Layout buttonBar, boolean viewMode) {
-		// overwrite in subclass if needed
-	}
+    public void setDividerProperty(String dividerProperty) {
+        this.dividerProperty = dividerProperty;
+    }
 
-	/**
-	 * Post processes the edit fields. This method is called once, just before the screen is
-	 * displayed in edit mode for the first time. Use this method to e.g. set up change listeners
-	 * 
-	 * @param editForm
-	 */
-	protected void postProcessEditFields(ModelBasedEditForm<ID, T> editForm) {
-		// override in subclasses
-	}
+    public void setMultiSelect(boolean multiSelect) {
+        this.multiSelect = multiSelect;
+    }
 
-	/**
-	 * Method that is called after the entire layout has been constructed. Use this to e.g. add
-	 * additional components to the bottom of the layout or to modify the table
-	 * 
-	 * @param main
-	 *            the main layout
-	 */
-	protected void postProcessLayout(Layout main) {
-		// override in subclasses
-	}
+    public void setPageLength(int pageLength) {
+        this.pageLength = pageLength;
+    }
 
-	/**
-	 * Method that is called after the table wrapper has been constructed
-	 * 
-	 * @param wrapper
-	 */
-	protected void postProcessTableWrapper(BaseTableWrapper<ID, T> wrapper) {
-		// overwrite in subclasses when needed
-	}
+    public void setSelectedItem(T selectedItem) {
+        this.selectedItem = selectedItem;
+        checkButtonState(selectedItem);
+    }
 
-	public void setDividerProperty(String dividerProperty) {
-		this.dividerProperty = dividerProperty;
-	}
+    public void setSortEnabled(boolean sortEnabled) {
+        this.sortEnabled = sortEnabled;
+    }
 
-	public void setMultiSelect(boolean multiSelect) {
-		this.multiSelect = multiSelect;
-	}
+    public FetchJoinInformation[] getDetailJoins() {
+        return detailJoins;
+    }
 
-	public void setPageLength(int pageLength) {
-		this.pageLength = pageLength;
-	}
+    public void setDetailJoins(FetchJoinInformation[] detailJoins) {
+        this.detailJoins = detailJoins;
+    }
 
-	public void setSelectedItem(T selectedItem) {
-		this.selectedItem = selectedItem;
-		checkButtonState(selectedItem);
-	}
+    public Map<String, Filter> getFieldFilters() {
+        return fieldFilters;
+    }
 
-	public void setSortEnabled(boolean sortEnabled) {
-		this.sortEnabled = sortEnabled;
-	}
+    public void setFieldFilters(Map<String, Filter> fieldFilters) {
+        this.fieldFilters = fieldFilters;
+    }
 
-	public FetchJoinInformation[] getDetailJoins() {
-		return detailJoins;
-	}
-
-	public void setDetailJoins(FetchJoinInformation[] detailJoins) {
-		this.detailJoins = detailJoins;
-	}
-
-	public Map<String, Filter> getFieldFilters() {
-		return fieldFilters;
-	}
-
-	public void setFieldFilters(Map<String, Filter> fieldFilters) {
-		this.fieldFilters = fieldFilters;
-	}
-
-	public FetchJoinInformation[] getDetailJoinsFallBack() {
-		return (detailJoins == null || detailJoins.length == 0) ? getJoins() : detailJoins;
-	}
+    public FetchJoinInformation[] getDetailJoinsFallBack() {
+        return (detailJoins == null || detailJoins.length == 0) ? getJoins() : detailJoins;
+    }
 }

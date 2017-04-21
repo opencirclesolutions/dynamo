@@ -584,10 +584,12 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
             field = constructCollectionSelect(fieldEntityModel, attributeModel, null, true, search);
         } else if (LocalDate.class.equals(attributeModel.getType())) {
             DateField df = new DateField();
+            df.setResolution(Resolution.DAY);
             df.setConverter(ConverterFactory.createLocalDateConverter());
             field = df;
         } else if (LocalDateTime.class.equals(attributeModel.getType())) {
             DateField df = new DateField();
+            df.setResolution(Resolution.SECOND);
             df.setConverter(ConverterFactory.createLocalDateTimeConverter());
             field = df;
         } else if (AttributeDateType.TIME.equals(attributeModel.getDateType())) {

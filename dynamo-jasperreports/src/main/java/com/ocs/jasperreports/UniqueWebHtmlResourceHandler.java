@@ -15,13 +15,20 @@ package com.ocs.jasperreports;
 
 import net.sf.jasperreports.web.util.WebHtmlResourceHandler;
 
+/**
+ * Resources handler that adds a timestamp to the link to make it unique
+ * 
+ * @author bas.rutten
+ *
+ */
 public class UniqueWebHtmlResourceHandler extends WebHtmlResourceHandler {
-	public UniqueWebHtmlResourceHandler(String path) {
-		super(path);
-	}
 
-	@Override
-	public String getResourcePath(String id) {
-		return super.getResourcePath(id) + "&time=" + System.nanoTime();
-	}
+    public UniqueWebHtmlResourceHandler(String path) {
+        super(path);
+    }
+
+    @Override
+    public String getResourcePath(String id) {
+        return super.getResourcePath(id) + "&time=" + System.nanoTime();
+    }
 }

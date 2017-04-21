@@ -80,7 +80,6 @@ import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.utils.ClassUtils;
 import com.ocs.dynamo.utils.DateUtils;
 import com.ocs.dynamo.utils.SystemPropertyUtils;
-import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.DefaultFieldFactory;
 
 /**

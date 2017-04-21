@@ -21,6 +21,7 @@ import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
+import java.time.temporal.Temporal;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -54,7 +55,7 @@ public final class DateUtils {
     private DateUtils() {
         // hidden constructor
     }
-    
+
     /**
      * Creates a java.util.Date based on a String representation
      * 
@@ -392,6 +393,18 @@ public final class DateUtils {
     }
 
     /**
+     * Checks if a class represents a supported Date time. This includes the Java 8 date types and
+     * the legacy java.util.Date
+     * 
+     * @param clazz
+     *            the class to check
+     * @return
+     */
+    public static boolean isSupportedDateType(Class<?> clazz) {
+        return Date.class.isAssignableFrom(clazz) || isJava8DateType(clazz);
+    }
+
+    /**
      * Checks if a string represents a valid week code (yyyy-ww). An empty String is considered
      * valid
      * 
@@ -442,6 +455,24 @@ public final class DateUtils {
             return null;
         }
         return Date.from(ldt.atZone(ZoneId.systemDefault()).toInstant());
+    }
+
+    /**
+     * Converts any of the Java 8 date type to a legacy java.util.Date
+     * 
+     * @param t
+     *            the date to convert
+     * @return
+     */
+    public static Date toLegacyDate(Temporal t) {
+        if (t instanceof LocalDate) {
+            return toLegacyDate((LocalDate) t);
+        } else if (t instanceof LocalDateTime) {
+            return toLegacyDate((LocalDateTime) t);
+        } else if (t instanceof LocalTime) {
+            return toLegacyTime((LocalTime) t);
+        }
+        return null;
     }
 
     /**
@@ -572,6 +603,5 @@ public final class DateUtils {
         calendar.set(Calendar.MILLISECOND, 0);
         return calendar;
     }
-
 
 }

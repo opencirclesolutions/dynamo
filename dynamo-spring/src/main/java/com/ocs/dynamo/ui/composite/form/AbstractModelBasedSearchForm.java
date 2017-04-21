@@ -54,446 +54,442 @@ import com.vaadin.ui.VerticalLayout;
  * @param <T>
  *            the type of the entity
  */
-public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T extends AbstractEntity<ID>> extends
-        AbstractModelBasedForm<ID, T> implements FilterListener, Button.ClickListener, Refreshable {
+public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T extends AbstractEntity<ID>>
+        extends AbstractModelBasedForm<ID, T> implements FilterListener, Button.ClickListener, Refreshable {
 
-	private static final long serialVersionUID = 2146875385041665280L;
+    private static final long serialVersionUID = 2146875385041665280L;
 
-	/**
-	 * Any filters that will always be applied to any search query (use these to restrict the result
-	 * set beforehand)
-	 */
-	private List<Filter> defaultFilters = new ArrayList<>();
+    /**
+     * Any filters that will always be applied to any search query (use these to restrict the result
+     * set beforehand)
+     */
+    private List<Filter> defaultFilters = new ArrayList<>();
 
-	/**
-	 * Button to clear the search form
-	 */
-	private Button clearButton;
+    /**
+     * Button to clear the search form
+     */
+    private Button clearButton;
 
-	/**
-	 * The list of currently active search filters
-	 */
-	private List<Filter> currentFilters = new ArrayList<>();
+    /**
+     * The list of currently active search filters
+     */
+    private List<Filter> currentFilters = new ArrayList<>();
 
-	/**
-	 * Field factory used for constructing search fields
-	 */
-	private ModelBasedFieldFactory<T> fieldFactory;
+    /**
+     * Field factory used for constructing search fields
+     */
+    private ModelBasedFieldFactory<T> fieldFactory;
 
-	/**
-	 * The layout that holds the various filters
-	 */
-	private Layout filterLayout;
+    /**
+     * The layout that holds the various filters
+     */
+    private Layout filterLayout;
 
-	/**
-	 * The object that will be searched when the user presses the "Search" button
-	 */
-	private Searchable searchable;
+    /**
+     * The object that will be searched when the user presses the "Search" button
+     */
+    private Searchable searchable;
 
-	/**
-	 * The "search" button
-	 */
-	private Button searchButton;
+    /**
+     * The "search" button
+     */
+    private Button searchButton;
 
-	/**
-	 * The toggle button (hides/shows the search form)
-	 */
-	private Button toggleButton;
+    /**
+     * The toggle button (hides/shows the search form)
+     */
+    private Button toggleButton;
 
-	/**
-	 * The panel that wraps around the filter form
-	 */
-	private Panel wrapperPanel;
+    /**
+     * The panel that wraps around the filter form
+     */
+    private Panel wrapperPanel;
 
-	/**
-	 * The button bar
-	 */
-	private HorizontalLayout buttonBar;
+    /**
+     * The button bar
+     */
+    private HorizontalLayout buttonBar;
 
-	/**
-	 * The main layout (constructed only once)
-	 */
-	private VerticalLayout main;
+    /**
+     * The main layout (constructed only once)
+     */
+    private VerticalLayout main;
 
-	/**
-	 * 
-	 * @param searchable
-	 * @param entityModel
-	 * @param formOptions
-	 * @param defaultFilters
-	 * @param fieldFilters
-	 */
-	public AbstractModelBasedSearchForm(Searchable searchable, EntityModel<T> entityModel, FormOptions formOptions,
-	        List<Filter> defaultFilters, Map<String, Filter> fieldFilters) {
-		super(formOptions, fieldFilters, entityModel);
-		this.fieldFactory = ModelBasedFieldFactory.getSearchInstance(entityModel, getMessageService());
-		this.defaultFilters = defaultFilters == null ? new ArrayList<>() : defaultFilters;
-		this.currentFilters.addAll(this.defaultFilters);
-		this.searchable = searchable;
-	}
+    /**
+     * Constructor
+     * 
+     * @param searchable
+     * @param entityModel
+     * @param formOptions
+     * @param defaultFilters
+     * @param fieldFilters
+     */
+    public AbstractModelBasedSearchForm(Searchable searchable, EntityModel<T> entityModel, FormOptions formOptions,
+            List<Filter> defaultFilters, Map<String, Filter> fieldFilters) {
+        super(formOptions, fieldFilters, entityModel);
+        this.fieldFactory = ModelBasedFieldFactory.getSearchInstance(entityModel, getMessageService());
+        this.defaultFilters = defaultFilters == null ? new ArrayList<>() : defaultFilters;
+        this.currentFilters.addAll(this.defaultFilters);
+        this.searchable = searchable;
+    }
 
-	/**
-	 * Callback method that is called after a successfull search has been performed
-	 */
-	protected void afterSearchPerformed() {
-		// override in subclasses
-	}
+    /**
+     * Callback method that is called after a successfull search has been performed
+     */
+    protected void afterSearchPerformed() {
+        // override in subclasses
+    }
 
-	/**
-	 * Callback method that is called when the user toggles the visibility of the search form
-	 * 
-	 * @param visible
-	 *            indicates if the search fields are visible now
-	 */
-	protected void afterSearchFieldToggle(boolean visible) {
-		// override in subclasses
-	}
+    /**
+     * Callback method that is called when the user toggles the visibility of the search form
+     * 
+     * @param visible
+     *            indicates if the search fields are visible now
+     */
+    protected void afterSearchFieldToggle(boolean visible) {
+        // override in subclasses
+    }
 
-	@Override
-	public void attach() {
-		super.attach();
-		build();
-	}
+    @Override
+    public void attach() {
+        super.attach();
+        build();
+    }
 
-	@Override
-	public void build() {
-		if (main == null) {
-			main = new DefaultVerticalLayout(false, true);
-			preProcessLayout(main);
+    @Override
+    public void build() {
+        if (main == null) {
+            main = new DefaultVerticalLayout(false, true);
+            preProcessLayout(main);
 
-			// create the search form
-			filterLayout = constructFilterLayout();
-			if (filterLayout.isVisible()) {
+            // create the search form
+            filterLayout = constructFilterLayout();
+            if (filterLayout.isVisible()) {
 
-				// add a wrapper for adding an action handler
-				wrapperPanel = new Panel();
-				main.addComponent(wrapperPanel);
+                // add a wrapper for adding an action handler
+                wrapperPanel = new Panel();
+                main.addComponent(wrapperPanel);
 
-				wrapperPanel.setContent(filterLayout);
+                wrapperPanel.setContent(filterLayout);
 
-				// action handler for carrying out a search after an Enter press
-				wrapperPanel.addActionHandler(new Handler() {
+                // action handler for carrying out a search after an Enter press
+                wrapperPanel.addActionHandler(new Handler() {
 
-					private static final long serialVersionUID = -2136828212405809213L;
+                    private static final long serialVersionUID = -2136828212405809213L;
 
-					private Action enter = new ShortcutAction(null, ShortcutAction.KeyCode.ENTER, null);
+                    private Action enter = new ShortcutAction(null, ShortcutAction.KeyCode.ENTER, null);
 
-					@Override
-					public Action[] getActions(Object target, Object sender) {
-						return new Action[] { enter };
-					}
+                    @Override
+                    public Action[] getActions(Object target, Object sender) {
+                        return new Action[] { enter };
+                    }
 
-					@Override
-					public void handleAction(Action action, Object sender, Object target) {
-						if (action == enter) {
-							search();
-						}
-					}
-				});
+                    @Override
+                    public void handleAction(Action action, Object sender, Object target) {
+                        if (action == enter) {
+                            search();
+                        }
+                    }
+                });
 
-				// create the button bar
-				buttonBar = new DefaultHorizontalLayout();
-				main.addComponent(buttonBar);
-				constructButtonBar(buttonBar);
-				// add custom buttons
-				postProcessButtonBar(buttonBar);
-			}
+                // create the button bar
+                buttonBar = new DefaultHorizontalLayout();
+                main.addComponent(buttonBar);
+                constructButtonBar(buttonBar);
+                // add custom buttons
+                postProcessButtonBar(buttonBar);
+            }
 
-			// add any custom functionality
-			postProcessLayout(main);
-			setCompositionRoot(main);
-		}
-	}
+            // add any custom functionality
+            postProcessLayout(main);
+            setCompositionRoot(main);
+        }
+    }
 
-	@Override
-	public void buttonClick(ClickEvent event) {
-		if (event.getButton() == searchButton) {
-			search();
-		} else if (event.getButton() == clearButton) {
-			if (getFormOptions().isConfirmClear()) {
-				VaadinUtils.showConfirmDialog(getMessageService(), message("ocs.confirm.clear"), () -> {
+    @Override
+    public void buttonClick(ClickEvent event) {
+        if (event.getButton() == searchButton) {
+            search();
+        } else if (event.getButton() == clearButton) {
+            if (getFormOptions().isConfirmClear()) {
+                VaadinUtils.showConfirmDialog(getMessageService(), message("ocs.confirm.clear"), () -> {
                     clear();
                     search(true);
                 });
-			} else {
-				clear();
-				search(true);
-			}
-		} else if (event.getButton() == toggleButton) {
-			toggle(!wrapperPanel.isVisible());
-		}
-	}
+            } else {
+                clear();
+                search(true);
+            }
+        } else if (event.getButton() == toggleButton) {
+            toggle(!wrapperPanel.isVisible());
+        }
+    }
 
-	/**
-	 * Clears any search filters (and re-applies the default filters afterwards)
-	 */
-	public void clear() {
-		currentFilters.clear();
-		currentFilters.addAll(getDefaultFilters());
-	}
+    /**
+     * Clears any search filters (and re-applies the default filters afterwards)
+     */
+    public void clear() {
+        currentFilters.clear();
+        currentFilters.addAll(getDefaultFilters());
+    }
 
-	/**
-	 * Creates buttons and adds them to the button bar
-	 * 
-	 * @param buttonBart
-	 *            the button bar
-	 */
-	protected abstract void constructButtonBar(Layout buttonBar);
+    /**
+     * Creates buttons and adds them to the button bar
+     * 
+     * @param buttonBart
+     *            the button bar
+     */
+    protected abstract void constructButtonBar(Layout buttonBar);
 
-	/**
-	 * Constructs the "clear" button
-	 * 
-	 * @return
-	 */
-	protected Button constructClearButton() {
-		clearButton = new Button(message("ocs.clear"));
-		clearButton.setImmediate(true);
-		clearButton.addClickListener(this);
-		clearButton.setVisible(!getFormOptions().isHideClearButton());
-		return clearButton;
-	}
+    /**
+     * Constructs the "clear" button
+     * 
+     * @return
+     */
+    protected Button constructClearButton() {
+        clearButton = new Button(message("ocs.clear"));
+        clearButton.setImmediate(true);
+        clearButton.addClickListener(this);
+        clearButton.setVisible(!getFormOptions().isHideClearButton());
+        return clearButton;
+    }
 
-	/**
-	 * Creates a custom field - override in subclasses if needed
-	 * 
-	 * @param entityModel
-	 *            the entity model of the entity to search for
-	 * @param attributeModel
-	 *            the attribute model the attribute model of the property that is bound to the field
-	 * @return
-	 */
-	protected Field<?> constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel) {
-		return null;
-	}
+    /**
+     * Creates a custom field - override in subclasses if needed
+     * 
+     * @param entityModel
+     *            the entity model of the entity to search for
+     * @param attributeModel
+     *            the attribute model the attribute model of the property that is bound to the field
+     * @return
+     */
+    protected Field<?> constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel) {
+        return null;
+    }
 
-	/**
-	 * Constructs the layout that holds all the filter components
-	 * 
-	 * @return
-	 */
-	protected abstract Layout constructFilterLayout();
+    /**
+     * Constructs the layout that holds all the filter components
+     * 
+     * @return
+     */
+    protected abstract Layout constructFilterLayout();
 
-	/**
-	 * Constructs the "search" button
-	 * 
-	 * @return
-	 */
-	protected Button constructSearchButton() {
-		searchButton = new Button(message("ocs.search"));
-		searchButton.setImmediate(true);
-		searchButton.addClickListener(this);
-		return searchButton;
-	}
+    /**
+     * Constructs the "search" button
+     * 
+     * @return
+     */
+    protected Button constructSearchButton() {
+        searchButton = new Button(message("ocs.search"));
+        searchButton.setImmediate(true);
+        searchButton.addClickListener(this);
+        return searchButton;
+    }
 
-	/**
-	 * Constructs the "toggle" button
-	 * 
-	 * @return
-	 */
-	protected Button constructToggleButton() {
-		toggleButton = new Button(message("ocs.hide"));
-		toggleButton.addClickListener(this);
-		toggleButton.setVisible(getFormOptions().isShowToggleButton());
-		return toggleButton;
-	}
+    /**
+     * Constructs the "toggle" button
+     * 
+     * @return
+     */
+    protected Button constructToggleButton() {
+        toggleButton = new Button(message("ocs.hide"));
+        toggleButton.addClickListener(this);
+        toggleButton.setVisible(getFormOptions().isShowToggleButton());
+        return toggleButton;
+    }
 
-	public Filter extractFilter() {
-		if (!currentFilters.isEmpty()) {
-			return new And(currentFilters.toArray(new Filter[0]));
-		}
-		return null;
-	}
+    public Filter extractFilter() {
+        if (!currentFilters.isEmpty()) {
+            return new And(currentFilters.toArray(new Filter[0]));
+        }
+        return null;
+    }
 
-	public List<Filter> getDefaultFilters() {
-		return defaultFilters;
-	}
+    public List<Filter> getDefaultFilters() {
+        return defaultFilters;
+    }
 
-	public HorizontalLayout getButtonBar() {
-		return buttonBar;
-	}
+    public HorizontalLayout getButtonBar() {
+        return buttonBar;
+    }
 
-	public Button getClearButton() {
-		return clearButton;
-	}
+    public Button getClearButton() {
+        return clearButton;
+    }
 
-	public List<Filter> getCurrentFilters() {
-		return currentFilters;
-	}
+    public List<Filter> getCurrentFilters() {
+        return currentFilters;
+    }
 
-	public ModelBasedFieldFactory<T> getFieldFactory() {
-		return fieldFactory;
-	}
+    public ModelBasedFieldFactory<T> getFieldFactory() {
+        return fieldFactory;
+    }
 
-	public Layout getFilterLayout() {
-		return filterLayout;
-	}
+    public Layout getFilterLayout() {
+        return filterLayout;
+    }
 
-	public Searchable getSearchable() {
-		return searchable;
-	}
+    public Searchable getSearchable() {
+        return searchable;
+    }
 
-	public Button getSearchButton() {
-		return searchButton;
-	}
+    public Button getSearchButton() {
+        return searchButton;
+    }
 
-	/**
-	 * Checks whether a filter is set for a certain attribute
-	 * 
-	 * @param path
-	 *            the path to the attribute
-	 * @return
-	 */
-	public boolean isFilterSet(String path) {
-		for (Filter filter : currentFilters) {
-			if (filter.appliesToProperty(path)) {
-				return true;
-			}
-		}
-		return false;
-	}
+    /**
+     * Checks whether a filter is set for a certain attribute
+     * 
+     * @param path
+     *            the path to the attribute
+     * @return
+     */
+    public boolean isFilterSet(String path) {
+        for (Filter filter : currentFilters) {
+            if (filter.appliesToProperty(path)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
-	/**
-	 * 
-	 * @return the number of filters
-	 */
-	public int getFilterCount() {
-		return currentFilters.size();
-	}
+    /**
+     * 
+     * @return the number of filters
+     */
+    public int getFilterCount() {
+        return currentFilters.size();
+    }
 
-	/**
-	 * Searching is allowed when there are no required attributes or all required attributes are in
-	 * the composite filter.
-	 * 
-	 * @return
-	 */
-	public boolean isSearchAllowed() {
+    /**
+     * Searching is allowed when there are no required attributes or all required attributes are in
+     * the composite filter.
+     * 
+     * @return
+     */
+    public boolean isSearchAllowed() {
 
-		// Get the required attributes.
-		List<AttributeModel> requiredAttributes = getEntityModel().getRequiredForSearchingAttributeModels();
-		if (requiredAttributes.isEmpty()) {
-			return true;
-		}
+        // Get the required attributes.
+        List<AttributeModel> requiredAttributes = getEntityModel().getRequiredForSearchingAttributeModels();
+        if (requiredAttributes.isEmpty()) {
+            return true;
+        }
 
-		if (currentFilters.isEmpty()) {
-			return false;
-		}
+        if (currentFilters.isEmpty()) {
+            return false;
+        }
 
-		int found = 0;
-		for (AttributeModel model : requiredAttributes) {
-			for (Filter filter : currentFilters) {
-				if (filter.appliesToProperty(model.getPath())) {
-					found++;
-				}
-			}
-		}
+        int matches = (int) requiredAttributes.stream()
+                .filter(am -> currentFilters.stream().anyMatch(f -> f.appliesToProperty(am.getPath()))).count();
+        return matches == requiredAttributes.size();
+    }
 
-		return found == requiredAttributes.size();
-	}
+    protected void validateBeforeSearch() {
+        // overwrite in subclass
+    }
 
-	protected void validateBeforeSearch() {
-		// overwrite in subclass
-	}
+    /**
+     * Responds to a filter change
+     */
+    @Override
+    public void onFilterChange(FilterChangeEvent event) {
+        if (event.getOldFilter() != null) {
+            currentFilters.remove(event.getOldFilter());
+        }
+        if (event.getNewFilter() != null) {
+            currentFilters.add(event.getNewFilter());
+        }
+        searchButton.setEnabled(isSearchAllowed());
+    }
 
-	/**
-	 * Responds to a filter change
-	 */
-	@Override
-	public void onFilterChange(FilterChangeEvent event) {
-		currentFilters.remove(event.getOldFilter());
-		if (event.getNewFilter() != null) {
-			currentFilters.add(event.getNewFilter());
-		}
-		searchButton.setEnabled(isSearchAllowed());
-	}
+    /**
+     * Callback method that allows the user to modify the button bar
+     * 
+     * @param groups
+     */
+    protected void postProcessButtonBar(Layout buttonBar) {
+        // Use in subclass to add additional buttons
+    }
 
-	/**
-	 * Callback method that allows the user to modify the button bar
-	 * 
-	 * @param groups
-	 */
-	protected void postProcessButtonBar(Layout buttonBar) {
-		// Use in subclass to add additional buttons
-	}
+    /**
+     * Perform any actions necessary after the layout has been build
+     * 
+     * @param main
+     *            the layout
+     */
+    protected void postProcessLayout(VerticalLayout layout) {
+        // override in subclass
+    }
 
-	/**
-	 * Perform any actions necessary after the layout has been build
-	 * 
-	 * @param main
-	 *            the layout
-	 */
-	protected void postProcessLayout(VerticalLayout layout) {
-		// override in subclass
-	}
+    /**
+     * Pre-process the layout - this method is called directly after the main layout has been
+     * created
+     * 
+     * @param main
+     *            the layout
+     */
+    protected void preProcessLayout(VerticalLayout layout) {
+        // override in subclass
+    }
 
-	/**
-	 * Pre-process the layout - this method is called directly after the main layout has been
-	 * created
-	 * 
-	 * @param main
-	 *            the layout
-	 */
-	protected void preProcessLayout(VerticalLayout layout) {
-		// override in subclass
-	}
+    public boolean search() {
+        return search(false);
+    }
 
-	public boolean search() {
-		return search(false);
-	}
+    /**
+     * Carries out a search
+     * 
+     * @param skipValidation
+     *            whether to skip validation before searching
+     * @return
+     */
+    private boolean search(boolean skipValidation) {
+        if (!isSearchAllowed()) {
+            return false;
+        }
 
-	/**
-	 * Carries out a search
-	 * 
-	 * @param skipValidation
-	 *            whether to skip validation before searching
-	 * @return
-	 */
-	private boolean search(boolean skipValidation) {
-		if (!isSearchAllowed()) {
-			return false;
-		}
+        if (searchable != null) {
+            if (!skipValidation) {
+                try {
+                    validateBeforeSearch();
+                } catch (OCSValidationException ex) {
+                    showNotifification(ex.getErrors().get(0), Notification.Type.ERROR_MESSAGE);
+                    return false;
+                }
+            }
+            searchable.search(extractFilter());
+            if (!skipValidation) {
+                afterSearchPerformed();
+            }
+            return true;
+        }
+        return false;
+    }
 
-		if (searchable != null) {
-			if (!skipValidation) {
-				try {
-					validateBeforeSearch();
-				} catch (OCSValidationException ex) {
-					showNotifification(ex.getErrors().get(0), Notification.Type.ERROR_MESSAGE);
-					return false;
-				}
-			}
-			searchable.search(extractFilter());
-			if (!skipValidation) {
-				afterSearchPerformed();
-			}
-			return true;
-		}
-		return false;
-	}
+    /**
+     * Sets the searchable
+     * 
+     * @param searchable
+     *            the searchable
+     */
+    public void setSearchable(Searchable searchable) {
+        this.searchable = searchable;
+    }
 
-	/**
-	 * Sets the searchable
-	 * 
-	 * @param searchable
-	 *            the searchable
-	 */
-	public void setSearchable(Searchable searchable) {
-		this.searchable = searchable;
-	}
-
-	/**
-	 * Toggles the visibility of the search form
-	 * 
-	 * @param show
-	 *            whether to show or hide the form
-	 */
-	protected void toggle(boolean show) {
-		if (!show) {
-			toggleButton.setCaption(message("ocs.show.search.fields"));
-		} else {
-			toggleButton.setCaption(message("ocs.hide.search.fields"));
-		}
-		wrapperPanel.setVisible(show);
-		afterSearchFieldToggle(wrapperPanel.isVisible());
-	}
+    /**
+     * Toggles the visibility of the search form
+     * 
+     * @param show
+     *            whether to show or hide the form
+     */
+    protected void toggle(boolean show) {
+        if (!show) {
+            toggleButton.setCaption(message("ocs.show.search.fields"));
+        } else {
+            toggleButton.setCaption(message("ocs.hide.search.fields"));
+        }
+        wrapperPanel.setVisible(show);
+        afterSearchFieldToggle(wrapperPanel.isVisible());
+    }
 
 }

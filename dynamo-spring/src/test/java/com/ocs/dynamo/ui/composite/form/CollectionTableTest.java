@@ -26,81 +26,81 @@ import java.util.Set;
 
 public class CollectionTableTest extends BaseIntegrationTest {
 
-	@Autowired
-	private EntityModelFactory emf;
+    @Autowired
+    private EntityModelFactory emf;
 
-	@Test
-	public void testViewMode() {
-		EntityModel<TestEntity> em = emf.getModel(TestEntity.class);
+    @Test
+    public void testViewMode() {
+        EntityModel<TestEntity> em = emf.getModel(TestEntity.class);
 
-		FormOptions fo = new FormOptions();
-		CollectionTable<String> table = new CollectionTable<>(em.getAttributeModel("tags"), true, fo);
+        FormOptions fo = new FormOptions();
+        CollectionTable<String> table = new CollectionTable<>(em.getAttributeModel("tags"), true, fo);
 
-		table.initContent();
+        table.initContent();
 
-		Assert.assertTrue(table.getTable().getContainerPropertyIds().contains("value"));
-		Assert.assertEquals(3, table.getTable().getPageLength());
-		Assert.assertFalse(table.getTable().isEditable());
-	}
+        Assert.assertTrue(table.getTable().getContainerPropertyIds().contains("value"));
+        Assert.assertEquals(3, table.getTable().getPageLength());
+        Assert.assertFalse(table.getTable().isEditable());
+    }
 
-	/**
-	 * Test the creation of a table for integers
-	 */
-	@Test
-	public void testTableOfIntegers() {
-		EntityModel<TestEntity> em = emf.getModel(TestEntity.class);
+    /**
+     * Test the creation of a table for integers
+     */
+    @Test
+    public void testTableOfIntegers() {
+        EntityModel<TestEntity> em = emf.getModel(TestEntity.class);
 
-		FormOptions fo = new FormOptions();
-		CollectionTable<Integer> table = new CollectionTable<>(em.getAttributeModel("intTags"), false, fo);
-		table.initContent();
+        FormOptions fo = new FormOptions();
+        CollectionTable<Integer> table = new CollectionTable<>(em.getAttributeModel("intTags"), false, fo);
+        table.initContent();
 
-		table.getAddButton().click();
+        table.getAddButton().click();
 
-		table.setValue(Sets.newHashSet(4, 5));
-		Assert.assertEquals(2, table.getTable().getItemIds().size());
-	}
+        table.setValue(Sets.newHashSet(4, 5));
+        Assert.assertEquals(2, table.getTable().getItemIds().size());
+    }
 
-	@Test
-	public void testTableOfLongs() {
-		EntityModel<TestEntity> em = emf.getModel(TestEntity.class);
+    @Test
+    public void testTableOfLongs() {
+        EntityModel<TestEntity> em = emf.getModel(TestEntity.class);
 
-		FormOptions fo = new FormOptions();
-		CollectionTable<Long> table = new CollectionTable<>(em.getAttributeModel("longTags"), false, fo);
-		table.initContent();
+        FormOptions fo = new FormOptions();
+        CollectionTable<Long> table = new CollectionTable<>(em.getAttributeModel("longTags"), false, fo);
+        table.initContent();
 
-		table.getAddButton().click();
+        table.getAddButton().click();
 
-		table.setValue(Sets.newHashSet(4L, 5L));
-		Assert.assertEquals(2, table.getTable().getItemIds().size());
-	}
+        table.setValue(Sets.newHashSet(4L, 5L));
+        Assert.assertEquals(2, table.getTable().getItemIds().size());
+    }
 
-	@Test
-	public void testEditMode() {
-		EntityModel<TestEntity> em = emf.getModel(TestEntity.class);
+    @Test
+    public void testEditMode() {
+        EntityModel<TestEntity> em = emf.getModel(TestEntity.class);
 
-		FormOptions fo = new FormOptions();
-		fo.setShowRemoveButton(true);
+        FormOptions fo = new FormOptions().setShowRemoveButton(true);
+        CollectionTable<String> table = new CollectionTable<>(em.getAttributeModel("tags"), false, fo);
 
-		CollectionTable<String> table = new CollectionTable<>(em.getAttributeModel("tags"), false, fo);
+        table.initContent();
 
-		table.initContent();
+        Assert.assertNotNull(table.getTable().getColumnGenerator("Remove"));
 
-		Assert.assertTrue(table.getTable().getContainerPropertyIds().contains("value"));
-		Assert.assertEquals(3, table.getTable().getPageLength());
-		Assert.assertTrue(table.getTable().isEditable());
+        Assert.assertTrue(table.getTable().getContainerPropertyIds().contains("value"));
+        Assert.assertEquals(3, table.getTable().getPageLength());
+        Assert.assertTrue(table.getTable().isEditable());
 
-		// set the values and check that they properly end up in the table
-		Set<String> values = Sets.newHashSet("a", "b", "c");
-		table.setInternalValue(values);
+        // set the values and check that they properly end up in the table
+        Set<String> values = Sets.newHashSet("a", "b", "c");
+        table.setInternalValue(values);
 
-		Assert.assertEquals(3, table.getTable().getItemIds().size());
+        Assert.assertEquals(3, table.getTable().getItemIds().size());
 
-		// click the add button and verify that an extra item is added
-		table.getAddButton().click();
-		Assert.assertEquals(4, table.getTable().getItemIds().size());
+        // click the add button and verify that an extra item is added
+        table.getAddButton().click();
+        Assert.assertEquals(4, table.getTable().getItemIds().size());
 
-		// select the first item
-		table.getTable().setValue(1);
-		Assert.assertEquals(1, table.getSelectedItem());
-	}
+        // select the first item
+        table.getTable().setValue(1);
+        Assert.assertEquals(1, table.getSelectedItem());
+    }
 }

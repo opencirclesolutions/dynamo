@@ -134,7 +134,7 @@ public class CollectionTable<T extends Serializable> extends CustomField<Collect
      */
     protected void constructAddButton(Layout buttonBar) {
         addButton = new Button(messageService.getMessage("ocs.add"));
-        addButton.addClickListener((Button.ClickListener) event -> {
+        addButton.addClickListener(event -> {
             // add a new item then set the validity to false (since an empty
             // item is never allowed)
             table.addItem();
@@ -329,7 +329,7 @@ public class CollectionTable<T extends Serializable> extends CustomField<Collect
 
         // add a change listener (to make sure the buttons are correctly
         // enabled/disabled)
-        table.addValueChangeListener((ValueChangeListener) event -> {
+        table.addValueChangeListener(event -> {
             selectedItem = table.getValue();
             onSelect(table.getValue());
         });

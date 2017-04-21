@@ -286,6 +286,15 @@ public class DateUtilsTest {
     }
 
     @Test
+    public void testToLegacyDate3() {
+        Date d = DateUtils.toLegacyDate(LocalTime.of(12, 13));
+        Assert.assertTrue(d.toString().contains("12:13:00"));
+        
+        d = DateUtils.toLegacyDate(LocalTime.of(23, 04));
+        Assert.assertTrue(d.toString().contains("23:04:00"));
+    }
+
+    @Test
     public void testToLocalDate() {
         Assert.assertNull(DateUtils.toLocalDate(null));
 

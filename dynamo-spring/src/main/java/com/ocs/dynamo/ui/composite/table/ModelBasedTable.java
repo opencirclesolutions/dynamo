@@ -45,303 +45,294 @@ import com.vaadin.ui.UI;
  */
 public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<ID>> extends Table {
 
-	private static final long serialVersionUID = 6946260934644731038L;
+    private static final long serialVersionUID = 6946260934644731038L;
 
-	/**
-	 * The container that hold the data for the table
-	 */
-	private Container container;
+    /**
+     * The container that hold the data for the table
+     */
+    private Container container;
 
-	/**
-	 * Custom currency symbol to be used for this table
-	 */
-	private String currencySymbol;
+    /**
+     * Custom currency symbol to be used for this table
+     */
+    private String currencySymbol;
 
-	/**
-	 * The entity model of the entities to display in the table
-	 */
-	private EntityModel<T> entityModel;
+    /**
+     * The entity model of the entities to display in the table
+     */
+    private EntityModel<T> entityModel;
 
-	/**
-	 * The entity model factory
-	 */
-	private EntityModelFactory entityModelFactory;
+    /**
+     * The entity model factory
+     */
+    private EntityModelFactory entityModelFactory;
 
-	/**
-	 * Indicated whether table export is allowed
-	 */
-	private boolean exportAllowed;
+    /**
+     * Indicated whether table export is allowed
+     */
+    private boolean exportAllowed;
 
-	/**
-	 * The message service
-	 */
-	private MessageService messageService;
+    /**
+     * The message service
+     */
+    private MessageService messageService;
 
-	/**
-	 * Constructor
-	 * 
-	 * @param container
-	 *            the data container
-	 * @param model
-	 *            the entity model that determines what to display
-	 * @param exportAllowed
-	 *            whether export of the table is allowed
-	 */
-	public ModelBasedTable(Container container, EntityModel<T> model, boolean exportAllowed) {
-		super("", container);
-		this.container = container;
-		this.entityModel = model;
-		this.messageService = ServiceLocator.getMessageService();
-		this.entityModelFactory = ServiceLocator.getEntityModelFactory();
-		this.exportAllowed = exportAllowed;
+    /**
+     * Constructor
+     * 
+     * @param container
+     *            the data container
+     * @param model
+     *            the entity model that determines what to display
+     * @param exportAllowed
+     *            whether export of the table is allowed
+     */
+    public ModelBasedTable(Container container, EntityModel<T> model, boolean exportAllowed) {
+        super("", container);
+        this.container = container;
+        this.entityModel = model;
+        this.messageService = ServiceLocator.getMessageService();
+        this.entityModelFactory = ServiceLocator.getEntityModelFactory();
+        this.exportAllowed = exportAllowed;
 
-		TableUtils.defaultInitialization(this);
+        TableUtils.defaultInitialization(this);
 
-		// add a custom field factory that takes care of special cases and
-		// validation
-		this.setTableFieldFactory(ModelBasedFieldFactory.getInstance(entityModel, messageService));
+        // add a custom field factory that takes care of special cases and
+        // validation
+        this.setTableFieldFactory(ModelBasedFieldFactory.getInstance(entityModel, messageService));
+        generateColumns(model);
 
-		generateColumns(container, model);
+        // add export functionality
+        if (isExportAllowed()) {
+            List<EntityModel<?>> list = new ArrayList<>();
+            list.add(model);
+            addActionHandler(new TableExportActionHandler(UI.getCurrent(), list, model.getDisplayNamePlural(), null,
+                    false, TableExportMode.EXCEL, null));
+            addActionHandler(new TableExportActionHandler(UI.getCurrent(), list, model.getDisplayNamePlural(), null,
+                    false, TableExportMode.EXCEL_SIMPLIFIED, null));
+            addActionHandler(new TableExportActionHandler(UI.getCurrent(), list, model.getDisplayNamePlural(), null,
+                    false, TableExportMode.CSV, null));
+        }
 
-		// add export functionality
-		if (isExportAllowed()) {
-			List<EntityModel<?>> list = new ArrayList<>();
-			list.add(model);
-			addActionHandler(new TableExportActionHandler(UI.getCurrent(), list, model.getDisplayNamePlural(), null,
-			        false, TableExportMode.EXCEL, null));
-			addActionHandler(new TableExportActionHandler(UI.getCurrent(), list, model.getDisplayNamePlural(), null,
-			        false, TableExportMode.EXCEL_SIMPLIFIED, null));
-			addActionHandler(new TableExportActionHandler(UI.getCurrent(), list, model.getDisplayNamePlural(), null,
-			        false, TableExportMode.CSV, null));
-		}
+        // update the table caption to reflect the number of items
+        addItemSetChangeListener(e -> updateTableCaption());
+    }
 
-		// update the table caption to reflect the number of items
-		addItemSetChangeListener(new ItemSetChangeListener() {
+    /**
+     * Adds a column to the table
+     * 
+     * @param attributeModel
+     *            the (possibly nested) attribute model for which to add a column
+     * @param propertyNames
+     *            the properties to be added
+     * @param headerNames
+     *            the headers to be added
+     */
+    private void addColumn(final AttributeModel attributeModel, List<Object> propertyNames, List<String> headerNames) {
+        if (attributeModel.isVisibleInTable()) {
+            propertyNames.add(attributeModel.getPath());
+            headerNames.add(attributeModel.getDisplayName());
 
-			private static final long serialVersionUID = 3035240490920769456L;
+            // for the lazy query container we explicitly have to add the
+            // properties - for the standard Bean container this is not
+            // needed
+            if (container instanceof LazyQueryContainer) {
+                LazyQueryContainer lazyContainer = (LazyQueryContainer) container;
+                if (!lazyContainer.getContainerPropertyIds().contains(attributeModel.getPath())) {
+                    lazyContainer.addContainerProperty(attributeModel.getPath(), attributeModel.getType(),
+                            attributeModel.getDefaultValue(), attributeModel.isReadOnly(), attributeModel.isSortable());
+                }
+            }
 
-			@Override
-			public void containerItemSetChange(ItemSetChangeEvent event) {
-				updateTableCaption();
-			}
-		});
-	}
+            // generated column with clickable URL (only in view mode)
+            addUrlField(attributeModel);
 
-	/**
-	 * Adds a column to the table
-	 * 
-	 * @param attributeModel
-	 *            the (possibly nested) attribute model for which to add a column
-	 * @param propertyNames
-	 *            the properties to be added
-	 * @param headerNames
-	 *            the headers to be added
-	 */
-	private void addColumn(final AttributeModel attributeModel, List<Object> propertyNames, List<String> headerNames) {
-		if (attributeModel.isVisibleInTable()) {
-			propertyNames.add(attributeModel.getPath());
-			headerNames.add(attributeModel.getDisplayName());
+            if (attributeModel.isNumerical()) {
+                this.setColumnAlignment(attributeModel.getPath(), Table.Align.RIGHT);
+            }
+        }
+    }
 
-			// for the lazy query container we explicitly have to add the
-			// properties - for the standard Bean container this is not
-			// needed
-			if (container instanceof LazyQueryContainer) {
-				LazyQueryContainer lazyContainer = (LazyQueryContainer) container;
-				if (!lazyContainer.getContainerPropertyIds().contains(attributeModel.getPath())) {
-					lazyContainer.addContainerProperty(attributeModel.getPath(), attributeModel.getType(),
-					        attributeModel.getDefaultValue(), attributeModel.isReadOnly(), attributeModel.isSortable());
-				}
-			}
+    /**
+     * Adds a generated column
+     * 
+     * @param attributeModel
+     *            the attribute model for which to add the column
+     */
+    private void addGeneratedColumn(final AttributeModel attributeModel) {
+        if (attributeModel.isVisibleInTable() && attributeModel.isUrl()) {
+            addUrlField(attributeModel);
+        }
+    }
 
-			// generated column with clickable URL (only in view mode)
-			addUrlField(attributeModel);
+    /**
+     * Adds any generated columns (URL fields) in response to a change to view mode
+     */
+    public void addGeneratedColumns() {
+        for (AttributeModel attributeModel : entityModel.getAttributeModels()) {
+            addGeneratedColumn(attributeModel);
+            if (attributeModel.getNestedEntityModel() != null) {
+                for (AttributeModel nestedAttributeModel : attributeModel.getNestedEntityModel().getAttributeModels()) {
+                    addGeneratedColumn(nestedAttributeModel);
+                }
+            }
+        }
+    }
 
-			if (attributeModel.isNumerical()) {
-				this.setColumnAlignment(attributeModel.getPath(), Table.Align.RIGHT);
-			}
-		}
-	}
+    /**
+     * Adds an URL field for a certain attribute
+     * 
+     * @param attributeModel
+     *            the attribute model
+     */
+    private void addUrlField(final AttributeModel attributeModel) {
+        if (attributeModel.isUrl() && !isEditable()) {
+            this.addGeneratedColumn(attributeModel.getPath(), new ColumnGenerator() {
 
-	/**
-	 * Adds a generated column
-	 * 
-	 * @param attributeModel
-	 *            the attribute model for which to add the column
-	 */
-	private void addGeneratedColumn(final AttributeModel attributeModel) {
-		if (attributeModel.isVisibleInTable() && attributeModel.isUrl()) {
-			addUrlField(attributeModel);
-		}
-	}
+                private static final long serialVersionUID = -3191235289754428914L;
 
-	/**
-	 * Adds any generated columns (URL fields) in response to a change to view mode
-	 */
-	public void addGeneratedColumns() {
-		for (AttributeModel attributeModel : entityModel.getAttributeModels()) {
-			addGeneratedColumn(attributeModel);
-			if (attributeModel.getNestedEntityModel() != null) {
-				for (AttributeModel nestedAttributeModel : attributeModel.getNestedEntityModel().getAttributeModels()) {
-					addGeneratedColumn(nestedAttributeModel);
-				}
-			}
-		}
-	}
+                @Override
+                public Object generateCell(Table source, final Object itemId, Object columnId) {
+                    URLField field = (URLField) ((ModelBasedFieldFactory<?>) getTableFieldFactory())
+                            .createField(attributeModel.getPath(), null);
+                    if (field != null) {
+                        String val = (String) getItem(itemId).getItemProperty(columnId).getValue();
+                        field.setValue(val);
+                    }
+                    return field;
+                }
+            });
+        }
+    }
 
-	/**
-	 * Adds an URL field for a certain attribute
-	 * 
-	 * @param attributeModel
-	 *            the attribute model
-	 */
-	private void addUrlField(final AttributeModel attributeModel) {
-		if (attributeModel.isUrl() && !isEditable()) {
-			this.addGeneratedColumn(attributeModel.getPath(), new ColumnGenerator() {
+    /**
+     * Overridden to deal with custom formatting
+     */
+    @Override
+    protected String formatPropertyValue(Object rowId, Object colId, Property<?> property) {
+        String result = TableUtils.formatPropertyValue(this, entityModelFactory, entityModel, messageService, rowId,
+                colId, property);
+        if (result != null) {
+            return result;
+        }
+        return super.formatPropertyValue(rowId, colId, property);
+    }
 
-				private static final long serialVersionUID = -3191235289754428914L;
+    /**
+     * Generates the columns of the table based on the entity model
+     * 
+     * @param container
+     *            the container
+     * @param model
+     *            the entity model
+     */
+    protected void generateColumns(EntityModel<T> model) {
+        generateColumns(model.getAttributeModels());
+        this.setCaption(model.getDisplayNamePlural());
+        this.setDescription(model.getDescription());
+    }
 
-				@Override
-				public Object generateCell(Table source, final Object itemId, Object columnId) {
-					URLField field = (URLField) ((ModelBasedFieldFactory<?>) getTableFieldFactory()).createField(
-					        attributeModel.getPath(), null);
-					if (field != null) {
-						String val = (String) getItem(itemId).getItemProperty(columnId).getValue();
-						field.setValue(val);
-					}
-					return field;
-				}
-			});
-		}
-	}
+    /**
+     * Generates the columns of the table based on a select number of attribute models
+     * 
+     * @param attributeModels
+     *            the attribute models for which to generate columns
+     */
+    protected void generateColumns(List<AttributeModel> attributeModels) {
+        List<Object> propertyNames = new ArrayList<>();
+        List<String> headerNames = new ArrayList<>();
 
-	/**
-	 * Overridden to deal with custom formatting
-	 */
-	@Override
-	protected String formatPropertyValue(Object rowId, Object colId, Property<?> property) {
-		String result = TableUtils.formatPropertyValue(this, entityModelFactory, entityModel, messageService, rowId,
-		        colId, property);
-		if (result != null) {
-			return result;
-		}
-		return super.formatPropertyValue(rowId, colId, property);
-	}
+        for (AttributeModel attributeModel : attributeModels) {
+            addColumn(attributeModel, propertyNames, headerNames);
+            if (attributeModel.getNestedEntityModel() != null) {
+                for (AttributeModel nestedAttributeModel : attributeModel.getNestedEntityModel().getAttributeModels()) {
+                    addColumn(nestedAttributeModel, propertyNames, headerNames);
+                }
+            }
+        }
 
-	/**
-	 * Generates the columns of the table based on the entity model
-	 * 
-	 * @param container
-	 *            the container
-	 * @param model
-	 *            the entity model
-	 */
-	protected void generateColumns(Container container, EntityModel<T> model) {
-		generateColumns(model.getAttributeModels());
-		this.setCaption(model.getDisplayNamePlural());
-		this.setDescription(model.getDescription());
-	}
+        this.setVisibleColumns(propertyNames.toArray());
+        this.setColumnHeaders(headerNames.toArray(new String[0]));
+    }
 
-	/**
-	 * Generates the columns of the table based on a select number of attribute models
-	 * 
-	 * @param attributeModels
-	 *            the attribute models for which to generate columns
-	 */
-	protected void generateColumns(List<AttributeModel> attributeModels) {
-		List<Object> propertyNames = new ArrayList<>();
-		List<String> headerNames = new ArrayList<>();
+    public Container getContainer() {
+        return container;
+    }
 
-		for (AttributeModel attributeModel : attributeModels) {
-			addColumn(attributeModel, propertyNames, headerNames);
-			if (attributeModel.getNestedEntityModel() != null) {
-				for (AttributeModel nestedAttributeModel : attributeModel.getNestedEntityModel().getAttributeModels()) {
-					addColumn(nestedAttributeModel, propertyNames, headerNames);
-				}
-			}
-		}
+    public String getCurrencySymbol() {
+        return currencySymbol;
+    }
 
-		this.setVisibleColumns(propertyNames.toArray());
-		this.setColumnHeaders(headerNames.toArray(new String[0]));
-	}
+    public boolean isExportAllowed() {
+        return exportAllowed;
+    }
 
-	public Container getContainer() {
-		return container;
-	}
+    /**
+     * Removes a generated column
+     * 
+     * @param attributeModel
+     *            the attribute model for which to remove the column
+     */
+    private void removeGeneratedColumn(final AttributeModel attributeModel) {
+        if (attributeModel.isVisibleInTable() && attributeModel.isUrl()) {
+            removeGeneratedColumn(attributeModel.getPath());
+        }
+    }
 
-	public String getCurrencySymbol() {
-		return currencySymbol;
-	}
+    /**
+     * Remove any generated columns - this is used when switching between modes in order to remove
+     * any generated columns containing URL fields
+     */
+    public void removeGeneratedColumns() {
+        for (AttributeModel attributeModel : entityModel.getAttributeModels()) {
+            removeGeneratedColumn(attributeModel);
+            if (attributeModel.getNestedEntityModel() != null) {
+                for (AttributeModel nestedAttributeModel : attributeModel.getNestedEntityModel().getAttributeModels()) {
+                    removeGeneratedColumn(nestedAttributeModel);
+                }
+            }
+        }
+    }
 
-	public boolean isExportAllowed() {
-		return exportAllowed;
-	}
+    /**
+     * Sets the visibility of a column. This can only be used to show/hide columns that would show
+     * up in the table based on the entity model
+     * 
+     * @param propertyId
+     *            the ID of the column.
+     * @param visible
+     *            whether the column must be visible
+     */
+    public void setColumnVisible(Object propertyId, boolean visible) {
+        Object[] visibleCols = getVisibleColumns();
+        List<Object> temp = new ArrayList<>();
 
-	/**
-	 * Removes a generated column
-	 * 
-	 * @param attributeModel
-	 *            the attribute model for which to remove the column
-	 */
-	private void removeGeneratedColumn(final AttributeModel attributeModel) {
-		if (attributeModel.isVisibleInTable() && attributeModel.isUrl()) {
-			removeGeneratedColumn(attributeModel.getPath());
-		}
-	}
+        boolean alreadyVisible = false;
+        for (Object o : visibleCols) {
+            if (!o.equals(propertyId) || visible) {
+                temp.add(o);
+            }
+            alreadyVisible |= o.equals(propertyId);
+        }
 
-	/**
-	 * Remove any generated columns - this is used when switching between modes in order to remove
-	 * any generated columns containing URL fields
-	 */
-	public void removeGeneratedColumns() {
-		for (AttributeModel attributeModel : entityModel.getAttributeModels()) {
-			removeGeneratedColumn(attributeModel);
-			if (attributeModel.getNestedEntityModel() != null) {
-				for (AttributeModel nestedAttributeModel : attributeModel.getNestedEntityModel().getAttributeModels()) {
-					removeGeneratedColumn(nestedAttributeModel);
-				}
-			}
-		}
-	}
+        // add column if not already visible
+        if (!alreadyVisible && visible) {
+            temp.add(propertyId);
+        }
 
-	/**
-	 * Sets the visibility of a column. This can only be used to show/hide columns that would show
-	 * up in the table based on the entity model
-	 * 
-	 * @param propertyId
-	 *            the ID of the column.
-	 * @param visible
-	 *            whether the column must be visible
-	 */
-	public void setColumnVisible(Object propertyId, boolean visible) {
-		Object[] visibleCols = getVisibleColumns();
-		List<Object> temp = new ArrayList<>();
+        setVisibleColumns(temp.toArray(new Object[0]));
+    }
 
-		boolean alreadyVisible = false;
-		for (Object o : visibleCols) {
-			if (!o.equals(propertyId) || visible) {
-				temp.add(o);
-			}
-			alreadyVisible |= o.equals(propertyId);
-		}
+    public void setCurrencySymbol(String currencySymbol) {
+        this.currencySymbol = currencySymbol;
+    }
 
-		// add column if not already visible
-		if (!alreadyVisible && visible) {
-			temp.add(propertyId);
-		}
-
-		setVisibleColumns(temp.toArray(new Object[0]));
-	}
-
-	public void setCurrencySymbol(String currencySymbol) {
-		this.currencySymbol = currencySymbol;
-	}
-
-	/**
-	 * Updates the table caption in response to a change of the data set
-	 */
-	public void updateTableCaption() {
-		setCaption(entityModel.getDisplayNamePlural() + " "
-		        + messageService.getMessage("ocs.showing.results", getContainerDataSource().size()));
-	}
+    /**
+     * Updates the table caption in response to a change of the data set
+     */
+    public void updateTableCaption() {
+        setCaption(entityModel.getDisplayNamePlural() + " "
+                + messageService.getMessage("ocs.showing.results", getContainerDataSource().size()));
+    }
 
 }

@@ -27,15 +27,23 @@ import com.vaadin.data.util.converter.StringToLongConverter;
 
 public final class ConverterFactory {
 
+    private ConverterFactory() {
+        // hidden constructor
+    }
+
     /**
      * Creates a BigDecimalConverter
      * 
      * @param currency
      *            whether the field is a currency field
      * @param percentage
+     *            whether to include a percentage sign
      * @param useGrouping
+     *            whether to uses a thousands grouping
      * @param precision
+     *            the desired decimal precision
      * @param currencySymbol
+     *            the currency symbol to include
      * @return
      */
     public static BigDecimalConverter createBigDecimalConverter(boolean currency, boolean percentage,
@@ -77,11 +85,11 @@ public final class ConverterFactory {
      * Creates a date converter for a Java 8 date/time class
      * 
      * @param clazz
-     * @param attributeModel
+     *            the class of the property for which to create the converter
      * @return
      */
     @SuppressWarnings("unchecked")
-    public static <T> Converter<Date, T> createDateConverter(Class<T> clazz, AttributeModel attributeModel) {
+    public static <T> Converter<Date, T> createDateConverter(Class<T> clazz) {
         if (clazz.equals(LocalDateTime.class)) {
             return (Converter<Date, T>) createLocalDateTimeConverter();
         } else if (clazz.equals(LocalDate.class)) {
@@ -125,7 +133,4 @@ public final class ConverterFactory {
         return new GroupingStringToLongConverter(useGrouping);
     }
 
-    private ConverterFactory() {
-        // hidden constructor
-    }
 }
