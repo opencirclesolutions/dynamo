@@ -88,9 +88,7 @@ public abstract class BaseServiceQuery<ID extends Serializable, T extends Abstra
 		} else if (Long.class.equals(idClass)) {
 			ClassUtils.setFieldValue(result, DynamoConstants.ID, Long.MAX_VALUE - countDown);
 		}
-
 		countDown--;
-
 		return result;
 	}
 

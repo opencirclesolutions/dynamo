@@ -25,8 +25,7 @@ import java.io.Serializable;
  * 
  * @author patrick.deenen
  */
-public class ServiceQueryFactory<ID extends Serializable, T extends AbstractEntity<ID>>
-        implements QueryFactory {
+public class ServiceQueryFactory<ID extends Serializable, T extends AbstractEntity<ID>> implements QueryFactory {
 
     /**
      * Constructs a new query based on its definition
@@ -35,14 +34,11 @@ public class ServiceQueryFactory<ID extends Serializable, T extends AbstractEnti
     @Override
     public Query constructQuery(QueryDefinition queryDefinition) {
         ServiceQueryDefinition<ID, T> def = (ServiceQueryDefinition<ID, T>) queryDefinition;
-
         switch (def.getQueryType()) {
         case PAGING:
-            return new PagingServiceQuery<>((ServiceQueryDefinition<ID, T>) queryDefinition,
-                    null);
+            return new PagingServiceQuery<>((ServiceQueryDefinition<ID, T>) queryDefinition, null);
         case ID_BASED:
-            return new IdBasedServiceQuery<>((ServiceQueryDefinition<ID, T>) queryDefinition,
-                    null);
+            return new IdBasedServiceQuery<>((ServiceQueryDefinition<ID, T>) queryDefinition, null);
         default:
             return null;
         }

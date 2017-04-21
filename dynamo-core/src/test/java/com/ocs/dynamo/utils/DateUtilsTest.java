@@ -40,7 +40,7 @@ public class DateUtilsTest {
     public void testCreateDateTime() {
         Assert.assertNull(DateUtils.createDate(null));
         Date d = DateUtils.createDateTime("01012015 070809");
-        Assert.assertEquals("Thu Jan 01 07:08:09 CET 2015", d.toString());
+        Assert.assertTrue(d.toString().startsWith("Thu Jan 01 07:08:09"));
 
         d = DateUtils.createDateTime("29022012 070809");
         Assert.assertTrue(d.toString().startsWith("Wed Feb 29 07:08:09"));
@@ -289,7 +289,7 @@ public class DateUtilsTest {
     public void testToLegacyDate3() {
         Date d = DateUtils.toLegacyDate(LocalTime.of(12, 13));
         Assert.assertTrue(d.toString().contains("12:13:00"));
-        
+
         d = DateUtils.toLegacyDate(LocalTime.of(23, 04));
         Assert.assertTrue(d.toString().contains("23:04:00"));
     }
