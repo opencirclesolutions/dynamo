@@ -117,6 +117,11 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
     private boolean searchLayoutConstructed;
 
     /**
+     * The layout that contains the search results table
+     */
+    private VerticalLayout searchResultsLayout;
+
+    /**
      * Constructor
      * 
      * @param service
@@ -200,10 +205,20 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
             // listen to a click on the clear button
             mainSearchLayout.addComponent(getSearchForm());
             if (getSearchForm().getClearButton() != null) {
+                if (!getFormOptions().isSearchImmediately()) {
+                    getSearchForm().getClearButton().addClickListener(e -> {
+                        // hide the search results table and add the label again
+                        Label noSearchYetLabel = new Label(message("ocs.no.search.yet"));
+                        searchResultsLayout.removeAllComponents();
+                        searchResultsLayout.addComponent(noSearchYetLabel);
+                        getSearchForm().setSearchable(null);
+                        searchLayoutConstructed = false;
+                    });
+                }
                 getSearchForm().getClearButton().addClickListener(e -> afterClear());
             }
 
-            VerticalLayout searchResultsLayout = new DefaultVerticalLayout(false, false);
+            searchResultsLayout = new DefaultVerticalLayout(false, false);
             mainSearchLayout.addComponent(searchResultsLayout);
 
             if (getFormOptions().isSearchImmediately()) {
@@ -358,6 +373,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
                 AbstractSearchLayout.this.doConstructContainer(container);
             }
         };
+        result.setMaxResults(getMaxResults());
 
         if (getFormOptions().isSearchImmediately()) {
             getSearchForm().setSearchable(result);
@@ -567,6 +583,10 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
         return getSearchForm().getFilterCount();
     }
 
+    public VerticalLayout getMainSearchLayout() {
+        return mainSearchLayout;
+    }
+
     /**
      * Returns the next entity in the container
      * 
@@ -625,6 +645,10 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
             searchForm = constructSearchForm();
         }
         return searchForm;
+    }
+
+    public VerticalLayout getSearchResultsLayout() {
+        return searchResultsLayout;
     }
 
     public Collection<T> getSelectedItems() {

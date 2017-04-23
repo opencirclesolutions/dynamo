@@ -24,6 +24,7 @@ import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.Searchable;
 import com.ocs.dynamo.ui.container.QueryType;
 import com.ocs.dynamo.ui.container.ServiceContainer;
+import com.ocs.dynamo.ui.container.ServiceQueryDefinition;
 import com.vaadin.data.Container;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.sort.SortOrder;
@@ -47,6 +48,8 @@ public class ServiceResultsTableWrapper<ID extends Serializable, T extends Abstr
      */
     private Filter filter;
 
+    private Integer maxResults;
+
     /**
      * @param service
      *            the service object
@@ -66,15 +69,24 @@ public class ServiceResultsTableWrapper<ID extends Serializable, T extends Abstr
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     protected Container constructContainer() {
         ServiceContainer<ID, T> container = new ServiceContainer<>(getService(), getEntityModel(),
                 DynamoConstants.PAGE_SIZE, getQueryType(), getJoins());
+        if (getMaxResults() != null) {
+            ((ServiceQueryDefinition<ID, T>) container.getQueryView().getQueryDefinition())
+                    .setMaxQuerySize(getMaxResults());
+        }
         doConstructContainer(container);
         return container;
     }
 
     protected Filter getFilter() {
         return filter;
+    }
+
+    public Integer getMaxResults() {
+        return maxResults;
     }
 
     @SuppressWarnings("unchecked")
@@ -114,4 +126,9 @@ public class ServiceResultsTableWrapper<ID extends Serializable, T extends Abstr
         this.filter = filter;
         search(filter);
     }
+
+    public void setMaxResults(Integer maxResults) {
+        this.maxResults = maxResults;
+    }
+
 }

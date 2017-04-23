@@ -290,6 +290,7 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
                 checkButtonState(getSelectedItem());
             }
         };
+        tableWrapper.setMaxResults(getMaxResults());
         tableWrapper.build();
         return tableWrapper;
     }

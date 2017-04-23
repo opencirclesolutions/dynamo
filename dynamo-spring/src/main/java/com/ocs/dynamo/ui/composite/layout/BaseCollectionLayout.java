@@ -96,6 +96,9 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
     // whether the selection of multiple values is allowed
     private boolean multiSelect = false;
 
+    // maximum number of results returned by search
+    private Integer maxResults;
+
     /**
      * Constructor
      * 
@@ -402,5 +405,13 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 
     public FetchJoinInformation[] getDetailJoinsFallBack() {
         return (detailJoins == null || detailJoins.length == 0) ? getJoins() : detailJoins;
+    }
+
+    public Integer getMaxResults() {
+        return maxResults;
+    }
+
+    public void setMaxResults(Integer maxResults) {
+        this.maxResults = maxResults;
     }
 }

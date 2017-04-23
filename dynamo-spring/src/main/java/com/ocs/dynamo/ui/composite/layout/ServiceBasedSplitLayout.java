@@ -161,6 +161,7 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
                 }
             }
         };
+        tw.setMaxResults(getMaxResults());
         tw.build();
         return tw;
     }

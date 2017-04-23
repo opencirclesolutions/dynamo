@@ -1,24 +1,37 @@
 package com.ocs.dynamo.ui.composite.layout;
 
-import com.google.common.collect.Lists;
-import com.ocs.dynamo.domain.TestEntity;
-import com.ocs.dynamo.domain.model.EntityModelFactory;
-import com.ocs.dynamo.service.TestEntityService;
-import com.ocs.dynamo.test.BaseIntegrationTest;
-import com.ocs.dynamo.ui.composite.form.FormOptions;
-import com.ocs.dynamo.ui.container.QueryType;
-import com.ocs.dynamo.ui.utils.VaadinUtils;
-import com.vaadin.data.Container.Filter;
-import com.vaadin.data.sort.SortOrder;
-import com.vaadin.shared.data.sort.SortDirection;
-import com.vaadin.ui.Table;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.inject.Inject;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.List;
+import com.google.common.collect.Lists;
+import com.ocs.dynamo.domain.CascadeEntity;
+import com.ocs.dynamo.domain.TestEntity;
+import com.ocs.dynamo.domain.TestEntity.TestEnum;
+import com.ocs.dynamo.domain.TestEntity2;
+import com.ocs.dynamo.domain.model.EntityModel;
+import com.ocs.dynamo.domain.model.EntityModelFactory;
+import com.ocs.dynamo.service.CascadeEntityService;
+import com.ocs.dynamo.service.TestEntityService;
+import com.ocs.dynamo.test.BaseIntegrationTest;
+import com.ocs.dynamo.ui.component.EntityComboBox;
+import com.ocs.dynamo.ui.composite.form.FormOptions;
+import com.ocs.dynamo.ui.composite.table.ServiceResultsTableWrapper;
+import com.ocs.dynamo.ui.container.QueryType;
+import com.ocs.dynamo.ui.utils.VaadinUtils;
+import com.vaadin.data.Container.Filter;
+import com.vaadin.data.sort.SortOrder;
+import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.data.util.filter.Compare;
+import com.vaadin.shared.data.sort.SortDirection;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Table;
 
 public class SimpleSearchLayoutTest extends BaseIntegrationTest {
 
@@ -27,6 +40,9 @@ public class SimpleSearchLayoutTest extends BaseIntegrationTest {
 
     @Inject
     private TestEntityService testEntityService;
+
+    @Inject
+    private CascadeEntityService cascadeEntityService;
 
     private TestEntity e1;
 
@@ -66,6 +82,40 @@ public class SimpleSearchLayoutTest extends BaseIntegrationTest {
     }
 
     @Test
+    public void testSimpleSearchLayout_DoNotSearchImmediately() {
+        SimpleSearchLayout<Integer, TestEntity> layout = createLayout(new FormOptions().setSearchImmediately(false));
+        layout.build();
+
+        // no search results table yet
+        Component label = VaadinUtils.getFirstChildOfClass(layout.getSearchResultsLayout(), Label.class);
+        Assert.assertNotNull(label);
+
+        // perform a search, verify the label is removed and replaced by a search results table
+        layout.getSearchForm().getSearchButton().click();
+        label = VaadinUtils.getFirstChildOfClass(layout.getSearchResultsLayout(), Label.class);
+        Assert.assertNull(label);
+
+        ServiceResultsTableWrapper<?, ?> wrapper = VaadinUtils.getFirstChildOfClass(layout.getSearchResultsLayout(),
+                ServiceResultsTableWrapper.class);
+        Assert.assertNotNull(wrapper);
+
+        // press the clear button and verify the layout is reset
+        layout.getSearchForm().getClearButton().click();
+        label = VaadinUtils.getFirstChildOfClass(layout.getSearchResultsLayout(), Label.class);
+        Assert.assertNotNull(label);
+        wrapper = VaadinUtils.getFirstChildOfClass(layout.getSearchResultsLayout(), ServiceResultsTableWrapper.class);
+        Assert.assertNull(wrapper);
+    }
+
+    @Test
+    public void testSimpleSearchLayoutMultipleColumns() {
+        SimpleSearchLayout<Integer, TestEntity> layout = createLayout(new FormOptions());
+        layout.setNrOfColumns(2);
+        layout.build();
+        Assert.assertEquals(2, layout.getNrOfColumns());
+    }
+
+    @Test
     public void testSimpleSearchLayout_AddButton() {
         SimpleSearchLayout<Integer, TestEntity> layout = createLayout(new FormOptions());
         layout.build();
@@ -92,7 +142,7 @@ public class SimpleSearchLayoutTest extends BaseIntegrationTest {
     }
 
     /**
-     * Test the user of a filter
+     * Test the use of a filter
      */
     @Test
     public void testSimpleSearchLayout_Filter() {
@@ -171,6 +221,57 @@ public class SimpleSearchLayoutTest extends BaseIntegrationTest {
         layout.search();
 
         Assert.assertEquals(1, layout.getTableWrapper().getTable().size());
+
+        // clear all search results
+        layout.getSearchForm().getClearButton().click();
+        Assert.assertEquals(3, layout.getTableWrapper().getTable().size());
+    }
+
+    @Test
+    public void testSimpleSearchLayout_setSearchValueEnum() {
+        SimpleSearchLayout<Integer, TestEntity> layout = createLayout(new FormOptions());
+        layout.build();
+
+        layout.setSearchValue("someEnum", TestEnum.A);
+        layout.search();
+
+        Assert.assertEquals(0, layout.getTableWrapper().getTable().size());
+
+    }
+
+    /**
+     * Test a cascading search
+     */
+    @Test
+    @SuppressWarnings("unchecked")
+    public void testSimpleSearchLayout_Cascade() {
+
+        Assert.assertEquals(3, testEntityService.findAll().size());
+
+        FormOptions fo = new FormOptions();
+        EntityModel<CascadeEntity> model = entityModelFactory.getModel(CascadeEntity.class);
+        Assert.assertEquals(1, model.getAttributeModel("testEntity").getCascadeAttributes().size());
+
+        SimpleSearchLayout<Integer, CascadeEntity> layout = new SimpleSearchLayout<Integer, CascadeEntity>(
+                cascadeEntityService, entityModelFactory.getModel(CascadeEntity.class), QueryType.ID_BASED, fo, null);
+        layout.build();
+
+        EntityComboBox<Integer, TestEntity> box1 = (EntityComboBox<Integer, TestEntity>) layout.getSearchForm()
+                .getGroups().get("testEntity").getField();
+        ((BeanItemContainer<TestEntity>) box1.getContainerDataSource()).addAll(testEntityService.findAll());
+        Assert.assertEquals(3, box1.getContainerDataSource().size());
+
+        layout.setSearchValue("testEntity", e1);
+
+        // check that an additional filter for "testEntity" is set
+        EntityComboBox<Integer, TestEntity2> box2 = (EntityComboBox<Integer, TestEntity2>) layout.getSearchForm()
+                .getGroups().get("testEntity2").getField();
+        Compare.Equal equal = (Compare.Equal) box2.getAdditionalFilter();
+        Assert.assertEquals("testEntity", equal.getPropertyId());
+
+        // clear filter and verify cascaded filter is removed as well
+        layout.setSearchValue("testEntity", null);
+        Assert.assertNull(box2.getAdditionalFilter());
     }
 
     private SimpleSearchLayout<Integer, TestEntity> createLayout(FormOptions fo) {

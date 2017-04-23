@@ -48,7 +48,12 @@ public class ServiceQueryDefinition<ID extends Serializable, T extends AbstractE
      */
     private Integer predeterminedCount;
 
+    /**
+     * The entity model to base the query translation on
+     */
     private EntityModel<T> entityModel;
+
+    private Integer maxResults;
 
     /**
      * Constructor
@@ -136,6 +141,14 @@ public class ServiceQueryDefinition<ID extends Serializable, T extends AbstractE
 
     public void setQueryType(QueryType queryType) {
         this.queryType = queryType;
+    }
+
+    public Integer getMaxResults() {
+        return maxResults;
+    }
+
+    public void setMaxResults(Integer maxResults) {
+        this.maxResults = maxResults;
     }
 
 }

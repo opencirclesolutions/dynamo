@@ -193,6 +193,7 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
 
     @Override
     public void clearAdditionalFilter() {
+        super.clearAdditionalFilter();
         if (comboBox != null) {
             comboBox.refresh(getFilter());
             extTokenField.setInputField(comboBox);
@@ -291,6 +292,7 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
 
     @Override
     public void setAdditionalFilter(Filter additionalFilter) {
+        super.setAdditionalFilter(additionalFilter);
         if (comboBox != null) {
             setValue(null);
             comboBox.setValue(null);

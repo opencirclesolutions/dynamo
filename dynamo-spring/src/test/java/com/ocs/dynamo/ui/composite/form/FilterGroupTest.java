@@ -15,6 +15,7 @@ import com.ocs.dynamo.ui.composite.form.ModelBasedSearchForm.FilterType;
 import com.vaadin.data.util.filter.And;
 import com.vaadin.data.util.filter.Compare;
 import com.vaadin.data.util.filter.SimpleStringFilter;
+import com.vaadin.ui.Slider;
 import com.vaadin.ui.TextField;
 
 public class FilterGroupTest extends BaseIntegrationTest {
@@ -78,7 +79,6 @@ public class FilterGroupTest extends BaseIntegrationTest {
             } else {
                 // if both filters set, then we return an "And" filter that combines both
                 Assert.assertTrue(event.getNewFilter() instanceof And);
-                And and = (And) event.getNewFilter();
             }
         });
 
@@ -86,6 +86,25 @@ public class FilterGroupTest extends BaseIntegrationTest {
         Assert.assertTrue(listened);
 
         aux.setValue("10");
+    }
+
+    @Test
+    public void testIntSlider() {
+        Slider main = (Slider) factory.createField("someIntSlider");
+        Slider aux = (Slider) factory.createField("someIntSlider");
+
+        FilterGroup fg = new FilterGroup(model.getAttributeModel("someIntSlider"), FilterType.BETWEEN, null, main, aux);
+        fg.addListener(event -> {
+            listened = true;
+        });
+
+        main.setValue(100.);
+        Assert.assertTrue(listened);
+
+        // check that value is reset to minimum
+        fg.reset();
+        Assert.assertEquals(main.getMin(), main.getValue(), 0.01);
+        Assert.assertEquals(aux.getMin(), main.getValue(), 0.01);
     }
 
     @Test

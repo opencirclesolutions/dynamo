@@ -124,6 +124,12 @@ public class ServiceContainer<ID extends Serializable, T extends AbstractEntity<
         refresh();
     }
 
+    /**
+     * Perofmrs a sorting operation
+     * 
+     * @param sortOrder
+     *            the desired sort order
+     */
     public void sort(SortOrder... sortOrder) {
         if (sortOrder != null && sortOrder.length > 0) {
             Object[] pIds = new Object[sortOrder.length];

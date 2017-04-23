@@ -130,6 +130,7 @@ public class FancyListSelect<ID extends Serializable, T extends AbstractEntity<I
 
 	@Override
 	public void clearAdditionalFilter() {
+	    super.clearAdditionalFilter();
 		if (comboBox != null) {
 			comboBox.refresh(getFilter());
 		}
@@ -300,6 +301,7 @@ public class FancyListSelect<ID extends Serializable, T extends AbstractEntity<I
 
 	@Override
 	public void setAdditionalFilter(Filter additionalFilter) {
+        super.setAdditionalFilter(additionalFilter);
 		if (comboBox != null) {
 			comboBox.setValue(null);
 			comboBox.refresh(getFilter() == null ? additionalFilter : new And(getFilter(), additionalFilter));

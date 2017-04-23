@@ -44,6 +44,7 @@ import com.vaadin.server.Page;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Field;
+import com.vaadin.ui.Layout;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.Table;
@@ -344,6 +345,18 @@ public final class VaadinUtils {
                 return (T) component;
             }
 
+        }
+        return null;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T extends Component> T getFirstChildOfClass(Layout layout, Class<T> clazz) {
+        Iterator<Component> it = layout.iterator();
+        while (it.hasNext()) {
+            Component c = it.next();
+            if (clazz.isAssignableFrom(c.getClass())) {
+                return (T) c;
+            }
         }
         return null;
     }

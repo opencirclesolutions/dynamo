@@ -34,24 +34,4 @@ public class HierarchicalFetchJoinInformation extends FetchJoinInformation {
     public int getLevel() {
         return level;
     }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.ocs.dynamo.dao.query.FetchJoinInformation#equals(java.lang.Object)
-     */
-    @Override
-    public boolean equals(Object obj) {
-        return super.equals(obj);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.ocs.dynamo.dao.query.FetchJoinInformation#hashCode()
-     */
-    @Override
-    public int hashCode() {
-        return super.hashCode();
-    }
 }

@@ -436,6 +436,12 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
         }
     }
 
+    /**
+     * Sets the desired number of columns
+     * 
+     * @param nrOfColumns
+     *            the number of columns
+     */
     public void setNrOfColumns(int nrOfColumns) {
         this.nrOfColumns = nrOfColumns;
     }

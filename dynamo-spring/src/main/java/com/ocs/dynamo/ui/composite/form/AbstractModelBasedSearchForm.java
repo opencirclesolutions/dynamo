@@ -198,6 +198,8 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
                 constructButtonBar(buttonBar);
                 // add custom buttons
                 postProcessButtonBar(buttonBar);
+
+                searchButton.setEnabled(isSearchAllowed());
             }
 
             // add any custom functionality
@@ -457,10 +459,12 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
                     return false;
                 }
             }
+
             searchable.search(extractFilter());
             if (!skipValidation) {
                 afterSearchPerformed();
             }
+
             return true;
         }
         return false;

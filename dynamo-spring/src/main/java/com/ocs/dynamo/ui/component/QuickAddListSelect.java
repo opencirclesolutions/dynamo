@@ -40,141 +40,143 @@ import java.io.Serializable;
  * @param <T>
  *            the type of the entity that is being displayed
  */
-public class QuickAddListSelect<ID extends Serializable, T extends AbstractEntity<ID>> extends
-        QuickAddEntityField<ID, T, Object> implements Refreshable {
+public class QuickAddListSelect<ID extends Serializable, T extends AbstractEntity<ID>>
+        extends QuickAddEntityField<ID, T, Object> implements Refreshable {
 
-	private static final long serialVersionUID = 4246187881499965296L;
+    private static final long serialVersionUID = 4246187881499965296L;
 
-	/**
-	 * The list select component
-	 */
-	private EntityListSelect<ID, T> listSelect;
+    /**
+     * The list select component
+     */
+    private EntityListSelect<ID, T> listSelect;
 
-	/**
-	 * Whether the component is in view mode
-	 */
-	private boolean viewMode;
+    /**
+     * Whether the component is in view mode
+     */
+    private boolean viewMode;
 
-	/**
-	 * Constructor
-	 * 
-	 * @param entityModel
-	 * @param attributeModel
-	 * @param service
-	 * @param filter
-	 * @param multiSelect
-	 * @param rows
-	 * @param sortOrder
-	 */
-	public QuickAddListSelect(EntityModel<T> entityModel, AttributeModel attributeModel, BaseService<ID, T> service,
-	        Filter filter, boolean multiSelect, int rows, SortOrder... sortOrder) {
-		super(service, entityModel, attributeModel, filter);
-		listSelect = new EntityListSelect<>(entityModel, attributeModel, service, filter, sortOrder);
-		listSelect.setMultiSelect(multiSelect);
-		listSelect.setRows(rows);
-	}
+    /**
+     * Constructor
+     * 
+     * @param entityModel
+     * @param attributeModel
+     * @param service
+     * @param filter
+     * @param multiSelect
+     * @param rows
+     * @param sortOrder
+     */
+    public QuickAddListSelect(EntityModel<T> entityModel, AttributeModel attributeModel, BaseService<ID, T> service,
+            Filter filter, boolean multiSelect, int rows, SortOrder... sortOrder) {
+        super(service, entityModel, attributeModel, filter);
+        listSelect = new EntityListSelect<>(entityModel, attributeModel, service, filter, sortOrder);
+        listSelect.setMultiSelect(multiSelect);
+        listSelect.setRows(rows);
+    }
 
-	@Override
-	@SuppressWarnings("unchecked")
-	protected void afterNewEntityAdded(T entity) {
-		// add to the container
-		BeanItemContainer<T> container = (BeanItemContainer<T>) listSelect.getContainerDataSource();
-		container.addBean(entity);
-		listSelect.select(entity);
-	}
+    @Override
+    @SuppressWarnings("unchecked")
+    protected void afterNewEntityAdded(T entity) {
+        // add to the container
+        BeanItemContainer<T> container = (BeanItemContainer<T>) listSelect.getContainerDataSource();
+        container.addBean(entity);
+        listSelect.select(entity);
+    }
 
-	public EntityListSelect<ID, T> getListSelect() {
-		return listSelect;
-	}
+    @Override
+    public void clearAdditionalFilter() {
+        super.clearAdditionalFilter();
+        if (listSelect != null) {
+            listSelect.refresh(getFilter());
+        }
+    }
 
-	@Override
-	public Class<?> getType() {
-		return Object.class;
-	}
+    public EntityListSelect<ID, T> getListSelect() {
+        return listSelect;
+    }
 
-	@Override
-	protected Component initContent() {
-		HorizontalLayout bar = new DefaultHorizontalLayout(false, true, true);
-		bar.setSizeFull();
+    @Override
+    public Class<?> getType() {
+        return Object.class;
+    }
 
-		if (this.getAttributeModel() != null) {
-			this.setCaption(getAttributeModel().getDisplayName());
-		}
+    @Override
+    protected Component initContent() {
+        HorizontalLayout bar = new DefaultHorizontalLayout(false, true, true);
+        bar.setSizeFull();
 
-		// no caption needed (the wrapping component has the caption)
-		listSelect.setCaption(null);
-		listSelect.setSizeFull();
+        if (this.getAttributeModel() != null) {
+            this.setCaption(getAttributeModel().getDisplayName());
+        }
 
-		listSelect.addValueChangeListener(new ValueChangeListener() {
+        // no caption needed (the wrapping component has the caption)
+        listSelect.setCaption(null);
+        listSelect.setSizeFull();
 
-			private static final long serialVersionUID = 5114731461745867455L;
+        listSelect.addValueChangeListener(new ValueChangeListener() {
 
-			@Override
-			public void valueChange(com.vaadin.data.Property.ValueChangeEvent event) {
-				setValue(event.getProperty().getValue());
-			}
-		});
+            private static final long serialVersionUID = 5114731461745867455L;
 
-		bar.addComponent(listSelect);
+            @Override
+            public void valueChange(com.vaadin.data.Property.ValueChangeEvent event) {
+                setValue(event.getProperty().getValue());
+            }
+        });
 
-		if (!viewMode) {
-			Button addButton = constructAddButton();
-			bar.addComponent(addButton);
-		}
+        bar.addComponent(listSelect);
 
-		return bar;
-	}
+        if (!viewMode) {
+            Button addButton = constructAddButton();
+            bar.addComponent(addButton);
+        }
 
-	/**
-	 * Refreshes the data in the list
-	 */
-	@Override
-	public void refresh() {
-		if (listSelect != null) {
-			listSelect.refresh();
-		}
-	}
+        return bar;
+    }
 
-	@Override
-	protected void setInternalValue(Object newValue) {
-		super.setInternalValue(newValue);
-		if (listSelect != null) {
-			listSelect.setValue(newValue);
-		}
-	}
+    /**
+     * Refreshes the data in the list
+     */
+    @Override
+    public void refresh() {
+        if (listSelect != null) {
+            listSelect.refresh();
+        }
+    }
 
-	@Override
-	public void setValue(Object newFieldValue) {
-		super.setValue(newFieldValue);
-		if (listSelect != null) {
-			listSelect.setValue(newFieldValue);
-		}
-	}
+    @Override
+    public void refresh(Filter filter) {
+        setFilter(filter);
+        if (listSelect != null) {
+            listSelect.refresh(filter);
+        }
+    }
 
-	public void setViewMode(boolean viewMode) {
-		this.viewMode = viewMode;
-	}
+    @Override
+    public void setAdditionalFilter(Filter additionalFilter) {
+        super.setAdditionalFilter(additionalFilter);
+        if (listSelect != null) {
+            listSelect.refresh(getFilter() == null ? additionalFilter : new And(getFilter(), additionalFilter));
+        }
+    }
 
-	@Override
-	public void refresh(Filter filter) {
-		setFilter(filter);
-		if (listSelect != null) {
-			listSelect.refresh(filter);
-		}
-	}
+    @Override
+    protected void setInternalValue(Object newValue) {
+        super.setInternalValue(newValue);
+        if (listSelect != null) {
+            listSelect.setValue(newValue);
+        }
+    }
 
-	@Override
-	public void setAdditionalFilter(Filter additionalFilter) {
-		if (listSelect != null) {
-			listSelect.refresh(getFilter() == null ? additionalFilter : new And(getFilter(), additionalFilter));
-		}
-	}
+    @Override
+    public void setValue(Object newFieldValue) {
+        super.setValue(newFieldValue);
+        if (listSelect != null) {
+            listSelect.setValue(newFieldValue);
+        }
+    }
 
-	@Override
-	public void clearAdditionalFilter() {
-		if (listSelect != null) {
-			listSelect.refresh(getFilter());
-		}
-	}
+    public void setViewMode(boolean viewMode) {
+        this.viewMode = viewMode;
+    }
 
 }

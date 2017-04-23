@@ -13,172 +13,182 @@
  */
 package com.ocs.dynamo.ui.container;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import org.vaadin.addons.lazyquerycontainer.AbstractBeanQuery;
+import org.vaadin.addons.lazyquerycontainer.QueryDefinition;
+
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.dao.SortOrder;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.filter.Filter;
 import com.ocs.dynamo.filter.FilterConverter;
+import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.ui.ServiceLocator;
 import com.ocs.dynamo.utils.ClassUtils;
 import com.vaadin.data.Container;
 import com.vaadin.data.util.filter.And;
-import org.vaadin.addons.lazyquerycontainer.AbstractBeanQuery;
-import org.vaadin.addons.lazyquerycontainer.QueryDefinition;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 /**
  * A lazy container query that retrieves data using a service
  * 
  * @author patrick.deenen
  */
-public abstract class BaseServiceQuery<ID extends Serializable, T extends AbstractEntity<ID>> extends
-        AbstractBeanQuery<T> {
+public abstract class BaseServiceQuery<ID extends Serializable, T extends AbstractEntity<ID>>
+        extends AbstractBeanQuery<T> {
 
-	private static final long serialVersionUID = 4128040933505878355L;
+    private static final long serialVersionUID = 4128040933505878355L;
 
-	// local variable used as a counter for assigning temporary IDs
-	private int countDown;
+    // local variable used as a counter for assigning temporary IDs
+    private int countDown;
 
-	// the class of the primary key
-	private Class<?> idClass;
+    // the class of the primary key
+    private Class<?> idClass;
 
-	// the class of the entity
-	private Class<T> entityClass;
+    // the class of the entity
+    private Class<T> entityClass;
 
-	/**
-	 * Constructor
-	 * 
-	 * @param queryDefinition
-	 * @param queryConfiguration
-	 */
-	public BaseServiceQuery(ServiceQueryDefinition<ID, T> queryDefinition, Map<String, Object> queryConfiguration) {
-		super(queryDefinition, queryConfiguration, null, null);
-	}
+    // message service
+    private MessageService messageService = ServiceLocator.getMessageService();
 
-	/**
-	 * Creates an instance of the entity class
-	 */
-	@Override
-	protected T constructBean() {
+    /**
+     * Constructor
+     * 
+     * @param queryDefinition
+     * @param queryConfiguration
+     */
+    public BaseServiceQuery(ServiceQueryDefinition<ID, T> queryDefinition, Map<String, Object> queryConfiguration) {
+        super(queryDefinition, queryConfiguration, null, null);
+    }
 
-		// lazily load the entity class
-		if (entityClass == null) {
-			entityClass = getCustomQueryDefinition().getService().getEntityClass();
-		}
+    /**
+     * Creates an instance of the entity class
+     */
+    @Override
+    protected T constructBean() {
 
-		// lazily load the ID class
-		if (idClass == null) {
-			idClass = ClassUtils.getResolvedType(entityClass, DynamoConstants.ID);
-		}
+        // lazily load the entity class
+        if (entityClass == null) {
+            entityClass = getCustomQueryDefinition().getService().getEntityClass();
+        }
 
-		// the lazy query container cannot deal with situations in which the
-		// new object doesn't have an ID
-		// to circumvent this, we give the object a temporary ID which we clear
-		// before actually persisting the object
-		T result = ClassUtils.instantiateClass(entityClass);
+        // lazily load the ID class
+        if (idClass == null) {
+            idClass = ClassUtils.getResolvedType(entityClass, DynamoConstants.ID);
+        }
 
-		// set the primary key
-		if (Integer.class.equals(idClass)) {
-			ClassUtils.setFieldValue(result, DynamoConstants.ID, Integer.MAX_VALUE - countDown);
-		} else if (Long.class.equals(idClass)) {
-			ClassUtils.setFieldValue(result, DynamoConstants.ID, Long.MAX_VALUE - countDown);
-		}
-		countDown--;
-		return result;
-	}
+        // the lazy query container cannot deal with situations in which the
+        // new object doesn't have an ID
+        // to circumvent this, we give the object a temporary ID which we clear
+        // before actually persisting the object
+        T result = ClassUtils.instantiateClass(entityClass);
 
-	/**
-	 * Constructs the search filter
-	 * 
-	 * @return
-	 */
-	protected Filter constructFilter() {
-		final List<Container.Filter> filters = new ArrayList<>();
-		filters.addAll(getCustomQueryDefinition().getDefaultFilters());
-		filters.addAll(getCustomQueryDefinition().getFilters());
+        // set the primary key
+        if (Integer.class.equals(idClass)) {
+            ClassUtils.setFieldValue(result, DynamoConstants.ID, Integer.MAX_VALUE - countDown);
+        } else if (Long.class.equals(idClass)) {
+            ClassUtils.setFieldValue(result, DynamoConstants.ID, Long.MAX_VALUE - countDown);
+        }
+        countDown--;
+        return result;
+    }
 
-		Container.Filter first;
-		if (!filters.isEmpty()) {
-			first = filters.remove(0);
-		} else {
-			first = null;
-		}
-		while (!filters.isEmpty()) {
-			final Container.Filter filter = filters.remove(0);
-			first = new And(first, filter);
-		}
+    /**
+     * Constructs the search filter
+     * 
+     * @return
+     */
+    protected Filter constructFilter() {
+        final List<Container.Filter> filters = new ArrayList<>();
+        filters.addAll(getCustomQueryDefinition().getDefaultFilters());
+        filters.addAll(getCustomQueryDefinition().getFilters());
 
-		// look up the correct entity model for filter conversion
-		EntityModel<T> em = getCustomQueryDefinition().getEntityModel();
-		if (em == null) {
-			em = ServiceLocator.getEntityModelFactory().getModel(
-			        getCustomQueryDefinition().getService().getEntityClass());
-		}
-		return new FilterConverter(em).convert(first);
-	}
+        Container.Filter first;
+        if (!filters.isEmpty()) {
+            first = filters.remove(0);
+        } else {
+            first = null;
+        }
+        while (!filters.isEmpty()) {
+            Container.Filter filter = filters.remove(0);
+            first = new And(first, filter);
+        }
 
-	/**
-	 * Sets order clause of Service query according to query definition sort states.
-	 * 
-	 * @return an array containing the constructed Order objects
-	 */
-	protected SortOrder[] constructOrder() {
-		Object[] sortPropertyIds;
-		boolean[] sortPropertyAscendingStates;
-		QueryDefinition queryDefinition = getCustomQueryDefinition();
+        // look up the correct entity model for filter conversion
+        EntityModel<T> em = getCustomQueryDefinition().getEntityModel();
+        if (em == null) {
+            em = ServiceLocator.getEntityModelFactory()
+                    .getModel(getCustomQueryDefinition().getService().getEntityClass());
+        }
+        return new FilterConverter(em).convert(first);
+    }
 
-		if (queryDefinition.getSortPropertyIds().length == 0) {
-			sortPropertyIds = queryDefinition.getDefaultSortPropertyIds();
-			sortPropertyAscendingStates = queryDefinition.getDefaultSortPropertyAscendingStates();
-		} else {
-			sortPropertyIds = queryDefinition.getSortPropertyIds();
-			sortPropertyAscendingStates = queryDefinition.getSortPropertyAscendingStates();
-		}
+    /**
+     * Sets order clause of Service query according to query definition sort states.
+     * 
+     * @return an array containing the constructed Order objects
+     */
+    protected SortOrder[] constructOrder() {
+        Object[] sortPropertyIds;
+        boolean[] sortPropertyAscendingStates;
+        QueryDefinition queryDefinition = getCustomQueryDefinition();
 
-		final SortOrder[] orders = new SortOrder[sortPropertyIds.length];
-		if (sortPropertyIds.length > 0) {
-			for (int i = 0; i < sortPropertyIds.length; i++) {
-				orders[i] = new SortOrder(sortPropertyAscendingStates[i] ? SortOrder.Direction.ASC
-				        : SortOrder.Direction.DESC, sortPropertyIds[i].toString());
-			}
-		}
-		return orders;
-	}
+        if (queryDefinition.getSortPropertyIds().length == 0) {
+            sortPropertyIds = queryDefinition.getDefaultSortPropertyIds();
+            sortPropertyAscendingStates = queryDefinition.getDefaultSortPropertyAscendingStates();
+        } else {
+            sortPropertyIds = queryDefinition.getSortPropertyIds();
+            sortPropertyAscendingStates = queryDefinition.getSortPropertyAscendingStates();
+        }
 
-	@Override
-	protected void saveBeans(List<T> addedBeans, List<T> modifiedBeans, List<T> removedBeans) {
+        final SortOrder[] orders = new SortOrder[sortPropertyIds.length];
+        if (sortPropertyIds.length > 0) {
+            for (int i = 0; i < sortPropertyIds.length; i++) {
+                orders[i] = new SortOrder(
+                        sortPropertyAscendingStates[i] ? SortOrder.Direction.ASC : SortOrder.Direction.DESC,
+                        sortPropertyIds[i].toString());
+            }
+        }
+        return orders;
+    }
 
-		// it is possible to first add/edit an item and then remove it - weed
-		// out the items that
-		// have already been removed here
-		modifiedBeans.removeAll(removedBeans);
-		addedBeans.removeAll(removedBeans);
+    @Override
+    protected void saveBeans(List<T> addedBeans, List<T> modifiedBeans, List<T> removedBeans) {
 
-		// any beans that have not been persisted before don't actually have to
-		// be removed - remove them from the collection before saving
-		removedBeans.removeIf(t -> getCustomQueryDefinition().getService().findById(t.getId()) == null);
+        // it is possible to first add/edit an item and then remove it - weed
+        // out the items that
+        // have already been removed here
+        modifiedBeans.removeAll(removedBeans);
+        addedBeans.removeAll(removedBeans);
 
-		// clear the IDs of the newly added bean and let the database assign
-		// proper ones
-		for (T added : addedBeans) {
-			added.setId(null);
-		}
+        // any beans that have not been persisted before don't actually have to
+        // be removed - remove them from the collection before saving
+        removedBeans.removeIf(t -> getCustomQueryDefinition().getService().findById(t.getId()) == null);
 
-		// reset the counter so we can start again
-		countDown = 0;
+        // clear the IDs of the newly added bean and let the database assign
+        // proper ones
+        for (T added : addedBeans) {
+            added.setId(null);
+        }
 
-		// add, update, and delete everything in a single transaction
-		getCustomQueryDefinition().getService().update(modifiedBeans, addedBeans, removedBeans);
-	}
+        // reset the counter so we can start again
+        countDown = 0;
 
-	@SuppressWarnings("unchecked")
-	protected ServiceQueryDefinition<ID, T> getCustomQueryDefinition() {
-		return (ServiceQueryDefinition<ID, T>) super.getQueryDefinition();
-	}
+        // add, update, and delete everything in a single transaction
+        getCustomQueryDefinition().getService().update(modifiedBeans, addedBeans, removedBeans);
+    }
+
+    @SuppressWarnings("unchecked")
+    protected ServiceQueryDefinition<ID, T> getCustomQueryDefinition() {
+        return (ServiceQueryDefinition<ID, T>) super.getQueryDefinition();
+    }
+
+    public MessageService getMessageService() {
+        return messageService;
+    }
 
 }
