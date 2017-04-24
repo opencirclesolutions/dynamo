@@ -630,6 +630,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
             if (id != null) {
                 T next = getService().fetchById(id, getDetailJoinsFallBack());
                 getTableWrapper().getTable().select(next.getId());
+                afterEntitySelected(getEditForm(), next);
                 return next;
             }
         }
@@ -650,6 +651,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
             if (id != null) {
                 T prev = getService().fetchById(id, getDetailJoinsFallBack());
                 getTableWrapper().getTable().select(prev.getId());
+                afterEntitySelected(getEditForm(), prev);
                 return prev;
             }
         }
