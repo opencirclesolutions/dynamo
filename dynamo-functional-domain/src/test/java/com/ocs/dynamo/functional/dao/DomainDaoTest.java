@@ -24,7 +24,6 @@ import org.junit.Test;
 import com.ocs.dynamo.functional.domain.Country;
 import com.ocs.dynamo.functional.domain.Currency;
 import com.ocs.dynamo.functional.domain.Domain;
-import com.ocs.dynamo.functional.domain.DomainChild;
 import com.ocs.dynamo.functional.domain.Region;
 import com.ocs.dynamo.test.BaseIntegrationTest;
 
@@ -93,7 +92,7 @@ public class DomainDaoTest extends BaseIntegrationTest {
         Assert.assertTrue(deu instanceof Region);
         Region eu = (Region) deu;
         Assert.assertEquals(4, eu.getChildren().size());
-        List<DomainChild<?>> countries = domainDao.findChildren(eu);
+        List<Country> countries = domainDao.findChildren(eu);
         Assert.assertEquals(4, countries.size());
         countries = regionDao.findChildren(eu);
         Assert.assertEquals(4, countries.size());

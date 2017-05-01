@@ -13,6 +13,12 @@
  */
 package com.ocs.dynamo.domain.model;
 
+/**
+ * the various options for components for editing a String value
+ * 
+ * @author bas.rutten
+ *
+ */
 public enum AttributeTextFieldMode {
 
     INHERIT, TEXTFIELD, TEXTAREA;

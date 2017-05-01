@@ -20,6 +20,7 @@ package com.ocs.dynamo.ui;
  * 
  * @author Patrick Deenen (patrick.deenen@opencirclesolutions.nl)
  */
+@FunctionalInterface
 public interface Buildable {
 
     /**

@@ -34,9 +34,7 @@ public interface DomainService extends BaseService<Integer, Domain> {
 	 * @param parent
 	 * @return the children for the given parent
 	 */
-	@SuppressWarnings("rawtypes")
-	List<DomainChild<? extends DomainParent>> findChildren(
-			DomainParent<? extends DomainChild> parent);
+	<C extends DomainChild<C, P>, P extends DomainParent<C, P>> List<C> findChildren(P parent);
 
 	/**
 	 * Query all entities for a specific type (subclass)
@@ -45,5 +43,5 @@ public interface DomainService extends BaseService<Integer, Domain> {
 	 *            The subclass
 	 * @return All entities of given type
 	 */
-	List<? extends Domain> findAllByType(Class<? extends Domain> type);
+	<D extends Domain> List<D> findAllByType(Class<D> type);
 }

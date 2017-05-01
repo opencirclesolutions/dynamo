@@ -33,8 +33,8 @@ import com.vaadin.ui.HorizontalLayout;
  * @param <T>
  *            the type of the entity being displayed
  */
-public class HorizontalDisplayLayout<ID extends Serializable, T extends AbstractEntity<ID>> extends
-        BaseServiceCustomComponent<ID, T> {
+public class HorizontalDisplayLayout<ID extends Serializable, T extends AbstractEntity<ID>>
+        extends BaseServiceCustomComponent<ID, T> {
 
     private static final long serialVersionUID = -2610435729199505546L;
 
@@ -52,9 +52,8 @@ public class HorizontalDisplayLayout<ID extends Serializable, T extends Abstract
      * @param formOptions
      *            the form options that govern how the layout is displayed
      */
-    public HorizontalDisplayLayout(BaseService<ID, T> service, EntityModel<T> entityModel,
-            T entity, FormOptions formOptions) {
-        super(service, entityModel, formOptions);
+    public HorizontalDisplayLayout(BaseService<ID, T> service, EntityModel<T> entityModel, T entity) {
+        super(service, entityModel, new FormOptions());
         this.entity = entity;
     }
 
@@ -67,14 +66,11 @@ public class HorizontalDisplayLayout<ID extends Serializable, T extends Abstract
     @Override
     public void build() {
         HorizontalLayout layout = new DefaultHorizontalLayout(false, true, true);
-
         for (AttributeModel attributeModel : getEntityModel().getAttributeModels()) {
-            if (attributeModel.isVisible()
-                    && AttributeType.BASIC.equals(attributeModel.getAttributeType())) {
+            if (attributeModel.isVisible() && AttributeType.BASIC.equals(attributeModel.getAttributeType())) {
                 layout.addComponent(constructLabel(entity, attributeModel));
             }
         }
-
         setCompositionRoot(layout);
     }
 }

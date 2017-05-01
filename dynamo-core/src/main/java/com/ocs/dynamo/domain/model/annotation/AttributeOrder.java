@@ -27,5 +27,9 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface AttributeOrder {
 
+    /**
+     * 
+     * @return the attributes names in the order they must be displayed
+     */
     String[] attributeNames() default {};
 }

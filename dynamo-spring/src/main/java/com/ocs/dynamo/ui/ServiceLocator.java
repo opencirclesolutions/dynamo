@@ -32,83 +32,81 @@ import java.util.Map.Entry;
  */
 public final class ServiceLocator {
 
-    private static ApplicationContext ctx;
+	private static ApplicationContext ctx;
 
-    private ServiceLocator() {
-        // hidden constructor
-    }
+	private ServiceLocator() {
+		// hidden constructor
+	}
 
-    /**
-     * @return
-     */
-    private static ApplicationContext getContext() {
-        if (ctx == null) {
-            loadCtx();
-        }
-        return ctx;
-    }
+	/**
+	 * @return
+	 */
+	private static ApplicationContext getContext() {
+		if (ctx == null) {
+			loadCtx();
+		}
+		return ctx;
+	}
 
-    /**
-     * Lazily loads the context
-     */
-    private static synchronized void loadCtx() {
-        if (ctx == null) {
-            if (SpringVaadinServlet.getCurrent() != null) {
-                ServletContext sc = SpringVaadinServlet.getCurrent().getServletContext();
-                ctx = WebApplicationContextUtils.getWebApplicationContext(sc);
-            } else {
-                ctx = new ClassPathXmlApplicationContext(
-                        "classpath:META-INF/testApplicationContext.xml");
-            }
-        }
-    }
+	/**
+	 * Lazily loads the context
+	 */
+	private static synchronized void loadCtx() {
+		if (ctx == null) {
+			if (SpringVaadinServlet.getCurrent() != null) {
+				ServletContext sc = SpringVaadinServlet.getCurrent().getServletContext();
+				ctx = WebApplicationContextUtils.getWebApplicationContext(sc);
+			} else {
+				ctx = new ClassPathXmlApplicationContext("classpath:META-INF/testApplicationContext.xml");
+			}
+		}
+	}
 
-    /**
-     * Retrieves a service of a certain type
-     * 
-     * @param clazz
-     * @return
-     */
-    public static <T> T getService(Class<T> clazz) {
-        return getContext().getBean(clazz);
-    }
+	/**
+	 * Retrieves a service of a certain type
+	 * 
+	 * @param clazz
+	 *            the class of the service
+	 * @return
+	 */
+	public static <T> T getService(Class<T> clazz) {
+		return getContext().getBean(clazz);
+	}
 
-    /**
-     * Retrieves the message service from the context
-     * 
-     * @return
-     */
-    public static MessageService getMessageService() {
-        return getService(MessageService.class);
-    }
+	/**
+	 * Retrieves the message service from the context
+	 * 
+	 * @return
+	 */
+	public static MessageService getMessageService() {
+		return getService(MessageService.class);
+	}
 
-    /**
-     * Retrieves the entity model factory from the context
-     * 
-     * @return
-     */
-    public static EntityModelFactory getEntityModelFactory() {
-        return getService(EntityModelFactory.class);
-    }
+	/**
+	 * Retrieves the entity model factory from the context
+	 * 
+	 * @return
+	 */
+	public static EntityModelFactory getEntityModelFactory() {
+		return getService(EntityModelFactory.class);
+	}
 
-    /**
-     * Returns a service that is used to manage a certain type of entity
-     * 
-     * @param entityClass
-     *            the entity class
-     * @return
-     */
-    @SuppressWarnings("rawtypes")
-    public static BaseService<?, ?> getServiceForEntity(Class<?> entityClass) {
-        Map<String, BaseService> services = getContext().getBeansOfType(BaseService.class, false,
-                true);
-        for (Entry<String, BaseService> e : services.entrySet()) {
-            if (e.getValue().getEntityClass() != null
-                    && e.getValue().getEntityClass().equals(entityClass)) {
-                return (BaseService<?, ?>) e.getValue();
-            }
-        }
-        return null;
-    }
+	/**
+	 * Returns a service that is used to manage a certain type of entity
+	 * 
+	 * @param entityClass
+	 *            the entity class
+	 * @return
+	 */
+	@SuppressWarnings("rawtypes")
+	public static BaseService<?, ?> getServiceForEntity(Class<?> entityClass) {
+		Map<String, BaseService> services = getContext().getBeansOfType(BaseService.class, false, true);
+		for (Entry<String, BaseService> e : services.entrySet()) {
+			if (e.getValue().getEntityClass() != null && e.getValue().getEntityClass().equals(entityClass)) {
+				return (BaseService<?, ?>) e.getValue();
+			}
+		}
+		return null;
+	}
 
 }

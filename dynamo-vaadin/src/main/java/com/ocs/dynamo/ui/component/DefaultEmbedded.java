@@ -25,7 +25,6 @@ import java.io.ByteArrayInputStream;
  * 
  * @author bas.rutten
  */
-@SuppressWarnings("serial")
 public class DefaultEmbedded extends Embedded {
 
     private static final long serialVersionUID = 4282321844504066376L;

@@ -36,4 +36,10 @@ public interface Cascadable {
 	 * Removes the additional filter
 	 */
 	void clearAdditionalFilter();
+	
+	/**
+	 * 
+	 * @return
+	 */
+	Filter getAdditionalFilter();
 }

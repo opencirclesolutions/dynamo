@@ -19,6 +19,7 @@ package com.ocs.dynamo.ui;
  * @author bas.rutten
  *
  */
+@FunctionalInterface
 public interface Refreshable {
 
     void refresh();

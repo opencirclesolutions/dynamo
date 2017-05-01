@@ -25,7 +25,6 @@ import com.ocs.dynamo.dao.SortOrder;
 import com.ocs.dynamo.functional.domain.Country;
 import com.ocs.dynamo.functional.domain.Currency;
 import com.ocs.dynamo.functional.domain.Domain;
-import com.ocs.dynamo.functional.domain.DomainChild;
 import com.ocs.dynamo.functional.domain.Region;
 import com.ocs.dynamo.service.impl.DefaultServiceImpl;
 import com.ocs.dynamo.test.BaseIntegrationTest;
@@ -104,7 +103,7 @@ public class DomainServiceTest extends BaseIntegrationTest {
 		Assert.assertTrue(deu instanceof Region);
 		Region eu = (Region) deu;
 		Assert.assertEquals(4, eu.getChildren().size());
-		List<DomainChild<?>> countries = domainService.findChildren(eu);
+		List<Country> countries = domainService.findChildren(eu);
 		Assert.assertEquals(4, countries.size());
 		countries = regionService.findChildren(eu);
 		Assert.assertEquals(4, countries.size());

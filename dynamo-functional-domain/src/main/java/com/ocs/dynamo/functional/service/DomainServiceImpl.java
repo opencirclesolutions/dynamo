@@ -19,10 +19,12 @@ import com.ocs.dynamo.functional.domain.Domain;
 import com.ocs.dynamo.functional.domain.DomainChild;
 import com.ocs.dynamo.functional.domain.DomainParent;
 import com.ocs.dynamo.service.impl.DefaultServiceImpl;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
+
 import java.util.List;
 
 /**
@@ -33,8 +35,7 @@ import java.util.List;
  */
 @Transactional
 @Service("domainService")
-public class DomainServiceImpl extends DefaultServiceImpl<Integer, Domain>
-		implements DomainService {
+public class DomainServiceImpl extends DefaultServiceImpl<Integer, Domain> implements DomainService {
 
 	/** data access object for domain */
 	@Inject
@@ -57,15 +58,14 @@ public class DomainServiceImpl extends DefaultServiceImpl<Integer, Domain>
 		return domainDao;
 	}
 
-	@SuppressWarnings("rawtypes")
 	@Override
-	public List<DomainChild<? extends DomainParent>> findChildren(
-			DomainParent<? extends DomainChild> parent) {
+	public <C extends DomainChild<C, P>, P extends DomainParent<C, P>> List<C> findChildren(P parent) {
 		return domainDao.findChildren(parent);
 	}
 
 	@Override
-	public List<? extends Domain> findAllByType(Class<? extends Domain> type) {
+	public <D extends Domain> List<D> findAllByType(Class<D> type) {
 		return domainDao.findAllByType(type);
 	}
+
 }

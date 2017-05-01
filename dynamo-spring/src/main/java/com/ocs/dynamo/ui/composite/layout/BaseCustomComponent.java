@@ -13,6 +13,14 @@
  */
 package com.ocs.dynamo.ui.composite.layout;
 
+import java.math.BigDecimal;
+import java.util.Date;
+
+import javax.persistence.OptimisticLockException;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeDateType;
@@ -31,6 +39,7 @@ import com.ocs.dynamo.ui.converter.FormattedStringToDateConverter;
 import com.ocs.dynamo.ui.converter.WeekCodeConverter;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.utils.ClassUtils;
+import com.ocs.dynamo.utils.DateUtils;
 import com.ocs.dynamo.utils.StringUtil;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.NestedMethodProperty;
@@ -44,16 +53,10 @@ import com.vaadin.ui.Embedded;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-
-import javax.persistence.OptimisticLockException;
-import java.math.BigDecimal;
-import java.util.Date;
 
 /**
- * Base class for custom components - contains convenience methods for getting various often-used
- * services
+ * Base class for custom components - contains convenience methods for getting
+ * various often-used services
  * 
  * @author bas.rutten
  */
@@ -98,29 +101,32 @@ public abstract class BaseCustomComponent extends CustomComponent implements Bui
 			} else if (Date.class.equals(type)) {
 				property = new ObjectProperty<>((Date) value);
 				if (AttributeDateType.TIME.equals(attributeModel.getDateType())
-				        || AttributeDateType.DATE.equals(attributeModel.getDateType())) {
+						|| AttributeDateType.DATE.equals(attributeModel.getDateType())) {
 					fieldLabel
-					        .setConverter(new FormattedStringToDateConverter(null, attributeModel.getDisplayFormat()));
+							.setConverter(new FormattedStringToDateConverter(null, attributeModel.getDisplayFormat()));
 				} else if (AttributeDateType.TIMESTAMP.equals(attributeModel.getDateType())) {
-					fieldLabel.setConverter(new FormattedStringToDateConverter(
-					        VaadinUtils.getTimeZone(UI.getCurrent()), attributeModel.getDisplayFormat()));
+					fieldLabel.setConverter(new FormattedStringToDateConverter(VaadinUtils.getTimeZone(UI.getCurrent()),
+							attributeModel.getDisplayFormat()));
 				}
+			} else if (DateUtils.isJava8DateType(attributeModel.getType())) {
+				fieldLabel.setValue(
+						DateUtils.formatJava8Date(attributeModel.getType(), value, attributeModel.getDisplayFormat()));
 			} else if (attributeModel.getType().isEnum()) {
 				String msg = getMessageService().getEnumMessage((Class<Enum<?>>) attributeModel.getType(),
-				        (Enum<?>) value);
+						(Enum<?>) value);
 				if (msg != null) {
 					fieldLabel.setValue(msg);
 				}
 			} else if (BigDecimal.class.equals(type)) {
 				property = new ObjectProperty<>((BigDecimal) value);
 				fieldLabel.setConverter(ConverterFactory.createBigDecimalConverter(attributeModel.isCurrency(),
-				        attributeModel.isPercentage(), attributeModel.isUseThousandsGrouping(),
-				        attributeModel.getPrecision(), VaadinUtils.getCurrencySymbol()));
+						attributeModel.isPercentage(), attributeModel.isUseThousandsGrouping(),
+						attributeModel.getPrecision(), VaadinUtils.getCurrencySymbol()));
 			} else if (Number.class.isAssignableFrom(type)) {
 				// other number types
 				property = new ObjectProperty<>((Number) value);
 				fieldLabel.setConverter(ConverterFactory.createConverterFor(type, attributeModel,
-				        attributeModel.isUseThousandsGrouping()));
+						attributeModel.isUseThousandsGrouping()));
 			} else if (AbstractEntity.class.isAssignableFrom(type)) {
 				// another entity - use the value of the "displayProperty"
 				EntityModel<?> model = getEntityModelFactory().getModel(type);
@@ -132,10 +138,12 @@ public abstract class BaseCustomComponent extends CustomComponent implements Bui
 				Embedded image = new DefaultEmbedded(attributeModel.getDisplayName(), bytes);
 				image.setStyleName(DynamoConstants.CSS_CLASS_UPLOAD);
 				return image;
-			} else if (Boolean.class.equals(attributeModel.getType()) || boolean.class.equals(attributeModel.getType())) {
+			} else if (Boolean.class.equals(attributeModel.getType())
+					|| boolean.class.equals(attributeModel.getType())) {
 				if (!StringUtils.isEmpty(attributeModel.getTrueRepresentation()) && Boolean.TRUE.equals(value)) {
 					property = new ObjectProperty<>(attributeModel.getTrueRepresentation());
-				} else if (!StringUtils.isEmpty(attributeModel.getFalseRepresentation()) && Boolean.FALSE.equals(value)) {
+				} else if (!StringUtils.isEmpty(attributeModel.getFalseRepresentation())
+						&& Boolean.FALSE.equals(value)) {
 					property = new ObjectProperty<>(attributeModel.getFalseRepresentation());
 				} else {
 					property = new ObjectProperty<>((Boolean) value);
@@ -143,8 +151,7 @@ public abstract class BaseCustomComponent extends CustomComponent implements Bui
 				}
 			} else if (Iterable.class.isAssignableFrom(attributeModel.getType())) {
 				// collection of entities
-				String str = TableUtils.formatEntityCollection(getEntityModelFactory(), attributeModel,
-						value);
+				String str = TableUtils.formatEntityCollection(getEntityModelFactory(), attributeModel, value);
 				property = new ObjectProperty<>(str);
 				fieldLabel.setPropertyDataSource(property);
 			}
@@ -223,8 +230,9 @@ public abstract class BaseCustomComponent extends CustomComponent implements Bui
 	}
 
 	/**
-	 * Shows a notification message - this method will check for the availability of a Vaadin Page
-	 * object and if this is not present, write the notification to the log instead
+	 * Shows a notification message - this method will check for the
+	 * availability of a Vaadin Page object and if this is not present, write
+	 * the notification to the log instead
 	 * 
 	 * @param message
 	 *            the message

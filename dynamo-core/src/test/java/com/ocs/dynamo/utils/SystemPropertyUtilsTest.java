@@ -24,6 +24,6 @@ public class SystemPropertyUtilsTest {
 
 		Assert.assertEquals(false, SystemPropertyUtils.useThousandsGroupingInEditMode());
 
-		Assert.assertEquals("de", SystemPropertyUtils.getDefaultLocale());
+		Assert.assertEquals("en_GB", SystemPropertyUtils.getDefaultLocale());
 	}
 }

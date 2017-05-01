@@ -1,9 +1,12 @@
 package com.ocs.dynamo.utils;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.ocs.dynamo.domain.TestEntity;
@@ -14,6 +17,11 @@ import com.ocs.dynamo.domain.model.impl.EntityModelFactoryImpl;
 public class ConvertUtilTest {
 
     private EntityModelFactory emf = new EntityModelFactoryImpl();
+
+    @BeforeClass
+    public static void beforeClass() {
+        System.setProperty("ocs.default.locale", "de");
+    }
 
     @Test
     public void testConvertSearchValue() {
@@ -43,8 +51,7 @@ public class ConvertUtilTest {
         Object s = ConvertUtil.convertToPresentationValue(model.getAttributeModel("age"), 12L);
         Assert.assertEquals("12", s);
 
-        s = ConvertUtil.convertToPresentationValue(model.getAttributeModel("discount"),
-                BigDecimal.valueOf(17.79));
+        s = ConvertUtil.convertToPresentationValue(model.getAttributeModel("discount"), BigDecimal.valueOf(17.79));
         Assert.assertEquals("17,79", s);
 
         s = ConvertUtil.convertToPresentationValue(model.getAttributeModel("id"), 1234);
@@ -53,5 +60,25 @@ public class ConvertUtilTest {
         s = ConvertUtil.convertToPresentationValue(model.getAttributeModel("birthWeek"),
                 DateUtils.createDate("01022015"));
         Assert.assertEquals("2015-05", s);
+    }
+
+    @Test
+    public void testConvertToPresentationDates() {
+        EntityModel<TestEntity> model = emf.getModel(TestEntity.class);
+
+        // LocalDate
+        Object s = ConvertUtil.convertToPresentationValue(model.getAttributeModel("birthDateLocal"),
+                LocalDate.of(2014, 1, 1));
+        Assert.assertEquals("01-01-2014", DateUtils.formatDate((Date) s, "dd-MM-yyyy"));
+
+        // LocalDateTime
+        s = ConvertUtil.convertToPresentationValue(model.getAttributeModel("registrationTime"),
+                LocalDateTime.of(2014, 1, 1, 13, 14, 0));
+        System.out.println(s.toString());
+
+        Assert.assertTrue(s.toString().contains("Jan 01 13:14:00"));
+        Assert.assertTrue(s.toString().contains("2014"));
+        
+        // 
     }
 }

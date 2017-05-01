@@ -50,308 +50,298 @@ import com.vaadin.ui.Label;
  *            the type of the selected value (can be a single entity or a collection depending on
  *            the use case)
  */
-public class EntityLookupField<ID extends Serializable, T extends AbstractEntity<ID>> extends
-        QuickAddEntityField<ID, T, Object> {
+public class EntityLookupField<ID extends Serializable, T extends AbstractEntity<ID>>
+        extends QuickAddEntityField<ID, T, Object> {
 
-	private static final long serialVersionUID = 5377765863515463622L;
+    private static final long serialVersionUID = 5377765863515463622L;
 
-	/**
-	 * Indicates whether it is allowed to add items
-	 */
-	private boolean addAllowed;
+    /**
+     * Indicates whether it is allowed to add items
+     */
+    private boolean addAllowed;
 
-	/**
-	 * The button used to clear the current selection
-	 */
-	private Button clearButton;
+    /**
+     * The button used to clear the current selection
+     */
+    private Button clearButton;
 
-	/**
-	 * Additional filter for cascading
-	 */
-	private Filter additionalFilter;
+    /**
+     * The joins to apply to the search in the search dialog
+     */
+    private final FetchJoinInformation[] joins;
 
-	/**
-	 * The joins to apply to the search in the search dialog
-	 */
-	private final FetchJoinInformation[] joins;
+    /**
+     * The label that displays the currently selected item
+     */
+    private Label label;
 
-	/**
-	 * The label that displays the currently selected item
-	 */
-	private Label label;
+    /**
+     * Whether the component allows multiple select
+     */
+    private boolean multiSelect;
 
-	/**
-	 * Whether the component allows multiple select
-	 */
-	private boolean multiSelect;
+    /**
+     * The page length of the table in the search dialog
+     */
+    private Integer pageLength;
 
-	/**
-	 * The page length of the table in the search dialog
-	 */
-	private Integer pageLength;
+    /**
+     * The button that brings up the search dialog
+     */
+    private Button selectButton;
 
-	/**
-	 * The button that brings up the search dialog
-	 */
-	private Button selectButton;
+    /**
+     * The sort order to apply to the search dialog
+     */
+    private List<SortOrder> sortOrders = new ArrayList<>();
 
-	/**
-	 * The sort order to apply to the search dialog
-	 */
-	private List<SortOrder> sortOrders = new ArrayList<>();
+    /**
+     * Constructor
+     * 
+     * @param service
+     *            the service used to query the database
+     * @param entityModel
+     *            the entity model
+     * @param attributeModel
+     *            the attribute mode
+     * @param filters
+     *            the filter to apply when searching
+     * @param search
+     *            whether the component is used in a search screen
+     * @param sortOrder
+     *            the sort order
+     * @param joins
+     *            the joins to use when fetching data when filling the popop dialog
+     */
+    public EntityLookupField(BaseService<ID, T> service, EntityModel<T> entityModel, AttributeModel attributeModel,
+            Filter filter, boolean search, boolean multiSelect, List<SortOrder> sortOrders,
+            FetchJoinInformation... joins) {
+        super(service, entityModel, attributeModel, filter);
+        this.sortOrders = sortOrders != null ? sortOrders : new ArrayList<>();
+        this.joins = joins;
+        this.multiSelect = multiSelect;
+        this.addAllowed = !search && (attributeModel != null && attributeModel.isQuickAddAllowed());
+    }
 
-	/**
-	 * Constructor
-	 * 
-	 * @param service
-	 *            the service used to query the database
-	 * @param entityModel
-	 *            the entity model
-	 * @param attributeModel
-	 *            the attribute mode
-	 * @param filters
-	 *            the filter to apply when searching
-	 * @param search
-	 *            whether the component is used in a search screen
-	 * @param sortOrder
-	 *            the sort order
-	 * @param joins
-	 *            the joins to use when fetching data when filling the popop dialog
-	 */
-	public EntityLookupField(BaseService<ID, T> service, EntityModel<T> entityModel, AttributeModel attributeModel,
-	        Filter filter, boolean search, boolean multiSelect, List<SortOrder> sortOrders,
-	        FetchJoinInformation... joins) {
-		super(service, entityModel, attributeModel, filter);
-		this.sortOrders = sortOrders != null ? sortOrders : new ArrayList<>();
-		this.joins = joins;
-		this.multiSelect = multiSelect;
-		this.addAllowed = !search && (attributeModel != null && attributeModel.isQuickAddAllowed());
-	}
+    /**
+     * Adds a sort order
+     * 
+     * @param sortOrder
+     *            the sort order to add
+     */
+    public void addSortOrder(SortOrder sortOrder) {
+        this.sortOrders.add(sortOrder);
+    }
 
-	/**
-	 * Adds a sort order
-	 * 
-	 * @param sortOrder
-	 *            the sort order to add
-	 */
-	public void addSortOrder(SortOrder sortOrder) {
-		this.sortOrders.add(sortOrder);
-	}
+    @Override
+    @SuppressWarnings("unchecked")
+    protected void afterNewEntityAdded(T entity) {
+        if (multiSelect) {
+            if (getValue() == null) {
+                // create new collection
+                setValue(Lists.newArrayList(entity));
+            } else {
+                // add new entity to existing collection
+                Collection<T> col = (Collection<T>) getValue();
+                col.add(entity);
+                setValue(col);
+            }
+        } else {
+            setValue(entity);
+        }
+    }
 
-	@Override
-	@SuppressWarnings("unchecked")
-	protected void afterNewEntityAdded(T entity) {
-		if (multiSelect) {
-			if (getValue() == null) {
-				// create new collection
-				setValue(Lists.newArrayList(entity));
-			} else {
-				// add new entity to existing collection
-				Collection<T> col = (Collection<T>) getValue();
-				col.add(entity);
-				setValue(col);
-			}
-		} else {
-			setValue(entity);
-		}
-	}
+    public Button getClearButton() {
+        return clearButton;
+    }
 
-	public Button getClearButton() {
-		return clearButton;
-	}
+    public Integer getPageLength() {
+        return pageLength;
+    }
 
-	public Integer getPageLength() {
-		return pageLength;
-	}
+    public Button getSelectButton() {
+        return selectButton;
+    }
 
-	public Button getSelectButton() {
-		return selectButton;
-	}
+    public List<SortOrder> getSortOrders() {
+        return Collections.unmodifiableList(sortOrders);
+    }
 
-	public List<SortOrder> getSortOrders() {
-		return Collections.unmodifiableList(sortOrders);
-	}
+    @Override
+    public Class<?> getType() {
+        return Object.class;
+    }
 
-	@Override
-	public Class<?> getType() {
-		return Object.class;
-	}
+    @Override
+    protected Component initContent() {
+        HorizontalLayout bar = new DefaultHorizontalLayout(false, true, true);
+        if (this.getAttributeModel() != null) {
+            this.setCaption(getAttributeModel().getDisplayName());
+        }
 
-	@Override
-	protected Component initContent() {
-		HorizontalLayout bar = new DefaultHorizontalLayout(false, true, true);
-		if (this.getAttributeModel() != null) {
-			this.setCaption(getAttributeModel().getDisplayName());
-		}
+        // label for displaying selected values
+        label = new Label();
+        updateLabel(getValue());
+        bar.addComponent(label);
 
-		// label for displaying selected values
-		label = new Label();
-		updateLabel(getValue());
-		bar.addComponent(label);
+        // button for selecting an entity - brings up the search dialog
+        selectButton = new Button(getMessageService().getMessage("ocs.select"));
+        selectButton.addClickListener(new Button.ClickListener() {
 
-		// button for selecting an entity - brings up the search dialog
-		selectButton = new Button(getMessageService().getMessage("ocs.select"));
-		selectButton.addClickListener(new Button.ClickListener() {
+            private static final long serialVersionUID = 8377632639548698729L;
 
-			private static final long serialVersionUID = 8377632639548698729L;
+            @Override
+            public void buttonClick(ClickEvent event) {
+                List<Filter> filterList = new ArrayList<>();
+                if (getFilter() != null) {
+                    filterList.add(getFilter());
+                }
+                if (getAdditionalFilter() != null) {
+                    filterList.add(getAdditionalFilter());
+                }
 
-			@Override
-			public void buttonClick(ClickEvent event) {
-				List<Filter> filterList = new ArrayList<>();
-				if (getFilter() != null) {
-					filterList.add(getFilter());
-				}
-				if (additionalFilter != null) {
-					filterList.add(additionalFilter);
-				}
+                ModelBasedSearchDialog<ID, T> dialog = new ModelBasedSearchDialog<ID, T>(getService(), getEntityModel(),
+                        filterList, sortOrders, multiSelect, true, joins) {
 
-				ModelBasedSearchDialog<ID, T> dialog = new ModelBasedSearchDialog<ID, T>(getService(),
-				        getEntityModel(), filterList, sortOrders, multiSelect, true, joins) {
+                    private static final long serialVersionUID = -3432107069929941520L;
 
-					private static final long serialVersionUID = -3432107069929941520L;
+                    @Override
+                    @SuppressWarnings("unchecked")
+                    protected boolean doClose() {
+                        if (multiSelect) {
+                            if (getValue() == null) {
+                                setValue(getSelectedItems());
+                            } else {
+                                // get current value
+                                Collection<T> current = (Collection<T>) EntityLookupField.this.getValue();
+                                // add new values
+                                for (T t : getSelectedItems()) {
+                                    if (!current.contains(t)) {
+                                        current.add(t);
+                                    }
+                                }
+                                EntityLookupField.this.setValue(current);
+                            }
+                        } else {
+                            // single value select
+                            setValue(getSelectedItem());
+                        }
+                        return true;
+                    }
+                };
+                dialog.setPageLength(pageLength);
+                dialog.build();
+                getUi().addWindow(dialog);
+            }
+        });
+        bar.addComponent(selectButton);
 
-					@Override
-					@SuppressWarnings("unchecked")
-					protected boolean doClose() {
-						if (multiSelect) {
-							if (getValue() == null) {
-								setValue(getSelectedItems());
-							} else {
-								// get current value
-								Collection<T> current = (Collection<T>) EntityLookupField.this.getValue();
-								// add new values
-								for (T t : getSelectedItems()) {
-									if (!current.contains(t)) {
-										current.add(t);
-									}
-								}
-								EntityLookupField.this.setValue(current);
-							}
-						} else {
-							// single value select
-							setValue(getSelectedItem());
-						}
-						return true;
-					}
-				};
-				dialog.setPageLength(pageLength);
-				dialog.build();
-				getUi().addWindow(dialog);
-			}
-		});
-		bar.addComponent(selectButton);
+        // button for clearing the current selection
+        clearButton = new Button(getMessageService().getMessage("ocs.clear"));
+        clearButton.addClickListener(new Button.ClickListener() {
 
-		// button for clearing the current selection
-		clearButton = new Button(getMessageService().getMessage("ocs.clear"));
-		clearButton.addClickListener(new Button.ClickListener() {
+            private static final long serialVersionUID = 8377632639548698729L;
 
-			private static final long serialVersionUID = 8377632639548698729L;
+            @Override
+            public void buttonClick(ClickEvent event) {
+                setValue(null);
+            }
+        });
+        bar.addComponent(clearButton);
 
-			@Override
-			public void buttonClick(ClickEvent event) {
-				setValue(null);
-			}
-		});
-		bar.addComponent(clearButton);
+        // quick add button
+        if (addAllowed) {
+            Button addButton = constructAddButton();
+            bar.addComponent(addButton);
+        }
+        return bar;
+    }
 
-		// quick add button
-		if (addAllowed) {
-			Button addButton = constructAddButton();
-			bar.addComponent(addButton);
-		}
-		return bar;
-	}
+    /**
+     * Makes sure any currently selected values are highlighted in the search dialog
+     * 
+     * @param dialog
+     *            the dialog
+     */
+    @SuppressWarnings("unchecked")
+    public void selectValuesInDialog(ModelBasedSearchDialog<ID, T> dialog) {
+        // select any previously selected values in the dialog
+        if (multiSelect && getValue() != null && getValue() instanceof Collection) {
+            List<ID> ids = new ArrayList<>();
+            Collection<T> col = (Collection<T>) getValue();
+            for (T t : col) {
+                ids.add(t.getId());
+            }
+            dialog.select(ids);
+        }
+    }
 
-	/**
-	 * Makes sure any currently selected values are highlighted in the search dialog
-	 * 
-	 * @param dialog
-	 *            the dialog
-	 */
-	@SuppressWarnings("unchecked")
-	public void selectValuesInDialog(ModelBasedSearchDialog<ID, T> dialog) {
-		// select any previously selected values in the dialog
-		if (multiSelect && getValue() != null && getValue() instanceof Collection) {
-			List<ID> ids = new ArrayList<>();
-			Collection<T> col = (Collection<T>) getValue();
-			for (T t : col) {
-				ids.add(t.getId());
-			}
-			dialog.select(ids);
-		}
-	}
+    @Override
+    public void setEnabled(boolean enabled) {
+        super.setEnabled(enabled);
+        if (selectButton != null) {
+            selectButton.setEnabled(enabled);
+            clearButton.setEnabled(enabled);
+            if (getAddButton() != null) {
+                getAddButton().setEnabled(enabled);
+            }
+        }
+    }
 
-	@Override
-	public void setEnabled(boolean enabled) {
-		super.setEnabled(enabled);
-		if (selectButton != null) {
-			selectButton.setEnabled(enabled);
-			clearButton.setEnabled(enabled);
-			if (getAddButton() != null) {
-				getAddButton().setEnabled(enabled);
-			}
-		}
-	}
+    @Override
+    protected void setInternalValue(Object newValue) {
+        super.setInternalValue(newValue);
+        updateLabel(newValue);
+    }
 
-	@Override
-	protected void setInternalValue(Object newValue) {
-		super.setInternalValue(newValue);
-		updateLabel(newValue);
-	}
+    public void setPageLength(Integer pageLength) {
+        this.pageLength = pageLength;
+    }
 
-	public void setPageLength(Integer pageLength) {
-		this.pageLength = pageLength;
-	}
+    @Override
+    public void setValue(Object newFieldValue) {
+        super.setValue(newFieldValue);
+        updateLabel(newFieldValue);
+    }
 
-	@Override
-	public void setValue(Object newFieldValue) {
-		super.setValue(newFieldValue);
-		updateLabel(newFieldValue);
-	}
+    /**
+     * Updates the value that is displayed in the label
+     * 
+     * @param newValue
+     *            the new value
+     */
+    @SuppressWarnings("unchecked")
+    private void updateLabel(Object newValue) {
+        if (label != null) {
+            label.setCaptionAsHtml(true);
 
-	/**
-	 * Updates the value that is displayed in the label
-	 * 
-	 * @param newValue
-	 *            the new value
-	 */
-	@SuppressWarnings("unchecked")
-	private void updateLabel(Object newValue) {
-		if (label != null) {
-			label.setCaptionAsHtml(true);
+            String caption = getMessageService().getMessage("ocs.no.item.selected");
+            if (newValue instanceof Collection<?>) {
+                Collection<T> col = (Collection<T>) newValue;
+                if (!col.isEmpty()) {
+                    caption = EntityModelUtil.getDisplayPropertyValue(col, getEntityModel(),
+                            SystemPropertyUtils.getLookupFieldMaxItems(), getMessageService());
+                }
+            } else {
+                // just a single value
+                T t = (T) newValue;
+                if (newValue != null) {
+                    caption = EntityModelUtil.getDisplayPropertyValue(t, getEntityModel());
+                }
+            }
+            label.setCaption(caption.replaceAll(",", StringUtil.HTML_LINE_BREAK));
+        }
+    }
 
-			String caption = getMessageService().getMessage("ocs.no.item.selected");
-			if (newValue instanceof Collection<?>) {
-				Collection<T> col = (Collection<T>) newValue;
-				if (!col.isEmpty()) {
-					caption = EntityModelUtil.getDisplayPropertyValue(col, getEntityModel(),
-					        SystemPropertyUtils.getLookupFieldMaxItems(), getMessageService());
-				}
-			} else {
-				// just a single value
-				T t = (T) newValue;
-				if (newValue != null) {
-					caption = EntityModelUtil.getDisplayPropertyValue(t, getEntityModel());
-				}
-			}
-			label.setCaption(caption.replaceAll(",", StringUtil.HTML_LINE_BREAK));
-		}
-	}
+    @Override
+    public void refresh(Filter filter) {
+        setFilter(filter);
+    }
 
-	@Override
-	public void refresh(Filter filter) {
-		setFilter(filter);
-	}
-
-	@Override
-	public void setAdditionalFilter(Filter additionalFilter) {
-		setValue(null);
-		this.additionalFilter = additionalFilter;
-	}
-
-	@Override
-	public void clearAdditionalFilter() {
-		this.additionalFilter = null;
-	}
+    @Override
+    public void setAdditionalFilter(Filter additionalFilter) {
+        setValue(null);
+        super.setAdditionalFilter(additionalFilter);
+    }
 
 }

@@ -32,7 +32,6 @@ import java.io.OutputStream;
  * 
  * @author bas.rutten
  */
-@SuppressWarnings("serial")
 public abstract class UploadForm extends ProgressForm<byte[]> {
 
 	/**

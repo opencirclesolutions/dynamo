@@ -64,10 +64,9 @@ public class ModelBasedHierarchicalContainer<T> extends HierarchicalContainer {
 
         private ModelBasedFieldFactory<AbstractEntity<?>> fieldFactory;
 
-        public ModelBasedHierarchicalDefinition(EntityModel<?> entityModel, Indexed container,
-                int level, Object itemPropertyIdParent, List<?> propertyIds) {
-            super(container, level, entityModel.getIdAttributeModel().getName(),
-                    itemPropertyIdParent, propertyIds);
+        public ModelBasedHierarchicalDefinition(EntityModel<?> entityModel, Indexed container, int level,
+                Object itemPropertyIdParent, List<?> propertyIds) {
+            super(container, level, entityModel.getIdAttributeModel().getName(), itemPropertyIdParent, propertyIds);
             this.entityModel = entityModel;
         }
 
@@ -100,15 +99,13 @@ public class ModelBasedHierarchicalContainer<T> extends HierarchicalContainer {
          * 
          * @param container
          */
-        public HierarchicalFieldFactory(ModelBasedHierarchicalContainer<T> container,
-                MessageService messageService) {
+        public HierarchicalFieldFactory(ModelBasedHierarchicalContainer<T> container, MessageService messageService) {
             this.container = container;
             this.messageService = messageService;
         }
 
         @Override
-        public Field<?> createField(Container container, Object itemId, Object propertyId,
-                Component uiContext) {
+        public Field<?> createField(Container container, Object itemId, Object propertyId, Component uiContext) {
             ModelBasedHierarchicalDefinition def = null;
             if (itemId instanceof HierarchicalId) {
                 def = this.container.getHierarchicalDefinitionByItemId(itemId);
@@ -128,8 +125,8 @@ public class ModelBasedHierarchicalContainer<T> extends HierarchicalContainer {
         @SuppressWarnings("rawtypes")
         @Override
         public <F extends Field> F createField(Class<?> dataType, Class<F> fieldType) {
-            FieldGroupFieldFactory f = (FieldGroupFieldFactory) container
-                    .getHierarchicalDefinition(0).getFieldFactory(messageService);
+            FieldGroupFieldFactory f = (FieldGroupFieldFactory) container.getHierarchicalDefinition(0)
+                    .getFieldFactory(messageService);
             return f.createField(dataType, fieldType);
         }
 
@@ -155,19 +152,16 @@ public class ModelBasedHierarchicalContainer<T> extends HierarchicalContainer {
      * @param services
      *            All services to be used for each level.
      */
-    public ModelBasedHierarchicalContainer(MessageService messageService,
-            EntityModel<T> rootEntityModel, List<BaseService<?, ?>> services,
-            HierarchicalFetchJoinInformation[] joins) {
-        generateHierarchy(messageService, ServiceLocator.getEntityModelFactory(), rootEntityModel,
-                services, joins, QueryType.ID_BASED);
+    public ModelBasedHierarchicalContainer(MessageService messageService, EntityModel<T> rootEntityModel,
+            List<BaseService<?, ?>> services, HierarchicalFetchJoinInformation[] joins) {
+        generateHierarchy(messageService, ServiceLocator.getEntityModelFactory(), rootEntityModel, services, joins,
+                QueryType.ID_BASED);
     }
 
-    public ModelBasedHierarchicalContainer(MessageService messageService,
-            EntityModelFactory entityModelFactory, EntityModel<T> rootEntityModel,
-            List<BaseService<?, ?>> services, HierarchicalFetchJoinInformation[] joins,
+    public ModelBasedHierarchicalContainer(MessageService messageService, EntityModelFactory entityModelFactory,
+            EntityModel<T> rootEntityModel, List<BaseService<?, ?>> services, HierarchicalFetchJoinInformation[] joins,
             QueryType queryType) {
-        generateHierarchy(messageService, entityModelFactory, rootEntityModel, services, joins,
-                queryType);
+        generateHierarchy(messageService, entityModelFactory, rootEntityModel, services, joins, queryType);
     }
 
     /**
@@ -182,9 +176,8 @@ public class ModelBasedHierarchicalContainer<T> extends HierarchicalContainer {
      * @param joins
      *            Join information for each level.
      */
-    public HierarchicalContainer generateHierarchy(MessageService messageService,
-            EntityModelFactory entityModelFactory, EntityModel<T> rootEntityModel,
-            List<BaseService<?, ?>> services, HierarchicalFetchJoinInformation[] joins,
+    public HierarchicalContainer generateHierarchy(MessageService messageService, EntityModelFactory entityModelFactory,
+            EntityModel<T> rootEntityModel, List<BaseService<?, ?>> services, HierarchicalFetchJoinInformation[] joins,
             QueryType queryType) {
         if (rootEntityModel != null) {
             // generate definitions
@@ -192,13 +185,11 @@ public class ModelBasedHierarchicalContainer<T> extends HierarchicalContainer {
             EntityModel<?> cm = rootEntityModel;
             for (int level = 0; level < services.size(); level++) {
                 // Create container for hierarchy level
-                Indexed container = createLevelContainer(level, services.get(level), cm, joins,
-                        queryType);
+                Indexed container = createLevelContainer(level, services.get(level), cm, joins, queryType);
 
                 // Initialize common properties
                 List<String> propertyIds = new ArrayList<>();
-                String msg = messageService.getEntityMessage(cm.getReference(),
-                        VISUAL_PROPERTY_IDS_MSG_KEY);
+                String msg = messageService.getEntityMessage(cm.getReference(), VISUAL_PROPERTY_IDS_MSG_KEY);
                 if (!StringUtils.isEmpty(msg)) {
                     // Use properties from message bundle
                     String[] tokens = msg.split(",");
@@ -226,15 +217,14 @@ public class ModelBasedHierarchicalContainer<T> extends HierarchicalContainer {
                 if (level > 0) {
                     // Find parent, look in message bundle and otherwise an
                     // educated guess
-                    AttributeModel parent = findRelatedAttributeModel(messageService, cm,
-                            pm.getEntityClass(), AttributeType.MASTER, "itemPropertyIdParent");
+                    AttributeModel parent = findRelatedAttributeModel(messageService, cm, pm.getEntityClass(),
+                            AttributeType.MASTER, "itemPropertyIdParent");
                     // Must have a parent
-                    addDefinition(new ModelBasedHierarchicalDefinition(cm, container, level,
-                            parent.getName(), propertyIds));
+                    addDefinition(
+                            new ModelBasedHierarchicalDefinition(cm, container, level, parent.getName(), propertyIds));
                 } else {
                     // Root will not have a parent
-                    addDefinition(new ModelBasedHierarchicalDefinition(cm, container, level, null,
-                            propertyIds));
+                    addDefinition(new ModelBasedHierarchicalDefinition(cm, container, level, null, propertyIds));
                 }
 
                 if ((level + 1) < services.size()) {
@@ -242,13 +232,12 @@ public class ModelBasedHierarchicalContainer<T> extends HierarchicalContainer {
                     // educated guess
                     pm = cm;
                     Class<?> pec = services.get(level + 1).getEntityClass();
-                    AttributeModel child = findRelatedAttributeModel(messageService, pm, pec,
-                            AttributeType.DETAIL, "itemPropertyIdChild");
+                    AttributeModel child = findRelatedAttributeModel(messageService, pm, pec, AttributeType.DETAIL,
+                            "itemPropertyIdChild");
                     if (child != null) {
                         cm = child.getNestedEntityModel();
                     } else {
-                        cm = entityModelFactory
-                                .getModel(pm.getReference() + "_" + pec.getSimpleName(), pec);
+                        cm = entityModelFactory.getModel(pm.getReference() + "_" + pec.getSimpleName(), pec);
                     }
                 }
             }
@@ -262,9 +251,8 @@ public class ModelBasedHierarchicalContainer<T> extends HierarchicalContainer {
      * @return the created container
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    protected Indexed createLevelContainer(int level, BaseService<?, ?> service,
-            EntityModel<?> entityModel, HierarchicalFetchJoinInformation[] joins,
-            QueryType queryType) {
+    protected Indexed createLevelContainer(int level, BaseService<?, ?> service, EntityModel<?> entityModel,
+            HierarchicalFetchJoinInformation[] joins, QueryType queryType) {
         List<HierarchicalFetchJoinInformation> ljoins = new ArrayList<>();
         if (joins != null) {
             for (HierarchicalFetchJoinInformation join : joins) {
@@ -274,24 +262,21 @@ public class ModelBasedHierarchicalContainer<T> extends HierarchicalContainer {
             }
         }
         ServiceContainer container = new ServiceContainer(service, entityModel, false,
-                DynamoConstants.EXTENDED_PAGE_SIZE, queryType,
-                ljoins.toArray(new FetchJoinInformation[0]));
+                DynamoConstants.EXTENDED_PAGE_SIZE, queryType, ljoins.toArray(new FetchJoinInformation[0]));
         // increase cache size to prevent endless re-queries
         container.getQueryView().setMaxCacheSize(DynamoConstants.CACHE_SIZE);
 
         return container;
     }
 
-    protected AttributeModel findRelatedAttributeModel(MessageService messageService,
-            EntityModel<?> entityModel, Class<?> entityClassOther, AttributeType attributeType,
-            String messageKey) {
+    protected AttributeModel findRelatedAttributeModel(MessageService messageService, EntityModel<?> entityModel,
+            Class<?> entityClassOther, AttributeType attributeType, String messageKey) {
         AttributeModel related = null;
         String msg = messageService.getEntityMessage(entityModel.getReference(), messageKey);
         if (!StringUtils.isEmpty(msg) && entityModel.getAttributeModel(msg) != null) {
             related = entityModel.getAttributeModel(msg);
         } else {
-            List<AttributeModel> ms = entityModel.getAttributeModelsForType(attributeType,
-                    entityClassOther);
+            List<AttributeModel> ms = entityModel.getAttributeModelsForType(attributeType, entityClassOther);
             if (!ms.isEmpty()) {
                 related = ms.get(0);
             }
@@ -321,16 +306,16 @@ public class ModelBasedHierarchicalContainer<T> extends HierarchicalContainer {
     }
 
     @Override
-    public void addDefinition(Indexed container, int level, Object itemPropertyId,
-            Object itemPropertyIdParent, Object... propertyIds) {
+    public void addDefinition(Indexed container, int level, Object itemPropertyId, Object itemPropertyIdParent,
+            Object... propertyIds) {
         throw new UnsupportedOperationException(
                 "The use of a ModelBasedHierarchicalDefinition is mandatory for a ModelBasedHierarchicalContainer.");
     }
 
-    public void addDefinition(EntityModel<?> entityModel, Indexed container, int level,
-            Object itemPropertyIdParent, Object... propertyIds) {
-        super.addDefinition(new ModelBasedHierarchicalDefinition(entityModel, container, level,
-                itemPropertyIdParent, Arrays.asList(propertyIds)));
+    public void addDefinition(EntityModel<?> entityModel, Indexed container, int level, Object itemPropertyIdParent,
+            Object... propertyIds) {
+        super.addDefinition(new ModelBasedHierarchicalDefinition(entityModel, container, level, itemPropertyIdParent,
+                Arrays.asList(propertyIds)));
 
     }
 }

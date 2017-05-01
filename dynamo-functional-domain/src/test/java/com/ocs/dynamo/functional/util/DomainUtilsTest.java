@@ -1,92 +1,124 @@
 package com.ocs.dynamo.functional.util;
 
-import com.google.common.collect.Sets;
-import com.ocs.dynamo.functional.domain.Country;
-import com.ocs.dynamo.functional.domain.Currency;
-import com.ocs.dynamo.functional.domain.Domain;
-import com.ocs.dynamo.functional.domain.Region;
-import com.ocs.dynamo.service.MessageService;
-import com.ocs.dynamo.test.BaseMockitoTest;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
-import java.util.HashSet;
-import java.util.Set;
+import com.google.common.collect.Sets;
+import com.ocs.dynamo.functional.domain.Country;
+import com.ocs.dynamo.functional.domain.Currency;
+import com.ocs.dynamo.functional.domain.Domain;
+import com.ocs.dynamo.functional.domain.Region;
+import com.ocs.dynamo.service.BaseService;
+import com.ocs.dynamo.service.MessageService;
+import com.ocs.dynamo.test.BaseMockitoTest;
+import com.ocs.dynamo.test.MockUtil;
 
 public class DomainUtilsTest extends BaseMockitoTest {
 
-	@Mock
-	private MessageService messageService;
+    @Mock
+    private MessageService messageService;
 
-	private Set<Domain> domains;
+    @Mock
+    private BaseService<Integer, Country> service;
 
-	@Override
-	public void setUp() {
-		super.setUp();
+    private Set<Domain> domains;
 
-		Currency c1 = new Currency("EUR", "Euro");
-		Currency c2 = new Currency("USD", "Dollar");
-		Country coun1 = new Country("NL", "Netherlands");
+    @Override
+    public void setUp() {
+        super.setUp();
 
-		domains = new HashSet<>();
-		domains.add(c1);
-		domains.add(c2);
-		domains.add(coun1);
-	}
+        Currency c1 = new Currency("EUR", "Euro");
+        Currency c2 = new Currency("USD", "Dollar");
+        Country coun1 = new Country("NL", "Netherlands");
 
-	@Test
-	public void testFilterDomains() {
+        domains = new HashSet<>();
+        domains.add(c1);
+        domains.add(c2);
+        domains.add(coun1);
+    }
 
-		Set<Currency> cs = DomainUtil.filterDomains(Currency.class, null);
-		Assert.assertEquals(0, cs.size());
+    @Test
+    public void testFilterDomains() {
 
-		cs = DomainUtil.filterDomains(Currency.class, domains);
-		Assert.assertEquals(2, cs.size());
+        Set<Currency> cs = DomainUtil.filterDomains(Currency.class, null);
+        Assert.assertEquals(0, cs.size());
 
-		Set<Country> countries = DomainUtil.filterDomains(Country.class, domains);
-		Assert.assertEquals(1, countries.size());
+        cs = DomainUtil.filterDomains(Currency.class, domains);
+        Assert.assertEquals(2, cs.size());
 
-		Set<Region> regions = DomainUtil.filterDomains(Region.class, domains);
-		Assert.assertEquals(0, regions.size());
-	}
+        Set<Country> countries = DomainUtil.filterDomains(Country.class, domains);
+        Assert.assertEquals(1, countries.size());
 
-	@Test
-	public void testUpdateDomains() {
+        Set<Region> regions = DomainUtil.filterDomains(Region.class, domains);
+        Assert.assertEquals(0, regions.size());
+    }
 
-		// replace currencies with new one
-		DomainUtil.updateDomains(Currency.class, domains, Sets.newHashSet(new Currency("GBP", "English Pound")));
-		Assert.assertEquals(2, domains.size());
+    @Test
+    public void testUpdateDomains() {
 
-		// remove all currencies
-		DomainUtil.updateDomains(Currency.class, domains, new HashSet<>());
-		Assert.assertEquals(1, domains.size());
+        // replace currencies with new one
+        DomainUtil.updateDomains(Currency.class, domains, Sets.newHashSet(new Currency("GBP", "English Pound")));
+        Assert.assertEquals(2, domains.size());
 
-		// remove all currencies
-		DomainUtil.updateDomains(Country.class, domains,
-		        Sets.newHashSet(new Country("USA", "United States Of America")));
-		Assert.assertEquals(1, domains.size());
-	}
+        // remove all currencies
+        DomainUtil.updateDomains(Currency.class, domains, new HashSet<>());
+        Assert.assertEquals(1, domains.size());
 
-	@Test
-	public void testGetDomainDescriptions() {
+        // remove all currencies
+        DomainUtil.updateDomains(Country.class, domains,
+                Sets.newHashSet(new Country("USA", "United States Of America")));
+        Assert.assertEquals(1, domains.size());
+    }
 
-		String res = DomainUtil
-		        .getDomainDescriptions(messageService, DomainUtil.filterDomains(Currency.class, domains));
-		Assert.assertEquals("Dollar, Euro", res);
+    @Test
+    public void testGetDomainDescriptions() {
 
-		domains.add(new Currency("SEK", "Swedish Crown"));
-		domains.add(new Currency("NEK", "Norwegian Crown"));
-		domains.add(new Currency("DEK", "Danish Crown"));
+        String res = DomainUtil.getDomainDescriptions(messageService,
+                DomainUtil.filterDomains(Currency.class, domains));
+        Assert.assertEquals("Dollar, Euro", res);
 
-		Mockito.when(messageService.getMessage(Matchers.eq("ocs.and.others"), Matchers.anyInt())).thenAnswer(
-				invocation -> " and " + invocation.getArguments()[1] + " others");
+        domains.add(new Currency("SEK", "Swedish Crown"));
+        domains.add(new Currency("NEK", "Norwegian Crown"));
+        domains.add(new Currency("DEK", "Danish Crown"));
 
-		res = DomainUtil.getDomainDescriptions(messageService, DomainUtil.filterDomains(Currency.class, domains));
+        Mockito.when(messageService.getMessage(Matchers.eq("ocs.and.others"), Matchers.anyInt()))
+                .thenAnswer(invocation -> " and " + invocation.getArguments()[1] + " others");
 
-		Assert.assertEquals("Danish Crown, Dollar, Euro and 2 others", res);
-	}
+        res = DomainUtil.getDomainDescriptions(messageService, DomainUtil.filterDomains(Currency.class, domains));
+
+        Assert.assertEquals("Danish Crown, Dollar, Euro and 2 others", res);
+    }
+
+    @Test
+    public void testCreateIfNotExists_Create() {
+        MockUtil.mockServiceSave(service, Country.class);
+
+        Country country = DomainUtil.createIfNotExists(service, Country.class, "SomeName", true);
+        Assert.assertNotNull(country);
+
+        // verify that a country is saved
+        Mockito.verify(service).save(Matchers.any(Country.class));
+    }
+
+    @Test
+    public void testCreateIfNotExists_DoNotCreate() {
+        Country existing = new Country();
+        existing.setName("SomeName");
+        existing.setId(44);
+        Mockito.when(service.findByUniqueProperty(Domain.NAME, "SomeName", true)).thenReturn(existing);
+
+        Country country = DomainUtil.createIfNotExists(service, Country.class, "SomeName", true);
+        Assert.assertNotNull(country);
+        Assert.assertEquals(existing.getId(), country.getId());
+
+        // verify that a country is saved
+        Mockito.verify(service, Mockito.times(0)).save(Matchers.any(Country.class));
+    }
 
 }

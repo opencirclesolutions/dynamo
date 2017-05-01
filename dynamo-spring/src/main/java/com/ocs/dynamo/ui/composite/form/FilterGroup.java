@@ -25,8 +25,6 @@ import com.ocs.dynamo.filter.listener.FilterListener;
 import com.ocs.dynamo.ui.composite.form.ModelBasedSearchForm.FilterType;
 import com.ocs.dynamo.utils.ConvertUtil;
 import com.vaadin.data.Container.Filter;
-import com.vaadin.data.Property.ValueChangeEvent;
-import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.util.converter.Converter.ConversionException;
 import com.vaadin.data.util.filter.And;
 import com.vaadin.data.util.filter.Compare;
@@ -42,245 +40,234 @@ import com.vaadin.ui.Slider;
  */
 public class FilterGroup {
 
-	// the attribute model that this region is based on
-	private final AttributeModel attributeModel;
+    // the attribute model that this region is based on
+    private final AttributeModel attributeModel;
 
-	// the name of the property to filter on
-	private final String propertyId;
+    // the name of the property to filter on
+    private final String propertyId;
 
-	// the type of the filter
-	private final FilterType filterType;
+    // the type of the filter
+    private final FilterType filterType;
 
-	// the component that contains the field(s) to filter on
-	private final Component filterComponent;
+    // the component that contains the field(s) to filter on
+    private final Component filterComponent;
 
-	// the main search field
-	private final Field<?> field;
+    // the main search field
+    private final Field<?> field;
 
-	// the currently active filter - constructing by composing the main filter
-	// and the aux filter
-	private Filter fieldFilter;
+    // the currently active filter - constructing by composing the main filter
+    // and the aux filter
+    private Filter fieldFilter;
 
-	// the main filter - only used in case of a main/aux combination
-	private Filter mainFilter;
+    // the main filter - only used in case of a main/aux combination
+    private Filter mainFilter;
 
-	// auxiliary field (in case of range searches)
-	private final Field<?> auxField;
+    // auxiliary field (in case of range searches)
+    private final Field<?> auxField;
 
-	// filter on the auxiliary field
-	private Filter auxFieldFilter;
+    // filter on the auxiliary field
+    private Filter auxFieldFilter;
 
-	// listener that responds to any changes
-	private List<FilterListener> listeners = new ArrayList<>();
+    // listener that responds to any changes
+    private List<FilterListener> listeners = new ArrayList<>();
 
-	/**
-	 * Constructor
-	 * 
-	 * @param attributeModel
-	 *            the attribute model
-	 * @param propertyId
-	 *            the property to bind
-	 * @param filterType
-	 *            the type of the filter
-	 * @param filterComponent
-	 *            the layout component that contains the filter components
-	 * @param field
-	 *            the main filter field
-	 * @param auxField
-	 *            the auxiliary filter field
-	 */
-	public FilterGroup(AttributeModel attributeModel, String propertyId, FilterType filterType,
-	        Component filterComponent, Field<?> field, Field<?> auxField) {
-		this.attributeModel = attributeModel;
-		this.propertyId = propertyId;
-		this.filterType = filterType;
-		this.filterComponent = filterComponent;
-		this.field = field;
-		this.auxField = auxField;
+    /**
+     * Constructor
+     * 
+     * @param attributeModel
+     *            the attribute model
+     * @param propertyId
+     *            the property to bind
+     * @param filterType
+     *            the type of the filter
+     * @param filterComponent
+     *            the layout component that contains the filter components
+     * @param field
+     *            the main filter field
+     * @param auxField
+     *            the auxiliary filter field
+     */
+    public FilterGroup(AttributeModel attributeModel, FilterType filterType, Component filterComponent, Field<?> field,
+            Field<?> auxField) {
+        this.attributeModel = attributeModel;
+        this.propertyId = attributeModel.getPath();
+        this.filterType = filterType;
+        this.filterComponent = filterComponent;
+        this.field = field;
+        this.auxField = auxField;
 
-		// respond to a change of the main field
-		field.addValueChangeListener(new ValueChangeListener() {
+        // respond to a change of the main field
+        field.addValueChangeListener(event -> {
+            try {
+                FilterGroup.this.valueChange(FilterGroup.this.field, ConvertUtil
+                        .convertSearchValue(FilterGroup.this.attributeModel, event.getProperty().getValue()));
+            } catch (ConversionException ex) {
+                // do nothing (this results in a nicer exception being displayed)
+            }
+        });
 
-			private static final long serialVersionUID = -7262800348377772750L;
+        // respond to a change of the auxiliary field
+        if (auxField != null) {
+            auxField.addValueChangeListener(event -> {
+                try {
+                    FilterGroup.this.valueChange(FilterGroup.this.auxField, ConvertUtil
+                            .convertSearchValue(FilterGroup.this.attributeModel, event.getProperty().getValue()));
+                } catch (ConversionException ex) {
+                    // do nothing (this results in a nicer exception being displayed)
+                }
+            });
+        }
+    }
 
-			@Override
-			public void valueChange(ValueChangeEvent event) {
-				try {
+    /**
+     * Adds a listener that responds to a filter change
+     * 
+     * @param listener
+     */
+    public void addListener(FilterListener listener) {
+        this.listeners.add(listener);
+    }
 
-					FilterGroup.this.valueChange(FilterGroup.this.field, ConvertUtil.convertSearchValue(
-					        FilterGroup.this.attributeModel, event.getProperty().getValue()));
-				} catch (ConversionException ex) {
-					// do nothing (this results in a nicer exception being displayed)
-				}
-			}
-		});
+    /**
+     * Broadcast a change to all listeners
+     * 
+     * @param event
+     *            the change event
+     */
+    protected void broadcast(FilterChangeEvent event) {
+        for (FilterListener listener : listeners) {
+            listener.onFilterChange(event);
+        }
+    }
 
-		// respond to a change of the auxiliary field
-		if (auxField != null) {
-			auxField.addValueChangeListener(new ValueChangeListener() {
+    @SuppressWarnings("unchecked")
+    public Field<Object> getAuxField() {
+        return (Field<Object>) auxField;
+    }
 
-				private static final long serialVersionUID = 2849016722614508332L;
+    @SuppressWarnings("unchecked")
+    public Field<Object> getField() {
+        return (Field<Object>) field;
+    }
 
-				@Override
-				public void valueChange(ValueChangeEvent event) {
-					try {
-						FilterGroup.this.valueChange(FilterGroup.this.auxField, ConvertUtil.convertSearchValue(
-						        FilterGroup.this.attributeModel, event.getProperty().getValue()));
-					} catch (ConversionException ex) {
-						// do nothing (this results in a nicer exception being displayed)
-					}
-				}
-			});
-		}
-	}
+    public Component getFilterComponent() {
+        return filterComponent;
+    }
 
-	/**
-	 * Respond to a value change
-	 * 
-	 * @param field
-	 *            the changed field (can either be the main field or the auxiliary field)
-	 * @param value
-	 *            the new field value
-	 */
-	public void valueChange(Field<?> field, Object value) {
-		// store the current filter
-		Filter oldFilter = fieldFilter;
-		Filter filter = null;
+    public List<FilterListener> getListeners() {
+        return listeners;
+    }
 
-		switch (filterType) {
-		case BETWEEN:
+    public String getPropertyId() {
+        return propertyId;
+    }
 
-			// construct new filter for the selected field (or clear it)
-			if (field == this.auxField) {
-				// filter for the auxiliary field
-				if (value != null) {
-					auxFieldFilter = new Compare.LessOrEqual(propertyId, value);
-				} else {
-					auxFieldFilter = null;
-				}
-			} else {
-				// filter for the main field
-				if (value != null) {
-					mainFilter = new Compare.GreaterOrEqual(propertyId, value);
-				} else {
-					mainFilter = null;
-				}
-			}
+    /**
+     * Resets both filters
+     */
+    public void reset() {
+        if (field instanceof Slider) {
+            // slider does not support null value
+            Slider slider = (Slider) field;
+            slider.setValue(slider.getMin());
+        } else {
+            field.setValue(null);
+        }
 
-			// construct the aggregate filter
-			if (auxFieldFilter != null && mainFilter != null) {
-				filter = new And(mainFilter, auxFieldFilter);
-			} else if (auxFieldFilter != null) {
-				filter = auxFieldFilter;
-			} else {
-				filter = mainFilter;
-			}
+        if (auxField != null) {
+            if (auxField instanceof Slider) {
+                // slider does not support null value
+                Slider slider = (Slider) auxField;
+                slider.setValue(slider.getMin());
+            } else {
+                auxField.setValue(null);
+            }
+        }
+    }
 
-			break;
-		case LIKE:
-			// like filter for comparing string fields
-			if (value != null) {
-				if (value instanceof Collection<?>) {
-					filter = new Compare.Equal(propertyId, value);
-				} else {
-					String valueStr = value.toString();
-					if (StringUtils.isNotEmpty(valueStr)) {
-						filter = new SimpleStringFilter(propertyId, valueStr, !attributeModel.isSearchCaseSensitive(),
-						        attributeModel.isSearchPrefixOnly());
-					}
-				}
-			}
-			break;
-		default:
-			// by default, simply use and "equals" filter
-			if (value != null) {
-				filter = new Compare.Equal(propertyId, value);
-			}
-			break;
-		}
+    public void setEnabled(boolean enabled) {
+        field.setEnabled(enabled);
+        if (auxField != null) {
+            auxField.setEnabled(enabled);
+        }
+    }
 
-		// store the current filter
-		this.fieldFilter = filter;
+    public void setListeners(List<FilterListener> listeners) {
+        this.listeners = listeners;
+    }
 
-		// propagate the change (this will trigger the actual search action)
-		if (!listeners.isEmpty()) {
-			broadcast(new FilterChangeEvent(propertyId, oldFilter, filter, value));
-		}
-	}
+    /**
+     * Respond to a value change
+     * 
+     * @param field
+     *            the changed field (can either be the main field or the auxiliary field)
+     * @param value
+     *            the new field value
+     */
+    public void valueChange(Field<?> field, Object value) {
+        // store the current filter
+        Filter oldFilter = fieldFilter;
+        Filter filter = null;
 
-	public void setEnabled(boolean enabled) {
-		field.setEnabled(enabled);
-		if (auxField != null) {
-			auxField.setEnabled(enabled);
-		}
-	}
+        switch (filterType) {
+        case BETWEEN:
 
-	/**
-	 * Resets both filters
-	 */
-	public void reset() {
-		if (field instanceof Slider) {
-			Slider slider = (Slider) field;
-			slider.setValue(slider.getMin());
-		} else {
-			field.setValue(null);
-		}
+            // construct new filter for the selected field (or clear it)
+            if (field == this.auxField) {
+                // filter for the auxiliary field
+                if (value != null) {
+                    auxFieldFilter = new Compare.LessOrEqual(propertyId, value);
+                } else {
+                    auxFieldFilter = null;
+                }
+            } else {
+                // filter for the main field
+                if (value != null) {
+                    mainFilter = new Compare.GreaterOrEqual(propertyId, value);
+                } else {
+                    mainFilter = null;
+                }
+            }
 
-		if (auxField != null) {
-			if (auxField instanceof Slider) {
-				Slider slider = (Slider) auxField;
-				slider.setValue(slider.getMin());
-			} else {
-				auxField.setValue(null);
-			}
-		}
-	}
+            // construct the aggregate filter
+            if (auxFieldFilter != null && mainFilter != null) {
+                filter = new And(mainFilter, auxFieldFilter);
+            } else if (auxFieldFilter != null) {
+                filter = auxFieldFilter;
+            } else {
+                filter = mainFilter;
+            }
 
-	public List<FilterListener> getListeners() {
-		return listeners;
-	}
+            break;
+        case LIKE:
+            // like filter for comparing string fields
+            if (value != null) {
+                if (value instanceof Collection<?>) {
+                    filter = new Compare.Equal(propertyId, value);
+                } else {
+                    String valueStr = value.toString();
+                    if (StringUtils.isNotEmpty(valueStr)) {
+                        filter = new SimpleStringFilter(propertyId, valueStr, !attributeModel.isSearchCaseSensitive(),
+                                attributeModel.isSearchPrefixOnly());
+                    }
+                }
+            }
+            break;
+        default:
+            // by default, simply use and "equal" filter
+            if (value != null) {
+                filter = new Compare.Equal(propertyId, value);
+            }
+            break;
+        }
 
-	public void setListeners(List<FilterListener> listeners) {
-		this.listeners = listeners;
-	}
+        // store the current filter
+        this.fieldFilter = filter;
 
-	/**
-	 * Adds a listener that responds to a filter change
-	 * 
-	 * @param listener
-	 */
-	public void addListener(FilterListener listener) {
-		this.listeners.add(listener);
-	}
-
-	/**
-	 * Broadcast a change to all listeners
-	 * 
-	 * @param event
-	 *            the change event
-	 */
-	protected void broadcast(FilterChangeEvent event) {
-		for (FilterListener listener : listeners) {
-			listener.onFilterChange(event);
-		}
-	}
-
-	public String getPropertyId() {
-		return propertyId;
-	}
-
-	public Component getFilterComponent() {
-		return filterComponent;
-	}
-
-	@SuppressWarnings("unchecked")
-	public Field<Object> getField() {
-		return (Field<Object>) field;
-	}
-
-	@SuppressWarnings("unchecked")
-	public Field<Object> getAuxField() {
-		return (Field<Object>) auxField;
-	}
+        // propagate the change (this will trigger the actual search action)
+        if (!listeners.isEmpty()) {
+            broadcast(new FilterChangeEvent(propertyId, oldFilter, filter, value));
+        }
+    }
 
 }

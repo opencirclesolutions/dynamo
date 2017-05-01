@@ -21,12 +21,28 @@ package com.ocs.dynamo.dao;
  */
 public interface Pageable {
 
+    /**
+     * 
+     * @return the index of the current page
+     */
     int getPageNumber();
 
+    /**
+     * 
+     * @return the size of the page
+     */
     int getPageSize();
 
+    /**
+     * 
+     * @return the offset of the first record
+     */
     int getOffset();
 
+    /**
+     * 
+     * @return the desired sort orders
+     */
     SortOrders getSortOrders();
 
 }

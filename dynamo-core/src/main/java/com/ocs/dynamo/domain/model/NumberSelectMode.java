@@ -13,7 +13,13 @@
  */
 package com.ocs.dynamo.domain.model;
 
+/**
+ * The various options for components for editing a numerical value
+ * 
+ * @author bas.rutten
+ *
+ */
 public enum NumberSelectMode {
 
-	TEXTFIELD, SLIDER;
+    TEXTFIELD, SLIDER;
 }

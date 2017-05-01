@@ -401,12 +401,6 @@ public interface EntityModel<T> {
 
 	/**
 	 * 
-	 * @return all attribute models that are required (value must be entered before saving)
-	 */
-	List<AttributeModel> getRequiredAttributeModels();
-
-	/**
-	 * 
 	 * @return all attribute models for all attributes that are required for searching
 	 */
 	List<AttributeModel> getRequiredForSearchingAttributeModels();

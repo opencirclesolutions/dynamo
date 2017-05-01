@@ -13,8 +13,11 @@
  */
 package com.ocs.dynamo.dao.impl;
 
+import java.util.List;
+
 import org.springframework.stereotype.Repository;
 
+import com.mysema.query.jpa.impl.JPAQuery;
 import com.mysema.query.types.path.EntityPathBase;
 import com.ocs.dynamo.dao.TestEntityDao;
 import com.ocs.dynamo.domain.QTestEntity;
@@ -23,19 +26,25 @@ import com.ocs.dynamo.domain.TestEntity;
 @Repository("testEntityDao")
 public class TestEntityDaoImpl extends TreeDaoImpl<Integer, TestEntity> implements TestEntityDao {
 
-    @Override
-    protected EntityPathBase<TestEntity> getDslRoot() {
-        return QTestEntity.testEntity;
-    }
+	@Override
+	protected EntityPathBase<TestEntity> getDslRoot() {
+		return QTestEntity.testEntity;
+	}
 
-    @Override
-    public Class<TestEntity> getEntityClass() {
-        return TestEntity.class;
-    }
+	@Override
+	public Class<TestEntity> getEntityClass() {
+		return TestEntity.class;
+	}
 
-    @Override
-    protected EntityPathBase<TestEntity> getParentPath() {
-        return QTestEntity.testEntity.parent;
-    }
+	@Override
+	protected EntityPathBase<TestEntity> getParentPath() {
+		return QTestEntity.testEntity.parent;
+	}
 
+	@Override
+	public List<TestEntity> findByBirthDateLocal() {
+		JPAQuery query = createQuery();
+		query.where(QTestEntity.testEntity.birthDateLocal.isNotNull());
+		return query.list(QTestEntity.testEntity);
+	}
 }

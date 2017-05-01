@@ -22,6 +22,8 @@ import java.math.BigDecimal;
 
 public class ModelBasedExportTemplateTest extends BaseIntegrationTest {
 
+	private static final int PAGE_SIZE = 1000;
+
 	private EntityModelFactory entityModelFactory = new EntityModelFactoryImpl();
 
 	@Autowired
@@ -46,6 +48,8 @@ public class ModelBasedExportTemplateTest extends BaseIntegrationTest {
 		e1.setSomeTime(DateUtils.createTime("121314"));
 		e1.setUrl("http://www.google.nl");
 		e1 = testEntityService.save(e1);
+		e1.setBirthDateLocal(DateUtils.createLocalDate("04031980"));
+		e1.setRegistrationTime(DateUtils.createLocalDateTime("14082015 111213"));
 
 		e2 = new TestEntity("Harry", 12L);
 		e2.setRate(BigDecimal.valueOf(3));
@@ -71,36 +75,44 @@ public class ModelBasedExportTemplateTest extends BaseIntegrationTest {
 			Assert.assertEquals("Sheet name", wb.getSheetName(0));
 
 			// check the header row
-			Assert.assertEquals("Age", sheet.getRow(0).getCell(0).getStringCellValue());
-			Assert.assertEquals("Birth Date", sheet.getRow(0).getCell(1).getStringCellValue());
-			Assert.assertEquals("Birth Week", sheet.getRow(0).getCell(2).getStringCellValue());
-			Assert.assertEquals("Discount", sheet.getRow(0).getCell(3).getStringCellValue());
-			Assert.assertEquals("Name", sheet.getRow(0).getCell(4).getStringCellValue());
-			Assert.assertEquals("Parent", sheet.getRow(0).getCell(5).getStringCellValue());
-			Assert.assertEquals("Rate", sheet.getRow(0).getCell(6).getStringCellValue());
-			Assert.assertEquals("Some Boolean", sheet.getRow(0).getCell(7).getStringCellValue());
-			Assert.assertEquals("Some Boolean2", sheet.getRow(0).getCell(8).getStringCellValue());
-			Assert.assertEquals("Some Enum", sheet.getRow(0).getCell(9).getStringCellValue());
-			Assert.assertEquals("Some Int", sheet.getRow(0).getCell(10).getStringCellValue());
-			Assert.assertEquals("Some String", sheet.getRow(0).getCell(11).getStringCellValue());
-			Assert.assertEquals("Some Text Area", sheet.getRow(0).getCell(12).getStringCellValue());
-			Assert.assertEquals("Some Time", sheet.getRow(0).getCell(13).getStringCellValue());
-			Assert.assertEquals("Url", sheet.getRow(0).getCell(15).getStringCellValue());
+			int i = 0;
+			Assert.assertEquals("Age", sheet.getRow(0).getCell(i++).getStringCellValue());
+			Assert.assertEquals("Birth Date", sheet.getRow(0).getCell(i++).getStringCellValue());
+			Assert.assertEquals("Birth Date Local", sheet.getRow(0).getCell(i++).getStringCellValue());
+			Assert.assertEquals("Birth Week", sheet.getRow(0).getCell(i++).getStringCellValue());
+			Assert.assertEquals("Discount", sheet.getRow(0).getCell(i++).getStringCellValue());
+			Assert.assertEquals("Name", sheet.getRow(0).getCell(i++).getStringCellValue());
+			Assert.assertEquals("Parent", sheet.getRow(0).getCell(i++).getStringCellValue());
+			Assert.assertEquals("Rate", sheet.getRow(0).getCell(i++).getStringCellValue());
+			Assert.assertEquals("Registration Time", sheet.getRow(0).getCell(i++).getStringCellValue());
+			Assert.assertEquals("Some Boolean", sheet.getRow(0).getCell(i++).getStringCellValue());
+			Assert.assertEquals("Some Boolean2", sheet.getRow(0).getCell(i++).getStringCellValue());
+			Assert.assertEquals("Some Enum", sheet.getRow(0).getCell(i++).getStringCellValue());
+			Assert.assertEquals("Some Int", sheet.getRow(0).getCell(i++).getStringCellValue());
+			Assert.assertEquals("Some String", sheet.getRow(0).getCell(i++).getStringCellValue());
+			Assert.assertEquals("Some Text Area", sheet.getRow(0).getCell(i++).getStringCellValue());
+			Assert.assertEquals("Some Time", sheet.getRow(0).getCell(i++).getStringCellValue());
+			Assert.assertEquals("Test Domain", sheet.getRow(0).getCell(i++).getStringCellValue());
+			Assert.assertEquals("Url", sheet.getRow(0).getCell(i++).getStringCellValue());
 
 			// check the data row
 			Row row = sheet.getRow(1);
+			i = 0;
 			Assert.assertEquals(11, row.getCell(0).getNumericCellValue(), 0.001);
 			Assert.assertEquals(DateUtils.createDate("01042014"), row.getCell(1).getDateCellValue());
-			Assert.assertEquals("2014-14", row.getCell(2).getStringCellValue());
-			Assert.assertEquals(34, row.getCell(3).getNumericCellValue(), 0.001);
-			Assert.assertEquals("Bob", row.getCell(4).getStringCellValue());
-			Assert.assertEquals(0.04, row.getCell(6).getNumericCellValue(), 0.001);
-			Assert.assertEquals("false", row.getCell(7).getStringCellValue());
-			Assert.assertEquals("On", row.getCell(8).getStringCellValue());
-			Assert.assertEquals("Value A", row.getCell(9).getStringCellValue());
-			Assert.assertEquals(1234, row.getCell(10).getNumericCellValue(), 0.001);
-			Assert.assertEquals("abab", row.getCell(12).getStringCellValue());
-			Assert.assertEquals("http://www.google.nl", row.getCell(15).getStringCellValue());
+			Assert.assertEquals(DateUtils.createDate("04031980"), row.getCell(2).getDateCellValue());
+
+			Assert.assertEquals("2014-14", row.getCell(3).getStringCellValue());
+			Assert.assertEquals(34, row.getCell(4).getNumericCellValue(), 0.001);
+			Assert.assertEquals("Bob", row.getCell(5).getStringCellValue());
+			Assert.assertEquals(0.04, row.getCell(7).getNumericCellValue(), 0.001);
+			Assert.assertEquals(DateUtils.createDateTime("14082015 111213"), row.getCell(8).getDateCellValue());
+			Assert.assertEquals("false", row.getCell(9).getStringCellValue());
+			Assert.assertEquals("On", row.getCell(10).getStringCellValue());
+			Assert.assertEquals("Value A", row.getCell(11).getStringCellValue());
+			Assert.assertEquals(1234, row.getCell(12).getNumericCellValue(), 0.001);
+			Assert.assertEquals("abab", row.getCell(14).getStringCellValue());
+			Assert.assertEquals("http://www.google.nl", row.getCell(17).getStringCellValue());
 		}
 
 	}
@@ -111,7 +123,7 @@ public class ModelBasedExportTemplateTest extends BaseIntegrationTest {
 		        testEntityService, entityModelFactory.getModel(TestEntity.class), null, null, "Sheet name", true, null) {
 			@Override
 			public int getPageSize() {
-				return 10000;
+				return PAGE_SIZE;
 			}
 		};
 		byte[] bytes = template.process(false);
@@ -119,10 +131,10 @@ public class ModelBasedExportTemplateTest extends BaseIntegrationTest {
 		String[] lines = str.split("\n");
 
 		Assert.assertEquals(
-		        "\"Age\";\"Birth Date\";\"Birth Week\";\"Discount\";\"Name\";\"Parent\";\"Rate\";\"Some Boolean\";\"Some Boolean2\";\"Some Enum\";\"Some Int\";\"Some String\";\"Some Text Area\";\"Some Time\";\"Test Domain\";\"Url\"",
+		        "\"Age\";\"Birth Date\";\"Birth Date Local\";\"Birth Week\";\"Discount\";\"Name\";\"Parent\";\"Rate\";\"Registration Time\";\"Some Boolean\";\"Some Boolean2\";\"Some Enum\";\"Some Int\";\"Some String\";\"Some Text Area\";\"Some Time\";\"Test Domain\";\"Url\"",
 		        lines[0]);
 		Assert.assertEquals(
-		        "\"11\";\"01/04/2014\";\"2014-14\";\"34,00\";\"Bob\";;\"4,00%\";\"false\";\"On\";\"Value A\";\"1.234\";;\"abab\";\"12:13:14\";;\"http://www.google.nl\"",
+		        "\"11\";\"01/04/2014\";\"04-03-1980\";\"2014-14\";\"34,00\";\"Bob\";;\"4,00%\";\"14-08-2015 11:12:13\";\"false\";\"On\";\"Value A\";\"1.234\";;\"abab\";\"12:13:14\";;\"http://www.google.nl\"",
 		        lines[1]);
 	}
 }

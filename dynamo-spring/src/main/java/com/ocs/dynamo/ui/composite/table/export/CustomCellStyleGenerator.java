@@ -26,6 +26,7 @@ import com.vaadin.data.Item;
  * @author bas.rutten
  *
  */
+@FunctionalInterface
 public interface CustomCellStyleGenerator {
 
     /**

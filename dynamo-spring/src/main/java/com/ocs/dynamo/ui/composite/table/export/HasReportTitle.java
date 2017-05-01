@@ -16,6 +16,7 @@ package com.ocs.dynamo.ui.composite.table.export;
 /**
  * Marker interface for objects that provide a report title
  */
+@FunctionalInterface
 public interface HasReportTitle {
 
     /**

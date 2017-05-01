@@ -21,7 +21,6 @@ import com.ocs.dynamo.dao.query.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
-import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.Searchable;
 import com.vaadin.data.sort.SortOrder;
@@ -39,121 +38,108 @@ import com.vaadin.shared.data.sort.SortDirection;
 public class ServiceContainer<ID extends Serializable, T extends AbstractEntity<ID>> extends LazyQueryContainer
         implements Searchable {
 
-	private static final long serialVersionUID = 2605988307857731787L;
+    private static final long serialVersionUID = 2605988307857731787L;
 
-	/**
-	 * Constructs a service container based on a query definition
-	 * 
-	 * @param queryDefinition
-	 *            the query definition
-	 */
-	public ServiceContainer(ServiceQueryDefinition<ID, T> queryDefinition) {
-		super(queryDefinition, new ServiceQueryFactory<ID, T>());
-	}
+    /**
+     * Constructor
+     * 
+     * @param service
+     * @param model
+     * @param compositeItems
+     * @param batchSize
+     * @param queryType
+     * @param joins
+     */
+    public ServiceContainer(BaseService<ID, T> service, EntityModel<T> model, boolean compositeItems, int batchSize,
+            QueryType queryType, FetchJoinInformation... joins) {
+        super(new ServiceQueryDefinition<>(service, compositeItems, batchSize, model, queryType, joins),
+                new ServiceQueryFactory<ID, T>());
+        addContainerProperties(model);
+    }
 
-	/**
-	 * Constructs a service container
-	 * 
-	 * @param service
-	 *            the service
-	 * @param compositeItems
-	 *            whether to include composite items
-	 * @param batchSize
-	 *            the batch size
-	 * @param properties
-	 */
-	public ServiceContainer(BaseService<ID, T> service, boolean compositeItems, int batchSize, QueryType queryType,
-	        FetchJoinInformation[] joins) {
-		super(new ServiceQueryDefinition<>(service, compositeItems, batchSize, queryType, joins),
-		        new ServiceQueryFactory<ID, T>());
-	}
+    /**
+     * Constructor
+     * 
+     * @param service
+     *            service used to query the database
+     * @param entityModel
+     *            the entity model used to convert the filters
+     * @param batchSize
+     *            batch size
+     * @param queryType
+     *            query type
+     * @param joins
+     *            optional joins
+     */
+    public ServiceContainer(BaseService<ID, T> service, EntityModel<T> entityModel, int batchSize, QueryType queryType,
+            FetchJoinInformation... joins) {
+        super(new ServiceQueryDefinition<>(service, true, batchSize, entityModel, queryType, joins),
+                new ServiceQueryFactory<ID, T>());
 
-	/**
-	 * Constructor
-	 * 
-	 * @param service
-	 * @param modelFactory
-	 * @param compositeItems
-	 * @param batchSize
-	 */
-	public ServiceContainer(BaseService<ID, T> service, EntityModelFactory emf, boolean compositeItems, int batchSize,
-	        QueryType queryType, FetchJoinInformation[] joins) {
-		super(new ServiceQueryDefinition<>(service, compositeItems, batchSize, queryType, joins),
-		        new ServiceQueryFactory<ID, T>());
-		addContainerProperties(emf.getModel(service.getEntityClass()));
-	}
+    }
 
-	/**
-	 * Constructor
-	 * 
-	 * @param service
-	 * @param model
-	 * @param compositeItems
-	 * @param batchSize
-	 */
-	public ServiceContainer(BaseService<ID, T> service, EntityModel<T> model, boolean compositeItems, int batchSize,
-	        QueryType queryType, FetchJoinInformation[] joins) {
-		super(new ServiceQueryDefinition<>(service, compositeItems, batchSize, queryType, joins),
-		        new ServiceQueryFactory<ID, T>());
-		addContainerProperties(model);
-	}
+    /**
+     * Adds properties based on an EntityModel
+     * 
+     * @param model
+     */
+    public void addContainerProperties(EntityModel<?> model) {
+        for (AttributeModel attributeModel : model.getAttributeModels()) {
+            if (attributeModel.isVisibleInTable()) {
+                addContainerProperty(attributeModel.getName(), attributeModel.getType(),
+                        attributeModel.getDefaultValue(), attributeModel.isReadOnly(), attributeModel.isSortable());
+            }
+        }
+    }
 
-	/**
-	 * Adds properties based on an EntityModel
-	 * 
-	 * @param model
-	 */
-	public void addContainerProperties(EntityModel<?> model) {
-		for (AttributeModel attributeModel : model.getAttributeModels()) {
-			if (attributeModel.isVisibleInTable()) {
-				addContainerProperty(attributeModel.getName(), attributeModel.getType(),
-				        attributeModel.getDefaultValue(), attributeModel.isReadOnly(), attributeModel.isSortable());
-			}
-		}
-	}
+    /**
+     * Adds a single property based on an attribute model
+     * 
+     * @param attributeModel
+     */
+    public void addContainerProperty(AttributeModel attributeModel) {
+        addContainerProperty(attributeModel.getPath(), attributeModel.getType(), attributeModel.getDefaultValue(),
+                attributeModel.isReadOnly(), attributeModel.isSortable());
+    }
 
-	/**
-	 * Adds a single property based on an attribute model
-	 * 
-	 * @param attributeModel
-	 */
-	public void addContainerProperty(AttributeModel attributeModel) {
-		addContainerProperty(attributeModel.getPath(), attributeModel.getType(), attributeModel.getDefaultValue(),
-		        attributeModel.isReadOnly(), attributeModel.isSortable());
-	}
+    @SuppressWarnings("unchecked")
+    public BaseService<ID, T> getService() {
+        if (getQueryView() != null && getQueryView().getQueryDefinition() instanceof ServiceQueryDefinition<?, ?>) {
+            return ((ServiceQueryDefinition<ID, T>) getQueryView().getQueryDefinition()).getService();
+        }
+        return null;
+    }
 
-	@Override
-	public void search(Filter filter) {
-		// warning: do not use "removeAllContainerFilters" here since this will
-		// trigger an unnecessary refresh
-		getQueryView().removeFilters();
+    @Override
+    public void search(Filter filter) {
+        // warning: do not use "removeAllContainerFilters" here since this will
+        // trigger an unnecessary refresh
+        getQueryView().removeFilters();
 
-		// likewise, don't call "addContainerfilter" here since it will also
-		// trigger this refresh
-		if (filter != null) {
-			getQueryView().addFilter(filter);
-		}
-		refresh();
-	}
+        // likewise, don't call "addContainerfilter" here since it will also
+        // trigger this refresh
+        if (filter != null) {
+            getQueryView().addFilter(filter);
+        }
+        refresh();
+    }
 
-	@SuppressWarnings("unchecked")
-	public BaseService<ID, T> getService() {
-		if (getQueryView() != null && getQueryView().getQueryDefinition() instanceof ServiceQueryDefinition<?, ?>) {
-			return ((ServiceQueryDefinition<ID, T>) getQueryView().getQueryDefinition()).getService();
-		}
-		return null;
-	}
-
-	public void sort(SortOrder... sortOrder) {
-		if (sortOrder != null && sortOrder.length > 0) {
-			Object[] pIds = new Object[sortOrder.length];
-			boolean[] sos = new boolean[sortOrder.length];
-			int i = 0;
-			for (SortOrder so : sortOrder) {
-				pIds[i] = so.getPropertyId();
-				sos[i++] = SortDirection.ASCENDING == so.getDirection();
-			}
-			sort(pIds, sos);
-		}
-	}
+    /**
+     * Perofmrs a sorting operation
+     * 
+     * @param sortOrder
+     *            the desired sort order
+     */
+    public void sort(SortOrder... sortOrder) {
+        if (sortOrder != null && sortOrder.length > 0) {
+            Object[] pIds = new Object[sortOrder.length];
+            boolean[] sos = new boolean[sortOrder.length];
+            int i = 0;
+            for (SortOrder so : sortOrder) {
+                pIds[i] = so.getPropertyId();
+                sos[i++] = SortDirection.ASCENDING == so.getDirection();
+            }
+            sort(pIds, sos);
+        }
+    }
 }

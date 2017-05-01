@@ -23,14 +23,15 @@ import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import com.ocs.dynamo.domain.model.annotation.Model;
 
 /**
- * A region of the world 
+ * A region of the world
+ * 
  * @author bas.rutten
  *
  */
 @Entity
 @DiscriminatorValue("REGION")
 @Model(displayProperty = "name", sortOrder = "name asc")
-public class Region extends DomainParent<Country> {
+public class Region extends DomainParent<Country, Region> {
 
 	private static final long serialVersionUID = 1410771214783677106L;
 

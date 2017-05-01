@@ -21,6 +21,7 @@ import com.ocs.dynamo.dao.SortOrder;
 import com.ocs.dynamo.dao.SortOrders;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.filter.Filter;
+import com.vaadin.ui.Notification;
 
 /**
  * A version of the BaseServiceQuery that retrieves data using a simple paging mechanism
@@ -31,8 +32,7 @@ import com.ocs.dynamo.filter.Filter;
  * @param <T>
  *            the type of the entity
  */
-public class PagingServiceQuery<ID extends Serializable, T extends AbstractEntity<ID>> extends
-        BaseServiceQuery<ID, T> {
+public class PagingServiceQuery<ID extends Serializable, T extends AbstractEntity<ID>> extends BaseServiceQuery<ID, T> {
 
     private static final long serialVersionUID = -324739194626626683L;
 
@@ -42,8 +42,7 @@ public class PagingServiceQuery<ID extends Serializable, T extends AbstractEntit
      * @param queryDefinition
      * @param queryConfiguration
      */
-    public PagingServiceQuery(ServiceQueryDefinition<ID, T> queryDefinition,
-            Map<String, Object> queryConfiguration) {
+    public PagingServiceQuery(ServiceQueryDefinition<ID, T> queryDefinition, Map<String, Object> queryConfiguration) {
         super(queryDefinition, queryConfiguration);
     }
 
@@ -67,6 +66,12 @@ public class PagingServiceQuery<ID extends Serializable, T extends AbstractEntit
         if (getCustomQueryDefinition().getPredeterminedCount() != null) {
             return getCustomQueryDefinition().getPredeterminedCount();
         }
-        return (int) getCustomQueryDefinition().getService().count(constructFilter(), false);
+
+        int count = (int) getCustomQueryDefinition().getService().count(constructFilter(), false);
+        if (getCustomQueryDefinition().getMaxQuerySize() > 0 && count >= getCustomQueryDefinition().getMaxQuerySize()) {
+            Notification.show(getMessageService().getMessage("ocs.too.many.results",
+                    getCustomQueryDefinition().getMaxQuerySize()), Notification.Type.ERROR_MESSAGE);
+        }
+        return count;
     }
 }

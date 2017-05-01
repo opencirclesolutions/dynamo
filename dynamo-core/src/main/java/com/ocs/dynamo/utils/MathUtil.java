@@ -23,9 +23,10 @@ public final class MathUtil {
 	private MathUtil() {
 		// hidden constructor
 	}
-	
+
 	/**
-	 * Divides the first argument by the second argument, then converts the result to a percentage
+	 * Divides the first argument by the second argument, then converts the
+	 * result to a percentage
 	 * 
 	 * @param first
 	 *            the first argument
@@ -42,7 +43,8 @@ public final class MathUtil {
 	}
 
 	/**
-	 * Divides the first argument by the second argument, then converts to a percentage
+	 * Divides the first argument by the second argument, then converts to a
+	 * percentage
 	 * 
 	 * @param first
 	 *            the first argument
@@ -53,10 +55,10 @@ public final class MathUtil {
 	 * @return
 	 */
 	public static BigDecimal dividePercentage(Integer first, Integer second, int scale) {
-		return dividePercentage(first == null ? BigDecimal.ZERO : new BigDecimal(first), second == null ? null
-		        : new BigDecimal(second), scale);
+		return dividePercentage(first == null ? BigDecimal.ZERO : new BigDecimal(first),
+				second == null ? null : new BigDecimal(second), scale);
 	}
-	
+
 	/**
 	 * Returns the result of multiplying a value with a certain percentage,
 	 * rounded to the specified precision
@@ -84,5 +86,8 @@ public final class MathUtil {
 		return x == null ? 0 : x;
 	}
 
+	public static long nullSafeGet(Long x) {
+		return x == null ? 0L : x;
+	}
 
 }

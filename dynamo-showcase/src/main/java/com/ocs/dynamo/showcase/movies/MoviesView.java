@@ -36,27 +36,27 @@ import com.vaadin.ui.VerticalLayout;
 @SuppressWarnings("serial")
 public class MoviesView extends BaseView {
 
-	/** The Movies View is using the MovieService for data access. */
-	@Inject
-	private MovieService movieService;
+    /** The Movies View is using the MovieService for data access. */
+    @Inject
+    private MovieService movieService;
 
-	@Override
-	public void enter(ViewChangeEvent event) {
+    @Override
+    public void enter(ViewChangeEvent event) {
 
-		// Apply Vaadin Layout.
-		VerticalLayout mainLayout = new DefaultVerticalLayout(true, true);
+        // Apply Vaadin Layout.
+        VerticalLayout mainLayout = new DefaultVerticalLayout(true, true);
 
-		// Set form options by convention.
-		FormOptions fo = new FormOptions().setShowRemoveButton(true).setShowEditButton(true);
+        // Set form options by convention.
+        FormOptions fo = new FormOptions().setShowRemoveButton(true).setEditAllowed(true);
 
-		// This is where the magic happens. The Simple Search layout uses the Dynamo Entity
-		// Model Factory to define a Simple Search Screen with sorting, filtering and lazy loading
-		// of data.
-		SimpleSearchLayout<Integer, Movie> movieLayout = new SimpleSearchLayout<>(movieService, getModelFactory()
-		        .getModel(Movie.class), QueryType.ID_BASED, fo, new com.vaadin.data.sort.SortOrder("id",
-		        SortDirection.ASCENDING));
+        // This is where the magic happens. The Simple Search layout uses the Dynamo Entity
+        // Model Factory to define a Simple Search Screen with sorting, filtering and lazy loading
+        // of data.
+        SimpleSearchLayout<Integer, Movie> movieLayout = new SimpleSearchLayout<>(movieService,
+                getModelFactory().getModel(Movie.class), QueryType.ID_BASED, fo,
+                new com.vaadin.data.sort.SortOrder("id", SortDirection.ASCENDING));
 
-		mainLayout.addComponent(movieLayout);
-		setCompositionRoot(mainLayout);
-	}
+        mainLayout.addComponent(movieLayout);
+        setCompositionRoot(mainLayout);
+    }
 }

@@ -14,6 +14,8 @@
 package com.ocs.dynamo.domain;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -51,297 +53,319 @@ import com.ocs.dynamo.domain.model.annotation.Model;
 @Model(displayProperty = "name", sortOrder = "name,age")
 public class TestEntity extends AbstractTreeEntity<Integer, TestEntity> {
 
-	private static final long serialVersionUID = 5557043276302609211L;
+    private static final long serialVersionUID = 5557043276302609211L;
 
-	public enum TestEnum {
-		A, B, C
-	}
+    public enum TestEnum {
+        A, B, C
+    }
 
-	@Id
-	@GeneratedValue
-	private Integer id;
+    @Id
+    @GeneratedValue
+    private Integer id;
 
-	@Size(max = 25)
-	@Attribute(main = true, searchable = true)
-	@NotNull
-	private String name;
+    @Size(max = 25)
+    @Attribute(main = true, searchable = true)
+    @NotNull
+    private String name;
 
-	@Attribute(searchable = true)
-	private Long age;
+    @Attribute(searchable = true)
+    private Long age;
 
-	private BigDecimal discount;
+    @Attribute(searchable = true)
+    private BigDecimal discount;
 
-	@Attribute(percentage = true, searchable = true)
-	private BigDecimal rate;
+    @Attribute(percentage = true, searchable = true)
+    private BigDecimal rate;
 
-	@Attribute(displayFormat = "dd/MM/yyyy")
-	private Date birthDate;
+    @Attribute(displayFormat = "dd/MM/yyyy", searchable = true)
+    private Date birthDate;
 
-	@Attribute(week = true)
-	private Date birthWeek;
+    private LocalDate birthDateLocal;
 
-	private TestEnum someEnum;
+    private LocalDateTime registrationTime;
 
-	@Lob
-	private byte[] someBytes;
+    @Attribute(week = true)
+    private Date birthWeek;
 
-	private Boolean someBoolean;
+    @Attribute(searchable = true)
+    private TestEnum someEnum;
 
-	private String someString;
+    @Lob
+    private byte[] someBytes;
 
-	private Integer someInt;
+    private Boolean someBoolean;
 
-	@Attribute(numberSelectMode = NumberSelectMode.SLIDER, minValue = 99, maxValue = 175, visible = VisibilityType.HIDE)
-	private Integer someIntSlider;
+    private String someString;
 
-	@Attribute(numberSelectMode = NumberSelectMode.SLIDER, visible = VisibilityType.HIDE)
-	private Long someLongSlider;
+    private Integer someInt;
 
-	@Attribute(textFieldMode = AttributeTextFieldMode.TEXTAREA)
-	private String someTextArea;
+    @Attribute(numberSelectMode = NumberSelectMode.SLIDER, minValue = 99, maxValue = 175, visible = VisibilityType.HIDE, searchable = true)
+    private Integer someIntSlider;
 
-	@Attribute(trueRepresentation = "On", falseRepresentation = "Off")
-	private Boolean someBoolean2;
+    @Attribute(numberSelectMode = NumberSelectMode.SLIDER, visible = VisibilityType.HIDE)
+    private Long someLongSlider;
 
-	@OneToMany(mappedBy = "testEntity", cascade = CascadeType.ALL)
-	@Attribute(searchable = true)
-	private Set<TestEntity2> testEntities = new HashSet<>();
+    @Attribute(textFieldMode = AttributeTextFieldMode.TEXTAREA)
+    private String someTextArea;
 
-	@Attribute(displayFormat = "HH:mm:ss")
-	@Temporal(TemporalType.TIME)
-	private Date someTime;
+    @Attribute(trueRepresentation = "On", falseRepresentation = "Off")
+    private Boolean someBoolean2;
 
-	@ElementCollection
-	@Attribute(maxLength = 25)
-	private Set<String> tags = new HashSet<>();
+    @OneToMany(mappedBy = "testEntity", cascade = CascadeType.ALL)
+    @Attribute(searchable = true)
+    private Set<TestEntity2> testEntities = new HashSet<>();
 
-	@Attribute(url = true)
-	private String url;
+    @Attribute(displayFormat = "HH:mm:ss")
+    @Temporal(TemporalType.TIME)
+    private Date someTime;
 
-	@Attribute(quickAddPropertyName = "name")
-	private TestDomain testDomain;
+    @ElementCollection
+    @Attribute(maxLength = 25)
+    private Set<String> tags = new HashSet<>();
 
-	@ElementCollection
-	private Set<Integer> intTags = new HashSet<>();
+    @Attribute(url = true)
+    private String url;
 
-	@ElementCollection
-	@Attribute(minValue = 34)
-	private Set<Long> longTags = new HashSet<>();
+    @Attribute(quickAddPropertyName = "name")
+    private TestDomain testDomain;
 
-	public TestEntity() {
-		// default constructor
-	}
+    @ElementCollection
+    private Set<Integer> intTags = new HashSet<>();
 
-	public TestEntity(int id, String name, Long age) {
-		this.id = id;
-		this.name = name;
-		this.age = age;
-	}
+    @ElementCollection
+    @Attribute(minValue = 34)
+    private Set<Long> longTags = new HashSet<>();
 
-	public TestEntity(String name, Long age) {
-		this.name = name;
-		this.age = age;
-	}
+    public TestEntity() {
+        // default constructor
+    }
 
-	@Override
-	public Integer getId() {
-		return id;
-	}
+    public TestEntity(int id, String name, Long age) {
+        this.id = id;
+        this.name = name;
+        this.age = age;
+    }
 
-	@Override
-	public void setId(Integer id) {
-		this.id = id;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public Long getAge() {
-		return age;
-	}
-
-	public void setAge(Long age) {
-		this.age = age;
-	}
-
-	public BigDecimal getDiscount() {
-		return discount;
-	}
-
-	public void setDiscount(BigDecimal discount) {
-		this.discount = discount;
-	}
-
-	public Date getBirthDate() {
-		return birthDate;
-	}
-
-	public void setBirthDate(Date birthDate) {
-		this.birthDate = birthDate;
-	}
-
-	public Date getBirthWeek() {
-		return birthWeek;
-	}
-
-	public void setBirthWeek(Date birthWeek) {
-		this.birthWeek = birthWeek;
-	}
-
-	public TestEnum getSomeEnum() {
-		return someEnum;
-	}
-
-	public void setSomeEnum(TestEnum someEnum) {
-		this.someEnum = someEnum;
-	}
-
-	@Override
-	public String toString() {
-		return ReflectionToStringBuilder.toString(this);
-	}
-
-	public byte[] getSomeBytes() {
-		return someBytes;
-	}
-
-	public void setSomeBytes(byte[] someBytes) {
-		this.someBytes = someBytes;
-	}
-
-	public BigDecimal getRate() {
-		return rate;
-	}
-
-	public void setRate(BigDecimal rate) {
-		this.rate = rate;
-	}
-
-	public Boolean getSomeBoolean() {
-		return someBoolean;
-	}
-
-	public void setSomeBoolean(Boolean someBoolean) {
-		this.someBoolean = someBoolean;
-	}
-
-	public String getSomeString() {
-		return someString;
-	}
-
-	public void setSomeString(String someString) {
-		this.someString = someString;
-	}
-
-	public Boolean getSomeBoolean2() {
-		return someBoolean2;
-	}
-
-	public void setSomeBoolean2(Boolean someBoolean2) {
-		this.someBoolean2 = someBoolean2;
-	}
-
-	public Integer getSomeInt() {
-		return someInt;
-	}
-
-	public void setSomeInt(Integer someInt) {
-		this.someInt = someInt;
-	}
-
-	public Set<TestEntity2> getTestEntities() {
-		return testEntities;
-	}
-
-	public void setTestEntities(Set<TestEntity2> testEntities) {
-		this.testEntities = testEntities;
-	}
-
-	public void addTestEntity2(TestEntity2 entity2) {
-		this.testEntities.add(entity2);
-		entity2.setTestEntity(this);
-	}
-
-	public Date getSomeTime() {
-		return someTime;
-	}
-
-	public void setSomeTime(Date someTime) {
-		this.someTime = someTime;
-	}
-
-	public String getSomeTextArea() {
-		return someTextArea;
-	}
-
-	public void setSomeTextArea(String someTextArea) {
-		this.someTextArea = someTextArea;
-	}
-
-	public Set<String> getTags() {
-		return tags;
-	}
-
-	public void setTags(Set<String> tags) {
-		this.tags = tags;
-	}
-
-	public String getUrl() {
-		return url;
-	}
-
-	public void setUrl(String url) {
-		this.url = url;
-	}
-
-	@AssertTrue
-	public boolean isAssertSomething() {
-		return !"bogus".equals(name);
-	}
-
-	public TestDomain getTestDomain() {
-		return testDomain;
-	}
-
-	public void setTestDomain(TestDomain testDomain) {
-		this.testDomain = testDomain;
-	}
-
-	public Set<Integer> getIntTags() {
-		return intTags;
-	}
-
-	public void setIntTags(Set<Integer> intTags) {
-		this.intTags = intTags;
-	}
-
-	public Set<Long> getLongTags() {
-		return longTags;
-	}
-
-	public void setLongTags(Set<Long> longTags) {
-		this.longTags = longTags;
-	}
-
-	public Integer getSomeIntSlider() {
-		return someIntSlider;
-	}
-
-	public void setSomeIntSlider(Integer someIntSlider) {
-		this.someIntSlider = someIntSlider;
-	}
-
-	public Long getSomeLongSlider() {
-		return someLongSlider;
-	}
-
-	public void setSomeLongSlider(Long someLongSlider) {
-		this.someLongSlider = someLongSlider;
-	}
+    public TestEntity(String name, Long age) {
+        this.name = name;
+        this.age = age;
+    }
+
+    @Override
+    public Integer getId() {
+        return id;
+    }
+
+    @Override
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Long getAge() {
+        return age;
+    }
+
+    public void setAge(Long age) {
+        this.age = age;
+    }
+
+    public BigDecimal getDiscount() {
+        return discount;
+    }
+
+    public void setDiscount(BigDecimal discount) {
+        this.discount = discount;
+    }
+
+    public Date getBirthDate() {
+        return birthDate;
+    }
+
+    public void setBirthDate(Date birthDate) {
+        this.birthDate = birthDate;
+    }
+
+    public Date getBirthWeek() {
+        return birthWeek;
+    }
+
+    public void setBirthWeek(Date birthWeek) {
+        this.birthWeek = birthWeek;
+    }
+
+    public TestEnum getSomeEnum() {
+        return someEnum;
+    }
+
+    public void setSomeEnum(TestEnum someEnum) {
+        this.someEnum = someEnum;
+    }
+
+    @Override
+    public String toString() {
+        return ReflectionToStringBuilder.toString(this);
+    }
+
+    public byte[] getSomeBytes() {
+        return someBytes;
+    }
+
+    public void setSomeBytes(byte[] someBytes) {
+        this.someBytes = someBytes;
+    }
+
+    public BigDecimal getRate() {
+        return rate;
+    }
+
+    public void setRate(BigDecimal rate) {
+        this.rate = rate;
+    }
+
+    public Boolean getSomeBoolean() {
+        return someBoolean;
+    }
+
+    public void setSomeBoolean(Boolean someBoolean) {
+        this.someBoolean = someBoolean;
+    }
+
+    public String getSomeString() {
+        return someString;
+    }
+
+    public void setSomeString(String someString) {
+        this.someString = someString;
+    }
+
+    public Boolean getSomeBoolean2() {
+        return someBoolean2;
+    }
+
+    public void setSomeBoolean2(Boolean someBoolean2) {
+        this.someBoolean2 = someBoolean2;
+    }
+
+    public Integer getSomeInt() {
+        return someInt;
+    }
+
+    public void setSomeInt(Integer someInt) {
+        this.someInt = someInt;
+    }
+
+    public Set<TestEntity2> getTestEntities() {
+        return testEntities;
+    }
+
+    public void setTestEntities(Set<TestEntity2> testEntities) {
+        this.testEntities = testEntities;
+    }
+
+    public void addTestEntity2(TestEntity2 entity2) {
+        this.testEntities.add(entity2);
+        entity2.setTestEntity(this);
+    }
+
+    public Date getSomeTime() {
+        return someTime;
+    }
+
+    public void setSomeTime(Date someTime) {
+        this.someTime = someTime;
+    }
+
+    public String getSomeTextArea() {
+        return someTextArea;
+    }
+
+    public void setSomeTextArea(String someTextArea) {
+        this.someTextArea = someTextArea;
+    }
+
+    public Set<String> getTags() {
+        return tags;
+    }
+
+    public void setTags(Set<String> tags) {
+        this.tags = tags;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    @AssertTrue
+    public boolean isAssertSomething() {
+        return !"bogus".equals(name);
+    }
+
+    public TestDomain getTestDomain() {
+        return testDomain;
+    }
+
+    public void setTestDomain(TestDomain testDomain) {
+        this.testDomain = testDomain;
+    }
+
+    public Set<Integer> getIntTags() {
+        return intTags;
+    }
+
+    public void setIntTags(Set<Integer> intTags) {
+        this.intTags = intTags;
+    }
+
+    public Set<Long> getLongTags() {
+        return longTags;
+    }
+
+    public void setLongTags(Set<Long> longTags) {
+        this.longTags = longTags;
+    }
+
+    public Integer getSomeIntSlider() {
+        return someIntSlider;
+    }
+
+    public void setSomeIntSlider(Integer someIntSlider) {
+        this.someIntSlider = someIntSlider;
+    }
+
+    public Long getSomeLongSlider() {
+        return someLongSlider;
+    }
+
+    public void setSomeLongSlider(Long someLongSlider) {
+        this.someLongSlider = someLongSlider;
+    }
+
+    public LocalDate getBirthDateLocal() {
+        return birthDateLocal;
+    }
+
+    public void setBirthDateLocal(LocalDate birthDateLocal) {
+        this.birthDateLocal = birthDateLocal;
+    }
+
+    public LocalDateTime getRegistrationTime() {
+        return registrationTime;
+    }
+
+    public void setRegistrationTime(LocalDateTime registrationTime) {
+        this.registrationTime = registrationTime;
+    }
 
 }

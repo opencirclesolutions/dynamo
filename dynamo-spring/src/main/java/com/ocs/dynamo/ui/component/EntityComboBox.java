@@ -31,234 +31,243 @@ import com.vaadin.shared.ui.combobox.FilteringMode;
 /**
  * Combo box for displaying a list of entities. This component supports filtering
  */
-public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID>> extends ComboBoxFixed implements
-        Refreshable, Cascadable {
+public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID>> extends ComboBoxFixed
+        implements Refreshable, Cascadable {
 
-	public enum SelectMode {
-		ALL, FILTERED, FIXED;
-	}
+    public enum SelectMode {
+        ALL, FILTERED, FIXED;
+    }
 
-	private static final long serialVersionUID = 3041574615271340579L;
+    private static final long serialVersionUID = 3041574615271340579L;
 
-	/**
-	 * The service
-	 */
-	private BaseService<ID, T> service;
+    /**
+     * The service
+     */
+    private BaseService<ID, T> service;
 
-	/**
-	 * The attribute mode
-	 */
-	private AttributeModel attributeModel;
+    /**
+     * The attribute mode
+     */
+    private AttributeModel attributeModel;
 
-	/**
-	 * The select mode
-	 */
-	private SelectMode selectMode = SelectMode.FILTERED;
+    /**
+     * The select mode
+     */
+    private SelectMode selectMode = SelectMode.FILTERED;
 
-	/**
-	 * The sort orders
-	 */
-	private final SortOrder[] sortOrder;
+    /**
+     * The sort orders
+     */
+    private final SortOrder[] sortOrder;
 
-	/**
-	 * The current search filter
-	 */
-	private Filter filter;
+    /**
+     * The current search filter
+     */
+    private Filter filter;
 
-	/**
-	 * The original search filter (without cascades)
-	 */
-	private Filter originalFilter;
+    /**
+     * The original search filter (without cascades)
+     */
+    private Filter originalFilter;
 
-	/**
-	 * Constructor (for a filtering combo box)
-	 * 
-	 * @param targetEntityModel
-	 * @param attributeModel
-	 * @param service
-	 * @param filter
-	 * @param sortOrder
-	 */
-	public EntityComboBox(EntityModel<T> targetEntityModel, AttributeModel attributeModel, BaseService<ID, T> service,
-	        Filter filter, SortOrder... sortOrder) {
-		this(targetEntityModel, attributeModel, service, SelectMode.FILTERED, filter, null, sortOrder);
-	}
+    private Filter additionalFilter;
 
-	/**
-	 * Constructor
-	 * 
-	 * @param targetEntityModel
-	 *            the entity model for the entities that are displayed in the combo box
-	 * @param attributeModel
-	 *            the attribute model for the attribute to which the selected value will be assigned
-	 * @param service
-	 *            the service used to retrieve entities
-	 * @param mode
-	 *            the select mode
-	 * @param filter
-	 *            optional filters to apply to the search
-	 * @param items
-	 *            the items to display (in fixed mode)
-	 * @param itemCaptionPropertyId
-	 *            the ID of the property to use as the caption
-	 * @param sortOrder
-	 *            the sort order(s) to apply
-	 */
-	public EntityComboBox(EntityModel<T> targetEntityModel, AttributeModel attributeModel, BaseService<ID, T> service,
-	        SelectMode mode, Filter filter, List<T> items, SortOrder... sortOrder) {
+    /**
+     * Constructor (for a filtering combo box)
+     * 
+     * @param targetEntityModel
+     * @param attributeModel
+     * @param service
+     * @param filter
+     * @param sortOrder
+     */
+    public EntityComboBox(EntityModel<T> targetEntityModel, AttributeModel attributeModel, BaseService<ID, T> service,
+            Filter filter, SortOrder... sortOrder) {
+        this(targetEntityModel, attributeModel, service, SelectMode.FILTERED, filter, null, sortOrder);
+    }
 
-		this.service = service;
-		this.selectMode = mode;
-		this.sortOrder = sortOrder;
-		this.attributeModel = attributeModel;
-		this.filter = filter;
+    /**
+     * Constructor
+     * 
+     * @param targetEntityModel
+     *            the entity model for the entities that are displayed in the combo box
+     * @param attributeModel
+     *            the attribute model for the attribute to which the selected value will be assigned
+     * @param service
+     *            the service used to retrieve entities
+     * @param mode
+     *            the select mode
+     * @param filter
+     *            optional filters to apply to the search
+     * @param items
+     *            the items to display (in fixed mode)
+     * @param itemCaptionPropertyId
+     *            the ID of the property to use as the caption
+     * @param sortOrder
+     *            the sort order(s) to apply
+     */
+    public EntityComboBox(EntityModel<T> targetEntityModel, AttributeModel attributeModel, BaseService<ID, T> service,
+            SelectMode mode, Filter filter, List<T> items, SortOrder... sortOrder) {
 
-		if (attributeModel != null) {
-			this.setCaption(attributeModel.getDisplayName());
-		}
+        this.service = service;
+        this.selectMode = mode;
+        this.sortOrder = sortOrder;
+        this.attributeModel = attributeModel;
+        this.filter = filter;
 
-		setFilteringMode(FilteringMode.CONTAINS);
+        if (attributeModel != null) {
+            this.setCaption(attributeModel.getDisplayName());
+        }
 
-		BeanItemContainer<T> container = new BeanItemContainer<>(targetEntityModel.getEntityClass());
-		this.setContainerDataSource(container);
+        setFilteringMode(FilteringMode.CONTAINS);
 
-		if (SelectMode.ALL.equals(mode)) {
-			// add all items (but sorted)
-			if (sortOrder != null) {
-				container.addAll(service.findAll(SortUtil.translate(sortOrder)));
-			}
-		} else if (SelectMode.FILTERED.equals(mode)) {
-			// add a filtered selection of items
-			items = service.find(new FilterConverter(null).convert(filter), SortUtil.translate(sortOrder));
-			container.addAll(items);
-		} else if (SelectMode.FIXED.equals(mode)) {
-			container.addAll(items);
-		}
+        BeanItemContainer<T> container = new BeanItemContainer<>(targetEntityModel.getEntityClass());
+        this.setContainerDataSource(container);
 
-		setItemCaptionMode(ItemCaptionMode.PROPERTY);
-		setItemCaptionPropertyId(targetEntityModel.getDisplayProperty());
-		setSizeFull();
-	}
+        if (SelectMode.ALL.equals(mode)) {
+            // add all items (but sorted)
+            if (sortOrder != null) {
+                container.addAll(service.findAll(SortUtil.translate(sortOrder)));
+            }
+        } else if (SelectMode.FILTERED.equals(mode)) {
+            // add a filtered selection of items
+            items = service.find(new FilterConverter(null).convert(filter), SortUtil.translate(sortOrder));
+            container.addAll(items);
+        } else if (SelectMode.FIXED.equals(mode)) {
+            container.addAll(items);
+        }
 
-	/**
-	 * Constructor - for the "ALL"mode
-	 * 
-	 * @param targetEntityModel
-	 *            the entity model for the entities that are displayed
-	 * @param attributeModel
-	 *            the attribute model of the property that is bound to this component
-	 * @param service
-	 *            the service used to retrieve the entities
-	 */
-	public EntityComboBox(EntityModel<T> targetEntityModel, AttributeModel attributeModel, BaseService<ID, T> service,
-	        SortOrder... sortOrder) {
-		this(targetEntityModel, attributeModel, service, SelectMode.ALL, null, null, sortOrder);
-	}
+        setItemCaptionMode(ItemCaptionMode.PROPERTY);
+        setItemCaptionPropertyId(targetEntityModel.getDisplayProperty());
+        setSizeFull();
+    }
 
-	/**
-	 * Constructor - for the "FIXED" mode
-	 * 
-	 * @param targetEntityModel
-	 *            the entity model for the entities that are displayed
-	 * @param attributeModel
-	 *            the attribute model of the property that is bound to this component
-	 * @param items
-	 *            the list of entities to display
-	 */
-	public EntityComboBox(EntityModel<T> targetEntityModel, AttributeModel attributeModel, List<T> items) {
-		this(targetEntityModel, attributeModel, null, SelectMode.FIXED, null, items);
-	}
+    /**
+     * Constructor - for the "ALL"mode
+     * 
+     * @param targetEntityModel
+     *            the entity model for the entities that are displayed
+     * @param attributeModel
+     *            the attribute model of the property that is bound to this component
+     * @param service
+     *            the service used to retrieve the entities
+     */
+    public EntityComboBox(EntityModel<T> targetEntityModel, AttributeModel attributeModel, BaseService<ID, T> service,
+            SortOrder... sortOrder) {
+        this(targetEntityModel, attributeModel, service, SelectMode.ALL, null, null, sortOrder);
+    }
 
-	/**
-	 * Adds an entity to the container
-	 * 
-	 * @param entity
-	 */
-	@SuppressWarnings("unchecked")
-	public void addEntity(T entity) {
-		BeanItemContainer<T> bic = (BeanItemContainer<T>) this.getContainerDataSource();
-		bic.addBean(entity);
-	}
+    /**
+     * Constructor - for the "FIXED" mode
+     * 
+     * @param targetEntityModel
+     *            the entity model for the entities that are displayed
+     * @param attributeModel
+     *            the attribute model of the property that is bound to this component
+     * @param items
+     *            the list of entities to display
+     */
+    public EntityComboBox(EntityModel<T> targetEntityModel, AttributeModel attributeModel, List<T> items) {
+        this(targetEntityModel, attributeModel, null, SelectMode.FIXED, null, items);
+    }
 
-	/**
-	 * Overwritten so that diacritics are ignored when comparing
-	 */
-	@Override
-	protected Filter buildFilter(String filterString, FilteringMode filteringMode) {
-		Filter ft = null;
+    /**
+     * Adds an entity to the container
+     * 
+     * @param entity
+     */
+    @SuppressWarnings("unchecked")
+    public void addEntity(T entity) {
+        BeanItemContainer<T> bic = (BeanItemContainer<T>) this.getContainerDataSource();
+        bic.addBean(entity);
+    }
 
-		if (null != filterString && !"".equals(filterString)) {
-			switch (filteringMode) {
-			case STARTSWITH:
-				ft = new IgnoreDiacriticsStringFilter(getItemCaptionPropertyId(), filterString, true, true);
-				break;
-			case CONTAINS:
-				ft = new IgnoreDiacriticsStringFilter(getItemCaptionPropertyId(), filterString, true, false);
-				break;
-			default:
-				break;
-			}
-		}
-		return ft;
-	}
+    /**
+     * Overwritten so that diacritics are ignored when comparing
+     */
+    @Override
+    protected Filter buildFilter(String filterString, FilteringMode filteringMode) {
+        Filter ft = null;
 
-	@Override
-	public void clearAdditionalFilter() {
-		this.filter = originalFilter;
-		refresh();
-	}
+        if (null != filterString && !"".equals(filterString)) {
+            switch (filteringMode) {
+            case STARTSWITH:
+                ft = new IgnoreDiacriticsStringFilter(getItemCaptionPropertyId(), filterString, true, true);
+                break;
+            case CONTAINS:
+                ft = new IgnoreDiacriticsStringFilter(getItemCaptionPropertyId(), filterString, true, false);
+                break;
+            default:
+                break;
+            }
+        }
+        return ft;
+    }
 
-	public AttributeModel getAttributeModel() {
-		return attributeModel;
-	}
+    @Override
+    public void clearAdditionalFilter() {
+        this.additionalFilter = null;
+        this.filter = originalFilter;
+        refresh();
+    }
 
-	public Filter getFilter() {
-		return filter;
-	}
+    public AttributeModel getAttributeModel() {
+        return attributeModel;
+    }
 
-	@SuppressWarnings("unchecked")
-	public T getFirstItem() {
-		BeanItemContainer<T> bc = (BeanItemContainer<T>) getContainerDataSource();
-		return bc.firstItemId();
-	}
+    public Filter getFilter() {
+        return filter;
+    }
 
-	public SelectMode getSelectMode() {
-		return selectMode;
-	}
+    @SuppressWarnings("unchecked")
+    public T getFirstItem() {
+        BeanItemContainer<T> bc = (BeanItemContainer<T>) getContainerDataSource();
+        return bc.firstItemId();
+    }
 
-	public SortOrder[] getSortOrder() {
-		return sortOrder;
-	}
+    public SelectMode getSelectMode() {
+        return selectMode;
+    }
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public void refresh() {
-		if (SelectMode.ALL.equals(selectMode)) {
-			// add all items (but sorted)
-			getContainerDataSource().removeAllItems();
-			((BeanItemContainer<T>) getContainerDataSource()).addAll(service.findAll(SortUtil.translate(sortOrder)));
-		} else if (SelectMode.FILTERED.equals(selectMode)) {
-			// add a filtered selection of items
-			getContainerDataSource().removeAllItems();
-			List<T> list = service.find(new FilterConverter(null).convert(filter), SortUtil.translate(sortOrder));
-			((BeanItemContainer<T>) getContainerDataSource()).addAll(list);
-		}
-	}
+    public SortOrder[] getSortOrder() {
+        return sortOrder;
+    }
 
-	public void refresh(Filter filter) {
-		this.originalFilter = filter;
-		this.filter = filter;
-		refresh();
-	}
+    @SuppressWarnings("unchecked")
+    @Override
+    public void refresh() {
+        if (SelectMode.ALL.equals(selectMode)) {
+            // add all items (but sorted)
+            getContainerDataSource().removeAllItems();
+            ((BeanItemContainer<T>) getContainerDataSource()).addAll(service.findAll(SortUtil.translate(sortOrder)));
+        } else if (SelectMode.FILTERED.equals(selectMode)) {
+            // add a filtered selection of items
+            getContainerDataSource().removeAllItems();
+            List<T> list = service.find(new FilterConverter(null).convert(filter), SortUtil.translate(sortOrder));
+            ((BeanItemContainer<T>) getContainerDataSource()).addAll(list);
+        }
+    }
 
-	@Override
-	public void setAdditionalFilter(Filter additionalFilter) {
-		setValue(null);
-		this.filter = originalFilter == null ? additionalFilter : new And(originalFilter, additionalFilter);
-		refresh();
-	}
+    public void refresh(Filter filter) {
+        this.originalFilter = filter;
+        this.filter = filter;
+        refresh();
+    }
 
-	public void setSelectMode(SelectMode selectMode) {
-		this.selectMode = selectMode;
-	}
+    @Override
+    public void setAdditionalFilter(Filter additionalFilter) {
+        setValue(null);
+        this.additionalFilter = additionalFilter;
+        this.filter = originalFilter == null ? additionalFilter : new And(originalFilter, additionalFilter);
+        refresh();
+    }
+
+    public void setSelectMode(SelectMode selectMode) {
+        this.selectMode = selectMode;
+    }
+
+    @Override
+    public Filter getAdditionalFilter() {
+        return additionalFilter;
+    }
 }

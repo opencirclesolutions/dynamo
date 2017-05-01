@@ -13,10 +13,13 @@
  */
 package com.ocs.dynamo.ui.composite.form;
 
-import com.ocs.dynamo.ui.utils.VaadinUtils;
-import com.vaadin.ui.UI;
-
 import java.math.BigDecimal;
+
+import com.ocs.dynamo.service.MessageService;
+import com.ocs.dynamo.ui.ServiceLocator;
+import com.ocs.dynamo.ui.utils.VaadinUtils;
+import com.ocs.dynamo.utils.MathUtil;
+import com.vaadin.ui.UI;
 
 /**
  * A Runnable that is used to update a progress bar during a long running process
@@ -37,6 +40,9 @@ public class ProgressBarUpdater implements Runnable {
     // flag variable to indicate that the process is stopped
     private volatile boolean stopped;
 
+    // the UI
+    private UI ui;
+
     /**
      * Constructor
      * 
@@ -45,7 +51,8 @@ public class ProgressBarUpdater implements Runnable {
      * @param estimatedSize
      *            the estimated size of the process
      */
-    public ProgressBarUpdater(Progressable progressable, int estimatedSize) {
+    public ProgressBarUpdater(UI ui, Progressable progressable, int estimatedSize) {
+        this.ui = ui;
         this.progressable = progressable;
         this.progress = 0.0f;
         this.estimatedSize = estimatedSize;
@@ -64,7 +71,7 @@ public class ProgressBarUpdater implements Runnable {
                 // do nothing
             }
 
-            UI.getCurrent().access(() -> {
+            ui.access(() -> {
                 if (estimatedSize > 0) {
                     progress = (float) ((1. * progressable.estimateCurrentProgress()) / (1. * estimatedSize));
                 } else {
@@ -76,9 +83,12 @@ public class ProgressBarUpdater implements Runnable {
                 progressable.getProgressBar().setValue(progress);
 
                 String progressString = VaadinUtils.bigDecimalToString(true, false,
-                        BigDecimal.valueOf(progress * 100));
-                progressable.getStatusLabel().setValue(progressString + " done");
+                        BigDecimal.valueOf(progress).multiply(MathUtil.HUNDRED));
+
+                MessageService ms = ServiceLocator.getMessageService();
+                progressable.getStatusLabel().setValue(ms.getMessage("ocs.progress.done", progressString));
             });
+
         }
     }
 }

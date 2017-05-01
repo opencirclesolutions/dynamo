@@ -1,3 +1,16 @@
+/*
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
 package com.ocs.jasperreports.chart;
 
 import java.awt.Paint;
@@ -22,9 +35,10 @@ import org.jfree.ui.Layer;
 public class XYChartCustomizer extends AbstractChartCustomizer implements CustomChartCustomizer<XYPlot> {
 
 	/**
-	 * Define an instance (or collection of instances) of this class in a report variable with the name "re.Quadrant"
-	 * (where re should be replaced with the name of the reporting element) to draw an annotation in the graph. Be sure
-	 * to configure the applicable XXXChartRenderableDecorator (in jasper.properties).
+	 * Define an instance (or collection of instances) of this class in a report variable with the
+	 * name "re.Quadrant" (where re should be replaced with the name of the reporting element) to
+	 * draw an annotation in the graph. Be sure to configure the applicable
+	 * XXXChartRenderableDecorator (in jasper.properties).
 	 */
 	@SuppressWarnings("serial")
 	public static class TextAnnotation extends XYTextAnnotation {
@@ -91,27 +105,27 @@ public class XYChartCustomizer extends AbstractChartCustomizer implements Custom
 			ValueAxis yAxis = plot.getRangeAxis();
 
 			// Create LT annotation
-			addXYBoxAnnotation(plot, xAxis.getLowerBound(), quadrant.getqOy(), quadrant.getqOx(), yAxis.getUpperBound(),
-					quadrant.getUrlMessageFormat(), quadrant.getTooltipMessageFormat());
+			addXYBoxAnnotation(plot, xAxis.getLowerBound(), quadrant.getqOy(), quadrant.getqOx(),
+			        yAxis.getUpperBound(), quadrant.getUrlMessageFormat(), quadrant.getTooltipMessageFormat());
 			// Create RT annotation
-			addXYBoxAnnotation(plot, quadrant.getqOx(), quadrant.getqOy(), xAxis.getUpperBound(), yAxis.getUpperBound(),
-					quadrant.getUrlMessageFormat(), quadrant.getTooltipMessageFormat());
+			addXYBoxAnnotation(plot, quadrant.getqOx(), quadrant.getqOy(), xAxis.getUpperBound(),
+			        yAxis.getUpperBound(), quadrant.getUrlMessageFormat(), quadrant.getTooltipMessageFormat());
 			// Create LB annotation
-			addXYBoxAnnotation(plot, xAxis.getLowerBound(), yAxis.getLowerBound(), quadrant.getqOx(), quadrant.getqOy(),
-					quadrant.getUrlMessageFormat(), quadrant.getTooltipMessageFormat());
+			addXYBoxAnnotation(plot, xAxis.getLowerBound(), yAxis.getLowerBound(), quadrant.getqOx(),
+			        quadrant.getqOy(), quadrant.getUrlMessageFormat(), quadrant.getTooltipMessageFormat());
 			// Create RB annotation
-			addXYBoxAnnotation(plot, quadrant.getqOx(), yAxis.getLowerBound(), xAxis.getUpperBound(), quadrant.getqOy(),
-					quadrant.getUrlMessageFormat(), quadrant.getTooltipMessageFormat());
+			addXYBoxAnnotation(plot, quadrant.getqOx(), yAxis.getLowerBound(), xAxis.getUpperBound(),
+			        quadrant.getqOy(), quadrant.getUrlMessageFormat(), quadrant.getTooltipMessageFormat());
 		}
 	}
 
 	public void addXYBoxAnnotation(XYPlot plot, double minx, double miny, double maxx, double maxy,
-			String urlMessageFormat, String tooltipMessageFormat) {
+	        String urlMessageFormat, String tooltipMessageFormat) {
 		addXYBoxAnnotation(plot, minx, miny, maxx, maxy, null, null, urlMessageFormat, tooltipMessageFormat);
 	}
 
 	public void addXYBoxAnnotation(XYPlot plot, double minx, double miny, double maxx, double maxy, Stroke stroke,
-			Paint paint, String urlMessageFormat, String tooltipMessageFormat) {
+	        Paint paint, String urlMessageFormat, String tooltipMessageFormat) {
 		// Does the annotation area fit to visible area?
 		if (minx < maxx && miny < maxy) {
 			// Create LT annotation

@@ -13,6 +13,16 @@
  */
 package com.ocs.dynamo.dao;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
+import java.util.List;
+
+import javax.inject.Inject;
+
+import org.junit.Assert;
+import org.junit.Test;
+
 import com.google.common.collect.Lists;
 import com.mysema.query.BooleanBuilder;
 import com.ocs.dynamo.dao.SortOrder.Direction;
@@ -23,14 +33,7 @@ import com.ocs.dynamo.filter.And;
 import com.ocs.dynamo.filter.Compare;
 import com.ocs.dynamo.filter.Filter;
 import com.ocs.dynamo.test.BaseIntegrationTest;
-import org.junit.Assert;
-import org.junit.Test;
-
-import javax.inject.Inject;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import com.ocs.dynamo.utils.DateUtils;
 
 /**
  * A basic integration test for testing the functionality of a DAO
@@ -294,9 +297,21 @@ public class TestEntityDaoTest extends BaseIntegrationTest {
 
 		List<String> names = dao.findDistinctInCollectionTable("test_entity", "name", String.class);
 		Assert.assertEquals(2, names.size());
-		
+
 		List<Long> ages = dao.findDistinctInCollectionTable("test_entity", "age", Long.class);
 		Assert.assertEquals(1, ages.size());
+	}
+
+	public void testFindByBirthDateLocal() {
+		List<TestEntity> result = dao.findByBirthDateLocal();
+		Assert.assertEquals(0, result.size());
+
+		TestEntity bob = save("Bob", 55L);
+		bob.setBirthDateLocal(DateUtils.createLocalDate("10081980"));
+		bob = dao.save(bob);
+
+		result = dao.findByBirthDateLocal();
+		Assert.assertEquals(1, result.size());
 	}
 
 	private TestEntity save(String name, long age) {

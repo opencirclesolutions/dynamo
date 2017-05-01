@@ -13,6 +13,8 @@
  */
 package com.ocs.dynamo.filter;
 
+import org.apache.commons.lang.builder.ReflectionToStringBuilder;
+
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.ui.composite.form.FlexibleFilterType;
 
@@ -64,4 +66,8 @@ public class FlexibleFilterDefinition {
         this.valueTo = valueTo;
     }
 
+    @Override
+    public String toString() {
+        return ReflectionToStringBuilder.toString(this);
+    }
 }

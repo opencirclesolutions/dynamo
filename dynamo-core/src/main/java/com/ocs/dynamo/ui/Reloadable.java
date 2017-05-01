@@ -18,6 +18,7 @@ package com.ocs.dynamo.ui;
  * 
  * @author bas.rutten
  */
+@FunctionalInterface
 public interface Reloadable {
 
     void reload();

@@ -32,105 +32,123 @@ import com.ocs.dynamo.service.BaseService;
  */
 public class ServiceQueryDefinition<ID extends Serializable, T extends AbstractEntity<ID>> extends LazyQueryDefinition {
 
-	private static final long serialVersionUID = 2780009981072027606L;
+    private static final long serialVersionUID = 2780009981072027606L;
 
-	private static final int MAX_NESTING_LEVEL = 3;
+    private static final int MAX_NESTING_LEVEL = 3;
 
-	private final BaseService<ID, T> service;
+    private final BaseService<ID, T> service;
 
-	private QueryType queryType;
+    private QueryType queryType;
 
-	private final FetchJoinInformation[] joins;
+    private final FetchJoinInformation[] joins;
 
-	private Integer predeterminedCount;
+    /**
+     * used for setting a predetermined record count - this will then skip the count query leading
+     * to potential performance improvements
+     */
+    private Integer predeterminedCount;
 
-	private EntityModel<T> entityModel;
+    /**
+     * The entity model to base the query translation on
+     */
+    private EntityModel<T> entityModel;
 
-	/**
-	 * Constructor
-	 * 
-	 * @param service
-	 *            the service
-	 * @param compositeItems
-	 *            whether composite items are allowed
-	 * @param batchSize
-	 *            the default batch size
-	 */
-	public ServiceQueryDefinition(BaseService<ID, T> service, boolean compositeItems, int batchSize,
-	        QueryType queryType, FetchJoinInformation[] joins) {
-		super(compositeItems, batchSize, DynamoConstants.ID);
-		this.service = service;
-		this.queryType = queryType;
-		this.joins = joins;
-		setMaxNestedPropertyDepth(MAX_NESTING_LEVEL);
-	}
+    private Integer maxResults;
 
-	/**
-	 * Constructor
-	 * 
-	 * @param service
-	 *            the service
-	 * @param compositeItems
-	 *            whether to use composite items
-	 * @param batchSize
-	 *            the batch size
-	 * @param idPropertyId
-	 *            the name of the primary key property
-	 * @param maxNestedPropertyDepth
-	 *            maximum nested property depth
-	 * @param queryType
-	 *            the query type
-	 * @param joins
-	 *            the joins to include in the query
-	 */
-	public ServiceQueryDefinition(BaseService<ID, T> service, boolean compositeItems, int batchSize,
-	        Object idPropertyId, int maxNestedPropertyDepth, QueryType queryType, FetchJoinInformation[] joins) {
-		super(compositeItems, batchSize, idPropertyId);
-		this.service = service;
-		this.queryType = queryType;
-		this.joins = joins;
-		setMaxNestedPropertyDepth(maxNestedPropertyDepth);
-	}
+    /**
+     * Constructor
+     * 
+     * @param service
+     *            the service
+     * @param compositeItems
+     *            whether composite items are allowed
+     * @param batchSize
+     *            the default batch size
+     */
+    public ServiceQueryDefinition(BaseService<ID, T> service, boolean compositeItems, int batchSize,
+            EntityModel<T> entityModel, QueryType queryType, FetchJoinInformation... joins) {
+        super(compositeItems, batchSize, DynamoConstants.ID);
+        this.service = service;
+        this.queryType = queryType;
+        this.joins = joins;
+        this.entityModel = entityModel;
+        setMaxNestedPropertyDepth(MAX_NESTING_LEVEL);
+    }
 
-	public BaseService<ID, T> getService() {
-		return service;
-	}
+    /**
+     * Constructor
+     * 
+     * @param service
+     *            the service
+     * @param compositeItems
+     *            whether to use composite items
+     * @param batchSize
+     *            the batch size
+     * @param idPropertyId
+     *            the name of the primary key property
+     * @param maxNestedPropertyDepth
+     *            maximum nested property depth
+     * @param queryType
+     *            the query type
+     * @param joins
+     *            the joins to include in the query
+     */
+    public ServiceQueryDefinition(BaseService<ID, T> service, boolean compositeItems, int batchSize,
+            Object idPropertyId, int maxNestedPropertyDepth, QueryType queryType, FetchJoinInformation... joins) {
+        super(compositeItems, batchSize, idPropertyId);
+        this.service = service;
+        this.queryType = queryType;
+        this.joins = joins;
+        setMaxNestedPropertyDepth(maxNestedPropertyDepth);
+    }
 
-	public QueryType getQueryType() {
-		return queryType;
-	}
+    public BaseService<ID, T> getService() {
+        return service;
+    }
 
-	public FetchJoinInformation[] getJoins() {
-		return joins;
-	}
+    public QueryType getQueryType() {
+        return queryType;
+    }
 
-	/**
-	 * @return the predetermined number of records that will be returned by the query
-	 */
-	public Integer getPredeterminedCount() {
-		return predeterminedCount;
-	}
+    public FetchJoinInformation[] getJoins() {
+        return joins;
+    }
 
-	/**
-	 * Sets the predetermined count. this can be used as a shortcut if you know how many records
-	 * will be returned by the query
-	 * 
-	 * @param predeterminedCount
-	 */
-	public void setPredeterminedCount(Integer predeterminedCount) {
-		this.predeterminedCount = predeterminedCount;
-	}
+    /**
+     * @return the predetermined number of records that will be returned by the query
+     */
+    public Integer getPredeterminedCount() {
+        return predeterminedCount;
+    }
 
-	public EntityModel<T> getEntityModel() {
-		return entityModel;
-	}
+    /**
+     * Sets the predetermined count. this can be used as a shortcut if you know how many records
+     * will be returned by the query
+     * 
+     * @param predeterminedCount
+     */
+    public void setPredeterminedCount(Integer predeterminedCount) {
+        this.predeterminedCount = predeterminedCount;
+    }
 
-	public void setEntityModel(EntityModel<T> entityModel) {
-		this.entityModel = entityModel;
-	}
+    public EntityModel<T> getEntityModel() {
+        return entityModel;
+    }
 
-	public void setQueryType(QueryType queryType) {
-		this.queryType = queryType;
-	}
+    public void setEntityModel(EntityModel<T> entityModel) {
+        this.entityModel = entityModel;
+    }
+
+    public void setQueryType(QueryType queryType) {
+        this.queryType = queryType;
+    }
+
+    public Integer getMaxResults() {
+        return maxResults;
+    }
+
+    public void setMaxResults(Integer maxResults) {
+        this.maxResults = maxResults;
+    }
 
 }

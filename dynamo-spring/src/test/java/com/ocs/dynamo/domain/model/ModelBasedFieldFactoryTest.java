@@ -13,6 +13,7 @@
  */
 package com.ocs.dynamo.domain.model;
 
+import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.TestEntity2;
@@ -45,6 +46,7 @@ import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mock;
 
@@ -66,6 +68,11 @@ public class ModelBasedFieldFactoryTest extends BaseMockitoTest {
 
 	private DecimalFormatSymbols symbols = DecimalFormatSymbols.getInstance(new Locale("de"));
 
+    @BeforeClass
+    public static void beforeClass() {
+        System.setProperty(DynamoConstants.SP_DEFAULT_LOCALE, "de");
+    }
+	
 	@Before
 	public void setUp() {
 		super.setUp();

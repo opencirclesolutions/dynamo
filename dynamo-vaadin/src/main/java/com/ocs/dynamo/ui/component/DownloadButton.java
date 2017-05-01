@@ -13,13 +13,12 @@
  */
 package com.ocs.dynamo.ui.component;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.StreamResource;
 import com.vaadin.server.StreamResource.StreamSource;
 import com.vaadin.ui.Button;
+
+import java.io.InputStream;
 
 /**
  * A button that starts a file download process when clicked
@@ -37,8 +36,6 @@ public abstract class DownloadButton extends Button {
      * 
      * @param caption
      *            the caption of the button
-     * @param fileName
-     *            the name of the file to download
      */
     public DownloadButton(String caption) {
         super(caption);
@@ -48,11 +45,7 @@ public abstract class DownloadButton extends Button {
 
             @Override
             public InputStream getStream() {
-                byte[] content = doCreateContent();
-                if (content != null) {
-                    return new ByteArrayInputStream(content);
-                }
-                return null;
+                return doCreateContent();
             }
 
         }, doCreateFileName());
@@ -67,7 +60,7 @@ public abstract class DownloadButton extends Button {
      * 
      * @return
      */
-    protected abstract byte[] doCreateContent();
+    protected abstract InputStream doCreateContent();
 
     /**
      * Creates the file name

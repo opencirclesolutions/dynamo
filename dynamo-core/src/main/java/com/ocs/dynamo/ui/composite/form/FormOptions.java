@@ -27,287 +27,327 @@ import com.ocs.dynamo.utils.SystemPropertyUtils;
  */
 public class FormOptions implements Serializable {
 
-	private static final long serialVersionUID = 7383335254540591298L;
+    private static final long serialVersionUID = 7383335254540591298L;
 
-	/**
-	 * How to display the various attribute groups. The default is PANEL (related fields are shown
-	 * in a panel, the panels are placed below each other), but it can be changed to TABSHEET
-	 * (related attributes are placed on separate tabs)
-	 */
-	private AttributeGroupMode attributeGroupMode = AttributeGroupMode.PANEL;
+    /**
+     * How to display the various attribute groups. The default is PANEL (related fields are shown
+     * in a panel, the panels are placed below each other), but it can be changed to TABSHEET
+     * (related attributes are placed on separate tabs)
+     */
+    private AttributeGroupMode attributeGroupMode = AttributeGroupMode.PANEL;
 
-	/**
-	 * Whether the user has to confirm the clearing of the search form
-	 */
-	private boolean confirmClear;
+    /**
+     * Whether the user has to confirm the clearing of the search form
+     */
+    private boolean confirmClear;
 
-	/**
-	 * Whether to hide the add button
-	 */
-	private boolean hideAddButton;
+    /**
+     * Whether to hide the add button
+     */
+    private boolean hideAddButton;
 
-	/**
-	 * Whether to hide the cancel button (in an explicit detail view)
-	 */
-	private boolean hideCancelButton;
+    /**
+     * Whether to hide the cancel button (in an explicit detail view)
+     */
+    private boolean hideCancelButton;
 
-	/**
-	 * Whether to hide the clear button in the search form
-	 */
-	private boolean hideClearButton;
+    /**
+     * Whether to hide the clear button in the search form
+     */
+    private boolean hideClearButton;
 
-	/**
-	 * Whether to open the form in view (read-only) mode
-	 */
-	private boolean openInViewMode;
+    /**
+     * Whether to open the form in view (read-only) mode
+     */
+    private boolean openInViewMode;
 
-	/**
-	 * Whether the form is shown as part of a popup - this is normally set by the framework when
-	 * appropriate
-	 */
-	private boolean popup;
+    /**
+     * Whether the form is shown as part of a popup - this is normally set by the framework when
+     * appropriate
+     */
+    private boolean popup;
 
-	/**
-	 * Whether to display the screen in complete read-only mode. Settings readOnly to true will
-	 * automatically adapt all other necessary settings (e.g. it will set "openInViewMode" to true)
-	 */
-	private boolean readOnly;
+    /**
+     * Whether to display the screen in complete read-only mode. Settings readOnly to true will
+     * automatically adapt all other necessary settings (e.g. it will set "openInViewMode" to true)
+     */
+    private boolean readOnly;
 
-	/**
-	 * The orientation of the screen (horizontal or vertical). This is relevant for the split
-	 * layout. In the HORIZONTAL view the table and form are displayed next to each other, in the
-	 * VERTICAL view they are below each other
-	 */
-	private ScreenMode screenMode = ScreenMode.HORIZONTAL;
+    /**
+     * The orientation of the screen (horizontal or vertical). This is relevant for the split
+     * layout. In the HORIZONTAL view the table and form are displayed next to each other, in the
+     * VERTICAL view they are below each other
+     */
+    private ScreenMode screenMode = ScreenMode.HORIZONTAL;
 
-	/**
-	 * Whether to search immediately when opening a search screen
-	 */
-	private boolean searchImmediately = true;
+    /**
+     * Whether to search immediately when opening a search screen
+     */
+    private boolean searchImmediately = true;
 
-	/**
-	 * Whether to display a back button
-	 */
-	private boolean showBackButton;
+    /**
+     * Whether to display a back button
+     */
+    private boolean showBackButton;
 
-	/**
-	 * Whether to show an edit button when the screen is opened in view mode
-	 */
-	private boolean showEditButton;
+    /**
+     * Whether to show an edit button when the screen is opened in view mode
+     */
+    private boolean editAllowed;
 
-	/**
-	 * Whether to include an quick search field
-	 */
-	private boolean showQuickSearchField;
+    /**
+     * Whether to display a "next" button
+     */
+    private boolean showNextButton = false;
 
-	/**
-	 * Whether or not to add a "remove" button - by default this is disabled
-	 */
-	private boolean showRemoveButton;
+    /**
+     * Whether to display a "previous" button
+     */
+    private boolean showPrevButton = false;
 
-	/**
-	 * Whether to display a button for opening a search dialog
-	 */
-	private boolean detailsTableSearchMode;
+    /**
+     * Whether to include an quick search field
+     */
+    private boolean showQuickSearchField;
 
-	/**
-	 * Whether to display a button for toggling search fields
-	 */
-	private boolean showToggleButton;
+    /**
+     * Whether or not to add a "remove" button - by default this is disabled
+     */
+    private boolean showRemoveButton;
 
-	/**
-	 * Whether to preserve the last selected tab when reopening a screen
-	 */
-	private boolean preserveSelectedTab;
+    /**
+     * Whether to display a button for opening a search dialog
+     */
+    private boolean detailsTableSearchMode;
 
-	/**
-	 * Indicates whether table export is allowed (read from system property)
-	 */
-	private boolean tableExportAllowed = SystemPropertyUtils.allowTableExport();
+    /**
+     * Whether to display a button for toggling search fields
+     */
+    private boolean showToggleButton;
 
-	private boolean doubleClickSelectAllowed = true;
+    /**
+     * Whether to preserve the last selected tab when reopening a screen
+     */
+    private boolean preserveSelectedTab;
 
-	public AttributeGroupMode getAttributeGroupMode() {
-		return attributeGroupMode;
-	}
+    /**
+     * Indicates whether table export is allowed (read from system property)
+     */
+    private boolean tableExportAllowed = SystemPropertyUtils.allowTableExport();
 
-	public ScreenMode getScreenMode() {
-		return screenMode;
-	}
+    private boolean doubleClickSelectAllowed = true;
 
-	public boolean isConfirmClear() {
-		return confirmClear;
-	}
+    public AttributeGroupMode getAttributeGroupMode() {
+        return attributeGroupMode;
+    }
 
-	public boolean isHideAddButton() {
-		return hideAddButton;
-	}
+    public ScreenMode getScreenMode() {
+        return screenMode;
+    }
 
-	public boolean isHideCancelButton() {
-		return hideCancelButton;
-	}
+    public boolean isConfirmClear() {
+        return confirmClear;
+    }
 
-	public boolean isHideClearButton() {
-		return hideClearButton;
-	}
+    public boolean isDetailsTableSearchMode() {
+        return detailsTableSearchMode;
+    }
 
-	public boolean isOpenInViewMode() {
-		return openInViewMode;
-	}
+    public boolean isDoubleClickSelectAllowed() {
+        return doubleClickSelectAllowed;
+    }
 
-	public boolean isPopup() {
-		return popup;
-	}
+    public boolean isEditAllowed() {
+        return editAllowed;
+    }
 
-	public boolean isReadOnly() {
-		return readOnly;
-	}
+    public boolean isHideAddButton() {
+        return hideAddButton;
+    }
 
-	public boolean isSearchImmediately() {
-		return searchImmediately;
-	}
+    public boolean isHideCancelButton() {
+        return hideCancelButton;
+    }
 
-	public boolean isShowBackButton() {
-		return showBackButton;
-	}
+    public boolean isHideClearButton() {
+        return hideClearButton;
+    }
 
-	public boolean isShowEditButton() {
-		return showEditButton;
-	}
+    public boolean isOpenInViewMode() {
+        return openInViewMode;
+    }
 
-	public boolean isShowQuickSearchField() {
-		return showQuickSearchField;
-	}
+    public boolean isPopup() {
+        return popup;
+    }
 
-	public boolean isShowRemoveButton() {
-		return showRemoveButton;
-	}
+    public boolean isPreserveSelectedTab() {
+        return preserveSelectedTab;
+    }
 
-	public boolean isDetailsTableSearchMode() {
-		return detailsTableSearchMode;
-	}
+    public boolean isReadOnly() {
+        return readOnly;
+    }
 
-	public boolean isShowToggleButton() {
-		return showToggleButton;
-	}
+    public boolean isSearchImmediately() {
+        return searchImmediately;
+    }
 
-	public boolean isTableExportAllowed() {
-		return tableExportAllowed;
-	}
+    public boolean isShowBackButton() {
+        return showBackButton;
+    }
 
-	public FormOptions setAttributeGroupMode(AttributeGroupMode attributeGroupMode) {
-		this.attributeGroupMode = attributeGroupMode;
-		return this;
-	}
+    public boolean isShowQuickSearchField() {
+        return showQuickSearchField;
+    }
 
-	public FormOptions setConfirmClear(boolean confirmClear) {
-		this.confirmClear = confirmClear;
-		return this;
-	}
+    public boolean isShowRemoveButton() {
+        return showRemoveButton;
+    }
 
-	public FormOptions setHideAddButton(boolean hideAddButton) {
-		this.hideAddButton = hideAddButton;
-		return this;
-	}
+    public boolean isShowToggleButton() {
+        return showToggleButton;
+    }
 
-	public FormOptions setHideCancelButton(boolean hideCancelButton) {
-		this.hideCancelButton = hideCancelButton;
-		return this;
-	}
+    public boolean isTableExportAllowed() {
+        return tableExportAllowed;
+    }
 
-	public FormOptions setHideClearButton(boolean hideClearButton) {
-		this.hideClearButton = hideClearButton;
-		return this;
-	}
+    public FormOptions setAttributeGroupMode(AttributeGroupMode attributeGroupMode) {
+        this.attributeGroupMode = attributeGroupMode;
+        return this;
+    }
 
-	public FormOptions setOpenInViewMode(boolean openInViewMode) {
-		this.openInViewMode = openInViewMode;
-		return this;
-	}
+    public FormOptions setConfirmClear(boolean confirmClear) {
+        this.confirmClear = confirmClear;
+        return this;
+    }
 
-	public FormOptions setPopup(boolean popup) {
-		this.popup = popup;
-		return this;
-	}
+    public FormOptions setDetailsTableSearchMode(boolean detailsTableSearchMode) {
+        this.detailsTableSearchMode = detailsTableSearchMode;
+        return this;
+    }
 
-	/**
-	 * Sets the screen to strict read-only modus. Will hide any add buttons and set the screen to
-	 * read only
-	 *
-	 * @param readOnly
-	 */
-	public FormOptions setReadOnly(boolean readOnly) {
-		if (readOnly) {
-			this.setOpenInViewMode(true);
-			this.setShowEditButton(false);
-			this.setHideAddButton(true);
-			this.setShowRemoveButton(false);
-		}
-		this.readOnly = readOnly;
-		return this;
-	}
+    public FormOptions setDoubleClickSelectAllowed(boolean doubleClickSelectAllowed) {
+        this.doubleClickSelectAllowed = doubleClickSelectAllowed;
+        return this;
+    }
 
-	public FormOptions setScreenMode(ScreenMode screenMode) {
-		this.screenMode = screenMode;
-		return this;
-	}
+    public FormOptions setEditAllowed(boolean editAllowed) {
+        this.editAllowed = editAllowed;
+        return this;
+    }
 
-	public FormOptions setSearchImmediately(boolean searchImmediately) {
-		this.searchImmediately = searchImmediately;
-		return this;
-	}
+    public FormOptions setHideAddButton(boolean hideAddButton) {
+        this.hideAddButton = hideAddButton;
+        return this;
+    }
 
-	public FormOptions setShowBackButton(boolean showBackButton) {
-		this.showBackButton = showBackButton;
-		return this;
-	}
+    public FormOptions setHideCancelButton(boolean hideCancelButton) {
+        this.hideCancelButton = hideCancelButton;
+        return this;
+    }
 
-	public FormOptions setShowEditButton(boolean showEditButton) {
-		this.showEditButton = showEditButton;
-		return this;
-	}
+    public FormOptions setHideClearButton(boolean hideClearButton) {
+        this.hideClearButton = hideClearButton;
+        return this;
+    }
 
-	public FormOptions setShowQuickSearchField(boolean showQuickSearchField) {
-		this.showQuickSearchField = showQuickSearchField;
-		return this;
-	}
+    public FormOptions setOpenInViewMode(boolean openInViewMode) {
+        this.openInViewMode = openInViewMode;
+        return this;
+    }
 
-	public FormOptions setShowRemoveButton(boolean showRemoveButton) {
-		this.showRemoveButton = showRemoveButton;
-		return this;
-	}
+    public FormOptions setPopup(boolean popup) {
+        this.popup = popup;
+        return this;
+    }
 
-	public FormOptions setDetailsTableSearchMode(boolean detailsTableSearchMode) {
-		this.detailsTableSearchMode = detailsTableSearchMode;
-		return this;
-	}
+    public FormOptions setPreserveSelectedTab(boolean preserveSelectedTab) {
+        this.preserveSelectedTab = preserveSelectedTab;
+        return this;
+    }
 
-	public FormOptions setShowToggleButton(boolean showToggleButton) {
-		this.showToggleButton = showToggleButton;
-		return this;
-	}
+    /**
+     * Sets the screen to strict read-only modus. Will hide any add buttons and set the screen to
+     * read only
+     *
+     * @param readOnly
+     */
+    public FormOptions setReadOnly(boolean readOnly) {
+        if (readOnly) {
+            this.setOpenInViewMode(true);
+            this.setEditAllowed(false);
+            this.setHideAddButton(true);
+            this.setShowRemoveButton(false);
+        }
+        this.readOnly = readOnly;
+        return this;
+    }
 
-	public FormOptions setTableExportAllowed(boolean tableExportAllowed) {
-		this.tableExportAllowed = tableExportAllowed;
-		return this;
-	}
+    public FormOptions setScreenMode(ScreenMode screenMode) {
+        this.screenMode = screenMode;
+        return this;
+    }
 
-	public boolean isPreserveSelectedTab() {
-		return preserveSelectedTab;
-	}
+    public FormOptions setSearchImmediately(boolean searchImmediately) {
+        this.searchImmediately = searchImmediately;
+        return this;
+    }
 
-	public FormOptions setPreserveSelectedTab(boolean preserveSelectedTab) {
-		this.preserveSelectedTab = preserveSelectedTab;
-		return this;
-	}
+    public FormOptions setShowBackButton(boolean showBackButton) {
+        this.showBackButton = showBackButton;
+        return this;
+    }
 
-	public boolean isDoubleClickSelectAllowed() {
-		return doubleClickSelectAllowed;
-	}
+    /**
+     * Shorthand method for showing/hiding the previous and next buttons
+     * 
+     * @param show
+     * @return
+     */
+    public FormOptions setShowIterationButtons(boolean show) {
+        this.setShowPrevButton(show);
+        this.setShowNextButton(show);
+        return this;
+    }
 
-	public FormOptions setDoubleClickSelectAllowed(boolean doubleClickSelectAllowed) {
-		this.doubleClickSelectAllowed = doubleClickSelectAllowed;
-		return this;
-	}
+    public FormOptions setShowNextButton(boolean showNextButton) {
+        this.showNextButton = showNextButton;
+        return this;
+    }
+
+    public FormOptions setShowPrevButton(boolean showPrevButton) {
+        this.showPrevButton = showPrevButton;
+        return this;
+    }
+
+    public FormOptions setShowQuickSearchField(boolean showQuickSearchField) {
+        this.showQuickSearchField = showQuickSearchField;
+        return this;
+    }
+
+    public FormOptions setShowRemoveButton(boolean showRemoveButton) {
+        this.showRemoveButton = showRemoveButton;
+        return this;
+    }
+
+    public FormOptions setShowToggleButton(boolean showToggleButton) {
+        this.showToggleButton = showToggleButton;
+        return this;
+    }
+
+    public FormOptions setTableExportAllowed(boolean tableExportAllowed) {
+        this.tableExportAllowed = tableExportAllowed;
+        return this;
+    }
+
+    public boolean isShowNextButton() {
+        return showNextButton;
+    }
+
+    public boolean isShowPrevButton() {
+        return showPrevButton;
+    }
 
 }
