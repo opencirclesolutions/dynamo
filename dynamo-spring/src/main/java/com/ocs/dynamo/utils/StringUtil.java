@@ -15,7 +15,7 @@ package com.ocs.dynamo.utils;
 
 public final class StringUtil {
 
-	private static final String EMAIL_PATTERN = "(.+)@(.+)";
+	private static final String EMAIL_PATTERN = "([\\w-\\.]+)@(?:[\\w]+\\.)(\\w){2,4}";
 
 	private static final String HTTP = "http";
 
@@ -26,8 +26,8 @@ public final class StringUtil {
 	}
 
 	/**
-	 * Checks if an value is a valid email address - this is actually a very simple check that only
-	 * checks for the @-sign
+	 * Checks if an value is a valid email address - this is actually a very
+	 * simple check that only checks for the @-sign
 	 * 
 	 * @param value
 	 *            the value to check
@@ -41,7 +41,8 @@ public final class StringUtil {
 	}
 
 	/**
-	 * Prepends the default protocol ("http://") to a value that represents a URL
+	 * Prepends the default protocol ("http://") to a value that represents a
+	 * URL
 	 * 
 	 * @param value
 	 *            the value
