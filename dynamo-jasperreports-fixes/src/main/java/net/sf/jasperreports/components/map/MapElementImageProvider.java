@@ -23,12 +23,6 @@
  */
 package net.sf.jasperreports.components.map;
 
-import java.awt.Color;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRGenericPrintElement;
 import net.sf.jasperreports.engine.JRPrintImage;
@@ -41,6 +35,12 @@ import net.sf.jasperreports.engine.type.VerticalImageAlignEnum;
 import net.sf.jasperreports.engine.util.JRColorUtil;
 import net.sf.jasperreports.renderers.Renderable;
 import net.sf.jasperreports.renderers.util.RendererUtil;
+
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Copy from original class by Jasperreports, which doesn't support automatic centering and zooming
@@ -80,7 +80,7 @@ public final class MapElementImageProvider {
 		String mapScale = (String) element.getParameterValue(MapComponent.ATTRIBUTE_MAP_SCALE);
 		String mapFormat = (String) element.getParameterValue(MapComponent.ATTRIBUTE_IMAGE_TYPE);
 		String reqParams = (String) element.getParameterValue(MapComponent.PARAMETER_REQ_PARAMS);
-		String markers = "";
+		StringBuilder markers = new StringBuilder();
 
 		List<Map<String, Object>> markerList = (List<Map<String, Object>>) element
 		        .getParameterValue(MapComponent.PARAMETER_MARKERS);
@@ -107,7 +107,7 @@ public final class MapElementImageProvider {
 					StringBuilder ll = new StringBuilder().append(map.get(MapComponent.ITEM_PROPERTY_latitude));
 					ll.append(",");
 					ll.append(map.get(MapComponent.ITEM_PROPERTY_longitude));
-					List<String> gml = null;
+					List<String> gml;
 					if (groupedMarkers.containsKey(style)) {
 						gml = groupedMarkers.get(style);
 					} else {
@@ -119,20 +119,20 @@ public final class MapElementImageProvider {
 			}
 
 			// Then add the markers to string list
-			String currentMarkers = "";
+			StringBuilder currentMarkers = new StringBuilder();
 			for (Object style : groupedMarkers.keySet().toArray()) {
-				currentMarkers = "&markers=" + style;
+				currentMarkers.append("&markers=" + style);
 				int i = 0;
 				for (String cm : groupedMarkers.get(style)) {
 					if (i > 0) {
-						currentMarkers += "%7C";
+						currentMarkers.append("%7C");
 					}
-					currentMarkers += cm;
+					currentMarkers.append(cm);
 
 					i++;
 				}
 				if (markers.length() + 248 < MAX_URL_LENGTH) {
-					markers += currentMarkers;
+					markers.append(currentMarkers.toString());
 				} else {
 					break;
 				}
@@ -178,7 +178,7 @@ public final class MapElementImageProvider {
 					        + "%7C" : "");
 					List<Map<String, Object>> locations = (List<Map<String, Object>>) pathMap
 					        .get(MapComponent.PARAMETER_PATH_LOCATIONS);
-					Map<String, Object> location = null;
+					Map<String, Object> location;
 					if (locations != null && !locations.isEmpty()) {
 						for (int i = 0; i < locations.size(); i++) {
 							location = locations.get(i);
@@ -212,7 +212,7 @@ public final class MapElementImageProvider {
 		// a static map url is limited to 2048 characters
 		imageLocation += imageLocation.length() + markers.length() + currentPaths.length() + params.length() < MAX_URL_LENGTH ? markers
 		        + currentPaths.toString() + params
-		        : imageLocation.length() + markers.length() + params.length() < MAX_URL_LENGTH ? markers + params
+		        : imageLocation.length() + markers.length() + params.length() < MAX_URL_LENGTH ? markers.toString() + params
 		                : params;
 		JRBasePrintImage printImage = new JRBasePrintImage(element.getDefaultStyleProvider());
 

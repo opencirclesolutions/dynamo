@@ -13,20 +13,6 @@
  */
 package com.ocs.dynamo.ui.composite.form;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.StringUtils;
-
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
@@ -54,6 +40,20 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Layout;
+import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * 
@@ -236,7 +236,7 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
                         event -> handleFilterTypeChange((FlexibleFilterType) event.getProperty().getValue()));
                 newTypeFilterCombo.setStyleName(DynamoConstants.CSS_NESTED);
 
-                getFilterTypes(am).stream().forEach(ft -> newTypeFilterCombo.addItem(ft));
+                getFilterTypes(am).stream().forEach(newTypeFilterCombo::addItem);
 
                 // cannot remove mandatory filters
                 removeButton.setEnabled(!am.isRequiredForSearching());
@@ -673,7 +673,7 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
      * Extracts a list of FlexibleFilterDefinitions form the currently active search filters
      */
     public List<FlexibleFilterDefinition> extractFilterDefinitions() {
-        return regions.stream().map(region -> region.toDefinition()).filter(d -> d != null)
+        return regions.stream().map(FilterRegion::toDefinition).filter(Objects::nonNull)
                 .collect(Collectors.toList());
     }
 

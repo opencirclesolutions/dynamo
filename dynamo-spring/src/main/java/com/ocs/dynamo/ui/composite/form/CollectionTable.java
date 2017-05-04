@@ -13,11 +13,6 @@
  */
 package com.ocs.dynamo.ui.composite.form;
 
-import java.io.Serializable;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.ui.ServiceLocator;
@@ -41,6 +36,12 @@ import com.vaadin.ui.Layout;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
+
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 
 /**
  * A component for editing a property that is annotated as an @ElementCollection
@@ -190,7 +191,7 @@ public class CollectionTable<T extends Serializable> extends CustomField<Collect
     @SuppressWarnings("unchecked")
     private Set<T> extractValues() {
         Set<T> set = new HashSet<>();
-        table.getItemIds().stream().map(o -> table.getItem(o).getItemProperty(VALUE).getValue()).filter(t -> t != null)
+        table.getItemIds().stream().map(o -> table.getItem(o).getItemProperty(VALUE).getValue()).filter(Objects::nonNull)
                 .forEach(t -> set.add((T) t));
         return set;
     }
