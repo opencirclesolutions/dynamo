@@ -16,7 +16,7 @@ package com.ocs.dynamo.ui.converter;
 import java.time.LocalDate;
 import java.util.Locale;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 
 import com.ocs.dynamo.utils.DateUtils;
 import com.vaadin.data.util.converter.Converter;
@@ -32,8 +32,7 @@ public class LocalDateWeekCodeConverter implements Converter<String, LocalDate> 
     private static final long serialVersionUID = -3286439685884522679L;
 
     @Override
-    public LocalDate convertToModel(String value, Class<? extends LocalDate> targetType, Locale locale)
-            throws com.vaadin.data.util.converter.Converter.ConversionException {
+    public LocalDate convertToModel(String value, Class<? extends LocalDate> targetType, Locale locale) {
         if (StringUtils.isEmpty(value)) {
             return null;
         }
@@ -41,8 +40,7 @@ public class LocalDateWeekCodeConverter implements Converter<String, LocalDate> 
     }
 
     @Override
-    public String convertToPresentation(LocalDate value, Class<? extends String> targetType, Locale locale)
-            throws com.vaadin.data.util.converter.Converter.ConversionException {
+    public String convertToPresentation(LocalDate value, Class<? extends String> targetType, Locale locale) {
         if (value == null) {
             return null;
         }

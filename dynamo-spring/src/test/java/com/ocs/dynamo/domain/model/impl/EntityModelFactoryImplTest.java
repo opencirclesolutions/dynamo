@@ -77,11 +77,8 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 
     @Before
     public void setupEntityModelFactoryTest() throws NoSuchFieldException {
-
         wireTestSubject(factory);
-
         source.setBasename("entitymodel");
-
         PrivateAccessor.setField(messageService, "source", source);
         PrivateAccessor.setField(factory, "messageService", messageService);
     }

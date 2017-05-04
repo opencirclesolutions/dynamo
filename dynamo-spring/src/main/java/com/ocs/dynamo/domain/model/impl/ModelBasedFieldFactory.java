@@ -780,17 +780,17 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
      * @param attributeModel
      *            the attribute model of the attribute to bind to the field
      */
-    protected void setConverters(AbstractTextField textField, AttributeModel attributeModel) {
-        if (attributeModel.getType().equals(BigDecimal.class)) {
-            textField.setConverter(ConverterFactory.createBigDecimalConverter(attributeModel.isCurrency(),
-                    attributeModel.isPercentage(), SystemPropertyUtils.useThousandsGroupingInEditMode(),
-                    attributeModel.getPrecision(), VaadinUtils.getCurrencySymbol()));
-        } else if (attributeModel.getType().equals(Integer.class)) {
-            textField.setConverter(
-                    ConverterFactory.createIntegerConverter(SystemPropertyUtils.useThousandsGroupingInEditMode()));
-        } else if (attributeModel.getType().equals(Long.class)) {
-            textField.setConverter(
-                    ConverterFactory.createLongConverter(SystemPropertyUtils.useThousandsGroupingInEditMode()));
+    protected void setConverters(AbstractTextField textField, AttributeModel am) {
+        if (am.getType().equals(BigDecimal.class)) {
+            textField.setConverter(ConverterFactory.createBigDecimalConverter(am.isCurrency(), am.isPercentage(),
+                    SystemPropertyUtils.useThousandsGroupingInEditMode(), am.getPrecision(),
+                    VaadinUtils.getCurrencySymbol()));
+        } else if (NumberUtils.isInteger(am.getType())) {
+            textField.setConverter(ConverterFactory
+                    .createIntegerConverter(SystemPropertyUtils.useThousandsGroupingInEditMode(), am.isPercentage()));
+        } else if (NumberUtils.isLong(am.getType())) {
+            textField.setConverter(ConverterFactory
+                    .createLongConverter(SystemPropertyUtils.useThousandsGroupingInEditMode(), am.isPercentage()));
         }
     }
 

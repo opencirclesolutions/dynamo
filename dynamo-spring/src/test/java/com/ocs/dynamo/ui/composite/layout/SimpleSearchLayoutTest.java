@@ -116,29 +116,80 @@ public class SimpleSearchLayoutTest extends BaseIntegrationTest {
     }
 
     @Test
-    public void testSimpleSearchLayout_AddButton() {
-        SimpleSearchLayout<Integer, TestEntity> layout = createLayout(new FormOptions());
+    public void testSimpleSearchLayout_AddButton1() {
+        SimpleSearchLayout<Integer, TestEntity> layout = createLayout(new FormOptions().setOpenInViewMode(true));
         layout.build();
 
         // click the add button and verify that a new item is added
         layout.getAddButton().click();
         Assert.assertNotNull(layout.getSelectedItem());
+
+        Assert.assertFalse(layout.isInSearchMode());
+        Assert.assertFalse(layout.getEditForm().isViewMode());
+
+        layout.getEditForm().getSaveButtons().get(0).click();
+        Assert.assertFalse(layout.isInSearchMode());
+    }
+    
+    @Test
+    public void testSimpleSearchLayout_AddButton2() {
+        SimpleSearchLayout<Integer, TestEntity> layout = createLayout(new FormOptions().setOpenInViewMode(false));
+        layout.build();
+
+        // click the add button and verify that a new item is added
+        layout.getAddButton().click();
+        Assert.assertNotNull(layout.getSelectedItem());
+
+        Assert.assertFalse(layout.isInSearchMode());
+        Assert.assertFalse(layout.getEditForm().isViewMode());
+
+        layout.getEditForm().getSaveButtons().get(0).click();
+        Assert.assertFalse(layout.isInSearchMode());
     }
 
     @Test
     public void testSimpleSearchLayout_EditButton() {
         FormOptions options = new FormOptions();
-        options.setEditAllowed(true);
+        options.setEditAllowed(true).setOpenInViewMode(false);
 
         SimpleSearchLayout<Integer, TestEntity> layout = createLayout(options);
         layout.build();
 
         Assert.assertTrue(layout.getEditButton().isVisible());
 
-        // click the add button and verify that a new item is added
+        // select an item and edit
         layout.setSelectedItem(e1);
         layout.getEditButton().click();
         Assert.assertEquals(e1, layout.getSelectedItem());
+        Assert.assertFalse(layout.getEditForm().isViewMode());
+
+        // save changes and check that we go back to search mode
+        layout.getEditForm().getSaveButtons().get(0).click();
+        Assert.assertTrue(layout.isInSearchMode());
+    }
+
+    @Test
+    public void testSimpleSearchLayout_EditButton2() {
+        FormOptions options = new FormOptions();
+        options.setEditAllowed(true).setOpenInViewMode(true);
+
+        SimpleSearchLayout<Integer, TestEntity> layout = createLayout(options);
+        layout.build();
+
+        Assert.assertTrue(layout.getEditButton().isVisible());
+
+        // select an item and edit
+        layout.setSelectedItem(e1);
+        layout.getEditButton().click();
+        Assert.assertEquals(e1, layout.getSelectedItem());
+        Assert.assertTrue(layout.getEditForm().isViewMode());
+        layout.getEditForm().getEditButtons().get(0).click();
+        Assert.assertFalse(layout.getEditForm().isViewMode());
+
+        // save changes and check that are back on the detail screen is view mode
+        layout.getEditForm().getSaveButtons().get(0).click();
+        Assert.assertTrue(layout.getEditForm().isViewMode());
+        Assert.assertFalse(layout.isInSearchMode());
     }
 
     /**

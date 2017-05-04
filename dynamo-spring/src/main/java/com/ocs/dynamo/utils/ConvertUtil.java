@@ -50,14 +50,15 @@ public final class ConvertUtil {
 
         Locale locale = VaadinUtils.getLocale();
         boolean grouping = SystemPropertyUtils.useThousandsGroupingInEditMode();
+        boolean percentage = attributeModel.isPercentage();
 
         if (attributeModel.isWeek()) {
             WeekCodeConverter converter = new WeekCodeConverter();
             return converter.convertToPresentation((Date) input, String.class, locale);
         } else if (Integer.class.equals(attributeModel.getType())) {
-            return VaadinUtils.integerToString(grouping, (Integer) input);
+            return VaadinUtils.integerToString(grouping, percentage, (Integer) input);
         } else if (Long.class.equals(attributeModel.getType())) {
-            return VaadinUtils.longToString(grouping, (Long) input);
+            return VaadinUtils.longToString(grouping, percentage, (Long) input);
         } else if (BigDecimal.class.equals(attributeModel.getType())) {
             return VaadinUtils.bigDecimalToString(attributeModel.isCurrency(), attributeModel.isPercentage(), grouping,
                     attributeModel.getPrecision(), (BigDecimal) input, locale);

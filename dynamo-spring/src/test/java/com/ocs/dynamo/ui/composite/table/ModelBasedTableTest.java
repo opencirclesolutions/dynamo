@@ -32,63 +32,89 @@ import org.mockito.Mockito;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class ModelBasedTableTest extends BaseMockitoTest {
 
-	private EntityModelFactory entityModelFactory = new EntityModelFactoryImpl();
+    private EntityModelFactory entityModelFactory = new EntityModelFactoryImpl();
 
-	@Mock
-	private MessageService messageService;
+    @Mock
+    private MessageService messageService;
 
-	@Mock
-	private TestEntityService service;
+    @Mock
+    private TestEntityService service;
 
-	@Override
-	public void setUp() {
-		super.setUp();
-		Mockito.when(service.getEntityClass()).thenReturn(TestEntity.class);
-		MockUtil.mockMessageService(messageService);
-		try {
-			PrivateAccessor.setField(entityModelFactory, "messageService", messageService);
-		} catch (NoSuchFieldException e) {
-			Assert.fail();
-		}
-	}
+    @Override
+    public void setUp() {
+        super.setUp();
+        Mockito.when(service.getEntityClass()).thenReturn(TestEntity.class);
+        MockUtil.mockMessageService(messageService);
+        try {
+            PrivateAccessor.setField(entityModelFactory, "messageService", messageService);
+        } catch (NoSuchFieldException e) {
+            Assert.fail();
+        }
+    }
 
-	@Test
-	public void testBeanItemContainer() {
-		BeanItemContainer<Person> container = new BeanItemContainer<>(Person.class);
-		EntityModel<Person> model = entityModelFactory.getModel(Person.class);
+    @Test
+    public void testBeanItemContainer() {
+        BeanItemContainer<Person> container = new BeanItemContainer<>(Person.class);
+        EntityModel<Person> model = entityModelFactory.getModel(Person.class);
 
-		Person person = new Person(1, "Bob", 50, BigDecimal.valueOf(76.4), BigDecimal.valueOf(44.4));
-		container.addItem(person);
+        Person person = new Person(1, "Bob", 50, BigDecimal.valueOf(76.4), BigDecimal.valueOf(44.4));
+        container.addItem(person);
 
-		ModelBasedTable<Integer, Person> table = new ModelBasedTable<>(container, model, false);
+        ModelBasedTable<Integer, Person> table = new ModelBasedTable<>(container, model, false);
 
-		Assert.assertEquals("Persons", table.getCaption());
-		Assert.assertEquals("Person", table.getDescription());
-		Assert.assertEquals(4, table.getVisibleColumns().length);
+        Assert.assertEquals("Persons", table.getCaption());
+        Assert.assertEquals("Person", table.getDescription());
+        Assert.assertEquals(4, table.getVisibleColumns().length);
 
-		// numeric column aligned to the right
-		Assert.assertEquals(Table.Align.RIGHT, table.getColumnAlignment("age"));
+        // numeric column aligned to the right
+        Assert.assertEquals(Table.Align.RIGHT, table.getColumnAlignment("age"));
 
-		String result = table.formatPropertyValue(person, "age", table.getItem(person).getItemProperty("age"));
-		Assert.assertEquals("50", result);
-	}
+        String result = table.formatPropertyValue(person, "age", table.getItem(person).getItemProperty("age"));
+        Assert.assertEquals("50", result);
+    }
 
-	@Test
-	public void testFixedTableWrapper() {
-		TestEntity entity = new TestEntity();
+    @Test
+    public void testFixedTableWrapper() {
+        TestEntity entity = new TestEntity();
 
-		EntityModel<TestEntity> model = entityModelFactory.getModel(TestEntity.class);
-		FixedTableWrapper<Integer, TestEntity> wrapper = new FixedTableWrapper<>(service, model,
-				Lists.newArrayList(entity), new ArrayList<>(), false);
-		wrapper.build();
+        EntityModel<TestEntity> model = entityModelFactory.getModel(TestEntity.class);
+        FixedTableWrapper<Integer, TestEntity> wrapper = new FixedTableWrapper<>(service, model,
+                Lists.newArrayList(entity), new ArrayList<>(), false);
+        wrapper.build();
 
-		Table table = wrapper.getTable();
-		Assert.assertNotNull(table);
+        Table table = wrapper.getTable();
+        Assert.assertNotNull(table);
 
-		Assert.assertEquals(1, wrapper.getTable().getContainerDataSource().size());
-	}
+        Assert.assertEquals(1, wrapper.getTable().getContainerDataSource().size());
+    }
+
+    @Test
+    public void testSetVisible() {
+        BeanItemContainer<Person> container = new BeanItemContainer<>(Person.class);
+        EntityModel<Person> model = entityModelFactory.getModel(Person.class);
+
+        Person person = new Person(1, "Bob", 50, BigDecimal.valueOf(76.4), BigDecimal.valueOf(44.4));
+        container.addItem(person);
+
+        ModelBasedTable<Integer, Person> table = new ModelBasedTable<>(container, model, false);
+
+        Assert.assertTrue(Arrays.asList(table.getVisibleColumns()).contains("name"));
+
+        // setting an already visible column to true doesn't do anything
+        table.setColumnVisible("name", true);
+        Assert.assertTrue(Arrays.asList(table.getVisibleColumns()).contains("name"));
+
+        // hide column
+        table.setColumnVisible("name", false);
+        Assert.assertFalse(Arrays.asList(table.getVisibleColumns()).contains("name"));
+
+        /// show it again
+        table.setColumnVisible("name", true);
+        Assert.assertTrue(Arrays.asList(table.getVisibleColumns()).contains("name"));
+    }
 
 }

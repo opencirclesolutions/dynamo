@@ -18,6 +18,8 @@ import java.text.DecimalFormatSymbols;
 import java.util.Calendar;
 import java.util.Locale;
 
+import javax.persistence.OptimisticLockException;
+
 import junitx.util.PrivateAccessor;
 
 import org.junit.Assert;
@@ -33,6 +35,8 @@ import com.ocs.dynamo.domain.TestEntity2;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.domain.model.impl.EntityModelFactoryImpl;
+import com.ocs.dynamo.exception.OCSRuntimeException;
+import com.ocs.dynamo.exception.OCSValidationException;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.test.BaseMockitoTest;
 import com.ocs.dynamo.test.MockUtil;
@@ -141,6 +145,14 @@ public class BaseCustomComponentTest extends BaseMockitoTest {
         // boolean with overwritten value
         label = (Label) component.constructLabel(e, model.getAttributeModel("someBoolean2"));
         Assert.assertEquals("On", label.getValue());
+    }
+
+    @Test
+    public void testHandleSaveException() {
+        component.handleSaveException(new OCSValidationException("Some error"));
+        component.handleSaveException(new OCSRuntimeException("Some error"));
+        component.handleSaveException(new OptimisticLockException());
+        component.handleSaveException(new RuntimeException());
     }
 
 }

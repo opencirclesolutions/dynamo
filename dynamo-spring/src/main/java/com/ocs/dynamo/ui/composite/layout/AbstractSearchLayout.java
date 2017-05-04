@@ -17,6 +17,8 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.commons.lang.ObjectUtils;
+
 import com.google.common.collect.Lists;
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.dao.query.FetchJoinInformation;
@@ -120,6 +122,8 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
      * The layout that contains the search results table
      */
     private VerticalLayout searchResultsLayout;
+    
+
 
     /**
      * Constructor
@@ -601,6 +605,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
             if (id != null) {
                 T next = getService().fetchById(id, getDetailJoinsFallBack());
                 getTableWrapper().getTable().select(next.getId());
+                afterEntitySelected(getEditForm(), next);
                 return next;
             }
         }
@@ -621,6 +626,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
             if (id != null) {
                 T prev = getService().fetchById(id, getDetailJoinsFallBack());
                 getTableWrapper().getTable().select(prev.getId());
+                afterEntitySelected(getEditForm(), prev);
                 return prev;
             }
         }
@@ -845,6 +851,10 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
      */
     public void validateBeforeSearch() {
         // overwrite in subclasses
+    }
+    
+    public boolean isInSearchMode() {
+        return ObjectUtils.equals(getCompositionRoot(), mainSearchLayout);
     }
 
 }

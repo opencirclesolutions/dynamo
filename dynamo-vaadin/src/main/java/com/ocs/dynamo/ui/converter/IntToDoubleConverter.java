@@ -17,6 +17,12 @@ import java.util.Locale;
 
 import com.vaadin.data.util.converter.Converter;
 
+/**
+ * Converter for converting between integers and doubles - used to be able to use
+ * 
+ * @author bas.rutten
+ *
+ */
 public class IntToDoubleConverter implements Converter<Double, Integer> {
 
 	private static final long serialVersionUID = -7643776654167662622L;

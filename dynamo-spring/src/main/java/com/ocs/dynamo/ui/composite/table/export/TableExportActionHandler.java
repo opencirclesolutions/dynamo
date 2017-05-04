@@ -20,12 +20,12 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
@@ -296,14 +296,25 @@ public class TableExportActionHandler implements Handler {
 
         private CellStyle bigDecimalStyle;
 
+        /**
+         * Style for (integer) numbers cells
+         */
         private CellStyle numberStyle;
 
+        /**
+         * Style for (percentage) integer numbers cells
+         */
+        private CellStyle numberPercentageStyle;
+
+        /**
+         * Style for normal (text) cells
+         */
         private CellStyle normal;
 
         /**
-         * Does the totals row contains percentages
+         * Map to keep track of which total rows contain percentages
          */
-        private boolean totalsRowPercentage;
+        private Map<Integer, Boolean> percentages = new HashMap<>();
 
         /**
          * Constructor
@@ -315,39 +326,29 @@ public class TableExportActionHandler implements Handler {
                     null, TableExportActionHandler.this.totalsRow);
 
             DataFormat format = workbook.createDataFormat();
-
-            // create the cell styles only once- this is a huge performance
-            // gain!
             numberStyle = workbook.createCellStyle();
             numberStyle.setAlignment(CellStyle.ALIGN_RIGHT);
-            numberStyle.setBorderBottom(CellStyle.BORDER_THIN);
-            numberStyle.setBorderTop(CellStyle.BORDER_THIN);
-            numberStyle.setBorderLeft(CellStyle.BORDER_THIN);
-            numberStyle.setBorderRight(CellStyle.BORDER_THIN);
+            addBorder(numberStyle);
             numberStyle.setDataFormat(format.getFormat("#,#"));
+
+            numberPercentageStyle = workbook.createCellStyle();
+            numberPercentageStyle.setAlignment(CellStyle.ALIGN_RIGHT);
+            addBorder(numberPercentageStyle);
+            numberPercentageStyle.setDataFormat(format.getFormat("#,#%"));
 
             bigDecimalStyle = workbook.createCellStyle();
             bigDecimalStyle.setAlignment(CellStyle.ALIGN_RIGHT);
-            bigDecimalStyle.setBorderBottom(CellStyle.BORDER_THIN);
-            bigDecimalStyle.setBorderTop(CellStyle.BORDER_THIN);
-            bigDecimalStyle.setBorderLeft(CellStyle.BORDER_THIN);
-            bigDecimalStyle.setBorderRight(CellStyle.BORDER_THIN);
+            addBorder(bigDecimalStyle);
             bigDecimalStyle.setDataFormat(format.getFormat("#,##0.00"));
 
             bigDecimalPercentageStyle = workbook.createCellStyle();
             bigDecimalPercentageStyle.setAlignment(CellStyle.ALIGN_RIGHT);
-            bigDecimalPercentageStyle.setBorderBottom(CellStyle.BORDER_THIN);
-            bigDecimalPercentageStyle.setBorderTop(CellStyle.BORDER_THIN);
-            bigDecimalPercentageStyle.setBorderLeft(CellStyle.BORDER_THIN);
-            bigDecimalPercentageStyle.setBorderRight(CellStyle.BORDER_THIN);
+            addBorder(bigDecimalPercentageStyle);
             bigDecimalPercentageStyle.setDataFormat(format.getFormat("#,##0.00%"));
 
             normal = workbook.createCellStyle();
             normal.setAlignment(CellStyle.ALIGN_LEFT);
-            normal.setBorderBottom(CellStyle.BORDER_THIN);
-            normal.setBorderTop(CellStyle.BORDER_THIN);
-            normal.setBorderLeft(CellStyle.BORDER_THIN);
-            normal.setBorderRight(CellStyle.BORDER_THIN);
+            addBorder(normal);
         }
 
         /**
@@ -385,6 +386,8 @@ public class TableExportActionHandler implements Handler {
 
                 if (value != null) {
                     AttributeModel am = findAttributeModel(propId);
+                    boolean isPercentage = am != null && am.isPercentage();
+
                     // custom formatting for certain cells
                     if (cellStyleGenerator != null) {
                         custom = cellStyleGenerator.getCustomCellStyle(workbook, item, rootItemId, propId, value, am);
@@ -393,24 +396,27 @@ public class TableExportActionHandler implements Handler {
                     // for numbers we do not use the default formatting since
                     // that would produce strings and we
                     // want actual numerical values!
-                    if (value instanceof Integer || value instanceof Long) {
-                        sheetCell.setCellValue(((Number) value).doubleValue());
-                        standard = numberStyle;
-                    } else if (value instanceof BigDecimal) {
-                        boolean isPercentage = am != null && am.isPercentage();
+                    if (NumberUtils.isLong(value) || NumberUtils.isInteger(value)) {
                         if (isPercentage) {
-                            // percentages in the application are just numbers,
-                            // but in Excel they are fractions that
-                            // are displayed as percentages -> so, divide by 100
-                            double temp = convertPercentageValue(am, value);
-                            sheetCell.setCellValue(temp);
+                            sheetCell.setCellValue(toPercentageValue(am, value));
+                            standard = numberPercentageStyle;
+                            percentages.put(col, true);
+                        } else {
+                            standard = numberStyle;
+                            sheetCell.setCellValue(((Number) value).doubleValue());
+                            percentages.put(col, false);
+                        }
+                    } else if (value instanceof BigDecimal) {
+                        if (isPercentage) {
+                            sheetCell.setCellValue(toPercentageValue(am, value));
                             standard = bigDecimalPercentageStyle;
-                            totalsRowPercentage = true;
+                            percentages.put(col, true);
                         } else {
                             // just display as a number
                             sheetCell.setCellValue(
                                     ((BigDecimal) value).setScale(SCALE, RoundingMode.HALF_UP).doubleValue());
                             standard = bigDecimalStyle;
+                            percentages.put(col, false);
                         }
                     } else if (am != null) {
                         // if it's an actual model attribute, then defer to the
@@ -435,6 +441,19 @@ public class TableExportActionHandler implements Handler {
                     sheetCell.setCellStyle(standard);
                 }
             }
+        }
+
+        /**
+         * Adds a border to a cell style
+         * 
+         * @param style
+         *            the cell style
+         */
+        private void addBorder(CellStyle style) {
+            style.setBorderBottom(CellStyle.BORDER_THIN);
+            style.setBorderTop(CellStyle.BORDER_THIN);
+            style.setBorderLeft(CellStyle.BORDER_THIN);
+            style.setBorderRight(CellStyle.BORDER_THIN);
         }
 
         /**
@@ -488,7 +507,12 @@ public class TableExportActionHandler implements Handler {
         }
 
         /**
+         * Adds a hierarchical data row
          * 
+         * @param sheetToAddTo
+         *            the sheet to add the row to
+         * @param row
+         *            the row
          */
         @Override
         protected int addHierarchicalDataRows(final Sheet sheetToAddTo, final int row) {
@@ -526,14 +550,13 @@ public class TableExportActionHandler implements Handler {
                     final Short poiAlignment = getTableHolder().getCellAlignment(propId);
                     CellUtil.setAlignment(cell, workbook, poiAlignment);
                     final Class<?> propType = getPropertyType(propId);
-                    if (isNumeric(propType)) {
-
-                        if (Integer.class.equals(propType)) {
-                            cell.setCellStyle(numberStyle);
+                    if (NumberUtils.isNumeric(propType)) {
+                        boolean perc = Boolean.TRUE.equals(percentages.get(col));
+                        if (NumberUtils.isInteger(propType) || NumberUtils.isLong(propType)) {
+                            cell.setCellStyle(perc ? numberPercentageStyle : numberStyle);
                         } else if (BigDecimal.class.equals(propType)) {
-                            cell.setCellStyle(isTotalsRowPercentage() ? bigDecimalPercentageStyle : bigDecimalStyle);
+                            cell.setCellStyle(perc ? bigDecimalPercentageStyle : bigDecimalStyle);
                         }
-
                         cra = new CellRangeAddress(startRow, currentRow - 1, col, col);
                         if (isHierarchical()) {
                             // 9 & 109 are for sum. 9 means include hidden
@@ -558,8 +581,23 @@ public class TableExportActionHandler implements Handler {
             }
         }
 
-        private double convertPercentageValue(AttributeModel am, Object value) {
-            return ((BigDecimal) value).divide(HUNDRED, DynamoConstants.INTERMEDIATE_PRECISION, RoundingMode.HALF_UP)
+        /**
+         * Converts a value to a percentage (basically divide it by 100)
+         * 
+         * @param am
+         *            the attribute model for the value to converter
+         * @param value
+         *            the value to convert - must be a number
+         * @return
+         */
+        private double toPercentageValue(AttributeModel am, Object value) {
+            BigDecimal bd = null;
+            if (value instanceof BigDecimal) {
+                bd = (BigDecimal) value;
+            } else {
+                bd = BigDecimal.valueOf(((Number) value).doubleValue());
+            }
+            return bd.divide(HUNDRED, DynamoConstants.INTERMEDIATE_PRECISION, RoundingMode.HALF_UP)
                     .setScale(am.getPrecision() + 2, RoundingMode.HALF_UP).doubleValue();
         }
 
@@ -613,32 +651,13 @@ public class TableExportActionHandler implements Handler {
         @Override
         public List<Object> getPropIds() {
             if (columnIds != null) {
-                List<Object> result = new ArrayList<>();
-                for (String s : columnIds) {
-                    result.add(s);
-                }
-                return result;
+                return columnIds.stream().collect(Collectors.toList());
             }
-
             return super.getPropIds();
-        }
-
-        /**
-         * Is the property a numeric property
-         * 
-         * @param propType
-         * @return
-         */
-        private boolean isNumeric(Class<?> propType) {
-            return Number.class.isAssignableFrom(propType);
         }
 
         private boolean isStreaming() {
             return workbook instanceof SXSSFWorkbook;
-        }
-
-        private boolean isTotalsRowPercentage() {
-            return totalsRowPercentage;
         }
 
         /**
@@ -809,11 +828,9 @@ public class TableExportActionHandler implements Handler {
         for (Column c : grid.getColumns()) {
             Object oid = c.getPropertyId();
 
-            // StringBuilder caption = new StringBuilder();
             List<String> caption = new ArrayList<>();
             for (int i = 0; i < grid.getHeaderRowCount(); i++) {
                 HeaderRow r = grid.getHeaderRow(i);
-
                 try {
                     caption.add(r.getCell(oid).getText());
                 } catch (Exception ex) {
@@ -842,7 +859,7 @@ public class TableExportActionHandler implements Handler {
             int p = prop.indexOf('_');
             String pString = p >= 0 ? prop.substring(p + 1) : prop;
             return entityModels.stream().filter(em -> em.getAttributeModel(pString) != null)
-                    .map(em -> em.getAttributeModel(pString)).findFirst().get();
+                    .map(em -> em.getAttributeModel(pString)).findFirst().orElse(null);
         }
         return null;
     }

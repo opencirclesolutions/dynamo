@@ -195,7 +195,6 @@ public final class VaadinUtils {
      *            the ID of the entity
      * @return
      */
-    @SuppressWarnings("unchecked")
     public static <ID, T> T getEntityFromContainer(Container container, ID id) {
         Object obj = container.getItem(id);
         return getEntityFromItem(obj);
@@ -405,8 +404,8 @@ public final class VaadinUtils {
      *            the value to convert
      * @return
      */
-    public static String integerToString(boolean grouping, Integer value) {
-        return integerToString(grouping, value, getLocale());
+    public static String integerToString(boolean grouping, boolean percentage, Integer value) {
+        return integerToString(grouping, percentage, value, getLocale());
     }
 
     /**
@@ -420,8 +419,8 @@ public final class VaadinUtils {
      *            the locale
      * @return
      */
-    public static String integerToString(boolean grouping, Integer value, Locale locale) {
-        StringToIntegerConverter converter = ConverterFactory.createIntegerConverter(grouping);
+    public static String integerToString(boolean grouping, boolean percentage, Integer value, Locale locale) {
+        StringToIntegerConverter converter = ConverterFactory.createIntegerConverter(grouping, percentage);
         return converter.convertToPresentation(value, String.class, locale);
     }
 
@@ -434,8 +433,8 @@ public final class VaadinUtils {
      *            the value to convert
      * @return
      */
-    public static String longToString(boolean grouping, Long value) {
-        return longToString(grouping, value, getLocale());
+    public static String longToString(boolean grouping, boolean percentage, Long value) {
+        return longToString(grouping, percentage, value, getLocale());
     }
 
     /**
@@ -449,8 +448,8 @@ public final class VaadinUtils {
      *            the locale
      * @return
      */
-    public static String longToString(boolean grouping, Long value, Locale locale) {
-        StringToLongConverter converter = ConverterFactory.createLongConverter(grouping);
+    public static String longToString(boolean grouping, boolean percentage, Long value, Locale locale) {
+        StringToLongConverter converter = ConverterFactory.createLongConverter(grouping, percentage);
         return converter.convertToPresentation(value, String.class, locale);
     }
 
@@ -556,7 +555,7 @@ public final class VaadinUtils {
      * @return
      */
     public static Integer stringToInteger(boolean grouping, String value, Locale locale) {
-        StringToIntegerConverter converter = ConverterFactory.createIntegerConverter(grouping);
+        StringToIntegerConverter converter = ConverterFactory.createIntegerConverter(grouping, false);
         return converter.convertToModel(value, Integer.class, locale);
     }
 
@@ -570,7 +569,7 @@ public final class VaadinUtils {
      * @return
      */
     public static Long stringToLong(boolean grouping, String value) {
-        StringToLongConverter converter = ConverterFactory.createLongConverter(grouping);
+        StringToLongConverter converter = ConverterFactory.createLongConverter(grouping, false);
         return converter.convertToModel(value, Long.class, getLocale());
     }
 
@@ -586,7 +585,7 @@ public final class VaadinUtils {
      * @return
      */
     public static Long stringToLong(boolean grouping, String value, Locale locale) {
-        StringToLongConverter converter = ConverterFactory.createLongConverter(grouping);
+        StringToLongConverter converter = ConverterFactory.createLongConverter(grouping, false);
         return converter.convertToModel(value, Long.class, locale);
     }
 

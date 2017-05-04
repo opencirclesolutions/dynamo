@@ -13,16 +13,17 @@
  */
 package com.ocs.dynamo.ui.composite.form;
 
+import java.util.Set;
+
+import org.junit.Assert;
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.google.common.collect.Sets;
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.test.BaseIntegrationTest;
-import org.junit.Assert;
-import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.Set;
 
 public class CollectionTableTest extends BaseIntegrationTest {
 

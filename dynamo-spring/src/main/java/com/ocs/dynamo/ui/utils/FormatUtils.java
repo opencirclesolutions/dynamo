@@ -37,6 +37,7 @@ import com.ocs.dynamo.ui.container.hierarchical.ModelBasedHierarchicalContainer;
 import com.ocs.dynamo.ui.container.hierarchical.ModelBasedHierarchicalContainer.ModelBasedHierarchicalDefinition;
 import com.ocs.dynamo.utils.ClassUtils;
 import com.ocs.dynamo.utils.DateUtils;
+import com.ocs.dynamo.utils.NumberUtils;
 import com.vaadin.data.Property;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.UI;
@@ -51,6 +52,10 @@ public final class FormatUtils {
 
     private static MessageService messageService = ServiceLocator.getMessageService();
 
+    private FormatUtils() {
+        // private constructor
+    }
+    
     /**
      * Formats a collection of entities (turns it into a comma-separated string based on the value
      * of the "displayProperty")
@@ -214,7 +219,7 @@ public final class FormatUtils {
                 String cs = TableUtils.getCurrencySymbol(table);
                 return VaadinUtils.bigDecimalToString(model.isCurrency(), model.isPercentage(),
                         model.isUseThousandsGrouping(), model.getPrecision(), (BigDecimal) value, locale, cs);
-            } else if (Number.class.isAssignableFrom(model.getType())) {
+            } else if (NumberUtils.isNumeric(model.getType())) {
                 // generic functionality for all other numbers
                 return VaadinUtils.numberToString(model, model.getType(), value, model.isUseThousandsGrouping(),
                         locale);
@@ -268,8 +273,6 @@ public final class FormatUtils {
         return input;
     }
 
-    private FormatUtils() {
-        // private constructor
-    }
+
 
 }

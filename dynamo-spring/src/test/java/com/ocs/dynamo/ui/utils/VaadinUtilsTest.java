@@ -108,16 +108,17 @@ public class VaadinUtilsTest extends BaseMockitoTest {
 
     @Test
     public void testIntegerToString() {
-        Assert.assertEquals("123.456", VaadinUtils.integerToString(true, 123456, LOCALE));
-        Assert.assertEquals("123456", VaadinUtils.integerToString(false, 123456, LOCALE));
-        Assert.assertEquals("123,456", VaadinUtils.integerToString(true, 123456, Locale.US));
+        Assert.assertEquals("123.456", VaadinUtils.integerToString(true, false, 123456, LOCALE));
+        Assert.assertEquals("123456", VaadinUtils.integerToString(false, false, 123456, LOCALE));
+        Assert.assertEquals("123,456", VaadinUtils.integerToString(true, false, 123456, Locale.US));
+        Assert.assertEquals("123,456%", VaadinUtils.integerToString(true, true, 123456, Locale.US));
     }
 
     @Test
     public void testLongToString() {
-        Assert.assertEquals("123.456", VaadinUtils.longToString(true, 123456L, LOCALE));
-        Assert.assertEquals("123456", VaadinUtils.longToString(false, 123456L, LOCALE));
-        Assert.assertEquals("123,456", VaadinUtils.longToString(true, 123456L, Locale.US));
+        Assert.assertEquals("123.456", VaadinUtils.longToString(true, false, 123456L, LOCALE));
+        Assert.assertEquals("123456", VaadinUtils.longToString(false, false, 123456L, LOCALE));
+        Assert.assertEquals("123,456", VaadinUtils.longToString(true, false, 123456L, Locale.US));
     }
 
     @Test

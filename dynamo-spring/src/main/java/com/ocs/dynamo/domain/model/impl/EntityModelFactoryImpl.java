@@ -106,6 +106,12 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 
     private ConcurrentMap<String, Class<?>> alreadyProcessed = new ConcurrentHashMap<>();
 
+    private void checkWeekSettingAllowed(AttributeModel model) {
+        if (!Date.class.equals(model.getType()) && !LocalDate.class.equals(model.getType())) {
+            throw new OCSRuntimeException("'Week' setting only allowed for attributes of type Date and LocalDate");
+        }
+    }
+
     /**
      * Constructs an attribute model for a property
      * 
@@ -849,6 +855,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
             }
 
             if (attribute.week()) {
+                checkWeekSettingAllowed(model);
                 model.setWeek(true);
             }
 
@@ -1120,6 +1127,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 
         msg = getAttributeMessage(entityModel, model, EntityModel.WEEK);
         if (!StringUtils.isEmpty(msg)) {
+            checkWeekSettingAllowed(model);
             model.setWeek(Boolean.valueOf(msg));
         }
 

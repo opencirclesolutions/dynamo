@@ -28,8 +28,6 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 
-import au.com.bytecode.opencsv.CSVWriter;
-
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.dao.SortOrder;
 import com.ocs.dynamo.dao.query.DataSetIterator;
@@ -39,6 +37,8 @@ import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.filter.Filter;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
+
+import au.com.bytecode.opencsv.CSVWriter;
 
 /**
  * Base class for template classes for exporting pivoted data
@@ -175,7 +175,7 @@ public abstract class ExportPivotTemplate<ID extends Serializable, T extends Abs
 							rowSum += ((BigDecimal) value).intValue();
 							rowAverage = rowAverage.add((BigDecimal) value);
 						} else {
-							row.add(VaadinUtils.integerToString(true, (Integer) value));
+							row.add(VaadinUtils.integerToString(true, false, (Integer) value));
 							rowSum += (Integer) value;
 							rowAverage = rowAverage.add(BigDecimal.valueOf((Integer) value));
 						}
@@ -428,7 +428,7 @@ public abstract class ExportPivotTemplate<ID extends Serializable, T extends Abs
 	private void writeCsvRow(CSVWriter writer, List<String> row, Integer rowSum, BigDecimal rowAverage, int valueCount) {
 		if (!row.isEmpty()) {
 			if (createSumColumn()) {
-				row.add(VaadinUtils.integerToString(true, rowSum));
+				row.add(VaadinUtils.integerToString(true, false, rowSum));
 			} else if (createAveragesColumn() && valueCount > 0) {
 				BigDecimal avg = rowAverage.divide(new BigDecimal(valueCount));
 				String s = VaadinUtils.bigDecimalToString(usePercentages(), true, avg);

@@ -15,7 +15,9 @@ package com.ocs.dynamo.ui.composite.table;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.vaadin.addons.lazyquerycontainer.LazyQueryContainer;
 
@@ -250,7 +252,6 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
                 }
             }
         }
-
         this.setVisibleColumns(propertyNames.toArray());
         this.setColumnHeaders(headerNames.toArray(new String[0]));
     }
@@ -305,21 +306,13 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
      */
     public void setColumnVisible(Object propertyId, boolean visible) {
         Object[] visibleCols = getVisibleColumns();
-        List<Object> temp = new ArrayList<>();
-
-        boolean alreadyVisible = false;
-        for (Object o : visibleCols) {
-            if (!o.equals(propertyId) || visible) {
-                temp.add(o);
-            }
-            alreadyVisible |= o.equals(propertyId);
-        }
+        List<Object> temp = Arrays.stream(visibleCols).filter(c -> !c.equals(propertyId)).collect(Collectors.toList());
+        boolean alreadyVisible = Arrays.stream(visibleCols).anyMatch(c -> c.equals(propertyId));
 
         // add column if not already visible
-        if (!alreadyVisible && visible) {
+        if (!alreadyVisible || visible) {
             temp.add(propertyId);
         }
-
         setVisibleColumns(temp.toArray(new Object[0]));
     }
 

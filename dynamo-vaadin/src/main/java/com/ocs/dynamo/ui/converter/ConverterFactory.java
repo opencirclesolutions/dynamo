@@ -50,8 +50,7 @@ public final class ConverterFactory {
             boolean useGrouping, int precision, String currencySymbol) {
         if (currency) {
             return new CurrencyBigDecimalConverter(precision, useGrouping, currencySymbol);
-        }
-        if (percentage) {
+        } else if (percentage) {
             return new PercentageBigDecimalConverter(precision, useGrouping);
         }
         return new BigDecimalConverter(precision, useGrouping);
@@ -70,9 +69,9 @@ public final class ConverterFactory {
     public static <T> Converter<String, T> createConverterFor(Class<T> clazz, AttributeModel attributeModel,
             boolean grouping) {
         if (clazz.equals(Integer.class) || clazz.equals(int.class)) {
-            return (Converter<String, T>) createIntegerConverter(grouping);
+            return (Converter<String, T>) createIntegerConverter(grouping, attributeModel.isPercentage());
         } else if (clazz.equals(Long.class) || clazz.equals(long.class)) {
-            return (Converter<String, T>) createLongConverter(grouping);
+            return (Converter<String, T>) createLongConverter(grouping, attributeModel.isPercentage());
         } else if (clazz.equals(BigDecimal.class)) {
             return (Converter<String, T>) createBigDecimalConverter(attributeModel.isCurrency(),
                     attributeModel.isPercentage(), grouping, attributeModel.getPrecision(),
@@ -107,8 +106,9 @@ public final class ConverterFactory {
      *            whether to use the thousands grouping separator
      * @return
      */
-    public static StringToIntegerConverter createIntegerConverter(boolean useGrouping) {
-        return new GroupingStringToIntegerConverter(useGrouping);
+    public static StringToIntegerConverter createIntegerConverter(boolean useGrouping, boolean percentage) {
+        return percentage ? new PercentageIntegerConverter(useGrouping)
+                : new GroupingStringToIntegerConverter(useGrouping);
     }
 
     public static LocalDateToDateConverter createLocalDateConverter() {
@@ -127,10 +127,13 @@ public final class ConverterFactory {
      * Creates a converter for converting between long and String
      * 
      * @param useGrouping
+     *            whether to use a grouping
+     * @param percentage
+     *            whether to include a percentage sign
      * @return
      */
-    public static StringToLongConverter createLongConverter(boolean useGrouping) {
-        return new GroupingStringToLongConverter(useGrouping);
+    public static StringToLongConverter createLongConverter(boolean useGrouping, boolean percentage) {
+        return percentage ? new PercentageLongConverter(useGrouping) : new GroupingStringToLongConverter(useGrouping);
     }
 
 }

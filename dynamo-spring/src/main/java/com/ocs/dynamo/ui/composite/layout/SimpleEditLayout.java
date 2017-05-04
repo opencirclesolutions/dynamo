@@ -145,7 +145,6 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
             // there is just one component here, so the screen mode is always
             // vertical
             getFormOptions().setScreenMode(ScreenMode.VERTICAL);
-
             editForm = new ModelBasedEditForm<ID, T>(entity, getService(), getEntityModel(), getFormOptions(),
                     fieldFilters) {
                 @Override
@@ -309,6 +308,18 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
         // overwrite in subclass
     }
 
+    /**
+     * Refreshes the contents of a label
+     * 
+     * @param propertyName
+     *            the name of the property for which to refresh the label
+     */
+    public void refreshLabel(String propertyName) {
+        if (editForm != null) {
+            editForm.refreshLabel(propertyName);
+        }
+    }
+
     @Override
     public void reload() {
 
@@ -324,15 +335,10 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
     }
 
     /**
-     * Refreshes the contents of a label
-     * 
-     * @param propertyName
-     *            the name of the property for which to refresh the label
+     * Resets the tab component (if any) to its first sheet
      */
-    public void refreshLabel(String propertyName) {
-        if (editForm != null) {
-            editForm.refreshLabel(propertyName);
-        }
+    public void resetTab() {
+        editForm.resetTab();
     }
 
     /**
@@ -356,13 +362,6 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 
     public void setJoins(FetchJoinInformation[] joins) {
         this.joins = joins;
-    }
-
-    /**
-     * Resets the tab component (if any) to its first sheet
-     */
-    public void resetTab() {
-        editForm.resetTab();
     }
 
 }

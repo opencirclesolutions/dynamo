@@ -191,8 +191,8 @@ public class CollectionTable<T extends Serializable> extends CustomField<Collect
     @SuppressWarnings("unchecked")
     private Set<T> extractValues() {
         Set<T> set = new HashSet<>();
-        table.getItemIds().stream().map(o -> table.getItem(o).getItemProperty(VALUE).getValue()).filter(Objects::nonNull)
-                .forEach(t -> set.add((T) t));
+        table.getItemIds().stream().map(o -> table.getItem(o).getItemProperty(VALUE).getValue())
+                .filter(Objects::nonNull).forEach(t -> set.add((T) t));
         return set;
     }
 
