@@ -13,22 +13,22 @@
  */
 package com.ocs.dynamo.ui.component;
 
-import java.text.DateFormat;
-import java.util.Date;
-import java.util.Locale;
-
-import com.vaadin.data.Property;
 import com.vaadin.shared.ui.datefield.Resolution;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.NativeSelect;
 
+import java.text.DateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 /**
  * A custom field for displaying a time - renders an hour combo box and a minute combo box
  * 
  * @author bas.rutten
  */
+//TODO java.util.Date -> java.time.LocalDateTime
 public class TimeField extends CustomField<Date> {
 
 	private static final long serialVersionUID = -676425827861766118L;
@@ -74,18 +74,12 @@ public class TimeField extends CustomField<Date> {
 		root.addComponent(secondSelect);
 
 		// when setValue() is called, update selects
-		addValueChangeListener(new Property.ValueChangeListener() {
-
-			private static final long serialVersionUID = 3383351188340627219L;
-
-			@Override
-			public void valueChange(Property.ValueChangeEvent event) {
-				if (maskInternalValueChange) {
-					return;
-				}
-				updateFields();
-			}
-		});
+		addValueChangeListener((ValueChangeListener) event -> {
+            if (maskInternalValueChange) {
+                return;
+            }
+            updateFields();
+        });
 
 		addStyleName("timefield");
 		setSizeUndefined();
@@ -193,22 +187,16 @@ public class TimeField extends CustomField<Date> {
 		NativeSelect select = new NativeSelect();
 		select.setImmediate(true);
 		select.setNullSelectionAllowed(false);
-		select.addValueChangeListener(new Property.ValueChangeListener() {
+		select.addValueChangeListener((ValueChangeListener) event -> {
+            if (maskInternalValueChange) {
+                return;
+            }
+            maskInternalValueChange = true;
+            updateValue();
+            TimeField.this.fireValueChange(true);
+            maskInternalValueChange = false;
 
-			private static final long serialVersionUID = 3383351188340627219L;
-
-			@Override
-			public void valueChange(com.vaadin.data.Property.ValueChangeEvent event) {
-				if (maskInternalValueChange) {
-					return;
-				}
-				maskInternalValueChange = true;
-				updateValue();
-				TimeField.this.fireValueChange(true);
-				maskInternalValueChange = false;
-
-			}
-		});
+        });
 		return select;
 	}
 

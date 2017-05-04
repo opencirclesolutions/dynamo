@@ -13,6 +13,13 @@
  */
 package com.ocs.dynamo.ui.container.pivot;
 
+import com.vaadin.data.Container;
+import com.vaadin.data.Container.Indexed;
+import com.vaadin.data.Container.ItemSetChangeListener;
+import com.vaadin.data.Container.Sortable;
+import com.vaadin.data.Item;
+import com.vaadin.data.Property;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -21,13 +28,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import com.vaadin.data.Container;
-import com.vaadin.data.Container.Indexed;
-import com.vaadin.data.Container.ItemSetChangeListener;
-import com.vaadin.data.Container.Sortable;
-import com.vaadin.data.Item;
-import com.vaadin.data.Property;
 
 /**
  * This container pivots data using another container that actually provides the
@@ -84,25 +84,25 @@ public class PivotContainer implements Container, ItemSetChangeListener, Indexed
 	public PivotContainer(Container sourceContainer, Object columnPropertyId, Object rowPropertyId,
 			List<?> columnIds, List<String> pivotedColumnPostFixes, int rowCount) {
 		if (sourceContainer == null) {
-			throw new AssertionError("sourceContainer is mandatory");
+			throw new IllegalArgumentException("sourceContainer is mandatory");
 		}
 		if (!(sourceContainer instanceof Container.Indexed)) {
-			throw new AssertionError("sourceContainer must implement Container.Indexed");
+			throw new IllegalArgumentException("sourceContainer must implement Container.Indexed");
 		}
 		if (columnPropertyId == null) {
-			throw new AssertionError("columnPropertyId is mandatory");
+			throw new IllegalArgumentException("columnPropertyId is mandatory");
 		}
 		if (rowPropertyId == null) {
-			throw new AssertionError("rowPropertyId is mandatory");
+			throw new IllegalArgumentException("rowPropertyId is mandatory");
 		}
 		if (columnIds == null) {
-			throw new AssertionError("columnIds is mandatory");
+			throw new IllegalArgumentException("columnIds is mandatory");
 		}
 		if (columnIds.isEmpty()) {
-			throw new AssertionError("columnIds size must be > 0");
+			throw new IllegalArgumentException("columnIds size must be > 0");
 		}
 		if (rowCount < 0) {
-			throw new AssertionError("rowCount must be >=0");
+			throw new IllegalArgumentException("rowCount must be >=0");
 		}
 		this.sourceContainer = sourceContainer;
 		this.columnPropertyId = columnPropertyId;

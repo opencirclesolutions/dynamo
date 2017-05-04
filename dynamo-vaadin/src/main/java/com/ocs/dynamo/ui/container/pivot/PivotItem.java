@@ -13,13 +13,13 @@
  */
 package com.ocs.dynamo.ui.container.pivot;
 
-import java.util.Collection;
-import java.util.Map;
-
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.ObjectProperty;
+
+import java.util.Collection;
+import java.util.Map;
 
 /**
  * @author Patrick Deenen
@@ -39,10 +39,10 @@ public class PivotItem implements Item {
 	 */
 	public PivotItem(Map<Object, Item> columns, PivotContainer pivotContainer) {
 		if (columns == null) {
-			throw new AssertionError("columns is mandatory");
+			throw new IllegalArgumentException("columns is mandatory");
 		}
 		if (pivotContainer == null) {
-			throw new AssertionError("pivotContainer is mandatory");
+			throw new IllegalArgumentException("pivotContainer is mandatory");
 		}
 		this.columns = columns;
 		this.pivotContainer = pivotContainer;

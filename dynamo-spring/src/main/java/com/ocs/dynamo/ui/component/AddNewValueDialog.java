@@ -88,7 +88,7 @@ public abstract class AddNewValueDialog<ID extends Serializable, T extends Abstr
 			Integer maxLength = entityModel.getAttributeModel(propName).getMaxLength();
 
 			if (maxLength != null && value.length() > maxLength) {
-				showNotifification(messageService.getMessage("ocs.value.too.long"), Notification.Type.ERROR_MESSAGE);
+				showNotification(messageService.getMessage("ocs.value.too.long"), Notification.Type.ERROR_MESSAGE);
 				return false;
 			}
 			ClassUtils.setFieldValue(t, propName, value);
@@ -99,10 +99,10 @@ public abstract class AddNewValueDialog<ID extends Serializable, T extends Abstr
 				return true;
 			} catch (OCSNonUniqueException ex) {
 				// not unique - produce warning
-				showNotifification(ex.getMessage(), Notification.Type.ERROR_MESSAGE);
+				showNotification(ex.getMessage(), Notification.Type.ERROR_MESSAGE);
 			}
 		} else {
-			showNotifification(messageService.getMessage("ocs.value.required"), Notification.Type.ERROR_MESSAGE);
+			showNotification(messageService.getMessage("ocs.value.required"), Notification.Type.ERROR_MESSAGE);
 		}
 		return false;
 	}

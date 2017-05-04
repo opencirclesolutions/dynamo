@@ -198,15 +198,7 @@ public final class VaadinUtils {
     @SuppressWarnings("unchecked")
     public static <ID, T> T getEntityFromContainer(Container container, ID id) {
         Object obj = container.getItem(id);
-        if (obj instanceof CompositeItem) {
-            CompositeItem item = (CompositeItem) obj;
-            NestingBeanItem<T> bi = (NestingBeanItem<T>) item.getItem("bean");
-            return bi.getBean();
-        } else if (obj instanceof BeanItem) {
-            BeanItem<T> bi = (BeanItem<T>) obj;
-            return bi.getBean();
-        }
-        return null;
+        return getEntityFromItem(obj);
     }
 
     /**

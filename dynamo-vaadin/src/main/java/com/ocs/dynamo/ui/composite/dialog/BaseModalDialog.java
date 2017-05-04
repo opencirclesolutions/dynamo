@@ -40,12 +40,6 @@ public abstract class BaseModalDialog extends Window implements Buildable {
 
 	private static final long serialVersionUID = -2265149201475495504L;
 
-	/**
-	 * Constructor
-	 */
-	public BaseModalDialog() {
-	}
-
 	@Override
 	public void build() {
 		constructLayout();
@@ -108,7 +102,7 @@ public abstract class BaseModalDialog extends Window implements Buildable {
 	 * @param type
 	 *            the type of the message
 	 */
-	protected void showNotifification(String message, Notification.Type type) {
+	protected void showNotification(String message, Notification.Type type) {
 		if (Page.getCurrent() != null) {
 			Notification.show(message, type);
 		} else {

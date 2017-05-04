@@ -69,7 +69,7 @@ public abstract class AbstractEntity<ID> implements Serializable {
         if (this == obj) {
             return true;
         }
-        if (obj == null || !this.getClass().isAssignableFrom(obj.getClass())) {
+            if (obj == null || !this.getClass().isAssignableFrom(obj.getClass())) {
             return false;
         }
 
