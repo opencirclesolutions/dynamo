@@ -454,6 +454,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
             options.setPreserveSelectedTab(getFormOptions().isPreserveSelectedTab());
             options.setShowNextButton(getFormOptions().isShowNextButton());
             options.setShowPrevButton(getFormOptions().isShowPrevButton());
+            options.setPlaceButtonBarAtTop(getFormOptions().isPlaceButtonBarAtTop());
 
             if (getFormOptions().isShowEditButton()) {
                 // editing in form must be possible

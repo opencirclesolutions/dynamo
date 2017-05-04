@@ -549,7 +549,13 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
         HorizontalLayout buttonBar = constructButtonBar();
         buttonBar.setSizeUndefined();
-        titleBars.get(isViewMode()).addComponent(buttonBar);
+
+        if(getFormOptions().isPlaceButtonBarAtTop()) {
+            layout.addComponent(buttonBar);
+        } else {
+            titleBars.get(isViewMode()).addComponent(buttonBar);
+        }
+
         layout.addComponent(titleBars.get(isViewMode()));
 
         Layout form = null;
