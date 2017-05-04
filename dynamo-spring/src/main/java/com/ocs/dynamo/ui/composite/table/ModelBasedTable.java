@@ -29,6 +29,7 @@ import com.ocs.dynamo.ui.ServiceLocator;
 import com.ocs.dynamo.ui.component.URLField;
 import com.ocs.dynamo.ui.composite.table.export.TableExportActionHandler;
 import com.ocs.dynamo.ui.composite.table.export.TableExportMode;
+import com.ocs.dynamo.ui.utils.FormatUtils;
 import com.vaadin.data.Container;
 import com.vaadin.data.Property;
 import com.vaadin.ui.Table;
@@ -210,8 +211,7 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
      */
     @Override
     protected String formatPropertyValue(Object rowId, Object colId, Property<?> property) {
-        String result = TableUtils.formatPropertyValue(this, entityModelFactory, entityModel, messageService, rowId,
-                colId, property);
+        String result = FormatUtils.formatPropertyValue(this, entityModelFactory, entityModel, rowId, colId, property);
         if (result != null) {
             return result;
         }

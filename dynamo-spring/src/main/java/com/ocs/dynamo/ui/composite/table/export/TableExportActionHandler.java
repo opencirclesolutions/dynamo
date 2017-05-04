@@ -13,7 +13,34 @@
  */
 package com.ocs.dynamo.ui.composite.table.export;
 
-import au.com.bytecode.opencsv.CSVWriter;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.log4j.Logger;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.DataFormat;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.ss.util.CellUtil;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
@@ -21,8 +48,9 @@ import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.ui.ServiceLocator;
 import com.ocs.dynamo.ui.composite.table.ModelBasedTreeTable;
-import com.ocs.dynamo.ui.composite.table.TableUtils;
 import com.ocs.dynamo.ui.container.hierarchical.ModelBasedHierarchicalContainer;
+import com.ocs.dynamo.ui.utils.FormatUtils;
+import com.ocs.dynamo.utils.DateUtils;
 import com.ocs.dynamo.utils.NumberUtils;
 import com.ocs.dynamo.utils.StringUtil;
 import com.ocs.dynamo.utils.SystemPropertyUtils;
@@ -40,31 +68,8 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TreeTable;
 import com.vaadin.ui.UI;
-import org.apache.commons.io.FileUtils;
-import org.apache.log4j.Logger;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.DataFormat;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.util.CellRangeAddress;
-import org.apache.poi.ss.util.CellUtil;
-import org.apache.poi.xssf.streaming.SXSSFWorkbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
+import au.com.bytecode.opencsv.CSVWriter;
 
 /**
  * Action Handler which adds export functionality to a table.
@@ -73,8 +78,6 @@ import java.util.List;
  *
  */
 public class TableExportActionHandler implements Handler {
-
-    private static final Logger LOG = Logger.getLogger(TableExportActionHandler.class);
 
     /**
      * A model-based export to CSV
@@ -107,45 +110,39 @@ public class TableExportActionHandler implements Handler {
         }
 
         /**
-         * Returns the property IDs that are to be included in the sheet. Overwritten so that grid
-         * properties are displayed in the correct order
+         * Adds a single data row
+         * 
+         * @param rootItemId
+         *            the ID of the item at the root of the row
          */
-        @Override
-        public List<Object> getPropIds() {
-            if (columnIds != null) {
-                List<Object> result = new ArrayList<>();
-                for (String s : columnIds) {
-                    result.add(s);
+        protected void addDataRow(Object rootItemId) {
+            List<Object> props = getPropIds();
+
+            Property<?> prop;
+            Object propId;
+            Object value;
+
+            Item item = container.getItem(rootItemId);
+            List<String> fields = new ArrayList<>();
+            for (Object prop1 : props) {
+                propId = prop1;
+                prop = getProperty(item, rootItemId, propId);
+                value = prop == null ? null : prop.getValue();
+                if (value != null) {
+                    AttributeModel am = findAttributeModel(propId);
+                    if (am != null) {
+                        value = FormatUtils.formatPropertyValue(entityModelFactory, am, value);
+                    }
+                    if (value instanceof String) {
+                        value = StringUtil.replaceHtmlBreaks(value.toString());
+                    } else {
+                        // apply default formatting for numbers
+                        value = NumberUtils.format(value);
+                    }
                 }
-                return result;
+                fields.add(value == null ? "" : value.toString());
             }
-            return super.getPropIds();
-        }
-
-        @Override
-        public void convertTable() {
-            out = new ByteArrayOutputStream();
-            writer = new CSVWriter(new OutputStreamWriter(out), SystemPropertyUtils.getExportCsvSeparator().charAt(0),
-                    SystemPropertyUtils.getExportCsvQuoteChar().charAt(0));
-            container = getTableHolder().getContainerDataSource();
-
-            addHeaderRow();
-            if (isHierarchical()) {
-                addHierarchicalDataRows();
-            } else {
-                addDataRows();
-            }
-        }
-
-        /**
-         * Adds a hierarchy of rows
-         */
-        protected void addHierarchicalDataRows() {
-            final Collection<?> roots;
-            roots = ((Container.Hierarchical) getTableHolder().getContainerDataSource()).rootItemIds();
-            for (Object rootId : roots) {
-                addDataRowRecursively(rootId);
-            }
+            writer.writeNext(fields.toArray(new String[0]));
         }
 
         /**
@@ -155,18 +152,19 @@ public class TableExportActionHandler implements Handler {
          *            the ID of the parent/root item
          */
         protected void addDataRowRecursively(Object rootItemId) {
-
-            // add the row itself
             addDataRow(rootItemId);
-
-            // iterate over the children
             if (container != null && ((Container.Hierarchical) container).hasChildren(rootItemId)) {
                 Collection<?> children = ((Container.Hierarchical) getTableHolder().getContainerDataSource())
                         .getChildren(rootItemId);
-                for (final Object child : children) {
-                    addDataRowRecursively(child);
-                }
+                children.forEach(c -> addDataRowRecursively(c));
             }
+        }
+
+        /**
+         * Iterates over the data rows and adds them to the export
+         */
+        protected void addDataRows() {
+            container.getItemIds().forEach(i -> addDataRow(i));
         }
 
         /**
@@ -184,56 +182,32 @@ public class TableExportActionHandler implements Handler {
         }
 
         /**
-         * Iterates over the data rows and adds them to the export
+         * Adds a hierarchy of rows
          */
-        protected void addDataRows() {
-            final Collection<?> itemIds = container.getItemIds();
-            for (final Object itemId : itemIds) {
-                addDataRow(itemId);
+        protected void addHierarchicalDataRows() {
+            final Collection<?> roots;
+            roots = ((Container.Hierarchical) getTableHolder().getContainerDataSource()).rootItemIds();
+            for (Object rootId : roots) {
+                addDataRowRecursively(rootId);
             }
         }
 
-        /**
-         * Adds a single data row
-         * 
-         * @param rootItemId
-         *            the ID of the item at the root of the row
-         */
-        protected void addDataRow(Object rootItemId) {
-            List<Object> props = getPropIds();
-
-            Property<?> prop;
-            Object propId;
-            Object value;
-
-            // if there is only one entity model, use that one.
-            EntityModel<?> onlyModel = entityModels == null ? null
-                    : (entityModels.size() == 1 ? entityModels.get(0) : null);
-
-            Item item = container.getItem(rootItemId);
-            List<String> fields = new ArrayList<>();
-            for (Object prop1 : props) {
-                propId = prop1;
-                prop = getProperty(item, rootItemId, propId);
-                value = prop == null ? null : prop.getValue();
-
-                if (value != null) {
-                    AttributeModel am = findAttributeModel(propId);
-                    if (am != null) {
-                        value = TableUtils.formatPropertyValue(entityModelFactory,
-                                onlyModel != null ? onlyModel : am.getEntityModel(), messageService, am.getPath(),
-                                value);
-                    }
-                    if (value instanceof String) {
-                        value = StringUtil.replaceHtmlBreaks(value.toString());
-                    } else {
-                        // apply default formatting for numbers
-                        value = NumberUtils.format(value);
-                    }
-                }
-                fields.add(value == null ? "" : value.toString());
+        @Override
+        public void convertTable() {
+            out = new ByteArrayOutputStream();
+            writer = new CSVWriter(new OutputStreamWriter(out), SystemPropertyUtils.getExportCsvSeparator().charAt(0),
+                    SystemPropertyUtils.getExportCsvQuoteChar().charAt(0));
+            container = getTableHolder().getContainerDataSource();
+            addHeaderRow();
+            if (isHierarchical()) {
+                addHierarchicalDataRows();
+            } else {
+                addDataRows();
             }
-            writer.writeNext(fields.toArray(new String[0]));
+        }
+
+        public String getExportFileName() {
+            return exportFileName;
         }
 
         /**
@@ -257,21 +231,21 @@ public class TableExportActionHandler implements Handler {
             return prop;
         }
 
-        public String getExportFileName() {
-            return exportFileName;
-        }
-
-        public void setExportFileName(String exportFileName) {
-            this.exportFileName = exportFileName;
+        /**
+         * Returns the property IDs that are to be included in the sheet. Overwritten so that grid
+         * properties are displayed in the correct order
+         */
+        @Override
+        public List<Object> getPropIds() {
+            if (columnIds != null) {
+                return columnIds.stream().collect(Collectors.toList());
+            }
+            return super.getPropIds();
         }
 
         @Override
         public String getReportTitle() {
             return reportTitle;
-        }
-
-        public void setReportTitle(String reportTitle) {
-            this.reportTitle = reportTitle;
         }
 
         @Override
@@ -298,6 +272,14 @@ public class TableExportActionHandler implements Handler {
                 }
             }
         }
+
+        public void setExportFileName(String exportFileName) {
+            this.exportFileName = exportFileName;
+        }
+
+        public void setReportTitle(String reportTitle) {
+            this.reportTitle = reportTitle;
+        }
     }
 
     /**
@@ -314,7 +296,7 @@ public class TableExportActionHandler implements Handler {
 
         private CellStyle bigDecimalStyle;
 
-        private CellStyle integerStyle;
+        private CellStyle numberStyle;
 
         private CellStyle normal;
 
@@ -336,13 +318,13 @@ public class TableExportActionHandler implements Handler {
 
             // create the cell styles only once- this is a huge performance
             // gain!
-            integerStyle = workbook.createCellStyle();
-            integerStyle.setAlignment(CellStyle.ALIGN_RIGHT);
-            integerStyle.setBorderBottom(CellStyle.BORDER_THIN);
-            integerStyle.setBorderTop(CellStyle.BORDER_THIN);
-            integerStyle.setBorderLeft(CellStyle.BORDER_THIN);
-            integerStyle.setBorderRight(CellStyle.BORDER_THIN);
-            integerStyle.setDataFormat(format.getFormat("#,#"));
+            numberStyle = workbook.createCellStyle();
+            numberStyle.setAlignment(CellStyle.ALIGN_RIGHT);
+            numberStyle.setBorderBottom(CellStyle.BORDER_THIN);
+            numberStyle.setBorderTop(CellStyle.BORDER_THIN);
+            numberStyle.setBorderLeft(CellStyle.BORDER_THIN);
+            numberStyle.setBorderRight(CellStyle.BORDER_THIN);
+            numberStyle.setDataFormat(format.getFormat("#,#"));
 
             bigDecimalStyle = workbook.createCellStyle();
             bigDecimalStyle.setAlignment(CellStyle.ALIGN_RIGHT);
@@ -388,21 +370,14 @@ public class TableExportActionHandler implements Handler {
             Cell sheetCell;
 
             List<Object> props = getPropIds();
-
             Item item = getTableHolder().getContainerDataSource().getItem(rootItemId);
-
-            // if there is only one entity model, use that one.
-            EntityModel<?> onlyModel = (entityModels != null && entityModels.size() == 1) ? entityModels.get(0) : null;
-
             for (int col = 0; col < props.size(); col++) {
 
                 // retrieve the property (be sure to get it directly from the
                 // item for a huge performance gain)
                 propId = props.get(col);
                 prop = getProperty(item, rootItemId, propId);
-
                 value = prop == null ? null : prop.getValue();
-
                 sheetCell = sheetRow.createCell(col);
 
                 CellStyle custom = null;
@@ -418,9 +393,9 @@ public class TableExportActionHandler implements Handler {
                     // for numbers we do not use the default formatting since
                     // that would produce strings and we
                     // want actual numerical values!
-                    if (value instanceof Integer) {
-                        sheetCell.setCellValue(((Integer) value).doubleValue());
-                        standard = integerStyle;
+                    if (value instanceof Integer || value instanceof Long) {
+                        sheetCell.setCellValue(((Number) value).doubleValue());
+                        standard = numberStyle;
                     } else if (value instanceof BigDecimal) {
                         boolean isPercentage = am != null && am.isPercentage();
                         if (isPercentage) {
@@ -430,7 +405,6 @@ public class TableExportActionHandler implements Handler {
                             double temp = convertPercentageValue(am, value);
                             sheetCell.setCellValue(temp);
                             standard = bigDecimalPercentageStyle;
-
                             totalsRowPercentage = true;
                         } else {
                             // just display as a number
@@ -446,9 +420,7 @@ public class TableExportActionHandler implements Handler {
                         if (value instanceof String) {
                             value = StringUtil.replaceHtmlBreaks((String) value);
                         }
-
-                        sheetCell.setCellValue(TableUtils.formatPropertyValue(entityModelFactory,
-                                onlyModel != null ? onlyModel : am.getEntityModel(), messageService, propId, value));
+                        sheetCell.setCellValue(FormatUtils.formatPropertyValue(entityModelFactory, am, value));
                     } else {
                         // if everything else fails, use the string
                         // representation
@@ -537,17 +509,6 @@ public class TableExportActionHandler implements Handler {
         }
 
         /**
-         * Final sheet formatting - this is skipped for streaming workbooks since they cannot
-         * perform actions on all the rows any more
-         */
-        @Override
-        protected void finalSheetFormat() {
-            if (!isStreaming()) {
-                super.finalSheetFormat();
-            }
-        }
-
-        /**
          * Adds a total rows to the bottom of the sheet - overwritten so that the columns can be
          * property aligned
          */
@@ -568,7 +529,7 @@ public class TableExportActionHandler implements Handler {
                     if (isNumeric(propType)) {
 
                         if (Integer.class.equals(propType)) {
-                            cell.setCellStyle(integerStyle);
+                            cell.setCellStyle(numberStyle);
                         } else if (BigDecimal.class.equals(propType)) {
                             cell.setCellStyle(isTotalsRowPercentage() ? bigDecimalPercentageStyle : bigDecimalStyle);
                         }
@@ -594,6 +555,22 @@ public class TableExportActionHandler implements Handler {
                         }
                     }
                 }
+            }
+        }
+
+        private double convertPercentageValue(AttributeModel am, Object value) {
+            return ((BigDecimal) value).divide(HUNDRED, DynamoConstants.INTERMEDIATE_PRECISION, RoundingMode.HALF_UP)
+                    .setScale(am.getPrecision() + 2, RoundingMode.HALF_UP).doubleValue();
+        }
+
+        /**
+         * Final sheet formatting - this is skipped for streaming workbooks since they cannot
+         * perform actions on all the rows any more
+         */
+        @Override
+        protected void finalSheetFormat() {
+            if (!isStreaming()) {
+                super.finalSheetFormat();
             }
         }
 
@@ -656,11 +633,6 @@ public class TableExportActionHandler implements Handler {
             return Number.class.isAssignableFrom(propType);
         }
 
-        private double convertPercentageValue(AttributeModel am, Object value) {
-            return ((BigDecimal) value).divide(HUNDRED, DynamoConstants.INTERMEDIATE_PRECISION, RoundingMode.HALF_UP)
-                    .setScale(am.getPrecision() + 2, RoundingMode.HALF_UP).doubleValue();
-        }
-
         private boolean isStreaming() {
             return workbook instanceof SXSSFWorkbook;
         }
@@ -700,6 +672,8 @@ public class TableExportActionHandler implements Handler {
             }
         }
     }
+
+    private static final Logger LOG = Logger.getLogger(TableExportActionHandler.class);
 
     private static final BigDecimal HUNDRED = new BigDecimal(100);
 
@@ -804,74 +778,6 @@ public class TableExportActionHandler implements Handler {
     }
 
     /**
-     * Export a grid - this is achieved by wrapping the data source from the grid in a table
-     * 
-     * @param grid
-     *            the grid to export from
-     */
-    public void exportFromGrid(Grid grid) {
-        Table table = new Table();
-        table.setContainerDataSource(grid.getContainerDataSource());
-
-        // copy header captions from grid to table
-        for (Column c : grid.getColumns()) {
-            Object oid = c.getPropertyId();
-
-            StringBuilder caption = new StringBuilder();
-            for (int i = 0; i < grid.getHeaderRowCount(); i++) {
-                HeaderRow r = grid.getHeaderRow(i);
-
-                if (caption.length() > 0) {
-                    caption.append(" ");
-                }
-
-                try {
-                    caption.append(r.getCell(oid).getText());
-                } catch (Exception ex) {
-                    // if it is not text, then it is HTML (very ugly, but seems
-                    // to
-                    // be the only way)
-                    caption.append(r.getCell(oid).getHtml());
-                }
-            }
-            table.setColumnHeader(c.getPropertyId(), caption.toString().replaceAll("<\\w+/>", " "));
-        }
-        handleAction(actionExport, table, null);
-    }
-
-    /**
-     * Looks up an attribute model in the list of available models
-     * 
-     * @param propId
-     *            the ID of the property for which to find the attribute model
-     * @return
-     */
-    protected AttributeModel findAttributeModel(Object propId) {
-        if (entityModels != null) {
-            for (EntityModel<?> em : entityModels) {
-                String prop = propId.toString();
-                int p = prop.indexOf('_');
-                if (p >= 0) {
-                    prop = prop.substring(p + 1);
-                }
-                AttributeModel am = em.getAttributeModel(prop);
-                if (am != null) {
-                    return am;
-                }
-            }
-        }
-        return null;
-    }
-
-    /**
-     * 
-     */
-    @Override
-    public Action[] getActions(Object target, Object sender) {
-        return new Action[] { actionExport };
-    }
-
-    /**
      * Creates the appropriate workbook based on the size of the data set
      * 
      * @param size
@@ -887,6 +793,74 @@ public class TableExportActionHandler implements Handler {
             return new SXSSFWorkbook();
         }
         return null;
+    }
+
+    /**
+     * Export a grid - this is achieved by wrapping the data source from the grid in a table
+     * 
+     * @param grid
+     *            the grid to export from
+     */
+    public void exportFromGrid(Grid grid) {
+        Table table = new Table();
+        table.setContainerDataSource(grid.getContainerDataSource());
+
+        // copy header captions from grid to table
+        for (Column c : grid.getColumns()) {
+            Object oid = c.getPropertyId();
+
+            // StringBuilder caption = new StringBuilder();
+            List<String> caption = new ArrayList<>();
+            for (int i = 0; i < grid.getHeaderRowCount(); i++) {
+                HeaderRow r = grid.getHeaderRow(i);
+
+                try {
+                    caption.add(r.getCell(oid).getText());
+                } catch (Exception ex) {
+                    // if it is not text, then it is HTML (very ugly, but seems
+                    // to
+                    // be the only way)
+                    caption.add(r.getCell(oid).getHtml());
+                }
+            }
+            table.setColumnHeader(c.getPropertyId(),
+                    caption.stream().collect(Collectors.joining(" ")).replaceAll("<\\w+/>", " "));
+        }
+        handleAction(actionExport, table, null);
+    }
+
+    /**
+     * Looks up an attribute model in the list of available models
+     * 
+     * @param propId
+     *            the ID of the property for which to find the attribute model
+     * @return
+     */
+    protected AttributeModel findAttributeModel(Object propId) {
+        if (entityModels != null) {
+            String prop = propId.toString();
+            int p = prop.indexOf('_');
+            String pString = p >= 0 ? prop.substring(p + 1) : prop;
+            return entityModels.stream().filter(em -> em.getAttributeModel(pString) != null)
+                    .map(em -> em.getAttributeModel(pString)).findFirst().get();
+        }
+        return null;
+    }
+
+    /**
+     * 
+     */
+    @Override
+    public Action[] getActions(Object target, Object sender) {
+        return new Action[] { actionExport };
+    }
+
+    /**
+     * 
+     * @return a formatted date
+     */
+    private String getFormattedDate() {
+        return DateUtils.formatDateTime(LocalDateTime.now(), SystemPropertyUtils.getDefaultDateTimeFormat());
     }
 
     /**
@@ -924,12 +898,10 @@ public class TableExportActionHandler implements Handler {
             TableExportService service = ServiceLocator.getService(TableExportService.class);
 
             if (TableExportMode.CSV.equals(exportMode)) {
-
                 ModelCSVExport export = new ModelCSVExport(table);
                 if (table instanceof TreeTable) {
                     export.getTableHolder().setHierarchical(true);
                 }
-
                 export.setExportFileName((reportTitle + " " + getFormattedDate() + ".csv").replace(' ', '_'));
                 export.setReportTitle(reportTitle);
                 service.export(export);
@@ -951,24 +923,11 @@ public class TableExportActionHandler implements Handler {
                         // totals calculation doesn't work in that case
                         export.setDisplayTotals(!(sender instanceof ModelBasedTreeTable));
                     }
-
                     export.setExportFileName((reportTitle + " " + getFormattedDate() + ".xlsx").replace(' ', '_'));
-
-                    // the original code uses the mime type for Excel 2003, this
-                    // is
-                    // not what we want
                     service.export(export);
                 }
             }
 
         }
-    }
-
-    /**
-     * 
-     * @return a formatted date
-     */
-    private String getFormattedDate() {
-        return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
     }
 }

@@ -559,6 +559,17 @@ public final class DateUtils {
     }
 
     /**
+     * Converts the provided LocalDate to a week code
+     * 
+     * @param d
+     *            date
+     * @return
+     */
+    public static String toWeekCode(LocalDate d) {
+        return toWeekCode(toLegacyDate(d));
+    }
+
+    /**
      * Converts a date to its corresponding week code
      * 
      * @param date

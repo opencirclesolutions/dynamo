@@ -18,6 +18,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -55,6 +56,7 @@ import com.ocs.dynamo.ui.composite.form.FormOptions;
 import com.ocs.dynamo.ui.converter.BigDecimalToDoubleConverter;
 import com.ocs.dynamo.ui.converter.ConverterFactory;
 import com.ocs.dynamo.ui.converter.IntToDoubleConverter;
+import com.ocs.dynamo.ui.converter.LocalDateWeekCodeConverter;
 import com.ocs.dynamo.ui.converter.LongToDoubleConverter;
 import com.ocs.dynamo.ui.converter.WeekCodeConverter;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
@@ -543,7 +545,8 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
         } else if (attributeModel.isWeek()) {
             // special case - week field in a table
             TextField tf = new TextField();
-            tf.setConverter(new WeekCodeConverter());
+            tf.setConverter(Date.class.equals(attributeModel.getType()) ? new WeekCodeConverter()
+                    : new LocalDateWeekCodeConverter());
             field = tf;
         } else if (search && AttributeSelectMode.TOKEN.equals(attributeModel.getSearchSelectMode())
                 && AttributeType.BASIC.equals(attributeModel.getAttributeType())) {

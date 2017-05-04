@@ -22,9 +22,11 @@ import junitx.util.PrivateAccessor;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mock;
 
+import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.TestEntity.TestEnum;
 import com.ocs.dynamo.domain.TestEntity2;
@@ -38,6 +40,11 @@ import com.ocs.dynamo.utils.DateUtils;
 import com.vaadin.ui.Label;
 
 public class BaseCustomComponentTest extends BaseMockitoTest {
+
+    @BeforeClass
+    public static void beforeClass() {
+        System.setProperty(DynamoConstants.SP_DEFAULT_LOCALE, "de");
+    }
 
     private EntityModelFactory factory = new EntityModelFactoryImpl();
 
@@ -121,7 +128,7 @@ public class BaseCustomComponentTest extends BaseMockitoTest {
 
         // enum
         label = (Label) component.constructLabel(e, model.getAttributeModel("someEnum"));
-        Assert.assertEquals("A", label.getValue());
+        Assert.assertEquals("Value A", label.getValue());
 
         // entity collection
         label = (Label) component.constructLabel(e, model.getAttributeModel("testEntities"));
