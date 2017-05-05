@@ -23,10 +23,10 @@ import com.ocs.dynamo.domain.model.impl.ModelBasedFieldFactory;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.test.BaseMockitoTest;
 import com.ocs.dynamo.test.MockUtil;
-import com.ocs.dynamo.ui.component.EntityComboBox;
 import com.ocs.dynamo.ui.component.EntityComboBox.SelectMode;
-import com.ocs.dynamo.ui.component.EntityListSelect;
 import com.ocs.dynamo.ui.component.EntityLookupField;
+import com.ocs.dynamo.ui.component.QuickAddEntityComboBox;
+import com.ocs.dynamo.ui.component.QuickAddListSelect;
 import com.ocs.dynamo.ui.component.TimeField;
 import com.ocs.dynamo.ui.component.URLField;
 import com.ocs.dynamo.ui.composite.form.CollectionTable;
@@ -351,12 +351,12 @@ public class ModelBasedFieldFactoryTest extends BaseMockitoTest {
 		fieldFilters.put("testEntityAlt", new Compare.Equal("name", "John"));
 
 		f = ff.constructField(model.getAttributeModel("testEntityAlt"), fieldFilters, null);
-		Assert.assertTrue(f instanceof EntityComboBox);
-		EntityComboBox<Integer, TestEntity> df = (EntityComboBox<Integer, TestEntity>) f;
-		Assert.assertEquals(SelectMode.FILTERED, df.getSelectMode());
+		Assert.assertTrue(f instanceof QuickAddEntityComboBox);
+		QuickAddEntityComboBox<Integer, TestEntity> df = (QuickAddEntityComboBox<Integer, TestEntity>) f;
+		Assert.assertEquals(SelectMode.FILTERED, df.getComboBox().getSelectMode());
 
 		f = ff.constructField(model.getAttributeModel("testEntityAlt2"), fieldFilters, null);
-		Assert.assertTrue(f instanceof EntityListSelect);
+		Assert.assertTrue(f instanceof QuickAddListSelect);
 	}
 
 	@SuppressWarnings("unused")

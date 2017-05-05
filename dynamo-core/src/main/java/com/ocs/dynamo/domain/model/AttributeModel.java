@@ -431,6 +431,11 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	boolean isWeek();
 
 	/**
+	 * Indicates whether this attribute allows direct navigation to entity edit screen
+	 */
+	boolean isDirectNavigation();
+
+	/**
 	 * Marks the attribute as the main attribute
 	 * 
 	 * @param main

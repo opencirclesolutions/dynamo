@@ -13,25 +13,24 @@
  */
 package com.ocs.dynamo.domain.model;
 
-import javax.inject.Inject;
-
-import org.junit.Assert;
-import org.junit.Test;
-
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.TestEntity2;
 import com.ocs.dynamo.domain.model.impl.ModelBasedFieldFactory;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.test.BaseIntegrationTest;
-import com.ocs.dynamo.ui.component.EntityComboBox;
 import com.ocs.dynamo.ui.component.EntityComboBox.SelectMode;
-import com.ocs.dynamo.ui.component.EntityListSelect;
 import com.ocs.dynamo.ui.component.EntityLookupField;
 import com.ocs.dynamo.ui.component.FancyListSelect;
+import com.ocs.dynamo.ui.component.QuickAddEntityComboBox;
+import com.ocs.dynamo.ui.component.QuickAddListSelect;
 import com.ocs.dynamo.ui.component.TokenFieldSelect;
 import com.vaadin.data.sort.SortOrder;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.Field;
+import org.junit.Assert;
+import org.junit.Test;
+
+import javax.inject.Inject;
 
 public class ModelBasedFieldFactoryIntegrationTest extends BaseIntegrationTest {
 
@@ -75,12 +74,12 @@ public class ModelBasedFieldFactoryIntegrationTest extends BaseIntegrationTest {
 		ModelBasedFieldFactory<TestEntity2> factory = new ModelBasedFieldFactory<>(model, messageService, false, false);
 
 		Field<?> field = factory.createField(am.getName());
-		Assert.assertTrue(field instanceof EntityListSelect);
+		Assert.assertTrue(field instanceof QuickAddListSelect);
 
-		EntityListSelect<Integer, TestEntity> f = (EntityListSelect<Integer, TestEntity>) field;
-		Assert.assertEquals(new com.vaadin.data.sort.SortOrder("name", SortDirection.ASCENDING), f.getSortOrders()[0]);
-		Assert.assertEquals(com.ocs.dynamo.ui.component.EntityListSelect.SelectMode.FILTERED, f.getSelectMode());
-		Assert.assertEquals(3, f.getRows());
+		QuickAddListSelect<Integer, TestEntity> f = (QuickAddListSelect<Integer, TestEntity>) field;
+		Assert.assertEquals(new com.vaadin.data.sort.SortOrder("name", SortDirection.ASCENDING), f.getListSelect().getSortOrders()[0]);
+		Assert.assertEquals(com.ocs.dynamo.ui.component.EntityListSelect.SelectMode.FILTERED, f.getListSelect().getSelectMode());
+		Assert.assertEquals(3, f.getListSelect().getRows());
 	}
 
 	/**
@@ -144,12 +143,12 @@ public class ModelBasedFieldFactoryIntegrationTest extends BaseIntegrationTest {
 		AttributeModel am = model.getAttributeModel("testEntity");
 
 		Field<?> field = fieldFactory.constructComboBox(am.getNestedEntityModel(), am, null, false);
-		Assert.assertTrue(field instanceof EntityComboBox);
+		Assert.assertTrue(field instanceof QuickAddEntityComboBox);
 
-		EntityComboBox<Integer, TestEntity> dc = (EntityComboBox<Integer, TestEntity>) field;
-		Assert.assertEquals(SelectMode.FILTERED, dc.getSelectMode());
+		QuickAddEntityComboBox<Integer, TestEntity> dc = (QuickAddEntityComboBox<Integer, TestEntity>) field;
+		Assert.assertEquals(SelectMode.FILTERED, dc.getComboBox().getSelectMode());
 
-		SortOrder[] sortOrders = dc.getSortOrder();
+		SortOrder[] sortOrders = dc.getComboBox().getSortOrder();
 		Assert.assertEquals(2, sortOrders.length);
 
 		Assert.assertEquals("name", sortOrders[0].getPropertyId());

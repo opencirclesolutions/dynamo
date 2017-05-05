@@ -55,6 +55,9 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 
     private static final long serialVersionUID = 5377765863515463622L;
 
+
+    private boolean directNavigationAllowed;
+
     /**
      * Indicates whether it is allowed to add items
      */
@@ -121,6 +124,7 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
         this.joins = joins;
         this.multiSelect = multiSelect;
         this.addAllowed = !search && (attributeModel != null && attributeModel.isQuickAddAllowed());
+        this.directNavigationAllowed = !search && (attributeModel != null && attributeModel.isDirectNavigation());
     }
 
     /**
@@ -253,6 +257,10 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
         if (addAllowed) {
             Button addButton = constructAddButton();
             bar.addComponent(addButton);
+        }
+        if (directNavigationAllowed){
+            Button directNavigationButton = constructDirectNavigationButton();
+            bar.addComponent(directNavigationButton);
         }
         return bar;
     }

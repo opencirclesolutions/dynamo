@@ -13,20 +13,6 @@
  */
 package com.ocs.dynamo.domain.model.impl;
 
-import java.io.Serializable;
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-
-import org.apache.commons.lang.StringUtils;
-
 import com.google.common.collect.Lists;
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.domain.AbstractEntity;
@@ -41,12 +27,11 @@ import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.ui.ServiceLocator;
-import com.ocs.dynamo.ui.component.EntityComboBox;
 import com.ocs.dynamo.ui.component.EntityComboBox.SelectMode;
-import com.ocs.dynamo.ui.component.EntityListSelect;
 import com.ocs.dynamo.ui.component.EntityLookupField;
 import com.ocs.dynamo.ui.component.FancyListSelect;
 import com.ocs.dynamo.ui.component.QuickAddEntityComboBox;
+import com.ocs.dynamo.ui.component.QuickAddListSelect;
 import com.ocs.dynamo.ui.component.SimpleTokenFieldSelect;
 import com.ocs.dynamo.ui.component.TimeField;
 import com.ocs.dynamo.ui.component.TokenFieldSelect;
@@ -88,6 +73,19 @@ import com.vaadin.ui.TableFieldFactory;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
+import org.apache.commons.lang.StringUtils;
+
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * Extension of the standard Vaadin field factory for creating custom fields
@@ -211,12 +209,8 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
         BaseService<ID, S> service = (BaseService<ID, S>) ServiceLocator
                 .getServiceForEntity(entityModel.getEntityClass());
         SortOrder[] sos = constructSortOrder(entityModel);
-        if (attributeModel != null && attributeModel.isQuickAddAllowed() && !search) {
-            return new QuickAddEntityComboBox<>((EntityModel<S>) entityModel, attributeModel, service,
-                    SelectMode.FILTERED, filter, null, sos);
-        } else {
-            return new EntityComboBox<>((EntityModel<S>) entityModel, attributeModel, service, filter, sos);
-        }
+        return new QuickAddEntityComboBox<>((EntityModel<S>) entityModel, attributeModel, service,
+                    SelectMode.FILTERED, filter, search, null, sos);
     }
 
     /**
@@ -305,10 +299,8 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
             return listSelect;
         } else if (AttributeSelectMode.LIST.equals(mode)) {
             // simple list select if everything else fails or is not applicable
-            EntityListSelect<ID, S> listSelect = new EntityListSelect<>((EntityModel<S>) em, attributeModel, service,
-                    fieldFilter, sos);
-            listSelect.setMultiSelect(multipleSelect);
-            listSelect.setRows(SystemPropertyUtils.getDefaultListSelectRows());
+            QuickAddListSelect<ID, S> listSelect = new QuickAddListSelect<>((EntityModel<S>) em, attributeModel, service,
+                    fieldFilter, multipleSelect, SystemPropertyUtils.getDefaultListSelectRows(), sos);
             return listSelect;
         } else {
             // by default, use a token field
@@ -319,7 +311,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
     /**
      * Constructs a lookup field (field that brings up a popup search dialog)
      * 
-     * @param entityModel
+     * @param overruled
      *            the entity model of the entity to display in the field
      * @param attributeModel
      *            the attribute model of the property that is bound to the field

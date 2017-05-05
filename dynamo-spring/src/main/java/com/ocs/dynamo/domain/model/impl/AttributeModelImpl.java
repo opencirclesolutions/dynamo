@@ -13,16 +13,6 @@
  */
 package com.ocs.dynamo.domain.model.impl;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.apache.commons.lang.builder.ReflectionToStringBuilder;
-
 import com.ocs.dynamo.domain.model.AttributeDateType;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.AttributeSelectMode;
@@ -31,6 +21,15 @@ import com.ocs.dynamo.domain.model.AttributeType;
 import com.ocs.dynamo.domain.model.CascadeMode;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.NumberSelectMode;
+import org.apache.commons.lang.builder.ReflectionToStringBuilder;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Implementation of the AttributeModel interface - simple container for properties
@@ -150,6 +149,8 @@ public class AttributeModelImpl implements AttributeModel {
 	private boolean visibleInTable;
 
 	private boolean week;
+
+	private boolean directNavigation;
 
 	@Override
 	public void addCascade(String cascadeTo, String filterPath, CascadeMode mode) {
@@ -474,6 +475,11 @@ public class AttributeModelImpl implements AttributeModel {
 		return week;
 	}
 
+	@Override
+	public boolean isDirectNavigation() {
+		return directNavigation;
+	}
+
 	public void setAllowedExtensions(Set<String> allowedExtensions) {
 		this.allowedExtensions = allowedExtensions;
 	}
@@ -681,6 +687,10 @@ public class AttributeModelImpl implements AttributeModel {
 
 	public void setWeek(boolean week) {
 		this.week = week;
+	}
+
+	public void setDirectNavigation(boolean directNavigation) {
+		this.directNavigation = directNavigation;
 	}
 
 	@Override
