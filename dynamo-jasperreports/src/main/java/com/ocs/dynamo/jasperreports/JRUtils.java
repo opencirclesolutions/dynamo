@@ -53,9 +53,7 @@ public final class JRUtils {
 	}
 
 	/**
-	 * Add all fields as a container property to given container using the type of the field when
-	 * the field has property CONTAINER_PROPERTY_NAME defined.
-	 *
+	 * 
 	 * @param container
 	 * @param jasperReport
 	 */

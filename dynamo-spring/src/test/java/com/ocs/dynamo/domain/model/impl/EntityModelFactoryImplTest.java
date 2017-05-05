@@ -281,10 +281,10 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
         Assert.assertFalse(model.usesDefaultGroupOnly());
 
         String group1 = model.getAttributeGroups().get(0);
-        Assert.assertEquals("group 1", model.getAttributeGroups().get(0));
+        Assert.assertEquals("group1", model.getAttributeGroups().get(0));
 
         String group2 = model.getAttributeGroups().get(1);
-        Assert.assertEquals("group 2", group2);
+        Assert.assertEquals("group2", group2);
 
         Assert.assertEquals("age", model.getAttributeModelsForGroup(group2).get(0).getName());
         Assert.assertEquals("birthDate", model.getAttributeModelsForGroup(group2).get(1).getName());

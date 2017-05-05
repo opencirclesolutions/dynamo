@@ -150,6 +150,11 @@ public interface EntityModel<T> {
 	 * The maximum value of the numeric items inside an element collection
 	 */
 	String MAX_VALUE = "maxValue";
+	
+	/**
+	 * Message key
+	 */
+	String MESSAGE_KEY = "messageKey";
 
 	/**
 	 * The minimum length of the numeric items inside an element collection

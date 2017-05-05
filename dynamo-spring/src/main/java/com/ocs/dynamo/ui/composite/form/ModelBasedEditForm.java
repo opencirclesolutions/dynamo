@@ -511,7 +511,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
                     fieldsProcessed = true;
                 }
             }
-
             setCompositionRoot(mainEditLayout);
         }
 

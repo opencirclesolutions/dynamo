@@ -465,16 +465,9 @@ public final class VaadinUtils {
     public static void showConfirmDialog(MessageService messageService, String question, final Runnable whenConfirmed) {
         if (UI.getCurrent() != null) {
             ConfirmDialog.show(UI.getCurrent(), messageService.getMessage("ocs.confirm"), question,
-                    messageService.getMessage("ocs.yes"), messageService.getMessage("ocs.no"),
-                    new ConfirmDialog.Listener() {
-
-                        private static final long serialVersionUID = 7993938332012882422L;
-
-                        @Override
-                        public void onClose(ConfirmDialog dialog) {
-                            if (dialog.isConfirmed()) {
-                                whenConfirmed.run();
-                            }
+                    messageService.getMessage("ocs.yes"), messageService.getMessage("ocs.no"), dialog -> {
+                        if (dialog.isConfirmed()) {
+                            whenConfirmed.run();
                         }
                     });
         } else {

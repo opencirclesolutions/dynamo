@@ -34,138 +34,138 @@ import org.jfree.ui.Layer;
 
 public class XYChartCustomizer extends AbstractChartCustomizer implements CustomChartCustomizer<XYPlot> {
 
-	/**
-	 * Define an instance (or collection of instances) of this class in a report variable with the
-	 * name "re.Quadrant" (where re should be replaced with the name of the reporting element) to
-	 * draw an annotation in the graph. Be sure to configure the applicable
-	 * XXXChartRenderableDecorator (in jasper.properties).
-	 */
-	@SuppressWarnings("serial")
-	public static class TextAnnotation extends XYTextAnnotation {
+    /**
+     * Define an instance (or collection of instances) of this class in a report variable with the
+     * name "re.Quadrant" (where re should be replaced with the name of the reporting element) to
+     * draw an annotation in the graph. Be sure to configure the applicable
+     * XXXChartRenderableDecorator (in jasper.properties).
+     */
+    @SuppressWarnings("serial")
+    public static class TextAnnotation extends XYTextAnnotation {
 
-		public TextAnnotation(String text, double x, double y) {
-			super(text, x, y);
-		}
+        public TextAnnotation(String text, double x, double y) {
+            super(text, x, y);
+        }
 
-		public TextAnnotation(String text, double x, double y, String url) {
-			super(text, x, y);
-			setURL(url);
-		}
+        public TextAnnotation(String text, double x, double y, String url) {
+            super(text, x, y);
+            setURL(url);
+        }
 
-		public TextAnnotation(String text, double x, double y, String url, String tooltip) {
-			super(text, x, y);
-			setURL(url);
-			setToolTipText(tooltip);
-		}
+        public TextAnnotation(String text, double x, double y, String url, String tooltip) {
+            super(text, x, y);
+            setURL(url);
+            setToolTipText(tooltip);
+        }
 
-	}
+    }
 
-	@Override
-	public void setLabels(XYPlot plot) {
-		plot.getRenderer().setBaseItemLabelGenerator(new XYChartCustomizer.XYLabelGenerator());
-		plot.getRenderer().setBaseItemLabelsVisible(true);
-	}
+    @Override
+    public void setLabels(XYPlot plot) {
+        plot.getRenderer().setBaseItemLabelGenerator(new XYChartCustomizer.XYLabelGenerator());
+        plot.getRenderer().setBaseItemLabelsVisible(true);
+    }
 
-	@Override
-	public void addRangeMarkerToPlot(XYPlot plot, Marker marker) {
-		final ChartCustomizer.XYMarker rangeMarker = (ChartCustomizer.XYMarker) marker;
-		final ValueAxis rangeAxis = plot.getRangeAxis();
+    @Override
+    public void addRangeMarkerToPlot(XYPlot plot, Marker marker) {
+        final ChartCustomizer.XYMarker rangeMarker = (ChartCustomizer.XYMarker) marker;
+        final ValueAxis rangeAxis = plot.getRangeAxis();
 
-		expandRange(rangeMarker, rangeAxis);
+        expandRange(rangeMarker, rangeAxis);
 
-		plot.addRangeMarker(marker, Layer.FOREGROUND);
-	}
+        plot.addRangeMarker(marker, Layer.FOREGROUND);
+    }
 
-	@Override
-	public void addDomainMarkerToPlot(XYPlot plot, Marker marker) {
-		final ChartCustomizer.XYMarker rangeMarker = (ChartCustomizer.XYMarker) marker;
-		final ValueAxis domainAxis = plot.getDomainAxis();
+    @Override
+    public void addDomainMarkerToPlot(XYPlot plot, Marker marker) {
+        final ChartCustomizer.XYMarker rangeMarker = (ChartCustomizer.XYMarker) marker;
+        final ValueAxis domainAxis = plot.getDomainAxis();
 
-		expandRange(rangeMarker, domainAxis);
+        expandRange(rangeMarker, domainAxis);
 
-		plot.addDomainMarker(marker, Layer.FOREGROUND);
-	}
+        plot.addDomainMarker(marker, Layer.FOREGROUND);
+    }
 
-	@Override
-	public void addQuadrant(XYPlot plot, ChartCustomizer.Quadrant quadrant) {
-		// Define the quadrant
-		Point2D pointQuadOrigin = new Point2D.Double(quadrant.getqOx(), quadrant.getqOy());
-		plot.setQuadrantOrigin(pointQuadOrigin);
+    @Override
+    public void addQuadrant(XYPlot plot, ChartCustomizer.Quadrant quadrant) {
+        // Define the quadrant
+        Point2D pointQuadOrigin = new Point2D.Double(quadrant.getqOx(), quadrant.getqOy());
+        plot.setQuadrantOrigin(pointQuadOrigin);
 
-		// Set the colors
-		plot.setQuadrantPaint(0, quadrant.getqClt());
-		plot.setQuadrantPaint(1, quadrant.getqCrt());
-		plot.setQuadrantPaint(2, quadrant.getqClb());
-		plot.setQuadrantPaint(3, quadrant.getqCrb());
+        // Set the colors
+        plot.setQuadrantPaint(0, quadrant.getqClt());
+        plot.setQuadrantPaint(1, quadrant.getqCrt());
+        plot.setQuadrantPaint(2, quadrant.getqClb());
+        plot.setQuadrantPaint(3, quadrant.getqCrb());
 
-		// Set the annotations when needed
-		if (quadrant.getUrlMessageFormat() != null || quadrant.getTooltipMessageFormat() != null) {
-			// Determine extremes
-			ValueAxis xAxis = plot.getDomainAxis();
-			ValueAxis yAxis = plot.getRangeAxis();
+        // Set the annotations when needed
+        if (quadrant.getUrlMessageFormat() != null || quadrant.getTooltipMessageFormat() != null) {
+            // Determine extremes
+            ValueAxis xAxis = plot.getDomainAxis();
+            ValueAxis yAxis = plot.getRangeAxis();
 
-			// Create LT annotation
-			addXYBoxAnnotation(plot, xAxis.getLowerBound(), quadrant.getqOy(), quadrant.getqOx(),
-			        yAxis.getUpperBound(), quadrant.getUrlMessageFormat(), quadrant.getTooltipMessageFormat());
-			// Create RT annotation
-			addXYBoxAnnotation(plot, quadrant.getqOx(), quadrant.getqOy(), xAxis.getUpperBound(),
-			        yAxis.getUpperBound(), quadrant.getUrlMessageFormat(), quadrant.getTooltipMessageFormat());
-			// Create LB annotation
-			addXYBoxAnnotation(plot, xAxis.getLowerBound(), yAxis.getLowerBound(), quadrant.getqOx(),
-			        quadrant.getqOy(), quadrant.getUrlMessageFormat(), quadrant.getTooltipMessageFormat());
-			// Create RB annotation
-			addXYBoxAnnotation(plot, quadrant.getqOx(), yAxis.getLowerBound(), xAxis.getUpperBound(),
-			        quadrant.getqOy(), quadrant.getUrlMessageFormat(), quadrant.getTooltipMessageFormat());
-		}
-	}
+            // Create LT annotation
+            addXYBoxAnnotation(plot, xAxis.getLowerBound(), quadrant.getqOy(), quadrant.getqOx(), yAxis.getUpperBound(),
+                    quadrant.getUrlMessageFormat(), quadrant.getTooltipMessageFormat());
+            // Create RT annotation
+            addXYBoxAnnotation(plot, quadrant.getqOx(), quadrant.getqOy(), xAxis.getUpperBound(), yAxis.getUpperBound(),
+                    quadrant.getUrlMessageFormat(), quadrant.getTooltipMessageFormat());
+            // Create LB annotation
+            addXYBoxAnnotation(plot, xAxis.getLowerBound(), yAxis.getLowerBound(), quadrant.getqOx(), quadrant.getqOy(),
+                    quadrant.getUrlMessageFormat(), quadrant.getTooltipMessageFormat());
+            // Create RB annotation
+            addXYBoxAnnotation(plot, quadrant.getqOx(), yAxis.getLowerBound(), xAxis.getUpperBound(), quadrant.getqOy(),
+                    quadrant.getUrlMessageFormat(), quadrant.getTooltipMessageFormat());
+        }
+    }
 
-	public void addXYBoxAnnotation(XYPlot plot, double minx, double miny, double maxx, double maxy,
-	        String urlMessageFormat, String tooltipMessageFormat) {
-		addXYBoxAnnotation(plot, minx, miny, maxx, maxy, null, null, urlMessageFormat, tooltipMessageFormat);
-	}
+    public void addXYBoxAnnotation(XYPlot plot, double minx, double miny, double maxx, double maxy,
+            String urlMessageFormat, String tooltipMessageFormat) {
+        addXYBoxAnnotation(plot, minx, miny, maxx, maxy, null, null, urlMessageFormat, tooltipMessageFormat);
+    }
 
-	public void addXYBoxAnnotation(XYPlot plot, double minx, double miny, double maxx, double maxy, Stroke stroke,
-	        Paint paint, String urlMessageFormat, String tooltipMessageFormat) {
-		// Does the annotation area fit to visible area?
-		if (minx < maxx && miny < maxy) {
-			// Create LT annotation
-			XYBoxAnnotation annotation = new XYBoxAnnotation(minx, miny, maxx, maxy, stroke, paint, null);
-			if (urlMessageFormat != null) {
-				MessageFormat mf = new MessageFormat(urlMessageFormat, Locale.ENGLISH);
-				annotation.setURL(mf.format(new Object[] { minx, miny, maxx, maxy }));
-			}
-			if (tooltipMessageFormat != null) {
-				annotation.setToolTipText(MessageFormat.format(tooltipMessageFormat, minx, miny, maxx, maxy));
-			}
-			// Add annotation
-			plot.getRenderer().addAnnotation(annotation, Layer.BACKGROUND);
-		}
-	}
+    public void addXYBoxAnnotation(XYPlot plot, double minx, double miny, double maxx, double maxy, Stroke stroke,
+            Paint paint, String urlMessageFormat, String tooltipMessageFormat) {
+        // Does the annotation area fit to visible area?
+        if (minx < maxx && miny < maxy) {
+            // Create LT annotation
+            XYBoxAnnotation annotation = new XYBoxAnnotation(minx, miny, maxx, maxy, stroke, paint, null);
+            if (urlMessageFormat != null) {
+                MessageFormat mf = new MessageFormat(urlMessageFormat, Locale.ENGLISH);
+                annotation.setURL(mf.format(new Object[] { minx, miny, maxx, maxy }));
+            }
+            if (tooltipMessageFormat != null) {
+                annotation.setToolTipText(MessageFormat.format(tooltipMessageFormat, minx, miny, maxx, maxy));
+            }
+            // Add annotation
+            plot.getRenderer().addAnnotation(annotation, Layer.BACKGROUND);
+        }
+    }
 
-	@Override
-	public void setStrokeTypes(XYPlot plot, Collection<ChartCustomizer.StrokeType> sts) {
-		// TODO not implemented yet
-	}
+    @Override
+    public void setStrokeTypes(XYPlot plot, Collection<ChartCustomizer.StrokeType> sts) {
+        // not implemented
+    }
 
-	@SuppressWarnings("serial")
-	private static class XYLabelGenerator extends BubbleXYItemLabelGenerator {
-		@Override
-		public String generateLabel(XYDataset dataset, int series, int item) {
-			if (dataset instanceof XYZDataset) {
-				Number z = ((XYZDataset) dataset).getZ(series, item);
-				if (z != null && z instanceof ChartCustomizer.BigDecimalLabelWrapper) {
-					return ((ChartCustomizer.BigDecimalLabelWrapper) z).getLabel();
-				}
-			}
-			return String.valueOf(dataset.getSeriesKey(series));
-		}
-	}
+    @SuppressWarnings("serial")
+    private static class XYLabelGenerator extends BubbleXYItemLabelGenerator {
+        @Override
+        public String generateLabel(XYDataset dataset, int series, int item) {
+            if (dataset instanceof XYZDataset) {
+                Number z = ((XYZDataset) dataset).getZ(series, item);
+                if (z != null && z instanceof ChartCustomizer.BigDecimalLabelWrapper) {
+                    return ((ChartCustomizer.BigDecimalLabelWrapper) z).getLabel();
+                }
+            }
+            return String.valueOf(dataset.getSeriesKey(series));
+        }
+    }
 
-	@Override
-	public void addAnnotationToPlot(XYPlot plot, Annotation annotation) {
-		if (annotation instanceof XYAnnotation) {
-			plot.addAnnotation((XYAnnotation) annotation);
-		}
-	}
+    @Override
+    public void addAnnotationToPlot(XYPlot plot, Annotation annotation) {
+        if (annotation instanceof XYAnnotation) {
+            plot.addAnnotation((XYAnnotation) annotation);
+        }
+    }
 
 }

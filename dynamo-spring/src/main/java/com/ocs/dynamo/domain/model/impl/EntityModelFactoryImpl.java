@@ -457,7 +457,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
         int i = 1;
         if (messageService != null) {
             String groupName = messageService.getEntityMessage(model.getReference(),
-                    EntityModel.ATTRIBUTE_GROUP + "." + i + "." + EntityModel.DISPLAY_NAME);
+                    EntityModel.ATTRIBUTE_GROUP + "." + i + "." + EntityModel.MESSAGE_KEY);
 
             if (groupName != null) {
                 result.clear();
@@ -476,7 +476,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 
                 i++;
                 groupName = messageService.getEntityMessage(model.getReference(),
-                        EntityModel.ATTRIBUTE_GROUP + "." + i + "." + EntityModel.DISPLAY_NAME);
+                        EntityModel.ATTRIBUTE_GROUP + "." + i + "." + EntityModel.MESSAGE_KEY);
             }
         }
         return result;

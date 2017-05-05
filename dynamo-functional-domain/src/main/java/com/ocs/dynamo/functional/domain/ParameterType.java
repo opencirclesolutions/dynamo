@@ -11,17 +11,11 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-package com.ocs.jasperreports;
+package com.ocs.dynamo.functional.domain;
 
-import net.sf.jasperreports.web.util.WebHtmlResourceHandler;
-
-public class UniqueWebHtmlResourceHandler extends WebHtmlResourceHandler {
-    public UniqueWebHtmlResourceHandler(String path) {
-        super(path);
-    }
-
-    @Override
-    public String getResourcePath(String id) {
-        return super.getResourcePath(id) + "&time=" + System.nanoTime();
-    }
+/**
+ * Created by R.E.M. Claassen on 6-4-2017.
+ */
+public enum ParameterType {
+    STRING, INTEGER, BOOLEAN
 }

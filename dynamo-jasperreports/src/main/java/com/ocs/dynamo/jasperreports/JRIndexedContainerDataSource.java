@@ -23,87 +23,82 @@ import net.sf.jasperreports.engine.JRRewindableDataSource;
 import net.sf.jasperreports.engine.data.IndexedDataSource;
 
 /**
- * JasperReports datasource implementation which uses a Vaadin container as source. Optimized for an indexed container.
+ * JasperReports datasource implementation which uses a Vaadin container as source. Optimized for an
+ * indexed container.
  * 
- * Assumes that nested properties are named with underscores in the report, e.g. an property in the vaadin container
- * "customer.name" is referenced by "customer_name" in jasperreports.
+ * Assumes that nested properties are named with underscores in the report, e.g. an property in the
+ * vaadin container "customer.name" is referenced by "customer_name" in jasperreports.
  * 
  * @author Patrick Deenen (patrick@opencircle.solutions)
  *
  */
 public class JRIndexedContainerDataSource implements JRRewindableDataSource, IndexedDataSource {
-	private Container.Indexed container;
-	private Object currentItemId;
-	private Item currentItem;
 
-	/**
-	 * Construct the datasource using a Vaadin Indexed container
-	 * 
-	 * @param container
-	 */
-	public JRIndexedContainerDataSource(Container.Indexed container) {
-		this.container = container;
-	}
+    private Container.Indexed container;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see net.sf.jasperreports.engine.JRDataSource#getFieldValue(net.sf.jasperreports .engine.JRField)
-	 */
-	@Override
-	public Object getFieldValue(JRField field) throws JRException {
-		Object result = null;
-		if (currentItem != null) {
-			String fieldName = field.getName().replaceAll("_", ".");
-			Property<?> p = currentItem.getItemProperty(fieldName);
-			if (p == null) {
-				fieldName = field.getPropertiesMap().getProperty(JRUtils.CONTAINER_PROPERTY_NAME);
-				p = currentItem.getItemProperty(fieldName);
-			}
-			if (p != null) {
-				result = p.getValue();
-				if (result != null && !(result instanceof String) && field.getValueClass() == String.class) {
-					result = result.toString();
-				}
-			}
-		}
-		return result;
-	}
+    private Object currentItemId;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see net.sf.jasperreports.engine.JRDataSource#next()
-	 */
-	@Override
-	public boolean next() throws JRException {
-		if (currentItem == null) {
-			moveFirst();
-			return currentItem != null;
-		}
-		currentItemId = container.nextItemId(currentItemId);
-		currentItem = container.getItem(currentItemId);
-		return currentItem != null;
-	}
+    private Item currentItem;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see net.sf.jasperreports.engine.JRRewindableDataSource#moveFirst()
-	 */
-	@Override
-	public void moveFirst() throws JRException {
-		if (container.size() > 0) {
-			currentItemId = container.firstItemId();
-			currentItem = container.getItem(currentItemId);
-		} else {
-			currentItemId = null;
-			currentItem = null;
-		}
-	}
+    /**
+     * Construct the data source using a Vaadin Indexed container
+     * 
+     * @param container
+     */
+    public JRIndexedContainerDataSource(Container.Indexed container) {
+        this.container = container;
+    }
 
-	@Override
-	public int getRecordIndex() {
-		return container.indexOfId(currentItemId);
-	}
+    /**
+     * 
+     */
+    @Override
+    public Object getFieldValue(JRField field) throws JRException {
+        Object result = null;
+        if (currentItem != null) {
+            String fieldName = field.getName().replaceAll("_", ".");
+            Property<?> p = currentItem.getItemProperty(fieldName);
+            if (p == null) {
+                fieldName = field.getPropertiesMap().getProperty(JRUtils.CONTAINER_PROPERTY_NAME);
+                p = currentItem.getItemProperty(fieldName);
+            }
+            if (p != null) {
+                result = p.getValue();
+                if (result != null && !(result instanceof String) && field.getValueClass() == String.class) {
+                    result = result.toString();
+                }
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public int getRecordIndex() {
+        return container.indexOfId(currentItemId);
+    }
+
+    @Override
+    public void moveFirst() throws JRException {
+        if (container.size() > 0) {
+            currentItemId = container.firstItemId();
+            currentItem = container.getItem(currentItemId);
+        } else {
+            currentItemId = null;
+            currentItem = null;
+        }
+    }
+
+    /**
+     * 
+     */
+    @Override
+    public boolean next() throws JRException {
+        if (currentItem == null) {
+            moveFirst();
+            return currentItem != null;
+        }
+        currentItemId = container.nextItemId(currentItemId);
+        currentItem = container.getItem(currentItemId);
+        return currentItem != null;
+    }
 }

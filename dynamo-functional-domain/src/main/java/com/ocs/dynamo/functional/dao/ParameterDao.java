@@ -11,17 +11,14 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-package com.ocs.jasperreports;
+package com.ocs.dynamo.functional.dao;
 
-import net.sf.jasperreports.web.util.WebHtmlResourceHandler;
+import com.ocs.dynamo.dao.BaseDao;
+import com.ocs.dynamo.functional.domain.Parameter;
 
-public class UniqueWebHtmlResourceHandler extends WebHtmlResourceHandler {
-    public UniqueWebHtmlResourceHandler(String path) {
-        super(path);
-    }
+/**
+ * Created by R.E.M. Claassen on 6-4-2017.
+ */
+public interface ParameterDao extends BaseDao<Integer, Parameter> {
 
-    @Override
-    public String getResourcePath(String id) {
-        return super.getResourcePath(id) + "&time=" + System.nanoTime();
-    }
 }

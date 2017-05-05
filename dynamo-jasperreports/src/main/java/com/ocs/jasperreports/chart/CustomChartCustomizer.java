@@ -20,22 +20,21 @@ import org.jfree.chart.plot.Marker;
 import org.jfree.chart.plot.Plot;
 
 /**
- * Chart customizer
- * 
- * @author bas.rutten
+ * Chart specific implementation of extra features
  *
  * @param <T>
+ *            the specific plot implementation for the chart
  */
 public interface CustomChartCustomizer<T extends Plot> {
-	void setLabels(T plot);
+    void setLabels(T plot);
 
-	void addRangeMarkerToPlot(T plot, Marker marker);
+    void addRangeMarkerToPlot(T plot, Marker marker);
 
-	void addDomainMarkerToPlot(T plot, Marker marker);
+    void addDomainMarkerToPlot(T plot, Marker marker);
 
-	void addQuadrant(T plot, ChartCustomizer.Quadrant quadrant);
+    void addQuadrant(T plot, ChartCustomizer.Quadrant quadrant);
 
-	void setStrokeTypes(T plot, Collection<ChartCustomizer.StrokeType> sts);
+    void setStrokeTypes(T plot, Collection<ChartCustomizer.StrokeType> sts);
 
-	void addAnnotationToPlot(T plot, Annotation annotation);
+    void addAnnotationToPlot(T plot, Annotation annotation);
 }

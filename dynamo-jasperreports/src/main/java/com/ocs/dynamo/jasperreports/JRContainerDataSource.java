@@ -45,7 +45,7 @@ public class JRContainerDataSource implements JRDataSource {
 	private Iterator<?> ids;
 
 	/**
-	 * Construct the datasource using a Vaadin Indexed container
+	 * Construct the data source using a Vaadin Indexed container
 	 * 
 	 * @param container
 	 */

@@ -352,6 +352,38 @@ public final class DateUtils {
         return 1 + date.getMonth().ordinal() / 3;
     }
 
+    /**
+     * 
+     * @param weekCode
+     * @return
+     */
+    public static LocalDate getStartDateOfWeek(String weekCode) {
+        return toLocalDate(getStartDateOfWeekLegacy(weekCode));
+    }
+
+    /**
+     * Translates a week code (yyyy-ww) to the starting day (this is taken to be a Monday) of that
+     * week
+     * 
+     * @param weekCode
+     *            the week code
+     * @return the date
+     */
+    public static Date getStartDateOfWeekLegacy(String weekCode) {
+        if (weekCode != null && weekCode.matches(WEEK_CODE_PATTERN)) {
+            int year = getYearFromWeekCode(weekCode);
+            int week = getWeekFromWeekCode(weekCode);
+
+            Calendar calendar = new GregorianCalendar(DynamoConstants.DEFAULT_LOCALE);
+            calendar.set(Calendar.YEAR, year);
+            calendar.set(Calendar.WEEK_OF_YEAR, week);
+            calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+
+            return truncate(calendar).getTime();
+        }
+        return null;
+    }
+
     private static int getWeekFromWeekCode(String weekCode) {
         return Integer.parseInt(weekCode.substring(5));
     }

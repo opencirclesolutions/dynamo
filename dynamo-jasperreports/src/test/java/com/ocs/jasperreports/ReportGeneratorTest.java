@@ -1,5 +1,17 @@
 package com.ocs.jasperreports;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Locale;
+import java.util.Map;
+
+import org.junit.Test;
+import org.springframework.mock.web.MockHttpSession;
+
 import com.ocs.dynamo.jasperreports.Customer;
 import com.ocs.dynamo.jasperreports.JRIndexedContainerDataSource;
 import com.ocs.dynamo.jasperreports.JRUtils;
@@ -7,18 +19,8 @@ import com.ocs.dynamo.jasperreports.Person;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.filter.And;
 import com.vaadin.data.util.filter.Compare;
+
 import net.sf.jasperreports.engine.JasperReport;
-import org.junit.Test;
-import org.springframework.mock.web.MockHttpSession;
-
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Locale;
-import java.util.Map;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 public class ReportGeneratorTest {
 
