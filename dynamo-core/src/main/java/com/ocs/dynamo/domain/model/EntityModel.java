@@ -289,6 +289,11 @@ public interface EntityModel<T> {
 	String WEEK = "week";
 
 	/**
+	 * Indicates whether direct navigation to this linked entity is allowed
+	 */
+	String DIRECT_NAVIGATION = "directNavigation";
+
+	/**
 	 * Adds a new attribute model on the position of the given existing attribute model. The
 	 * existing model will shift one position to the back of the list. When the existing model is
 	 * not found the attribute will added on the end of the list.

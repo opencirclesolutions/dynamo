@@ -55,6 +55,10 @@ public class QuickAddListSelect<ID extends Serializable, T extends AbstractEntit
      */
     private boolean viewMode;
 
+    private boolean quickAddAllowed;
+
+    private boolean directNavigationAllowed;
+
     /**
      * Constructor
      * 
@@ -72,6 +76,8 @@ public class QuickAddListSelect<ID extends Serializable, T extends AbstractEntit
         listSelect = new EntityListSelect<>(entityModel, attributeModel, service, filter, sortOrder);
         listSelect.setMultiSelect(multiSelect);
         listSelect.setRows(rows);
+        this.quickAddAllowed = attributeModel != null && attributeModel.isQuickAddAllowed();
+        this.directNavigationAllowed = (attributeModel != null && attributeModel.isDirectNavigation());
     }
 
     @Override
@@ -125,11 +131,26 @@ public class QuickAddListSelect<ID extends Serializable, T extends AbstractEntit
 
         bar.addComponent(listSelect);
 
-        if (!viewMode) {
-            Button addButton = constructAddButton();
-            bar.addComponent(addButton);
+        float listExpandRatio = 1f;
+        if (quickAddAllowed && !viewMode){
+            listExpandRatio -= 0.10f;
+        }
+        if (directNavigationAllowed){
+            listExpandRatio -= 0.05f;
         }
 
+        bar.setExpandRatio(listSelect, listExpandRatio);
+
+        if (!viewMode && quickAddAllowed) {
+            Button addButton = constructAddButton();
+            bar.addComponent(addButton);
+            bar.setExpandRatio(addButton, 0.10f);
+        }
+        if (directNavigationAllowed){
+            Button directNavigationButton = constructDirectNavigationButton();
+            bar.addComponent(directNavigationButton);
+            bar.setExpandRatio(directNavigationButton, 0.05f);
+        }
         return bar;
     }
 

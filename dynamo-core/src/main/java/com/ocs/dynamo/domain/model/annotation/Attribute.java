@@ -13,16 +13,16 @@
  */
 package com.ocs.dynamo.domain.model.annotation;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 import com.ocs.dynamo.domain.model.AttributeDateType;
 import com.ocs.dynamo.domain.model.AttributeSelectMode;
 import com.ocs.dynamo.domain.model.AttributeTextFieldMode;
 import com.ocs.dynamo.domain.model.NumberSelectMode;
 import com.ocs.dynamo.domain.model.VisibilityType;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * An interface that can be used to specify the properties of an attribute - this will override any
@@ -196,4 +196,7 @@ public @interface Attribute {
 
     /** whether the field represents a date that must be shown in week notation */
     boolean week() default false;
+
+    /** Whether direct navigation is allowed to this entity from another entity detailscreen */
+    boolean directNavigation() default false;
 }

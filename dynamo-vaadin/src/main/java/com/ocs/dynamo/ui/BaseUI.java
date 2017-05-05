@@ -17,8 +17,13 @@ import com.ocs.dynamo.ui.navigator.CustomNavigator;
 import com.vaadin.annotations.Widgetset;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.ViewProvider;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.SingleComponentContainer;
 import com.vaadin.ui.UI;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Consumer;
 
 @Widgetset(value = "com.ocs.dynamo.DynamoWidgetSet")
 public abstract class BaseUI extends UI {
@@ -39,6 +44,8 @@ public abstract class BaseUI extends UI {
 	 * The navigator
 	 */
 	private CustomNavigator navigator;
+
+	private Map<Class<?>, Consumer<?>> entityOnViewMapping = new HashMap<>();
 
 	public Integer getSelectedTab() {
 		return selectedTab;
@@ -84,5 +91,30 @@ public abstract class BaseUI extends UI {
 	public void setNavigator(CustomNavigator navigator) {
 		this.navigator = navigator;
 	}
+
+	public void addEntityOnViewMapping(Class<?> entityClass, Consumer<?> navigateAction){
+	    entityOnViewMapping.put(entityClass, navigateAction);
+    }
+
+    /**
+     * Navigate to a screen based on the actual type of parameter o.
+     * During initialisation of the UI of your project a mapping from
+     * type to consumer must have been provided by adding it through
+     * the method addEntityOnViewMapping.
+     * @param o The selected object to be displayed on the target screen.
+     */
+    public void navigateToEntityScreenDirectly(Object o){
+        Consumer navigateToView =entityOnViewMapping.getOrDefault(o.getClass(), err ->
+        Notification.show("No view mapping registered for class: " + o.getClass(), Notification.Type.ERROR_MESSAGE));
+        if (navigateToView != null){
+            try {
+                navigateToView.accept(o);
+            } catch (Exception e){
+                Notification.show("An exception occurred while executing the mapped action for class: " +
+                                    o.getClass() + " with message: " + e.getMessage(), Notification.Type.ERROR_MESSAGE);
+                throw e;
+            }
+        }
+    }
 
 }

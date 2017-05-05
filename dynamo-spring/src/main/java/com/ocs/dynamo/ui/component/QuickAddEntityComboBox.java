@@ -13,9 +13,6 @@
  */
 package com.ocs.dynamo.ui.component;
 
-import java.io.Serializable;
-import java.util.List;
-
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
@@ -29,6 +26,9 @@ import com.vaadin.data.util.filter.And;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
+
+import java.io.Serializable;
+import java.util.List;
 
 /**
  * A component that contains a combo box for selecting an entity, plus the option to add new values
@@ -45,6 +45,8 @@ public class QuickAddEntityComboBox<ID extends Serializable, T extends AbstractE
         QuickAddEntityField<ID, T, T> implements Refreshable {
 
 	private static final long serialVersionUID = 4246187881499965296L;
+	private final boolean quickAddAllowed;
+	private final boolean directNavigationAllowed;
 
 	/**
 	 * The combo box that we wrap this component around
@@ -68,9 +70,11 @@ public class QuickAddEntityComboBox<ID extends Serializable, T extends AbstractE
 	 * @param sortOrder
 	 */
 	public QuickAddEntityComboBox(EntityModel<T> entityModel, AttributeModel attributeModel,
-	        BaseService<ID, T> service, SelectMode mode, Filter filter, List<T> items, SortOrder... sortOrder) {
+	        BaseService<ID, T> service, SelectMode mode, Filter filter, boolean search, List<T> items, SortOrder... sortOrder) {
 		super(service, entityModel, attributeModel, filter);
 		comboBox = new EntityComboBox<>(entityModel, attributeModel, service, mode, filter, items, sortOrder);
+		quickAddAllowed = attributeModel != null && attributeModel.isQuickAddAllowed() && !search;
+		directNavigationAllowed = attributeModel != null && attributeModel.isDirectNavigation() && !search;
 	}
 
 	@Override
@@ -121,14 +125,29 @@ public class QuickAddEntityComboBox<ID extends Serializable, T extends AbstractE
 				setValue((T) event.getProperty().getValue());
 			}
 		});
+        comboBox.setSizeFull();
 
 		bar.addComponent(comboBox);
-		bar.setExpandRatio(comboBox, 0.90f);
+		float comboBoxExpandRatio = 1f;
+		if (quickAddAllowed){
+		    comboBoxExpandRatio -= 0.1f;
+        }
+        if (directNavigationAllowed){
+		    comboBoxExpandRatio -= 0.05f;
+        }
 
-		Button addButton = constructAddButton();
-		bar.addComponent(addButton);
-		bar.setExpandRatio(addButton, 0.10f);
+		bar.setExpandRatio(comboBox, comboBoxExpandRatio);
 
+		if (quickAddAllowed) {
+			Button addButton = constructAddButton();
+			bar.addComponent(addButton);
+			bar.setExpandRatio(addButton, 0.10f);
+		}
+		if (directNavigationAllowed) {
+			Button directNavigationButton = constructDirectNavigationButton();
+			bar.addComponent(directNavigationButton);
+			bar.setExpandRatio(directNavigationButton, 0.5f);
+		}
 		return bar;
 	}
 

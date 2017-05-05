@@ -13,16 +13,17 @@
  */
 package com.ocs.dynamo.ui.component;
 
-import java.io.Serializable;
-
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
+import com.ocs.dynamo.ui.BaseUI;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.UI;
+
+import java.io.Serializable;
 
 /**
  * Base class for components that display an Entity or collection of entities and that allow the
@@ -48,6 +49,11 @@ public abstract class QuickAddEntityField<ID extends Serializable, T extends Abs
      * The button that brings up the dialog for adding a new entity
      */
     private Button addButton;
+
+    /**
+     * The button that navigates directly to detailscreen of the selected entity
+     */
+    private Button directNavigationButton;
 
     /**
      * Additional filter for cascading
@@ -110,8 +116,25 @@ public abstract class QuickAddEntityField<ID extends Serializable, T extends Abs
         return addButton;
     }
 
+    /**
+     * Constructs the button that navigates directly to
+     *
+     * @return
+     */
+    protected Button constructDirectNavigationButton() {
+        directNavigationButton = new Button(getMessageService().getMessage("ocs.direct.navigate"));
+        directNavigationButton.addClickListener((Button.ClickListener) event -> {
+                ((BaseUI)ui).navigateToEntityScreenDirectly(getValue());
+        });
+        return directNavigationButton;
+    }
+
     public Button getAddButton() {
         return addButton;
+    }
+
+    public Button getDirectNavigationButton() {
+        return directNavigationButton;
     }
 
     @Override

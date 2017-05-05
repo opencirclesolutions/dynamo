@@ -1,14 +1,5 @@
 package com.ocs.dynamo.ui.composite.layout;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.inject.Inject;
-
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-
 import com.google.common.collect.Lists;
 import com.ocs.dynamo.domain.CascadeEntity;
 import com.ocs.dynamo.domain.TestEntity;
@@ -19,7 +10,7 @@ import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.service.CascadeEntityService;
 import com.ocs.dynamo.service.TestEntityService;
 import com.ocs.dynamo.test.BaseIntegrationTest;
-import com.ocs.dynamo.ui.component.EntityComboBox;
+import com.ocs.dynamo.ui.component.QuickAddEntityComboBox;
 import com.ocs.dynamo.ui.composite.form.FormOptions;
 import com.ocs.dynamo.ui.composite.table.ServiceResultsTableWrapper;
 import com.ocs.dynamo.ui.container.QueryType;
@@ -32,6 +23,13 @@ import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
+import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SimpleSearchLayoutTest extends BaseIntegrationTest {
 
@@ -307,15 +305,15 @@ public class SimpleSearchLayoutTest extends BaseIntegrationTest {
                 cascadeEntityService, entityModelFactory.getModel(CascadeEntity.class), QueryType.ID_BASED, fo, null);
         layout.build();
 
-        EntityComboBox<Integer, TestEntity> box1 = (EntityComboBox<Integer, TestEntity>) layout.getSearchForm()
+        QuickAddEntityComboBox<Integer, TestEntity> box1 = (QuickAddEntityComboBox<Integer, TestEntity>) (Object)layout.getSearchForm()
                 .getGroups().get("testEntity").getField();
-        ((BeanItemContainer<TestEntity>) box1.getContainerDataSource()).addAll(testEntityService.findAll());
-        Assert.assertEquals(3, box1.getContainerDataSource().size());
+        ((BeanItemContainer<TestEntity>) box1.getComboBox().getContainerDataSource()).addAll(testEntityService.findAll());
+        Assert.assertEquals(3, box1.getComboBox().getContainerDataSource().size());
 
         layout.setSearchValue("testEntity", e1);
 
         // check that an additional filter for "testEntity" is set
-        EntityComboBox<Integer, TestEntity2> box2 = (EntityComboBox<Integer, TestEntity2>) layout.getSearchForm()
+        QuickAddEntityComboBox<Integer, TestEntity2> box2 = (QuickAddEntityComboBox<Integer, TestEntity2>) (Object) layout.getSearchForm()
                 .getGroups().get("testEntity2").getField();
         Compare.Equal equal = (Compare.Equal) box2.getAdditionalFilter();
         Assert.assertEquals("testEntity", equal.getPropertyId());
