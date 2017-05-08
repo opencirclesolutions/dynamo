@@ -41,120 +41,120 @@ import com.vaadin.ui.Layout;
  * @param <T>
  *            the entity to search for
  */
-public class FlexibleSearchLayout<ID extends Serializable, T extends AbstractEntity<ID>> extends
-        AbstractSearchLayout<ID, T> {
+public class FlexibleSearchLayout<ID extends Serializable, T extends AbstractEntity<ID>>
+        extends AbstractSearchLayout<ID, T> {
 
-	private static final long serialVersionUID = -6179979286298244161L;
+    private static final long serialVersionUID = -6179979286298244161L;
 
-	/**
-	 * Paths of the properties for which to offer only basic String filter functionality (equal,
-	 * contains, and starts)
-	 */
-	private Set<String> basicStringFilterProperties = new HashSet<>();
+    /**
+     * Paths of the properties for which to offer only basic String filter functionality (equal,
+     * contains, and starts)
+     */
+    private Set<String> basicStringFilterProperties = new HashSet<>();
 
-	/**
-	 * Constructor
-	 * 
-	 * @param service
-	 *            the service used to retrieve the entities
-	 * @param entityModel
-	 *            the entity model
-	 * @param queryType
-	 *            the query type
-	 * @param formOptions
-	 *            the form options
-	 * @param sortOrder
-	 *            sort order
-	 * @param joins
-	 *            relations to fetch
-	 */
-	public FlexibleSearchLayout(BaseService<ID, T> service, EntityModel<T> entityModel, QueryType queryType,
-	        FormOptions formOptions, SortOrder sortOrder, FetchJoinInformation... joins) {
-		super(service, entityModel, queryType, formOptions, sortOrder, joins);
-	}
+    /**
+     * Constructor
+     * 
+     * @param service
+     *            the service used to retrieve the entities
+     * @param entityModel
+     *            the entity model
+     * @param queryType
+     *            the query type
+     * @param formOptions
+     *            the form options
+     * @param sortOrder
+     *            sort order
+     * @param joins
+     *            relations to fetch
+     */
+    public FlexibleSearchLayout(BaseService<ID, T> service, EntityModel<T> entityModel, QueryType queryType,
+            FormOptions formOptions, SortOrder sortOrder, FetchJoinInformation... joins) {
+        super(service, entityModel, queryType, formOptions, sortOrder, joins);
+    }
 
-	@Override
-	protected AbstractModelBasedSearchForm<ID, T> constructSearchForm() {
-		ModelBasedFlexibleSearchForm<ID, T> result = new ModelBasedFlexibleSearchForm<ID, T>(null, getEntityModel(),
-		        getFormOptions(), this.getDefaultFilters(), this.getFieldFilters()) {
+    @Override
+    protected AbstractModelBasedSearchForm<ID, T> constructSearchForm() {
+        ModelBasedFlexibleSearchForm<ID, T> result = new ModelBasedFlexibleSearchForm<ID, T>(null, getEntityModel(),
+                getFormOptions(), this.getDefaultFilters(), this.getFieldFilters()) {
 
-			private static final long serialVersionUID = 8929442625027442714L;
+            private static final long serialVersionUID = 8929442625027442714L;
 
-			@Override
-			protected void afterSearchFieldToggle(boolean visible) {
-				FlexibleSearchLayout.this.afterSearchFieldToggle(visible);
-			}
+            @Override
+            protected void afterSearchFieldToggle(boolean visible) {
+                FlexibleSearchLayout.this.afterSearchFieldToggle(visible);
+            }
 
-			@Override
-			protected Field<?> constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel) {
-				return FlexibleSearchLayout.this.constructCustomField(entityModel, attributeModel, false, true);
-			}
+            @Override
+            protected Field<?> constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel) {
+                return FlexibleSearchLayout.this.constructCustomField(entityModel, attributeModel, false, true);
+            }
 
-			@Override
-			protected void postProcessButtonBar(Layout buttonBar) {
-				FlexibleSearchLayout.this.postProcessSearchButtonBar(buttonBar);
-			}
+            @Override
+            protected void postProcessButtonBar(Layout buttonBar) {
+                FlexibleSearchLayout.this.postProcessSearchButtonBar(buttonBar);
+            }
 
-			@Override
-			protected void validateBeforeSearch() {
-				FlexibleSearchLayout.this.validateBeforeSearch();
-			}
+            @Override
+            protected void validateBeforeSearch() {
+                FlexibleSearchLayout.this.validateBeforeSearch();
+            }
 
-		};
-		result.setFieldEntityModels(getFieldEntityModels());
-		result.setBasicStringFilterProperties(basicStringFilterProperties);
-		result.build();
+        };
+        result.setFieldEntityModels(getFieldEntityModels());
+        result.setBasicStringFilterProperties(basicStringFilterProperties);
+        result.build();
 
-		for (AttributeModel am : getEntityModel().getRequiredForSearchingAttributeModels()) {
-			result.addFilter(am, result.getDefaultFilterType(am), null, null);
-		}
+        for (AttributeModel am : getEntityModel().getRequiredForSearchingAttributeModels()) {
+            result.addFilter(am, result.getDefaultFilterType(am), null, null);
+        }
 
-		return result;
-	}
+        return result;
+    }
 
-	/**
-	 * Adds a property to the set of properties for which only basic String filters will be
-	 * supported
-	 * 
-	 * @param property
-	 *            the property
-	 */
-	public void addBasicStringFilterProperty(String property) {
-		basicStringFilterProperties.add(property);
-	}
+    /**
+     * Adds a property to the set of properties for which only basic String filters will be
+     * supported
+     * 
+     * @param property
+     *            the property
+     */
+    public void addBasicStringFilterProperty(String property) {
+        basicStringFilterProperties.add(property);
+    }
 
-	@Override
-	public ModelBasedFlexibleSearchForm<ID, T> getSearchForm() {
-		return (ModelBasedFlexibleSearchForm<ID, T>) super.getSearchForm();
-	}
+    @Override
+    public ModelBasedFlexibleSearchForm<ID, T> getSearchForm() {
+        return (ModelBasedFlexibleSearchForm<ID, T>) super.getSearchForm();
+    }
 
-	/**
-	 * Sets a predefined search value
-	 * 
-	 * @param propertyId
-	 *            the property to search for
-	 * @param value
-	 *            the desired value
-	 */
-	@Override
-	public void setSearchValue(String propertyId, Object value) {
-		getSearchForm().addFilter(getEntityModel().getAttributeModel(propertyId), FlexibleFilterType.EQUALS, value,
-		        null);
-	}
+    /**
+     * Sets a predefined search value
+     * 
+     * @param propertyId
+     *            the property to search for
+     * @param value
+     *            the desired value
+     */
+    @Override
+    public void setSearchValue(String propertyId, Object value) {
+        getSearchForm().addFilter(getEntityModel().getAttributeModel(propertyId), FlexibleFilterType.EQUALS, value,
+                null);
+    }
 
-	/**
-	 * Sets a certain search value (for a property with an upper and a lower bound)
-	 * 
-	 * @param propertyId
-	 *            the property to search for
-	 * @param value
-	 *            the value of the lower bound
-	 * @param auxValue
-	 *            the value of the upper bound
-	 */
-	@Override
-	public void setSearchValue(String propertyId, Object value, Object auxValue) {
-		getSearchForm().addFilter(getEntityModel().getAttributeModel(propertyId), FlexibleFilterType.BETWEEN, value,
-		        auxValue);
-	}
+    /**
+     * Sets a certain search value (for a property with an upper and a lower bound)
+     * 
+     * @param propertyId
+     *            the property to search for
+     * @param value
+     *            the value of the lower bound
+     * @param auxValue
+     *            the value of the upper bound
+     */
+    @Override
+    public void setSearchValue(String propertyId, Object value, Object auxValue) {
+        getSearchForm().addFilter(getEntityModel().getAttributeModel(propertyId), FlexibleFilterType.BETWEEN, value,
+                auxValue);
+    }
 }

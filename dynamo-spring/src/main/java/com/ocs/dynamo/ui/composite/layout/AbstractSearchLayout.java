@@ -520,6 +520,11 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
                 }
 
                 @Override
+                protected void afterEntitySelected(T entity) {
+                    AbstractSearchLayout.this.afterEntitySelected(editForm, entity);
+                }
+
+                @Override
                 protected String getParentGroup(String childGroup) {
                     return AbstractSearchLayout.this.getParentGroup(childGroup);
                 }
@@ -631,7 +636,6 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
             if (id != null) {
                 T next = getService().fetchById(id, getDetailJoinsFallBack());
                 getTableWrapper().getTable().select(next.getId());
-                afterEntitySelected(getEditForm(), next);
                 return next;
             }
         }
@@ -652,7 +656,6 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
             if (id != null) {
                 T prev = getService().fetchById(id, getDetailJoinsFallBack());
                 getTableWrapper().getTable().select(prev.getId());
-                afterEntitySelected(getEditForm(), prev);
                 return prev;
             }
         }

@@ -470,6 +470,18 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
     }
 
     /**
+     * Method that is called after the user selects an entity to view in Details mode
+     * 
+     * @param editForm
+     *            the edit form which displays the entity
+     * @param entity
+     *            the selected entity
+     */
+    protected void afterEntitySelected(T entity) {
+        // override in subclass
+    }
+
+    /**
      * Respond to the setting of a new entity as the selected entity. This can be used to fetch any
      * additionally required data
      * 
@@ -550,7 +562,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
         HorizontalLayout buttonBar = constructButtonBar();
         buttonBar.setSizeUndefined();
 
-        if(getFormOptions().isPlaceButtonBarAtTop()) {
+        if (getFormOptions().isPlaceButtonBarAtTop()) {
             layout.addComponent(buttonBar);
         } else {
             titleBars.get(isViewMode()).addComponent(buttonBar);
@@ -795,6 +807,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
                 T prev = getPrevEntity(getEntity());
                 if (prev != null) {
                     setEntity(prev, true);
+                    afterEntitySelected(prev);
                 }
             }
         });
@@ -811,6 +824,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
                 T next = getNextEntity(getEntity());
                 if (next != null) {
                     setEntity(next, true);
+                    afterEntitySelected(next);
                 }
             }
         });
