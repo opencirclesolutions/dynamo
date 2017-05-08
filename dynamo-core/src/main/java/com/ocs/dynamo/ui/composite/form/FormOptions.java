@@ -21,7 +21,7 @@ import com.ocs.dynamo.ui.composite.type.ScreenMode;
 /**
  * Parameter object that can be passed along when creating a page - this object uses smart defaults
  * so that in most cases, you do not have to set the properties individually
- * 
+ *
  * @author bas.rutten
  */
 public class FormOptions implements Serializable {
@@ -66,6 +66,11 @@ public class FormOptions implements Serializable {
 	private boolean openInViewMode;
 
 	/**
+	 * Whether to place the butonbar at the top of the screen
+	 */
+	private boolean placeButtonBarAtTop;
+
+	/**
 	 * Whether the form is shown as part of a popup - set by the framework when appropriate
 	 */
 	private boolean popup;
@@ -107,6 +112,11 @@ public class FormOptions implements Serializable {
 	 * Whether to display a "next" button
 	 */
 	private boolean showNextButton = false;
+
+	/**
+	 * Whether to display a "previous" button
+	 */
+	private boolean showPrevButton = false;
 
 	/**
 	 * Whether to include an quick search field
@@ -165,6 +175,10 @@ public class FormOptions implements Serializable {
 		return openInViewMode;
 	}
 
+	public boolean isPlaceButtonBarAtTop() {
+		return placeButtonBarAtTop;
+	}
+
 	public boolean isPopup() {
 		return popup;
 	}
@@ -187,6 +201,10 @@ public class FormOptions implements Serializable {
 
 	public boolean isShowEditButton() {
 		return showEditButton;
+	}
+
+	public boolean isShowPrevButton() {
+		return showPrevButton;
 	}
 
 	public boolean isShowNextButton() {
@@ -248,6 +266,11 @@ public class FormOptions implements Serializable {
 		return this;
 	}
 
+	public FormOptions setPlaceButtonBarAtTop(boolean placeButtonBarAtTop) {
+		this.placeButtonBarAtTop = placeButtonBarAtTop;
+		return this;
+	}
+
 	public FormOptions setPopup(boolean popup) {
 		this.popup = popup;
 		return this;
@@ -297,6 +320,23 @@ public class FormOptions implements Serializable {
 
 	public FormOptions setShowNextButton(boolean showNextButton) {
 		this.showNextButton = showNextButton;
+		return this;
+	}
+
+	public FormOptions setShowPrevButton(boolean showPrevButton) {
+		this.showPrevButton = showPrevButton;
+		return this;
+	}
+
+	/**
+	 * Shorthand method for showing/hiding the previous and next buttons
+	 *
+	 * @param show
+	 * @return
+	 */
+	public FormOptions setShowIterationButtons(boolean show) {
+		this.setShowPrevButton(show);
+		this.setShowNextButton(show);
 		return this;
 	}
 

@@ -13,69 +13,70 @@
  */
 package com.ocs.dynamo.functional.domain;
 
-import javax.persistence.DiscriminatorColumn;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Inheritance;
 import javax.persistence.SequenceGenerator;
+import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 
-import com.ocs.dynamo.domain.AbstractEntity;
-import com.ocs.dynamo.domain.model.VisibilityType;
+import com.ocs.dynamo.domain.AbstractAuditableEntity;
 import com.ocs.dynamo.domain.model.annotation.Attribute;
+import com.ocs.dynamo.domain.model.annotation.AttributeOrder;
 import com.ocs.dynamo.domain.model.annotation.Model;
-import com.ocs.dynamo.functional.DomainConstants;
 
 /**
  * Base class for reference information.
- * 
- * @author Patrick Deenen (patrick@opencircle.solutions)
+ *
+ * @author R.E.M. Claassen (ruud@opencircle.solutions)
  *
  */
-@Inheritance
-@DiscriminatorColumn(name = "TYPE")
 @Entity
+@AttributeOrder(attributeNames = { "name", "parameterType", "value", "createdBy", "createdOn" })
 @Model(displayProperty = "name", sortOrder = "name asc")
-public abstract class Domain extends AbstractEntity<Integer> {
+public class Parameter extends AbstractAuditableEntity<Integer> {
+
+    private static final long serialVersionUID = 3570240623304694175L;
 
     public static final String ATTRIBUTE_NAME = "name";
 
-    public static final String ATTRIBUTE_CODE = "code";
-
-    private static final long serialVersionUID = 1598343469161718498L;
-
     @Id
-    @SequenceGenerator(name = "DOMAIN_ID_GENERATOR", sequenceName = "DOMAIN_ID_SEQ")
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "DOMAIN_ID_GENERATOR")
+    @SequenceGenerator(name = "PARAMETER_ID_GENERATOR", sequenceName = "PARAMETER_ID_SEQ")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "PARAMETER_ID_GENERATOR")
     private Integer id;
 
-    /**
-     * By default, we only use "name" so the code is hidden
-     */
-    @Attribute(visible = VisibilityType.HIDE)
-    private String code;
-
     @NotNull
-    @Attribute(main = true, maxLength = DomainConstants.MAX_NAME_LENGTH, searchable = true)
+    @Attribute(main = true, maxLength = 100, searchable = true, readOnly = true)
     private String name;
 
-    public Domain() {
+    @NotNull
+    @Attribute(searchable = true, readOnly = true)
+    @Column(name = "type")
+    private ParameterType parameterType;
+
+    @NotNull
+    @Attribute(maxLength = 50)
+    private String value;
+
+    public ParameterType getParameterType() {
+        return parameterType;
     }
 
-    /**
-     * Constructor
-     * 
-     * @param code
-     * @param name
-     */
-    public Domain(String code, String name) {
-        this.code = code;
-        this.name = name;
+    public void setParameterType(ParameterType parameterType) {
+        this.parameterType = parameterType;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
     }
 
     @Override
@@ -86,14 +87,6 @@ public abstract class Domain extends AbstractEntity<Integer> {
     @Override
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    public String getCode() {
-        return this.code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
     }
 
     public String getName() {
@@ -114,7 +107,7 @@ public abstract class Domain extends AbstractEntity<Integer> {
         if (this == obj) {
             return true;
         }
-        if (!(obj instanceof Domain)) {
+        if (!(obj instanceof Parameter)) {
             return false;
         }
 
@@ -122,19 +115,34 @@ public abstract class Domain extends AbstractEntity<Integer> {
             return false;
         }
 
-        Domain other = (Domain) obj;
+        Parameter other = (Parameter) obj;
         if (this.id != null && other.id != null) {
             // first, check if the IDs match
             return ObjectUtils.equals(this.id, other.id);
         } else {
             // if this is not the case, check for code and type
-            return ObjectUtils.equals(this.code, other.code);
+            return ObjectUtils.equals(this.name, other.name);
         }
 
     }
 
     @Override
     public String toString() {
-        return ReflectionToStringBuilder.toStringExclude(this, "parent");
+        return ReflectionToStringBuilder.toString(this);
+    }
+
+    @AssertTrue(message = "{Parameter.type.valid}")
+    public boolean isValueCorrect() {
+        if (value == null) {
+            return true;
+        }
+
+        if (ParameterType.BOOLEAN.equals(this.parameterType)) {
+            return "true".equals(value) || "false".equals(value);
+        } else if (ParameterType.INTEGER.equals(this.parameterType)) {
+            return value.matches("\\d+");
+        } else {
+            return true;
+        }
     }
 }

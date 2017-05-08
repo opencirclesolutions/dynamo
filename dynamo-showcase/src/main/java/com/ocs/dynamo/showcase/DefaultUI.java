@@ -47,8 +47,6 @@ import com.vaadin.ui.VerticalLayout;
 @UIScope
 public class DefaultUI extends BaseUI {
 
-    private MenuBar menu;
-
     @Autowired
     private MenuService menuService;
 
@@ -78,10 +76,6 @@ public class DefaultUI extends BaseUI {
     @Inject
     private SpringViewProvider viewProvider;
 
-    private Panel viewPanel;
-
-    private Navigator navigator;
-
     /**
      * Main method - sets up the application
      */
@@ -94,7 +88,7 @@ public class DefaultUI extends BaseUI {
 
         // navigator part
         VerticalLayout viewLayout = new VerticalLayout();
-        viewPanel = new Panel();
+        Panel viewPanel = new Panel();
         viewPanel.setImmediate(Boolean.TRUE);
         viewPanel.setContent(viewLayout);
 
@@ -106,13 +100,13 @@ public class DefaultUI extends BaseUI {
         stateManager.setState(Views.MOVIES_VIEW);
 
         // create the navigator
-        navigator = new Navigator(this, stateManager,
+        Navigator navigator = new Navigator(this, stateManager,
                 new Navigator.SingleComponentContainerViewDisplay(viewPanel));
         UI.getCurrent().setNavigator(navigator);
         navigator.addProvider(viewProvider);
         navigator.setErrorView(new ErrorView());
 
-        menu = menuService.constructMenu("movies.menu", navigator);
+        MenuBar menu = menuService.constructMenu("movies.menu", navigator);
         content.addComponent(menu);
 
         // Display the greeting

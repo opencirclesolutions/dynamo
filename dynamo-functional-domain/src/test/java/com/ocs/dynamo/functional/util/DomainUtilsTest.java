@@ -119,7 +119,7 @@ public class DomainUtilsTest extends BaseMockitoTest {
 		Country existing = new Country();
 		existing.setName("SomeName");
 		existing.setId(44);
-		Mockito.when(service.findByUniqueProperty(Domain.NAME, "SomeName", true)).thenReturn(existing);
+		Mockito.when(service.findByUniqueProperty(Domain.ATTRIBUTE_NAME, "SomeName", true)).thenReturn(existing);
 
 		Country country = DomainUtil.createIfNotExists(service, Country.class, "SomeName", true);
 		Assert.assertNotNull(country);

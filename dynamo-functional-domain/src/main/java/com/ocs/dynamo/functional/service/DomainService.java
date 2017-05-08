@@ -28,22 +28,21 @@ import com.ocs.dynamo.service.BaseService;
  */
 public interface DomainService extends BaseService<Integer, Domain> {
 
-	/**
-	 * Query the children for a given parent
-	 * 
-	 * @param parent
-	 * @return the children for the given parent
-	 */
-	@SuppressWarnings("rawtypes")
-	List<DomainChild<? extends DomainParent>> findChildren(
-			DomainParent<? extends DomainChild> parent);
+    /**
+     * Query the children for a given parent
+     * 
+     * @param parent
+     * @return the children for the given parent
+     */
+    @SuppressWarnings("rawtypes")
+    List<DomainChild<? extends DomainParent>> findChildren(DomainParent<? extends DomainChild> parent);
 
-	/**
-	 * Query all entities for a specific type (subclass)
-	 * 
-	 * @param type
-	 *            The subclass
-	 * @return All entities of given type
-	 */
-	List<? extends Domain> findAllByType(Class<? extends Domain> type);
+    /**
+     * Query all entities for a specific type (subclass)
+     * 
+     * @param type
+     *            The subclass
+     * @return All entities of given type
+     */
+    List<? extends Domain> findAllByType(Class<? extends Domain> type);
 }

@@ -191,6 +191,19 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
     private void copyValueFromContainer() {
         Collection<T> values = container.getItemIds();
         setValue(new HashSet<>(values));
+        setComboBoxWidth();
+    }
+
+    @Override
+    public void focus() {
+        super.focus();
+        if (comboBox != null) {
+            comboBox.focus();
+        }
+    }
+
+    public EntityComboBox<ID, T> getComboBox() {
+        return comboBox;
     }
 
     @Override
@@ -199,6 +212,10 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
             return null;
         }
         return container.getItemIds();
+    }
+
+    public ExtTokenField getTokenField() {
+        return extTokenField;
     }
 
     @Override
@@ -218,8 +235,9 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
 
         comboBox.setInputPrompt(getMessageService().getMessage("ocs.type.to.add"));
         comboBox.setFilteringMode(FilteringMode.CONTAINS);
-        comboBox.setWidth(25, Unit.PERCENTAGE);
         comboBox.setHeightUndefined();
+
+        setComboBoxWidth();
 
         extTokenField.setInputField(comboBox);
         extTokenField.setEnableDefaultDeleteTokenAction(true);
@@ -246,9 +264,27 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
     }
 
     @Override
+    public void refresh() {
+        if (comboBox != null) {
+            comboBox.refresh();
+        }
+    }
+
+    /**
+     * Adapt the width of the combo box based on the number of items currently selected
+     */
+    private void setComboBoxWidth() {
+        // if selection is empty, set combo box to full width
+        if (container.size() > 0) {
+            comboBox.setWidth(25, Unit.PERCENTAGE);
+        } else {
+            comboBox.setWidth(100, Unit.PERCENTAGE);
+        }
+    }
+
+    @Override
     protected void setInternalValue(Collection<T> values) {
         super.setInternalValue(values);
-
         container.removeAllItems();
         if (values != null) {
             container.addAll((Collection<T>) values);
@@ -274,28 +310,5 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
     public void setValue(Collection<T> values) {
         super.setValue(values);
         setInternalValue(values);
-    }
-
-    public EntityComboBox<ID, T> getComboBox() {
-        return comboBox;
-    }
-
-    public ExtTokenField getTokenField() {
-        return extTokenField;
-    }
-
-    @Override
-    public void refresh() {
-        if (comboBox != null) {
-            comboBox.refresh();
-        }
-    }
-
-    @Override
-    public void focus() {
-        super.focus();
-        if (comboBox != null) {
-            comboBox.focus();
-        }
     }
 }

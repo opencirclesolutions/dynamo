@@ -34,7 +34,7 @@ public class PivotIdList extends AbstractList<Integer> implements Serializable {
      */
     private static final long serialVersionUID = 1L;
 
-    private Map<Integer, Integer> cachedIds = new HashMap<Integer, Integer>();
+    private Map<Integer, Integer> cachedIds = new HashMap<>();
 
     private PivotContainer container;
 

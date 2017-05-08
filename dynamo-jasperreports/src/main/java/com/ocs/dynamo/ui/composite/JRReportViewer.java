@@ -147,22 +147,22 @@ public class JRReportViewer<T> extends BaseCustomComponent {
 	}
 
 	protected ComponentContainer buildMain() {
-		ComponentContainer main = null;
+		ComponentContainer cc = null;
 		if (isSplitlayout()) {
 			// Create split layout for reports
 			HorizontalSplitPanel sp = new HorizontalSplitPanel(toolbar, reportArea);
 			sp.setSizeFull();
 			sp.setSplitPosition(30, Unit.PERCENTAGE);
-			main = sp;
+			cc = sp;
 		} else {
 			VerticalLayout vl = new VerticalLayout();
 			vl.setMargin(true);
 			vl.setSpacing(true);
 			vl.addComponent(toolbar);
 			vl.addComponent(reportArea);
-			main = vl;
+			cc = vl;
 		}
-		return main;
+		return cc;
 	}
 
 	protected Component buildExportSelection() {
@@ -276,7 +276,7 @@ public class JRReportViewer<T> extends BaseCustomComponent {
 		currentParameters = parameters;
 
 		// Load template
-		ReportDefinition rd = (ReportDefinition) getReportSelection().getValue();
+		ReportDefinition rd = getReportSelectionValue();
 		String path = getFullPath(rd);
 		jasperReport = reportGenerator.loadTemplate(path);
 
