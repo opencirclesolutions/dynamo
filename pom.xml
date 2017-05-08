@@ -5,7 +5,7 @@
 	<groupId>org.dynamoframework</groupId>
 	<artifactId>dynamo-parent</artifactId>
 	<packaging>pom</packaging>
-	<version>1.1-CB2-SNAPSHOT</version>
+	<version>1.1-CB2</version>
 	<name>Dynamo Framework</name>
 	<description>Dynamo Web Application Accelerator is a development framework that aims to increase productivity.</description>
 	<url>https://github.com/opencirclesolutions/dynamo</url>
@@ -58,14 +58,14 @@
 	</scm>
 
 	<distributionManagement>
-		<snapshotRepository>
-			<id>ossrh</id>
-			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-		</snapshotRepository>
 		<repository>
-			<id>ossrh</id>
-			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+			<id>nexus</id>
+			<url>http://nexus-opencirclesol.rhcloud.com/content/repositories/releases/</url>
 		</repository>
+		<snapshotRepository>
+			<id>nexus</id>
+			<url>http://nexus-opencirclesol.rhcloud.com/content/repositories/snapshots</url>
+		</snapshotRepository>
 	</distributionManagement>
 
 	<modules>
