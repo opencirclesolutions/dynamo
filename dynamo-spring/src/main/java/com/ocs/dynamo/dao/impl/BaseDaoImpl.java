@@ -84,7 +84,7 @@ public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements B
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
     private void addSorting(JPAQuery query, SortOrder... sorts) {
-        PathBuilder<T> builder = new PathBuilder<T>(getDslRoot().getType(), getDslRoot().getMetadata());
+        PathBuilder<T> builder = new PathBuilder<>(getDslRoot().getType(), getDslRoot().getMetadata());
 
         for (SortOrder s : sorts) {
             if (s != null && s.getProperty() != null) {
@@ -210,7 +210,7 @@ public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements B
     @Override
     public List<T> fetchByIds(List<ID> ids, SortOrders sortOrders, FetchJoinInformation... joins) {
         if (ids.isEmpty()) {
-            return new ArrayList<T>();
+            return new ArrayList<>();
         }
 
         CriteriaQuery<T> cq = JpaQueryBuilder.createFetchQuery(entityManager, getEntityClass(), ids, sortOrders,

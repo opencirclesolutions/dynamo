@@ -94,7 +94,7 @@ public abstract class BaseCustomComponent extends CustomComponent implements Bui
                 // String
                 String str = (String) value;
                 str = str.replace("\n", StringUtil.getHtmlLineBreak());
-                property = new ObjectProperty<String>(str);
+                property = new ObjectProperty<>(str);
                 fieldLabel.setPropertyDataSource(property);
                 fieldLabel.setContentMode(ContentMode.HTML);
             } else if (Date.class.equals(type)) {

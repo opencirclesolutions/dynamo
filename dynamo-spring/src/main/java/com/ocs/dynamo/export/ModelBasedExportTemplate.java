@@ -23,8 +23,7 @@ import java.util.List;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
-
-import au.com.bytecode.opencsv.CSVWriter;
+import org.apache.poi.ss.usermodel.Workbook;
 
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.dao.SortOrder;
@@ -41,6 +40,8 @@ import com.ocs.dynamo.ui.composite.table.TableUtils;
 import com.ocs.dynamo.utils.ClassUtils;
 import com.ocs.dynamo.utils.SystemPropertyUtils;
 
+import au.com.bytecode.opencsv.CSVWriter;
+
 /**
  * Template for exporting a data set to Excel based on the Entity model
  * 
@@ -51,150 +52,145 @@ import com.ocs.dynamo.utils.SystemPropertyUtils;
  * @param <T>
  *            the type of the entity
  */
-public abstract class ModelBasedExportTemplate<ID extends Serializable, T extends AbstractEntity<ID>> extends
-        BaseExportTemplate<ID, T> {
+public abstract class ModelBasedExportTemplate<ID extends Serializable, T extends AbstractEntity<ID>>
+        extends BaseExportTemplate<ID, T> {
 
-	/**
-	 * The entity model used to govern the export
-	 */
-	private EntityModel<T> entityModel;
+    /**
+     * The entity model used to govern the export
+     */
+    private EntityModel<T> entityModel;
 
-	/**
-	 * Constructor
-	 * 
-	 * @param service
-	 *            the service used to retrieve the data
-	 * @param entityModel
-	 *            the entity model
-	 * @param sortOrders
-	 *            any sort orders to apply to the data
-	 * @param filter
-	 *            the filter that is used to retrieve the appropriate data
-	 * @param title
-	 *            the title of the sheet
-	 * @param customGenerator
-	 *            custom style generator
-	 * @param joins
-	 */
-	public ModelBasedExportTemplate(BaseService<ID, T> service, EntityModel<T> entityModel, SortOrder[] sortOrders,
-	        Filter filter, String title, boolean intThousandsGrouping, CustomXlsStyleGenerator<ID, T> customGenerator,
-	        FetchJoinInformation... joins) {
-		super(service, sortOrders, filter, title, intThousandsGrouping, customGenerator, joins);
-		this.entityModel = entityModel;
-	}
+    /**
+     * Constructor
+     * 
+     * @param service
+     *            the service used to retrieve the data
+     * @param entityModel
+     *            the entity model
+     * @param sortOrders
+     *            any sort orders to apply to the data
+     * @param filter
+     *            the filter that is used to retrieve the appropriate data
+     * @param title
+     *            the title of the sheet
+     * @param customGenerator
+     *            custom style generator
+     * @param joins
+     */
+    public ModelBasedExportTemplate(BaseService<ID, T> service, EntityModel<T> entityModel, SortOrder[] sortOrders,
+            Filter filter, String title, boolean intThousandsGrouping, CustomXlsStyleGenerator<ID, T> customGenerator,
+            FetchJoinInformation... joins) {
+        super(service, sortOrders, filter, title, intThousandsGrouping, customGenerator, joins);
+        this.entityModel = entityModel;
+    }
 
-	@Override
-	protected byte[] generateXls(DataSetIterator<ID, T> iterator) throws IOException {
-		setWorkbook(createWorkbook(iterator.size()));
-		try {
-			Sheet sheet = getWorkbook().createSheet(getTitle());
-			setGenerator(createGenerator(getWorkbook()));
+    @Override
+    protected byte[] generateXls(DataSetIterator<ID, T> iterator) throws IOException {
+        try (Workbook wb = createWorkbook(iterator.size())) {
+            setWorkbook(wb);
+            Sheet sheet = getWorkbook().createSheet(getTitle());
+            setGenerator(createGenerator(getWorkbook()));
 
-			boolean resize = canResize();
-			ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            boolean resize = canResize();
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
 
-			// add header row
-			Row titleRow = sheet.createRow(0);
-			titleRow.setHeightInPoints(TITLE_ROW_HEIGHT);
+            // add header row
+            Row titleRow = sheet.createRow(0);
+            titleRow.setHeightInPoints(TITLE_ROW_HEIGHT);
 
-			int i = 0;
-			for (AttributeModel am : entityModel.getAttributeModels()) {
-				if (show(am)) {
-					if (!resize) {
-						sheet.setColumnWidth(i, FIXED_COLUMN_WIDTH);
-					}
-					Cell cell = titleRow.createCell(i);
-					cell.setCellStyle(getGenerator().getHeaderStyle(i));
-					cell.setCellValue(am.getDisplayName());
-					i++;
-				}
-			}
+            int i = 0;
+            for (AttributeModel am : entityModel.getAttributeModels()) {
+                if (show(am)) {
+                    if (!resize) {
+                        sheet.setColumnWidth(i, FIXED_COLUMN_WIDTH);
+                    }
+                    Cell cell = titleRow.createCell(i);
+                    cell.setCellStyle(getGenerator().getHeaderStyle(i));
+                    cell.setCellValue(am.getDisplayName());
+                    i++;
+                }
+            }
 
-			// iterate over the rows
-			int rowIndex = 1;
-			T entity = iterator.next();
-			while (entity != null) {
-				Row row = sheet.createRow(rowIndex);
+            // iterate over the rows
+            int rowIndex = 1;
+            T entity = iterator.next();
+            while (entity != null) {
+                Row row = sheet.createRow(rowIndex);
 
-				int colIndex = 0;
-				for (AttributeModel am : entityModel.getAttributeModels()) {
-					if (am != null && show(am)) {
-						Object value = ClassUtils.getFieldValue(entity, am.getPath());
-						Cell cell = createCell(row, colIndex, entity, value, am, false);
-						writeCellValue(cell, value, entity, entityModel, am);
-						colIndex++;
-					}
-				}
-				rowIndex++;
-				entity = iterator.next();
-			}
-			resizeColumns(sheet);
+                int colIndex = 0;
+                for (AttributeModel am : entityModel.getAttributeModels()) {
+                    if (am != null && show(am)) {
+                        Object value = ClassUtils.getFieldValue(entity, am.getPath());
+                        Cell cell = createCell(row, colIndex, entity, value, am, false);
+                        writeCellValue(cell, value, entity, entityModel, am);
+                        colIndex++;
+                    }
+                }
+                rowIndex++;
+                entity = iterator.next();
+            }
+            resizeColumns(sheet);
+            getWorkbook().write(stream);
+            return stream.toByteArray();
+        }
+    }
 
-			getWorkbook().write(stream);
-			return stream.toByteArray();
-		} finally {
-			if (getWorkbook() != null) {
-				getWorkbook().close();
-			}
-		}
-	}
+    /**
+     * Check whether a certain attribute model must be included in the export
+     * 
+     * @param am
+     *            the attribute model
+     * @return <code>true</code> if the attribute must be included, <code>false</code> otherwise
+     */
+    private boolean show(AttributeModel am) {
+        // never show invisible or LOB attributes
+        if (!am.isVisible() || AttributeType.LOB.equals(am.getAttributeType())) {
+            return false;
+        }
 
-	/**
-	 * Check whether a certain attribute model must be included in the export
-	 * 
-	 * @param am
-	 *            the attribute model
-	 * @return <code>true</code> if the attribute must be included, <code>false</code> otherwise
-	 */
-	private boolean show(AttributeModel am) {
-		// never show invisible or LOB attributes
-		if (!am.isVisible() || AttributeType.LOB.equals(am.getAttributeType())) {
-			return false;
-		}
+        // show multiple value attributes only if they would normally show up in a table
+        if (AttributeType.DETAIL.equals(am.getAttributeType())
+                || AttributeType.ELEMENT_COLLECTION.equals(am.getAttributeType())) {
+            return am.isVisibleInTable();
+        }
+        return true;
+    }
 
-		// show multiple value attributes only if they would normally show up in a table
-		if (AttributeType.DETAIL.equals(am.getAttributeType())
-		        || AttributeType.ELEMENT_COLLECTION.equals(am.getAttributeType())) {
-			return am.isVisibleInTable();
-		}
-		return true;
-	}
+    @Override
+    protected byte[] generateCsv(DataSetIterator<ID, T> iterator) throws IOException {
+        try (ByteArrayOutputStream out = new ByteArrayOutputStream();
+                CSVWriter writer = new CSVWriter(new OutputStreamWriter(out, DynamoConstants.UTF_8),
+                        SystemPropertyUtils.getExportCsvSeparator().charAt(0))) {
 
-	@Override
-	protected byte[] generateCsv(DataSetIterator<ID, T> iterator) throws IOException {
-		try (ByteArrayOutputStream out = new ByteArrayOutputStream();
-		        CSVWriter writer = new CSVWriter(new OutputStreamWriter(out, DynamoConstants.UTF_8),
-		                SystemPropertyUtils.getExportCsvSeparator().charAt(0))) {
+            // add header row
+            List<String> headers = new ArrayList<>();
+            for (AttributeModel am : entityModel.getAttributeModels()) {
+                if (show(am)) {
+                    headers.add(am.getDisplayName());
+                }
+            }
+            writer.writeNext(headers.toArray(new String[0]));
 
-			// add header row
-			List<String> headers = new ArrayList<>();
-			for (AttributeModel am : entityModel.getAttributeModels()) {
-				if (show(am)) {
-					headers.add(am.getDisplayName());
-				}
-			}
-			writer.writeNext(headers.toArray(new String[0]));
-
-			// iterate over the rows
-			T entity = iterator.next();
-			while (entity != null) {
-				List<String> row = new ArrayList<>();
-				for (AttributeModel am : entityModel.getAttributeModels()) {
-					if (show(am)) {
-						Object value = ClassUtils.getFieldValue(entity, am.getPath());
-						String str = TableUtils.formatPropertyValue(ServiceLocator.getEntityModelFactory(),
-						        entityModel, ServiceLocator.getMessageService(), am.getPath(), value);
-						row.add(str);
-					}
-				}
-				if (!row.isEmpty()) {
-					writer.writeNext(row.toArray(new String[0]));
-				}
-				entity = iterator.next();
-			}
-			writer.flush();
-			return out.toByteArray();
-		}
-	}
+            // iterate over the rows
+            T entity = iterator.next();
+            while (entity != null) {
+                List<String> row = new ArrayList<>();
+                for (AttributeModel am : entityModel.getAttributeModels()) {
+                    if (show(am)) {
+                        Object value = ClassUtils.getFieldValue(entity, am.getPath());
+                        String str = TableUtils.formatPropertyValue(ServiceLocator.getEntityModelFactory(), entityModel,
+                                ServiceLocator.getMessageService(), am.getPath(), value);
+                        row.add(str);
+                    }
+                }
+                if (!row.isEmpty()) {
+                    writer.writeNext(row.toArray(new String[0]));
+                }
+                entity = iterator.next();
+            }
+            writer.flush();
+            return out.toByteArray();
+        }
+    }
 
 }

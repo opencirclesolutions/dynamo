@@ -29,14 +29,12 @@ import javax.persistence.OneToMany;
  * @author bas.rutten
  * @param <ID>
  *            type of the primary key
- * @param
- *            <P>
+ * @param <P>
  *            type of the entity
  */
 @SuppressWarnings("rawtypes")
 @MappedSuperclass
-public abstract class AbstractTreeEntity<ID, P extends AbstractTreeEntity>
-        extends AbstractEntity<ID> {
+public abstract class AbstractTreeEntity<ID, P extends AbstractTreeEntity> extends AbstractEntity<ID> {
 
     private static final long serialVersionUID = 2561513983753651230L;
 
@@ -45,7 +43,7 @@ public abstract class AbstractTreeEntity<ID, P extends AbstractTreeEntity>
     private P parent;
 
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<P> children = new ArrayList<P>();
+    private List<P> children = new ArrayList<>();
 
     /**
      * @return the parent
