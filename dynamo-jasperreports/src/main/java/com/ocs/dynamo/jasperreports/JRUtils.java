@@ -22,8 +22,11 @@ import java.util.Map;
 import org.apache.commons.beanutils.BeanUtilsBean;
 import org.apache.commons.lang.StringUtils;
 
+import com.ocs.dynamo.domain.model.AttributeModel;
+import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.filter.FilterUtil;
+import com.ocs.dynamo.ui.container.ServiceContainer;
 import com.vaadin.data.Container;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.util.AbstractBeanContainer;
@@ -56,7 +59,8 @@ public final class JRUtils {
      * @param container
      * @param jasperReport
      */
-    public static void addContainerPropertiesFromReport(Container container, JasperReport jasperReport) {
+    public static void addContainerPropertiesFromReport(Container container, JasperReport jasperReport,
+            EntityModel<?> em) {
         if (container == null || jasperReport == null) {
             return;
         }
@@ -67,6 +71,12 @@ public final class JRUtils {
                 if (!ids.contains(cpn)) {
                     if (container instanceof AbstractBeanContainer<?, ?>) {
                         ((AbstractBeanContainer<?, ?>) container).addNestedContainerProperty(cpn);
+                    } else if (container instanceof ServiceContainer<?, ?>) {
+                        AttributeModel am = em == null ? null : em.getAttributeModel(cpn);
+                        // service container (make sure sorting works)
+                        ServiceContainer<?, ?> sc = (ServiceContainer<?, ?>) container;
+                        sc.addContainerProperty(cpn, f.getValueClass(), null, false,
+                                am == null ? false : am.isSortable());
                     } else {
                         container.addContainerProperty(cpn, f.getValueClass(), null);
                     }

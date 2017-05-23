@@ -54,7 +54,7 @@ public class ReportGeneratorTest {
 		assertTrue(fp.containsKey("person_id_less_or_equal"));
 		assertEquals(2000, fp.get("person_id_less_or_equal"));
 
-		JRUtils.addContainerPropertiesFromReport(container, jasperReport);
+		JRUtils.addContainerPropertiesFromReport(container, jasperReport, null);
 		assertTrue(container.getContainerPropertyIds().contains("customer.email"));
 
 		String result = reportGenerator.executeReportAsHtml(jasperReport, fp, new JRIndexedContainerDataSource(

@@ -332,8 +332,8 @@ public class JRReportViewer<T> extends BaseCustomComponent {
             // Prepare the container by adding all properties needed for the reports
             for (ReportDefinition type : (ReportDefinition[]) reportDefinition.getClass().getEnumConstants()) {
                 if (!type.requiresDatabaseConnection()) {
-                    JRUtils.addContainerPropertiesFromReport(container,
-                            reportGenerator.loadTemplate(getFullPath(type)));
+                    JRUtils.addContainerPropertiesFromReport(container, reportGenerator.loadTemplate(getFullPath(type)),
+                            entityModel);
                 }
             }
         }
