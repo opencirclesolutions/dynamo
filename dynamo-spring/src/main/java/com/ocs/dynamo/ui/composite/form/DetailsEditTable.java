@@ -380,7 +380,7 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
      */
     @Override
     protected Component initContent() {
-        container = new BeanItemContainer<T>(entityModel.getEntityClass());
+        container = new BeanItemContainer<>(entityModel.getEntityClass());
         container.addAll(items);
 
         table = new ModelBasedTable<>(container, entityModel, false);

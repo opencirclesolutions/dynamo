@@ -95,9 +95,9 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
     @Autowired(required = false)
     private MessageService messageService;
 
-    private ConcurrentMap<String, EntityModel<?>> cache = new ConcurrentHashMap<String, EntityModel<?>>();
+    private ConcurrentMap<String, EntityModel<?>> cache = new ConcurrentHashMap<>();
 
-    private ConcurrentMap<String, Class<?>> alreadyProcessed = new ConcurrentHashMap<String, Class<?>>();
+    private ConcurrentMap<String, Class<?>> alreadyProcessed = new ConcurrentHashMap<>();
 
     /**
      * Constructs an attribute model for a property
@@ -117,7 +117,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
      */
     private <T> List<AttributeModel> constructAttributeModel(PropertyDescriptor descriptor,
             EntityModelImpl<T> entityModel, Class<?> parentClass, boolean nested, String prefix) {
-        List<AttributeModel> result = new ArrayList<AttributeModel>();
+        List<AttributeModel> result = new ArrayList<>();
 
         // validation methods annotated with @AssertTrue or @AssertFalse have to
         // be ignored

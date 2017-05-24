@@ -87,7 +87,7 @@ public abstract class BaseCustomComponent extends CustomComponent implements Bui
             Property<?> property = null;
             if (attributeModel.isWeek()) {
                 // week code
-                property = new ObjectProperty<Date>((Date) value);
+                property = new ObjectProperty<>((Date) value);
                 fieldLabel.setConverter(new WeekCodeConverter());
                 fieldLabel.setPropertyDataSource(property);
             } else if (String.class.equals(type)) {
@@ -98,7 +98,7 @@ public abstract class BaseCustomComponent extends CustomComponent implements Bui
                 fieldLabel.setPropertyDataSource(property);
                 fieldLabel.setContentMode(ContentMode.HTML);
             } else if (Date.class.equals(type)) {
-                property = new ObjectProperty<Date>((Date) value);
+                property = new ObjectProperty<>((Date) value);
                 if (AttributeDateType.TIME.equals(attributeModel.getDateType())) {
                     // for a time, do not include a time zone (we have no way of
                     // knowing it!)
@@ -119,7 +119,7 @@ public abstract class BaseCustomComponent extends CustomComponent implements Bui
                     fieldLabel.setValue(msg);
                 }
             } else if (BigDecimal.class.equals(type)) {
-                property = new ObjectProperty<BigDecimal>((BigDecimal) value);
+                property = new ObjectProperty<>((BigDecimal) value);
                 fieldLabel.setConverter(ConverterFactory.createBigDecimalConverter(attributeModel.isCurrency(),
                         attributeModel.isPercentage(), attributeModel.isUseThousandsGrouping(),
                         attributeModel.getPrecision(), VaadinUtils.getCurrencySymbol()));

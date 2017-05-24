@@ -386,7 +386,7 @@ public class HierarchicalContainer
     /**
      * List of registered ItemSetChangeListener.
      */
-    private List<ItemSetChangeListener> itemSetChangeListeners = new ArrayList<ItemSetChangeListener>();
+    private List<ItemSetChangeListener> itemSetChangeListeners = new ArrayList<>();
 
     private boolean itemSetChangeEventInProgress = false;
 

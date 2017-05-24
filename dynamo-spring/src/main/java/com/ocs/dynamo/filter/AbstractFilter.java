@@ -125,8 +125,7 @@ public abstract class AbstractFilter implements Filter {
      * @param endValue
      * @return
      */
-    public AbstractJunctionFilter between(String propertyId, Comparable<?> startValue,
-            Comparable<?> endValue) {
+    public AbstractJunctionFilter between(String propertyId, Comparable<?> startValue, Comparable<?> endValue) {
         return newJunction(new Between(propertyId, startValue, endValue));
     }
 
@@ -250,7 +249,7 @@ public abstract class AbstractFilter implements Filter {
      */
     @Override
     public <T> List<T> applyFilter(Collection<T> collection) {
-        List<T> result = new ArrayList<T>();
+        List<T> result = new ArrayList<>();
         if (collection != null) {
             for (T that : collection) {
                 if (this.evaluate(that)) {
