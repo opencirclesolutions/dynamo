@@ -661,6 +661,7 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
         buttonBar.addComponent(constructSearchButton());
         buttonBar.addComponent(constructClearButton());
         buttonBar.addComponent(constructToggleButton());
+        buttonBar.addComponent(constructOrButton());
     }
 
     @Override

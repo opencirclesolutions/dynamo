@@ -138,6 +138,7 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
         buttonBar.addComponent(constructSearchButton());
         buttonBar.addComponent(constructClearButton());
         buttonBar.addComponent(constructToggleButton());
+        buttonBar.addComponent(constructOrButton());
     }
 
     /**

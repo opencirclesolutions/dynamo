@@ -13,11 +13,6 @@
  */
 package com.ocs.dynamo.ui.composite.form;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
@@ -31,18 +26,25 @@ import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.data.Container.Filter;
+import com.vaadin.data.util.filter.Or;
 import com.vaadin.data.util.filter.And;
 import com.vaadin.event.Action;
 import com.vaadin.event.Action.Handler;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * An abstract model search form that servers as the basis for other model based search forms
@@ -99,6 +101,8 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
      * The toggle button (hides/shows the search form)
      */
     private Button toggleButton;
+
+    private CheckBox orButton;
 
     /**
      * The panel that wraps around the filter form
@@ -300,9 +304,29 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
         return toggleButton;
     }
 
+    protected CheckBox constructOrButton(){
+        orButton = new CheckBox(message("ocs.or"));
+        orButton.setVisible(getFormOptions().isShowOrButton());
+        return orButton;
+    }
+
     public Filter extractFilter() {
         if (!currentFilters.isEmpty()) {
-            return new And(currentFilters.toArray(new Filter[0]));
+            Filter defaultFilter = null;
+            if (!defaultFilters.isEmpty()){
+                defaultFilter = new And(defaultFilters.toArray(new Filter[0]));
+            }
+            List<Filter> customFilters = new ArrayList<>(currentFilters);
+            customFilters.removeAll(defaultFilters);
+            if (currentFilters.isEmpty()){
+                return defaultFilter;
+            }
+            Filter currentFilter = getOrButton().getValue() ?
+                 new Or(currentFilters.toArray(new Filter[0])) : new And(currentFilters.toArray(new Filter[0]));
+            if (defaultFilter != null){
+                return new And(defaultFilter, currentFilter);
+            }
+            return currentFilter;
         }
         return null;
     }
@@ -338,6 +362,8 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
     public Button getSearchButton() {
         return searchButton;
     }
+
+    public CheckBox getOrButton() { return orButton; }
 
     /**
      * Checks whether a filter is set for a certain attribute
