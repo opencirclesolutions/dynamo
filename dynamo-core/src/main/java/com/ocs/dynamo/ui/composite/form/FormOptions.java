@@ -133,7 +133,7 @@ public class FormOptions implements Serializable {
     /**
      * Whether to show an or button to enable match any search
      */
-    private boolean showOrButton;
+    private boolean showSearchAnyButton;
 
     /**
      * Indicates whether table export is allowed (read from system property)
@@ -218,7 +218,7 @@ public class FormOptions implements Serializable {
         return tableExportAllowed;
     }
 
-    public boolean isShowOrButton() { return showOrButton; }
+    public boolean isShowSearchAnyButton() { return showSearchAnyButton; }
 
     public FormOptions setAttributeGroupMode(AttributeGroupMode attributeGroupMode) {
         this.attributeGroupMode = attributeGroupMode;
@@ -349,8 +349,8 @@ public class FormOptions implements Serializable {
         return this;
     }
 
-    public FormOptions setShowOrbutton(boolean showOrButton){
-        this.showOrButton = showOrButton;
+    public FormOptions setShowSearchAnyButton(boolean showSearchAnyButton){
+        this.showSearchAnyButton = showSearchAnyButton;
         return this;
     }
 

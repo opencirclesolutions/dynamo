@@ -33,7 +33,6 @@ import com.vaadin.event.Action.Handler;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Layout;
@@ -102,7 +101,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
      */
     private Button toggleButton;
 
-    private CheckBox orButton;
+    private Button searchAnyButton;
 
     /**
      * The panel that wraps around the filter form
@@ -216,6 +215,8 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
     public void buttonClick(ClickEvent event) {
         if (event.getButton() == searchButton) {
             search();
+        } else if (event.getButton() == searchAnyButton) {
+            searchAny();
         } else if (event.getButton() == clearButton) {
             if (getFormOptions().isConfirmClear()) {
                 VaadinUtils.showConfirmDialog(getMessageService(), message("ocs.confirm.clear"), () -> {
@@ -242,7 +243,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
     /**
      * Creates buttons and adds them to the button bar
      * 
-     * @param buttonBart
+     * @param buttonBar
      *            the button bar
      */
     protected abstract void constructButtonBar(Layout buttonBar);
@@ -304,13 +305,18 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
         return toggleButton;
     }
 
-    protected CheckBox constructOrButton(){
-        orButton = new CheckBox(message("ocs.or"));
-        orButton.setVisible(getFormOptions().isShowOrButton());
-        return orButton;
+    protected Button constructSearchAnyButton(){
+        searchAnyButton = new Button(message("ocs.search.any"));
+        searchAnyButton.setVisible(getFormOptions().isShowSearchAnyButton());
+        searchAnyButton.addClickListener(this);
+        return searchAnyButton;
     }
 
-    public Filter extractFilter() {
+    public Filter extractFilter(){
+        return extractFilter(false);
+    }
+
+    private Filter extractFilter(boolean matchAny) {
         if (!currentFilters.isEmpty()) {
             Filter defaultFilter = null;
             if (!defaultFilters.isEmpty()){
@@ -321,7 +327,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
             if (currentFilters.isEmpty()){
                 return defaultFilter;
             }
-            Filter currentFilter = getOrButton().getValue() ?
+            Filter currentFilter = matchAny ?
                  new Or(currentFilters.toArray(new Filter[0])) : new And(currentFilters.toArray(new Filter[0]));
             if (defaultFilter != null){
                 return new And(defaultFilter, currentFilter);
@@ -363,7 +369,9 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
         return searchButton;
     }
 
-    public CheckBox getOrButton() { return orButton; }
+    public Button getSearchAnyButton() {
+        return searchAnyButton;
+    }
 
     /**
      * Checks whether a filter is set for a certain attribute
@@ -461,7 +469,23 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
     }
 
     public boolean search() {
-        return search(false);
+        return search(false, false);
+    }
+
+    public boolean searchAny() {
+        return search(false, true);
+    }
+
+    /**
+     * Carries out a search using default search AND behaviour.
+     *
+     * @param skipValidation
+     *            whether to skip validation before searching
+     *
+     * @return
+     */
+    private boolean search(boolean skipValidation){
+        return search(skipValidation, false);
     }
 
     /**
@@ -469,9 +493,13 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
      * 
      * @param skipValidation
      *            whether to skip validation before searching
+     * @param matchAny
+     *            whether the search is an 'Or' search or an 'And' search. Where in the former all results matching
+     *            any predicate are returned and in the latter case all results matching all predicates are returned.
+     *
      * @return
      */
-    private boolean search(boolean skipValidation) {
+    private boolean search(boolean skipValidation, boolean matchAny) {
         if (!isSearchAllowed()) {
             return false;
         }
@@ -486,7 +514,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
                 }
             }
 
-            searchable.search(extractFilter());
+            searchable.search(extractFilter(matchAny));
             if (!skipValidation) {
                 afterSearchPerformed();
             }
