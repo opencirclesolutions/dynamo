@@ -13,11 +13,11 @@
  */
 package com.ocs.dynamo.ui.composite.form;
 
-import java.io.Serializable;
-
 import com.ocs.dynamo.ui.composite.type.AttributeGroupMode;
 import com.ocs.dynamo.ui.composite.type.ScreenMode;
 import com.ocs.dynamo.utils.SystemPropertyUtils;
+
+import java.io.Serializable;
 
 /**
  * Parameter object that can be passed along when creating a page - this object uses smart defaults
@@ -131,6 +131,11 @@ public class FormOptions implements Serializable {
     private boolean preserveSelectedTab;
 
     /**
+     * Whether to show an or button to enable match any search
+     */
+    private boolean showSearchAnyButton;
+
+    /**
      * Indicates whether table export is allowed (read from system property)
      */
     private boolean tableExportAllowed = SystemPropertyUtils.allowTableExport();
@@ -212,6 +217,8 @@ public class FormOptions implements Serializable {
     public boolean isTableExportAllowed() {
         return tableExportAllowed;
     }
+
+    public boolean isShowSearchAnyButton() { return showSearchAnyButton; }
 
     public FormOptions setAttributeGroupMode(AttributeGroupMode attributeGroupMode) {
         this.attributeGroupMode = attributeGroupMode;
@@ -339,6 +346,11 @@ public class FormOptions implements Serializable {
 
     public FormOptions setTableExportAllowed(boolean tableExportAllowed) {
         this.tableExportAllowed = tableExportAllowed;
+        return this;
+    }
+
+    public FormOptions setShowSearchAnyButton(boolean showSearchAnyButton){
+        this.showSearchAnyButton = showSearchAnyButton;
         return this;
     }
 

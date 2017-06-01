@@ -136,6 +136,7 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
     @Override
     protected void constructButtonBar(Layout buttonBar) {
         buttonBar.addComponent(constructSearchButton());
+        buttonBar.addComponent(constructSearchAnyButton());
         buttonBar.addComponent(constructClearButton());
         buttonBar.addComponent(constructToggleButton());
     }
