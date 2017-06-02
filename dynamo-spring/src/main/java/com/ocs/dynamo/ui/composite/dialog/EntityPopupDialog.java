@@ -25,7 +25,6 @@ import com.ocs.dynamo.ui.composite.form.FormOptions;
 import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
 import com.ocs.dynamo.ui.composite.layout.SimpleEditLayout;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Layout;
 
@@ -41,160 +40,153 @@ import com.vaadin.ui.Layout;
  */
 public class EntityPopupDialog<ID extends Serializable, T extends AbstractEntity<ID>> extends BaseModalDialog {
 
-	private static final long serialVersionUID = -2012972894321597214L;
+    private static final long serialVersionUID = -2012972894321597214L;
 
-	private MessageService messageService = ServiceLocator.getMessageService();
+    private MessageService messageService = ServiceLocator.getMessageService();
 
-	/**
-	 * The entity model
-	 */
-	private EntityModel<T> entityModel;
+    /**
+     * The entity model
+     */
+    private EntityModel<T> entityModel;
 
-	/**
-	 * The layout used to create/modify the entity
-	 */
-	private SimpleEditLayout<ID, T> layout;
+    /**
+     * The layout used to create/modify the entity
+     */
+    private SimpleEditLayout<ID, T> layout;
 
-	/**
-	 * The service used to query the database
-	 */
-	private BaseService<ID, T> service;
+    /**
+     * The service used to query the database
+     */
+    private BaseService<ID, T> service;
 
-	/**
-	 * The form options
-	 */
-	private FormOptions formOptions;
+    /**
+     * The form options
+     */
+    private FormOptions formOptions;
 
-	/**
-	 * The entity to add/modify
-	 */
-	private T entity;
+    /**
+     * The entity to add/modify
+     */
+    private T entity;
 
-	/**
-	 * The OK button used to close the dialog in readonly mode
-	 */
-	private Button okButton;
+    /**
+     * The OK button used to close the dialog in readonly mode
+     */
+    private Button okButton;
 
-	/**
-	 * 
-	 * @param service
-	 * @param entity
-	 * @param entityModel
-	 * @param formOptions
-	 */
-	public EntityPopupDialog(BaseService<ID, T> service, T entity, EntityModel<T> entityModel, FormOptions formOptions) {
-		this.service = service;
-		this.entityModel = entityModel;
-		this.formOptions = formOptions;
-		this.entity = entity;
-	}
+    /**
+     * Constructor
+     * 
+     * @param service
+     * @param entity
+     * @param entityModel
+     * @param formOptions
+     */
+    public EntityPopupDialog(BaseService<ID, T> service, T entity, EntityModel<T> entityModel,
+            FormOptions formOptions) {
+        this.service = service;
+        this.entityModel = entityModel;
+        this.formOptions = formOptions;
+        this.entity = entity;
+    }
 
-	/**
-	 * Callback method that is called after the user is done editing the entry
-	 * 
-	 * @param cancel
-	 *            whether the edit action was cancelled
-	 * @param newEntity
-	 *            whether the user was adding a new entity
-	 * @param entity
-	 *            the entity that was being edited
-	 */
-	public void afterEditDone(boolean cancel, boolean newEntity, T entity) {
-		// override in subclasses
-	}
+    /**
+     * Callback method that is called after the user is done editing the entry
+     * 
+     * @param cancel
+     *            whether the edit action was cancelled
+     * @param newEntity
+     *            whether the user was adding a new entity
+     * @param entity
+     *            the entity that was being edited
+     */
+    public void afterEditDone(boolean cancel, boolean newEntity, T entity) {
+        // override in subclasses
+    }
 
-	/**
-	 * Creates a new entity
-	 * 
-	 * @return
-	 */
-	protected T createEntity() {
-		return service.createNewEntity();
-	}
+    /**
+     * Creates a new entity
+     * 
+     * @return
+     */
+    protected T createEntity() {
+        return service.createNewEntity();
+    }
 
-	@Override
-	protected void doBuild(Layout parent) {
+    @Override
+    protected void doBuild(Layout parent) {
 
-		// cancel button makes no sense in a popup
-		formOptions.setHideCancelButton(false);
+        // cancel button makes no sense in a popup
+        formOptions.setHideCancelButton(false);
 
-		layout = new SimpleEditLayout<ID, T>(entity, service, entityModel, formOptions) {
+        layout = new SimpleEditLayout<ID, T>(entity, service, entityModel, formOptions) {
 
-			private static final long serialVersionUID = -2965981316297118264L;
+            private static final long serialVersionUID = -2965981316297118264L;
 
-			@Override
-			protected void afterEditDone(boolean cancel, boolean newEntity, T entity) {
-				super.afterEditDone(cancel, newEntity, entity);
-				EntityPopupDialog.this.close();
-				EntityPopupDialog.this.afterEditDone(cancel, newEntity, entity);
-			}
+            @Override
+            protected void afterEditDone(boolean cancel, boolean newEntity, T entity) {
+                super.afterEditDone(cancel, newEntity, entity);
+                EntityPopupDialog.this.close();
+                EntityPopupDialog.this.afterEditDone(cancel, newEntity, entity);
+            }
 
-			@Override
-			protected T createEntity() {
-				return EntityPopupDialog.this.createEntity();
-			}
+            @Override
+            protected T createEntity() {
+                return EntityPopupDialog.this.createEntity();
+            }
 
-			@Override
-			protected void postProcessButtonBar(HorizontalLayout buttonBar, boolean viewMode) {
-				EntityPopupDialog.this.postProcessButtonBar(buttonBar, viewMode);
-			}
+            @Override
+            protected void postProcessButtonBar(HorizontalLayout buttonBar, boolean viewMode) {
+                EntityPopupDialog.this.postProcessButtonBar(buttonBar, viewMode);
+            }
 
-			@Override
-			protected void postProcessEditFields(ModelBasedEditForm<ID, T> editForm) {
-				EntityPopupDialog.this.postProcessEditFields(editForm);
-			}
+            @Override
+            protected void postProcessEditFields(ModelBasedEditForm<ID, T> editForm) {
+                EntityPopupDialog.this.postProcessEditFields(editForm);
+            }
 
-		};
-		parent.addComponent(layout);
-	}
+        };
+        parent.addComponent(layout);
+    }
 
-	@Override
-	protected void doBuildButtonBar(HorizontalLayout buttonBar) {
-		// in read-only mode, display only an "OK" button that closes the dialog
-		buttonBar.setVisible(formOptions.isReadOnly());
-		if (formOptions.isReadOnly()) {
-			okButton = new Button(messageService.getMessage("ocs.ok"));
-			okButton.addClickListener(new Button.ClickListener() {
+    @Override
+    protected void doBuildButtonBar(HorizontalLayout buttonBar) {
+        // in read-only mode, display only an "OK" button that closes the dialog
+        buttonBar.setVisible(formOptions.isReadOnly());
+        if (formOptions.isReadOnly()) {
+            okButton = new Button(messageService.getMessage("ocs.ok"));
+            okButton.addClickListener(event -> close());
+            buttonBar.addComponent(okButton);
+        }
+    }
 
-				private static final long serialVersionUID = 1889018073135108348L;
+    public T getEntity() {
+        return layout.getEntity();
+    }
 
-				@Override
-				public void buttonClick(ClickEvent event) {
-					close();
-				}
-			});
+    public List<Button> getSaveButtons() {
+        return layout.getEditForm().getSaveButtons();
+    }
 
-			buttonBar.addComponent(okButton);
-		}
-	}
+    @Override
+    protected String getTitle() {
+        return entityModel.getDisplayName();
+    }
 
-	public T getEntity() {
-		return layout.getEntity();
-	}
+    protected void postProcessButtonBar(HorizontalLayout buttonBar, boolean viewMode) {
+        // overwrite in subclasses when needed
+    }
 
-	public List<Button> getSaveButtons() {
-		return layout.getEditForm().getSaveButtons();
-	}
+    protected void postProcessEditFields(ModelBasedEditForm<ID, T> editForm) {
+        // overwrite in subclasses when needed
+    }
 
-	@Override
-	protected String getTitle() {
-		return entityModel.getDisplayName();
-	}
+    public SimpleEditLayout<ID, T> getLayout() {
+        return layout;
+    }
 
-	protected void postProcessButtonBar(HorizontalLayout buttonBar, boolean viewMode) {
-		// overwrite in subclasses when needed
-	}
-
-	protected void postProcessEditFields(ModelBasedEditForm<ID, T> editForm) {
-		// overwrite in subclasses when needed
-	}
-
-	public SimpleEditLayout<ID, T> getLayout() {
-		return layout;
-	}
-
-	public Button getOkButton() {
-		return okButton;
-	}
+    public Button getOkButton() {
+        return okButton;
+    }
 
 }

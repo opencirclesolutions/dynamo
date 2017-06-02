@@ -28,6 +28,8 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.springframework.util.StringUtils;
+
 /**
  * A layout that contains a tab sheet with tabs that are lazily loaded
  * 
@@ -92,24 +94,30 @@ public abstract class LazyTabLayout<ID extends Serializable, T extends AbstractE
     @Override
     public void build() {
         if (tabs == null) {
-            panel = new Panel();
-            panel.setCaptionAsHtml(true);
-            panel.setCaption(createTitle());
-
-            VerticalLayout main = new DefaultVerticalLayout(true, true);
-            panel.setContent(main);
-
             tabs = new TabSheet();
             tabs.setSizeFull();
 
-            main.addComponent(tabs);
+            String title = createTitle();
+            if (!StringUtils.isEmpty(title)) {
+                panel = new Panel();
+                panel.setCaptionAsHtml(true);
+                panel.setCaption(createTitle());
+
+                VerticalLayout main = new DefaultVerticalLayout(true, true);
+                panel.setContent(main);
+                main.addComponent(tabs);
+                setCompositionRoot(panel);
+            } else {
+                setCompositionRoot(tabs);
+            }
+
             setupLazySheet(tabs);
-            setCompositionRoot(panel);
+
         }
     }
 
     /**
-     * Constructs the title of the page
+     * Constructs the title of the page. If this method returns null then no title will be displayed
      * 
      * @return
      */
@@ -223,7 +231,9 @@ public abstract class LazyTabLayout<ID extends Serializable, T extends AbstractE
     public void setEntity(T entity) {
         this.entity = entity;
         this.selectTab(0);
-        panel.setCaption(createTitle());
+        if (panel != null) {
+            panel.setCaption(createTitle());
+        }
     }
 
     /**

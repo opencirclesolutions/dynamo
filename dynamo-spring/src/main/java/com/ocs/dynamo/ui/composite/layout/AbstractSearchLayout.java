@@ -27,6 +27,7 @@ import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.exception.OCSValidationException;
 import com.ocs.dynamo.service.BaseService;
+import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.composite.form.AbstractModelBasedSearchForm;
 import com.ocs.dynamo.ui.composite.form.FormOptions;
@@ -84,6 +85,18 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
     private ModelBasedEditForm<ID, T> editForm;
 
     /**
+     * Tabbed layout for complex detail mode
+     */
+    private LazyTabLayout<ID, T> tabLayout;
+
+    /**
+     * 
+     */
+    private VerticalLayout tabContainerLayout;
+
+    private Component selectedDetailLayout;
+
+    /**
      * The main layout (in edit mode)
      */
     private VerticalLayout mainEditLayout;
@@ -122,8 +135,6 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
      * The layout that contains the search results table
      */
     private VerticalLayout searchResultsLayout;
-    
-
 
     /**
      * Constructor
@@ -237,24 +248,11 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
                 // deferred search
                 // set up a click listener that will set the searchable when
                 // needed
-                getSearchForm().getSearchButton().addClickListener(e -> {
-                    if (!searchLayoutConstructed) {
-                        // construct search screen if it is not there yet
-                        try {
-                            validateBeforeSearch();
-                            constructSearchLayout();
-
-                            searchResultsLayout.addComponent(getTableWrapper());
-                            getSearchForm().setSearchable(getTableWrapper());
-
-                            searchResultsLayout.removeComponent(noSearchYetLabel);
-                            searchLayoutConstructed = true;
-                            afterSearchPerformed();
-                        } catch (OCSValidationException ex) {
-                            showNotifification(ex.getErrors().get(0), Notification.Type.ERROR_MESSAGE);
-                        }
-                    }
-                });
+                getSearchForm().getSearchButton().addClickListener(e -> constructLayoutIfNeeded(noSearchYetLabel));
+                if (getSearchForm().getSearchAnyButton() != null) {
+                    getSearchForm().getSearchAnyButton()
+                            .addClickListener(e -> constructLayoutIfNeeded(noSearchYetLabel));
+                }
             }
 
             // add button
@@ -298,6 +296,29 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
         // hide button inside popup window
         eb.setVisible(!getFormOptions().isPopup());
         return eb;
+    }
+
+    /**
+     * Constructs a search layout in response to a click on any of the search buttons
+     * 
+     * @param noSearchYetLabel
+     */
+    private void constructLayoutIfNeeded(Label noSearchYetLabel) {
+        if (!searchLayoutConstructed) {
+            // construct search screen if it is not there yet
+            try {
+                validateBeforeSearch();
+                searchResultsLayout.removeAllComponents();
+                constructSearchLayout();
+                searchResultsLayout.addComponent(getTableWrapper());
+                getSearchForm().setSearchable(getTableWrapper());
+                searchResultsLayout.removeComponent(noSearchYetLabel);
+                searchLayoutConstructed = true;
+                afterSearchPerformed();
+            } catch (OCSValidationException ex) {
+                showNotifification(ex.getErrors().get(0), Notification.Type.ERROR_MESSAGE);
+            }
+        }
     }
 
     /**
@@ -397,6 +418,175 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
         setCompositionRoot(root);
     }
 
+    protected void buildEditForm(T entity, FormOptions options) {
+        editForm = new ModelBasedEditForm<ID, T>(entity, getService(), getEntityModel(), options, getFieldFilters()) {
+
+            private static final long serialVersionUID = 6485097089659928131L;
+
+            @Override
+            protected void afterEditDone(boolean cancel, boolean newObject, T entity) {
+                if (getFormOptions().isOpenInViewMode()) {
+                    if (newObject) {
+                        back();
+                    } else {
+                        // if details screen opens in view mode, simply switch to view mode
+                        setViewMode(true);
+                        detailsMode(entity);
+                    }
+                } else {
+                    // otherwise go back to the main screen
+                    if (cancel || newObject
+                            || (!getFormOptions().isShowNextButton() && !getFormOptions().isShowPrevButton())) {
+                        back();
+                    }
+                }
+            }
+
+            @Override
+            protected void afterEntitySet(T entity) {
+                AbstractSearchLayout.this.afterEntitySet(entity);
+            }
+
+            @Override
+            protected void afterModeChanged(boolean viewMode) {
+                AbstractSearchLayout.this.afterModeChanged(viewMode, editForm);
+            }
+
+            @Override
+            protected void back() {
+                searchMode();
+            }
+
+            @Override
+            protected Field<?> constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel,
+                    boolean viewMode) {
+                return AbstractSearchLayout.this.constructCustomField(entityModel, attributeModel, viewMode, false);
+            }
+
+            @Override
+            protected T getNextEntity(T current) {
+                return AbstractSearchLayout.this.getNextEntity(current);
+            }
+
+            @Override
+            protected String getParentGroup(String childGroup) {
+                return AbstractSearchLayout.this.getParentGroup(childGroup);
+            }
+
+            @Override
+            protected String[] getParentGroupHeaders() {
+                return AbstractSearchLayout.this.getParentGroupHeaders();
+            }
+
+            @Override
+            protected T getPrevEntity(T current) {
+                return AbstractSearchLayout.this.getPrevEntity(current);
+            }
+
+            @Override
+            protected boolean hasNextEntity(T current) {
+                return AbstractSearchLayout.this.hasNextEntity(current);
+            }
+
+            @Override
+            protected boolean hasPrevEntity(T current) {
+                return AbstractSearchLayout.this.hasPrevEntity(current);
+            }
+
+            @Override
+            protected boolean isEditAllowed() {
+                return AbstractSearchLayout.this.isEditAllowed();
+            }
+
+            @Override
+            protected void postProcessButtonBar(HorizontalLayout buttonBar, boolean viewMode) {
+                AbstractSearchLayout.this.postProcessDetailButtonBar(buttonBar, viewMode);
+            }
+
+            @Override
+            protected void postProcessEditFields() {
+                AbstractSearchLayout.this.postProcessEditFields(editForm);
+            }
+
+        };
+        editForm.setFormTitleWidth(getFormTitleWidth());
+        editForm.setSupportsIteration(true);
+        editForm.setDetailJoins(getDetailJoinsFallBack());
+        editForm.setFieldEntityModels(getFieldEntityModels());
+        editForm.build();
+
+    }
+
+    /**
+     * Builds a tab layout for the display view. The definition of the tabs has to be done in the
+     * subclasses
+     * 
+     * @param entity
+     */
+    protected void buildDetailsTabLayout(T entity) {
+        tabContainerLayout = new DefaultVerticalLayout(true, true);
+
+        HorizontalLayout buttonBar = new DefaultHorizontalLayout(false, true, true);
+        tabContainerLayout.addComponent(buttonBar);
+
+        Button backButton = new Button(message("ocs.back"));
+        backButton.addClickListener(e -> searchMode());
+        buttonBar.addComponent(backButton);
+
+        if (getFormOptions().isShowPrevButton()) {
+            Button prevButton = new Button(message("ocs.previous"));
+            prevButton.addClickListener(e -> {
+                T prev = getPrevEntity(tabLayout.getEntity());
+                if (prev != null) {
+                    tabLayout.setEntity(prev);
+                    tabLayout.reload();
+                } else {
+                    prevButton.setEnabled(false);
+                }
+            });
+            buttonBar.addComponent(prevButton);
+        }
+
+        if (getFormOptions().isShowNextButton()) {
+            Button nextButton = new Button(message("ocs.next"));
+            nextButton.addClickListener(e -> {
+                T next = getNextEntity(tabLayout.getEntity());
+                if (next != null) {
+                    tabLayout.setEntity(next);
+                    tabLayout.reload();
+                } else {
+                    nextButton.setEnabled(false);
+                }
+            });
+            buttonBar.addComponent(nextButton);
+        }
+
+        tabLayout = new LazyTabLayout<ID, T>(entity) {
+
+            private static final long serialVersionUID = 1278134557026074688L;
+
+            @Override
+            protected String createTitle() {
+                return AbstractSearchLayout.this.getDetailModeTabTitle();
+            }
+
+            @Override
+            protected String[] getTabCaptions() {
+                return AbstractSearchLayout.this.getDetailModeTabCaptions();
+            }
+
+            @Override
+            protected Component initTab(int index) {
+                // back button and iteration buttons not needed (they are displayed above
+                // the tabs)
+                return AbstractSearchLayout.this.initTab(getEntity(), index);
+            }
+        };
+        tabLayout.build();
+        tabContainerLayout.addComponent(tabLayout);
+
+    }
+
     /**
      * Open the screen in details mode
      * 
@@ -408,8 +598,23 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
         if (mainEditLayout == null) {
             mainEditLayout = new DefaultVerticalLayout();
             mainEditLayout.setStyleName(DynamoConstants.CSS_CLASS_HALFSCREEN);
+        }
 
-            // set the form options for the detail form
+        if (getFormOptions().isComplexDetailsMode() && entity != null && entity.getId() != null) {
+            // complex tabbed layout
+            if (tabContainerLayout == null) {
+                buildDetailsTabLayout(entity);
+            } else {
+                tabLayout.setEntity(entity);
+                tabLayout.reload();
+            }
+            if (selectedDetailLayout == null) {
+                mainEditLayout.addComponent(tabContainerLayout);
+            } else {
+                mainEditLayout.replaceComponent(selectedDetailLayout, tabContainerLayout);
+            }
+            selectedDetailLayout = tabContainerLayout;
+        } else {
             FormOptions options = new FormOptions();
             options.setOpenInViewMode(getFormOptions().isOpenInViewMode());
             options.setScreenMode(ScreenMode.VERTICAL);
@@ -417,7 +622,8 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
             options.setPreserveSelectedTab(getFormOptions().isPreserveSelectedTab());
             options.setShowNextButton(getFormOptions().isShowNextButton());
             options.setShowPrevButton(getFormOptions().isShowPrevButton());
-
+            options.setPlaceButtonBarAtTop(getFormOptions().isPlaceButtonBarAtTop());
+            // set the form options for the detail form
             if (getFormOptions().isEditAllowed()) {
                 // editing in form must be possible
                 options.setEditAllowed(true);
@@ -429,108 +635,21 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
             if (options.isOpenInViewMode() || !isEditAllowed()) {
                 options.setShowBackButton(true);
             }
-
-            editForm = new ModelBasedEditForm<ID, T>(entity, getService(), getEntityModel(), options,
-                    getFieldFilters()) {
-
-                private static final long serialVersionUID = 6485097089659928131L;
-
-                @Override
-                protected void afterEditDone(boolean cancel, boolean newObject, T entity) {
-                    if (getFormOptions().isOpenInViewMode()) {
-                        if (newObject) {
-                            back();
-                        } else {
-                            // if details screen opens in view mode, simply switch to view mode
-                            setViewMode(true);
-                            detailsMode(entity);
-                        }
-                    } else {
-                        // otherwise go back to the main screen
-                        if (cancel || newObject
-                                || (!getFormOptions().isShowNextButton() && !getFormOptions().isShowPrevButton())) {
-                            back();
-                        }
-                    }
-                }
-
-                @Override
-                protected void afterEntitySet(T entity) {
-                    AbstractSearchLayout.this.afterEntitySet(entity);
-                }
-
-                @Override
-                protected void afterModeChanged(boolean viewMode) {
-                    AbstractSearchLayout.this.afterModeChanged(viewMode, editForm);
-                }
-
-                @Override
-                protected void back() {
-                    searchMode();
-                }
-
-                @Override
-                protected Field<?> constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel,
-                        boolean viewMode) {
-                    return AbstractSearchLayout.this.constructCustomField(entityModel, attributeModel, viewMode, false);
-                }
-
-                @Override
-                protected T getNextEntity(T current) {
-                    return AbstractSearchLayout.this.getNextEntity(current);
-                }
-
-                @Override
-                protected String getParentGroup(String childGroup) {
-                    return AbstractSearchLayout.this.getParentGroup(childGroup);
-                }
-
-                @Override
-                protected String[] getParentGroupHeaders() {
-                    return AbstractSearchLayout.this.getParentGroupHeaders();
-                }
-
-                @Override
-                protected T getPrevEntity(T current) {
-                    return AbstractSearchLayout.this.getPrevEntity(current);
-                }
-
-                @Override
-                protected boolean hasNextEntity(T current) {
-                    return AbstractSearchLayout.this.hasNextEntity(current);
-                }
-
-                @Override
-                protected boolean hasPrevEntity(T current) {
-                    return AbstractSearchLayout.this.hasPrevEntity(current);
-                }
-
-                @Override
-                protected boolean isEditAllowed() {
-                    return AbstractSearchLayout.this.isEditAllowed();
-                }
-
-                @Override
-                protected void postProcessButtonBar(HorizontalLayout buttonBar, boolean viewMode) {
-                    AbstractSearchLayout.this.postProcessDetailButtonBar(buttonBar, viewMode);
-                }
-
-                @Override
-                protected void postProcessEditFields() {
-                    AbstractSearchLayout.this.postProcessEditFields(editForm);
-                }
-
-            };
-            editForm.setFormTitleWidth(getFormTitleWidth());
-            editForm.setSupportsIteration(true);
-            editForm.setDetailJoins(getDetailJoinsFallBack());
-            editForm.setFieldEntityModels(getFieldEntityModels());
-            editForm.build();
-            mainEditLayout.addComponent(editForm);
-        } else {
-            editForm.setViewMode(getFormOptions().isOpenInViewMode());
-            editForm.setEntity(entity);
-            editForm.resetTab();
+            
+            // simple edit form
+            if (editForm == null) {
+                buildEditForm(entity, options);
+            } else {
+                editForm.setViewMode(getFormOptions().isOpenInViewMode());
+                editForm.setEntity(entity);
+                editForm.resetTab();
+            }
+            if (selectedDetailLayout == null) {
+                mainEditLayout.addComponent(editForm);
+            } else {
+                mainEditLayout.replaceComponent(selectedDetailLayout, editForm);
+            }
+            selectedDetailLayout = editForm;
         }
 
         checkButtonState(getSelectedItem());
@@ -700,6 +819,10 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
         return getSearchForm().isFilterSet(path);
     }
 
+    public boolean isInSearchMode() {
+        return ObjectUtils.equals(getCompositionRoot(), mainSearchLayout);
+    }
+
     /**
      * Post-processes the button bar for the search form
      * 
@@ -852,9 +975,20 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
     public void validateBeforeSearch() {
         // overwrite in subclasses
     }
-    
-    public boolean isInSearchMode() {
-        return ObjectUtils.equals(getCompositionRoot(), mainSearchLayout);
+
+    protected String[] getDetailModeTabCaptions() {
+        // overwrite in subclasses
+        return new String[0];
+    }
+
+    protected String getDetailModeTabTitle() {
+        //
+        return null;
+    }
+
+    protected Component initTab(T entity, int index) {
+        // overwrite is subclasses
+        return null;
     }
 
 }

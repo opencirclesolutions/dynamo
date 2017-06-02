@@ -1,5 +1,14 @@
 package com.ocs.dynamo.ui.composite.layout;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.inject.Inject;
+
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
 import com.google.common.collect.Lists;
 import com.ocs.dynamo.domain.CascadeEntity;
 import com.ocs.dynamo.domain.TestEntity;
@@ -23,13 +32,6 @@ import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-
-import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.List;
 
 public class SimpleSearchLayoutTest extends BaseIntegrationTest {
 

@@ -13,6 +13,9 @@
  */
 package com.ocs.dynamo.ui.component;
 
+import java.io.Serializable;
+import java.util.List;
+
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
@@ -26,9 +29,6 @@ import com.vaadin.data.util.filter.And;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
-
-import java.io.Serializable;
-import java.util.List;
 
 /**
  * A component that contains a combo box for selecting an entity, plus the option to add new values

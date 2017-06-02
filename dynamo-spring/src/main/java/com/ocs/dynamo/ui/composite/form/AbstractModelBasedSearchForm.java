@@ -13,6 +13,11 @@
  */
 package com.ocs.dynamo.ui.composite.form;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
@@ -26,8 +31,8 @@ import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.data.Container.Filter;
-import com.vaadin.data.util.filter.Or;
 import com.vaadin.data.util.filter.And;
+import com.vaadin.data.util.filter.Or;
 import com.vaadin.event.Action;
 import com.vaadin.event.Action.Handler;
 import com.vaadin.event.ShortcutAction;
@@ -39,11 +44,6 @@ import com.vaadin.ui.Layout;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 /**
  * An abstract model search form that servers as the basis for other model based search forms

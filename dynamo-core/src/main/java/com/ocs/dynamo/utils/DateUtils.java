@@ -52,8 +52,14 @@ public final class DateUtils {
 
     private static final int YEAR_STRING_LENGTH = 4;
 
-    private DateUtils() {
-        // hidden constructor
+    private static Date convertSQLDate(Date d) {
+        // toInstance is not supported on java.sql.Date, so convert to actual date
+        if (d instanceof java.sql.Date) {
+            Date temp = new Date();
+            temp.setTime(d.getTime());
+            return temp;
+        }
+        return d;
     }
 
     /**
@@ -532,7 +538,8 @@ public final class DateUtils {
         if (d == null) {
             return null;
         }
-        return d.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+        return convertSQLDate(d).toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
     }
 
     /**
@@ -546,14 +553,14 @@ public final class DateUtils {
         if (d == null) {
             return null;
         }
-        return d.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+        return convertSQLDate(d).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
     }
 
     public static LocalTime toLocalTime(Date d) {
         if (d == null) {
             return null;
         }
-        return d.toInstant().atZone(ZoneId.systemDefault()).toLocalTime();
+        return convertSQLDate(d).toInstant().atZone(ZoneId.systemDefault()).toLocalTime();
     }
 
     /**
@@ -591,17 +598,6 @@ public final class DateUtils {
     }
 
     /**
-     * Converts the provided LocalDate to a week code
-     * 
-     * @param d
-     *            date
-     * @return
-     */
-    public static String toWeekCode(LocalDate d) {
-        return toWeekCode(toLegacyDate(d));
-    }
-
-    /**
      * Converts a date to its corresponding week code
      * 
      * @param date
@@ -634,6 +630,17 @@ public final class DateUtils {
     }
 
     /**
+     * Converts the provided LocalDate to a week code
+     * 
+     * @param d
+     *            date
+     * @return
+     */
+    public static String toWeekCode(LocalDate d) {
+        return toWeekCode(toLegacyDate(d));
+    }
+
+    /**
      * Truncates a calendar object, setting all time fields to zero
      * 
      * @param calendar
@@ -645,6 +652,10 @@ public final class DateUtils {
         calendar.set(Calendar.SECOND, 0);
         calendar.set(Calendar.MILLISECOND, 0);
         return calendar;
+    }
+
+    private DateUtils() {
+        // hidden constructor
     }
 
 }

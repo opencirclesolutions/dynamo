@@ -221,7 +221,7 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
      */
     protected void constructAddButton(Layout buttonBar) {
         addButton = new Button(messageService.getMessage("ocs.add"));
-        addButton.addClickListener((Button.ClickListener) event -> {
+        addButton.addClickListener(event -> {
             T t = createEntity();
             container.addBean(t);
             if (parentForm != null) {
@@ -273,7 +273,7 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 
         searchDialogButton = new Button(messageService.getMessage("ocs.search"));
         searchDialogButton.setDescription(messageService.getMessage("ocs.search.description"));
-        searchDialogButton.addClickListener((Button.ClickListener) event -> {
+        searchDialogButton.addClickListener(event -> {
 
             // service must be specified
             if (service == null) {
@@ -392,7 +392,7 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
             final String removeMsg = messageService.getMessage("ocs.remove");
             table.addGeneratedColumn(removeMsg, (ColumnGenerator) (source, itemId, columnId) -> {
                 Button remove = new Button(removeMsg);
-                remove.addClickListener((Button.ClickListener) event -> {
+                remove.addClickListener(event -> {
                     container.removeItem(itemId);
                     items.remove(itemId);
                     // callback method so the entity can be removed from its
@@ -435,7 +435,7 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
                     // adds a value change listener (for updating the save
                     // button)
                     if (!viewMode) {
-                        field.addValueChangeListener((ValueChangeListener) event -> {
+                        field.addValueChangeListener(event -> {
                             if (parentForm != null) {
                                 parentForm.signalDetailsTableValid(DetailsEditTable.this,
                                         VaadinUtils.allFixedTableFieldsValid(table));
@@ -459,7 +459,7 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 
         // add a change listener (to make sure the buttons are correctly
         // enabled/disabled)
-        table.addValueChangeListener((ValueChangeListener) event -> {
+        table.addValueChangeListener(event -> {
             selectedItem = (T) table.getValue();
             onSelect(table.getValue());
             checkButtonState(selectedItem);

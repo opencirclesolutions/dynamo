@@ -534,7 +534,11 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
         HorizontalLayout buttonBar = constructButtonBar();
         buttonBar.setSizeUndefined();
-        titleBars.get(isViewMode()).addComponent(buttonBar);
+        if (getFormOptions().isPlaceButtonBarAtTop()) {
+            layout.addComponent(buttonBar);
+        } else {
+            titleBars.get(isViewMode()).addComponent(buttonBar);
+        }
         layout.addComponent(titleBars.get(isViewMode()));
 
         Layout form = null;
@@ -636,7 +640,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
         for (Button b : filterButtons(NEXT_BUTTON_DATA)) {
             b.setVisible(isSupportsIteration() && getFormOptions().isShowNextButton() && entity.getId() != null);
             if (checkEnabled && b.isVisible() && (isViewMode() || !getFormOptions().isOpenInViewMode())) {
-                b.setEnabled(hasNextEntity(entity));
+                b.setEnabled(true);
             } else {
                 b.setEnabled(false);
             }
@@ -644,7 +648,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
         for (Button b : filterButtons(PREV_BUTTON_DATA)) {
             b.setVisible(isSupportsIteration() && getFormOptions().isShowPrevButton() && entity.getId() != null);
             if (checkEnabled && b.isVisible() && (isViewMode() || !getFormOptions().isOpenInViewMode())) {
-                b.setEnabled(hasPrevEntity(entity));
+                b.setEnabled(true);
             } else {
                 b.setEnabled(false);
             }
@@ -757,6 +761,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
             T prev = getPrevEntity(getEntity());
             if (prev != null) {
                 setEntity(prev, true);
+            } else {
+                prevButton.setEnabled(false);
             }
         });
         prevButton.setData(PREV_BUTTON_DATA);
@@ -769,6 +775,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
             T next = getNextEntity(getEntity());
             if (next != null) {
                 setEntity(next, true);
+            } else {
+                nextButton.setEnabled(false);
             }
         });
         nextButton.setData(NEXT_BUTTON_DATA);
@@ -1060,7 +1068,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
         if (getFormTitleWidth() != null) {
             label.setWidth(getFormTitleWidth(), Unit.PIXELS);
-        } else if (SystemPropertyUtils.getDefaultFormTitleWidth() > 0) {
+        } else if (SystemPropertyUtils.getDefaultFormTitleWidth() > 0 && !getFormOptions().isPlaceButtonBarAtTop()) {
             label.setWidth(SystemPropertyUtils.getDefaultFormTitleWidth(), Unit.PIXELS);
         }
 

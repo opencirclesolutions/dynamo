@@ -13,11 +13,11 @@
  */
 package com.ocs.dynamo.ui.composite.form;
 
+import java.io.Serializable;
+
 import com.ocs.dynamo.ui.composite.type.AttributeGroupMode;
 import com.ocs.dynamo.ui.composite.type.ScreenMode;
 import com.ocs.dynamo.utils.SystemPropertyUtils;
-
-import java.io.Serializable;
 
 /**
  * Parameter object that can be passed along when creating a page - this object uses smart defaults
@@ -55,6 +55,11 @@ public class FormOptions implements Serializable {
      * Whether to hide the clear button in the search form
      */
     private boolean hideClearButton;
+
+    /**
+     * Whether to place the butonbar at the top of the screen
+     */
+    private boolean placeButtonBarAtTop;
 
     /**
      * Whether to open the form in view (read-only) mode
@@ -142,6 +147,12 @@ public class FormOptions implements Serializable {
 
     private boolean doubleClickSelectAllowed = true;
 
+    /**
+     * Whether to use a complex details mode that contains multiple tabs (only supported for
+     * AbstractSearchLayout and subclasses)
+     */
+    private boolean complexDetailsMode = false;
+
     public AttributeGroupMode getAttributeGroupMode() {
         return attributeGroupMode;
     }
@@ -182,6 +193,10 @@ public class FormOptions implements Serializable {
         return openInViewMode;
     }
 
+    public boolean isPlaceButtonBarAtTop() {
+        return placeButtonBarAtTop;
+    }
+
     public boolean isPopup() {
         return popup;
     }
@@ -218,7 +233,9 @@ public class FormOptions implements Serializable {
         return tableExportAllowed;
     }
 
-    public boolean isShowSearchAnyButton() { return showSearchAnyButton; }
+    public boolean isShowSearchAnyButton() {
+        return showSearchAnyButton;
+    }
 
     public FormOptions setAttributeGroupMode(AttributeGroupMode attributeGroupMode) {
         this.attributeGroupMode = attributeGroupMode;
@@ -262,6 +279,11 @@ public class FormOptions implements Serializable {
 
     public FormOptions setOpenInViewMode(boolean openInViewMode) {
         this.openInViewMode = openInViewMode;
+        return this;
+    }
+
+    public FormOptions setPlaceButtonBarAtTop(boolean placeButtonBarAtTop) {
+        this.placeButtonBarAtTop = placeButtonBarAtTop;
         return this;
     }
 
@@ -349,7 +371,7 @@ public class FormOptions implements Serializable {
         return this;
     }
 
-    public FormOptions setShowSearchAnyButton(boolean showSearchAnyButton){
+    public FormOptions setShowSearchAnyButton(boolean showSearchAnyButton) {
         this.showSearchAnyButton = showSearchAnyButton;
         return this;
     }
@@ -360,6 +382,44 @@ public class FormOptions implements Serializable {
 
     public boolean isShowPrevButton() {
         return showPrevButton;
+    }
+
+    public boolean isComplexDetailsMode() {
+        return complexDetailsMode;
+    }
+
+    public FormOptions setComplexDetailsMode(boolean complexDetailsMode) {
+        this.complexDetailsMode = complexDetailsMode;
+        return this;
+    }
+
+    public FormOptions createCopy() {
+        FormOptions fo = new FormOptions();
+        fo.setAttributeGroupMode(getAttributeGroupMode());
+        fo.setComplexDetailsMode(isComplexDetailsMode());
+        fo.setConfirmClear(isConfirmClear());
+        fo.setDetailsTableSearchMode(isDetailsTableSearchMode());
+        fo.setDoubleClickSelectAllowed(isDoubleClickSelectAllowed());
+        fo.setEditAllowed(isEditAllowed());
+        fo.setHideAddButton(isHideAddButton());
+        fo.setHideCancelButton(isHideCancelButton());
+        fo.setHideClearButton(isHideClearButton());
+        fo.setOpenInViewMode(isOpenInViewMode());
+        fo.setPlaceButtonBarAtTop(isPlaceButtonBarAtTop());
+        fo.setPopup(isPopup());
+        fo.setPreserveSelectedTab(isPreserveSelectedTab());
+        fo.setScreenMode(getScreenMode());
+        fo.setSearchImmediately(isSearchImmediately());
+        fo.setShowBackButton(isShowBackButton());
+        fo.setShowNextButton(isShowNextButton());
+        fo.setShowPrevButton(isShowPrevButton());
+        fo.setShowQuickSearchField(isShowQuickSearchField());
+        fo.setShowRemoveButton(isShowRemoveButton());
+        fo.setShowSearchAnyButton(isShowSearchAnyButton());
+        fo.setShowToggleButton(isShowToggleButton());
+        fo.setTableExportAllowed(isTableExportAllowed());
+
+        return fo;
     }
 
 }
