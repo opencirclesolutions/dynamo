@@ -13,6 +13,7 @@
  */
 package com.ocs.dynamo.ui.component;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.junit.Assert;
@@ -66,6 +67,9 @@ public class EntityLookupFieldTest extends BaseMockitoTest {
         Mockito.when(service.fetchByIds(Matchers.any(List.class), Matchers.any(SortOrders.class),
                 (FetchJoinInformation[]) Matchers.anyVararg())).thenReturn(Lists.newArrayList(e1, e2));
 
+        Mockito.when(service.fetchById(e1.getId())).thenReturn(e1);
+        Mockito.when(service.fetchById(e2.getId())).thenReturn(e2);
+
         Mockito.when(service.createNewEntity()).thenReturn(new TestEntity());
         MockUtil.mockServiceSave(service, TestEntity.class);
     }
@@ -115,6 +119,35 @@ public class EntityLookupFieldTest extends BaseMockitoTest {
         ModelBasedSearchDialog<Integer, TestEntity> dialog = (ModelBasedSearchDialog<Integer, TestEntity>) captor
                 .getValue();
         dialog.getOkButton().click();
+    }
+
+    @Test
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public void testMultipleSelectWithPreviousValue() {
+        EntityLookupField<Integer, TestEntity> field = new EntityLookupField<>(service,
+                factory.getModel(TestEntity.class), null, null, false, true,
+                Lists.newArrayList(new SortOrder("name", SortDirection.ASCENDING)));
+        MockUtil.injectUI(field, ui);
+        field.initContent();
+        field.setValue(Lists.newArrayList(e1));
+
+        ArgumentCaptor<ModelBasedSearchDialog> captor = ArgumentCaptor.forClass(ModelBasedSearchDialog.class);
+
+        field.getSelectButton().click();
+        Mockito.verify(ui).addWindow(captor.capture());
+
+        ModelBasedSearchDialog<Integer, TestEntity> dialog = (ModelBasedSearchDialog<Integer, TestEntity>) captor
+                .getValue();
+
+        dialog.getSearchLayout().select(Lists.newArrayList(e2.getId()));
+
+        dialog.getOkButton().click();
+
+        // extra selected value must be added to already selected
+        Collection<TestEntity> col = (Collection<TestEntity>) field.getValue();
+        Assert.assertEquals(2, col.size());
+        
+        field.selectValuesInDialog(dialog);
     }
 
     @Test

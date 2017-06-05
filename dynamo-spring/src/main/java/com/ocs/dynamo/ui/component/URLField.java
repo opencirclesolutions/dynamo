@@ -62,16 +62,8 @@ public class URLField extends CustomField<String> {
         this.attributeModel = attributeModel;
         this.textField = textField;
         this.editable = editable;
+        textField.addValueChangeListener(event -> setValue((String) event.getProperty().getValue()));
 
-        textField.addValueChangeListener(new ValueChangeListener() {
-
-            private static final long serialVersionUID = 3876834083532952681L;
-
-            @Override
-            public void valueChange(com.vaadin.data.Property.ValueChangeEvent event) {
-                setValue((String) event.getProperty().getValue());
-            }
-        });
     }
 
     protected Link getLink() {

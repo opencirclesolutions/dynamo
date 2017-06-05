@@ -13,6 +13,12 @@
  */
 package com.ocs.dynamo.ui.composite.table;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.dao.query.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
@@ -24,17 +30,10 @@ import com.ocs.dynamo.ui.composite.layout.BaseCustomComponent;
 import com.ocs.dynamo.ui.container.QueryType;
 import com.vaadin.data.Container;
 import com.vaadin.data.Container.Filter;
-import com.vaadin.data.Property;
 import com.vaadin.data.sort.SortOrder;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
 
 /**
  * A base class for objects that wrap around a ModelBasedTable
@@ -140,7 +139,7 @@ public abstract class BaseTableWrapper<ID extends Serializable, T extends Abstra
 		main.addComponent(table);
 
 		// add a change listener that responds to the selection of an item
-		table.addValueChangeListener((Property.ValueChangeListener) event -> onSelect(table.getValue()));
+		table.addValueChangeListener(event -> onSelect(table.getValue()));
 		setCompositionRoot(main);
 	}
 

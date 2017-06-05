@@ -52,6 +52,10 @@ public final class DateUtils {
 
     private static final int YEAR_STRING_LENGTH = 4;
 
+    private DateUtils() {
+        // hidden constructor
+    }
+
     private static Date convertSQLDate(Date d) {
         // toInstance is not supported on java.sql.Date, so convert to actual date
         if (d instanceof java.sql.Date) {
@@ -653,9 +657,4 @@ public final class DateUtils {
         calendar.set(Calendar.MILLISECOND, 0);
         return calendar;
     }
-
-    private DateUtils() {
-        // hidden constructor
-    }
-
 }

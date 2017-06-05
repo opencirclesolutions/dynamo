@@ -13,6 +13,10 @@
  */
 package com.ocs.dynamo.ui;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Consumer;
+
 import com.ocs.dynamo.ui.navigator.CustomNavigator;
 import com.vaadin.annotations.Widgetset;
 import com.vaadin.navigator.Navigator;
@@ -21,97 +25,95 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.SingleComponentContainer;
 import com.vaadin.ui.UI;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Consumer;
-
 @Widgetset(value = "com.ocs.dynamo.DynamoWidgetSet")
 public abstract class BaseUI extends UI {
 
-	private static final long serialVersionUID = 5903140845804805314L;
+    private static final long serialVersionUID = 5903140845804805314L;
 
-	/**
-	 * Index of the tab to select directly after opening a screen
-	 */
-	private Integer selectedTab;
+    /**
+     * Index of the tab to select directly after opening a screen
+     */
+    private Integer selectedTab;
 
-	/**
-	 * A string describing the desired screen mode to set after opening a screen
-	 */
-	private String screenMode;
+    /**
+     * A string describing the desired screen mode to set after opening a screen
+     */
+    private String screenMode;
 
-	/**
-	 * The navigator
-	 */
-	private CustomNavigator navigator;
+    /**
+     * The navigator
+     */
+    private CustomNavigator navigator;
 
-	private Map<Class<?>, Consumer<?>> entityOnViewMapping = new HashMap<>();
+    private Map<Class<?>, Consumer<?>> entityOnViewMapping = new HashMap<>();
 
-	public Integer getSelectedTab() {
-		return selectedTab;
-	}
+    public Integer getSelectedTab() {
+        return selectedTab;
+    }
 
-	public void setSelectedTab(Integer selectedTab) {
-		this.selectedTab = selectedTab;
-	}
+    public void setSelectedTab(Integer selectedTab) {
+        this.selectedTab = selectedTab;
+    }
 
-	public String getScreenMode() {
-		return screenMode;
-	}
+    public String getScreenMode() {
+        return screenMode;
+    }
 
-	public void setScreenMode(String screenMode) {
-		this.screenMode = screenMode;
-	}
-
-	/**
-	 * Initializes the startup view
-	 * 
-	 * @param startView
-	 * @param alwaysReload
-	 *            indicates whether the view must always be reloaded (even when navigating from the
-	 *            view to the same view)
-	 */
-	protected void initNavigation(ViewProvider viewProvider, SingleComponentContainer container, String startView,
-	        boolean alwaysReload) {
-
-		// create the navigator
-		navigator = new CustomNavigator(this, new Navigator.SingleComponentContainerViewDisplay(container));
-		navigator.setAlwaysReload(alwaysReload);
-
-		UI.getCurrent().setNavigator(navigator);
-		navigator.addProvider(viewProvider);
-		navigator.navigateTo(startView);
-	}
-
-	@Override
-	public CustomNavigator getNavigator() {
-		return navigator;
-	}
-
-	public void setNavigator(CustomNavigator navigator) {
-		this.navigator = navigator;
-	}
-
-	public void addEntityOnViewMapping(Class<?> entityClass, Consumer<?> navigateAction){
-	    entityOnViewMapping.put(entityClass, navigateAction);
+    public void setScreenMode(String screenMode) {
+        this.screenMode = screenMode;
     }
 
     /**
-     * Navigate to a screen based on the actual type of parameter o.
-     * During initialisation of the UI of your project a mapping from
-     * type to consumer must have been provided by adding it through
-     * the method addEntityOnViewMapping.
-     * @param o The selected object to be displayed on the target screen.
+     * Initializes the startup view
+     * 
+     * @param startView
+     * @param alwaysReload
+     *            indicates whether the view must always be reloaded (even when navigating from the
+     *            view to the same view)
      */
-    public void navigateToEntityScreenDirectly(Object o){
-        Consumer navigateToView =entityOnViewMapping.getOrDefault(o.getClass(), err ->
-        Notification.show("No view mapping registered for class: " + o.getClass(), Notification.Type.ERROR_MESSAGE));
-        if (navigateToView != null){
+    protected void initNavigation(ViewProvider viewProvider, SingleComponentContainer container, String startView,
+            boolean alwaysReload) {
+
+        // create the navigator
+        navigator = new CustomNavigator(this, new Navigator.SingleComponentContainerViewDisplay(container));
+        navigator.setAlwaysReload(alwaysReload);
+
+        UI.getCurrent().setNavigator(navigator);
+        navigator.addProvider(viewProvider);
+        navigator.navigateTo(startView);
+    }
+
+    @Override
+    public CustomNavigator getNavigator() {
+        return navigator;
+    }
+
+    public void setNavigator(CustomNavigator navigator) {
+        this.navigator = navigator;
+    }
+
+    public void addEntityOnViewMapping(Class<?> entityClass, Consumer<?> navigateAction) {
+        entityOnViewMapping.put(entityClass, navigateAction);
+    }
+
+    /**
+     * Navigate to a screen based on the actual type of parameter o. During initialisation of the UI
+     * of your project a mapping from type to consumer must have been provided by adding it through
+     * the method addEntityOnViewMapping.
+     * 
+     * @param o
+     *            The selected object to be displayed on the target screen.
+     */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public void navigateToEntityScreenDirectly(Object o) {
+        Consumer navigateToView = entityOnViewMapping.getOrDefault(o.getClass(), err -> Notification
+                .show("No view mapping registered for class: " + o.getClass(), Notification.Type.ERROR_MESSAGE));
+        if (navigateToView != null) {
             try {
                 navigateToView.accept(o);
-            } catch (Exception e){
-                Notification.show("An exception occurred while executing the mapped action for class: " +
-                                    o.getClass() + " with message: " + e.getMessage(), Notification.Type.ERROR_MESSAGE);
+            } catch (Exception e) {
+                Notification.show("An exception occurred while executing the mapped action for class: " + o.getClass()
+                        + " with message: " + e.getMessage(), Notification.Type.ERROR_MESSAGE);
                 throw e;
             }
         }

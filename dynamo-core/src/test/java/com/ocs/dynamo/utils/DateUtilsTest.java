@@ -305,6 +305,10 @@ public class DateUtilsTest {
         date = DateUtils.createDate("29022012");
         ld = DateUtils.toLocalDate(date);
         Assert.assertEquals("2012-02-29", ld.toString());
+
+        java.sql.Date sqlDate = new java.sql.Date(date.getTime());
+        ld = DateUtils.toLocalDate(sqlDate);
+        Assert.assertEquals("2012-02-29", ld.toString());
     }
 
     @Test
@@ -321,6 +325,10 @@ public class DateUtilsTest {
 
         date = DateUtils.createDateTime("01042010 222324");
         ld = DateUtils.toLocalDateTime(date);
+        Assert.assertEquals("2010-04-01T22:23:24", ld.toString());
+
+        java.sql.Date sqlDate = new java.sql.Date(date.getTime());
+        ld = DateUtils.toLocalDateTime(sqlDate);
         Assert.assertEquals("2010-04-01T22:23:24", ld.toString());
     }
 
@@ -340,6 +348,10 @@ public class DateUtilsTest {
         Date date = DateUtils.createTime("161718");
         LocalTime lt = DateUtils.toLocalTime(date);
         Assert.assertEquals("16:17:18", lt.toString());
+
+        java.sql.Date sqlDate = new java.sql.Date(date.getTime());
+        lt = DateUtils.toLocalTime(sqlDate);
+        Assert.assertEquals("16:17:18", lt.toString());
     }
 
     @Test
@@ -354,5 +366,20 @@ public class DateUtilsTest {
         Assert.assertEquals("2015-53", DateUtils.toWeekCode(DateUtils.createDate("28122015")));
         Assert.assertEquals("2016-01", DateUtils.toWeekCode(DateUtils.createDate("04012016")));
         Assert.assertEquals("2016-02", DateUtils.toWeekCode(DateUtils.createDate("11012016")));
+    }
+
+    @Test
+    public void testGetStartDayOfWeek() {
+        LocalDate ld = DateUtils.getStartDateOfWeek("2013-51");
+        Assert.assertEquals("2013-12-16", ld.toString());
+
+        ld = DateUtils.getStartDateOfWeek("2013-52");
+        Assert.assertEquals("2013-12-23", ld.toString());
+
+        ld = DateUtils.getStartDateOfWeek("2014-01");
+        Assert.assertEquals("2013-12-30", ld.toString());
+
+        ld = DateUtils.getStartDateOfWeek("2015-53");
+        Assert.assertEquals("2015-12-28", ld.toString());
     }
 }

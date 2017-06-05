@@ -20,133 +20,181 @@ import com.ocs.dynamo.service.TestEntityService;
 import com.ocs.dynamo.test.BaseMockitoTest;
 import com.ocs.dynamo.test.MockUtil;
 import com.ocs.dynamo.ui.component.EntityComboBox.SelectMode;
+import com.vaadin.data.util.filter.Compare;
 import com.vaadin.ui.UI;
 
 public class QuickAddEntityComboBoxTest extends BaseMockitoTest {
 
-	private EntityModelFactory factory = new EntityModelFactoryImpl();
+    private EntityModelFactory factory = new EntityModelFactoryImpl();
 
-	@Mock
-	private UI ui;
+    @Mock
+    private UI ui;
 
-	@Mock
-	private TestEntityService service;
+    @Mock
+    private TestEntityService service;
 
-	private TestEntity t1;
+    private TestEntity t1;
 
-	private TestEntity t2;
+    private TestEntity t2;
 
-	private TestEntity t3;
+    private TestEntity t3;
 
-	@Before
-	public void setUp() {
-		t1 = new TestEntity(1, "Kevin", 12L);
-		t2 = new TestEntity(2, "Bob", 13L);
-		t3 = new TestEntity(3, "Stewart", 14L);
+    @Before
+    public void setUp() {
+        t1 = new TestEntity(1, "Kevin", 12L);
+        t2 = new TestEntity(2, "Bob", 13L);
+        t3 = new TestEntity(3, "Stewart", 14L);
 
-		Mockito.when(service.find(Matchers.any(Filter.class), (SortOrder[]) Matchers.anyVararg())).thenReturn(
-		        Lists.newArrayList(t1, t2, t3));
-		Mockito.when(service.createNewEntity()).thenReturn(new TestEntity());
-		MockUtil.mockServiceSave(service, TestEntity.class);
-	}
+        Mockito.when(service.find(Matchers.isNull(Filter.class), (SortOrder[]) Matchers.anyVararg()))
+                .thenReturn(Lists.newArrayList(t1, t2, t3));
 
-	/**
-	 * Test the creation of the component and a simple selection
-	 */
-	@Test
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public void testCreateAndSelect() {
-		EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
-		AttributeModel am = em.getAttributeModel("testDomain");
+        Filter f = new com.ocs.dynamo.filter.Compare.Equal("name", "Kevin");
+        Mockito.when(service.find(Matchers.eq(f), (SortOrder[]) Matchers.anyVararg()))
+                .thenReturn(Lists.newArrayList(t1));
 
-		QuickAddEntityComboBox<Integer, TestEntity> select = new QuickAddEntityComboBox<>(em, am, service,
-		        SelectMode.FILTERED, null, false, null);
-		select.initContent();
-		MockUtil.injectUI(select, ui);
+        Mockito.when(service.createNewEntity()).thenReturn(new TestEntity());
+        MockUtil.mockServiceSave(service, TestEntity.class);
+    }
 
-		// list must contain 3 items
-		Assert.assertEquals(3, select.getComboBox().getContainerDataSource().size());
+    /**
+     * Test the creation of the component and a simple selection
+     */
+    @Test
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public void testCreateAndSelect() {
+        EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
+        AttributeModel am = em.getAttributeModel("testDomain");
 
-		// test propagation of the value
-		select.setValue(t1);
-		Assert.assertEquals(t1, select.getComboBox().getValue());
+        QuickAddEntityComboBox<Integer, TestEntity> select = new QuickAddEntityComboBox<>(em, am, service,
+                SelectMode.FILTERED, null, false, null);
+        select.initContent();
+        MockUtil.injectUI(select, ui);
 
-		// .. and the other way around
-		select.getComboBox().setValue(t2);
-		Assert.assertEquals(t2, select.getValue());
+        // list must contain 3 items
+        Assert.assertEquals(3, select.getComboBox().getContainerDataSource().size());
 
-		// bring up the add dialog
-		ArgumentCaptor<AddNewValueDialog> captor = ArgumentCaptor.forClass(AddNewValueDialog.class);
+        // test propagation of the value
+        select.setValue(t1);
+        Assert.assertEquals(t1, select.getComboBox().getValue());
 
-		select.getAddButton().click();
-		Mockito.verify(ui).addWindow(captor.capture());
+        // .. and the other way around
+        select.getComboBox().setValue(t2);
+        Assert.assertEquals(t2, select.getValue());
 
-		AddNewValueDialog<Integer, TestEntity> dialog = (AddNewValueDialog<Integer, TestEntity>) captor.getValue();
+        // bring up the add dialog
+        ArgumentCaptor<AddNewValueDialog> captor = ArgumentCaptor.forClass(AddNewValueDialog.class);
 
-		dialog.getValueField().setValue("New Item");
+        select.getAddButton().click();
+        Mockito.verify(ui).addWindow(captor.capture());
 
-		dialog.getOkButton().click();
+        AddNewValueDialog<Integer, TestEntity> dialog = (AddNewValueDialog<Integer, TestEntity>) captor.getValue();
 
-		// list must now contain an extra item
-		Assert.assertEquals(4, select.getComboBox().getContainerDataSource().size());
+        dialog.getValueField().setValue("New Item");
 
-	}
+        dialog.getOkButton().click();
 
-	@Test
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public void testAddEmptyItem() {
-		EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
-		AttributeModel am = em.getAttributeModel("testDomain");
+        // list must now contain an extra item
+        Assert.assertEquals(4, select.getComboBox().getContainerDataSource().size());
 
-		QuickAddEntityComboBox<Integer, TestEntity> select = new QuickAddEntityComboBox<>(em, am, service,
-		        SelectMode.FILTERED, null, false, null);
-		select.initContent();
-		MockUtil.injectUI(select, ui);
+    }
 
-		// bring up the add dialog
-		ArgumentCaptor<AddNewValueDialog> captor = ArgumentCaptor.forClass(AddNewValueDialog.class);
+    @Test
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public void testAddEmptyItem() {
+        EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
+        AttributeModel am = em.getAttributeModel("testDomain");
 
-		select.getAddButton().click();
-		Mockito.verify(ui).addWindow(captor.capture());
+        QuickAddEntityComboBox<Integer, TestEntity> select = new QuickAddEntityComboBox<>(em, am, service,
+                SelectMode.FILTERED, null, false, null);
+        select.initContent();
+        MockUtil.injectUI(select, ui);
 
-		AddNewValueDialog<Integer, TestEntity> dialog = (AddNewValueDialog<Integer, TestEntity>) captor.getValue();
+        // bring up the add dialog
+        ArgumentCaptor<AddNewValueDialog> captor = ArgumentCaptor.forClass(AddNewValueDialog.class);
 
-		// try to add an empty value
-		dialog.getValueField().setValue(null);
-		dialog.getOkButton().click();
+        select.getAddButton().click();
+        Mockito.verify(ui).addWindow(captor.capture());
 
-		// no new item may have been created
-		Assert.assertEquals(3, select.getComboBox().getContainerDataSource().size());
-	}
+        AddNewValueDialog<Integer, TestEntity> dialog = (AddNewValueDialog<Integer, TestEntity>) captor.getValue();
 
-	/**
-	 * Try to add an item that is too long
-	 */
-	@Test
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public void testAddLongItem() {
-		EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
-		AttributeModel am = em.getAttributeModel("testDomain");
+        // try to add an empty value
+        dialog.getValueField().setValue(null);
+        dialog.getOkButton().click();
 
-		QuickAddEntityComboBox<Integer, TestEntity> select = new QuickAddEntityComboBox<>(em, am, service,
-		        SelectMode.FILTERED, null, false, null);
-		select.initContent();
-		MockUtil.injectUI(select, ui);
+        // no new item may have been created
+        Assert.assertEquals(3, select.getComboBox().getContainerDataSource().size());
+    }
 
-		// bring up the add dialog
-		ArgumentCaptor<AddNewValueDialog> captor = ArgumentCaptor.forClass(AddNewValueDialog.class);
+    /**
+     * Try to add an item that is too long
+     */
+    @Test
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public void testAddLongItem() {
+        EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
+        AttributeModel am = em.getAttributeModel("testDomain");
 
-		select.getAddButton().click();
-		Mockito.verify(ui).addWindow(captor.capture());
+        QuickAddEntityComboBox<Integer, TestEntity> select = new QuickAddEntityComboBox<>(em, am, service,
+                SelectMode.FILTERED, null, false, null);
+        select.initContent();
+        MockUtil.injectUI(select, ui);
 
-		AddNewValueDialog<Integer, TestEntity> dialog = (AddNewValueDialog<Integer, TestEntity>) captor.getValue();
+        // bring up the add dialog
+        ArgumentCaptor<AddNewValueDialog> captor = ArgumentCaptor.forClass(AddNewValueDialog.class);
 
-		// try to add an empty value
-		dialog.getValueField().setValue("LongLongLongLongLongLongLongLongLong");
-		dialog.getOkButton().click();
+        select.getAddButton().click();
+        Mockito.verify(ui).addWindow(captor.capture());
 
-		// no new item may have been created
-		Assert.assertEquals(3, select.getComboBox().getContainerDataSource().size());
-	}
+        AddNewValueDialog<Integer, TestEntity> dialog = (AddNewValueDialog<Integer, TestEntity>) captor.getValue();
+
+        // try to add an empty value
+        dialog.getValueField().setValue("LongLongLongLongLongLongLongLongLong");
+        dialog.getOkButton().click();
+
+        // no new item may have been created
+        Assert.assertEquals(3, select.getComboBox().getContainerDataSource().size());
+    }
+
+    @Test
+    public void testAdditionalFilter() {
+        EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
+        AttributeModel am = em.getAttributeModel("testDomain");
+
+        QuickAddEntityComboBox<Integer, TestEntity> select = new QuickAddEntityComboBox<>(em, am, service,
+                SelectMode.FILTERED, null, false, null);
+        select.initContent();
+        MockUtil.injectUI(select, ui);
+
+        Assert.assertEquals(3, select.getComboBox().getContainerDataSource().size());
+
+        // apply an additional filter
+        select.setAdditionalFilter(new Compare.Equal("name", "Kevin"));
+        Assert.assertEquals(1, select.getComboBox().getContainerDataSource().size());
+
+        // and remove it again
+        select.clearAdditionalFilter();
+        Assert.assertEquals(3, select.getComboBox().getContainerDataSource().size());
+    }
+    
+    @Test
+    public void testRefresh() {
+        EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
+        AttributeModel am = em.getAttributeModel("testDomain");
+
+        QuickAddEntityComboBox<Integer, TestEntity> select = new QuickAddEntityComboBox<>(em, am, service,
+                SelectMode.FILTERED, null, false, null);
+        select.initContent();
+        MockUtil.injectUI(select, ui);
+        
+        Assert.assertEquals(3, select.getComboBox().getContainerDataSource().size());
+        
+        // refresh with a filter
+        select.refresh(new Compare.Equal("name", "Kevin"));
+        Assert.assertEquals(1, select.getComboBox().getContainerDataSource().size());
+        
+        // just a regular refresh
+        select.refresh();
+        Assert.assertEquals(1, select.getComboBox().getContainerDataSource().size());
+    }
 
 }

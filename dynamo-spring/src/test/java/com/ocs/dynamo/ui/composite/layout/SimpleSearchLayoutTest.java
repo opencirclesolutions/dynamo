@@ -32,6 +32,7 @@ import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.VerticalLayout;
 
 public class SimpleSearchLayoutTest extends BaseIntegrationTest {
 
@@ -46,12 +47,16 @@ public class SimpleSearchLayoutTest extends BaseIntegrationTest {
 
     private TestEntity e1;
 
+    private TestEntity e2;
+
+    private boolean detailsTabCreated = false;
+
     @Before
     public void setup() {
         e1 = new TestEntity("Bob", 11L);
         e1 = testEntityService.save(e1);
 
-        TestEntity e2 = new TestEntity("Kevin", 12L);
+        e2 = new TestEntity("Kevin", 12L);
         e2 = testEntityService.save(e2);
 
         TestEntity e3 = new TestEntity("Stewart", 13L);
@@ -60,7 +65,10 @@ public class SimpleSearchLayoutTest extends BaseIntegrationTest {
 
     @Test
     public void testSimpleSearchLayout() {
-        SimpleSearchLayout<Integer, TestEntity> layout = createLayout(new FormOptions());
+        SimpleSearchLayout<Integer, TestEntity> layout = createLayout(
+                new FormOptions().setShowNextButton(true).setShowPrevButton(true));
+        layout.setDividerProperty("name");
+
         layout.build();
 
         Assert.assertTrue(layout.getAddButton().isVisible());
@@ -79,6 +87,56 @@ public class SimpleSearchLayoutTest extends BaseIntegrationTest {
         TestEntity t = VaadinUtils.getEntityFromContainer(table.getContainerDataSource(), id);
 
         layout.detailsMode(t);
+
+        // click the next button
+        layout.getEditForm().getNextButtons().iterator().next().click();
+        Assert.assertNotNull(layout.getSelectedItem());
+
+        // click the previous button and verify that the same item is again selected
+        layout.getEditForm().getPreviousButtons().iterator().next().click();
+        Assert.assertEquals(t, layout.getSelectedItem());
+    }
+
+    /**
+     * Check that a complex details tab is created when requested
+     */
+    @Test
+    public void testSimpleSearchLayout_ComplexDetailMode() {
+        detailsTabCreated = false;
+        SimpleSearchLayout<Integer, TestEntity> layout = new SimpleSearchLayout<Integer, TestEntity>(testEntityService,
+                entityModelFactory.getModel(TestEntity.class), QueryType.ID_BASED,
+                new FormOptions().setComplexDetailsMode(true), new SortOrder("name", SortDirection.ASCENDING)) {
+
+            private static final long serialVersionUID = -5529138385460474211L;
+
+            @Override
+            protected String[] getDetailModeTabCaptions() {
+                return new String[] { "title 1" };
+            }
+
+            @Override
+            protected Component initTab(TestEntity entity, int index) {
+                detailsTabCreated = true;
+                return new VerticalLayout();
+            }
+        };
+        layout.build();
+
+        // click add button, verify that we just get a simple edit screen and not
+        // the tab layout
+        layout.getAddButton().click();
+        Assert.assertFalse(detailsTabCreated);
+
+        // select the item and verify that the proper details tab is created
+        layout.setSelectedItem(e1);
+        layout.getEditButton().click();
+        Assert.assertTrue(detailsTabCreated);
+
+        // select another item
+        layout.searchMode();
+        layout.setSelectedItem(e2);
+        layout.getEditButton().click();
+
     }
 
     @Test
@@ -130,7 +188,7 @@ public class SimpleSearchLayoutTest extends BaseIntegrationTest {
         layout.getEditForm().getSaveButtons().get(0).click();
         Assert.assertFalse(layout.isInSearchMode());
     }
-    
+
     @Test
     public void testSimpleSearchLayout_AddButton2() {
         SimpleSearchLayout<Integer, TestEntity> layout = createLayout(new FormOptions().setOpenInViewMode(false));
@@ -307,16 +365,17 @@ public class SimpleSearchLayoutTest extends BaseIntegrationTest {
                 cascadeEntityService, entityModelFactory.getModel(CascadeEntity.class), QueryType.ID_BASED, fo, null);
         layout.build();
 
-        QuickAddEntityComboBox<Integer, TestEntity> box1 = (QuickAddEntityComboBox<Integer, TestEntity>) (Object)layout.getSearchForm()
-                .getGroups().get("testEntity").getField();
-        ((BeanItemContainer<TestEntity>) box1.getComboBox().getContainerDataSource()).addAll(testEntityService.findAll());
+        QuickAddEntityComboBox<Integer, TestEntity> box1 = (QuickAddEntityComboBox<Integer, TestEntity>) (Object) layout
+                .getSearchForm().getGroups().get("testEntity").getField();
+        ((BeanItemContainer<TestEntity>) box1.getComboBox().getContainerDataSource())
+                .addAll(testEntityService.findAll());
         Assert.assertEquals(3, box1.getComboBox().getContainerDataSource().size());
 
         layout.setSearchValue("testEntity", e1);
 
         // check that an additional filter for "testEntity" is set
-        QuickAddEntityComboBox<Integer, TestEntity2> box2 = (QuickAddEntityComboBox<Integer, TestEntity2>) (Object) layout.getSearchForm()
-                .getGroups().get("testEntity2").getField();
+        QuickAddEntityComboBox<Integer, TestEntity2> box2 = (QuickAddEntityComboBox<Integer, TestEntity2>) (Object) layout
+                .getSearchForm().getGroups().get("testEntity2").getField();
         Compare.Equal equal = (Compare.Equal) box2.getAdditionalFilter();
         Assert.assertEquals("testEntity", equal.getPropertyId());
 

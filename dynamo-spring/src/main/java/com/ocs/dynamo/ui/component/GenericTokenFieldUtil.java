@@ -88,25 +88,19 @@ public final class GenericTokenFieldUtil {
     private static <T> void attachComboBoxValueChange(final ComboBox comboBox, final ExtTokenField extTokenField,
             final BeanItemContainer<T> container, final Collection<Property.ValueChangeListener> valueChangeListeners,
             final Field<?> field, final TokenizableFactory<T> tokenizableFactory) {
-        comboBox.addValueChangeListener(new Property.ValueChangeListener() {
+        comboBox.addValueChangeListener(event -> {
+            Object selectedObject = event.getProperty().getValue();
+            if (selectedObject != null) {
+                T value = (T) selectedObject;
+                addValueToContainer(value, container);
 
-            private static final long serialVersionUID = -1734818761735064248L;
+                addTokens(extTokenField, container, valueChangeListeners, field, tokenizableFactory);
 
-            @Override
-            public void valueChange(Property.ValueChangeEvent event) {
-                Object selectedObject = event.getProperty().getValue();
-                if (selectedObject != null) {
-                    T value = (T) selectedObject;
-                    addValueToContainer(value, container);
+                // reset the combo box
+                comboBox.setValue(null);
+                comboBox.getContainerDataSource().removeItem(value);
 
-                    addTokens(extTokenField, container, valueChangeListeners, field, tokenizableFactory);
-
-                    // reset the combo box
-                    comboBox.setValue(null);
-                    comboBox.getContainerDataSource().removeItem(value);
-
-                    copyValueFromContainer(container, field);
-                }
+                copyValueFromContainer(container, field);
             }
         });
     }
@@ -215,19 +209,9 @@ public final class GenericTokenFieldUtil {
 
         // initial filling of the field
         addTokens(extTokenField, container, valueChangeListeners, field, tokenizableFactory);
-
-        container.addItemSetChangeListener(new Container.ItemSetChangeListener() {
-
-            private static final long serialVersionUID = -2171389796068112560L;
-
-            @Override
-            public void containerItemSetChange(Container.ItemSetChangeEvent event) {
-                addTokens(extTokenField, container, valueChangeListeners, field, tokenizableFactory);
-            }
-        });
-
+        container.addItemSetChangeListener(
+                event -> addTokens(extTokenField, container, valueChangeListeners, field, tokenizableFactory));
         processLayout.postProcessLayout(layout);
-
         layout.setSizeFull();
 
         return layout;

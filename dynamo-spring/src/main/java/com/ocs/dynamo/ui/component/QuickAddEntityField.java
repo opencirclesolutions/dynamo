@@ -13,6 +13,8 @@
  */
 package com.ocs.dynamo.ui.component;
 
+import java.io.Serializable;
+
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
@@ -20,10 +22,7 @@ import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.BaseUI;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.UI;
-
-import java.io.Serializable;
 
 /**
  * Base class for components that display an Entity or collection of entities and that allow the
@@ -92,26 +91,20 @@ public abstract class QuickAddEntityField<ID extends Serializable, T extends Abs
      */
     protected Button constructAddButton() {
         addButton = new Button(getMessageService().getMessage("ocs.add"));
-        addButton.addClickListener(new Button.ClickListener() {
+        addButton.addClickListener(event -> {
+            AddNewValueDialog<ID, T> dialog = new AddNewValueDialog<ID, T>(getEntityModel(), getAttributeModel(),
+                    getService(), getMessageService()) {
 
-            private static final long serialVersionUID = 4074804834729142520L;
+                private static final long serialVersionUID = 2040216794358094524L;
 
-            @Override
-            public void buttonClick(ClickEvent event) {
-                AddNewValueDialog<ID, T> dialog = new AddNewValueDialog<ID, T>(getEntityModel(), getAttributeModel(),
-                        getService(), getMessageService()) {
+                @Override
+                protected void afterNewEntityAdded(T entity) {
+                    QuickAddEntityField.this.afterNewEntityAdded(entity);
+                }
 
-                    private static final long serialVersionUID = 2040216794358094524L;
-
-                    @Override
-                    protected void afterNewEntityAdded(T entity) {
-                        QuickAddEntityField.this.afterNewEntityAdded(entity);
-                    }
-
-                };
-                dialog.build();
-                ui.addWindow(dialog);
-            }
+            };
+            dialog.build();
+            ui.addWindow(dialog);
         });
         return addButton;
     }
@@ -123,9 +116,7 @@ public abstract class QuickAddEntityField<ID extends Serializable, T extends Abs
      */
     protected Button constructDirectNavigationButton() {
         directNavigationButton = new Button(getMessageService().getMessage("ocs.direct.navigate"));
-        directNavigationButton.addClickListener((Button.ClickListener) event -> {
-                ((BaseUI)ui).navigateToEntityScreenDirectly(getValue());
-        });
+        directNavigationButton.addClickListener(event -> ((BaseUI) ui).navigateToEntityScreenDirectly(getValue()));
         return directNavigationButton;
     }
 

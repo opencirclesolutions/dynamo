@@ -32,7 +32,6 @@ import com.ocs.jasperreports.ReportGenerator.Format;
 import com.vaadin.data.Container;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Container.Indexed;
-import com.vaadin.data.Property;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.StreamResource;
 import com.vaadin.server.StreamResource.StreamSource;
@@ -195,22 +194,17 @@ public class JRReportViewer<T> extends BaseCustomComponent {
         FormLayout content = new FormLayout();
         content.setSpacing(true);
         // Create reporting selection
-        reportSelection = ModelBasedFieldFactory.getInstance(entityModel, getMessageService()).createEnumCombo(
-                reportDefinition.getClass(), ComboBox.class);
-        reportSelection.setCaption(getMessageService().getMessage(
-                entityModel.getReference() + "." + reportDefinition.getClass().getSimpleName()));
+        reportSelection = ModelBasedFieldFactory.getInstance(entityModel, getMessageService())
+                .createEnumCombo(reportDefinition.getClass(), ComboBox.class);
+        reportSelection.setCaption(getMessageService()
+                .getMessage(entityModel.getReference() + "." + reportDefinition.getClass().getSimpleName()));
         reportSelection.setNullSelectionAllowed(false);
         reportSelection.setRequired(true);
         reportSelection.select(reportSelection.getItemIds().iterator().next());
         reportSelection.setSizeFull();
-        reportSelection.addValueChangeListener(new Property.ValueChangeListener() {
-            private static final long serialVersionUID = -3358229370015557129L;
-
-            @Override
-            public void valueChange(Property.ValueChangeEvent event) {
-                if (exportPDF != null) {
-                    exportPDF.setEnabled(false);
-                }
+        reportSelection.addValueChangeListener(event -> {
+            if (exportPDF != null) {
+                exportPDF.setEnabled(false);
             }
         });
         // Add combo
@@ -302,8 +296,8 @@ public class JRReportViewer<T> extends BaseCustomComponent {
         // Generate report
         reportGenerator.setShowMargins(showMargins.getValue());
         String html = reportGenerator.executeReportAsHtml(jasperReport, params, jrDataSource,
-                ((WrappedHttpSession) VaadinSession.getCurrent().getSession()).getHttpSession(), VaadinSession
-                        .getCurrent().getLocale());
+                ((WrappedHttpSession) VaadinSession.getCurrent().getSession()).getHttpSession(),
+                VaadinSession.getCurrent().getLocale());
         if (html == null || "".equals(html) || (container != null && container.size() <= 0)) {
             reportArea.setValue(getMessageService().getMessage(NO_DATA_FOUND_KEY));
             exportPDF.setEnabled(false);
@@ -362,7 +356,8 @@ public class JRReportViewer<T> extends BaseCustomComponent {
             // Prepare the container by adding all properties needed for the reports
             for (ReportDefinition type : (ReportDefinition[]) reportDefinition.getClass().getEnumConstants()) {
                 if (!type.requiresDatabaseConnection()) {
-                    JRUtils.addContainerPropertiesFromReport(container, reportGenerator.loadTemplate(getFullPath(type)));
+                    JRUtils.addContainerPropertiesFromReport(container,
+                            reportGenerator.loadTemplate(getFullPath(type)));
                 }
             }
         }

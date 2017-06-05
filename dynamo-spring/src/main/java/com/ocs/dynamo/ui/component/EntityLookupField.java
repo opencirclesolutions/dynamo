@@ -32,7 +32,6 @@ import com.ocs.dynamo.utils.SystemPropertyUtils;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.sort.SortOrder;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -54,7 +53,6 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
         extends QuickAddEntityField<ID, T, Object> {
 
     private static final long serialVersionUID = 5377765863515463622L;
-
 
     private boolean directNavigationAllowed;
 
@@ -190,67 +188,53 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 
         // button for selecting an entity - brings up the search dialog
         selectButton = new Button(getMessageService().getMessage("ocs.select"));
-        selectButton.addClickListener(new Button.ClickListener() {
-
-            private static final long serialVersionUID = 8377632639548698729L;
-
-            @Override
-            public void buttonClick(ClickEvent event) {
-                List<Filter> filterList = new ArrayList<>();
-                if (getFilter() != null) {
-                    filterList.add(getFilter());
-                }
-                if (getAdditionalFilter() != null) {
-                    filterList.add(getAdditionalFilter());
-                }
-
-                ModelBasedSearchDialog<ID, T> dialog = new ModelBasedSearchDialog<ID, T>(getService(), getEntityModel(),
-                        filterList, sortOrders, multiSelect, true, joins) {
-
-                    private static final long serialVersionUID = -3432107069929941520L;
-
-                    @Override
-                    @SuppressWarnings("unchecked")
-                    protected boolean doClose() {
-                        if (multiSelect) {
-                            if (getValue() == null) {
-                                setValue(getSelectedItems());
-                            } else {
-                                // get current value
-                                Collection<T> current = (Collection<T>) EntityLookupField.this.getValue();
-                                // add new values
-                                for (T t : getSelectedItems()) {
-                                    if (!current.contains(t)) {
-                                        current.add(t);
-                                    }
-                                }
-                                EntityLookupField.this.setValue(current);
-                            }
-                        } else {
-                            // single value select
-                            setValue(getSelectedItem());
-                        }
-                        return true;
-                    }
-                };
-                dialog.setPageLength(pageLength);
-                dialog.build();
-                getUi().addWindow(dialog);
+        selectButton.addClickListener(event -> {
+            List<Filter> filterList = new ArrayList<>();
+            if (getFilter() != null) {
+                filterList.add(getFilter());
             }
+            if (getAdditionalFilter() != null) {
+                filterList.add(getAdditionalFilter());
+            }
+
+            ModelBasedSearchDialog<ID, T> dialog = new ModelBasedSearchDialog<ID, T>(getService(), getEntityModel(),
+                    filterList, sortOrders, multiSelect, true, joins) {
+
+                private static final long serialVersionUID = -3432107069929941520L;
+
+                @Override
+                @SuppressWarnings("unchecked")
+                protected boolean doClose() {
+                    if (multiSelect) {
+                        if (getValue() == null) {
+                            setValue(getSelectedItems());
+                        } else {
+                            // get current value
+                            Collection<T> current = (Collection<T>) EntityLookupField.this.getValue();
+                            // add new values
+                            for (T t : getSelectedItems()) {
+                                if (!current.contains(t)) {
+                                    current.add(t);
+                                }
+                            }
+                            EntityLookupField.this.setValue(current);
+                        }
+                    } else {
+                        // single value select
+                        setValue(getSelectedItem());
+                    }
+                    return true;
+                }
+            };
+            dialog.setPageLength(pageLength);
+            dialog.build();
+            getUi().addWindow(dialog);
         });
         bar.addComponent(selectButton);
 
         // button for clearing the current selection
         clearButton = new Button(getMessageService().getMessage("ocs.clear"));
-        clearButton.addClickListener(new Button.ClickListener() {
-
-            private static final long serialVersionUID = 8377632639548698729L;
-
-            @Override
-            public void buttonClick(ClickEvent event) {
-                setValue(null);
-            }
-        });
+        clearButton.addClickListener(event -> setValue(null));
         bar.addComponent(clearButton);
 
         // quick add button
@@ -258,7 +242,7 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
             Button addButton = constructAddButton();
             bar.addComponent(addButton);
         }
-        if (directNavigationAllowed){
+        if (directNavigationAllowed) {
             Button directNavigationButton = constructDirectNavigationButton();
             bar.addComponent(directNavigationButton);
         }

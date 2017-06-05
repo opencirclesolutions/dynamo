@@ -33,12 +33,12 @@ import com.ocs.dynamo.utils.ClassUtils;
  */
 public final class DomainUtil {
 
-	private static final int MAX_DESCRIPTION_ITEMS = 3;
+    private static final int MAX_DESCRIPTION_ITEMS = 3;
 
-	private DomainUtil() {
-	}
+    private DomainUtil() {
+    }
 
-	   /**
+    /**
      * Creates a new item if it does not exist. Otherwise, returns the existing item
      * 
      * @param service
@@ -61,74 +61,74 @@ public final class DomainUtil {
         }
         return t;
     }
-	
-	/**
-	 * Returns all domain value that match the specified type
-	 * 
-	 * @param clazz
-	 *            the type
-	 * @param domains
-	 *            the set of all domain values
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	public static <T extends Domain> Set<T> filterDomains(Class<T> clazz, Set<Domain> domains) {
-		Set<T> result = new HashSet<>();
-		if (domains != null) {
-			for (Domain d : domains) {
-				if (d != null && d.getClass().isAssignableFrom(clazz)) {
-					result.add((T) d);
-				}
-			}
-		}
-		return result;
-	}
 
-	/**
-	 * Updates a certain category of domain items, removing all current values and replacing them by
-	 * the new ones
-	 * 
-	 * @param clazz
-	 *            the domain type
-	 * @param domains
-	 *            all current domain values
-	 * @param newValues
-	 *            the set of new values
-	 */
-	public static <T extends Domain> void updateDomains(Class<T> clazz, Set<Domain> domains, Set<T> newValues) {
-		domains.removeIf(domain -> domain.getClass().isAssignableFrom(clazz));
+    /**
+     * Returns all domain value that match the specified type
+     * 
+     * @param clazz
+     *            the type
+     * @param domains
+     *            the set of all domain values
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public static <T extends Domain> Set<T> filterDomains(Class<T> clazz, Set<Domain> domains) {
+        Set<T> result = new HashSet<>();
+        if (domains != null) {
+            for (Domain d : domains) {
+                if (d != null && d.getClass().isAssignableFrom(clazz)) {
+                    result.add((T) d);
+                }
+            }
+        }
+        return result;
+    }
 
-		if (newValues != null) {
-			domains.addAll(newValues);
-		}
-	}
+    /**
+     * Updates a certain category of domain items, removing all current values and replacing them by
+     * the new ones
+     * 
+     * @param clazz
+     *            the domain type
+     * @param domains
+     *            all current domain values
+     * @param newValues
+     *            the set of new values
+     */
+    public static <T extends Domain> void updateDomains(Class<T> clazz, Set<Domain> domains, Set<T> newValues) {
+        domains.removeIf(domain -> domain != null && domain.getClass().isAssignableFrom(clazz));
+        if (newValues != null) {
+            newValues.stream().filter(v -> v != null).forEach(v -> domains.add(v));
+        }
+    }
 
-	/**
-	 * Returns a string containing the descriptions of the supplied domain objects (truncated after
-	 * a number of items)
-	 * 
-	 * @param domains
-	 *            the domains
-	 * @return
-	 */
-	public static <T extends Domain> String getDomainDescriptions(MessageService messageService, Collection<T> domains) {
-		List<T> sorted = Lists.newArrayList(domains);
-		sorted.sort(new AttributeComparator<>("name"));
+    /**
+     * Returns a string containing the descriptions of the supplied domain objects (truncated after
+     * a number of items)
+     * 
+     * @param domains
+     *            the domains
+     * @return
+     */
+    public static <T extends Domain> String getDomainDescriptions(MessageService messageService,
+            Collection<T> domains) {
+        List<T> sorted = Lists.newArrayList(domains);
+        sorted.sort(new AttributeComparator<>("name"));
 
-		StringBuilder result = new StringBuilder();
-		int i = 0;
-		while (i < MAX_DESCRIPTION_ITEMS && i < sorted.size()) {
-			if (i > 0) {
-				result.append(", ");
-			}
-			result.append(sorted.get(i).getName());
-			i++;
-		}
+        StringBuilder result = new StringBuilder();
+        int i = 0;
+        while (i < MAX_DESCRIPTION_ITEMS && i < sorted.size()) {
+            if (i > 0) {
+                result.append(", ");
+            }
+            result.append(sorted.get(i).getName());
+            i++;
+        }
 
-		if (sorted.size() > MAX_DESCRIPTION_ITEMS) {
-			result.append(messageService.getMessage("ocs.and.others", sorted.size() - MAX_DESCRIPTION_ITEMS));
-		}
+        if (sorted.size() > MAX_DESCRIPTION_ITEMS) {
+            result.append(messageService.getMessage("ocs.and.others", sorted.size() - MAX_DESCRIPTION_ITEMS));
+        }
 
-		return result.toString();
-	}
+        return result.toString();
+    }
 }

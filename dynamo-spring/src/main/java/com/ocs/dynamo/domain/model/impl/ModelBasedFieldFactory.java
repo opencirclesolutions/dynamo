@@ -209,8 +209,8 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
         BaseService<ID, S> service = (BaseService<ID, S>) ServiceLocator
                 .getServiceForEntity(entityModel.getEntityClass());
         SortOrder[] sos = constructSortOrder(entityModel);
-        return new QuickAddEntityComboBox<>((EntityModel<S>) entityModel, attributeModel, service,
-                    SelectMode.FILTERED, filter, search, null, sos);
+        return new QuickAddEntityComboBox<>((EntityModel<S>) entityModel, attributeModel, service, SelectMode.FILTERED,
+                filter, search, null, sos);
     }
 
     /**
@@ -299,9 +299,8 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
             return listSelect;
         } else if (AttributeSelectMode.LIST.equals(mode)) {
             // simple list select if everything else fails or is not applicable
-            QuickAddListSelect<ID, S> listSelect = new QuickAddListSelect<>((EntityModel<S>) em, attributeModel, service,
-                    fieldFilter, multipleSelect, SystemPropertyUtils.getDefaultListSelectRows(), sos);
-            return listSelect;
+            return new QuickAddListSelect<>((EntityModel<S>) em, attributeModel, service, fieldFilter, multipleSelect,
+                    SystemPropertyUtils.getDefaultListSelectRows(), sos);
         } else {
             // by default, use a token field
             return new TokenFieldSelect<>((EntityModel<S>) em, attributeModel, service, fieldFilter, search, sos);

@@ -305,31 +305,31 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
         return toggleButton;
     }
 
-    protected Button constructSearchAnyButton(){
+    protected Button constructSearchAnyButton() {
         searchAnyButton = new Button(message("ocs.search.any"));
         searchAnyButton.setVisible(getFormOptions().isShowSearchAnyButton());
         searchAnyButton.addClickListener(this);
         return searchAnyButton;
     }
 
-    public Filter extractFilter(){
+    public Filter extractFilter() {
         return extractFilter(false);
     }
 
     private Filter extractFilter(boolean matchAny) {
         if (!currentFilters.isEmpty()) {
             Filter defaultFilter = null;
-            if (!defaultFilters.isEmpty()){
+            if (!defaultFilters.isEmpty()) {
                 defaultFilter = new And(defaultFilters.toArray(new Filter[0]));
             }
             List<Filter> customFilters = new ArrayList<>(currentFilters);
             customFilters.removeAll(defaultFilters);
-            if (currentFilters.isEmpty()){
+            if (currentFilters.isEmpty()) {
                 return defaultFilter;
             }
-            Filter currentFilter = matchAny ?
-                 new Or(currentFilters.toArray(new Filter[0])) : new And(currentFilters.toArray(new Filter[0]));
-            if (defaultFilter != null){
+            Filter currentFilter = matchAny ? new Or(currentFilters.toArray(new Filter[0]))
+                    : new And(currentFilters.toArray(new Filter[0]));
+            if (defaultFilter != null) {
                 return new And(defaultFilter, currentFilter);
             }
             return currentFilter;
@@ -484,7 +484,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
      *
      * @return
      */
-    private boolean search(boolean skipValidation){
+    private boolean search(boolean skipValidation) {
         return search(skipValidation, false);
     }
 
@@ -494,8 +494,9 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
      * @param skipValidation
      *            whether to skip validation before searching
      * @param matchAny
-     *            whether the search is an 'Or' search or an 'And' search. Where in the former all results matching
-     *            any predicate are returned and in the latter case all results matching all predicates are returned.
+     *            whether the search is an 'Or' search or an 'And' search. Where in the former all
+     *            results matching any predicate are returned and in the latter case all results
+     *            matching all predicates are returned.
      *
      * @return
      */

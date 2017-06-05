@@ -77,7 +77,7 @@ public class QuickAddListSelect<ID extends Serializable, T extends AbstractEntit
         listSelect.setMultiSelect(multiSelect);
         listSelect.setRows(rows);
         this.quickAddAllowed = attributeModel != null && attributeModel.isQuickAddAllowed();
-        this.directNavigationAllowed = (attributeModel != null && attributeModel.isDirectNavigation());
+        this.directNavigationAllowed = attributeModel != null && attributeModel.isDirectNavigation();
     }
 
     @Override
@@ -118,24 +118,15 @@ public class QuickAddListSelect<ID extends Serializable, T extends AbstractEntit
         // no caption needed (the wrapping component has the caption)
         listSelect.setCaption(null);
         listSelect.setSizeFull();
-
-        listSelect.addValueChangeListener(new ValueChangeListener() {
-
-            private static final long serialVersionUID = 5114731461745867455L;
-
-            @Override
-            public void valueChange(com.vaadin.data.Property.ValueChangeEvent event) {
-                setValue(event.getProperty().getValue());
-            }
-        });
+        listSelect.addValueChangeListener(event -> setValue(event.getProperty().getValue()));
 
         bar.addComponent(listSelect);
 
         float listExpandRatio = 1f;
-        if (quickAddAllowed && !viewMode){
+        if (quickAddAllowed && !viewMode) {
             listExpandRatio -= 0.10f;
         }
-        if (directNavigationAllowed){
+        if (directNavigationAllowed) {
             listExpandRatio -= 0.05f;
         }
 
@@ -146,7 +137,7 @@ public class QuickAddListSelect<ID extends Serializable, T extends AbstractEntit
             bar.addComponent(addButton);
             bar.setExpandRatio(addButton, 0.10f);
         }
-        if (directNavigationAllowed){
+        if (directNavigationAllowed) {
             Button directNavigationButton = constructDirectNavigationButton();
             bar.addComponent(directNavigationButton);
             bar.setExpandRatio(directNavigationButton, 0.05f);
