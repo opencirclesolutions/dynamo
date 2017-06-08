@@ -89,48 +89,49 @@ public class MapElementImageProvider {
             Map<String, List<String>> groupedMarkers = new HashMap<>();
             for (Map<String, Object> map : markerList) {
                 if (map != null && !map.isEmpty()) {
-                    StringBuilder style = new StringBuilder();
+                    String style = "";
                     String size = (String) map.get(MapComponent.ITEM_PROPERTY_MARKER_size);
-                    style.append(size != null && size.length() > 0 ? "size:" + size + "%7C" : "");
+                    style += size != null && size.length() > 0 ? "size:" + size + "%7C" : "";
                     String color = (String) map.get(MapComponent.ITEM_PROPERTY_MARKER_color);
-                    style.append(color != null && color.length() > 0 ? "color:0x" + color + "%7C" : "");
+                    style += color != null && color.length() > 0 ? "color:0x" + color + "%7C" : "";
                     String label = (String) map.get(MapComponent.ITEM_PROPERTY_MARKER_label);
-                    style.append(label != null && label.length() > 0
-                            ? "label:" + Character.toUpperCase(label.charAt(0)) + "%7C" : "");
+                    style += label != null && label.length() > 0
+                            ? "label:" + Character.toUpperCase(label.charAt(0)) + "%7C" : "";
                     String icon = map.get(MapComponent.ITEM_PROPERTY_MARKER_ICON_url) != null
                             ? (String) map.get(MapComponent.ITEM_PROPERTY_MARKER_ICON_url)
                             : (String) map.get(MapComponent.ITEM_PROPERTY_MARKER_icon);
                     if (icon != null && icon.length() > 0) {
-                        style.append("icon:" + icon + "%7C");
+                        style += "icon:" + icon + "%7C";
                     }
-                    StringBuilder ll = new StringBuilder("" + map.get(MapComponent.ITEM_PROPERTY_latitude));
-                    ll.append(",");
-                    ll.append(map.get(MapComponent.ITEM_PROPERTY_longitude));
+                    String ll = "" + map.get(MapComponent.ITEM_PROPERTY_latitude);
+                    ll += ",";
+                    ll += map.get(MapComponent.ITEM_PROPERTY_longitude);
                     List<String> gml = null;
                     if (groupedMarkers.containsKey(style)) {
                         gml = groupedMarkers.get(style);
                     } else {
                         gml = new ArrayList<>();
-                        groupedMarkers.put(style.toString(), gml);
+                        groupedMarkers.put(style, gml);
                     }
-                    gml.add(ll.toString());
+                    gml.add(ll);
                 }
             }
 
             // Then add the markers to string list
-            StringBuilder currentMarkers = new StringBuilder();
+            String currentMarkers = "";
             for (Object style : groupedMarkers.keySet().toArray()) {
-                currentMarkers.append("&markers=" + style);
+                currentMarkers = "&markers=" + style;
                 int i = 0;
                 for (String cm : groupedMarkers.get(style)) {
                     if (i > 0) {
-                        currentMarkers.append("%7C");
+                        currentMarkers += "%7C";
                     }
-                    currentMarkers.append(cm);
+                    currentMarkers += cm;
+
                     i++;
                 }
                 if (markers.length() + 248 < MAX_URL_LENGTH) {
-                    markers += currentMarkers.toString();
+                    markers += currentMarkers;
                 } else {
                     break;
                 }
@@ -139,11 +140,11 @@ public class MapElementImageProvider {
 
         List<Map<String, Object>> pathList = (List<Map<String, Object>>) element
                 .getParameterValue(MapComponent.PARAMETER_PATHS);
-        StringBuilder currentPaths = new StringBuilder();
+        String currentPaths = "";
         if (pathList != null && !pathList.isEmpty()) {
             for (Map<String, Object> pathMap : pathList) {
                 if (pathMap != null && !pathMap.isEmpty()) {
-                    currentPaths.append("&path=");
+                    currentPaths += "&path=";
                     String color = (String) pathMap.get(MapComponent.ITEM_PROPERTY_STYLE_strokeColor);
                     if (color != null && color.length() > 0) {
                         // adding opacity to color
@@ -154,8 +155,7 @@ public class MapElementImageProvider {
                                         : Integer.toHexString((int) (255 * Double.valueOf(pathMap
                                                 .get(MapComponent.ITEM_PROPERTY_STYLE_strokeOpacity).toString())));
                     }
-                    currentPaths.append(
-                            color != null && color.length() > 0 ? "color:0x" + color.toLowerCase() + "%7C" : "");
+                    currentPaths += color != null && color.length() > 0 ? "color:0x" + color.toLowerCase() + "%7C" : "";
                     Boolean isPolygon = pathMap.get(MapComponent.ITEM_PROPERTY_STYLE_isPolygon) == null ? false
                             : Boolean.valueOf(pathMap.get(MapComponent.ITEM_PROPERTY_STYLE_isPolygon).toString());
                     if (isPolygon) {
@@ -168,29 +168,29 @@ public class MapElementImageProvider {
                                             : Integer.toHexString((int) (256 * Double.valueOf(pathMap
                                                     .get(MapComponent.ITEM_PROPERTY_STYLE_fillOpacity).toString())));
                         }
-                        currentPaths.append(fillColor != null && fillColor.length() > 0
-                                ? "fillcolor:0x" + fillColor.toLowerCase() + "%7C" : "");
+                        currentPaths += fillColor != null && fillColor.length() > 0
+                                ? "fillcolor:0x" + fillColor.toLowerCase() + "%7C" : "";
                     }
                     String weight = pathMap.get(MapComponent.ITEM_PROPERTY_STYLE_strokeWeight) == null ? null
                             : pathMap.get(MapComponent.ITEM_PROPERTY_STYLE_strokeWeight).toString();
-                    currentPaths.append(
-                            weight != null && weight.length() > 0 ? "weight:" + Integer.valueOf(weight) + "%7C" : "");
+                    currentPaths += weight != null && weight.length() > 0 ? "weight:" + Integer.valueOf(weight) + "%7C"
+                            : "";
                     List<Map<String, Object>> locations = (List<Map<String, Object>>) pathMap
                             .get(MapComponent.PARAMETER_PATH_LOCATIONS);
                     Map<String, Object> location = null;
                     if (locations != null && !locations.isEmpty()) {
                         for (int i = 0; i < locations.size(); i++) {
                             location = locations.get(i);
-                            currentPaths.append(location.get(MapComponent.ITEM_PROPERTY_latitude));
-                            currentPaths.append(",");
-                            currentPaths.append(location.get(MapComponent.ITEM_PROPERTY_longitude));
-                            currentPaths.append(i < locations.size() - 1 ? "%7C" : "");
+                            currentPaths += location.get(MapComponent.ITEM_PROPERTY_latitude);
+                            currentPaths += ",";
+                            currentPaths += location.get(MapComponent.ITEM_PROPERTY_longitude);
+                            currentPaths += i < locations.size() - 1 ? "%7C" : "";
                         }
                         if (isPolygon) {
-                            currentPaths.append("%7C");
-                            currentPaths.append(locations.get(0).get(MapComponent.ITEM_PROPERTY_latitude));
-                            currentPaths.append(",");
-                            currentPaths.append(locations.get(0).get(MapComponent.ITEM_PROPERTY_longitude));
+                            currentPaths += "%7C";
+                            currentPaths += locations.get(0).get(MapComponent.ITEM_PROPERTY_latitude);
+                            currentPaths += ",";
+                            currentPaths += locations.get(0).get(MapComponent.ITEM_PROPERTY_longitude);
                         }
                     }
                 }
@@ -210,7 +210,7 @@ public class MapElementImageProvider {
 
         // a static map url is limited to 2048 characters
         imageLocation += imageLocation.length() + markers.length() + currentPaths.length()
-                + params.length() < MAX_URL_LENGTH ? markers + currentPaths.toString() + params
+                + params.length() < MAX_URL_LENGTH ? markers + currentPaths + params
                         : imageLocation.length() + markers.length() + params.length() < MAX_URL_LENGTH
                                 ? markers + params : params;
         JRBasePrintImage printImage = new JRBasePrintImage(element.getDefaultStyleProvider());
