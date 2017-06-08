@@ -42,7 +42,9 @@ public class AttributeComparator<T extends AbstractEntity<?>> implements Compara
         Object v1 = ClassUtils.getFieldValue(o1, attribute);
         Object v2 = ClassUtils.getFieldValue(o2, attribute);
 
-        if (v1 == null) {
+        if (v1 == null && v2 == null) {
+            return 0;
+        } else if (v1 == null) {
             return -1;
         } else if (v2 == null) {
             return 1;

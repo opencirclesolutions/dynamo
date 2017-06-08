@@ -378,6 +378,9 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
         private void handleFilterTypeChange(FlexibleFilterType type) {
             filterType = type;
 
+            Object oldValue = mainValueComponent == null ? null : mainValueComponent.getValue();
+            Object oldAuxValue = auxValueComponent == null ? null : auxValueComponent.getValue();
+            
             // construct the field
             Field<Object> custom = (Field<Object>) constructCustomField(getEntityModel(), am);
             final Field<Object> newComponent = custom != null ? custom
@@ -434,6 +437,18 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
                     layout.removeComponent(auxValueComponent);
                     auxValueComponent = null;
                 }
+            }
+            
+            // try to restore old values
+            try {
+                if (oldValue != null) {
+                    mainValueComponent.setValue(oldValue);
+                }
+                if (oldAuxValue != null && auxValueComponent != null) {
+                    auxValueComponent.setValue(oldAuxValue);
+                }
+            } catch (Exception ex) {
+                // do nothing
             }
         }
 
