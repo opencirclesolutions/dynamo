@@ -29,25 +29,9 @@
 	<dependencies>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>dynamo-core</artifactId>
+			<artifactId>dynamo-frontend</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>dynamo-jpa</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>dynamo-spring</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>dynamo-vaadin</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-
 		<!-- JasperReports Library -->
 		<dependency>
 			<groupId>org.dynamoframework</groupId>

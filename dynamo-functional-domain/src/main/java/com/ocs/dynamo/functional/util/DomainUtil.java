@@ -16,6 +16,7 @@ package com.ocs.dynamo.functional.util;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import com.google.common.collect.Lists;
@@ -110,8 +111,8 @@ public final class DomainUtil {
      *            the domains
      * @return
      */
-    public static <T extends Domain> String getDomainDescriptions(MessageService messageService,
-            Collection<T> domains) {
+    public static <T extends Domain> String getDomainDescriptions(MessageService messageService, Collection<T> domains,
+            Locale locale) {
         List<T> sorted = Lists.newArrayList(domains);
         sorted.sort(new AttributeComparator<>("name"));
 
@@ -126,7 +127,7 @@ public final class DomainUtil {
         }
 
         if (sorted.size() > MAX_DESCRIPTION_ITEMS) {
-            result.append(messageService.getMessage("ocs.and.others", sorted.size() - MAX_DESCRIPTION_ITEMS));
+            result.append(messageService.getMessage("ocs.and.others", locale, sorted.size() - MAX_DESCRIPTION_ITEMS));
         }
 
         return result.toString();

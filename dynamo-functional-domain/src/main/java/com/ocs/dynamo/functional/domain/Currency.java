@@ -17,8 +17,8 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
 import com.ocs.dynamo.domain.model.VisibilityType;
-import com.ocs.dynamo.domain.model.annotation.Attribute;
-import com.ocs.dynamo.domain.model.annotation.Model;
+import com.ocs.dynamo.domain.model.annnotation.Attribute;
+import com.ocs.dynamo.domain.model.annnotation.Model;
 
 /**
  * A currency identified by an ISO currency code

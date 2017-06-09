@@ -1,6 +1,7 @@
 package com.ocs.dynamo.functional.util;
 
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 
 import org.junit.Assert;
@@ -79,18 +80,20 @@ public class DomainUtilsTest extends BaseMockitoTest {
     @Test
     public void testGetDomainDescriptions() {
 
-        String res = DomainUtil.getDomainDescriptions(messageService,
-                DomainUtil.filterDomains(Currency.class, domains));
+        String res = DomainUtil.getDomainDescriptions(messageService, DomainUtil.filterDomains(Currency.class, domains),
+                new Locale("en"));
         Assert.assertEquals("Dollar, Euro", res);
 
         domains.add(new Currency("SEK", "Swedish Crown"));
         domains.add(new Currency("NEK", "Norwegian Crown"));
         domains.add(new Currency("DEK", "Danish Crown"));
 
-        Mockito.when(messageService.getMessage(Matchers.eq("ocs.and.others"), Matchers.anyInt()))
-                .thenAnswer(invocation -> " and " + invocation.getArguments()[1] + " others");
+        Mockito.when(
+                messageService.getMessage(Matchers.eq("ocs.and.others"), Matchers.any(Locale.class), Matchers.anyInt()))
+                .thenAnswer(invocation -> " and " + invocation.getArguments()[2] + " others");
 
-        res = DomainUtil.getDomainDescriptions(messageService, DomainUtil.filterDomains(Currency.class, domains));
+        res = DomainUtil.getDomainDescriptions(messageService, DomainUtil.filterDomains(Currency.class, domains),
+                new Locale("nl"));
 
         Assert.assertEquals("Danish Crown, Dollar, Euro and 2 others", res);
     }

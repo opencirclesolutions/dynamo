@@ -16,6 +16,7 @@ package com.ocs.dynamo.ui.composite;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
@@ -27,6 +28,7 @@ import com.ocs.dynamo.jasperreports.JRIndexedContainerDataSource;
 import com.ocs.dynamo.jasperreports.JRUtils;
 import com.ocs.dynamo.ui.composite.layout.BaseCustomComponent;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
+import com.ocs.dynamo.utils.SystemPropertyUtils;
 import com.ocs.jasperreports.ReportGenerator;
 import com.ocs.jasperreports.ReportGenerator.Format;
 import com.vaadin.data.Container;
@@ -179,7 +181,7 @@ public class JRReportViewer<T> extends BaseCustomComponent {
     }
 
     protected Label buildReportArea() {
-        Label label = new Label(getMessageService().getMessage(REPORT_NA_KEY));
+        Label label = new Label(getMessageService().getMessage(REPORT_NA_KEY, VaadinUtils.getLocale()));
         label.setContentMode(ContentMode.HTML);
         label.setId(REPORT_AREA_ID);
         return label;
@@ -196,8 +198,9 @@ public class JRReportViewer<T> extends BaseCustomComponent {
         // Create reporting selection
         reportSelection = ModelBasedFieldFactory.getInstance(entityModel, getMessageService())
                 .createEnumCombo(reportDefinition.getClass(), ComboBox.class);
-        reportSelection.setCaption(getMessageService()
-                .getMessage(entityModel.getReference() + "." + reportDefinition.getClass().getSimpleName()));
+        reportSelection.setCaption(getMessageService().getMessage(
+                entityModel.getReference() + "." + reportDefinition.getClass().getSimpleName(),
+                VaadinUtils.getLocale()));
         reportSelection.setNullSelectionAllowed(false);
         reportSelection.setRequired(true);
         reportSelection.select(reportSelection.getItemIds().iterator().next());
@@ -233,7 +236,8 @@ public class JRReportViewer<T> extends BaseCustomComponent {
     }
 
     public void clear() {
-        reportArea.setValue(getMessageService().getMessage(REPORT_NA_KEY));
+        reportArea.setValue(
+                getMessageService().getMessage(REPORT_NA_KEY, new Locale(SystemPropertyUtils.getDefaultLocale())));
     }
 
     /**
@@ -263,7 +267,7 @@ public class JRReportViewer<T> extends BaseCustomComponent {
         }, "report." + format.name());
     }
 
-    public void displayReport(Filter filter, Map<String, Object> parameters) {
+    public void displayReport(Filter filter, Map<String, Object> parameters, Locale locale) {
         // TODO make the report generation asynchronous and display the first page when it is ready
         // and not after last
         // page is ready
@@ -299,7 +303,7 @@ public class JRReportViewer<T> extends BaseCustomComponent {
                 ((WrappedHttpSession) VaadinSession.getCurrent().getSession()).getHttpSession(),
                 VaadinSession.getCurrent().getLocale());
         if (html == null || "".equals(html) || (container != null && container.size() <= 0)) {
-            reportArea.setValue(getMessageService().getMessage(NO_DATA_FOUND_KEY));
+            reportArea.setValue(getMessageService().getMessage(NO_DATA_FOUND_KEY, locale));
             exportPDF.setEnabled(false);
         } else {
             if (rd.requiresExternalScript()) {

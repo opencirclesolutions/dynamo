@@ -27,8 +27,8 @@ import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.VisibilityType;
-import com.ocs.dynamo.domain.model.annotation.Attribute;
-import com.ocs.dynamo.domain.model.annotation.Model;
+import com.ocs.dynamo.domain.model.annnotation.Attribute;
+import com.ocs.dynamo.domain.model.annnotation.Model;
 import com.ocs.dynamo.functional.DomainConstants;
 
 /**

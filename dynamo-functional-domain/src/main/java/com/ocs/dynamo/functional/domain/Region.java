@@ -20,7 +20,7 @@ import javax.persistence.Entity;
 
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 
-import com.ocs.dynamo.domain.model.annotation.Model;
+import com.ocs.dynamo.domain.model.annnotation.Model;
 
 /**
  * A region of the world
@@ -33,26 +33,26 @@ import com.ocs.dynamo.domain.model.annotation.Model;
 @Model(displayProperty = "name", sortOrder = "name asc")
 public class Region extends DomainParent<Country, Region> {
 
-	private static final long serialVersionUID = 1410771214783677106L;
+    private static final long serialVersionUID = 1410771214783677106L;
 
-	public Region() {
-		// default constructor
-	}
+    public Region() {
+        // default constructor
+    }
 
-	public Region(String code, String name) {
-		super(code, name);
-	}
+    public Region(String code, String name) {
+        super(code, name);
+    }
 
-	public Set<Country> getCountries() {
-		return getChildren();
-	}
+    public Set<Country> getCountries() {
+        return getChildren();
+    }
 
-	public void setCountries(Set<Country> countries) {
-		setChildren(countries);
-	}
+    public void setCountries(Set<Country> countries) {
+        setChildren(countries);
+    }
 
-	@Override
-	public String toString() {
-		return ReflectionToStringBuilder.toStringExclude(this, new String[] { "countries", "children" });
-	}
+    @Override
+    public String toString() {
+        return ReflectionToStringBuilder.toStringExclude(this, new String[] { "countries", "children" });
+    }
 }

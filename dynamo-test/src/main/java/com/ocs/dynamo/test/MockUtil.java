@@ -28,7 +28,7 @@ import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.ocs.dynamo.dao.BaseDao;
-import com.ocs.dynamo.dao.query.FetchJoinInformation;
+import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.service.BaseService;
@@ -190,10 +190,10 @@ public final class MockUtil {
      */
     public static void mockMessageService(MessageService messageService) {
         // method without any arguments
-        Mockito.when(messageService.getMessage(Matchers.anyString()))
+        Mockito.when(messageService.getMessage(Matchers.anyString(), Matchers.any(Locale.class)))
                 .thenAnswer(invocation -> (String) invocation.getArguments()[0]);
         // method with varargs
-        Mockito.when(messageService.getMessage(Matchers.anyString(), Matchers.anyVararg()))
+        Mockito.when(messageService.getMessage(Matchers.anyString(), Matchers.any(Locale.class), Matchers.anyVararg()))
                 .thenAnswer(invocation -> (String) invocation.getArguments()[0]);
 
         // method with locale
@@ -201,7 +201,8 @@ public final class MockUtil {
                 .thenAnswer(invocation -> (String) invocation.getArguments()[0]);
 
         // method for retrieving enum message
-        Mockito.when(messageService.getEnumMessage(Matchers.any(), Matchers.any(Enum.class)))
+        Mockito.when(
+                messageService.getEnumMessage(Matchers.any(), Matchers.any(Enum.class), Matchers.any(Locale.class)))
                 .thenAnswer(invocation -> invocation.getArguments()[1].toString());
     }
 

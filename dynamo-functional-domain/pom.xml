@@ -2,23 +2,19 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-
 	<artifactId>dynamo-functional-domain</artifactId>
 	<packaging>jar</packaging>
 	<name>Dynamo Framework - Functional extension - Domain</name>
 	<url>https://github.com/opencirclesolutions/dynamo</url>
-
 	<parent>
 		<groupId>org.dynamoframework</groupId>
 		<artifactId>dynamo-parent</artifactId>
 		<version>1.2-SNAPSHOT</version>
 	</parent>
-
 	<organization>
 		<name>Open Circle Solutions</name>
 		<url>http://www.opencirclesolutions.nl</url>
 	</organization>
-
 	<licenses>
 		<license>
 			<name>Apache License Version 2.0</name>
@@ -26,29 +22,12 @@
 			<url>http://www.apache.org/licenses/LICENSE-2.0</url>
 		</license>
 	</licenses>
-
 	<dependencies>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>dynamo-core</artifactId>
+			<artifactId>dynamo-frontend</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>dynamo-jpa</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>dynamo-spring</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>dynamo-vaadin</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-
 		<!-- Hibernate -->
 		<dependency>
 			<groupId>org.hibernate</groupId>
@@ -91,7 +70,6 @@
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
 		</dependency>
-
 		<!-- Test -->
 		<dependency>
 			<groupId>${project.groupId}</groupId>
@@ -108,7 +86,6 @@
 			<artifactId>h2</artifactId>
 			<scope>test</scope>
 		</dependency>
-
 	</dependencies>
 	<build>
 		<plugins>
