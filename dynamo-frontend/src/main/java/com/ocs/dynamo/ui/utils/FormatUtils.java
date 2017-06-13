@@ -232,7 +232,8 @@ public final class FormatUtils {
                     return msg;
                 }
             } else if (value instanceof Iterable) {
-                return restrictToMaxLength(formatEntityCollection(entityModelFactory, model, value), model);
+                String result = formatEntityCollection(entityModelFactory, model, value);
+                return table == null ? result : restrictToMaxLength(result, model);
             } else if (AbstractEntity.class.isAssignableFrom(model.getType())) {
                 EntityModel<?> detailEntityModel = model.getNestedEntityModel();
                 if (detailEntityModel == null) {
@@ -249,10 +250,13 @@ public final class FormatUtils {
             } else if (value instanceof AbstractEntity) {
                 // single entity
                 Object result = ClassUtils.getFieldValue(value, model.getPath());
-                return restrictToMaxLength(result != null ? result.toString() : null, model);
+                if (result == null) {
+                    return null;
+                }
+                return table == null ? result.toString() : restrictToMaxLength(result.toString(), model);
             } else {
                 // just use the String value
-                return restrictToMaxLength(value.toString(), model);
+                return table == null ? value.toString() : restrictToMaxLength(value.toString(), model);
             }
         }
         return null;
