@@ -35,109 +35,131 @@ import com.ocs.dynamo.utils.ClassUtils;
  */
 public final class DomainUtil {
 
-	private static final int MAX_DESCRIPTION_ITEMS = 3;
+    private static final int MAX_DESCRIPTION_ITEMS = 3;
 
-	private DomainUtil() {
-	}
+    private DomainUtil() {
+    }
 
-	/**
-	 * Creates a new item if it does not exist. Otherwise, returns the existing item
-	 * 
-	 * @param service
-	 *            the service used to retrieve the item
-	 * @param clazz
-	 *            the domain class
-	 * @param value
-	 *            the value of the "name" attribute
-	 * @param caseSensitive
-	 *            whether to check for case-sensitive values
-	 * @return
-	 */
-	public static <T extends Domain> T createIfNotExists(BaseService<?, T> service, Class<T> clazz, String value,
-	        boolean caseSensitive) {
-		T t = service.findByUniqueProperty(Domain.NAME, value, caseSensitive);
-		if (t == null) {
-			t = ClassUtils.instantiateClass(clazz);
-			t.setName(value);
-			t = service.save(t);
-		}
-		return t;
-	}
+    /**
+     * Creates a new item if it does not exist. Otherwise, returns the existing item
+     * 
+     * @param service
+     *            the service used to retrieve the item
+     * @param clazz
+     *            the domain class
+     * @param value
+     *            the value of the "name" attribute
+     * @param caseSensitive
+     *            whether to check for case-sensitive values
+     * @return
+     */
+    public static <T extends Domain> T createIfNotExists(BaseService<?, T> service, Class<T> clazz, String value,
+            boolean caseSensitive) {
+        T t = service.findByUniqueProperty(Domain.NAME, value, caseSensitive);
+        if (t == null) {
+            t = ClassUtils.instantiateClass(clazz);
+            t.setName(value);
+            t = service.save(t);
+        }
+        return t;
+    }
 
-	/**
-	 * Returns all domain value that match the specified type
-	 * 
-	 * @param clazz
-	 *            the type
-	 * @param domains
-	 *            the set of all domain values
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	public static <T extends Domain> Set<T> filterDomains(Class<T> clazz, Set<Domain> domains) {
-		Set<T> result = new HashSet<>();
-		if (domains != null) {
-			for (Domain d : domains) {
-				if (d != null && d.getClass().isAssignableFrom(clazz)) {
-					result.add((T) d);
-				}
-			}
-		}
-		return result;
-	}
+    /**
+     * 
+     * @param service
+     * @param clazz
+     * @param code
+     * @param value
+     * @param caseSensitive
+     * @return
+     */
+    public static <T extends Domain> T createIfNotExists(BaseService<?, T> service, Class<T> clazz, String code,
+            String name, boolean caseSensitive) {
+        T t = service.findByUniqueProperty(Domain.CODE, code, caseSensitive);
+        if (t == null) {
+            t = ClassUtils.instantiateClass(clazz);
+            t.setCode(code);
+            t.setName(name);
+            t = service.save(t);
+        }
+        return t;
+    }
 
-	/**
-	 * Returns a string containing the descriptions of the supplied domain objects (truncated after
-	 * a number of items)
-	 * 
-	 * @param domains
-	 *            the domains
-	 * @return
-	 */
-	public static <T extends Domain> String getDomainDescriptions(MessageService messageService, Collection<T> domains) {
-		List<T> sorted = Lists.newArrayList(domains);
-		Collections.sort(sorted, new AttributeComparator<T>("name"));
+    /**
+     * Returns all domain value that match the specified type
+     * 
+     * @param clazz
+     *            the type
+     * @param domains
+     *            the set of all domain values
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public static <T extends Domain> Set<T> filterDomains(Class<T> clazz, Set<Domain> domains) {
+        Set<T> result = new HashSet<>();
+        if (domains != null) {
+            for (Domain d : domains) {
+                if (d != null && d.getClass().isAssignableFrom(clazz)) {
+                    result.add((T) d);
+                }
+            }
+        }
+        return result;
+    }
 
-		StringBuilder result = new StringBuilder();
-		int i = 0;
-		while (i < MAX_DESCRIPTION_ITEMS && i < sorted.size()) {
-			if (i > 0) {
-				result.append(", ");
-			}
-			result.append(sorted.get(i).getName());
-			i++;
-		}
+    /**
+     * Returns a string containing the descriptions of the supplied domain objects (truncated after
+     * a number of items)
+     * 
+     * @param domains
+     *            the domains
+     * @return
+     */
+    public static <T extends Domain> String getDomainDescriptions(MessageService messageService,
+            Collection<T> domains) {
+        List<T> sorted = Lists.newArrayList(domains);
+        Collections.sort(sorted, new AttributeComparator<T>("name"));
 
-		if (sorted.size() > MAX_DESCRIPTION_ITEMS) {
-			result.append(messageService.getMessage("ocs.and.others", sorted.size() - MAX_DESCRIPTION_ITEMS));
-		}
+        StringBuilder result = new StringBuilder();
+        int i = 0;
+        while (i < MAX_DESCRIPTION_ITEMS && i < sorted.size()) {
+            if (i > 0) {
+                result.append(", ");
+            }
+            result.append(sorted.get(i).getName());
+            i++;
+        }
 
-		return result.toString();
-	}
+        if (sorted.size() > MAX_DESCRIPTION_ITEMS) {
+            result.append(messageService.getMessage("ocs.and.others", sorted.size() - MAX_DESCRIPTION_ITEMS));
+        }
 
-	/**
-	 * Updates a certain category of domain items, removing all current values and replacing them by
-	 * the new ones
-	 * 
-	 * @param clazz
-	 *            the domain type
-	 * @param domains
-	 *            all current domain values
-	 * @param newValues
-	 *            the set of new values
-	 */
-	public static <T extends Domain> void updateDomains(Class<T> clazz, Set<Domain> domains, Set<T> newValues) {
-		Iterator<Domain> it = domains.iterator();
-		while (it.hasNext()) {
-			Domain domain = it.next();
-			if (domain != null && domain.getClass().isAssignableFrom(clazz)) {
-				it.remove();
-			}
-		}
+        return result.toString();
+    }
 
-		if (newValues != null) {
-			domains.addAll(newValues);
-		}
-	}
+    /**
+     * Updates a certain category of domain items, removing all current values and replacing them by
+     * the new ones
+     * 
+     * @param clazz
+     *            the domain type
+     * @param domains
+     *            all current domain values
+     * @param newValues
+     *            the set of new values
+     */
+    public static <T extends Domain> void updateDomains(Class<T> clazz, Set<Domain> domains, Set<T> newValues) {
+        Iterator<Domain> it = domains.iterator();
+        while (it.hasNext()) {
+            Domain domain = it.next();
+            if (domain != null && domain.getClass().isAssignableFrom(clazz)) {
+                it.remove();
+            }
+        }
+
+        if (newValues != null) {
+            domains.addAll(newValues);
+        }
+    }
 
 }
