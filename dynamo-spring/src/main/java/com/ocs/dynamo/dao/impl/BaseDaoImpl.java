@@ -201,9 +201,8 @@ public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements B
 
     @Override
     public T fetchById(ID id, FetchJoinInformation... joins) {
-        CriteriaQuery<T> cq = JpaQueryBuilder.createFetchSingleObjectQuery(entityManager, getEntityClass(), id,
+        TypedQuery<T> query = JpaQueryBuilder.createFetchSingleObjectQuery(entityManager, getEntityClass(), id,
                 (joins != null && joins.length > 0) ? joins : getFetchJoins());
-        TypedQuery<T> query = entityManager.createQuery(cq);
         return getFirstValue(query.getResultList());
     }
 
@@ -213,9 +212,8 @@ public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements B
             return new ArrayList<>();
         }
 
-        CriteriaQuery<T> cq = JpaQueryBuilder.createFetchQuery(entityManager, getEntityClass(), ids, sortOrders,
+        TypedQuery<T> query = JpaQueryBuilder.createFetchQuery(entityManager, getEntityClass(), ids, sortOrders,
                 (joins != null && joins.length > 0) ? joins : getFetchJoins());
-        TypedQuery<T> query = entityManager.createQuery(cq);
         return query.getResultList();
     }
 
@@ -356,6 +354,7 @@ public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements B
         CriteriaQuery<Tuple> cq = JpaQueryBuilder.createIdQuery(entityManager, getEntityClass(), filter, sortOrders);
 
         TypedQuery<Tuple> query = entityManager.createQuery(cq);
+
         List<Tuple> temp = query.getResultList();
         List<ID> result = new ArrayList<>();
 
