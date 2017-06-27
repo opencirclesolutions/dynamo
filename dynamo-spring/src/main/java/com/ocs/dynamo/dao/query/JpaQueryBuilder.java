@@ -14,7 +14,10 @@
 package com.ocs.dynamo.dao.query;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Tuple;
@@ -96,8 +99,8 @@ public final class JpaQueryBuilder {
      *            the criteria query
      * @param root
      *            the query root
-     * @param sortOrder
-     *            the sort object
+     * @param sortOrders
+     *            the sort orders
      * @return
      */
     private static <T, R> CriteriaQuery<R> addSortInformation(CriteriaBuilder builder, CriteriaQuery<R> cq,
@@ -105,7 +108,7 @@ public final class JpaQueryBuilder {
         if (sortOrders != null && sortOrders.length > 0) {
             List<javax.persistence.criteria.Order> orders = new ArrayList<>();
             for (SortOrder sortOrder : sortOrders) {
-                Expression<?> property = (Expression<?>) getPropertyPath(root, sortOrder.getProperty());
+                Expression<?> property = getPropertyPath(root, sortOrder.getProperty());
                 orders.add(sortOrder.isAscending() ? builder.asc(property) : builder.desc(property));
             }
             cq.orderBy(orders);
@@ -124,15 +127,16 @@ public final class JpaQueryBuilder {
      *            the "And" filter
      * @return
      */
-    private static Predicate createAndPredicate(CriteriaBuilder builder, Root<?> root, Filter filter) {
+    private static Predicate createAndPredicate(CriteriaBuilder builder, Root<?> root, Filter filter,
+            Map<String, Object> parameters) {
         And and = (And) filter;
         List<Filter> filters = new ArrayList<>(and.getFilters());
 
         Predicate predicate = null;
         if (!filters.isEmpty()) {
-            predicate = createPredicate(filters.remove(0), builder, root);
+            predicate = createPredicate(filters.remove(0), builder, root, parameters);
             while (!filters.isEmpty()) {
-                Predicate next = createPredicate(filters.remove(0), builder, root);
+                Predicate next = createPredicate(filters.remove(0), builder, root, parameters);
                 if (next != null) {
                     predicate = builder.and(predicate, next);
                 }
@@ -145,8 +149,11 @@ public final class JpaQueryBuilder {
      * Creates a predicate based on a "Compare" filter
      * 
      * @param builder
+     *            the criteria builder
      * @param root
+     *            the query root
      * @param filter
+     *            the Compare filter
      * @return
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -192,6 +199,21 @@ public final class JpaQueryBuilder {
     }
 
     /**
+     * Creates an empty parameter map
+     * 
+     * @return
+     */
+    public static Map<String, Object> createParameterMap() {
+        return new HashMap<>();
+    }
+
+    public static void setParameters(TypedQuery<?> query, Map<String, Object> pars) {
+        for (Entry<String, Object> entry : pars.entrySet()) {
+            query.setParameter(entry.getKey(), entry.getValue());
+        }
+    }
+
+    /**
      * Creates a query that performs a count
      * 
      * @param entityManager
@@ -204,7 +226,7 @@ public final class JpaQueryBuilder {
      *            whether to return only distinct results
      * @return
      */
-    public static <T> CriteriaQuery<Long> createCountQuery(EntityManager entityManager, Class<T> entityClass,
+    public static <T> TypedQuery<Long> createCountQuery(EntityManager entityManager, Class<T> entityClass,
             Filter filter, boolean distinct) {
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> cq = builder.createQuery(Long.class);
@@ -212,11 +234,48 @@ public final class JpaQueryBuilder {
 
         cq.select(distinct ? builder.countDistinct(root) : builder.count(root));
 
-        Predicate p = createPredicate(filter, builder, root);
+        Map<String, Object> pars = createParameterMap();
+        Predicate p = createPredicate(filter, builder, root, pars);
         if (p != null) {
             cq.where(p);
         }
-        return cq;
+        TypedQuery<Long> query = entityManager.createQuery(cq);
+        setParameters(query, pars);
+        return query;
+    }
+
+    /**
+     * Creates a distinct query
+     * 
+     * @param filter
+     * @param entityManager
+     * @param entityClass
+     * @param distinctField
+     * @param sortOrders
+     * @return
+     */
+    public static <T> TypedQuery<Tuple> createDistinctQuery(Filter filter, EntityManager entityManager,
+            Class<T> entityClass, String distinctField, SortOrder... sortOrders) {
+        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Tuple> cq = builder.createTupleQuery();
+        Root<T> root = cq.from(entityClass);
+
+        // select only the distinctField
+        cq.multiselect(root.get(distinctField));
+
+        // Set where clause
+        Map<String, Object> pars = createParameterMap();
+        Predicate p = createPredicate(filter, builder, root, pars);
+        if (p != null) {
+            cq.where(p);
+        }
+        cq.distinct(true);
+        cq = addSortInformation(builder, cq, root, sortOrders);
+
+        TypedQuery<Tuple> query = entityManager.createQuery(cq);
+        setParameters(query, pars);
+
+        return query;
     }
 
     /**
@@ -234,6 +293,7 @@ public final class JpaQueryBuilder {
      *            the desired fetch joins
      * @return
      */
+    @SuppressWarnings("rawtypes")
     public static <ID, T> TypedQuery<T> createFetchQuery(EntityManager entityManager, Class<T> entityClass,
             List<ID> ids, SortOrders sortOrders, FetchJoinInformation[] fetchJoins) {
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
@@ -314,8 +374,8 @@ public final class JpaQueryBuilder {
      *            the sorting to apply
      * @return
      */
-    public static <T> CriteriaQuery<Tuple> createIdQuery(EntityManager entityManager, Class<T> entityClass,
-            Filter filter, SortOrder... sortOrders) {
+    public static <T> TypedQuery<Tuple> createIdQuery(EntityManager entityManager, Class<T> entityClass, Filter filter,
+            SortOrder... sortOrders) {
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Tuple> cq = builder.createTupleQuery();
         Root<T> root = cq.from(entityClass);
@@ -324,14 +384,18 @@ public final class JpaQueryBuilder {
         cq.multiselect(root.get(DynamoConstants.ID));
 
         // Set where clause
-        Predicate p = createPredicate(filter, builder, root);
+        Map<String, Object> pars = createParameterMap();
+        Predicate p = createPredicate(filter, builder, root, pars);
         if (p != null) {
             cq.where(p);
         }
 
         // add order clause - this is also important in case of an ID query
         // since we do need to return the correct IDs!
-        return addSortInformation(builder, cq, root, sortOrders);
+        cq = addSortInformation(builder, cq, root, sortOrders);
+        TypedQuery<Tuple> query = entityManager.createQuery(cq);
+        setParameters(query, pars);
+        return query;
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -366,15 +430,16 @@ public final class JpaQueryBuilder {
         }
     }
 
-    private static Predicate createOrPredicate(CriteriaBuilder builder, Root<?> root, Filter filter) {
+    private static Predicate createOrPredicate(CriteriaBuilder builder, Root<?> root, Filter filter,
+            Map<String, Object> parameters) {
         Or or = (Or) filter;
         List<Filter> filters = new ArrayList<>(or.getFilters());
 
         Predicate predicate = null;
         if (!filters.isEmpty()) {
-            predicate = createPredicate(filters.remove(0), builder, root);
+            predicate = createPredicate(filters.remove(0), builder, root, parameters);
             while (!filters.isEmpty()) {
-                Predicate next = createPredicate(filters.remove(0), builder, root);
+                Predicate next = createPredicate(filters.remove(0), builder, root, parameters);
                 if (next != null) {
                     predicate = builder.or(predicate, next);
                 }
@@ -396,18 +461,19 @@ public final class JpaQueryBuilder {
      * @return
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    private static Predicate createPredicate(Filter filter, CriteriaBuilder builder, Root<?> root) {
+    private static Predicate createPredicate(Filter filter, CriteriaBuilder builder, Root<?> root,
+            Map<String, Object> parameters) {
         if (filter == null) {
             return null;
         }
 
         if (filter instanceof And) {
-            return createAndPredicate(builder, root, filter);
+            return createAndPredicate(builder, root, filter, parameters);
         } else if (filter instanceof Or) {
-            return createOrPredicate(builder, root, filter);
+            return createOrPredicate(builder, root, filter, parameters);
         } else if (filter instanceof Not) {
             Not not = (Not) filter;
-            return builder.not(createPredicate(not.getFilter(), builder, root));
+            return builder.not(createPredicate(not.getFilter(), builder, root, parameters));
         } else if (filter instanceof Between) {
             Between between = (Between) filter;
             Expression property = getPropertyPath(root, between.getPropertyId());
@@ -425,8 +491,11 @@ public final class JpaQueryBuilder {
         } else if (filter instanceof In) {
             In in = (In) filter;
             if (in.getValues() != null && !in.getValues().isEmpty()) {
-                Expression exp = getPropertyPath(root, in.getPropertyId());
-                return exp.in(in.getValues());
+                Expression<?> exp = getPropertyPath(root, in.getPropertyId());
+                String parName = in.getPropertyId().replace('.', '_');
+                ParameterExpression<List> p = builder.parameter(List.class, parName);
+                parameters.put(parName, in.getValues());
+                return exp.in(p);
             } else {
                 Expression exp = getPropertyPath(root, in.getPropertyId());
                 return exp.in(Lists.newArrayList(-1));
@@ -451,8 +520,8 @@ public final class JpaQueryBuilder {
      *            the sorting information
      * @return
      */
-    public static <T> CriteriaQuery<T> createSelectQuery(Filter filter, EntityManager entityManager,
-            Class<T> entityClass, FetchJoinInformation[] fetchJoins, SortOrder... sortOrders) {
+    public static <T> TypedQuery<T> createSelectQuery(Filter filter, EntityManager entityManager, Class<T> entityClass,
+            FetchJoinInformation[] fetchJoins, SortOrder... sortOrders) {
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaQuery<T> cq = builder.createQuery(entityClass);
         Root<T> root = cq.from(entityClass);
@@ -461,12 +530,15 @@ public final class JpaQueryBuilder {
         cq.select(root);
         cq.distinct(distinct);
 
-        Predicate p = createPredicate(filter, builder, root);
+        Map<String, Object> pars = createParameterMap();
+        Predicate p = createPredicate(filter, builder, root, pars);
         if (p != null) {
             cq.where(p);
         }
-
-        return addSortInformation(builder, cq, root, sortOrders);
+        cq = addSortInformation(builder, cq, root, sortOrders);
+        TypedQuery<T> query = entityManager.createQuery(cq);
+        setParameters(query, pars);
+        return query;
     }
 
     /**
@@ -559,6 +631,7 @@ public final class JpaQueryBuilder {
      * Indicates whether at least one of the specified fetches is a fetch that fetches a collection
      * 
      * @param parent
+     *            the fetch parent
      * @return
      */
     private static boolean isCollectionFetch(FetchParent<?, ?> parent) {
@@ -573,33 +646,4 @@ public final class JpaQueryBuilder {
         return result;
     }
 
-    /**
-     * Creates a distinct query
-     * 
-     * @param filter
-     * @param entityManager
-     * @param entityClass
-     * @param distinctField
-     * @param sortOrders
-     * @return
-     */
-    public static <T> CriteriaQuery<Tuple> createDistinctQuery(Filter filter, EntityManager entityManager,
-            Class<T> entityClass, String distinctField, SortOrder... sortOrders) {
-        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Tuple> cq = builder.createTupleQuery();
-        Root<T> root = cq.from(entityClass);
-
-        // select only the distinctField
-        cq.multiselect(root.get(distinctField));
-
-        // Set where clause
-        Predicate p = createPredicate(filter, builder, root);
-        if (p != null) {
-            cq.where(p);
-        }
-        cq.distinct(true);
-
-        // add order clause
-        return addSortInformation(builder, cq, root, sortOrders);
-    }
 }

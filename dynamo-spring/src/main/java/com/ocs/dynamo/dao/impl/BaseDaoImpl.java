@@ -25,6 +25,8 @@ import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaQuery;
 
+import org.apache.commons.lang.StringEscapeUtils;
+
 import com.mysema.query.jpa.impl.JPADeleteClause;
 import com.mysema.query.jpa.impl.JPAQuery;
 import com.mysema.query.jpa.impl.JPAUpdateClause;
@@ -101,8 +103,7 @@ public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements B
 
     @Override
     public long count(Filter filter, boolean distinct) {
-        CriteriaQuery<Long> cq = JpaQueryBuilder.createCountQuery(entityManager, getEntityClass(), filter, distinct);
-        TypedQuery<Long> query = entityManager.createQuery(cq);
+        TypedQuery<Long> query = JpaQueryBuilder.createCountQuery(entityManager, getEntityClass(), filter, distinct);
         return query.getSingleResult();
     }
 
@@ -181,12 +182,9 @@ public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements B
      * @return
      */
     private List<T> fetch(Filter filter, Pageable pageable, SortOrders sortOrders, FetchJoinInformation... joins) {
-        CriteriaQuery<T> cq = JpaQueryBuilder.createSelectQuery(filter, entityManager, getEntityClass(),
+        TypedQuery<T> query = JpaQueryBuilder.createSelectQuery(filter, entityManager, getEntityClass(),
                 (joins == null || joins.length == 0) ? getFetchJoins() : joins,
                 sortOrders == null ? null : sortOrders.toArray());
-
-        TypedQuery<T> query = entityManager.createQuery(cq);
-
         if (pageable != null) {
             query.setFirstResult(pageable.getOffset());
             query.setMaxResults(pageable.getPageSize());
@@ -211,7 +209,6 @@ public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements B
         if (ids.isEmpty()) {
             return new ArrayList<>();
         }
-
         TypedQuery<T> query = JpaQueryBuilder.createFetchQuery(entityManager, getEntityClass(), ids, sortOrders,
                 (joins != null && joins.length > 0) ? joins : getFetchJoins());
         return query.getResultList();
@@ -250,10 +247,8 @@ public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements B
      */
     private List<T> find(Filter filter, Pageable pageable, SortOrders sortOrders) {
         // Create select and where clauses
-        CriteriaQuery<T> cq = JpaQueryBuilder.createSelectQuery(filter, entityManager, getEntityClass(), null,
+        TypedQuery<T> query = JpaQueryBuilder.createSelectQuery(filter, entityManager, getEntityClass(), null,
                 sortOrders == null ? null : sortOrders.toArray());
-
-        TypedQuery<T> query = entityManager.createQuery(cq);
 
         // Limit results
         if (pageable != null) {
@@ -323,12 +318,9 @@ public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements B
     @Override
     @SuppressWarnings("unchecked")
     public <S> List<S> findDistinct(Filter filter, String distinctField, Class<S> elementType, SortOrder... orders) {
-        final CriteriaQuery<Tuple> cq = JpaQueryBuilder.createDistinctQuery(filter, entityManager, getEntityClass(),
+        final TypedQuery<Tuple> query = JpaQueryBuilder.createDistinctQuery(filter, entityManager, getEntityClass(),
                 distinctField, orders);
-
-        TypedQuery<Tuple> query = entityManager.createQuery(cq);
         List<Tuple> temp = query.getResultList();
-
         List<S> result = new ArrayList<>();
 
         for (Tuple t : temp) {
@@ -344,17 +336,15 @@ public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements B
     @Override
     @SuppressWarnings("unchecked")
     public <S> List<S> findDistinctInCollectionTable(String tableName, String distinctField, Class<S> elementType) {
-        String query = "select distinct " + distinctField + " from " + tableName;
+        String query = "select distinct " + StringEscapeUtils.escapeSql(distinctField) + " from "
+                + StringEscapeUtils.escapeSql(tableName);
         return (List<S>) getEntityManager().createNativeQuery(query).getResultList();
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public List<ID> findIds(Filter filter, SortOrder... sortOrders) {
-        CriteriaQuery<Tuple> cq = JpaQueryBuilder.createIdQuery(entityManager, getEntityClass(), filter, sortOrders);
-
-        TypedQuery<Tuple> query = entityManager.createQuery(cq);
-
+        TypedQuery<Tuple> query = JpaQueryBuilder.createIdQuery(entityManager, getEntityClass(), filter, sortOrders);
         List<Tuple> temp = query.getResultList();
         List<ID> result = new ArrayList<>();
 
