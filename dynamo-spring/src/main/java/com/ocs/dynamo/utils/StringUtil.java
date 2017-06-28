@@ -15,89 +15,107 @@ package com.ocs.dynamo.utils;
 
 public final class StringUtil {
 
-	private static final String EMAIL_PATTERN = "(.+)@(.+)";
+    private static final String EMAIL_PATTERN = "(.+)@(.+)";
 
-	private static final String HTTP = "http";
+    public static final String HTML_LINE_BREAK = "<br/>";
 
-	public static final String HTML_LINE_BREAK = "<br/>";
+    private static final String HTTP = "http";
 
-	private StringUtil() {
-		// private constructor
-	}
+    public static String getHtmlLineBreak() {
+        return HTML_LINE_BREAK;
+    }
 
-	/**
-	 * Checks if an value is a valid email address - this is actually a very simple check that only
-	 * checks for the @-sign
-	 * 
-	 * @param value
-	 *            the value to check
-	 */
-	public static boolean isValidEmail(String value) {
-		if (value == null) {
-			return true;
-		}
+    /**
+     * Checks if an value is a valid email address - this is actually a very simple check that only
+     * checks for the @-sign
+     * 
+     * @param value
+     *            the value to check
+     */
+    public static boolean isValidEmail(String value) {
+        if (value == null) {
+            return true;
+        }
 
-		return value.matches(EMAIL_PATTERN);
-	}
+        return value.matches(EMAIL_PATTERN);
+    }
 
-	/**
-	 * Prepends the default protocol ("http://") to a value that represents a URL
-	 * 
-	 * @param value
-	 *            the value
-	 * @return
-	 */
-	public static String prependProtocol(String value) {
-		if (value == null) {
-			return value;
-		}
+    /**
+     * Prepends the default protocol ("http://") to a value that represents a URL
+     * 
+     * @param value
+     *            the value
+     * @return
+     */
+    public static String prependProtocol(String value) {
+        if (value == null) {
+            return value;
+        }
 
-		if (!value.startsWith(HTTP)) {
-			return HTTP + "://" + value;
-		}
-		return value;
-	}
+        if (!value.startsWith(HTTP)) {
+            return HTTP + "://" + value;
+        }
+        return value;
+    }
 
-	/**
-	 * Replaces all HTML line breaks by commas
-	 *
-	 * @param value
-	 *            the string in which to replace all line breaks
-	 * @return
-	 */
-	public static String replaceHtmlBreaks(String value) {
-		if (value == null) {
-			return null;
-		}
-		value = value.replaceAll("<br/>", ", ").trim();
-		if (value.endsWith(",")) {
-			value = value.substring(0, value.length() - 1);
-		}
-		return value;
-	}
+    /**
+     * Replaces all HTML line breaks by commas
+     *
+     * @param value
+     *            the string in which to replace all line breaks
+     * @return
+     */
+    public static String replaceHtmlBreaks(String value) {
+        if (value == null) {
+            return null;
+        }
+        value = value.replaceAll("<br/>", ", ").trim();
+        if (value.endsWith(",")) {
+            value = value.substring(0, value.length() - 1);
+        }
+        return value;
+    }
 
-	/**
-	 * Restricts a string value to the maximum length of a certain field
-	 * 
-	 * @param value
-	 * @param clazz
-	 * @param fieldName
-	 * @return
-	 */
-	public static String restrictToMaxFieldLength(String value, Class<?> clazz, String fieldName) {
-		if (value == null) {
-			return null;
-		} else {
-			int maxLength = ClassUtils.getMaxLength(clazz, fieldName);
-			if (maxLength >= 0 && value.length() > maxLength) {
-				value = value.substring(0, maxLength);
-			}
-		}
-		return value;
-	}
+    /**
+     * Restricts the provided String to the maximum length
+     * 
+     * @param value
+     * @param maxLength
+     * @return
+     */
+    public static String restrictToLength(String value, int maxLength) {
+        if (value == null) {
+            return null;
+        } else {
+            if (value.length() > maxLength) {
+                return value.substring(0, maxLength);
+            }
+        }
+        return value;
+    }
 
-	public static String getHtmlLineBreak() {
-		return HTML_LINE_BREAK;
-	}
+    /**
+     * Restricts a string value to the maximum length of a certain field
+     * 
+     * @param value
+     * @param clazz
+     * @param fieldName
+     * @return
+     */
+    public static String restrictToMaxFieldLength(String value, Class<?> clazz, String fieldName) {
+        if (value == null) {
+            return null;
+        } else {
+            int maxLength = ClassUtils.getMaxLength(clazz, fieldName);
+            if (maxLength >= 0 && value.length() > maxLength) {
+                value = value.substring(0, maxLength);
+            }
+        }
+        return value;
+    }
+
+    private StringUtil() {
+        // private constructor
+    }
 
 }
