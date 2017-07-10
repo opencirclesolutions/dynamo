@@ -253,15 +253,17 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
             if (getFormOptions().isSearchImmediately()) {
                 // immediately construct the search results table
                 searchResultsLayout.addComponent(getTableWrapper());
-                getSearchForm().getSearchButton().addClickListener(new Button.ClickListener() {
+                if (getSearchForm() != null && getSearchForm().getSearchButton() != null) {
+                    getSearchForm().getSearchButton().addClickListener(new Button.ClickListener() {
 
-                    private static final long serialVersionUID = 1L;
+                        private static final long serialVersionUID = -156650492974447814L;
 
-                    @Override
-                    public void buttonClick(ClickEvent arg0) {
-                        checkButtonState(null);
-                    }
-                });
+                        @Override
+                        public void buttonClick(ClickEvent event) {
+                            checkButtonState(null);
+                        }
+                    });
+                }
             } else {
                 // do not construct the search results table yet
                 noSearchYetLabel = new Label(message("ocs.no.search.yet"));
