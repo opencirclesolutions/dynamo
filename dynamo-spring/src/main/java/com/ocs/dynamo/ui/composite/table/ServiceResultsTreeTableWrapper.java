@@ -59,14 +59,14 @@ public class ServiceResultsTreeTableWrapper<ID extends Serializable, T extends A
      * @param queryType
      *            the query type
      * @param sortOrders
-     *            the sorders
+     *            the sort orders
      * @param joins
      *            the relations to fetch
      */
     @SuppressWarnings("unchecked")
     public ServiceResultsTreeTableWrapper(List<BaseService<?, ?>> services, EntityModel<T> rootEntityModel,
             QueryType queryType, List<SortOrder> sortOrders, HierarchicalFetchJoinInformation... joins) {
-        super((BaseService<ID, T>) services.get(0), rootEntityModel, queryType, null, sortOrders, true, joins);
+        super((BaseService<ID, T>) services.get(0), rootEntityModel, queryType, null, sortOrders, true, null, joins);
         this.services = services;
     }
 

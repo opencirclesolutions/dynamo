@@ -32,56 +32,56 @@ import org.springframework.context.support.GenericApplicationContext;
 @RunWith(MockitoJUnitRunner.class)
 public abstract class BaseMockitoTest {
 
-	private GenericApplicationContext applicationContext;
+    private GenericApplicationContext applicationContext;
 
-	protected void addBeanToContext(Object bean) {
-		applicationContext.getAutowireCapableBeanFactory().autowireBean(bean);
-		applicationContext.getBeanFactory().registerSingleton(bean.getClass().getName(), bean);
-	}
+    protected void addBeanToContext(Object bean) {
+        applicationContext.getAutowireCapableBeanFactory().autowireBean(bean);
+        applicationContext.getBeanFactory().registerSingleton(bean.getClass().getName(), bean);
+    }
 
-	public void addBeanToContext(String qualifier, Object bean) {
-		applicationContext.getAutowireCapableBeanFactory().autowireBean(bean);
-		applicationContext.getBeanFactory().registerSingleton(qualifier, bean);
-	}
+    public void addBeanToContext(String qualifier, Object bean) {
+        applicationContext.getAutowireCapableBeanFactory().autowireBean(bean);
+        applicationContext.getBeanFactory().registerSingleton(qualifier, bean);
+    }
 
-	protected String formatNumber(String str) {
-		DecimalFormat df = (DecimalFormat) DecimalFormat.getNumberInstance();
-		char ds = df.getDecimalFormatSymbols().getDecimalSeparator();
-		return str.replace(',', ds);
-	}
+    protected String formatNumber(String str) {
+        DecimalFormat df = (DecimalFormat) DecimalFormat.getNumberInstance();
+        char ds = df.getDecimalFormatSymbols().getDecimalSeparator();
+        return str.replace(',', ds);
+    }
 
-	@SuppressWarnings("unchecked")
-	protected Map<String, Object> getSystemProperties() {
-		return (Map<String, Object>) applicationContext.getBean("systemProperties");
-	}
+    @SuppressWarnings("unchecked")
+    protected Map<String, Object> getSystemProperties() {
+        return (Map<String, Object>) applicationContext.getBean("systemProperties");
+    }
 
-	protected void initialize(Object subject) {
-		applicationContext.getAutowireCapableBeanFactory().initializeBean(subject, subject.getClass().getSimpleName());
-	}
+    protected void initialize(Object subject) {
+        applicationContext.getAutowireCapableBeanFactory().initializeBean(subject, subject.getClass().getSimpleName());
+    }
 
-	public void registerProperties(String name, Map<String, Object> properties) {
-		applicationContext.getBeanFactory().registerSingleton(name, properties);
-	}
+    public void registerProperties(String name, Map<String, Object> properties) {
+        applicationContext.getBeanFactory().registerSingleton(name, properties);
+    }
 
-	public void registerProperties(String name, Properties properties) {
-		applicationContext.getBeanFactory().registerSingleton(name, properties);
-	}
+    public void registerProperties(String name, Properties properties) {
+        applicationContext.getBeanFactory().registerSingleton(name, properties);
+    }
 
-	@Before
-	public void setUp() throws Exception {
-		setupApplicationContext();
-	}
+    @Before
+    public void setUp() throws Exception {
+        setupApplicationContext();
+    }
 
-	protected void setupApplicationContext() {
-		this.applicationContext = new AnnotationConfigApplicationContext();
-		applicationContext.refresh();
-		applicationContext.start();
-		MockUtil.registerMocks(applicationContext.getBeanFactory(), this);
-	}
+    protected void setupApplicationContext() {
+        this.applicationContext = new AnnotationConfigApplicationContext();
+        applicationContext.refresh();
+        applicationContext.start();
+        MockUtil.registerMocks(applicationContext.getBeanFactory(), this);
+    }
 
-	protected <T> T wireTestSubject(T subject) {
-		applicationContext.getAutowireCapableBeanFactory().autowireBean(subject);
-		initialize(subject);
-		return subject;
-	}
+    protected <T> T wireTestSubject(T subject) {
+        applicationContext.getAutowireCapableBeanFactory().autowireBean(subject);
+        initialize(subject);
+        return subject;
+    }
 }

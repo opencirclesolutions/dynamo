@@ -282,7 +282,7 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
     protected BaseTableWrapper<ID, T> constructTableWrapper() {
         ServiceResultsTableWrapper<ID, T> tableWrapper = new ServiceResultsTableWrapper<ID, T>(getService(),
                 getEntityModel(), QueryType.ID_BASED, filter, getSortOrders(), getFormOptions().isTableExportAllowed(),
-                getJoins()) {
+                getPageLength(), getJoins()) {
 
             @Override
             protected void doConstructContainer(Container container) {

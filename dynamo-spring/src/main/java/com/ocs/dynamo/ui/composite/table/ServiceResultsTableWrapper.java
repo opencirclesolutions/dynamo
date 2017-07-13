@@ -48,6 +48,8 @@ public class ServiceResultsTableWrapper<ID extends Serializable, T extends Abstr
      */
     private Filter filter;
 
+    private Integer pageLength;
+
     /**
      * @param service
      *            the service object
@@ -61,16 +63,20 @@ public class ServiceResultsTableWrapper<ID extends Serializable, T extends Abstr
      *            options list of fetch joins to include in the query
      */
     public ServiceResultsTableWrapper(BaseService<ID, T> service, EntityModel<T> entityModel, QueryType queryType,
-            Filter filter, List<SortOrder> sortOrders, boolean allowExport, FetchJoinInformation... joins) {
+            Filter filter, List<SortOrder> sortOrders, boolean allowExport, Integer pageLength,
+            FetchJoinInformation... joins) {
         super(service, entityModel, queryType, sortOrders, allowExport, joins);
+        this.pageLength = pageLength;
         this.filter = filter;
     }
 
     @Override
     @SuppressWarnings("unchecked")
     protected Container constructContainer() {
-        ServiceContainer<ID, T> container = new ServiceContainer<>(getService(), true, DynamoConstants.PAGE_SIZE,
-                getQueryType(), getJoins());
+        ServiceContainer<ID, T> container = new ServiceContainer<>(getService(), true,
+                pageLength != null ? pageLength : DynamoConstants.PAGE_SIZE, getQueryType(), getJoins());
+        ((ServiceQueryDefinition<ID, T>) container.getQueryView().getQueryDefinition())
+                .setEntityModel(getEntityModel());
         ((ServiceQueryDefinition<ID, T>) container.getQueryView().getQueryDefinition())
                 .setEntityModel(getEntityModel());
         doConstructContainer(container);

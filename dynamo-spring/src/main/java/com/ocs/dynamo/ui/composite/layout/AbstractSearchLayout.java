@@ -440,7 +440,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
     public ServiceResultsTableWrapper<ID, T> constructTableWrapper() {
         ServiceResultsTableWrapper<ID, T> result = new ServiceResultsTableWrapper<ID, T>(this.getService(),
                 getEntityModel(), getQueryType(), getSearchForm().extractFilter(), getSortOrders(),
-                getFormOptions().isTableExportAllowed(), getJoins()) {
+                getFormOptions().isTableExportAllowed(), getPageLength(), getJoins()) {
 
             private static final long serialVersionUID = 6343267378913526151L;
 
