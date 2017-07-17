@@ -20,8 +20,8 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import com.ocs.dynamo.domain.AbstractEntity;
-import com.ocs.dynamo.domain.model.annotation.Attribute;
-import com.ocs.dynamo.domain.model.annotation.Model;
+import com.ocs.dynamo.domain.model.annnotation.Attribute;
+import com.ocs.dynamo.domain.model.annnotation.Model;
 
 /**
  * Country JPA entity.

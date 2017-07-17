@@ -29,8 +29,19 @@
 		<!-- Dynamo dependency -->
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>dynamo-spring</artifactId>
+			<artifactId>dynamo-api</artifactId>
+			<version>${project.version}</version>			
 		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>dynamo-impl</artifactId>
+			<version>${project.version}</version>			
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>dynamo-frontend</artifactId>
+			<version>${project.version}</version>			
+		</dependency>		
 
 		<!-- Override parent dependencies -->
 		<dependency>

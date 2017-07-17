@@ -31,7 +31,7 @@
     <dependencies>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>dynamo-core</artifactId>
+			<artifactId>dynamo-impl</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>

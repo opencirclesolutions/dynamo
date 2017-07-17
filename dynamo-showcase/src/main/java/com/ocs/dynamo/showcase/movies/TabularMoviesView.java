@@ -23,7 +23,7 @@ import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.showcase.Views;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.component.EntityComboBox;
-import com.ocs.dynamo.ui.composite.form.FormOptions;
+import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.composite.layout.TabularEditLayout;
 import com.ocs.dynamo.ui.view.BaseView;
 import com.vaadin.data.sort.SortOrder;

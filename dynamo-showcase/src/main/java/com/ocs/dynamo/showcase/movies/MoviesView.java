@@ -17,7 +17,7 @@ import javax.inject.Inject;
 
 import com.ocs.dynamo.showcase.Views;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
-import com.ocs.dynamo.ui.composite.form.FormOptions;
+import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.composite.layout.SimpleSearchLayout;
 import com.ocs.dynamo.ui.container.QueryType;
 import com.ocs.dynamo.ui.view.BaseView;

@@ -117,6 +117,11 @@ public final class DynamoConstants {
      */
     public static final String ID = "id";
 
+    /**
+     * Additional ID field
+     */
+    public static final String IDS = "ids";
+    
     public static final int INTERMEDIATE_PRECISION = 10;
 
     /**
