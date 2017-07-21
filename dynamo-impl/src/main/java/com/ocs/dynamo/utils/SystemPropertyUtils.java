@@ -91,6 +91,16 @@ public final class SystemPropertyUtils {
     public static String getDefaultDateTimeFormat() {
         return System.getProperty(DynamoConstants.SP_DEFAULT_DATETIME_FORMAT, "dd-MM-yyyy HH:mm:ss");
     }
+    
+    /**
+     * The default date/time format with time zone
+     * 
+     * @return
+     */
+    public static String getDefaultDateTimeWithTimezoneFormat() {
+        return System.getProperty(DynamoConstants.SP_DEFAULT_DATETIME_ZONE_FORMAT, "dd-MM-yyyy HH:mm:ssZ");
+    }
+
 
     /**
      * The default decimal precision

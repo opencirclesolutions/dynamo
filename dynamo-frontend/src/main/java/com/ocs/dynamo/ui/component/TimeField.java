@@ -28,7 +28,6 @@ import com.vaadin.ui.NativeSelect;
  * 
  * @author bas.rutten
  */
-//TODO java.util.Date -> java.time.LocalDateTime
 public class TimeField extends CustomField<Date> {
 
 	private static final long serialVersionUID = -676425827861766118L;

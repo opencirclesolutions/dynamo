@@ -43,6 +43,8 @@ import com.ocs.dynamo.ui.component.QuickAddListSelect;
 import com.ocs.dynamo.ui.component.TimeField;
 import com.ocs.dynamo.ui.component.URLField;
 import com.ocs.dynamo.ui.composite.form.CollectionTable;
+import com.ocs.dynamo.ui.converter.LocalDateTimeToDateConverter;
+import com.ocs.dynamo.ui.converter.ZonedDateTimeToDateConverter;
 import com.ocs.dynamo.ui.validator.URLValidator;
 import com.ocs.dynamo.utils.DateUtils;
 import com.vaadin.data.Item;
@@ -69,11 +71,11 @@ public class ModelBasedFieldFactoryTest extends BaseMockitoTest {
 
 	private DecimalFormatSymbols symbols = DecimalFormatSymbols.getInstance(new Locale("de"));
 
-    @BeforeClass
-    public static void beforeClass() {
-        System.setProperty(DynamoConstants.SP_DEFAULT_LOCALE, "de");
-    }
-	
+	@BeforeClass
+	public static void beforeClass() {
+		System.setProperty(DynamoConstants.SP_DEFAULT_LOCALE, "de");
+	}
+
 	@Before
 	public void setUp() {
 		super.setUp();
@@ -157,7 +159,7 @@ public class ModelBasedFieldFactoryTest extends BaseMockitoTest {
 		Assert.assertEquals(99, slider.getMin(), 0.001);
 		Assert.assertEquals(175, slider.getMax(), 0.001);
 	}
-	
+
 	@Test
 	public void testLongSlider() {
 		Object obj = fieldFactory.createField("someLongSlider");
@@ -208,8 +210,8 @@ public class ModelBasedFieldFactoryTest extends BaseMockitoTest {
 
 		Assert.assertNotNull(tf.getConverter());
 
-		BigDecimal dec = (BigDecimal) tf.getConverter().convertToModel("3" + symbols.getDecimalSeparator() + "43",
-		        null, null);
+		BigDecimal dec = (BigDecimal) tf.getConverter().convertToModel("3" + symbols.getDecimalSeparator() + "43", null,
+				null);
 		Assert.assertEquals(new BigDecimal("3.43"), dec);
 	}
 
@@ -224,15 +226,16 @@ public class ModelBasedFieldFactoryTest extends BaseMockitoTest {
 		Assert.assertNotNull(tf.getConverter());
 
 		BigDecimal dec = (BigDecimal) tf.getConverter().convertToModel("3" + symbols.getDecimalSeparator() + "43%",
-		        null, null);
+				null, null);
 		Assert.assertEquals(new BigDecimal("3.43"), dec);
 
 		Assert.assertEquals("3" + symbols.getDecimalSeparator() + "14%",
-		        tf.getConverter().convertToPresentation(BigDecimal.valueOf(3.14), null, null));
+				tf.getConverter().convertToPresentation(BigDecimal.valueOf(3.14), null, null));
 	}
 
 	/**
-	 * Test the creation of a date field and verify the date format is correctly set
+	 * Test the creation of a date field and verify the date format is correctly
+	 * set
 	 */
 	@Test
 	public void testDateField() {
@@ -256,7 +259,31 @@ public class ModelBasedFieldFactoryTest extends BaseMockitoTest {
 	}
 
 	/**
-	 * Test the creation of a date field and verify the date format is correctly set
+	 * Test the creation of a time field
+	 */
+	@Test
+	public void testZonedDateTimeField() {
+		Object obj = fieldFactory.createField("zoned");
+		Assert.assertTrue(obj instanceof DateField);
+
+		DateField tf = (DateField) obj;
+		Assert.assertEquals(Resolution.MINUTE, tf.getResolution());
+		Assert.assertTrue(tf.getConverter().getClass().isAssignableFrom(ZonedDateTimeToDateConverter.class));
+	}
+
+	@Test
+	public void testLocalDateTimeField() {
+		Object obj = fieldFactory.createField("registrationTime");
+		Assert.assertTrue(obj instanceof DateField);
+
+		DateField tf = (DateField) obj;
+		Assert.assertEquals(Resolution.MINUTE, tf.getResolution());
+		Assert.assertTrue(tf.getConverter().getClass().isAssignableFrom(LocalDateTimeToDateConverter.class));
+	}
+
+	/**
+	 * Test the creation of a date field and verify the date format is correctly
+	 * set
 	 */
 	@Test
 	public void testWeekField() {
@@ -315,7 +342,7 @@ public class ModelBasedFieldFactoryTest extends BaseMockitoTest {
 	@Test
 	public void testDoNotCreateReadonlyField() {
 		ModelBasedFieldFactory<TestX> f = ModelBasedFieldFactory.getInstance(factory.getModel(TestX.class),
-		        messageService);
+				messageService);
 		Assert.assertNull(f.createField("readOnlyField"));
 
 		// in search mode, it does not matter if the field is readonly

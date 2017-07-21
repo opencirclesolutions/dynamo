@@ -29,6 +29,11 @@ public final class StringUtils {
         // private constructor
     }
 
+    /**
+     * 
+     * @param camelCaseString
+     * @return
+     */
     public static String camelCaseToHumanFriendly(String camelCaseString) {
         String[] parts = splitCamelCase(camelCaseString);
         for (int i = 0; i < parts.length; i++) {

@@ -182,6 +182,12 @@ public final class DynamoConstants {
     public static final String SP_DEFAULT_DATETIME_FORMAT = "ocs.default.datetime.format";
 
     /**
+     * Name of the system property that is used to determine the default date/time (timestamp)
+     * format with time zone
+     */
+    public static final String SP_DEFAULT_DATETIME_ZONE_FORMAT = "ocs.default.datetime.zone.format";
+    
+    /**
      * Name of the system property that is used to determine the default decimal precision
      */
     public static final String SP_DEFAULT_DECIMAL_PRECISION = "ocs.default.decimal.precision";

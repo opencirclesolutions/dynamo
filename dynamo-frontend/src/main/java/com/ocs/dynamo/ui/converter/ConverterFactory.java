@@ -27,113 +27,137 @@ import com.vaadin.data.util.converter.StringToLongConverter;
 
 public final class ConverterFactory {
 
-    private ConverterFactory() {
-        // hidden constructor
-    }
+	/**
+	 * Creates a BigDecimalConverter
+	 * 
+	 * @param currency
+	 *            whether the field is a currency field
+	 * @param percentage
+	 *            whether to include a percentage sign
+	 * @param useGrouping
+	 *            whether to uses a thousands grouping
+	 * @param precision
+	 *            the desired decimal precision
+	 * @param currencySymbol
+	 *            the currency symbol to include
+	 * @return
+	 */
+	public static BigDecimalConverter createBigDecimalConverter(boolean currency, boolean percentage,
+			boolean useGrouping, int precision, String currencySymbol) {
+		if (currency) {
+			return new CurrencyBigDecimalConverter(precision, useGrouping, currencySymbol);
+		} else if (percentage) {
+			return new PercentageBigDecimalConverter(precision, useGrouping);
+		}
+		return new BigDecimalConverter(precision, useGrouping);
+	}
 
-    /**
-     * Creates a BigDecimalConverter
-     * 
-     * @param currency
-     *            whether the field is a currency field
-     * @param percentage
-     *            whether to include a percentage sign
-     * @param useGrouping
-     *            whether to uses a thousands grouping
-     * @param precision
-     *            the desired decimal precision
-     * @param currencySymbol
-     *            the currency symbol to include
-     * @return
-     */
-    public static BigDecimalConverter createBigDecimalConverter(boolean currency, boolean percentage,
-            boolean useGrouping, int precision, String currencySymbol) {
-        if (currency) {
-            return new CurrencyBigDecimalConverter(precision, useGrouping, currencySymbol);
-        } else if (percentage) {
-            return new PercentageBigDecimalConverter(precision, useGrouping);
-        }
-        return new BigDecimalConverter(precision, useGrouping);
-    }
+	/**
+	 * Create a converter for a certain type
+	 * 
+	 * @param clazz
+	 *            the type
+	 * @param attributeModel
+	 *            the attribute model
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static <T> Converter<String, T> createConverterFor(Class<T> clazz, AttributeModel attributeModel,
+			boolean grouping) {
+		if (clazz.equals(Integer.class) || clazz.equals(int.class)) {
+			return (Converter<String, T>) createIntegerConverter(grouping, attributeModel.isPercentage());
+		} else if (clazz.equals(Long.class) || clazz.equals(long.class)) {
+			return (Converter<String, T>) createLongConverter(grouping, attributeModel.isPercentage());
+		} else if (clazz.equals(BigDecimal.class)) {
+			return (Converter<String, T>) createBigDecimalConverter(attributeModel.isCurrency(),
+					attributeModel.isPercentage(), grouping, attributeModel.getPrecision(),
+					SystemPropertyUtils.getDefaultCurrencySymbol());
+		}
+		return null;
+	}
 
-    /**
-     * Create a converter for a certain type
-     * 
-     * @param clazz
-     *            the type
-     * @param attributeModel
-     *            the attribute model
-     * @return
-     */
-    @SuppressWarnings("unchecked")
-    public static <T> Converter<String, T> createConverterFor(Class<T> clazz, AttributeModel attributeModel,
-            boolean grouping) {
-        if (clazz.equals(Integer.class) || clazz.equals(int.class)) {
-            return (Converter<String, T>) createIntegerConverter(grouping, attributeModel.isPercentage());
-        } else if (clazz.equals(Long.class) || clazz.equals(long.class)) {
-            return (Converter<String, T>) createLongConverter(grouping, attributeModel.isPercentage());
-        } else if (clazz.equals(BigDecimal.class)) {
-            return (Converter<String, T>) createBigDecimalConverter(attributeModel.isCurrency(),
-                    attributeModel.isPercentage(), grouping, attributeModel.getPrecision(),
-                    SystemPropertyUtils.getDefaultCurrencySymbol());
-        }
-        return null;
-    }
+	/**
+	 * Creates a date converter for a Java 8 date/time class
+	 * 
+	 * @param clazz
+	 *            the class of the property for which to create the converter
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static <T> Converter<Date, T> createDateConverter(Class<T> clazz) {
+		if (clazz.equals(LocalDateTime.class)) {
+			return (Converter<Date, T>) createLocalDateTimeConverter();
+		} else if (clazz.equals(LocalDate.class)) {
+			return (Converter<Date, T>) createLocalDateConverter();
+		} else if (clazz.equals(LocalTime.class)) {
+			return (Converter<Date, T>) createLocalTimeConverter();
+		}
+		return null;
+	}
 
-    /**
-     * Creates a date converter for a Java 8 date/time class
-     * 
-     * @param clazz
-     *            the class of the property for which to create the converter
-     * @return
-     */
-    @SuppressWarnings("unchecked")
-    public static <T> Converter<Date, T> createDateConverter(Class<T> clazz) {
-        if (clazz.equals(LocalDateTime.class)) {
-            return (Converter<Date, T>) createLocalDateTimeConverter();
-        } else if (clazz.equals(LocalDate.class)) {
-            return (Converter<Date, T>) createLocalDateConverter();
-        } else if (clazz.equals(LocalTime.class)) {
-            return (Converter<Date, T>) createLocalTimeConverter();
-        }
-        return null;
-    }
+	/**
+	 * Creates a converter for converting between integer and String
+	 * 
+	 * @param useGrouping
+	 *            whether to use the thousands grouping separator
+	 * @return
+	 */
+	public static StringToIntegerConverter createIntegerConverter(boolean useGrouping, boolean percentage) {
+		return percentage ? new PercentageIntegerConverter(useGrouping)
+				: new GroupingStringToIntegerConverter(useGrouping);
+	}
 
-    /**
-     * Creates a converter for converting between integer and String
-     * 
-     * @param useGrouping
-     *            whether to use the thousands grouping separator
-     * @return
-     */
-    public static StringToIntegerConverter createIntegerConverter(boolean useGrouping, boolean percentage) {
-        return percentage ? new PercentageIntegerConverter(useGrouping)
-                : new GroupingStringToIntegerConverter(useGrouping);
-    }
+	/**
+	 * Creates a converter for a LocalDate
+	 * 
+	 * @return
+	 */
+	public static LocalDateToDateConverter createLocalDateConverter() {
+		return new LocalDateToDateConverter();
+	}
 
-    public static LocalDateToDateConverter createLocalDateConverter() {
-        return new LocalDateToDateConverter();
-    }
+	/**
+	 * Creates a converter for a LocalDateTimeConverter
+	 * 
+	 * @return
+	 */
+	public static LocalDateTimeToDateConverter createLocalDateTimeConverter() {
+		return new LocalDateTimeToDateConverter();
+	}
 
-    public static LocalDateTimeToDateConverter createLocalDateTimeConverter() {
-        return new LocalDateTimeToDateConverter();
-    }
+	/**
+	 * Creates a converter for a LocalTime
+	 * 
+	 * @return
+	 */
+	public static LocalTimeToDateConverter createLocalTimeConverter() {
+		return new LocalTimeToDateConverter();
+	}
 
-    public static LocalTimeToDateConverter createLocalTimeConverter() {
-        return new LocalTimeToDateConverter();
-    }
+	/**
+	 * Creates a converter for converting between long and String
+	 * 
+	 * @param useGrouping
+	 *            whether to use a grouping
+	 * @param percentage
+	 *            whether to include a percentage sign
+	 * @return
+	 */
+	public static StringToLongConverter createLongConverter(boolean useGrouping, boolean percentage) {
+		return percentage ? new PercentageLongConverter(useGrouping) : new GroupingStringToLongConverter(useGrouping);
+	}
 
-    /**
-     * Creates a converter for converting between long and String
-     * 
-     * @param useGrouping
-     *            whether to use a grouping
-     * @param percentage
-     *            whether to include a percentage sign
-     * @return
-     */
-    public static StringToLongConverter createLongConverter(boolean useGrouping, boolean percentage) {
-        return percentage ? new PercentageLongConverter(useGrouping) : new GroupingStringToLongConverter(useGrouping);
-    }
+	/**
+	 * Creates a converter for a ZonedDateTime
+	 * 
+	 * @return
+	 */
+	public static ZonedDateTimeToDateConverter createZonedDateTimeConverter() {
+		return new ZonedDateTimeToDateConverter();
+	}
+
+	private ConverterFactory() {
+		// hidden constructor
+	}
 
 }
