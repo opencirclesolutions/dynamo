@@ -500,6 +500,7 @@
 					<version>${org.apache.maven.plugins.checkstyle.version}</version>
 					<configuration>
 						<configLocation>${project.baseUri}../dynamo-qa/ocs_checks.xml</configLocation>
+						<suppressionsLocation>${project.baseUri}../dynamo-qa/ocs_suppressions.xml</suppressionsLocation>						
 						<encoding>UTF-8</encoding>
 						<consoleOutput>true</consoleOutput>
 						<failsOnError>true</failsOnError>
