@@ -225,6 +225,15 @@ public abstract class BaseServiceImpl<ID, T extends AbstractEntity<ID>> implemen
         }
         return false;
     }
+    
+    /**
+     * 
+     * @param key
+     * @return
+     */
+    protected String message(String key) {
+    	return messageService.getMessage(key, Locale.getDefault());
+    }
 
     @Override
     @Transactional

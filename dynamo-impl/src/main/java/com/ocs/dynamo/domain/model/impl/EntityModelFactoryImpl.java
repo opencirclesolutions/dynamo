@@ -582,10 +582,10 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 				} else if (ClassUtils.getAnnotation(parentClass, name, ManyToMany.class) != null
 						|| ClassUtils.getAnnotation(parentClass, name, OneToMany.class) != null) {
 					result = AttributeType.DETAIL;
-					model.setMemberType(ClassUtils.getResolvedType(parentClass, model.getName(), 0));
+					model.setMemberType(ClassUtils.getResolvedType(parentClass, name, 0));
 				} else if (ClassUtils.getAnnotation(parentClass, name, ElementCollection.class) != null) {
 					result = AttributeType.ELEMENT_COLLECTION;
-					model.setMemberType(ClassUtils.getResolvedType(parentClass, model.getName(), 0));
+					model.setMemberType(ClassUtils.getResolvedType(parentClass, name, 0));
 					model.setCollectionTableName(model.getName());
 					model.setCollectionTableFieldName(model.getName());
 
