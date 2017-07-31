@@ -1226,6 +1226,24 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
     }
 
     /**
+     * Sets default values for a new entity based on the meta model
+     */
+    @SuppressWarnings("unchecked")
+    private void setDefaultValues() {
+        // set default values
+        if (entity.getId() == null) {
+            for (AttributeModel am : getEntityModel().getAttributeModels()) {
+                if (am.getDefaultValue() != null) {
+                    Field<?> field = groups.get(isViewMode()).getField(am.getPath());
+                    if (field != null) {
+                        field.getPropertyDataSource().setValue(am.getDefaultValue());
+                    }
+                }
+            }
+        }
+    }
+
+    /**
      * Shows or hides the component for a certain property - this will work regardless of the view
      * 
      * @param propertyName
@@ -1246,6 +1264,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
     public void setEntity(T entity) {
         this.entity = entity;
+
         afterEntitySet(this.entity);
 
         setViewMode(getFormOptions().isOpenInViewMode() && entity.getId() != null);
@@ -1253,6 +1272,9 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
         // recreate the group
         BeanItem<T> beanItem = new BeanItem<>(entity);
         groups.get(isViewMode()).setItemDataSource(beanItem);
+
+        // set default values
+        setDefaultValues();
 
         // "rebuild" so that the correct layout is displayed
         build();
