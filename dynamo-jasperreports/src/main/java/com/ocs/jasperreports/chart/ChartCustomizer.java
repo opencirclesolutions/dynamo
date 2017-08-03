@@ -13,19 +13,15 @@
  */
 package com.ocs.jasperreports.chart;
 
-import com.ocs.jasperreports.renderer.SvgFontRenderer;
-import net.sf.jasperreports.charts.util.ChartHyperlinkProvider;
-import net.sf.jasperreports.charts.util.SvgChartRendererFactory;
-import net.sf.jasperreports.engine.JRAbstractChartCustomizer;
-import net.sf.jasperreports.engine.JRChart;
-import net.sf.jasperreports.engine.JRChartCustomizer;
-import net.sf.jasperreports.engine.JRPrintHyperlink;
-import net.sf.jasperreports.engine.JRRuntimeException;
-import net.sf.jasperreports.engine.JasperReportsContext;
-import net.sf.jasperreports.engine.base.JRBasePrintHyperlink;
-import net.sf.jasperreports.engine.type.HyperlinkTypeEnum;
-import net.sf.jasperreports.renderers.Renderable;
-import net.sf.jasperreports.renderers.SimpleRenderToImageAwareDataRenderer;
+import java.awt.Color;
+import java.awt.Paint;
+import java.awt.Stroke;
+import java.awt.geom.Rectangle2D;
+import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.annotations.Annotation;
 import org.jfree.chart.entity.ChartEntity;
@@ -43,14 +39,19 @@ import org.jfree.ui.VerticalAlignment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.awt.Color;
-import java.awt.Paint;
-import java.awt.Stroke;
-import java.awt.geom.Rectangle2D;
-import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
+import com.ocs.jasperreports.renderer.SvgFontRenderer;
+
+import net.sf.jasperreports.charts.util.ChartHyperlinkProvider;
+import net.sf.jasperreports.charts.util.SvgChartRendererFactory;
+import net.sf.jasperreports.engine.JRAbstractChartCustomizer;
+import net.sf.jasperreports.engine.JRChart;
+import net.sf.jasperreports.engine.JRPrintHyperlink;
+import net.sf.jasperreports.engine.JRRuntimeException;
+import net.sf.jasperreports.engine.JasperReportsContext;
+import net.sf.jasperreports.engine.base.JRBasePrintHyperlink;
+import net.sf.jasperreports.engine.type.HyperlinkTypeEnum;
+import net.sf.jasperreports.renderers.Renderable;
+import net.sf.jasperreports.renderers.SimpleRenderToImageAwareDataRenderer;
 
 /**
  * Chart customizer that adds several enhancements to charts: draw labels, quadrants and markers.
@@ -60,13 +61,13 @@ import java.util.Collections;
 public class ChartCustomizer<T extends Plot> extends JRAbstractChartCustomizer {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ChartCustomizer.class);
 
-	private static final String ANNOTATION = ".Annotation";
-	private static final String LABELS = ".Labels";
-	private static final String MARKER_RANGE = ".MarkerRange";
-	private static final String MARKER_DOMAIN = ".MarkerDomain";
-	private static final String QUADRANT = ".Quadrant";
-	private static final String STROKE_TYPE = ".StrokeType";
-	private static final String LEGEND = ".Legend";
+	public static final String ANNOTATION = ".Annotation";
+	public static final String LABELS = ".Labels";
+	public static final String MARKER_RANGE = ".MarkerRange";
+	public static final String MARKER_DOMAIN = ".MarkerDomain";
+	public static final String QUADRANT = ".Quadrant";
+	public static final String STROKE_TYPE = ".StrokeType";
+	public static final String LEGEND = ".Legend";
 
 	/**
 	 * Class to override settings of the legend
@@ -345,27 +346,15 @@ public class ChartCustomizer<T extends Plot> extends JRAbstractChartCustomizer {
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see net.sf.jasperreports.engine.JRChartCustomizer#customize(org.jfree.chart.JFreeChart,
-	 * net.sf.jasperreports.engine.JRChart)
-	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	@Override
-	public void customize(JFreeChart chart, JRChart jasperChart) {
-		final T plot = (T) chart.getPlot();
-		String key = jasperChart.getKey();
-
+	public static void customizeLegend(JFreeChart chart, Object legendVariable) {
 		try {
 			// Adjust the legend in the chart when defined for this chart
-			Object v = getVariableValue(key + LEGEND);
-			if (v instanceof LegendTitle) {
+			if (legendVariable instanceof LegendTitle) {
 				chart.removeLegend();
-				chart.addLegend((LegendTitle) v);
+				chart.addLegend((LegendTitle) legendVariable);
 			}
-			if (v instanceof LegendOptions) {
-				LegendOptions lo = (LegendOptions) v;
+			if (legendVariable instanceof LegendOptions) {
+				LegendOptions lo = (LegendOptions) legendVariable;
 				LegendTitle legend = chart.getLegend();
 				if (lo.border != null) {
 					legend.setBorder(lo.border, lo.border, lo.border, lo.border);
@@ -380,6 +369,22 @@ public class ChartCustomizer<T extends Plot> extends JRAbstractChartCustomizer {
 		} catch (JRRuntimeException e) {
 			// No legend defined and needed
 		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see net.sf.jasperreports.engine.JRChartCustomizer#customize(org.jfree.chart.JFreeChart,
+	 * net.sf.jasperreports.engine.JRChart)
+	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@Override
+	public void customize(JFreeChart chart, JRChart jasperChart) {
+		String key = jasperChart.getKey();
+		final T plot = (T) chart.getPlot();
+
+		// Adjust the legend in the chart when defined for this chart
+		customizeLegend(chart, getVariableValue(key + LEGEND));
 
 		// All customizations for which a plot customizer is needed
 		CustomChartCustomizer chartCustomizer = null;
@@ -443,11 +448,6 @@ public class ChartCustomizer<T extends Plot> extends JRAbstractChartCustomizer {
 			}
 		} catch (JRRuntimeException e) {
 			// No annotations defined and needed
-		}
-
-		if (chartCustomizer instanceof JRChartCustomizer) {
-			// Delegate to custom implementation
-			((JRChartCustomizer) chartCustomizer).customize(chart, jasperChart);
 		}
 	}
 
