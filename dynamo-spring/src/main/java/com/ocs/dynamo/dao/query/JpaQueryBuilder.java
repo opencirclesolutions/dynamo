@@ -494,7 +494,12 @@ public final class JpaQueryBuilder {
                 Expression<?> exp = getPropertyPath(root, in.getPropertyId());
                 String parName = in.getPropertyId().replace('.', '_');
                 ParameterExpression<List> p = builder.parameter(List.class, parName);
-                parameters.put(parName, in.getValues());
+                if (in.getValues() instanceof List) {
+                    parameters.put(parName, in.getValues());
+                } else {
+                    List temp = new ArrayList<>(in.getValues());
+                    parameters.put(parName, temp);
+                }
                 return exp.in(p);
             } else {
                 Expression exp = getPropertyPath(root, in.getPropertyId());
