@@ -384,7 +384,14 @@ public class ChartCustomizer<T extends Plot> extends JRAbstractChartCustomizer {
 		final T plot = (T) chart.getPlot();
 
 		// Adjust the legend in the chart when defined for this chart
-		customizeLegend(chart, getVariableValue(key + LEGEND));
+		try {
+			Object legend = getVariableValue(key + LEGEND);
+			if (legend != null) {
+				customizeLegend(chart, legend);
+			}
+		} catch (JRRuntimeException e) {
+			// No legend defined and needed
+		}
 
 		// All customizations for which a plot customizer is needed
 		CustomChartCustomizer chartCustomizer = null;
