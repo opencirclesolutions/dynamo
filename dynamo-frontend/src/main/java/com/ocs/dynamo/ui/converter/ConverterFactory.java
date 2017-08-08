@@ -27,6 +27,10 @@ import com.vaadin.data.util.converter.StringToLongConverter;
 
 public final class ConverterFactory {
 
+	private ConverterFactory() {
+		// hidden constructor
+	}
+	
 	/**
 	 * Creates a BigDecimalConverter
 	 * 
@@ -155,9 +159,4 @@ public final class ConverterFactory {
 	public static ZonedDateTimeToDateConverter createZonedDateTimeConverter() {
 		return new ZonedDateTimeToDateConverter();
 	}
-
-	private ConverterFactory() {
-		// hidden constructor
-	}
-
 }

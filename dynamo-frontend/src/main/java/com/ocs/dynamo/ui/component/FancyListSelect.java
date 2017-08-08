@@ -182,6 +182,7 @@ public class FancyListSelect<ID extends Serializable, T extends AbstractEntity<I
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     protected Component initContent() {
         VerticalLayout layout = new DefaultVerticalLayout(false, false);
 

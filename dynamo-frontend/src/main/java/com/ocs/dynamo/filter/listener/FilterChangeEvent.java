@@ -32,7 +32,7 @@ public class FilterChangeEvent implements Serializable {
 
     private final Filter newFilter;
 
-    private final Object value;
+    private final transient Object value;
 
     /**
      * Constructor

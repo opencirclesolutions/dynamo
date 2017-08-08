@@ -55,8 +55,6 @@ public class AuditAspectTest extends BaseMockitoTest {
 
     private class MyAuditableEntity extends AbstractAuditableEntity<Integer> {
 
-        private static final long serialVersionUID = 89014990402090601L;
-
         private Integer id;
 
         @Override
