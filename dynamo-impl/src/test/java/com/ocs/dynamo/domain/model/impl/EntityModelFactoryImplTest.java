@@ -69,7 +69,7 @@ import junitx.util.PrivateAccessor;
 @SuppressWarnings("unused")
 public class EntityModelFactoryImplTest extends BaseMockitoTest {
 
-	public EntityModelFactoryImpl factory = new EntityModelFactoryImpl();
+	private EntityModelFactoryImpl factory = new EntityModelFactoryImpl();
 
 	private ResourceBundleMessageSource source = new ResourceBundleMessageSource();
 
@@ -591,7 +591,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		Assert.assertEquals("dd/MM/yyyy HH-mm-ss", am3.getDisplayFormat());
 		Assert.assertEquals(AttributeDateType.TIMESTAMP, am3.getDateType());
 		Assert.assertEquals(DateUtils.createLocalDateTime("01011980 121314"), am3.getDefaultValue());
-		
+
 		AttributeModel am4 = model.getAttributeModel("zonedDateTime");
 		Assert.assertNotNull(am4);
 		Assert.assertEquals("dd-MM-yyyy HH:mm:ssZ", am4.getDisplayFormat());

@@ -195,6 +195,7 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 
             };
 
+            editForm.setDetailJoins(getJoins());
             editForm.setFormTitleWidth(getFormTitleWidth());
             editForm.setFieldEntityModels(getFieldEntityModels());
             editForm.build();

@@ -27,7 +27,7 @@ import com.ocs.dynamo.utils.DateUtils;
  */
 public class WeekCodeConverterTest {
 
-    public WeekCodeConverter converter = new WeekCodeConverter();
+    private WeekCodeConverter converter = new WeekCodeConverter();
 
     @Test
     public void testToModel() {

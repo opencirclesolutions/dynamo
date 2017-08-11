@@ -164,6 +164,8 @@ public class FormatUtilsTest extends BaseMockitoTest {
 	@Model(displayProperty = "name")
 	class Entity1 extends AbstractEntity<Integer> {
 
+		private static final long serialVersionUID = -706695912687382812L;
+
 		private Integer id;
 
 		private String name;
@@ -188,6 +190,8 @@ public class FormatUtilsTest extends BaseMockitoTest {
 	}
 
 	class Entity2 extends AbstractEntity<Integer> {
+
+		private static final long serialVersionUID = -6048664928800386501L;
 
 		private Integer id;
 
@@ -224,6 +228,8 @@ public class FormatUtilsTest extends BaseMockitoTest {
 
 	class Entity3 extends AbstractEntity<Integer> {
 
+		private static final long serialVersionUID = -6793879377561210713L;
+
 		private Integer id;
 
 		private Set<Entity1> entities = new HashSet<>();
@@ -249,6 +255,8 @@ public class FormatUtilsTest extends BaseMockitoTest {
 	}
 
 	class Entity4 extends AbstractEntity<Integer> {
+
+		private static final long serialVersionUID = -6617462805267353476L;
 
 		private Integer id;
 

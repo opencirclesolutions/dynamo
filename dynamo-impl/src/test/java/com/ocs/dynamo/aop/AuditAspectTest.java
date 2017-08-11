@@ -12,60 +12,62 @@ import com.ocs.dynamo.test.BaseMockitoTest;
 
 public class AuditAspectTest extends BaseMockitoTest {
 
-    private AuditAspect aspect = new AuditAspect();
+	private AuditAspect aspect = new AuditAspect();
 
-    @Mock
-    private UserDetailsService userDetailsService;
+	@Mock
+	private UserDetailsService userDetailsService;
 
-    @Mock
-    private ProceedingJoinPoint joinPoint;
+	@Mock
+	private ProceedingJoinPoint joinPoint;
 
-    @Override
-    public void setUp() {
-        super.setUp();
-        Mockito.when(userDetailsService.getCurrentUserName()).thenReturn("Kevin");
-        wireTestSubject(aspect);
-    }
+	@Override
+	public void setUp() {
+		super.setUp();
+		Mockito.when(userDetailsService.getCurrentUserName()).thenReturn("Kevin");
+		wireTestSubject(aspect);
+	}
 
-    @Test
-    public void testSaveNew() throws Throwable {
-        MyAuditableEntity entity = new MyAuditableEntity();
-        aspect.auditSave(joinPoint, entity);
+	@Test
+	public void testSaveNew() throws Throwable {
+		MyAuditableEntity entity = new MyAuditableEntity();
+		aspect.auditSave(joinPoint, entity);
 
-        Assert.assertEquals("Kevin", entity.getCreatedBy());
-        Assert.assertEquals("Kevin", entity.getChangedBy());
-        Assert.assertNotNull(entity.getCreatedBy());
-        Assert.assertNotNull(entity.getChangedOn());
-    }
+		Assert.assertEquals("Kevin", entity.getCreatedBy());
+		Assert.assertEquals("Kevin", entity.getChangedBy());
+		Assert.assertNotNull(entity.getCreatedBy());
+		Assert.assertNotNull(entity.getChangedOn());
+	}
 
-    @Test
-    public void testSaveExisting() throws Throwable {
-        MyAuditableEntity entity = new MyAuditableEntity();
-        entity.setId(33);
-        entity.setCreatedBy("Stuart");
-        entity.setChangedBy("Stuart");
+	@Test
+	public void testSaveExisting() throws Throwable {
+		MyAuditableEntity entity = new MyAuditableEntity();
+		entity.setId(33);
+		entity.setCreatedBy("Stuart");
+		entity.setChangedBy("Stuart");
 
-        aspect.auditSave(joinPoint, entity);
+		aspect.auditSave(joinPoint, entity);
 
-        Assert.assertEquals("Stuart", entity.getCreatedBy());
-        Assert.assertEquals("Kevin", entity.getChangedBy());
-        Assert.assertNotNull(entity.getCreatedBy());
-        Assert.assertNotNull(entity.getChangedOn());
-    }
+		Assert.assertEquals("Stuart", entity.getCreatedBy());
+		Assert.assertEquals("Kevin", entity.getChangedBy());
+		Assert.assertNotNull(entity.getCreatedBy());
+		Assert.assertNotNull(entity.getChangedOn());
+	}
 
-    private class MyAuditableEntity extends AbstractAuditableEntity<Integer> {
+	private class MyAuditableEntity extends AbstractAuditableEntity<Integer> {
 
-        private Integer id;
+		private static final long serialVersionUID = 5076818539497538764L;
 
-        @Override
-        public Integer getId() {
-            return id;
-        }
+		private Integer id;
 
-        @Override
-        public void setId(Integer id) {
-            this.id = id;
-        }
+		@Override
+		public Integer getId() {
+			return id;
+		}
 
-    }
+		@Override
+		public void setId(Integer id) {
+			this.id = id;
+		}
+
+	}
 }

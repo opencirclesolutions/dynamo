@@ -10,7 +10,7 @@ import com.ocs.dynamo.utils.DateUtils;
 
 public class ZonedDateTimeToDateConverterTest {
 
-	public ZonedDateTimeToDateConverter converter = new ZonedDateTimeToDateConverter();
+	private ZonedDateTimeToDateConverter converter = new ZonedDateTimeToDateConverter();
 
 	@Test
 	public void testConvertToModel() {
