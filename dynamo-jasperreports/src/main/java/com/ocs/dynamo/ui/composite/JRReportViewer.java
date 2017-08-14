@@ -13,6 +13,16 @@
  */
 package com.ocs.dynamo.ui.composite;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+import org.apache.commons.lang.StringUtils;
+
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.impl.ModelBasedFieldFactory;
 import com.ocs.dynamo.jasperreports.JRContainerDataSource;
@@ -44,17 +54,9 @@ import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
+
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JasperReport;
-import org.apache.commons.lang.StringUtils;
-
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * Custom component to render HTML versions of JasperReports and export to other formats
@@ -274,7 +276,8 @@ public class JRReportViewer<T> extends BaseCustomComponent {
         String html = reportGenerator.executeReportAsHtml(jasperReport, params, jrDataSource,
                 ((WrappedHttpSession) VaadinSession.getCurrent().getSession()).getHttpSession(),
                 VaadinSession.getCurrent().getLocale());
-        if (html == null || "".equals(html) || (container != null && container.size() <= 0)) {
+		if (html == null || "".equals(html)
+				|| (!rd.requiresDatabaseConnection() && container != null && container.size() <= 0)) {
             reportArea.setValue(getMessageService().getMessage(NO_DATA_FOUND_KEY));
             exportSelection.setEnabled(false);
         } else {
