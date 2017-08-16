@@ -43,9 +43,9 @@ import com.ocs.dynamo.functional.DomainConstants;
 @Model(displayProperty = "name", sortOrder = "name asc")
 public abstract class Domain extends AbstractEntity<Integer> {
 
-	public static final String NAME = "name";
+	public static final String ATTRIBUTE_NAME = "name";
 
-	public static final String CODE = "code";
+	public static final String ATTRIBUTE_CODE = "code";
 
 	private static final long serialVersionUID = 1598343469161718498L;
 

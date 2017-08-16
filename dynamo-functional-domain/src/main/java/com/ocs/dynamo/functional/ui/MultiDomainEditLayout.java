@@ -150,13 +150,13 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
         BaseService<Integer, T> baseService = (BaseService<Integer, T>) ServiceLocator.getServiceForEntity(domainClass);
         if (baseService != null) {
             return new ServiceBasedSplitLayout<Integer, T>(baseService, getEntityModelFactory().getModel(domainClass),
-                    formOptions, new SortOrder(Domain.NAME, SortDirection.ASCENDING)) {
+                    formOptions, new SortOrder(Domain.ATTRIBUTE_NAME, SortDirection.ASCENDING)) {
 
                 private static final long serialVersionUID = -6504072714662771230L;
 
                 @Override
                 protected Filter constructQuickSearchFilter(String value) {
-                    return new SimpleStringFilter(Domain.NAME, value, true, false);
+                    return new SimpleStringFilter(Domain.ATTRIBUTE_NAME, value, true, false);
                 }
 
                 @Override
