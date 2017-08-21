@@ -13,12 +13,13 @@
  */
 package com.ocs.dynamo.test;
 
-import static org.mockito.Mockito.spy;
-
-import java.lang.reflect.Field;
-import java.util.List;
-import java.util.Locale;
-
+import com.ocs.dynamo.dao.BaseDao;
+import com.ocs.dynamo.dao.FetchJoinInformation;
+import com.ocs.dynamo.domain.AbstractEntity;
+import com.ocs.dynamo.exception.OCSRuntimeException;
+import com.ocs.dynamo.service.BaseService;
+import com.ocs.dynamo.service.MessageService;
+import junitx.util.PrivateAccessor;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Matchers;
 import org.mockito.Mock;
@@ -27,14 +28,11 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import com.ocs.dynamo.dao.BaseDao;
-import com.ocs.dynamo.dao.FetchJoinInformation;
-import com.ocs.dynamo.domain.AbstractEntity;
-import com.ocs.dynamo.exception.OCSRuntimeException;
-import com.ocs.dynamo.service.BaseService;
-import com.ocs.dynamo.service.MessageService;
+import java.lang.reflect.Field;
+import java.util.List;
+import java.util.Locale;
 
-import junitx.util.PrivateAccessor;
+import static org.mockito.Mockito.spy;
 
 /**
  * Utility class for registering service and DAO related mock functionality
@@ -218,7 +216,8 @@ public final class MockUtil {
     public static <ID, X extends AbstractEntity<ID>> void mockSave(BaseDao<ID, X> dao, Class<X> clazz) {
         // mock the save behaviour - return the first argument being passed to the method
         Mockito.when(dao.save(Matchers.any(clazz))).thenAnswer(invocation -> invocation.getArguments()[0]);
-    }
+		Mockito.when(dao.save(Matchers.any(List.class))).thenAnswer(invocation -> invocation.getArguments()[0]);
+	}
 
     /**
      * Mock the saving of a list on a DAO
