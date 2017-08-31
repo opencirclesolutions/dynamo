@@ -10,8 +10,8 @@
 	<parent>
 		<groupId>org.dynamoframework</groupId>
 		<artifactId>dynamo-parent</artifactId>
-		<version>1.5-CB1-SNAPSHOT</version>
-    </parent>
+		<version>1.5-CB1</version>
+    	</parent>
 	
 	<organization>
         <name>Open Circle Solutions</name>
