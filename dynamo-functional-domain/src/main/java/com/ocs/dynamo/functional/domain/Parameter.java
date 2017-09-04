@@ -18,7 +18,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
 import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.NotNull;
 
@@ -46,8 +45,7 @@ public class Parameter extends AbstractAuditableEntity<Integer> {
     public static final String ATTRIBUTE_NAME = "name";
 
     @Id
-    @SequenceGenerator(name = "PARAMETER_ID_GENERATOR", sequenceName = "PARAMETER_ID_SEQ")
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "PARAMETER_ID_GENERATOR")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @NotNull
