@@ -133,6 +133,7 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
      *            the headers to be added
      */
     private void addColumn(final AttributeModel attributeModel, List<Object> propertyNames, List<String> headerNames) {
+
         if (attributeModel.isVisibleInTable()) {
             propertyNames.add(attributeModel.getPath());
             headerNames.add(attributeModel.getDisplayName());
@@ -256,6 +257,12 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
             if (attributeModel.getNestedEntityModel() != null) {
                 for (AttributeModel nestedAttributeModel : attributeModel.getNestedEntityModel().getAttributeModels()) {
                     addColumn(nestedAttributeModel, propertyNames, headerNames);
+                    if (nestedAttributeModel.getNestedEntityModel() != null) {
+                        for (AttributeModel nested2 : nestedAttributeModel.getNestedEntityModel()
+                                .getAttributeModels()) {
+                            addColumn(nested2, propertyNames, headerNames);
+                        }
+                    }
                 }
             }
         }
