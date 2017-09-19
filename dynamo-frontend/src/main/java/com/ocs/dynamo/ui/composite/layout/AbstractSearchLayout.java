@@ -436,6 +436,11 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 			}
 
 			@Override
+			protected boolean handleCustomException(RuntimeException ex) {
+				return AbstractSearchLayout.this.handleCustomException(ex);
+			}
+
+			@Override
 			protected boolean hasNextEntity(T current) {
 				return AbstractSearchLayout.this.hasNextEntity(current);
 			}
@@ -706,6 +711,10 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	public final void edit(T entity) {
 		setSelectedItem(entity);
 		doEdit();
+	}
+	
+	protected boolean handleCustomException(RuntimeException ex) {
+		return false;
 	}
 
 	public Button getAddButton() {
