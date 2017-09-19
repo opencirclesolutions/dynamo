@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.dynamoframework</groupId>
         <artifactId>dynamo-parent</artifactId>
-        <version>1.3-SNAPSHOT</version>
+        <version>1.0.1-SNAPSHOT</version>
     </parent>
 
     <artifactId>dynamo-spring-archetype</artifactId>
