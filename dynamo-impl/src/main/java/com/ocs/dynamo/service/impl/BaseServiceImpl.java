@@ -273,7 +273,7 @@ public abstract class BaseServiceImpl<ID, T extends AbstractEntity<ID>> implemen
 			}
 
 			for (String error : errors) {
-				LOGGER.error(error);
+				LOGGER.warn(error);
 			}
 
 			throw new OCSValidationException(errors);

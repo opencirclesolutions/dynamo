@@ -86,7 +86,7 @@ public abstract class BaseCustomComponent extends CustomComponent implements Bui
     protected void handleSaveException(RuntimeException ex) {
         if (ex instanceof OCSValidationException) {
             // validation exception
-            LOG.error(ex.getMessage(), ex);
+            LOG.warn(ex.getMessage(), ex);
             showNotifification(((OCSValidationException) ex).getErrors().get(0), Notification.Type.ERROR_MESSAGE);
         } else if (ex instanceof OCSRuntimeException) {
             // any other OCS runtime exception
