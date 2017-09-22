@@ -669,7 +669,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 			if (editForm == null) {
 				buildEditForm(entity, options);
 			} else {
-				editForm.setViewMode(getFormOptions().isOpenInViewMode());
+				editForm.setViewMode(options.isOpenInViewMode());
 				editForm.setEntity(entity);
 				editForm.resetTab();
 			}
