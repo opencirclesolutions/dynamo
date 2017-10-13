@@ -204,7 +204,6 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
                 private static final long serialVersionUID = -3432107069929941520L;
 
                 @Override
-                @SuppressWarnings("unchecked")
                 protected boolean doClose() {
                     if (multiSelect) {
                         if (getValue() == null) {

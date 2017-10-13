@@ -55,7 +55,6 @@ import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.utils.ClassUtils;
 import com.ocs.dynamo.utils.SystemPropertyUtils;
 import com.vaadin.data.Container.Filter;
-import com.vaadin.data.Property.ValueChangeListener;
 import com.vaadin.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.filter.Compare;
@@ -1047,7 +1046,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		saveButton.setData(SAVE_BUTTON_DATA);
 		saveButton.setEnabled(groups.get(isViewMode()).isValid());
 		for (Field<?> f : groups.get(isViewMode()).getFields()) {
-			f.addValueChangeListener((ValueChangeListener) event -> checkSaveButtonState());
+			f.addValueChangeListener(event -> checkSaveButtonState());
 		}
 		return saveButton;
 	}
