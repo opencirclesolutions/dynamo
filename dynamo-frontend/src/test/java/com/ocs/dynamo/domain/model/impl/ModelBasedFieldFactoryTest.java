@@ -267,7 +267,7 @@ public class ModelBasedFieldFactoryTest extends BaseMockitoTest {
 		Assert.assertTrue(obj instanceof DateField);
 
 		DateField tf = (DateField) obj;
-		Assert.assertEquals(Resolution.MINUTE, tf.getResolution());
+		Assert.assertEquals(Resolution.SECOND, tf.getResolution());
 		Assert.assertTrue(tf.getConverter().getClass().isAssignableFrom(ZonedDateTimeToDateConverter.class));
 	}
 
@@ -277,7 +277,7 @@ public class ModelBasedFieldFactoryTest extends BaseMockitoTest {
 		Assert.assertTrue(obj instanceof DateField);
 
 		DateField tf = (DateField) obj;
-		Assert.assertEquals(Resolution.MINUTE, tf.getResolution());
+		Assert.assertEquals(Resolution.SECOND, tf.getResolution());
 		Assert.assertTrue(tf.getConverter().getClass().isAssignableFrom(LocalDateTimeToDateConverter.class));
 	}
 

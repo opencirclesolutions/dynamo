@@ -78,6 +78,7 @@ import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.AbstractTextField;
+import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.DateField;
@@ -564,8 +565,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 		} else if (AttributeType.ELEMENT_COLLECTION.equals(attributeModel.getAttributeType())) {
 			if (!search) {
 				// use a "collection table" for an element collection
-				FormOptions fo = new FormOptions();
-				fo.setShowRemoveButton(true);
+				FormOptions fo = new FormOptions().setShowRemoveButton(true);
 				if (String.class.equals(attributeModel.getMemberType())
 						|| Integer.class.equals(attributeModel.getMemberType())
 						|| Long.class.equals(attributeModel.getMemberType())
@@ -682,9 +682,8 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 				dateField.setDateFormat(attributeModel.getDisplayFormat());
 			}
 
-			// display minutes only when dealing with time stamps
 			if (AttributeDateType.TIMESTAMP.equals(attributeModel.getDateType())) {
-				dateField.setResolution(Resolution.MINUTE);
+				dateField.setResolution(Resolution.SECOND);
 			}
 		}
 	}

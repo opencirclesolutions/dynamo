@@ -52,4 +52,14 @@ public class Locale extends Domain {
 	public String getCodeAndName() {
 		return getCode() + " - " + getName();
 	}
+
+	@Attribute(readOnly = true, visible = VisibilityType.SHOW)
+	public String getCode() {
+		return super.getCode();
+	}
+
+	@Attribute(readOnly = true, visible = VisibilityType.SHOW)
+	public String getName() {
+		return super.getName();
+	}
 }
