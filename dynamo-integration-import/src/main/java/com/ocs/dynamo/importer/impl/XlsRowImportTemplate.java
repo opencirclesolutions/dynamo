@@ -29,8 +29,8 @@ import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.utils.SystemPropertyUtils;
 
 /**
- * A template for processing an Excel file that contains row-based data and transforming it into a
- * collection of DTOs
+ * A template for processing an Excel file that contains row-based data and
+ * transforming it into a collection of DTOs
  * 
  * @author bas.rutten
  *
@@ -41,163 +41,165 @@ import com.ocs.dynamo.utils.SystemPropertyUtils;
  */
 public abstract class XlsRowImportTemplate<ID, T extends AbstractDTO> {
 
-    /**
-     * The importer
-     */
-    private BaseXlsImporter importer;
+	/**
+	 * The importer
+	 */
+	private BaseXlsImporter importer;
 
-    /**
-     * Index of the column (zero based) from which to read the values
-     */
-    private int colIndex;
+	/**
+	 * Index of the column (zero based) from which to read the values
+	 */
+	private int colIndex;
 
-    /**
-     * Byte representation of the files
-     */
-    private byte[] bytes;
+	/**
+	 * Byte representation of the files
+	 */
+	private byte[] bytes;
 
-    /**
-     * Index of the sheet from which to read the values
-     */
-    private int sheetIndex;
+	/**
+	 * Index of the sheet from which to read the values
+	 */
+	private int sheetIndex;
 
-    /**
-     * Whether to check for duplicates
-     */
-    private boolean checkForDuplicates;
+	/**
+	 * Whether to check for duplicates
+	 */
+	private boolean checkForDuplicates;
 
-    /**
-     * List of errors/warnings that have occurred so far
-     */
-    private List<String> errors;
+	/**
+	 * List of errors/warnings that have occurred so far
+	 */
+	private List<String> errors;
 
-    /**
-     * Index of the first row from which to start reading
-     */
-    private int firstRowNumber;
+	/**
+	 * Index of the first row from which to start reading
+	 */
+	private int firstRowNumber;
 
-    /**
-     * Length (number of rows) in a single record
-     */
-    private int recordLength;
+	/**
+	 * Length (number of rows) in a single record
+	 */
+	private int recordLength;
 
-    /**
-     * Keys of the records processed so far
-     */
-    private Set<ID> keys = new HashSet<>();
+	/**
+	 * Keys of the records processed so far
+	 */
+	private Set<ID> keys = new HashSet<>();
 
-    /**
-     * The message service
-     */
-    private MessageService messageService;
+	/**
+	 * The message service
+	 */
+	private MessageService messageService;
 
-    /**
-     * The class of the DTO object to create
-     */
-    private Class<T> clazz;
+	/**
+	 * The class of the DTO object to create
+	 */
+	private Class<T> clazz;
 
-    /**
-     * Constructor
-     * 
-     * @param importer
-     *            the XLS importer that is used to do the actual reading from the file
-     * @param messageService
-     * @param bytes
-     *            the raw content to process
-     * @param errors
-     *            list of errors
-     * @param clazz
-     *            the class
-     * @param sheetIndex
-     *            the index of the sheet to read from
-     * @param firstRowNumber
-     *            the index of the first row to read from
-     * @param colIndex
-     *            the index of the column to read from
-     * @param recordLength
-     *            the length (number of lines) of a single record
-     * @param checkForDuplicates
-     *            whether to check for duplicates
-     */
-    public XlsRowImportTemplate(BaseXlsImporter importer, MessageService messageService, byte[] bytes,
-            List<String> errors, Class<T> clazz, int sheetIndex, int firstRowNumber, int colIndex, int recordLength,
-            boolean checkForDuplicates) {
-        this.messageService = messageService;
-        this.importer = importer;
-        this.bytes = bytes;
-        this.sheetIndex = sheetIndex;
-        this.errors = errors;
-        this.checkForDuplicates = checkForDuplicates;
-        this.firstRowNumber = firstRowNumber;
-        this.colIndex = colIndex;
-        this.clazz = clazz;
-        this.recordLength = recordLength;
-    }
+	/**
+	 * Constructor
+	 * 
+	 * @param importer
+	 *            the XLS importer that is used to do the actual reading from
+	 *            the file
+	 * @param messageService
+	 * @param bytes
+	 *            the raw content to process
+	 * @param errors
+	 *            list of errors
+	 * @param clazz
+	 *            the class
+	 * @param sheetIndex
+	 *            the index of the sheet to read from
+	 * @param firstRowNumber
+	 *            the index of the first row to read from
+	 * @param colIndex
+	 *            the index of the column to read from
+	 * @param recordLength
+	 *            the length (number of lines) of a single record
+	 * @param checkForDuplicates
+	 *            whether to check for duplicates
+	 */
+	public XlsRowImportTemplate(BaseXlsImporter importer, MessageService messageService, byte[] bytes,
+			List<String> errors, Class<T> clazz, int sheetIndex, int firstRowNumber, int colIndex, int recordLength,
+			boolean checkForDuplicates) {
+		this.messageService = messageService;
+		this.importer = importer;
+		this.bytes = bytes;
+		this.sheetIndex = sheetIndex;
+		this.errors = errors;
+		this.checkForDuplicates = checkForDuplicates;
+		this.firstRowNumber = firstRowNumber;
+		this.colIndex = colIndex;
+		this.clazz = clazz;
+		this.recordLength = recordLength;
+	}
 
-    @SuppressWarnings("unchecked")
-    public List<T> execute() throws IOException {
+	@SuppressWarnings("unchecked")
+	public List<T> execute() throws IOException {
 
-        List<T> results = new ArrayList<>();
+		List<T> results = new ArrayList<>();
 
-        try (Workbook wb = importer.createWorkbook(bytes)) {
-            Sheet sheet = wb.getSheetAt(sheetIndex);
+		try (Workbook wb = importer.createWorkbook(bytes)) {
+			Sheet sheet = wb.getSheetAt(sheetIndex);
 
-            int i = 0;
+			int i = 0;
 
-            while (i <= sheet.getLastRowNum()) {
-                if (i >= firstRowNumber) {
-                    try {
-                        // check for non-empty separator row
-                        if (importer.isRowEmpty(sheet.getRow(i))) {
-                            break;
-                        } else {
-                            i++;
-                        }
+			while (i <= sheet.getLastRowNum()) {
+				if (i >= firstRowNumber) {
+					try {
+						// check for non-empty separator row
+						if (importer.isRowEmpty(sheet.getRow(i))) {
+							break;
+						} else {
+							i++;
+						}
 
-                        T t = importer.processRows(sheet, i, colIndex, clazz);
+						T t = importer.processRows(sheet, i, colIndex, clazz);
 
-                        if (t != null && extractKey(t) != null) {
-                            ID key = extractKey(t);
+						if (t != null && extractKey(t) != null) {
+							ID key = extractKey(t);
 
-                            // in case of a string, compare by lower case
-                            if (key instanceof String) {
-                                key = (ID) ((String) key).toLowerCase();
-                            }
+							// in case of a string, compare by lower case
+							if (key instanceof String) {
+								key = (ID) ((String) key).toLowerCase();
+							}
 
-                            if (checkForDuplicates) {
-                                if (!keys.contains(key)) {
-                                    keys.add(key);
-                                    results.add(t);
-                                } else {
-                                    errors.add(messageService.getMessage("ocs.duplicate.row",
-                                            new Locale(SystemPropertyUtils.getDefaultLocale()), i + 1, key));
-                                }
-                            } else {
-                                results.add(t);
-                            }
-                        }
-                    } catch (OCSImportException ex) {
-                        // catch errors on a record by record level
-                        errors.add(String.format("Row %d: %s", i + 1, ex.getMessage()));
-                    }
-                    i += recordLength;
-                } else {
-                    // row is before the start of the input, skip row and try the next
-                    i++;
-                }
-            }
+							if (checkForDuplicates) {
+								if (!keys.contains(key)) {
+									keys.add(key);
+									results.add(t);
+								} else {
+									errors.add(messageService.getMessage("ocs.duplicate.row",
+											new Locale(SystemPropertyUtils.getDefaultLocale()), i + 1, key));
+								}
+							} else {
+								results.add(t);
+							}
+						}
+					} catch (OCSImportException ex) {
+						// catch errors on a record by record level
+						errors.add(String.format("Row %d: %s", i + 1, ex.getMessage()));
+					}
+					i += recordLength;
+				} else {
+					// row is before the start of the input, skip row and try
+					// the next
+					i++;
+				}
+			}
 
-            return results;
-        }
-    }
+			return results;
+		}
+	}
 
-    /**
-     * Retrieves the key value from a record (used for duplicate checking)
-     * 
-     * @param record
-     *            the record
-     * @return the value of the key
-     */
-    protected abstract ID extractKey(T record);
+	/**
+	 * Retrieves the key value from a record (used for duplicate checking)
+	 * 
+	 * @param record
+	 *            the record
+	 * @return the value of the key
+	 */
+	protected abstract ID extractKey(T record);
 
 }
