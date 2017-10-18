@@ -53,12 +53,12 @@ public class Locale extends Domain {
 		return getCode() + " - " + getName();
 	}
 
-	@Attribute(readOnly = true, visible = VisibilityType.SHOW)
+	@Attribute(visible = VisibilityType.SHOW)
 	public String getCode() {
 		return super.getCode();
 	}
 
-	@Attribute(readOnly = true, visible = VisibilityType.SHOW)
+	@Attribute(visible = VisibilityType.SHOW)
 	public String getName() {
 		return super.getName();
 	}
