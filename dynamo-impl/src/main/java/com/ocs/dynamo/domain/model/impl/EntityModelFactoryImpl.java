@@ -140,8 +140,9 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 		// validation methods annotated with @AssertTrue or @AssertFalse have to
 		// be ignored
 		String fieldName = descriptor.getName();
-		AssertTrue assertTrue = ClassUtils.getAnnotation(entityModel.getEntityClass(), fieldName, AssertTrue.class);
-		AssertFalse assertFalse = ClassUtils.getAnnotation(entityModel.getEntityClass(), fieldName, AssertFalse.class);
+		Class<?> pClass = parentClass != null ? parentClass : entityModel.getEntityClass();
+		AssertTrue assertTrue = ClassUtils.getAnnotation(pClass, fieldName, AssertTrue.class);
+		AssertFalse assertFalse = ClassUtils.getAnnotation(pClass, fieldName, AssertFalse.class);
 
 		if (assertTrue == null && assertFalse == null) {
 

@@ -34,7 +34,8 @@ import com.vaadin.data.util.filter.Like;
 import com.vaadin.ui.TextField;
 
 /**
- * A split layout - contains both a table and a details view - that uses a service to fetch data
+ * A split layout - contains both a table and a details view - that uses a
+ * service to fetch data
  * 
  * @author bas.rutten
  * @param <ID>
@@ -44,174 +45,176 @@ import com.vaadin.ui.TextField;
  */
 @SuppressWarnings("serial")
 public class ServiceBasedSplitLayout<ID extends Serializable, T extends AbstractEntity<ID>>
-        extends BaseSplitLayout<ID, T> {
+		extends BaseSplitLayout<ID, T> {
 
-    private static final long serialVersionUID = 1068860513192819804L;
+	private static final long serialVersionUID = 1068860513192819804L;
 
-    /**
-     * The filter used to restrict the search results. Override the <code>constructFilter</code>
-     * method to set this filter.
-     */
-    private Filter filter;
+	/**
+	 * The filter used to restrict the search results. Override the
+	 * <code>constructFilter</code> method to set this filter.
+	 */
+	private Filter filter;
 
-    /**
-     * The query type (ID based or paging) used to query the database
-     */
-    private QueryType queryType = QueryType.ID_BASED;
+	/**
+	 * The query type (ID based or paging) used to query the database
+	 */
+	private QueryType queryType;
 
-    /**
-     * Constructor
-     * 
-     * @param service
-     *            the service for retrieving data from the database
-     * @param entityModel
-     *            the entity model
-     * @param formOptions
-     *            the form options
-     * @param sortOrder
-     *            the sort order
-     * @param joins
-     */
-    public ServiceBasedSplitLayout(BaseService<ID, T> service, EntityModel<T> entityModel, FormOptions formOptions,
-            SortOrder sortOrder, FetchJoinInformation... joins) {
-        super(service, entityModel, formOptions, sortOrder, joins);
-    }
+	/**
+	 * Constructor
+	 * 
+	 * @param service
+	 *            the service for retrieving data from the database
+	 * @param entityModel
+	 *            the entity model
+	 * @param formOptions
+	 *            the form options
+	 * @param sortOrder
+	 *            the sort order
+	 * @param joins
+	 */
+	public ServiceBasedSplitLayout(BaseService<ID, T> service, EntityModel<T> entityModel, QueryType queryType,
+			FormOptions formOptions, SortOrder sortOrder, FetchJoinInformation... joins) {
+		super(service, entityModel, formOptions, sortOrder, joins);
+		this.queryType = queryType;
+	}
 
-    @Override
-    protected final void buildFilter() {
-        filter = constructFilter();
-    }
+	@Override
+	protected final void buildFilter() {
+		filter = constructFilter();
+	}
 
-    /**
-     * Creates the main search filter - overwrite in subclass if you need to actually filter the
-     * data
-     * 
-     * @return
-     */
-    protected Filter constructFilter() {
-        // overwrite in subclass
-        return null;
-    }
+	/**
+	 * Creates the main search filter - overwrite in subclass if you need to
+	 * actually filter the data
+	 * 
+	 * @return
+	 */
+	protected Filter constructFilter() {
+		// overwrite in subclass
+		return null;
+	}
 
-    /**
-     * Constructs the quick search filter - override if you need a custom filter when searching for
-     * the main attribute is not sufficient
-     * 
-     * @param value
-     *            the value to search for
-     * @return
-     */
-    protected Filter constructQuickSearchFilter(String value) {
-        // override in subclasses
-        return null;
-    }
+	/**
+	 * Constructs the quick search filter - override if you need a custom filter
+	 * when searching for the main attribute is not sufficient
+	 * 
+	 * @param value
+	 *            the value to search for
+	 * @return
+	 */
+	protected Filter constructQuickSearchFilter(String value) {
+		// override in subclasses
+		return null;
+	}
 
-    /**
-     * Constructs a quick search field - this method will only be called if the
-     * "showQuickSearchField" form option is enabled. It will then look for a custom filter returned
-     * by the constructQuickSearchFilter method, and if that method returns null it will construct a
-     * filter based on the main attribute
-     */
-    @Override
-    protected TextField constructSearchField() {
-        if (getFormOptions().isShowQuickSearchField()) {
-            TextField searchField = new TextField(message("ocs.search"));
+	/**
+	 * Constructs a quick search field - this method will only be called if the
+	 * "showQuickSearchField" form option is enabled. It will then look for a
+	 * custom filter returned by the constructQuickSearchFilter method, and if
+	 * that method returns null it will construct a filter based on the main
+	 * attribute
+	 */
+	@Override
+	protected TextField constructSearchField() {
+		if (getFormOptions().isShowQuickSearchField()) {
+			TextField searchField = new TextField(message("ocs.search"));
 
-            // respond to the user entering a search term
-            searchField.addTextChangeListener(event -> {
-                String text = event.getText();
-                if (!StringUtils.isEmpty(text)) {
-                    Filter quickFilter = constructQuickSearchFilter(text);
-                    if (quickFilter == null && getEntityModel().getMainAttributeModel() != null) {
-                        quickFilter = new Like(getEntityModel().getMainAttributeModel().getPath(), "%" + text + "%",
-                                false);
-                    }
+			// respond to the user entering a search term
+			searchField.addTextChangeListener(event -> {
+				String text = event.getText();
+				if (!StringUtils.isEmpty(text)) {
+					Filter quickFilter = constructQuickSearchFilter(text);
+					if (quickFilter == null && getEntityModel().getMainAttributeModel() != null) {
+						quickFilter = new Like(getEntityModel().getMainAttributeModel().getPath(), "%" + text + "%",
+								false);
+					}
 
-                    Filter temp = quickFilter;
-                    if (getFilter() != null) {
-                        temp = new And(quickFilter, getFilter());
-                    }
-                    getContainer().search(temp);
-                } else {
-                    getContainer().search(filter);
-                }
-            });
-            return searchField;
-        }
-        return null;
-    }
+					Filter temp = quickFilter;
+					if (getFilter() != null) {
+						temp = new And(quickFilter, getFilter());
+					}
+					getContainer().search(temp);
+				} else {
+					getContainer().search(filter);
+				}
+			});
+			return searchField;
+		}
+		return null;
+	}
 
-    @Override
-    protected BaseTableWrapper<ID, T> constructTableWrapper() {
-        ServiceResultsTableWrapper<ID, T> tw = new ServiceResultsTableWrapper<ID, T>(getService(), getEntityModel(),
-                getQueryType(), filter, getSortOrders(), getFormOptions().isTableExportAllowed(), getJoins()) {
+	@Override
+	protected BaseTableWrapper<ID, T> constructTableWrapper() {
+		ServiceResultsTableWrapper<ID, T> tw = new ServiceResultsTableWrapper<ID, T>(getService(), getEntityModel(),
+				getQueryType(), filter, getSortOrders(), getFormOptions().isTableExportAllowed(), getJoins()) {
 
-            @Override
-            protected void doConstructContainer(Container container) {
-                ServiceBasedSplitLayout.this.doConstructContainer(container);
-            }
+			@Override
+			protected void doConstructContainer(Container container) {
+				ServiceBasedSplitLayout.this.doConstructContainer(container);
+			}
 
-            @Override
-            protected void onSelect(Object selected) {
-                setSelectedItems(selected);
-                checkButtonState(getSelectedItem());
-                if (getSelectedItem() != null) {
-                    detailsMode(getSelectedItem());
-                }
-            }
-        };
-        tw.setMaxResults(getMaxResults());
-        tw.build();
-        return tw;
-    }
+			@Override
+			protected void onSelect(Object selected) {
+				setSelectedItems(selected);
+				checkButtonState(getSelectedItem());
+				if (getSelectedItem() != null) {
+					detailsMode(getSelectedItem());
+				}
+			}
+		};
+		tw.setMaxResults(getMaxResults());
+		tw.build();
+		return tw;
+	}
 
-    @SuppressWarnings("unchecked")
-    protected ServiceContainer<ID, T> getContainer() {
-        return (ServiceContainer<ID, T>) getTableWrapper().getContainer();
-    }
+	@SuppressWarnings("unchecked")
+	protected ServiceContainer<ID, T> getContainer() {
+		return (ServiceContainer<ID, T>) getTableWrapper().getContainer();
+	}
 
-    public Filter getFilter() {
-        return filter;
-    }
+	public Filter getFilter() {
+		return filter;
+	}
 
-    public QueryType getQueryType() {
-        return queryType;
-    }
+	public QueryType getQueryType() {
+		return queryType;
+	}
 
-    @Override
-    public ServiceResultsTableWrapper<ID, T> getTableWrapper() {
-        return (ServiceResultsTableWrapper<ID, T>) super.getTableWrapper();
-    }
+	@Override
+	public ServiceResultsTableWrapper<ID, T> getTableWrapper() {
+		return (ServiceResultsTableWrapper<ID, T>) super.getTableWrapper();
+	}
 
-    /**
-     * Reloads the component - this will first rebuild the filter and then reload the container
-     * using that filter
-     */
-    @Override
-    public void reload() {
-        buildFilter();
-        super.reload();
-        getTableWrapper().setFilter(filter);
-    }
+	/**
+	 * Reloads the component - this will first rebuild the filter and then
+	 * reload the container using that filter
+	 */
+	@Override
+	public void reload() {
+		buildFilter();
+		super.reload();
+		getTableWrapper().setFilter(filter);
+	}
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public void setSelectedItems(Object selectedItems) {
-        if (selectedItems != null) {
-            if (selectedItems instanceof Collection<?>) {
-                // the lazy query container returns an array of IDs of the
-                // selected items
-                Collection<?> col = (Collection<?>) selectedItems;
-                ID id = (ID) col.iterator().next();
-                setSelectedItem(getService().fetchById(id, getDetailJoinsFallBack()));
-            } else {
-                ID id = (ID) selectedItems;
-                setSelectedItem(getService().fetchById(id, getDetailJoinsFallBack()));
-            }
-        } else {
-            // nothing selected
-            setSelectedItem(null);
-            emptyDetailView();
-        }
-    }
+	@SuppressWarnings("unchecked")
+	@Override
+	public void setSelectedItems(Object selectedItems) {
+		if (selectedItems != null) {
+			if (selectedItems instanceof Collection<?>) {
+				// the lazy query container returns an array of IDs of the
+				// selected items
+				Collection<?> col = (Collection<?>) selectedItems;
+				ID id = (ID) col.iterator().next();
+				setSelectedItem(getService().fetchById(id, getDetailJoinsFallBack()));
+			} else {
+				ID id = (ID) selectedItems;
+				setSelectedItem(getService().fetchById(id, getDetailJoinsFallBack()));
+			}
+		} else {
+			// nothing selected
+			setSelectedItem(null);
+			emptyDetailView();
+		}
+	}
 }
