@@ -53,7 +53,7 @@ public class Locale extends Domain {
 		return getCode() + " - " + getName();
 	}
 
-	@Attribute(visible = VisibilityType.SHOW)
+	@Attribute(visible = VisibilityType.SHOW, required = true)
 	public String getCode() {
 		return super.getCode();
 	}
