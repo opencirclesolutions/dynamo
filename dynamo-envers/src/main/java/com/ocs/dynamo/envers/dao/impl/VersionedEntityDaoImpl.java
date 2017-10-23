@@ -20,6 +20,8 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.NoResultException;
+
 import org.hibernate.envers.AuditReader;
 import org.hibernate.envers.AuditReaderFactory;
 import org.hibernate.envers.query.AuditEntity;
@@ -129,11 +131,16 @@ public abstract class VersionedEntityDaoImpl<ID, T extends AbstractEntity<ID>, U
 	@Override
 	@Transactional
 	public U fetchById(RevisionKey<ID> id, FetchJoinInformation... joins) {
-		AuditQuery aq = getAuditReader().createQuery().forRevisionsOfEntity(getBaseEntityClass(), false, true);
-		aq.add(AuditEntity.id().eq(id.getId()));
-		aq.add(AuditEntity.revisionNumber().eq(id.getRevision()));
-		Object[] rev = (Object[]) aq.getSingleResult();
-		return map(rev);
+		try {
+			AuditQuery aq = getAuditReader().createQuery().forRevisionsOfEntity(getBaseEntityClass(), false, true);
+			aq.add(AuditEntity.id().eq(id.getId()));
+			aq.add(AuditEntity.revisionNumber().eq(id.getRevision()));
+			Object[] rev = (Object[]) aq.getSingleResult();
+			return map(rev);
+		} catch (NoResultException ex) {
+			// nothing found
+			return null;
+		}
 	}
 
 	@Override
@@ -197,6 +204,10 @@ public abstract class VersionedEntityDaoImpl<ID, T extends AbstractEntity<ID>, U
 	 */
 	@SuppressWarnings("unchecked")
 	private U map(Object[] rev) {
+		if (rev == null) {
+			return null;
+		}
+
 		T t = (T) rev[0];
 		DynamoRevisionEntity revisionData = (DynamoRevisionEntity) rev[1];
 		U u = createVersionedEntity(t, revisionData.getId());

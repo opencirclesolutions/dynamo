@@ -14,6 +14,7 @@ import com.ocs.dynamo.dao.Pageable;
 import com.ocs.dynamo.envers.dao.PersonDao;
 import com.ocs.dynamo.envers.domain.Person;
 import com.ocs.dynamo.envers.domain.PersonRevision;
+import com.ocs.dynamo.envers.domain.RevisionKey;
 import com.ocs.dynamo.envers.domain.RevisionType;
 import com.ocs.dynamo.filter.Compare;
 import com.ocs.dynamo.test.BaseIntegrationTest;
@@ -77,11 +78,18 @@ public class PersonDaoImplTest extends BaseIntegrationTest {
 		personDao.delete(person);
 
 		transactionManager.commit(status);
-		
+
 		list = personRevisionDao.fetch(new Compare.Equal("id", person.getId()), (Pageable) null);
 		Assert.assertEquals(3, list.size());
 		Assert.assertEquals(RevisionType.DEL, list.get(2).getRevisionType());
 
+		// the revision key
+		RevisionKey<Integer> key = new RevisionKey<Integer>(person.getId(), 3);
+		PersonRevision pr = personRevisionDao.fetchById(key);
+		Assert.assertNotNull(pr);
 
+		key = new RevisionKey<Integer>(person.getId(), 4);
+		pr = personRevisionDao.fetchById(key);
+		Assert.assertNull(pr);
 	}
 }
