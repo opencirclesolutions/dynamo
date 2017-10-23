@@ -358,7 +358,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	 */
 	public void emptyDetailView() {
 		VerticalLayout vLayout = new VerticalLayout();
-		vLayout.addComponent(new Label(message("ocs.select.item")));
+		vLayout.addComponent(new Label(message("ocs.select.item", getEntityModel().getDisplayName())));
 		detailLayout.replaceComponent(selectedDetailLayout, vLayout);
 		selectedDetailLayout = vLayout;
 	}

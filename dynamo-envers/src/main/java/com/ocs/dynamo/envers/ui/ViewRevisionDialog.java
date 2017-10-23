@@ -13,28 +13,88 @@
  */
 package com.ocs.dynamo.envers.ui;
 
+import com.ocs.dynamo.constants.DynamoConstants;
+import com.ocs.dynamo.domain.AbstractEntity;
+import com.ocs.dynamo.domain.model.EntityModel;
+import com.ocs.dynamo.envers.domain.RevisionKey;
+import com.ocs.dynamo.envers.domain.VersionedEntity;
+import com.ocs.dynamo.service.BaseService;
+import com.ocs.dynamo.service.MessageService;
+import com.ocs.dynamo.ui.ServiceLocator;
 import com.ocs.dynamo.ui.composite.dialog.BaseModalDialog;
+import com.ocs.dynamo.ui.composite.layout.FormOptions;
+import com.ocs.dynamo.ui.composite.layout.ServiceBasedSplitLayout;
+import com.ocs.dynamo.ui.composite.type.AttributeGroupMode;
+import com.ocs.dynamo.ui.composite.type.ScreenMode;
+import com.ocs.dynamo.ui.container.QueryType;
+import com.ocs.dynamo.ui.utils.VaadinUtils;
+import com.vaadin.data.Container.Filter;
+import com.vaadin.data.util.filter.Compare;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Layout;
 
-public class ViewRevisionDialog extends BaseModalDialog {
+/**
+ * 
+ * @author bas.rutten
+ *
+ */
+public class ViewRevisionDialog<ID, T extends AbstractEntity<ID>, U extends VersionedEntity<ID, T>>
+		extends BaseModalDialog {
+
+	private static final long serialVersionUID = -8950374678949377884L;
+
+	private ServiceBasedSplitLayout<RevisionKey<ID>, U> layout;
+
+	private BaseService<RevisionKey<ID>, U> service;
+
+	private EntityModel<U> entityModel;
+
+	private MessageService messageService = ServiceLocator.getMessageService();
+
+	private ID id;
+
+	/**
+	 * Constructor
+	 * 
+	 * @param service
+	 * @param entityModel
+	 * @param id
+	 */
+	public ViewRevisionDialog(BaseService<RevisionKey<ID>, U> service, EntityModel<U> entityModel, ID id) {
+		this.service = service;
+		this.entityModel = entityModel;
+		this.id = id;
+	}
 
 	@Override
 	protected void doBuild(Layout parent) {
-		// TODO Auto-generated method stub
-		
+		FormOptions fo = new FormOptions().setReadOnly(true).setScreenMode(ScreenMode.VERTICAL)
+				.setAttributeGroupMode(AttributeGroupMode.TABSHEET);
+		layout = new ServiceBasedSplitLayout<RevisionKey<ID>, U>(service, entityModel, QueryType.PAGING, fo, null) {
+
+			private static final long serialVersionUID = -5302678717934028964L;
+
+			@Override
+			protected Filter constructFilter() {
+				// always filter on
+				return new Compare.Equal(DynamoConstants.ID, id);
+			}
+		};
+		layout.setPageLength(5);
+		parent.addComponent(layout);
 	}
 
 	@Override
 	protected void doBuildButtonBar(HorizontalLayout buttonBar) {
-		// TODO Auto-generated method stub
-		
+		Button closeButton = new Button(messageService.getMessage("ocs.close", VaadinUtils.getLocale()));
+		closeButton.addClickListener(e -> close());
+		buttonBar.addComponent(closeButton);
 	}
 
 	@Override
 	protected String getTitle() {
-		// TODO Auto-generated method stub
-		return null;
+		return messageService.getMessage("ocs.revision.history", VaadinUtils.getLocale());
 	}
 
 }

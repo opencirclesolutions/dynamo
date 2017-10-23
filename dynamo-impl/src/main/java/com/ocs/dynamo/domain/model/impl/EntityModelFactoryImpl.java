@@ -149,7 +149,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 			AttributeModelImpl model = new AttributeModelImpl();
 			model.setEntityModel(entityModel);
 
-			String displayName = com.ocs.dynamo.utils.StringUtils.propertyIdToHumanFriendly(fieldName);
+			String displayName = com.ocs.dynamo.utils.StringUtils.propertyIdToHumanFriendly(fieldName,
+					SystemPropertyUtils.isCapitalizeWords());
 
 			// first, set the defaults
 			model.setDisplayName(displayName);
@@ -382,7 +383,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 	 */
 	private <T> EntityModelImpl<T> constructModelInner(Class<T> entityClass, String reference) {
 
-		String displayName = com.ocs.dynamo.utils.StringUtils.propertyIdToHumanFriendly(entityClass.getSimpleName());
+		String displayName = com.ocs.dynamo.utils.StringUtils.propertyIdToHumanFriendly(entityClass.getSimpleName(),
+				SystemPropertyUtils.isCapitalizeWords());
 		String displayNamePlural = displayName + PLURAL_POSTFIX;
 		String description = displayName;
 		String selectDisplayProperty = null;
