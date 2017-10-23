@@ -33,6 +33,14 @@ public class RevisionKey<ID> implements Serializable {
 
 	private ID id;
 
+	/**
+	 * Constructor
+	 * 
+	 * @param id
+	 *            the ID of the original entity
+	 * @param revision
+	 *            the revision number
+	 */
 	public RevisionKey(ID id, int revision) {
 		this.id = id;
 		this.revision = revision;

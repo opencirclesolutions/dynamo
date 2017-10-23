@@ -23,6 +23,12 @@ public enum RevisionType {
 
 	ADD, MOD, DEL;
 
+	/**
+	 * Translates the Envers revision type to the Dymnamo revision type
+	 * 
+	 * @param t
+	 * @return
+	 */
 	public static RevisionType fromInternal(org.hibernate.envers.RevisionType t) {
 		switch (t) {
 		case ADD:

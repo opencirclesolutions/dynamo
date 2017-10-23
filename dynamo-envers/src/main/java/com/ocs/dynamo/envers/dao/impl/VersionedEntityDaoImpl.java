@@ -178,10 +178,12 @@ public abstract class VersionedEntityDaoImpl<ID, T extends AbstractEntity<ID>, U
 	 */
 	public abstract Class<T> getBaseEntityClass();
 
+	/**
+	 * Returns the Query DSL root. This is not supported for versioned entities
+	 */
 	@Override
 	protected EntityPathBase<U> getDslRoot() {
-		// not needed
-		return null;
+		throw new UnsupportedOperationException();
 	}
 
 	/**

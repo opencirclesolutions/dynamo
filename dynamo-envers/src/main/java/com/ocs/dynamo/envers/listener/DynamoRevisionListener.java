@@ -21,6 +21,7 @@ import com.ocs.dynamo.ui.ServiceLocator;
 
 /**
  * Custom Hibernate envers listener
+ * 
  * @author bas.rutten
  *
  */
@@ -29,7 +30,6 @@ public class DynamoRevisionListener implements RevisionListener {
 	@Override
 	public void newRevision(final Object o) {
 		UserDetailsService uds = ServiceLocator.getService(UserDetailsService.class);
-
 		final DynamoRevisionEntity entity = (DynamoRevisionEntity) o;
 		entity.setUsername(uds.getCurrentUserName());
 	}

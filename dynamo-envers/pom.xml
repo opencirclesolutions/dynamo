@@ -25,6 +25,11 @@
 	<dependencies>
 		<!-- Hibernate -->
 		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>dynamo-api</artifactId>
 			<version>${project.version}</version>

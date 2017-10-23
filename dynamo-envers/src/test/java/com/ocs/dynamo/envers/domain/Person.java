@@ -1,0 +1,41 @@
+package com.ocs.dynamo.envers.domain;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+
+import org.hibernate.envers.Audited;
+
+import com.ocs.dynamo.domain.AbstractEntity;
+
+@Audited
+@Entity
+public class Person extends AbstractEntity<Integer> {
+
+	private static final long serialVersionUID = -5939362772351629511L;
+
+	@Id
+	@GeneratedValue
+	private Integer id;
+
+	private String name;
+
+	@Override
+	public Integer getId() {
+		return id;
+	}
+
+	@Override
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+}

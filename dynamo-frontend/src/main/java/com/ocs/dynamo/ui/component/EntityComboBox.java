@@ -27,7 +27,6 @@ import com.ocs.dynamo.ui.Refreshable;
 import com.ocs.dynamo.ui.ServiceLocator;
 import com.ocs.dynamo.ui.utils.SortUtil;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
-import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.data.sort.SortOrder;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.util.filter.And;
@@ -287,8 +286,4 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 		this.filter = filter;
 	}
 
-	@Override
-	public void validate() throws InvalidValueException {
-		super.validate();
-	}
 }

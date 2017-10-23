@@ -56,7 +56,7 @@ public abstract class VersionedEntity<ID, T extends AbstractEntity<ID>> extends 
 	public VersionedEntity(T entity, int revision) {
 		this.entity = entity;
 		this.revision = revision;
-		this.id = new RevisionKey<ID>(entity.getId(), revision);
+		this.id = new RevisionKey<>(entity.getId(), revision);
 	}
 
 	public T getEntity() {
