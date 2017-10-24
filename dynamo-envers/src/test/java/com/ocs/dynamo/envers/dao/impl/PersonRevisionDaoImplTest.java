@@ -1,5 +1,6 @@
 package com.ocs.dynamo.envers.dao.impl;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.junit.Assert;
@@ -19,7 +20,7 @@ import com.ocs.dynamo.envers.domain.RevisionType;
 import com.ocs.dynamo.filter.Compare;
 import com.ocs.dynamo.test.BaseIntegrationTest;
 
-public class PersonDaoImplTest extends BaseIntegrationTest {
+public class PersonRevisionDaoImplTest extends BaseIntegrationTest {
 
 	@Autowired
 	private PlatformTransactionManager transactionManager;
@@ -88,8 +89,22 @@ public class PersonDaoImplTest extends BaseIntegrationTest {
 		PersonRevision pr = personRevisionDao.fetchById(key);
 		Assert.assertNotNull(pr);
 
-		key = new RevisionKey<Integer>(person.getId(), 4);
+		list = personRevisionDao.findRevisions(person.getId());
+		Assert.assertEquals(3, list.size());
+
+		// fetch non existing
+		key = new RevisionKey<>(person.getId(), 4);
 		pr = personRevisionDao.fetchById(key);
 		Assert.assertNull(pr);
+
+		// fetch non existing part 2
+		key = new RevisionKey<>(-1, 1);
+		pr = personRevisionDao.fetchById(key);
+		Assert.assertNull(pr);
+
+		// check last revision number
+		Number revNumber = personRevisionDao.findRevisionNumber(LocalDateTime.now());
+		Assert.assertEquals(3, revNumber);
 	}
+
 }

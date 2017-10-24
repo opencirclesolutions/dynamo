@@ -25,15 +25,27 @@ public final class StringUtils {
 
 	public static final String HTML_LINE_BREAK = "<br/>";
 
+	private StringUtils() {
+		// private constructor
+	}
+
 	/**
 	 * Converts CamelCase string to human friendly
 	 * 
 	 * @param camelCaseString
+	 *            the Camel Case string to convert
+	 * @param capitalize
+	 *            indicates whether to capitalize every word (if set to
+	 *            <code>false</code> then only the first word will be
+	 *            capitalized
 	 * @return
 	 */
 	public static String camelCaseToHumanFriendly(String camelCaseString, boolean capitalize) {
-		String[] parts = splitCamelCase(camelCaseString);
+		if (camelCaseString == null) {
+			return null;
+		}
 
+		String[] parts = splitCamelCase(camelCaseString);
 		for (int i = 0; i < parts.length; i++) {
 			if (capitalize) {
 				parts[i] = capitalize(parts[i]);
@@ -48,9 +60,10 @@ public final class StringUtils {
 	 * Capitalize a String
 	 * 
 	 * @param string
+	 *            the String to capitalize
 	 * @return
 	 */
-	public static String capitalize(String string) {
+	private static String capitalize(String string) {
 		if (string == null) {
 			return null;
 		}
@@ -77,10 +90,17 @@ public final class StringUtils {
 		if (value == null) {
 			return true;
 		}
-
 		return value.matches(EMAIL_PATTERN);
 	}
 
+	/**
+	 * Indicates whether a word ends at position i in the string
+	 * 
+	 * @param camelCaseString
+	 *            the string
+	 * @param i
+	 * @return
+	 */
 	private static boolean isWordComplete(String camelCaseString, int i) {
 		if (i == 0) {
 			// Word can't end at the beginning
@@ -175,7 +195,14 @@ public final class StringUtils {
 		return value;
 	}
 
-	public static String[] splitCamelCase(String camelCaseString) {
+	/**
+	 * Splits a CamelCase String into words
+	 * 
+	 * @param camelCaseString
+	 *            the String to split
+	 * @return
+	 */
+	private static String[] splitCamelCase(String camelCaseString) {
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < camelCaseString.length(); i++) {
 			char c = camelCaseString.charAt(i);
@@ -185,10 +212,6 @@ public final class StringUtils {
 			sb.append(c);
 		}
 		return sb.toString().split(" ");
-	}
-
-	private StringUtils() {
-		// private constructor
 	}
 
 }

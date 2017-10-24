@@ -6,7 +6,6 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.ocs.dynamo.test.BaseMockitoTest;
-import com.ocs.dynamo.utils.NumberUtils;
 
 public class NumberUtilsTest extends BaseMockitoTest {
 
@@ -37,15 +36,31 @@ public class NumberUtilsTest extends BaseMockitoTest {
 	public void testIsLong() {
 		Assert.assertTrue(NumberUtils.isLong(Long.class));
 		Assert.assertTrue(NumberUtils.isLong(long.class));
-
 		Assert.assertFalse(NumberUtils.isLong(Integer.class));
+	}
+
+	@Test
+	public void testIsLong2() {
+		Assert.assertFalse(NumberUtils.isLong(null));
+		Assert.assertTrue(NumberUtils.isLong(1L));
+		Assert.assertTrue(NumberUtils.isLong(Long.valueOf("123")));
+
+		Assert.assertFalse(NumberUtils.isLong(new Object()));
+		Assert.assertFalse(NumberUtils.isLong(12345));
 	}
 
 	@Test
 	public void testIsInteger() {
 		Assert.assertTrue(NumberUtils.isInteger(Integer.class));
 		Assert.assertTrue(NumberUtils.isInteger(int.class));
-
 		Assert.assertFalse(NumberUtils.isInteger(Long.class));
+	}
+
+	@Test
+	public void testIsInteger2() {
+		Assert.assertTrue(NumberUtils.isInteger(4));
+		Assert.assertTrue(NumberUtils.isInteger(new Integer(12)));
+		Assert.assertFalse(NumberUtils.isInteger(5L));
+		Assert.assertFalse(NumberUtils.isInteger(null));
 	}
 }
