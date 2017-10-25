@@ -290,7 +290,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	 * @param entity
 	 *            the currently selected entity
 	 */
-	protected void buildDetailsTabLayout(T entity) {
+	protected void buildDetailsTabLayout(T entity, FormOptions formOptions) {
 		tabContainerLayout = new DefaultVerticalLayout(true, true);
 
 		HorizontalLayout buttonBar = new DefaultHorizontalLayout(false, true, true);
@@ -353,7 +353,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 				// back button and iteration buttons not needed (they are
 				// displayed above
 				// the tabs)
-				return AbstractSearchLayout.this.initTab(getEntity(), index);
+				return AbstractSearchLayout.this.initTab(getEntity(), index, formOptions);
 			}
 		};
 		tabLayout.build();
@@ -629,10 +629,34 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 			mainEditLayout.setStyleName(DynamoConstants.CSS_CLASS_HALFSCREEN);
 		}
 
+		FormOptions options = new FormOptions();
+		options.setOpenInViewMode(getFormOptions().isOpenInViewMode());
+		options.setScreenMode(ScreenMode.VERTICAL);
+		options.setAttributeGroupMode(getFormOptions().getAttributeGroupMode());
+		options.setPreserveSelectedTab(getFormOptions().isPreserveSelectedTab());
+		options.setShowNextButton(getFormOptions().isShowNextButton());
+		options.setShowPrevButton(getFormOptions().isShowPrevButton());
+		options.setPlaceButtonBarAtTop(getFormOptions().isPlaceButtonBarAtTop());
+		options.setHideCancelButton(true);
+		options.setFormNested(true);
+		
+		// set the form options for the detail form
+		if (getFormOptions().isEditAllowed()) {
+			// editing in form must be possible
+			options.setEditAllowed(true);
+		} else {
+			// read-only mode
+			options.setOpenInViewMode(true).setEditAllowed(false);
+		}
+
+		if (options.isOpenInViewMode() || !isEditAllowed()) {
+			options.setShowBackButton(true);
+		}
+
 		if (getFormOptions().isComplexDetailsMode() && entity != null && entity.getId() != null) {
 			// complex tabbed layout
 			if (tabContainerLayout == null) {
-				buildDetailsTabLayout(entity);
+				buildDetailsTabLayout(entity, options);
 			} else {
 				tabLayout.setEntity(entity);
 				tabLayout.reload();
@@ -644,27 +668,6 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 			}
 			selectedDetailLayout = tabContainerLayout;
 		} else {
-			FormOptions options = new FormOptions();
-			options.setOpenInViewMode(getFormOptions().isOpenInViewMode());
-			options.setScreenMode(ScreenMode.VERTICAL);
-			options.setAttributeGroupMode(getFormOptions().getAttributeGroupMode());
-			options.setPreserveSelectedTab(getFormOptions().isPreserveSelectedTab());
-			options.setShowNextButton(getFormOptions().isShowNextButton());
-			options.setShowPrevButton(getFormOptions().isShowPrevButton());
-			options.setPlaceButtonBarAtTop(getFormOptions().isPlaceButtonBarAtTop());
-			// set the form options for the detail form
-			if (getFormOptions().isEditAllowed()) {
-				// editing in form must be possible
-				options.setEditAllowed(true);
-			} else {
-				// read-only mode
-				options.setOpenInViewMode(true).setEditAllowed(false);
-			}
-
-			if (options.isOpenInViewMode() || !isEditAllowed()) {
-				options.setShowBackButton(true);
-			}
-
 			// simple edit form
 			if (editForm == null) {
 				buildEditForm(entity, options);
@@ -712,7 +715,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 		setSelectedItem(entity);
 		doEdit();
 	}
-	
+
 	protected boolean handleCustomException(RuntimeException ex) {
 		return false;
 	}
@@ -853,7 +856,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 		return false;
 	}
 
-	protected Component initTab(T entity, int index) {
+	protected Component initTab(T entity, int index, FormOptions fo) {
 		// overwrite is subclasses
 		return null;
 	}

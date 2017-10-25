@@ -738,7 +738,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			}
 			afterEditDone(true, entity.getId() == null, entity);
 		});
-		cancelButton.setVisible(!isViewMode() && !getFormOptions().isHideCancelButton());
+		cancelButton.setVisible((!isViewMode() && !getFormOptions().isHideCancelButton())
+				|| (getFormOptions().isFormNested() && entity.getId() == null));
 		cancelButton.setData(CANCEL_BUTTON_DATA);
 		buttonBar.addComponent(cancelButton);
 		buttons.get(isViewMode()).add(cancelButton);
@@ -1018,11 +1019,10 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	 * Constructs the save button
 	 */
 	private Button constructSaveButton() {
-		Button saveButton = new Button(message("ocs.save"));
+		Button saveButton = new Button(message("ocs.save.existing"));
 		saveButton.addClickListener(event -> {
 			try {
 				boolean isNew = entity.getId() == null;
-
 				entity = service.save(entity);
 				setEntity(service.fetchById(entity.getId(), getDetailJoins()));
 				showNotifification(message("ocs.changes.saved"), Notification.Type.TRAY_NOTIFICATION);
@@ -1479,6 +1479,20 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		Label newTitleLabel = constructTitleLabel();
 		titleBars.get(isViewMode()).replaceComponent(titleLabels.get(isViewMode()), newTitleLabel);
 		titleLabels.put(isViewMode(), newTitleLabel);
+
+		// change caption depending on entity state
+		for (Button b : getSaveButtons()) {
+			if (entity.getId() != null) {
+				b.setCaption(message("ocs.save.existing"));
+			} else {
+				b.setCaption(message("ocs.save.new"));
+			}
+		}
+
+		for (Button b : getCancelButtons()) {
+			b.setVisible((!isViewMode() && !getFormOptions().isHideCancelButton())
+					|| (getFormOptions().isFormNested() && entity.getId() == null));
+		}
 
 	}
 

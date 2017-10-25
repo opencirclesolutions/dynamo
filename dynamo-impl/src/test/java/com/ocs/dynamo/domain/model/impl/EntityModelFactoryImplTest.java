@@ -100,7 +100,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		Assert.assertNotNull(nameModel);
 
 		Assert.assertNull(nameModel.getDefaultValue());
-		Assert.assertEquals("Name", nameModel.getPrompt());
+		Assert.assertNull(nameModel.getPrompt());
 		Assert.assertEquals("Name", nameModel.getDisplayName());
 		Assert.assertEquals(4, nameModel.getOrder().intValue());
 		Assert.assertEquals(String.class, nameModel.getType());

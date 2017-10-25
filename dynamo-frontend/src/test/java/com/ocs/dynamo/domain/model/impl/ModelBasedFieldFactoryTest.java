@@ -93,7 +93,7 @@ public class ModelBasedFieldFactoryTest extends BaseMockitoTest {
 
 		TextField tf = (TextField) obj;
 		Assert.assertEquals("", tf.getNullRepresentation());
-		Assert.assertNotNull(tf.getInputPrompt());
+		Assert.assertNull(tf.getInputPrompt());
 	}
 
 	/**
@@ -193,7 +193,7 @@ public class ModelBasedFieldFactoryTest extends BaseMockitoTest {
 
 		TextField tf = (TextField) obj;
 		Assert.assertEquals("", tf.getNullRepresentation());
-		Assert.assertNotNull(tf.getInputPrompt());
+		Assert.assertNull(tf.getInputPrompt());
 		Assert.assertFalse(tf.getValidators().isEmpty());
 	}
 

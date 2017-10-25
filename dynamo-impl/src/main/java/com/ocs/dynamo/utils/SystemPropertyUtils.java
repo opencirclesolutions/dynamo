@@ -234,6 +234,16 @@ public final class SystemPropertyUtils {
 	}
 
 	/**
+	 * Whether to use the display name as the default value for the prompt
+	 * 
+	 * @return
+	 */
+	public static boolean isUseDefaultPromptValue() {
+		String temp = System.getProperty(DynamoConstants.SP_USE_DEFAULT_PROMPT_VALUE, "false");
+		return Boolean.valueOf(temp);
+	}
+
+	/**
 	 * @return whether to include thousands grouping separators in edit mode
 	 */
 	public static boolean useThousandsGroupingInEditMode() {

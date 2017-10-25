@@ -155,7 +155,10 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 			// first, set the defaults
 			model.setDisplayName(displayName);
 			model.setDescription(displayName);
-			model.setPrompt(displayName);
+
+			if (SystemPropertyUtils.isUseDefaultPromptValue()) {
+				model.setPrompt(displayName);
+			}
 			model.setMainAttribute(descriptor.isPreferred());
 			model.setSearchable(descriptor.isPreferred());
 			model.setName((prefix == null ? "" : (prefix + ".")) + fieldName);
@@ -827,7 +830,9 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 				// well -
 				// they are overwritten in the following code if they are
 				// explicitly set
-				model.setPrompt(attribute.displayName());
+				if (SystemPropertyUtils.isUseDefaultPromptValue()) {
+					model.setPrompt(attribute.displayName());
+				}
 				model.setDescription(attribute.displayName());
 			}
 

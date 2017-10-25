@@ -152,6 +152,11 @@ public final class DynamoConstants {
 	public static final String SP_CAPITALIZE_WORDS = "ocs.capitalize.words";
 
 	/**
+	 * Indicates whether to use the display name as the input prompt by default
+	 */
+	public static final String SP_USE_DEFAULT_PROMPT_VALUE = "ocs.use.default.prompt.value";
+	
+	/**
 	 * Name of the system property that is used to set the locale used for month
 	 * names in date components
 	 */
