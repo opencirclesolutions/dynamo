@@ -730,10 +730,14 @@
 								<goals>
 									<goal>sign</goal>
 								</goals>
+								<configuration>
+									<keyname>info@dynamoframework.org</keyname>
+								</configuration>
 							</execution>
 						</executions>
 					</plugin>
 					<!-- Publish to central repositories. -->
+<!--
 					<plugin>
 						<groupId>org.sonatype.plugins</groupId>
 						<artifactId>nexus-staging-maven-plugin</artifactId>
@@ -742,16 +746,17 @@
 						<configuration>
 							<serverId>ossrh</serverId>
 							<nexusUrl>https://oss.sonatype.org/</nexusUrl>
-							<!-- Manually inspect the staging repository in the Nexus Repository 
-								Manager and trigger a release of the staging repository -->
 							<autoReleaseAfterClose>false</autoReleaseAfterClose>
 						</configuration>
 					</plugin>
+-->
 					<!-- Publish to GitHub Releases. -->
+<!--
 					<plugin>
 						<groupId>de.jutzig</groupId>
 						<artifactId>github-release-plugin</artifactId>
 					</plugin>
+-->
 				</plugins>
 			</build>
 		</profile>
