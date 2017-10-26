@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.dynamoframework</groupId>
 		<artifactId>dynamo-parent</artifactId>
-		<version>1.6-CB1</version>
+		<version>1.6.1-CB1-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>dynamo-jasperreports-fixes</artifactId>
