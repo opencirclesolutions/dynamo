@@ -473,7 +473,7 @@
 						<!-- Select release profile during release:prepare. -->
 						<arguments>-Prelease</arguments>
 						<!-- Release to the Central Repository. -->
-						<goals>deploy nexus-staging:release</goals>
+						<goals>install</goals>
 					</configuration>
 				</plugin>
 				<plugin>
