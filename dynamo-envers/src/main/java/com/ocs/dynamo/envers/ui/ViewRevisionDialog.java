@@ -15,6 +15,7 @@ package com.ocs.dynamo.envers.ui;
 
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.domain.AbstractEntity;
+import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.envers.domain.RevisionKey;
 import com.ocs.dynamo.envers.domain.VersionedEntity;
@@ -31,6 +32,7 @@ import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.util.filter.Compare;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Field;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Layout;
 
@@ -43,6 +45,8 @@ public class ViewRevisionDialog<ID, T extends AbstractEntity<ID>, U extends Vers
 		extends BaseModalDialog {
 
 	private static final long serialVersionUID = -8950374678949377884L;
+
+	private static final int PAGE_SIZE = 5;
 
 	private ServiceBasedSplitLayout<RevisionKey<ID>, U> layout;
 
@@ -65,6 +69,7 @@ public class ViewRevisionDialog<ID, T extends AbstractEntity<ID>, U extends Vers
 		this.service = service;
 		this.entityModel = entityModel;
 		this.id = id;
+		setStyleName("revisionDialog");
 	}
 
 	@Override
@@ -80,8 +85,14 @@ public class ViewRevisionDialog<ID, T extends AbstractEntity<ID>, U extends Vers
 				// always filter on
 				return new Compare.Equal(DynamoConstants.ID, id);
 			}
+
+			@Override
+			protected Field<?> constructCustomField(EntityModel<U> entityModel, AttributeModel attributeModel,
+					boolean viewMode, boolean searchMode) {
+				return ViewRevisionDialog.this.constructCustomField(entityModel, attributeModel);
+			}
 		};
-		layout.setPageLength(5);
+		layout.setPageLength(PAGE_SIZE);
 		parent.addComponent(layout);
 	}
 
@@ -95,6 +106,11 @@ public class ViewRevisionDialog<ID, T extends AbstractEntity<ID>, U extends Vers
 	@Override
 	protected String getTitle() {
 		return messageService.getMessage("ocs.revision.history", VaadinUtils.getLocale());
+	}
+
+	protected Field<?> constructCustomField(EntityModel<U> entityModel, AttributeModel attributeModel) {
+		// override in subclasses
+		return null;
 	}
 
 }

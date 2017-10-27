@@ -19,6 +19,7 @@ import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
 import com.ocs.dynamo.domain.AbstractEntity;
+import com.ocs.dynamo.domain.model.annnotation.Attribute;
 
 /**
  * A versioned entity. This is a wrapper around the snapshot of the original
@@ -33,16 +34,21 @@ public abstract class VersionedEntity<ID, T extends AbstractEntity<ID>> extends 
 
 	private static final long serialVersionUID = 4784364096429184957L;
 
+	@Attribute(sortable = false, displayName = "Revision number")
 	private int revision;
 
+	@Attribute(sortable = false)
 	private T entity;
 
+	@Attribute(sortable = false)
 	private ZonedDateTime revisionTimeStamp;
 
+	@Attribute(sortable = false)
 	private String user;
 
 	private RevisionKey<ID> id;
 
+	@Attribute(sortable = false)
 	private RevisionType revisionType;
 
 	/**

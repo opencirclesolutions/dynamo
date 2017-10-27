@@ -51,7 +51,7 @@ import com.ocs.dynamo.utils.DateUtils;
  * 
  * @author bas.rutten
  *
- * @param <ID>
+ * @param <ID> 
  * @param <T>
  * @param <U>
  */
@@ -114,6 +114,20 @@ public abstract class VersionedEntityDaoImpl<ID, T extends AbstractEntity<ID>, U
 		if (pageable != null) {
 			aq.setFirstResult(pageable.getOffset());
 			aq.setMaxResults(pageable.getPageSize());
+			if (pageable.getSortOrders() != null) {
+				for (SortOrder so : pageable.getSortOrders().toArray()) {
+					String prop = so.getProperty();
+					int index = prop.indexOf("entity.");
+					if (index >= 0) {
+						prop = prop.substring(index + "entity.".length());
+					}
+					if (so.isAscending()) {
+						aq.addOrder(AuditEntity.property(prop).asc());
+					} else {
+						aq.addOrder(AuditEntity.property(prop).desc());
+					}
+				}
+			}
 		}
 
 		List<U> resultList = new ArrayList<>();
