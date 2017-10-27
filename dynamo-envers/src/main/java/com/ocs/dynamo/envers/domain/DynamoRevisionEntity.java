@@ -27,7 +27,7 @@ import com.ocs.dynamo.envers.listener.DynamoRevisionListener;
  * Custom revision entity for use with Envers - stores user name in addition to
  * default fields
  */
-@Table(name = "revisionentity")
+@Table(name = "RevisionEntity")
 @Entity
 @org.hibernate.envers.RevisionEntity(DynamoRevisionListener.class)
 @QueryExclude
