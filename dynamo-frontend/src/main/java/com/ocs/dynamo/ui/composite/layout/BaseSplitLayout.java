@@ -427,6 +427,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 		// clear the details
 		setSelectedItem(null);
 		emptyDetailView();
+		checkMainButtons();
 	}
 
 	/**
@@ -487,6 +488,19 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 
 	public TextField getQuickSearchField() {
 		return quickSearchField;
+	}
+
+	/**
+	 * Check the state of the "main" buttons (add and remove) that are not tied
+	 * to the currently selected item
+	 */
+	protected void checkMainButtons() {
+		if (getAddButton() != null) {
+			getAddButton().setVisible(!getFormOptions().isHideAddButton() && isEditAllowed());
+		}
+		if (getRemoveButton() != null) {
+			getRemoveButton().setVisible(getFormOptions().isShowRemoveButton() && isEditAllowed());
+		}
 	}
 
 }
