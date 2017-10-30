@@ -13,11 +13,13 @@
  */
 package com.ocs.dynamo.envers.listener;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.hibernate.envers.RevisionListener;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.ocs.dynamo.envers.domain.DynamoRevisionEntity;
-import com.ocs.dynamo.service.UserDetailsService;
-import com.ocs.dynamo.ui.ServiceLocator;
 
 /**
  * Custom Hibernate envers listener
@@ -27,10 +29,22 @@ import com.ocs.dynamo.ui.ServiceLocator;
  */
 public class DynamoRevisionListener implements RevisionListener {
 
+	private static final String UNKNOWN = "unknown";
+
 	@Override
 	public void newRevision(final Object o) {
-		UserDetailsService uds = ServiceLocator.getService(UserDetailsService.class);
 		final DynamoRevisionEntity entity = (DynamoRevisionEntity) o;
-		entity.setUsername(uds.getCurrentUserName());
+		try {
+			final HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder
+					.currentRequestAttributes()).getRequest();
+			if (request != null && request.getUserPrincipal() != null) {
+				entity.setUsername(request.getUserPrincipal().getName());
+			} else {
+				entity.setUsername(UNKNOWN);
+			}
+		} catch (IllegalStateException ex) {
+			// in case no request present
+			entity.setUsername(UNKNOWN);
+		}
 	}
 }

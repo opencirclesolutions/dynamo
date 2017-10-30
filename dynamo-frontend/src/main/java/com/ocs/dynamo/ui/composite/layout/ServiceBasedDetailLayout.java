@@ -46,6 +46,11 @@ public class ServiceBasedDetailLayout<ID extends Serializable, T extends Abstrac
 	private Q parentEntity;
 
 	/**
+	 * The joins to use when refreshing the parent entity
+	 */
+	private FetchJoinInformation[] parentJoins;
+
+	/**
 	 * Constructor
 	 * 
 	 * @param service
@@ -78,11 +83,20 @@ public class ServiceBasedDetailLayout<ID extends Serializable, T extends Abstrac
 
 	@Override
 	public void reload() {
-		setParentEntity(getParentService().fetchById(getParentEntity().getId()));
+		setParentEntity(getParentService().fetchById(getParentEntity().getId(), getParentJoins()));
 		super.reload();
 	}
 
 	public void setParentEntity(Q parentEntity) {
 		this.parentEntity = parentEntity;
 	}
+
+	public FetchJoinInformation[] getParentJoins() {
+		return parentJoins;
+	}
+
+	public void setParentJoins(FetchJoinInformation[] parentJoins) {
+		this.parentJoins = parentJoins;
+	}
+
 }
