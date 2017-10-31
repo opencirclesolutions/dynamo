@@ -34,21 +34,21 @@ public abstract class VersionedEntity<ID, T extends AbstractEntity<ID>> extends 
 
 	private static final long serialVersionUID = 4784364096429184957L;
 
-	@Attribute(sortable = false, displayName = "Revision number")
+	@Attribute(sortable = true, displayName = "Revision number")
 	private int revision;
 
 	@Attribute(sortable = false)
 	private T entity;
 
-	@Attribute(sortable = false)
+	@Attribute(sortable = true)
 	private ZonedDateTime revisionTimeStamp;
 
-	@Attribute(sortable = false)
+	@Attribute(sortable = true)
 	private String user;
 
 	private RevisionKey<ID> id;
 
-	@Attribute(sortable = false)
+	@Attribute(sortable = true)
 	private RevisionType revisionType;
 
 	/**

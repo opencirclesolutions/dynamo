@@ -12,12 +12,19 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import com.ocs.dynamo.dao.Pageable;
+import com.ocs.dynamo.dao.PageableImpl;
+import com.ocs.dynamo.dao.SortOrder;
+import com.ocs.dynamo.dao.SortOrder.Direction;
+import com.ocs.dynamo.dao.SortOrders;
 import com.ocs.dynamo.envers.dao.PersonDao;
 import com.ocs.dynamo.envers.domain.Person;
 import com.ocs.dynamo.envers.domain.PersonRevision;
 import com.ocs.dynamo.envers.domain.RevisionKey;
 import com.ocs.dynamo.envers.domain.RevisionType;
+import com.ocs.dynamo.filter.And;
 import com.ocs.dynamo.filter.Compare;
+import com.ocs.dynamo.filter.Not;
+import com.ocs.dynamo.filter.Or;
 import com.ocs.dynamo.test.BaseIntegrationTest;
 
 public class PersonRevisionDaoImplTest extends BaseIntegrationTest {
@@ -84,7 +91,22 @@ public class PersonRevisionDaoImplTest extends BaseIntegrationTest {
 		Assert.assertEquals(3, list.size());
 		Assert.assertEquals(RevisionType.DEL, list.get(2).getRevisionType());
 
-		// the revision key
+		// try with sorting
+		Pageable p = new PageableImpl(0, 10, new SortOrders(new SortOrder(Direction.ASC, "name")));
+		list = personRevisionDao.fetch(new Compare.Equal("id", person.getId()), p);
+		Assert.assertEquals(3, list.size());
+
+		// sort on revision type
+		p = new PageableImpl(0, 10, new SortOrders(new SortOrder(Direction.ASC, "revisionType")));
+		list = personRevisionDao.fetch(new Compare.Equal("id", person.getId()), p);
+		Assert.assertEquals(3, list.size());
+
+		// sort on revision property
+		p = new PageableImpl(0, 10, new SortOrders(new SortOrder(Direction.ASC, "revision")));
+		list = personRevisionDao.fetch(new Compare.Equal("id", person.getId()), p);
+		Assert.assertEquals(3, list.size());
+
+		// find by revision key
 		RevisionKey<Integer> key = new RevisionKey<Integer>(person.getId(), 3);
 		PersonRevision pr = personRevisionDao.fetchById(key);
 		Assert.assertNotNull(pr);
@@ -105,6 +127,22 @@ public class PersonRevisionDaoImplTest extends BaseIntegrationTest {
 		// check last revision number
 		Number revNumber = personRevisionDao.findRevisionNumber(LocalDateTime.now());
 		Assert.assertEquals(3, revNumber);
+	}
+
+	@Test
+	public void testFiltering() {
+		// no filter
+		personRevisionDao.fetch(null, (Pageable) null);
+		personRevisionDao.fetch(new Compare.Equal("name", "Kevin"), (Pageable) null);
+		personRevisionDao.fetch(new Compare.GreaterOrEqual("name", "Kevin"), (Pageable) null);
+		personRevisionDao.fetch(new Compare.Greater("name", "Kevin"), (Pageable) null);
+		personRevisionDao.fetch(new Compare.LessOrEqual("name", "Kevin"), (Pageable) null);
+		personRevisionDao.fetch(new Compare.Less("name", "Kevin"), (Pageable) null);
+		personRevisionDao.fetch(new Not(new Compare.Equal("name", "Kevin")), (Pageable) null);
+		personRevisionDao.fetch(new And(new Compare.Equal("name", "Kevin"), new Compare.Equal("name", "Bob")),
+				(Pageable) null);
+		personRevisionDao.fetch(new Or(new Compare.Equal("name", "Kevin"), new Compare.Equal("name", "Bob")),
+				(Pageable) null);		
 	}
 
 }
