@@ -6,10 +6,7 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import com.ocs.dynamo.dao.Pageable;
 import com.ocs.dynamo.dao.PageableImpl;
@@ -30,9 +27,6 @@ import com.ocs.dynamo.test.BaseIntegrationTest;
 public class PersonRevisionDaoImplTest extends BaseIntegrationTest {
 
 	@Autowired
-	private PlatformTransactionManager transactionManager;
-
-	@Autowired
 	private PersonDao personDao;
 
 	@Autowired
@@ -42,14 +36,13 @@ public class PersonRevisionDaoImplTest extends BaseIntegrationTest {
 
 	@Test
 	public void testCreateUpdateDelete() {
-		TransactionStatus status = transactionManager
-				.getTransaction(new DefaultTransactionDefinition(TransactionDefinition.PROPAGATION_REQUIRES_NEW));
+		TransactionStatus status = startTransaction();
 
 		person = new Person();
 		person.setName("Bas");
 		person = personDao.save(person);
 
-		transactionManager.commit(status);
+		commitTransaction(status);
 
 		long count = personRevisionDao.count(new Compare.Equal("id", person.getId()), true);
 		Assert.assertEquals(1L, count);
@@ -62,13 +55,12 @@ public class PersonRevisionDaoImplTest extends BaseIntegrationTest {
 		Assert.assertEquals("Bas", list.get(0).getEntity().getName());
 		Assert.assertEquals(RevisionType.ADD, list.get(0).getRevisionType());
 
-		status = transactionManager
-				.getTransaction(new DefaultTransactionDefinition(TransactionDefinition.PROPAGATION_REQUIRES_NEW));
+		status = startTransaction();
 
 		person.setName("Jeroen");
 		person = personDao.save(person);
 
-		transactionManager.commit(status);
+		commitTransaction(status);
 
 		count = personRevisionDao.count(new Compare.Equal("id", person.getId()), true);
 		Assert.assertEquals(2L, count);
@@ -80,12 +72,11 @@ public class PersonRevisionDaoImplTest extends BaseIntegrationTest {
 		Assert.assertEquals("Jeroen", list.get(1).getEntity().getName());
 		Assert.assertEquals(RevisionType.MOD, list.get(1).getRevisionType());
 
-		status = transactionManager
-				.getTransaction(new DefaultTransactionDefinition(TransactionDefinition.PROPAGATION_REQUIRES_NEW));
+		status = startTransaction();
 
 		personDao.delete(person);
 
-		transactionManager.commit(status);
+		commitTransaction(status);
 
 		list = personRevisionDao.fetch(new Compare.Equal("id", person.getId()), (Pageable) null);
 		Assert.assertEquals(3, list.size());
@@ -142,7 +133,7 @@ public class PersonRevisionDaoImplTest extends BaseIntegrationTest {
 		personRevisionDao.fetch(new And(new Compare.Equal("name", "Kevin"), new Compare.Equal("name", "Bob")),
 				(Pageable) null);
 		personRevisionDao.fetch(new Or(new Compare.Equal("name", "Kevin"), new Compare.Equal("name", "Bob")),
-				(Pageable) null);		
+				(Pageable) null);
 	}
 
 }

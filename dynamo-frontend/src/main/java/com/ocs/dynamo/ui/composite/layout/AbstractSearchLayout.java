@@ -84,18 +84,6 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	private ModelBasedEditForm<ID, T> editForm;
 
 	/**
-	 * Tabbed layout for complex detail mode
-	 */
-	private LazyTabLayout<ID, T> tabLayout;
-
-	/**
-	 * 
-	 */
-	private VerticalLayout tabContainerLayout;
-
-	private Component selectedDetailLayout;
-
-	/**
 	 * The main layout (in edit mode)
 	 */
 	private VerticalLayout mainEditLayout;
@@ -104,6 +92,10 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	 * The main layout (in search mode)
 	 */
 	private VerticalLayout mainSearchLayout;
+
+	private Button nextButton;
+
+	private Button prevButton;
 
 	/**
 	 * The query type
@@ -121,11 +113,6 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	private AbstractModelBasedSearchForm<ID, T> searchForm;
 
 	/**
-	 * The currently selected items in the search results table
-	 */
-	private Collection<T> selectedItems;
-
-	/**
 	 * Indicates whether the search layout has been constructed yet
 	 */
 	private boolean searchLayoutConstructed;
@@ -135,9 +122,22 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	 */
 	private VerticalLayout searchResultsLayout;
 
-	private Button nextButton;
+	private Component selectedDetailLayout;
 
-	private Button prevButton;
+	/**
+	 * The currently selected items in the search results table
+	 */
+	private Collection<T> selectedItems;
+
+	/**
+	 * 
+	 */
+	private VerticalLayout tabContainerLayout;
+
+	/**
+	 * Tabbed layout for complex detail mode
+	 */
+	private LazyTabLayout<ID, T> tabLayout;
 
 	/**
 	 * Constructor
@@ -639,7 +639,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 		options.setPlaceButtonBarAtTop(getFormOptions().isPlaceButtonBarAtTop());
 		options.setHideCancelButton(true);
 		options.setFormNested(true);
-		
+
 		// set the form options for the detail form
 		if (getFormOptions().isEditAllowed()) {
 			// editing in form must be possible
@@ -714,10 +714,6 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	public final void edit(T entity) {
 		setSelectedItem(entity);
 		doEdit();
-	}
-
-	protected boolean handleCustomException(RuntimeException ex) {
-		return false;
 	}
 
 	public Button getAddButton() {
@@ -826,6 +822,10 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 
 	public Collection<T> getSelectedItems() {
 		return selectedItems;
+	}
+
+	protected boolean handleCustomException(RuntimeException ex) {
+		return false;
 	}
 
 	/**

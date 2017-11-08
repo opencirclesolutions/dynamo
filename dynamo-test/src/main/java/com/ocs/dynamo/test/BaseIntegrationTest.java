@@ -19,58 +19,54 @@ import javax.persistence.PersistenceContext;
 import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 @ContextConfiguration(locations = "classpath:META-INF/testApplicationContext.xml")
 @RunWith(SpringJUnit4ClassRunner.class)
 public abstract class BaseIntegrationTest extends AbstractTransactionalJUnit4SpringContextTests {
 
-    private static final Logger LOG = Logger.getLogger(BaseIntegrationTest.class);
+	private static final Logger LOG = Logger.getLogger(BaseIntegrationTest.class);
 
-    @PersistenceContext
-    protected EntityManager entityManager;
+	@Autowired
+	private PlatformTransactionManager transactionManager;
 
-    protected Logger getLog() {
-        return LOG;
-    }
+	@PersistenceContext
+	protected EntityManager entityManager;
 
-    public EntityManager getEntityManager() {
-        return entityManager;
-    }
+	protected Logger getLog() {
+		return LOG;
+	}
 
-    public void setEntityManager(EntityManager entityManager) {
-        this.entityManager = entityManager;
-    }
+	public EntityManager getEntityManager() {
+		return entityManager;
+	}
 
-    /**
-     * Commits the current transaction - this means that for the remainder of the unit test, the
-     * tests that follow this test will be able to see the data that is committed in this test
-     */
-    public void commitTransaction() {
-        getEntityManager().getTransaction().commit();
-    }
+	public void setEntityManager(EntityManager entityManager) {
+		this.entityManager = entityManager;
+	}
 
-    public void beginTransaction() {
-        getEntityManager().getTransaction().begin();
-    }
+	public void wait(int miliSeconds) {
+		try {
+			Thread.sleep(miliSeconds);
+		} catch (InterruptedException ex) {
+			Assert.fail("Waiting period was interrupted");
+		}
+	}
 
-    public void commitAndStartTransaction() {
-        commitTransaction();
-        beginTransaction();
-    }
+	protected TransactionStatus startTransaction() {
+		return transactionManager
+				.getTransaction(new DefaultTransactionDefinition(TransactionDefinition.PROPAGATION_REQUIRES_NEW));
+	}
 
-    public void rollBackTransaction() {
-        getEntityManager().getTransaction().rollback();
-    }
-
-    public void wait(int miliSeconds) {
-        try {
-            Thread.sleep(miliSeconds);
-        } catch (InterruptedException ex) {
-            Assert.fail("Waiting period was interrupted");
-        }
-    }
+	protected void commitTransaction(TransactionStatus status) {
+		transactionManager.commit(status);
+	}
 
 }

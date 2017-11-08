@@ -215,6 +215,12 @@ public abstract class VersionedEntityDaoImpl<ID, T extends AbstractEntity<ID>, U
 
 	@Override
 	@Transactional
+	public List<U> fetch(Filter filter, FetchJoinInformation... joins) {
+		return fetch(filter, (Pageable) null, joins);
+	}
+
+	@Override
+	@Transactional
 	@SuppressWarnings("unchecked")
 	public List<U> fetch(Filter filter, Pageable pageable, FetchJoinInformation... joins) {
 
