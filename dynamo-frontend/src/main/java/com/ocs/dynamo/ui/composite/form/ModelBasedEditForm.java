@@ -307,6 +307,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 	private Map<Boolean, Map<AttributeModel, Component>> uploads = new HashMap<>();
 
+	private Map<Boolean, Map<AttributeModel, Component>> previews = new HashMap<>();
+
 	private Map<Boolean, Set<String>> alreadyBound = new HashMap<>();
 
 	private Map<Integer, Field<?>> firstFields = new HashMap<>();
@@ -397,6 +399,11 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 				if (attributeModel.isUrl()) {
 					// display a complex component even in read-only mode
 					constructField(parent, entityModel, attributeModel, true, tabIndex);
+				} else if (AttributeType.LOB.equals(type) && attributeModel.isImage()) {
+					// image preview
+					Component c = constructImagePreview(attributeModel);
+					parent.addComponent(c);
+					previews.get(isViewMode()).put(attributeModel, c);
 				} else if (AttributeType.DETAIL.equals(type) && attributeModel.isComplexEditable()) {
 					Field<?> f = constructCustomField(entityModel, attributeModel, viewMode);
 					if (f instanceof DetailsEditTable) {
@@ -496,6 +503,9 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 				Map<AttributeModel, Component> uploadMap = new HashMap<>();
 				uploads.put(Boolean.TRUE, uploadMap);
 
+				Map<AttributeModel, Component> previewMap = new HashMap<>();
+				previews.put(Boolean.TRUE, previewMap);
+
 				mainViewLayout = buildMainLayout(getEntityModel());
 			}
 			setCompositionRoot(mainViewLayout);
@@ -506,6 +516,9 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 				Map<AttributeModel, Component> uploadMap = new HashMap<>();
 				uploads.put(Boolean.FALSE, uploadMap);
+
+				Map<AttributeModel, Component> previewMap = new HashMap<>();
+				previews.put(Boolean.FALSE, previewMap);
 
 				mainEditLayout = buildMainLayout(getEntityModel());
 
@@ -844,6 +857,13 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		return null;
 	}
 
+	private Component constructImagePreview(AttributeModel attributeModel) {
+		byte[] bytes = ClassUtils.getBytes(getEntity(), attributeModel.getName());
+		Embedded image = new DefaultEmbedded(attributeModel.getDisplayName(), bytes);
+		image.setStyleName(DynamoConstants.CSS_CLASS_UPLOAD);
+		return image;
+	}
+
 	/**
 	 * Constructs a field or label for a certain attribute
 	 * 
@@ -949,6 +969,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		labels.get(isViewMode()).put(attributeModel, label);
 
 		if (!attributeModel.getGroupTogetherWith().isEmpty()) {
+			// group multiple attributes on the same line
 			HorizontalLayout horizontal = constructRowLayout(attributeModel, false, true);
 			parent.addComponent(horizontal);
 
@@ -966,7 +987,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 					addField(fl2, getEntityModel(), am, tabIndex);
 				}
 			}
-
 		} else {
 			parent.addComponent(label);
 		}
@@ -1460,11 +1480,21 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 		// refresh the upload components
 		for (Entry<AttributeModel, Component> e : uploads.get(isViewMode()).entrySet()) {
-			Component uc = constructUploadField(e.getKey());
 			HasComponents hc = e.getValue().getParent();
 			if (hc instanceof Layout) {
+				Component uc = constructUploadField(e.getKey());
 				((Layout) hc).replaceComponent(e.getValue(), uc);
 				uploads.get(isViewMode()).put(e.getKey(), uc);
+			}
+		}
+
+		// refresh preview components
+		for (Entry<AttributeModel, Component> e : previews.get(isViewMode()).entrySet()) {
+			HasComponents hc = e.getValue().getParent();
+			if (hc instanceof Layout) {
+				Component pv = constructImagePreview(e.getKey());
+				((Layout) hc).replaceComponent(e.getValue(), pv);
+				previews.get(isViewMode()).put(e.getKey(), pv);
 			}
 		}
 
