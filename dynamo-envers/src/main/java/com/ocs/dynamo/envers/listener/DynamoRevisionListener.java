@@ -13,13 +13,11 @@
  */
 package com.ocs.dynamo.envers.listener;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.hibernate.envers.RevisionListener;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.ocs.dynamo.envers.domain.DynamoRevisionEntity;
+import com.ocs.dynamo.service.UserDetailsService;
+import com.ocs.dynamo.service.impl.ApplicationContextProvider;
 
 /**
  * Custom Hibernate envers listener
@@ -34,16 +32,10 @@ public class DynamoRevisionListener implements RevisionListener {
 	@Override
 	public void newRevision(final Object o) {
 		final DynamoRevisionEntity entity = (DynamoRevisionEntity) o;
-		try {
-			final HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder
-					.currentRequestAttributes()).getRequest();
-			if (request != null && request.getUserPrincipal() != null) {
-				entity.setUsername(request.getUserPrincipal().getName());
-			} else {
-				entity.setUsername(UNKNOWN);
-			}
-		} catch (IllegalStateException ex) {
-			// in case no request present
+		UserDetailsService uds = ApplicationContextProvider.getApplicationContext().getBean(UserDetailsService.class);
+		if (uds != null) {
+			entity.setUsername(uds.getCurrentUserName());
+		} else {
 			entity.setUsername(UNKNOWN);
 		}
 	}

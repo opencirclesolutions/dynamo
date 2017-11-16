@@ -18,13 +18,11 @@
 		<entry key="hibernate.dialect" value="org.hibernate.dialect.H2Dialect" />
 	</util:map>
 
-	<!--  
-	<tx:annotation-driven transaction-manager="transactionManager" />
-	-->
-
 	<!-- wrapper around the export -->
 	<bean id="tableExportService"
 		class="com.ocs.dynamo.ui.composite.table.export.TableExportService" />
+
+	<bean id="applicationContextProvider" class="com.ocs.dynamo.service.impl.ApplicationContextProvider"/>
 
 	<!-- Entity Manager, the use of packagesToScan, jpaPropertyMap and jpaVendorAdapter 
 		prevent the need for an persistence.xml -->
