@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.Locale;
 import java.util.Map;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpSession;
 
@@ -25,6 +26,7 @@ import net.sf.jasperreports.engine.JasperReport;
 public class ReportGeneratorTest {
 
 	@Test
+	@Ignore
 	public void testExecuteReport() {
 		BeanContainer<Integer, Person> container;
 
