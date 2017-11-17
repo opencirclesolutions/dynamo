@@ -1,6 +1,6 @@
 package com.ocs.dynamo.envers.domain;
 
-import com.ocs.dynamo.domain.model.annnotation.Attribute;
+import com.ocs.dynamo.domain.model.annotation.Attribute;
 
 public class PersonRevision extends VersionedEntity<Integer, Person> {
 

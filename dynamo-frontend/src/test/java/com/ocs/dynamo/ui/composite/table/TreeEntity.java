@@ -1,7 +1,7 @@
 package com.ocs.dynamo.ui.composite.table;
 
 import com.ocs.dynamo.domain.AbstractTreeEntity;
-import com.ocs.dynamo.domain.model.annnotation.Model;
+import com.ocs.dynamo.domain.model.annotation.Model;
 
 @Model(displayProperty = "name")
 public class TreeEntity extends AbstractTreeEntity<Integer, TreeEntity> {

@@ -20,7 +20,7 @@ import javax.persistence.Entity;
 
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 
-import com.ocs.dynamo.domain.model.annnotation.Model;
+import com.ocs.dynamo.domain.model.annotation.Model;
 
 /**
  * A region of the world

@@ -11,7 +11,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-package com.ocs.dynamo.domain.model.annnotation;
+package com.ocs.dynamo.domain.model.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -19,43 +19,27 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * An annotation that can be placed on an entity - allows you to override metadata defaults
+ * An annotation that can be used to indicate that certain attribute should be grouped together on
+ * the screen
  * 
  * @author bas.rutten
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface Model {
+public @interface AttributeGroup {
 
     /**
+     * The names/paths of the attributes that appear in the group
      * 
-     * @return the display name of the entity
+     * @return
      */
-    String displayName() default "";
+    String[] attributeNames() default {};
 
     /**
+     * The message key that is used as the identifier of the group
      * 
-     * @return the display name (plural form) of the entity
+     * @return
      */
-    String displayNamePlural() default "";
+    String messageKey();
 
-    /**
-     * 
-     * @return the textual description, will be used in tool tips
-     */
-    String description() default "";
-
-    /**
-     * 
-     * @return the path of the property that will be used to describe the entity inside lookup
-     *         components
-     */
-    String displayProperty() default "";
-
-    /**
-     * 
-     * @return the default sort order (property name followed by option asc/desc, use commas to
-     *         separate)
-     */
-    String sortOrder() default "";
 }
