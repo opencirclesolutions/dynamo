@@ -55,6 +55,9 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	// the add button
 	private Button addButton;
 
+	// default split position (width of first component in percent)
+	private Integer defaultSplitPosition;
+
 	// the form layout that is nested inside the detail view
 	private Layout detailFormLayout;
 
@@ -161,6 +164,10 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 
 				splitterLayout.addComponent(getTableWrapper());
 				splitter.setFirstComponent(splitterLayout);
+
+				if (defaultSplitPosition != null) {
+					splitter.setSplitPosition(defaultSplitPosition);
+				}
 			} else {
 				mainLayout.addComponent(getTableWrapper());
 			}
@@ -201,7 +208,24 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 		}
 	}
 
-	public abstract void setSelectedItems(Object selectedItems);
+	/**
+	 * Perform any required initialization (e.g. load the required items) before
+	 * attaching the screen
+	 */
+	protected abstract void buildFilter();
+
+	/**
+	 * Check the state of the "main" buttons (add and remove) that are not tied
+	 * to the currently selected item
+	 */
+	protected void checkMainButtons() {
+		if (getAddButton() != null) {
+			getAddButton().setVisible(!getFormOptions().isHideAddButton() && isEditAllowed());
+		}
+		if (getRemoveButton() != null) {
+			getRemoveButton().setVisible(getFormOptions().isShowRemoveButton() && isEditAllowed());
+		}
+	}
 
 	/**
 	 * Constructs a header layout (displayed above the actual tabular content).
@@ -363,12 +387,12 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 		selectedDetailLayout = vLayout;
 	}
 
-	protected boolean handleCustomException(RuntimeException ex) {
-		return false;
-	}
-
 	public Button getAddButton() {
 		return addButton;
+	}
+
+	public Integer getDefaultSplitPosition() {
+		return defaultSplitPosition;
 	}
 
 	public Layout getDetailLayout() {
@@ -379,15 +403,17 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 		return editForm;
 	}
 
+	public TextField getQuickSearchField() {
+		return quickSearchField;
+	}
+
 	public Button getRemoveButton() {
 		return removeButton;
 	}
 
-	/**
-	 * Perform any required initialization (e.g. load the required items) before
-	 * attaching the screen
-	 */
-	protected abstract void buildFilter();
+	protected boolean handleCustomException(RuntimeException ex) {
+		return false;
+	}
 
 	/**
 	 * Indicates whether the panel is in horizontal mode
@@ -401,6 +427,19 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	@Override
 	public void refresh() {
 		// override in subclasses
+	}
+
+	/**
+	 * Replaces the contents of a label by its current value. Use in response to
+	 * an automatic update if a field
+	 * 
+	 * @param propertyName
+	 *            the name of the property for which to replace the label
+	 */
+	public void refreshLabel(String propertyName) {
+		if (editForm != null) {
+			editForm.refreshLabel(propertyName);
+		}
 	}
 
 	@Override
@@ -461,18 +500,11 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 		getTableWrapper().getTable().select(t == null ? null : t.getId());
 	}
 
-	/**
-	 * Replaces the contents of a label by its current value. Use in response to
-	 * an automatic update if a field
-	 * 
-	 * @param propertyName
-	 *            the name of the property for which to replace the label
-	 */
-	public void refreshLabel(String propertyName) {
-		if (editForm != null) {
-			editForm.refreshLabel(propertyName);
-		}
+	public void setDefaultSplitPosition(Integer defaultSplitPosition) {
+		this.defaultSplitPosition = defaultSplitPosition;
 	}
+
+	public abstract void setSelectedItems(Object selectedItems);
 
 	/**
 	 * Sets the mode of the screen (either view mode or edit mode)
@@ -483,23 +515,6 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	public void setViewMode(boolean viewMode) {
 		if (getSelectedItem() != null) {
 			editForm.setViewMode(viewMode);
-		}
-	}
-
-	public TextField getQuickSearchField() {
-		return quickSearchField;
-	}
-
-	/**
-	 * Check the state of the "main" buttons (add and remove) that are not tied
-	 * to the currently selected item
-	 */
-	protected void checkMainButtons() {
-		if (getAddButton() != null) {
-			getAddButton().setVisible(!getFormOptions().isHideAddButton() && isEditAllowed());
-		}
-		if (getRemoveButton() != null) {
-			getRemoveButton().setVisible(getFormOptions().isShowRemoveButton() && isEditAllowed());
 		}
 	}
 

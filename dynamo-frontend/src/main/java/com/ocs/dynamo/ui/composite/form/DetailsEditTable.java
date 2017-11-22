@@ -396,7 +396,7 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 
 		// add a remove button directly in the table
 		if (!isViewMode() && formOptions.isShowRemoveButton()) {
-			final String removeMsg = messageService.getMessage("ocs.remove", VaadinUtils.getLocale());
+			final String removeMsg = messageService.getMessage("ocs.detail.remove", VaadinUtils.getLocale());
 			table.addGeneratedColumn(removeMsg, (ColumnGenerator) (source, itemId, columnId) -> {
 				Button remove = new Button(removeMsg);
 				remove.addClickListener(event -> {
@@ -481,6 +481,8 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 		ModelBasedEditForm<?, ?> parent = VaadinUtils.getParentOfClass(this, ModelBasedEditForm.class);
 		setParentForm(parent);
 
+		postConstruct();
+
 		return layout;
 	}
 
@@ -553,6 +555,13 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 	 * @param toRemove
 	 */
 	protected abstract void removeEntity(T toRemove);
+
+	/**
+	 * Perform any necessary post construction
+	 */
+	protected void postConstruct() {
+		// overwrite in subclasses
+	}
 
 	public void setComparator(Comparator<T> comparator) {
 		this.comparator = comparator;
