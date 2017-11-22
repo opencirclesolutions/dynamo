@@ -654,7 +654,9 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 		}
 
 		if (getFormOptions().isComplexDetailsMode() && entity != null && entity.getId() != null) {
-			// complex tabbed layout
+			// complex tabbed layout, back button is placed separately
+			options.setShowBackButton(false);
+
 			if (tabContainerLayout == null) {
 				buildDetailsTabLayout(entity, options);
 			} else {

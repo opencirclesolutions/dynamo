@@ -28,119 +28,129 @@ import com.ocs.dynamo.ui.utils.FormatUtils;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.utils.ClassUtils;
 import com.vaadin.server.Page;
+import com.vaadin.shared.Position;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 
 /**
- * Base class for custom components - contains convenience methods for getting various often-used
- * services
+ * Base class for custom components - contains convenience methods for getting
+ * various often-used services
  * 
  * @author bas.rutten
  */
 public abstract class BaseCustomComponent extends CustomComponent implements Buildable {
 
-    private static final Logger LOG = Logger.getLogger(BaseCustomComponent.class);
+	private static final Logger LOG = Logger.getLogger(BaseCustomComponent.class);
 
-    private static final long serialVersionUID = -8982555842423738005L;
+	private static final long serialVersionUID = -8982555842423738005L;
 
-    private MessageService messageService = ServiceLocator.getMessageService();
+	private MessageService messageService = ServiceLocator.getMessageService();
 
-    /**
-     * Constructs a (formatted) label based on the attribute model
-     * 
-     * @param entity
-     *            the entity that is being displayed
-     * @param attributeModel
-     *            the attribute model
-     * @return
-     */
-    protected Component constructLabel(Object entity, AttributeModel attributeModel) {
-        Label fieldLabel = new Label();
-        fieldLabel.setCaption(attributeModel.getDisplayName());
-        Object value = ClassUtils.getFieldValue(entity, attributeModel.getName());
-        String formatted = FormatUtils.formatPropertyValue(getEntityModelFactory(), attributeModel, value);
-        fieldLabel.setValue(formatted);
-        return fieldLabel;
-    }
+	/**
+	 * Constructs a (formatted) label based on the attribute model
+	 * 
+	 * @param entity
+	 *            the entity that is being displayed
+	 * @param attributeModel
+	 *            the attribute model
+	 * @return
+	 */
+	protected Component constructLabel(Object entity, AttributeModel attributeModel) {
+		Label fieldLabel = new Label();
+		fieldLabel.setCaption(attributeModel.getDisplayName());
+		Object value = ClassUtils.getFieldValue(entity, attributeModel.getName());
+		String formatted = FormatUtils.formatPropertyValue(getEntityModelFactory(), attributeModel, value);
+		fieldLabel.setValue(formatted);
+		return fieldLabel;
+	}
 
-    protected EntityModelFactory getEntityModelFactory() {
-        return ServiceLocator.getEntityModelFactory();
-    }
+	protected EntityModelFactory getEntityModelFactory() {
+		return ServiceLocator.getEntityModelFactory();
+	}
 
-    protected MessageService getMessageService() {
-        return messageService;
-    }
+	protected MessageService getMessageService() {
+		return messageService;
+	}
 
-    protected <T> T getService(Class<T> clazz) {
-        return ServiceLocator.getService(clazz);
-    }
+	protected <T> T getService(Class<T> clazz) {
+		return ServiceLocator.getService(clazz);
+	}
 
-    /**
-     * Generic handling of error messages after a save operation
-     * 
-     * @param ex
-     *            the exception that occurred
-     */
-    protected void handleSaveException(RuntimeException ex) {
-        if (ex instanceof OCSValidationException) {
-            // validation exception
-            LOG.warn(ex.getMessage(), ex);
-            showNotifification(((OCSValidationException) ex).getErrors().get(0), Notification.Type.ERROR_MESSAGE);
-        } else if (ex instanceof OCSRuntimeException) {
-            // any other OCS runtime exception
-            LOG.error(ex.getMessage(), ex);
-            showNotifification(ex.getMessage(), Notification.Type.ERROR_MESSAGE);
-        } else if (ex instanceof OptimisticLockException) {
-            // optimistic lock
-            LOG.error(ex.getMessage(), ex);
-            showNotifification(message("ocs.optimistic.lock"), Notification.Type.ERROR_MESSAGE);
-        } else {
-            // any other save exception
-            LOG.error(ex.getMessage(), ex);
-            showNotifification(message("ocs.error.occurred"), Notification.Type.ERROR_MESSAGE);
-        }
-    }
+	/**
+	 * Generic handling of error messages after a save operation
+	 * 
+	 * @param ex
+	 *            the exception that occurred
+	 */
+	protected void handleSaveException(RuntimeException ex) {
+		if (ex instanceof OCSValidationException) {
+			// validation exception
+			LOG.warn(ex.getMessage(), ex);
+			showNotifification(((OCSValidationException) ex).getErrors().get(0), Notification.Type.ERROR_MESSAGE);
+		} else if (ex instanceof OCSRuntimeException) {
+			// any other OCS runtime exception
+			LOG.error(ex.getMessage(), ex);
+			showNotifification(ex.getMessage(), Notification.Type.ERROR_MESSAGE);
+		} else if (ex instanceof OptimisticLockException) {
+			// optimistic lock
+			LOG.error(ex.getMessage(), ex);
+			showNotifification(message("ocs.optimistic.lock"), Notification.Type.ERROR_MESSAGE);
+		} else {
+			// any other save exception
+			LOG.error(ex.getMessage(), ex);
+			showNotifification(message("ocs.error.occurred"), Notification.Type.ERROR_MESSAGE);
+		}
+	}
 
-    /**
-     * Retrieves a message from the message bundle
-     * 
-     * @param key
-     *            the key of the message
-     * @return
-     */
-    protected String message(String key) {
-        return getMessageService().getMessage(key, VaadinUtils.getLocale());
-    }
+	/**
+	 * Retrieves a message from the message bundle
+	 * 
+	 * @param key
+	 *            the key of the message
+	 * @return
+	 */
+	protected String message(String key) {
+		return getMessageService().getMessage(key, VaadinUtils.getLocale());
+	}
 
-    /**
-     * Retrieves a message from the message bundle
-     * 
-     * @param key
-     *            the key of the message
-     * @param args
-     *            any arguments that are used in the message
-     * @return
-     */
-    protected String message(String key, Object... args) {
-        return getMessageService().getMessage(key, VaadinUtils.getLocale(), args);
-    }
+	/**
+	 * Retrieves a message from the message bundle
+	 * 
+	 * @param key
+	 *            the key of the message
+	 * @param args
+	 *            any arguments that are used in the message
+	 * @return
+	 */
+	protected String message(String key, Object... args) {
+		return getMessageService().getMessage(key, VaadinUtils.getLocale(), args);
+	}
 
-    /**
-     * Shows a notification message - this method will check for the availability of a Vaadin Page
-     * object and if this is not present, write the notification to the log instead
-     * 
-     * @param message
-     *            the message
-     * @param type
-     *            the type of the message (error, warning, tray etc.)
-     */
-    protected void showNotifification(String message, Notification.Type type) {
-        if (Page.getCurrent() != null) {
-            Notification.show(message, type);
-        } else {
-            LOG.info(message);
-        }
-    }
+	/**
+	 * Shows a notification message - this method will check for the
+	 * availability of a Vaadin Page object and if this is not present, write
+	 * the notification to the log instead
+	 * 
+	 * @param message
+	 *            the message
+	 * @param type
+	 *            the type of the message (error, warning, tray etc.)
+	 */
+	protected void showNotifification(String message, Notification.Type type) {
+		if (Page.getCurrent() != null) {
+			Notification not = new Notification(message, type);
+			if (Notification.Type.TRAY_NOTIFICATION.equals(type)) {
+				// custom settings for tray notification
+				not.setStyleName("dynamoTray");
+				not.setDelayMsec(1000);
+				not.setPosition(Position.MIDDLE_CENTER);
+			}
+			not.show(Page.getCurrent());
+
+		} else {
+			LOG.info(message);
+		}
+	}
 }
