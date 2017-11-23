@@ -23,6 +23,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.TimeZone;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -591,6 +592,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 			DateField df = new DateField();
 			df.setResolution(Resolution.SECOND);
 			df.setConverter(ConverterFactory.createLocalDateTimeConverter());
+			df.setTimeZone(TimeZone.getDefault());
 			field = df;
 		} else if (ZonedDateTime.class.equals(attributeModel.getType())) {
 			DateField df = new DateField();

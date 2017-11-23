@@ -33,56 +33,56 @@ import com.ocs.dynamo.domain.model.annotation.Attribute;
 @MappedSuperclass
 public abstract class AbstractAuditableEntity<ID> extends AbstractEntity<ID> {
 
-    private static final long serialVersionUID = 3347137920794563022L;
+	private static final long serialVersionUID = 3347137920794563022L;
 
-    @Attribute(readOnly = true)
-    @Column(name = "created_by")
-    private String createdBy;
+	@Attribute(readOnly = true)
+	@Column(name = "created_by")
+	private String createdBy;
 
-    @Attribute(readOnly = true)
-    @Column(name = "created_on")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date createdOn;
+	@Attribute(readOnly = true)
+	@Column(name = "created_on")
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date createdOn;
 
-    @Attribute(readOnly = true, showInTable = VisibilityType.HIDE)
-    @Column(name = "changed_by")
-    private String changedBy;
+	@Attribute(readOnly = true, showInTable = VisibilityType.HIDE)
+	@Column(name = "changed_by")
+	private String changedBy;
 
-    @Attribute(readOnly = true, showInTable = VisibilityType.HIDE)
-    @Column(name = "changed_on")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date changedOn;
+	@Attribute(readOnly = true, showInTable = VisibilityType.HIDE)
+	@Column(name = "changed_on")
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date changedOn;
 
-    public String getCreatedBy() {
-        return createdBy;
-    }
+	public String getCreatedBy() {
+		return createdBy;
+	}
 
-    public void setCreatedBy(String createdBy) {
-        this.createdBy = createdBy;
-    }
+	public void setCreatedBy(String createdBy) {
+		this.createdBy = createdBy;
+	}
 
-    public Date getCreatedOn() {
-        return createdOn;
-    }
+	public Date getCreatedOn() {
+		return createdOn;
+	}
 
-    public void setCreatedOn(Date createdOn) {
-        this.createdOn = createdOn;
-    }
+	public void setCreatedOn(Date createdOn) {
+		this.createdOn = createdOn;
+	}
 
-    public String getChangedBy() {
-        return changedBy;
-    }
+	public String getChangedBy() {
+		return changedBy;
+	}
 
-    public void setChangedBy(String changedBy) {
-        this.changedBy = changedBy;
-    }
+	public void setChangedBy(String changedBy) {
+		this.changedBy = changedBy;
+	}
 
-    public Date getChangedOn() {
-        return changedOn;
-    }
+	public Date getChangedOn() {
+		return changedOn;
+	}
 
-    public void setChangedOn(Date changedOn) {
-        this.changedOn = changedOn;
-    }
+	public void setChangedOn(Date changedOn) {
+		this.changedOn = changedOn;
+	}
 
 }
