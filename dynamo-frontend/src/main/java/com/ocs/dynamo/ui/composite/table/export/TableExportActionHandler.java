@@ -341,7 +341,7 @@ public class TableExportActionHandler implements Handler {
 			bigDecimalStyle = workbook.createCellStyle();
 			bigDecimalStyle.setAlignment(CellStyle.ALIGN_RIGHT);
 			addBorder(bigDecimalStyle);
-			bigDecimalStyle.setDataFormat(format.getFormat("#,##0.00"));
+			bigDecimalStyle.setDataFormat(format.getFormat("#,##0.00##"));
 
 			bigDecimalPercentageStyle = workbook.createCellStyle();
 			bigDecimalPercentageStyle.setAlignment(CellStyle.ALIGN_RIGHT);

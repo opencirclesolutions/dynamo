@@ -18,12 +18,12 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.TimeZone;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -598,6 +598,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 			DateField df = new DateField();
 			df.setResolution(Resolution.SECOND);
 			df.setConverter(ConverterFactory.createZonedDateTimeConverter());
+			df.setTimeZone(VaadinUtils.getTimeZone(UI.getCurrent()));
 			field = df;
 		} else if (AttributeDateType.TIME.equals(attributeModel.getDateType())) {
 			// use custom time field, potentially with Java 8 date converter
@@ -737,7 +738,16 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 		}
 		select.addContainerProperty(CAPTION_PROPERTY_ID, String.class, "");
 		select.setItemCaptionPropertyId(CAPTION_PROPERTY_ID);
-		for (E e : enumClass.getEnumConstants()) {
+
+		// sort on the description
+		List<E> list = Arrays.asList(enumClass.getEnumConstants());
+		list.sort((a, b) -> {
+			String msg1 = messageService.getEnumMessage(enumClass, a, VaadinUtils.getLocale());
+			String msg2 = messageService.getEnumMessage(enumClass, b, VaadinUtils.getLocale());
+			return msg1.compareToIgnoreCase(msg2);
+		});
+
+		for (E e : list) {
 			Item newItem = select.addItem(e);
 
 			String msg = messageService.getEnumMessage(enumClass, e, VaadinUtils.getLocale());
@@ -748,6 +758,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 						.setValue(DefaultFieldFactory.createCaptionByPropertyId(e.name()));
 			}
 		}
+
 	}
 
 	public EntityModel<T> getModel() {
