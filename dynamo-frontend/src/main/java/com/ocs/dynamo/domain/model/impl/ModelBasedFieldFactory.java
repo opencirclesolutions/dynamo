@@ -17,6 +17,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Collection;
@@ -24,6 +25,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.TimeZone;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -598,7 +600,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 			DateField df = new DateField();
 			df.setResolution(Resolution.SECOND);
 			df.setConverter(ConverterFactory.createZonedDateTimeConverter());
-			df.setTimeZone(VaadinUtils.getTimeZone(UI.getCurrent()));
+			df.setTimeZone(TimeZone.getTimeZone(ZoneId.systemDefault()));
 			field = df;
 		} else if (AttributeDateType.TIME.equals(attributeModel.getDateType())) {
 			// use custom time field, potentially with Java 8 date converter
