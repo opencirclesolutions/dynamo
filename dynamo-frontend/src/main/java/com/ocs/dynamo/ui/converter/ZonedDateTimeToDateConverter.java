@@ -17,12 +17,9 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.Locale;
-import java.util.TimeZone;
 
-import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.utils.DateUtils;
 import com.vaadin.data.util.converter.Converter;
-import com.vaadin.ui.UI;
 
 /**
  * 
@@ -38,8 +35,7 @@ public class ZonedDateTimeToDateConverter implements Converter<Date, ZonedDateTi
 		if (value == null) {
 			return null;
 		}
-		TimeZone tz = VaadinUtils.getTimeZone(UI.getCurrent());
-		return DateUtils.convertSQLDate(value).toInstant().atZone(tz.toZoneId());
+		return DateUtils.convertSQLDate(value).toInstant().atZone(ZoneId.systemDefault());
 	}
 
 	@Override
