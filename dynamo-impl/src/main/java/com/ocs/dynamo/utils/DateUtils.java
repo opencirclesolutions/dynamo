@@ -58,7 +58,7 @@ public final class DateUtils {
 		// hidden constructor
 	}
 	
-	private static Date convertSQLDate(Date d) {
+	public static Date convertSQLDate(Date d) {
 		// toInstance is not supported on java.sql.Date, so convert to actual
 		// date
 		if (d instanceof java.sql.Date) {

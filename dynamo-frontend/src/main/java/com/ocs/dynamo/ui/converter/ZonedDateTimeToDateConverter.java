@@ -13,12 +13,16 @@
  */
 package com.ocs.dynamo.ui.converter;
 
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.Locale;
+import java.util.TimeZone;
 
+import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.utils.DateUtils;
 import com.vaadin.data.util.converter.Converter;
+import com.vaadin.ui.UI;
 
 /**
  * 
@@ -31,12 +35,19 @@ public class ZonedDateTimeToDateConverter implements Converter<Date, ZonedDateTi
 
 	@Override
 	public ZonedDateTime convertToModel(Date value, Class<? extends ZonedDateTime> targetType, Locale locale) {
-		return DateUtils.toZonedDateTime(value);
+		if (value == null) {
+			return null;
+		}
+		TimeZone tz = VaadinUtils.getTimeZone(UI.getCurrent());
+		return DateUtils.convertSQLDate(value).toInstant().atZone(tz.toZoneId());
 	}
 
 	@Override
 	public Date convertToPresentation(ZonedDateTime value, Class<? extends Date> targetType, Locale locale) {
-		return DateUtils.toLegacyDate(value);
+		if (value == null) {
+			return null;
+		}
+		return Date.from(value.toInstant());
 	}
 
 	@Override

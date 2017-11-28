@@ -600,7 +600,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 			DateField df = new DateField();
 			df.setResolution(Resolution.SECOND);
 			df.setConverter(ConverterFactory.createZonedDateTimeConverter());
-			df.setTimeZone(TimeZone.getTimeZone(ZoneId.systemDefault()));
+			df.setTimeZone(VaadinUtils.getTimeZone(UI.getCurrent()));
 			field = df;
 		} else if (AttributeDateType.TIME.equals(attributeModel.getDateType())) {
 			// use custom time field, potentially with Java 8 date converter

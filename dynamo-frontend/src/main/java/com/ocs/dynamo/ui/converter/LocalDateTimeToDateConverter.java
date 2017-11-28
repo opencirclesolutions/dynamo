@@ -19,6 +19,7 @@ import java.util.Date;
 import java.util.Locale;
 
 import com.ocs.dynamo.ui.utils.VaadinUtils;
+import com.ocs.dynamo.utils.DateUtils;
 import com.vaadin.data.util.converter.Converter;
 import com.vaadin.ui.UI;
 
