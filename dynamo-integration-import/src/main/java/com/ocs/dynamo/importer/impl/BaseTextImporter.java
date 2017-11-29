@@ -31,7 +31,8 @@ import com.ocs.dynamo.utils.SystemPropertyUtils;
 public abstract class BaseTextImporter extends BaseImporter<String[], String> {
 
 	/**
-	 * Tries to convert a String value to a Boolean
+	 * Tries to convert a String value to a Boolean (empty String or null
+	 * resolves to false)
 	 * 
 	 * @param unit
 	 *            the String

@@ -13,12 +13,12 @@
  */
 package com.ocs.dynamo.functional.domain;
 
-import com.ocs.dynamo.domain.model.VisibilityType;
-import com.ocs.dynamo.domain.model.annnotation.Attribute;
-import com.ocs.dynamo.domain.model.annnotation.Model;
-
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+
+import com.ocs.dynamo.domain.model.VisibilityType;
+import com.ocs.dynamo.domain.model.annotation.Attribute;
+import com.ocs.dynamo.domain.model.annotation.Model;
 
 /**
  * A locale identified by an IETF BCP 47 code
@@ -27,9 +27,7 @@ import javax.persistence.Entity;
  */
 @Entity
 @DiscriminatorValue("LOCALE")
-@Model(displayNamePlural = "Locales",
-	   displayProperty = "name",
-	   sortOrder = "name asc")
+@Model(displayNamePlural = "Locales", displayProperty = "name", sortOrder = "name asc")
 public class Locale extends Domain {
 
 	private static final long serialVersionUID = 3270223599926941961L;
@@ -41,15 +39,27 @@ public class Locale extends Domain {
 	/**
 	 * Constructor
 	 *
-	 * @param code the code of the currency
-	 * @param name the name of the currency
+	 * @param code
+	 *            the code of the currency
+	 * @param name
+	 *            the name of the currency
 	 */
 	public Locale(String code, String name) {
 		super(code, name);
 	}
-	
+
 	@Attribute(visible = VisibilityType.HIDE)
 	public String getCodeAndName() {
 		return getCode() + " - " + getName();
+	}
+
+	@Attribute(visible = VisibilityType.SHOW, required = true)
+	public String getCode() {
+		return super.getCode();
+	}
+
+	@Attribute(visible = VisibilityType.SHOW)
+	public String getName() {
+		return super.getName();
 	}
 }

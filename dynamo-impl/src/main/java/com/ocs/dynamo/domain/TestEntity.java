@@ -40,8 +40,8 @@ import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import com.ocs.dynamo.domain.model.AttributeTextFieldMode;
 import com.ocs.dynamo.domain.model.NumberSelectMode;
 import com.ocs.dynamo.domain.model.VisibilityType;
-import com.ocs.dynamo.domain.model.annnotation.Attribute;
-import com.ocs.dynamo.domain.model.annnotation.Model;
+import com.ocs.dynamo.domain.model.annotation.Attribute;
+import com.ocs.dynamo.domain.model.annotation.Model;
 
 /**
  * Entity used for testing purposes - has to be included in src/main/java

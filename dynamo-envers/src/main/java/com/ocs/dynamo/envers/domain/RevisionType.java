@@ -11,26 +11,34 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-package com.ocs.dynamo.domain.model.annnotation;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+package com.ocs.dynamo.envers.domain;
 
 /**
- * An annotation that can be used to place multiple "AttributeGroup" annotation on an entity.
+ * Revision types for auditing
  * 
  * @author bas.rutten
+ *
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
-public @interface AttributeGroups {
+public enum RevisionType {
 
-    /**
-     * 
-     * @return the attribute groups
-     */
-    AttributeGroup[] attributeGroups() default {};
+	ADD, MOD, DEL;
 
+	/**
+	 * Translates the Envers revision type to the Dymnamo revision type
+	 * 
+	 * @param t
+	 * @return
+	 */
+	public static RevisionType fromInternal(org.hibernate.envers.RevisionType t) {
+		switch (t) {
+		case ADD:
+			return ADD;
+		case MOD:
+			return MOD;
+		case DEL:
+			return DEL;
+		default:
+			return null;
+		}
+	}
 }

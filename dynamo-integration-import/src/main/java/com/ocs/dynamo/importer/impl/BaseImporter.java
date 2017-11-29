@@ -59,7 +59,7 @@ public abstract class BaseImporter<R, U> {
 	 * not defined
 	 * 
 	 * @param unit
-	 *            the field value to process
+	 *            the unit of data value to process
 	 * @param field
 	 *            the field definition
 	 * @return
@@ -71,7 +71,7 @@ public abstract class BaseImporter<R, U> {
 	 * not defined
 	 * 
 	 * @param unit
-	 *            the field value to process
+	 *            the unit of data to process
 	 * @param field
 	 *            the field definition
 	 * @return
@@ -79,14 +79,14 @@ public abstract class BaseImporter<R, U> {
 	protected abstract Date getDateValueWithDefault(U unit, ImportField field);
 
 	/**
-	 * Retrieves a value from a field
+	 * Retrieves a value from a unit of data
 	 * 
 	 * @param d
 	 *            the property descriptor that tells the process the type of the value to retrieve
 	 * @param unit
-	 *            the input unit from which to retrieve the value
+	 *            the unit of data to process
 	 * @param field
-	 *            the fiel definition
+	 *            the field definition
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")

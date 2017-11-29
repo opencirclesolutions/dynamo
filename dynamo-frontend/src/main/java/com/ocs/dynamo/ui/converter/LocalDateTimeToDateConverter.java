@@ -14,15 +14,18 @@
 package com.ocs.dynamo.ui.converter;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.Locale;
 
-import com.ocs.dynamo.utils.DateUtils;
+import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.data.util.converter.Converter;
+import com.vaadin.ui.UI;
 
 /**
  * Vaadin converter for converting between legacy date and
- * java.time.LocalDateTime
+ * java.time.LocalDateTime. Uses the time zone from the browser to make this
+ * work on all servers
  * 
  * @author bas.rutten
  *
@@ -33,12 +36,20 @@ public class LocalDateTimeToDateConverter implements Converter<Date, LocalDateTi
 
 	@Override
 	public LocalDateTime convertToModel(Date value, Class<? extends LocalDateTime> targetType, Locale locale) {
-		return DateUtils.toLocalDateTime(value);
+		if (value == null) {
+			return null;
+		}
+		ZoneId tz = VaadinUtils.getTimeZone(UI.getCurrent()).toZoneId();
+		return value.toInstant().atZone(tz).toLocalDateTime();
 	}
 
 	@Override
 	public Date convertToPresentation(LocalDateTime value, Class<? extends Date> targetType, Locale locale) {
-		return DateUtils.toLegacyDate(value);
+		if (value == null) {
+			return null;
+		}
+		ZoneId tz = VaadinUtils.getTimeZone(UI.getCurrent()).toZoneId();
+		return Date.from(value.atZone(tz).toInstant());
 	}
 
 	@Override

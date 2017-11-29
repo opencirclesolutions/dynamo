@@ -20,6 +20,7 @@ import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.CanAssignEntity;
+import com.ocs.dynamo.ui.container.QueryType;
 import com.vaadin.data.sort.SortOrder;
 
 /**
@@ -36,51 +37,66 @@ import com.vaadin.data.sort.SortOrder;
  *            type of the parent entity
  */
 public class ServiceBasedDetailLayout<ID extends Serializable, T extends AbstractEntity<ID>, ID2 extends Serializable, Q extends AbstractEntity<ID2>>
-        extends ServiceBasedSplitLayout<ID, T> implements CanAssignEntity<ID2, Q> {
+		extends ServiceBasedSplitLayout<ID, T> implements CanAssignEntity<ID2, Q> {
 
-    private static final long serialVersionUID = 1068860513192819804L;
+	private static final long serialVersionUID = 1068860513192819804L;
 
-    private final BaseService<ID2, Q> parentService;
+	private final BaseService<ID2, Q> parentService;
 
-    private Q parentEntity;
+	private Q parentEntity;
 
-    /**
-     * Constructor
-     * 
-     * @param service
-     * @param parentEntity
-     * @param parentService
-     * @param formOptions
-     * @param sortOrder
-     * @param joins
-     */
-    public ServiceBasedDetailLayout(BaseService<ID, T> service, Q parentEntity, BaseService<ID2, Q> parentService,
-            EntityModel<T> entityModel, FormOptions formOptions, SortOrder sortOrder, FetchJoinInformation... joins) {
-        super(service, entityModel, formOptions, sortOrder, joins);
-        this.parentEntity = parentEntity;
-        this.parentService = parentService;
-    }
+	/**
+	 * The joins to use when refreshing the parent entity
+	 */
+	private FetchJoinInformation[] parentJoins;
 
-    @Override
-    public void assignEntity(Q parentEntity) {
-        setParentEntity(parentEntity);
-    }
+	/**
+	 * Constructor
+	 * 
+	 * @param service
+	 * @param parentEntity
+	 * @param parentService
+	 * @param formOptions
+	 * @param sortOrder
+	 * @param joins
+	 */
+	public ServiceBasedDetailLayout(BaseService<ID, T> service, Q parentEntity, BaseService<ID2, Q> parentService,
+			EntityModel<T> entityModel, QueryType queryType, FormOptions formOptions, SortOrder sortOrder,
+			FetchJoinInformation... joins) {
+		super(service, entityModel, queryType, formOptions, sortOrder, joins);
+		this.parentEntity = parentEntity;
+		this.parentService = parentService;
+	}
 
-    public Q getParentEntity() {
-        return parentEntity;
-    }
+	@Override
+	public void assignEntity(Q parentEntity) {
+		setParentEntity(parentEntity);
+	}
 
-    public BaseService<ID2, Q> getParentService() {
-        return parentService;
-    }
+	public Q getParentEntity() {
+		return parentEntity;
+	}
 
-    @Override
-    public void reload() {
-        setParentEntity(getParentService().fetchById(getParentEntity().getId()));
-        super.reload();
-    }
+	public BaseService<ID2, Q> getParentService() {
+		return parentService;
+	}
 
-    public void setParentEntity(Q parentEntity) {
-        this.parentEntity = parentEntity;
-    }
+	@Override
+	public void reload() {
+		setParentEntity(getParentService().fetchById(getParentEntity().getId(), getParentJoins()));
+		super.reload();
+	}
+
+	public void setParentEntity(Q parentEntity) {
+		this.parentEntity = parentEntity;
+	}
+
+	public FetchJoinInformation[] getParentJoins() {
+		return parentJoins;
+	}
+
+	public void setParentJoins(FetchJoinInformation[] parentJoins) {
+		this.parentJoins = parentJoins;
+	}
+
 }

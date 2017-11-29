@@ -19,8 +19,8 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
 import com.ocs.dynamo.domain.model.CascadeMode;
-import com.ocs.dynamo.domain.model.annnotation.Attribute;
-import com.ocs.dynamo.domain.model.annnotation.Cascade;
+import com.ocs.dynamo.domain.model.annotation.Attribute;
+import com.ocs.dynamo.domain.model.annotation.Cascade;
 
 @Entity
 public class CascadeEntity extends AbstractEntity<Integer> {

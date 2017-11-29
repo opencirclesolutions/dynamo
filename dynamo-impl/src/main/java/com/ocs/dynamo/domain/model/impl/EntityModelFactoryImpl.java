@@ -67,12 +67,12 @@ import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.domain.model.NumberSelectMode;
 import com.ocs.dynamo.domain.model.VisibilityType;
-import com.ocs.dynamo.domain.model.annnotation.Attribute;
-import com.ocs.dynamo.domain.model.annnotation.AttributeGroup;
-import com.ocs.dynamo.domain.model.annnotation.AttributeGroups;
-import com.ocs.dynamo.domain.model.annnotation.AttributeOrder;
-import com.ocs.dynamo.domain.model.annnotation.Cascade;
-import com.ocs.dynamo.domain.model.annnotation.Model;
+import com.ocs.dynamo.domain.model.annotation.Attribute;
+import com.ocs.dynamo.domain.model.annotation.AttributeGroup;
+import com.ocs.dynamo.domain.model.annotation.AttributeGroups;
+import com.ocs.dynamo.domain.model.annotation.AttributeOrder;
+import com.ocs.dynamo.domain.model.annotation.Cascade;
+import com.ocs.dynamo.domain.model.annotation.Model;
 import com.ocs.dynamo.domain.model.validator.Email;
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.service.MessageService;
@@ -140,20 +140,25 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 		// validation methods annotated with @AssertTrue or @AssertFalse have to
 		// be ignored
 		String fieldName = descriptor.getName();
-		AssertTrue assertTrue = ClassUtils.getAnnotation(entityModel.getEntityClass(), fieldName, AssertTrue.class);
-		AssertFalse assertFalse = ClassUtils.getAnnotation(entityModel.getEntityClass(), fieldName, AssertFalse.class);
+		Class<?> pClass = parentClass != null ? parentClass : entityModel.getEntityClass();
+		AssertTrue assertTrue = ClassUtils.getAnnotation(pClass, fieldName, AssertTrue.class);
+		AssertFalse assertFalse = ClassUtils.getAnnotation(pClass, fieldName, AssertFalse.class);
 
 		if (assertTrue == null && assertFalse == null) {
 
 			AttributeModelImpl model = new AttributeModelImpl();
 			model.setEntityModel(entityModel);
 
-			String displayName = com.ocs.dynamo.utils.StringUtils.propertyIdToHumanFriendly(fieldName);
+			String displayName = com.ocs.dynamo.utils.StringUtils.propertyIdToHumanFriendly(fieldName,
+					SystemPropertyUtils.isCapitalizeWords());
 
 			// first, set the defaults
 			model.setDisplayName(displayName);
 			model.setDescription(displayName);
-			model.setPrompt(displayName);
+
+			if (SystemPropertyUtils.isUseDefaultPromptValue()) {
+				model.setPrompt(displayName);
+			}
 			model.setMainAttribute(descriptor.isPreferred());
 			model.setSearchable(descriptor.isPreferred());
 			model.setName((prefix == null ? "" : (prefix + ".")) + fieldName);
@@ -381,7 +386,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 	 */
 	private <T> EntityModelImpl<T> constructModelInner(Class<T> entityClass, String reference) {
 
-		String displayName = com.ocs.dynamo.utils.StringUtils.propertyIdToHumanFriendly(entityClass.getSimpleName());
+		String displayName = com.ocs.dynamo.utils.StringUtils.propertyIdToHumanFriendly(entityClass.getSimpleName(),
+				SystemPropertyUtils.isCapitalizeWords());
 		String displayNamePlural = displayName + PLURAL_POSTFIX;
 		String description = displayName;
 		String selectDisplayProperty = null;
@@ -824,7 +830,9 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 				// well -
 				// they are overwritten in the following code if they are
 				// explicitly set
-				model.setPrompt(attribute.displayName());
+				if (SystemPropertyUtils.isUseDefaultPromptValue()) {
+					model.setPrompt(attribute.displayName());
+				}
 				model.setDescription(attribute.displayName());
 			}
 

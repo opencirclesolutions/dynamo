@@ -32,7 +32,7 @@ import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.TestEntity2;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
-import com.ocs.dynamo.domain.model.annnotation.Attribute;
+import com.ocs.dynamo.domain.model.annotation.Attribute;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.test.BaseMockitoTest;
 import com.ocs.dynamo.test.MockUtil;
@@ -93,7 +93,7 @@ public class ModelBasedFieldFactoryTest extends BaseMockitoTest {
 
 		TextField tf = (TextField) obj;
 		Assert.assertEquals("", tf.getNullRepresentation());
-		Assert.assertNotNull(tf.getInputPrompt());
+		Assert.assertNull(tf.getInputPrompt());
 	}
 
 	/**
@@ -193,7 +193,7 @@ public class ModelBasedFieldFactoryTest extends BaseMockitoTest {
 
 		TextField tf = (TextField) obj;
 		Assert.assertEquals("", tf.getNullRepresentation());
-		Assert.assertNotNull(tf.getInputPrompt());
+		Assert.assertNull(tf.getInputPrompt());
 		Assert.assertFalse(tf.getValidators().isEmpty());
 	}
 
@@ -267,7 +267,7 @@ public class ModelBasedFieldFactoryTest extends BaseMockitoTest {
 		Assert.assertTrue(obj instanceof DateField);
 
 		DateField tf = (DateField) obj;
-		Assert.assertEquals(Resolution.MINUTE, tf.getResolution());
+		Assert.assertEquals(Resolution.SECOND, tf.getResolution());
 		Assert.assertTrue(tf.getConverter().getClass().isAssignableFrom(ZonedDateTimeToDateConverter.class));
 	}
 
@@ -277,7 +277,7 @@ public class ModelBasedFieldFactoryTest extends BaseMockitoTest {
 		Assert.assertTrue(obj instanceof DateField);
 
 		DateField tf = (DateField) obj;
-		Assert.assertEquals(Resolution.MINUTE, tf.getResolution());
+		Assert.assertEquals(Resolution.SECOND, tf.getResolution());
 		Assert.assertTrue(tf.getConverter().getClass().isAssignableFrom(LocalDateTimeToDateConverter.class));
 	}
 

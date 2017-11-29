@@ -20,8 +20,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import com.ocs.dynamo.domain.model.AttributeSelectMode;
-import com.ocs.dynamo.domain.model.annnotation.Attribute;
-import com.ocs.dynamo.domain.model.annnotation.Model;
+import com.ocs.dynamo.domain.model.annotation.Attribute;
+import com.ocs.dynamo.domain.model.annotation.Model;
 
 @Entity
 @Table(name = "test_entity2")

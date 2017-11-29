@@ -13,6 +13,7 @@
  */
 package com.ocs.dynamo.ui.converter;
 
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.Locale;
@@ -31,12 +32,18 @@ public class ZonedDateTimeToDateConverter implements Converter<Date, ZonedDateTi
 
 	@Override
 	public ZonedDateTime convertToModel(Date value, Class<? extends ZonedDateTime> targetType, Locale locale) {
-		return DateUtils.toZonedDateTime(value);
+		if (value == null) {
+			return null;
+		}
+		return DateUtils.convertSQLDate(value).toInstant().atZone(ZoneId.systemDefault());
 	}
 
 	@Override
 	public Date convertToPresentation(ZonedDateTime value, Class<? extends Date> targetType, Locale locale) {
-		return DateUtils.toLegacyDate(value);
+		if (value == null) {
+			return null;
+		}
+		return Date.from(value.toInstant());
 	}
 
 	@Override

@@ -78,6 +78,7 @@
 		<module>dynamo-api</module>
 		<module>dynamo-impl</module>
 		<module>dynamo-test</module>
+		<module>dynamo-envers</module>
 		<module>dynamo-integration-camel</module>
 		<module>dynamo-integration-import</module>
 		<module>dynamo-frontend</module>
@@ -144,12 +145,6 @@
 
 	<dependencyManagement>
 		<dependencies>
-			<dependency>
-				<groupId>${project.groupId}</groupId>
-				<artifactId>dynamo-spring</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-
 			<!-- Vaadin -->
 			<dependency>
 				<groupId>com.vaadin</groupId>
@@ -317,6 +312,12 @@
 				<version>${hibernate.version}</version>
 				<scope>provided</scope>
 			</dependency>
+			<dependency>
+				<groupId>org.hibernate</groupId>
+				<artifactId>hibernate-envers</artifactId>
+				<version>${hibernate.version}</version>
+				<scope>provided</scope>				
+			</dependency>				
 			<dependency>
 				<groupId>org.hibernate</groupId>
 				<artifactId>hibernate-validator</artifactId>

@@ -20,7 +20,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
 import com.ocs.dynamo.domain.AbstractEntity;
-import com.ocs.dynamo.domain.model.annnotation.Attribute;
+import com.ocs.dynamo.domain.model.annotation.Attribute;
 
 @Entity
 public class Person extends AbstractEntity<Integer> {

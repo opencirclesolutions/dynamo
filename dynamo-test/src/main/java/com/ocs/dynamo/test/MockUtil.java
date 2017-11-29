@@ -213,6 +213,7 @@ public final class MockUtil {
      * @param clazz
      *            the class of the entity
      */
+    @SuppressWarnings("unchecked")
     public static <ID, X extends AbstractEntity<ID>> void mockSave(BaseDao<ID, X> dao, Class<X> clazz) {
         // mock the save behaviour - return the first argument being passed to the method
         Mockito.when(dao.save(Matchers.any(clazz))).thenAnswer(invocation -> invocation.getArguments()[0]);

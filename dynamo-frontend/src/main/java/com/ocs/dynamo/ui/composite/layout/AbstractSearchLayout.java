@@ -84,18 +84,6 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	private ModelBasedEditForm<ID, T> editForm;
 
 	/**
-	 * Tabbed layout for complex detail mode
-	 */
-	private LazyTabLayout<ID, T> tabLayout;
-
-	/**
-	 * 
-	 */
-	private VerticalLayout tabContainerLayout;
-
-	private Component selectedDetailLayout;
-
-	/**
 	 * The main layout (in edit mode)
 	 */
 	private VerticalLayout mainEditLayout;
@@ -104,6 +92,10 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	 * The main layout (in search mode)
 	 */
 	private VerticalLayout mainSearchLayout;
+
+	private Button nextButton;
+
+	private Button prevButton;
 
 	/**
 	 * The query type
@@ -121,11 +113,6 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	private AbstractModelBasedSearchForm<ID, T> searchForm;
 
 	/**
-	 * The currently selected items in the search results table
-	 */
-	private Collection<T> selectedItems;
-
-	/**
 	 * Indicates whether the search layout has been constructed yet
 	 */
 	private boolean searchLayoutConstructed;
@@ -135,9 +122,22 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	 */
 	private VerticalLayout searchResultsLayout;
 
-	private Button nextButton;
+	private Component selectedDetailLayout;
 
-	private Button prevButton;
+	/**
+	 * The currently selected items in the search results table
+	 */
+	private Collection<T> selectedItems;
+
+	/**
+	 * 
+	 */
+	private VerticalLayout tabContainerLayout;
+
+	/**
+	 * Tabbed layout for complex detail mode
+	 */
+	private LazyTabLayout<ID, T> tabLayout;
 
 	/**
 	 * Constructor
@@ -290,7 +290,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	 * @param entity
 	 *            the currently selected entity
 	 */
-	protected void buildDetailsTabLayout(T entity) {
+	protected void buildDetailsTabLayout(T entity, FormOptions formOptions) {
 		tabContainerLayout = new DefaultVerticalLayout(true, true);
 
 		HorizontalLayout buttonBar = new DefaultHorizontalLayout(false, true, true);
@@ -353,7 +353,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 				// back button and iteration buttons not needed (they are
 				// displayed above
 				// the tabs)
-				return AbstractSearchLayout.this.initTab(getEntity(), index);
+				return AbstractSearchLayout.this.initTab(getEntity(), index, formOptions);
 			}
 		};
 		tabLayout.build();
@@ -433,6 +433,11 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 			@Override
 			protected T getPrevEntity(T current) {
 				return AbstractSearchLayout.this.getPrevEntity(current);
+			}
+
+			@Override
+			protected boolean handleCustomException(RuntimeException ex) {
+				return AbstractSearchLayout.this.handleCustomException(ex);
 			}
 
 			@Override
@@ -624,10 +629,36 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 			mainEditLayout.setStyleName(DynamoConstants.CSS_CLASS_HALFSCREEN);
 		}
 
+		FormOptions options = new FormOptions();
+		options.setOpenInViewMode(getFormOptions().isOpenInViewMode());
+		options.setScreenMode(ScreenMode.VERTICAL);
+		options.setAttributeGroupMode(getFormOptions().getAttributeGroupMode());
+		options.setPreserveSelectedTab(getFormOptions().isPreserveSelectedTab());
+		options.setShowNextButton(getFormOptions().isShowNextButton());
+		options.setShowPrevButton(getFormOptions().isShowPrevButton());
+		options.setPlaceButtonBarAtTop(getFormOptions().isPlaceButtonBarAtTop());
+		options.setHideCancelButton(true);
+		options.setFormNested(true);
+
+		// set the form options for the detail form
+		if (getFormOptions().isEditAllowed()) {
+			// editing in form must be possible
+			options.setEditAllowed(true);
+		} else {
+			// read-only mode
+			options.setOpenInViewMode(true).setEditAllowed(false);
+		}
+
+		if (options.isOpenInViewMode() || !isEditAllowed()) {
+			options.setShowBackButton(true);
+		}
+
 		if (getFormOptions().isComplexDetailsMode() && entity != null && entity.getId() != null) {
-			// complex tabbed layout
+			// complex tabbed layout, back button is placed separately
+			options.setShowBackButton(false);
+
 			if (tabContainerLayout == null) {
-				buildDetailsTabLayout(entity);
+				buildDetailsTabLayout(entity, options);
 			} else {
 				tabLayout.setEntity(entity);
 				tabLayout.reload();
@@ -639,32 +670,11 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 			}
 			selectedDetailLayout = tabContainerLayout;
 		} else {
-			FormOptions options = new FormOptions();
-			options.setOpenInViewMode(getFormOptions().isOpenInViewMode());
-			options.setScreenMode(ScreenMode.VERTICAL);
-			options.setAttributeGroupMode(getFormOptions().getAttributeGroupMode());
-			options.setPreserveSelectedTab(getFormOptions().isPreserveSelectedTab());
-			options.setShowNextButton(getFormOptions().isShowNextButton());
-			options.setShowPrevButton(getFormOptions().isShowPrevButton());
-			options.setPlaceButtonBarAtTop(getFormOptions().isPlaceButtonBarAtTop());
-			// set the form options for the detail form
-			if (getFormOptions().isEditAllowed()) {
-				// editing in form must be possible
-				options.setEditAllowed(true);
-			} else {
-				// read-only mode
-				options.setOpenInViewMode(true).setEditAllowed(false);
-			}
-
-			if (options.isOpenInViewMode() || !isEditAllowed()) {
-				options.setShowBackButton(true);
-			}
-
 			// simple edit form
 			if (editForm == null) {
 				buildEditForm(entity, options);
 			} else {
-				editForm.setViewMode(getFormOptions().isOpenInViewMode());
+				editForm.setViewMode(options.isOpenInViewMode());
 				editForm.setEntity(entity);
 				editForm.resetTab();
 			}
@@ -816,6 +826,10 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 		return selectedItems;
 	}
 
+	protected boolean handleCustomException(RuntimeException ex) {
+		return false;
+	}
+
 	/**
 	 * Check whether the container contains a next entity
 	 * 
@@ -844,7 +858,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 		return false;
 	}
 
-	protected Component initTab(T entity, int index) {
+	protected Component initTab(T entity, int index, FormOptions fo) {
 		// overwrite is subclasses
 		return null;
 	}

@@ -52,12 +52,12 @@ import com.ocs.dynamo.domain.model.AttributeType;
 import com.ocs.dynamo.domain.model.CascadeMode;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.VisibilityType;
-import com.ocs.dynamo.domain.model.annnotation.Attribute;
-import com.ocs.dynamo.domain.model.annnotation.AttributeGroup;
-import com.ocs.dynamo.domain.model.annnotation.AttributeGroups;
-import com.ocs.dynamo.domain.model.annnotation.AttributeOrder;
-import com.ocs.dynamo.domain.model.annnotation.Cascade;
-import com.ocs.dynamo.domain.model.annnotation.Model;
+import com.ocs.dynamo.domain.model.annotation.Attribute;
+import com.ocs.dynamo.domain.model.annotation.AttributeGroup;
+import com.ocs.dynamo.domain.model.annotation.AttributeGroups;
+import com.ocs.dynamo.domain.model.annotation.AttributeOrder;
+import com.ocs.dynamo.domain.model.annotation.Cascade;
+import com.ocs.dynamo.domain.model.annotation.Model;
 import com.ocs.dynamo.domain.model.validator.Email;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.service.impl.MessageServiceImpl;
@@ -100,7 +100,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		Assert.assertNotNull(nameModel);
 
 		Assert.assertNull(nameModel.getDefaultValue());
-		Assert.assertEquals("Name", nameModel.getPrompt());
+		Assert.assertNull(nameModel.getPrompt());
 		Assert.assertEquals("Name", nameModel.getDisplayName());
 		Assert.assertEquals(4, nameModel.getOrder().intValue());
 		Assert.assertEquals(String.class, nameModel.getType());

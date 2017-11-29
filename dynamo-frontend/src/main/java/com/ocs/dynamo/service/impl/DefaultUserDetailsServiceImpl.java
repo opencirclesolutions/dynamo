@@ -28,44 +28,45 @@ import com.ocs.dynamo.service.UserDetailsService;
  */
 public class DefaultUserDetailsServiceImpl implements UserDetailsService {
 
-    private static final String SYSTEM = "system";
+	private static final String SYSTEM = "system";
 
-    @Override
-    public String getCurrentUserName() {
-        try {
-            HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder
-                    .currentRequestAttributes()).getRequest();
-            return request.getUserPrincipal().getName();
-        } catch (Exception ex) {
-            // ignore - no request available during integration test
-            return SYSTEM;
-        }
-    }
+	@Override
+	public String getCurrentUserName() {
+		try {
+			HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes())
+					.getRequest();
+			return request.getUserPrincipal().getName();
+		} catch (Exception ex) {
+			// ignore - no request available during integration test
+			return SYSTEM;
+		}
+	}
 
-    @Override
-    public boolean isUserInRole(String role) {
-        try {
-            HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder
-                    .currentRequestAttributes()).getRequest();
-            return request.isUserInRole(role);
-        } catch (Exception ex) {
-            return false;
-        }
-    }
+	@Override
+	public boolean isUserInRole(String role) {
+		try {
+			HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes())
+					.getRequest();
 
-    @Override
-    public boolean isUserInRole(String... roles) {
-        try {
-            HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder
-                    .currentRequestAttributes()).getRequest();
-            for (String r : roles) {
-                if (request.isUserInRole(r)) {
-                    return true;
-                }
-            }
-            return false;
-        } catch (Exception ex) {
-            return false;
-        }
-    }
+			return request.isUserInRole(role);
+		} catch (Exception ex) {
+			return false;
+		}
+	}
+
+	@Override
+	public boolean isUserInRole(String... roles) {
+		try {
+			HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes())
+					.getRequest();
+			for (String r : roles) {
+				if (request.isUserInRole(r)) {
+					return true;
+				}
+			}
+			return false;
+		} catch (Exception ex) {
+			return false;
+		}
+	}
 }

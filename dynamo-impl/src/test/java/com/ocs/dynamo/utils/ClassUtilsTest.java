@@ -26,7 +26,7 @@ import org.junit.Test;
 
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.TestEntity2;
-import com.ocs.dynamo.domain.model.annnotation.Attribute;
+import com.ocs.dynamo.domain.model.annotation.Attribute;
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.utils.ClassUtils;
 

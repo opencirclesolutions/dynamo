@@ -23,7 +23,8 @@ import com.ocs.dynamo.ui.CanAssignEntity;
 import com.vaadin.data.sort.SortOrder;
 
 /**
- * A tabular edit layout that keeps a reference to a parent object of the collection being edited
+ * A tabular edit layout that keeps a reference to a parent object of the
+ * collection being edited
  * 
  * @author bas.rutten
  * @param <ID>
@@ -32,13 +33,18 @@ import com.vaadin.data.sort.SortOrder;
  * @param <Q>
  */
 public class TabularDetailEditLayout<ID extends Serializable, T extends AbstractEntity<ID>, ID2 extends Serializable, Q extends AbstractEntity<ID2>>
-        extends TabularEditLayout<ID, T> implements CanAssignEntity<ID2, Q> {
+		extends TabularEditLayout<ID, T> implements CanAssignEntity<ID2, Q> {
 
 	private static final long serialVersionUID = -3432301286152665223L;
 
 	private final BaseService<ID2, Q> parentService;
 
 	private Q parentEntity;
+
+	/**
+	 * The joins to use when refreshing the parent entity
+	 */
+	private FetchJoinInformation[] parentJoins;
 
 	/**
 	 * Constructor
@@ -59,7 +65,7 @@ public class TabularDetailEditLayout<ID extends Serializable, T extends Abstract
 	 *            the relations to fetch
 	 */
 	public TabularDetailEditLayout(BaseService<ID, T> service, Q parentEntity, BaseService<ID2, Q> parentService,
-	        EntityModel<T> entityModel, FormOptions formOptions, SortOrder sortOrder, FetchJoinInformation... joins) {
+			EntityModel<T> entityModel, FormOptions formOptions, SortOrder sortOrder, FetchJoinInformation... joins) {
 		super(service, entityModel, formOptions, sortOrder, joins);
 		this.parentService = parentService;
 		this.parentEntity = parentEntity;
@@ -67,7 +73,7 @@ public class TabularDetailEditLayout<ID extends Serializable, T extends Abstract
 
 	@Override
 	public void assignEntity(Q parentEntity) {
-		setParentEntity(parentEntity);
+		setParentEntity(getParentService().fetchById(parentEntity.getId(), getParentJoins()));
 	}
 
 	public Q getParentEntity() {
@@ -81,4 +87,13 @@ public class TabularDetailEditLayout<ID extends Serializable, T extends Abstract
 	public void setParentEntity(Q parentEntity) {
 		this.parentEntity = parentEntity;
 	}
+
+	public FetchJoinInformation[] getParentJoins() {
+		return parentJoins;
+	}
+
+	public void setParentJoins(FetchJoinInformation[] parentJoins) {
+		this.parentJoins = parentJoins;
+	}
+
 }

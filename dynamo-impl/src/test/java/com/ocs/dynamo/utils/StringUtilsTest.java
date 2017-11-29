@@ -21,42 +21,60 @@ import com.ocs.dynamo.utils.StringUtils;
 
 public class StringUtilsTest {
 
-    @Test
-    public void testRestrictToMaxFieldLength() {
+	@Test
+	public void testCamelCaseToHumanFriendly() {
+		Assert.assertNull(StringUtils.camelCaseToHumanFriendly(null, true));
+		Assert.assertEquals("Slightly Complex", StringUtils.camelCaseToHumanFriendly("slightlyComplex", true));
+		Assert.assertEquals("Simple", StringUtils.camelCaseToHumanFriendly("simple", true));
+		Assert.assertEquals("Multiple Words Camel", StringUtils.camelCaseToHumanFriendly("multiple wordsCamel", true));
 
-        Assert.assertNull(StringUtils.restrictToMaxFieldLength(null, TestEntity.class, "name"));
+		Assert.assertEquals("Slightly complex", StringUtils.camelCaseToHumanFriendly("slightlyComplex", false));
+		Assert.assertEquals("Simple", StringUtils.camelCaseToHumanFriendly("simple", false));
+		Assert.assertEquals("Multiple words camel", StringUtils.camelCaseToHumanFriendly("multiple wordsCamel", false));
+	}
 
-        // a value that is too long is truncated
-        String result = StringUtils.restrictToMaxFieldLength("longlonglonglonglonglonglonglonglonglonglong",
-                TestEntity.class, "name");
-        Assert.assertEquals(25, result.length());
+	@Test
+	public void testRestrictToMaxFieldLength() {
 
-        // a short value is left alone
-        result = StringUtils.restrictToMaxFieldLength("shortshort", TestEntity.class, "name");
-        Assert.assertEquals(10, result.length());
+		Assert.assertNull(StringUtils.restrictToMaxFieldLength(null, TestEntity.class, "name"));
 
-        // no restriction on the field means no change
-        result = StringUtils.restrictToMaxFieldLength("longlonglonglonglonglonglonglonglonglonglong", TestEntity.class,
-                "somestring");
-        Assert.assertEquals(44, result.length());
-    }
+		// a value that is too long is truncated
+		String result = StringUtils.restrictToMaxFieldLength("longlonglonglonglonglonglonglonglonglonglong",
+				TestEntity.class, "name");
+		Assert.assertEquals(25, result.length());
 
-    @Test
-    public void testReplaceHtmlBreaks() {
-        Assert.assertNull(StringUtils.replaceHtmlBreaks(null));
+		// a short value is left alone
+		result = StringUtils.restrictToMaxFieldLength("shortshort", TestEntity.class, "name");
+		Assert.assertEquals(10, result.length());
 
-        Assert.assertEquals("", StringUtils.replaceHtmlBreaks("<br/>"));
-        Assert.assertEquals("a, b", StringUtils.replaceHtmlBreaks("a<br/>b"));
-        Assert.assertEquals("a, b", StringUtils.replaceHtmlBreaks("a<br/>b<br/>"));
-    }
+		// no restriction on the field means no change
+		result = StringUtils.restrictToMaxFieldLength("longlonglonglonglonglonglonglonglonglonglong", TestEntity.class,
+				"somestring");
+		Assert.assertEquals(44, result.length());
+	}
 
-    @Test
-    public void testIsValidEmail() {
-        Assert.assertFalse(StringUtils.isValidEmail(" "));
-        Assert.assertFalse(StringUtils.isValidEmail(""));
-        Assert.assertFalse(StringUtils.isValidEmail("@"));
-        Assert.assertTrue(StringUtils.isValidEmail("a@b.com"));
-        Assert.assertFalse(StringUtils.isValidEmail("a@b"));
-        Assert.assertTrue(StringUtils.isValidEmail("kevin@opencirclesolutions.nl"));
-    }
+	@Test
+	public void testReplaceHtmlBreaks() {
+		Assert.assertNull(StringUtils.replaceHtmlBreaks(null));
+
+		Assert.assertEquals("", StringUtils.replaceHtmlBreaks("<br/>"));
+		Assert.assertEquals("a, b", StringUtils.replaceHtmlBreaks("a<br/>b"));
+		Assert.assertEquals("a, b", StringUtils.replaceHtmlBreaks("a<br/>b<br/>"));
+	}
+
+	@Test
+	public void testIsValidEmail() {
+		Assert.assertFalse(StringUtils.isValidEmail(" "));
+		Assert.assertFalse(StringUtils.isValidEmail(""));
+		Assert.assertFalse(StringUtils.isValidEmail("@"));
+		Assert.assertTrue(StringUtils.isValidEmail("a@b.com"));
+		Assert.assertFalse(StringUtils.isValidEmail("a@b"));
+		Assert.assertTrue(StringUtils.isValidEmail("kevin@opencirclesolutions.nl"));
+	}
+
+	@Test
+	public void testPrependProtocol() {
+		Assert.assertEquals("http://www.google.nl", StringUtils.prependProtocol("http://www.google.nl"));
+		Assert.assertEquals("http://www.google.nl", StringUtils.prependProtocol("www.google.nl"));
+	}
 }

@@ -13,23 +13,21 @@
  */
 package com.ocs.dynamo.functional.domain;
 
+import com.ocs.dynamo.domain.AbstractEntity;
+import com.ocs.dynamo.domain.model.VisibilityType;
+import com.ocs.dynamo.domain.model.annotation.Attribute;
+import com.ocs.dynamo.domain.model.annotation.Model;
+import com.ocs.dynamo.functional.DomainConstants;
+import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.builder.ReflectionToStringBuilder;
+
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
-import javax.persistence.SequenceGenerator;
 import javax.validation.constraints.NotNull;
-
-import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.builder.ReflectionToStringBuilder;
-
-import com.ocs.dynamo.domain.AbstractEntity;
-import com.ocs.dynamo.domain.model.VisibilityType;
-import com.ocs.dynamo.domain.model.annnotation.Attribute;
-import com.ocs.dynamo.domain.model.annnotation.Model;
-import com.ocs.dynamo.functional.DomainConstants;
 
 /**
  * Base class for reference information.
@@ -39,7 +37,7 @@ import com.ocs.dynamo.functional.DomainConstants;
  */
 @Inheritance
 @DiscriminatorColumn(name = "TYPE")
-@Entity
+@Entity(name = "domain")
 @Model(displayProperty = "name", sortOrder = "name asc")
 public abstract class Domain extends AbstractEntity<Integer> {
 
@@ -50,8 +48,7 @@ public abstract class Domain extends AbstractEntity<Integer> {
 	private static final long serialVersionUID = 1598343469161718498L;
 
 	@Id
-	@SequenceGenerator(name = "DOMAIN_ID_GENERATOR", sequenceName = "DOMAIN_ID_SEQ")
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "DOMAIN_ID_GENERATOR")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 
 	/**
@@ -73,7 +70,7 @@ public abstract class Domain extends AbstractEntity<Integer> {
 	 * @param code
 	 * @param name
 	 */
-	public Domain(String code, String name) {
+	public Domain(final String code, final String name) {
 		this.code = code;
 		this.name = name;
 	}
@@ -84,7 +81,7 @@ public abstract class Domain extends AbstractEntity<Integer> {
 	}
 
 	@Override
-	public void setId(Integer id) {
+	public void setId(final Integer id) {
 		this.id = id;
 	}
 
@@ -92,7 +89,7 @@ public abstract class Domain extends AbstractEntity<Integer> {
 		return this.code;
 	}
 
-	public void setCode(String code) {
+	public void setCode(final String code) {
 		this.code = code;
 	}
 
@@ -100,7 +97,7 @@ public abstract class Domain extends AbstractEntity<Integer> {
 		return this.name;
 	}
 
-	public void setName(String name) {
+	public void setName(final String name) {
 		this.name = name;
 	}
 
@@ -110,7 +107,7 @@ public abstract class Domain extends AbstractEntity<Integer> {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(final Object obj) {
 		if (this == obj) {
 			return true;
 		}
@@ -122,7 +119,7 @@ public abstract class Domain extends AbstractEntity<Integer> {
 			return false;
 		}
 
-		Domain other = (Domain) obj;
+		final Domain other = (Domain) obj;
 		if (this.id != null && other.id != null) {
 			// first, check if the IDs match
 			return ObjectUtils.equals(this.id, other.id);
