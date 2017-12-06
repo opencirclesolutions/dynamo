@@ -40,8 +40,8 @@ import com.ocs.dynamo.exception.OCSValidationException;
 import com.ocs.dynamo.filter.Filter;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.MessageService;
+import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.ocs.dynamo.utils.ClassUtils;
-import com.ocs.dynamo.utils.SystemPropertyUtils;
 
 /**
  * Base service implementation

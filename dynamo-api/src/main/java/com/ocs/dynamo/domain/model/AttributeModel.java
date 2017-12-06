@@ -17,9 +17,10 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * An attribute model represents how a certain attribute of an entity will be behave in the user
- * interface. This includes e.g. whether the attribute is searchable, sortable, what kind of user
- * interface component is used to edit the attribute any many other aspects
+ * An attribute model represents how a certain attribute of an entity will be
+ * behave in the user interface. This includes e.g. whether the attribute is
+ * searchable, sortable, what kind of user interface component is used to edit
+ * the attribute any many other aspects
  * 
  * @author bas.rutten
  *
@@ -40,8 +41,8 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 
 	/**
 	 * Adds a "group together with" attribute. These attributes mentioned as the
-	 * "group together with" attributes will be rendered on the same line as the attribute for which
-	 * this model is defined
+	 * "group together with" attributes will be rendered on the same line as the
+	 * attribute for which this model is defined
 	 * 
 	 * @param path
 	 *            the path to the attribute to group with
@@ -60,7 +61,8 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 
 	/**
 	 * 
-	 * @return the attributes to cascade to when the value of this attribute changes
+	 * @return the attributes to cascade to when the value of this attribute
+	 *         changes
 	 */
 	Set<String> getCascadeAttributes();
 
@@ -84,15 +86,16 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 
 	/**
 	 * 
-	 * @return the name of the field in the collection table that is used to search on when building
-	 *         a token search field for values in a collection table
+	 * @return the name of the field in the collection table that is used to
+	 *         search on when building a token search field for values in a
+	 *         collection table
 	 */
 	String getCollectionTableFieldName();
 
 	/**
 	 * 
-	 * @return the name of the collection table that is used when building a token search field for
-	 *         values in a collection table
+	 * @return the name of the collection table that is used when building a
+	 *         token search field for values in a collection table
 	 */
 	String getCollectionTableName();
 
@@ -110,7 +113,8 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 
 	/**
 	 * 
-	 * @return The description of the attribute. This is used as the tool tip in tables
+	 * @return The description of the attribute. This is used as the tool tip in
+	 *         tables
 	 */
 	String getDescription();
 
@@ -139,20 +143,22 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 
 	/**
 	 * 
-	 * @return The name of the property in which to store the file name of an uploaded file
+	 * @return The name of the property in which to store the file name of an
+	 *         uploaded file
 	 */
 	String getFileNameProperty();
 
 	/**
 	 * 
-	 * @return the paths to the other attributes that must be appear on the same line in an edit
-	 *         form
+	 * @return the paths to the other attributes that must be appear on the same
+	 *         line in an edit form
 	 */
 	List<String> getGroupTogetherWith();
 
 	/**
 	 * 
-	 * @return The maximum allowed length of the attribute (inside a collection table)
+	 * @return The maximum allowed length of the attribute (inside a collection
+	 *         table)
 	 */
 	Integer getMaxLength();
 
@@ -165,25 +171,29 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 
 	/**
 	 * 
-	 * @return the maximum allowed value of the attribute (inside a collection table)
+	 * @return the maximum allowed value of the attribute (inside a collection
+	 *         table)
 	 */
 	Long getMaxValue();
 
 	/**
 	 * 
-	 * @return the member type of the collection, if this attribute holds a collection of values
+	 * @return the member type of the collection, if this attribute holds a
+	 *         collection of values
 	 */
 	Class<?> getMemberType();
 
 	/**
 	 * 
-	 * @return the minimum allowed length of the attribute (inside a collection table)
+	 * @return the minimum allowed length of the attribute (inside a collection
+	 *         table)
 	 */
 	Integer getMinLength();
 
 	/**
 	 * 
-	 * @return the minimum allowed value of the attribute (inside a collection table)
+	 * @return the minimum allowed value of the attribute (inside a collection
+	 *         table)
 	 */
 	Long getMinValue();
 
@@ -200,9 +210,9 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	EntityModel<?> getNestedEntityModel();
 
 	/**
-	 * @return The normalized type of the attribute (this is the same as the <code>type</code> in
-	 *         case of a singular attribute, and the member type of the collection case of
-	 *         collection attribute
+	 * @return The normalized type of the attribute (this is the same as the
+	 *         <code>type</code> in case of a singular attribute, and the member
+	 *         type of the collection case of collection attribute
 	 */
 	Class<?> getNormalizedType();
 
@@ -226,40 +236,45 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	String getPath();
 
 	/**
-	 * @return The precision (number of decimals) to use when displaying a decimal number
+	 * @return The precision (number of decimals) to use when displaying a
+	 *         decimal number
 	 */
 	int getPrecision();
 
 	/**
-	 * @return The value to display as the input prompt value inside an edit field
+	 * @return The value to display as the input prompt value inside an edit
+	 *         field
 	 */
 	String getPrompt();
 
 	/**
 	 * 
-	 * @return the name of the property to which to assign a value in case of a "quick addition"
+	 * @return the name of the property to which to assign a value in case of a
+	 *         "quick addition"
 	 */
 	String getQuickAddPropertyName();
 
 	/**
 	 * 
-	 * @return The path by which to replace the actual path when carrying out a search. This is
-	 *         needed in very specific cases when an Entity has multiple detail relations that are
-	 *         mapped to the same table
+	 * @return The path by which to replace the actual path when carrying out a
+	 *         search. This is needed in very specific cases when an Entity has
+	 *         multiple detail relations that are mapped to the same table
 	 */
 	String getReplacementSearchPath();
 
 	/**
 	 * 
 	 * 
-	 * @return The search select mode (determines which component to render in search screens)
+	 * @return The search select mode (determines which component to render in
+	 *         search screens)
 	 */
 	AttributeSelectMode getSearchSelectMode();
 
 	/**
 	 * 
 	 * 
-	 * @return The select mode (determines which component to render in edit screens)
+	 * @return The select mode (determines which component to render in edit
+	 *         screens)
 	 */
 	AttributeSelectMode getSelectMode();
 
@@ -283,14 +298,15 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 
 	/**
 	 * 
-	 * @return true if the attribute is already included in a "groupTogetherWith" clause
+	 * @return true if the attribute is already included in a
+	 *         "groupTogetherWith" clause
 	 */
 	boolean isAlreadyGrouped();
 
 	/**
 	 * 
-	 * @return Whether the property is present inside an edit form. By default this is switched off
-	 *         for complex (i.e. MASTER or DETAIL) objects
+	 * @return Whether the property is present inside an edit form. By default
+	 *         this is switched off for complex (i.e. MASTER or DETAIL) objects
 	 */
 	boolean isComplexEditable();
 
@@ -342,8 +358,8 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	boolean isPercentage();
 
 	/**
-	 * @ return whether "quick edit" functionality is allowed. Quick edit functionality allows for
-	 * the inline addition of simple domain values
+	 * @ return whether "quick edit" functionality is allowed. Quick edit
+	 * functionality allows for the inline addition of simple domain values
 	 */
 	boolean isQuickAddAllowed();
 
@@ -353,15 +369,15 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	boolean isReadOnly();
 
 	/**
-	 * @return whether the attribute is a required attribute (entity can only be saved if values for
-	 *         all required attributes have been provided)
+	 * @return whether the attribute is a required attribute (entity can only be
+	 *         saved if values for all required attributes have been provided)
 	 */
 	boolean isRequired();
 
 	/**
 	 * 
-	 * @return whether it is required to fill in a value for this attribute before you can carry out
-	 *         a search
+	 * @return whether it is required to fill in a value for this attribute
+	 *         before you can carry out a search
 	 */
 	boolean isRequiredForSearching();
 
@@ -371,22 +387,22 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	boolean isSearchable();
 
 	/**
-	 * @return whether searching on this attribute is case sensitive (only applies if this is a
-	 *         String attribute)
+	 * @return whether searching on this attribute is case sensitive (only
+	 *         applies if this is a String attribute)
 	 */
 	boolean isSearchCaseSensitive();
 
 	/**
-	 * @return whether searching for this value is by exact match (rather than using a range). Only
-	 *         applicable to numerical and date field
+	 * @return whether searching for this value is by exact match (rather than
+	 *         using a range). Only applicable to numerical and date field
 	 */
 	boolean isSearchForExactValue();
 
 	/**
 	 * 
 	 * 
-	 * @return whether searching should only match on prefixes rather than on a substring occurring
-	 *         anywhere
+	 * @return whether searching should only match on prefixes rather than on a
+	 *         substring occurring anywhere
 	 */
 	boolean isSearchPrefixOnly();
 
@@ -394,6 +410,12 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	 * @return whether the attribute is sortable
 	 */
 	boolean isSortable();
+
+	/**
+	 * 
+	 * @return whether the attribute is transient
+	 */
+	boolean isTransient();
 
 	/**
 	 * Indicates whether this represents a (clickable) URL
@@ -431,7 +453,8 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	boolean isWeek();
 
 	/**
-	 * Indicates whether this attribute allows direct navigation to entity edit screen
+	 * Indicates whether this attribute allows direct navigation to entity edit
+	 * screen
 	 */
 	boolean isDirectNavigation();
 

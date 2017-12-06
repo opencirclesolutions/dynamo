@@ -17,7 +17,7 @@ import java.io.Serializable;
 
 import com.ocs.dynamo.ui.composite.type.AttributeGroupMode;
 import com.ocs.dynamo.ui.composite.type.ScreenMode;
-import com.ocs.dynamo.utils.SystemPropertyUtils;
+import com.ocs.dynamo.util.SystemPropertyUtils;
 
 /**
  * Parameter object that can be passed along when creating a page - this object

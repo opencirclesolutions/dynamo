@@ -19,7 +19,7 @@ import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.functional.domain.Domain;
 import com.ocs.dynamo.service.BaseService;
-import com.ocs.dynamo.ui.ServiceLocator;
+import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.composite.layout.BaseCustomComponent;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
@@ -148,7 +148,8 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
 	private <T extends Domain> ServiceBasedSplitLayout<Integer, T> constructSplitLayout(Class<T> domainClass,
 			FormOptions formOptions) {
 
-		BaseService<Integer, T> baseService = (BaseService<Integer, T>) ServiceLocator.getServiceForEntity(domainClass);
+		BaseService<Integer, T> baseService = (BaseService<Integer, T>) ServiceLocatorFactory.getServiceLocator()
+				.getServiceForEntity(domainClass);
 		if (baseService != null) {
 			return new ServiceBasedSplitLayout<Integer, T>(baseService, getEntityModelFactory().getModel(domainClass),
 					QueryType.PAGING, formOptions, new SortOrder(Domain.ATTRIBUTE_NAME, SortDirection.ASCENDING)) {

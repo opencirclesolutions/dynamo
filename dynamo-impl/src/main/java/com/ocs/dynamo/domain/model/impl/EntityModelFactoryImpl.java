@@ -45,6 +45,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import javax.validation.constraints.AssertFalse;
 import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.NotNull;
@@ -76,9 +77,9 @@ import com.ocs.dynamo.domain.model.annotation.Model;
 import com.ocs.dynamo.domain.model.validator.Email;
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.service.MessageService;
+import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.ocs.dynamo.utils.ClassUtils;
 import com.ocs.dynamo.utils.DateUtils;
-import com.ocs.dynamo.utils.SystemPropertyUtils;
 
 /**
  * Implementation of the entity model factory - creates models that hold
@@ -202,6 +203,12 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 			if (AttributeType.BASIC.equals(model.getAttributeType()) && size != null) {
 				model.setMaxLength(size.max());
 				model.setMinLength(size.min());
+			}
+
+			// check for transient attributes
+			Transient trans = ClassUtils.getAnnotation(entityModel.getEntityClass(), fieldName, Transient.class);
+			if (trans != null) {
+				model.setTransient(true);
 			}
 
 			setNestedEntityModel(model);

@@ -24,8 +24,8 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.support.GenericApplicationContext;
 
 /**
- * Base class for testing Spring beans. Automatically injects all dependencies annotated with
- * "@Mock" into the bean
+ * Base class for testing Spring beans. Automatically injects all dependencies
+ * annotated with "@Mock" into the bean
  * 
  * @author bas.rutten
  */
@@ -38,7 +38,8 @@ public abstract class BaseMockitoTest {
 	private GenericApplicationContext applicationContext;
 
 	/**
-	 * Adds a bean to the application context context under the bean's class name
+	 * Adds a bean to the application context context under the bean's class
+	 * name
 	 * 
 	 * @param bean
 	 *            the bean
@@ -115,8 +116,8 @@ public abstract class BaseMockitoTest {
 	}
 
 	/**
-	 * Wires the test subject (the bean to test) by injecting all appropriate services and other
-	 * fields into it
+	 * Wires the test subject (the bean to test) by injecting all appropriate
+	 * services and other fields into it
 	 * 
 	 * @param subject
 	 *            the test subject to wire

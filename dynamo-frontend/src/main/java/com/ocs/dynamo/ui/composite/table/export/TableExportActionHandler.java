@@ -46,15 +46,15 @@ import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.service.MessageService;
-import com.ocs.dynamo.ui.ServiceLocator;
+import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.composite.table.ModelBasedTreeTable;
 import com.ocs.dynamo.ui.container.hierarchical.ModelBasedHierarchicalContainer;
 import com.ocs.dynamo.ui.utils.FormatUtils;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
+import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.ocs.dynamo.utils.DateUtils;
 import com.ocs.dynamo.utils.NumberUtils;
 import com.ocs.dynamo.utils.StringUtils;
-import com.ocs.dynamo.utils.SystemPropertyUtils;
 import com.vaadin.addon.tableexport.ExcelExport;
 import com.vaadin.addon.tableexport.TableExport;
 import com.vaadin.data.Container;
@@ -780,8 +780,8 @@ public class TableExportActionHandler implements Handler {
 	 */
 	public TableExportActionHandler(UI ui, List<String> columnIds, String reportTitle, boolean totalsRow,
 			TableExportMode exportMode, CustomCellStyleGenerator cellStyleGenerator) {
-		this.messageService = ServiceLocator.getMessageService();
-		this.entityModelFactory = ServiceLocator.getEntityModelFactory();
+		this.messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
+		this.entityModelFactory = ServiceLocatorFactory.getServiceLocator().getEntityModelFactory();
 		this.columnIds = columnIds;
 		this.cellStyleGenerator = cellStyleGenerator;
 		this.exportMode = exportMode;
@@ -920,7 +920,7 @@ public class TableExportActionHandler implements Handler {
 				size = table.getContainerDataSource().size();
 			}
 
-			TableExportService service = ServiceLocator.getService(TableExportService.class);
+			TableExportService service = ServiceLocatorFactory.getServiceLocator().getService(TableExportService.class);
 
 			if (TableExportMode.CSV.equals(exportMode)) {
 				ModelCSVExport export = new ModelCSVExport(table);

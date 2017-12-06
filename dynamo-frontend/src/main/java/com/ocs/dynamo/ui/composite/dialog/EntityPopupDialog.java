@@ -20,7 +20,7 @@ import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.MessageService;
-import com.ocs.dynamo.ui.ServiceLocator;
+import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.composite.layout.SimpleEditLayout;
@@ -43,7 +43,7 @@ public class EntityPopupDialog<ID extends Serializable, T extends AbstractEntity
 
     private static final long serialVersionUID = -2012972894321597214L;
 
-    private MessageService messageService = ServiceLocator.getMessageService();
+    private MessageService messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
 
     /**
      * The entity model

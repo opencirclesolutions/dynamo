@@ -11,7 +11,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-package com.ocs.dynamo.utils;
+package com.ocs.dynamo.util;
 
 import com.ocs.dynamo.constants.DynamoConstants;
 
@@ -46,7 +46,7 @@ public final class SystemPropertyUtils {
 	}
 
 	/**
-	 * 
+	 * The default caption format 
 	 * @return
 	 */
 	public static String getDefaultCaptionFormat() {
@@ -144,7 +144,7 @@ public final class SystemPropertyUtils {
 	}
 
 	/**
-	 * @return default search case sensitive. False if not specified
+	 * @return Indicates whether searches on text fields will be default be case insensitive 
 	 */
 	public static boolean getDefaultSearchCaseSensitive() {
 		return Boolean.getBoolean(DynamoConstants.SP_DEFAULT_SEARCH_CASE_SENSITIVE);
@@ -248,6 +248,15 @@ public final class SystemPropertyUtils {
 	 */
 	public static boolean useThousandsGroupingInEditMode() {
 		return Boolean.getBoolean(DynamoConstants.SP_THOUSAND_GROUPING);
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public static String getServiceLocatorClassName() {
+		return System.getProperty(DynamoConstants.SP_SERVICE_LOCATOR_CLASS_NAME, 
+				"com.ocs.dynamo.ui.SpringWebServiceLocator");
 	}
 
 	private SystemPropertyUtils() {

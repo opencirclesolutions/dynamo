@@ -3,6 +3,8 @@ package com.ocs.dynamo.utils;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.ocs.dynamo.util.SystemPropertyUtils;
+
 public class SystemPropertyUtilsTest {
 
     @Test

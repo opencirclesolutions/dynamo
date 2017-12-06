@@ -33,7 +33,7 @@ import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.ui.container.pivot.PivotItem;
 import com.ocs.dynamo.ui.converter.BigDecimalConverter;
 import com.ocs.dynamo.ui.converter.ConverterFactory;
-import com.ocs.dynamo.utils.SystemPropertyUtils;
+import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanItem;

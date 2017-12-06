@@ -11,57 +11,37 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-package com.ocs.dynamo.ui;
+package com.ocs.dynamo.service.impl;
 
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.servlet.ServletContext;
-
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.MessageService;
-import com.vaadin.spring.server.SpringVaadinServlet;
+import com.ocs.dynamo.service.ServiceLocator;
 
 /**
  * Static class for accessing the Spring container
  * 
  * @author bas.rutten
  */
-public final class ServiceLocator {
+public abstract class BaseSpringServiceLocator implements ServiceLocator {
 
-	private static ApplicationContext ctx;
+	protected ApplicationContext ctx;
 
-	private ServiceLocator() {
-		// hidden constructor
-	}
+	protected abstract void loadCtx();
 
 	/**
 	 * @return
 	 */
-	private static ApplicationContext getContext() {
+	private ApplicationContext getContext() {
 		if (ctx == null) {
 			loadCtx();
 		}
 		return ctx;
-	}
-
-	/**
-	 * Lazily loads the context
-	 */
-	private static synchronized void loadCtx() {
-		if (ctx == null) {
-			if (SpringVaadinServlet.getCurrent() != null) {
-				ServletContext sc = SpringVaadinServlet.getCurrent().getServletContext();
-				ctx = WebApplicationContextUtils.getWebApplicationContext(sc);
-			} else {
-				ctx = new ClassPathXmlApplicationContext("classpath:META-INF/testApplicationContext.xml");
-			}
-		}
 	}
 
 	/**
@@ -71,7 +51,7 @@ public final class ServiceLocator {
 	 *            the class of the service
 	 * @return
 	 */
-	public static <T> T getService(Class<T> clazz) {
+	public <T> T getService(Class<T> clazz) {
 		return getContext().getBean(clazz);
 	}
 
@@ -80,7 +60,7 @@ public final class ServiceLocator {
 	 * 
 	 * @return
 	 */
-	public static MessageService getMessageService() {
+	public MessageService getMessageService() {
 		return getService(MessageService.class);
 	}
 
@@ -89,7 +69,7 @@ public final class ServiceLocator {
 	 * 
 	 * @return
 	 */
-	public static EntityModelFactory getEntityModelFactory() {
+	public EntityModelFactory getEntityModelFactory() {
 		return getService(EntityModelFactory.class);
 	}
 
@@ -101,7 +81,7 @@ public final class ServiceLocator {
 	 * @return
 	 */
 	@SuppressWarnings("rawtypes")
-	public static BaseService<?, ?> getServiceForEntity(Class<?> entityClass) {
+	public BaseService<?, ?> getServiceForEntity(Class<?> entityClass) {
 		Map<String, BaseService> services = getContext().getBeansOfType(BaseService.class, false, true);
 		for (Entry<String, BaseService> e : services.entrySet()) {
 			if (e.getValue().getEntityClass() != null && e.getValue().getEntityClass().equals(entityClass)) {

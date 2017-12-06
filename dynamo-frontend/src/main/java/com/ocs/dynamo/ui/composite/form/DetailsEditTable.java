@@ -29,7 +29,7 @@ import com.ocs.dynamo.domain.model.impl.ModelBasedFieldFactory;
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.MessageService;
-import com.ocs.dynamo.ui.ServiceLocator;
+import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.composite.dialog.ModelBasedSearchDialog;
@@ -190,7 +190,7 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 	public DetailsEditTable(Collection<T> items, EntityModel<T> entityModel, boolean viewMode,
 			FormOptions formOptions) {
 		this.entityModel = entityModel;
-		this.messageService = ServiceLocator.getMessageService();
+		this.messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
 		this.items = items;
 		this.viewMode = viewMode;
 		this.formOptions = formOptions;

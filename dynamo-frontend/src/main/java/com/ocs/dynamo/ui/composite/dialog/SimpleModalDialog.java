@@ -13,65 +13,68 @@
  */
 package com.ocs.dynamo.ui.composite.dialog;
 
+import com.ocs.dynamo.service.MessageService;
+import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 
 /**
- * A simple modal dialog with a single "OK" button. The content of this dialog can be customized
+ * A simple modal dialog with a single "OK" button. The content of this dialog
+ * can be customized
  * 
  * @author bas.rutten
  */
 public abstract class SimpleModalDialog extends BaseModalDialog {
 
-    private static final long serialVersionUID = -2265149201475495504L;
+	private static final long serialVersionUID = -2265149201475495504L;
 
-    private Button cancelButton;
+	private Button cancelButton;
 
-    private Button okButton;
+	private Button okButton;
 
-    private boolean showCancelButton;
+	private boolean showCancelButton;
 
-    /**
-     * Constructor
-     */
-    public SimpleModalDialog(boolean showCancelButton) {
-        this.showCancelButton = showCancelButton;
-    }
+	private MessageService messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
 
-    @Override
-    protected void doBuildButtonBar(HorizontalLayout buttonBar) {
-        okButton = new Button(
-                com.ocs.dynamo.ui.ServiceLocator.getMessageService().getMessage("ocs.ok", VaadinUtils.getLocale()));
-        okButton.addClickListener((Button.ClickListener) event -> {
-            if (doClose()) {
-                SimpleModalDialog.this.close();
-            }
-        });
-        buttonBar.addComponent(okButton);
+	/**
+	 * Constructor
+	 */
+	public SimpleModalDialog(boolean showCancelButton) {
+		this.showCancelButton = showCancelButton;
+	}
 
-        cancelButton = new Button(
-                com.ocs.dynamo.ui.ServiceLocator.getMessageService().getMessage("ocs.cancel", VaadinUtils.getLocale()));
-        cancelButton.addClickListener((Button.ClickListener) event -> SimpleModalDialog.this.close());
+	@Override
+	protected void doBuildButtonBar(HorizontalLayout buttonBar) {
+		okButton = new Button(messageService.getMessage("ocs.ok", VaadinUtils.getLocale()));
+		okButton.addClickListener((Button.ClickListener) event -> {
+			if (doClose()) {
+				SimpleModalDialog.this.close();
+			}
+		});
+		buttonBar.addComponent(okButton);
 
-        cancelButton.setVisible(showCancelButton);
-        buttonBar.addComponent(cancelButton);
-    }
+		cancelButton = new Button(messageService.getMessage("ocs.cancel", VaadinUtils.getLocale()));
+		cancelButton.addClickListener((Button.ClickListener) event -> SimpleModalDialog.this.close());
 
-    /**
-     * The method that is called just before closing the dialog
-     */
-    protected boolean doClose() {
-        // overwrite in subclass
-        return true;
-    }
+		cancelButton.setVisible(showCancelButton);
+		buttonBar.addComponent(cancelButton);
+	}
 
-    public Button getCancelButton() {
-        return cancelButton;
-    }
+	/**
+	 * The method that is called just before closing the dialog
+	 */
+	protected boolean doClose() {
+		// overwrite in subclass
+		return true;
+	}
 
-    public Button getOkButton() {
-        return okButton;
-    }
+	public Button getCancelButton() {
+		return cancelButton;
+	}
+
+	public Button getOkButton() {
+		return okButton;
+	}
 
 }

@@ -16,7 +16,7 @@ package com.ocs.dynamo.ui.composite.form;
 import java.math.BigDecimal;
 
 import com.ocs.dynamo.service.MessageService;
-import com.ocs.dynamo.ui.ServiceLocator;
+import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.utils.MathUtils;
 import com.vaadin.ui.UI;
@@ -85,7 +85,7 @@ public class ProgressBarUpdater implements Runnable {
                 String progressString = VaadinUtils.bigDecimalToString(true, false,
                         BigDecimal.valueOf(progress).multiply(MathUtils.HUNDRED));
 
-                MessageService ms = ServiceLocator.getMessageService();
+                MessageService ms = ServiceLocatorFactory.getServiceLocator().getMessageService();
                 progressable.getStatusLabel()
                         .setValue(ms.getMessage("ocs.progress.done", VaadinUtils.getLocale(), progressString));
             });

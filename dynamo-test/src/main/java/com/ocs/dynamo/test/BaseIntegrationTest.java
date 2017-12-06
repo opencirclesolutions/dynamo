@@ -18,6 +18,7 @@ import javax.persistence.PersistenceContext;
 
 import org.apache.log4j.Logger;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -27,6 +28,8 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
+
+import com.ocs.dynamo.constants.DynamoConstants;
 
 @ContextConfiguration(locations = "classpath:META-INF/testApplicationContext.xml")
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -39,6 +42,12 @@ public abstract class BaseIntegrationTest extends AbstractTransactionalJUnit4Spr
 
 	@PersistenceContext
 	protected EntityManager entityManager;
+
+	@BeforeClass
+	public static void beforeClass() {
+		// make sure the test service locator is loaded
+		System.setProperty(DynamoConstants.SP_SERVICE_LOCATOR_CLASS_NAME, "com.ocs.dynamo.ui.SpringTestServiceLocator");
+	}
 
 	protected Logger getLog() {
 		return LOG;

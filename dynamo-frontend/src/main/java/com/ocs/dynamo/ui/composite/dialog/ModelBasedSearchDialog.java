@@ -23,7 +23,7 @@ import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
-import com.ocs.dynamo.ui.ServiceLocator;
+import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.composite.layout.SimpleSearchLayout;
@@ -167,7 +167,7 @@ public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractE
 
 	@Override
 	protected String getTitle() {
-		return ServiceLocator.getMessageService().getMessage("ocs.search.title", VaadinUtils.getLocale(),
+		return ServiceLocatorFactory.getServiceLocator().getMessageService().getMessage("ocs.search.title", VaadinUtils.getLocale(),
 				entityModel.getDisplayNamePlural());
 	}
 

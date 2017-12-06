@@ -20,7 +20,7 @@ import java.time.LocalTime;
 import java.util.Date;
 
 import com.ocs.dynamo.domain.model.AttributeModel;
-import com.ocs.dynamo.utils.SystemPropertyUtils;
+import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.vaadin.data.util.converter.Converter;
 import com.vaadin.data.util.converter.StringToIntegerConverter;
 import com.vaadin.data.util.converter.StringToLongConverter;
