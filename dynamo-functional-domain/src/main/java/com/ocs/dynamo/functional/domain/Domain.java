@@ -13,21 +13,22 @@
  */
 package com.ocs.dynamo.functional.domain;
 
+import javax.persistence.DiscriminatorColumn;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.MappedSuperclass;
+import javax.validation.constraints.NotNull;
+
+import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.builder.ReflectionToStringBuilder;
+
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.VisibilityType;
 import com.ocs.dynamo.domain.model.annotation.Attribute;
 import com.ocs.dynamo.domain.model.annotation.Model;
 import com.ocs.dynamo.functional.DomainConstants;
-import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.builder.ReflectionToStringBuilder;
-
-import javax.persistence.DiscriminatorColumn;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Inheritance;
-import javax.validation.constraints.NotNull;
 
 /**
  * Base class for reference information.
@@ -37,7 +38,7 @@ import javax.validation.constraints.NotNull;
  */
 @Inheritance
 @DiscriminatorColumn(name = "TYPE")
-@Entity(name = "domain")
+@Entity
 @Model(displayProperty = "name", sortOrder = "name asc")
 public abstract class Domain extends AbstractEntity<Integer> {
 
@@ -48,7 +49,6 @@ public abstract class Domain extends AbstractEntity<Integer> {
 	private static final long serialVersionUID = 1598343469161718498L;
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 
 	/**
