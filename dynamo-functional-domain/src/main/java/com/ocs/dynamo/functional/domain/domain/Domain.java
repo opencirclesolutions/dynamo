@@ -11,7 +11,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-package com.ocs.dynamo.functional.domain;
+package com.ocs.dynamo.functional.domain.domain;
 
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.VisibilityType;

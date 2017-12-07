@@ -13,6 +13,8 @@
  */
 package com.ocs.dynamo.functional.domain;
 
+import com.ocs.dynamo.functional.domain.domain.Domain;
+
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;

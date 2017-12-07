@@ -16,7 +16,7 @@ package com.ocs.dynamo.functional.dao;
 import java.util.List;
 
 import com.ocs.dynamo.dao.BaseDao;
-import com.ocs.dynamo.functional.domain.Domain;
+import com.ocs.dynamo.functional.domain.domain.Domain;
 import com.ocs.dynamo.functional.domain.DomainChild;
 import com.ocs.dynamo.functional.domain.DomainParent;
 

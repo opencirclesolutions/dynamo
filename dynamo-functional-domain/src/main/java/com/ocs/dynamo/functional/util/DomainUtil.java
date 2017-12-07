@@ -20,7 +20,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.ocs.dynamo.functional.domain.Domain;
+import com.ocs.dynamo.functional.domain.domain.Domain;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.utils.ClassUtils;

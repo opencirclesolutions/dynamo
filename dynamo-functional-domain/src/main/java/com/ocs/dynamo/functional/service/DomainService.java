@@ -15,7 +15,7 @@ package com.ocs.dynamo.functional.service;
 
 import java.util.List;
 
-import com.ocs.dynamo.functional.domain.Domain;
+import com.ocs.dynamo.functional.domain.domain.Domain;
 import com.ocs.dynamo.functional.domain.DomainChild;
 import com.ocs.dynamo.functional.domain.DomainParent;
 import com.ocs.dynamo.service.BaseService;
