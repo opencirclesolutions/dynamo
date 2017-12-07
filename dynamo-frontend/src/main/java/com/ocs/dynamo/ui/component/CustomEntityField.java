@@ -21,7 +21,6 @@ import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
-import com.ocs.dynamo.service.impl.BaseSpringServiceLocator;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.ui.CustomField;
 

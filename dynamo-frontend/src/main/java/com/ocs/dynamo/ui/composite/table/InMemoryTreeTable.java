@@ -26,7 +26,6 @@ import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
-import com.ocs.dynamo.service.impl.BaseSpringServiceLocator;
 import com.ocs.dynamo.ui.Buildable;
 import com.ocs.dynamo.ui.composite.table.export.TableExportActionHandler;
 import com.ocs.dynamo.ui.composite.table.export.TableExportMode;

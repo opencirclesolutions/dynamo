@@ -36,7 +36,6 @@ import com.ocs.dynamo.domain.query.DataSetIterator;
 import com.ocs.dynamo.filter.Filter;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
-import com.ocs.dynamo.service.impl.BaseSpringServiceLocator;
 import com.ocs.dynamo.ui.utils.FormatUtils;
 import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.ocs.dynamo.utils.ClassUtils;
