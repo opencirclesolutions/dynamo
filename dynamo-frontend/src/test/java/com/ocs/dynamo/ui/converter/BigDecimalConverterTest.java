@@ -22,70 +22,69 @@ import org.junit.Test;
 
 public class BigDecimalConverterTest {
 
-    /**
-     * Test conversion to model (for two separate locales)
-     */
-    @Test
-    public void testConvertToModel() {
+	/**
+	 * Test conversion to model (for two separate locales)
+	 */
+	@Test
+	public void testConvertToModel() {
 
-        // default using European locale
-        BigDecimalConverter converter = new BigDecimalConverter(2, false);
-        BigDecimal result = converter.convertToModel("3,14", BigDecimal.class, null);
-        Assert.assertEquals(BigDecimal.valueOf(3.14).setScale(2, RoundingMode.HALF_EVEN), result);
+		// default using European locale
+		BigDecimalConverter converter = new BigDecimalConverter(2, false);
+		BigDecimal result = converter.convertToModel("3,14", BigDecimal.class, Locale.GERMANY);
+		Assert.assertEquals(BigDecimal.valueOf(3.14).setScale(2, RoundingMode.HALF_EVEN), result);
 
-        converter = new BigDecimalConverter(2, false);
-        result = converter.convertToModel("3.142", BigDecimal.class, Locale.US);
-        Assert.assertEquals(BigDecimal.valueOf(3.14).setScale(2, RoundingMode.HALF_EVEN), result);
+		converter = new BigDecimalConverter(2, false);
+		result = converter.convertToModel("3.142", BigDecimal.class, Locale.US);
+		Assert.assertEquals(BigDecimal.valueOf(3.14).setScale(2, RoundingMode.HALF_EVEN), result);
 
-        converter = new BigDecimalConverter(3, false);
-        result = converter.convertToModel("3.142", BigDecimal.class, Locale.US);
-        Assert.assertEquals(3.142, result.doubleValue(), 0.0001);
+		converter = new BigDecimalConverter(3, false);
+		result = converter.convertToModel("3.142", BigDecimal.class, Locale.US);
+		Assert.assertEquals(3.142, result.doubleValue(), 0.0001);
 
-        // no decimals at all
-        converter = new BigDecimalConverter(0, false);
-        result = converter.convertToModel("3.142", BigDecimal.class, Locale.US);
-        Assert.assertEquals(3, result.doubleValue(), 0.0001);
-    }
+		// no decimals at all
+		converter = new BigDecimalConverter(0, false);
+		result = converter.convertToModel("3.142", BigDecimal.class, Locale.US);
+		Assert.assertEquals(3, result.doubleValue(), 0.0001);
+	}
 
-    /**
-     * Test conversion to presentation (for two separate locales)
-     */
-    @Test
-    public void testConvertToPresentation() {
-        
-        // using default European locale
-        BigDecimalConverter converter = new BigDecimalConverter(2, false);
-        String result = converter.convertToPresentation(BigDecimal.valueOf(3.14), String.class,
-                null);
-        Assert.assertEquals("3,14", result);
+	/**
+	 * Test conversion to presentation (for two separate locales)
+	 */
+	@Test
+	public void testConvertToPresentation() {
 
-        converter = new BigDecimalConverter(2, false);
-        result = converter.convertToPresentation(BigDecimal.valueOf(3.14), String.class, Locale.US);
-        Assert.assertEquals("3.14", result);
+		// using default European locale
+		BigDecimalConverter converter = new BigDecimalConverter(2, false);
+		String result = converter.convertToPresentation(BigDecimal.valueOf(3.14), String.class, Locale.GERMANY);
+		Assert.assertEquals("3,14", result);
 
-        converter = new BigDecimalConverter(0, false);
-        result = converter.convertToPresentation(BigDecimal.valueOf(3.14), String.class, Locale.US);
-        Assert.assertEquals("3", result);
+		converter = new BigDecimalConverter(2, false);
+		result = converter.convertToPresentation(BigDecimal.valueOf(3.14), String.class, Locale.US);
+		Assert.assertEquals("3.14", result);
 
-        converter = new BigDecimalConverter(3, false);
-        result = converter.convertToPresentation(BigDecimal.valueOf(3.14), String.class, Locale.US);
-        Assert.assertEquals("3.140", result);
-    }
+		converter = new BigDecimalConverter(0, false);
+		result = converter.convertToPresentation(BigDecimal.valueOf(3.14), String.class, Locale.US);
+		Assert.assertEquals("3", result);
 
-    /**
-     * Test that a specifically set pattern overrules the other settings
-     */
-    @Test
-    public void testDecimalFormat() {
-        BigDecimalConverter converter = new BigDecimalConverter("#,##0.00");
+		converter = new BigDecimalConverter(3, false);
+		result = converter.convertToPresentation(BigDecimal.valueOf(3.14), String.class, Locale.US);
+		Assert.assertEquals("3.140", result);
+	}
 
-        Assert.assertEquals("1.234,56", converter.convertToPresentation(
-                BigDecimal.valueOf(1234.56), String.class, new Locale("nl")));
+	/**
+	 * Test that a specifically set pattern overrules the other settings
+	 */
+	@Test
+	public void testDecimalFormat() {
+		BigDecimalConverter converter = new BigDecimalConverter("#,##0.00");
 
-        Assert.assertEquals("123.456,00", converter.convertToPresentation(
-                BigDecimal.valueOf(123456), String.class, new Locale("nl")));
+		Assert.assertEquals("1.234,56",
+				converter.convertToPresentation(BigDecimal.valueOf(1234.56), String.class, new Locale("nl")));
 
-        Assert.assertEquals("123,456.00", converter.convertToPresentation(
-                BigDecimal.valueOf(123456), String.class, new Locale("us")));
-    }
+		Assert.assertEquals("123.456,00",
+				converter.convertToPresentation(BigDecimal.valueOf(123456), String.class, new Locale("nl")));
+
+		Assert.assertEquals("123,456.00",
+				converter.convertToPresentation(BigDecimal.valueOf(123456), String.class, new Locale("us")));
+	}
 }
