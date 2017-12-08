@@ -18,10 +18,13 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
+
+import com.ocs.dynamo.constants.DynamoConstants;
 
 /**
  * Base class for testing Spring beans. Automatically injects all dependencies
@@ -36,6 +39,11 @@ public abstract class BaseMockitoTest {
 	 * The Spring application context
 	 */
 	private GenericApplicationContext applicationContext;
+
+	@BeforeClass
+	public static void beforeClass() {
+		System.setProperty(DynamoConstants.SP_SERVICE_LOCATOR_CLASS_NAME, "com.ocs.dynamo.ui.SpringTestServiceLocator");
+	}
 
 	/**
 	 * Adds a bean to the application context context under the bean's class
