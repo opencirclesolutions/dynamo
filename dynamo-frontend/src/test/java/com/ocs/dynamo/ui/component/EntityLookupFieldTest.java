@@ -41,190 +41,190 @@ import com.vaadin.ui.UI;
 
 public class EntityLookupFieldTest extends BaseMockitoTest {
 
-    @Mock
-    private UI ui;
+	@Mock
+	private UI ui;
 
-    @Mock
-    private TestEntityService service;
+	@Mock
+	private TestEntityService service;
 
-    private EntityModelFactory factory = new EntityModelFactoryImpl();
+	private EntityModelFactory factory = new EntityModelFactoryImpl();
 
-    private TestEntity e1;
+	private TestEntity e1;
 
-    private TestEntity e2;
+	private TestEntity e2;
 
-    @Override
-    @SuppressWarnings("unchecked")
-    public void setUp() {
-        e1 = new TestEntity(1, "Bob", 14L);
-        e2 = new TestEntity(2, "Kevin", 15L);
+	@Override
+	@SuppressWarnings("unchecked")
+	public void setUp() {
+		e1 = new TestEntity(1, "Bob", 14L);
+		e2 = new TestEntity(2, "Kevin", 15L);
 
-        Mockito.when(service.getEntityClass()).thenReturn(TestEntity.class);
+		Mockito.when(service.getEntityClass()).thenReturn(TestEntity.class);
 
-        Mockito.when(service.findIds(Matchers.any(Filter.class), (com.ocs.dynamo.dao.SortOrder[]) Matchers.anyVararg()))
-                .thenReturn(Lists.newArrayList(1, 2));
+		Mockito.when(service.findIds(Matchers.any(Filter.class), (com.ocs.dynamo.dao.SortOrder[]) Matchers.anyVararg()))
+				.thenReturn(Lists.newArrayList(1, 2));
 
-        Mockito.when(service.fetchByIds(Matchers.any(List.class), Matchers.any(SortOrders.class),
-                (FetchJoinInformation[]) Matchers.anyVararg())).thenReturn(Lists.newArrayList(e1, e2));
+		Mockito.when(service.fetchByIds(Matchers.any(List.class), Matchers.any(SortOrders.class),
+				(FetchJoinInformation[]) Matchers.anyVararg())).thenReturn(Lists.newArrayList(e1, e2));
 
-        Mockito.when(service.fetchById(e1.getId())).thenReturn(e1);
-        Mockito.when(service.fetchById(e2.getId())).thenReturn(e2);
+		Mockito.when(service.fetchById(e1.getId())).thenReturn(e1);
+		Mockito.when(service.fetchById(e2.getId())).thenReturn(e2);
 
-        Mockito.when(service.createNewEntity()).thenReturn(new TestEntity());
-        MockUtil.mockServiceSave(service, TestEntity.class);
-    }
+		Mockito.when(service.createNewEntity()).thenReturn(new TestEntity());
+		MockUtil.mockServiceSave(service, TestEntity.class);
+	}
 
-    @Test
-    @SuppressWarnings("rawtypes")
-    public void test() {
-        EntityLookupField<Integer, TestEntity> field = new EntityLookupField<>(service,
-                factory.getModel(TestEntity.class), null, null, false, false,
-                Lists.newArrayList(new SortOrder("name", SortDirection.ASCENDING)));
-        MockUtil.injectUI(field, ui);
+	@Test
+	@SuppressWarnings("rawtypes")
+	public void test() {
+		EntityLookupField<Integer, TestEntity> field = new EntityLookupField<>(service,
+				factory.getModel(TestEntity.class), null, null, false, false,
+				Lists.newArrayList(new SortOrder("name", SortDirection.ASCENDING)));
+		MockUtil.injectUI(field, ui);
 
-        field.initContent();
+		field.initContent();
 
-        Assert.assertEquals(new SortOrder("name", SortDirection.ASCENDING), field.getSortOrders().get(0));
-        Assert.assertEquals(Object.class, field.getType());
+		Assert.assertEquals(new SortOrder("name", SortDirection.ASCENDING), field.getSortOrders().get(0));
+		Assert.assertEquals(Object.class, field.getType());
 
-        Component comp = field.iterator().next();
-        Assert.assertTrue(comp instanceof DefaultHorizontalLayout);
+		Component comp = field.iterator().next();
+		Assert.assertTrue(comp instanceof DefaultHorizontalLayout);
 
-        ArgumentCaptor<ModelBasedSearchDialog> captor = ArgumentCaptor.forClass(ModelBasedSearchDialog.class);
+		ArgumentCaptor<ModelBasedSearchDialog> captor = ArgumentCaptor.forClass(ModelBasedSearchDialog.class);
 
-        field.getSelectButton().click();
-        Mockito.verify(ui).addWindow(captor.capture());
+		field.getSelectButton().click();
+		Mockito.verify(ui).addWindow(captor.capture());
 
-        captor.getValue().getOkButton().click();
+		captor.getValue().getOkButton().click();
 
-        field.setEnabled(false);
-        Assert.assertFalse(field.getSelectButton().isEnabled());
-        Assert.assertFalse(field.getClearButton().isEnabled());
-    }
+		field.setEnabled(false);
+		Assert.assertFalse(field.getSelectButton().isEnabled());
+		Assert.assertFalse(field.getClearButton().isEnabled());
+	}
 
-    @Test
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public void testMultipleSelect() {
-        EntityLookupField<Integer, TestEntity> field = new EntityLookupField<>(service,
-                factory.getModel(TestEntity.class), null, null, false, true,
-                Lists.newArrayList(new SortOrder("name", SortDirection.ASCENDING)));
-        MockUtil.injectUI(field, ui);
-        field.initContent();
+	@Test
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public void testMultipleSelect() {
+		EntityLookupField<Integer, TestEntity> field = new EntityLookupField<>(service,
+				factory.getModel(TestEntity.class), null, null, false, true,
+				Lists.newArrayList(new SortOrder("name", SortDirection.ASCENDING)));
+		MockUtil.injectUI(field, ui);
+		field.initContent();
 
-        ArgumentCaptor<ModelBasedSearchDialog> captor = ArgumentCaptor.forClass(ModelBasedSearchDialog.class);
+		ArgumentCaptor<ModelBasedSearchDialog> captor = ArgumentCaptor.forClass(ModelBasedSearchDialog.class);
 
-        field.getSelectButton().click();
-        Mockito.verify(ui).addWindow(captor.capture());
+		field.getSelectButton().click();
+		Mockito.verify(ui).addWindow(captor.capture());
 
-        ModelBasedSearchDialog<Integer, TestEntity> dialog = (ModelBasedSearchDialog<Integer, TestEntity>) captor
-                .getValue();
-        dialog.getOkButton().click();
-    }
+		ModelBasedSearchDialog<Integer, TestEntity> dialog = (ModelBasedSearchDialog<Integer, TestEntity>) captor
+				.getValue();
+		dialog.getOkButton().click();
+	}
 
-    @Test
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public void testMultipleSelectWithPreviousValue() {
-        EntityLookupField<Integer, TestEntity> field = new EntityLookupField<>(service,
-                factory.getModel(TestEntity.class), null, null, false, true,
-                Lists.newArrayList(new SortOrder("name", SortDirection.ASCENDING)));
-        MockUtil.injectUI(field, ui);
-        field.initContent();
-        field.setValue(Lists.newArrayList(e1));
+	@Test
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public void testMultipleSelectWithPreviousValue() {
+		EntityLookupField<Integer, TestEntity> field = new EntityLookupField<>(service,
+				factory.getModel(TestEntity.class), null, null, false, true,
+				Lists.newArrayList(new SortOrder("name", SortDirection.ASCENDING)));
+		MockUtil.injectUI(field, ui);
+		field.initContent();
+		field.setValue(Lists.newArrayList(e1));
 
-        ArgumentCaptor<ModelBasedSearchDialog> captor = ArgumentCaptor.forClass(ModelBasedSearchDialog.class);
+		ArgumentCaptor<ModelBasedSearchDialog> captor = ArgumentCaptor.forClass(ModelBasedSearchDialog.class);
 
-        field.getSelectButton().click();
-        Mockito.verify(ui).addWindow(captor.capture());
+		field.getSelectButton().click();
+		Mockito.verify(ui).addWindow(captor.capture());
 
-        ModelBasedSearchDialog<Integer, TestEntity> dialog = (ModelBasedSearchDialog<Integer, TestEntity>) captor
-                .getValue();
+		ModelBasedSearchDialog<Integer, TestEntity> dialog = (ModelBasedSearchDialog<Integer, TestEntity>) captor
+				.getValue();
 
-        dialog.getSearchLayout().select(Lists.newArrayList(e2.getId()));
+		dialog.getSearchLayout().select(Lists.newArrayList(e2.getId()));
 
-        dialog.getOkButton().click();
+		dialog.getOkButton().click();
 
-        // extra selected value must be added to already selected
-        Collection<TestEntity> col = (Collection<TestEntity>) field.getValue();
-        Assert.assertEquals(2, col.size());
-        
-        field.selectValuesInDialog(dialog);
-    }
+		// extra selected value must be added to already selected
+		Collection<TestEntity> col = (Collection<TestEntity>) field.getValue();
+		Assert.assertEquals(2, col.size());
 
-    @Test
-    public void testPageLength() {
-        EntityLookupField<Integer, TestEntity> field = new EntityLookupField<>(service,
-                factory.getModel(TestEntity.class), null, null, false, false,
-                Lists.newArrayList(new SortOrder("name", SortDirection.ASCENDING)));
-        field.setPageLength(10);
-        field.initContent();
-        MockUtil.injectUI(field, ui);
+		field.selectValuesInDialog(dialog);
+	}
 
-        Assert.assertEquals(new SortOrder("name", SortDirection.ASCENDING), field.getSortOrders().get(0));
-        Assert.assertEquals(10, field.getPageLength().intValue());
+	@Test
+	public void testPageLength() {
+		EntityLookupField<Integer, TestEntity> field = new EntityLookupField<>(service,
+				factory.getModel(TestEntity.class), null, null, false, false,
+				Lists.newArrayList(new SortOrder("name", SortDirection.ASCENDING)));
+		field.setPageLength(10);
+		field.initContent();
+		MockUtil.injectUI(field, ui);
 
-    }
+		Assert.assertEquals(new SortOrder("name", SortDirection.ASCENDING), field.getSortOrders().get(0));
+		Assert.assertEquals(10, field.getPageLength().intValue());
 
-    /**
-     * Test that the clear button has the desired effect
-     */
-    @Test
-    public void testClear() {
-        EntityLookupField<Integer, TestEntity> field = new EntityLookupField<>(service,
-                factory.getModel(TestEntity.class), null, null, false, false,
-                Lists.newArrayList(new SortOrder("name", SortDirection.ASCENDING)));
-        field.initContent();
-        field.setValue(new TestEntity("Kevin", 47L));
+	}
 
-        field.getClearButton().click();
-        Assert.assertNull(field.getValue());
-    }
+	/**
+	 * Test that the clear button has the desired effect
+	 */
+	@Test
+	public void testClear() {
+		EntityLookupField<Integer, TestEntity> field = new EntityLookupField<>(service,
+				factory.getModel(TestEntity.class), null, null, false, false,
+				Lists.newArrayList(new SortOrder("name", SortDirection.ASCENDING)));
+		field.initContent();
+		field.setValue(new TestEntity("Kevin", 47L));
 
-    @Test
-    public void testAdd() {
-        EntityLookupField<Integer, TestEntity> field = new EntityLookupField<>(service,
-                factory.getModel(TestEntity.class), factory.getModel(TestEntity.class).getAttributeModel("testDomain"),
-                null, false, false, Lists.newArrayList(new SortOrder("name", SortDirection.ASCENDING)));
-        field.initContent();
-        MockUtil.injectUI(field, ui);
+		field.getClearButton().click();
+		Assert.assertNull(field.getValue());
+	}
 
-        // check that a model dialog is shown
-        addNewValue(field, "New Item");
+	@Test
+	public void testAdd() {
+		EntityLookupField<Integer, TestEntity> field = new EntityLookupField<>(service,
+				factory.getModel(TestEntity.class), factory.getModel(TestEntity.class).getAttributeModel("testDomain"),
+				null, false, false, Lists.newArrayList(new SortOrder("name", SortDirection.ASCENDING)));
+		field.initContent();
+		MockUtil.injectUI(field, ui);
 
-        // check that a new item has been added
-        TestEntity tNew = (TestEntity) field.getValue();
-        Assert.assertEquals("New Item", tNew.getName());
-    }
+		// check that a model dialog is shown
+		addNewValue(field, "New Item");
 
-    /**
-     * Test adding a new item in multiple select mode
-     */
-    @Test
-    @SuppressWarnings({ "unchecked" })
-    public void testAddMultiple() {
-        // now in multiple select mode
-        EntityLookupField<Integer, TestEntity> field = new EntityLookupField<>(service,
-                factory.getModel(TestEntity.class), factory.getModel(TestEntity.class).getAttributeModel("testDomain"),
-                null, false, true, Lists.newArrayList(new SortOrder("name", SortDirection.ASCENDING)));
-        field.initContent();
-        MockUtil.injectUI(field, ui);
+		// check that a new item has been added
+		TestEntity tNew = (TestEntity) field.getValue();
+		Assert.assertEquals("New Item", tNew.getName());
+	}
 
-        field.setValue(Lists.newArrayList(new TestEntity(1, "Old Item", 2L)));
-        addNewValue(field, "New Item");
+	/**
+	 * Test adding a new item in multiple select mode
+	 */
+	@Test
+	@SuppressWarnings({ "unchecked" })
+	public void testAddMultiple() {
+		// now in multiple select mode
+		EntityLookupField<Integer, TestEntity> field = new EntityLookupField<>(service,
+				factory.getModel(TestEntity.class), factory.getModel(TestEntity.class).getAttributeModel("testDomain"),
+				null, false, true, Lists.newArrayList(new SortOrder("name", SortDirection.ASCENDING)));
+		field.initContent();
+		MockUtil.injectUI(field, ui);
 
-        // check that a new item has been added
-        List<TestEntity> newValue = (List<TestEntity>) field.getValue();
-        Assert.assertEquals(2, newValue.size());
-    }
+		field.setValue(Lists.newArrayList(new TestEntity(1, "Old Item", 2L)));
+		addNewValue(field, "New Item");
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    private void addNewValue(EntityLookupField<Integer, TestEntity> field, String newValue) {
-        ArgumentCaptor<AddNewValueDialog> captor = ArgumentCaptor.forClass(AddNewValueDialog.class);
+		// check that a new item has been added
+		List<TestEntity> newValue = (List<TestEntity>) field.getValue();
+		Assert.assertEquals(2, newValue.size());
+	}
 
-        field.getAddButton().click();
-        Mockito.verify(ui).addWindow(captor.capture());
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private void addNewValue(EntityLookupField<Integer, TestEntity> field, String newValue) {
+		ArgumentCaptor<AddNewValueDialog> captor = ArgumentCaptor.forClass(AddNewValueDialog.class);
 
-        AddNewValueDialog<Integer, TestEntity> dialog = (AddNewValueDialog<Integer, TestEntity>) captor.getValue();
-        dialog.getValueField().setValue(newValue);
-        dialog.getOkButton().click();
-    }
+		field.getAddButton().click();
+		Mockito.verify(ui).addWindow(captor.capture());
+
+		AddNewValueDialog<Integer, TestEntity> dialog = (AddNewValueDialog<Integer, TestEntity>) captor.getValue();
+		dialog.getValueField().setValue(newValue);
+		dialog.getOkButton().click();
+	}
 }
