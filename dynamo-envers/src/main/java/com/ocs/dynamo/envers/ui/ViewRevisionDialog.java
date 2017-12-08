@@ -21,7 +21,7 @@ import com.ocs.dynamo.envers.domain.RevisionKey;
 import com.ocs.dynamo.envers.domain.VersionedEntity;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.MessageService;
-import com.ocs.dynamo.ui.ServiceLocator;
+import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.composite.dialog.BaseModalDialog;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.composite.layout.ServiceBasedSplitLayout;
@@ -54,7 +54,7 @@ public class ViewRevisionDialog<ID, T extends AbstractEntity<ID>, U extends Vers
 
 	private EntityModel<U> entityModel;
 
-	private MessageService messageService = ServiceLocator.getMessageService();
+	private MessageService messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
 
 	private ID id;
 

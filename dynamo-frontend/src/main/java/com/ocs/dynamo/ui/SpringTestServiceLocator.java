@@ -13,6 +13,7 @@
  */
 package com.ocs.dynamo.ui;
 
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.ocs.dynamo.service.impl.BaseSpringServiceLocator;
@@ -22,9 +23,7 @@ public class SpringTestServiceLocator extends BaseSpringServiceLocator {
 	/**
 	 * Lazily loads the context
 	 */
-	protected void loadCtx() {
-		if (ctx == null) {
-			ctx = new ClassPathXmlApplicationContext("classpath:META-INF/testApplicationContext.xml");
-		}
+	protected ApplicationContext loadCtx() {
+		return new ClassPathXmlApplicationContext("classpath:META-INF/testApplicationContext.xml");
 	}
 }

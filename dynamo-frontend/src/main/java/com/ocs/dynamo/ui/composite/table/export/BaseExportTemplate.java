@@ -43,7 +43,6 @@ import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.filter.Filter;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
-import com.ocs.dynamo.service.impl.BaseSpringServiceLocator;
 import com.ocs.dynamo.ui.utils.FormatUtils;
 import com.ocs.dynamo.utils.DateUtils;
 import com.ocs.dynamo.utils.MathUtils;

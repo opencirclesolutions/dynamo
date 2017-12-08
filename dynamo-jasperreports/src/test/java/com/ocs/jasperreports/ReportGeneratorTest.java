@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.Locale;
 import java.util.Map;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpSession;
 

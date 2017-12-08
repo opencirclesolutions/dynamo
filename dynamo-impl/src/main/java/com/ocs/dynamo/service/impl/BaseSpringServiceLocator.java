@@ -32,14 +32,14 @@ public abstract class BaseSpringServiceLocator implements ServiceLocator {
 
 	protected ApplicationContext ctx;
 
-	protected abstract void loadCtx();
+	protected abstract ApplicationContext loadCtx();
 
 	/**
 	 * @return
 	 */
 	private ApplicationContext getContext() {
 		if (ctx == null) {
-			loadCtx();
+			ctx = loadCtx();
 		}
 		return ctx;
 	}

@@ -15,6 +15,7 @@ package com.ocs.dynamo.ui;
 
 import javax.servlet.ServletContext;
 
+import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import com.ocs.dynamo.service.impl.BaseSpringServiceLocator;
@@ -25,12 +26,11 @@ public class SpringWebServiceLocator extends BaseSpringServiceLocator {
 	/**
 	 * Lazily loads the context
 	 */
-	protected void loadCtx() {
-		if (ctx == null) {
-			if (SpringVaadinServlet.getCurrent() != null) {
-				ServletContext sc = SpringVaadinServlet.getCurrent().getServletContext();
-				ctx = WebApplicationContextUtils.getWebApplicationContext(sc);
-			}
+	protected ApplicationContext loadCtx() {
+		if (SpringVaadinServlet.getCurrent() != null) {
+			ServletContext sc = SpringVaadinServlet.getCurrent().getServletContext();
+			return WebApplicationContextUtils.getWebApplicationContext(sc);
 		}
+		return null;
 	}
 }
