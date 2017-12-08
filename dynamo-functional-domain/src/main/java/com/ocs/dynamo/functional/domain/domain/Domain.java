@@ -48,7 +48,6 @@ public abstract class Domain extends AbstractEntity<Integer> {
 	private static final long serialVersionUID = 1598343469161718498L;
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 
 	/**
