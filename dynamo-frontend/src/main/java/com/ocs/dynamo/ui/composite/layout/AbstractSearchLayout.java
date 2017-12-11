@@ -637,7 +637,6 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 		options.setShowNextButton(getFormOptions().isShowNextButton());
 		options.setShowPrevButton(getFormOptions().isShowPrevButton());
 		options.setPlaceButtonBarAtTop(getFormOptions().isPlaceButtonBarAtTop());
-		options.setHideCancelButton(true);
 		options.setFormNested(true);
 
 		// set the form options for the detail form
