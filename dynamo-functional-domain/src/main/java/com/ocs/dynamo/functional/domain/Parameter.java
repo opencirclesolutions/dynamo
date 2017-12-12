@@ -45,7 +45,6 @@ public class Parameter extends AbstractAuditableEntity<Integer> {
     public static final String ATTRIBUTE_NAME = "name";
 
     @Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @NotNull

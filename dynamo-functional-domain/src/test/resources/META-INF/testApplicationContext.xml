@@ -110,7 +110,8 @@
 		<constructor-arg name="entityClass" value="com.ocs.dynamo.functional.domain.Country"/>
 	</bean>
 	
-	<bean id="countryService" class="com.ocs.dynamo.functional.service.DomainServiceImpl">
+	<bean id="countryService" class="com.ocs.dynamo.service.impl.DefaultServiceImpl">
 		<constructor-arg ref="countryDao"/>
+		<constructor-arg value="name,code" />
 	</bean>
 </beans>
