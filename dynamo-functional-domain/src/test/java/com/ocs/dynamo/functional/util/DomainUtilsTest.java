@@ -13,7 +13,7 @@ import org.mockito.Mockito;
 import com.google.common.collect.Sets;
 import com.ocs.dynamo.functional.domain.Country;
 import com.ocs.dynamo.functional.domain.Currency;
-import com.ocs.dynamo.functional.domain.domain.Domain;
+import com.ocs.dynamo.functional.domain.Domain;
 import com.ocs.dynamo.functional.domain.Region;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.MessageService;

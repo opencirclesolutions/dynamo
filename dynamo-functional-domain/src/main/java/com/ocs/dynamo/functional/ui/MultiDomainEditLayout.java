@@ -17,7 +17,7 @@ import java.util.List;
 
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.exception.OCSRuntimeException;
-import com.ocs.dynamo.functional.domain.domain.Domain;
+import com.ocs.dynamo.functional.domain.Domain;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.ServiceLocator;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;

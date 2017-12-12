@@ -19,7 +19,6 @@ import javax.persistence.Entity;
 import com.ocs.dynamo.domain.model.VisibilityType;
 import com.ocs.dynamo.domain.model.annotation.Attribute;
 import com.ocs.dynamo.domain.model.annotation.Model;
-import com.ocs.dynamo.functional.domain.domain.Domain;
 
 /**
  * A locale identified by an IETF BCP 47 code

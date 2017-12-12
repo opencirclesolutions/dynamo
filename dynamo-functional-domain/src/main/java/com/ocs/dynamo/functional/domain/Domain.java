@@ -11,7 +11,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-package com.ocs.dynamo.functional.domain.domain;
+package com.ocs.dynamo.functional.domain;
 
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.VisibilityType;
@@ -23,8 +23,6 @@ import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.validation.constraints.NotNull;

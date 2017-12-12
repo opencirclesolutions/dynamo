@@ -22,10 +22,10 @@ import org.springframework.stereotype.Repository;
 import com.mysema.query.jpa.impl.JPAQuery;
 import com.mysema.query.types.path.EntityPathBase;
 import com.ocs.dynamo.dao.impl.DefaultDaoImpl;
-import com.ocs.dynamo.functional.domain.domain.Domain;
+import com.ocs.dynamo.functional.domain.Domain;
 import com.ocs.dynamo.functional.domain.DomainChild;
 import com.ocs.dynamo.functional.domain.DomainParent;
-import com.ocs.dynamo.functional.domain.domain.QDomain;
+import com.ocs.dynamo.functional.domain.QDomain;
 import com.ocs.dynamo.functional.domain.QDomainChild;
 
 /**

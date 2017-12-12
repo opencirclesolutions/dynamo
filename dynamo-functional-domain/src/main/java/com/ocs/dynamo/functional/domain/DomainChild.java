@@ -13,8 +13,6 @@
  */
 package com.ocs.dynamo.functional.domain;
 
-import com.ocs.dynamo.functional.domain.domain.Domain;
-
 import java.io.Serializable;
 
 import javax.persistence.Entity;
