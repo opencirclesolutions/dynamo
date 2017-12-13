@@ -23,7 +23,7 @@ import org.apache.log4j.Logger;
 
 import com.ocs.dynamo.exception.OCSImportException;
 import com.ocs.dynamo.service.MessageService;
-import com.ocs.dynamo.utils.SystemPropertyUtils;
+import com.ocs.dynamo.util.SystemPropertyUtils;
 
 /**
  * Template class for importing data from a text (CSV or fixed width) file and translating it to an

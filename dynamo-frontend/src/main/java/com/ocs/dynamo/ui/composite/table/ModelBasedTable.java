@@ -27,7 +27,7 @@ import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.domain.model.impl.ModelBasedFieldFactory;
 import com.ocs.dynamo.service.MessageService;
-import com.ocs.dynamo.ui.ServiceLocator;
+import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.component.URLField;
 import com.ocs.dynamo.ui.composite.table.export.TableExportActionHandler;
 import com.ocs.dynamo.ui.composite.table.export.TableExportMode;
@@ -95,8 +95,8 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
         super("", container);
         this.container = container;
         this.entityModel = model;
-        this.messageService = ServiceLocator.getMessageService();
-        this.entityModelFactory = ServiceLocator.getEntityModelFactory();
+        this.messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
+        this.entityModelFactory = ServiceLocatorFactory.getServiceLocator().getEntityModelFactory();
         this.exportAllowed = exportAllowed;
 
         TableUtils.defaultInitialization(this);

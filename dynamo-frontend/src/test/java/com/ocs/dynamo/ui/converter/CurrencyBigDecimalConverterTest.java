@@ -20,7 +20,7 @@ import java.util.Locale;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.ocs.dynamo.utils.SystemPropertyUtils;
+import com.ocs.dynamo.util.SystemPropertyUtils;
 
 public class CurrencyBigDecimalConverterTest {
 

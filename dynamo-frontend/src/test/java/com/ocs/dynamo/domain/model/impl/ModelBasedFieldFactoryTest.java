@@ -20,13 +20,12 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
-import org.mockito.Mock;
 
-import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.TestEntity2;
@@ -34,8 +33,7 @@ import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.domain.model.annotation.Attribute;
 import com.ocs.dynamo.service.MessageService;
-import com.ocs.dynamo.test.BaseMockitoTest;
-import com.ocs.dynamo.test.MockUtil;
+import com.ocs.dynamo.test.BaseIntegrationTest;
 import com.ocs.dynamo.ui.component.EntityComboBox.SelectMode;
 import com.ocs.dynamo.ui.component.EntityLookupField;
 import com.ocs.dynamo.ui.component.QuickAddEntityComboBox;
@@ -46,6 +44,7 @@ import com.ocs.dynamo.ui.composite.form.CollectionTable;
 import com.ocs.dynamo.ui.converter.LocalDateTimeToDateConverter;
 import com.ocs.dynamo.ui.converter.ZonedDateTimeToDateConverter;
 import com.ocs.dynamo.ui.validator.URLValidator;
+import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.ocs.dynamo.utils.DateUtils;
 import com.vaadin.data.Item;
 import com.vaadin.data.Validator;
@@ -60,27 +59,23 @@ import com.vaadin.ui.Slider;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 
-public class ModelBasedFieldFactoryTest extends BaseMockitoTest {
+public class ModelBasedFieldFactoryTest extends BaseIntegrationTest {
 
-	@Mock
+	@Inject
 	private MessageService messageService;
 
-	private EntityModelFactory factory = new EntityModelFactoryImpl();
+	@Inject
+	private EntityModelFactory factory;
 
 	private ModelBasedFieldFactory<TestEntity> fieldFactory;
 
-	private DecimalFormatSymbols symbols = DecimalFormatSymbols.getInstance(new Locale("de"));
-
-	@BeforeClass
-	public static void beforeClass() {
-		System.setProperty(DynamoConstants.SP_DEFAULT_LOCALE, "de");
-	}
+	private DecimalFormatSymbols symbols = DecimalFormatSymbols
+			.getInstance(new Locale(SystemPropertyUtils.getDefaultLocale()));
 
 	@Before
 	public void setUp() {
-		super.setUp();
-		MockUtil.mockMessageService(messageService);
-		fieldFactory = new ModelBasedFieldFactory<>(factory.getModel(TestEntity.class), messageService, false, false);
+		fieldFactory = new ModelBasedFieldFactory<TestEntity>(factory.getModel(TestEntity.class), messageService, false,
+				false);
 	}
 
 	/**
@@ -310,11 +305,11 @@ public class ModelBasedFieldFactoryTest extends BaseMockitoTest {
 		AbstractSelect select = (AbstractSelect) obj;
 		Item item = select.getItem(TestEntity.TestEnum.A);
 		Assert.assertNotNull(item);
-		Assert.assertEquals("A", item.getItemProperty("Caption").getValue());
+		Assert.assertEquals("Value A", item.getItemProperty("Caption").getValue());
 
 		Item itemB = select.getItem(TestEntity.TestEnum.B);
 		Assert.assertNotNull(itemB);
-		Assert.assertEquals("B", itemB.getItemProperty("Caption").getValue());
+		Assert.assertEquals("Value B", itemB.getItemProperty("Caption").getValue());
 	}
 
 	/**

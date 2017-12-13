@@ -29,7 +29,7 @@ import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.domain.model.impl.ModelBasedFieldFactory;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.MessageService;
-import com.ocs.dynamo.ui.ServiceLocator;
+import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.container.QueryType;
 import com.ocs.dynamo.ui.container.ServiceContainer;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
@@ -159,8 +159,8 @@ public class ModelBasedHierarchicalContainer<T> extends HierarchicalContainer {
 	 */
 	public ModelBasedHierarchicalContainer(MessageService messageService, EntityModel<T> rootEntityModel,
 			List<BaseService<?, ?>> services, HierarchicalFetchJoinInformation[] joins) {
-		generateHierarchy(messageService, ServiceLocator.getEntityModelFactory(), rootEntityModel, services, joins,
-				QueryType.ID_BASED);
+		generateHierarchy(messageService, ServiceLocatorFactory.getServiceLocator().getEntityModelFactory(),
+				rootEntityModel, services, joins, QueryType.ID_BASED);
 	}
 
 	public ModelBasedHierarchicalContainer(MessageService messageService, EntityModelFactory entityModelFactory,

@@ -22,8 +22,8 @@ import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.exception.OCSValidationException;
 import com.ocs.dynamo.service.MessageService;
+import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.Buildable;
-import com.ocs.dynamo.ui.ServiceLocator;
 import com.ocs.dynamo.ui.utils.FormatUtils;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.utils.ClassUtils;
@@ -46,7 +46,7 @@ public abstract class BaseCustomComponent extends CustomComponent implements Bui
 
 	private static final long serialVersionUID = -8982555842423738005L;
 
-	private MessageService messageService = ServiceLocator.getMessageService();
+	private MessageService messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
 
 	/**
 	 * Constructs a (formatted) label based on the attribute model
@@ -67,7 +67,7 @@ public abstract class BaseCustomComponent extends CustomComponent implements Bui
 	}
 
 	protected EntityModelFactory getEntityModelFactory() {
-		return ServiceLocator.getEntityModelFactory();
+		return ServiceLocatorFactory.getServiceLocator().getEntityModelFactory();
 	}
 
 	protected MessageService getMessageService() {
@@ -75,7 +75,7 @@ public abstract class BaseCustomComponent extends CustomComponent implements Bui
 	}
 
 	protected <T> T getService(Class<T> clazz) {
-		return ServiceLocator.getService(clazz);
+		return ServiceLocatorFactory.getServiceLocator().getService(clazz);
 	}
 
 	/**

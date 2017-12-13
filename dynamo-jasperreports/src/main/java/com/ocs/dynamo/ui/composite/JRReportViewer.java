@@ -28,7 +28,7 @@ import com.ocs.dynamo.jasperreports.JRIndexedContainerDataSource;
 import com.ocs.dynamo.jasperreports.JRUtils;
 import com.ocs.dynamo.ui.composite.layout.BaseCustomComponent;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
-import com.ocs.dynamo.utils.SystemPropertyUtils;
+import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.ocs.jasperreports.ReportGenerator;
 import com.ocs.jasperreports.ReportGenerator.Format;
 import com.vaadin.data.Container;

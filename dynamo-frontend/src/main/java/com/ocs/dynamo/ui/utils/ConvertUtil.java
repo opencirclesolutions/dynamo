@@ -21,9 +21,9 @@ import java.util.Locale;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.NumberSelectMode;
 import com.ocs.dynamo.ui.converter.WeekCodeConverter;
+import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.ocs.dynamo.utils.DateUtils;
 import com.ocs.dynamo.utils.NumberUtils;
-import com.ocs.dynamo.utils.SystemPropertyUtils;
 
 /**
  * Utility for converting between data types

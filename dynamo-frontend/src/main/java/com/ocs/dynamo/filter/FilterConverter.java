@@ -33,90 +33,90 @@ import com.vaadin.data.util.filter.SimpleStringFilter;
  */
 public class FilterConverter implements Converter<Filter, com.ocs.dynamo.filter.Filter> {
 
-    /**
-     * Entity model used when converting filters for detail collections
-     */
-    private EntityModel<?> entityModel;
+	/**
+	 * Entity model used when converting filters for detail collections
+	 */
+	private EntityModel<?> entityModel;
 
-    public FilterConverter(EntityModel<?> entityModel) {
-        this.entityModel = entityModel;
-    }
+	public FilterConverter(EntityModel<?> entityModel) {
+		this.entityModel = entityModel;
+	}
 
-    @Override
-    public com.ocs.dynamo.filter.Filter convert(Filter filter) {
-        if (filter == null) {
-            return null;
-        }
+	@Override
+	public com.ocs.dynamo.filter.Filter convert(Filter filter) {
+		if (filter == null) {
+			return null;
+		}
 
-        com.ocs.dynamo.filter.Filter result = null;
-        if (filter instanceof And) {
-            com.ocs.dynamo.filter.And and = new com.ocs.dynamo.filter.And();
-            result = and;
-            for (Filter f : ((And) filter).getFilters()) {
-                and.getFilters().add(convert(f));
-            }
-        } else if (filter instanceof Or) {
-            com.ocs.dynamo.filter.Or or = new com.ocs.dynamo.filter.Or();
-            result = or;
-            for (Filter f : ((Or) filter).getFilters()) {
-                or.getFilters().add(convert(f));
-            }
-        } else if (filter instanceof Not) {
-            final Not not = (Not) filter;
-            result = new com.ocs.dynamo.filter.Not(convert(not.getFilter()));
-        } else if (filter instanceof Between) {
-            final Between between = (Between) filter;
-            result = new com.ocs.dynamo.filter.Between(between.getPropertyId().toString(),
-                    between.getStartValue(), between.getEndValue());
-        } else if (filter instanceof Compare) {
-            final Compare compare = (Compare) filter;
-            switch (compare.getOperation()) {
-            case EQUAL:
-                result = new com.ocs.dynamo.filter.Compare.Equal(
-                        compare.getPropertyId().toString(), compare.getValue());
-                break;
-            case GREATER:
-                result = new com.ocs.dynamo.filter.Compare.Greater(compare.getPropertyId()
-                        .toString(), compare.getValue());
-                break;
-            case GREATER_OR_EQUAL:
-                result = new com.ocs.dynamo.filter.Compare.GreaterOrEqual(compare.getPropertyId()
-                        .toString(), compare.getValue());
-                break;
-            case LESS:
-                result = new com.ocs.dynamo.filter.Compare.Less(compare.getPropertyId().toString(),
-                        compare.getValue());
-                break;
-            case LESS_OR_EQUAL:
-                result = new com.ocs.dynamo.filter.Compare.LessOrEqual(compare.getPropertyId()
-                        .toString(), compare.getValue());
-                break;
-            default:
-                result = null;
-            }
-        } else if (filter instanceof IsNull) {
-            final IsNull isNull = (IsNull) filter;
-            result = new com.ocs.dynamo.filter.IsNull(isNull.getPropertyId().toString());
-        } else if (filter instanceof Like) {
-            final Like like = (Like) filter;
-            result = new com.ocs.dynamo.filter.Like(like.getPropertyId().toString(),
-                    like.getValue(), like.isCaseSensitive());
-        } else if (filter instanceof SimpleStringFilter) {
-            final SimpleStringFilter like = (SimpleStringFilter) filter;
-            result = new com.ocs.dynamo.filter.Like(like.getPropertyId().toString(),
-                    (like.isOnlyMatchPrefix() ? "" : "%") + like.getFilterString() + "%",
-                    !like.isIgnoreCase());
-        } else {
-            throw new UnsupportedOperationException("Filter: " + filter.getClass().getName()
-                    + " is not supported.");
-        }
+		com.ocs.dynamo.filter.Filter result = null;
+		if (filter instanceof And) {
+			com.ocs.dynamo.filter.And and = new com.ocs.dynamo.filter.And();
+			result = and;
+			for (Filter f : ((And) filter).getFilters()) {
+				com.ocs.dynamo.filter.Filter converted = convert(f);
+				if (converted != null) {
+					and.getFilters().add(converted);
+				}
+			}
+		} else if (filter instanceof Or) {
+			com.ocs.dynamo.filter.Or or = new com.ocs.dynamo.filter.Or();
+			result = or;
+			for (Filter f : ((Or) filter).getFilters()) {
+				or.getFilters().add(convert(f));
+			}
+		} else if (filter instanceof Not) {
+			final Not not = (Not) filter;
+			result = new com.ocs.dynamo.filter.Not(convert(not.getFilter()));
+		} else if (filter instanceof Between) {
+			final Between between = (Between) filter;
+			result = new com.ocs.dynamo.filter.Between(between.getPropertyId().toString(), between.getStartValue(),
+					between.getEndValue());
+		} else if (filter instanceof Compare) {
+			final Compare compare = (Compare) filter;
+			switch (compare.getOperation()) {
+			case EQUAL:
+				result = new com.ocs.dynamo.filter.Compare.Equal(compare.getPropertyId().toString(),
+						compare.getValue());
+				break;
+			case GREATER:
+				result = new com.ocs.dynamo.filter.Compare.Greater(compare.getPropertyId().toString(),
+						compare.getValue());
+				break;
+			case GREATER_OR_EQUAL:
+				result = new com.ocs.dynamo.filter.Compare.GreaterOrEqual(compare.getPropertyId().toString(),
+						compare.getValue());
+				break;
+			case LESS:
+				result = new com.ocs.dynamo.filter.Compare.Less(compare.getPropertyId().toString(), compare.getValue());
+				break;
+			case LESS_OR_EQUAL:
+				result = new com.ocs.dynamo.filter.Compare.LessOrEqual(compare.getPropertyId().toString(),
+						compare.getValue());
+				break;
+			default:
+				result = null;
+			}
+		} else if (filter instanceof IsNull) {
+			final IsNull isNull = (IsNull) filter;
+			result = new com.ocs.dynamo.filter.IsNull(isNull.getPropertyId().toString());
+		} else if (filter instanceof Like) {
+			final Like like = (Like) filter;
+			result = new com.ocs.dynamo.filter.Like(like.getPropertyId().toString(), like.getValue(),
+					like.isCaseSensitive());
+		} else if (filter instanceof SimpleStringFilter) {
+			final SimpleStringFilter like = (SimpleStringFilter) filter;
+			result = new com.ocs.dynamo.filter.Like(like.getPropertyId().toString(),
+					(like.isOnlyMatchPrefix() ? "" : "%") + like.getFilterString() + "%", !like.isIgnoreCase());
+		} else {
+			throw new UnsupportedOperationException("Filter: " + filter.getClass().getName() + " is not supported.");
+		}
 
-        // replace any filters for searching detail fields by Contains-filters
-        if (entityModel != null) {
-            FilterUtil.replaceMasterAndDetailFilters(result, entityModel);
-        }
+		// replace any filters for searching detail fields by Contains-filters
+		if (entityModel != null) {
+			FilterUtil.replaceMasterAndDetailFilters(result, entityModel);
+		}
 
-        return result;
-    }
+		return result;
+	}
 
 }

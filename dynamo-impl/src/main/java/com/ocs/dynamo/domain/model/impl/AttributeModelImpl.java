@@ -134,6 +134,8 @@ public class AttributeModelImpl implements AttributeModel {
 
     private boolean sortable;
 
+    private boolean trans;
+    
     private AttributeTextFieldMode textFieldMode;
 
     private String trueRepresentation;
@@ -706,5 +708,13 @@ public class AttributeModelImpl implements AttributeModel {
     public void setNumberSelectMode(NumberSelectMode numberSelectMode) {
         this.numberSelectMode = numberSelectMode;
     }
+
+	public boolean isTransient() {
+		return trans;
+	}
+
+	public void setTransient(boolean trans) {
+		this.trans = trans;
+	}
 
 }

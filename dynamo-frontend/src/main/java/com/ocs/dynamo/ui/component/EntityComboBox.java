@@ -23,8 +23,9 @@ import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.filter.FilterConverter;
 import com.ocs.dynamo.service.BaseService;
+import com.ocs.dynamo.service.ServiceLocator;
+import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.Refreshable;
-import com.ocs.dynamo.ui.ServiceLocator;
 import com.ocs.dynamo.ui.utils.SortUtil;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.data.sort.SortOrder;
@@ -78,6 +79,8 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 
 	private Filter additionalFilter;
 
+	private ServiceLocator serviceLocator = ServiceLocatorFactory.getServiceLocator();
+
 	/**
 	 * Constructor (for a filtering combo box)
 	 * 
@@ -126,7 +129,7 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 			this.setCaption(attributeModel.getDisplayName());
 		}
 		this.setRequiredError(
-				ServiceLocator.getMessageService().getMessage("ocs.may.not.be.null", VaadinUtils.getLocale()));
+				serviceLocator.getMessageService().getMessage("ocs.may.not.be.null", VaadinUtils.getLocale()));
 
 		setFilteringMode(FilteringMode.CONTAINS);
 

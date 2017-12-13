@@ -26,7 +26,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import com.ocs.dynamo.exception.OCSImportException;
 import com.ocs.dynamo.importer.dto.AbstractDTO;
 import com.ocs.dynamo.service.MessageService;
-import com.ocs.dynamo.utils.SystemPropertyUtils;
+import com.ocs.dynamo.util.SystemPropertyUtils;
 
 /**
  * A template for processing an Excel file that contains row-based data and

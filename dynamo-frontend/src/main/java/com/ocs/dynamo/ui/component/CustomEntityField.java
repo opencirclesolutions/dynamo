@@ -20,7 +20,7 @@ import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.MessageService;
-import com.ocs.dynamo.ui.ServiceLocator;
+import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.ui.CustomField;
 
@@ -79,7 +79,7 @@ public abstract class CustomEntityField<ID extends Serializable, T extends Abstr
 		this.service = service;
 		this.entityModel = entityModel;
 		this.attributeModel = attributeModel;
-		this.messageService = ServiceLocator.getMessageService();
+		this.messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
 		this.filter = filter;
 	}
 

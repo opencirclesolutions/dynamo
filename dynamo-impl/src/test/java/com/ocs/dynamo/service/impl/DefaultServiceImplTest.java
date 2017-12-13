@@ -20,7 +20,7 @@ public class DefaultServiceImplTest extends BaseMockitoTest {
 	@Test
 	public void testConstructWithDao() {
 		service = new DefaultServiceImpl<>(dao);
-		Assert.assertNull(service.getUniquePropertyId());
+		Assert.assertNull(service.getUniquePropertyIds());
 
 		TestEntity te = new TestEntity();
 		te.setName("Kevin");
@@ -33,7 +33,7 @@ public class DefaultServiceImplTest extends BaseMockitoTest {
 	@Test
 	public void testConstructWithDaoAndUniqueProperty() {
 		service = new DefaultServiceImpl<>(dao, "name");
-		Assert.assertEquals("name", service.getUniquePropertyId());
+		Assert.assertEquals("name", service.getUniquePropertyIds()[0]);
 		Assert.assertFalse(service.isUniqueCaseSensitive());
 
 		TestEntity te = new TestEntity();
@@ -45,8 +45,8 @@ public class DefaultServiceImplTest extends BaseMockitoTest {
 
 	@Test
 	public void testConstructWithDaoAndUniquePropertyCaseSensitive() {
-		service = new DefaultServiceImpl<>(dao, "name", true);
-		Assert.assertEquals("name", service.getUniquePropertyId());
+		service = new DefaultServiceImpl<>(dao, new String[] { "name" }, true);
+		Assert.assertEquals("name", service.getUniquePropertyIds()[0]);
 		Assert.assertTrue(service.isUniqueCaseSensitive());
 
 		TestEntity te = new TestEntity();
@@ -59,20 +59,20 @@ public class DefaultServiceImplTest extends BaseMockitoTest {
 	@Test
 	public void testConstructWithDslAndClass() {
 		service = new DefaultServiceImpl<>(QTestEntity.testEntity, TestEntity.class);
-		Assert.assertNull(service.getUniquePropertyId());
+		Assert.assertNull(service.getUniquePropertyIds());
 	}
 
 	@Test
 	public void testConstructWithDslAndClassAndProperty() {
-		service = new DefaultServiceImpl<>(QTestEntity.testEntity, TestEntity.class, "name");
-		Assert.assertEquals("name", service.getUniquePropertyId());
+		service = new DefaultServiceImpl<>(QTestEntity.testEntity, TestEntity.class, new String[] { "name" });
+		Assert.assertEquals("name", service.getUniquePropertyIds()[0]);
 		Assert.assertFalse(service.isUniqueCaseSensitive());
 	}
 
 	@Test
 	public void testConstructWithDslAndClassAndPropertyCaseSensitive() {
-		service = new DefaultServiceImpl<>(QTestEntity.testEntity, TestEntity.class, "name", true);
-		Assert.assertEquals("name", service.getUniquePropertyId());
+		service = new DefaultServiceImpl<>(QTestEntity.testEntity, TestEntity.class, new String[] { "name" }, true);
+		Assert.assertEquals("name", service.getUniquePropertyIds()[0]);
 		Assert.assertTrue(service.isUniqueCaseSensitive());
 	}
 }

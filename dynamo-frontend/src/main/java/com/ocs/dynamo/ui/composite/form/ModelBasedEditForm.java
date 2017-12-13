@@ -52,8 +52,8 @@ import com.ocs.dynamo.ui.composite.type.AttributeGroupMode;
 import com.ocs.dynamo.ui.composite.type.ScreenMode;
 import com.ocs.dynamo.ui.utils.EntityModelUtil;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
+import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.ocs.dynamo.utils.ClassUtils;
-import com.ocs.dynamo.utils.SystemPropertyUtils;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.data.util.BeanItem;
@@ -1039,7 +1039,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	 * Constructs the save button
 	 */
 	private Button constructSaveButton() {
-		Button saveButton = new Button(message("ocs.save.existing"));
+		Button saveButton = new Button(
+				(entity != null && entity.getId() != null) ? message("ocs.save.existing") : message("ocs.save.new"));
 		saveButton.addClickListener(event -> {
 			try {
 				boolean isNew = entity.getId() == null;
@@ -1511,13 +1512,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		titleLabels.put(isViewMode(), newTitleLabel);
 
 		// change caption depending on entity state
-		for (Button b : getSaveButtons()) {
-			if (entity.getId() != null) {
-				b.setCaption(message("ocs.save.existing"));
-			} else {
-				b.setCaption(message("ocs.save.new"));
-			}
-		}
+		updateSaveButtonCaptions();
 
 		for (Button b : getCancelButtons()) {
 			b.setVisible((!isViewMode() && !getFormOptions().isHideCancelButton())
@@ -1609,6 +1604,9 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			fieldsProcessed = true;
 		}
 
+		// update button captions
+		updateSaveButtonCaptions();
+
 		// preserve tab index when switching
 		if (tabSheets.get(oldMode) != null) {
 			Component c = tabSheets.get(oldMode).getSelectedTab();
@@ -1661,6 +1659,20 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 			if (viewLabel != null) {
 				viewLabel.addStyleName(className);
+			}
+		}
+	}
+
+	/**
+	 * Sets the caption of the save button depending on whether we are creating
+	 * or updating an entity
+	 */
+	private void updateSaveButtonCaptions() {
+		for (Button b : getSaveButtons()) {
+			if (entity.getId() != null) {
+				b.setCaption(message("ocs.save.existing"));
+			} else {
+				b.setCaption(message("ocs.save.new"));
 			}
 		}
 	}

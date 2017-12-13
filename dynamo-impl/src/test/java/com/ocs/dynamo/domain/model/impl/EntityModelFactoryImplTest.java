@@ -36,6 +36,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -530,6 +531,9 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		AttributeModel am = model.getAttributeModel("attribute1");
 		Assert.assertEquals(1, am.getGroupTogetherWith().size());
 		Assert.assertEquals("attribute2", am.getGroupTogetherWith().get(0));
+		
+		AttributeModel am2 = model.getAttributeModel("attribute2");
+		Assert.assertTrue(am2.isTransient());
 	}
 
 	/**
@@ -976,6 +980,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		@Attribute(groupTogetherWith = "attribute2")
 		private String attribute1;
 
+		@Transient
 		private String attribute2;
 
 		public String getAttribute1() {

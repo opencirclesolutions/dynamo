@@ -26,7 +26,7 @@ import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.service.MessageService;
-import com.ocs.dynamo.ui.ServiceLocator;
+import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.composite.table.export.TableExportActionHandler;
 import com.ocs.dynamo.ui.composite.table.export.TableExportMode;
 import com.ocs.dynamo.ui.container.hierarchical.HierarchicalContainer.HierarchicalDefinition;
@@ -100,7 +100,7 @@ public class ModelBasedTreeTable<ID extends Serializable, T extends AbstractEnti
     public ModelBasedTreeTable(ModelBasedHierarchicalContainer<T> container, EntityModelFactory entityModelFactory,
             boolean exportAllowed) {
         super("", container);
-        this.messageService = ServiceLocator.getMessageService();
+        this.messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
         this.entityModelFactory = entityModelFactory;
         this.exportAllowed = exportAllowed;
 

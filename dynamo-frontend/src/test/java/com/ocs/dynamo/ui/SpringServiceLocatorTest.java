@@ -19,6 +19,8 @@ import org.junit.Test;
 
 import com.ocs.dynamo.dao.impl.TestEntityDao;
 import com.ocs.dynamo.domain.TestEntity;
+import com.ocs.dynamo.service.ServiceLocator;
+import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.test.BaseIntegrationTest;
 
 import junitx.util.PrivateAccessor;
@@ -28,31 +30,28 @@ import junitx.util.PrivateAccessor;
  * 
  * @author bas.rutten
  */
-public class ServiceLocatorTest extends BaseIntegrationTest {
+public class SpringServiceLocatorTest extends BaseIntegrationTest {
 
-    @Before
-    public void setup() throws NoSuchFieldException {
-        PrivateAccessor.setField(ServiceLocator.class, "ctx", this.applicationContext);
-    }
+	private ServiceLocator serviceLocator = ServiceLocatorFactory.getServiceLocator();
 
-    @Test
-    public void testGetEntityModelFactory() {
-        Assert.assertNotNull(ServiceLocator.getEntityModelFactory());
-    }
+	@Test
+	public void testGetEntityModelFactory() {
+		Assert.assertNotNull(serviceLocator.getEntityModelFactory());
+	}
 
-    @Test
-    public void testGetService() {
-        Assert.assertNotNull(ServiceLocator.getService(TestEntityDao.class));
-    }
+	@Test
+	public void testGetService() {
+		Assert.assertNotNull(serviceLocator.getService(TestEntityDao.class));
+	}
 
-    @Test
-    public void testGetServiceForEntity() {
-        Assert.assertNotNull(ServiceLocator.getServiceForEntity(TestEntity.class));
-    }
+	@Test
+	public void testGetServiceForEntity() {
+		Assert.assertNotNull(serviceLocator.getServiceForEntity(TestEntity.class));
+	}
 
-    @Test
-    public void testGetMessageService() {
-        Assert.assertNotNull(ServiceLocator.getMessageService());
-    }
+	@Test
+	public void testGetMessageService() {
+		Assert.assertNotNull(serviceLocator.getMessageService());
+	}
 
 }

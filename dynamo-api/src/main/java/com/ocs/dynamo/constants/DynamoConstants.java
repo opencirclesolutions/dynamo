@@ -99,7 +99,7 @@ public final class DynamoConstants {
 	public static final String CURRENCY_SYMBOL = "currencySymbol";
 
 	/**
-	 * 
+	 * The locale to use in Date components (can be different from the main locale)
 	 */
 	public static final String DATE_LOCALE = "dateLocale";
 
@@ -123,6 +123,9 @@ public final class DynamoConstants {
 	 */
 	public static final String IDS = "ids";
 
+	/**
+	 * Intermediate precision for floating point calculations
+	 */
 	public static final int INTERMEDIATE_PRECISION = 10;
 
 	/**
@@ -295,6 +298,12 @@ public final class DynamoConstants {
 	 * separator in edit mode
 	 */
 	public static final String SP_THOUSAND_GROUPING = "ocs.edit.thousands.grouping";
+	
+	/**
+	 * Class name for the service locator (override to create a different service locator, e.g. 
+	 * to use a separate service locator for integration tests)
+	 */
+	public static final String SP_SERVICE_LOCATOR_CLASS_NAME = "ocs.service.locator.classname";
 
 	/**
 	 * The name of the variable that is used to store the user

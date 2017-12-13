@@ -20,130 +20,137 @@ import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.utils.ClassUtils;
 
 /**
- * Default service implementation that uses the DefaultDaoImpl when no other implementation is
- * given.
+ * Default service implementation that uses the DefaultDaoImpl when no other
+ * implementation is given.
  * 
  * @author Patrick Deenen
  */
 public class DefaultServiceImpl<ID, T extends AbstractEntity<ID>> extends BaseServiceImpl<ID, T> {
 
-    /**
-     * The DAO
-     */
-    private BaseDao<ID, T> dao;
+	/**
+	 * The DAO
+	 */
+	private BaseDao<ID, T> dao;
 
-    /**
-     * The name of the property that is used to check if a value is unique
-     */
-    private String uniquePropertyId;
+	/**
+	 * The name of the property that is used to check if a value is unique
+	 */
+	private String[] uniquePropertyIds;
 
-    /**
-     * Whether the unique value is case sensitive
-     */
-    private boolean uniqueCaseSensitive;
+	/**
+	 * Whether the unique value is case sensitive
+	 */
+	private boolean uniqueCaseSensitive;
 
-    /**
-     * Constructor - no unique property
-     * 
-     * @param dslRoot
-     *            the DSL root
-     * @param entityClass
-     *            the entity class
-     */
-    public DefaultServiceImpl(EntityPathBase<T> dslRoot, Class<T> entityClass) {
-        this(dslRoot, entityClass, null);
-    }
+	/**
+	 * Constructor - no unique property
+	 * 
+	 * @param dslRoot
+	 *            the DSL root
+	 * @param entityClass
+	 *            the entity class
+	 */
+	public DefaultServiceImpl(EntityPathBase<T> dslRoot, Class<T> entityClass) {
+		this(dslRoot, entityClass, null);
+	}
 
-    /**
-     * Constructor - with unique property, not case sensitive
-     * 
-     * @param dslRoot
-     *            the DSL root
-     * @param entityClass
-     *            the entity class
-     * @param uniquePropertyId
-     *            the unique property name
-     */
-    public DefaultServiceImpl(EntityPathBase<T> dslRoot, Class<T> entityClass, String uniquePropertyId) {
-        this(dslRoot, entityClass, uniquePropertyId, false);
-    }
+	/**
+	 * Constructor - with unique property, not case sensitive
+	 * 
+	 * @param dslRoot
+	 *            the DSL root
+	 * @param entityClass
+	 *            the entity class
+	 * @param uniquePropertyId
+	 *            the unique property name
+	 */
+	public DefaultServiceImpl(EntityPathBase<T> dslRoot, Class<T> entityClass, String[] uniquePropertyIds) {
+		this(dslRoot, entityClass, uniquePropertyIds, false);
+	}
 
-    /**
-     * Constructor
-     * 
-     * @param dslRoot
-     *            the QueryDSL root
-     * @param entityClass
-     *            the entity class
-     * @param uniquePropertyId
-     * @param uniqueCaseSensitive
-     */
-    public DefaultServiceImpl(EntityPathBase<T> dslRoot, Class<T> entityClass, String uniquePropertyId,
-            boolean uniqueCaseSensitive) {
-        dao = new DefaultDaoImpl<>(dslRoot, entityClass);
-        this.uniquePropertyId = uniquePropertyId;
-        this.uniqueCaseSensitive = uniqueCaseSensitive;
-    }
+	/**
+	 * Constructor
+	 * 
+	 * @param dslRoot
+	 *            the QueryDSL root
+	 * @param entityClass
+	 *            the entity class
+	 * @param uniquePropertyId
+	 * @param uniqueCaseSensitive
+	 */
+	public DefaultServiceImpl(EntityPathBase<T> dslRoot, Class<T> entityClass, String[] uniquePropertyIds,
+			boolean uniqueCaseSensitive) {
+		dao = new DefaultDaoImpl<>(dslRoot, entityClass);
+		this.uniquePropertyIds = uniquePropertyIds;
+		this.uniqueCaseSensitive = uniqueCaseSensitive;
+	}
 
-    /**
-     * 
-     * @param dao
-     */
-    public DefaultServiceImpl(BaseDao<ID, T> dao) {
-        this(dao, null);
-    }
+	/**
+	 * 
+	 * @param dao
+	 */
+	public DefaultServiceImpl(BaseDao<ID, T> dao) {
+		this(dao, (String[]) null);
+	}
 
-    /**
-     * Constructor
-     * 
-     * @param dao
-     *            the DAO
-     * @param uniquePropertyId
-     *            the name of the property that must be unique
-     */
-    public DefaultServiceImpl(BaseDao<ID, T> dao, String uniquePropertyId) {
-        this(dao, uniquePropertyId, false);
-    }
+	/**
+	 * Constructor
+	 * 
+	 * @param dao
+	 *            the DAO
+	 * @param uniquePropertyId
+	 *            the name of the property that must be unique
+	 */
+	public DefaultServiceImpl(BaseDao<ID, T> dao, String... uniquePropertyIds) {
+		this(dao, uniquePropertyIds, false);
+	}
 
-    /**
-     * Constructor
-     * 
-     * @param dao
-     *            the DAO used to retrieve the data
-     * @param uniquePropertyId
-     *            the unique property
-     * @param uniqueCaseSensitive
-     *            whether the unique property is case sensitive
-     */
-    public DefaultServiceImpl(BaseDao<ID, T> dao, String uniquePropertyId, boolean uniqueCaseSensitive) {
-        this.dao = dao;
-        this.uniquePropertyId = uniquePropertyId;
-        this.uniqueCaseSensitive = uniqueCaseSensitive;
-    }
+	/**
+	 * Constructor
+	 * 
+	 * @param dao
+	 *            the DAO used to retrieve the data
+	 * @param uniquePropertyId
+	 *            the unique property
+	 * @param uniqueCaseSensitive
+	 *            whether the unique property is case sensitive
+	 */
+	public DefaultServiceImpl(BaseDao<ID, T> dao, String[] uniquePropertyIds, boolean uniqueCaseSensitive) {
+		this.dao = dao;
+		this.uniquePropertyIds = uniquePropertyIds;
+		this.uniqueCaseSensitive = uniqueCaseSensitive;
+	}
 
-    @Override
-    protected BaseDao<ID, T> getDao() {
-        return dao;
-    }
+	@Override
+	protected BaseDao<ID, T> getDao() {
+		return dao;
+	}
 
-    /**
-     * Check for an identical entry - by default we to this by simply checking for a unique property
-     */
-    @Override
-    protected T findIdenticalEntity(T entity) {
-        if (uniquePropertyId == null) {
-            return super.findIdenticalEntity(entity);
-        }
-        return getDao().findByUniqueProperty(uniquePropertyId, ClassUtils.getFieldValue(entity, uniquePropertyId),
-                uniqueCaseSensitive);
-    }
+	/**
+	 * Check for an identical entry - by default we to this by simply checking
+	 * for a unique property
+	 */
+	@Override
+	protected T findIdenticalEntity(T entity) {
+		if (uniquePropertyIds == null || uniquePropertyIds.length == 0) {
+			return super.findIdenticalEntity(entity);
+		}
 
-    public String getUniquePropertyId() {
-        return uniquePropertyId;
-    }
+		for (String u : uniquePropertyIds) {
+			T t = getDao().findByUniqueProperty(u, ClassUtils.getFieldValue(entity, u), uniqueCaseSensitive);
+			if (t != null) {
+				return t;
+			}
+		}
+		return null;
+	}
 
-    public boolean isUniqueCaseSensitive() {
-        return uniqueCaseSensitive;
-    }
+	public String[] getUniquePropertyIds() {
+		return uniquePropertyIds;
+	}
+
+	public boolean isUniqueCaseSensitive() {
+		return uniqueCaseSensitive;
+	}
 
 }

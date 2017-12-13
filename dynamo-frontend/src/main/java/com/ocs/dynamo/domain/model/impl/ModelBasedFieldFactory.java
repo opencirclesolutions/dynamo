@@ -44,7 +44,8 @@ import com.ocs.dynamo.domain.model.NumberSelectMode;
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.MessageService;
-import com.ocs.dynamo.ui.ServiceLocator;
+import com.ocs.dynamo.service.ServiceLocator;
+import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.component.EntityComboBox.SelectMode;
 import com.ocs.dynamo.ui.component.EntityLookupField;
 import com.ocs.dynamo.ui.component.FancyListSelect;
@@ -64,9 +65,9 @@ import com.ocs.dynamo.ui.converter.LongToDoubleConverter;
 import com.ocs.dynamo.ui.converter.WeekCodeConverter;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.ui.validator.URLValidator;
+import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.ocs.dynamo.utils.DateUtils;
 import com.ocs.dynamo.utils.NumberUtils;
-import com.ocs.dynamo.utils.SystemPropertyUtils;
 import com.vaadin.data.Container;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Item;
@@ -112,6 +113,8 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 	private MessageService messageService;
 
 	private EntityModel<T> model;
+
+	private ServiceLocator serviceLocator = ServiceLocatorFactory.getServiceLocator();
 
 	// indicates whether the system is in search mode. In search mode,
 	// components for
@@ -213,7 +216,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 	public <ID extends Serializable, S extends AbstractEntity<ID>> AbstractField<?> constructComboBox(
 			EntityModel<?> entityModel, AttributeModel attributeModel, Filter filter, boolean search) {
 		entityModel = resolveEntityModel(entityModel, attributeModel);
-		BaseService<ID, S> service = (BaseService<ID, S>) ServiceLocator
+		BaseService<ID, S> service = (BaseService<ID, S>) serviceLocator
 				.getServiceForEntity(entityModel.getEntityClass());
 		SortOrder[] sos = constructSortOrder(entityModel);
 		return new QuickAddEntityComboBox<>((EntityModel<S>) entityModel, attributeModel, service, SelectMode.FILTERED,
@@ -292,7 +295,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 			boolean search) {
 		EntityModel<?> em = resolveEntityModel(fieldEntityModel, attributeModel);
 
-		BaseService<ID, S> service = (BaseService<ID, S>) ServiceLocator.getServiceForEntity(em.getEntityClass());
+		BaseService<ID, S> service = (BaseService<ID, S>) serviceLocator.getServiceForEntity(em.getEntityClass());
 		SortOrder[] sos = constructSortOrder(em);
 
 		// mode depends on whether we are searching
@@ -339,9 +342,9 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 		// unnested entity list so
 		// using a path from the parent entity makes no sense here
 		EntityModel<?> entityModel = overruled != null ? overruled
-				: ServiceLocator.getEntityModelFactory().getModel(attributeModel.getNormalizedType());
+				: serviceLocator.getEntityModelFactory().getModel(attributeModel.getNormalizedType());
 
-		BaseService<ID, S> service = (BaseService<ID, S>) ServiceLocator.getServiceForEntity(
+		BaseService<ID, S> service = (BaseService<ID, S>) serviceLocator.getServiceForEntity(
 				attributeModel.getMemberType() != null ? attributeModel.getMemberType() : entityModel.getEntityClass());
 		SortOrder[] sos = constructSortOrder(entityModel);
 		return new EntityLookupField<>(service, (EntityModel<S>) entityModel, attributeModel, fieldFilter, search,
@@ -397,7 +400,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 	private <ID extends Serializable, S extends AbstractEntity<ID>, O extends Comparable<O>> SimpleTokenFieldSelect<ID, S, O> constructSimpleTokenField(
 			EntityModel<?> entityModel, AttributeModel attributeModel, String distinctField, boolean elementCollection,
 			Filter fieldFilter) {
-		BaseService<ID, S> service = (BaseService<ID, S>) ServiceLocator
+		BaseService<ID, S> service = (BaseService<ID, S>) serviceLocator
 				.getServiceForEntity(entityModel.getEntityClass());
 
 		SortOrder[] sos;
@@ -466,7 +469,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 			}
 		} else if (AbstractEntity.class.isAssignableFrom(type)) {
 			// inside a table, always use a combo box
-			EntityModel<?> entityModel = ServiceLocator.getEntityModelFactory().getModel(type);
+			EntityModel<?> entityModel = serviceLocator.getEntityModelFactory().getModel(type);
 			return (F) constructComboBox(entityModel, null, null, search);
 		}
 
@@ -784,7 +787,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 				entityModel = attributeModel.getNestedEntityModel();
 			} else {
 				Class<?> type = attributeModel.getNormalizedType();
-				entityModel = ServiceLocator.getEntityModelFactory().getModel(type.asSubclass(AbstractEntity.class));
+				entityModel = serviceLocator.getEntityModelFactory().getModel(type.asSubclass(AbstractEntity.class));
 			}
 		}
 		return entityModel;

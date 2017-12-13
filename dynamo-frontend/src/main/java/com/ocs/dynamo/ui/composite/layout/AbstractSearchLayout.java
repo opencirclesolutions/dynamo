@@ -637,7 +637,6 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 		options.setShowNextButton(getFormOptions().isShowNextButton());
 		options.setShowPrevButton(getFormOptions().isShowPrevButton());
 		options.setPlaceButtonBarAtTop(getFormOptions().isPlaceButtonBarAtTop());
-		options.setHideCancelButton(true);
 		options.setFormNested(true);
 
 		// set the form options for the detail form
@@ -656,6 +655,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 		if (getFormOptions().isComplexDetailsMode() && entity != null && entity.getId() != null) {
 			// complex tabbed layout, back button is placed separately
 			options.setShowBackButton(false);
+			options.setHideCancelButton(true);
 
 			if (tabContainerLayout == null) {
 				buildDetailsTabLayout(entity, options);
