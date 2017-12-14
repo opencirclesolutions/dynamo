@@ -642,6 +642,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		buttonBar.setSizeUndefined();
 		layout.addComponent(buttonBar);
 		checkSaveButtonState();
+		disableCreateOnlyFields();
 
 		return layout;
 	}
@@ -890,10 +891,13 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		}
 
 		if (field instanceof URLField) {
-			((URLField) field).setEditable(!isViewMode());
+			((URLField) field)
+					.setEditable(!isViewMode() && !EditableType.CREATE_ONLY.equals(attributeModel.getEditableType()));
 		}
 
-		// set view mode if appropriate
+		// collection tables are normally rendered in both edit and view mode so
+		// they must
+		// be explicitly enabled/disabled
 		if (field instanceof CollectionTable) {
 			((CollectionTable<?>) field).setViewMode(isViewMode());
 		}
@@ -1112,6 +1116,20 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	 */
 	private UploadComponent constructUploadField(AttributeModel attributeModel) {
 		return new UploadComponent(attributeModel);
+	}
+
+	/**
+	 * Disables any fields that are only editable when creating a new entity
+	 */
+	private void disableCreateOnlyFields() {
+		if (!isViewMode()) {
+			for (AttributeModel am : getEntityModel().getAttributeModels()) {
+				Field<?> field = groups.get(isViewMode()).getField(am.getPath());
+				if (field != null && EditableType.CREATE_ONLY.equals(am.getEditableType())) {
+					field.setEnabled(entity.getId() == null);
+				}
+			}
+		}
 	}
 
 	private List<Button> filterButtons(String data) {
@@ -1508,16 +1526,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		}
 
 		// enable/disable fields for create only mode
-		if (!isViewMode()) {
-			for (AttributeModel am : getEntityModel().getAttributeModels()) {
-				Field<?> field = groups.get(isViewMode()).getField(am.getPath());
-				if (field != null) {
-					if (EditableType.CREATE_ONLY.equals(am.getEditableType())) {
-						field.setEnabled(entity.getId() == null);
-					}
-				}
-			}
-		}
+		disableCreateOnlyFields();
 
 		// update the title label
 		Label newTitleLabel = constructTitleLabel();
