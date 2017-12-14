@@ -51,6 +51,7 @@ import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.AttributeSelectMode;
 import com.ocs.dynamo.domain.model.AttributeType;
 import com.ocs.dynamo.domain.model.CascadeMode;
+import com.ocs.dynamo.domain.model.EditableType;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.VisibilityType;
 import com.ocs.dynamo.domain.model.annotation.Attribute;
@@ -113,7 +114,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 
 		Assert.assertTrue(nameModel.isSortable());
 		Assert.assertTrue(nameModel.isMainAttribute());
-		Assert.assertFalse(nameModel.isReadOnly());
+		Assert.assertEquals(EditableType.EDITABLE, nameModel.getEditableType());
 
 		AttributeModel ageModel = model.getAttributeModel("age");
 		Assert.assertNull(ageModel.getDefaultValue());
@@ -222,7 +223,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		Assert.assertFalse(nameModel.isSortable());
 		Assert.assertTrue(nameModel.isSearchable());
 		Assert.assertTrue(nameModel.isMainAttribute());
-		Assert.assertTrue(nameModel.isReadOnly());
+		Assert.assertEquals(EditableType.READ_ONLY, nameModel.getEditableType());
 
 		AttributeModel ageModel = model.getAttributeModel("age");
 		Assert.assertNotNull(ageModel);
@@ -277,7 +278,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 
 		Assert.assertEquals("Override", nameModel.getDisplayName());
 		Assert.assertEquals("Prompt override", nameModel.getPrompt());
-		Assert.assertTrue(nameModel.isReadOnly());
+		Assert.assertEquals(EditableType.CREATE_ONLY, nameModel.getEditableType());
 
 		Assert.assertFalse(model.usesDefaultGroupOnly());
 
@@ -531,7 +532,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		AttributeModel am = model.getAttributeModel("attribute1");
 		Assert.assertEquals(1, am.getGroupTogetherWith().size());
 		Assert.assertEquals("attribute2", am.getGroupTogetherWith().get(0));
-		
+
 		AttributeModel am2 = model.getAttributeModel("attribute2");
 		Assert.assertTrue(am2.isTransient());
 	}
@@ -724,7 +725,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 			@AttributeGroup(messageKey = "group2.key", attributeNames = { "age" }) })
 	private class Entity3 {
 
-		@Attribute(defaultValue = "Bas", description = "Test", displayName = "Naampje", readOnly = true, prompt = "Prompt", searchable = true, main = true, sortable = false)
+		@Attribute(defaultValue = "Bas", description = "Test", displayName = "Naampje", editable = EditableType.READ_ONLY, prompt = "Prompt", searchable = true, main = true, sortable = false)
 		private String name;
 
 		@Attribute(searchCaseSensitive = true, searchPrefixOnly = true, useThousandsGrouping = false)

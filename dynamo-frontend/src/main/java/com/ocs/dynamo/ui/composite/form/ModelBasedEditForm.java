@@ -36,6 +36,7 @@ import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.AttributeType;
 import com.ocs.dynamo.domain.model.CascadeMode;
+import com.ocs.dynamo.domain.model.EditableType;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.impl.ModelBasedFieldFactory;
 import com.ocs.dynamo.exception.OCSRuntimeException;
@@ -395,7 +396,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		if (!alreadyBound.get(isViewMode()).contains(attributeModel.getPath()) && attributeModel.isVisible()
 				&& (AttributeType.BASIC.equals(type) || AttributeType.LOB.equals(type)
 						|| attributeModel.isComplexEditable())) {
-			if (attributeModel.isReadOnly() || isViewMode()) {
+
+			if (EditableType.READ_ONLY.equals(attributeModel.getEditableType()) || isViewMode()) {
 				if (attributeModel.isUrl()) {
 					// display a complex component even in read-only mode
 					constructField(parent, entityModel, attributeModel, true, tabIndex);
@@ -605,8 +607,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 				// just one layer of attribute groups
 				int tabIndex = 0;
 				for (String attributeGroup : entityModel.getAttributeGroups()) {
-
-					if (entityModel.isAttributeGroupVisible(attributeGroup, viewMode)) {
+					if (entityModel.isAttributeGroupVisible(attributeGroup, isViewMode())) {
 						Layout innerForm = constructAttributeGroupLayout(form, tabs, tabSheets.get(isViewMode()),
 								attributeGroup, true);
 						if (ScreenMode.VERTICAL.equals(getFormOptions().getScreenMode())) {
@@ -1311,7 +1312,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		// display a group if it is not the default group
 		for (String attributeGroup : getEntityModel().getAttributeGroups()) {
 			if ((!EntityModel.DEFAULT_GROUP.equals(attributeGroup)
-					|| getEntityModel().isAttributeGroupVisible(attributeGroup, isViewMode()))
+					|| getEntityModel().isAttributeGroupVisible(attributeGroup, viewMode))
 					&& getParentGroup(attributeGroup).equals(parentGroupHeader)) {
 				Layout innerLayout2 = constructAttributeGroupLayout(innerForm, innerTabs, innerTabSheet, attributeGroup,
 						true);
@@ -1503,6 +1504,18 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		for (Field<?> f : groups.get(isViewMode()).getFields()) {
 			if (f instanceof Refreshable) {
 				((Refreshable) f).refresh();
+			}
+		}
+
+		// enable/disable fields for create only mode
+		if (!isViewMode()) {
+			for (AttributeModel am : getEntityModel().getAttributeModels()) {
+				Field<?> field = groups.get(isViewMode()).getField(am.getPath());
+				if (field != null) {
+					if (EditableType.CREATE_ONLY.equals(am.getEditableType())) {
+						field.setEnabled(entity.getId() == null);
+					}
+				}
 			}
 		}
 

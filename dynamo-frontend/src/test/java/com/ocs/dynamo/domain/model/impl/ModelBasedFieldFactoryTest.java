@@ -29,6 +29,7 @@ import org.junit.Test;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.TestEntity2;
+import com.ocs.dynamo.domain.model.EditableType;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.domain.model.annotation.Attribute;
@@ -389,7 +390,7 @@ public class ModelBasedFieldFactoryTest extends BaseIntegrationTest {
 
 		private Integer id;
 
-		@Attribute(readOnly = true)
+		@Attribute(editable = EditableType.READ_ONLY)
 		private String readOnlyField;
 
 		@Override

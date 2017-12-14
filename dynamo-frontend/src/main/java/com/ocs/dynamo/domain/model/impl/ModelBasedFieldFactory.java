@@ -32,6 +32,7 @@ import java.util.concurrent.ConcurrentMap;
 import org.apache.commons.lang.StringUtils;
 
 import com.google.common.collect.Lists;
+import com.google.gwt.core.linker.SymbolMapsLinker.ScriptFragmentEditsArtifact.Edit;
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeDateType;
@@ -39,6 +40,7 @@ import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.AttributeSelectMode;
 import com.ocs.dynamo.domain.model.AttributeTextFieldMode;
 import com.ocs.dynamo.domain.model.AttributeType;
+import com.ocs.dynamo.domain.model.EditableType;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.NumberSelectMode;
 import com.ocs.dynamo.exception.OCSRuntimeException;
@@ -514,7 +516,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 		// in case of a read-only field, return <code>null</code> so Vaadin will
 		// render a label instead
 		AttributeModel attributeModel = model.getAttributeModel(propertyId);
-		if (attributeModel.isReadOnly()
+		if (EditableType.READ_ONLY.equals(attributeModel.getEditableType())
 				&& (!attributeModel.isUrl() && !AttributeType.DETAIL.equals(attributeModel.getAttributeType()))
 				&& !search) {
 			return null;
@@ -647,7 +649,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 			field.addValidator(new BeanValidator(model.getEntityClass(), propertyId));
 			// disable the field if it cannot be edited
 			if (!attributeModel.isUrl()) {
-				field.setEnabled(!attributeModel.isReadOnly());
+				field.setEnabled(!EditableType.READ_ONLY.equals(attributeModel.getEditableType()));
 			}
 
 			if (attributeModel.isNumerical()) {

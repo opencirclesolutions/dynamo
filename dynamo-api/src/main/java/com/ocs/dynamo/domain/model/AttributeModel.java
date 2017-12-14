@@ -131,6 +131,11 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	String getDisplayName();
 
 	/**
+	 * @return When the attribute can be edited
+	 */
+	EditableType getEditableType();
+
+	/**
 	 * @return The EntityModel for the entity that contains this attribute
 	 */
 	EntityModel<?> getEntityModel();
@@ -317,6 +322,12 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	boolean isCurrency();
 
 	/**
+	 * Indicates whether this attribute allows direct navigation to entity edit
+	 * screen
+	 */
+	boolean isDirectNavigation();
+
+	/**
 	 * 
 	 * 
 	 * @return Whether the attribute is an email address
@@ -362,11 +373,6 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	 * functionality allows for the inline addition of simple domain values
 	 */
 	boolean isQuickAddAllowed();
-
-	/**
-	 * @return Whether the attribute is read only
-	 */
-	boolean isReadOnly();
 
 	/**
 	 * @return whether the attribute is a required attribute (entity can only be
@@ -451,12 +457,6 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	 * @return
 	 */
 	boolean isWeek();
-
-	/**
-	 * Indicates whether this attribute allows direct navigation to entity edit
-	 * screen
-	 */
-	boolean isDirectNavigation();
 
 	/**
 	 * Marks the attribute as the main attribute

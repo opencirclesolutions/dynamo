@@ -28,14 +28,18 @@ public class MultiDomainEditLayoutTest extends BaseIntegrationTest {
 	@Test
 	@SuppressWarnings("unchecked")
 	public void testCreate() {
+
 		FormOptions fo = new FormOptions().setShowQuickSearchField(true).setShowRemoveButton(true);
 		MultiDomainEditLayout layout = new MultiDomainEditLayout(fo, Lists.newArrayList(Country.class, Region.class));
+		layout.addEntityModelOverride(Region.class, "CustomRegion");
 		layout.build();
 
 		// check that first domain class is selected by default
 		Assert.assertEquals(2, layout.getDomainClasses().size());
 		Assert.assertEquals(Country.class, layout.getSelectedDomain());
 		Assert.assertTrue(layout.isDeleteAllowed(Country.class));
+
+		layout.selectDomain(Region.class);
 
 		BaseSplitLayout<?, ?> splitLayout = layout.getSplitLayout();
 		Assert.assertNotNull(splitLayout);
@@ -93,7 +97,6 @@ public class MultiDomainEditLayoutTest extends BaseIntegrationTest {
 		FormOptions fo = new FormOptions();
 		MultiDomainEditLayout layout = new MultiDomainEditLayout(fo, list);
 		layout.build();
-
 	}
 
 	private class TestDomain extends Domain {

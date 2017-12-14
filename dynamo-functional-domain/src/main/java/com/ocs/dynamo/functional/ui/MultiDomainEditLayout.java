@@ -13,9 +13,12 @@
  */
 package com.ocs.dynamo.functional.ui;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.ocs.dynamo.constants.DynamoConstants;
+import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.functional.domain.Domain;
 import com.ocs.dynamo.service.BaseService;
@@ -27,6 +30,7 @@ import com.ocs.dynamo.ui.composite.layout.ServiceBasedSplitLayout;
 import com.ocs.dynamo.ui.container.QueryType;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.sort.SortOrder;
+import com.vaadin.data.util.filter.Or;
 import com.vaadin.data.util.filter.SimpleStringFilter;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.Button;
@@ -51,6 +55,11 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
 	 * The classes of the domains that are managed by this screen
 	 */
 	private final List<Class<? extends Domain>> domainClasses;
+
+	/**
+	 * Entity model overrides
+	 */
+	private Map<Class<?>, String> entityModelOverrides = new HashMap<>();
 
 	/**
 	 * The form options (these are passed directly to the split layout)
@@ -90,6 +99,18 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
 		this.domainClasses = domainClasses;
 	}
 
+	/**
+	 * Adds an entity model override
+	 * 
+	 * @param clazz
+	 *            the entity class
+	 * @param reference
+	 *            the reference to use for the overriden model
+	 */
+	public void addEntityModelOverride(Class<?> clazz, String reference) {
+		entityModelOverrides.put(clazz, reference);
+	}
+
 	@Override
 	public void attach() {
 		super.attach();
@@ -113,7 +134,7 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
 			ComboBox domainCombo = new ComboBox(message("ocs.select.domain"));
 			for (Class<? extends Domain> clazz : getDomainClasses()) {
 				domainCombo.addItem(clazz);
-				domainCombo.setItemCaption(clazz, getEntityModelFactory().getModel(clazz).getDisplayName());
+				domainCombo.setItemCaption(clazz, getEntityModel(clazz).getDisplayName());
 			}
 			domainCombo.setNullSelectionAllowed(false);
 			domainCombo.setSizeFull();
@@ -147,18 +168,19 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
 	@SuppressWarnings("unchecked")
 	private <T extends Domain> ServiceBasedSplitLayout<Integer, T> constructSplitLayout(Class<T> domainClass,
 			FormOptions formOptions) {
-
 		BaseService<Integer, T> baseService = (BaseService<Integer, T>) ServiceLocatorFactory.getServiceLocator()
 				.getServiceForEntity(domainClass);
 		if (baseService != null) {
-			return new ServiceBasedSplitLayout<Integer, T>(baseService, getEntityModelFactory().getModel(domainClass),
-					QueryType.PAGING, formOptions, new SortOrder(Domain.ATTRIBUTE_NAME, SortDirection.ASCENDING)) {
+			EntityModel<T> em = getEntityModel(domainClass);
+			return new ServiceBasedSplitLayout<Integer, T>(baseService, em, QueryType.PAGING, formOptions,
+					new SortOrder(Domain.ATTRIBUTE_NAME, SortDirection.ASCENDING)) {
 
 				private static final long serialVersionUID = -6504072714662771230L;
 
 				@Override
 				protected Filter constructQuickSearchFilter(String value) {
-					return new SimpleStringFilter(Domain.ATTRIBUTE_NAME, value, true, false);
+					return new Or(new SimpleStringFilter(Domain.ATTRIBUTE_NAME, value, true, false),
+							new SimpleStringFilter(Domain.ATTRIBUTE_CODE, value, true, false));
 				}
 
 				@Override
@@ -178,7 +200,6 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
 				protected void postProcessButtonBar(Layout buttonBar) {
 					MultiDomainEditLayout.this.postProcessButtonBar(buttonBar);
 				}
-
 			};
 		} else {
 			throw new OCSRuntimeException(message("ocs.no.service.class.found", domainClass));
@@ -190,6 +211,19 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
 	}
 
 	/**
+	 * Returns the entity model to use for a certain domain class
+	 * 
+	 * @param domainClass
+	 *            the domain class
+	 * @return
+	 */
+	private <T> EntityModel<T> getEntityModel(Class<T> domainClass) {
+		String override = entityModelOverrides.get(domainClass);
+		return override != null ? getEntityModelFactory().getModel(override, domainClass)
+				: getEntityModelFactory().getModel(domainClass);
+	}
+
+	/**
 	 * 
 	 * @return the currently selected domain class
 	 */
@@ -197,6 +231,10 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
 		return selectedDomain;
 	}
 
+	/**
+	 * 
+	 * @return the currently selected item
+	 */
 	public Domain getSelectedItem() {
 		return (Domain) splitLayout.getSelectedItem();
 	}
@@ -227,6 +265,10 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
 		return true;
 	}
 
+	/**
+	 * 
+	 * @param buttonBar
+	 */
 	protected void postProcessButtonBar(Layout buttonBar) {
 		// overwrite in subclasses
 	}
@@ -259,7 +301,7 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
 	 * @param clazz
 	 *            the domain class
 	 */
-	private void selectDomain(Class<? extends Domain> clazz) {
+	public void selectDomain(Class<? extends Domain> clazz) {
 		selectedDomain = clazz;
 		ServiceBasedSplitLayout<?, ?> layout = constructSplitLayout(clazz, formOptions);
 		selectedDomainLayout.replaceComponent(splitLayout, layout);

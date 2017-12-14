@@ -20,6 +20,7 @@ import javax.persistence.MappedSuperclass;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.ocs.dynamo.domain.model.EditableType;
 import com.ocs.dynamo.domain.model.VisibilityType;
 import com.ocs.dynamo.domain.model.annotation.Attribute;
 
@@ -35,20 +36,20 @@ public abstract class AbstractAuditableEntity<ID> extends AbstractEntity<ID> {
 
 	private static final long serialVersionUID = 3347137920794563022L;
 
-	@Attribute(readOnly = true)
+	@Attribute(editable = EditableType.READ_ONLY)
 	@Column(name = "created_by")
 	private String createdBy;
 
-	@Attribute(readOnly = true)
+	@Attribute(editable = EditableType.READ_ONLY)
 	@Column(name = "created_on")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date createdOn;
 
-	@Attribute(readOnly = true, showInTable = VisibilityType.HIDE)
+	@Attribute(editable = EditableType.READ_ONLY, showInTable = VisibilityType.HIDE)
 	@Column(name = "changed_by")
 	private String changedBy;
 
-	@Attribute(readOnly = true, showInTable = VisibilityType.HIDE)
+	@Attribute(editable = EditableType.READ_ONLY, showInTable = VisibilityType.HIDE)
 	@Column(name = "changed_on")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date changedOn;

@@ -64,6 +64,7 @@ import com.ocs.dynamo.domain.model.AttributeSelectMode;
 import com.ocs.dynamo.domain.model.AttributeTextFieldMode;
 import com.ocs.dynamo.domain.model.AttributeType;
 import com.ocs.dynamo.domain.model.CascadeMode;
+import com.ocs.dynamo.domain.model.EditableType;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.domain.model.NumberSelectMode;
@@ -165,7 +166,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 			model.setName((prefix == null ? "" : (prefix + ".")) + fieldName);
 			model.setImage(false);
 
-			model.setReadOnly(descriptor.isHidden());
+			model.setEditableType(descriptor.isHidden() ? EditableType.READ_ONLY : EditableType.EDITABLE);
 			model.setSortable(true);
 			model.setComplexEditable(false);
 			model.setPrecision(SystemPropertyUtils.getDefaultDecimalPrecision());
@@ -853,9 +854,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 				model.setPrompt(attribute.prompt());
 			}
 
-			if (attribute.readOnly()) {
-				model.setReadOnly(true);
-			}
+			model.setEditableType(attribute.editable());
 
 			// set visibility (but not for nested attributes - these are hidden
 			// by default)
@@ -1128,9 +1127,20 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 			model.setPrompt(msg);
 		}
 
+		// check for read only (convenience only, overwritten by "editable")
 		msg = getAttributeMessage(entityModel, model, EntityModel.READ_ONLY);
 		if (!StringUtils.isEmpty(msg)) {
-			model.setReadOnly(Boolean.valueOf(msg));
+			boolean edt = Boolean.valueOf(msg);
+			if (edt) {
+				model.setEditableType(EditableType.READ_ONLY);
+			} else {
+				model.setEditableType(EditableType.EDITABLE);
+			}
+		}
+
+		msg = getAttributeMessage(entityModel, model, EntityModel.EDITABLE);
+		if (!StringUtils.isEmpty(msg)) {
+			model.setEditableType(EditableType.valueOf(msg));
 		}
 
 		msg = getAttributeMessage(entityModel, model, EntityModel.SEARCHABLE);
