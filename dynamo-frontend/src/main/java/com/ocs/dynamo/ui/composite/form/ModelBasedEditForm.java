@@ -1628,6 +1628,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 		// update button captions
 		updateSaveButtonCaptions();
+		disableCreateOnlyFields();
 
 		// preserve tab index when switching
 		if (tabSheets.get(oldMode) != null) {
