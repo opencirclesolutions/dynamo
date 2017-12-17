@@ -55,6 +55,11 @@ public interface EntityModel<T> {
 	 * Cascade attribute
 	 */
 	String CASCADE = "cascade";
+	
+	/**
+	 * To completely turn off cascading for an attribute
+	 */
+	String CASCADE_OFF = "cascadeOff";
 
 	/**
 	 * Cascade filter path (what to filter to receving end of the cascade on)

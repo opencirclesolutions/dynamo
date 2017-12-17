@@ -1070,22 +1070,28 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 	 *            the attribute model
 	 */
 	private void setMessageBundleCascadeOverrides(EntityModel<?> entityModel, AttributeModel model) {
-		int cascadeIndex = 1;
-		String msg = getAttributeMessage(entityModel, model, EntityModel.CASCADE + "." + cascadeIndex);
-		while (msg != null) {
-			String filter = getAttributeMessage(entityModel, model,
-					EntityModel.CASCADE_FILTER_PATH + "." + cascadeIndex);
-			// optional mode (defaults to BOTH when omitted)
-			String mode = getAttributeMessage(entityModel, model, EntityModel.CASCADE_MODE + "." + cascadeIndex);
-
-			if (filter != null) {
-				model.addCascade(msg, filter, mode == null ? CascadeMode.BOTH : CascadeMode.valueOf(mode));
-			} else {
-				throw new OCSRuntimeException("Incomplete cascade definition for " + model.getPath());
-			}
-
-			cascadeIndex++;
+		String msg = getAttributeMessage(entityModel, model, EntityModel.CASCADE_OFF);
+		if (msg != null) {
+			// complete cancel all cascades for this attribute
+			model.removeCascades();
+		} else {
+			int cascadeIndex = 1;
 			msg = getAttributeMessage(entityModel, model, EntityModel.CASCADE + "." + cascadeIndex);
+			while (msg != null) {
+				String filter = getAttributeMessage(entityModel, model,
+						EntityModel.CASCADE_FILTER_PATH + "." + cascadeIndex);
+				// optional mode (defaults to BOTH when omitted)
+				String mode = getAttributeMessage(entityModel, model, EntityModel.CASCADE_MODE + "." + cascadeIndex);
+
+				if (filter != null && mode != null) {
+					model.addCascade(msg, filter, CascadeMode.valueOf(mode));
+				} else {
+					throw new OCSRuntimeException("Incomplete cascade definition for " + model.getPath());
+				}
+
+				cascadeIndex++;
+				msg = getAttributeMessage(entityModel, model, EntityModel.CASCADE + "." + cascadeIndex);
+			}
 		}
 	}
 

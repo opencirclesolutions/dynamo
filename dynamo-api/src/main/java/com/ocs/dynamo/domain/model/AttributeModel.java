@@ -459,6 +459,11 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	boolean isWeek();
 
 	/**
+	 * Removes all cascading
+	 */
+	void removeCascades();
+
+	/**
 	 * Marks the attribute as the main attribute
 	 * 
 	 * @param main

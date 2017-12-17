@@ -492,6 +492,11 @@ public class AttributeModelImpl implements AttributeModel {
 		return week;
 	}
 
+	@Override
+	public void removeCascades() {
+		this.cascadeAttributes.clear();
+	}
+
 	public void setAllowedExtensions(Set<String> allowedExtensions) {
 		this.allowedExtensions = allowedExtensions;
 	}
