@@ -47,7 +47,6 @@ public class DefaultUserDetailsServiceImpl implements UserDetailsService {
 		try {
 			HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes())
 					.getRequest();
-
 			return request.isUserInRole(role);
 		} catch (Exception ex) {
 			return false;

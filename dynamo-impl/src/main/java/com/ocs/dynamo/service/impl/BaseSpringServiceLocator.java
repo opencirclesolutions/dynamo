@@ -19,6 +19,7 @@ import java.util.Map.Entry;
 import org.springframework.context.ApplicationContext;
 
 import com.ocs.dynamo.domain.model.EntityModelFactory;
+import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.service.ServiceLocator;
@@ -40,6 +41,9 @@ public abstract class BaseSpringServiceLocator implements ServiceLocator {
 	private ApplicationContext getContext() {
 		if (ctx == null) {
 			ctx = loadCtx();
+			if (ctx == null) {
+				throw new OCSRuntimeException("Cannot load context");
+			}
 		}
 		return ctx;
 	}
