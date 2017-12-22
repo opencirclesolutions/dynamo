@@ -41,9 +41,6 @@ public abstract class BaseSpringServiceLocator implements ServiceLocator {
 	private ApplicationContext getContext() {
 		if (ctx == null) {
 			ctx = loadCtx();
-			if (ctx == null) {
-				throw new OCSRuntimeException("Cannot load context");
-			}
 		}
 		return ctx;
 	}
