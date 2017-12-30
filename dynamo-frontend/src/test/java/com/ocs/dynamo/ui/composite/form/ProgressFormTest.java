@@ -128,7 +128,7 @@ public class ProgressFormTest extends BaseMockitoTest {
 		Assert.assertEquals(0, called);
 		pf.startWork(null);
 
-		Thread.sleep(3000);
+		Thread.sleep(5000);
 
 		Mockito.verify(ui, Mockito.atLeast(1)).access(Matchers.any(Runnable.class));
 
