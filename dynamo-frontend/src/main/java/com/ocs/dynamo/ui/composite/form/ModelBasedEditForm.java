@@ -19,6 +19,7 @@ import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -287,8 +288,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	private Map<Boolean, BeanFieldGroup<T>> groups = new HashMap<>();
 
 	/**
-	 * A map containing all the labels that were added - used to replace the
-	 * label values as the selected entity changes
+	 * A map containing all the labels that were added - used to replace the label
+	 * values as the selected entity changes
 	 */
 	private Map<Boolean, Map<AttributeModel, Component>> labels = new HashMap<>();
 
@@ -328,6 +329,11 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	 * Whether to display the component in view mode
 	 */
 	private boolean viewMode;
+
+	/**
+	 * Whether the form is in nested mode
+	 */
+	private boolean nestedMode;
 
 	/**
 	 * Constructor
@@ -408,8 +414,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 					previews.get(isViewMode()).put(attributeModel, c);
 				} else if (AttributeType.DETAIL.equals(type) && attributeModel.isComplexEditable()) {
 					Field<?> f = constructCustomField(entityModel, attributeModel, viewMode);
-					if (f instanceof DetailsEditTable) {
-						// a details edit table must be displayed
+					if (f instanceof DetailsEditTable || f instanceof DetailsEditLayout) {
+						// a details edit table or details edit layout must always be displayed
 						constructField(parent, entityModel, attributeModel, true, tabIndex);
 					} else {
 						constructLabel(parent, entityModel, attributeModel, tabIndex);
@@ -435,6 +441,11 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		}
 	}
 
+	/**
+	 * Add a listener to respond to a tab change and focus the first available field
+	 * 
+	 * @param tabSheet
+	 */
 	private void addTabChangeListener(TabSheet tabSheet) {
 		tabSheet.addSelectedTabChangeListener(event -> {
 			Component c = event.getTabSheet().getSelectedTab();
@@ -463,14 +474,18 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	}
 
 	/**
-	 * Respond to the setting of a new entity as the selected entity. This can
-	 * be used to fetch any additionally required data
+	 * Respond to the setting of a new entity as the selected entity. This can be
+	 * used to fetch any additionally required data
 	 * 
 	 * @param entity
 	 *            the entity
 	 */
 	protected void afterEntitySet(T entity) {
 		// override in subclass
+	}
+
+	protected void afterLayoutBuilt(boolean viewMode) {
+		// after the layout
 	}
 
 	/**
@@ -482,8 +497,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	}
 
 	/**
-	 * Called after the user navigates back to a search screen using the back
-	 * button
+	 * Called after the user navigates back to a search screen using the back button
 	 * 
 	 * @return
 	 */
@@ -492,8 +506,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	}
 
 	/**
-	 * Main build method - lazily constructs the layout for either edit or view
-	 * mode
+	 * Main build method - lazily constructs the layout for either edit or view mode
 	 */
 	@Override
 	public void build() {
@@ -544,20 +557,21 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		VerticalLayout layout = new DefaultVerticalLayout(false, true);
 
 		titleLabels.put(isViewMode(), constructTitleLabel());
-
-		// horizontal layout that contains title label and buttons
-
 		titleBars.put(isViewMode(), new DefaultHorizontalLayout(false, true, true));
 		titleBars.get(isViewMode()).addComponent(titleLabels.get(isViewMode()));
 
-		HorizontalLayout buttonBar = constructButtonBar();
-		buttonBar.setSizeUndefined();
-		if (getFormOptions().isPlaceButtonBarAtTop()) {
-			layout.addComponent(buttonBar);
-		} else {
-			titleBars.get(isViewMode()).addComponent(buttonBar);
+		HorizontalLayout buttonBar = null;
+		if (!nestedMode) {
+			buttonBar = constructButtonBar();
+			buttonBar.setSizeUndefined();
+			if (getFormOptions().isPlaceButtonBarAtTop()) {
+				layout.addComponent(buttonBar);
+			} else {
+				titleBars.get(isViewMode()).addComponent(buttonBar);
+			}
 		}
 		layout.addComponent(titleBars.get(isViewMode()));
+		titleBars.get(isViewMode()).setVisible(!nestedMode);
 
 		Layout form = null;
 		if (entityModel.usesDefaultGroupOnly()) {
@@ -638,18 +652,22 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			firstFields.get(0).focus();
 		}
 
-		buttonBar = constructButtonBar();
-		buttonBar.setSizeUndefined();
-		layout.addComponent(buttonBar);
+		if (!nestedMode) {
+			buttonBar = constructButtonBar();
+			buttonBar.setSizeUndefined();
+			layout.addComponent(buttonBar);
+		}
 		checkSaveButtonState();
 		disableCreateOnlyFields();
+
+		afterLayoutBuilt(isViewMode());
 
 		return layout;
 	}
 
 	/**
-	 * Checks the state of the iteration (prev/next) buttons. These will be
-	 * shown in view mode or if the form only supports an edit mode
+	 * Checks the state of the iteration (prev/next) buttons. These will be shown in
+	 * view mode or if the form only supports an edit mode
 	 * 
 	 * @param checkEnabled
 	 *            whether to check if the buttons should be enabled
@@ -674,20 +692,26 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	}
 
 	/**
-	 * Sets the state (enabled/disabled) of the save button. The button is
-	 * enabled if the from is valid and all of its detail tables are as well
+	 * Sets the state (enabled/disabled) of the save button. The button is enabled
+	 * if the from is valid and all of its detail tables are as well
 	 */
 	private void checkSaveButtonState() {
 		for (Button saveButton : buttons.get(isViewMode())) {
 			if (SAVE_BUTTON_DATA.equals(saveButton.getData())) {
-				boolean valid = groups.get(isViewMode()).isValid();
-
-				for (Boolean b : detailTablesValid.values()) {
-					valid &= b;
-				}
-				saveButton.setEnabled(valid);
+				saveButton.setEnabled(isValid());
 			}
 		}
+	}
+
+	/**
+	 * Check if the form is valid
+	 * 
+	 * @return
+	 */
+	public boolean isValid() {
+		boolean valid = groups.get(isViewMode()).isValid();
+		valid &= detailTablesValid.values().stream().allMatch(x -> x);
+		return valid;
 	}
 
 	/**
@@ -698,8 +722,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	 * @param tabs
 	 *            whether to include the component in a tab sheet
 	 * @param tabSheet
-	 *            the parent tab sheet (only used if the "tabs" parameter is
-	 *            true)
+	 *            the parent tab sheet (only used if the "tabs" parameter is true)
 	 * @param caption
 	 *            caption of the panel or tab sheet
 	 * @param lowest
@@ -963,8 +986,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	 * @param entityModel
 	 *            the entity model
 	 * @param attributeModel
-	 *            the attribute model for the attribute for which to create a
-	 *            label
+	 *            the attribute model for the attribute for which to create a label
 	 * @param tabIndex
 	 *            the number of components added so far
 	 */
@@ -1017,8 +1039,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	}
 
 	/**
-	 * Constructs a layout that serves as the basis for displaying multiple
-	 * input components in a single row
+	 * Constructs a layout that serves as the basis for displaying multiple input
+	 * components in a single row
 	 * 
 	 * @param attributeModel
 	 *            the attribute model for the first attribute
@@ -1192,8 +1214,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	/**
 	 * Indicates which parent group a certain child group belongs to. The parent
 	 * group must be mentioned in the result of the
-	 * <code>getParentGroupHeaders</code> method. The childGroup must be the
-	 * name of an attribute group from the entity model
+	 * <code>getParentGroupHeaders</code> method. The childGroup must be the name of
+	 * an attribute group from the entity model
 	 * 
 	 * @param childGroup
 	 * @return
@@ -1204,8 +1226,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 	/**
 	 * Returns the group headers of any additional parent groups that must be
-	 * included in the form. These can be used to add an extra layer of nesting
-	 * of the attribute groups
+	 * included in the form. These can be used to add an extra layer of nesting of
+	 * the attribute groups
 	 * 
 	 * @return
 	 */
@@ -1303,9 +1325,9 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	}
 
 	/**
-	 * Post-processes any edit fields- this method does nothing by default but
-	 * must be used to call the postProcessEditFields callback method on an
-	 * enclosing component
+	 * Post-processes any edit fields- this method does nothing by default but must
+	 * be used to call the postProcessEditFields callback method on an enclosing
+	 * component
 	 */
 	protected void postProcessEditFields() {
 		// overwrite in subclasses
@@ -1342,8 +1364,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	}
 
 	/**
-	 * Reconstructs all labels are a change of the view mode or the selected
-	 * entity
+	 * Reconstructs all labels are a change of the view mode or the selected entity
 	 */
 	private void reconstructLabels() {
 		// reconstruct all labels (since they cannot be bound automatically)
@@ -1657,7 +1678,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	 * @param valid
 	 *            whether the component is valid
 	 */
-	public void signalDetailsTableValid(SignalsParent component, boolean valid) {
+	public void signalDetailsComponentValid(SignalsParent component, boolean valid) {
 		detailTablesValid.put(component, valid);
 		checkSaveButtonState();
 	}
@@ -1687,8 +1708,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	}
 
 	/**
-	 * Sets the caption of the save button depending on whether we are creating
-	 * or updating an entity
+	 * Sets the caption of the save button depending on whether we are creating or
+	 * updating an entity
 	 */
 	private void updateSaveButtonCaptions() {
 		for (Button b : getSaveButtons()) {
@@ -1698,6 +1719,18 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 				b.setCaption(message("ocs.save.new"));
 			}
 		}
+	}
+
+	public boolean isNestedMode() {
+		return nestedMode;
+	}
+
+	public void setNestedMode(boolean nestedMode) {
+		this.nestedMode = nestedMode;
+	}
+
+	public Collection<Field<?>> getFields(boolean viewMode) {
+		return groups.get(viewMode).getFields();
 	}
 
 }

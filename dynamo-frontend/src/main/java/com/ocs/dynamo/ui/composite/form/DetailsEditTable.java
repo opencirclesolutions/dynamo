@@ -99,8 +99,7 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 	private Map<String, Filter> fieldFilters = new HashMap<>();
 
 	/**
-	 * Form options that determine which buttons and functionalities are
-	 * available
+	 * Form options that determine which buttons and functionalities are available
 	 */
 	private FormOptions formOptions;
 
@@ -197,8 +196,8 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 	}
 
 	/**
-	 * Callback method that is called after selecting one or more items using
-	 * the search dialog
+	 * Callback method that is called after selecting one or more items using the
+	 * search dialog
 	 * 
 	 * @param selectedItems
 	 */
@@ -229,7 +228,8 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 			T t = createEntity();
 			container.addBean(t);
 			if (parentForm != null) {
-				parentForm.signalDetailsTableValid(DetailsEditTable.this, VaadinUtils.allFixedTableFieldsValid(table));
+				parentForm.signalDetailsComponentValid(DetailsEditTable.this,
+						VaadinUtils.allFixedTableFieldsValid(table));
 			}
 		});
 		addButton.setVisible(isTableEditEnabled() && !formOptions.isHideAddButton());
@@ -259,8 +259,8 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 	 * @param entityModel
 	 *            the entity model of the entity that is displayed in the table
 	 * @param attributeModel
-	 *            the attribute model of the attribute for which we are
-	 *            constructing a field
+	 *            the attribute model of the attribute for which we are constructing
+	 *            a field
 	 * @param viewMode
 	 *            whether the form is in view mode
 	 * @return
@@ -406,7 +406,7 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 					// parent
 					removeEntity((T) itemId);
 					if (parentForm != null) {
-						parentForm.signalDetailsTableValid(DetailsEditTable.this,
+						parentForm.signalDetailsComponentValid(DetailsEditTable.this,
 								VaadinUtils.allFixedTableFieldsValid(table));
 					}
 
@@ -444,7 +444,7 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 					if (!viewMode) {
 						field.addValueChangeListener(event -> {
 							if (parentForm != null) {
-								parentForm.signalDetailsTableValid(DetailsEditTable.this,
+								parentForm.signalDetailsComponentValid(DetailsEditTable.this,
 										VaadinUtils.allFixedTableFieldsValid(table));
 							}
 						});
@@ -487,8 +487,7 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 	}
 
 	/**
-	 * Indicates whether it is possible to add/modify items directly via the
-	 * table
+	 * Indicates whether it is possible to add/modify items directly via the table
 	 * 
 	 * @return
 	 */
@@ -501,8 +500,8 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 	}
 
 	/**
-	 * Method that is called in order to enable/disable a button after selecting
-	 * an item in the table
+	 * Method that is called in order to enable/disable a button after selecting an
+	 * item in the table
 	 * 
 	 * @param button
 	 * @return
@@ -520,8 +519,8 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 	}
 
 	/**
-	 * Callback method that is used to modify the button bar. Override in
-	 * subclasses if needed
+	 * Callback method that is used to modify the button bar. Override in subclasses
+	 * if needed
 	 * 
 	 * @param buttonBar
 	 */
@@ -534,9 +533,9 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 	}
 
 	/**
-	 * Registers a button that must be enabled/disabled after an item is
-	 * selected. use the "mustEnableButton" callback method to impose additional
-	 * constraints on when the button must be enabled
+	 * Registers a button that must be enabled/disabled after an item is selected.
+	 * use the "mustEnableButton" callback method to impose additional constraints
+	 * on when the button must be enabled
 	 * 
 	 * @param button
 	 *            the button to register
@@ -616,7 +615,7 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 	private void setParentForm(ModelBasedEditForm<?, ?> parentForm) {
 		this.parentForm = parentForm;
 		if (parentForm != null) {
-			parentForm.signalDetailsTableValid(this, VaadinUtils.allFixedTableFieldsValid(table));
+			parentForm.signalDetailsComponentValid(this, VaadinUtils.allFixedTableFieldsValid(table));
 		}
 	}
 

@@ -130,7 +130,7 @@ public class CollectionTable<T extends Serializable> extends CustomField<Collect
 			// item is never allowed)
 			table.addItem();
 			if (parentForm != null) {
-				parentForm.signalDetailsTableValid(CollectionTable.this, false);
+				parentForm.signalDetailsComponentValid(CollectionTable.this, false);
 			}
 		});
 		buttonBar.addComponent(addButton);
@@ -233,7 +233,7 @@ public class CollectionTable<T extends Serializable> extends CustomField<Collect
 	private void setParentForm(final ModelBasedEditForm<?, ?> parentForm) {
 		this.parentForm = parentForm;
 		if (parentForm != null) {
-			parentForm.signalDetailsTableValid(this, VaadinUtils.allFixedTableFieldsValid(table));
+			parentForm.signalDetailsComponentValid(this, VaadinUtils.allFixedTableFieldsValid(table));
 		}
 	}
 
@@ -343,12 +343,11 @@ public class CollectionTable<T extends Serializable> extends CustomField<Collect
 					if (propagateChanges) {
 						propagateChanges = false;
 						setValue(extractValues());
-						parentForm.signalDetailsTableValid(CollectionTable.this,
+						parentForm.signalDetailsComponentValid(CollectionTable.this,
 								VaadinUtils.allFixedTableFieldsValid(table));
 						propagateChanges = true;
 					}
 				});
-
 				return f;
 			}
 		});
