@@ -1467,6 +1467,17 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	}
 
 	/**
+	 * Selects the tab specified by the provided index
+	 * 
+	 * @param index
+	 */
+	public void selectTab(int index) {
+		if (tabSheets.get(isViewMode()) != null) {
+			tabSheets.get(isViewMode()).setSelectedTab(index);
+		}
+	}
+
+	/**
 	 * Shows/hides an attribute group
 	 * 
 	 * @param caption

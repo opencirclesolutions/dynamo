@@ -124,7 +124,7 @@ public class SimpleSearchLayoutTest extends BaseIntegrationTest {
         // click add button, verify that we just get a simple edit screen and not
         // the tab layout
         layout.getAddButton().click();
-        Assert.assertFalse(detailsTabCreated);
+        Assert.assertTrue(detailsTabCreated);
 
         // select the item and verify that the proper details tab is created
         layout.setSelectedItem(e1);

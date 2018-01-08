@@ -193,8 +193,8 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	}
 
 	/**
-	 * Perform any actions that are necessary before carrying out a search. Can
-	 * be used to interfere with the search process
+	 * Perform any actions that are necessary before carrying out a search. Can be
+	 * used to interfere with the search process
 	 * 
 	 * @param filter
 	 *            the current search filter
@@ -284,8 +284,8 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	}
 
 	/**
-	 * Builds a tab layout for the display view. The definition of the tabs has
-	 * to be done in the subclasses
+	 * Builds a tab layout for the display view. The definition of the tabs has to
+	 * be done in the subclasses
 	 * 
 	 * @param entity
 	 *            the currently selected entity
@@ -669,7 +669,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 				mainEditLayout.replaceComponent(selectedDetailLayout, tabContainerLayout);
 			}
 			selectedDetailLayout = tabContainerLayout;
-		} else {
+		} else if (!getFormOptions().isComplexDetailsMode()) {
 			// simple edit form
 			if (editForm == null) {
 				buildEditForm(entity, options);
@@ -684,25 +684,35 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 				mainEditLayout.replaceComponent(selectedDetailLayout, editForm);
 			}
 			selectedDetailLayout = editForm;
+
+		} else {
+			Component comp = initTab(entity, 0, getFormOptions());
+			if (selectedDetailLayout == null) {
+				mainEditLayout.addComponent(comp);
+			} else {
+				mainEditLayout.replaceComponent(selectedDetailLayout, comp);
+			}
+			selectedDetailLayout = comp;
 		}
 
 		checkButtonState(getSelectedItem());
-		afterEntitySelected(editForm, entity);
+		if (editForm != null) {
+			afterEntitySelected(editForm, entity);
+		}
 		setCompositionRoot(mainEditLayout);
+
 	}
 
 	/**
-	 * Callback method that is called when the user presses the edit method.
-	 * Will by default open the screen in edit mode. Overwrite in subclass if
-	 * needed
+	 * Callback method that is called when the user presses the edit method. Will by
+	 * default open the screen in edit mode. Overwrite in subclass if needed
 	 */
 	protected void doEdit() {
 		detailsMode(getSelectedItem());
 	}
 
 	/**
-	 * Performs the actual remove functionality - overwrite in subclass if
-	 * needed
+	 * Performs the actual remove functionality - overwrite in subclass if needed
 	 */
 	protected void doRemove() {
 		getService().delete(getSelectedItem());
@@ -889,8 +899,8 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	}
 
 	/**
-	 * Refreshes all lookup components but otherwise does not update the state
-	 * of the screen
+	 * Refreshes all lookup components but otherwise does not update the state of
+	 * the screen
 	 */
 	@Override
 	public void refresh() {
@@ -1026,8 +1036,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 
 	/**
 	 * Validate before a search is carried out - if the search criteria are not
-	 * correctly set, throw an OCSValidationException to abort the search
-	 * process
+	 * correctly set, throw an OCSValidationException to abort the search process
 	 */
 	public void validateBeforeSearch() {
 		// overwrite in subclasses

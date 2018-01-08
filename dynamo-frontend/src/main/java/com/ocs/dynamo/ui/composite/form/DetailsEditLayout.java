@@ -38,6 +38,14 @@ import com.vaadin.ui.Field;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.VerticalLayout;
 
+/**
+ * A layout for displaying various
+ * 
+ * @author Bas Rutten
+ *
+ * @param <ID>
+ * @param <T>
+ */
 public abstract class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity<ID>>
 		extends CustomField<Collection<T>> implements SignalsParent {
 
@@ -143,14 +151,18 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 	/**
 	 * Constructor
 	 * 
+	 * @param service
+	 *            the service
 	 * @param items
-	 *            the entities to display
+	 *            the items to display
 	 * @param entityModel
-	 *            the entity model of the entities to display
+	 *            the entity model
+	 * @param attributeModel
+	 *            the attribute model
 	 * @param viewMode
-	 *            the view mode
+	 *            whether the form is in view mode
 	 * @param formOptions
-	 *            the form options that determine how the table
+	 *            the form options
 	 */
 	public DetailsEditLayout(BaseService<ID, T> service, Collection<T> items, EntityModel<T> entityModel,
 			AttributeModel attributeModel, boolean viewMode, FormOptions formOptions) {
@@ -163,6 +175,10 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 		this.formOptions = formOptions;
 	}
 
+	/**
+	 * Adds a detail edit form
+	 * @param t
+	 */
 	private void addDetailEditForm(T t) {
 		ModelBasedEditForm<ID, T> editForm = new ModelBasedEditForm<ID, T>(t, service, entityModel, formOptions,
 				fieldFilters) {
@@ -429,7 +445,5 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 		setItems(newFieldValue);
 		super.setValue(newFieldValue);
 	}
-	
-	
 
 }

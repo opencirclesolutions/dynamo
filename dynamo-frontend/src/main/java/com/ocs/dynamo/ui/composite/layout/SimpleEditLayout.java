@@ -340,6 +340,10 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
     public void resetTab() {
         editForm.resetTab();
     }
+    
+	public void selectTab(int index) {
+		editForm.selectTab(index);
+	}
 
     /**
      * Sets the entity
