@@ -34,7 +34,8 @@ import com.vaadin.ui.Layout;
 import com.vaadin.ui.VerticalLayout;
 
 /**
- * A layout for editing a single entity (can either be an existing or a new entity)
+ * A layout for editing a single entity (can either be an existing or a new
+ * entity)
  * 
  * @author bas.rutten
  * @param <ID>
@@ -44,328 +45,340 @@ import com.vaadin.ui.VerticalLayout;
  */
 @SuppressWarnings("serial")
 public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<ID>>
-        extends BaseServiceCustomComponent<ID, T> implements Reloadable, CanAssignEntity<ID, T> {
+		extends BaseServiceCustomComponent<ID, T> implements Reloadable, CanAssignEntity<ID, T> {
 
-    private static final long serialVersionUID = -7935358582100755140L;
+	private static final long serialVersionUID = -7935358582100755140L;
 
-    // the edit form
-    private ModelBasedEditForm<ID, T> editForm;
+	// the edit form
+	private ModelBasedEditForm<ID, T> editForm;
 
-    // the selected entity
-    private T entity;
+	// the selected entity
+	private T entity;
 
-    // map of additional field filters
-    private Map<String, Filter> fieldFilters = new HashMap<>();
+	// map of additional field filters
+	private Map<String, Filter> fieldFilters = new HashMap<>();
 
-    // specifies which relations to fetch when querying
-    private FetchJoinInformation[] joins;
+	// specifies which relations to fetch when querying
+	private FetchJoinInformation[] joins;
 
-    // the main layout
-    private VerticalLayout main;
+	// the main layout
+	private VerticalLayout main;
 
-    /**
-     * Constructor
-     * 
-     * @param entity
-     *            the entity to edit
-     * @param service
-     *            the service used to save/refresh the entity
-     * @param entityModel
-     *            the entity model used to generate the form
-     * @param formOptions
-     *            the form options
-     * @param joins
-     *            optional joins to use when fetching the entity from the database
-     */
-    public SimpleEditLayout(T entity, BaseService<ID, T> service, EntityModel<T> entityModel, FormOptions formOptions,
-            FetchJoinInformation... joins) {
-        super(service, entityModel, formOptions);
-        this.entity = entity;
-        this.joins = joins;
-    }
+	/**
+	 * Constructor
+	 * 
+	 * @param entity
+	 *            the entity to edit
+	 * @param service
+	 *            the service used to save/refresh the entity
+	 * @param entityModel
+	 *            the entity model used to generate the form
+	 * @param formOptions
+	 *            the form options
+	 * @param joins
+	 *            optional joins to use when fetching the entity from the database
+	 */
+	public SimpleEditLayout(T entity, BaseService<ID, T> service, EntityModel<T> entityModel, FormOptions formOptions,
+			FetchJoinInformation... joins) {
+		super(service, entityModel, formOptions);
+		this.entity = entity;
+		this.joins = joins;
+	}
 
-    /**
-     * Method that is called after the user has completed (or cancelled) an edit action
-     * 
-     * @param cancel
-     *            whether the edit was cancelled
-     * @param newEntity
-     *            whether a new entity was being edited
-     * @param entity
-     *            the entity that has just been edited
-     */
-    protected void afterEditDone(boolean cancel, boolean newEntity, T entity) {
-        if (entity.getId() != null) {
-            // reset to view mode
-            if (getFormOptions().isOpenInViewMode()) {
-                editForm.setViewMode(true);
-            }
-            setEntity(getService().fetchById(entity.getId(), getJoins()));
-        } else {
-            // new entity
-            back();
-        }
-    }
+	/**
+	 * Method that is called after the user has completed (or cancelled) an edit
+	 * action
+	 * 
+	 * @param cancel
+	 *            whether the edit was cancelled
+	 * @param newEntity
+	 *            whether a new entity was being edited
+	 * @param entity
+	 *            the entity that has just been edited
+	 */
+	protected void afterEditDone(boolean cancel, boolean newEntity, T entity) {
+		if (entity.getId() != null) {
+			// reset to view mode
+			if (getFormOptions().isOpenInViewMode()) {
+				editForm.setViewMode(true);
+			}
+			setEntity(getService().fetchById(entity.getId(), getJoins()));
+		} else {
+			// new entity
+			back();
+		}
+	}
+	
+	protected void afterLayoutBuilt(Layout layout, boolean viewMode) {
+		// override in subclass
+	}
 
-    @Override
-    public void assignEntity(T t) {
-        setEntity(t);
-        if (editForm != null) {
-            editForm.resetTab();
-        }
-    }
+	@Override
+	public void assignEntity(T t) {
+		setEntity(t);
+		if (editForm != null) {
+			editForm.resetTab();
+		}
+	}
 
-    @Override
-    public void attach() {
-        super.attach();
-        build();
-    }
+	@Override
+	public void attach() {
+		super.attach();
+		build();
+	}
 
-    /**
-     * Code to carry out after navigating "back" to the main screen
-     */
-    protected void back() {
-        // overwrite in subclasses
-    }
+	/**
+	 * Code to carry out after navigating "back" to the main screen
+	 */
+	protected void back() {
+		// overwrite in subclasses
+	}
 
-    /**
-     * Constructs the screen - this method is called just once
-     */
-    @Override
-    public void build() {
-        if (main == null) {
-            main = new DefaultVerticalLayout(true, true);
+	/**
+	 * Constructs the screen - this method is called just once
+	 */
+	@Override
+	public void build() {
+		if (main == null) {
+			main = new DefaultVerticalLayout(true, true);
 
-            // create new entity if it does not exist yet
-            if (entity == null) {
-                entity = createEntity();
-            }
+			// create new entity if it does not exist yet
+			if (entity == null) {
+				entity = createEntity();
+			}
 
-            // there is just one component here, so the screen mode is always
-            // vertical
-            getFormOptions().setScreenMode(ScreenMode.VERTICAL);
-            editForm = new ModelBasedEditForm<ID, T>(entity, getService(), getEntityModel(), getFormOptions(),
-                    fieldFilters) {
-                @Override
-                protected void afterEditDone(boolean cancel, boolean newObject, T entity) {
-                    setEntity(entity);
-                    SimpleEditLayout.this.afterEditDone(cancel, newObject, entity);
-                }
+			// there is just one component here, so the screen mode is always
+			// vertical
+			getFormOptions().setScreenMode(ScreenMode.VERTICAL);
+			editForm = new ModelBasedEditForm<ID, T>(entity, getService(), getEntityModel(), getFormOptions(),
+					fieldFilters) {
 
-                @Override
-                protected void afterModeChanged(boolean viewMode) {
-                    SimpleEditLayout.this.afterModeChanged(viewMode, editForm);
-                }
+				@Override
+				protected void afterLayoutBuilt(Layout layout, boolean viewMode) {
+					SimpleEditLayout.this.afterLayoutBuilt(layout, viewMode);
+				}
 
-                @Override
-                protected void back() {
-                    SimpleEditLayout.this.back();
-                }
+				@Override
+				protected void afterEditDone(boolean cancel, boolean newObject, T entity) {
+					setEntity(entity);
+					SimpleEditLayout.this.afterEditDone(cancel, newObject, entity);
+				}
 
-                @Override
-                protected Field<?> constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel,
-                        boolean viewMode) {
-                    return SimpleEditLayout.this.constructCustomField(entityModel, attributeModel, viewMode, false);
-                }
+				@Override
+				protected void afterModeChanged(boolean viewMode) {
+					SimpleEditLayout.this.afterModeChanged(viewMode, editForm);
+				}
 
-                @Override
-                protected String getParentGroup(String childGroup) {
-                    return SimpleEditLayout.this.getParentGroup(childGroup);
-                }
+				@Override
+				protected void back() {
+					SimpleEditLayout.this.back();
+				}
 
-                @Override
-                protected String[] getParentGroupHeaders() {
-                    return SimpleEditLayout.this.getParentGroupHeaders();
-                }
+				@Override
+				protected Field<?> constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel,
+						boolean viewMode) {
+					return SimpleEditLayout.this.constructCustomField(entityModel, attributeModel, viewMode, false);
+				}
 
-                @Override
-                protected boolean isEditAllowed() {
-                    return SimpleEditLayout.this.isEditAllowed();
-                }
+				@Override
+				protected String getParentGroup(String childGroup) {
+					return SimpleEditLayout.this.getParentGroup(childGroup);
+				}
 
-                @Override
-                protected void postProcessButtonBar(HorizontalLayout buttonBar, boolean viewMode) {
-                    SimpleEditLayout.this.postProcessButtonBar(buttonBar, viewMode);
-                }
+				@Override
+				protected String[] getParentGroupHeaders() {
+					return SimpleEditLayout.this.getParentGroupHeaders();
+				}
 
-                @Override
-                protected void postProcessEditFields() {
-                    SimpleEditLayout.this.postProcessEditFields(editForm);
-                }
+				@Override
+				protected boolean isEditAllowed() {
+					return SimpleEditLayout.this.isEditAllowed();
+				}
 
-            };
+				@Override
+				protected void postProcessButtonBar(HorizontalLayout buttonBar, boolean viewMode) {
+					SimpleEditLayout.this.postProcessButtonBar(buttonBar, viewMode);
+				}
 
-            editForm.setDetailJoins(getJoins());
-            editForm.setFormTitleWidth(getFormTitleWidth());
-            editForm.setFieldEntityModels(getFieldEntityModels());
-            editForm.build();
+				@Override
+				protected void postProcessEditFields() {
+					SimpleEditLayout.this.postProcessEditFields(editForm);
+				}
 
-            main.addComponent(editForm);
+			};
 
-            afterEntitySelected(editForm, getEntity());
-            checkButtonState(getEntity());
+			editForm.setDetailJoins(getJoins());
+			editForm.setFormTitleWidth(getFormTitleWidth());
+			editForm.setFieldEntityModels(getFieldEntityModels());
+			editForm.build();
 
-            postProcessLayout(main);
+			main.addComponent(editForm);
 
-            setCompositionRoot(main);
-        }
-    }
+			afterEntitySelected(editForm, getEntity());
+			checkButtonState(getEntity());
 
-    /**
-     * Creates a new entity - override in subclass if needed
-     * 
-     * @return
-     */
-    protected T createEntity() {
-        return getService().createNewEntity();
-    }
+			postProcessLayout(main);
 
-    public ModelBasedEditForm<ID, T> getEditForm() {
-        return editForm;
-    }
+			setCompositionRoot(main);
+		}
+	}
 
-    public T getEntity() {
-        return entity;
-    }
+	/**
+	 * Creates a new entity - override in subclass if needed
+	 * 
+	 * @return
+	 */
+	protected T createEntity() {
+		return getService().createNewEntity();
+	}
 
-    public Map<String, Filter> getFieldFilters() {
-        return fieldFilters;
-    }
+	public ModelBasedEditForm<ID, T> getEditForm() {
+		return editForm;
+	}
 
-    public FetchJoinInformation[] getJoins() {
-        return joins;
-    }
+	public T getEntity() {
+		return entity;
+	}
 
-    /**
-     * Returns the parent group (which must be returned by the getParentGroupHeaders method) to
-     * which a certain child group belongs
-     * 
-     * @param childGroup
-     *            the name of the child group
-     * @return
-     */
-    protected String getParentGroup(String childGroup) {
-        // overwrite in subclasses if needed
-        return null;
-    }
+	public Map<String, Filter> getFieldFilters() {
+		return fieldFilters;
+	}
 
-    /**
-     * Returns a list of additional group headers that can be used to add an extra nesting layer to
-     * the layout
-     * 
-     * @return
-     */
-    protected String[] getParentGroupHeaders() {
-        // overwrite in subclasses if needed
-        return null;
-    }
+	public FetchJoinInformation[] getJoins() {
+		return joins;
+	}
 
-    /**
-     * 
-     * @return
-     */
-    protected boolean isEditAllowed() {
-        return true;
-    }
+	/**
+	 * Returns the parent group (which must be returned by the getParentGroupHeaders
+	 * method) to which a certain child group belongs
+	 * 
+	 * @param childGroup
+	 *            the name of the child group
+	 * @return
+	 */
+	protected String getParentGroup(String childGroup) {
+		// overwrite in subclasses if needed
+		return null;
+	}
 
-    /**
-     * Check if the layout is in edit mode
-     * 
-     * @return
-     */
-    public boolean isViewMode() {
-        return editForm.isViewMode();
-    }
+	/**
+	 * Returns a list of additional group headers that can be used to add an extra
+	 * nesting layer to the layout
+	 * 
+	 * @return
+	 */
+	protected String[] getParentGroupHeaders() {
+		// overwrite in subclasses if needed
+		return null;
+	}
 
-    /**
-     * Callback method that can be used to add additional buttons to the button bar (at both the top
-     * and the bottom of the screen)
-     * 
-     * @param buttonBar
-     *            the button bar
-     * @param viewMode
-     *            the view mode
-     */
-    protected void postProcessButtonBar(HorizontalLayout buttonBar, boolean viewMode) {
-        // overwrite in subclasses
-    }
+	/**
+	 * 
+	 * @return
+	 */
+	protected boolean isEditAllowed() {
+		return true;
+	}
 
-    /**
-     * @param editForm
-     */
-    protected void postProcessEditFields(ModelBasedEditForm<ID, T> editForm) {
-        // do nothing by default - override in subclasses
-    }
+	/**
+	 * Check if the layout is in edit mode
+	 * 
+	 * @return
+	 */
+	public boolean isViewMode() {
+		return editForm.isViewMode();
+	}
 
-    /**
-     * Method that is called after the entire layout has been constructed. Use this to e.g. add
-     * additional components to the bottom of the layout or to modify the table
-     * 
-     * @param main
-     *            the main layout
-     */
-    protected void postProcessLayout(Layout main) {
-        // overwrite in subclass
-    }
+	/**
+	 * Callback method that can be used to add additional buttons to the button bar
+	 * (at both the top and the bottom of the screen)
+	 * 
+	 * @param buttonBar
+	 *            the button bar
+	 * @param viewMode
+	 *            the view mode
+	 */
+	protected void postProcessButtonBar(HorizontalLayout buttonBar, boolean viewMode) {
+		// overwrite in subclasses
+	}
 
-    /**
-     * Refreshes the contents of a label
-     * 
-     * @param propertyName
-     *            the name of the property for which to refresh the label
-     */
-    public void refreshLabel(String propertyName) {
-        if (editForm != null) {
-            editForm.refreshLabel(propertyName);
-        }
-    }
+	/**
+	 * @param editForm
+	 */
+	protected void postProcessEditFields(ModelBasedEditForm<ID, T> editForm) {
+		// do nothing by default - override in subclasses
+	}
 
-    @Override
-    public void reload() {
+	/**
+	 * Method that is called after the entire layout has been constructed. Use this
+	 * to e.g. add additional components to the bottom of the layout or to modify
+	 * the table
+	 * 
+	 * @param main
+	 *            the main layout
+	 */
+	protected void postProcessLayout(Layout main) {
+		// overwrite in subclass
+	}
 
-        // reset to view mode
-        if (getFormOptions().isOpenInViewMode()) {
-            editForm.setViewMode(true);
-        }
+	/**
+	 * Refreshes the contents of a label
+	 * 
+	 * @param propertyName
+	 *            the name of the property for which to refresh the label
+	 */
+	public void refreshLabel(String propertyName) {
+		if (editForm != null) {
+			editForm.refreshLabel(propertyName);
+		}
+	}
 
-        if (entity.getId() != null) {
-            setEntity(getService().fetchById(entity.getId(), getJoins()));
-            editForm.resetTab();
-        }
-    }
+	@Override
+	public void reload() {
 
-    /**
-     * Resets the tab component (if any) to its first sheet
-     */
-    public void resetTab() {
-        editForm.resetTab();
-    }
-    
+		// reset to view mode
+		if (getFormOptions().isOpenInViewMode()) {
+			editForm.setViewMode(true);
+		}
+
+		if (entity.getId() != null) {
+			setEntity(getService().fetchById(entity.getId(), getJoins()));
+			editForm.resetTab();
+		}
+	}
+
+	/**
+	 * Resets the tab component (if any) to its first sheet
+	 */
+	public void resetTab() {
+		editForm.resetTab();
+	}
+
 	public void selectTab(int index) {
 		editForm.selectTab(index);
 	}
 
-    /**
-     * Sets the entity
-     * 
-     * @param entity
-     */
-    public void setEntity(T entity) {
-        this.entity = entity;
-        if (this.entity == null) {
-            this.entity = createEntity();
-        }
-        editForm.setEntity(this.entity);
-        afterEntitySelected(editForm, this.entity);
-        checkButtonState(getEntity());
-    }
+	/**
+	 * Sets the entity
+	 * 
+	 * @param entity
+	 */
+	public void setEntity(T entity) {
+		this.entity = entity;
+		if (this.entity == null) {
+			this.entity = createEntity();
+		}
+		editForm.setEntity(this.entity);
+		afterEntitySelected(editForm, this.entity);
+		checkButtonState(getEntity());
+	}
 
-    public void setFieldFilters(Map<String, Filter> fieldFilters) {
-        this.fieldFilters = fieldFilters;
-    }
+	public void setFieldFilters(Map<String, Filter> fieldFilters) {
+		this.fieldFilters = fieldFilters;
+	}
 
-    public void setJoins(FetchJoinInformation[] joins) {
-        this.joins = joins;
-    }
+	public void setJoins(FetchJoinInformation[] joins) {
+		this.joins = joins;
+	}
 
 }

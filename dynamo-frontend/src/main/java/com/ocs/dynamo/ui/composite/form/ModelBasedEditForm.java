@@ -44,10 +44,10 @@ import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.Refreshable;
 import com.ocs.dynamo.ui.component.Cascadable;
+import com.ocs.dynamo.ui.component.CollapsiblePanel;
 import com.ocs.dynamo.ui.component.DefaultEmbedded;
 import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
-import com.ocs.dynamo.ui.component.CollapsiblePanel;
 import com.ocs.dynamo.ui.component.QuickAddListSelect;
 import com.ocs.dynamo.ui.component.URLField;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
@@ -484,7 +484,12 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		// override in subclass
 	}
 
-	protected void afterLayoutBuilt(boolean viewMode) {
+	/**
+	 * 
+	 * @param layout
+	 * @param viewMode
+	 */
+	protected void afterLayoutBuilt(Layout layout, boolean viewMode) {
 		// after the layout
 	}
 
@@ -660,7 +665,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		checkSaveButtonState();
 		disableCreateOnlyFields();
 
-		afterLayoutBuilt(isViewMode());
+		afterLayoutBuilt(form, isViewMode());
 
 		return layout;
 	}
@@ -938,8 +943,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 				// multiple fields behind each other
 				HorizontalLayout horizontal = constructRowLayout(attributeModel, attributeModel.isRequired(),
 						!(field instanceof CheckBox));
-				//horizontal.setSizeFull();
-
+				horizontal.setSizeFull();
 				parent.addComponent(horizontal);
 
 				// add the first field (without caption, unless it's a checkbox)

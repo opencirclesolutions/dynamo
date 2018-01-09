@@ -187,7 +187,7 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 			private static final long serialVersionUID = -7229109969816505927L;
 
 			@Override
-			protected void afterLayoutBuilt(boolean viewMode) {
+			protected void afterLayoutBuilt(Layout layout, boolean viewMode) {
 				DetailsEditLayout.this.afterLayoutBuilt(this, viewMode);
 			}
 
