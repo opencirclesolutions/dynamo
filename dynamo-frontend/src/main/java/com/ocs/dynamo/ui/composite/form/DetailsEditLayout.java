@@ -132,12 +132,18 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 			if (!viewMode) {
 				deleteButton = new Button(messageService.getMessage("ocs.remove", VaadinUtils.getLocale()));
 				deleteButton.addClickListener(event -> {
-					removeEntity(this.form.getEntity());
-					items.remove(this.form.getEntity());
-					mainFormContainer.removeComponent(this);
+					Runnable toDo = () -> {
+						removeEntity(this.form.getEntity());
+						items.remove(this.form.getEntity());
+						mainFormContainer.removeComponent(this);
 
-					boolean allValid = forms.stream().allMatch(x -> x.isValid());
-					parentForm.signalDetailsComponentValid(DetailsEditLayout.this, allValid);
+						boolean allValid = forms.stream().allMatch(x -> x.isValid());
+						parentForm.signalDetailsComponentValid(DetailsEditLayout.this, allValid);
+					};
+
+					VaadinUtils.showConfirmDialog(messageService,
+							messageService.getMessage("ocs.delete.confirm", VaadinUtils.getLocale()), toDo);
+
 				});
 				addComponent(deleteButton);
 			}
@@ -177,6 +183,7 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 
 	/**
 	 * Adds a detail edit form
+	 * 
 	 * @param t
 	 */
 	private void addDetailEditForm(T t) {

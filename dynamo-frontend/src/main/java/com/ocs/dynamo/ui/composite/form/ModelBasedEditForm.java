@@ -47,6 +47,7 @@ import com.ocs.dynamo.ui.component.Cascadable;
 import com.ocs.dynamo.ui.component.DefaultEmbedded;
 import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
+import com.ocs.dynamo.ui.component.CollapsiblePanel;
 import com.ocs.dynamo.ui.component.QuickAddListSelect;
 import com.ocs.dynamo.ui.component.URLField;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
@@ -74,7 +75,6 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.Notification;
-import com.vaadin.ui.Panel;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.Upload;
@@ -746,7 +746,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			Tab added = tabSheet.addTab(innerLayout, message(messageKey));
 			attributeGroups.get(isViewMode()).put(messageKey, added);
 		} else {
-			Panel panel = new Panel();
+			CollapsiblePanel panel = new CollapsiblePanel();
 			panel.setStyleName("attributePanel");
 			panel.setCaption(message(messageKey));
 			panel.setContent(innerLayout);
@@ -938,11 +938,11 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 				// multiple fields behind each other
 				HorizontalLayout horizontal = constructRowLayout(attributeModel, attributeModel.isRequired(),
 						!(field instanceof CheckBox));
-				horizontal.setSizeFull();
+				//horizontal.setSizeFull();
 
 				parent.addComponent(horizontal);
 
-				// add the first field (without caption)
+				// add the first field (without caption, unless it's a checkbox)
 				if (!(field instanceof CheckBox)) {
 					field.setCaption("");
 				}
@@ -1058,7 +1058,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		if (required) {
 			horizontal.setStyleName(DynamoConstants.CSS_REQUIRED, true);
 		}
-
 		return horizontal;
 	}
 
