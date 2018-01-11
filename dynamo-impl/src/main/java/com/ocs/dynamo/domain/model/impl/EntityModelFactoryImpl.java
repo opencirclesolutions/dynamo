@@ -127,8 +127,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 	 * @param entityModel
 	 *            the entity model
 	 * @param parentClass
-	 *            the type of the direct parent of the attribute (relevant in
-	 *            case of embedded attributes)
+	 *            the type of the direct parent of the attribute (relevant in case
+	 *            of embedded attributes)
 	 * @param nested
 	 *            whether this is a nested attribute
 	 * @param prefix
@@ -503,9 +503,9 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 
 	/**
 	 * Determines the order of the attributes - this will first pick up any
-	 * attributes that are mentioned in the @AttributeOrder annotation (in the
-	 * order in which they occur) and then add any attributes that are not
-	 * explicitly mentioned
+	 * attributes that are mentioned in the @AttributeOrder annotation (in the order
+	 * in which they occur) and then add any attributes that are not explicitly
+	 * mentioned
 	 * 
 	 * @param entityClass
 	 * @param reference
@@ -640,8 +640,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 	 * Determines the "dateType" for an attribute
 	 * 
 	 * @param modelType
-	 *            the type of the attribute. Can be either java.util.Date or a
-	 *            java 8 LocalX type
+	 *            the type of the attribute. Can be either java.util.Date or a java
+	 *            8 LocalX type
 	 * @param entityClass
 	 *            the class of the entity
 	 * @param fieldName
@@ -1399,9 +1399,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 	}
 
 	/**
-	 * Indicates whether to skip an attribute since it does not constitute an
-	 * actual property but rather a generic or technical field that all entities
-	 * have
+	 * Indicates whether to skip an attribute since it does not constitute an actual
+	 * property but rather a generic or technical field that all entities have
 	 * 
 	 * @param name
 	 * @return

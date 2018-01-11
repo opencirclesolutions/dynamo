@@ -16,6 +16,7 @@ package com.ocs.dynamo.ui.composite.form;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +36,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
 import com.vaadin.ui.Field;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.VerticalLayout;
 
@@ -67,6 +69,11 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 	private final AttributeModel attributeModel;
 
 	/**
+	 * The comparator (will be used to sort the items)
+	 */
+	private Comparator<T> comparator;
+
+	/**
 	 * Optional field filters for restricting the contents of combo boxes
 	 */
 	private Map<String, Filter> fieldFilters = new HashMap<>();
@@ -79,7 +86,7 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 	/**
 	 * The list of items to display
 	 */
-	private Collection<T> items;
+	private List<T> items;
 
 	/**
 	 * The message service
@@ -120,6 +127,8 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 
 		private Button deleteButton;
 
+		private HorizontalLayout buttonBar;
+
 		/**
 		 * 
 		 * @param form
@@ -128,6 +137,9 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 			super(false, true);
 			this.form = form;
 			addComponent(form);
+
+			buttonBar = new DefaultHorizontalLayout(false, true, true);
+			addComponent(buttonBar);
 
 			if (!viewMode) {
 				deleteButton = new Button(messageService.getMessage("ocs.remove", VaadinUtils.getLocale()));
@@ -139,12 +151,36 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 					boolean allValid = forms.stream().allMatch(x -> x.isValid());
 					parentForm.signalDetailsComponentValid(DetailsEditLayout.this, allValid);
 				});
-				addComponent(deleteButton);
+				buttonBar.addComponent(deleteButton);
 			}
+			postProcessButtonBar(buttonBar);
 		}
 
 		public boolean isValid() {
 			return form.isValid();
+		}
+
+		public void setDeleteAllowed(boolean enabled) {
+			deleteButton.setEnabled(enabled);
+		}
+
+		public void setFieldEnabled(String path, boolean enabled) {
+			Field<?> field = form.getField(path);
+			if (field != null) {
+				field.setEnabled(enabled);
+			}
+		}
+
+		public void postProcessButtonBar(Layout buttonBar) {
+			// overwrite in subclasses
+		}
+
+		public T getEntity() {
+			return form.getEntity();
+		}
+
+		public void setEntity(T t) {
+			form.setEntity(t);
 		}
 	}
 
@@ -165,12 +201,15 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 	 *            the form options
 	 */
 	public DetailsEditLayout(BaseService<ID, T> service, Collection<T> items, EntityModel<T> entityModel,
-			AttributeModel attributeModel, boolean viewMode, FormOptions formOptions) {
+			AttributeModel attributeModel, boolean viewMode, FormOptions formOptions, Comparator<T> comparator) {
 		this.service = service;
 		this.entityModel = entityModel;
 		this.attributeModel = attributeModel;
 		this.messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
-		this.items = items;
+		this.comparator = comparator;
+		this.items = new ArrayList<>();
+		this.items.addAll(items);
+
 		this.viewMode = viewMode;
 		this.formOptions = formOptions;
 	}
@@ -181,6 +220,7 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 	 * @param t
 	 */
 	private void addDetailEditForm(T t) {
+
 		ModelBasedEditForm<ID, T> editForm = new ModelBasedEditForm<ID, T>(t, service, entityModel, formOptions,
 				fieldFilters) {
 
@@ -220,10 +260,21 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 		editForm.setViewMode(viewMode);
 		editForm.build();
 
-		FormContainer fc = new FormContainer(editForm);
-		forms.add(fc);
+		FormContainer fc = new FormContainer(editForm) {
 
+			private static final long serialVersionUID = 6186428121967857827L;
+
+			@Override
+			public void postProcessButtonBar(Layout buttonBar) {
+				DetailsEditLayout.this.postProcessDetailButtonBar(forms.size(), buttonBar);
+			}
+		};
+		forms.add(fc);
 		mainFormContainer.addComponent(fc);
+	}
+
+	protected void postProcessDetailButtonBar(int index, Layout buttonBar) {
+
 	}
 
 	protected void afterLayoutBuilt(ModelBasedEditForm<ID, T> editForm, boolean viewMode) {
@@ -340,6 +391,10 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 		mainFormContainer = new DefaultVerticalLayout(false, false);
 		layout.addComponent(mainFormContainer);
 
+		if (comparator != null) {
+			items.sort(comparator);
+		}
+
 		for (T t : items) {
 			addDetailEditForm(t);
 		}
@@ -414,6 +469,10 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 
 		List<T> list = new ArrayList<>();
 		list.addAll(items);
+		if (comparator != null) {
+			list.sort(comparator);
+		}
+
 		this.items = list;
 
 		if (mainFormContainer != null) {
@@ -445,6 +504,52 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 	public void setValue(Collection<T> newFieldValue) {
 		setItems(newFieldValue);
 		super.setValue(newFieldValue);
+	}
+
+	/**
+	 * Enables or disables the delete button
+	 * 
+	 * @param index
+	 * @param allowed
+	 */
+	public void setDeleteEnabled(int index, boolean allowed) {
+		if (index < this.forms.size()) {
+			this.forms.get(index).setDeleteAllowed(allowed);
+		}
+	}
+
+	/**
+	 * Enables or disables a field
+	 * 
+	 * @param index
+	 * @param path
+	 * @param enabled
+	 */
+	public void setFieldEnabled(int index, String path, boolean enabled) {
+		if (index < this.forms.size()) {
+			this.forms.get(index).setFieldEnabled(path, enabled);
+		}
+	}
+
+	public T getEntity(int index) {
+		if (index < this.forms.size()) {
+			return this.forms.get(index).getEntity();
+		}
+		return null;
+	}
+
+	public void setEntity(int index, T entity) {
+		if (index < this.forms.size()) {
+			this.forms.get(index).setEntity(entity);
+		}
+	}
+
+	public Comparator<T> getComparator() {
+		return comparator;
+	}
+
+	public void setComparator(Comparator<T> comparator) {
+		this.comparator = comparator;
 	}
 
 }

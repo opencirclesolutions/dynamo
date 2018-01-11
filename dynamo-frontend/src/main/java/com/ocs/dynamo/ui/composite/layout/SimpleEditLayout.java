@@ -108,7 +108,7 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 			back();
 		}
 	}
-	
+
 	protected void afterLayoutBuilt(Layout layout, boolean viewMode) {
 		// override in subclass
 	}
@@ -214,12 +214,12 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 
 			main.addComponent(editForm);
 
-			afterEntitySelected(editForm, getEntity());
-			checkButtonState(getEntity());
-
 			postProcessLayout(main);
 
 			setCompositionRoot(main);
+
+			afterEntitySelected(editForm, getEntity());
+			checkButtonState(getEntity());
 		}
 	}
 
