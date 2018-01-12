@@ -18,6 +18,9 @@ import java.net.MalformedURLException;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
+import org.apache.commons.lang.StringUtils;
+
+
 /**
  * A validator for checking if a String is a valid URL
  * 
@@ -33,7 +36,7 @@ public class URLValidator implements ConstraintValidator<URL, String> {
 
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {
-        if (value == null) {
+        if (StringUtils.isEmpty(value)) {
             return true;
         }
 

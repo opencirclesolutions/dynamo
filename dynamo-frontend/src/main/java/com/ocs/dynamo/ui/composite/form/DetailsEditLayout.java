@@ -164,7 +164,7 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 					removeEntity(this.form.getEntity());
 					items.remove(this.form.getEntity());
 					mainFormContainer.removeComponent(this);
-
+					forms.remove(this);
 					boolean allValid = forms.stream().allMatch(x -> x.isValid());
 					parentForm.signalDetailsComponentValid(DetailsEditLayout.this, allValid);
 				});
