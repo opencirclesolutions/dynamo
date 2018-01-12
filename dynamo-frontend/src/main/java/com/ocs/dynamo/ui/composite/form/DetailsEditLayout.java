@@ -53,6 +53,8 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 
 	private static final long serialVersionUID = -1203245694503350276L;
 
+	private boolean onSameLine;
+
 	/**
 	 * The button that can be used to add rows to the table
 	 */
@@ -139,13 +141,22 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 		 * 
 		 * @param form
 		 */
-		FormContainer(ModelBasedEditForm<ID, T> form) {
+		FormContainer(ModelBasedEditForm<ID, T> form, boolean sameLine) {
 			super(false, true);
+			setStyleName("formContainer");
 			this.form = form;
-			addComponent(form);
-
 			buttonBar = new DefaultHorizontalLayout(false, true, true);
-			addComponent(buttonBar);
+			if (!sameLine) {
+				addComponent(form);
+				addComponent(buttonBar);
+			} else {
+				HorizontalLayout hz = new DefaultHorizontalLayout(false, true, true);
+				hz.setSizeFull();
+				addComponent(hz);
+				hz.addComponent(form);
+				hz.setExpandRatio(form, 0.7f);
+				hz.addComponent(buttonBar);
+			}
 
 			if (!viewMode) {
 				deleteButton = new Button(messageService.getMessage("ocs.remove", VaadinUtils.getLocale()));
@@ -207,7 +218,8 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 	 *            the form options
 	 */
 	public DetailsEditLayout(BaseService<ID, T> service, Collection<T> items, EntityModel<T> entityModel,
-			AttributeModel attributeModel, boolean viewMode, FormOptions formOptions, Comparator<T> comparator) {
+			AttributeModel attributeModel, boolean viewMode, FormOptions formOptions, Comparator<T> comparator,
+			boolean onSameLine) {
 		this.service = service;
 		this.entityModel = entityModel;
 		this.attributeModel = attributeModel;
@@ -215,7 +227,7 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 		this.comparator = comparator;
 		this.items = new ArrayList<>();
 		this.items.addAll(items);
-
+		this.onSameLine = onSameLine;
 		this.viewMode = viewMode;
 		this.formOptions = formOptions;
 	}
@@ -267,7 +279,7 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 		editForm.setViewMode(viewMode);
 		editForm.build();
 
-		FormContainer fc = new FormContainer(editForm) {
+		FormContainer fc = new FormContainer(editForm, onSameLine) {
 
 			private static final long serialVersionUID = 6186428121967857827L;
 
@@ -580,4 +592,13 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 	public final void addFieldEntityModel(String path, String reference) {
 		fieldEntityModels.put(path, reference);
 	}
+
+	public boolean isOnSameLine() {
+		return onSameLine;
+	}
+
+	public void setOnSameLine(boolean onSameLine) {
+		this.onSameLine = onSameLine;
+	}
+
 }
