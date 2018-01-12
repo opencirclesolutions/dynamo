@@ -211,9 +211,8 @@ public abstract class BaseServiceImpl<ID, T extends AbstractEntity<ID>> implemen
 	}
 
 	/**
-	 * Checks if there is an entity that is identical to this one Subclasses
-	 * must override the findIdenticalEntity method to perform the actual
-	 * calculation
+	 * Checks if there is an entity that is identical to this one Subclasses must
+	 * override the findIdenticalEntity method to perform the actual calculation
 	 * 
 	 * @param t
 	 *            the entity to check
@@ -231,6 +230,10 @@ public abstract class BaseServiceImpl<ID, T extends AbstractEntity<ID>> implemen
 	 */
 	protected String message(String key) {
 		return messageService.getMessage(key, Locale.getDefault());
+	}
+
+	protected String message(String key, Object... args) {
+		return messageService.getMessage(key, Locale.getDefault(), args);
 	}
 
 	@Override

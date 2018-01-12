@@ -64,6 +64,12 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 	private final EntityModel<T> entityModel;
 
 	/**
+	 * The entity models used for rendering the individual fields (mostly useful for
+	 * lookup components)
+	 */
+	private Map<String, String> fieldEntityModels = new HashMap<>();
+
+	/**
 	 * The attribute model of the attribute to display
 	 */
 	private final AttributeModel attributeModel;
@@ -255,6 +261,7 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 				}
 			}
 		};
+		editForm.setFieldEntityModels(getFieldEntityModels());
 		editForm.setFieldFilters(fieldFilters);
 		editForm.setNestedMode(true);
 		editForm.setViewMode(viewMode);
@@ -552,4 +559,25 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 		this.comparator = comparator;
 	}
 
+	public Map<String, String> getFieldEntityModels() {
+		return fieldEntityModels;
+	}
+
+	public void setFieldEntityModels(Map<String, String> fieldEntityModels) {
+		this.fieldEntityModels = fieldEntityModels;
+	}
+
+	/**
+	 * Adds a field entity model - this can be used to overwrite the default entity
+	 * model that is used for rendering complex selection components (lookup
+	 * dialogs)
+	 * 
+	 * @param path
+	 *            the path to the field
+	 * @param reference
+	 *            the unique ID of the entity model
+	 */
+	public final void addFieldEntityModel(String path, String reference) {
+		fieldEntityModels.put(path, reference);
+	}
 }
