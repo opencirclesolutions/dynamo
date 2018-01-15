@@ -139,6 +139,8 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	 * @return The EntityModel for the entity that contains this attribute
 	 */
 	EntityModel<?> getEntityModel();
+	
+	float getExpansionFactor();
 
 	/**
 	 * 

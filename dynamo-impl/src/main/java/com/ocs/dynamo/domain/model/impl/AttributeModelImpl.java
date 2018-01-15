@@ -76,6 +76,8 @@ public class AttributeModelImpl implements AttributeModel {
 
 	private EntityModel<?> entityModel;
 
+	private float expansionFactor;
+
 	private String falseRepresentation;
 
 	private String fileNameProperty;
@@ -721,6 +723,15 @@ public class AttributeModelImpl implements AttributeModel {
 	@Override
 	public String toString() {
 		return ReflectionToStringBuilder.toStringExclude(this, "entityModel");
+	}
+
+	@Override
+	public float getExpansionFactor() {
+		return expansionFactor;
+	}
+
+	public void setExpansionFactor(float expansionFactor) {
+		this.expansionFactor = expansionFactor;
 	}
 
 }

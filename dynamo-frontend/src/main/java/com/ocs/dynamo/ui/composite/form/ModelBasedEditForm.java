@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -552,8 +553,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			setCompositionRoot(mainEditLayout);
 		}
 
-
-
 	}
 
 	/**
@@ -958,18 +957,31 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 					field.setCaption("");
 				}
 
+				float sums = attributeModel.getExpansionFactor();
+				for (String path : attributeModel.getGroupTogetherWith()) {
+					AttributeModel am = getEntityModel().getAttributeModel(path);
+					if (am != null) {
+						sums += am.getExpansionFactor();
+					}
+				}
+
 				// form layout for holding first field
 				FormLayout fl = constructNestedFormLayout(true);
 				fl.addComponent(field);
 				horizontal.addComponent(fl);
 
+				float ep = attributeModel.getExpansionFactor() / sums;
+				horizontal.setExpandRatio(fl, ep);
+
 				// form layout for any of the other fields
 				for (String path : attributeModel.getGroupTogetherWith()) {
-					AttributeModel am = getEntityModel().getAttributeModel(path);
-					if (am != null) {
+					AttributeModel nestedAm = getEntityModel().getAttributeModel(path);
+					if (nestedAm != null) {
 						FormLayout fl2 = constructNestedFormLayout(false);
 						horizontal.addComponent(fl2);
-						addField(fl2, entityModel, am, tabIndex);
+						ep = nestedAm.getExpansionFactor() / sums;
+						addField(fl2, entityModel, nestedAm, tabIndex);
+						horizontal.setExpandRatio(fl2, ep);
 					}
 				}
 

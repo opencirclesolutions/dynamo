@@ -165,6 +165,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 			model.setSearchable(descriptor.isPreferred());
 			model.setName((prefix == null ? "" : (prefix + ".")) + fieldName);
 			model.setImage(false);
+			model.setExpansionFactor(1.0f);
 
 			model.setEditableType(descriptor.isHidden() ? EditableType.READ_ONLY : EditableType.EDITABLE);
 			model.setSortable(true);
@@ -1027,6 +1028,10 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 			if (!StringUtils.isEmpty(attribute.defaultValue())) {
 				String defaultValue = attribute.defaultValue();
 				setDefaultValue(model, defaultValue);
+			}
+
+			if (attribute.expansionFactor() > 1.0f) {
+				model.setExpansionFactor(attribute.expansionFactor());
 			}
 		}
 	}
