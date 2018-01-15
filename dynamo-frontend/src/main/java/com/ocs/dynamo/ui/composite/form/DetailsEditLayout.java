@@ -148,20 +148,21 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 				setStyleName("formContainer");
 			}
 			this.form = form;
-			buttonBar = new DefaultHorizontalLayout(false, true, true);
-			if (!sameLine) {
-				addComponent(form);
-				addComponent(buttonBar);
-			} else {
-				HorizontalLayout hz = new DefaultHorizontalLayout(false, true, true);
-				hz.setSizeFull();
-				addComponent(hz);
-				hz.addComponent(form);
-				hz.setExpandRatio(form, 0.8f);
-				hz.addComponent(buttonBar);
-			}
 
 			if (!viewMode) {
+				buttonBar = new DefaultHorizontalLayout(false, true, true);
+				if (!sameLine) {
+					addComponent(form);
+					addComponent(buttonBar);
+				} else {
+					HorizontalLayout hz = new DefaultHorizontalLayout(false, true, true);
+					hz.setSizeFull();
+					addComponent(hz);
+					hz.addComponent(form);
+					hz.setExpandRatio(form, 0.8f);
+					hz.addComponent(buttonBar);
+				}
+
 				deleteButton = new Button(messageService.getMessage("ocs.remove", VaadinUtils.getLocale()));
 				deleteButton.addClickListener(event -> {
 					removeEntity(this.form.getEntity());
@@ -172,8 +173,11 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 					parentForm.signalDetailsComponentValid(DetailsEditLayout.this, allValid);
 				});
 				buttonBar.addComponent(deleteButton);
+				postProcessButtonBar(buttonBar);
+			} else {
+				// read only mode
+				addComponent(form);
 			}
-			postProcessButtonBar(buttonBar);
 		}
 
 		public boolean isValid() {
@@ -181,7 +185,9 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 		}
 
 		public void setDeleteAllowed(boolean enabled) {
-			deleteButton.setEnabled(enabled);
+			if (deleteButton != null) {
+				deleteButton.setEnabled(enabled);
+			}
 		}
 
 		public void setFieldEnabled(String path, boolean enabled) {
@@ -289,7 +295,7 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 
 			@Override
 			public void postProcessButtonBar(Layout buttonBar) {
-				DetailsEditLayout.this.postProcessDetailButtonBar(forms.size(), buttonBar);
+				DetailsEditLayout.this.postProcessDetailButtonBar(forms.size(), buttonBar, viewMode);
 			}
 		};
 		forms.add(fc);
@@ -301,7 +307,7 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 		}
 	}
 
-	protected void postProcessDetailButtonBar(int index, Layout buttonBar) {
+	protected void postProcessDetailButtonBar(int index, Layout buttonBar, boolean viewMode) {
 
 	}
 
@@ -342,6 +348,7 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 	 */
 	protected void constructButtonBar(Layout parent) {
 		Layout buttonBar = new DefaultHorizontalLayout();
+		buttonBar.setVisible(!viewMode);
 		parent.addComponent(buttonBar);
 
 		constructAddButton(buttonBar);
@@ -429,7 +436,8 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 
 		// add the buttons
 		constructButtonBar(layout);
-
+		
+		
 		// set the reference to the parent so the status of the save button can
 		// be set correctly
 		ModelBasedEditForm<?, ?> parent = VaadinUtils.getParentOfClass(this, ModelBasedEditForm.class);
