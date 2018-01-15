@@ -94,7 +94,7 @@ import com.vaadin.ui.VerticalLayout;
  */
 @SuppressWarnings("serial")
 public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntity<ID>>
-		extends AbstractModelBasedForm<ID, T> {
+		extends AbstractModelBasedForm<ID, T> implements SignalsParent {
 
 	/**
 	 * A custom field that can be used to upload a file
@@ -265,7 +265,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	/**
 	 * Indicates whether all details tables for editing complex fields are valid
 	 */
-	private Map<SignalsParent, Boolean> detailTablesValid = new HashMap<>();
+	private Map<SignalsParent, Boolean> detailComponentsValid = new HashMap<>();
 
 	/**
 	 * The selected entity
@@ -314,6 +314,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	private Map<Boolean, Set<String>> alreadyBound = new HashMap<>();
 
 	private Map<Integer, Field<?>> firstFields = new HashMap<>();
+
+	private ModelBasedEditForm<?, ?> parentForm = null;
 
 	/**
 	 * The width of the title caption above the form (in pixels)
@@ -550,6 +552,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			setCompositionRoot(mainEditLayout);
 		}
 
+
+
 	}
 
 	/**
@@ -706,6 +710,9 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 				saveButton.setEnabled(isValid());
 			}
 		}
+		if (parentForm != null) {
+			parentForm.signalDetailsComponentValid(this, isValid());
+		}
 	}
 
 	/**
@@ -715,7 +722,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	 */
 	public boolean isValid() {
 		boolean valid = groups.get(isViewMode()).isValid();
-		valid &= detailTablesValid.values().stream().allMatch(x -> x);
+		valid &= detailComponentsValid.values().stream().allMatch(x -> x);
 		return valid;
 	}
 
@@ -1693,8 +1700,11 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	 *            whether the component is valid
 	 */
 	public void signalDetailsComponentValid(SignalsParent component, boolean valid) {
-		detailTablesValid.put(component, valid);
+		detailComponentsValid.put(component, valid);
 		checkSaveButtonState();
+		if (parentForm != null) {
+			parentForm.signalDetailsComponentValid(this, valid);
+		}
 	}
 
 	/**
@@ -1745,6 +1755,14 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 	public Collection<Field<?>> getFields(boolean viewMode) {
 		return groups.get(viewMode).getFields();
+	}
+
+	public ModelBasedEditForm<?, ?> getParentForm() {
+		return parentForm;
+	}
+
+	public void setParentForm(ModelBasedEditForm<?, ?> parentForm) {
+		this.parentForm = parentForm;
 	}
 
 }

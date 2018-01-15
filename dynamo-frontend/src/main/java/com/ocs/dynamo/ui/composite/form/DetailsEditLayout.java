@@ -143,7 +143,10 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 		 */
 		FormContainer(ModelBasedEditForm<ID, T> form, boolean sameLine) {
 			super(false, true);
-			setStyleName("formContainer");
+
+			if (sameLine) {
+				setStyleName("formContainer");
+			}
 			this.form = form;
 			buttonBar = new DefaultHorizontalLayout(false, true, true);
 			if (!sameLine) {
@@ -154,7 +157,7 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 				hz.setSizeFull();
 				addComponent(hz);
 				hz.addComponent(form);
-				hz.setExpandRatio(form, 0.7f);
+				hz.setExpandRatio(form, 0.8f);
 				hz.addComponent(buttonBar);
 			}
 
@@ -262,8 +265,6 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 
 			@Override
 			protected void postProcessEditFields() {
-				DetailsEditLayout.this.postProcessEditFields(this);
-
 				// signal parent if everything is valid
 				for (Field<?> f : getFields(false)) {
 					f.addValueChangeListener(event -> {
@@ -271,6 +272,9 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 						parentForm.signalDetailsComponentValid(DetailsEditLayout.this, allValid);
 					});
 				}
+
+				DetailsEditLayout.this.postProcessEditFields(this);
+
 			}
 		};
 		editForm.setFieldEntityModels(getFieldEntityModels());
@@ -290,6 +294,11 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 		};
 		forms.add(fc);
 		mainFormContainer.addComponent(fc);
+
+		ModelBasedEditForm<?, ?> parentForm = VaadinUtils.getParentOfClass(this, ModelBasedEditForm.class);
+		if (parentForm != null) {
+			editForm.setParentForm(parentForm);
+		}
 	}
 
 	protected void postProcessDetailButtonBar(int index, Layout buttonBar) {
