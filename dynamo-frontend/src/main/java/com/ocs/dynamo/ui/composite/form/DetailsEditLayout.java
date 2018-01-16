@@ -306,8 +306,10 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 		ModelBasedEditForm<?, ?> parentForm = VaadinUtils.getParentOfClass(this, ModelBasedEditForm.class);
 		editForm.setParentForm(parentForm);
 
-		boolean allValid = forms.stream().allMatch(x -> x.isValid());
-		parentForm.signalDetailsComponentValid(DetailsEditLayout.this, allValid);
+		if (parentForm != null) {
+			boolean allValid = forms.stream().allMatch(x -> x.isValid());
+			parentForm.signalDetailsComponentValid(DetailsEditLayout.this, allValid);
+		}
 	}
 
 	protected void postProcessDetailButtonBar(int index, Layout buttonBar, boolean viewMode) {
