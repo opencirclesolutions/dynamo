@@ -686,6 +686,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 			selectedDetailLayout = editForm;
 
 		} else {
+			// complex mode, but re-use
 			Component comp = initTab(entity, 0, getFormOptions());
 			if (selectedDetailLayout == null) {
 				mainEditLayout.addComponent(comp);

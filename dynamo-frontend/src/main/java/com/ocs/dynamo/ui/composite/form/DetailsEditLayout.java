@@ -271,8 +271,10 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 
 			@Override
 			protected void postProcessEditFields() {
+				super.postProcessEditFields();
+
 				// signal parent if everything is valid
-				for (Field<?> f : getFields(false)) {
+				for (Field<?> f : getFields(viewMode)) {
 					f.addValueChangeListener(event -> {
 						boolean allValid = forms.stream().allMatch(x -> x.isValid());
 						parentForm.signalDetailsComponentValid(DetailsEditLayout.this, allValid);
@@ -302,9 +304,10 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 		mainFormContainer.addComponent(fc);
 
 		ModelBasedEditForm<?, ?> parentForm = VaadinUtils.getParentOfClass(this, ModelBasedEditForm.class);
-		if (parentForm != null) {
-			editForm.setParentForm(parentForm);
-		}
+		editForm.setParentForm(parentForm);
+
+		boolean allValid = forms.stream().allMatch(x -> x.isValid());
+		parentForm.signalDetailsComponentValid(DetailsEditLayout.this, allValid);
 	}
 
 	protected void postProcessDetailButtonBar(int index, Layout buttonBar, boolean viewMode) {
@@ -436,8 +439,7 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 
 		// add the buttons
 		constructButtonBar(layout);
-		
-		
+
 		// set the reference to the parent so the status of the save button can
 		// be set correctly
 		ModelBasedEditForm<?, ?> parent = VaadinUtils.getParentOfClass(this, ModelBasedEditForm.class);

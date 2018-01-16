@@ -709,7 +709,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			}
 		}
 		if (parentForm != null) {
-			parentForm.signalDetailsComponentValid(this, isValid());
+			boolean valid = this.isValid();
+			parentForm.signalDetailsComponentValid(this, valid);
 		}
 	}
 
@@ -1592,6 +1593,10 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		for (Button b : getCancelButtons()) {
 			b.setVisible((!isViewMode() && !getFormOptions().isHideCancelButton())
 					|| (getFormOptions().isFormNested() && entity.getId() == null));
+		}
+
+		if (parentForm != null) {
+			signalDetailsComponentValid(parentForm, this.isValid());
 		}
 
 	}

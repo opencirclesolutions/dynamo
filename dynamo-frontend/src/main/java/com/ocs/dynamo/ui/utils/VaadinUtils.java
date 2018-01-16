@@ -335,7 +335,6 @@ public final class VaadinUtils {
             if (clazz.isAssignableFrom(component.getClass())) {
                 return (T) component;
             }
-
         }
         return null;
     }
