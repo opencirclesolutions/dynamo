@@ -617,6 +617,20 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	}
 
 	/**
+	 * Opens the screen in details mode and selects a certain tab
+	 * @param entity
+	 * @param selectedTab
+	 */
+	protected void detailsMode(T entity, int selectedTab) {
+		detailsMode(entity);
+		if (editForm != null) {
+			editForm.selectTab(selectedTab);
+		} else if (getFormOptions().isComplexDetailsMode()) {
+			tabLayout.selectTab(selectedTab);
+		}
+	}
+
+	/**
 	 * Open the screen in details mode
 	 * 
 	 * @param entity

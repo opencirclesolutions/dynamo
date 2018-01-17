@@ -26,6 +26,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -1205,6 +1206,10 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		return groups.get(isViewMode()).getField(propertyName);
 	}
 
+	public Optional<Field<?>> getFieldOptional(String propertyName) {
+		return Optional.ofNullable((Field<?>) groups.get(isViewMode()).getField(propertyName));
+	}
+
 	public Integer getFormTitleWidth() {
 		return formTitleWidth;
 	}
@@ -1782,3 +1787,4 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	}
 
 }
+
