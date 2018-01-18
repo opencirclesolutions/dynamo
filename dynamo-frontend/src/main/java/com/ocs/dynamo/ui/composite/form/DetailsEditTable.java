@@ -121,7 +121,7 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 	/**
 	 * The parent form in which this component is embedded
 	 */
-	private ModelBasedEditForm<?, ?> parentForm;
+	private ReceivesSignal receiver;
 
 	/**
 	 * Button used to open the search dialog
@@ -227,8 +227,8 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 		addButton.addClickListener(event -> {
 			T t = createEntity();
 			container.addBean(t);
-			if (parentForm != null) {
-				parentForm.signalDetailsComponentValid(DetailsEditTable.this,
+			if (receiver != null) {
+				receiver.signalDetailsComponentValid(DetailsEditTable.this,
 						VaadinUtils.allFixedTableFieldsValid(table));
 			}
 		});
@@ -342,8 +342,8 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 		return items;
 	}
 
-	public ModelBasedEditForm<?, ?> getParentForm() {
-		return parentForm;
+	public ReceivesSignal getReceiver() {
+		return receiver;
 	}
 
 	public Button getSearchDialogButton() {
@@ -405,8 +405,8 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 					// callback method so the entity can be removed from its
 					// parent
 					removeEntity((T) itemId);
-					if (parentForm != null) {
-						parentForm.signalDetailsComponentValid(DetailsEditTable.this,
+					if (receiver != null) {
+						receiver.signalDetailsComponentValid(DetailsEditTable.this,
 								VaadinUtils.allFixedTableFieldsValid(table));
 					}
 
@@ -443,8 +443,8 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 					// button)
 					if (!viewMode) {
 						field.addValueChangeListener(event -> {
-							if (parentForm != null) {
-								parentForm.signalDetailsComponentValid(DetailsEditTable.this,
+							if (receiver != null) {
+								receiver.signalDetailsComponentValid(DetailsEditTable.this,
 										VaadinUtils.allFixedTableFieldsValid(table));
 							}
 						});
@@ -478,8 +478,8 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 
 		// set the reference to the parent so the status of the save button can
 		// be set correctly
-		ModelBasedEditForm<?, ?> parent = VaadinUtils.getParentOfClass(this, ModelBasedEditForm.class);
-		setParentForm(parent);
+		ReceivesSignal receiver = VaadinUtils.getParentOfClass(this, ReceivesSignal.class);
+		setReceiver(receiver);
 
 		postConstruct();
 
@@ -612,10 +612,10 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 	 * 
 	 * @param parentForm
 	 */
-	private void setParentForm(ModelBasedEditForm<?, ?> parentForm) {
-		this.parentForm = parentForm;
-		if (parentForm != null) {
-			parentForm.signalDetailsComponentValid(this, VaadinUtils.allFixedTableFieldsValid(table));
+	private void setReceiver(ReceivesSignal receiver) {
+		this.receiver = receiver;
+		if (receiver != null) {
+			receiver.signalDetailsComponentValid(this, VaadinUtils.allFixedTableFieldsValid(table));
 		}
 	}
 

@@ -49,7 +49,7 @@ import com.vaadin.ui.VerticalLayout;
  * @param <T>
  */
 public abstract class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity<ID>>
-		extends CustomField<Collection<T>> implements SignalsParent {
+		extends CustomField<Collection<T>> implements SignalsParent, ReceivesSignal {
 
 	private static final long serialVersionUID = -1203245694503350276L;
 
@@ -104,7 +104,7 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 	/**
 	 * The parent form in which this component is embedded
 	 */
-	private ModelBasedEditForm<?, ?> parentForm;
+	private ReceivesSignal receiver;
 
 	/**
 	 * Whether the table is in view mode. If this is the case, editing is not
@@ -121,6 +121,8 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 	 * The individual edit forms
 	 */
 	private List<FormContainer> forms = new ArrayList<>();
+
+	private Map<SignalsParent, Boolean> detailComponentsValid = new HashMap<>();
 
 	/**
 	 * Container that holds all the subforms
@@ -167,8 +169,9 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 					items.remove(this.form.getEntity());
 					mainFormContainer.removeComponent(this);
 					forms.remove(this);
-					boolean allValid = forms.stream().allMatch(x -> x.isValid());
-					parentForm.signalDetailsComponentValid(DetailsEditLayout.this, allValid);
+					detailComponentsValid.remove(form);
+					// boolean allValid = isAllValid();
+					receiver.signalDetailsComponentValid(DetailsEditLayout.this, isAllValid());
 				});
 				buttonBar.addComponent(deleteButton);
 				postProcessButtonBar(buttonBar);
@@ -176,10 +179,6 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 				// read only mode
 				addComponent(form);
 			}
-		}
-
-		public boolean isValid() {
-			return form.isValid();
 		}
 
 		public void setDeleteAllowed(boolean enabled) {
@@ -270,17 +269,7 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 			@Override
 			protected void postProcessEditFields() {
 				super.postProcessEditFields();
-
-				// signal parent if everything is valid
-				for (Field<?> f : getFields(viewMode)) {
-					f.addValueChangeListener(event -> {
-						boolean allValid = forms.stream().allMatch(x -> x.isValid());
-						parentForm.signalDetailsComponentValid(DetailsEditLayout.this, allValid);
-					});
-				}
-
 				DetailsEditLayout.this.postProcessEditFields(this);
-
 			}
 		};
 		editForm.setFieldEntityModels(getFieldEntityModels());
@@ -301,17 +290,13 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 		forms.add(fc);
 		mainFormContainer.addComponent(fc);
 
-		// extra styling for odd/even forms
-		//if (forms.size() % 2 == 0) {
-		//	fc.addStyleName("odd");
-		//}
+		editForm.setReceiver(this);
+		detailComponentsValid.put(editForm, editForm.isValid());
 
-		ModelBasedEditForm<?, ?> parentForm = VaadinUtils.getParentOfClass(this, ModelBasedEditForm.class);
-		editForm.setParentForm(parentForm);
+		ReceivesSignal receiver = VaadinUtils.getParentOfClass(this, ReceivesSignal.class);
 
-		if (parentForm != null) {
-			boolean allValid = forms.stream().allMatch(x -> x.isValid());
-			parentForm.signalDetailsComponentValid(DetailsEditLayout.this, allValid);
+		if (receiver != null) {
+			receiver.signalDetailsComponentValid(DetailsEditLayout.this, isAllValid());
 		}
 	}
 
@@ -340,8 +325,8 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 			items.add(t);
 			addDetailEditForm(t);
 
-			if (parentForm != null) {
-				parentForm.signalDetailsComponentValid(this, forms.stream().allMatch(f -> f.isValid()));
+			if (receiver != null) {
+				receiver.signalDetailsComponentValid(this, isAllValid());
 			}
 		});
 		addButton.setVisible(!viewMode && !formOptions.isHideAddButton());
@@ -408,8 +393,8 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 		return items;
 	}
 
-	public ModelBasedEditForm<?, ?> getParentForm() {
-		return parentForm;
+	public ReceivesSignal getReceiver() {
+		return receiver;
 	}
 
 	/**
@@ -447,8 +432,8 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 
 		// set the reference to the parent so the status of the save button can
 		// be set correctly
-		ModelBasedEditForm<?, ?> parent = VaadinUtils.getParentOfClass(this, ModelBasedEditForm.class);
-		setParentForm(parent);
+		ReceivesSignal receiver = VaadinUtils.getParentOfClass(this, ReceivesSignal.class);
+		setReceiver(receiver);
 
 		postConstruct();
 
@@ -532,10 +517,10 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 	 * 
 	 * @param parentForm
 	 */
-	private void setParentForm(ModelBasedEditForm<?, ?> parentForm) {
-		this.parentForm = parentForm;
-		if (parentForm != null) {
-			parentForm.signalDetailsComponentValid(this, forms.stream().allMatch(f -> f.isValid()));
+	private void setReceiver(ReceivesSignal receiver) {
+		this.receiver = receiver;
+		if (receiver != null) {
+			receiver.signalDetailsComponentValid(this, isAllValid());
 		}
 	}
 
@@ -625,4 +610,14 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 		this.onSameLine = onSameLine;
 	}
 
+	public void signalDetailsComponentValid(SignalsParent component, boolean valid) {
+		detailComponentsValid.put(component, valid);
+		if (receiver != null) {
+			receiver.signalDetailsComponentValid(this, isAllValid());
+		}
+	}
+
+	private boolean isAllValid() {
+		return detailComponentsValid.values().stream().allMatch(x -> x);
+	}
 }

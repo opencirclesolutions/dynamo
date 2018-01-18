@@ -95,7 +95,7 @@ import com.vaadin.ui.VerticalLayout;
  */
 @SuppressWarnings("serial")
 public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntity<ID>>
-		extends AbstractModelBasedForm<ID, T> implements SignalsParent {
+		extends AbstractModelBasedForm<ID, T> implements SignalsParent, ReceivesSignal {
 
 	/**
 	 * A custom field that can be used to upload a file
@@ -316,8 +316,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 	private Map<Integer, Field<?>> firstFields = new HashMap<>();
 
-	private ModelBasedEditForm<?, ?> parentForm = null;
-
+	private ReceivesSignal receiver;
 	/**
 	 * The width of the title caption above the form (in pixels)
 	 */
@@ -664,6 +663,16 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			buttonBar = constructButtonBar();
 			buttonBar.setSizeUndefined();
 			layout.addComponent(buttonBar);
+		} else {
+			// no button bar but need
+			for (Field<?> f : groups.get(isViewMode()).getFields()) {
+				f.addValueChangeListener(event -> {
+					if (receiver != null) {
+						boolean valid = this.isValid();
+						receiver.signalDetailsComponentValid(this, valid);
+					}
+				});
+			}
 		}
 		checkSaveButtonState();
 		disableCreateOnlyFields();
@@ -709,10 +718,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 				saveButton.setEnabled(isValid());
 			}
 		}
-		if (parentForm != null) {
-			boolean valid = this.isValid();
-			parentForm.signalDetailsComponentValid(this, valid);
-		}
+
 	}
 
 	/**
@@ -799,7 +805,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			Button saveButton = constructSaveButton();
 			buttonBar.addComponent(saveButton);
 			buttons.get(isViewMode()).add(saveButton);
-
 		}
 
 		// create the edit button
@@ -1600,8 +1605,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 					|| (getFormOptions().isFormNested() && entity.getId() == null));
 		}
 
-		if (parentForm != null) {
-			signalDetailsComponentValid(parentForm, this.isValid());
+		if (receiver != null) {
+			receiver.signalDetailsComponentValid(this, this.isValid());
 		}
 
 	}
@@ -1733,8 +1738,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	public void signalDetailsComponentValid(SignalsParent component, boolean valid) {
 		detailComponentsValid.put(component, valid);
 		checkSaveButtonState();
-		if (parentForm != null) {
-			parentForm.signalDetailsComponentValid(this, valid);
+		if (receiver != null) {
+			receiver.signalDetailsComponentValid(this, isValid());
 		}
 	}
 
@@ -1788,12 +1793,12 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		return groups.get(viewMode).getFields();
 	}
 
-	public ModelBasedEditForm<?, ?> getParentForm() {
-		return parentForm;
+	public ReceivesSignal getReceiver() {
+		return receiver;
 	}
 
-	public void setParentForm(ModelBasedEditForm<?, ?> parentForm) {
-		this.parentForm = parentForm;
+	public void setReceiver(ReceivesSignal receiver) {
+		this.receiver = receiver;
 	}
 
 }
