@@ -143,10 +143,8 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 		 */
 		FormContainer(ModelBasedEditForm<ID, T> form, boolean sameLine) {
 			super(false, true);
+			setStyleName(sameLine ? "formContainerSameLine" : "formContainer");
 
-			if (sameLine) {
-				setStyleName("formContainer");
-			}
 			this.form = form;
 
 			if (!viewMode) {
@@ -302,6 +300,11 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 		};
 		forms.add(fc);
 		mainFormContainer.addComponent(fc);
+
+		// extra styling for odd/even forms
+		//if (forms.size() % 2 == 0) {
+		//	fc.addStyleName("odd");
+		//}
 
 		ModelBasedEditForm<?, ?> parentForm = VaadinUtils.getParentOfClass(this, ModelBasedEditForm.class);
 		editForm.setParentForm(parentForm);
