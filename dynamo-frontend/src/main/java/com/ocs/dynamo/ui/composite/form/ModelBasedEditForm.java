@@ -100,7 +100,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	/**
 	 * A custom field that can be used to upload a file
 	 * 
-	 * @author bas.rutten
+	 * @author bas.ruttent
 	 *
 	 */
 	private final class UploadComponent extends CustomField<byte[]> {
@@ -1713,6 +1713,16 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	}
 
 	/**
+	 * Overwrite the value of the title label
+	 * 
+	 * @param value
+	 *            the desired value
+	 */
+	public void setTitleLabel(String value) {
+		titleLabels.get(isViewMode()).setValue(value);
+	}
+
+	/**
 	 * Method used the notify this form that a detail component is valid or not
 	 * 
 	 * @param component
@@ -1787,4 +1797,3 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	}
 
 }
-
