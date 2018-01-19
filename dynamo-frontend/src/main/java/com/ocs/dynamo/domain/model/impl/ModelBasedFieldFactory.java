@@ -593,6 +593,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 			DateField df = new DateField();
 			df.setResolution(Resolution.DAY);
 			df.setConverter(ConverterFactory.createLocalDateConverter());
+			df.setTimeZone(VaadinUtils.getTimeZone(UI.getCurrent()));			
 			field = df;
 		} else if (LocalDateTime.class.equals(attributeModel.getType())) {
 			DateField df = new DateField();
