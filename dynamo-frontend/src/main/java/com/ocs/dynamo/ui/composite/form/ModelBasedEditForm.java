@@ -2,7 +2,6 @@
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
-
        http://www.apache.org/licenses/LICENSE-2.0
 
    Unless required by applicable law or agreed to in writing, software
@@ -59,11 +58,14 @@ import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.ocs.dynamo.utils.ClassUtils;
 import com.vaadin.data.Container.Filter;
+import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.filter.Compare;
 import com.vaadin.server.StreamResource;
+import com.vaadin.server.UserError;
 import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Component;
@@ -718,7 +720,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 				saveButton.setEnabled(isValid());
 			}
 		}
-
 	}
 
 	/**
@@ -963,6 +964,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 					field.setCaption("");
 				}
 
+				// calculate expansion factors
 				float sums = attributeModel.getExpansionFactor();
 				for (String path : attributeModel.getGroupTogetherWith()) {
 					AttributeModel am = getEntityModel().getAttributeModel(path);
@@ -990,7 +992,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 						horizontal.setExpandRatio(fl2, ep);
 					}
 				}
-
 			} else {
 				parent.addComponent(field);
 			}
@@ -1085,7 +1086,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		}
 		horizontal.setStyleName(DynamoConstants.CSS_NESTED, true);
 		if (required) {
-			horizontal.setStyleName(DynamoConstants.CSS_REQUIRED, true);
+			horizontal.setStyleName(DynamoConstants.CSS_NESTED + " " + DynamoConstants.CSS_REQUIRED, true);
 		}
 		return horizontal;
 	}
@@ -1098,6 +1099,19 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 				(entity != null && entity.getId() != null) ? message("ocs.save.existing") : message("ocs.save.new"));
 		saveButton.addClickListener(event -> {
 			try {
+
+				// validate all fields
+				// boolean error = false;
+				// for (Field<?> f : groups.get(isViewMode()).getFields()) {
+				// try {
+				// f.validate();
+				// } catch (InvalidValueException ex) {
+				// error = true;
+				// ((AbstractField<?>) f).setComponentError(new
+				// UserError(ex.getLocalizedMessage()));
+				// }
+				// }
+
 				boolean isNew = entity.getId() == null;
 				entity = service.save(entity);
 				setEntity(service.fetchById(entity.getId(), getDetailJoins()));
@@ -1111,6 +1125,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 				}
 
 				afterEditDone(false, isNew, getEntity());
+
 			} catch (RuntimeException ex) {
 				if (!handleCustomException(ex)) {
 					handleSaveException(ex);
@@ -1122,8 +1137,13 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		saveButton.setData(SAVE_BUTTON_DATA);
 		saveButton.setEnabled(groups.get(isViewMode()).isValid());
 		if (bottom) {
+
 			for (Field<?> f : groups.get(isViewMode()).getFields()) {
-				f.addValueChangeListener(event -> checkSaveButtonState());
+				f.addValueChangeListener(event -> {
+					checkSaveButtonState();
+					((AbstractField<?>) f).setComponentError(null);
+				});
+
 			}
 		}
 		return saveButton;
@@ -1211,6 +1231,33 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 	public Field<?> getField(String propertyName) {
 		return groups.get(isViewMode()).getField(propertyName);
+	}
+
+	/**
+	 * Sets the "required"
+	 * 
+	 * @param propertyName
+	 * @param required
+	 */
+	public void setFieldRequired(String propertyName, boolean required) {
+		Field<?> field = getField(propertyName);
+		if (field != null) {
+
+			field.setRequired(true);
+
+			// if there are multiple fields in a row, we need to some additional trickery
+			// since
+			// to make sure the "required" asterisk is properly displayed
+			AttributeModel am = getEntityModel().getAttributeModel(propertyName);
+			if (am != null && !am.getGroupTogetherWith().isEmpty()) {
+				HorizontalLayout hz = (HorizontalLayout) field.getParent().getParent();
+				if (required) {
+					hz.addStyleName(DynamoConstants.CSS_REQUIRED);
+				} else {
+					hz.removeStyleName(DynamoConstants.CSS_REQUIRED);
+				}
+			}
+		}
 	}
 
 	public Optional<Field<?>> getFieldOptional(String propertyName) {
@@ -1714,6 +1761,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			firstFields.get(0).focus();
 		}
 
+		resetComponentErrors();
+
 		if (oldMode != this.viewMode) {
 			afterModeChanged(isViewMode());
 		}
@@ -1766,6 +1815,15 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			if (viewLabel != null) {
 				viewLabel.addStyleName(className);
 			}
+		}
+	}
+
+	/**
+	 * Removes any error messages from the individual form components
+	 */
+	private void resetComponentErrors() {
+		for (Field<?> f : groups.get(isViewMode()).getFields()) {
+			((AbstractField<?>) f).setComponentError(null);
 		}
 	}
 
