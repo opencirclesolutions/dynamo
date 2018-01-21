@@ -569,7 +569,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 		HorizontalLayout buttonBar = null;
 		if (!nestedMode) {
-			buttonBar = constructButtonBar();
+			buttonBar = constructButtonBar(false);
 			buttonBar.setSizeUndefined();
 			if (getFormOptions().isPlaceButtonBarAtTop()) {
 				layout.addComponent(buttonBar);
@@ -660,11 +660,11 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		}
 
 		if (!nestedMode) {
-			buttonBar = constructButtonBar();
+			buttonBar = constructButtonBar(true);
 			buttonBar.setSizeUndefined();
 			layout.addComponent(buttonBar);
 		} else {
-			// no button bar but need
+			// no button bar needed
 			for (Field<?> f : groups.get(isViewMode()).getFields()) {
 				f.addValueChangeListener(event -> {
 					if (receiver != null) {
@@ -775,7 +775,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		return innerLayout;
 	}
 
-	private HorizontalLayout constructButtonBar() {
+	private HorizontalLayout constructButtonBar(boolean bottom) {
 		HorizontalLayout buttonBar = new DefaultHorizontalLayout();
 
 		// button to go back to the main screen when in view mode
@@ -802,7 +802,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 		// create the save button
 		if (!isViewMode()) {
-			Button saveButton = constructSaveButton();
+			Button saveButton = constructSaveButton(bottom);
 			buttonBar.addComponent(saveButton);
 			buttons.get(isViewMode()).add(saveButton);
 		}
@@ -1093,7 +1093,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	/**
 	 * Constructs the save button
 	 */
-	private Button constructSaveButton() {
+	private Button constructSaveButton(boolean bottom) {
 		Button saveButton = new Button(
 				(entity != null && entity.getId() != null) ? message("ocs.save.existing") : message("ocs.save.new"));
 		saveButton.addClickListener(event -> {
@@ -1103,7 +1103,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 				setEntity(service.fetchById(entity.getId(), getDetailJoins()));
 				showNotifification(message("ocs.changes.saved"), Notification.Type.TRAY_NOTIFICATION);
 
-				// set to viewmode, load the view mode screen, and fill the
+				// set to view mode, load the view mode screen, and fill the
 				// details
 				if (getFormOptions().isOpenInViewMode()) {
 					viewMode = true;
@@ -1121,8 +1121,10 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		// enable/disable save button based on form validity
 		saveButton.setData(SAVE_BUTTON_DATA);
 		saveButton.setEnabled(groups.get(isViewMode()).isValid());
-		for (Field<?> f : groups.get(isViewMode()).getFields()) {
-			f.addValueChangeListener(event -> checkSaveButtonState());
+		if (bottom) {
+			for (Field<?> f : groups.get(isViewMode()).getFields()) {
+				f.addValueChangeListener(event -> checkSaveButtonState());
+			}
 		}
 		return saveButton;
 	}
