@@ -26,6 +26,7 @@ import com.vaadin.data.Container.Filter;
 import com.vaadin.data.sort.SortOrder;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.util.filter.And;
+import com.vaadin.server.ErrorMessage;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
@@ -178,6 +179,13 @@ public class QuickAddEntityComboBox<ID extends Serializable, T extends AbstractE
 		super.setValue(newFieldValue);
 		if (comboBox != null) {
 			comboBox.setValue(newFieldValue);
+		}
+	}
+
+	@Override
+	public void setComponentError(ErrorMessage componentError) {
+		if (comboBox != null) {
+			comboBox.setComponentError(componentError);
 		}
 	}
 }

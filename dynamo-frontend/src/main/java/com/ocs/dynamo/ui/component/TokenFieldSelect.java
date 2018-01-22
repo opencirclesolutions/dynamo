@@ -36,6 +36,7 @@ import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.data.sort.SortOrder;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.util.filter.And;
+import com.vaadin.server.ErrorMessage;
 import com.vaadin.shared.ui.combobox.FilteringMode;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -350,5 +351,12 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
 			throw new Validator.EmptyValueException(getRequiredError());
 		}
 		super.validate();
+	}
+	
+	@Override
+	public void setComponentError(ErrorMessage componentError) {
+		if (comboBox != null) {
+			comboBox.setComponentError(componentError);
+		}
 	}
 }

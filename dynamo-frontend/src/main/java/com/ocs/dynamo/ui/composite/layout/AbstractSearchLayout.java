@@ -33,6 +33,7 @@ import com.ocs.dynamo.ui.composite.form.AbstractModelBasedSearchForm;
 import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
 import com.ocs.dynamo.ui.composite.table.ServiceResultsTableWrapper;
 import com.ocs.dynamo.ui.composite.type.ScreenMode;
+import com.ocs.dynamo.ui.composite.type.ValidationMode;
 import com.ocs.dynamo.ui.container.QueryType;
 import com.vaadin.data.Container;
 import com.vaadin.data.Container.Filter;
@@ -652,6 +653,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 		options.setShowPrevButton(getFormOptions().isShowPrevButton());
 		options.setPlaceButtonBarAtTop(getFormOptions().isPlaceButtonBarAtTop());
 		options.setFormNested(true);
+		options.setValidationMode(getFormOptions().getValidationMode());
 
 		// set the form options for the detail form
 		if (getFormOptions().isEditAllowed()) {

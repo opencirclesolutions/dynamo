@@ -53,6 +53,7 @@ import com.ocs.dynamo.ui.component.URLField;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.composite.type.AttributeGroupMode;
 import com.ocs.dynamo.ui.composite.type.ScreenMode;
+import com.ocs.dynamo.ui.composite.type.ValidationMode;
 import com.ocs.dynamo.ui.utils.EntityModelUtil;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.util.SystemPropertyUtils;
@@ -666,19 +667,23 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			buttonBar.setSizeUndefined();
 			layout.addComponent(buttonBar);
 		} else {
-			// no button bar needed
+			// no button bar needed, but we do need value change listeners
 			for (Field<?> f : groups.get(isViewMode()).getFields()) {
 				f.addValueChangeListener(event -> {
-					if (receiver != null) {
-						boolean valid = this.isValid();
-						receiver.signalDetailsComponentValid(this, valid);
+					if (receiver != null
+							&& ValidationMode.DISABLE_BUTTON.equals(getFormOptions().getValidationMode())) {
+						receiver.signalDetailsComponentValid(this, this.isValid());
 					}
+
+					// always clear validation errors
+					((AbstractField<?>) f).setComponentError(null);
 				});
 			}
+
 		}
+
 		checkSaveButtonState();
 		disableCreateOnlyFields();
-
 		afterLayoutBuilt(form, isViewMode());
 
 		return layout;
@@ -717,7 +722,11 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	private void checkSaveButtonState() {
 		for (Button saveButton : buttons.get(isViewMode())) {
 			if (SAVE_BUTTON_DATA.equals(saveButton.getData())) {
-				saveButton.setEnabled(isValid());
+				if (ValidationMode.DISABLE_BUTTON.equals(getFormOptions().getValidationMode())) {
+					saveButton.setEnabled(isValid());
+				} else {
+					saveButton.setEnabled(true);
+				}
 			}
 		}
 	}
@@ -1101,30 +1110,21 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			try {
 
 				// validate all fields
-				// boolean error = false;
-				// for (Field<?> f : groups.get(isViewMode()).getFields()) {
-				// try {
-				// f.validate();
-				// } catch (InvalidValueException ex) {
-				// error = true;
-				// ((AbstractField<?>) f).setComponentError(new
-				// UserError(ex.getLocalizedMessage()));
-				// }
-				// }
+				boolean error = validateAllFields();
+				if (!error) {
+					boolean isNew = entity.getId() == null;
+					entity = service.save(entity);
+					setEntity(service.fetchById(entity.getId(), getDetailJoins()));
+					showNotifification(message("ocs.changes.saved"), Notification.Type.TRAY_NOTIFICATION);
 
-				boolean isNew = entity.getId() == null;
-				entity = service.save(entity);
-				setEntity(service.fetchById(entity.getId(), getDetailJoins()));
-				showNotifification(message("ocs.changes.saved"), Notification.Type.TRAY_NOTIFICATION);
-
-				// set to view mode, load the view mode screen, and fill the
-				// details
-				if (getFormOptions().isOpenInViewMode()) {
-					viewMode = true;
-					build();
+					// set to view mode, load the view mode screen, and fill the
+					// details
+					if (getFormOptions().isOpenInViewMode()) {
+						viewMode = true;
+						build();
+					}
+					afterEditDone(false, isNew, getEntity());
 				}
-
-				afterEditDone(false, isNew, getEntity());
 
 			} catch (RuntimeException ex) {
 				if (!handleCustomException(ex)) {
@@ -1137,13 +1137,11 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		saveButton.setData(SAVE_BUTTON_DATA);
 		saveButton.setEnabled(groups.get(isViewMode()).isValid());
 		if (bottom) {
-
 			for (Field<?> f : groups.get(isViewMode()).getFields()) {
 				f.addValueChangeListener(event -> {
 					checkSaveButtonState();
 					((AbstractField<?>) f).setComponentError(null);
 				});
-
 			}
 		}
 		return saveButton;
@@ -1787,10 +1785,12 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	 *            whether the component is valid
 	 */
 	public void signalDetailsComponentValid(SignalsParent component, boolean valid) {
-		detailComponentsValid.put(component, valid);
-		checkSaveButtonState();
-		if (receiver != null) {
-			receiver.signalDetailsComponentValid(this, isValid());
+		if (ValidationMode.DISABLE_BUTTON.equals(getFormOptions().getValidationMode())) {
+			detailComponentsValid.put(component, valid);
+			checkSaveButtonState();
+			if (receiver != null) {
+				receiver.signalDetailsComponentValid(this, isValid());
+			}
 		}
 	}
 
@@ -1859,6 +1859,32 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 	public void setReceiver(ReceivesSignal receiver) {
 		this.receiver = receiver;
+	}
+
+	/**
+	 * Validates all fields and returns true if an error occurs
+	 * 
+	 * @return
+	 */
+	public boolean validateAllFields() {
+		boolean error = false;
+		if (ValidationMode.VALIDATE_DIRECTLY.equals(getFormOptions().getValidationMode())) {
+			for (Field<?> f : groups.get(isViewMode()).getFields()) {
+				try {
+					f.validate();
+					((AbstractField<?>) f).setComponentError(null);
+				} catch (InvalidValueException ex) {
+					error = true;
+					((AbstractField<?>) f).setComponentError(new UserError(ex.getLocalizedMessage()));
+				}
+
+				// propagate to child form
+				if (f instanceof SignalsParent) {
+					error |= ((SignalsParent) f).validateAllFields();
+				}
+			}
+		}
+		return error;
 	}
 
 }

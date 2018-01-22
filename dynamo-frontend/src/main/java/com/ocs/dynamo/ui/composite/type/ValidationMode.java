@@ -11,15 +11,9 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-package com.ocs.dynamo.ui.composite.form;
+package com.ocs.dynamo.ui.composite.type;
 
-/**
- * Marker interface for a component that sends a signal to a parent component after a change to an
- * editable component
- * 
- * @author bas.rutten
- */
-public interface SignalsParent {
+public enum ValidationMode {
 
-	boolean validateAllFields();
+	DISABLE_BUTTON, VALIDATE_DIRECTLY;
 }

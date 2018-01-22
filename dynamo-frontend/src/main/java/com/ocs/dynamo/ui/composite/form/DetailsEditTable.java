@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -37,8 +38,11 @@ import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.composite.table.ModelBasedTable;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.data.Container.Filter;
+import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.data.sort.SortOrder;
 import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.server.UserError;
+import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
@@ -644,6 +648,23 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 	public void setValue(Collection<T> newFieldValue) {
 		setItems(newFieldValue);
 		super.setValue(newFieldValue);
+	}
+
+	@Override
+	public boolean validateAllFields() {
+		boolean error = false;
+		Iterator<Component> component = table.iterator();
+		while (component.hasNext()) {
+			Component next = component.next();
+			try {
+				((AbstractField<?>) next).validate();
+				((AbstractField<?>) next).setComponentError(null);
+			} catch (InvalidValueException ex) {
+				error = true;
+				((AbstractField<?>) next).setComponentError(new UserError(ex.getLocalizedMessage()));
+			}
+		}
+		return error;
 	}
 
 }

@@ -147,6 +147,7 @@ public abstract class QuickAddEntityField<ID extends Serializable, T extends Abs
     @Override
     public void clearAdditionalFilter() {
         this.additionalFilter = null;
-
     }
+    
+
 }

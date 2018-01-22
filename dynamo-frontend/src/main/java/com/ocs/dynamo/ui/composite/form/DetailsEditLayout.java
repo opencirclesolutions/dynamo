@@ -30,6 +30,7 @@ import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
+import com.ocs.dynamo.ui.composite.type.ValidationMode;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.ui.Button;
@@ -41,7 +42,7 @@ import com.vaadin.ui.Layout;
 import com.vaadin.ui.VerticalLayout;
 
 /**
- * A layout for displaying various
+ * A layout for displaying various nested forms below each other
  * 
  * @author Bas Rutten
  *
@@ -50,6 +51,95 @@ import com.vaadin.ui.VerticalLayout;
  */
 public abstract class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity<ID>>
 		extends CustomField<Collection<T>> implements SignalsParent, ReceivesSignal {
+
+	private class FormContainer extends DefaultVerticalLayout {
+
+		private static final long serialVersionUID = 3507638736422806589L;
+
+		private ModelBasedEditForm<ID, T> form;
+
+		private Button deleteButton;
+
+		private HorizontalLayout buttonBar;
+
+		/**
+		 * 
+		 * @param form
+		 */
+		FormContainer(ModelBasedEditForm<ID, T> form, boolean sameLine) {
+			super(false, true);
+			setStyleName(sameLine ? "formContainerSameLine" : "formContainer");
+
+			this.form = form;
+
+			if (!viewMode) {
+				buttonBar = new DefaultHorizontalLayout(false, true, true);
+				if (!sameLine) {
+					addComponent(form);
+					addComponent(buttonBar);
+				} else {
+					HorizontalLayout hz = new DefaultHorizontalLayout(false, true, true);
+					hz.setSizeFull();
+					addComponent(hz);
+					hz.addComponent(form);
+					hz.setExpandRatio(form, 0.8f);
+					hz.addComponent(buttonBar);
+				}
+
+				deleteButton = new Button(messageService.getMessage("ocs.remove", VaadinUtils.getLocale()));
+				deleteButton.addClickListener(event -> {
+					removeEntity(this.form.getEntity());
+					items.remove(this.form.getEntity());
+					mainFormContainer.removeComponent(this);
+					forms.remove(this);
+					detailComponentsValid.remove(form);
+					// boolean allValid = isAllValid();
+					receiver.signalDetailsComponentValid(DetailsEditLayout.this, isAllValid());
+				});
+				buttonBar.addComponent(deleteButton);
+				postProcessButtonBar(buttonBar);
+			} else {
+				// read only mode
+				addComponent(form);
+			}
+		}
+
+		public T getEntity() {
+			return form.getEntity();
+		}
+
+		public void postProcessButtonBar(Layout buttonBar) {
+			// overwrite in subclasses
+		}
+
+		public void setDeleteAllowed(boolean enabled) {
+			if (deleteButton != null) {
+				deleteButton.setEnabled(enabled);
+			}
+		}
+
+		public void setDeleteVisible(boolean visible) {
+			if (deleteButton != null) {
+				deleteButton.setVisible(visible);
+			}
+		}
+
+		public void setEntity(T t) {
+			form.setEntity(t);
+		}
+
+		public void setFieldEnabled(String path, boolean enabled) {
+			form.getFieldOptional(path).ifPresent(f -> f.setEnabled(enabled));
+		}
+
+		public void setFieldVisible(String path, boolean visible) {
+			form.getFieldOptional(path).ifPresent(f -> f.setVisible(visible));
+		}
+
+		public boolean validateAllFields() {
+			return form.validateAllFields();
+		}
+	}
 
 	private static final long serialVersionUID = -1203245694503350276L;
 
@@ -128,84 +218,6 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 	 * Container that holds all the subforms
 	 */
 	private Layout mainFormContainer;
-
-	private class FormContainer extends DefaultVerticalLayout {
-
-		private static final long serialVersionUID = 3507638736422806589L;
-
-		private ModelBasedEditForm<ID, T> form;
-
-		private Button deleteButton;
-
-		private HorizontalLayout buttonBar;
-
-		/**
-		 * 
-		 * @param form
-		 */
-		FormContainer(ModelBasedEditForm<ID, T> form, boolean sameLine) {
-			super(false, true);
-			setStyleName(sameLine ? "formContainerSameLine" : "formContainer");
-
-			this.form = form;
-
-			if (!viewMode) {
-				buttonBar = new DefaultHorizontalLayout(false, true, true);
-				if (!sameLine) {
-					addComponent(form);
-					addComponent(buttonBar);
-				} else {
-					HorizontalLayout hz = new DefaultHorizontalLayout(false, true, true);
-					hz.setSizeFull();
-					addComponent(hz);
-					hz.addComponent(form);
-					hz.setExpandRatio(form, 0.8f);
-					hz.addComponent(buttonBar);
-				}
-
-				deleteButton = new Button(messageService.getMessage("ocs.remove", VaadinUtils.getLocale()));
-				deleteButton.addClickListener(event -> {
-					removeEntity(this.form.getEntity());
-					items.remove(this.form.getEntity());
-					mainFormContainer.removeComponent(this);
-					forms.remove(this);
-					detailComponentsValid.remove(form);
-					// boolean allValid = isAllValid();
-					receiver.signalDetailsComponentValid(DetailsEditLayout.this, isAllValid());
-				});
-				buttonBar.addComponent(deleteButton);
-				postProcessButtonBar(buttonBar);
-			} else {
-				// read only mode
-				addComponent(form);
-			}
-		}
-
-		public void setDeleteAllowed(boolean enabled) {
-			if (deleteButton != null) {
-				deleteButton.setEnabled(enabled);
-			}
-		}
-
-		public void setFieldEnabled(String path, boolean enabled) {
-			Field<?> field = form.getField(path);
-			if (field != null) {
-				field.setEnabled(enabled);
-			}
-		}
-
-		public void postProcessButtonBar(Layout buttonBar) {
-			// overwrite in subclasses
-		}
-
-		public T getEntity() {
-			return form.getEntity();
-		}
-
-		public void setEntity(T t) {
-			form.setEntity(t);
-		}
-	}
 
 	/**
 	 * Constructor
@@ -300,8 +312,18 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 		}
 	}
 
-	protected void postProcessDetailButtonBar(int index, Layout buttonBar, boolean viewMode) {
-
+	/**
+	 * Adds a field entity model - this can be used to overwrite the default entity
+	 * model that is used for rendering complex selection components (lookup
+	 * dialogs)
+	 * 
+	 * @param path
+	 *            the path to the field
+	 * @param reference
+	 *            the unique ID of the entity model
+	 */
+	public final void addFieldEntityModel(String path, String reference) {
+		fieldEntityModels.put(path, reference);
 	}
 
 	protected void afterLayoutBuilt(ModelBasedEditForm<ID, T> editForm, boolean viewMode) {
@@ -377,8 +399,23 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 		return addButton;
 	}
 
+	public Comparator<T> getComparator() {
+		return comparator;
+	}
+
+	public T getEntity(int index) {
+		if (index < this.forms.size()) {
+			return this.forms.get(index).getEntity();
+		}
+		return null;
+	}
+
 	public EntityModel<T> getEntityModel() {
 		return entityModel;
+	}
+
+	public Map<String, String> getFieldEntityModels() {
+		return fieldEntityModels;
 	}
 
 	public Map<String, Filter> getFieldFilters() {
@@ -440,6 +477,14 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 		return layout;
 	}
 
+	private boolean isAllValid() {
+		return detailComponentsValid.values().stream().allMatch(x -> x);
+	}
+
+	public boolean isOnSameLine() {
+		return onSameLine;
+	}
+
 	public boolean isViewMode() {
 		return viewMode;
 	}
@@ -461,6 +506,10 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 		// overwrite in subclass if needed
 	}
 
+	protected void postProcessDetailButtonBar(int index, Layout buttonBar, boolean viewMode) {
+
+	}
+
 	protected void postProcessEditFields(ModelBasedEditForm<ID, T> editForm) {
 		// override in subclasses
 	}
@@ -472,6 +521,57 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 	 * @param toRemove
 	 */
 	protected abstract void removeEntity(T toRemove);
+
+	public void setComparator(Comparator<T> comparator) {
+		this.comparator = comparator;
+	}
+
+	/**
+	 * Enables or disables the delete button
+	 * 
+	 * @param index
+	 * @param allowed
+	 */
+	public void setDeleteEnabled(int index, boolean allowed) {
+		if (index < this.forms.size()) {
+			this.forms.get(index).setDeleteAllowed(allowed);
+		}
+	}
+
+	public void setDeleteVisible(int index, boolean visible) {
+		if (index < this.forms.size()) {
+			this.forms.get(index).setDeleteVisible(visible);
+		}
+	}
+
+	public void setEntity(int index, T entity) {
+		if (index < this.forms.size()) {
+			this.forms.get(index).setEntity(entity);
+		}
+	}
+
+	/**
+	 * Enables or disables a field
+	 * 
+	 * @param index
+	 * @param path
+	 * @param enabled
+	 */
+	public void setFieldEnabled(int index, String path, boolean enabled) {
+		if (index < this.forms.size()) {
+			this.forms.get(index).setFieldEnabled(path, enabled);
+		}
+	}
+
+	public void setFieldVisible(int index, String path, boolean visible) {
+		if (index < this.forms.size()) {
+			this.forms.get(index).setFieldVisible(path, visible);
+		}
+	}
+
+	public void setFieldEntityModels(Map<String, String> fieldEntityModels) {
+		this.fieldEntityModels = fieldEntityModels;
+	}
 
 	public void setFieldFilters(Map<String, Filter> fieldFilters) {
 		this.fieldFilters = fieldFilters;
@@ -512,6 +612,10 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 		}
 	}
 
+	public void setOnSameLine(boolean onSameLine) {
+		this.onSameLine = onSameLine;
+	}
+
 	/**
 	 * This method is called to store a reference to the parent form
 	 * 
@@ -519,7 +623,7 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 	 */
 	private void setReceiver(ReceivesSignal receiver) {
 		this.receiver = receiver;
-		if (receiver != null) {
+		if (receiver != null && ValidationMode.DISABLE_BUTTON.equals(getFormOptions().getValidationMode())) {
 			receiver.signalDetailsComponentValid(this, isAllValid());
 		}
 	}
@@ -534,90 +638,25 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 		super.setValue(newFieldValue);
 	}
 
-	/**
-	 * Enables or disables the delete button
-	 * 
-	 * @param index
-	 * @param allowed
-	 */
-	public void setDeleteEnabled(int index, boolean allowed) {
-		if (index < this.forms.size()) {
-			this.forms.get(index).setDeleteAllowed(allowed);
-		}
-	}
-
-	/**
-	 * Enables or disables a field
-	 * 
-	 * @param index
-	 * @param path
-	 * @param enabled
-	 */
-	public void setFieldEnabled(int index, String path, boolean enabled) {
-		if (index < this.forms.size()) {
-			this.forms.get(index).setFieldEnabled(path, enabled);
-		}
-	}
-
-	public T getEntity(int index) {
-		if (index < this.forms.size()) {
-			return this.forms.get(index).getEntity();
-		}
-		return null;
-	}
-
-	public void setEntity(int index, T entity) {
-		if (index < this.forms.size()) {
-			this.forms.get(index).setEntity(entity);
-		}
-	}
-
-	public Comparator<T> getComparator() {
-		return comparator;
-	}
-
-	public void setComparator(Comparator<T> comparator) {
-		this.comparator = comparator;
-	}
-
-	public Map<String, String> getFieldEntityModels() {
-		return fieldEntityModels;
-	}
-
-	public void setFieldEntityModels(Map<String, String> fieldEntityModels) {
-		this.fieldEntityModels = fieldEntityModels;
-	}
-
-	/**
-	 * Adds a field entity model - this can be used to overwrite the default entity
-	 * model that is used for rendering complex selection components (lookup
-	 * dialogs)
-	 * 
-	 * @param path
-	 *            the path to the field
-	 * @param reference
-	 *            the unique ID of the entity model
-	 */
-	public final void addFieldEntityModel(String path, String reference) {
-		fieldEntityModels.put(path, reference);
-	}
-
-	public boolean isOnSameLine() {
-		return onSameLine;
-	}
-
-	public void setOnSameLine(boolean onSameLine) {
-		this.onSameLine = onSameLine;
-	}
-
 	public void signalDetailsComponentValid(SignalsParent component, boolean valid) {
-		detailComponentsValid.put(component, valid);
-		if (receiver != null) {
-			receiver.signalDetailsComponentValid(this, isAllValid());
+		if (ValidationMode.DISABLE_BUTTON.equals(getFormOptions().getValidationMode())) {
+			detailComponentsValid.put(component, valid);
+			if (receiver != null) {
+				receiver.signalDetailsComponentValid(this, isAllValid());
+			}
 		}
 	}
 
-	private boolean isAllValid() {
-		return detailComponentsValid.values().stream().allMatch(x -> x);
+	/**
+	 * Validates all underlying forms
+	 */
+	public boolean validateAllFields() {
+		boolean error = false;
+		if (ValidationMode.VALIDATE_DIRECTLY.equals(getFormOptions().getValidationMode())) {
+			for (FormContainer f : forms) {
+				error |= f.validateAllFields();
+			}
+		}
+		return error;
 	}
 }
