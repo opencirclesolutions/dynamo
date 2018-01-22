@@ -36,17 +36,17 @@ public final class SystemPropertyUtils {
 	/**
 	 * 
 	 * 
-	 * @return whether export to Excel or CSV is allowed for all tables. If set
-	 *         to <code>false</code> it will disable exporting for all tables.
-	 *         You can selectively enable it for somet tables using the
-	 *         FormOptions object
+	 * @return whether export to Excel or CSV is allowed for all tables. If set to
+	 *         <code>false</code> it will disable exporting for all tables. You can
+	 *         selectively enable it for somet tables using the FormOptions object
 	 */
 	public static boolean allowTableExport() {
 		return Boolean.getBoolean(DynamoConstants.SP_ALLOW_TABLE_EXPORT);
 	}
 
 	/**
-	 * The default caption format 
+	 * The default caption format
+	 * 
 	 * @return
 	 */
 	public static String getDefaultCaptionFormat() {
@@ -133,9 +133,9 @@ public final class SystemPropertyUtils {
 	}
 
 	/**
-	 * The default locale - this is used mainly for number formatting. We use
-	 * the German locale here since this ensure the use of the comma as the
-	 * decimal separator
+	 * The default locale - this is used mainly for number formatting. We use the
+	 * German locale here since this ensure the use of the comma as the decimal
+	 * separator
 	 * 
 	 * @return
 	 */
@@ -144,7 +144,8 @@ public final class SystemPropertyUtils {
 	}
 
 	/**
-	 * @return Indicates whether searches on text fields will be default be case insensitive 
+	 * @return Indicates whether searches on text fields will be default be case
+	 *         insensitive
 	 */
 	public static boolean getDefaultSearchCaseSensitive() {
 		return Boolean.getBoolean(DynamoConstants.SP_DEFAULT_SEARCH_CASE_SENSITIVE);
@@ -255,8 +256,16 @@ public final class SystemPropertyUtils {
 	 * @return
 	 */
 	public static String getServiceLocatorClassName() {
-		return System.getProperty(DynamoConstants.SP_SERVICE_LOCATOR_CLASS_NAME, 
+		return System.getProperty(DynamoConstants.SP_SERVICE_LOCATOR_CLASS_NAME,
 				"com.ocs.dynamo.ui.SpringWebServiceLocator");
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public static Integer getDefaultFieldWidth() {
+		return Integer.getInteger(DynamoConstants.SP_DEFAULT_FIELD_WIDTH);
 	}
 
 	private SystemPropertyUtils() {
