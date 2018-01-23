@@ -1249,7 +1249,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		Field<?> field = getField(propertyName);
 		if (field != null) {
 
-			field.setRequired(true);
+			field.setRequired(required);
 
 			// if there are multiple fields in a row, we need to some additional trickery
 			// since
