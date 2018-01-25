@@ -33,7 +33,6 @@ import com.ocs.dynamo.ui.composite.form.AbstractModelBasedSearchForm;
 import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
 import com.ocs.dynamo.ui.composite.table.ServiceResultsTableWrapper;
 import com.ocs.dynamo.ui.composite.type.ScreenMode;
-import com.ocs.dynamo.ui.composite.type.ValidationMode;
 import com.ocs.dynamo.ui.container.QueryType;
 import com.vaadin.data.Container;
 import com.vaadin.data.Container.Filter;
@@ -351,10 +350,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 
 			@Override
 			protected Component initTab(int index) {
-				// back button and iteration buttons not needed (they are
-				// displayed above
-				// the tabs)
-				return AbstractSearchLayout.this.initTab(getEntity(), index, formOptions);
+				return AbstractSearchLayout.this.initTab(getEntity(), index, formOptions, false);
 			}
 		};
 		tabLayout.build();
@@ -619,6 +615,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 
 	/**
 	 * Opens the screen in details mode and selects a certain tab
+	 * 
 	 * @param entity
 	 * @param selectedTab
 	 */
@@ -639,6 +636,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	 */
 	@Override
 	protected void detailsMode(T entity) {
+
 		if (mainEditLayout == null) {
 			mainEditLayout = new DefaultVerticalLayout();
 			mainEditLayout.setStyleName(DynamoConstants.CSS_CLASS_HALFSCREEN);
@@ -703,7 +701,8 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 
 		} else {
 			// complex mode, but re-use
-			Component comp = initTab(entity, 0, getFormOptions());
+			Component comp = initTab(entity, 0, getFormOptions(), true);
+
 			if (selectedDetailLayout == null) {
 				mainEditLayout.addComponent(comp);
 			} else {
@@ -885,7 +884,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 		return false;
 	}
 
-	protected Component initTab(T entity, int index, FormOptions fo) {
+	protected Component initTab(T entity, int index, FormOptions fo, boolean newEntity) {
 		// overwrite is subclasses
 		return null;
 	}
