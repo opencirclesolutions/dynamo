@@ -309,6 +309,11 @@ public final class DynamoConstants {
 	 * Default width of input components
 	 */
 	public static final String SP_DEFAULT_FIELD_WIDTH = "ocs.default.field.width";
+	
+	/**
+	 * Default validation mode
+	 */
+	public static final String SP_DEFAULT_VALIDATION_MODE = "ocs.default.validation.mode";
 
 	/**
 	 * The name of the variable that is used to store the user

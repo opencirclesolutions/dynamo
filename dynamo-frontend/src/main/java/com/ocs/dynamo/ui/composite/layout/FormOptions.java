@@ -17,8 +17,8 @@ import java.io.Serializable;
 
 import com.ocs.dynamo.ui.composite.type.AttributeGroupMode;
 import com.ocs.dynamo.ui.composite.type.ScreenMode;
-import com.ocs.dynamo.ui.composite.type.ValidationMode;
 import com.ocs.dynamo.util.SystemPropertyUtils;
+import com.ocs.dynamo.util.ValidationMode;
 
 /**
  * Parameter object that can be passed along when creating a page - this object
@@ -158,7 +158,7 @@ public class FormOptions implements Serializable {
 
 	private boolean formNested;
 
-	private ValidationMode validationMode = ValidationMode.DISABLE_BUTTON;
+	private ValidationMode validationMode = SystemPropertyUtils.getDefaultValidationMode();
 
 	public FormOptions createCopy() {
 		FormOptions fo = new FormOptions();

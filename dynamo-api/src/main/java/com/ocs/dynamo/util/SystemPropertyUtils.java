@@ -13,6 +13,7 @@
  */
 package com.ocs.dynamo.util;
 
+
 import com.ocs.dynamo.constants.DynamoConstants;
 
 /**
@@ -266,6 +267,15 @@ public final class SystemPropertyUtils {
 	 */
 	public static Integer getDefaultFieldWidth() {
 		return Integer.getInteger(DynamoConstants.SP_DEFAULT_FIELD_WIDTH);
+	}
+
+	/**
+	 * Returns the default validation mode
+	 * 
+	 * @return
+	 */
+	public static ValidationMode getDefaultValidationMode() {
+		return ValidationMode.valueOf(System.getProperty(DynamoConstants.SP_DEFAULT_VALIDATION_MODE, "DISABLE_BUTTON"));
 	}
 
 	private SystemPropertyUtils() {

@@ -154,7 +154,7 @@ public class DateUtilsTest {
 	public void testFormatLocalDateTime() {
 		LocalDateTime date = DateUtils.createLocalDateTime("01122013 111415");
 
-		Assert.assertNull(DateUtils.formatDateTime(null, "dd-MM-yyyy"));
+		Assert.assertNull(DateUtils.formatDateTime((LocalDateTime) null, "dd-MM-yyyy"));
 		Assert.assertNull(DateUtils.formatDateTime(date, null));
 
 		Assert.assertEquals("01-12-2013 11:14:15", DateUtils.formatDateTime(date, "dd-MM-yyyy HH:mm:ss"));

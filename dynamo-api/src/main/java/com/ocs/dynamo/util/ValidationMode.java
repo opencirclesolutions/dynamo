@@ -11,7 +11,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-package com.ocs.dynamo.ui.composite.type;
+package com.ocs.dynamo.util;
 
 /**
  * The various ways of handling form validation. Can either be "DISABLE_BUTTON" (save button is disabled until all fields
