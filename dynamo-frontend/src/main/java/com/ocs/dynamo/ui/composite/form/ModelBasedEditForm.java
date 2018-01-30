@@ -1240,7 +1240,9 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	}
 
 	/**
-	 * Sets the "required"
+	 * Sets the "required" status for a field. Convenience method that also
+	 * correctly handles the situation in which there are multiple fields behind
+	 * each other on the same row
 	 * 
 	 * @param propertyName
 	 * @param required
@@ -1250,6 +1252,9 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		if (field != null) {
 
 			field.setRequired(required);
+			if (!required) {
+				((AbstractField<?>) field).setComponentError(null);
+			}
 
 			// if there are multiple fields in a row, we need to some additional trickery
 			// since
