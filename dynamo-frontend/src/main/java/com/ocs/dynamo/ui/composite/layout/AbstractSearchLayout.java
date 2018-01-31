@@ -744,6 +744,25 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 		doEdit();
 	}
 
+	/**
+	 * Open in edit mode and select the tab with the provided index
+	 * 
+	 * @param entity
+	 *            the entity to select
+	 * @param initialTab
+	 *            the index of the tab to display
+	 */
+	public final void edit(T entity, int initialTab) {
+		setSelectedItem(entity);
+		doEdit();
+
+		if (editForm != null) {
+			editForm.selectTab(initialTab);
+		} else {
+			tabLayout.selectTab(initialTab);
+		}
+	}
+
 	public Button getAddButton() {
 		return addButton;
 	}
