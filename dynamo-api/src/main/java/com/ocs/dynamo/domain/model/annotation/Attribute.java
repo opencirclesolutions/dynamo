@@ -72,6 +72,8 @@ public @interface Attribute {
 	 * @return whether the attribute is embedded
 	 */
 	boolean embedded() default false;
+	
+	float expansionFactor() default 1.0f;
 
 	/** @return the representation to use instead of "false" */
 	String falseRepresentation() default "";

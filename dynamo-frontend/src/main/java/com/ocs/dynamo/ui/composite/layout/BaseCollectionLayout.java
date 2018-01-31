@@ -213,7 +213,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
      * Method that is called when the Add button is clicked. Can be overridden in order to perform
      * your own custom logic
      */
-    protected void doAdd() {
+    public void doAdd() {
         setSelectedItem(createEntity());
         detailsMode(getSelectedItem());
     }

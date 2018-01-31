@@ -26,6 +26,7 @@ import com.vaadin.data.Container.Filter;
 import com.vaadin.data.sort.SortOrder;
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.data.util.filter.And;
+import com.vaadin.server.ErrorMessage;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
@@ -121,23 +122,24 @@ public class QuickAddEntityComboBox<ID extends Serializable, T extends AbstractE
 		bar.addComponent(comboBox);
 		float comboBoxExpandRatio = 1f;
 		if (quickAddAllowed) {
-			comboBoxExpandRatio -= 0.1f;
+			comboBoxExpandRatio -= 0.20f;
 		}
 		if (directNavigationAllowed) {
-			comboBoxExpandRatio -= 0.05f;
+			comboBoxExpandRatio -= 0.10f;
 		}
 
 		bar.setExpandRatio(comboBox, comboBoxExpandRatio);
 
 		if (quickAddAllowed) {
 			Button addButton = constructAddButton();
+			addButton.setSizeFull();
 			bar.addComponent(addButton);
-			bar.setExpandRatio(addButton, 0.10f);
+			bar.setExpandRatio(addButton, 0.20f);
 		}
 		if (directNavigationAllowed) {
 			Button directNavigationButton = constructDirectNavigationButton();
 			bar.addComponent(directNavigationButton);
-			bar.setExpandRatio(directNavigationButton, 0.5f);
+			bar.setExpandRatio(directNavigationButton, 0.10f);
 		}
 		return bar;
 	}
@@ -178,6 +180,13 @@ public class QuickAddEntityComboBox<ID extends Serializable, T extends AbstractE
 		super.setValue(newFieldValue);
 		if (comboBox != null) {
 			comboBox.setValue(newFieldValue);
+		}
+	}
+
+	@Override
+	public void setComponentError(ErrorMessage componentError) {
+		if (comboBox != null) {
+			comboBox.setComponentError(componentError);
 		}
 	}
 }

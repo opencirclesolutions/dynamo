@@ -24,10 +24,13 @@ import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.ocs.dynamo.utils.NumberUtils;
 import com.vaadin.data.Container;
+import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.data.validator.IntegerRangeValidator;
 import com.vaadin.data.validator.LongRangeValidator;
 import com.vaadin.data.validator.StringLengthValidator;
+import com.vaadin.server.UserError;
+import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
@@ -41,15 +44,16 @@ import com.vaadin.ui.VerticalLayout;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Objects;
 import java.util.Set;
 
 /**
  * A component for editing a property that is annotated as an @ElementCollection
  *
- * @param <T> the type of the elements in the table
- * @author bas.rutten
- * @ElementCollection.
+ * @param <T>
+ *            the type of the elements in the table
+ * @author bas.rutten @ElementCollection.
  */
 @SuppressWarnings("serial")
 public class CollectionTable<T extends Serializable> extends CustomField<Collection<T>> implements SignalsParent {
@@ -77,8 +81,7 @@ public class CollectionTable<T extends Serializable> extends CustomField<Collect
 	 */
 	private Button addButton;
 	/**
-	 * Form options that determine which buttons and functionalities are
-	 * available
+	 * Form options that determine which buttons and functionalities are available
 	 */
 	private FormOptions formOptions;
 	/**
@@ -106,9 +109,11 @@ public class CollectionTable<T extends Serializable> extends CustomField<Collect
 	/**
 	 * Constructor
 	 *
-	 * @param viewMode    whether to display the component in view (read-only) mode
-	 * @param formOptions FormOptions parameter object that can be used to govern how
-	 *                    the component behaves
+	 * @param viewMode
+	 *            whether to display the component in view (read-only) mode
+	 * @param formOptions
+	 *            FormOptions parameter object that can be used to govern how the
+	 *            component behaves
 	 */
 	public CollectionTable(final AttributeModel attributeModel, final boolean viewMode, final FormOptions formOptions) {
 		this.messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
@@ -130,7 +135,7 @@ public class CollectionTable<T extends Serializable> extends CustomField<Collect
 			// item is never allowed)
 			table.addItem();
 			if (parentForm != null) {
-				parentForm.signalDetailsTableValid(CollectionTable.this, false);
+				parentForm.signalDetailsComponentValid(CollectionTable.this, false);
 			}
 		});
 		buttonBar.addComponent(addButton);
@@ -139,7 +144,8 @@ public class CollectionTable<T extends Serializable> extends CustomField<Collect
 	/**
 	 * Constructs the button bar
 	 *
-	 * @param parent the parent layout
+	 * @param parent
+	 *            the parent layout
 	 */
 	protected void constructButtonBar(final Layout parent) {
 		final Layout buttonBar = new DefaultHorizontalLayout();
@@ -233,7 +239,7 @@ public class CollectionTable<T extends Serializable> extends CustomField<Collect
 	private void setParentForm(final ModelBasedEditForm<?, ?> parentForm) {
 		this.parentForm = parentForm;
 		if (parentForm != null) {
-			parentForm.signalDetailsTableValid(this, VaadinUtils.allFixedTableFieldsValid(table));
+			parentForm.signalDetailsComponentValid(this, VaadinUtils.allFixedTableFieldsValid(table));
 		}
 	}
 
@@ -277,8 +283,7 @@ public class CollectionTable<T extends Serializable> extends CustomField<Collect
 		table.setTableFieldFactory(new DefaultFieldFactory() {
 
 			@Override
-			public Field<?> createField(
-					final Container container, final Object itemId, final Object propertyId,
+			public Field<?> createField(final Container container, final Object itemId, final Object propertyId,
 					final Component uiContext) {
 
 				final Field<?> f = super.createField(container, itemId, propertyId, uiContext);
@@ -343,12 +348,11 @@ public class CollectionTable<T extends Serializable> extends CustomField<Collect
 					if (propagateChanges) {
 						propagateChanges = false;
 						setValue(extractValues());
-						parentForm.signalDetailsTableValid(CollectionTable.this,
+						parentForm.signalDetailsComponentValid(CollectionTable.this,
 								VaadinUtils.allFixedTableFieldsValid(table));
 						propagateChanges = true;
 					}
 				});
-
 				return f;
 			}
 		});
@@ -426,6 +430,23 @@ public class CollectionTable<T extends Serializable> extends CustomField<Collect
 
 		}
 		super.setInternalValue(newValue);
+	}
+
+	@Override
+	public boolean validateAllFields() {
+		boolean error = false;
+		Iterator<Component> component = table.iterator();
+		while (component.hasNext()) {
+			Component next = component.next();
+			try {
+				((AbstractField<?>) next).validate();
+				((AbstractField<?>) next).setComponentError(null);
+			} catch (InvalidValueException ex) {
+				error = true;
+				((AbstractField<?>) next).setComponentError(new UserError(ex.getLocalizedMessage()));
+			}
+		}
+		return error;
 	}
 
 }

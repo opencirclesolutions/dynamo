@@ -14,12 +14,11 @@
 package com.ocs.dynamo.ui.composite.form;
 
 /**
- * Marker interface for a component that sends a signal to a parent component after a change to an
- * editable component
+ * Marker interface for a parent component that receives a signal
  * 
  * @author bas.rutten
  */
-public interface SignalsParent {
+public interface ReceivesSignal {
 
-	boolean validateAllFields();
+	void signalDetailsComponentValid(SignalsParent component, boolean valid);
 }

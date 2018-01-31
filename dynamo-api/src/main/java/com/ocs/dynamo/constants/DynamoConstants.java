@@ -304,6 +304,16 @@ public final class DynamoConstants {
 	 * to use a separate service locator for integration tests)
 	 */
 	public static final String SP_SERVICE_LOCATOR_CLASS_NAME = "ocs.service.locator.classname";
+	
+	/**
+	 * Default width of input components
+	 */
+	public static final String SP_DEFAULT_FIELD_WIDTH = "ocs.default.field.width";
+	
+	/**
+	 * Default validation mode
+	 */
+	public static final String SP_DEFAULT_VALIDATION_MODE = "ocs.default.validation.mode";
 
 	/**
 	 * The name of the variable that is used to store the user

@@ -18,6 +18,7 @@ import java.io.Serializable;
 import com.ocs.dynamo.ui.composite.type.AttributeGroupMode;
 import com.ocs.dynamo.ui.composite.type.ScreenMode;
 import com.ocs.dynamo.util.SystemPropertyUtils;
+import com.ocs.dynamo.util.ValidationMode;
 
 /**
  * Parameter object that can be passed along when creating a page - this object
@@ -31,10 +32,9 @@ public class FormOptions implements Serializable {
 	private static final long serialVersionUID = 7383335254540591298L;
 
 	/**
-	 * How to display the various attribute groups. The default is PANEL
-	 * (related fields are shown in a panel, the panels are placed below each
-	 * other), but it can be changed to TABSHEET (related attributes are placed
-	 * on separate tabs)
+	 * How to display the various attribute groups. The default is PANEL (related
+	 * fields are shown in a panel, the panels are placed below each other), but it
+	 * can be changed to TABSHEET (related attributes are placed on separate tabs)
 	 */
 	private AttributeGroupMode attributeGroupMode = AttributeGroupMode.PANEL;
 
@@ -69,23 +69,22 @@ public class FormOptions implements Serializable {
 	private boolean openInViewMode;
 
 	/**
-	 * Whether the form is shown as part of a popup - this is normally set by
-	 * the framework when appropriate
+	 * Whether the form is shown as part of a popup - this is normally set by the
+	 * framework when appropriate
 	 */
 	private boolean popup;
 
 	/**
-	 * Whether to display the screen in complete read-only mode. Settings
-	 * readOnly to true will automatically adapt all other necessary settings
-	 * (e.g. it will set "openInViewMode" to true)
+	 * Whether to display the screen in complete read-only mode. Settings readOnly
+	 * to true will automatically adapt all other necessary settings (e.g. it will
+	 * set "openInViewMode" to true)
 	 */
 	private boolean readOnly;
 
 	/**
-	 * The orientation of the screen (horizontal or vertical). This is relevant
-	 * for the split layout. In the HORIZONTAL view the table and form are
-	 * displayed next to each other, in the VERTICAL view they are below each
-	 * other
+	 * The orientation of the screen (horizontal or vertical). This is relevant for
+	 * the split layout. In the HORIZONTAL view the table and form are displayed
+	 * next to each other, in the VERTICAL view they are below each other
 	 */
 	private ScreenMode screenMode = ScreenMode.HORIZONTAL;
 
@@ -159,6 +158,8 @@ public class FormOptions implements Serializable {
 
 	private boolean formNested;
 
+	private ValidationMode validationMode = SystemPropertyUtils.getDefaultValidationMode();
+
 	public FormOptions createCopy() {
 		FormOptions fo = new FormOptions();
 		fo.setAttributeGroupMode(getAttributeGroupMode());
@@ -185,6 +186,7 @@ public class FormOptions implements Serializable {
 		fo.setShowToggleButton(isShowToggleButton());
 		fo.setTableExportAllowed(isTableExportAllowed());
 		fo.setFormNested(isFormNested());
+		fo.setValidationMode(getValidationMode());
 		return fo;
 	}
 
@@ -194,6 +196,10 @@ public class FormOptions implements Serializable {
 
 	public ScreenMode getScreenMode() {
 		return screenMode;
+	}
+
+	public ValidationMode getValidationMode() {
+		return validationMode;
 	}
 
 	public boolean isComplexDetailsMode() {
@@ -359,8 +365,8 @@ public class FormOptions implements Serializable {
 	}
 
 	/**
-	 * Sets the screen to strict read-only modus. Will hide any add buttons and
-	 * set the screen to read only
+	 * Sets the screen to strict read-only modus. Will hide any add buttons and set
+	 * the screen to read only
 	 *
 	 * @param readOnly
 	 */
@@ -434,6 +440,11 @@ public class FormOptions implements Serializable {
 
 	public FormOptions setTableExportAllowed(boolean tableExportAllowed) {
 		this.tableExportAllowed = tableExportAllowed;
+		return this;
+	}
+
+	public FormOptions setValidationMode(ValidationMode validationMode) {
+		this.validationMode = validationMode;
 		return this;
 	}
 

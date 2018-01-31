@@ -11,15 +11,16 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-package com.ocs.dynamo.ui.composite.form;
+package com.ocs.dynamo.util;
 
 /**
- * Marker interface for a component that sends a signal to a parent component after a change to an
- * editable component
- * 
- * @author bas.rutten
+ * The various ways of handling form validation. Can either be "DISABLE_BUTTON" (save button is disabled until all fields
+ * have been filled in) or VALIDATE_DIRECTLY (save button always enabled, pressing it will trigger validations and highlight
+ * errors)
+ * @author Bas Rutten
+ *
  */
-public interface SignalsParent {
+public enum ValidationMode {
 
-	boolean validateAllFields();
+	DISABLE_BUTTON, VALIDATE_DIRECTLY;
 }

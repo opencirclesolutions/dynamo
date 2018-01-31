@@ -18,6 +18,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
@@ -53,8 +54,10 @@ public abstract class Domain extends AbstractEntity<Integer> {
 	 * By default, we only use "name" so the code is hidden
 	 */
 	@Attribute(visible = VisibilityType.HIDE)
+	@Size(max = 3)
 	private String code;
 
+	@Size(max = 255)
 	@NotNull
 	@Attribute(main = true, maxLength = DomainConstants.MAX_NAME_LENGTH, searchable = true)
 	private String name;

@@ -329,13 +329,12 @@ public final class VaadinUtils {
      * @return
      */
     @SuppressWarnings("unchecked")
-    public static <T extends Component> T getParentOfClass(Component component, Class<T> clazz) {
+    public static <T> T getParentOfClass(Component component, Class<T> clazz) {
         while (component.getParent() != null) {
             component = component.getParent();
             if (clazz.isAssignableFrom(component.getClass())) {
                 return (T) component;
             }
-
         }
         return null;
     }

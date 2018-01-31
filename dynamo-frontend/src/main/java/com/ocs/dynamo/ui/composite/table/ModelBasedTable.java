@@ -127,8 +127,7 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
 	 * Adds a column to the table
 	 * 
 	 * @param attributeModel
-	 *            the (possibly nested) attribute model for which to add a
-	 *            column
+	 *            the (possibly nested) attribute model for which to add a column
 	 * @param propertyNames
 	 *            the properties to be added
 	 * @param headerNames
@@ -174,8 +173,7 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
 	}
 
 	/**
-	 * Adds any generated columns (URL fields) in response to a change to view
-	 * mode
+	 * Adds any generated columns (URL fields) in response to a change to view mode
 	 */
 	public void addGeneratedColumns() {
 		for (AttributeModel attributeModel : entityModel.getAttributeModels()) {
@@ -288,8 +286,8 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
 	}
 
 	/**
-	 * Remove any generated columns - this is used when switching between modes
-	 * in order to remove any generated columns containing URL fields
+	 * Remove any generated columns - this is used when switching between modes in
+	 * order to remove any generated columns containing URL fields
 	 */
 	public void removeGeneratedColumns() {
 		for (AttributeModel attributeModel : entityModel.getAttributeModels()) {
@@ -303,8 +301,8 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
 	}
 
 	/**
-	 * Sets the visibility of a column. This can only be used to show/hide
-	 * columns that would show up in the table based on the entity model
+	 * Sets the visibility of a column. This can only be used to show/hide columns
+	 * that would show up in the table based on the entity model
 	 * 
 	 * @param propertyId
 	 *            the ID of the column.

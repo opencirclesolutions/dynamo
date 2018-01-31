@@ -144,7 +144,6 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 				final String removeMsg = message("ocs.remove");
 				getTableWrapper().getTable().addGeneratedColumn(removeMsg, (source, itemId, columnId) -> {
 					return isViewmode() ? null : new RemoveButton() {
-
 						@Override
 						protected void doDelete() {
 							source.removeItem(itemId);

@@ -12,7 +12,6 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -38,13 +37,9 @@ public class ModelBasedExportTemplateTest extends BaseIntegrationTest {
 
 	private TestEntity e2;
 
-	@BeforeClass
-	public static void beforefClass() {
-		System.setProperty("ocs.default.locale", "de");
-	}
-
 	@Before
 	public void setup() {
+		System.setProperty("ocs.default.locale", "de");
 		e1 = new TestEntity("Bob", 11L);
 		e1.setRate(BigDecimal.valueOf(4));
 		e1.setBirthDate(DateUtils.createDate("01042014"));
@@ -107,7 +102,7 @@ public class ModelBasedExportTemplateTest extends BaseIntegrationTest {
 			Assert.assertEquals("Test Domain", sheet.getRow(0).getCell(i++).getStringCellValue());
 			Assert.assertEquals("Url", sheet.getRow(0).getCell(i++).getStringCellValue());
 			Assert.assertEquals("Zoned", sheet.getRow(0).getCell(i++).getStringCellValue());
-			
+
 			// check the data row
 			Row row = sheet.getRow(1);
 			i = 0;
