@@ -13,12 +13,12 @@
  */
 package com.ocs.dynamo.functional.domain;
 
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
-
 import com.ocs.dynamo.domain.model.VisibilityType;
 import com.ocs.dynamo.domain.model.annotation.Attribute;
 import com.ocs.dynamo.domain.model.annotation.Model;
+
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
 
 /**
  * A locale identified by an IETF BCP 47 code
@@ -44,7 +44,7 @@ public class Locale extends Domain {
 	 * @param name
 	 *            the name of the currency
 	 */
-	public Locale(String code, String name) {
+	public Locale(final String code, final String name) {
 		super(code, name);
 	}
 
@@ -53,11 +53,13 @@ public class Locale extends Domain {
 		return getCode() + " - " + getName();
 	}
 
+	@Override
 	@Attribute(visible = VisibilityType.SHOW, required = true)
 	public String getCode() {
 		return super.getCode();
 	}
 
+	@Override
 	@Attribute(visible = VisibilityType.SHOW)
 	public String getName() {
 		return super.getName();
