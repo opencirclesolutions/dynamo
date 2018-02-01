@@ -26,9 +26,9 @@ import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.service.BaseService;
-import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
+import com.vaadin.server.Resource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.Notification;
@@ -56,8 +56,9 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 
 		private static final long serialVersionUID = -942298948585447203L;
 
-		public RemoveButton() {
-			super(message("ocs.remove"));
+		public RemoveButton(String message, Resource icon) {
+			super(message);
+			setIcon(icon);
 			this.addClickListener(event -> {
 				Runnable r = () -> {
 					try {

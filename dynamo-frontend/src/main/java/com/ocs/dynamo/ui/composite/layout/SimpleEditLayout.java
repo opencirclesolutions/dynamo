@@ -64,7 +64,7 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 
 	// the main layout
 	private VerticalLayout main;
-	
+
 	private Consumer<T> customSaveConsumer;
 
 	/**
@@ -205,11 +205,6 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 				@Override
 				protected void postProcessEditFields() {
 					SimpleEditLayout.this.postProcessEditFields(editForm);
-				}
-				
-				@Override
-				protected boolean beforeSave() {
-					return SimpleEditLayout.this.beforeSave();
 				}
 
 			};
@@ -396,7 +391,7 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 	public void setCustomSaveConsumer(Consumer<T> customSaveConsumer) {
 		this.customSaveConsumer = customSaveConsumer;
 	}
-	
+
 	public void doSave() {
 		this.editForm.doSave();
 	}

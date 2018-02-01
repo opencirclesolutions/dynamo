@@ -16,6 +16,8 @@ package com.ocs.dynamo.ui.composite.layout;
 import java.io.Serializable;
 import java.util.Collection;
 
+import org.vaadin.addons.lazyquerycontainer.CompositeItem;
+
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
@@ -34,6 +36,7 @@ import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.data.Container;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.sort.SortOrder;
+import com.vaadin.server.Resource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.Table;
@@ -100,6 +103,10 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 	 */
 	private boolean viewmode;
 
+	private String removeMessage;
+
+	private Resource removeIcon;
+
 	/**
 	 * Constructor
 	 * 
@@ -141,15 +148,16 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 			// remove button at the end of the row
 			if (getFormOptions().isShowRemoveButton()) {
 
-				final String removeMsg = message("ocs.remove");
-				getTableWrapper().getTable().addGeneratedColumn(removeMsg, (source, itemId, columnId) -> {
-					return isViewmode() ? null : new RemoveButton() {
-						@Override
-						protected void doDelete() {
-							source.removeItem(itemId);
-							getContainer().commit();
-						}
-					};
+				final String defaultMsg = message("ocs.remove");
+				getTableWrapper().getTable().addGeneratedColumn(defaultMsg, (source, itemId, columnId) -> {
+					return isViewmode() ? null
+							: new RemoveButton(removeMessage, removeIcon) {
+								@Override
+								protected void doDelete() {
+									CompositeItem ci = (CompositeItem) source.getItem(itemId);
+									doRemove(VaadinUtils.getEntityFromItem(ci));
+								}
+							};
 				});
 			}
 
@@ -326,8 +334,9 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 	/**
 	 * Method that is called to remove an item
 	 */
-	protected void doRemove() {
-		getTableWrapper().getTable().removeItem(getSelectedItem().getId());
+	protected void doRemove(T t) {
+		getTableWrapper().getTable().removeItem(t.getId());
+		getTableWrapper().getTable().commit();
 	}
 
 	public Button getAddButton() {
@@ -390,7 +399,7 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 
 	@Override
 	public void reload() {
-		getContainer().search(filter);
+		getContainer().search(constructFilter());
 	}
 
 	@Override
@@ -442,6 +451,22 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 		} else {
 			((ModelBasedTable<ID, T>) getTableWrapper().getTable()).addGeneratedColumns();
 		}
+	}
+
+	public String getRemoveMessage() {
+		return removeMessage;
+	}
+
+	public void setRemoveMessage(String removeMessage) {
+		this.removeMessage = removeMessage;
+	}
+
+	public Resource getRemoveIcon() {
+		return removeIcon;
+	}
+
+	public void setRemoveIcon(Resource removeIcon) {
+		this.removeIcon = removeIcon;
 	}
 
 }

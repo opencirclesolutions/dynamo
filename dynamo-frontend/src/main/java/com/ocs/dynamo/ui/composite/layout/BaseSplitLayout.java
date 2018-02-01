@@ -215,8 +215,8 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	protected abstract void buildFilter();
 
 	/**
-	 * Check the state of the "main" buttons (add and remove) that are not tied
-	 * to the currently selected item
+	 * Check the state of the "main" buttons (add and remove) that are not tied to
+	 * the currently selected item
 	 */
 	protected void checkMainButtons() {
 		if (getAddButton() != null) {
@@ -228,9 +228,8 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	}
 
 	/**
-	 * Constructs a header layout (displayed above the actual tabular content).
-	 * By defualt this is empty, overwrite in subclasses if you want to modify
-	 * this
+	 * Constructs a header layout (displayed above the actual tabular content). By
+	 * defualt this is empty, overwrite in subclasses if you want to modify this
 	 * 
 	 * @return
 	 */
@@ -242,7 +241,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	 * Constructs the remove button
 	 */
 	protected final Button constructRemoveButton() {
-		Button rb = new RemoveButton() {
+		Button rb = new RemoveButton(message("ocs.remove"), null) {
 
 			@Override
 			protected void doDelete() {
@@ -370,8 +369,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	}
 
 	/**
-	 * Performs the actual remove functionality - overwrite in subclass if
-	 * needed
+	 * Performs the actual remove functionality - overwrite in subclass if needed
 	 */
 	protected void doRemove() {
 		getService().delete(getSelectedItem());
@@ -430,8 +428,8 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	}
 
 	/**
-	 * Replaces the contents of a label by its current value. Use in response to
-	 * an automatic update if a field
+	 * Replaces the contents of a label by its current value. Use in response to an
+	 * automatic update if a field
 	 * 
 	 * @param propertyName
 	 *            the name of the property for which to replace the label

@@ -461,11 +461,6 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 			protected void postProcessEditFields() {
 				AbstractSearchLayout.this.postProcessEditFields(editForm);
 			}
-			
-			@Override
-			protected boolean beforeSave() {
-				return AbstractSearchLayout.this.beforeSave();
-			}
 
 		};
 		editForm.setFormTitleWidth(getFormTitleWidth());
@@ -526,7 +521,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	 * @return
 	 */
 	protected final Button constructRemoveButton() {
-		Button rb = new RemoveButton() {
+		Button rb = new RemoveButton(message("ocs.remove"), null) {
 
 			private static final long serialVersionUID = -7428844985367616649L;
 

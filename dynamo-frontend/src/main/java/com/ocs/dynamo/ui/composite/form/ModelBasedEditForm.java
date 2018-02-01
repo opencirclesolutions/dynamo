@@ -1112,16 +1112,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	}
 
 	/**
-	 * Carry out extra actions before saving
-	 * 
-	 * @return true if the save may continue
-	 */
-	protected boolean beforeSave() {
-		// override in subclasses
-		return true;
-	}
-
-	/**
 	 * Constructs the save button
 	 * 
 	 * @param boolean
@@ -1136,20 +1126,12 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 				// validate all fields
 				boolean error = validateAllFields();
 				if (!error) {
-
-					service.validate(entity);
-
-					boolean beforeSave = beforeSave();
-					if (beforeSave) {
-
-						if (customSaveConsumer != null) {
-							customSaveConsumer.accept(entity);
-						} else {
-							doSave();
-						}
+					if (customSaveConsumer != null) {
+						customSaveConsumer.accept(entity);
+					} else {
+						doSave();
 					}
 				}
-
 			} catch (RuntimeException ex) {
 				if (!handleCustomException(ex)) {
 					handleSaveException(ex);
