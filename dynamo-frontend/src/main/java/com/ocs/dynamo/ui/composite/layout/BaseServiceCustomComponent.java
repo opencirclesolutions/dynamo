@@ -67,7 +67,8 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 						showNotifification(ex.getMessage(), Notification.Type.ERROR_MESSAGE);
 					}
 				};
-				VaadinUtils.showConfirmDialog(getMessageService(), message("ocs.delete.confirm"), r);
+				VaadinUtils.showConfirmDialog(getMessageService(), message("ocs.delete.confirm", 
+						getItemToDelete()), r);
 			});
 		}
 
@@ -75,6 +76,12 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 		 * Performs the actual deletion
 		 */
 		protected abstract void doDelete();
+
+		/**
+		 * 
+		 * @return
+		 */
+		protected abstract String getItemToDelete();
 	}
 
 	private static final long serialVersionUID = 6015180039863418544L;

@@ -32,6 +32,7 @@ import com.ocs.dynamo.ui.composite.table.ModelBasedTable;
 import com.ocs.dynamo.ui.composite.table.ServiceResultsTableWrapper;
 import com.ocs.dynamo.ui.container.QueryType;
 import com.ocs.dynamo.ui.container.ServiceContainer;
+import com.ocs.dynamo.ui.utils.FormatUtils;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.data.Container;
 import com.vaadin.data.Container.Filter;
@@ -150,14 +151,20 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 
 				final String defaultMsg = message("ocs.remove");
 				getTableWrapper().getTable().addGeneratedColumn(defaultMsg, (source, itemId, columnId) -> {
-					return isViewmode() ? null
-							: new RemoveButton(removeMessage, removeIcon) {
-								@Override
-								protected void doDelete() {
-									CompositeItem ci = (CompositeItem) source.getItem(itemId);
-									doRemove(VaadinUtils.getEntityFromItem(ci));
-								}
-							};
+					return isViewmode() ? null : new RemoveButton(removeMessage, removeIcon) {
+						@Override
+						protected void doDelete() {
+							CompositeItem ci = (CompositeItem) source.getItem(itemId);
+							doRemove(VaadinUtils.getEntityFromItem(ci));
+						}
+
+						@Override
+						protected String getItemToDelete() {
+							CompositeItem ci = (CompositeItem) source.getItem(itemId);
+							T t = VaadinUtils.getEntityFromItem(ci);
+							return FormatUtils.formatEntity(getEntityModel(), t);
+						}
+					};
 				});
 			}
 

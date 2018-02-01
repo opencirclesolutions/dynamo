@@ -34,6 +34,7 @@ import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
 import com.ocs.dynamo.ui.composite.table.ServiceResultsTableWrapper;
 import com.ocs.dynamo.ui.composite.type.ScreenMode;
 import com.ocs.dynamo.ui.container.QueryType;
+import com.ocs.dynamo.ui.utils.FormatUtils;
 import com.vaadin.data.Container;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.sort.SortOrder;
@@ -528,6 +529,12 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 			@Override
 			protected void doDelete() {
 				remove();
+			}
+
+			@Override
+			protected String getItemToDelete() {
+				T t = getSelectedItem();
+				return FormatUtils.formatEntity(getEntityModel(), t);
 			}
 
 		};

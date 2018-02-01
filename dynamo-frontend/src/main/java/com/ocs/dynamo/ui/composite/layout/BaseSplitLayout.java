@@ -23,6 +23,7 @@ import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
 import com.ocs.dynamo.ui.composite.type.ScreenMode;
+import com.ocs.dynamo.ui.utils.FormatUtils;
 import com.vaadin.data.sort.SortOrder;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -246,6 +247,12 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 			@Override
 			protected void doDelete() {
 				remove();
+			}
+
+			@Override
+			protected String getItemToDelete() {
+				T t = getSelectedItem();
+				return FormatUtils.formatEntity(getEntityModel(), t);
 			}
 		};
 		rb.setVisible(getFormOptions().isShowRemoveButton() && isEditAllowed());

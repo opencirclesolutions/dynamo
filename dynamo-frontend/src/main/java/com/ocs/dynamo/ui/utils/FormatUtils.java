@@ -56,6 +56,14 @@ public final class FormatUtils {
 		// private constructor
 	}
 
+	public static String formatEntity(EntityModel<?> entityModel, Object value) {
+		if (value instanceof AbstractEntity) {
+			AbstractEntity<?> entity = (AbstractEntity<?>) value;
+			return ClassUtils.getFieldValueAsString(entity, entityModel.getDisplayProperty());
+		}
+		return null;
+	}
+
 	/**
 	 * Formats a collection of entities (turns it into a comma-separated string
 	 * based on the value of the "displayProperty")
@@ -90,8 +98,8 @@ public final class FormatUtils {
 	}
 
 	/**
-	 * Formats a collection of entities into a comma-separated string that
-	 * displays the meaningful representations of the entities
+	 * Formats a collection of entities into a comma-separated string that displays
+	 * the meaningful representations of the entities
 	 * 
 	 * @param entityModelFactory
 	 *            the entity model factory
