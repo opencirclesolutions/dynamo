@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
@@ -339,6 +340,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	 * Whether the form is in nested mode
 	 */
 	private boolean nestedMode;
+
+	private Consumer<T> customSaveConsumer;
 
 	/**
 	 * Constructor
@@ -1109,7 +1112,20 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	}
 
 	/**
+	 * Carry out extra actions before saving
+	 * 
+	 * @return true if the save may continue
+	 */
+	protected boolean beforeSave() {
+		// override in subclasses
+		return true;
+	}
+
+	/**
 	 * Constructs the save button
+	 * 
+	 * @param boolean
+	 *            indicates whether this is the button at the bottom of the screen
 	 */
 	private Button constructSaveButton(boolean bottom) {
 		Button saveButton = new Button(
@@ -1120,18 +1136,18 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 				// validate all fields
 				boolean error = validateAllFields();
 				if (!error) {
-					boolean isNew = entity.getId() == null;
-					entity = service.save(entity);
-					setEntity(service.fetchById(entity.getId(), getDetailJoins()));
-					showNotifification(message("ocs.changes.saved"), Notification.Type.TRAY_NOTIFICATION);
 
-					// set to view mode, load the view mode screen, and fill the
-					// details
-					if (getFormOptions().isOpenInViewMode()) {
-						viewMode = true;
-						build();
+					service.validate(entity);
+
+					boolean beforeSave = beforeSave();
+					if (beforeSave) {
+
+						if (customSaveConsumer != null) {
+							customSaveConsumer.accept(entity);
+						} else {
+							doSave();
+						}
 					}
-					afterEditDone(false, isNew, getEntity());
 				}
 
 			} catch (RuntimeException ex) {
@@ -1559,6 +1575,24 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	}
 
 	/**
+	 * Perform the actual save action
+	 */
+	public void doSave() {
+		boolean isNew = entity.getId() == null;
+		entity = service.save(entity);
+		setEntity(service.fetchById(entity.getId(), getDetailJoins()));
+		showNotifification(message("ocs.changes.saved"), Notification.Type.TRAY_NOTIFICATION);
+
+		// set to view mode, load the view mode screen, and fill the
+		// details
+		if (getFormOptions().isOpenInViewMode()) {
+			viewMode = true;
+			build();
+		}
+		afterEditDone(false, isNew, getEntity());
+	}
+
+	/**
 	 * Selects the tab specified by the provided index
 	 * 
 	 * @param index
@@ -1898,6 +1932,14 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			}
 		}
 		return error;
+	}
+
+	public Consumer<T> getCustomSaveConsumer() {
+		return customSaveConsumer;
+	}
+
+	public void setCustomSaveConsumer(Consumer<T> customSaveConsumer) {
+		this.customSaveConsumer = customSaveConsumer;
 	}
 
 }

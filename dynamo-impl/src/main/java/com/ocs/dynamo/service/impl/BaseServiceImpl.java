@@ -257,7 +257,7 @@ public abstract class BaseServiceImpl<ID, T extends AbstractEntity<ID>> implemen
 	 * 
 	 * @param t
 	 */
-	protected void validate(T t) {
+	public void validate(T t) {
 
 		Validator validator = factory.getValidator();
 		Set<ConstraintViolation<T>> constraintViolations = validator.validate(t);

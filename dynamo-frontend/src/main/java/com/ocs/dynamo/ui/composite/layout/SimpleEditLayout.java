@@ -16,6 +16,7 @@ package com.ocs.dynamo.ui.composite.layout;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
@@ -63,6 +64,8 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 
 	// the main layout
 	private VerticalLayout main;
+	
+	private Consumer<T> customSaveConsumer;
 
 	/**
 	 * Constructor
@@ -203,9 +206,15 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 				protected void postProcessEditFields() {
 					SimpleEditLayout.this.postProcessEditFields(editForm);
 				}
+				
+				@Override
+				protected boolean beforeSave() {
+					return SimpleEditLayout.this.beforeSave();
+				}
 
 			};
 
+			editForm.setCustomSaveConsumer(customSaveConsumer);
 			editForm.setDetailJoins(getJoins());
 			editForm.setFormTitleWidth(getFormTitleWidth());
 			editForm.setFieldEntityModels(getFieldEntityModels());
@@ -378,6 +387,18 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 
 	public void setJoins(FetchJoinInformation[] joins) {
 		this.joins = joins;
+	}
+
+	public Consumer<T> getCustomSaveConsumer() {
+		return customSaveConsumer;
+	}
+
+	public void setCustomSaveConsumer(Consumer<T> customSaveConsumer) {
+		this.customSaveConsumer = customSaveConsumer;
+	}
+	
+	public void doSave() {
+		this.editForm.doSave();
 	}
 
 }

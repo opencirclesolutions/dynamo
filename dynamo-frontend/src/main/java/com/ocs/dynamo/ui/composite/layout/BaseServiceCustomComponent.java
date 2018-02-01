@@ -19,16 +19,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.vaadin.dialogs.ConfirmDialog;
+
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.service.BaseService;
+import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.UI;
 
 /**
  * Base class for UI components that need/have access to a Service that can read
@@ -80,8 +84,8 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	private EntityModel<T> entityModel;
 
 	/**
-	 * The entity models used for rendering the individual fields (mostly useful
-	 * for lookup components)
+	 * The entity models used for rendering the individual fields (mostly useful for
+	 * lookup components)
 	 */
 	private Map<String, String> fieldEntityModels = new HashMap<>();
 
@@ -105,6 +109,8 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	 */
 	private Integer formTitleWidth;
 
+	private boolean confirmed;
+
 	/**
 	 * Constructor
 	 * 
@@ -122,9 +128,9 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	}
 
 	/**
-	 * Adds a field entity model - this can be used to overwrite the default
-	 * entity model that is used for rendering complex selection components
-	 * (lookup dialogs)
+	 * Adds a field entity model - this can be used to overwrite the default entity
+	 * model that is used for rendering complex selection components (lookup
+	 * dialogs)
 	 * 
 	 * @param path
 	 *            the path to the field
@@ -149,8 +155,8 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	}
 
 	/**
-	 * Method that is called after the mode is changed (from editable to read
-	 * only or vice versa)
+	 * Method that is called after the mode is changed (from editable to read only
+	 * or vice versa)
 	 * 
 	 * @param viewMode
 	 *            whether the component is now in view mode (after the change)
@@ -162,8 +168,17 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	}
 
 	/**
-	 * Checks which buttons in the button bar must be enabled after an item has
-	 * been selected
+	 * Method that is called before saving an entity but after the validation
+	 * 
+	 * @return
+	 */
+	protected boolean beforeSave() {
+		return true;
+	}
+
+	/**
+	 * Checks which buttons in the button bar must be enabled after an item has been
+	 * selected
 	 * 
 	 * @param selectedItem
 	 *            the selected item
@@ -211,8 +226,8 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	}
 
 	/**
-	 * Method that is called in order to enable/disable a button after selecting
-	 * an item table
+	 * Method that is called in order to enable/disable a button after selecting an
+	 * item table
 	 * 
 	 * @param button
 	 *            the button
@@ -226,9 +241,9 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	}
 
 	/**
-	 * Registers a button that must be enabled/disabled after an item is
-	 * selected. use the "mustEnableButton" callback method to impose additional
-	 * constraints on when the button must be enabled
+	 * Registers a button that must be enabled/disabled after an item is selected.
+	 * use the "mustEnableButton" callback method to impose additional constraints
+	 * on when the button must be enabled
 	 * 
 	 * @param button
 	 *            the button to register
@@ -256,4 +271,25 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 		this.formTitleWidth = formTitleWidth;
 	}
 
+	/**
+	 * Show a confirm dialog
+	 * 
+	 * @param question
+	 * @return
+	 */
+	public boolean confirm(String question) {
+		confirmed = false;
+		if (UI.getCurrent() != null) {
+			ConfirmDialog.show(UI.getCurrent(), getMessageService().getMessage("ocs.confirm", getLocale()), question,
+					getMessageService().getMessage("ocs.yes", getLocale()),
+					getMessageService().getMessage("ocs.no", getLocale()), dialog -> {
+						if (dialog.isConfirmed()) {
+							confirmed = true;
+						}
+					});
+		} else {
+			return true;
+		}
+		return confirmed;
+	}
 }

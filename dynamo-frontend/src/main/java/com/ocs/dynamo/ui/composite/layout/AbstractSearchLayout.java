@@ -461,6 +461,11 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 			protected void postProcessEditFields() {
 				AbstractSearchLayout.this.postProcessEditFields(editForm);
 			}
+			
+			@Override
+			protected boolean beforeSave() {
+				return AbstractSearchLayout.this.beforeSave();
+			}
 
 		};
 		editForm.setFormTitleWidth(getFormTitleWidth());

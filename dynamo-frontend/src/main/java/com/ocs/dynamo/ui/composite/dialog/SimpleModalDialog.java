@@ -77,4 +77,7 @@ public abstract class SimpleModalDialog extends BaseModalDialog {
 		return okButton;
 	}
 
+	protected String message(String key) {
+		return messageService.getMessage(key, VaadinUtils.getLocale());
+	}
 }
