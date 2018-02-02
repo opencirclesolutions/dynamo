@@ -23,12 +23,14 @@ import org.vaadin.addons.lazyquerycontainer.LazyQueryContainer;
 
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
+import com.ocs.dynamo.domain.model.AttributeType;
 import com.ocs.dynamo.domain.model.EditableType;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.domain.model.impl.ModelBasedFieldFactory;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
+import com.ocs.dynamo.ui.BaseUI;
 import com.ocs.dynamo.ui.component.URLField;
 import com.ocs.dynamo.ui.composite.table.export.TableExportActionHandler;
 import com.ocs.dynamo.ui.composite.table.export.TableExportMode;
@@ -36,8 +38,10 @@ import com.ocs.dynamo.ui.utils.FormatUtils;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.data.Container;
 import com.vaadin.data.Property;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.UI;
+import com.vaadin.ui.themes.ValoTheme;
 
 /**
  * A Table that bases its columns on the meta model of an entity
@@ -153,6 +157,7 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
 
 			// generated column with clickable URL (only in view mode)
 			addUrlField(attributeModel);
+			addInternalLinkField(attributeModel);
 
 			if (attributeModel.isNumerical()) {
 				this.setColumnAlignment(attributeModel.getPath(), Table.Align.RIGHT);
@@ -207,6 +212,41 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
 						field.setValue(val);
 					}
 					return field;
+				}
+			});
+		}
+	}
+
+	/**
+	 * Adds a button/link for navigation within the application
+	 * 
+	 * @param attributeModel.
+	 *            For this to work you must register a navigation rule in the BaseUI
+	 *            at the base of your application
+	 */
+	private void addInternalLinkField(final AttributeModel attributeModel) {
+		if (attributeModel.isNavigable() && !isEditable()
+				&& AttributeType.MASTER.equals(attributeModel.getAttributeType())) {
+			this.addGeneratedColumn(attributeModel.getPath(), new ColumnGenerator() {
+
+				private static final long serialVersionUID = -3191235289754428914L;
+
+				@Override
+				public Object generateCell(Table source, final Object itemId, Object columnId) {
+					Object val = getItem(itemId).getItemProperty(columnId).getValue();
+					if (val != null) {
+
+						String str = FormatUtils.formatEntity(attributeModel.getNestedEntityModel(), val);
+						Button button = new Button(str);
+						button.setStyleName(ValoTheme.BUTTON_LINK);
+						button.addClickListener(event -> {
+							BaseUI ui = (BaseUI) UI.getCurrent();
+							ui.navigateToEntityScreenDirectly(val);
+						});
+
+						return button;
+					}
+					return null;
 				}
 			});
 		}

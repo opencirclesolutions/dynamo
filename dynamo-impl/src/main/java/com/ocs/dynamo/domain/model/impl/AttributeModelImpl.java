@@ -104,6 +104,8 @@ public class AttributeModelImpl implements AttributeModel {
 
 	private String name;
 
+	private boolean navigable;
+
 	private EntityModel<?> nestedEntityModel;
 
 	private NumberSelectMode numberSelectMode = NumberSelectMode.TEXTFIELD;
@@ -732,6 +734,15 @@ public class AttributeModelImpl implements AttributeModel {
 
 	public void setExpansionFactor(float expansionFactor) {
 		this.expansionFactor = expansionFactor;
+	}
+
+	@Override
+	public boolean isNavigable() {
+		return navigable;
+	}
+
+	public void setNavigable(boolean navigable) {
+		this.navigable = navigable;
 	}
 
 }

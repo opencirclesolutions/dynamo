@@ -1033,6 +1033,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 			if (attribute.expansionFactor() > 1.0f) {
 				model.setExpansionFactor(attribute.expansionFactor());
 			}
+
+			model.setNavigable(attribute.navigable());
 		}
 	}
 
@@ -1341,6 +1343,11 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 		msg = getAttributeMessage(entityModel, model, EntityModel.SEARCH_EXACT_VALUE);
 		if (msg != null && !StringUtils.isEmpty(msg)) {
 			model.setSearchForExactValue(Boolean.valueOf(msg));
+		}
+		
+		msg = getAttributeMessage(entityModel, model, EntityModel.NAVIGABLE);
+		if (msg != null && !StringUtils.isEmpty(msg)) {
+			model.setNavigable(Boolean.valueOf(msg));
 		}
 
 		setMessageBundleCascadeOverrides(entityModel, model);

@@ -123,6 +123,12 @@ public @interface Attribute {
 
 	/** @return the minimum element length (-1 indicates no value) */
 	long minValue() default Long.MIN_VALUE;
+	
+	/**
+	 * 
+	 * @return
+	 */
+	boolean navigable() default false;
 
 	/**
 	 * @return whether this attribute allows search for multiple values (only

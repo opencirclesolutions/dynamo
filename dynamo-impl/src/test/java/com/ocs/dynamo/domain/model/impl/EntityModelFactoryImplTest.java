@@ -234,6 +234,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		AttributeModel entityModel = model.getAttributeModel("entity2");
 		Assert.assertEquals(AttributeType.MASTER, entityModel.getAttributeType());
 		Assert.assertTrue(entityModel.isComplexEditable());
+		Assert.assertTrue(entityModel.isNavigable());
 
 		AttributeModel entityListModel = model.getAttributeModel("entityList");
 		Assert.assertEquals(AttributeType.DETAIL, entityListModel.getAttributeType());
@@ -736,7 +737,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		private Date birthDate;
 
 		@OneToOne
-		@Attribute(complexEditable = true)
+		@Attribute(complexEditable = true, navigable = true)
 		private Entity2 entity2;
 
 		@OneToMany

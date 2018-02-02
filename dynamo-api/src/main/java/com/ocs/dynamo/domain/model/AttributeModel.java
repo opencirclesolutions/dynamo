@@ -360,6 +360,12 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 
 	/**
 	 * 
+	 * @return
+	 */
+	boolean isNavigable();
+
+	/**
+	 * 
 	 * @return Whether this is a numeric attribute
 	 */
 	boolean isNumerical();
@@ -464,6 +470,7 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	 * Removes all cascading
 	 */
 	void removeCascades();
+	
 
 	/**
 	 * Marks the attribute as the main attribute
