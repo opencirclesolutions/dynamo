@@ -56,10 +56,23 @@ public final class FormatUtils {
 		// private constructor
 	}
 
+	/**
+	 * Formats an entity
+	 * 
+	 * @param entityModel
+	 *            the entity model
+	 * @param value
+	 *            the value (must be an instance of AbstractEntity)
+	 * @return
+	 */
 	public static String formatEntity(EntityModel<?> entityModel, Object value) {
 		if (value instanceof AbstractEntity) {
 			AbstractEntity<?> entity = (AbstractEntity<?>) value;
-			return ClassUtils.getFieldValueAsString(entity, entityModel.getDisplayProperty());
+			if (entityModel.getDisplayProperty() != null) {
+				return ClassUtils.getFieldValueAsString(entity, entityModel.getDisplayProperty());
+			} else {
+				return entity.toString();
+			}
 		}
 		return null;
 	}
