@@ -12,6 +12,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -24,6 +25,7 @@ import com.ocs.dynamo.test.BaseIntegrationTest;
 import com.ocs.dynamo.ui.composite.table.export.ModelBasedExportTemplate;
 import com.ocs.dynamo.utils.DateUtils;
 
+@Ignore
 public class ModelBasedExportTemplateTest extends BaseIntegrationTest {
 
 	private static final int PAGE_SIZE = 1000;
