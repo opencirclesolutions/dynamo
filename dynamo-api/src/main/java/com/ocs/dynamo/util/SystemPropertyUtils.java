@@ -275,7 +275,7 @@ public final class SystemPropertyUtils {
 	 * @return
 	 */
 	public static ValidationMode getDefaultValidationMode() {
-		return ValidationMode.valueOf(System.getProperty(DynamoConstants.SP_DEFAULT_VALIDATION_MODE, "DISABLE_BUTTON"));
+		return ValidationMode.valueOf(System.getProperty(DynamoConstants.SP_DEFAULT_VALIDATION_MODE, "VALIDATE_DIRECTLY"));
 	}
 
 	private SystemPropertyUtils() {
