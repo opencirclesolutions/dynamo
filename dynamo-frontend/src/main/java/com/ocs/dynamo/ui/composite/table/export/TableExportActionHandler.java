@@ -928,6 +928,7 @@ public class TableExportActionHandler implements Handler {
 				export.setReportTitle(reportTitle);
 				service.export(export);
 			} else {
+
 				// create the workbook
 				Workbook wb = createWorkbook(size);
 				if (wb == null) {

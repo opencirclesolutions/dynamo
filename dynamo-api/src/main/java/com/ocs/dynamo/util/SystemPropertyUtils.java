@@ -39,7 +39,7 @@ public final class SystemPropertyUtils {
 	 * 
 	 * @return whether export to Excel or CSV is allowed for all tables. If set to
 	 *         <code>false</code> it will disable exporting for all tables. You can
-	 *         selectively enable it for somet tables using the FormOptions object
+	 *         selectively enable it for some tables using the FormOptions object
 	 */
 	public static boolean allowTableExport() {
 		return Boolean.getBoolean(DynamoConstants.SP_ALLOW_TABLE_EXPORT);
