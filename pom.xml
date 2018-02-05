@@ -83,11 +83,13 @@
 		<module>dynamo-integration-import</module>
 		<module>dynamo-frontend</module>
 		<module>dynamo-functional-domain</module>
+		<!-- 
 		<module>dynamo-jasperreports</module>
 		<module>dynamo-jasperreports-fixes</module>
 		<module>dynamo-archetype</module>
 		<module>dynamo-archetype-modules</module>
 		<module>dynamo-showcase</module>
+		 -->
 	</modules>
 	<properties>
 		<!-- Build settings. -->
