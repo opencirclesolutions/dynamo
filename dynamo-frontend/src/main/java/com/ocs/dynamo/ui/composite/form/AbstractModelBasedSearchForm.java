@@ -89,8 +89,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	private Layout filterLayout;
 
 	/**
-	 * The object that will be searched when the user presses the "Search"
-	 * button
+	 * The object that will be searched when the user presses the "Search" button
 	 */
 	private Searchable searchable;
 
@@ -140,16 +139,15 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	}
 
 	/**
-	 * Callback method that is called after a successfull search has been
-	 * performed
+	 * Callback method that is called after a successfull search has been performed
 	 */
 	protected void afterSearchPerformed() {
 		// override in subclasses
 	}
 
 	/**
-	 * Callback method that is called when the user toggles the visibility of
-	 * the search form
+	 * Callback method that is called when the user toggles the visibility of the
+	 * search form
 	 * 
 	 * @param visible
 	 *            indicates if the search fields are visible now
@@ -276,8 +274,8 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	 * @param entityModel
 	 *            the entity model of the entity to search for
 	 * @param attributeModel
-	 *            the attribute model the attribute model of the property that
-	 *            is bound to the field
+	 *            the attribute model the attribute model of the property that is
+	 *            bound to the field
 	 * @return
 	 */
 	protected Field<?> constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel) {
@@ -408,8 +406,8 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	}
 
 	/**
-	 * Searching is allowed when there are no required attributes or all
-	 * required attributes are in the composite filter.
+	 * Searching is allowed when there are no required attributes or all required
+	 * attributes are in the composite filter.
 	 * 
 	 * @return
 	 */
@@ -439,14 +437,11 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	 */
 	@Override
 	public void onFilterChange(FilterChangeEvent event) {
-		AttributeModel am = getEntityModel().getAttributeModel(event.getPropertyId());
-		if (am == null || !am.isTransient()) {
-			if (event.getOldFilter() != null) {
-				currentFilters.remove(event.getOldFilter());
-			}
-			if (event.getNewFilter() != null) {
-				currentFilters.add(event.getNewFilter());
-			}
+		if (event.getOldFilter() != null) {
+			currentFilters.remove(event.getOldFilter());
+		}
+		if (event.getNewFilter() != null) {
+			currentFilters.add(event.getNewFilter());
 		}
 		searchButton.setEnabled(isSearchAllowed());
 	}
@@ -471,8 +466,8 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	}
 
 	/**
-	 * Pre-process the layout - this method is called directly after the main
-	 * layout has been created
+	 * Pre-process the layout - this method is called directly after the main layout
+	 * has been created
 	 * 
 	 * @param main
 	 *            the layout
@@ -507,10 +502,9 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	 * @param skipValidation
 	 *            whether to skip validation before searching
 	 * @param matchAny
-	 *            whether the search is an 'Or' search or an 'And' search. Where
-	 *            in the former all results matching any predicate are returned
-	 *            and in the latter case all results matching all predicates are
-	 *            returned.
+	 *            whether the search is an 'Or' search or an 'And' search. Where in
+	 *            the former all results matching any predicate are returned and in
+	 *            the latter case all results matching all predicates are returned.
 	 *
 	 * @return
 	 */
