@@ -680,7 +680,7 @@
 					<version>${vaadin.plugin.version}</version>
 					<configuration>
 						<extraJvmArgs>-Xmx512M -Xss1024k</extraJvmArgs>
-						<webappDirectory>src/main/webapp/VAADIN/widgetsets</webappDirectory>
+						<webappDirectory>${project.basedir}/target/classes/VAADIN/widgetsets</webappDirectory>
 						<hostedWebapp>${project.basedir}/target/classes/VAADIN/widgetsets</hostedWebapp>
 						<compileReport>false</compileReport>
 						<draftCompile>false</draftCompile>
