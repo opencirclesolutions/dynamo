@@ -39,8 +39,7 @@ public @interface Attribute {
 	String[] allowedExtensions() default {};
 
 	/**
-	 * @return the properties to cascade to when the value of this property
-	 *         changes
+	 * @return the properties to cascade to when the value of this property changes
 	 **/
 	Cascade[] cascade() default {};
 
@@ -54,13 +53,19 @@ public @interface Attribute {
 	AttributeDateType dateType() default AttributeDateType.INHERIT;
 
 	/**
-	 * @return the default value (represented as a string - use "." as the
-	 *         decimal separator)
+	 * @return the default value (represented as a string - use "." as the decimal
+	 *         separator)
 	 */
 	String defaultValue() default "";
 
 	/** @return the description (appears as a tooltip) */
 	String description() default "";
+
+	/**
+	 * Whether direct navigation is allowed to this entity from another entity
+	 * detailscreen
+	 */
+	boolean directNavigation() default false;
 
 	/** @return the display format (useful in case of dates) */
 	String displayFormat() default "";
@@ -68,25 +73,28 @@ public @interface Attribute {
 	/** @return the display name */
 	String displayName() default "";
 
+	/** @return when the field can be edited */
+	EditableType editable() default EditableType.EDITABLE;
+
 	/**
 	 * @return whether the attribute is embedded
 	 */
 	boolean embedded() default false;
-	
+
 	float expansionFactor() default 1.0f;
 
 	/** @return the representation to use instead of "false" */
 	String falseRepresentation() default "";
 
 	/**
-	 * @return the name of the property in which to store the file name (after
-	 *         an upload)
+	 * @return the name of the property in which to store the file name (after an
+	 *         upload)
 	 */
 	String fileNameProperty() default "";
 
 	/**
-	 * @return the names of other attributes that appear on the same line as
-	 *         this attribute inside an edit form
+	 * @return the names of other attributes that appear on the same line as this
+	 *         attribute inside an edit form
 	 */
 	String[] groupTogetherWith() default {};
 
@@ -95,7 +103,10 @@ public @interface Attribute {
 	 */
 	boolean image() default false;
 
-	/** @return whether this field is the main attribute */
+	/**
+	 * 
+	 * @return whether this attribute is the main attribute
+	 */
 	boolean main() default false;
 
 	/** @return the maximum element length (-1 indicates no value) */
@@ -123,23 +134,23 @@ public @interface Attribute {
 
 	/** @return the minimum element length (-1 indicates no value) */
 	long minValue() default Long.MIN_VALUE;
-	
-	/**
-	 * 
-	 * @return
-	 */
-	boolean navigable() default false;
 
 	/**
-	 * @return whether this attribute allows search for multiple values (only
-	 *         for MASTER attributes)
+	 * @return whether this attribute allows search for multiple values (only for
+	 *         MASTER attributes)
 	 */
 	boolean multipleSearch() default false;
 
 	/**
 	 * 
-	 * @return the number select mode (indicates which component to use for
-	 *         editing numbers)
+	 * @return whether this attribute is navigable when inside a table
+	 */
+	boolean navigable() default false;
+
+	/**
+	 * 
+	 * @return the number select mode (indicates which component to use for editing
+	 *         numbers)
 	 */
 	NumberSelectMode numberSelectMode() default NumberSelectMode.TEXTFIELD;
 
@@ -153,13 +164,9 @@ public @interface Attribute {
 	String prompt() default "";
 
 	/**
-	 * @return the name of the property to set when using "quick add"
-	 *         functionality
+	 * @return the name of the property to set when using "quick add" functionality
 	 */
 	String quickAddPropertyName() default "";
-
-	/** @return when the field can be edited */
-	EditableType editable() default EditableType.EDITABLE;
 
 	/**
 	 * @return the replacement search path to be used when the property does not
@@ -206,8 +213,7 @@ public @interface Attribute {
 	boolean sortable() default true;
 
 	/**
-	 * @return whether to display a text attribute as a text field or a text
-	 *         area
+	 * @return whether to display a text attribute as a text field or a text area
 	 */
 	AttributeTextFieldMode textFieldMode() default AttributeTextFieldMode.INHERIT;
 
@@ -218,8 +224,7 @@ public @interface Attribute {
 	boolean url() default false;
 
 	/**
-	 * indicates whether to use thousands grouping for an integer or decimal
-	 * field
+	 * indicates whether to use thousands grouping for an integer or decimal field
 	 */
 	boolean useThousandsGrouping() default true;
 
@@ -230,10 +235,4 @@ public @interface Attribute {
 	 * whether the field represents a date that must be shown in week notation
 	 */
 	boolean week() default false;
-
-	/**
-	 * Whether direct navigation is allowed to this entity from another entity
-	 * detailscreen
-	 */
-	boolean directNavigation() default false;
 }

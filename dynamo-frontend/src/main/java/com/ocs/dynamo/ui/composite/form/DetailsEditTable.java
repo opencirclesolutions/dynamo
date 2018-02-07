@@ -55,7 +55,7 @@ import com.vaadin.ui.VerticalLayout;
 /**
  * A complex table component for the in-place editing of a one-to-many relation.
  * It can also be used to manage a many-to-many relation but in this case the
- * "setDetailsTableSearchMode" on the FormOptions must be set to true. You can 
+ * "setDetailsTableSearchMode" on the FormOptions must be set to true. You can
  * then use the setSearchXXX methods to configure the behaviour of the search
  * dialog that can be used to modify the values If you need a component like
  * this, you should override the constructCustomField method and use it to
@@ -73,7 +73,7 @@ import com.vaadin.ui.VerticalLayout;
  */
 @SuppressWarnings("serial")
 public abstract class DetailsEditTable<ID extends Serializable, T extends AbstractEntity<ID>>
-		extends CustomField<Collection<T>> implements SignalsParent {
+		extends CustomField<Collection<T>> implements SignalsParent, UseInViewMode {
 
 	private static final long serialVersionUID = -1203245694503350276L;
 
@@ -657,8 +657,10 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 		while (component.hasNext()) {
 			Component next = component.next();
 			try {
-				((AbstractField<?>) next).validate();
-				((AbstractField<?>) next).setComponentError(null);
+				if (next instanceof AbstractField) {
+					((AbstractField<?>) next).validate();
+					((AbstractField<?>) next).setComponentError(null);
+				}
 			} catch (InvalidValueException ex) {
 				error = true;
 				((AbstractField<?>) next).setComponentError(new UserError(ex.getLocalizedMessage()));

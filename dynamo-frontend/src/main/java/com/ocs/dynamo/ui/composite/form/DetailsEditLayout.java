@@ -50,7 +50,7 @@ import com.vaadin.ui.VerticalLayout;
  * @param <T>
  */
 public abstract class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity<ID>>
-		extends CustomField<Collection<T>> implements SignalsParent, ReceivesSignal {
+		extends CustomField<Collection<T>> implements SignalsParent, ReceivesSignal, UseInViewMode {
 
 	private class FormContainer extends DefaultVerticalLayout {
 

@@ -423,7 +423,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 					previews.get(isViewMode()).put(attributeModel, c);
 				} else if (AttributeType.DETAIL.equals(type) && attributeModel.isComplexEditable()) {
 					Field<?> f = constructCustomField(entityModel, attributeModel, viewMode);
-					if (f instanceof DetailsEditTable || f instanceof DetailsEditLayout) {
+					if (f instanceof UseInViewMode) {
 						// a details edit table or details edit layout must always be displayed
 						constructField(parent, entityModel, attributeModel, true, tabIndex, sameRow);
 					} else {
@@ -963,7 +963,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 		if (field != null) {
 			Integer fieldWidth = SystemPropertyUtils.getDefaultFieldWidth();
-			if (fieldWidth == null || sameRow || field instanceof DetailsEditLayout || field instanceof DetailsEditTable
+			if (fieldWidth == null || sameRow || field instanceof DetailsEditLayout
 					|| !attributeModel.getGroupTogetherWith().isEmpty()) {
 				field.setSizeFull();
 			} else {
