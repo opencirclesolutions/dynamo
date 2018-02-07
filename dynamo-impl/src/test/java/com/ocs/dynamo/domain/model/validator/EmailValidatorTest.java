@@ -26,7 +26,8 @@ public class EmailValidatorTest {
 
 		Assert.assertTrue(validator.isValid(null, null));
 		Assert.assertTrue(validator.isValid("kevin@opencirclesolutions.nl", null));
-
+		Assert.assertTrue(validator.isValid("Bob@Opencirclesolutions.nl", null));
+		
 		Assert.assertFalse(validator.isValid("", null));
 		Assert.assertFalse(validator.isValid("ab", null));
 	}
