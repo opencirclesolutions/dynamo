@@ -1,0 +1,2 @@
+# Module com.ocs.dynamo.DynamoWidgetSet
+# RPC service class, partial path of RPC policy file
