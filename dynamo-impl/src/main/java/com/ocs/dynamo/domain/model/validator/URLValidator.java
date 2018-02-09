@@ -28,6 +28,11 @@ import org.apache.commons.lang.StringUtils;
  *
  */
 public class URLValidator implements ConstraintValidator<URL, String> {
+	
+	private static final String URL_PREFIX_SECURE = "https://";
+	
+	private static final String URL_PREFIX = "http://";
+	
 
     @Override
     public void initialize(URL constraintAnnotation) {
@@ -38,6 +43,10 @@ public class URLValidator implements ConstraintValidator<URL, String> {
     public boolean isValid(String value, ConstraintValidatorContext context) {
         if (StringUtils.isEmpty(value)) {
             return true;
+        }
+        
+        if (!value.contains(URL_PREFIX) && !value.contains(URL_PREFIX_SECURE)) {
+        	value = URL_PREFIX + value;
         }
 
         try {
