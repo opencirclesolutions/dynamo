@@ -20,11 +20,8 @@ import java.util.Locale;
 
 import javax.persistence.OptimisticLockException;
 
-import junitx.util.PrivateAccessor;
-
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mock;
 
@@ -42,6 +39,8 @@ import com.ocs.dynamo.test.BaseMockitoTest;
 import com.ocs.dynamo.test.MockUtil;
 import com.ocs.dynamo.utils.DateUtils;
 import com.vaadin.ui.Label;
+
+import junitx.util.PrivateAccessor;
 
 public class BaseCustomComponentTest extends BaseMockitoTest {
 

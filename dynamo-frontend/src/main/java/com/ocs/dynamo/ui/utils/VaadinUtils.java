@@ -36,6 +36,7 @@ import com.ocs.dynamo.ui.converter.ConverterFactory;
 import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.vaadin.data.Container;
 import com.vaadin.data.Item;
+import com.vaadin.data.Validator;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.converter.Converter;
 import com.vaadin.data.util.converter.StringToIntegerConverter;
@@ -582,6 +583,14 @@ public final class VaadinUtils {
 	public static Long stringToLong(boolean grouping, String value, Locale locale) {
 		StringToLongConverter converter = ConverterFactory.createLongConverter(grouping, false);
 		return converter.convertToModel(value, Long.class, locale);
+	}
+
+	public static void removeValidatorsOfType(Field<?> field, Class<?> validatorClass) {
+		for (Validator v : field.getValidators()) {
+			if (v.getClass().equals(validatorClass)) {
+				field.removeValidator(v);
+			}
+		}
 	}
 
 	/**
