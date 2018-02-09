@@ -559,4 +559,8 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 		afterSearchFieldToggle(wrapperPanel.isVisible());
 	}
 
+	public void setDefaultFilters(List<Filter> defaultFilters) {
+		this.defaultFilters = defaultFilters;
+	}
+
 }

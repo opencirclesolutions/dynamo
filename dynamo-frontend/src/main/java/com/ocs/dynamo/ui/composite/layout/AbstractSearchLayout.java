@@ -1048,6 +1048,9 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 
 	public void setDefaultFilters(List<Filter> defaultFilters) {
 		this.defaultFilters = defaultFilters;
+		if (searchForm != null) {
+			searchForm.setDefaultFilters(defaultFilters);
+		}
 	}
 
 	public void setQueryType(QueryType queryType) {

@@ -20,7 +20,6 @@ import javax.validation.ConstraintValidatorContext;
 
 import org.apache.commons.lang.StringUtils;
 
-
 /**
  * A validator for checking if a String is a valid URL
  * 
@@ -28,34 +27,39 @@ import org.apache.commons.lang.StringUtils;
  *
  */
 public class URLValidator implements ConstraintValidator<URL, String> {
-	
+
 	private static final String URL_PREFIX_SECURE = "https://";
-	
+
 	private static final String URL_PREFIX = "http://";
-	
 
-    @Override
-    public void initialize(URL constraintAnnotation) {
-        // do nothing
-    }
+	@Override
+	public void initialize(URL constraintAnnotation) {
+		// do nothing
+	}
 
-    @Override
-    public boolean isValid(String value, ConstraintValidatorContext context) {
-        if (StringUtils.isEmpty(value)) {
-            return true;
-        }
-        
-        if (!value.contains(URL_PREFIX) && !value.contains(URL_PREFIX_SECURE)) {
-        	value = URL_PREFIX + value;
-        }
+	@Override
+	public boolean isValid(String value, ConstraintValidatorContext context) {
+		if (StringUtils.isEmpty(value)) {
+			return true;
+		}
 
-        try {
-            new java.net.URL(value);
-            return true;
-        } catch (MalformedURLException ex) {
-            // do nothing
-            return false;
-        }
-    }
+		if (!value.contains(URL_PREFIX) && !value.contains(URL_PREFIX_SECURE)) {
+			value = URL_PREFIX + value;
+		}
+
+		try {
+			new java.net.URL(value);
+
+			// assume at least 2 dots
+			int matches = StringUtils.countMatches(value, ".");
+			if (matches < 2) {
+				return false;
+			}
+		} catch (MalformedURLException ex) {
+			// do nothing
+			return false;
+		}
+		return true;
+	}
 
 }

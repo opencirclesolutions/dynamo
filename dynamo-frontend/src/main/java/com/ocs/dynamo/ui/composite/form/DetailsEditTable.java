@@ -172,6 +172,8 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 	 */
 	private UI ui = UI.getCurrent();
 
+	private ModelBasedSearchDialog<ID, T> dialog;
+
 	/**
 	 * Whether the table is in view mode. If this is the case, editing is not
 	 * allowed and no buttons will be displayed
@@ -291,7 +293,7 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 						messageService.getMessage("ocs.no.service.specified", VaadinUtils.getLocale()));
 			}
 
-			ModelBasedSearchDialog<ID, T> dialog = new ModelBasedSearchDialog<ID, T>(service,
+			dialog = new ModelBasedSearchDialog<ID, T>(service,
 					searchDialogEntityModel != null ? searchDialogEntityModel : entityModel, searchDialogFilters,
 					searchDialogSortOrder == null ? null : Lists.newArrayList(searchDialogSortOrder), true, true) {
 				@Override
@@ -629,6 +631,9 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 
 	public void setSearchDialogFilters(List<Filter> searchDialogFilters) {
 		this.searchDialogFilters = searchDialogFilters;
+		if (dialog != null) {
+			dialog.setFilters(searchDialogFilters);
+		}
 	}
 
 	public void setSearchDialogSortOrder(SortOrder searchDialogSortOrder) {

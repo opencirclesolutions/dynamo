@@ -477,4 +477,6 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
             group.getAuxField().setValue(auxValue);
         }
     }
+    
+    
 }
