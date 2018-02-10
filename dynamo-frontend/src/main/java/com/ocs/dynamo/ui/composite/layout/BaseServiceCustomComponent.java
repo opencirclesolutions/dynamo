@@ -19,8 +19,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.vaadin.dialogs.ConfirmDialog;
-
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
@@ -32,7 +30,6 @@ import com.vaadin.server.Resource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.Notification;
-import com.vaadin.ui.UI;
 
 /**
  * Base class for UI components that need/have access to a Service that can read
@@ -67,8 +64,7 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 						showNotifification(ex.getMessage(), Notification.Type.ERROR_MESSAGE);
 					}
 				};
-				VaadinUtils.showConfirmDialog(getMessageService(), message("ocs.delete.confirm", 
-						getItemToDelete()), r);
+				VaadinUtils.showConfirmDialog(getMessageService(), message("ocs.delete.confirm", getItemToDelete()), r);
 			});
 		}
 
@@ -103,6 +99,11 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	private FormOptions formOptions;
 
 	/**
+	 * The width of the title caption above the form (in pixels)
+	 */
+	private Integer formTitleWidth;
+
+	/**
 	 * The service used for retrieving data
 	 */
 	private BaseService<ID, T> service;
@@ -111,13 +112,6 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	 * The list of buttons to update after an entity is selected
 	 */
 	private List<Button> toUpdate = new ArrayList<>();
-
-	/**
-	 * The width of the title caption above the form (in pixels)
-	 */
-	private Integer formTitleWidth;
-
-	private boolean confirmed;
 
 	/**
 	 * Constructor
@@ -229,6 +223,10 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 		return formOptions;
 	}
 
+	public Integer getFormTitleWidth() {
+		return formTitleWidth;
+	}
+
 	public BaseService<ID, T> getService() {
 		return service;
 	}
@@ -267,37 +265,12 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 		fieldEntityModels.remove(path);
 	}
 
-	public void setService(BaseService<ID, T> service) {
-		this.service = service;
-	}
-
-	public Integer getFormTitleWidth() {
-		return formTitleWidth;
-	}
-
 	public void setFormTitleWidth(Integer formTitleWidth) {
 		this.formTitleWidth = formTitleWidth;
 	}
 
-	/**
-	 * Show a confirm dialog
-	 * 
-	 * @param question
-	 * @return
-	 */
-	public boolean confirm(String question) {
-		confirmed = false;
-		if (UI.getCurrent() != null) {
-			ConfirmDialog.show(UI.getCurrent(), getMessageService().getMessage("ocs.confirm", getLocale()), question,
-					getMessageService().getMessage("ocs.yes", getLocale()),
-					getMessageService().getMessage("ocs.no", getLocale()), dialog -> {
-						if (dialog.isConfirmed()) {
-							confirmed = true;
-						}
-					});
-		} else {
-			return true;
-		}
-		return confirmed;
+	public void setService(BaseService<ID, T> service) {
+		this.service = service;
 	}
+
 }

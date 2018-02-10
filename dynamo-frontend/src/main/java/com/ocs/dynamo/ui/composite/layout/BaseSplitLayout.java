@@ -14,6 +14,7 @@
 package com.ocs.dynamo.ui.composite.layout;
 
 import java.io.Serializable;
+import java.util.function.Consumer;
 
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
@@ -55,6 +56,9 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 
 	// the add button
 	private Button addButton;
+
+	// custom code to execute instead of the normal save method
+	private Consumer<T> customSaveConsumer;
 
 	// default split position (width of first component in percent)
 	private Integer defaultSplitPosition;
@@ -355,6 +359,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 
 			};
 
+			editForm.setCustomSaveConsumer(customSaveConsumer);
 			editForm.setFormTitleWidth(getFormTitleWidth());
 			editForm.setDetailJoins(getDetailJoinsFallBack());
 			editForm.setFieldEntityModels(getFieldEntityModels());
@@ -382,6 +387,10 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 		getService().delete(getSelectedItem());
 	}
 
+	public void doSave() {
+		this.editForm.doSave();
+	}
+
 	/**
 	 * Clears the detail view
 	 */
@@ -394,6 +403,10 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 
 	public Button getAddButton() {
 		return addButton;
+	}
+
+	public Consumer<T> getCustomSaveConsumer() {
+		return customSaveConsumer;
 	}
 
 	public Integer getDefaultSplitPosition() {
@@ -505,6 +518,10 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 		getTableWrapper().getTable().select(t == null ? null : t.getId());
 	}
 
+	public void setCustomSaveConsumer(Consumer<T> customSaveConsumer) {
+		this.customSaveConsumer = customSaveConsumer;
+	}
+
 	public void setDefaultSplitPosition(Integer defaultSplitPosition) {
 		this.defaultSplitPosition = defaultSplitPosition;
 	}
@@ -522,5 +539,4 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 			editForm.setViewMode(viewMode);
 		}
 	}
-
 }
