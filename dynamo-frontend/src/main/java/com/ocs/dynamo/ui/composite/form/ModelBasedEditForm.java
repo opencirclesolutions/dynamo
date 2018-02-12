@@ -42,6 +42,7 @@ import com.ocs.dynamo.domain.model.EditableType;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.impl.ModelBasedFieldFactory;
 import com.ocs.dynamo.exception.OCSRuntimeException;
+import com.ocs.dynamo.exception.OCSValidationException;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.Refreshable;
 import com.ocs.dynamo.ui.component.Cascadable;
@@ -1126,10 +1127,27 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 				// validate all fields
 				boolean error = validateAllFields();
 				if (!error) {
-					if (customSaveConsumer != null) {
-						customSaveConsumer.accept(entity);
+					if (getFormOptions().isConfirmSave() && entity.getId() == null) {
+						// ask for confirmation before saving
+
+						service.validate(entity);
+						VaadinUtils.showConfirmDialog(getMessageService(),
+								getMessageService().getMessage("ocs.confirm.save", VaadinUtils.getLocale(), 
+										getEntityModel().getDisplayName()), () -> {
+									try {
+										doSave();
+									} catch (RuntimeException ex) {
+										if (!handleCustomException(ex)) {
+											handleSaveException(ex);
+										}
+									}
+								});
 					} else {
-						doSave();
+						if (customSaveConsumer != null) {
+							customSaveConsumer.accept(entity);
+						} else {
+							doSave();
+						}
 					}
 				}
 			} catch (RuntimeException ex) {

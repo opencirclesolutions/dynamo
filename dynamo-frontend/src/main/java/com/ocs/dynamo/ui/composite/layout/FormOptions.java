@@ -44,6 +44,11 @@ public class FormOptions implements Serializable {
 	private boolean confirmClear;
 
 	/**
+	 * Whether to ask for confirmation before saving
+	 */
+	private boolean confirmSave;
+
+	/**
 	 * Whether to hide the add button
 	 */
 	private boolean hideAddButton;
@@ -187,6 +192,7 @@ public class FormOptions implements Serializable {
 		fo.setTableExportAllowed(isTableExportAllowed());
 		fo.setFormNested(isFormNested());
 		fo.setValidationMode(getValidationMode());
+		fo.setConfirmSave(isConfirmSave());
 		return fo;
 	}
 
@@ -445,6 +451,15 @@ public class FormOptions implements Serializable {
 
 	public FormOptions setValidationMode(ValidationMode validationMode) {
 		this.validationMode = validationMode;
+		return this;
+	}
+
+	public boolean isConfirmSave() {
+		return confirmSave;
+	}
+
+	public FormOptions setConfirmSave(boolean confirmSave) {
+		this.confirmSave = confirmSave;
 		return this;
 	}
 
