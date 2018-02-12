@@ -218,7 +218,6 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 			main.addComponent(editForm);
 
 			postProcessLayout(main);
-
 			setCompositionRoot(main);
 
 			afterEntitySelected(editForm, getEntity());
