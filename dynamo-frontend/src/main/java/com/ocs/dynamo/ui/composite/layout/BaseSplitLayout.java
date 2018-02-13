@@ -322,6 +322,11 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 				}
 
 				@Override
+				protected void afterTabSelected(int tabIndex) {
+					BaseSplitLayout.this.afterTabSelected(tabIndex);
+				}
+
+				@Override
 				protected Field<?> constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel,
 						boolean viewMode) {
 					return BaseSplitLayout.this.constructCustomField(entityModel, attributeModel, viewMode, false);

@@ -401,6 +401,11 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 			protected void afterModeChanged(boolean viewMode) {
 				AbstractSearchLayout.this.afterModeChanged(viewMode, editForm);
 			}
+			
+			@Override
+			protected void afterTabSelected(int tabIndex) {
+				AbstractSearchLayout.this.afterTabSelected(tabIndex);
+			}
 
 			@Override
 			protected void back() {

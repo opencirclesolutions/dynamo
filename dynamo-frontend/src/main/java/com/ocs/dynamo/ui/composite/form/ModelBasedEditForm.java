@@ -42,7 +42,6 @@ import com.ocs.dynamo.domain.model.EditableType;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.impl.ModelBasedFieldFactory;
 import com.ocs.dynamo.exception.OCSRuntimeException;
-import com.ocs.dynamo.exception.OCSValidationException;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.Refreshable;
 import com.ocs.dynamo.ui.component.Cascadable;
@@ -319,6 +318,9 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 	private Map<Boolean, Set<String>> alreadyBound = new HashMap<>();
 
+	/**
+	 * Map from tab index to the first field on each tab
+	 */
 	private Map<Integer, Field<?>> firstFields = new HashMap<>();
 
 	private ReceivesSignal receiver;
@@ -462,6 +464,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			if (tabSheets.get(isViewMode()) != null && tabSheets.get(isViewMode()).getTab(c) != null) {
 				int index = VaadinUtils.getTabIndex(tabSheets.get(isViewMode()),
 						tabSheets.get(isViewMode()).getTab(c).getCaption());
+				afterTabSelected(index);
 				if (firstFields.get(index) != null) {
 					firstFields.get(index).focus();
 				}
@@ -508,6 +511,15 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	 * mode
 	 */
 	protected void afterModeChanged(boolean viewMode) {
+		// overwrite in subclasses
+	}
+
+	/**
+	 * Callback method that is called after a tab has been selected
+	 * 
+	 * @param tabIndex the zero-based index of the selected tab
+	 */
+	protected void afterTabSelected(int tabIndex) {
 		// overwrite in subclasses
 	}
 
@@ -1131,9 +1143,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 						// ask for confirmation before saving
 
 						service.validate(entity);
-						VaadinUtils.showConfirmDialog(getMessageService(),
-								getMessageService().getMessage("ocs.confirm.save", VaadinUtils.getLocale(), 
-										getEntityModel().getDisplayName()), () -> {
+						VaadinUtils.showConfirmDialog(getMessageService(), getMessageService().getMessage(
+								"ocs.confirm.save", VaadinUtils.getLocale(), getEntityModel().getDisplayName()), () -> {
 									try {
 										doSave();
 									} catch (RuntimeException ex) {

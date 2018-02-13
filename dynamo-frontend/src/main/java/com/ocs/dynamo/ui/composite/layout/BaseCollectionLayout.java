@@ -142,6 +142,16 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
         // override in subclass
     }
 
+	/**
+	 * Callback method that is called after a tab has been selected
+	 * 
+	 * @param tabIndex
+	 *            the zero-based index of the selected tab
+	 */
+	protected void afterTabSelected(int tabIndex) {
+		// overwrite in subclasses
+	}
+    
     /**
      * Removes all sort orders
      */
