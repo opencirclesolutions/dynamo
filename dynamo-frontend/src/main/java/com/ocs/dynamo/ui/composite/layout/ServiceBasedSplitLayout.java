@@ -195,6 +195,7 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
 	public void reload() {
 		buildFilter();
 		super.reload();
+		refresh();
 		getTableWrapper().setFilter(filter);
 	}
 
