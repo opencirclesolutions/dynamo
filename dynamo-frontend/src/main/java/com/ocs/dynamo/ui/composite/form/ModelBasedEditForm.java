@@ -517,7 +517,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	/**
 	 * Callback method that is called after a tab has been selected
 	 * 
-	 * @param tabIndex the zero-based index of the selected tab
+	 * @param tabIndex
+	 *            the zero-based index of the selected tab
 	 */
 	protected void afterTabSelected(int tabIndex) {
 		// overwrite in subclasses
@@ -1612,6 +1613,15 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		if (tabSheets.get(isViewMode()) != null) {
 			tabSheets.get(isViewMode()).setSelectedTab(index);
 		}
+	}
+
+	public int getSelectedTabIndex() {
+		if (tabSheets.get(isViewMode()) != null) {
+			Component c = tabSheets.get(isViewMode()).getSelectedTab();
+			return VaadinUtils.getTabIndex(tabSheets.get(isViewMode()),
+					tabSheets.get(isViewMode()).getTab(c).getCaption());
+		}
+		return 0;
 	}
 
 	/**
