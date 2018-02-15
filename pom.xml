@@ -672,29 +672,30 @@
 							WEB-INF/classes/VAADIN/widgetsets/WEB-INF/**</packagingExcludes>
 					</configuration>
 				</plugin>
-				<plugin>
-					<groupId>com.vaadin</groupId>
-					<artifactId>vaadin-maven-plugin</artifactId>
-					<version>${vaadin.plugin.version}</version>
-					<configuration>
-						<extraJvmArgs>-Xmx512M -Xss1024k</extraJvmArgs>
-						<webappDirectory>${project.basedir}/target/classes/VAADIN/widgetsets</webappDirectory>
-						<hostedWebapp>${project.basedir}/target/classes/VAADIN/widgetsets</hostedWebapp>
-						<compileReport>false</compileReport>
-						<draftCompile>false</draftCompile>
-						<style>OBF</style>
-						<strict>true</strict>
-					</configuration>
-					<executions>
-						<execution>
-							<goals>
-								<goal>update-widgetset</goal>
-								<goal>update-theme</goal>
-								<goal>compile</goal>
-							</goals>
-						</execution>
-					</executions>
-				</plugin>
+				<!--<plugin>-->
+				<!--<groupId>com.vaadin</groupId>-->
+				<!--<artifactId>vaadin-maven-plugin</artifactId>-->
+				<!--<version>${vaadin.plugin.version}</version>-->
+				<!--<configuration>-->
+				<!--<extraJvmArgs>-Xmx512M -Xss1024k</extraJvmArgs>-->
+				<!--<webappDirectory>src/main/webapp/VAADIN/widgetsets</webappDirectory>-->
+				<!--<hostedWebapp>${project.basedir}/target/classes/VAADIN/widgetsets</hostedWebapp>-->
+				<!--<compileReport>false</compileReport>-->
+				<!--<draftCompile>false</draftCompile>-->
+				<!--<style>OBF</style>-->
+				<!--<strict>true</strict>-->
+				<!--</configuration>-->
+				<!--<executions>-->
+				<!--<execution>-->
+				<!--<goals>-->
+				<!--<goal>update-widgetset</goal>-->
+				<!--<goal>update-theme</goal>-->
+				<!--<goal>compile</goal>-->
+				<!--<goal>compile-theme</goal>-->
+				<!--</goals>-->
+				<!--</execution>-->
+				<!--</executions>-->
+				<!--</plugin>-->
 				<plugin>
 					<groupId>de.jutzig</groupId>
 					<artifactId>github-release-plugin</artifactId>
