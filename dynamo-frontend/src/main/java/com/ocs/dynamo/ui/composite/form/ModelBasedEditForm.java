@@ -1639,6 +1639,18 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		setGroupVisible(c, visible);
 	}
 
+	public CollapsiblePanel getAttributeGroupPanel(String key) {
+		Object c = attributeGroups.get(isViewMode()).get(key);
+		if (c instanceof CollapsiblePanel) {
+			return (CollapsiblePanel) c;
+		}
+		return null;
+	}
+
+	public void putAttributeGroupPanel(String key, Component c) {
+		attributeGroups.get(isViewMode()).put(key, c);
+	}
+
 	/**
 	 * Shows or hides the component for a certain property - this will work
 	 * regardless of the view
