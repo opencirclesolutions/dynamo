@@ -218,10 +218,10 @@
 						</manifestEntries>
 					</archive>
 					<!-- Exclude useless rubbish from JAR (saves 20MB) -->
-					<excludes>
+					<!--<excludes>
 						<exclude>VAADIN/gwt-unitCache/**</exclude>
-						<exclude>VAADIN/widgetsets/WEB-INF/**</exclude>
-					</excludes>
+						&lt;!&ndash;<exclude>VAADIN/widgetsets/WEB-INF/**</exclude>&ndash;&gt;
+					</excludes>-->
 				</configuration>
 			</plugin>
 			<plugin>

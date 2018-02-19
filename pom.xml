@@ -680,8 +680,9 @@
 					<version>${vaadin.plugin.version}</version>
 					<configuration>
 						<extraJvmArgs>-Xmx512M -Xss1024k</extraJvmArgs>
-						<webappDirectory>${project.basedir}/target/classes/VAADIN/widgetsets</webappDirectory>
-						<hostedWebapp>${project.basedir}/target/classes/VAADIN/widgetsets</hostedWebapp>
+						<!--<webappDirectory>${project.basedir}/target/classes/VAADIN/widgetsets</webappDirectory>-->
+						 <webappDirectory>${project.basedir}/src/main/resources/VAADIN/widgetsets</webappDirectory>
+						<hostedWebapp>${project.basedir}/src/main/resources/VAADIN/widgetsets</hostedWebapp>
 						<compileReport>false</compileReport>
 						<draftCompile>false</draftCompile>
 						<style>OBF</style>
@@ -690,8 +691,8 @@
 					<executions>
 						<execution>
 							<goals>
-								<goal>update-widgetset</goal>
-								<goal>update-theme</goal>
+								<goal>resources</goal>
+								<!--<goal>update-theme</goal>-->
 								<goal>compile</goal>
 							</goals>
 						</execution>
