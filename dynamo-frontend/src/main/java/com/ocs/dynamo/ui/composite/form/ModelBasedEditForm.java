@@ -433,8 +433,13 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 						constructLabel(parent, entityModel, attributeModel, tabIndex, sameRow);
 					}
 				} else {
-					// otherwise display a label
-					constructLabel(parent, entityModel, attributeModel, tabIndex, sameRow);
+					Field<?> f = constructCustomField(entityModel, attributeModel, viewMode);
+					if (f != null) {
+						constructField(parent, entityModel, attributeModel, true, tabIndex, sameRow);
+					} else {
+						// otherwise display a label
+						constructLabel(parent, entityModel, attributeModel, tabIndex, sameRow);
+					}
 				}
 			} else {
 				// display an editable field
