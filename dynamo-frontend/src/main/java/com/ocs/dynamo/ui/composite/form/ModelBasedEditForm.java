@@ -434,7 +434,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 					}
 				} else {
 					Field<?> f = constructCustomField(entityModel, attributeModel, viewMode);
-					if (f != null) {
+					if (f instanceof UseInViewMode) {
 						constructField(parent, entityModel, attributeModel, true, tabIndex, sameRow);
 					} else {
 						// otherwise display a label
