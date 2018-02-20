@@ -88,7 +88,7 @@ public final class FormatUtils {
 	 * @return
 	 */
 	public static String formatEntityCollection(EntityModelFactory entityModelFactory, AttributeModel attributeModel,
-			Object collection) {
+			Object collection, String separator) {
 		List<String> result = new ArrayList<>();
 		Iterable<?> col = (Iterable<?>) collection;
 		for (Object next : col) {
@@ -107,7 +107,7 @@ public final class FormatUtils {
 				result.add(next.toString());
 			}
 		}
-		return result.stream().collect(Collectors.joining(", "));
+		return result.stream().collect(Collectors.joining(separator + " "));
 	}
 
 	/**
@@ -124,7 +124,7 @@ public final class FormatUtils {
 	 */
 	public static String formatEntityCollection(EntityModelFactory entityModelFactory, AttributeModel attributeModel,
 			Property<?> property) {
-		return formatEntityCollection(entityModelFactory, attributeModel, property.getValue());
+		return formatEntityCollection(entityModelFactory, attributeModel, property.getValue(), ", ");
 	}
 
 	/**
@@ -253,7 +253,7 @@ public final class FormatUtils {
 					return msg;
 				}
 			} else if (value instanceof Iterable) {
-				String result = formatEntityCollection(entityModelFactory, model, value);
+				String result = formatEntityCollection(entityModelFactory, model, value, ",");
 				return table == null ? result : restrictToMaxLength(result, model);
 			} else if (AbstractEntity.class.isAssignableFrom(model.getType())) {
 				EntityModel<?> detailEntityModel = model.getNestedEntityModel();

@@ -126,7 +126,7 @@ public class FormatUtilsTest extends BaseMockitoTest {
 		Entity3 e3 = new Entity3();
 		e3.setEntities(Sets.newHashSet(t1, t2, t3));
 
-		String result = FormatUtils.formatEntityCollection(factory, null, e3.getEntities());
+		String result = FormatUtils.formatEntityCollection(factory, null, e3.getEntities(), ",");
 		Assert.assertEquals("a1, a2, a3", result);
 	}
 
@@ -140,7 +140,7 @@ public class FormatUtilsTest extends BaseMockitoTest {
 		e.setDecimals(Sets.newHashSet(BigDecimal.valueOf(5), BigDecimal.valueOf(6)));
 
 		String result = FormatUtils.formatEntityCollection(factory,
-				factory.getModel(Entity4.class).getAttributeModel("decimals"), e.getDecimals());
+				factory.getModel(Entity4.class).getAttributeModel("decimals"), e.getDecimals(), ",");
 		Assert.assertTrue(result.contains("5,00"));
 		Assert.assertTrue(result.contains("6,00"));
 	}
@@ -156,7 +156,8 @@ public class FormatUtilsTest extends BaseMockitoTest {
 		e.setDecimalPercentages(Sets.newHashSet(BigDecimal.valueOf(5), BigDecimal.valueOf(6)));
 
 		String result = FormatUtils.formatEntityCollection(factory,
-				factory.getModel(Entity4.class).getAttributeModel("decimalPercentages"), e.getDecimalPercentages());
+				factory.getModel(Entity4.class).getAttributeModel("decimalPercentages"), e.getDecimalPercentages(),
+				",");
 		Assert.assertTrue(result.contains("5,00%"));
 		Assert.assertTrue(result.contains("6,00%"));
 	}
