@@ -114,7 +114,7 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 	protected void afterLayoutBuilt(Layout layout, boolean viewMode) {
 		// override in subclass
 	}
-	
+
 	/**
 	 * Callback method that is called after a tab has been selected
 	 * 
@@ -171,6 +171,11 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 				}
 
 				@Override
+				protected void afterEntitySet(T entity) {
+					SimpleEditLayout.this.afterEntitySet(entity);
+				}
+
+				@Override
 				protected void afterEditDone(boolean cancel, boolean newObject, T entity) {
 					setEntity(entity);
 					SimpleEditLayout.this.afterEditDone(cancel, newObject, entity);
@@ -185,7 +190,7 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 				protected void afterTabSelected(int tabIndex) {
 					SimpleEditLayout.this.afterTabSelected(tabIndex);
 				}
-				
+
 				@Override
 				protected void back() {
 					SimpleEditLayout.this.back();
@@ -408,6 +413,10 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 
 	public void doSave() {
 		this.editForm.doSave();
+	}
+	
+	public void afterEntitySet(T entity) {
+		// overwrite in entity 
 	}
 
 }
