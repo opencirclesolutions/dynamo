@@ -45,6 +45,7 @@ import com.vaadin.server.Page;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Field;
+import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.Tab;
@@ -643,5 +644,12 @@ public final class VaadinUtils {
 				}
 			}
 		}
+	}
+
+	public static FormLayout wrapInFormLayout(Component c) {
+		FormLayout fl = new FormLayout();
+		fl.setMargin(false);
+		fl.addComponent(c);
+		return fl;
 	}
 }
