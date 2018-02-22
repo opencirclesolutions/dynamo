@@ -38,6 +38,7 @@ import com.ocs.dynamo.ui.utils.FormatUtils;
 import com.vaadin.data.Container;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.sort.SortOrder;
+import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Field;
@@ -298,6 +299,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 		tabContainerLayout.addComponent(buttonBar);
 
 		Button backButton = new Button(message("ocs.back"));
+		backButton.setIcon(FontAwesome.BACKWARD);
 		backButton.addClickListener(e -> searchMode());
 		buttonBar.addComponent(backButton);
 
@@ -487,6 +489,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	protected final Button constructEditButton() {
 		Button eb = new Button(
 				(!getFormOptions().isEditAllowed() || !isEditAllowed()) ? message("ocs.view") : message("ocs.edit"));
+		eb.setIcon(FontAwesome.PENCIL);
 		eb.addClickListener(e -> {
 			if (getSelectedItem() != null) {
 				doEdit();
@@ -543,6 +546,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 			}
 
 		};
+		rb.setIcon(FontAwesome.TRASH);
 		rb.setVisible(isEditAllowed() && getFormOptions().isShowRemoveButton());
 		return rb;
 	}

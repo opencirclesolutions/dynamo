@@ -37,6 +37,7 @@ import com.vaadin.data.util.filter.Or;
 import com.vaadin.event.Action;
 import com.vaadin.event.Action.Handler;
 import com.vaadin.event.ShortcutAction;
+import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Field;
@@ -262,6 +263,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	 */
 	protected Button constructClearButton() {
 		clearButton = new Button(message("ocs.clear"));
+		clearButton.setIcon(FontAwesome.ERASER);
 		clearButton.setImmediate(true);
 		clearButton.addClickListener(this);
 		clearButton.setVisible(!getFormOptions().isHideClearButton());
@@ -296,6 +298,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	 */
 	protected Button constructSearchButton() {
 		searchButton = new Button(message("ocs.search"));
+		searchButton.setIcon(FontAwesome.SEARCH);
 		searchButton.setImmediate(true);
 		searchButton.addClickListener(this);
 		return searchButton;
@@ -308,6 +311,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	 */
 	protected Button constructToggleButton() {
 		toggleButton = new Button(message("ocs.hide"));
+		toggleButton.setIcon(FontAwesome.ARROWS_V);
 		toggleButton.addClickListener(this);
 		toggleButton.setVisible(getFormOptions().isShowToggleButton());
 		return toggleButton;
@@ -315,6 +319,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 
 	protected Button constructSearchAnyButton() {
 		searchAnyButton = new Button(message("ocs.search.any"));
+		searchAnyButton.setIcon(FontAwesome.SEARCH);
 		searchAnyButton.setVisible(getFormOptions().isShowSearchAnyButton());
 		searchAnyButton.addClickListener(this);
 		return searchAnyButton;

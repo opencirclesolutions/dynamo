@@ -41,6 +41,7 @@ import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.data.sort.SortOrder;
 import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.server.FontAwesome;
 import com.vaadin.server.UserError;
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.Button;
@@ -230,6 +231,7 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 	 */
 	protected void constructAddButton(Layout buttonBar) {
 		addButton = new Button(messageService.getMessage("ocs.add", VaadinUtils.getLocale()));
+		addButton.setIcon(FontAwesome.PLUS);
 		addButton.addClickListener(event -> {
 			T t = createEntity();
 			container.addBean(t);
@@ -284,6 +286,7 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 	protected void constructSearchButton(Layout buttonBar) {
 
 		searchDialogButton = new Button(messageService.getMessage("ocs.search", VaadinUtils.getLocale()));
+		searchDialogButton.setIcon(FontAwesome.SEARCH);
 		searchDialogButton.setDescription(messageService.getMessage("ocs.search.description", VaadinUtils.getLocale()));
 		searchDialogButton.addClickListener(event -> {
 
@@ -405,6 +408,7 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 			final String removeMsg = messageService.getMessage("ocs.detail.remove", VaadinUtils.getLocale());
 			table.addGeneratedColumn(removeMsg, (ColumnGenerator) (source, itemId, columnId) -> {
 				Button remove = new Button(removeMsg);
+				remove.setIcon(FontAwesome.TRASH);
 				remove.addClickListener(event -> {
 					container.removeItem(itemId);
 					items.remove(itemId);

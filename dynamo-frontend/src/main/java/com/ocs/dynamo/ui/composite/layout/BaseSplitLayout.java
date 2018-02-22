@@ -26,6 +26,7 @@ import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
 import com.ocs.dynamo.ui.composite.type.ScreenMode;
 import com.ocs.dynamo.ui.utils.FormatUtils;
 import com.vaadin.data.sort.SortOrder;
+import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Field;
@@ -259,6 +260,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 				return FormatUtils.formatEntity(getEntityModel(), t);
 			}
 		};
+		rb.setIcon(FontAwesome.TRASH);
 		rb.setVisible(getFormOptions().isShowRemoveButton() && isEditAllowed());
 		return rb;
 	}

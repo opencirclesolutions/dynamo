@@ -13,6 +13,13 @@
  */
 package com.ocs.dynamo.ui.composite.form;
 
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Objects;
+import java.util.Set;
+
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
@@ -29,6 +36,7 @@ import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.data.validator.IntegerRangeValidator;
 import com.vaadin.data.validator.LongRangeValidator;
 import com.vaadin.data.validator.StringLengthValidator;
+import com.vaadin.server.FontAwesome;
 import com.vaadin.server.UserError;
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.Button;
@@ -40,13 +48,6 @@ import com.vaadin.ui.Layout;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
-
-import java.io.Serializable;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Objects;
-import java.util.Set;
 
 /**
  * A component for editing a property that is annotated as an @ElementCollection
@@ -130,6 +131,7 @@ public class CollectionTable<T extends Serializable> extends CustomField<Collect
 	 */
 	protected void constructAddButton(final Layout buttonBar) {
 		addButton = new Button(messageService.getMessage("ocs.add", VaadinUtils.getLocale()));
+		addButton.setIcon(FontAwesome.PLUS);
 		addButton.addClickListener(event -> {
 			// add a new item then set the validity to false (since an empty
 			// item is never allowed)
@@ -168,6 +170,7 @@ public class CollectionTable<T extends Serializable> extends CustomField<Collect
 			final String removeMsg = messageService.getMessage("ocs.detail.remove", VaadinUtils.getLocale());
 			table.addGeneratedColumn(removeMsg, (source, itemId, columnId) -> {
 				final Button remove = new Button(removeMsg);
+				remove.setIcon(FontAwesome.TRASH);
 				remove.addClickListener(event -> {
 					table.removeItem(itemId);
 					setValue(extractValues());

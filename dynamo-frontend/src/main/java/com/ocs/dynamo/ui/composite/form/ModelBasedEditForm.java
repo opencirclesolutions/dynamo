@@ -64,6 +64,7 @@ import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.filter.Compare;
+import com.vaadin.server.FontAwesome;
 import com.vaadin.server.StreamResource;
 import com.vaadin.server.UserError;
 import com.vaadin.shared.ui.label.ContentMode;
@@ -813,6 +814,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 		// button to go back to the main screen when in view mode
 		Button backButton = new Button(message("ocs.back"));
+		backButton.setIcon(FontAwesome.BACKWARD);
 		backButton.addClickListener(event -> back());
 		backButton.setVisible(isViewMode() && getFormOptions().isShowBackButton());
 		backButton.setData(BACK_BUTTON_DATA);
@@ -821,6 +823,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 		// in edit mode, display a cancel button
 		Button cancelButton = new Button(message("ocs.cancel"));
+		cancelButton.setData(CANCEL_BUTTON_DATA);
 		cancelButton.addClickListener(event -> {
 			if (entity.getId() != null) {
 				entity = service.fetchById(entity.getId(), getDetailJoins());
@@ -829,7 +832,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		});
 		cancelButton.setVisible((!isViewMode() && !getFormOptions().isHideCancelButton())
 				|| (getFormOptions().isFormNested() && entity.getId() == null));
-		cancelButton.setData(CANCEL_BUTTON_DATA);
+		cancelButton.setIcon(FontAwesome.BAN);
 		buttonBar.addComponent(cancelButton);
 		buttons.get(isViewMode()).add(cancelButton);
 
@@ -842,6 +845,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 		// create the edit button
 		Button editButton = new Button(message("ocs.edit"));
+		editButton.setIcon(FontAwesome.PENCIL);
 		editButton.addClickListener(event -> setViewMode(false));
 		buttonBar.addComponent(editButton);
 		buttons.get(isViewMode()).add(editButton);
@@ -850,6 +854,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 		// button for moving to the previous record
 		Button prevButton = new Button(message("ocs.previous"));
+		prevButton.setIcon(FontAwesome.ARROW_LEFT);
 		prevButton.addClickListener(e -> {
 			T prev = getPrevEntity(getEntity());
 			if (prev != null) {
@@ -864,6 +869,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 		// button for moving to the next record
 		Button nextButton = new Button(message("ocs.next"));
+		nextButton.setIcon(FontAwesome.ARROW_RIGHT);
 		nextButton.addClickListener(e -> {
 			T next = getNextEntity(getEntity());
 			if (next != null) {
@@ -1139,6 +1145,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	private Button constructSaveButton(boolean bottom) {
 		Button saveButton = new Button(
 				(entity != null && entity.getId() != null) ? message("ocs.save.existing") : message("ocs.save.new"));
+		saveButton.setIcon(FontAwesome.SAVE);
 		saveButton.addClickListener(event -> {
 			try {
 
