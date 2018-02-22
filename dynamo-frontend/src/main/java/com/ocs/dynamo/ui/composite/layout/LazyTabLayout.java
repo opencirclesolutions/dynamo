@@ -80,8 +80,8 @@ public abstract class LazyTabLayout<ID extends Serializable, T extends AbstractE
 	}
 
 	/**
-	 * Callback method that is called before a tab is reloaded - use this to
-	 * make sure the correct data is available in the tab
+	 * Callback method that is called before a tab is reloaded - use this to make
+	 * sure the correct data is available in the tab
 	 * 
 	 * @param index
 	 *            the index of the selected tab
@@ -117,8 +117,8 @@ public abstract class LazyTabLayout<ID extends Serializable, T extends AbstractE
 	}
 
 	/**
-	 * Constructs the title of the page. If this method returns null then no
-	 * title will be displayed
+	 * Constructs the title of the page. If this method returns null then no title
+	 * will be displayed
 	 * 
 	 * @return
 	 */

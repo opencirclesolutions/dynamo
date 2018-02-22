@@ -298,5 +298,5 @@ public final class FormatUtils {
 		}
 		return input;
 	}
-
 }
+

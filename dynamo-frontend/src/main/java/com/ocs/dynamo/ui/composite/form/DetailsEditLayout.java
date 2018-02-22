@@ -33,6 +33,7 @@ import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.util.ValidationMode;
 import com.vaadin.data.Container.Filter;
+import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
@@ -87,13 +88,13 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 				}
 
 				deleteButton = new Button(messageService.getMessage("ocs.remove", VaadinUtils.getLocale()));
+				deleteButton.setIcon(FontAwesome.TRASH);
 				deleteButton.addClickListener(event -> {
 					removeEntity(this.form.getEntity());
 					items.remove(this.form.getEntity());
 					mainFormContainer.removeComponent(this);
 					forms.remove(this);
 					detailComponentsValid.remove(form);
-					// boolean allValid = isAllValid();
 					receiver.signalDetailsComponentValid(DetailsEditLayout.this, isAllValid());
 				});
 				buttonBar.addComponent(deleteButton);
@@ -342,6 +343,7 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 	 */
 	protected void constructAddButton(Layout buttonBar) {
 		addButton = new Button(messageService.getMessage("ocs.add", VaadinUtils.getLocale()));
+		addButton.setIcon(FontAwesome.PLUS);
 		addButton.addClickListener(event -> {
 			T t = createEntity();
 			items.add(t);

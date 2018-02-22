@@ -154,3 +154,4 @@ public abstract class BaseCustomComponent extends CustomComponent implements Bui
 		}
 	}
 }
+
