@@ -646,6 +646,12 @@ public final class VaadinUtils {
 		}
 	}
 
+	/**
+	 * Wraps the provided component inside a form layout
+	 * 
+	 * @param c
+	 * @return
+	 */
 	public static FormLayout wrapInFormLayout(Component c) {
 		FormLayout fl = new FormLayout();
 		fl.setMargin(false);
