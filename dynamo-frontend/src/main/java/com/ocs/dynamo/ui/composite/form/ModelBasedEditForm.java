@@ -31,6 +31,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
+import org.vaadin.teemu.switchui.Switch;
 
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.dao.FetchJoinInformation;
@@ -987,12 +988,15 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		}
 
 		if (field != null) {
-			Integer fieldWidth = SystemPropertyUtils.getDefaultFieldWidth();
-			if (fieldWidth == null || sameRow || field instanceof DetailsEditLayout
-					|| !attributeModel.getGroupTogetherWith().isEmpty()) {
-				field.setSizeFull();
-			} else {
-				field.setWidth(fieldWidth + "px");
+			// set explicit field width
+			if (!(field instanceof Switch)) {
+				Integer fieldWidth = SystemPropertyUtils.getDefaultFieldWidth();
+				if (fieldWidth == null || sameRow || field instanceof DetailsEditLayout
+						|| !attributeModel.getGroupTogetherWith().isEmpty()) {
+					field.setSizeFull();
+				} else {
+					field.setWidth(fieldWidth + "px");
+				}
 			}
 
 			groups.get(viewMode).bind(field, attributeModel.getName());

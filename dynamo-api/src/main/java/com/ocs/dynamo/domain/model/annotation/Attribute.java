@@ -21,6 +21,7 @@ import java.lang.annotation.Target;
 import com.ocs.dynamo.domain.model.AttributeDateType;
 import com.ocs.dynamo.domain.model.AttributeSelectMode;
 import com.ocs.dynamo.domain.model.AttributeTextFieldMode;
+import com.ocs.dynamo.domain.model.CheckboxMode;
 import com.ocs.dynamo.domain.model.EditableType;
 import com.ocs.dynamo.domain.model.NumberSelectMode;
 import com.ocs.dynamo.domain.model.VisibilityType;
@@ -42,6 +43,12 @@ public @interface Attribute {
 	 * @return the properties to cascade to when the value of this property changes
 	 **/
 	Cascade[] cascade() default {};
+
+	/**
+	 * 
+	 * @return the desired check box mode
+	 */
+	CheckboxMode checkboxMode() default CheckboxMode.CHECKBOX;
 
 	/** @return whether a complex attribute is directly editable */
 	boolean complexEditable() default false;

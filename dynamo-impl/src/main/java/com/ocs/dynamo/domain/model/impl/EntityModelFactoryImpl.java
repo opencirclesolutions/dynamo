@@ -1033,7 +1033,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 			if (attribute.expansionFactor() > 1.0f) {
 				model.setExpansionFactor(attribute.expansionFactor());
 			}
-
+			
+			model.setCheckboxMode(attribute.checkboxMode());
 			model.setNavigable(attribute.navigable());
 		}
 	}
