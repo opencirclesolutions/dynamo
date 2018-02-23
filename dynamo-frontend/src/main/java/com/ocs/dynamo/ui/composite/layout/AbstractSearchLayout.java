@@ -39,6 +39,7 @@ import com.vaadin.data.Container;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.sort.SortOrder;
 import com.vaadin.server.FontAwesome;
+import com.vaadin.server.Resource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Field;
@@ -352,6 +353,11 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 			}
 
 			@Override
+			protected Resource getIconForTab(int index) {
+				return AbstractSearchLayout.this.getIconForTab(index);
+			}	
+
+			@Override
 			protected Component initTab(int index) {
 				return AbstractSearchLayout.this.initTab(getEntity(), index, formOptions, false);
 			}
@@ -403,7 +409,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 			protected void afterModeChanged(boolean viewMode) {
 				AbstractSearchLayout.this.afterModeChanged(viewMode, editForm);
 			}
-			
+
 			@Override
 			protected void afterTabSelected(int tabIndex) {
 				AbstractSearchLayout.this.afterTabSelected(tabIndex);
@@ -817,6 +823,11 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 		return mainSearchLayout;
 	}
 
+	protected Resource getIconForTab(int index) {
+		// overwrite
+		return null;
+	}
+	
 	/**
 	 * Returns the next entity in the container
 	 * 

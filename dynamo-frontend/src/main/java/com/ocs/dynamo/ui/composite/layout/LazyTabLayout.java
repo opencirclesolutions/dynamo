@@ -23,6 +23,8 @@ import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.ui.CanAssignEntity;
 import com.ocs.dynamo.ui.Reloadable;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
+import com.vaadin.client.debug.internal.Icon;
+import com.vaadin.server.Resource;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.Panel;
@@ -220,6 +222,13 @@ public abstract class LazyTabLayout<ID extends Serializable, T extends AbstractE
 	 */
 	protected abstract Component initTab(int index);
 
+	/**
+	 * 
+	 * @param index
+	 * @return
+	 */
+	protected abstract Resource getIconForTab(int index);
+
 	@Override
 	public void reload() {
 		initOrReload(tabs.getSelectedTab());
@@ -249,6 +258,7 @@ public abstract class LazyTabLayout<ID extends Serializable, T extends AbstractE
 		int i = 0;
 		for (String caption : getTabCaptions()) {
 			Tab t = tabs.addTab(new DefaultVerticalLayout(false, false), caption);
+			t.setIcon(getIconForTab(i));
 			t.setDescription(getTabDescription(i++));
 		}
 
