@@ -193,4 +193,5 @@ public class QuickAddEntityComboBox<ID extends Serializable, T extends AbstractE
 			comboBox.setComponentError(componentError);
 		}
 	}
+
 }
