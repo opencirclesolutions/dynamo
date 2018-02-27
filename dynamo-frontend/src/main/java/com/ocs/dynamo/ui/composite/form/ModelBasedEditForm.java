@@ -40,6 +40,7 @@ import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.impl.ModelBasedFieldFactory;
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.service.BaseService;
+import com.ocs.dynamo.ui.CanAssignEntity;
 import com.ocs.dynamo.ui.Refreshable;
 import com.ocs.dynamo.ui.component.Cascadable;
 import com.ocs.dynamo.ui.component.DefaultEmbedded;
@@ -327,6 +328,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	 * Whether to display the component in view mode
 	 */
 	private boolean viewMode;
+
+	private List<CanAssignEntity<ID, T>> assignEntityToFields = new ArrayList<>();
 
 	/**
 	 * Constructor
@@ -948,6 +951,10 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		if (!isViewMode() && firstFields.get(tabIndex) == null && field.isEnabled() && !(field instanceof CheckBox)) {
 			firstFields.put(tabIndex, field);
 		}
+
+		if (field instanceof CanAssignEntity) {
+			assignEntityToFields.add((CanAssignEntity<ID, T>) field);
+		}
 	}
 
 	/**
@@ -1467,6 +1474,12 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 	private void setEntity(T entity, boolean checkIterationButtons) {
 		this.entity = entity;
+
+		// Inform all childs
+		for (CanAssignEntity<ID, T> field : assignEntityToFields) {
+			field.assignEntity(entity);
+		}
+
 		afterEntitySet(this.entity);
 
 		setViewMode(getFormOptions().isOpenInViewMode() && entity.getId() != null, checkIterationButtons);

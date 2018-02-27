@@ -20,6 +20,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,6 +30,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.reflect.FieldUtils;
 import org.apache.commons.lang.reflect.MethodUtils;
 import org.apache.log4j.Logger;
+import org.springframework.core.MethodParameter;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.util.Assert;
@@ -437,6 +439,42 @@ public final class ClassUtils {
 		Field field = getField(type, fieldName);
 		if (field != null) {
 			ResolvableType rt = ResolvableType.forField(field);
+			if (rt != null) {
+				if (indexes != null && indexes.length > 0) {
+					rt = rt.getGeneric(indexes);
+				}
+				if (rt != null) {
+					return rt.resolve();
+				}
+
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Return a Class<?> representing the generic parameter for the given indexes. Indexes are zero based; for example
+	 * given the type Map<Integer, List<String>>, getGeneric(0) will access the Integer. Nested generics can be accessed
+	 * by specifying multiple indexes; for example getGeneric(1, 0) will access the String from the nested List. For
+	 * convenience, if no indexes are specified the first generic is returned.
+	 * 
+	 * @param method
+	 *            or method parameter or type
+	 * @param indexes
+	 * @return
+	 */
+	public static <T> Class<?> getResolvedType(Object object, int... indexes) {
+		if (object != null) {
+			ResolvableType rt = null;
+			if (object instanceof Method) {
+				rt = ResolvableType.forMethodReturnType((Method) object);
+			} else if (object instanceof MethodParameter) {
+				rt = ResolvableType.forMethodParameter((MethodParameter) object);
+			} else if (object instanceof Type) {
+				rt = ResolvableType.forType((Type) object);
+			} else if (object instanceof Class) {
+				rt = ResolvableType.forRawClass((Class<?>) object);
+			}
 			if (rt != null) {
 				if (indexes != null && indexes.length > 0) {
 					rt = rt.getGeneric(indexes);

@@ -34,7 +34,7 @@ public abstract class DomainChild<C extends DomainChild<C, P>, P extends DomainP
 	private static final long serialVersionUID = 2615942460028599211L;
 
 	@NotNull
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY, targetEntity = DomainParent.class)
 	@JoinColumn(name = "parent")
 	private P parent;
 
