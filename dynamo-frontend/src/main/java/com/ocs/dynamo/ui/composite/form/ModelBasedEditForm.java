@@ -991,6 +991,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			// set explicit field width
 			if (!(field instanceof Switch)) {
 				Integer fieldWidth = SystemPropertyUtils.getDefaultFieldWidth();
+
 				if (fieldWidth == null || sameRow || field instanceof DetailsEditLayout
 						|| !attributeModel.getGroupTogetherWith().isEmpty()) {
 					field.setSizeFull();
@@ -1005,7 +1006,13 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 				// multiple fields behind each other
 				HorizontalLayout horizontal = constructRowLayout(attributeModel, attributeModel.isRequired(),
 						!(field instanceof CheckBox));
-				horizontal.setSizeFull();
+
+				Integer fieldWidth = SystemPropertyUtils.getDefaultFieldWidth();
+				if (fieldWidth == null || nestedMode) {
+					horizontal.setSizeFull();
+				} else {
+					horizontal.setWidth(fieldWidth + "px");
+				}
 				parent.addComponent(horizontal);
 
 				// add the first field (without caption, unless it's a checkbox)
