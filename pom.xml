@@ -83,6 +83,7 @@
 		<module>dynamo-integration-import</module>
 		<module>dynamo-frontend</module>
 		<module>dynamo-functional-domain</module>
+		<module>dynamo-functional-translation</module>
 		<module>dynamo-jasperreports</module>
 		<module>dynamo-jasperreports-fixes</module>
 		<module>dynamo-archetype</module>
