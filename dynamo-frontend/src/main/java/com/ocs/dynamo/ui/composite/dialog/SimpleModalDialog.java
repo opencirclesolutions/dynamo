@@ -49,7 +49,10 @@ public abstract class SimpleModalDialog extends BaseModalDialog {
 	protected void doBuildButtonBar(HorizontalLayout buttonBar) {
 		cancelButton = new Button(messageService.getMessage("ocs.cancel", VaadinUtils.getLocale()));
 		cancelButton.setIcon(FontAwesome.BAN);
-		cancelButton.addClickListener((Button.ClickListener) event -> SimpleModalDialog.this.close());
+		cancelButton.addClickListener((Button.ClickListener) event -> {
+			doCancel();
+			SimpleModalDialog.this.close();
+		});
 		cancelButton.setVisible(showCancelButton);
 		buttonBar.addComponent(cancelButton);
 
@@ -70,6 +73,13 @@ public abstract class SimpleModalDialog extends BaseModalDialog {
 	protected boolean doClose() {
 		// overwrite in subclass
 		return true;
+	}
+	
+	/**
+	 * 
+	 */
+	protected void doCancel() {
+		// overwrite in subclass
 	}
 
 	public Button getCancelButton() {
