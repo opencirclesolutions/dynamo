@@ -33,6 +33,7 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.UI;
 
 /**
  * Base class for custom components - contains convenience methods for getting
@@ -129,9 +130,19 @@ public abstract class BaseCustomComponent extends CustomComponent implements Bui
 	}
 
 	/**
-	 * Shows a notification message - this method will check for the
-	 * availability of a Vaadin Page object and if this is not present, write
-	 * the notification to the log instead
+	 * Navigates to the specified view
+	 * 
+	 * @param view
+	 *            the ID of the view
+	 */
+	protected void navigate(String view) {
+		UI.getCurrent().getNavigator().navigateTo(view);
+	}
+
+	/**
+	 * Shows a notification message - this method will check for the availability of
+	 * a Vaadin Page object and if this is not present, write the notification to
+	 * the log instead
 	 * 
 	 * @param message
 	 *            the message
@@ -154,4 +165,3 @@ public abstract class BaseCustomComponent extends CustomComponent implements Bui
 		}
 	}
 }
-
