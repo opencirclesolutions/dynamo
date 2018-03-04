@@ -33,6 +33,7 @@ import com.ocs.dynamo.utils.StringUtils;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.sort.SortOrder;
 import com.vaadin.server.ErrorMessage;
+import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
@@ -190,6 +191,7 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 
 		// button for selecting an entity - brings up the search dialog
 		selectButton = new Button(getMessageService().getMessage("ocs.select", VaadinUtils.getLocale()));
+		selectButton.setIcon(FontAwesome.SEARCH);
 		selectButton.addClickListener(event -> {
 			List<Filter> filterList = new ArrayList<>();
 			if (getFilter() != null) {
@@ -235,6 +237,7 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 
 		// button for clearing the current selection
 		clearButton = new Button(getMessageService().getMessage("ocs.clear", VaadinUtils.getLocale()));
+		clearButton.setIcon(FontAwesome.ERASER);
 		clearButton.addClickListener(event -> setValue(null));
 		bar.addComponent(clearButton);
 
