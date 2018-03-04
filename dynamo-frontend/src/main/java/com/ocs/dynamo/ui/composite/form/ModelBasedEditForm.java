@@ -218,8 +218,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			if (stream != null && stream.toByteArray().length > 0) {
 				String extension = FilenameUtils.getExtension(event.getFilename());
 
-				if (supportedExtensions == null || supportedExtensions.length == 0
-						|| (extension != null && Arrays.asList(supportedExtensions).contains(extension))) {
+				if (supportedExtensions == null || supportedExtensions.length == 0 || (extension != null
+						&& Arrays.asList(supportedExtensions).contains(extension.toLowerCase()))) {
 
 					// set the image source
 					if (target != null) {

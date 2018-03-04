@@ -34,6 +34,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.stream.Collectors;
 
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
@@ -898,7 +899,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 			}
 
 			if (attribute.allowedExtensions() != null && attribute.allowedExtensions().length > 0) {
-				Set<String> set = Sets.newHashSet(attribute.allowedExtensions());
+				Set<String> set = Arrays.stream(attribute.allowedExtensions()).map(x -> x.toLowerCase())
+						.collect(Collectors.toSet());
 				model.setAllowedExtensions(set);
 			}
 
@@ -1033,7 +1035,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 			if (attribute.expansionFactor() > 1.0f) {
 				model.setExpansionFactor(attribute.expansionFactor());
 			}
-			
+
 			model.setCheckboxMode(attribute.checkboxMode());
 			model.setNavigable(attribute.navigable());
 		}
@@ -1345,7 +1347,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 		if (msg != null && !StringUtils.isEmpty(msg)) {
 			model.setSearchForExactValue(Boolean.valueOf(msg));
 		}
-		
+
 		msg = getAttributeMessage(entityModel, model, EntityModel.NAVIGABLE);
 		if (msg != null && !StringUtils.isEmpty(msg)) {
 			model.setNavigable(Boolean.valueOf(msg));
