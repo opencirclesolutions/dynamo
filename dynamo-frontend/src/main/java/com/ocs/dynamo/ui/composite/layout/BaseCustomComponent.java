@@ -23,6 +23,7 @@ import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.exception.OCSValidationException;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
+import com.ocs.dynamo.ui.BaseUI;
 import com.ocs.dynamo.ui.Buildable;
 import com.ocs.dynamo.ui.utils.FormatUtils;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
@@ -135,8 +136,9 @@ public abstract class BaseCustomComponent extends CustomComponent implements Bui
 	 * @param view
 	 *            the ID of the view
 	 */
-	protected void navigate(String view) {
-		UI.getCurrent().getNavigator().navigateTo(view);
+	protected void navigate(String viewName) {
+		BaseUI ui = (BaseUI) UI.getCurrent();
+		ui.navigate(viewName);
 	}
 
 	/**
