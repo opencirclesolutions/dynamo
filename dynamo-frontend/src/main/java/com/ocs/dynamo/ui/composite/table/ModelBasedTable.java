@@ -257,7 +257,8 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
 	 */
 	@Override
 	protected String formatPropertyValue(Object rowId, Object colId, Property<?> property) {
-		String result = FormatUtils.formatPropertyValue(this, entityModelFactory, entityModel, rowId, colId, property);
+		String result = FormatUtils.formatPropertyValue(this, entityModelFactory, entityModel, rowId, colId, property,
+				", ");
 		if (result != null) {
 			return result;
 		}

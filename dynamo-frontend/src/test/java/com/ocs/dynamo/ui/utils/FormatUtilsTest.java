@@ -43,51 +43,51 @@ public class FormatUtilsTest extends BaseMockitoTest {
 
 		// simple string
 		Assert.assertEquals("Bob",
-				FormatUtils.formatPropertyValue(null, factory, model.getAttributeModel("name"), "Bob", LOCALE));
+				FormatUtils.formatPropertyValue(null, factory, model.getAttributeModel("name"), "Bob", LOCALE, ", "));
 
 		// boolean (without overrides)
-		Assert.assertEquals("true",
-				FormatUtils.formatPropertyValue(null, factory, model.getAttributeModel("someBoolean"), true, LOCALE));
-		Assert.assertEquals("false",
-				FormatUtils.formatPropertyValue(null, factory, model.getAttributeModel("someBoolean"), false, LOCALE));
+		Assert.assertEquals("true", FormatUtils.formatPropertyValue(null, factory,
+				model.getAttributeModel("someBoolean"), true, LOCALE, ", "));
+		Assert.assertEquals("false", FormatUtils.formatPropertyValue(null, factory,
+				model.getAttributeModel("someBoolean"), false, LOCALE, ", "));
 
 		// boolean (with overrides)
-		Assert.assertEquals("On",
-				FormatUtils.formatPropertyValue(null, factory, model.getAttributeModel("someBoolean2"), true, LOCALE));
-		Assert.assertEquals("Off",
-				FormatUtils.formatPropertyValue(null, factory, model.getAttributeModel("someBoolean2"), false, LOCALE));
+		Assert.assertEquals("On", FormatUtils.formatPropertyValue(null, factory,
+				model.getAttributeModel("someBoolean2"), true, LOCALE, ", "));
+		Assert.assertEquals("Off", FormatUtils.formatPropertyValue(null, factory,
+				model.getAttributeModel("someBoolean2"), false, LOCALE, ", "));
 
 		// enumeration
 		Assert.assertEquals("Value A", FormatUtils.formatPropertyValue(null, factory,
-				model.getAttributeModel("someEnum"), TestEnum.A, LOCALE));
+				model.getAttributeModel("someEnum"), TestEnum.A, LOCALE, ", "));
 
 		// BigDecimal
 		Assert.assertEquals("12,40", FormatUtils.formatPropertyValue(null, factory, model.getAttributeModel("discount"),
-				BigDecimal.valueOf(12.4), LOCALE));
+				BigDecimal.valueOf(12.4), LOCALE, ", "));
 		Assert.assertEquals("1.042,40", FormatUtils.formatPropertyValue(null, factory,
-				model.getAttributeModel("discount"), BigDecimal.valueOf(1042.4), LOCALE));
+				model.getAttributeModel("discount"), BigDecimal.valueOf(1042.4), LOCALE, ", "));
 		Assert.assertEquals("1.042,40%", FormatUtils.formatPropertyValue(null, factory, model.getAttributeModel("rate"),
-				BigDecimal.valueOf(1042.4), LOCALE));
+				BigDecimal.valueOf(1042.4), LOCALE, ", "));
 
 		// US formatting (reverse separators)
 		Assert.assertEquals("1,000.40", FormatUtils.formatPropertyValue(null, factory,
-				model.getAttributeModel("discount"), BigDecimal.valueOf(1000.4), Locale.US));
+				model.getAttributeModel("discount"), BigDecimal.valueOf(1000.4), Locale.US, ", "));
 
 		// date
 		Assert.assertEquals("12/10/2015", FormatUtils.formatPropertyValue(null, factory,
-				model.getAttributeModel("birthDate"), DateUtils.createDate("12102015"), LOCALE));
+				model.getAttributeModel("birthDate"), DateUtils.createDate("12102015"), LOCALE, ", "));
 
 		// date (as week)
 		Assert.assertEquals("2015-42", FormatUtils.formatPropertyValue(null, factory,
-				model.getAttributeModel("birthWeek"), DateUtils.createDate("12102015"), LOCALE));
+				model.getAttributeModel("birthWeek"), DateUtils.createDate("12102015"), LOCALE, ", "));
 
 		// integer (with grouping)
 		Assert.assertEquals("1.234",
-				FormatUtils.formatPropertyValue(null, factory, model.getAttributeModel("someInt"), 1234, LOCALE));
+				FormatUtils.formatPropertyValue(null, factory, model.getAttributeModel("someInt"), 1234, LOCALE, ", "));
 
 		// long
 		Assert.assertEquals("1.234",
-				FormatUtils.formatPropertyValue(null, factory, model.getAttributeModel("age"), 1234L, LOCALE));
+				FormatUtils.formatPropertyValue(null, factory, model.getAttributeModel("age"), 1234L, LOCALE, ", "));
 	}
 
 	@Test
@@ -104,7 +104,8 @@ public class FormatUtilsTest extends BaseMockitoTest {
 		e2.setSize(2);
 		e2.setEntity1(e1);
 
-		String result = FormatUtils.formatPropertyValue(null, factory, model.getAttributeModel("entity1"), e1, LOCALE);
+		String result = FormatUtils.formatPropertyValue(null, factory, model.getAttributeModel("entity1"), e1, LOCALE,
+				", ");
 		Assert.assertEquals("some name", result);
 	}
 

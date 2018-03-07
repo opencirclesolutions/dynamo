@@ -125,4 +125,3 @@ public abstract class AddNewValueDialog<ID extends Serializable, T extends Abstr
 		return messageService.getMessage("ocs.enter.new.value", VaadinUtils.getLocale());
 	}
 }
-

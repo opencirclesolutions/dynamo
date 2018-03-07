@@ -329,7 +329,7 @@ public abstract class BaseExportTemplate<ID extends Serializable, T extends Abst
 			}
 		} else if (am != null) {
 			// use the attribute model
-			String str = FormatUtils.formatPropertyValue(entityModelFactory, am, value);
+			String str = FormatUtils.formatPropertyValue(entityModelFactory, am, value, ", ");
 			cell.setCellValue(str);
 		}
 	}

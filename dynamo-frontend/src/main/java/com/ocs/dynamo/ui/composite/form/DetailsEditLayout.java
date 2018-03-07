@@ -34,6 +34,7 @@ import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.util.ValidationMode;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.server.FontAwesome;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
@@ -146,6 +147,8 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 
 	private boolean onSameLine;
 
+	private boolean alignRight;
+
 	/**
 	 * The button that can be used to add rows to the table
 	 */
@@ -238,7 +241,7 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 	 */
 	public DetailsEditLayout(BaseService<ID, T> service, Collection<T> items, EntityModel<T> entityModel,
 			AttributeModel attributeModel, boolean viewMode, FormOptions formOptions, Comparator<T> comparator,
-			boolean onSameLine) {
+			boolean onSameLine, boolean alignRight) {
 		this.service = service;
 		this.entityModel = entityModel;
 		this.attributeModel = attributeModel;
@@ -249,6 +252,7 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 		this.onSameLine = onSameLine;
 		this.viewMode = viewMode;
 		this.formOptions = formOptions;
+		this.alignRight = alignRight;
 	}
 
 	/**
@@ -341,7 +345,7 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 	 * @param buttonBar
 	 *            the button bar
 	 */
-	protected void constructAddButton(Layout buttonBar) {
+	protected void constructAddButton(HorizontalLayout buttonBar) {
 		addButton = new Button(messageService.getMessage("ocs.add", VaadinUtils.getLocale()));
 		addButton.setIcon(FontAwesome.PLUS);
 		addButton.addClickListener(event -> {
@@ -353,8 +357,14 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 				receiver.signalDetailsComponentValid(this, isAllValid());
 			}
 		});
+
 		addButton.setVisible(!viewMode && !formOptions.isHideAddButton());
 		buttonBar.addComponent(addButton);
+
+		if (alignRight) {
+			addButton.setSizeUndefined();
+			buttonBar.setComponentAlignment(addButton, Alignment.MIDDLE_RIGHT);
+		}
 	}
 
 	/**
@@ -364,7 +374,11 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 	 *            the layout to which to add the button bar
 	 */
 	protected void constructButtonBar(Layout parent) {
-		Layout buttonBar = new DefaultHorizontalLayout();
+		HorizontalLayout buttonBar = new DefaultHorizontalLayout();
+
+		if (alignRight) {
+			buttonBar.setSizeFull();
+		}
 		buttonBar.setVisible(!viewMode);
 		parent.addComponent(buttonBar);
 

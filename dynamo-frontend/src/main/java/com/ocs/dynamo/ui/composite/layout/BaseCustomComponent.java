@@ -30,6 +30,7 @@ import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.utils.ClassUtils;
 import com.vaadin.server.Page;
 import com.vaadin.shared.Position;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.Label;
@@ -60,10 +61,11 @@ public abstract class BaseCustomComponent extends CustomComponent implements Bui
 	 * @return
 	 */
 	protected Component constructLabel(Object entity, AttributeModel attributeModel) {
-		Label fieldLabel = new Label();
+		Label fieldLabel = new Label("", ContentMode.HTML);
 		fieldLabel.setCaption(attributeModel.getDisplayName());
 		Object value = ClassUtils.getFieldValue(entity, attributeModel.getName());
-		String formatted = FormatUtils.formatPropertyValue(getEntityModelFactory(), attributeModel, value);
+		String formatted = FormatUtils.formatPropertyValue(getEntityModelFactory(), attributeModel, value, 
+				"<br/>");
 		fieldLabel.setValue(formatted);
 		return fieldLabel;
 	}
