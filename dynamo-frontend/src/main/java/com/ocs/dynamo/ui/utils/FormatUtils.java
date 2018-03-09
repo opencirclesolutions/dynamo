@@ -107,7 +107,7 @@ public final class FormatUtils {
 				result.add(next.toString());
 			}
 		}
-		return result.stream().collect(Collectors.joining(separator + " "));
+		return result.stream().collect(Collectors.joining(separator));
 	}
 
 	/**
