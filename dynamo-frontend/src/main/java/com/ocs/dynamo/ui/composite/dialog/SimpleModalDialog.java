@@ -93,4 +93,17 @@ public abstract class SimpleModalDialog extends BaseModalDialog {
 	protected String message(String key) {
 		return messageService.getMessage(key, VaadinUtils.getLocale());
 	}
+	
+	/**
+	 * Retrieves a message based on its key
+	 * 
+	 * @param key
+	 *            the key of the message
+	 * @param args
+	 *            any arguments to pass to the message
+	 * @return
+	 */
+	protected String message(String key, Object... args) {
+		return messageService.getMessage(key, VaadinUtils.getLocale(), args);
+	}
 }
