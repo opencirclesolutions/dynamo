@@ -130,7 +130,7 @@ public class BaseCustomComponentTest extends BaseMockitoTest {
 
 		// entity collection
 		label = (Label) component.constructLabel(e, model.getAttributeModel("testEntities"));
-		Assert.assertEquals("Bob<br/> Stuart", label.getValue());
+		Assert.assertEquals("Bob<br/>Stuart", label.getValue());
 
 		// boolean
 		label = (Label) component.constructLabel(e, model.getAttributeModel("someBoolean"));

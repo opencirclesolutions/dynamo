@@ -13,7 +13,6 @@
  */
 package com.ocs.dynamo.util;
 
-
 import com.ocs.dynamo.constants.DynamoConstants;
 
 /**
@@ -46,9 +45,9 @@ public final class SystemPropertyUtils {
 	}
 
 	/**
-	 * The default caption format
 	 * 
-	 * @return
+	 * 
+	 * @return the default caption format
 	 */
 	public static String getDefaultCaptionFormat() {
 		return System.getProperty(DynamoConstants.SP_DEFAULT_CAPTION_FORMAT,
@@ -56,9 +55,10 @@ public final class SystemPropertyUtils {
 	}
 
 	/**
-	 * The default currency symbol
 	 * 
-	 * @return
+	 * 
+	 * @return the default currency symbol to use for decimale fields that display a
+	 *         currency
 	 */
 	public static String getDefaultCurrencySymbol() {
 		return System.getProperty(DynamoConstants.SP_DEFAULT_CURRENCY_SYMBOL, "€");
@@ -109,10 +109,18 @@ public final class SystemPropertyUtils {
 	}
 
 	/**
-	 * @return default false representation
+	 * @return the default false representation
 	 */
 	public static String getDefaultFalseRepresentation() {
 		return System.getProperty(DynamoConstants.SP_DEFAULT_FALSE_REPRESENTATION, DEFAULT_FALSE_REPRESENTATION);
+	}
+
+	/**
+	 * 
+	 * @return the default field width of edit fields within a form
+	 */
+	public static Integer getDefaultFieldWidth() {
+		return Integer.getInteger(DynamoConstants.SP_DEFAULT_FIELD_WIDTH);
 	}
 
 	/**
@@ -134,11 +142,8 @@ public final class SystemPropertyUtils {
 	}
 
 	/**
-	 * The default locale - this is used mainly for number formatting. We use the
-	 * German locale here since this ensure the use of the comma as the decimal
-	 * separator
 	 * 
-	 * @return
+	 * @return the default locale used for e.g. the decimal and thousands separators
 	 */
 	public static String getDefaultLocale() {
 		return System.getProperty(DynamoConstants.SP_DEFAULT_LOCALE, DynamoConstants.DEFAULT_LOCALE.toString());
@@ -173,6 +178,16 @@ public final class SystemPropertyUtils {
 	 */
 	public static String getDefaultTrueRepresentation() {
 		return System.getProperty(DynamoConstants.SP_DEFAULT_TRUE_REPRESENTATION, DEFAULT_TRUE_REPRESENTATION);
+	}
+
+	/**
+	 * Returns the default validation mode
+	 * 
+	 * @return
+	 */
+	public static ValidationMode getDefaultValidationMode() {
+		return ValidationMode
+				.valueOf(System.getProperty(DynamoConstants.SP_DEFAULT_VALIDATION_MODE, "VALIDATE_DIRECTLY"));
 	}
 
 	/**
@@ -226,6 +241,15 @@ public final class SystemPropertyUtils {
 	}
 
 	/**
+	 * 
+	 * @return
+	 */
+	public static String getServiceLocatorClassName() {
+		return System.getProperty(DynamoConstants.SP_SERVICE_LOCATOR_CLASS_NAME,
+				"com.ocs.dynamo.ui.SpringWebServiceLocator");
+	}
+
+	/**
 	 * Whether to capitalize every word in a property name
 	 * 
 	 * @return
@@ -250,32 +274,6 @@ public final class SystemPropertyUtils {
 	 */
 	public static boolean useThousandsGroupingInEditMode() {
 		return Boolean.getBoolean(DynamoConstants.SP_THOUSAND_GROUPING);
-	}
-
-	/**
-	 * 
-	 * @return
-	 */
-	public static String getServiceLocatorClassName() {
-		return System.getProperty(DynamoConstants.SP_SERVICE_LOCATOR_CLASS_NAME,
-				"com.ocs.dynamo.ui.SpringWebServiceLocator");
-	}
-
-	/**
-	 * 
-	 * @return
-	 */
-	public static Integer getDefaultFieldWidth() {
-		return Integer.getInteger(DynamoConstants.SP_DEFAULT_FIELD_WIDTH);
-	}
-
-	/**
-	 * Returns the default validation mode
-	 * 
-	 * @return
-	 */
-	public static ValidationMode getDefaultValidationMode() {
-		return ValidationMode.valueOf(System.getProperty(DynamoConstants.SP_DEFAULT_VALIDATION_MODE, "VALIDATE_DIRECTLY"));
 	}
 
 	private SystemPropertyUtils() {

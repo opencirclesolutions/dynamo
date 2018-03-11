@@ -161,6 +161,10 @@ public class FormOptions implements Serializable {
 	 */
 	private boolean complexDetailsMode = false;
 
+	/**
+	 * Whether this form is nested in another form. Used by the framework, usually no need
+	 * to set this yourself
+	 */
 	private boolean formNested;
 
 	private ValidationMode validationMode = SystemPropertyUtils.getDefaultValidationMode();

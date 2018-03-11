@@ -65,6 +65,7 @@ import com.ocs.dynamo.domain.model.AttributeSelectMode;
 import com.ocs.dynamo.domain.model.AttributeTextFieldMode;
 import com.ocs.dynamo.domain.model.AttributeType;
 import com.ocs.dynamo.domain.model.CascadeMode;
+import com.ocs.dynamo.domain.model.CheckboxMode;
 import com.ocs.dynamo.domain.model.EditableType;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
@@ -1294,63 +1295,68 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 		}
 
 		msg = getAttributeMessage(entityModel, model, EntityModel.TEXTFIELD_MODE);
-		if (msg != null && !StringUtils.isEmpty(msg)) {
+		if (!StringUtils.isEmpty(msg)) {
 			model.setTextFieldMode(AttributeTextFieldMode.valueOf(msg));
 		}
 
 		msg = getAttributeMessage(entityModel, model, EntityModel.MIN_LENGTH);
-		if (msg != null && !StringUtils.isEmpty(msg)) {
+		if (!StringUtils.isEmpty(msg)) {
 			model.setMinLength(Integer.parseInt(msg));
 		}
 
 		msg = getAttributeMessage(entityModel, model, EntityModel.MIN_VALUE);
-		if (msg != null && !StringUtils.isEmpty(msg)) {
+		if (!StringUtils.isEmpty(msg)) {
 			model.setMinValue(Long.parseLong(msg));
 		}
 
 		msg = getAttributeMessage(entityModel, model, EntityModel.MAX_LENGTH);
-		if (msg != null && !StringUtils.isEmpty(msg)) {
+		if (!StringUtils.isEmpty(msg)) {
 			model.setMaxLength(Integer.parseInt(msg));
 		}
 
 		msg = getAttributeMessage(entityModel, model, EntityModel.MAX_LENGTH_IN_TABLE);
-		if (msg != null && !StringUtils.isEmpty(msg)) {
+		if (!StringUtils.isEmpty(msg)) {
 			model.setMaxLengthInTable(Integer.parseInt(msg));
 		}
 
 		msg = getAttributeMessage(entityModel, model, EntityModel.MAX_VALUE);
-		if (msg != null && !StringUtils.isEmpty(msg)) {
+		if (!StringUtils.isEmpty(msg)) {
 			model.setMaxValue(Long.parseLong(msg));
 		}
 
 		msg = getAttributeMessage(entityModel, model, EntityModel.URL);
-		if (msg != null && !StringUtils.isEmpty(msg)) {
+		if (!StringUtils.isEmpty(msg)) {
 			model.setUrl(Boolean.valueOf(msg));
 		}
 
 		msg = getAttributeMessage(entityModel, model, EntityModel.REPLACEMENT_SEARCH_PATH);
-		if (msg != null && !StringUtils.isEmpty(msg)) {
+		if (!StringUtils.isEmpty(msg)) {
 			model.setReplacementSearchPath(msg);
 		}
 
 		msg = getAttributeMessage(entityModel, model, EntityModel.QUICK_ADD_PROPERTY);
-		if (msg != null && !StringUtils.isEmpty(msg)) {
+		if (!StringUtils.isEmpty(msg)) {
 			model.setQuickAddPropertyName(msg);
 		}
 
 		msg = getAttributeMessage(entityModel, model, EntityModel.THOUSANDS_GROUPING);
-		if (msg != null && !StringUtils.isEmpty(msg)) {
+		if (!StringUtils.isEmpty(msg)) {
 			model.setUseThousandsGrouping(Boolean.valueOf(msg));
 		}
 
 		msg = getAttributeMessage(entityModel, model, EntityModel.SEARCH_EXACT_VALUE);
-		if (msg != null && !StringUtils.isEmpty(msg)) {
+		if (!StringUtils.isEmpty(msg)) {
 			model.setSearchForExactValue(Boolean.valueOf(msg));
 		}
 
 		msg = getAttributeMessage(entityModel, model, EntityModel.NAVIGABLE);
-		if (msg != null && !StringUtils.isEmpty(msg)) {
+		if (!StringUtils.isEmpty(msg)) {
 			model.setNavigable(Boolean.valueOf(msg));
+		}
+
+		msg = getAttributeMessage(entityModel, model, EntityModel.CHECKBOX_MODE);
+		if (!StringUtils.isEmpty(msg)) {
+			model.setCheckboxMode(CheckboxMode.valueOf(msg));
 		}
 
 		setMessageBundleCascadeOverrides(entityModel, model);

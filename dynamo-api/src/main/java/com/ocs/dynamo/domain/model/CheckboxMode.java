@@ -13,6 +13,12 @@
  */
 package com.ocs.dynamo.domain.model;
 
+/**
+ * Checkbox mode for boolean properties
+ * 
+ * @author Bas Rutten
+ *
+ */
 public enum CheckboxMode {
 
 	CHECKBOX, SWITCH;

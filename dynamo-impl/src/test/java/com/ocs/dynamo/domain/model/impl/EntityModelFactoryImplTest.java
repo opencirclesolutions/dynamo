@@ -51,6 +51,7 @@ import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.AttributeSelectMode;
 import com.ocs.dynamo.domain.model.AttributeType;
 import com.ocs.dynamo.domain.model.CascadeMode;
+import com.ocs.dynamo.domain.model.CheckboxMode;
 import com.ocs.dynamo.domain.model.EditableType;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.VisibilityType;
@@ -142,6 +143,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		AttributeModel boolModel = model.getAttributeModel("bool");
 		Assert.assertEquals("Yes", boolModel.getTrueRepresentation());
 		Assert.assertEquals("No", boolModel.getFalseRepresentation());
+		Assert.assertEquals(CheckboxMode.SWITCH, boolModel.getCheckboxMode());
 
 		AttributeModel mailModel = model.getAttributeModel("email");
 		Assert.assertTrue(mailModel.isEmail());
@@ -619,7 +621,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		@Temporal(TemporalType.DATE)
 		private Date birthDate;
 
-		@Attribute(trueRepresentation = "Yes", falseRepresentation = "No")
+		@Attribute(trueRepresentation = "Yes", falseRepresentation = "No", checkboxMode = CheckboxMode.SWITCH)
 		private Boolean bool;
 
 		@Email

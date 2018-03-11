@@ -46,12 +46,6 @@ public interface EntityModel<T> {
 	String ATTRIBUTE_ORDER = "attributeOrder";
 
 	/**
-	 * Whether the attribute (of type MASTER, DETAIL or ELEMENT_TABLE) can be edited
-	 * in an edit form
-	 */
-	String COMPLEX_EDITABLE = "complexEditable";
-
-	/**
 	 * Cascade attribute
 	 */
 	String CASCADE = "cascade";
@@ -70,6 +64,17 @@ public interface EntityModel<T> {
 	 * Cascade mode (when to apply cascading - search, edit, or both)
 	 */
 	String CASCADE_MODE = "cascadeMode";
+	
+	/**
+	 * The "checkbox mode" for a boolean (either a checkbox or a toggle)
+	 */
+	String CHECKBOX_MODE = "checkboxMode";
+	
+	/**
+	 * Whether the attribute (of type MASTER, DETAIL or ELEMENT_TABLE) can be edited
+	 * in an edit form
+	 */
+	String COMPLEX_EDITABLE = "complexEditable";
 
 	/**
 	 * Whether an amount represents a currency

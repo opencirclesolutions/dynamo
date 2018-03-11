@@ -136,7 +136,7 @@ public final class StringUtils {
 	}
 
 	/**
-	 * Converts a propertyId to a
+	 * Converts a propertyId to a human friendly form
 	 * 
 	 * @param propertyId
 	 *            the ID of the property

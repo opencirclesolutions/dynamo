@@ -355,7 +355,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 			@Override
 			protected Resource getIconForTab(int index) {
 				return AbstractSearchLayout.this.getIconForTab(index);
-			}	
+			}
 
 			@Override
 			protected Component initTab(int index) {
@@ -674,6 +674,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 		options.setPlaceButtonBarAtTop(getFormOptions().isPlaceButtonBarAtTop());
 		options.setFormNested(true);
 		options.setValidationMode(getFormOptions().getValidationMode());
+		options.setConfirmSave(getFormOptions().isConfirmSave());
 
 		// set the form options for the detail form
 		if (getFormOptions().isEditAllowed()) {
@@ -827,7 +828,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 		// overwrite
 		return null;
 	}
-	
+
 	/**
 	 * Returns the next entity in the container
 	 * 

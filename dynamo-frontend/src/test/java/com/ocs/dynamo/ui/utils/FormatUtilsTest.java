@@ -127,7 +127,7 @@ public class FormatUtilsTest extends BaseMockitoTest {
 		Entity3 e3 = new Entity3();
 		e3.setEntities(Sets.newHashSet(t1, t2, t3));
 
-		String result = FormatUtils.formatEntityCollection(factory, null, e3.getEntities(), ",");
+		String result = FormatUtils.formatEntityCollection(factory, null, e3.getEntities(), ", ");
 		Assert.assertEquals("a1, a2, a3", result);
 	}
 

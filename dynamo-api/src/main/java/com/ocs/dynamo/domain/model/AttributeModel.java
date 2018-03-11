@@ -145,6 +145,11 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	 */
 	EntityModel<?> getEntityModel();
 
+	/**
+	 * The expansion factor for sizing components that are rendered on the same row
+	 * 
+	 * @return
+	 */
 	float getExpansionFactor();
 
 	/**
@@ -231,7 +236,8 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	/**
 	 * Returns the number select mode
 	 * 
-	 * @return the number select mode
+	 * @return the number select mode (can be used to switch between text field and
+	 *         slider)
 	 */
 	NumberSelectMode getNumberSelectMode();
 

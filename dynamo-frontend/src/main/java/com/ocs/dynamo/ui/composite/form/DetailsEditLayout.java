@@ -49,7 +49,9 @@ import com.vaadin.ui.VerticalLayout;
  * @author Bas Rutten
  *
  * @param <ID>
+ *            the type of the ID
  * @param <T>
+ *            the type of the entity that is managed in the form
  */
 public abstract class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity<ID>>
 		extends CustomField<Collection<T>> implements SignalsParent, ReceivesSignal, UseInViewMode {

@@ -1163,7 +1163,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 				// validate all fields
 				boolean error = validateAllFields();
 				if (!error) {
-					if (getFormOptions().isConfirmSave() && entity.getId() == null) {
+					if (getFormOptions().isConfirmSave()) {
 						// ask for confirmation before saving
 
 						service.validate(entity);
