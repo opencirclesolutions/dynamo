@@ -55,10 +55,10 @@ import com.vaadin.ui.Table;
 public abstract class BaseCollectionLayout<ID extends Serializable, T extends AbstractEntity<ID>>
 		extends BaseServiceCustomComponent<ID, T> implements Reloadable, Refreshable {
 
-	private static final long serialVersionUID = -2864711994829582000L;
-
 	// the default page length
 	private static final int PAGE_LENGTH = 15;
+
+	private static final long serialVersionUID = -2864711994829582000L;
 
 	// the button bar
 	private HorizontalLayout buttonBar = new DefaultHorizontalLayout();
@@ -75,11 +75,17 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	// the joins to use when fetching data
 	private FetchJoinInformation[] joins;
 
-	// the value from the previous row used when drawing divider rows
-	private Object previousDividerValue;
+	// maximum number of results returned by search
+	private Integer maxResults;
+
+	// whether the selection of multiple values is allowed
+	private boolean multiSelect = false;
 
 	// the page length (number of rows that is displayed in the table)
 	private int pageLength = PAGE_LENGTH;
+
+	// the value from the previous row used when drawing divider rows
+	private Object previousDividerValue;
 
 	// the currently selected item
 	private T selectedItem;
@@ -92,12 +98,6 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 
 	// the table wrapper
 	private BaseTableWrapper<ID, T> tableWrapper;
-
-	// whether the selection of multiple values is allowed
-	private boolean multiSelect = false;
-
-	// maximum number of results returned by search
-	private Integer maxResults;
 
 	/**
 	 * Constructor
@@ -247,20 +247,32 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 		return buttonBar;
 	}
 
+	public FetchJoinInformation[] getDetailJoins() {
+		return detailJoins;
+	}
+
+	public FetchJoinInformation[] getDetailJoinsFallBack() {
+		return (detailJoins == null || detailJoins.length == 0) ? getJoins() : detailJoins;
+	}
+
 	public String getDividerProperty() {
 		return dividerProperty;
+	}
+
+	public Map<String, Filter> getFieldFilters() {
+		return fieldFilters;
 	}
 
 	public FetchJoinInformation[] getJoins() {
 		return joins;
 	}
 
-	public int getPageLength() {
-		return pageLength;
+	public Integer getMaxResults() {
+		return maxResults;
 	}
 
-	public T getSelectedItem() {
-		return selectedItem;
+	public int getPageLength() {
+		return pageLength;
 	}
 
 	/**
@@ -291,6 +303,10 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 		return null;
 	}
 
+	public T getSelectedItem() {
+		return selectedItem;
+	}
+
 	/**
 	 * 
 	 * @return the currently configured sort orders
@@ -301,7 +317,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 
 	/**
 	 * 
-	 * @return the table wrapper
+	 * @return the table wrapper (constructed lazily)
 	 */
 	public BaseTableWrapper<ID, T> getTableWrapper() {
 		if (tableWrapper == null) {
@@ -384,8 +400,20 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 		// overwrite in subclasses when needed
 	}
 
+	public void setDetailJoins(FetchJoinInformation[] detailJoins) {
+		this.detailJoins = detailJoins;
+	}
+
 	public void setDividerProperty(String dividerProperty) {
 		this.dividerProperty = dividerProperty;
+	}
+
+	public void setFieldFilters(Map<String, Filter> fieldFilters) {
+		this.fieldFilters = fieldFilters;
+	}
+
+	public void setMaxResults(Integer maxResults) {
+		this.maxResults = maxResults;
 	}
 
 	public void setMultiSelect(boolean multiSelect) {
@@ -403,33 +431,5 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 
 	public void setSortEnabled(boolean sortEnabled) {
 		this.sortEnabled = sortEnabled;
-	}
-
-	public FetchJoinInformation[] getDetailJoins() {
-		return detailJoins;
-	}
-
-	public void setDetailJoins(FetchJoinInformation[] detailJoins) {
-		this.detailJoins = detailJoins;
-	}
-
-	public Map<String, Filter> getFieldFilters() {
-		return fieldFilters;
-	}
-
-	public void setFieldFilters(Map<String, Filter> fieldFilters) {
-		this.fieldFilters = fieldFilters;
-	}
-
-	public FetchJoinInformation[] getDetailJoinsFallBack() {
-		return (detailJoins == null || detailJoins.length == 0) ? getJoins() : detailJoins;
-	}
-
-	public Integer getMaxResults() {
-		return maxResults;
-	}
-
-	public void setMaxResults(Integer maxResults) {
-		this.maxResults = maxResults;
 	}
 }

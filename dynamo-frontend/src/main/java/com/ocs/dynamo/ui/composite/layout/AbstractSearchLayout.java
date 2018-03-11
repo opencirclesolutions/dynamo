@@ -947,6 +947,11 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 		return getSearchForm().isFilterSet(path);
 	}
 
+	/**
+	 * Checks whether the layout is currently in search mode
+	 * 
+	 * @return
+	 */
 	public boolean isInSearchMode() {
 		return ObjectUtils.equals(getCompositionRoot(), mainSearchLayout);
 	}
@@ -971,7 +976,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	}
 
 	/**
-	 * Refreshes the contents of a label
+	 * Refreshes the contents of a label inside the edit form
 	 * 
 	 * @param propertyName
 	 *            the name of the property for which to refresh the label
@@ -983,7 +988,8 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	}
 
 	/**
-	 * Resets the layout (clears the search form)
+	 * Reloads the entire component, reverting to search mode and clearing the
+	 * search form
 	 */
 	@Override
 	public void reload() {
@@ -1023,7 +1029,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	}
 
 	/**
-	 * Puts the screen in search mode
+	 * Puts the screen in search mode (does not reset the search form)
 	 */
 	public void searchMode() {
 		setCompositionRoot(mainSearchLayout);
@@ -1067,6 +1073,12 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 		}
 	}
 
+	/**
+	 * Sets the default filters that are always applied to a search query (even
+	 * after all search fields have been cleared)
+	 * 
+	 * @param defaultFilters
+	 */
 	public void setDefaultFilters(List<Filter> defaultFilters) {
 		this.defaultFilters = defaultFilters;
 		if (searchForm != null) {
@@ -1074,6 +1086,11 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 		}
 	}
 
+	/**
+	 * Sets the query type. Only use before the component is built.
+	 * 
+	 * @param queryType
+	 */
 	public void setQueryType(QueryType queryType) {
 		this.queryType = queryType;
 	}

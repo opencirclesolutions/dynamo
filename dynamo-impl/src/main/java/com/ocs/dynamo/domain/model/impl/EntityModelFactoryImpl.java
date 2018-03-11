@@ -160,7 +160,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 			model.setDisplayName(displayName);
 			model.setDescription(displayName);
 
-			if (SystemPropertyUtils.isUseDefaultPromptValue()) {
+			if (SystemPropertyUtils.useDefaultPromptValue()) {
 				model.setPrompt(displayName);
 			}
 			model.setMainAttribute(descriptor.isPreferred());
@@ -841,7 +841,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 				// well -
 				// they are overwritten in the following code if they are
 				// explicitly set
-				if (SystemPropertyUtils.isUseDefaultPromptValue()) {
+				if (SystemPropertyUtils.useDefaultPromptValue()) {
 					model.setPrompt(attribute.displayName());
 				}
 				model.setDescription(attribute.displayName());

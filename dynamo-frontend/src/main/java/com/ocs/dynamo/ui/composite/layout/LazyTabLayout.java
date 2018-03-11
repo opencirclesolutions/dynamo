@@ -23,7 +23,6 @@ import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.ui.CanAssignEntity;
 import com.ocs.dynamo.ui.Reloadable;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
-import com.vaadin.client.debug.internal.Icon;
 import com.vaadin.server.Resource;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Layout;
@@ -47,24 +46,24 @@ public abstract class LazyTabLayout<ID extends Serializable, T extends AbstractE
 	private static final long serialVersionUID = 3788799136302802727L;
 
 	/**
-	 * The entity that is being shown
-	 */
-	private T entity;
-
-	/**
 	 * The captions of the tabs that have already been constructed
 	 */
 	private Set<String> constructedTabs = new HashSet<>();
 
 	/**
-	 * The tab sheet component
+	 * The entity that is being shown
 	 */
-	private TabSheet tabs;
+	private T entity;
 
 	/**
 	 * The panel that surrounds the tab sheet
 	 */
 	private Panel panel;
+
+	/**
+	 * The tab sheet component
+	 */
+	private TabSheet tabs;
 
 	/**
 	 * Constructor
@@ -131,6 +130,15 @@ public abstract class LazyTabLayout<ID extends Serializable, T extends AbstractE
 	}
 
 	/**
+	 * Returns the icon to use inside a certain tab
+	 * 
+	 * @param index
+	 *            the zero-based index of the tab
+	 * @return
+	 */
+	protected abstract Resource getIconForTab(int index);
+
+	/**
 	 * Returns the tab identified by a certain index
 	 * 
 	 * @param index
@@ -149,7 +157,7 @@ public abstract class LazyTabLayout<ID extends Serializable, T extends AbstractE
 	protected abstract String[] getTabCaptions();
 
 	/**
-	 * Returns the description (tooltip) for a certain tab
+	 * Returns the description (tool tip) for a certain tab
 	 * 
 	 * @param index
 	 *            the index of the tab
@@ -221,13 +229,6 @@ public abstract class LazyTabLayout<ID extends Serializable, T extends AbstractE
 	 * @return
 	 */
 	protected abstract Component initTab(int index);
-
-	/**
-	 * 
-	 * @param index
-	 * @return
-	 */
-	protected abstract Resource getIconForTab(int index);
 
 	@Override
 	public void reload() {

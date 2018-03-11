@@ -467,6 +467,9 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 		}
 	}
 
+	/**
+	 * Reloads the component
+	 */
 	@Override
 	public void reload() {
 		// replace the header layout (if there is one)

@@ -25,8 +25,8 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.Layout;
 
 /**
- * A composite layout for nesting multiple other components. The nested
- * components will automatically be updated once this component is reloaded
+ * A layout for nesting multiple other components. Each nested component must implement the Reloadable
+ * interface and must be registered using the addNestedComponent method.
  * 
  * @author Bas Rutten
  *

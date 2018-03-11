@@ -37,6 +37,7 @@ import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.data.Container;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.sort.SortOrder;
+import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Resource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Field;
@@ -57,12 +58,12 @@ import com.vaadin.ui.VerticalLayout;
 public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity<ID>>
 		extends BaseCollectionLayout<ID, T> {
 
-	private static final long serialVersionUID = 4606800218149558500L;
-
 	/**
 	 * The default page length
 	 */
 	private static final int PAGE_LENGTH = 15;
+
+	private static final long serialVersionUID = 4606800218149558500L;
 
 	/**
 	 * The add button
@@ -95,6 +96,16 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 	private int pageLength = PAGE_LENGTH;
 
 	/**
+	 * The icon to use inside the remove button
+	 */
+	private Resource removeIcon;
+
+	/**
+	 * The message to display inside the "remove" button
+	 */
+	private String removeMessage;
+
+	/**
 	 * The save button
 	 */
 	private Button saveButton;
@@ -103,10 +114,6 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 	 * Whether the screen is in view mode
 	 */
 	private boolean viewmode;
-
-	private String removeMessage;
-
-	private Resource removeIcon;
 
 	/**
 	 * Constructor
@@ -167,11 +174,11 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 					};
 				});
 			}
-
 			mainLayout.addComponent(getButtonBar());
 
 			// add button
 			addButton = new Button(message("ocs.add"));
+			addButton.setIcon(FontAwesome.PLUS);
 			addButton.addClickListener(event -> {
 				// delegate the construction of a new item to the lazy
 				// query container
@@ -184,6 +191,7 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 
 			// save button
 			saveButton = new Button(message("ocs.save"));
+			saveButton.setIcon(FontAwesome.SAVE);
 			saveButton.setEnabled(false);
 			saveButton.addClickListener(event -> {
 				try {
@@ -200,11 +208,13 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 			saveButton.setVisible(!isViewmode());
 
 			editButton = new Button(message("ocs.edit"));
+			editButton.setIcon(FontAwesome.PENCIL);
 			editButton.addClickListener(event -> toggleViewMode(false));
 			editButton.setVisible(isViewmode() && getFormOptions().isEditAllowed());
 			getButtonBar().addComponent(editButton);
 
 			cancelButton = new Button(message("ocs.cancel"));
+			cancelButton.setIcon(FontAwesome.BAN);
 			cancelButton.addClickListener(event -> {
 				reload();
 				toggleViewMode(true);
@@ -379,6 +389,14 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 		return pageLength;
 	}
 
+	public Resource getRemoveIcon() {
+		return removeIcon;
+	}
+
+	public String getRemoveMessage() {
+		return removeMessage;
+	}
+
 	public Button getSaveButton() {
 		return saveButton;
 	}
@@ -412,6 +430,14 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 	@Override
 	public void setPageLength(int pageLength) {
 		this.pageLength = pageLength;
+	}
+
+	public void setRemoveIcon(Resource removeIcon) {
+		this.removeIcon = removeIcon;
+	}
+
+	public void setRemoveMessage(String removeMessage) {
+		this.removeMessage = removeMessage;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -458,22 +484,6 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 		} else {
 			((ModelBasedTable<ID, T>) getTableWrapper().getTable()).addGeneratedColumns();
 		}
-	}
-
-	public String getRemoveMessage() {
-		return removeMessage;
-	}
-
-	public void setRemoveMessage(String removeMessage) {
-		this.removeMessage = removeMessage;
-	}
-
-	public Resource getRemoveIcon() {
-		return removeIcon;
-	}
-
-	public void setRemoveIcon(Resource removeIcon) {
-		this.removeIcon = removeIcon;
 	}
 
 }

@@ -125,17 +125,17 @@ public final class SystemPropertyUtils {
 
 	/**
 	 * 
-	 * @return default width (in pixels) of the title label above an edit from
+	 * @return the default width (in pixels) of the title label above an edit from
 	 */
 	public static int getDefaultFormTitleWidth() {
 		return Integer.getInteger(DynamoConstants.SP_DEFAULT_FORM_TITLE_WIDTH, 0);
 	}
 
 	/**
-	 * The default number of rows in a list select component. Also used as the
-	 * default for collection tables
 	 * 
-	 * @return
+	 * 
+	 * @return the default number of rows in a list select component. Also used as
+	 *         the default for collection tables
 	 */
 	public static int getDefaultListSelectRows() {
 		return Integer.getInteger(DynamoConstants.SP_DEFAULT_LISTSELECT_ROWS, DEFAULT_LISTSELECT_ROWS);
@@ -150,8 +150,7 @@ public final class SystemPropertyUtils {
 	}
 
 	/**
-	 * @return Indicates whether searches on text fields will be default be case
-	 *         insensitive
+	 * @return whether searches on text fields will be default be case insensitive
 	 */
 	public static boolean getDefaultSearchCaseSensitive() {
 		return Boolean.getBoolean(DynamoConstants.SP_DEFAULT_SEARCH_CASE_SENSITIVE);
@@ -165,25 +164,25 @@ public final class SystemPropertyUtils {
 	}
 
 	/**
-	 * The default date/time format
 	 * 
-	 * @return
+	 * 
+	 * @return the default format for formatting attributes of type LocalTime or
+	 *         Java 7 dates that only consist of a timestamp
 	 */
 	public static String getDefaultTimeFormat() {
 		return System.getProperty(DynamoConstants.SP_DEFAULT_TIME_FORMAT, "HH:mm:ss");
 	}
 
 	/**
-	 * @return default true representation
+	 * @return the default true representation
 	 */
 	public static String getDefaultTrueRepresentation() {
 		return System.getProperty(DynamoConstants.SP_DEFAULT_TRUE_REPRESENTATION, DEFAULT_TRUE_REPRESENTATION);
 	}
 
 	/**
-	 * Returns the default validation mode
 	 * 
-	 * @return
+	 * @return the default validation mode
 	 */
 	public static ValidationMode getDefaultValidationMode() {
 		return ValidationMode
@@ -242,7 +241,8 @@ public final class SystemPropertyUtils {
 
 	/**
 	 * 
-	 * @return
+	 * @return the name of the service locator to use. Used internally by the
+	 *         framework, highly unlikely this needs to be modified directly
 	 */
 	public static String getServiceLocatorClassName() {
 		return System.getProperty(DynamoConstants.SP_SERVICE_LOCATOR_CLASS_NAME,
@@ -260,11 +260,12 @@ public final class SystemPropertyUtils {
 	}
 
 	/**
-	 * Whether to use the display name as the default value for the prompt
 	 * 
-	 * @return
+	 * 
+	 * @return whether to use the display name of an attribute as the "prompt" value
+	 *         (hint) inside the component
 	 */
-	public static boolean isUseDefaultPromptValue() {
+	public static boolean useDefaultPromptValue() {
 		String temp = System.getProperty(DynamoConstants.SP_USE_DEFAULT_PROMPT_VALUE, "false");
 		return Boolean.valueOf(temp);
 	}
