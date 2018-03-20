@@ -1866,6 +1866,12 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 		if (oldMode != this.viewMode) {
 			afterModeChanged(isViewMode());
+			for (Field<?> f : groups.get(isViewMode()).getFields()) {
+				if (f instanceof DetailsEditLayout<?, ?>) {
+					DetailsEditLayout<?, ?> detMode = (DetailsEditLayout<?, ?>) f;
+					detMode.signalModeChange(isViewMode());
+				}
+			}
 		}
 	}
 

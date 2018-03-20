@@ -143,6 +143,11 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 		public boolean validateAllFields() {
 			return form.validateAllFields();
 		}
+
+		public ModelBasedEditForm<ID, T> getForm() {
+			return form;
+		}
+
 	}
 
 	private static final long serialVersionUID = -1203245694503350276L;
@@ -338,7 +343,7 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 	}
 
 	protected void afterModeChanged(ModelBasedEditForm<ID, T> editForm, boolean viewMode) {
-		// override
+		// override in subclasses
 	}
 
 	/**
@@ -676,5 +681,11 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 			}
 		}
 		return error;
+	}
+
+	public void signalModeChange(boolean viewMode) {
+		for (FormContainer f : forms) {
+			DetailsEditLayout.this.afterModeChanged(f.getForm(), viewMode);
+		}
 	}
 }
