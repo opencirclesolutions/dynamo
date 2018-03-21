@@ -71,6 +71,8 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	 */
 	private Button addButton;
 
+	private Button complexDetailModeBackButton;
+
 	/**
 	 * The default filters that are always apply to any query
 	 */
@@ -299,10 +301,10 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 		HorizontalLayout buttonBar = new DefaultHorizontalLayout(false, true, true);
 		tabContainerLayout.addComponent(buttonBar);
 
-		Button backButton = new Button(message("ocs.back"));
-		backButton.setIcon(FontAwesome.BACKWARD);
-		backButton.addClickListener(e -> searchMode());
-		buttonBar.addComponent(backButton);
+		complexDetailModeBackButton = new Button(message("ocs.back"));
+		complexDetailModeBackButton.setIcon(FontAwesome.BACKWARD);
+		complexDetailModeBackButton.addClickListener(e -> searchMode());
+		buttonBar.addComponent(complexDetailModeBackButton);
 
 		if (getFormOptions().isShowPrevButton()) {
 			prevButton = new Button(message("ocs.previous"));
@@ -1123,6 +1125,10 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	 */
 	public void validateBeforeSearch() {
 		// overwrite in subclasses
+	}
+
+	public Button getComplexDetailModeBackButton() {
+		return complexDetailModeBackButton;
 	}
 
 }

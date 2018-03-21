@@ -684,8 +684,6 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 	}
 
 	public void signalModeChange(boolean viewMode) {
-		for (FormContainer f : forms) {
-			DetailsEditLayout.this.afterModeChanged(f.getForm(), viewMode);
-		}
+		// override in subclasses
 	}
 }
