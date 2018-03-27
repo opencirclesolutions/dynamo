@@ -144,6 +144,7 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 			return form.validateAllFields();
 		}
 
+		@SuppressWarnings("unused")
 		public ModelBasedEditForm<ID, T> getForm() {
 			return form;
 		}

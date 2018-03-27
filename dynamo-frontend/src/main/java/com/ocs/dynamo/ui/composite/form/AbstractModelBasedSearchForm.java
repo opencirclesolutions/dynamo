@@ -140,7 +140,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	}
 
 	/**
-	 * Callback method that is called after a successfull search has been performed
+	 * Callback method that is called after a successful search has been performed
 	 */
 	protected void afterSearchPerformed() {
 		// override in subclasses
