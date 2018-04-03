@@ -82,6 +82,7 @@
 		<module>dynamo-integration-camel</module>
 		<module>dynamo-integration-import</module>
 		<module>dynamo-frontend</module>
+		<module>dynamo-frontend-charts</module>
 		<module>dynamo-functional-domain</module>
 		<module>dynamo-functional-translation</module>
 		<module>dynamo-jasperreports</module>
@@ -102,6 +103,8 @@
 		<vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
 		<vaadin.lazycontainer.version>7.6.1.3</vaadin.lazycontainer.version>
 		<vaadin-spring.version>1.2.0</vaadin-spring.version>
+		<vaadin.charts.version>3.2.1</vaadin.charts.version>
+		
 		<tableexport-for-vaadin.version>1.5.1.5</tableexport-for-vaadin.version>
 		<vaadin.confirmdialog.version>2.1.3</vaadin.confirmdialog.version>
 		<hibernate.version>4.3.2.Final</hibernate.version>
@@ -199,6 +202,11 @@
 				<groupId>org.tltv.gantt</groupId>
 				<artifactId>gantt-addon</artifactId>
 				<version>0.9.4</version>
+			</dependency>
+			<dependency>
+				<groupId>com.vaadin.addon</groupId>
+				<artifactId>vaadin-charts</artifactId>
+				<version>${vaadin.charts.version}</version>
 			</dependency>
 			<!-- Bean Validation API -->
 			<dependency>
@@ -532,12 +540,24 @@
 					<version>${com.mysema.maven.plugins.apt.version}</version>
 					<executions>
 						<execution>
+							<id>src</id>
 							<phase>generate-sources</phase>
 							<goals>
 								<goal>process</goal>
 							</goals>
 							<configuration>
 								<outputDirectory>target/generated-sources/querydsl</outputDirectory>
+								<processor>com.mysema.query.apt.jpa.JPAAnnotationProcessor</processor>
+							</configuration>
+						</execution>
+						<execution>
+							<id>src-tst</id>
+							<phase>generate-test-sources</phase>
+							<goals>
+								<goal>test-process</goal>
+							</goals>
+							<configuration>
+								<outputDirectory>target/generated-test-sources/querydsl</outputDirectory>
 								<processor>com.mysema.query.apt.jpa.JPAAnnotationProcessor</processor>
 							</configuration>
 						</execution>
