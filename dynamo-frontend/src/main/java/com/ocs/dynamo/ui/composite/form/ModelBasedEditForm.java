@@ -1475,7 +1475,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	private void setEntity(T entity, boolean checkIterationButtons) {
 		this.entity = entity;
 
-		// Inform all childs
+		// Inform all children
 		for (CanAssignEntity<ID, T> field : assignEntityToFields) {
 			field.assignEntity(entity);
 		}

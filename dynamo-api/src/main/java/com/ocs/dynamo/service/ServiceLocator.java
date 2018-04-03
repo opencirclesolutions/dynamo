@@ -13,6 +13,8 @@
  */
 package com.ocs.dynamo.service;
 
+import java.util.Collection;
+
 import com.ocs.dynamo.domain.model.EntityModelFactory;
 
 /**
@@ -31,6 +33,15 @@ public interface ServiceLocator {
 	 * @return
 	 */
 	<T> T getService(Class<T> clazz);
+
+	/**
+	 * Retrieves all services of a certain type
+	 * 
+	 * @param clazz
+	 *            the class of the service
+	 * @return
+	 */
+	<T> Collection<T> getServices(Class<T> clazz);
 
 	/**
 	 * Retrieves the message service from the context

@@ -29,6 +29,7 @@ import org.vaadin.dialogs.ConfirmDialog;
 
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.domain.model.AttributeModel;
+import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.ui.container.pivot.PivotItem;
 import com.ocs.dynamo.ui.converter.BigDecimalConverter;
@@ -62,14 +63,42 @@ public final class VaadinUtils {
     }
 
     /**
-     * Check if all editable fields that are contained in a (fixed, non-lazy) table are valid. This
-     * method is needed because simply calling table.isValid() will not take into account any
-     * editable components within the table
-     * 
-     * @param table
-     *            the table
-     * @return
-     */
+	 * Add attribute from entitymodel to container when not in container already.
+	 * 
+	 * @param container
+	 * @param entityModel
+	 * @param attributeName
+	 */
+	public static <T> void addPropertyIdToContainer(Container container, EntityModel<T> entityModel,
+			String attributeName) {
+		if (entityModel != null) {
+			AttributeModel attributeModel = entityModel.getAttributeModel(attributeName);
+			addPropertyIdToContainer(container, attributeModel);
+		}
+	}
+
+	/**
+	 * Add attribute from attributemodel to container when not in container already.
+	 * 
+	 * @param container
+	 * @param attributeModel
+	 */
+	public static void addPropertyIdToContainer(Container container, AttributeModel attributeModel) {
+		if (container != null && attributeModel != null && attributeModel.isVisibleInTable()
+				&& !container.getContainerPropertyIds().contains(attributeModel.getPath())) {
+			container.addContainerProperty(attributeModel.getPath(), attributeModel.getType(),
+					attributeModel.getDefaultValue());
+		}
+	}
+
+	/**
+	 * Check if all editable fields that are contained in a (fixed, non-lazy) table are valid. This method is needed
+	 * because simply calling table.isValid() will not take into account any editable components within the table
+	 * 
+	 * @param table
+	 *            the table
+	 * @return
+	 */
     public static boolean allFixedTableFieldsValid(Table table) {
         boolean allValid = true;
         Iterator<Component> component = table.iterator();

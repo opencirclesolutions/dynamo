@@ -41,25 +41,32 @@ import com.ocs.dynamo.utils.ClassUtils;
 public class EntityModelImpl<T> implements EntityModel<T> {
 
     // use a linked hash map to guarantee the ordering
-    private final Map<String, List<AttributeModel>> attributeModels = new LinkedHashMap<>();
+	private final Map<String, List<AttributeModel>> attributeModels = new LinkedHashMap<>();
 
-    private final String description;
+    private String description;
 
-    private final String displayName;
+    private String displayName;
 
-    private final String displayNamePlural;
+    private String displayNamePlural;
 
-    private final String displayProperty;
+    private String displayProperty;
 
-    private final Class<T> entityClass;
+    private Class<T> entityClass;
 
     private AttributeModel idAttributeModel;
 
-    private final String reference;
+    private String reference;
 
-    private Map<AttributeModel, Boolean> sortOrder = new LinkedHashMap<>();
+	private final Map<AttributeModel, Boolean> sortOrder = new LinkedHashMap<>();
 
     /**
+	 * Default constructor
+	 */
+	public EntityModelImpl() {
+		super();
+	}
+
+	/**
      * Constructor
      * 
      * @param entityClass
@@ -85,7 +92,8 @@ public class EntityModelImpl<T> implements EntityModel<T> {
         this.reference = reference;
     }
 
-    public void addAttributeGroup(String attributeGroup) {
+    @Override
+	public void addAttributeGroup(String attributeGroup) {
         if (!attributeModels.containsKey(attributeGroup)) {
             attributeModels.put(attributeGroup, new ArrayList<>());
         }
@@ -260,7 +268,55 @@ public class EntityModelImpl<T> implements EntityModel<T> {
         this.idAttributeModel = idAttributeModel;
     }
 
-    @Override
+	/**
+	 * @param description
+	 *            the description to set
+	 */
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	/**
+	 * @param displayName
+	 *            the displayName to set
+	 */
+	public void setDisplayName(String displayName) {
+		this.displayName = displayName;
+	}
+
+	/**
+	 * @param displayNamePlural
+	 *            the displayNamePlural to set
+	 */
+	public void setDisplayNamePlural(String displayNamePlural) {
+		this.displayNamePlural = displayNamePlural;
+	}
+
+	/**
+	 * @param displayProperty
+	 *            the displayProperty to set
+	 */
+	public void setDisplayProperty(String displayProperty) {
+		this.displayProperty = displayProperty;
+	}
+
+	/**
+	 * @param entityClass
+	 *            the entityClass to set
+	 */
+	public void setEntityClass(Class<T> entityClass) {
+		this.entityClass = entityClass;
+	}
+
+	/**
+	 * @param reference
+	 *            the reference to set
+	 */
+	public void setReference(String reference) {
+		this.reference = reference;
+	}
+
+	@Override
     public String toString() {
         return ReflectionToStringBuilder.toStringExclude(this, "attributeModels");
     }

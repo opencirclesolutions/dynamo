@@ -435,4 +435,6 @@ public interface EntityModel<T> {
 	 * @return whether only the default attribute gorup is used
 	 */
 	boolean usesDefaultGroupOnly();
+
+	void addAttributeGroup(String attributeGroup);
 }
