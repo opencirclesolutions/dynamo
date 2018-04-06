@@ -18,6 +18,7 @@ import java.io.Serializable;
 import com.ocs.dynamo.ui.composite.type.AttributeGroupMode;
 import com.ocs.dynamo.ui.composite.type.ScreenMode;
 import com.ocs.dynamo.util.SystemPropertyUtils;
+import com.ocs.dynamo.util.ValidationMode;
 
 /**
  * Parameter object that can be passed along when creating a page - this object
@@ -31,17 +32,49 @@ public class FormOptions implements Serializable {
 	private static final long serialVersionUID = 7383335254540591298L;
 
 	/**
-	 * How to display the various attribute groups. The default is PANEL
-	 * (related fields are shown in a panel, the panels are placed below each
-	 * other), but it can be changed to TABSHEET (related attributes are placed
-	 * on separate tabs)
+	 * How to display the various attribute groups. The default is PANEL (related
+	 * fields are shown in a panel, the panels are placed below each other), but it
+	 * can be changed to TABSHEET (related attributes are placed on separate tabs)
 	 */
 	private AttributeGroupMode attributeGroupMode = AttributeGroupMode.PANEL;
+
+	/**
+	 * Whether to use a complex details mode that contains multiple tabs (only
+	 * supported for AbstractSearchLayout and subclasses)
+	 */
+	private boolean complexDetailsMode = false;
 
 	/**
 	 * Whether the user has to confirm the clearing of the search form
 	 */
 	private boolean confirmClear;
+
+	/**
+	 * Whether to ask for confirmation before saving
+	 */
+	private boolean confirmSave;
+
+	/**
+	 * Whether to display a button for opening a search dialog
+	 */
+	private boolean detailsTableSearchMode;
+
+	/**
+	 * Whether you can navigate to a detail screen by double clicking on a row in a
+	 * results table
+	 */
+	private boolean doubleClickSelectAllowed = true;
+
+	/**
+	 * Whether to show an edit button when the screen is opened in view mode
+	 */
+	private boolean editAllowed;
+
+	/**
+	 * Whether this form is nested in another form. Used by the framework, usually
+	 * no need to set this yourself
+	 */
+	private boolean formNested;
 
 	/**
 	 * Whether to hide the add button
@@ -59,33 +92,37 @@ public class FormOptions implements Serializable {
 	private boolean hideClearButton;
 
 	/**
-	 * Whether to place the butonbar at the top of the screen
-	 */
-	private boolean placeButtonBarAtTop;
-
-	/**
 	 * Whether to open the form in view (read-only) mode
 	 */
 	private boolean openInViewMode;
 
 	/**
-	 * Whether the form is shown as part of a popup - this is normally set by
-	 * the framework when appropriate
+	 * Whether to place the button bar at the top of the title label (rather than behind it)
+	 */
+	private boolean placeButtonBarAtTop;
+
+	/**
+	 * Whether the form is shown as part of a popup - this is normally set by the
+	 * framework when appropriate
 	 */
 	private boolean popup;
 
 	/**
-	 * Whether to display the screen in complete read-only mode. Settings
-	 * readOnly to true will automatically adapt all other necessary settings
-	 * (e.g. it will set "openInViewMode" to true)
+	 * Whether to preserve the last selected tab when reopening a screen
+	 */
+	private boolean preserveSelectedTab;
+
+	/**
+	 * Whether to display the screen in complete read-only mode. Settings readOnly
+	 * to true will automatically adapt all other necessary settings (e.g. it will
+	 * set "openInViewMode" to true)
 	 */
 	private boolean readOnly;
 
 	/**
-	 * The orientation of the screen (horizontal or vertical). This is relevant
-	 * for the split layout. In the HORIZONTAL view the table and form are
-	 * displayed next to each other, in the VERTICAL view they are below each
-	 * other
+	 * The orientation of the screen (horizontal or vertical). This is relevant for
+	 * the split layout. In the HORIZONTAL view the table and form are displayed
+	 * next to each other, in the VERTICAL view they are below each other
 	 */
 	private ScreenMode screenMode = ScreenMode.HORIZONTAL;
 
@@ -95,24 +132,20 @@ public class FormOptions implements Serializable {
 	private boolean searchImmediately = true;
 
 	/**
-	 * Whether to display a back button
+	 * Whether to display a back button inside an edit form. Usually managed by 
+	 * the framework.
 	 */
 	private boolean showBackButton;
 
 	/**
-	 * Whether to show an edit button when the screen is opened in view mode
+	 * Whether to display a "next" button inside an edit form
 	 */
-	private boolean editAllowed;
+	private boolean showNextButton;
 
 	/**
-	 * Whether to display a "next" button
+	 * Whether to display a "previous" button inside an edit form
 	 */
-	private boolean showNextButton = false;
-
-	/**
-	 * Whether to display a "previous" button
-	 */
-	private boolean showPrevButton = false;
+	private boolean showPrevButton;
 
 	/**
 	 * Whether to include an quick search field
@@ -125,9 +158,9 @@ public class FormOptions implements Serializable {
 	private boolean showRemoveButton;
 
 	/**
-	 * Whether to display a button for opening a search dialog
+	 * Whether to show an or button to enable match any search
 	 */
-	private boolean detailsTableSearchMode;
+	private boolean showSearchAnyButton;
 
 	/**
 	 * Whether to display a button for toggling search fields
@@ -135,29 +168,14 @@ public class FormOptions implements Serializable {
 	private boolean showToggleButton;
 
 	/**
-	 * Whether to preserve the last selected tab when reopening a screen
-	 */
-	private boolean preserveSelectedTab;
-
-	/**
-	 * Whether to show an or button to enable match any search
-	 */
-	private boolean showSearchAnyButton;
-
-	/**
 	 * Indicates whether table export is allowed (read from system property)
 	 */
 	private boolean tableExportAllowed = SystemPropertyUtils.allowTableExport();
 
-	private boolean doubleClickSelectAllowed = true;
-
 	/**
-	 * Whether to use a complex details mode that contains multiple tabs (only
-	 * supported for AbstractSearchLayout and subclasses)
+	 * The form validation mode
 	 */
-	private boolean complexDetailsMode = false;
-
-	private boolean formNested;
+	private ValidationMode validationMode = SystemPropertyUtils.getDefaultValidationMode();
 
 	public FormOptions createCopy() {
 		FormOptions fo = new FormOptions();
@@ -185,6 +203,8 @@ public class FormOptions implements Serializable {
 		fo.setShowToggleButton(isShowToggleButton());
 		fo.setTableExportAllowed(isTableExportAllowed());
 		fo.setFormNested(isFormNested());
+		fo.setValidationMode(getValidationMode());
+		fo.setConfirmSave(isConfirmSave());
 		return fo;
 	}
 
@@ -196,12 +216,20 @@ public class FormOptions implements Serializable {
 		return screenMode;
 	}
 
+	public ValidationMode getValidationMode() {
+		return validationMode;
+	}
+
 	public boolean isComplexDetailsMode() {
 		return complexDetailsMode;
 	}
 
 	public boolean isConfirmClear() {
 		return confirmClear;
+	}
+
+	public boolean isConfirmSave() {
+		return confirmSave;
 	}
 
 	public boolean isDetailsTableSearchMode() {
@@ -303,6 +331,11 @@ public class FormOptions implements Serializable {
 		return this;
 	}
 
+	public FormOptions setConfirmSave(boolean confirmSave) {
+		this.confirmSave = confirmSave;
+		return this;
+	}
+
 	public FormOptions setDetailsTableSearchMode(boolean detailsTableSearchMode) {
 		this.detailsTableSearchMode = detailsTableSearchMode;
 		return this;
@@ -359,8 +392,8 @@ public class FormOptions implements Serializable {
 	}
 
 	/**
-	 * Sets the screen to strict read-only modus. Will hide any add buttons and
-	 * set the screen to read only
+	 * Sets the screen to strict read-only modus. Will hide any add buttons and set
+	 * the screen to read only
 	 *
 	 * @param readOnly
 	 */
@@ -434,6 +467,11 @@ public class FormOptions implements Serializable {
 
 	public FormOptions setTableExportAllowed(boolean tableExportAllowed) {
 		this.tableExportAllowed = tableExportAllowed;
+		return this;
+	}
+
+	public FormOptions setValidationMode(ValidationMode validationMode) {
+		this.validationMode = validationMode;
 		return this;
 	}
 

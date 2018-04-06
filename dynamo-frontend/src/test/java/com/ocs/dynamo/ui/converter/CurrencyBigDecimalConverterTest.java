@@ -20,74 +20,70 @@ import java.util.Locale;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.ocs.dynamo.util.SystemPropertyUtils;
+
 public class CurrencyBigDecimalConverterTest {
 
-    private DecimalFormatSymbols symbols = DecimalFormatSymbols.getInstance(new Locale("de"));
+	private DecimalFormatSymbols symbols = DecimalFormatSymbols
+			.getInstance(new Locale(SystemPropertyUtils.getDefaultLocale()));
 
-    @Test
-    public void testConvertToPresentation() {
-        CurrencyBigDecimalConverter cv = new CurrencyBigDecimalConverter(2, true, "€");
+	@Test
+	public void testConvertToPresentation() {
+		CurrencyBigDecimalConverter cv = new CurrencyBigDecimalConverter(2, true, "€");
 
-        String result = cv.convertToPresentation(new BigDecimal(123456), null, null);
-        Assert.assertEquals(String.format("%s123%s456%s00", cv.getDecimalFormat(null)
-                .getPositivePrefix(), symbols.getGroupingSeparator(), symbols
-                .getMonetaryDecimalSeparator()), result);
+		String result = cv.convertToPresentation(new BigDecimal(123456), null, null);
+		Assert.assertEquals(String.format("%s123%s456%s00", cv.getDecimalFormat(null).getPositivePrefix(),
+				symbols.getGroupingSeparator(), symbols.getMonetaryDecimalSeparator()), result);
 
-        cv = new CurrencyBigDecimalConverter(2, true, "$");
-        result = cv.convertToPresentation(new BigDecimal(123456), null, null);
-        Assert.assertEquals(String.format("%s123%s456%s00", cv.getDecimalFormat(null)
-                .getPositivePrefix(), symbols.getGroupingSeparator(), symbols
-                .getMonetaryDecimalSeparator()), result);
-    }
+		cv = new CurrencyBigDecimalConverter(2, true, "$");
+		result = cv.convertToPresentation(new BigDecimal(123456), null, null);
+		Assert.assertEquals(String.format("%s123%s456%s00", cv.getDecimalFormat(null).getPositivePrefix(),
+				symbols.getGroupingSeparator(), symbols.getMonetaryDecimalSeparator()), result);
+	}
 
-    @Test
-    public void testConvertToModel() {
-        CurrencyBigDecimalConverter cv = new CurrencyBigDecimalConverter(2, true, "€");
-        Assert.assertEquals(
-                123456,
-                cv.convertToModel(cv.getDecimalFormat(null).getPositivePrefix() + "123456",
-                        BigDecimal.class, null).doubleValue(), 0.001);
+	@Test
+	public void testConvertToModel() {
+		CurrencyBigDecimalConverter cv = new CurrencyBigDecimalConverter(2, true, "€");
+		Assert.assertEquals(123456,
+				cv.convertToModel(cv.getDecimalFormat(null).getPositivePrefix() + "123456", BigDecimal.class, null)
+						.doubleValue(),
+				0.001);
 
-        // test that the currency symbol is stripped when needed
-        Assert.assertEquals(
-                123456,
-                cv.convertToModel("€ 123" + symbols.getGroupingSeparator() + "456",
-                        BigDecimal.class, null).doubleValue(), 0.001);
+		// test that the currency symbol is stripped when needed
+		Assert.assertEquals(123456, cv
+				.convertToModel("€ 123" + symbols.getGroupingSeparator() + "456", BigDecimal.class, null).doubleValue(),
+				0.001);
 
-        Assert.assertEquals(123456, cv.convertToModel("€ 123456", BigDecimal.class, null)
-                .doubleValue(), 0.001);
+		Assert.assertEquals(123456, cv.convertToModel("€ 123456", BigDecimal.class, null).doubleValue(), 0.001);
 
-        Assert.assertEquals(
-                123456.12,
-                cv.convertToModel("€ 123456" + symbols.getDecimalSeparator() + "12",
-                        BigDecimal.class, null).doubleValue(), 0.001);
-    }
+		Assert.assertEquals(123456.12,
+				cv.convertToModel("€ 123456" + symbols.getDecimalSeparator() + "12", BigDecimal.class, null)
+						.doubleValue(),
+				0.001);
+	}
 
-    @Test
-    public void testConvertToModelUSA() {
+	@Test
+	public void testConvertToModelUSA() {
 
-        DecimalFormatSymbols usa = DecimalFormatSymbols.getInstance(new Locale("us"));
+		DecimalFormatSymbols usa = DecimalFormatSymbols.getInstance(new Locale("us"));
 
-        CurrencyBigDecimalConverter cv = new CurrencyBigDecimalConverter(2, true, "USD");
-        Assert.assertEquals(
-                123456,
-                cv.convertToModel(cv.getDecimalFormat(null).getPositivePrefix() + "123456",
-                        BigDecimal.class, new Locale("us")).doubleValue(), 0.001);
+		CurrencyBigDecimalConverter cv = new CurrencyBigDecimalConverter(2, true, "USD");
+		Assert.assertEquals(123456, cv.convertToModel(cv.getDecimalFormat(null).getPositivePrefix() + "123456",
+				BigDecimal.class, new Locale("us")).doubleValue(), 0.001);
 
-        // test that the currency symbol is stripped when needed
-        Assert.assertEquals(
-                123456,
-                cv.convertToModel("USD 123" + usa.getGroupingSeparator() + "456", BigDecimal.class,
-                        new Locale("us")).doubleValue(), 0.001);
+		// test that the currency symbol is stripped when needed
+		Assert.assertEquals(123456,
+				cv.convertToModel("USD 123" + usa.getGroupingSeparator() + "456", BigDecimal.class, new Locale("us"))
+						.doubleValue(),
+				0.001);
 
-        // simple value without separators
-        Assert.assertEquals(123456, cv.convertToModel("USD 123456", BigDecimal.class, null)
-                .doubleValue(), 0.001);
+		// simple value without separators
+		Assert.assertEquals(123456, cv.convertToModel("USD 123456", BigDecimal.class, null).doubleValue(), 0.001);
 
-        Assert.assertEquals(
-                123456.12,
-                cv.convertToModel("USD 123456" + usa.getDecimalSeparator() + "12",
-                        BigDecimal.class, new Locale("us")).doubleValue(), 0.001);
-    }
+		Assert.assertEquals(123456.12,
+				cv.convertToModel("USD 123456" + usa.getDecimalSeparator() + "12", BigDecimal.class, new Locale("us"))
+						.doubleValue(),
+				0.001);
+	}
 
 }

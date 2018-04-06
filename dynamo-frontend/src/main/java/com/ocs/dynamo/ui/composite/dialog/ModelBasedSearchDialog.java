@@ -73,8 +73,7 @@ public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractE
 	private boolean searchImmediately;
 
 	/**
-	 * the (optional) page length. If set it will override the default page
-	 * length
+	 * the (optional) page length. If set it will override the default page length
 	 */
 	private Integer pageLength;
 
@@ -167,8 +166,8 @@ public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractE
 
 	@Override
 	protected String getTitle() {
-		return ServiceLocatorFactory.getServiceLocator().getMessageService().getMessage("ocs.search.title", VaadinUtils.getLocale(),
-				entityModel.getDisplayNamePlural());
+		return ServiceLocatorFactory.getServiceLocator().getMessageService().getMessage("ocs.search.title",
+				VaadinUtils.getLocale(), entityModel.getDisplayNamePlural());
 	}
 
 	public void setPageLength(Integer pageLength) {
@@ -194,6 +193,17 @@ public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractE
 		} else {
 			ID id = (ID) selectedItems;
 			searchLayout.getTableWrapper().getTable().select(id);
+		}
+	}
+
+	public List<Filter> getFilters() {
+		return filters;
+	}
+
+	public void setFilters(List<Filter> filters) {
+		this.filters = filters;
+		if (searchLayout != null) {
+			searchLayout.setDefaultFilters(filters);
 		}
 	}
 

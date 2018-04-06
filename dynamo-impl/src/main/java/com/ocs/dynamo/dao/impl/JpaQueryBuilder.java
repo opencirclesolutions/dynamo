@@ -591,8 +591,8 @@ public final class JpaQueryBuilder {
 	}
 
 	/**
-	 * Creates a query used to retrieve a single entity based on a unique
-	 * property value
+	 * Creates a query used to retrieve a single entity based on a unique property
+	 * value
 	 * 
 	 * @param entityManager
 	 * @param entityClass

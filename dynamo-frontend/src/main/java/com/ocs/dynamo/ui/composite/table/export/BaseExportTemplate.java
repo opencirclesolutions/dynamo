@@ -67,9 +67,9 @@ public abstract class BaseExportTemplate<ID extends Serializable, T extends Abst
 	protected static final int TITLE_ROW_HEIGHT = 40;
 
 	/**
-	 * The maximum number of rows that will be created normally. If the number
-	 * is larger, then a streaming writer will be used. This is faster but it
-	 * will mean we cannot auto size the columns
+	 * The maximum number of rows that will be created normally. If the number is
+	 * larger, then a streaming writer will be used. This is faster but it will mean
+	 * we cannot auto size the columns
 	 */
 	protected static final int MAX_SIZE = 20000;
 
@@ -148,8 +148,8 @@ public abstract class BaseExportTemplate<ID extends Serializable, T extends Abst
 	}
 
 	/**
-	 * Creates an Excel cell and applies the correct style. The style to use
-	 * depends on the attribute model and the value to display in the cell
+	 * Creates an Excel cell and applies the correct style. The style to use depends
+	 * on the attribute model and the value to display in the cell
 	 * 
 	 * @param row
 	 *            the row to which to add the cell
@@ -187,10 +187,9 @@ public abstract class BaseExportTemplate<ID extends Serializable, T extends Abst
 	}
 
 	/**
-	 * Creates an appropriate work book - if the size is below the threshold
-	 * then a normal workbook is created. Otherwise a streaming workbook is
-	 * created. This is much faster and more efficient, but you cannot auto
-	 * resize the columns
+	 * Creates an appropriate work book - if the size is below the threshold then a
+	 * normal workbook is created. Otherwise a streaming workbook is created. This
+	 * is much faster and more efficient, but you cannot auto resize the columns
 	 * 
 	 * @param size
 	 *            the number of rows
@@ -330,7 +329,7 @@ public abstract class BaseExportTemplate<ID extends Serializable, T extends Abst
 			}
 		} else if (am != null) {
 			// use the attribute model
-			String str = FormatUtils.formatPropertyValue(entityModelFactory, am, value);
+			String str = FormatUtils.formatPropertyValue(entityModelFactory, am, value, ", ");
 			cell.setCellValue(str);
 		}
 	}

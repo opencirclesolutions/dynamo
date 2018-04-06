@@ -30,6 +30,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import org.apache.commons.lang.StringUtils;
+import org.vaadin.teemu.switchui.Switch;
 
 import com.google.common.collect.Lists;
 import com.ocs.dynamo.constants.DynamoConstants;
@@ -39,6 +40,8 @@ import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.AttributeSelectMode;
 import com.ocs.dynamo.domain.model.AttributeTextFieldMode;
 import com.ocs.dynamo.domain.model.AttributeType;
+import com.ocs.dynamo.domain.model.CheckboxMode;
+import com.ocs.dynamo.domain.model.EditableType;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.NumberSelectMode;
 import com.ocs.dynamo.exception.OCSRuntimeException;
@@ -136,11 +139,11 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 	 * @param messageService
 	 *            the message service
 	 * @param validate
-	 *            whether to add extra validators (this is the case when the
-	 *            field is displayed inside a table)
+	 *            whether to add extra validators (this is the case when the field
+	 *            is displayed inside a table)
 	 * @param search
-	 *            whether the fields are displayed inside a search form (this
-	 *            has an effect on the construction of some fields)
+	 *            whether the fields are displayed inside a search form (this has an
+	 *            effect on the construction of some fields)
 	 */
 	public ModelBasedFieldFactory(EntityModel<T> model, MessageService messageService, boolean validate,
 			boolean search) {
@@ -200,16 +203,15 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 	}
 
 	/**
-	 * Constructs a combo box- the sort order will be taken from the entity
-	 * model
+	 * Constructs a combo box- the sort order will be taken from the entity model
 	 * 
 	 * @param entityModel
 	 *            the entity model to base the combo box on
 	 * @param attributeModel
 	 *            the attribute model
 	 * @param filter
-	 *            optional field filter - only items that match the filter will
-	 *            be included
+	 *            optional field filter - only items that match the filter will be
+	 *            included
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
@@ -224,8 +226,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 	}
 
 	/**
-	 * Constructs a field based on an attribute model and possibly a field
-	 * filter
+	 * Constructs a field based on an attribute model and possibly a field filter
 	 * 
 	 * @param attributeModel
 	 *            the attribute model
@@ -285,8 +286,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 	 * @param multipleSelect
 	 *            is multiple select supported?
 	 * @param search
-	 *            indicates whether the component is being used in a search
-	 *            screen
+	 *            indicates whether the component is being used in a search screen
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
@@ -352,8 +352,8 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 	}
 
 	/**
-	 * Create a combo box for searching on a boolean. This combo box contains
-	 * three values (yes, no, and null)
+	 * Create a combo box for searching on a boolean. This combo box contains three
+	 * values (yes, no, and null)
 	 * 
 	 * @return
 	 */
@@ -514,7 +514,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 		// in case of a read-only field, return <code>null</code> so Vaadin will
 		// render a label instead
 		AttributeModel attributeModel = model.getAttributeModel(propertyId);
-		if (attributeModel.isReadOnly()
+		if (EditableType.READ_ONLY.equals(attributeModel.getEditableType())
 				&& (!attributeModel.isUrl() && !AttributeType.DETAIL.equals(attributeModel.getAttributeType()))
 				&& !search) {
 			return null;
@@ -592,6 +592,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 			DateField df = new DateField();
 			df.setResolution(Resolution.DAY);
 			df.setConverter(ConverterFactory.createLocalDateConverter());
+			df.setTimeZone(VaadinUtils.getTimeZone(UI.getCurrent()));
 			field = df;
 		} else if (LocalDateTime.class.equals(attributeModel.getType())) {
 			DateField df = new DateField();
@@ -624,6 +625,10 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 			// wrap text field in URL field
 			field = new URLField(tf, attributeModel, false);
 			field.setSizeFull();
+		} else if (Boolean.class.equals(attributeModel.getType())
+				&& CheckboxMode.SWITCH.equals(attributeModel.getCheckboxMode())) {
+			field = new Switch();
+			((Switch) field).addStyleName("compact");
 		} else {
 			// just a regular field
 			field = createField(attributeModel.getType(), Field.class);
@@ -647,7 +652,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 			field.addValidator(new BeanValidator(model.getEntityClass(), propertyId));
 			// disable the field if it cannot be edited
 			if (!attributeModel.isUrl()) {
-				field.setEnabled(!attributeModel.isReadOnly());
+				field.setEnabled(!EditableType.READ_ONLY.equals(attributeModel.getEditableType()));
 			}
 
 			if (attributeModel.isNumerical()) {
@@ -771,9 +776,8 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 	}
 
 	/**
-	 * Resolves an entity model by falling back first to the nested attribute
-	 * model and then to the default model for the normalized type of the
-	 * property
+	 * Resolves an entity model by falling back first to the nested attribute model
+	 * and then to the default model for the normalized type of the property
 	 * 
 	 * @param entityModel
 	 *            the entity model

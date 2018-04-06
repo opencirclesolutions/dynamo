@@ -132,7 +132,7 @@ public class TableExportActionHandler implements Handler {
 				if (value != null) {
 					AttributeModel am = findAttributeModel(propId);
 					if (am != null) {
-						value = FormatUtils.formatPropertyValue(entityModelFactory, am, value);
+						value = FormatUtils.formatPropertyValue(entityModelFactory, am, value, ", ");
 					}
 					if (value instanceof String) {
 						value = StringUtils.replaceHtmlBreaks(value.toString());
@@ -212,8 +212,8 @@ public class TableExportActionHandler implements Handler {
 		}
 
 		/**
-		 * Overruled from parent class to support model based formatting. Method
-		 * is private in parent.
+		 * Overruled from parent class to support model based formatting. Method is
+		 * private in parent.
 		 * 
 		 * @param item
 		 *            the item to render
@@ -233,9 +233,8 @@ public class TableExportActionHandler implements Handler {
 		}
 
 		/**
-		 * Returns the property IDs that are to be included in the sheet.
-		 * Overwritten so that grid properties are displayed in the correct
-		 * order
+		 * Returns the property IDs that are to be included in the sheet. Overwritten so
+		 * that grid properties are displayed in the correct order
 		 */
 		@Override
 		public List<Object> getPropIds() {
@@ -428,7 +427,7 @@ public class TableExportActionHandler implements Handler {
 						if (value instanceof String) {
 							value = StringUtils.replaceHtmlBreaks((String) value);
 						}
-						sheetCell.setCellValue(FormatUtils.formatPropertyValue(entityModelFactory, am, value));
+						sheetCell.setCellValue(FormatUtils.formatPropertyValue(entityModelFactory, am, value, ", "));
 					} else {
 						// if everything else fails, use the string
 						// representation
@@ -459,8 +458,8 @@ public class TableExportActionHandler implements Handler {
 		}
 
 		/**
-		 * Add row recursively - overwritten to provide true unlimited
-		 * recursion, rather than just one level
+		 * Add row recursively - overwritten to provide true unlimited recursion, rather
+		 * than just one level
 		 * 
 		 * @param sheetToAddTo
 		 *            the sheet
@@ -522,9 +521,8 @@ public class TableExportActionHandler implements Handler {
 			int localRow = row;
 			roots = ((Container.Hierarchical) getTableHolder().getContainerDataSource()).rootItemIds();
 			/*
-			 * For Hierarchical Containers, the outlining/grouping in the sheet
-			 * is with the summary row at the top and the grouped/outlined
-			 * subcategories below.
+			 * For Hierarchical Containers, the outlining/grouping in the sheet is with the
+			 * summary row at the top and the grouped/outlined subcategories below.
 			 */
 			sheet.setRowSumsBelow(false);
 			int count = 0;
@@ -536,8 +534,8 @@ public class TableExportActionHandler implements Handler {
 		}
 
 		/**
-		 * Adds a total rows to the bottom of the sheet - overwritten so that
-		 * the columns can be property aligned
+		 * Adds a total rows to the bottom of the sheet - overwritten so that the
+		 * columns can be property aligned
 		 */
 		@Override
 		protected void addTotalsRow(final int currentRow, final int startRow) {
@@ -605,8 +603,8 @@ public class TableExportActionHandler implements Handler {
 		}
 
 		/**
-		 * Final sheet formatting - this is skipped for streaming workbooks
-		 * since they cannot perform actions on all the rows any more
+		 * Final sheet formatting - this is skipped for streaming workbooks since they
+		 * cannot perform actions on all the rows any more
 		 */
 		@Override
 		protected void finalSheetFormat() {
@@ -616,8 +614,8 @@ public class TableExportActionHandler implements Handler {
 		}
 
 		/**
-		 * Overruled from parent class to support model based formatting. Method
-		 * is private in parent.
+		 * Overruled from parent class to support model based formatting. Method is
+		 * private in parent.
 		 */
 		protected Property<?> getProperty(Item item, Object rootItemId, Object propId) {
 			Property<?> prop;
@@ -630,8 +628,8 @@ public class TableExportActionHandler implements Handler {
 		}
 
 		/**
-		 * Reintroduced method because it is private in the parent class -
-		 * retrieve the type of a property
+		 * Reintroduced method because it is private in the parent class - retrieve the
+		 * type of a property
 		 * 
 		 * @param propId
 		 *            the property
@@ -648,9 +646,8 @@ public class TableExportActionHandler implements Handler {
 		}
 
 		/**
-		 * Returns the property IDs that are to be included in the sheet.
-		 * Overwritten so that grid properties are displayed in the correct
-		 * order
+		 * Returns the property IDs that are to be included in the sheet. Overwritten so
+		 * that grid properties are displayed in the correct order
 		 */
 		@Override
 		public List<Object> getPropIds() {
@@ -665,8 +662,8 @@ public class TableExportActionHandler implements Handler {
 		}
 
 		/**
-		 * Overwritten so we can use the correct mime type and make sure the UI
-		 * is not null
+		 * Overwritten so we can use the correct mime type and make sure the UI is not
+		 * null
 		 */
 		@Override
 		public boolean sendConverted() {
@@ -822,8 +819,8 @@ public class TableExportActionHandler implements Handler {
 	}
 
 	/**
-	 * Export a grid - this is achieved by wrapping the data source from the
-	 * grid in a table
+	 * Export a grid - this is achieved by wrapping the data source from the grid in
+	 * a table
 	 * 
 	 * @param grid
 	 *            the grid to export from
@@ -931,6 +928,7 @@ public class TableExportActionHandler implements Handler {
 				export.setReportTitle(reportTitle);
 				service.export(export);
 			} else {
+
 				// create the workbook
 				Workbook wb = createWorkbook(size);
 				if (wb == null) {

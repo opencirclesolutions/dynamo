@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -37,8 +38,12 @@ import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.composite.table.ModelBasedTable;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.data.Container.Filter;
+import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.data.sort.SortOrder;
 import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.server.FontAwesome;
+import com.vaadin.server.UserError;
+import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
@@ -69,7 +74,7 @@ import com.vaadin.ui.VerticalLayout;
  */
 @SuppressWarnings("serial")
 public abstract class DetailsEditTable<ID extends Serializable, T extends AbstractEntity<ID>>
-		extends CustomField<Collection<T>> implements SignalsParent {
+		extends CustomField<Collection<T>> implements SignalsParent, UseInViewMode {
 
 	private static final long serialVersionUID = -1203245694503350276L;
 
@@ -99,8 +104,7 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 	private Map<String, Filter> fieldFilters = new HashMap<>();
 
 	/**
-	 * Form options that determine which buttons and functionalities are
-	 * available
+	 * Form options that determine which buttons and functionalities are available
 	 */
 	private FormOptions formOptions;
 
@@ -122,7 +126,7 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 	/**
 	 * The parent form in which this component is embedded
 	 */
-	private ModelBasedEditForm<?, ?> parentForm;
+	private ReceivesSignal receiver;
 
 	/**
 	 * Button used to open the search dialog
@@ -169,6 +173,8 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 	 */
 	private UI ui = UI.getCurrent();
 
+	private ModelBasedSearchDialog<ID, T> dialog;
+
 	/**
 	 * Whether the table is in view mode. If this is the case, editing is not
 	 * allowed and no buttons will be displayed
@@ -197,8 +203,8 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 	}
 
 	/**
-	 * Callback method that is called after selecting one or more items using
-	 * the search dialog
+	 * Callback method that is called after selecting one or more items using the
+	 * search dialog
 	 * 
 	 * @param selectedItems
 	 */
@@ -225,11 +231,13 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 	 */
 	protected void constructAddButton(Layout buttonBar) {
 		addButton = new Button(messageService.getMessage("ocs.add", VaadinUtils.getLocale()));
+		addButton.setIcon(FontAwesome.PLUS);
 		addButton.addClickListener(event -> {
 			T t = createEntity();
 			container.addBean(t);
-			if (parentForm != null) {
-				parentForm.signalDetailsTableValid(DetailsEditTable.this, VaadinUtils.allFixedTableFieldsValid(table));
+			if (receiver != null) {
+				receiver.signalDetailsComponentValid(DetailsEditTable.this,
+						VaadinUtils.allFixedTableFieldsValid(table));
 			}
 		});
 		addButton.setVisible(isTableEditEnabled() && !formOptions.isHideAddButton());
@@ -259,8 +267,8 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 	 * @param entityModel
 	 *            the entity model of the entity that is displayed in the table
 	 * @param attributeModel
-	 *            the attribute model of the attribute for which we are
-	 *            constructing a field
+	 *            the attribute model of the attribute for which we are constructing
+	 *            a field
 	 * @param viewMode
 	 *            whether the form is in view mode
 	 * @return
@@ -278,6 +286,7 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 	protected void constructSearchButton(Layout buttonBar) {
 
 		searchDialogButton = new Button(messageService.getMessage("ocs.search", VaadinUtils.getLocale()));
+		searchDialogButton.setIcon(FontAwesome.SEARCH);
 		searchDialogButton.setDescription(messageService.getMessage("ocs.search.description", VaadinUtils.getLocale()));
 		searchDialogButton.addClickListener(event -> {
 
@@ -287,7 +296,7 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 						messageService.getMessage("ocs.no.service.specified", VaadinUtils.getLocale()));
 			}
 
-			ModelBasedSearchDialog<ID, T> dialog = new ModelBasedSearchDialog<ID, T>(service,
+			dialog = new ModelBasedSearchDialog<ID, T>(service,
 					searchDialogEntityModel != null ? searchDialogEntityModel : entityModel, searchDialogFilters,
 					searchDialogSortOrder == null ? null : Lists.newArrayList(searchDialogSortOrder), true, true) {
 				@Override
@@ -342,8 +351,8 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 		return items;
 	}
 
-	public ModelBasedEditForm<?, ?> getParentForm() {
-		return parentForm;
+	public ReceivesSignal getReceiver() {
+		return receiver;
 	}
 
 	public Button getSearchDialogButton() {
@@ -399,14 +408,15 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 			final String removeMsg = messageService.getMessage("ocs.detail.remove", VaadinUtils.getLocale());
 			table.addGeneratedColumn(removeMsg, (ColumnGenerator) (source, itemId, columnId) -> {
 				Button remove = new Button(removeMsg);
+				remove.setIcon(FontAwesome.TRASH);
 				remove.addClickListener(event -> {
 					container.removeItem(itemId);
 					items.remove(itemId);
 					// callback method so the entity can be removed from its
 					// parent
 					removeEntity((T) itemId);
-					if (parentForm != null) {
-						parentForm.signalDetailsTableValid(DetailsEditTable.this,
+					if (receiver != null) {
+						receiver.signalDetailsComponentValid(DetailsEditTable.this,
 								VaadinUtils.allFixedTableFieldsValid(table));
 					}
 
@@ -443,8 +453,8 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 					// button)
 					if (!viewMode) {
 						field.addValueChangeListener(event -> {
-							if (parentForm != null) {
-								parentForm.signalDetailsTableValid(DetailsEditTable.this,
+							if (receiver != null) {
+								receiver.signalDetailsComponentValid(DetailsEditTable.this,
 										VaadinUtils.allFixedTableFieldsValid(table));
 							}
 						});
@@ -478,8 +488,8 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 
 		// set the reference to the parent so the status of the save button can
 		// be set correctly
-		ModelBasedEditForm<?, ?> parent = VaadinUtils.getParentOfClass(this, ModelBasedEditForm.class);
-		setParentForm(parent);
+		ReceivesSignal receiver = VaadinUtils.getParentOfClass(this, ReceivesSignal.class);
+		setReceiver(receiver);
 
 		postConstruct();
 
@@ -487,8 +497,7 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 	}
 
 	/**
-	 * Indicates whether it is possible to add/modify items directly via the
-	 * table
+	 * Indicates whether it is possible to add/modify items directly via the table
 	 * 
 	 * @return
 	 */
@@ -501,8 +510,8 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 	}
 
 	/**
-	 * Method that is called in order to enable/disable a button after selecting
-	 * an item in the table
+	 * Method that is called in order to enable/disable a button after selecting an
+	 * item in the table
 	 * 
 	 * @param button
 	 * @return
@@ -520,8 +529,8 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 	}
 
 	/**
-	 * Callback method that is used to modify the button bar. Override in
-	 * subclasses if needed
+	 * Callback method that is used to modify the button bar. Override in subclasses
+	 * if needed
 	 * 
 	 * @param buttonBar
 	 */
@@ -534,9 +543,9 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 	}
 
 	/**
-	 * Registers a button that must be enabled/disabled after an item is
-	 * selected. use the "mustEnableButton" callback method to impose additional
-	 * constraints on when the button must be enabled
+	 * Registers a button that must be enabled/disabled after an item is selected.
+	 * use the "mustEnableButton" callback method to impose additional constraints
+	 * on when the button must be enabled
 	 * 
 	 * @param button
 	 *            the button to register
@@ -613,10 +622,10 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 	 * 
 	 * @param parentForm
 	 */
-	private void setParentForm(ModelBasedEditForm<?, ?> parentForm) {
-		this.parentForm = parentForm;
-		if (parentForm != null) {
-			parentForm.signalDetailsTableValid(this, VaadinUtils.allFixedTableFieldsValid(table));
+	private void setReceiver(ReceivesSignal receiver) {
+		this.receiver = receiver;
+		if (receiver != null) {
+			receiver.signalDetailsComponentValid(this, VaadinUtils.allFixedTableFieldsValid(table));
 		}
 	}
 
@@ -626,6 +635,9 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 
 	public void setSearchDialogFilters(List<Filter> searchDialogFilters) {
 		this.searchDialogFilters = searchDialogFilters;
+		if (dialog != null) {
+			dialog.setFilters(searchDialogFilters);
+		}
 	}
 
 	public void setSearchDialogSortOrder(SortOrder searchDialogSortOrder) {
@@ -645,6 +657,25 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 	public void setValue(Collection<T> newFieldValue) {
 		setItems(newFieldValue);
 		super.setValue(newFieldValue);
+	}
+
+	@Override
+	public boolean validateAllFields() {
+		boolean error = false;
+		Iterator<Component> component = table.iterator();
+		while (component.hasNext()) {
+			Component next = component.next();
+			try {
+				if (next instanceof AbstractField) {
+					((AbstractField<?>) next).validate();
+					((AbstractField<?>) next).setComponentError(null);
+				}
+			} catch (InvalidValueException ex) {
+				error = true;
+				((AbstractField<?>) next).setComponentError(new UserError(ex.getLocalizedMessage()));
+			}
+		}
+		return error;
 	}
 
 }

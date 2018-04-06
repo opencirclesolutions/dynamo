@@ -16,6 +16,7 @@ package com.ocs.dynamo.domain.model.impl;
 import javax.inject.Inject;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.ocs.dynamo.domain.TestEntity;
@@ -36,6 +37,7 @@ import com.vaadin.data.sort.SortOrder;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.Field;
 
+@Ignore
 public class ModelBasedFieldFactoryIntegrationTest extends BaseIntegrationTest {
 
     @Inject

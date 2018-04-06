@@ -21,4 +21,5 @@ package com.ocs.dynamo.ui.composite.form;
  */
 public interface SignalsParent {
 
+	boolean validateAllFields();
 }

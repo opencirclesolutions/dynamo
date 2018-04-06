@@ -14,11 +14,13 @@
 package com.ocs.dynamo.ui.converter;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.Locale;
 
-import com.ocs.dynamo.utils.DateUtils;
+import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.data.util.converter.Converter;
+import com.vaadin.ui.UI;
 
 /**
  * Vaadin converter for converting a legacy date to a LocalDate
@@ -32,12 +34,20 @@ public class LocalDateToDateConverter implements Converter<Date, LocalDate> {
 
 	@Override
 	public LocalDate convertToModel(Date value, Class<? extends LocalDate> targetType, Locale locale) {
-		return DateUtils.toLocalDate(value);
+		if (value == null) {
+			return null;
+		}
+		ZoneId tz = VaadinUtils.getTimeZone(UI.getCurrent()).toZoneId();
+		return value.toInstant().atZone(tz).toLocalDate();
 	}
 
 	@Override
 	public Date convertToPresentation(LocalDate value, Class<? extends Date> targetType, Locale locale) {
-		return DateUtils.toLegacyDate(value);
+		if (value == null) {
+			return null;
+		}
+		ZoneId tz = VaadinUtils.getTimeZone(UI.getCurrent()).toZoneId();
+		return Date.from(value.atStartOfDay(tz).toInstant());
 	}
 
 	@Override

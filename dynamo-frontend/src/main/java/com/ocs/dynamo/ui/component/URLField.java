@@ -32,118 +32,117 @@ import com.vaadin.ui.VerticalLayout;
  */
 public class URLField extends CustomField<String> {
 
-    private static final long serialVersionUID = -1899451186343723434L;
+	private static final long serialVersionUID = -1899451186343723434L;
 
-    private AttributeModel attributeModel;
+	private AttributeModel attributeModel;
 
-    private HorizontalLayout bar;
+	private HorizontalLayout bar;
 
-    private boolean editable;
+	private boolean editable;
 
-    private Link link;
+	private Link link;
 
-    private VerticalLayout main;
+	private VerticalLayout main;
 
-    private TextField textField;
+	private TextField textField;
 
-    /**
-     * Constructor
-     * 
-     * @param textField
-     *            the text field that this component wraps around
-     * @param attributeModel
-     *            the attribute model used to construct the compoent
-     * @param editable
-     *            whether to display the field in editable mode
-     */
-    public URLField(TextField textField, AttributeModel attributeModel, boolean editable) {
-        this.attributeModel = attributeModel;
-        this.textField = textField;
-        this.editable = editable;
-        textField.addValueChangeListener(event -> setValue((String) event.getProperty().getValue()));
+	/**
+	 * Constructor
+	 * 
+	 * @param textField
+	 *            the text field that this component wraps around
+	 * @param attributeModel
+	 *            the attribute model used to construct the compoent
+	 * @param editable
+	 *            whether to display the field in editable mode
+	 */
+	public URLField(TextField textField, AttributeModel attributeModel, boolean editable) {
+		this.attributeModel = attributeModel;
+		this.textField = textField;
+		this.editable = editable;
+		textField.addValueChangeListener(event -> setValue((String) event.getProperty().getValue()));
 
-    }
+	}
 
-    protected Link getLink() {
-        return link;
-    }
+	protected Link getLink() {
+		return link;
+	}
 
-    public TextField getTextField() {
-        return textField;
-    }
+	public TextField getTextField() {
+		return textField;
+	}
 
-    @Override
-    public Class<? extends String> getType() {
-        return String.class;
-    }
+	@Override
+	public Class<? extends String> getType() {
+		return String.class;
+	}
 
-    @Override
-    protected Component initContent() {
-        main = new VerticalLayout();
-        setCaption(attributeModel.getDisplayName());
+	@Override
+	protected Component initContent() {
+		main = new VerticalLayout();
+		setCaption(attributeModel.getDisplayName());
 
-        bar = new DefaultHorizontalLayout(false, true, true);
-        updateLink(getValue());
+		bar = new DefaultHorizontalLayout(false, true, true);
+		updateLink(getValue());
+		setMode();
+		return main;
+	}
 
-        // read only by default
-        setMode();
+	public boolean isEditable() {
+		return editable;
+	}
 
-        return main;
-    }
+	public void setEditable(boolean editable) {
+		this.editable = editable;
+		setMode();
+	}
 
-    public boolean isEditable() {
-        return editable;
-    }
+	@Override
+	protected void setInternalValue(String newValue) {
+		super.setInternalValue(newValue);
+		updateLink(newValue);
+		textField.setValue(newValue);
+	}
 
-    public void setEditable(boolean editable) {
-        this.editable = editable;
-        setMode();
-    }
+	/**
+	 * Sets the correct mode (read only or editable)
+	 */
+	private void setMode() {
+		if (main != null) {
+			// display different component depending on mode
+			if (editable) {
+				main.replaceComponent(bar, textField);
+			} else {
+				main.replaceComponent(textField, bar);
+			}
+		}
+	}
 
-    @Override
-    protected void setInternalValue(String newValue) {
-        super.setInternalValue(newValue);
-        updateLink(newValue);
-        textField.setValue(newValue);
-    }
+	@Override
+	public void setValue(String newValue) {
+		super.setValue(newValue);
+		updateLink(newValue);
+		textField.setValue(newValue);
+	}
 
-    /**
-     * Sets the correct mode (read only or editable)
-     */
-    private void setMode() {
-        if (main != null) {
-            // display different component depending on mode
-            if (editable) {
-                main.replaceComponent(bar, textField);
-            } else {
-                main.replaceComponent(textField, bar);
-            }
-        }
-    }
+	/**
+	 * Updates the field value - renders a clickable URL if the field value is not
+	 * empty
+	 * 
+	 * @param value
+	 */
+	private void updateLink(String value) {
+		if (bar != null) {
+			bar.removeAllComponents();
+			if (!org.apache.commons.lang.StringUtils.isEmpty(value)) {
+				String temp = StringUtils.prependProtocol(value);
+				link = new Link(temp, new ExternalResource(temp), "_blank", 0, 0, BorderStyle.DEFAULT);
 
-    @Override
-    public void setValue(String newValue) {
-        super.setValue(newValue);
-        updateLink(newValue);
-        textField.setValue(newValue);
-    }
-
-    /**
-     * Updates the field value - renders a clickable URL if the field value is not empty
-     * 
-     * @param value
-     */
-    private void updateLink(String value) {
-        if (bar != null) {
-            bar.removeAllComponents();
-            if (!org.apache.commons.lang.StringUtils.isEmpty(value)) {
-                String temp = StringUtils.prependProtocol(value);
-                link = new Link(temp, new ExternalResource(temp), "_blank", 0, 0, BorderStyle.DEFAULT);
-                bar.addComponent(link);
-            } else {
-                link = null;
-            }
-        }
-    }
+				bar.addComponent(link);
+			} else {
+				link = null;
+			}
+		}
+	}
 
 }

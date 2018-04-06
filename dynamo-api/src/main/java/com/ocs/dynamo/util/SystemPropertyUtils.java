@@ -36,18 +36,18 @@ public final class SystemPropertyUtils {
 	/**
 	 * 
 	 * 
-	 * @return whether export to Excel or CSV is allowed for all tables. If set
-	 *         to <code>false</code> it will disable exporting for all tables.
-	 *         You can selectively enable it for somet tables using the
-	 *         FormOptions object
+	 * @return whether export to Excel or CSV is allowed for all tables. If set to
+	 *         <code>false</code> it will disable exporting for all tables. You can
+	 *         selectively enable it for some tables using the FormOptions object
 	 */
 	public static boolean allowTableExport() {
 		return Boolean.getBoolean(DynamoConstants.SP_ALLOW_TABLE_EXPORT);
 	}
 
 	/**
-	 * The default caption format 
-	 * @return
+	 * 
+	 * 
+	 * @return the default caption format
 	 */
 	public static String getDefaultCaptionFormat() {
 		return System.getProperty(DynamoConstants.SP_DEFAULT_CAPTION_FORMAT,
@@ -55,9 +55,10 @@ public final class SystemPropertyUtils {
 	}
 
 	/**
-	 * The default currency symbol
 	 * 
-	 * @return
+	 * 
+	 * @return the default currency symbol to use for decimale fields that display a
+	 *         currency
 	 */
 	public static String getDefaultCurrencySymbol() {
 		return System.getProperty(DynamoConstants.SP_DEFAULT_CURRENCY_SYMBOL, "€");
@@ -108,7 +109,7 @@ public final class SystemPropertyUtils {
 	}
 
 	/**
-	 * @return default false representation
+	 * @return the default false representation
 	 */
 	public static String getDefaultFalseRepresentation() {
 		return System.getProperty(DynamoConstants.SP_DEFAULT_FALSE_REPRESENTATION, DEFAULT_FALSE_REPRESENTATION);
@@ -116,35 +117,40 @@ public final class SystemPropertyUtils {
 
 	/**
 	 * 
-	 * @return default width (in pixels) of the title label above an edit from
+	 * @return the default field width of edit fields within a form
+	 */
+	public static Integer getDefaultFieldWidth() {
+		return Integer.getInteger(DynamoConstants.SP_DEFAULT_FIELD_WIDTH);
+	}
+
+	/**
+	 * 
+	 * @return the default width (in pixels) of the title label above an edit from
 	 */
 	public static int getDefaultFormTitleWidth() {
 		return Integer.getInteger(DynamoConstants.SP_DEFAULT_FORM_TITLE_WIDTH, 0);
 	}
 
 	/**
-	 * The default number of rows in a list select component. Also used as the
-	 * default for collection tables
 	 * 
-	 * @return
+	 * 
+	 * @return the default number of rows in a list select component. Also used as
+	 *         the default for collection tables
 	 */
 	public static int getDefaultListSelectRows() {
 		return Integer.getInteger(DynamoConstants.SP_DEFAULT_LISTSELECT_ROWS, DEFAULT_LISTSELECT_ROWS);
 	}
 
 	/**
-	 * The default locale - this is used mainly for number formatting. We use
-	 * the German locale here since this ensure the use of the comma as the
-	 * decimal separator
 	 * 
-	 * @return
+	 * @return the default locale used for e.g. the decimal and thousands separators
 	 */
 	public static String getDefaultLocale() {
 		return System.getProperty(DynamoConstants.SP_DEFAULT_LOCALE, DynamoConstants.DEFAULT_LOCALE.toString());
 	}
 
 	/**
-	 * @return Indicates whether searches on text fields will be default be case insensitive 
+	 * @return whether searches on text fields will be default be case insensitive
 	 */
 	public static boolean getDefaultSearchCaseSensitive() {
 		return Boolean.getBoolean(DynamoConstants.SP_DEFAULT_SEARCH_CASE_SENSITIVE);
@@ -158,19 +164,29 @@ public final class SystemPropertyUtils {
 	}
 
 	/**
-	 * The default date/time format
 	 * 
-	 * @return
+	 * 
+	 * @return the default format for formatting attributes of type LocalTime or
+	 *         Java 7 dates that only consist of a timestamp
 	 */
 	public static String getDefaultTimeFormat() {
 		return System.getProperty(DynamoConstants.SP_DEFAULT_TIME_FORMAT, "HH:mm:ss");
 	}
 
 	/**
-	 * @return default true representation
+	 * @return the default true representation
 	 */
 	public static String getDefaultTrueRepresentation() {
 		return System.getProperty(DynamoConstants.SP_DEFAULT_TRUE_REPRESENTATION, DEFAULT_TRUE_REPRESENTATION);
+	}
+
+	/**
+	 * 
+	 * @return the default validation mode
+	 */
+	public static ValidationMode getDefaultValidationMode() {
+		return ValidationMode
+				.valueOf(System.getProperty(DynamoConstants.SP_DEFAULT_VALIDATION_MODE, "VALIDATE_DIRECTLY"));
 	}
 
 	/**
@@ -224,6 +240,16 @@ public final class SystemPropertyUtils {
 	}
 
 	/**
+	 * 
+	 * @return the name of the service locator to use. Used internally by the
+	 *         framework, highly unlikely this needs to be modified directly
+	 */
+	public static String getServiceLocatorClassName() {
+		return System.getProperty(DynamoConstants.SP_SERVICE_LOCATOR_CLASS_NAME,
+				"com.ocs.dynamo.ui.SpringWebServiceLocator");
+	}
+
+	/**
 	 * Whether to capitalize every word in a property name
 	 * 
 	 * @return
@@ -234,11 +260,12 @@ public final class SystemPropertyUtils {
 	}
 
 	/**
-	 * Whether to use the display name as the default value for the prompt
 	 * 
-	 * @return
+	 * 
+	 * @return whether to use the display name of an attribute as the "prompt" value
+	 *         (hint) inside the component
 	 */
-	public static boolean isUseDefaultPromptValue() {
+	public static boolean useDefaultPromptValue() {
 		String temp = System.getProperty(DynamoConstants.SP_USE_DEFAULT_PROMPT_VALUE, "false");
 		return Boolean.valueOf(temp);
 	}
@@ -248,15 +275,6 @@ public final class SystemPropertyUtils {
 	 */
 	public static boolean useThousandsGroupingInEditMode() {
 		return Boolean.getBoolean(DynamoConstants.SP_THOUSAND_GROUPING);
-	}
-
-	/**
-	 * 
-	 * @return
-	 */
-	public static String getServiceLocatorClassName() {
-		return System.getProperty(DynamoConstants.SP_SERVICE_LOCATOR_CLASS_NAME, 
-				"com.ocs.dynamo.ui.SpringWebServiceLocator");
 	}
 
 	private SystemPropertyUtils() {

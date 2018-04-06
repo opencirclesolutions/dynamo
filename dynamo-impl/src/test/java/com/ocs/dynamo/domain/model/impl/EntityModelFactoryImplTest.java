@@ -51,6 +51,8 @@ import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.AttributeSelectMode;
 import com.ocs.dynamo.domain.model.AttributeType;
 import com.ocs.dynamo.domain.model.CascadeMode;
+import com.ocs.dynamo.domain.model.CheckboxMode;
+import com.ocs.dynamo.domain.model.EditableType;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.VisibilityType;
 import com.ocs.dynamo.domain.model.annotation.Attribute;
@@ -113,7 +115,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 
 		Assert.assertTrue(nameModel.isSortable());
 		Assert.assertTrue(nameModel.isMainAttribute());
-		Assert.assertFalse(nameModel.isReadOnly());
+		Assert.assertEquals(EditableType.EDITABLE, nameModel.getEditableType());
 
 		AttributeModel ageModel = model.getAttributeModel("age");
 		Assert.assertNull(ageModel.getDefaultValue());
@@ -141,6 +143,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		AttributeModel boolModel = model.getAttributeModel("bool");
 		Assert.assertEquals("Yes", boolModel.getTrueRepresentation());
 		Assert.assertEquals("No", boolModel.getFalseRepresentation());
+		Assert.assertEquals(CheckboxMode.SWITCH, boolModel.getCheckboxMode());
 
 		AttributeModel mailModel = model.getAttributeModel("email");
 		Assert.assertTrue(mailModel.isEmail());
@@ -222,7 +225,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		Assert.assertFalse(nameModel.isSortable());
 		Assert.assertTrue(nameModel.isSearchable());
 		Assert.assertTrue(nameModel.isMainAttribute());
-		Assert.assertTrue(nameModel.isReadOnly());
+		Assert.assertEquals(EditableType.READ_ONLY, nameModel.getEditableType());
 
 		AttributeModel ageModel = model.getAttributeModel("age");
 		Assert.assertNotNull(ageModel);
@@ -233,6 +236,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		AttributeModel entityModel = model.getAttributeModel("entity2");
 		Assert.assertEquals(AttributeType.MASTER, entityModel.getAttributeType());
 		Assert.assertTrue(entityModel.isComplexEditable());
+		Assert.assertTrue(entityModel.isNavigable());
 
 		AttributeModel entityListModel = model.getAttributeModel("entityList");
 		Assert.assertEquals(AttributeType.DETAIL, entityListModel.getAttributeType());
@@ -277,7 +281,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 
 		Assert.assertEquals("Override", nameModel.getDisplayName());
 		Assert.assertEquals("Prompt override", nameModel.getPrompt());
-		Assert.assertTrue(nameModel.isReadOnly());
+		Assert.assertEquals(EditableType.CREATE_ONLY, nameModel.getEditableType());
 
 		Assert.assertFalse(model.usesDefaultGroupOnly());
 
@@ -531,7 +535,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		AttributeModel am = model.getAttributeModel("attribute1");
 		Assert.assertEquals(1, am.getGroupTogetherWith().size());
 		Assert.assertEquals("attribute2", am.getGroupTogetherWith().get(0));
-		
+
 		AttributeModel am2 = model.getAttributeModel("attribute2");
 		Assert.assertTrue(am2.isTransient());
 	}
@@ -617,7 +621,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		@Temporal(TemporalType.DATE)
 		private Date birthDate;
 
-		@Attribute(trueRepresentation = "Yes", falseRepresentation = "No")
+		@Attribute(trueRepresentation = "Yes", falseRepresentation = "No", checkboxMode = CheckboxMode.SWITCH)
 		private Boolean bool;
 
 		@Email
@@ -724,7 +728,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 			@AttributeGroup(messageKey = "group2.key", attributeNames = { "age" }) })
 	private class Entity3 {
 
-		@Attribute(defaultValue = "Bas", description = "Test", displayName = "Naampje", readOnly = true, prompt = "Prompt", searchable = true, main = true, sortable = false)
+		@Attribute(defaultValue = "Bas", description = "Test", displayName = "Naampje", editable = EditableType.READ_ONLY, prompt = "Prompt", searchable = true, main = true, sortable = false)
 		private String name;
 
 		@Attribute(searchCaseSensitive = true, searchPrefixOnly = true, useThousandsGrouping = false)
@@ -735,7 +739,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		private Date birthDate;
 
 		@OneToOne
-		@Attribute(complexEditable = true)
+		@Attribute(complexEditable = true, navigable = true)
 		private Entity2 entity2;
 
 		@OneToMany

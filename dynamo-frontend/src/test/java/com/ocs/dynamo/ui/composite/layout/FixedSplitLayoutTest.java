@@ -6,6 +6,7 @@ import javax.inject.Inject;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.google.common.collect.Lists;
@@ -18,6 +19,7 @@ import com.ocs.dynamo.test.BaseIntegrationTest;
 import com.vaadin.data.sort.SortOrder;
 import com.vaadin.shared.data.sort.SortDirection;
 
+@Ignore
 public class FixedSplitLayoutTest extends BaseIntegrationTest {
 
 	@Inject

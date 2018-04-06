@@ -102,7 +102,8 @@ public abstract class AbstractJunctionFilter extends AbstractFilter {
 	}
 
 	/**
-	 * Replaces a filter by a new filter. Does nothing if the old filter is not found
+	 * Replaces a filter by a new filter. Does nothing if the old filter is not
+	 * found
 	 * 
 	 * @param oldFilter
 	 *            the filter that must be replaced

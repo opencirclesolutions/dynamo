@@ -34,6 +34,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.stream.Collectors;
 
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
@@ -64,6 +65,8 @@ import com.ocs.dynamo.domain.model.AttributeSelectMode;
 import com.ocs.dynamo.domain.model.AttributeTextFieldMode;
 import com.ocs.dynamo.domain.model.AttributeType;
 import com.ocs.dynamo.domain.model.CascadeMode;
+import com.ocs.dynamo.domain.model.CheckboxMode;
+import com.ocs.dynamo.domain.model.EditableType;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.domain.model.NumberSelectMode;
@@ -126,8 +129,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 	 * @param entityModel
 	 *            the entity model
 	 * @param parentClass
-	 *            the type of the direct parent of the attribute (relevant in
-	 *            case of embedded attributes)
+	 *            the type of the direct parent of the attribute (relevant in case
+	 *            of embedded attributes)
 	 * @param nested
 	 *            whether this is a nested attribute
 	 * @param prefix
@@ -157,15 +160,16 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 			model.setDisplayName(displayName);
 			model.setDescription(displayName);
 
-			if (SystemPropertyUtils.isUseDefaultPromptValue()) {
+			if (SystemPropertyUtils.useDefaultPromptValue()) {
 				model.setPrompt(displayName);
 			}
 			model.setMainAttribute(descriptor.isPreferred());
 			model.setSearchable(descriptor.isPreferred());
 			model.setName((prefix == null ? "" : (prefix + ".")) + fieldName);
 			model.setImage(false);
+			model.setExpansionFactor(1.0f);
 
-			model.setReadOnly(descriptor.isHidden());
+			model.setEditableType(descriptor.isHidden() ? EditableType.READ_ONLY : EditableType.EDITABLE);
 			model.setSortable(true);
 			model.setComplexEditable(false);
 			model.setPrecision(SystemPropertyUtils.getDefaultDecimalPrecision());
@@ -502,9 +506,9 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 
 	/**
 	 * Determines the order of the attributes - this will first pick up any
-	 * attributes that are mentioned in the @AttributeOrder annotation (in the
-	 * order in which they occur) and then add any attributes that are not
-	 * explicitly mentioned
+	 * attributes that are mentioned in the @AttributeOrder annotation (in the order
+	 * in which they occur) and then add any attributes that are not explicitly
+	 * mentioned
 	 * 
 	 * @param entityClass
 	 * @param reference
@@ -639,8 +643,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 	 * Determines the "dateType" for an attribute
 	 * 
 	 * @param modelType
-	 *            the type of the attribute. Can be either java.util.Date or a
-	 *            java 8 LocalX type
+	 *            the type of the attribute. Can be either java.util.Date or a java
+	 *            8 LocalX type
 	 * @param entityClass
 	 *            the class of the entity
 	 * @param fieldName
@@ -837,7 +841,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 				// well -
 				// they are overwritten in the following code if they are
 				// explicitly set
-				if (SystemPropertyUtils.isUseDefaultPromptValue()) {
+				if (SystemPropertyUtils.useDefaultPromptValue()) {
 					model.setPrompt(attribute.displayName());
 				}
 				model.setDescription(attribute.displayName());
@@ -853,9 +857,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 				model.setPrompt(attribute.prompt());
 			}
 
-			if (attribute.readOnly()) {
-				model.setReadOnly(true);
-			}
+			model.setEditableType(attribute.editable());
 
 			// set visibility (but not for nested attributes - these are hidden
 			// by default)
@@ -898,7 +900,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 			}
 
 			if (attribute.allowedExtensions() != null && attribute.allowedExtensions().length > 0) {
-				Set<String> set = Sets.newHashSet(attribute.allowedExtensions());
+				Set<String> set = Arrays.stream(attribute.allowedExtensions()).map(x -> x.toLowerCase())
+						.collect(Collectors.toSet());
 				model.setAllowedExtensions(set);
 			}
 
@@ -1029,6 +1032,13 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 				String defaultValue = attribute.defaultValue();
 				setDefaultValue(model, defaultValue);
 			}
+
+			if (attribute.expansionFactor() > 1.0f) {
+				model.setExpansionFactor(attribute.expansionFactor());
+			}
+
+			model.setCheckboxMode(attribute.checkboxMode());
+			model.setNavigable(attribute.navigable());
 		}
 	}
 
@@ -1071,22 +1081,28 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 	 *            the attribute model
 	 */
 	private void setMessageBundleCascadeOverrides(EntityModel<?> entityModel, AttributeModel model) {
-		int cascadeIndex = 1;
-		String msg = getAttributeMessage(entityModel, model, EntityModel.CASCADE + "." + cascadeIndex);
-		while (msg != null) {
-			String filter = getAttributeMessage(entityModel, model,
-					EntityModel.CASCADE_FILTER_PATH + "." + cascadeIndex);
-			// optional mode (defaults to BOTH when omitted)
-			String mode = getAttributeMessage(entityModel, model, EntityModel.CASCADE_MODE + "." + cascadeIndex);
-
-			if (filter != null) {
-				model.addCascade(msg, filter, mode == null ? CascadeMode.BOTH : CascadeMode.valueOf(mode));
-			} else {
-				throw new OCSRuntimeException("Incomplete cascade definition for " + model.getPath());
-			}
-
-			cascadeIndex++;
+		String msg = getAttributeMessage(entityModel, model, EntityModel.CASCADE_OFF);
+		if (msg != null) {
+			// complete cancel all cascades for this attribute
+			model.removeCascades();
+		} else {
+			int cascadeIndex = 1;
 			msg = getAttributeMessage(entityModel, model, EntityModel.CASCADE + "." + cascadeIndex);
+			while (msg != null) {
+				String filter = getAttributeMessage(entityModel, model,
+						EntityModel.CASCADE_FILTER_PATH + "." + cascadeIndex);
+				// optional mode (defaults to BOTH when omitted)
+				String mode = getAttributeMessage(entityModel, model, EntityModel.CASCADE_MODE + "." + cascadeIndex);
+
+				if (filter != null && mode != null) {
+					model.addCascade(msg, filter, CascadeMode.valueOf(mode));
+				} else {
+					throw new OCSRuntimeException("Incomplete cascade definition for " + model.getPath());
+				}
+
+				cascadeIndex++;
+				msg = getAttributeMessage(entityModel, model, EntityModel.CASCADE + "." + cascadeIndex);
+			}
 		}
 	}
 
@@ -1128,9 +1144,20 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 			model.setPrompt(msg);
 		}
 
+		// check for read only (convenience only, overwritten by "editable")
 		msg = getAttributeMessage(entityModel, model, EntityModel.READ_ONLY);
 		if (!StringUtils.isEmpty(msg)) {
-			model.setReadOnly(Boolean.valueOf(msg));
+			boolean edt = Boolean.valueOf(msg);
+			if (edt) {
+				model.setEditableType(EditableType.READ_ONLY);
+			} else {
+				model.setEditableType(EditableType.EDITABLE);
+			}
+		}
+
+		msg = getAttributeMessage(entityModel, model, EntityModel.EDITABLE);
+		if (!StringUtils.isEmpty(msg)) {
+			model.setEditableType(EditableType.valueOf(msg));
 		}
 
 		msg = getAttributeMessage(entityModel, model, EntityModel.SEARCHABLE);
@@ -1268,58 +1295,68 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 		}
 
 		msg = getAttributeMessage(entityModel, model, EntityModel.TEXTFIELD_MODE);
-		if (msg != null && !StringUtils.isEmpty(msg)) {
+		if (!StringUtils.isEmpty(msg)) {
 			model.setTextFieldMode(AttributeTextFieldMode.valueOf(msg));
 		}
 
 		msg = getAttributeMessage(entityModel, model, EntityModel.MIN_LENGTH);
-		if (msg != null && !StringUtils.isEmpty(msg)) {
+		if (!StringUtils.isEmpty(msg)) {
 			model.setMinLength(Integer.parseInt(msg));
 		}
 
 		msg = getAttributeMessage(entityModel, model, EntityModel.MIN_VALUE);
-		if (msg != null && !StringUtils.isEmpty(msg)) {
+		if (!StringUtils.isEmpty(msg)) {
 			model.setMinValue(Long.parseLong(msg));
 		}
 
 		msg = getAttributeMessage(entityModel, model, EntityModel.MAX_LENGTH);
-		if (msg != null && !StringUtils.isEmpty(msg)) {
+		if (!StringUtils.isEmpty(msg)) {
 			model.setMaxLength(Integer.parseInt(msg));
 		}
 
 		msg = getAttributeMessage(entityModel, model, EntityModel.MAX_LENGTH_IN_TABLE);
-		if (msg != null && !StringUtils.isEmpty(msg)) {
+		if (!StringUtils.isEmpty(msg)) {
 			model.setMaxLengthInTable(Integer.parseInt(msg));
 		}
 
 		msg = getAttributeMessage(entityModel, model, EntityModel.MAX_VALUE);
-		if (msg != null && !StringUtils.isEmpty(msg)) {
+		if (!StringUtils.isEmpty(msg)) {
 			model.setMaxValue(Long.parseLong(msg));
 		}
 
 		msg = getAttributeMessage(entityModel, model, EntityModel.URL);
-		if (msg != null && !StringUtils.isEmpty(msg)) {
+		if (!StringUtils.isEmpty(msg)) {
 			model.setUrl(Boolean.valueOf(msg));
 		}
 
 		msg = getAttributeMessage(entityModel, model, EntityModel.REPLACEMENT_SEARCH_PATH);
-		if (msg != null && !StringUtils.isEmpty(msg)) {
+		if (!StringUtils.isEmpty(msg)) {
 			model.setReplacementSearchPath(msg);
 		}
 
 		msg = getAttributeMessage(entityModel, model, EntityModel.QUICK_ADD_PROPERTY);
-		if (msg != null && !StringUtils.isEmpty(msg)) {
+		if (!StringUtils.isEmpty(msg)) {
 			model.setQuickAddPropertyName(msg);
 		}
 
 		msg = getAttributeMessage(entityModel, model, EntityModel.THOUSANDS_GROUPING);
-		if (msg != null && !StringUtils.isEmpty(msg)) {
+		if (!StringUtils.isEmpty(msg)) {
 			model.setUseThousandsGrouping(Boolean.valueOf(msg));
 		}
 
 		msg = getAttributeMessage(entityModel, model, EntityModel.SEARCH_EXACT_VALUE);
-		if (msg != null && !StringUtils.isEmpty(msg)) {
+		if (!StringUtils.isEmpty(msg)) {
 			model.setSearchForExactValue(Boolean.valueOf(msg));
+		}
+
+		msg = getAttributeMessage(entityModel, model, EntityModel.NAVIGABLE);
+		if (!StringUtils.isEmpty(msg)) {
+			model.setNavigable(Boolean.valueOf(msg));
+		}
+
+		msg = getAttributeMessage(entityModel, model, EntityModel.CHECKBOX_MODE);
+		if (!StringUtils.isEmpty(msg)) {
+			model.setCheckboxMode(CheckboxMode.valueOf(msg));
 		}
 
 		setMessageBundleCascadeOverrides(entityModel, model);
@@ -1383,9 +1420,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 	}
 
 	/**
-	 * Indicates whether to skip an attribute since it does not constitute an
-	 * actual property but rather a generic or technical field that all entities
-	 * have
+	 * Indicates whether to skip an attribute since it does not constitute an actual
+	 * property but rather a generic or technical field that all entities have
 	 * 
 	 * @param name
 	 * @return

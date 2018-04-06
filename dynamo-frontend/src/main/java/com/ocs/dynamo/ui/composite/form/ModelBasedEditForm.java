@@ -2,7 +2,6 @@
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
-
        http://www.apache.org/licenses/LICENSE-2.0
 
    Unless required by applicable law or agreed to in writing, software
@@ -19,16 +18,20 @@ import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
+import org.vaadin.teemu.switchui.Switch;
 
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.dao.FetchJoinInformation;
@@ -36,12 +39,14 @@ import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.AttributeType;
 import com.ocs.dynamo.domain.model.CascadeMode;
+import com.ocs.dynamo.domain.model.EditableType;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.impl.ModelBasedFieldFactory;
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.Refreshable;
 import com.ocs.dynamo.ui.component.Cascadable;
+import com.ocs.dynamo.ui.component.CollapsiblePanel;
 import com.ocs.dynamo.ui.component.DefaultEmbedded;
 import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
@@ -53,13 +58,18 @@ import com.ocs.dynamo.ui.composite.type.ScreenMode;
 import com.ocs.dynamo.ui.utils.EntityModelUtil;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.util.SystemPropertyUtils;
+import com.ocs.dynamo.util.ValidationMode;
 import com.ocs.dynamo.utils.ClassUtils;
 import com.vaadin.data.Container.Filter;
+import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.data.util.filter.Compare;
+import com.vaadin.server.FontAwesome;
 import com.vaadin.server.StreamResource;
+import com.vaadin.server.UserError;
 import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Component;
@@ -72,7 +82,6 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.Notification;
-import com.vaadin.ui.Panel;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.Upload;
@@ -92,12 +101,12 @@ import com.vaadin.ui.VerticalLayout;
  */
 @SuppressWarnings("serial")
 public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntity<ID>>
-		extends AbstractModelBasedForm<ID, T> {
+		extends AbstractModelBasedForm<ID, T> implements SignalsParent, ReceivesSignal {
 
 	/**
 	 * A custom field that can be used to upload a file
 	 * 
-	 * @author bas.rutten
+	 * @author bas.ruttent
 	 *
 	 */
 	private final class UploadComponent extends CustomField<byte[]> {
@@ -209,8 +218,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			if (stream != null && stream.toByteArray().length > 0) {
 				String extension = FilenameUtils.getExtension(event.getFilename());
 
-				if (supportedExtensions == null || supportedExtensions.length == 0
-						|| (extension != null && Arrays.asList(supportedExtensions).contains(extension))) {
+				if (supportedExtensions == null || supportedExtensions.length == 0 || (extension != null
+						&& Arrays.asList(supportedExtensions).contains(extension.toLowerCase()))) {
 
 					// set the image source
 					if (target != null) {
@@ -263,7 +272,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	/**
 	 * Indicates whether all details tables for editing complex fields are valid
 	 */
-	private Map<SignalsParent, Boolean> detailTablesValid = new HashMap<>();
+	private Map<SignalsParent, Boolean> detailComponentsValid = new HashMap<>();
 
 	/**
 	 * The selected entity
@@ -286,8 +295,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	private Map<Boolean, BeanFieldGroup<T>> groups = new HashMap<>();
 
 	/**
-	 * A map containing all the labels that were added - used to replace the
-	 * label values as the selected entity changes
+	 * A map containing all the labels that were added - used to replace the label
+	 * values as the selected entity changes
 	 */
 	private Map<Boolean, Map<AttributeModel, Component>> labels = new HashMap<>();
 
@@ -311,8 +320,12 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 	private Map<Boolean, Set<String>> alreadyBound = new HashMap<>();
 
+	/**
+	 * Map from tab index to the first field on each tab
+	 */
 	private Map<Integer, Field<?>> firstFields = new HashMap<>();
 
+	private ReceivesSignal receiver;
 	/**
 	 * The width of the title caption above the form (in pixels)
 	 */
@@ -327,6 +340,13 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	 * Whether to display the component in view mode
 	 */
 	private boolean viewMode;
+
+	/**
+	 * Whether the form is in nested mode
+	 */
+	private boolean nestedMode;
+
+	private Consumer<T> customSaveConsumer;
 
 	/**
 	 * Constructor
@@ -390,15 +410,17 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	 * @param attributeModel
 	 *            the attribute model
 	 */
-	private void addField(Layout parent, EntityModel<T> entityModel, AttributeModel attributeModel, int tabIndex) {
+	private void addField(Layout parent, EntityModel<T> entityModel, AttributeModel attributeModel, int tabIndex,
+			boolean sameRow) {
 		AttributeType type = attributeModel.getAttributeType();
 		if (!alreadyBound.get(isViewMode()).contains(attributeModel.getPath()) && attributeModel.isVisible()
 				&& (AttributeType.BASIC.equals(type) || AttributeType.LOB.equals(type)
 						|| attributeModel.isComplexEditable())) {
-			if (attributeModel.isReadOnly() || isViewMode()) {
+
+			if (EditableType.READ_ONLY.equals(attributeModel.getEditableType()) || isViewMode()) {
 				if (attributeModel.isUrl()) {
 					// display a complex component even in read-only mode
-					constructField(parent, entityModel, attributeModel, true, tabIndex);
+					constructField(parent, entityModel, attributeModel, true, tabIndex, sameRow);
 				} else if (AttributeType.LOB.equals(type) && attributeModel.isImage()) {
 					// image preview
 					Component c = constructImagePreview(attributeModel);
@@ -406,21 +428,26 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 					previews.get(isViewMode()).put(attributeModel, c);
 				} else if (AttributeType.DETAIL.equals(type) && attributeModel.isComplexEditable()) {
 					Field<?> f = constructCustomField(entityModel, attributeModel, viewMode);
-					if (f instanceof DetailsEditTable) {
-						// a details edit table must be displayed
-						constructField(parent, entityModel, attributeModel, true, tabIndex);
+					if (f instanceof UseInViewMode) {
+						// a details edit table or details edit layout must always be displayed
+						constructField(parent, entityModel, attributeModel, true, tabIndex, sameRow);
 					} else {
-						constructLabel(parent, entityModel, attributeModel, tabIndex);
+						constructLabel(parent, entityModel, attributeModel, tabIndex, sameRow);
 					}
 				} else {
-					// otherwise display a label
-					constructLabel(parent, entityModel, attributeModel, tabIndex);
+					Field<?> f = constructCustomField(entityModel, attributeModel, viewMode);
+					if (f instanceof UseInViewMode) {
+						constructField(parent, entityModel, attributeModel, true, tabIndex, sameRow);
+					} else {
+						// otherwise display a label
+						constructLabel(parent, entityModel, attributeModel, tabIndex, sameRow);
+					}
 				}
 			} else {
 				// display an editable field
 				if (AttributeType.BASIC.equals(type) || AttributeType.MASTER.equals(type)
 						|| AttributeType.DETAIL.equals(type) || AttributeType.ELEMENT_COLLECTION.equals(type)) {
-					constructField(parent, entityModel, attributeModel, false, tabIndex);
+					constructField(parent, entityModel, attributeModel, false, tabIndex, sameRow);
 				} else if (AttributeType.LOB.equals(type)) {
 					// for a LOB field we need to construct a rather
 					// elaborate upload component
@@ -433,12 +460,18 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		}
 	}
 
+	/**
+	 * Add a listener to respond to a tab change and focus the first available field
+	 * 
+	 * @param tabSheet
+	 */
 	private void addTabChangeListener(TabSheet tabSheet) {
 		tabSheet.addSelectedTabChangeListener(event -> {
 			Component c = event.getTabSheet().getSelectedTab();
 			if (tabSheets.get(isViewMode()) != null && tabSheets.get(isViewMode()).getTab(c) != null) {
 				int index = VaadinUtils.getTabIndex(tabSheets.get(isViewMode()),
 						tabSheets.get(isViewMode()).getTab(c).getCaption());
+				afterTabSelected(index);
 				if (firstFields.get(index) != null) {
 					firstFields.get(index).focus();
 				}
@@ -461,14 +494,23 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	}
 
 	/**
-	 * Respond to the setting of a new entity as the selected entity. This can
-	 * be used to fetch any additionally required data
+	 * Respond to the setting of a new entity as the selected entity. This can be
+	 * used to fetch any additionally required data
 	 * 
 	 * @param entity
 	 *            the entity
 	 */
 	protected void afterEntitySet(T entity) {
 		// override in subclass
+	}
+
+	/**
+	 * 
+	 * @param layout
+	 * @param viewMode
+	 */
+	protected void afterLayoutBuilt(Layout layout, boolean viewMode) {
+		// after the layout
 	}
 
 	/**
@@ -480,8 +522,17 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	}
 
 	/**
-	 * Called after the user navigates back to a search screen using the back
-	 * button
+	 * Callback method that is called after a tab has been selected
+	 * 
+	 * @param tabIndex
+	 *            the zero-based index of the selected tab
+	 */
+	protected void afterTabSelected(int tabIndex) {
+		// overwrite in subclasses
+	}
+
+	/**
+	 * Called after the user navigates back to a search screen using the back button
 	 * 
 	 * @return
 	 */
@@ -490,8 +541,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	}
 
 	/**
-	 * Main build method - lazily constructs the layout for either edit or view
-	 * mode
+	 * Main build method - lazily constructs the layout for either edit or view mode
 	 */
 	@Override
 	public void build() {
@@ -542,20 +592,21 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		VerticalLayout layout = new DefaultVerticalLayout(false, true);
 
 		titleLabels.put(isViewMode(), constructTitleLabel());
-
-		// horizontal layout that contains title label and buttons
-
 		titleBars.put(isViewMode(), new DefaultHorizontalLayout(false, true, true));
 		titleBars.get(isViewMode()).addComponent(titleLabels.get(isViewMode()));
 
-		HorizontalLayout buttonBar = constructButtonBar();
-		buttonBar.setSizeUndefined();
-		if (getFormOptions().isPlaceButtonBarAtTop()) {
-			layout.addComponent(buttonBar);
-		} else {
-			titleBars.get(isViewMode()).addComponent(buttonBar);
+		HorizontalLayout buttonBar = null;
+		if (!nestedMode) {
+			buttonBar = constructButtonBar(false);
+			buttonBar.setSizeUndefined();
+			if (getFormOptions().isPlaceButtonBarAtTop()) {
+				layout.addComponent(buttonBar);
+			} else {
+				titleBars.get(isViewMode()).addComponent(buttonBar);
+			}
 		}
 		layout.addComponent(titleBars.get(isViewMode()));
+		titleBars.get(isViewMode()).setVisible(!nestedMode);
 
 		Layout form = null;
 		if (entityModel.usesDefaultGroupOnly()) {
@@ -605,8 +656,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 				// just one layer of attribute groups
 				int tabIndex = 0;
 				for (String attributeGroup : entityModel.getAttributeGroups()) {
-
-					if (entityModel.isAttributeGroupVisible(attributeGroup, viewMode)) {
+					if (entityModel.isAttributeGroupVisible(attributeGroup, isViewMode())) {
 						Layout innerForm = constructAttributeGroupLayout(form, tabs, tabSheets.get(isViewMode()),
 								attributeGroup, true);
 						if (ScreenMode.VERTICAL.equals(getFormOptions().getScreenMode())) {
@@ -614,7 +664,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 						}
 
 						for (AttributeModel attributeModel : entityModel.getAttributeModelsForGroup(attributeGroup)) {
-							addField(innerForm, entityModel, attributeModel, tabIndex);
+							addField(innerForm, entityModel, attributeModel, tabIndex, false);
 						}
 						if (AttributeGroupMode.TABSHEET.equals(getFormOptions().getAttributeGroupMode())) {
 							tabIndex++;
@@ -626,7 +676,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			// iterate over the attributes and add them to the form (without any
 			// grouping)
 			for (AttributeModel attributeModel : entityModel.getAttributeModels()) {
-				addField(form, entityModel, attributeModel, 0);
+				addField(form, entityModel, attributeModel, 0, false);
 			}
 		}
 
@@ -637,17 +687,36 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			firstFields.get(0).focus();
 		}
 
-		buttonBar = constructButtonBar();
-		buttonBar.setSizeUndefined();
-		layout.addComponent(buttonBar);
+		if (!nestedMode) {
+			buttonBar = constructButtonBar(true);
+			buttonBar.setSizeUndefined();
+			layout.addComponent(buttonBar);
+		} else {
+			// no button bar needed, but we do need value change listeners
+			for (Field<?> f : groups.get(isViewMode()).getFields()) {
+				f.addValueChangeListener(event -> {
+					if (receiver != null
+							&& ValidationMode.DISABLE_BUTTON.equals(getFormOptions().getValidationMode())) {
+						receiver.signalDetailsComponentValid(this, this.isValid());
+					}
+
+					// always clear validation errors
+					((AbstractField<?>) f).setComponentError(null);
+				});
+			}
+
+		}
+
 		checkSaveButtonState();
+		disableCreateOnlyFields();
+		afterLayoutBuilt(form, isViewMode());
 
 		return layout;
 	}
 
 	/**
-	 * Checks the state of the iteration (prev/next) buttons. These will be
-	 * shown in view mode or if the form only supports an edit mode
+	 * Checks the state of the iteration (prev/next) buttons. These will be shown in
+	 * view mode or if the form only supports an edit mode
 	 * 
 	 * @param checkEnabled
 	 *            whether to check if the buttons should be enabled
@@ -672,20 +741,30 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	}
 
 	/**
-	 * Sets the state (enabled/disabled) of the save button. The button is
-	 * enabled if the from is valid and all of its detail tables are as well
+	 * Sets the state (enabled/disabled) of the save button. The button is enabled
+	 * if the from is valid and all of its detail tables are as well
 	 */
 	private void checkSaveButtonState() {
 		for (Button saveButton : buttons.get(isViewMode())) {
 			if (SAVE_BUTTON_DATA.equals(saveButton.getData())) {
-				boolean valid = groups.get(isViewMode()).isValid();
-
-				for (Boolean b : detailTablesValid.values()) {
-					valid &= b;
+				if (ValidationMode.DISABLE_BUTTON.equals(getFormOptions().getValidationMode())) {
+					saveButton.setEnabled(isValid());
+				} else {
+					saveButton.setEnabled(true);
 				}
-				saveButton.setEnabled(valid);
 			}
 		}
+	}
+
+	/**
+	 * Check if the form is valid
+	 * 
+	 * @return
+	 */
+	public boolean isValid() {
+		boolean valid = groups.get(isViewMode()).isValid();
+		valid &= detailComponentsValid.values().stream().allMatch(x -> x);
+		return valid;
 	}
 
 	/**
@@ -696,8 +775,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	 * @param tabs
 	 *            whether to include the component in a tab sheet
 	 * @param tabSheet
-	 *            the parent tab sheet (only used if the "tabs" parameter is
-	 *            true)
+	 *            the parent tab sheet (only used if the "tabs" parameter is true)
 	 * @param caption
 	 *            caption of the panel or tab sheet
 	 * @param lowest
@@ -721,7 +799,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			Tab added = tabSheet.addTab(innerLayout, message(messageKey));
 			attributeGroups.get(isViewMode()).put(messageKey, added);
 		} else {
-			Panel panel = new Panel();
+			CollapsiblePanel panel = new CollapsiblePanel();
 			panel.setStyleName("attributePanel");
 			panel.setCaption(message(messageKey));
 			panel.setContent(innerLayout);
@@ -732,11 +810,12 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		return innerLayout;
 	}
 
-	private HorizontalLayout constructButtonBar() {
+	private HorizontalLayout constructButtonBar(boolean bottom) {
 		HorizontalLayout buttonBar = new DefaultHorizontalLayout();
 
 		// button to go back to the main screen when in view mode
 		Button backButton = new Button(message("ocs.back"));
+		backButton.setIcon(FontAwesome.BACKWARD);
 		backButton.addClickListener(event -> back());
 		backButton.setVisible(isViewMode() && getFormOptions().isShowBackButton());
 		backButton.setData(BACK_BUTTON_DATA);
@@ -745,6 +824,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 		// in edit mode, display a cancel button
 		Button cancelButton = new Button(message("ocs.cancel"));
+		cancelButton.setData(CANCEL_BUTTON_DATA);
 		cancelButton.addClickListener(event -> {
 			if (entity.getId() != null) {
 				entity = service.fetchById(entity.getId(), getDetailJoins());
@@ -753,20 +833,20 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		});
 		cancelButton.setVisible((!isViewMode() && !getFormOptions().isHideCancelButton())
 				|| (getFormOptions().isFormNested() && entity.getId() == null));
-		cancelButton.setData(CANCEL_BUTTON_DATA);
+		cancelButton.setIcon(FontAwesome.BAN);
 		buttonBar.addComponent(cancelButton);
 		buttons.get(isViewMode()).add(cancelButton);
 
 		// create the save button
 		if (!isViewMode()) {
-			Button saveButton = constructSaveButton();
+			Button saveButton = constructSaveButton(bottom);
 			buttonBar.addComponent(saveButton);
 			buttons.get(isViewMode()).add(saveButton);
-
 		}
 
 		// create the edit button
 		Button editButton = new Button(message("ocs.edit"));
+		editButton.setIcon(FontAwesome.PENCIL);
 		editButton.addClickListener(event -> setViewMode(false));
 		buttonBar.addComponent(editButton);
 		buttons.get(isViewMode()).add(editButton);
@@ -775,6 +855,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 		// button for moving to the previous record
 		Button prevButton = new Button(message("ocs.previous"));
+		prevButton.setIcon(FontAwesome.ARROW_LEFT);
 		prevButton.addClickListener(e -> {
 			T prev = getPrevEntity(getEntity());
 			if (prev != null) {
@@ -789,6 +870,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 		// button for moving to the next record
 		Button nextButton = new Button(message("ocs.next"));
+		nextButton.setIcon(FontAwesome.ARROW_RIGHT);
 		nextButton.addClickListener(e -> {
 			T next = getNextEntity(getEntity());
 			if (next != null) {
@@ -878,7 +960,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	 */
 	@SuppressWarnings("unchecked")
 	private void constructField(Layout parent, EntityModel<T> entityModel, AttributeModel attributeModel,
-			boolean viewMode, int tabIndex) {
+			boolean viewMode, int tabIndex, boolean sameRow) {
 
 		EntityModel<?> em = getFieldEntityModel(attributeModel);
 		// allow the user to override the construction of a field
@@ -889,10 +971,13 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		}
 
 		if (field instanceof URLField) {
-			((URLField) field).setEditable(!isViewMode());
+			((URLField) field)
+					.setEditable(!isViewMode() && !EditableType.CREATE_ONLY.equals(attributeModel.getEditableType()));
 		}
 
-		// set view mode if appropriate
+		// collection tables are normally rendered in both edit and view mode so
+		// they must
+		// be explicitly enabled/disabled
 		if (field instanceof CollectionTable) {
 			((CollectionTable<?>) field).setViewMode(isViewMode());
 		}
@@ -903,20 +988,45 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		}
 
 		if (field != null) {
+			// set explicit field width
+			if (!(field instanceof Switch)) {
+				Integer fieldWidth = SystemPropertyUtils.getDefaultFieldWidth();
+
+				if (fieldWidth == null || sameRow || field instanceof DetailsEditLayout
+						|| !attributeModel.getGroupTogetherWith().isEmpty()) {
+					field.setSizeFull();
+				} else {
+					field.setWidth(fieldWidth + "px");
+				}
+			}
+
 			groups.get(viewMode).bind(field, attributeModel.getName());
-			field.setSizeFull();
 
 			if (!attributeModel.getGroupTogetherWith().isEmpty()) {
 				// multiple fields behind each other
 				HorizontalLayout horizontal = constructRowLayout(attributeModel, attributeModel.isRequired(),
 						!(field instanceof CheckBox));
-				horizontal.setSizeFull();
 
+				Integer fieldWidth = SystemPropertyUtils.getDefaultFieldWidth();
+				if (fieldWidth == null || nestedMode) {
+					horizontal.setSizeFull();
+				} else {
+					horizontal.setWidth(fieldWidth + "px");
+				}
 				parent.addComponent(horizontal);
 
-				// add the first field (without caption)
+				// add the first field (without caption, unless it's a checkbox)
 				if (!(field instanceof CheckBox)) {
 					field.setCaption("");
+				}
+
+				// calculate expansion factors
+				float sums = attributeModel.getExpansionFactor();
+				for (String path : attributeModel.getGroupTogetherWith()) {
+					AttributeModel am = getEntityModel().getAttributeModel(path);
+					if (am != null) {
+						sums += am.getExpansionFactor();
+					}
 				}
 
 				// form layout for holding first field
@@ -924,16 +1034,20 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 				fl.addComponent(field);
 				horizontal.addComponent(fl);
 
+				float ep = attributeModel.getExpansionFactor() / sums;
+				horizontal.setExpandRatio(fl, ep);
+
 				// form layout for any of the other fields
 				for (String path : attributeModel.getGroupTogetherWith()) {
-					AttributeModel am = getEntityModel().getAttributeModel(path);
-					if (am != null) {
+					AttributeModel nestedAm = getEntityModel().getAttributeModel(path);
+					if (nestedAm != null) {
 						FormLayout fl2 = constructNestedFormLayout(false);
 						horizontal.addComponent(fl2);
-						addField(fl2, entityModel, am, tabIndex);
+						ep = nestedAm.getExpansionFactor() / sums;
+						addField(fl2, entityModel, nestedAm, tabIndex, true);
+						horizontal.setExpandRatio(fl2, ep);
 					}
 				}
-
 			} else {
 				parent.addComponent(field);
 			}
@@ -958,13 +1072,12 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	 * @param entityModel
 	 *            the entity model
 	 * @param attributeModel
-	 *            the attribute model for the attribute for which to create a
-	 *            label
+	 *            the attribute model for the attribute for which to create a label
 	 * @param tabIndex
 	 *            the number of components added so far
 	 */
-	private void constructLabel(Layout parent, EntityModel<T> entityModel, AttributeModel attributeModel,
-			int tabIndex) {
+	private void constructLabel(Layout parent, EntityModel<T> entityModel, AttributeModel attributeModel, int tabIndex,
+			boolean sameRow) {
 		Component label = constructLabel(entity, attributeModel);
 		labels.get(isViewMode()).put(attributeModel, label);
 
@@ -984,7 +1097,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 				if (am != null) {
 					FormLayout fl2 = constructNestedFormLayout(false);
 					horizontal.addComponent(fl2);
-					addField(fl2, getEntityModel(), am, tabIndex);
+					addField(fl2, getEntityModel(), am, tabIndex, sameRow);
 				}
 			}
 		} else {
@@ -1012,8 +1125,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	}
 
 	/**
-	 * Constructs a layout that serves as the basis for displaying multiple
-	 * input components in a single row
+	 * Constructs a layout that serves as the basis for displaying multiple input
+	 * components in a single row
 	 * 
 	 * @param attributeModel
 	 *            the attribute model for the first attribute
@@ -1029,32 +1142,49 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		}
 		horizontal.setStyleName(DynamoConstants.CSS_NESTED, true);
 		if (required) {
-			horizontal.setStyleName(DynamoConstants.CSS_REQUIRED, true);
+			horizontal.setStyleName(DynamoConstants.CSS_NESTED + " " + DynamoConstants.CSS_REQUIRED, true);
 		}
-
 		return horizontal;
 	}
 
 	/**
 	 * Constructs the save button
+	 * 
+	 * @param boolean
+	 *            indicates whether this is the button at the bottom of the screen
 	 */
-	private Button constructSaveButton() {
-		Button saveButton = new Button(message("ocs.save.existing"));
+	private Button constructSaveButton(boolean bottom) {
+		Button saveButton = new Button(
+				(entity != null && entity.getId() != null) ? message("ocs.save.existing") : message("ocs.save.new"));
+		saveButton.setIcon(FontAwesome.SAVE);
 		saveButton.addClickListener(event -> {
 			try {
-				boolean isNew = entity.getId() == null;
-				entity = service.save(entity);
-				setEntity(service.fetchById(entity.getId(), getDetailJoins()));
-				showNotifification(message("ocs.changes.saved"), Notification.Type.TRAY_NOTIFICATION);
 
-				// set to viewmode, load the view mode screen, and fill the
-				// details
-				if (getFormOptions().isOpenInViewMode()) {
-					viewMode = true;
-					build();
+				// validate all fields
+				boolean error = validateAllFields();
+				if (!error) {
+					if (getFormOptions().isConfirmSave()) {
+						// ask for confirmation before saving
+
+						service.validate(entity);
+						VaadinUtils.showConfirmDialog(getMessageService(), getMessageService().getMessage(
+								"ocs.confirm.save", VaadinUtils.getLocale(), getEntityModel().getDisplayName()), () -> {
+									try {
+										doSave();
+									} catch (RuntimeException ex) {
+										if (!handleCustomException(ex)) {
+											handleSaveException(ex);
+										}
+									}
+								});
+					} else {
+						if (customSaveConsumer != null) {
+							customSaveConsumer.accept(entity);
+						} else {
+							doSave();
+						}
+					}
 				}
-
-				afterEditDone(false, isNew, getEntity());
 			} catch (RuntimeException ex) {
 				if (!handleCustomException(ex)) {
 					handleSaveException(ex);
@@ -1065,8 +1195,13 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		// enable/disable save button based on form validity
 		saveButton.setData(SAVE_BUTTON_DATA);
 		saveButton.setEnabled(groups.get(isViewMode()).isValid());
-		for (Field<?> f : groups.get(isViewMode()).getFields()) {
-			f.addValueChangeListener(event -> checkSaveButtonState());
+		if (bottom) {
+			for (Field<?> f : groups.get(isViewMode()).getFields()) {
+				f.addValueChangeListener(event -> {
+					checkSaveButtonState();
+					((AbstractField<?>) f).setComponentError(null);
+				});
+			}
 		}
 		return saveButton;
 	}
@@ -1112,6 +1247,20 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		return new UploadComponent(attributeModel);
 	}
 
+	/**
+	 * Disables any fields that are only editable when creating a new entity
+	 */
+	private void disableCreateOnlyFields() {
+		if (!isViewMode()) {
+			for (AttributeModel am : getEntityModel().getAttributeModels()) {
+				Field<?> field = groups.get(isViewMode()).getField(am.getPath());
+				if (field != null && EditableType.CREATE_ONLY.equals(am.getEditableType())) {
+					field.setEnabled(entity.getId() == null);
+				}
+			}
+		}
+	}
+
 	private List<Button> filterButtons(String data) {
 		return Collections.unmodifiableList(
 				buttons.get(isViewMode()).stream().filter(b -> data.equals(b.getData())).collect(Collectors.toList()));
@@ -1139,6 +1288,42 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 	public Field<?> getField(String propertyName) {
 		return groups.get(isViewMode()).getField(propertyName);
+	}
+
+	/**
+	 * Sets the "required" status for a field. Convenience method that also
+	 * correctly handles the situation in which there are multiple fields behind
+	 * each other on the same row
+	 * 
+	 * @param propertyName
+	 * @param required
+	 */
+	public void setFieldRequired(String propertyName, boolean required) {
+		Field<?> field = getField(propertyName);
+		if (field != null) {
+
+			field.setRequired(required);
+			if (!required) {
+				((AbstractField<?>) field).setComponentError(null);
+			}
+
+			// if there are multiple fields in a row, we need to some additional trickery
+			// since
+			// to make sure the "required" asterisk is properly displayed
+			AttributeModel am = getEntityModel().getAttributeModel(propertyName);
+			if (am != null && !am.getGroupTogetherWith().isEmpty()) {
+				HorizontalLayout hz = (HorizontalLayout) field.getParent().getParent();
+				if (required) {
+					hz.addStyleName(DynamoConstants.CSS_REQUIRED);
+				} else {
+					hz.removeStyleName(DynamoConstants.CSS_REQUIRED);
+				}
+			}
+		}
+	}
+
+	public Optional<Field<?>> getFieldOptional(String propertyName) {
+		return Optional.ofNullable((Field<?>) groups.get(isViewMode()).getField(propertyName));
 	}
 
 	public Integer getFormTitleWidth() {
@@ -1172,8 +1357,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	/**
 	 * Indicates which parent group a certain child group belongs to. The parent
 	 * group must be mentioned in the result of the
-	 * <code>getParentGroupHeaders</code> method. The childGroup must be the
-	 * name of an attribute group from the entity model
+	 * <code>getParentGroupHeaders</code> method. The childGroup must be the name of
+	 * an attribute group from the entity model
 	 * 
 	 * @param childGroup
 	 * @return
@@ -1184,8 +1369,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 	/**
 	 * Returns the group headers of any additional parent groups that must be
-	 * included in the form. These can be used to add an extra layer of nesting
-	 * of the attribute groups
+	 * included in the form. These can be used to add an extra layer of nesting of
+	 * the attribute groups
 	 * 
 	 * @return
 	 */
@@ -1283,9 +1468,9 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	}
 
 	/**
-	 * Post-processes any edit fields- this method does nothing by default but
-	 * must be used to call the postProcessEditFields callback method on an
-	 * enclosing component
+	 * Post-processes any edit fields- this method does nothing by default but must
+	 * be used to call the postProcessEditFields callback method on an enclosing
+	 * component
 	 */
 	protected void postProcessEditFields() {
 		// overwrite in subclasses
@@ -1310,20 +1495,19 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		// display a group if it is not the default group
 		for (String attributeGroup : getEntityModel().getAttributeGroups()) {
 			if ((!EntityModel.DEFAULT_GROUP.equals(attributeGroup)
-					|| getEntityModel().isAttributeGroupVisible(attributeGroup, isViewMode()))
+					|| getEntityModel().isAttributeGroupVisible(attributeGroup, viewMode))
 					&& getParentGroup(attributeGroup).equals(parentGroupHeader)) {
 				Layout innerLayout2 = constructAttributeGroupLayout(innerForm, innerTabs, innerTabSheet, attributeGroup,
 						true);
 				for (AttributeModel attributeModel : getEntityModel().getAttributeModelsForGroup(attributeGroup)) {
-					addField(innerLayout2, getEntityModel(), attributeModel, tabIndex);
+					addField(innerLayout2, getEntityModel(), attributeModel, tabIndex, false);
 				}
 			}
 		}
 	}
 
 	/**
-	 * Reconstructs all labels are a change of the view mode or the selected
-	 * entity
+	 * Reconstructs all labels are a change of the view mode or the selected entity
 	 */
 	private void reconstructLabels() {
 		// reconstruct all labels (since they cannot be bound automatically)
@@ -1426,6 +1610,44 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	}
 
 	/**
+	 * Perform the actual save action
+	 */
+	public void doSave() {
+		boolean isNew = entity.getId() == null;
+		entity = service.save(entity);
+		setEntity(service.fetchById(entity.getId(), getDetailJoins()));
+		showNotifification(message("ocs.changes.saved"), Notification.Type.TRAY_NOTIFICATION);
+
+		// set to view mode, load the view mode screen, and fill the
+		// details
+		if (getFormOptions().isOpenInViewMode()) {
+			viewMode = true;
+			build();
+		}
+		afterEditDone(false, isNew, getEntity());
+	}
+
+	/**
+	 * Selects the tab specified by the provided index
+	 * 
+	 * @param index
+	 */
+	public void selectTab(int index) {
+		if (tabSheets.get(isViewMode()) != null) {
+			tabSheets.get(isViewMode()).setSelectedTab(index);
+		}
+	}
+
+	public int getSelectedTabIndex() {
+		if (tabSheets.get(isViewMode()) != null) {
+			Component c = tabSheets.get(isViewMode()).getSelectedTab();
+			return VaadinUtils.getTabIndex(tabSheets.get(isViewMode()),
+					tabSheets.get(isViewMode()).getTab(c).getCaption());
+		}
+		return 0;
+	}
+
+	/**
 	 * Shows/hides an attribute group
 	 * 
 	 * @param caption
@@ -1438,6 +1660,18 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		setGroupVisible(c, visible);
 		c = attributeGroups.get(true).get(key);
 		setGroupVisible(c, visible);
+	}
+
+	public CollapsiblePanel getAttributeGroupPanel(String key) {
+		Object c = attributeGroups.get(isViewMode()).get(key);
+		if (c instanceof CollapsiblePanel) {
+			return (CollapsiblePanel) c;
+		}
+		return null;
+	}
+
+	public void putAttributeGroupPanel(String key, Component c) {
+		attributeGroups.get(isViewMode()).put(key, c);
 	}
 
 	/**
@@ -1505,23 +1739,24 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			}
 		}
 
+		// enable/disable fields for create only mode
+		disableCreateOnlyFields();
+
 		// update the title label
 		Label newTitleLabel = constructTitleLabel();
 		titleBars.get(isViewMode()).replaceComponent(titleLabels.get(isViewMode()), newTitleLabel);
 		titleLabels.put(isViewMode(), newTitleLabel);
 
 		// change caption depending on entity state
-		for (Button b : getSaveButtons()) {
-			if (entity.getId() != null) {
-				b.setCaption(message("ocs.save.existing"));
-			} else {
-				b.setCaption(message("ocs.save.new"));
-			}
-		}
+		updateSaveButtonCaptions();
 
 		for (Button b : getCancelButtons()) {
 			b.setVisible((!isViewMode() && !getFormOptions().isHideCancelButton())
 					|| (getFormOptions().isFormNested() && entity.getId() == null));
+		}
+
+		if (receiver != null) {
+			receiver.signalDetailsComponentValid(this, this.isValid());
 		}
 
 	}
@@ -1609,6 +1844,10 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			fieldsProcessed = true;
 		}
 
+		// update button captions
+		updateSaveButtonCaptions();
+		disableCreateOnlyFields();
+
 		// preserve tab index when switching
 		if (tabSheets.get(oldMode) != null) {
 			Component c = tabSheets.get(oldMode).getSelectedTab();
@@ -1623,9 +1862,27 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			firstFields.get(0).focus();
 		}
 
+		resetComponentErrors();
+
 		if (oldMode != this.viewMode) {
 			afterModeChanged(isViewMode());
+			for (Field<?> f : groups.get(isViewMode()).getFields()) {
+				if (f instanceof DetailsEditLayout<?, ?>) {
+					DetailsEditLayout<?, ?> detMode = (DetailsEditLayout<?, ?>) f;
+					detMode.signalModeChange(isViewMode());
+				}
+			}
 		}
+	}
+
+	/**
+	 * Overwrite the value of the title label
+	 * 
+	 * @param value
+	 *            the desired value
+	 */
+	public void setTitleLabel(String value) {
+		titleLabels.get(isViewMode()).setValue(value);
 	}
 
 	/**
@@ -1636,9 +1893,14 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	 * @param valid
 	 *            whether the component is valid
 	 */
-	public void signalDetailsTableValid(SignalsParent component, boolean valid) {
-		detailTablesValid.put(component, valid);
-		checkSaveButtonState();
+	public void signalDetailsComponentValid(SignalsParent component, boolean valid) {
+		if (ValidationMode.DISABLE_BUTTON.equals(getFormOptions().getValidationMode())) {
+			detailComponentsValid.put(component, valid);
+			checkSaveButtonState();
+			if (receiver != null) {
+				receiver.signalDetailsComponentValid(this, isValid());
+			}
+		}
 	}
 
 	/**
@@ -1663,6 +1925,83 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 				viewLabel.addStyleName(className);
 			}
 		}
+	}
+
+	/**
+	 * Removes any error messages from the individual form components
+	 */
+	private void resetComponentErrors() {
+		for (Field<?> f : groups.get(isViewMode()).getFields()) {
+			((AbstractField<?>) f).setComponentError(null);
+		}
+	}
+
+	/**
+	 * Sets the caption of the save button depending on whether we are creating or
+	 * updating an entity
+	 */
+	private void updateSaveButtonCaptions() {
+		for (Button b : getSaveButtons()) {
+			if (entity.getId() != null) {
+				b.setCaption(message("ocs.save.existing"));
+			} else {
+				b.setCaption(message("ocs.save.new"));
+			}
+		}
+	}
+
+	public boolean isNestedMode() {
+		return nestedMode;
+	}
+
+	public void setNestedMode(boolean nestedMode) {
+		this.nestedMode = nestedMode;
+	}
+
+	public Collection<Field<?>> getFields(boolean viewMode) {
+		return groups.get(viewMode).getFields();
+	}
+
+	public ReceivesSignal getReceiver() {
+		return receiver;
+	}
+
+	public void setReceiver(ReceivesSignal receiver) {
+		this.receiver = receiver;
+	}
+
+	/**
+	 * Validates all fields and returns true if an error occurs
+	 * 
+	 * @return
+	 */
+	public boolean validateAllFields() {
+		boolean error = false;
+		if (ValidationMode.VALIDATE_DIRECTLY.equals(getFormOptions().getValidationMode())) {
+			for (Field<?> f : groups.get(isViewMode()).getFields()) {
+				try {
+					f.validate();
+					((AbstractField<?>) f).setComponentError(null);
+				} catch (InvalidValueException ex) {
+					error = true;
+					((AbstractField<?>) f).setComponentError(new UserError(ex.getLocalizedMessage()));
+				}
+
+				// propagate to child form
+				if (f instanceof SignalsParent) {
+					error |= ((SignalsParent) f).validateAllFields();
+				}
+			}
+		}
+		return error;
+	}
+
+	public Consumer<T> getCustomSaveConsumer() {
+		return customSaveConsumer;
+	}
+
+	public void setCustomSaveConsumer(Consumer<T> customSaveConsumer) {
+		this.customSaveConsumer = customSaveConsumer;
 	}
 
 }

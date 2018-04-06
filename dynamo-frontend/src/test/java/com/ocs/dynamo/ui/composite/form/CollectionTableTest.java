@@ -16,6 +16,7 @@ package com.ocs.dynamo.ui.composite.form;
 import java.util.Set;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -26,6 +27,7 @@ import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.test.BaseIntegrationTest;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 
+@Ignore
 public class CollectionTableTest extends BaseIntegrationTest {
 
     @Autowired

@@ -36,8 +36,7 @@ public final class StringUtils {
 	 *            the Camel Case string to convert
 	 * @param capitalize
 	 *            indicates whether to capitalize every word (if set to
-	 *            <code>false</code> then only the first word will be
-	 *            capitalized
+	 *            <code>false</code> then only the first word will be capitalized
 	 * @return
 	 */
 	public static String camelCaseToHumanFriendly(String camelCaseString, boolean capitalize) {
@@ -80,8 +79,8 @@ public final class StringUtils {
 	}
 
 	/**
-	 * Checks if an value is a valid email address - this is actually a very
-	 * simple check that only checks for the @-sign
+	 * Checks if an value is a valid email address - this is actually a very simple
+	 * check that only checks for the @-sign
 	 * 
 	 * @param value
 	 *            the value to check
@@ -117,8 +116,7 @@ public final class StringUtils {
 	}
 
 	/**
-	 * Prepends the default protocol ("http://") to a value that represents a
-	 * URL
+	 * Prepends the default protocol ("http://") to a value that represents a URL
 	 * 
 	 * @param value
 	 *            the value
@@ -136,7 +134,7 @@ public final class StringUtils {
 	}
 
 	/**
-	 * Converts a propertyId to a
+	 * Converts a propertyId to a human friendly form
 	 * 
 	 * @param propertyId
 	 *            the ID of the property
