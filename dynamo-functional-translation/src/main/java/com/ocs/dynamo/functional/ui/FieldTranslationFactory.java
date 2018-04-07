@@ -27,8 +27,9 @@ import com.ocs.dynamo.utils.ClassUtils;
 import com.vaadin.ui.Field;
 
 /**
- * This factory can be used to generate TranslationTable objects for attributes in fields which have to be dynamically
- * localized (translated). It expects a generic database table based on entity Translation and attributes to be
+ * This factory can be used to generate TranslationTable objects for attributes
+ * in fields which have to be dynamically localized (translated). It expects a
+ * generic database table based on entity Translation and attributes to be
  * translated mapped to the translation collection in this entity.
  * 
  * @author patrick.deenen@opencircle.solutions
@@ -38,16 +39,17 @@ import com.vaadin.ui.Field;
  * @param <T>
  *            The type which implements the translation for the entity
  */
-// FIXME This factory should be improved to implement an interface that can register this interface to a field
+// FIXME This factory should be improved to implement an interface that can
+// register this interface to a field
 // factory repository which can be used by a generic ModelFieldFactory.
 public class FieldTranslationFactory<ID extends Serializable, T extends AbstractEntityTranslated<ID, Translation<T>>> {
-	
+
 	private EntityModel<T> em;
-	
+
 	private T entity;
-	
+
 	private HashMap<String, Field<?>> fields = new HashMap<>();
-	
+
 	private boolean viewMode;
 
 	/**

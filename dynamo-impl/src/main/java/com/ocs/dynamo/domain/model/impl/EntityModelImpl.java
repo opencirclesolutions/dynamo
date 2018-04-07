@@ -60,6 +60,9 @@ public class EntityModelImpl<T> implements EntityModel<T> {
 
 	private Map<AttributeModel, Boolean> sortOrder = new LinkedHashMap<>();
 
+	public EntityModelImpl() {
+	}
+
 	/**
 	 * Constructor
 	 * 
@@ -84,9 +87,6 @@ public class EntityModelImpl<T> implements EntityModel<T> {
 		this.description = description;
 		this.displayProperty = displayProperty;
 		this.reference = reference;
-	}
-
-	public EntityModelImpl() {
 	}
 
 	public void addAttributeGroup(String attributeGroup) {
@@ -260,21 +260,6 @@ public class EntityModelImpl<T> implements EntityModel<T> {
 				.anyMatch(m -> m.isVisible() && (readOnly || !m.getEditableType().equals(EditableType.READ_ONLY)));
 	}
 
-	void setIdAttributeModel(AttributeModel idAttributeModel) {
-		this.idAttributeModel = idAttributeModel;
-	}
-
-	@Override
-	public String toString() {
-		return ReflectionToStringBuilder.toStringExclude(this, "attributeModels");
-	}
-
-	@Override
-	public boolean usesDefaultGroupOnly() {
-		return attributeModels.keySet().size() == 1
-				&& attributeModels.keySet().iterator().next().equals(EntityModel.DEFAULT_GROUP);
-	}
-
 	public void setDescription(String description) {
 		this.description = description;
 	}
@@ -295,12 +280,27 @@ public class EntityModelImpl<T> implements EntityModel<T> {
 		this.entityClass = entityClass;
 	}
 
-	public void setSortOrder(Map<AttributeModel, Boolean> sortOrder) {
-		this.sortOrder = sortOrder;
+	void setIdAttributeModel(AttributeModel idAttributeModel) {
+		this.idAttributeModel = idAttributeModel;
 	}
 
 	public void setReference(String reference) {
 		this.reference = reference;
+	}
+
+	public void setSortOrder(Map<AttributeModel, Boolean> sortOrder) {
+		this.sortOrder = sortOrder;
+	}
+
+	@Override
+	public String toString() {
+		return ReflectionToStringBuilder.toStringExclude(this, "attributeModels");
+	}
+
+	@Override
+	public boolean usesDefaultGroupOnly() {
+		return attributeModels.keySet().size() == 1
+				&& attributeModels.keySet().iterator().next().equals(EntityModel.DEFAULT_GROUP);
 	}
 
 }
