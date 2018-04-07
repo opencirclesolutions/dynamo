@@ -43,6 +43,7 @@ import com.ocs.dynamo.domain.model.AttributeType;
 import com.ocs.dynamo.domain.model.CheckboxMode;
 import com.ocs.dynamo.domain.model.EditableType;
 import com.ocs.dynamo.domain.model.EntityModel;
+import com.ocs.dynamo.domain.model.FieldFactory;
 import com.ocs.dynamo.domain.model.NumberSelectMode;
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.service.BaseService;
@@ -119,6 +120,8 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 
 	private ServiceLocator serviceLocator = ServiceLocatorFactory.getServiceLocator();
 
+	private Collection<FieldFactory> fieldFactories;
+
 	// indicates whether the system is in search mode. In search mode,
 	// components for
 	// some attributes are constructed differently (e.g. we render two search
@@ -151,6 +154,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 		this.messageService = messageService;
 		this.validate = validate;
 		this.search = search;
+		this.fieldFactories = serviceLocator.getServices(FieldFactory.class);
 	}
 
 	/**
@@ -236,30 +240,45 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 	 *            the custom entity model for the field
 	 * @return
 	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public Field<?> constructField(AttributeModel attributeModel, Map<String, Filter> fieldFilters,
 			EntityModel<?> fieldEntityModel) {
 
-		Filter fieldFilter = fieldFilters == null ? null : fieldFilters.get(attributeModel.getPath());
-
 		Field<?> field = null;
-		if (fieldFilter != null) {
-			if (AttributeType.MASTER.equals(attributeModel.getAttributeType())) {
-				// create a combo box or lookup field
-				field = constructSelectField(attributeModel, fieldEntityModel, fieldFilter);
-			} else if (search && AttributeSelectMode.TOKEN.equals(attributeModel.getSearchSelectMode())
-					&& AttributeType.BASIC.equals(attributeModel.getAttributeType())) {
-				// simple token field (for distinct string values)
-				field = constructSimpleTokenField(
-						fieldEntityModel != null ? fieldEntityModel : attributeModel.getEntityModel(), attributeModel,
-						attributeModel.getPath().substring(attributeModel.getPath().lastIndexOf('.') + 1), false,
-						fieldFilter);
-			} else {
-				// detail relationship, render a multiple select
-				field = this.constructCollectionSelect(fieldEntityModel, attributeModel, fieldFilter, true, search);
+
+		// Are there any delegated component factories that can create this field?
+		if (fieldFactories != null && !fieldFactories.isEmpty()) {
+			for (FieldFactory ff : fieldFactories) {
+				FieldFactoryContextImpl<?> c = new FieldFactoryContextImpl<>().setAttributeModel(attributeModel)
+						.setFieldFilters(fieldFilters).setFieldEntityModel((EntityModel) fieldEntityModel);
+				field = ff.constructField(c);
+				if (field != null) {
+					break;
+				}
 			}
-		} else {
-			// no field filter present - delegate to default construction
-			field = this.createField(attributeModel.getPath(), fieldEntityModel);
+		}
+
+		if (field == null) {
+			Filter fieldFilter = fieldFilters == null ? null : fieldFilters.get(attributeModel.getPath());
+			if (fieldFilter != null) {
+				if (AttributeType.MASTER.equals(attributeModel.getAttributeType())) {
+					// create a combo box or lookup field
+					field = constructSelectField(attributeModel, fieldEntityModel, fieldFilter);
+				} else if (search && AttributeSelectMode.TOKEN.equals(attributeModel.getSearchSelectMode())
+						&& AttributeType.BASIC.equals(attributeModel.getAttributeType())) {
+					// simple token field (for distinct string values)
+					field = constructSimpleTokenField(
+							fieldEntityModel != null ? fieldEntityModel : attributeModel.getEntityModel(),
+							attributeModel,
+							attributeModel.getPath().substring(attributeModel.getPath().lastIndexOf('.') + 1), false,
+							fieldFilter);
+				} else {
+					// detail relationship, render a multiple select
+					field = this.constructCollectionSelect(fieldEntityModel, attributeModel, fieldFilter, true, search);
+				}
+			} else {
+				field = this.createField(attributeModel.getPath(), fieldEntityModel);
+			}
 		}
 
 		// Is it a required field?

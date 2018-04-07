@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<entity-mappings xmlns="http://java.sun.com/xml/ns/persistence/orm"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm http://java.sun.com/xml/ns/persistence/orm_1_0.xsd"
+	version="1.0">
+	<sequence-generator name="translation_id_seq"
+		allocation-size="1" sequence-name="translation_id_seq" />
+	<entity class="com.ocs.dynamo.functional.domain.Translation">
+		<attributes>
+			<id name="id">
+				<generated-value strategy="SEQUENCE" generator="translation_id_seq" />
+			</id>
+		</attributes>
+	</entity>
+</entity-mappings>

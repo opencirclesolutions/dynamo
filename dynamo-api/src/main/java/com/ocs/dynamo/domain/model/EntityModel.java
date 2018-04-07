@@ -64,12 +64,12 @@ public interface EntityModel<T> {
 	 * Cascade mode (when to apply cascading - search, edit, or both)
 	 */
 	String CASCADE_MODE = "cascadeMode";
-	
+
 	/**
 	 * The "checkbox mode" for a boolean (either a checkbox or a toggle)
 	 */
 	String CHECKBOX_MODE = "checkboxMode";
-	
+
 	/**
 	 * Whether the attribute (of type MASTER, DETAIL or ELEMENT_TABLE) can be edited
 	 * in an edit form
@@ -316,6 +316,8 @@ public interface EntityModel<T> {
 	 * Indicates whether direct navigation to this linked entity is allowed
 	 */
 	String DIRECT_NAVIGATION = "directNavigation";
+
+	void addAttributeGroup(String attributeGroup);
 
 	/**
 	 * Adds a new attribute model on the position of the given existing attribute

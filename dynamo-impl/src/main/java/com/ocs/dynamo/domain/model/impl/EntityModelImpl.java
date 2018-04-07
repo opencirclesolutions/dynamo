@@ -44,19 +44,19 @@ public class EntityModelImpl<T> implements EntityModel<T> {
 	// use a linked hash map to guarantee the ordering
 	private final Map<String, List<AttributeModel>> attributeModels = new LinkedHashMap<>();
 
-	private final String description;
+	private String description;
 
-	private final String displayName;
+	private String displayName;
 
-	private final String displayNamePlural;
+	private String displayNamePlural;
 
-	private final String displayProperty;
+	private String displayProperty;
 
-	private final Class<T> entityClass;
+	private Class<T> entityClass;
 
 	private AttributeModel idAttributeModel;
 
-	private final String reference;
+	private String reference;
 
 	private Map<AttributeModel, Boolean> sortOrder = new LinkedHashMap<>();
 
@@ -84,6 +84,9 @@ public class EntityModelImpl<T> implements EntityModel<T> {
 		this.description = description;
 		this.displayProperty = displayProperty;
 		this.reference = reference;
+	}
+
+	public EntityModelImpl() {
 	}
 
 	public void addAttributeGroup(String attributeGroup) {
@@ -270,6 +273,34 @@ public class EntityModelImpl<T> implements EntityModel<T> {
 	public boolean usesDefaultGroupOnly() {
 		return attributeModels.keySet().size() == 1
 				&& attributeModels.keySet().iterator().next().equals(EntityModel.DEFAULT_GROUP);
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public void setDisplayName(String displayName) {
+		this.displayName = displayName;
+	}
+
+	public void setDisplayNamePlural(String displayNamePlural) {
+		this.displayNamePlural = displayNamePlural;
+	}
+
+	public void setDisplayProperty(String displayProperty) {
+		this.displayProperty = displayProperty;
+	}
+
+	public void setEntityClass(Class<T> entityClass) {
+		this.entityClass = entityClass;
+	}
+
+	public void setSortOrder(Map<AttributeModel, Boolean> sortOrder) {
+		this.sortOrder = sortOrder;
+	}
+
+	public void setReference(String reference) {
+		this.reference = reference;
 	}
 
 }

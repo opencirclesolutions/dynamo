@@ -171,4 +171,9 @@ public class LazyEntityModelWrapper<T> implements EntityModel<T> {
 		return getDelegate().usesDefaultGroupOnly();
 	}
 
+	@Override
+	public void addAttributeGroup(String attributeGroup) {
+		getDelegate().addAttributeGroup(attributeGroup);
+	}
+
 }

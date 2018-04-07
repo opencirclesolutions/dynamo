@@ -82,6 +82,11 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
 	private boolean exportAllowed;
 
 	/**
+	 * Indicate whether to update the caption with the number of items in the table
+	 */
+	private boolean updateTableCaption = true;
+
+	/**
 	 * The message service
 	 */
 	private MessageService messageService;
@@ -124,7 +129,9 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
 		}
 
 		// update the table caption to reflect the number of items
-		addItemSetChangeListener(e -> updateTableCaption());
+		if (isUpdateTableCaption()) {
+			addItemSetChangeListener(e -> updateTableCaption());
+		}
 	}
 
 	/**
@@ -374,4 +381,11 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
 				VaadinUtils.getLocale(), getContainerDataSource().size()));
 	}
 
+	public boolean isUpdateTableCaption() {
+		return updateTableCaption;
+	}
+
+	public void setUpdateTableCaption(boolean updateTableCaption) {
+		this.updateTableCaption = updateTableCaption;
+	}
 }
