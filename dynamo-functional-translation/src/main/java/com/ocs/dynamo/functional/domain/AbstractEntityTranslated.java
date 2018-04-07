@@ -191,6 +191,10 @@ public abstract class AbstractEntityTranslated<ID, T extends Translation> extend
 		return null;
 	}
 
+	/**
+	 * 
+	 * @return ??
+	 */
 	protected List<String> findTranslatedFields() {
 		Method[] methods = this.getClass().getDeclaredMethods();
 		ArrayList<String> translatedFields = new ArrayList<>();
