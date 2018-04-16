@@ -132,7 +132,7 @@ public class TableExportActionHandler implements Handler {
 				if (value != null) {
 					AttributeModel am = findAttributeModel(propId);
 					if (am != null) {
-						value = FormatUtils.formatPropertyValue(entityModelFactory, am, value);
+						value = FormatUtils.formatPropertyValue(entityModelFactory, am, value, ", ");
 					}
 					if (value instanceof String) {
 						value = StringUtils.replaceHtmlBreaks(value.toString());
@@ -427,7 +427,7 @@ public class TableExportActionHandler implements Handler {
 						if (value instanceof String) {
 							value = StringUtils.replaceHtmlBreaks((String) value);
 						}
-						sheetCell.setCellValue(FormatUtils.formatPropertyValue(entityModelFactory, am, value));
+						sheetCell.setCellValue(FormatUtils.formatPropertyValue(entityModelFactory, am, value, ", "));
 					} else {
 						// if everything else fails, use the string
 						// representation
@@ -928,6 +928,7 @@ public class TableExportActionHandler implements Handler {
 				export.setReportTitle(reportTitle);
 				service.export(export);
 			} else {
+
 				// create the workbook
 				Workbook wb = createWorkbook(size);
 				if (wb == null) {

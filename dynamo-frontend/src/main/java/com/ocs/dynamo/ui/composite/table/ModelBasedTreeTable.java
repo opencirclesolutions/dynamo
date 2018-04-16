@@ -164,7 +164,7 @@ public class ModelBasedTreeTable<ID extends Serializable, T extends AbstractEnti
 	 */
 	@Override
 	protected String formatPropertyValue(Object rowId, Object colId, Property<?> property) {
-		String result = FormatUtils.formatPropertyValue(this, entityModelFactory, null, rowId, colId, property);
+		String result = FormatUtils.formatPropertyValue(this, entityModelFactory, null, rowId, colId, property, ",");
 		if (result != null) {
 			return result;
 		}
@@ -302,8 +302,8 @@ public class ModelBasedTreeTable<ID extends Serializable, T extends AbstractEnti
 	}
 
 	/**
-	 * Recursively sets the collapsed state of the item identified by the
-	 * provided ID and all of its children
+	 * Recursively sets the collapsed state of the item identified by the provided
+	 * ID and all of its children
 	 * 
 	 * @param itemId
 	 *            the ID of the item

@@ -82,8 +82,8 @@ public final class EntityModelUtil {
 				Object newValue = ClassUtils.getFieldValue(newEntity, am.getName());
 
 				if (!ObjectUtils.equals(oldValue, newValue)) {
-					String oldValueStr = FormatUtils.formatPropertyValue(entityModelFactory, am, oldValue);
-					String newValueStr = FormatUtils.formatPropertyValue(entityModelFactory, am, newValue);
+					String oldValueStr = FormatUtils.formatPropertyValue(entityModelFactory, am, oldValue, ", ");
+					String newValueStr = FormatUtils.formatPropertyValue(entityModelFactory, am, newValue, ", ");
 					results.add(messageService.getMessage("ocs.value.changed", VaadinUtils.getLocale(),
 							am.getDisplayName(), oldValue == null ? noValue : oldValueStr,
 							newValue == null ? noValue : newValueStr));

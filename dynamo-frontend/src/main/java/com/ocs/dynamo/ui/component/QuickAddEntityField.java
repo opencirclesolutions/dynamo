@@ -22,12 +22,13 @@ import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.BaseUI;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.data.Container.Filter;
+import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.UI;
 
 /**
- * Base class for components that display an Entity or collection of entities and that allow the
- * user to easily add new values on the fly
+ * Base class for components that display an Entity or collection of entities
+ * and that allow the user to easily add new values on the fly
  * 
  * @author bas.rutten
  *
@@ -36,118 +37,120 @@ import com.vaadin.ui.UI;
  * @param <T>
  *            the type of the entity
  * @param <U>
- *            the type of the value of the component (can be an entity, or a collection of entities)
+ *            the type of the value of the component (can be an entity, or a
+ *            collection of entities)
  */
 public abstract class QuickAddEntityField<ID extends Serializable, T extends AbstractEntity<ID>, U>
-        extends CustomEntityField<ID, T, U> {
+		extends CustomEntityField<ID, T, U> {
 
-    private static final long serialVersionUID = 7118578276952170818L;
+	private static final long serialVersionUID = 7118578276952170818L;
 
-    private UI ui = UI.getCurrent();
+	private UI ui = UI.getCurrent();
 
-    /**
-     * The button that brings up the dialog for adding a new entity
-     */
-    private Button addButton;
+	/**
+	 * The button that brings up the dialog for adding a new entity
+	 */
+	private Button addButton;
 
-    /**
-     * The button that navigates directly to detailscreen of the selected entity
-     */
-    private Button directNavigationButton;
+	/**
+	 * The button that navigates directly to detailscreen of the selected entity
+	 */
+	private Button directNavigationButton;
 
-    /**
-     * Additional filter for cascading
-     */
-    private Filter additionalFilter;
+	/**
+	 * Additional filter for cascading
+	 */
+	private Filter additionalFilter;
 
-    /**
-     * Constructor
-     * 
-     * @param service
-     *            the service used to interact with the storage
-     * @param entityModel
-     *            the entity model of the entity that is being displayed
-     * @param attributeModel
-     *            the attribute model
-     * @param filter
-     *            the search filter
-     */
-    public QuickAddEntityField(BaseService<ID, T> service, EntityModel<T> entityModel, AttributeModel attributeModel,
-            Filter filter) {
-        super(service, entityModel, attributeModel, filter);
-    }
+	/**
+	 * Constructor
+	 * 
+	 * @param service
+	 *            the service used to interact with the storage
+	 * @param entityModel
+	 *            the entity model of the entity that is being displayed
+	 * @param attributeModel
+	 *            the attribute model
+	 * @param filter
+	 *            the search filter
+	 */
+	public QuickAddEntityField(BaseService<ID, T> service, EntityModel<T> entityModel, AttributeModel attributeModel,
+			Filter filter) {
+		super(service, entityModel, attributeModel, filter);
+	}
 
-    /**
-     * Method that is called after a new entity has been successfully created. Use this to add the
-     * new entity to the component and select it
-     * 
-     * @param entity
-     */
-    protected abstract void afterNewEntityAdded(T entity);
+	/**
+	 * Method that is called after a new entity has been successfully created. Use
+	 * this to add the new entity to the component and select it
+	 * 
+	 * @param entity
+	 */
+	protected abstract void afterNewEntityAdded(T entity);
 
-    /**
-     * Constructs the button that brings up the dialog that allows the user to add a new item
-     * 
-     * @return
-     */
-    protected Button constructAddButton() {
-        addButton = new Button(getMessageService().getMessage("ocs.add", VaadinUtils.getLocale()));
-        addButton.addClickListener(event -> {
-            AddNewValueDialog<ID, T> dialog = new AddNewValueDialog<ID, T>(getEntityModel(), getAttributeModel(),
-                    getService(), getMessageService()) {
+	/**
+	 * Constructs the button that brings up the dialog that allows the user to add a
+	 * new item
+	 * 
+	 * @return
+	 */
+	protected Button constructAddButton() {
+		addButton = new Button(getMessageService().getMessage("ocs.add", VaadinUtils.getLocale()));
+		addButton.setIcon(FontAwesome.PLUS);
+		addButton.addClickListener(event -> {
+			AddNewValueDialog<ID, T> dialog = new AddNewValueDialog<ID, T>(getEntityModel(), getAttributeModel(),
+					getService(), getMessageService()) {
 
-                private static final long serialVersionUID = 2040216794358094524L;
+				private static final long serialVersionUID = 2040216794358094524L;
 
-                @Override
-                protected void afterNewEntityAdded(T entity) {
-                    QuickAddEntityField.this.afterNewEntityAdded(entity);
-                }
+				@Override
+				protected void afterNewEntityAdded(T entity) {
+					QuickAddEntityField.this.afterNewEntityAdded(entity);
+				}
 
-            };
-            dialog.build();
-            ui.addWindow(dialog);
-        });
-        return addButton;
-    }
+			};
+			dialog.build();
+			ui.addWindow(dialog);
+		});
+		return addButton;
+	}
 
-    /**
-     * Constructs the button that navigates directly to
-     *
-     * @return
-     */
-    protected Button constructDirectNavigationButton() {
-        directNavigationButton = new Button(
-                getMessageService().getMessage("ocs.direct.navigate", VaadinUtils.getLocale()));
-        directNavigationButton.addClickListener(event -> ((BaseUI) ui).navigateToEntityScreenDirectly(getValue()));
-        return directNavigationButton;
-    }
+	/**
+	 * Constructs the button that navigates directly to
+	 *
+	 * @return
+	 */
+	protected Button constructDirectNavigationButton() {
+		directNavigationButton = new Button(
+				getMessageService().getMessage("ocs.direct.navigate", VaadinUtils.getLocale()));
+		directNavigationButton.addClickListener(event -> ((BaseUI) ui).navigateToEntityScreenDirectly(getValue()));
+		return directNavigationButton;
+	}
 
-    public Button getAddButton() {
-        return addButton;
-    }
+	public Button getAddButton() {
+		return addButton;
+	}
 
-    public Button getDirectNavigationButton() {
-        return directNavigationButton;
-    }
+	public Button getDirectNavigationButton() {
+		return directNavigationButton;
+	}
 
-    @Override
-    public Filter getAdditionalFilter() {
-        return additionalFilter;
-    }
+	@Override
+	public Filter getAdditionalFilter() {
+		return additionalFilter;
+	}
 
-    public UI getUi() {
-        return ui;
-    }
+	public UI getUi() {
+		return ui;
+	}
 
-    @Override
-    public void setAdditionalFilter(Filter additionalFilter) {
-        this.additionalFilter = additionalFilter;
-    }
+	@Override
+	public void setAdditionalFilter(Filter additionalFilter) {
+		this.additionalFilter = additionalFilter;
+	}
 
-    @Override
-    public void clearAdditionalFilter() {
-        this.additionalFilter = null;
-    }
-    
+	@Override
+	public void clearAdditionalFilter() {
+		this.additionalFilter = null;
+	}
 
 }

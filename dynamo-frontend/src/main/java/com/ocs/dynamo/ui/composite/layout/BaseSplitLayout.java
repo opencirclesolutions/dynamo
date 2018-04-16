@@ -14,6 +14,7 @@
 package com.ocs.dynamo.ui.composite.layout;
 
 import java.io.Serializable;
+import java.util.function.Consumer;
 
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
@@ -23,7 +24,9 @@ import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
 import com.ocs.dynamo.ui.composite.type.ScreenMode;
+import com.ocs.dynamo.ui.utils.FormatUtils;
 import com.vaadin.data.sort.SortOrder;
+import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Field;
@@ -54,6 +57,9 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 
 	// the add button
 	private Button addButton;
+
+	// custom code to execute instead of the normal save method
+	private Consumer<T> customSaveConsumer;
 
 	// default split position (width of first component in percent)
 	private Integer defaultSplitPosition;
@@ -215,8 +221,8 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	protected abstract void buildFilter();
 
 	/**
-	 * Check the state of the "main" buttons (add and remove) that are not tied
-	 * to the currently selected item
+	 * Check the state of the "main" buttons (add and remove) that are not tied to
+	 * the currently selected item
 	 */
 	protected void checkMainButtons() {
 		if (getAddButton() != null) {
@@ -228,9 +234,8 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	}
 
 	/**
-	 * Constructs a header layout (displayed above the actual tabular content).
-	 * By defualt this is empty, overwrite in subclasses if you want to modify
-	 * this
+	 * Constructs a header layout (displayed above the actual tabular content). By
+	 * defualt this is empty, overwrite in subclasses if you want to modify this
 	 * 
 	 * @return
 	 */
@@ -242,13 +247,20 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	 * Constructs the remove button
 	 */
 	protected final Button constructRemoveButton() {
-		Button rb = new RemoveButton() {
+		Button rb = new RemoveButton(message("ocs.remove"), null) {
 
 			@Override
 			protected void doDelete() {
 				remove();
 			}
+
+			@Override
+			protected String getItemToDelete() {
+				T t = getSelectedItem();
+				return FormatUtils.formatEntity(getEntityModel(), t);
+			}
 		};
+		rb.setIcon(FontAwesome.TRASH);
 		rb.setVisible(getFormOptions().isShowRemoveButton() && isEditAllowed());
 		return rb;
 	}
@@ -312,6 +324,11 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 				}
 
 				@Override
+				protected void afterTabSelected(int tabIndex) {
+					BaseSplitLayout.this.afterTabSelected(tabIndex);
+				}
+
+				@Override
 				protected Field<?> constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel,
 						boolean viewMode) {
 					return BaseSplitLayout.this.constructCustomField(entityModel, attributeModel, viewMode, false);
@@ -349,6 +366,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 
 			};
 
+			editForm.setCustomSaveConsumer(customSaveConsumer);
 			editForm.setFormTitleWidth(getFormTitleWidth());
 			editForm.setDetailJoins(getDetailJoinsFallBack());
 			editForm.setFieldEntityModels(getFieldEntityModels());
@@ -370,11 +388,14 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	}
 
 	/**
-	 * Performs the actual remove functionality - overwrite in subclass if
-	 * needed
+	 * Performs the actual remove functionality - overwrite in subclass if needed
 	 */
 	protected void doRemove() {
 		getService().delete(getSelectedItem());
+	}
+
+	public void doSave() {
+		this.editForm.doSave();
 	}
 
 	/**
@@ -389,6 +410,10 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 
 	public Button getAddButton() {
 		return addButton;
+	}
+
+	public Consumer<T> getCustomSaveConsumer() {
+		return customSaveConsumer;
 	}
 
 	public Integer getDefaultSplitPosition() {
@@ -430,8 +455,8 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	}
 
 	/**
-	 * Replaces the contents of a label by its current value. Use in response to
-	 * an automatic update if a field
+	 * Replaces the contents of a label by its current value. Use in response to an
+	 * automatic update if a field
 	 * 
 	 * @param propertyName
 	 *            the name of the property for which to replace the label
@@ -442,6 +467,9 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 		}
 	}
 
+	/**
+	 * Reloads the component
+	 */
 	@Override
 	public void reload() {
 		// replace the header layout (if there is one)
@@ -500,6 +528,10 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 		getTableWrapper().getTable().select(t == null ? null : t.getId());
 	}
 
+	public void setCustomSaveConsumer(Consumer<T> customSaveConsumer) {
+		this.customSaveConsumer = customSaveConsumer;
+	}
+
 	public void setDefaultSplitPosition(Integer defaultSplitPosition) {
 		this.defaultSplitPosition = defaultSplitPosition;
 	}
@@ -517,5 +549,4 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 			editForm.setViewMode(viewMode);
 		}
 	}
-
 }

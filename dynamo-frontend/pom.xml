@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>dynamo-frontend</artifactId>
 	<packaging>jar</packaging>
@@ -50,6 +50,10 @@
 		<dependency>
 			<groupId>com.vaadin.external.google</groupId>
 			<artifactId>guava</artifactId>
+		</dependency>
+		<dependency>
+		   <groupId>org.vaadin.teemu</groupId>
+		   <artifactId>switch</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.persistence</groupId>
@@ -217,10 +221,10 @@
 						</manifestEntries>
 					</archive>
 					<!-- Exclude useless rubbish from JAR (saves 20MB) -->
-					<excludes>
+					<!--<excludes>
 						<exclude>VAADIN/gwt-unitCache/**</exclude>
-						<exclude>VAADIN/widgetsets/WEB-INF/**</exclude>
-					</excludes>
+						&lt;!&ndash;<exclude>VAADIN/widgetsets/WEB-INF/**</exclude>&ndash;&gt;
+					</excludes>-->
 				</configuration>
 			</plugin>
 			<plugin>

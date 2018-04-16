@@ -26,6 +26,7 @@ import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
+import com.vaadin.server.Resource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.Notification;
@@ -52,8 +53,9 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 
 		private static final long serialVersionUID = -942298948585447203L;
 
-		public RemoveButton() {
-			super(message("ocs.remove"));
+		public RemoveButton(String message, Resource icon) {
+			super(message);
+			setIcon(icon);
 			this.addClickListener(event -> {
 				Runnable r = () -> {
 					try {
@@ -62,7 +64,7 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 						showNotifification(ex.getMessage(), Notification.Type.ERROR_MESSAGE);
 					}
 				};
-				VaadinUtils.showConfirmDialog(getMessageService(), message("ocs.delete.confirm"), r);
+				VaadinUtils.showConfirmDialog(getMessageService(), message("ocs.delete.confirm", getItemToDelete()), r);
 			});
 		}
 
@@ -70,6 +72,12 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 		 * Performs the actual deletion
 		 */
 		protected abstract void doDelete();
+
+		/**
+		 * 
+		 * @return
+		 */
+		protected abstract String getItemToDelete();
 	}
 
 	private static final long serialVersionUID = 6015180039863418544L;
@@ -80,8 +88,8 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	private EntityModel<T> entityModel;
 
 	/**
-	 * The entity models used for rendering the individual fields (mostly useful
-	 * for lookup components)
+	 * The entity models used for rendering the individual fields (mostly useful for
+	 * lookup components)
 	 */
 	private Map<String, String> fieldEntityModels = new HashMap<>();
 
@@ -89,6 +97,11 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	 * The form options that determine what options are available in the screen
 	 */
 	private FormOptions formOptions;
+
+	/**
+	 * The width of the title caption above the form (in pixels)
+	 */
+	private Integer formTitleWidth;
 
 	/**
 	 * The service used for retrieving data
@@ -99,11 +112,6 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	 * The list of buttons to update after an entity is selected
 	 */
 	private List<Button> toUpdate = new ArrayList<>();
-
-	/**
-	 * The width of the title caption above the form (in pixels)
-	 */
-	private Integer formTitleWidth;
 
 	/**
 	 * Constructor
@@ -122,9 +130,9 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	}
 
 	/**
-	 * Adds a field entity model - this can be used to overwrite the default
-	 * entity model that is used for rendering complex selection components
-	 * (lookup dialogs)
+	 * Adds a field entity model - this can be used to overwrite the default entity
+	 * model that is used for rendering complex selection components (lookup
+	 * dialogs)
 	 * 
 	 * @param path
 	 *            the path to the field
@@ -149,8 +157,8 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	}
 
 	/**
-	 * Method that is called after the mode is changed (from editable to read
-	 * only or vice versa)
+	 * Method that is called after the mode is changed (from editable to read only
+	 * or vice versa)
 	 * 
 	 * @param viewMode
 	 *            whether the component is now in view mode (after the change)
@@ -162,8 +170,17 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	}
 
 	/**
-	 * Checks which buttons in the button bar must be enabled after an item has
-	 * been selected
+	 * Method that is called before saving an entity but after the validation
+	 * 
+	 * @return
+	 */
+	protected boolean beforeSave() {
+		return true;
+	}
+
+	/**
+	 * Checks which buttons in the button bar must be enabled after an item has been
+	 * selected
 	 * 
 	 * @param selectedItem
 	 *            the selected item
@@ -206,13 +223,17 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 		return formOptions;
 	}
 
+	public Integer getFormTitleWidth() {
+		return formTitleWidth;
+	}
+
 	public BaseService<ID, T> getService() {
 		return service;
 	}
 
 	/**
-	 * Method that is called in order to enable/disable a button after selecting
-	 * an item table
+	 * Method that is called in order to enable/disable a button after selecting an
+	 * item table
 	 * 
 	 * @param button
 	 *            the button
@@ -226,9 +247,9 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	}
 
 	/**
-	 * Registers a button that must be enabled/disabled after an item is
-	 * selected. use the "mustEnableButton" callback method to impose additional
-	 * constraints on when the button must be enabled
+	 * Registers a button that must be enabled/disabled after an item is selected.
+	 * use the "mustEnableButton" callback method to impose additional constraints
+	 * on when the button must be enabled
 	 * 
 	 * @param button
 	 *            the button to register
@@ -244,16 +265,12 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 		fieldEntityModels.remove(path);
 	}
 
-	public void setService(BaseService<ID, T> service) {
-		this.service = service;
-	}
-
-	public Integer getFormTitleWidth() {
-		return formTitleWidth;
-	}
-
 	public void setFormTitleWidth(Integer formTitleWidth) {
 		this.formTitleWidth = formTitleWidth;
+	}
+
+	public void setService(BaseService<ID, T> service) {
+		this.service = service;
 	}
 
 }

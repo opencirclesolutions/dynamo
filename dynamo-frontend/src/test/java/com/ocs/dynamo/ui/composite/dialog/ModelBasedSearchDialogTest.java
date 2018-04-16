@@ -9,12 +9,14 @@ import com.vaadin.data.Container.Filter;
 import com.vaadin.data.util.filter.Compare;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 
+@Ignore
 public class ModelBasedSearchDialogTest extends BaseIntegrationTest {
 
 	@Inject

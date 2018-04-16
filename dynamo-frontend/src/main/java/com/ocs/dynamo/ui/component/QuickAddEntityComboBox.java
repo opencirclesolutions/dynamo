@@ -46,8 +46,12 @@ public class QuickAddEntityComboBox<ID extends Serializable, T extends AbstractE
 		extends QuickAddEntityField<ID, T, T> implements Refreshable {
 
 	private static final long serialVersionUID = 4246187881499965296L;
+
 	private final boolean quickAddAllowed;
+
 	private final boolean directNavigationAllowed;
+
+	private static final float BUTTON_EXPAND_RATIO = 0.25f;
 
 	/**
 	 * The combo box that we wrap this component around
@@ -122,7 +126,7 @@ public class QuickAddEntityComboBox<ID extends Serializable, T extends AbstractE
 		bar.addComponent(comboBox);
 		float comboBoxExpandRatio = 1f;
 		if (quickAddAllowed) {
-			comboBoxExpandRatio -= 0.20f;
+			comboBoxExpandRatio -= BUTTON_EXPAND_RATIO;
 		}
 		if (directNavigationAllowed) {
 			comboBoxExpandRatio -= 0.10f;
@@ -134,7 +138,7 @@ public class QuickAddEntityComboBox<ID extends Serializable, T extends AbstractE
 			Button addButton = constructAddButton();
 			addButton.setSizeFull();
 			bar.addComponent(addButton);
-			bar.setExpandRatio(addButton, 0.20f);
+			bar.setExpandRatio(addButton, BUTTON_EXPAND_RATIO);
 		}
 		if (directNavigationAllowed) {
 			Button directNavigationButton = constructDirectNavigationButton();
@@ -189,4 +193,5 @@ public class QuickAddEntityComboBox<ID extends Serializable, T extends AbstractE
 			comboBox.setComponentError(componentError);
 		}
 	}
+
 }

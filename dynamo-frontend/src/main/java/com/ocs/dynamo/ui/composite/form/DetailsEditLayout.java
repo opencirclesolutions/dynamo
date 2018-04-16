@@ -33,6 +33,8 @@ import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.util.ValidationMode;
 import com.vaadin.data.Container.Filter;
+import com.vaadin.server.FontAwesome;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
@@ -47,10 +49,12 @@ import com.vaadin.ui.VerticalLayout;
  * @author Bas Rutten
  *
  * @param <ID>
+ *            the type of the ID
  * @param <T>
+ *            the type of the entity that is managed in the form
  */
 public abstract class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity<ID>>
-		extends CustomField<Collection<T>> implements SignalsParent, ReceivesSignal {
+		extends CustomField<Collection<T>> implements SignalsParent, ReceivesSignal, UseInViewMode {
 
 	private class FormContainer extends DefaultVerticalLayout {
 
@@ -87,13 +91,13 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 				}
 
 				deleteButton = new Button(messageService.getMessage("ocs.remove", VaadinUtils.getLocale()));
+				deleteButton.setIcon(FontAwesome.TRASH);
 				deleteButton.addClickListener(event -> {
 					removeEntity(this.form.getEntity());
 					items.remove(this.form.getEntity());
 					mainFormContainer.removeComponent(this);
 					forms.remove(this);
 					detailComponentsValid.remove(form);
-					// boolean allValid = isAllValid();
 					receiver.signalDetailsComponentValid(DetailsEditLayout.this, isAllValid());
 				});
 				buttonBar.addComponent(deleteButton);
@@ -139,11 +143,19 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 		public boolean validateAllFields() {
 			return form.validateAllFields();
 		}
+
+		@SuppressWarnings("unused")
+		public ModelBasedEditForm<ID, T> getForm() {
+			return form;
+		}
+
 	}
 
 	private static final long serialVersionUID = -1203245694503350276L;
 
 	private boolean onSameLine;
+
+	private boolean alignRight;
 
 	/**
 	 * The button that can be used to add rows to the table
@@ -237,7 +249,7 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 	 */
 	public DetailsEditLayout(BaseService<ID, T> service, Collection<T> items, EntityModel<T> entityModel,
 			AttributeModel attributeModel, boolean viewMode, FormOptions formOptions, Comparator<T> comparator,
-			boolean onSameLine) {
+			boolean onSameLine, boolean alignRight) {
 		this.service = service;
 		this.entityModel = entityModel;
 		this.attributeModel = attributeModel;
@@ -248,6 +260,7 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 		this.onSameLine = onSameLine;
 		this.viewMode = viewMode;
 		this.formOptions = formOptions;
+		this.alignRight = alignRight;
 	}
 
 	/**
@@ -331,7 +344,7 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 	}
 
 	protected void afterModeChanged(ModelBasedEditForm<ID, T> editForm, boolean viewMode) {
-		// override
+		// override in subclasses
 	}
 
 	/**
@@ -340,8 +353,9 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 	 * @param buttonBar
 	 *            the button bar
 	 */
-	protected void constructAddButton(Layout buttonBar) {
+	protected void constructAddButton(HorizontalLayout buttonBar) {
 		addButton = new Button(messageService.getMessage("ocs.add", VaadinUtils.getLocale()));
+		addButton.setIcon(FontAwesome.PLUS);
 		addButton.addClickListener(event -> {
 			T t = createEntity();
 			items.add(t);
@@ -351,8 +365,14 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 				receiver.signalDetailsComponentValid(this, isAllValid());
 			}
 		});
+
 		addButton.setVisible(!viewMode && !formOptions.isHideAddButton());
 		buttonBar.addComponent(addButton);
+
+		if (alignRight) {
+			addButton.setSizeUndefined();
+			buttonBar.setComponentAlignment(addButton, Alignment.MIDDLE_RIGHT);
+		}
 	}
 
 	/**
@@ -362,7 +382,11 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 	 *            the layout to which to add the button bar
 	 */
 	protected void constructButtonBar(Layout parent) {
-		Layout buttonBar = new DefaultHorizontalLayout();
+		HorizontalLayout buttonBar = new DefaultHorizontalLayout();
+
+		if (alignRight) {
+			buttonBar.setSizeFull();
+		}
 		buttonBar.setVisible(!viewMode);
 		parent.addComponent(buttonBar);
 
@@ -658,5 +682,9 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 			}
 		}
 		return error;
+	}
+
+	public void signalModeChange(boolean viewMode) {
+		// override in subclasses
 	}
 }

@@ -41,6 +41,7 @@ import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.data.sort.SortOrder;
 import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.server.FontAwesome;
 import com.vaadin.server.UserError;
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.Button;
@@ -55,7 +56,7 @@ import com.vaadin.ui.VerticalLayout;
 /**
  * A complex table component for the in-place editing of a one-to-many relation.
  * It can also be used to manage a many-to-many relation but in this case the
- * "setDetailsTableSearchMode" on the FormOptions must be set to true. You can 
+ * "setDetailsTableSearchMode" on the FormOptions must be set to true. You can
  * then use the setSearchXXX methods to configure the behaviour of the search
  * dialog that can be used to modify the values If you need a component like
  * this, you should override the constructCustomField method and use it to
@@ -73,7 +74,7 @@ import com.vaadin.ui.VerticalLayout;
  */
 @SuppressWarnings("serial")
 public abstract class DetailsEditTable<ID extends Serializable, T extends AbstractEntity<ID>>
-		extends CustomField<Collection<T>> implements SignalsParent {
+		extends CustomField<Collection<T>> implements SignalsParent, UseInViewMode {
 
 	private static final long serialVersionUID = -1203245694503350276L;
 
@@ -172,6 +173,8 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 	 */
 	private UI ui = UI.getCurrent();
 
+	private ModelBasedSearchDialog<ID, T> dialog;
+
 	/**
 	 * Whether the table is in view mode. If this is the case, editing is not
 	 * allowed and no buttons will be displayed
@@ -228,6 +231,7 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 	 */
 	protected void constructAddButton(Layout buttonBar) {
 		addButton = new Button(messageService.getMessage("ocs.add", VaadinUtils.getLocale()));
+		addButton.setIcon(FontAwesome.PLUS);
 		addButton.addClickListener(event -> {
 			T t = createEntity();
 			container.addBean(t);
@@ -282,6 +286,7 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 	protected void constructSearchButton(Layout buttonBar) {
 
 		searchDialogButton = new Button(messageService.getMessage("ocs.search", VaadinUtils.getLocale()));
+		searchDialogButton.setIcon(FontAwesome.SEARCH);
 		searchDialogButton.setDescription(messageService.getMessage("ocs.search.description", VaadinUtils.getLocale()));
 		searchDialogButton.addClickListener(event -> {
 
@@ -291,7 +296,7 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 						messageService.getMessage("ocs.no.service.specified", VaadinUtils.getLocale()));
 			}
 
-			ModelBasedSearchDialog<ID, T> dialog = new ModelBasedSearchDialog<ID, T>(service,
+			dialog = new ModelBasedSearchDialog<ID, T>(service,
 					searchDialogEntityModel != null ? searchDialogEntityModel : entityModel, searchDialogFilters,
 					searchDialogSortOrder == null ? null : Lists.newArrayList(searchDialogSortOrder), true, true) {
 				@Override
@@ -403,6 +408,7 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 			final String removeMsg = messageService.getMessage("ocs.detail.remove", VaadinUtils.getLocale());
 			table.addGeneratedColumn(removeMsg, (ColumnGenerator) (source, itemId, columnId) -> {
 				Button remove = new Button(removeMsg);
+				remove.setIcon(FontAwesome.TRASH);
 				remove.addClickListener(event -> {
 					container.removeItem(itemId);
 					items.remove(itemId);
@@ -629,6 +635,9 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 
 	public void setSearchDialogFilters(List<Filter> searchDialogFilters) {
 		this.searchDialogFilters = searchDialogFilters;
+		if (dialog != null) {
+			dialog.setFilters(searchDialogFilters);
+		}
 	}
 
 	public void setSearchDialogSortOrder(SortOrder searchDialogSortOrder) {
@@ -657,8 +666,10 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 		while (component.hasNext()) {
 			Component next = component.next();
 			try {
-				((AbstractField<?>) next).validate();
-				((AbstractField<?>) next).setComponentError(null);
+				if (next instanceof AbstractField) {
+					((AbstractField<?>) next).validate();
+					((AbstractField<?>) next).setComponentError(null);
+				}
 			} catch (InvalidValueException ex) {
 				error = true;
 				((AbstractField<?>) next).setComponentError(new UserError(ex.getLocalizedMessage()));

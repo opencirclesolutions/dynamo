@@ -44,21 +44,24 @@ public class EntityModelImpl<T> implements EntityModel<T> {
 	// use a linked hash map to guarantee the ordering
 	private final Map<String, List<AttributeModel>> attributeModels = new LinkedHashMap<>();
 
-	private final String description;
+	private String description;
 
-	private final String displayName;
+	private String displayName;
 
-	private final String displayNamePlural;
+	private String displayNamePlural;
 
-	private final String displayProperty;
+	private String displayProperty;
 
-	private final Class<T> entityClass;
+	private Class<T> entityClass;
 
 	private AttributeModel idAttributeModel;
 
-	private final String reference;
+	private String reference;
 
 	private Map<AttributeModel, Boolean> sortOrder = new LinkedHashMap<>();
+
+	public EntityModelImpl() {
+	}
 
 	/**
 	 * Constructor
@@ -257,8 +260,36 @@ public class EntityModelImpl<T> implements EntityModel<T> {
 				.anyMatch(m -> m.isVisible() && (readOnly || !m.getEditableType().equals(EditableType.READ_ONLY)));
 	}
 
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public void setDisplayName(String displayName) {
+		this.displayName = displayName;
+	}
+
+	public void setDisplayNamePlural(String displayNamePlural) {
+		this.displayNamePlural = displayNamePlural;
+	}
+
+	public void setDisplayProperty(String displayProperty) {
+		this.displayProperty = displayProperty;
+	}
+
+	public void setEntityClass(Class<T> entityClass) {
+		this.entityClass = entityClass;
+	}
+
 	void setIdAttributeModel(AttributeModel idAttributeModel) {
 		this.idAttributeModel = idAttributeModel;
+	}
+
+	public void setReference(String reference) {
+		this.reference = reference;
+	}
+
+	public void setSortOrder(Map<AttributeModel, Boolean> sortOrder) {
+		this.sortOrder = sortOrder;
 	}
 
 	@Override

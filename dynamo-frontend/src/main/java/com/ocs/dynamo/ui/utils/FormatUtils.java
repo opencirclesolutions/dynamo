@@ -57,6 +57,27 @@ public final class FormatUtils {
 	}
 
 	/**
+	 * Formats an entity
+	 * 
+	 * @param entityModel
+	 *            the entity model
+	 * @param value
+	 *            the value (must be an instance of AbstractEntity)
+	 * @return
+	 */
+	public static String formatEntity(EntityModel<?> entityModel, Object value) {
+		if (value instanceof AbstractEntity) {
+			AbstractEntity<?> entity = (AbstractEntity<?>) value;
+			if (entityModel.getDisplayProperty() != null) {
+				return ClassUtils.getFieldValueAsString(entity, entityModel.getDisplayProperty());
+			} else {
+				return entity.toString();
+			}
+		}
+		return null;
+	}
+
+	/**
 	 * Formats a collection of entities (turns it into a comma-separated string
 	 * based on the value of the "displayProperty")
 	 * 
@@ -67,7 +88,7 @@ public final class FormatUtils {
 	 * @return
 	 */
 	public static String formatEntityCollection(EntityModelFactory entityModelFactory, AttributeModel attributeModel,
-			Object collection) {
+			Object collection, String separator) {
 		List<String> result = new ArrayList<>();
 		Iterable<?> col = (Iterable<?>) collection;
 		for (Object next : col) {
@@ -86,12 +107,12 @@ public final class FormatUtils {
 				result.add(next.toString());
 			}
 		}
-		return result.stream().collect(Collectors.joining(", "));
+		return result.stream().collect(Collectors.joining(separator));
 	}
 
 	/**
-	 * Formats a collection of entities into a comma-separated string that
-	 * displays the meaningful representations of the entities
+	 * Formats a collection of entities into a comma-separated string that displays
+	 * the meaningful representations of the entities
 	 * 
 	 * @param entityModelFactory
 	 *            the entity model factory
@@ -103,7 +124,7 @@ public final class FormatUtils {
 	 */
 	public static String formatEntityCollection(EntityModelFactory entityModelFactory, AttributeModel attributeModel,
 			Property<?> property) {
-		return formatEntityCollection(entityModelFactory, attributeModel, property.getValue());
+		return formatEntityCollection(entityModelFactory, attributeModel, property.getValue(), "<br/> ");
 	}
 
 	/**
@@ -117,9 +138,9 @@ public final class FormatUtils {
 	 *            the value of the property
 	 * @return
 	 */
-	public static String formatPropertyValue(EntityModelFactory entityModelFactory, AttributeModel model,
-			Object value) {
-		return formatPropertyValue(null, entityModelFactory, model, value, VaadinUtils.getLocale());
+	public static String formatPropertyValue(EntityModelFactory entityModelFactory, AttributeModel model, Object value,
+			String separator) {
+		return formatPropertyValue(null, entityModelFactory, model, value, VaadinUtils.getLocale(), separator);
 	}
 
 	/**
@@ -140,9 +161,9 @@ public final class FormatUtils {
 	 * @return
 	 */
 	public static <T> String formatPropertyValue(Table table, EntityModelFactory entityModelFactory,
-			EntityModel<T> entityModel, Object rowId, Object colId, Property<?> property) {
+			EntityModel<T> entityModel, Object rowId, Object colId, Property<?> property, String separator) {
 		return formatPropertyValue(table, entityModelFactory, entityModel, rowId, colId, property,
-				VaadinUtils.getLocale());
+				VaadinUtils.getLocale(), separator);
 	}
 
 	/**
@@ -160,17 +181,18 @@ public final class FormatUtils {
 	 */
 	@SuppressWarnings("rawtypes")
 	public static <T> String formatPropertyValue(Table table, EntityModelFactory entityModelFactory,
-			EntityModel<T> entityModel, Object rowId, Object colId, Property<?> property, Locale locale) {
+			EntityModel<T> entityModel, Object rowId, Object colId, Property<?> property, Locale locale,
+			String separator) {
 		if (table.getContainerDataSource() instanceof ModelBasedHierarchicalContainer) {
 			ModelBasedHierarchicalContainer<?> c = (ModelBasedHierarchicalContainer<?>) table.getContainerDataSource();
 			ModelBasedHierarchicalDefinition def = c.getHierarchicalDefinitionByItemId(rowId);
 			Object path = c.unmapProperty(def, colId);
 			return formatPropertyValue(table, entityModelFactory,
 					path == null ? null : def.getEntityModel().getAttributeModel(path.toString()), property.getValue(),
-					locale);
+					locale, separator);
 		}
 		return formatPropertyValue(table, entityModelFactory, entityModel.getAttributeModel(colId.toString()),
-				property.getValue(), locale);
+				property.getValue(), locale, separator);
 	}
 
 	/**
@@ -190,7 +212,7 @@ public final class FormatUtils {
 	 */
 	@SuppressWarnings("unchecked")
 	public static String formatPropertyValue(Table table, EntityModelFactory entityModelFactory, AttributeModel model,
-			Object value, Locale locale) {
+			Object value, Locale locale, String separator) {
 		if (model != null && value != null) {
 			if (model.isWeek()) {
 				if (value instanceof Date) {
@@ -232,7 +254,7 @@ public final class FormatUtils {
 					return msg;
 				}
 			} else if (value instanceof Iterable) {
-				String result = formatEntityCollection(entityModelFactory, model, value);
+				String result = formatEntityCollection(entityModelFactory, model, value, separator);
 				return table == null ? result : restrictToMaxLength(result, model);
 			} else if (AbstractEntity.class.isAssignableFrom(model.getType())) {
 				EntityModel<?> detailEntityModel = model.getNestedEntityModel();
@@ -246,7 +268,7 @@ public final class FormatUtils {
 				}
 				AttributeModel detailModel = detailEntityModel.getAttributeModel(displayProperty);
 				return formatPropertyValue(table, entityModelFactory, detailModel,
-						ClassUtils.getFieldValue(value, displayProperty), locale);
+						ClassUtils.getFieldValue(value, displayProperty), locale, separator);
 			} else if (value instanceof AbstractEntity) {
 				// single entity
 				Object result = ClassUtils.getFieldValue(value, model.getPath());
@@ -277,5 +299,4 @@ public final class FormatUtils {
 		}
 		return input;
 	}
-
 }

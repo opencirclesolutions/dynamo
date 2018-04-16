@@ -51,6 +51,7 @@ import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.AttributeSelectMode;
 import com.ocs.dynamo.domain.model.AttributeType;
 import com.ocs.dynamo.domain.model.CascadeMode;
+import com.ocs.dynamo.domain.model.CheckboxMode;
 import com.ocs.dynamo.domain.model.EditableType;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.VisibilityType;
@@ -142,6 +143,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		AttributeModel boolModel = model.getAttributeModel("bool");
 		Assert.assertEquals("Yes", boolModel.getTrueRepresentation());
 		Assert.assertEquals("No", boolModel.getFalseRepresentation());
+		Assert.assertEquals(CheckboxMode.SWITCH, boolModel.getCheckboxMode());
 
 		AttributeModel mailModel = model.getAttributeModel("email");
 		Assert.assertTrue(mailModel.isEmail());
@@ -234,6 +236,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		AttributeModel entityModel = model.getAttributeModel("entity2");
 		Assert.assertEquals(AttributeType.MASTER, entityModel.getAttributeType());
 		Assert.assertTrue(entityModel.isComplexEditable());
+		Assert.assertTrue(entityModel.isNavigable());
 
 		AttributeModel entityListModel = model.getAttributeModel("entityList");
 		Assert.assertEquals(AttributeType.DETAIL, entityListModel.getAttributeType());
@@ -604,7 +607,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		Assert.assertEquals(DateUtils.createZonedDateTime("01-01-2017 12:00:00+0100"), am4.getDefaultValue());
 	}
 
-	private class Entity1 {
+	public class Entity1 {
 
 		@Size(max = 55)
 		@Attribute(main = true)
@@ -618,7 +621,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		@Temporal(TemporalType.DATE)
 		private Date birthDate;
 
-		@Attribute(trueRepresentation = "Yes", falseRepresentation = "No")
+		@Attribute(trueRepresentation = "Yes", falseRepresentation = "No", checkboxMode = CheckboxMode.SWITCH)
 		private Boolean bool;
 
 		@Email
@@ -686,7 +689,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 	}
 
 	@AttributeOrder(attributeNames = { "name", "birthDate" })
-	private class Entity2 {
+	public class Entity2 {
 
 		private String name;
 
@@ -723,7 +726,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 	@Model(description = "desc", displayName = "dis", displayNamePlural = "diss", displayProperty = "prop")
 	@AttributeGroups(attributeGroups = { @AttributeGroup(messageKey = "group1.key", attributeNames = { "name" }),
 			@AttributeGroup(messageKey = "group2.key", attributeNames = { "age" }) })
-	private class Entity3 {
+	public class Entity3 {
 
 		@Attribute(defaultValue = "Bas", description = "Test", displayName = "Naampje", editable = EditableType.READ_ONLY, prompt = "Prompt", searchable = true, main = true, sortable = false)
 		private String name;
@@ -736,7 +739,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		private Date birthDate;
 
 		@OneToOne
-		@Attribute(complexEditable = true)
+		@Attribute(complexEditable = true, navigable = true)
 		private Entity2 entity2;
 
 		@OneToMany
@@ -800,7 +803,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 
 	}
 
-	private class Entity6 {
+	public class Entity6 {
 
 		private String name;
 
@@ -839,7 +842,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 	 * 
 	 * @author bas.rutten
 	 */
-	private class Entity7 {
+	public class Entity7 {
 
 		@Attribute(selectMode = AttributeSelectMode.LOOKUP)
 		private Entity6 entity6;
@@ -876,7 +879,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 
 	}
 
-	private class Entity8 {
+	public class Entity8 {
 
 		private Date date1;
 
@@ -945,7 +948,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		}
 	}
 
-	private class Entity9 {
+	public class Entity9 {
 
 		@ElementCollection
 		@CollectionTable(name = "element_table")
@@ -976,7 +979,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 
 	}
 
-	private class Entity10 {
+	public class Entity10 {
 
 		@Attribute(groupTogetherWith = "attribute2")
 		private String attribute1;
@@ -1003,7 +1006,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 	}
 
 	@AttributeOrder(attributeNames = { "attribute1", "attribute2" })
-	private class Entity11 {
+	public class Entity11 {
 
 		private String attribute1;
 
@@ -1028,7 +1031,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 
 	}
 
-	private class Entity12 {
+	public class Entity12 {
 
 		@Attribute(cascade = @Cascade(cascadeTo = "attribute2", filterPath = "somePath"))
 		private String attribute1;
@@ -1059,7 +1062,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 	 * @author bas.rutten
 	 *
 	 */
-	private class Entity13 {
+	public class Entity13 {
 
 		private String attribute1;
 
@@ -1083,7 +1086,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 
 	}
 
-	private class Entity14 {
+	public class Entity14 {
 
 		@Attribute(displayFormat = "dd/MM/yyyy", defaultValue = "01/01/1980")
 		private LocalDate localDate;
@@ -1131,11 +1134,11 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 
 	}
 
-	private class Entity4 {
+	public class Entity4 {
 
 	}
 
-	private class Entity5 {
+	public class Entity5 {
 
 		@Lob
 		@Basic(fetch = FetchType.LAZY)
@@ -1157,7 +1160,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 	}
 
 	@Model(sortOrder = "name desc, id asc")
-	private class EntityParent {
+	public class EntityParent {
 
 		@Id
 		private int id;
@@ -1202,7 +1205,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		}
 	}
 
-	private class EntityChild {
+	public class EntityChild {
 		@Id
 		private int id;
 		private String name;
@@ -1242,12 +1245,12 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		}
 	}
 
-	private class EntityGrandChild extends EntityChild {
+	public class EntityGrandChild extends EntityChild {
 
 	}
 
 	@Model(sortOrder = "code unknown, unknown asc")
-	private class EntitySortError {
+	public class EntitySortError {
 		private String code;
 		private String name;
 
@@ -1269,7 +1272,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 	}
 
 	@AttributeOrder(attributeNames = { "child.embedded1", "child.embedded2", "name" })
-	private class EmbeddedParent {
+	public class EmbeddedParent {
 
 		private String name;
 
@@ -1295,7 +1298,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 	}
 
 	@Embeddable
-	private class EmbeddedChild {
+	public class EmbeddedChild {
 
 		@Attribute(visible = VisibilityType.HIDE)
 		private String embedded1;
@@ -1332,7 +1335,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 	}
 
 	@Embeddable
-	private class EmbeddedGrandChild {
+	public class EmbeddedGrandChild {
 
 		private String sometAttribute;
 

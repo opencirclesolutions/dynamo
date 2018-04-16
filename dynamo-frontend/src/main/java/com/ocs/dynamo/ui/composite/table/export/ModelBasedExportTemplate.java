@@ -180,7 +180,7 @@ public abstract class ModelBasedExportTemplate<ID extends Serializable, T extend
 					if (show(am)) {
 						Object value = ClassUtils.getFieldValue(entity, am.getPath());
 						EntityModelFactory emf = ServiceLocatorFactory.getServiceLocator().getEntityModelFactory();
-						String str = FormatUtils.formatPropertyValue(emf, am, value);
+						String str = FormatUtils.formatPropertyValue(emf, am, value, ", ");
 						row.add(str);
 					}
 				}

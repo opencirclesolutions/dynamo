@@ -16,6 +16,7 @@ package com.ocs.dynamo.ui.composite.dialog;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
+import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 
@@ -46,7 +47,17 @@ public abstract class SimpleModalDialog extends BaseModalDialog {
 
 	@Override
 	protected void doBuildButtonBar(HorizontalLayout buttonBar) {
+		cancelButton = new Button(messageService.getMessage("ocs.cancel", VaadinUtils.getLocale()));
+		cancelButton.setIcon(FontAwesome.BAN);
+		cancelButton.addClickListener((Button.ClickListener) event -> {
+			doCancel();
+			SimpleModalDialog.this.close();
+		});
+		cancelButton.setVisible(showCancelButton);
+		buttonBar.addComponent(cancelButton);
+
 		okButton = new Button(messageService.getMessage("ocs.ok", VaadinUtils.getLocale()));
+		okButton.setIcon(FontAwesome.CHECK);
 		okButton.addClickListener((Button.ClickListener) event -> {
 			if (doClose()) {
 				SimpleModalDialog.this.close();
@@ -54,11 +65,6 @@ public abstract class SimpleModalDialog extends BaseModalDialog {
 		});
 		buttonBar.addComponent(okButton);
 
-		cancelButton = new Button(messageService.getMessage("ocs.cancel", VaadinUtils.getLocale()));
-		cancelButton.addClickListener((Button.ClickListener) event -> SimpleModalDialog.this.close());
-
-		cancelButton.setVisible(showCancelButton);
-		buttonBar.addComponent(cancelButton);
 	}
 
 	/**
@@ -67,6 +73,13 @@ public abstract class SimpleModalDialog extends BaseModalDialog {
 	protected boolean doClose() {
 		// overwrite in subclass
 		return true;
+	}
+	
+	/**
+	 * 
+	 */
+	protected void doCancel() {
+		// overwrite in subclass
 	}
 
 	public Button getCancelButton() {
@@ -77,4 +90,24 @@ public abstract class SimpleModalDialog extends BaseModalDialog {
 		return okButton;
 	}
 
+	protected String message(String key) {
+		return messageService.getMessage(key, VaadinUtils.getLocale());
+	}
+	
+	/**
+	 * Retrieves a message based on its key
+	 * 
+	 * @param key
+	 *            the key of the message
+	 * @param args
+	 *            any arguments to pass to the message
+	 * @return
+	 */
+	protected String message(String key, Object... args) {
+		return messageService.getMessage(key, VaadinUtils.getLocale(), args);
+	}
+
+	public MessageService getMessageService() {
+		return messageService;
+	}
 }

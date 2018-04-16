@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.TransactionStatus;
@@ -24,6 +25,7 @@ import com.ocs.dynamo.filter.Not;
 import com.ocs.dynamo.filter.Or;
 import com.ocs.dynamo.test.BaseIntegrationTest;
 
+@Ignore
 public class PersonRevisionDaoImplTest extends BaseIntegrationTest {
 
 	@Autowired

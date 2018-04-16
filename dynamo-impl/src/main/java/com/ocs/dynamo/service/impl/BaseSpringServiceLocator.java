@@ -13,6 +13,7 @@
  */
 package com.ocs.dynamo.service.impl;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -87,6 +88,15 @@ public abstract class BaseSpringServiceLocator implements ServiceLocator {
 			if (e.getValue().getEntityClass() != null && e.getValue().getEntityClass().equals(entityClass)) {
 				return (BaseService<?, ?>) e.getValue();
 			}
+		}
+		return null;
+	}
+
+	@Override
+	public <T> Collection<T> getServices(Class<T> clazz) {
+		Map<String, T> beans = getContext().getBeansOfType(clazz);
+		if (beans != null && !beans.isEmpty()) {
+			return beans.values();
 		}
 		return null;
 	}

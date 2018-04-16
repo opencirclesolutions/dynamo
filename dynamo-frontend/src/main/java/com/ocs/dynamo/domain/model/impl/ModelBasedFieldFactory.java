@@ -30,6 +30,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import org.apache.commons.lang.StringUtils;
+import org.vaadin.teemu.switchui.Switch;
 
 import com.google.common.collect.Lists;
 import com.ocs.dynamo.constants.DynamoConstants;
@@ -39,8 +40,10 @@ import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.AttributeSelectMode;
 import com.ocs.dynamo.domain.model.AttributeTextFieldMode;
 import com.ocs.dynamo.domain.model.AttributeType;
+import com.ocs.dynamo.domain.model.CheckboxMode;
 import com.ocs.dynamo.domain.model.EditableType;
 import com.ocs.dynamo.domain.model.EntityModel;
+import com.ocs.dynamo.domain.model.FieldFactory;
 import com.ocs.dynamo.domain.model.NumberSelectMode;
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.service.BaseService;
@@ -117,6 +120,8 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 
 	private ServiceLocator serviceLocator = ServiceLocatorFactory.getServiceLocator();
 
+	private Collection<FieldFactory> fieldFactories;
+
 	// indicates whether the system is in search mode. In search mode,
 	// components for
 	// some attributes are constructed differently (e.g. we render two search
@@ -137,11 +142,11 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 	 * @param messageService
 	 *            the message service
 	 * @param validate
-	 *            whether to add extra validators (this is the case when the
-	 *            field is displayed inside a table)
+	 *            whether to add extra validators (this is the case when the field
+	 *            is displayed inside a table)
 	 * @param search
-	 *            whether the fields are displayed inside a search form (this
-	 *            has an effect on the construction of some fields)
+	 *            whether the fields are displayed inside a search form (this has an
+	 *            effect on the construction of some fields)
 	 */
 	public ModelBasedFieldFactory(EntityModel<T> model, MessageService messageService, boolean validate,
 			boolean search) {
@@ -149,6 +154,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 		this.messageService = messageService;
 		this.validate = validate;
 		this.search = search;
+		this.fieldFactories = serviceLocator.getServices(FieldFactory.class);
 	}
 
 	/**
@@ -201,16 +207,15 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 	}
 
 	/**
-	 * Constructs a combo box- the sort order will be taken from the entity
-	 * model
+	 * Constructs a combo box- the sort order will be taken from the entity model
 	 * 
 	 * @param entityModel
 	 *            the entity model to base the combo box on
 	 * @param attributeModel
 	 *            the attribute model
 	 * @param filter
-	 *            optional field filter - only items that match the filter will
-	 *            be included
+	 *            optional field filter - only items that match the filter will be
+	 *            included
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
@@ -225,8 +230,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 	}
 
 	/**
-	 * Constructs a field based on an attribute model and possibly a field
-	 * filter
+	 * Constructs a field based on an attribute model and possibly a field filter
 	 * 
 	 * @param attributeModel
 	 *            the attribute model
@@ -236,30 +240,45 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 	 *            the custom entity model for the field
 	 * @return
 	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public Field<?> constructField(AttributeModel attributeModel, Map<String, Filter> fieldFilters,
 			EntityModel<?> fieldEntityModel) {
 
-		Filter fieldFilter = fieldFilters == null ? null : fieldFilters.get(attributeModel.getPath());
-
 		Field<?> field = null;
-		if (fieldFilter != null) {
-			if (AttributeType.MASTER.equals(attributeModel.getAttributeType())) {
-				// create a combo box or lookup field
-				field = constructSelectField(attributeModel, fieldEntityModel, fieldFilter);
-			} else if (search && AttributeSelectMode.TOKEN.equals(attributeModel.getSearchSelectMode())
-					&& AttributeType.BASIC.equals(attributeModel.getAttributeType())) {
-				// simple token field (for distinct string values)
-				field = constructSimpleTokenField(
-						fieldEntityModel != null ? fieldEntityModel : attributeModel.getEntityModel(), attributeModel,
-						attributeModel.getPath().substring(attributeModel.getPath().lastIndexOf('.') + 1), false,
-						fieldFilter);
-			} else {
-				// detail relationship, render a multiple select
-				field = this.constructCollectionSelect(fieldEntityModel, attributeModel, fieldFilter, true, search);
+
+		// Are there any delegated component factories that can create this field?
+		if (fieldFactories != null && !fieldFactories.isEmpty()) {
+			for (FieldFactory ff : fieldFactories) {
+				FieldFactoryContextImpl<?> c = new FieldFactoryContextImpl<>().setAttributeModel(attributeModel)
+						.setFieldFilters(fieldFilters).setFieldEntityModel((EntityModel) fieldEntityModel);
+				field = ff.constructField(c);
+				if (field != null) {
+					break;
+				}
 			}
-		} else {
-			// no field filter present - delegate to default construction
-			field = this.createField(attributeModel.getPath(), fieldEntityModel);
+		}
+
+		if (field == null) {
+			Filter fieldFilter = fieldFilters == null ? null : fieldFilters.get(attributeModel.getPath());
+			if (fieldFilter != null) {
+				if (AttributeType.MASTER.equals(attributeModel.getAttributeType())) {
+					// create a combo box or lookup field
+					field = constructSelectField(attributeModel, fieldEntityModel, fieldFilter);
+				} else if (search && AttributeSelectMode.TOKEN.equals(attributeModel.getSearchSelectMode())
+						&& AttributeType.BASIC.equals(attributeModel.getAttributeType())) {
+					// simple token field (for distinct string values)
+					field = constructSimpleTokenField(
+							fieldEntityModel != null ? fieldEntityModel : attributeModel.getEntityModel(),
+							attributeModel,
+							attributeModel.getPath().substring(attributeModel.getPath().lastIndexOf('.') + 1), false,
+							fieldFilter);
+				} else {
+					// detail relationship, render a multiple select
+					field = this.constructCollectionSelect(fieldEntityModel, attributeModel, fieldFilter, true, search);
+				}
+			} else {
+				field = this.createField(attributeModel.getPath(), fieldEntityModel);
+			}
 		}
 
 		// Is it a required field?
@@ -286,8 +305,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 	 * @param multipleSelect
 	 *            is multiple select supported?
 	 * @param search
-	 *            indicates whether the component is being used in a search
-	 *            screen
+	 *            indicates whether the component is being used in a search screen
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
@@ -353,8 +371,8 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 	}
 
 	/**
-	 * Create a combo box for searching on a boolean. This combo box contains
-	 * three values (yes, no, and null)
+	 * Create a combo box for searching on a boolean. This combo box contains three
+	 * values (yes, no, and null)
 	 * 
 	 * @return
 	 */
@@ -593,7 +611,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 			DateField df = new DateField();
 			df.setResolution(Resolution.DAY);
 			df.setConverter(ConverterFactory.createLocalDateConverter());
-			df.setTimeZone(VaadinUtils.getTimeZone(UI.getCurrent()));			
+			df.setTimeZone(VaadinUtils.getTimeZone(UI.getCurrent()));
 			field = df;
 		} else if (LocalDateTime.class.equals(attributeModel.getType())) {
 			DateField df = new DateField();
@@ -626,6 +644,10 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 			// wrap text field in URL field
 			field = new URLField(tf, attributeModel, false);
 			field.setSizeFull();
+		} else if (Boolean.class.equals(attributeModel.getType())
+				&& CheckboxMode.SWITCH.equals(attributeModel.getCheckboxMode())) {
+			field = new Switch();
+			((Switch) field).addStyleName("compact");
 		} else {
 			// just a regular field
 			field = createField(attributeModel.getType(), Field.class);
@@ -773,9 +795,8 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 	}
 
 	/**
-	 * Resolves an entity model by falling back first to the nested attribute
-	 * model and then to the default model for the normalized type of the
-	 * property
+	 * Resolves an entity model by falling back first to the nested attribute model
+	 * and then to the default model for the normalized type of the property
 	 * 
 	 * @param entityModel
 	 *            the entity model

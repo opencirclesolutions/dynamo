@@ -20,6 +20,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,6 +30,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.reflect.FieldUtils;
 import org.apache.commons.lang.reflect.MethodUtils;
 import org.apache.log4j.Logger;
+import org.springframework.core.MethodParameter;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.util.Assert;
@@ -52,8 +54,8 @@ public final class ClassUtils {
 	}
 
 	/**
-	 * Checks if the specified property can be set for the specified object.
-	 * This method supports nested properties
+	 * Checks if the specified property can be set for the specified object. This
+	 * method supports nested properties
 	 * 
 	 * @param obj
 	 *            the object
@@ -109,8 +111,7 @@ public final class ClassUtils {
 	}
 
 	/**
-	 * forClass which doesn't throw an exception and can handle empty class
-	 * names
+	 * forClass which doesn't throw an exception and can handle empty class names
 	 * 
 	 * @param clazz
 	 *            The fully qualified class name
@@ -129,8 +130,8 @@ public final class ClassUtils {
 	}
 
 	/**
-	 * Tries to retrieve an annotation, by first looking at the field name, and
-	 * then at the getter method
+	 * Tries to retrieve an annotation, by first looking at the field name, and then
+	 * at the getter method
 	 * 
 	 * @param clazz
 	 *            the class
@@ -156,8 +157,7 @@ public final class ClassUtils {
 	 * @param annotionType
 	 *            The name of the annotation type to find
 	 * @param attributeName
-	 *            The name of the attribute on the annotation type to find the
-	 *            value
+	 *            The name of the attribute on the annotation type to find the value
 	 * @return the value of the field of the annotation or null when not found
 	 */
 	@SuppressWarnings("unchecked")
@@ -421,12 +421,12 @@ public final class ClassUtils {
 	}
 
 	/**
-	 * Return a Class<?> representing the generic parameter for the given
-	 * indexes. Indexes are zero based; for example given the type Map<Integer,
-	 * List<String>>, getGeneric(0) will access the Integer. Nested generics can
-	 * be accessed by specifying multiple indexes; for example getGeneric(1, 0)
-	 * will access the String from the nested List. For convenience, if no
-	 * indexes are specified the first generic is returned.
+	 * Return a Class<?> representing the generic parameter for the given indexes.
+	 * Indexes are zero based; for example given the type Map<Integer,
+	 * List<String>>, getGeneric(0) will access the Integer. Nested generics can be
+	 * accessed by specifying multiple indexes; for example getGeneric(1, 0) will
+	 * access the String from the nested List. For convenience, if no indexes are
+	 * specified the first generic is returned.
 	 * 
 	 * @param type
 	 * @param fieldName
@@ -437,6 +437,44 @@ public final class ClassUtils {
 		Field field = getField(type, fieldName);
 		if (field != null) {
 			ResolvableType rt = ResolvableType.forField(field);
+			if (rt != null) {
+				if (indexes != null && indexes.length > 0) {
+					rt = rt.getGeneric(indexes);
+				}
+				if (rt != null) {
+					return rt.resolve();
+				}
+
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Return a Class<?> representing the generic parameter for the given indexes.
+	 * Indexes are zero based; for example given the type Map<Integer,
+	 * List<String>>, getGeneric(0) will access the Integer. Nested generics can be
+	 * accessed by specifying multiple indexes; for example getGeneric(1, 0) will
+	 * access the String from the nested List. For convenience, if no indexes are
+	 * specified the first generic is returned.
+	 * 
+	 * @param method
+	 *            or method parameter or type
+	 * @param indexes
+	 * @return
+	 */
+	public static <T> Class<?> getResolvedType(Object object, int... indexes) {
+		if (object != null) {
+			ResolvableType rt = null;
+			if (object instanceof Method) {
+				rt = ResolvableType.forMethodReturnType((Method) object);
+			} else if (object instanceof MethodParameter) {
+				rt = ResolvableType.forMethodParameter((MethodParameter) object);
+			} else if (object instanceof Type) {
+				rt = ResolvableType.forType((Type) object);
+			} else if (object instanceof Class) {
+				rt = ResolvableType.forRawClass((Class<?>) object);
+			}
 			if (rt != null) {
 				if (indexes != null && indexes.length > 0) {
 					rt = rt.getGeneric(indexes);
@@ -468,9 +506,9 @@ public final class ClassUtils {
 	}
 
 	/**
-	 * Instantiate a class with the given arguments; assumed is that all
-	 * arguments are not null so the types can be determined and a matching
-	 * constructor can be found. When no constructor is found null is returned.
+	 * Instantiate a class with the given arguments; assumed is that all arguments
+	 * are not null so the types can be determined and a matching constructor can be
+	 * found. When no constructor is found null is returned.
 	 * 
 	 * @param clazz
 	 * @param args

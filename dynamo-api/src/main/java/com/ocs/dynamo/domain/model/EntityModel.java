@@ -46,16 +46,10 @@ public interface EntityModel<T> {
 	String ATTRIBUTE_ORDER = "attributeOrder";
 
 	/**
-	 * Whether the attribute (of type MASTER, DETAIL or ELEMENT_TABLE) can be
-	 * edited in an edit form
-	 */
-	String COMPLEX_EDITABLE = "complexEditable";
-
-	/**
 	 * Cascade attribute
 	 */
 	String CASCADE = "cascade";
-	
+
 	/**
 	 * To completely turn off cascading for an attribute
 	 */
@@ -72,19 +66,29 @@ public interface EntityModel<T> {
 	String CASCADE_MODE = "cascadeMode";
 
 	/**
+	 * The "checkbox mode" for a boolean (either a checkbox or a toggle)
+	 */
+	String CHECKBOX_MODE = "checkboxMode";
+
+	/**
+	 * Whether the attribute (of type MASTER, DETAIL or ELEMENT_TABLE) can be edited
+	 * in an edit form
+	 */
+	String COMPLEX_EDITABLE = "complexEditable";
+
+	/**
 	 * Whether an amount represents a currency
 	 */
 	String CURRENCY = "currency";
 
 	/**
-	 * The date type (date, time, or time stamp) of a value of type
-	 * java.util.Date
+	 * The date type (date, time, or time stamp) of a value of type java.util.Date
 	 */
 	String DATE_TYPE = "dateType";
 
 	/**
-	 * The name of the default group for all attributes for which no explicit
-	 * group is specified
+	 * The name of the default group for all attributes for which no explicit group
+	 * is specified
 	 */
 	String DEFAULT_GROUP = "ocs.default.attribute.group";
 
@@ -114,8 +118,8 @@ public interface EntityModel<T> {
 	String DISPLAY_NAME_PLURAL = "displayNamePlural";
 
 	/**
-	 * The display property (used to determine what to display when using the
-	 * entity inside a lookup component or inside a table)
+	 * The display property (used to determine what to display when using the entity
+	 * inside a lookup component or inside a table)
 	 */
 	String DISPLAY_PROPERTY = "displayProperty";
 
@@ -130,8 +134,8 @@ public interface EntityModel<T> {
 	String FALSE_REPRESENTATION = "falseRepresentation";
 
 	/**
-	 * Names of other attributes that must appear on the same line inside an
-	 * edit form
+	 * Names of other attributes that must appear on the same line inside an edit
+	 * form
 	 */
 	String GROUP_TOGETHER_WITH = "groupTogetherWith";
 
@@ -176,10 +180,14 @@ public interface EntityModel<T> {
 	String MIN_VALUE = "minValue";
 
 	/**
-	 * Whether to allow searching for multiple values in case of a MASTER
-	 * attribute
+	 * Whether to allow searching for multiple values in case of a MASTER attribute
 	 */
 	String MULTIPLE_SEARCH = "multipleSearch";
+
+	/**
+	 * Whether a link in a table is navigable
+	 */
+	String NAVIGABLE = "navigable";
 
 	/**
 	 * Whether to include a percentage sign to a numerical field (cosmetic only)
@@ -202,11 +210,11 @@ public interface EntityModel<T> {
 	String QUICK_ADD_PROPERTY = "quickAddProperty";
 
 	/**
-	 * Indicates whether the property is read-only. This is deprecated
-	 * but left for convenience - please use "editable" instead
+	 * Indicates whether the property is read-only. This is deprecated but left for
+	 * convenience - please use "editable" instead
 	 */
 	String READ_ONLY = "readOnly";
-	
+
 	/**
 	 * The editable modus (EDITABLE, READ_ONLY, or CREATE_ONLY)
 	 */
@@ -274,8 +282,8 @@ public interface EntityModel<T> {
 	String SORTABLE = "sortable";
 
 	/**
-	 * The text field mode - indicates whether to use a text field or text area
-	 * for editing a String field
+	 * The text field mode - indicates whether to use a text field or text area for
+	 * editing a String field
 	 */
 	String TEXTFIELD_MODE = "textFieldMode";
 
@@ -309,11 +317,13 @@ public interface EntityModel<T> {
 	 */
 	String DIRECT_NAVIGATION = "directNavigation";
 
+	void addAttributeGroup(String attributeGroup);
+
 	/**
-	 * Adds a new attribute model on the position of the given existing
-	 * attribute model. The existing model will shift one position to the back
-	 * of the list. When the existing model is not found the attribute will
-	 * added on the end of the list.
+	 * Adds a new attribute model on the position of the given existing attribute
+	 * model. The existing model will shift one position to the back of the list.
+	 * When the existing model is not found the attribute will added on the end of
+	 * the list.
 	 * 
 	 * @param attributeGroup
 	 *            The group to which the attribute model should be registered
@@ -357,9 +367,9 @@ public interface EntityModel<T> {
 	List<AttributeModel> getAttributeModelsForGroup(String group);
 
 	/**
-	 * Returns the attribute models for a certain attribute type and type. Just
-	 * one of the parameters is mandatory, when both are given both will be used
-	 * in a boolean AND. Will also look at the generic type of a attribute, e.g.
+	 * Returns the attribute models for a certain attribute type and type. Just one
+	 * of the parameters is mandatory, when both are given both will be used in a
+	 * boolean AND. Will also look at the generic type of a attribute, e.g.
 	 * List<some generic type>.
 	 * 
 	 * @param attributeType

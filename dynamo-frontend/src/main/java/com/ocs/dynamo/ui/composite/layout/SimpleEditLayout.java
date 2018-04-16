@@ -16,6 +16,7 @@ package com.ocs.dynamo.ui.composite.layout;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
@@ -64,6 +65,8 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 	// the main layout
 	private VerticalLayout main;
 
+	private Consumer<T> customSaveConsumer;
+
 	/**
 	 * Constructor
 	 * 
@@ -102,7 +105,6 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 			if (getFormOptions().isOpenInViewMode()) {
 				editForm.setViewMode(true);
 			}
-			//setEntity(getService().fetchById(entity.getId(), getJoins()));
 		} else {
 			// new entity
 			back();
@@ -111,6 +113,16 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 
 	protected void afterLayoutBuilt(Layout layout, boolean viewMode) {
 		// override in subclass
+	}
+
+	/**
+	 * Callback method that is called after a tab has been selected
+	 * 
+	 * @param tabIndex
+	 *            the zero-based index of the selected tab
+	 */
+	protected void afterTabSelected(int tabIndex) {
+		// overwrite in subclasses
 	}
 
 	@Override
@@ -159,6 +171,11 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 				}
 
 				@Override
+				protected void afterEntitySet(T entity) {
+					SimpleEditLayout.this.afterEntitySet(entity);
+				}
+
+				@Override
 				protected void afterEditDone(boolean cancel, boolean newObject, T entity) {
 					setEntity(entity);
 					SimpleEditLayout.this.afterEditDone(cancel, newObject, entity);
@@ -167,6 +184,11 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 				@Override
 				protected void afterModeChanged(boolean viewMode) {
 					SimpleEditLayout.this.afterModeChanged(viewMode, editForm);
+				}
+
+				@Override
+				protected void afterTabSelected(int tabIndex) {
+					SimpleEditLayout.this.afterTabSelected(tabIndex);
 				}
 
 				@Override
@@ -207,6 +229,7 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 
 			};
 
+			editForm.setCustomSaveConsumer(customSaveConsumer);
 			editForm.setDetailJoins(getJoins());
 			editForm.setFormTitleWidth(getFormTitleWidth());
 			editForm.setFieldEntityModels(getFieldEntityModels());
@@ -215,7 +238,6 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 			main.addComponent(editForm);
 
 			postProcessLayout(main);
-
 			setCompositionRoot(main);
 
 			afterEntitySelected(editForm, getEntity());
@@ -379,6 +401,22 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 
 	public void setJoins(FetchJoinInformation[] joins) {
 		this.joins = joins;
+	}
+
+	public Consumer<T> getCustomSaveConsumer() {
+		return customSaveConsumer;
+	}
+
+	public void setCustomSaveConsumer(Consumer<T> customSaveConsumer) {
+		this.customSaveConsumer = customSaveConsumer;
+	}
+
+	public void doSave() {
+		this.editForm.doSave();
+	}
+	
+	public void afterEntitySet(T entity) {
+		// overwrite in entity 
 	}
 
 }

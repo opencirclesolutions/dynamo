@@ -19,6 +19,7 @@ import com.ocs.dynamo.domain.model.AttributeSelectMode;
 import com.ocs.dynamo.domain.model.AttributeTextFieldMode;
 import com.ocs.dynamo.domain.model.AttributeType;
 import com.ocs.dynamo.domain.model.CascadeMode;
+import com.ocs.dynamo.domain.model.CheckboxMode;
 import com.ocs.dynamo.domain.model.EditableType;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.NumberSelectMode;
@@ -49,6 +50,8 @@ public class AttributeModelImpl implements AttributeModel {
 	private Map<String, String> cascadeAttributes = new HashMap<>();
 
 	private Map<String, CascadeMode> cascadeModes = new HashMap<>();
+	
+	private CheckboxMode checkboxMode;
 
 	private String collectionTableFieldName;
 
@@ -103,6 +106,8 @@ public class AttributeModelImpl implements AttributeModel {
 	private boolean multipleSearch;
 
 	private String name;
+
+	private boolean navigable;
 
 	private EntityModel<?> nestedEntityModel;
 
@@ -200,6 +205,11 @@ public class AttributeModelImpl implements AttributeModel {
 	}
 
 	@Override
+	public CheckboxMode getCheckboxMode() {
+		return checkboxMode;
+	}
+
+	@Override
 	public String getCollectionTableFieldName() {
 		return collectionTableFieldName;
 	}
@@ -241,6 +251,11 @@ public class AttributeModelImpl implements AttributeModel {
 	@Override
 	public EntityModel<?> getEntityModel() {
 		return entityModel;
+	}
+
+	@Override
+	public float getExpansionFactor() {
+		return expansionFactor;
 	}
 
 	@Override
@@ -416,6 +431,11 @@ public class AttributeModelImpl implements AttributeModel {
 	}
 
 	@Override
+	public boolean isNavigable() {
+		return navigable;
+	}
+
+	@Override
 	public boolean isNumerical() {
 		return Number.class.isAssignableFrom(type);
 	}
@@ -511,6 +531,10 @@ public class AttributeModelImpl implements AttributeModel {
 		this.attributeType = attributeType;
 	}
 
+	public void setCheckboxMode(CheckboxMode checkboxMode) {
+		this.checkboxMode = checkboxMode;
+	}
+
 	public void setCollectionTableFieldName(String collectionTableFieldName) {
 		this.collectionTableFieldName = collectionTableFieldName;
 	}
@@ -563,6 +587,10 @@ public class AttributeModelImpl implements AttributeModel {
 		this.entityModel = entityModel;
 	}
 
+	public void setExpansionFactor(float expansionFactor) {
+		this.expansionFactor = expansionFactor;
+	}
+
 	public void setFalseRepresentation(String falseRepresentation) {
 		this.falseRepresentation = falseRepresentation;
 	}
@@ -610,6 +638,10 @@ public class AttributeModelImpl implements AttributeModel {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public void setNavigable(boolean navigable) {
+		this.navigable = navigable;
 	}
 
 	public void setNestedEntityModel(EntityModel<?> nestedEntityModel) {
@@ -723,15 +755,6 @@ public class AttributeModelImpl implements AttributeModel {
 	@Override
 	public String toString() {
 		return ReflectionToStringBuilder.toStringExclude(this, "entityModel");
-	}
-
-	@Override
-	public float getExpansionFactor() {
-		return expansionFactor;
-	}
-
-	public void setExpansionFactor(float expansionFactor) {
-		this.expansionFactor = expansionFactor;
 	}
 
 }

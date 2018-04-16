@@ -98,7 +98,7 @@ public class LazyEntityModelWrapper<T> implements EntityModel<T> {
 		return getDelegate().getCascadeAttributeModels();
 	}
 
-	private EntityModel<T> getDelegate() {
+	protected EntityModel<T> getDelegate() {
 		if (delegate == null) {
 			init();
 		}
@@ -169,6 +169,11 @@ public class LazyEntityModelWrapper<T> implements EntityModel<T> {
 	@Override
 	public boolean usesDefaultGroupOnly() {
 		return getDelegate().usesDefaultGroupOnly();
+	}
+
+	@Override
+	public void addAttributeGroup(String attributeGroup) {
+		getDelegate().addAttributeGroup(attributeGroup);
 	}
 
 }

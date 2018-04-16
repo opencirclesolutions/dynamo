@@ -23,16 +23,19 @@ import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.exception.OCSValidationException;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
+import com.ocs.dynamo.ui.BaseUI;
 import com.ocs.dynamo.ui.Buildable;
 import com.ocs.dynamo.ui.utils.FormatUtils;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.utils.ClassUtils;
 import com.vaadin.server.Page;
 import com.vaadin.shared.Position;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.UI;
 
 /**
  * Base class for custom components - contains convenience methods for getting
@@ -58,10 +61,11 @@ public abstract class BaseCustomComponent extends CustomComponent implements Bui
 	 * @return
 	 */
 	protected Component constructLabel(Object entity, AttributeModel attributeModel) {
-		Label fieldLabel = new Label();
+		Label fieldLabel = new Label("", ContentMode.HTML);
 		fieldLabel.setCaption(attributeModel.getDisplayName());
 		Object value = ClassUtils.getFieldValue(entity, attributeModel.getName());
-		String formatted = FormatUtils.formatPropertyValue(getEntityModelFactory(), attributeModel, value);
+		String formatted = FormatUtils.formatPropertyValue(getEntityModelFactory(), attributeModel, value, 
+				"<br/>");
 		fieldLabel.setValue(formatted);
 		return fieldLabel;
 	}
@@ -129,9 +133,20 @@ public abstract class BaseCustomComponent extends CustomComponent implements Bui
 	}
 
 	/**
-	 * Shows a notification message - this method will check for the
-	 * availability of a Vaadin Page object and if this is not present, write
-	 * the notification to the log instead
+	 * Navigates to the specified view
+	 * 
+	 * @param view
+	 *            the ID of the view
+	 */
+	protected void navigate(String viewName) {
+		BaseUI ui = (BaseUI) UI.getCurrent();
+		ui.navigate(viewName);
+	}
+
+	/**
+	 * Shows a notification message - this method will check for the availability of
+	 * a Vaadin Page object and if this is not present, write the notification to
+	 * the log instead
 	 * 
 	 * @param message
 	 *            the message

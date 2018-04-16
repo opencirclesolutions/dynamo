@@ -4,11 +4,10 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.ocs.dynamo.domain.TestEntity;
-import com.ocs.dynamo.domain.model.EntityModelFactory;
 
 public class LazyEntityModelWrapperTest {
 
-	EntityModelFactory factory = new EntityModelFactoryImpl();
+	EntityModelFactoryImpl factory = new EntityModelFactoryImpl();
 
 	@Test
 	public void test() {
