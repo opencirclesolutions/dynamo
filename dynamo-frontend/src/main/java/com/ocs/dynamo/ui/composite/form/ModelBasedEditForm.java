@@ -37,6 +37,7 @@ import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.AttributeType;
 import com.ocs.dynamo.domain.model.CascadeMode;
 import com.ocs.dynamo.domain.model.EntityModel;
+import com.ocs.dynamo.domain.model.impl.FieldFactoryContextImpl;
 import com.ocs.dynamo.domain.model.impl.ModelBasedFieldFactory;
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.service.BaseService;
@@ -879,16 +880,22 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	 * @param viewMode
 	 *            whether the screen is in view mode
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void constructField(Layout parent, EntityModel<T> entityModel, AttributeModel attributeModel,
 			boolean viewMode, int tabIndex) {
 
-		EntityModel<?> em = getFieldEntityModel(attributeModel);
 		// allow the user to override the construction of a field
 		Field<?> field = constructCustomField(entityModel, attributeModel, viewMode);
 		if (field == null) {
 			// if no custom field is defined, then use the default
-			field = fieldFactory.constructField(attributeModel, getFieldFilters(), em);
+			FieldFactoryContextImpl c = new FieldFactoryContextImpl()
+					.setFieldEntityModel((EntityModel) getFieldEntityModel(attributeModel));
+			c.setAttributeModel(attributeModel);
+			c.setFieldFilters(getFieldFilters());
+			c.setParentEntity(entity);
+			c.setViewMode(viewMode);
+
+			field = fieldFactory.constructField(c);
 		}
 
 		if (field instanceof URLField) {

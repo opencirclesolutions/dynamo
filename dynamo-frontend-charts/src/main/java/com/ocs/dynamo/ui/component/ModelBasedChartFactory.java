@@ -285,7 +285,7 @@ public class ModelBasedChartFactory implements FieldFactory {
 	}
 
 	@Override
-	public <T> Field<?> constructField(Context<T> context) {
+	public Field<?> constructField(Context context) {
 		ChartField<Object> chartField = null;
 		if (context.getAttributeModel() != null && context.getAttributeModel().getNestedEntityModel() != null
 				&& context.getAttributeModel().getNestedEntityModel() instanceof GraphEntityModel) {
