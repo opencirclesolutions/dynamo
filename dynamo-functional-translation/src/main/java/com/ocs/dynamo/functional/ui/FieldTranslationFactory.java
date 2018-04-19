@@ -19,6 +19,8 @@ import java.util.HashMap;
 
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
+import com.ocs.dynamo.domain.model.FieldFactory;
+import com.ocs.dynamo.domain.model.impl.FieldFactoryContextImpl;
 import com.ocs.dynamo.functional.domain.AbstractEntityTranslated;
 import com.ocs.dynamo.functional.domain.Translation;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
@@ -31,6 +33,8 @@ import com.vaadin.ui.Field;
  * localized (translated). It expects a generic database table based on entity Translation and attributes to be
  * translated mapped to the translation collection in this entity.
  * 
+ * This class can be used in 2 ways: [1] by hand [2] as a factory delegate as part of the editform.
+ * 
  * @author patrick.deenen@opencircle.solutions
  *
  * @param <ID>
@@ -38,13 +42,19 @@ import com.vaadin.ui.Field;
  * @param <T>
  *            The type which implements the translation for the entity
  */
-// FIXME This factory should be improved to implement an interface that can register this interface to a field
-// factory repository which can be used by a generic ModelFieldFactory.
-public class FieldTranslationFactory<ID extends Serializable, T extends AbstractEntityTranslated<ID, Translation<T>>> {
+public class FieldTranslationFactory<ID extends Serializable, T extends AbstractEntityTranslated<ID, Translation<T>>>
+		implements FieldFactory {
 	private EntityModel<T> em;
 	private T entity;
 	private HashMap<String, Field<?>> fields = new HashMap<>();
 	private boolean viewMode;
+
+	/**
+	 * Default constructor
+	 */
+	public FieldTranslationFactory() {
+		super();
+	}
 
 	/**
 	 * Create the factory using the entity model of the parent form
@@ -83,23 +93,24 @@ public class FieldTranslationFactory<ID extends Serializable, T extends Abstract
 		fields.clear();
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	protected void createFields() {
 		if (em != null && entity != null) {
+			FieldFactoryContextImpl context = new FieldFactoryContextImpl();
+			context.setParentEntity(entity);
+			context.setViewMode(viewMode);
 			for (AttributeModel am : em.getAttributeModels()) {
-				if (am.isVisible() && am.getNestedEntityModel() != null
-						&& Translation.class.isAssignableFrom(am.getNestedEntityModel().getEntityClass())) {
-					Collection<Translation<T>> items = (Collection<Translation<T>>) ClassUtils.getFieldValue(entity,
-							am.getName());
-					final EntityModel<Translation<T>> nem = (EntityModel<Translation<T>>) ServiceLocatorFactory
-							.getServiceLocator().getEntityModelFactory()
-							.getModel(am.getNestedEntityModel().getEntityClass());
-					TranslationTable<ID, T> tt = new TranslationTable(entity, am.getName(), items, nem, viewMode);
-					tt.setRequired(am.isRequired());
+				context.setAttributeModel(am);
+				Field<?> tt = constructField(context);
+				if (tt != null) {
 					fields.put(am.getName(), tt);
 				}
 			}
 		}
+	}
+
+	protected static Field<?> createField(AttributeModel attributeModel) {
+		Field<?> field = null;
+		return field;
 	}
 
 	public Field<?> getField(String fieldName) {
@@ -117,5 +128,27 @@ public class FieldTranslationFactory<ID extends Serializable, T extends Abstract
 				}
 			}
 		}
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public Field<?> constructField(Context context) {
+		AttributeModel am = context.getAttributeModel();
+		if (am.isVisible() && am.getNestedEntityModel() != null
+				&& Translation.class
+						.isAssignableFrom(am.getNestedEntityModel().getEntityClass())
+				&& context.getParentEntity() != null) {
+			Collection<Translation<T>> items = (Collection<Translation<T>>) ClassUtils
+					.getFieldValue(context.getParentEntity(), am.getName());
+			final EntityModel<Translation<T>> nem = (EntityModel<Translation<T>>) ServiceLocatorFactory
+					.getServiceLocator().getEntityModelFactory()
+					.getModel(am.getNestedEntityModel().getEntityClass());
+			TranslationTable<ID, T> tt = new TranslationTable<>(context.getParentEntity(),
+					am.getName(), items, nem, context.getViewMode());
+			tt.setRequired(am.isRequired());
+			tt.setCaption(am.getDisplayName());
+			return tt;
+		}
+		return null;
 	}
 }

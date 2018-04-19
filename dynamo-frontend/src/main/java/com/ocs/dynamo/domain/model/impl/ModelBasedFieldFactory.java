@@ -103,7 +103,8 @@ import com.vaadin.ui.UI;
  * @param <T>
  *            the type of the entity for which to create a field
  */
-public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory implements TableFieldFactory {
+public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory
+		implements TableFieldFactory, FieldFactory {
 
 	private static ConcurrentMap<String, ModelBasedFieldFactory<?>> nonValidatingInstances = new ConcurrentHashMap<>();
 
@@ -244,21 +245,31 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public Field<?> constructField(AttributeModel attributeModel, Map<String, Filter> fieldFilters,
 			EntityModel<?> fieldEntityModel) {
+		FieldFactoryContextImpl c = new FieldFactoryContextImpl().setAttributeModel(attributeModel)
+				.setFieldFilters(fieldFilters).setFieldEntityModel((EntityModel) fieldEntityModel);
+		return constructField(c);
+	}
+
+	@Override
+	public Field<?> constructField(Context context) {
+
 		Field<?> field = null;
 
 		// Are there any delegated component factories that can create this field?
 		if (fieldFactories != null && !fieldFactories.isEmpty()) {
 			for (FieldFactory ff : fieldFactories) {
-				FieldFactoryContextImpl<?> c = new FieldFactoryContextImpl<>().setAttributeModel(attributeModel)
-						.setFieldFilters(fieldFilters).setFieldEntityModel((EntityModel) fieldEntityModel);
-				field = ff.constructField(c);
+				field = ff.constructField(context);
 				if (field != null) {
 					break;
 				}
 			}
 		}
 
+		AttributeModel attributeModel = context.getAttributeModel();
 		if (field == null) {
+			Map<String, Filter> fieldFilters = context.getFieldFilters();
+			EntityModel<?> fieldEntityModel = context.getFieldEntityModel();
+
 			Filter fieldFilter = fieldFilters == null ? null : fieldFilters.get(attributeModel.getPath());
 			if (fieldFilter != null) {
 				if (AttributeType.MASTER.equals(attributeModel.getAttributeType())) {
@@ -840,5 +851,4 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 					.createLongConverter(SystemPropertyUtils.useThousandsGroupingInEditMode(), am.isPercentage()));
 		}
 	}
-
 }
