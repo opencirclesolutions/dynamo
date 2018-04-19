@@ -714,6 +714,11 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 				dateField.setResolution(Resolution.SECOND);
 			}
 		}
+
+		// set description for all fields
+		if (field instanceof AbstractField) {
+			((AbstractField<?>) field).setDescription(attributeModel.getDescription());
+		}
 	}
 
 	/**
