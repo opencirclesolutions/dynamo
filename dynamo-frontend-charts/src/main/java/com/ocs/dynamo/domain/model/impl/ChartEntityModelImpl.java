@@ -14,15 +14,15 @@
 package com.ocs.dynamo.domain.model.impl;
 
 import com.ocs.dynamo.domain.model.AttributeModel;
-import com.ocs.dynamo.domain.model.GraphEntityModel;
+import com.ocs.dynamo.domain.model.ChartEntityModel;
 
 /**
- * Extension of the entitymodel to support graph's
+ * Extension of the entitymodel to support charts
  * 
  * @author patrickdeenen
  *
  */
-public class GraphEntityModelImpl<T> extends EntityModelImpl<T> implements GraphEntityModel<T> {
+public class ChartEntityModelImpl<T> extends EntityModelImpl<T> implements ChartEntityModel<T> {
 
 	private String subTitle;
 	private String tooltip;
@@ -33,7 +33,7 @@ public class GraphEntityModelImpl<T> extends EntityModelImpl<T> implements Graph
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.ocs.dynamo.domain.model.impl.GraphEntityModel#getSubTitle()
+	 * @see com.ocs.dynamo.domain.model.impl.ChartEntityModel#getSubTitle()
 	 */
 	@Override
 	public String getSubTitle() {
@@ -51,7 +51,7 @@ public class GraphEntityModelImpl<T> extends EntityModelImpl<T> implements Graph
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.ocs.dynamo.domain.model.impl.GraphEntityModel#getTooltip()
+	 * @see com.ocs.dynamo.domain.model.impl.ChartEntityModel#getTooltip()
 	 */
 	@Override
 	public String getTooltip() {
@@ -114,7 +114,7 @@ public class GraphEntityModelImpl<T> extends EntityModelImpl<T> implements Graph
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.ocs.dynamo.domain.model.impl.GraphEntityModel#getSeriesAttributeModel()
+	 * @see com.ocs.dynamo.domain.model.impl.ChartEntityModel#getSeriesAttributeModel()
 	 */
 	@Override
 	public AttributeModel getSeriesAttributeModel() {
@@ -124,7 +124,7 @@ public class GraphEntityModelImpl<T> extends EntityModelImpl<T> implements Graph
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.ocs.dynamo.domain.model.impl.GraphEntityModel#getNameAttributeModel()
+	 * @see com.ocs.dynamo.domain.model.impl.ChartEntityModel#getNameAttributeModel()
 	 */
 	@Override
 	public AttributeModel getNameAttributeModel() {
@@ -134,7 +134,7 @@ public class GraphEntityModelImpl<T> extends EntityModelImpl<T> implements Graph
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.ocs.dynamo.domain.model.impl.GraphEntityModel#getDataAttributeModel()
+	 * @see com.ocs.dynamo.domain.model.impl.ChartEntityModel#getDataAttributeModel()
 	 */
 	@Override
 	public AttributeModel getDataAttributeModel() {

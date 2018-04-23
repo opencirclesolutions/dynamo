@@ -18,10 +18,10 @@ import java.util.Locale;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.ocs.dynamo.domain.model.ChartEntityModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
-import com.ocs.dynamo.domain.model.GraphEntityModel;
-import com.ocs.dynamo.domain.model.annotation.Graph;
+import com.ocs.dynamo.domain.model.annotation.Chart;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.util.SystemPropertyUtils;
 
@@ -29,7 +29,7 @@ import com.ocs.dynamo.util.SystemPropertyUtils;
  * @author patrickdeenen
  *
  */
-public class GraphEntityModelFactory implements EntityModelFactory, EntityModelConstruct {
+public class ChartEntityModelFactory implements EntityModelFactory, EntityModelConstruct {
 
 	@Autowired(required = false)
 	private MessageService messageService;
@@ -38,7 +38,7 @@ public class GraphEntityModelFactory implements EntityModelFactory, EntityModelC
 	 * Construct the factory
 	 * 
 	 */
-	public GraphEntityModelFactory() {
+	public ChartEntityModelFactory() {
 		super();
 	}
 
@@ -47,7 +47,7 @@ public class GraphEntityModelFactory implements EntityModelFactory, EntityModelC
 	 * 
 	 * @param messageService
 	 */
-	public GraphEntityModelFactory(MessageService messageService) {
+	public ChartEntityModelFactory(MessageService messageService) {
 		super();
 		this.messageService = messageService;
 	}
@@ -65,12 +65,12 @@ public class GraphEntityModelFactory implements EntityModelFactory, EntityModelC
 	 */
 	@Override
 	public <T> EntityModel<T> getModel(String reference, Class<T> entityClass) {
-		GraphEntityModelImpl<T> gem = null;
-		Graph ga = entityClass.getAnnotation(Graph.class);
+		ChartEntityModelImpl<T> gem = null;
+		Chart ga = entityClass.getAnnotation(Chart.class);
 		if (ga != null) {
 
-			// Get properties from graph annotation
-			gem = new GraphEntityModelImpl<>();
+			// Get properties from chart annotation
+			gem = new ChartEntityModelImpl<>();
 			gem.setSubTitle(ga.subTitle());
 			gem.setSeriesPath(ga.seriesPath());
 			gem.setNamePath(ga.namePath());
@@ -78,23 +78,23 @@ public class GraphEntityModelFactory implements EntityModelFactory, EntityModelC
 			gem.setTooltip(ga.tooltip());
 
 			// Override properties from property file
-			String prop = getEntityMessage(reference, GraphEntityModel.SUBTITLE);
+			String prop = getEntityMessage(reference, ChartEntityModel.SUBTITLE);
 			if (!StringUtils.isEmpty(prop)) {
 				gem.setSubTitle(prop);
 			}
-			prop = getEntityMessage(reference, GraphEntityModel.SERIES_PATH);
+			prop = getEntityMessage(reference, ChartEntityModel.SERIES_PATH);
 			if (!StringUtils.isEmpty(prop)) {
 				gem.setSeriesPath(prop);
 			}
-			prop = getEntityMessage(reference, GraphEntityModel.NAME_PATH);
+			prop = getEntityMessage(reference, ChartEntityModel.NAME_PATH);
 			if (!StringUtils.isEmpty(prop)) {
 				gem.setNamePath(prop);
 			}
-			prop = getEntityMessage(reference, GraphEntityModel.DATA_PATH);
+			prop = getEntityMessage(reference, ChartEntityModel.DATA_PATH);
 			if (!StringUtils.isEmpty(prop)) {
 				gem.setDataPath(prop);
 			}
-			prop = getEntityMessage(reference, GraphEntityModel.TOOLTIP);
+			prop = getEntityMessage(reference, ChartEntityModel.TOOLTIP);
 			if (!StringUtils.isEmpty(prop)) {
 				gem.setTooltip(prop);
 			}
@@ -115,11 +115,11 @@ public class GraphEntityModelFactory implements EntityModelFactory, EntityModelC
 
 	@Override
 	public EntityModel<?> constructNestedEntityModel(EntityModelFactory master, Class<?> type, String reference) {
-		return new LazyGraphEntityModelWrapper<>(master, reference, type);
+		return new LazyChartEntityModelWrapper<>(master, reference, type);
 	}
 
 	@Override
 	public <T> boolean canProvideModel(String reference, Class<T> entityClass) {
-		return entityClass != null && entityClass.getAnnotation(Graph.class) != null;
+		return entityClass != null && entityClass.getAnnotation(Chart.class) != null;
 	}
 }

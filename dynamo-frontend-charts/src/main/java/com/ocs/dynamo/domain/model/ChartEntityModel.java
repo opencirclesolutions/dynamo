@@ -14,13 +14,13 @@
 package com.ocs.dynamo.domain.model;
 
 /**
- * The interface for graph entity models
+ * The interface for chart entity models
  * 
  * @author patrickdeenen
  *
  * @param <T>
  */
-public interface GraphEntityModel<T> extends EntityModel<T> {
+public interface ChartEntityModel<T> extends EntityModel<T> {
 
 	String SUBTITLE = "subTitle";
 	String TOOLTIP = "tooltip";

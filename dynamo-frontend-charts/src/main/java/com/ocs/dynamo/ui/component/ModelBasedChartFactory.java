@@ -19,9 +19,9 @@ import java.util.HashSet;
 import org.apache.commons.lang.StringUtils;
 
 import com.ocs.dynamo.domain.model.AttributeModel;
+import com.ocs.dynamo.domain.model.ChartEntityModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.FieldFactory;
-import com.ocs.dynamo.domain.model.GraphEntityModel;
 import com.ocs.dynamo.ui.container.ServiceContainer;
 import com.ocs.dynamo.ui.container.ServiceQueryDefinition;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
@@ -88,27 +88,27 @@ public class ModelBasedChartFactory implements FieldFactory {
 	}
 
 	/**
-	 * Use this constructor when you have a ServiceContainer based on a GraphEntityModel
+	 * Use this constructor when you have a ServiceContainer based on a ChartEntityModel
 	 * 
 	 * @param container
-	 *            The service container with GraphEntityModel
+	 *            The service container with ChartEntityModel
 	 */
 	public ModelBasedChartFactory(ServiceContainer<?, ?> container) {
 		this(container,
-				(GraphEntityModel<?>) (((ServiceQueryDefinition<?, ?>) container.getQueryView().getQueryDefinition())
+				(ChartEntityModel<?>) (((ServiceQueryDefinition<?, ?>) container.getQueryView().getQueryDefinition())
 						.getEntityModel()));
 	}
 
 	/**
-	 * Use this constructor when you have a Container and GraphEntityModel
+	 * Use this constructor when you have a Container and ChartEntityModel
 	 * 
 	 * @param container
-	 * @param graphEntityModel
+	 * @param chartEntityModel
 	 */
-	public ModelBasedChartFactory(Container container, GraphEntityModel<?> graphEntityModel) {
+	public ModelBasedChartFactory(Container container, ChartEntityModel<?> chartEntityModel) {
 		super();
 		this.container = container;
-		init(graphEntityModel);
+		init(chartEntityModel);
 	}
 
 	/**
@@ -288,9 +288,9 @@ public class ModelBasedChartFactory implements FieldFactory {
 	public Field<?> constructField(Context context) {
 		ChartField<Object> chartField = null;
 		if (context.getAttributeModel() != null && context.getAttributeModel().getNestedEntityModel() != null
-				&& context.getAttributeModel().getNestedEntityModel() instanceof GraphEntityModel) {
+				&& context.getAttributeModel().getNestedEntityModel() instanceof ChartEntityModel) {
 			// Create from model
-			GraphEntityModel<?> gem = (GraphEntityModel<?>) context.getAttributeModel().getNestedEntityModel();
+			ChartEntityModel<?> gem = (ChartEntityModel<?>) context.getAttributeModel().getNestedEntityModel();
 			chartField = new ChartField<Object>();
 			chartField.setSeriesAttribute(gem.getSeriesAttributeModel());
 			chartField.setNameAttribute(gem.getNameAttributeModel());
@@ -368,20 +368,20 @@ public class ModelBasedChartFactory implements FieldFactory {
 	protected void init(Container container) {
 		this.container = container;
 		if (container instanceof ServiceContainer<?, ?>) {
-			GraphEntityModel<?> graphEntityModel = (GraphEntityModel<?>) (((ServiceQueryDefinition<?, ?>) ((ServiceContainer<?, ?>) container)
+			ChartEntityModel<?> chartEntityModel = (ChartEntityModel<?>) (((ServiceQueryDefinition<?, ?>) ((ServiceContainer<?, ?>) container)
 					.getQueryView().getQueryDefinition()).getEntityModel());
-			init(graphEntityModel);
+			init(chartEntityModel);
 		}
 	}
 
-	protected void init(GraphEntityModel<?> graphEntityModel) {
-		if (graphEntityModel != null) {
-			this.title = graphEntityModel.getDisplayName();
-			this.subTitle = graphEntityModel.getSubTitle();
-			this.tooltip = graphEntityModel.getTooltip();
-			this.seriesAttribute = graphEntityModel.getSeriesAttributeModel();
-			this.nameAttribute = graphEntityModel.getNameAttributeModel();
-			this.dataAttribute = graphEntityModel.getDataAttributeModel();
+	protected void init(ChartEntityModel<?> chartEntityModel) {
+		if (chartEntityModel != null) {
+			this.title = chartEntityModel.getDisplayName();
+			this.subTitle = chartEntityModel.getSubTitle();
+			this.tooltip = chartEntityModel.getTooltip();
+			this.seriesAttribute = chartEntityModel.getSeriesAttributeModel();
+			this.nameAttribute = chartEntityModel.getNameAttributeModel();
+			this.dataAttribute = chartEntityModel.getDataAttributeModel();
 		} else {
 			this.title = null;
 			this.subTitle = null;

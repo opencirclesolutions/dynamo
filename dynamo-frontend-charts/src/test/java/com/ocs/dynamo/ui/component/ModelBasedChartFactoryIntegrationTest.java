@@ -24,7 +24,7 @@ import com.ocs.dynamo.domain.WorldPopulation;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
-import com.ocs.dynamo.domain.model.GraphEntityModel;
+import com.ocs.dynamo.domain.model.ChartEntityModel;
 import com.ocs.dynamo.service.impl.DefaultServiceImpl;
 import com.ocs.dynamo.test.BaseIntegrationTest;
 import com.ocs.dynamo.ui.container.QueryType;
@@ -80,7 +80,7 @@ public class ModelBasedChartFactoryIntegrationTest extends BaseIntegrationTest {
      */
     @Test
 	public void testChartFactory() {
-		GraphEntityModel<Population> model = (GraphEntityModel<Population>) entityModelFactory
+		ChartEntityModel<Population> model = (ChartEntityModel<Population>) entityModelFactory
 				.getModel(Population.class);
 		Assert.assertNotNull(model);
 		Assert.assertNotNull(model.getDisplayName());
@@ -120,8 +120,8 @@ public class ModelBasedChartFactoryIntegrationTest extends BaseIntegrationTest {
 		EntityModel<?> model = am.getNestedEntityModel();
 		Assert.assertNotNull(model);
 		Assert.assertNotNull(model.getDisplayName());
-		Assert.assertTrue(model instanceof GraphEntityModel);
-		GraphEntityModel<?> gem = (GraphEntityModel<?>) model;
+		Assert.assertTrue(model instanceof ChartEntityModel);
+		ChartEntityModel<?> gem = (ChartEntityModel<?>) model;
 		Assert.assertNotNull(gem.getSubTitle());
 		Assert.assertNotNull(gem.getSeriesAttributeModel());
 		Assert.assertNotNull(gem.getNameAttributeModel());

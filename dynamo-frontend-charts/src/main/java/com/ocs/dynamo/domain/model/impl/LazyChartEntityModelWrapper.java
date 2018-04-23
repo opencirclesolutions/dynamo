@@ -14,18 +14,18 @@
 package com.ocs.dynamo.domain.model.impl;
 
 import com.ocs.dynamo.domain.model.AttributeModel;
+import com.ocs.dynamo.domain.model.ChartEntityModel;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
-import com.ocs.dynamo.domain.model.GraphEntityModel;
 
 /**
- * A wrapper that adds lazy loading to an entity model definition for graphs
+ * A wrapper that adds lazy loading to an entity model definition for Charts
  * 
  * @author patrickdeenen
  *
  */
-public class LazyGraphEntityModelWrapper<T> extends LazyEntityModelWrapper<T> implements GraphEntityModel<T> {
+public class LazyChartEntityModelWrapper<T> extends LazyEntityModelWrapper<T> implements ChartEntityModel<T> {
 
-	public LazyGraphEntityModelWrapper(EntityModelFactory factory, String reference, Class<T> entityClass) {
+	public LazyChartEntityModelWrapper(EntityModelFactory factory, String reference, Class<T> entityClass) {
 		super(factory, reference, entityClass);
 	}
 
@@ -35,8 +35,8 @@ public class LazyGraphEntityModelWrapper<T> extends LazyEntityModelWrapper<T> im
 	 * @see com.ocs.dynamo.domain.model.impl.LazyEntityModelWrapper#getDelegate()
 	 */
 	@Override
-	protected GraphEntityModel<T> getDelegate() {
-		return (GraphEntityModel<T>) super.getDelegate();
+	protected ChartEntityModel<T> getDelegate() {
+		return (ChartEntityModel<T>) super.getDelegate();
 	}
 
 	@Override

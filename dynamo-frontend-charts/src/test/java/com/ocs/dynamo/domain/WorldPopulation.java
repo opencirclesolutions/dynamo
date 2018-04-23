@@ -33,7 +33,7 @@ import com.ocs.dynamo.domain.model.annotation.Model;
  */
 @Entity
 @Table(name = "worldpopulation")
-@Model(displayProperty = "World population")
+@Model(displayName = "World population")
 public class WorldPopulation extends AbstractEntity<Integer> {
 
 	private static final long serialVersionUID = -3910599511872410346L;

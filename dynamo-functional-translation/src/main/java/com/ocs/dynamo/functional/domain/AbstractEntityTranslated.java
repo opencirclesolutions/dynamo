@@ -166,8 +166,6 @@ public abstract class AbstractEntityTranslated<ID, T extends Translation>
 		ArrayList<String> translatedFields = new ArrayList<>();
 		for (Method m : methods) {
 			if (m.getName().startsWith("get") && Collection.class.isAssignableFrom(m.getReturnType())) {
-				// java.lang.reflect.Type[] ta = ((java.lang.reflect.ParameterizedType) m.getGenericReturnType())
-				// .getActualTypeArguments();
 				Class<?> ta = ClassUtils.getResolvedType(m, 0);
 				if (ta != null && Translation.class.isAssignableFrom(ta)) {
 					translatedFields.add(m.getName().substring(3).toUpperCase());

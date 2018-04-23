@@ -19,14 +19,14 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * An interface that can be used to specify the properties of an graph - this will override any defaults
+ * An interface that can be used to specify the properties of an chart - this will override any defaults
  * 
  * @author Patrick.Deenen@opencirclesolutions.nl
  *
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE })
-public @interface Graph {
+public @interface Chart {
 
 	/** @return the subtitle */
 	String subTitle() default "";
