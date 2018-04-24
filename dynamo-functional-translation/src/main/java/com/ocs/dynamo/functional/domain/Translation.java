@@ -121,4 +121,28 @@ public abstract class Translation<E> extends AbstractEntity<Integer> {
 		return StringUtils.camelCaseToHumanFriendly(getField(), false) + " - " + getLocale().getName() + " - "
 				+ getTranslation();
 	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (!super.equals(obj)) {
+			return false;
+		}
+		if (!(obj instanceof Translation)) {
+			return false;
+		}
+		Translation<?> other = (Translation<?>) obj;
+		if (this.id == null || other.id == null) {
+			return false;
+		}
+		return this.id.equals(other.id);
+	}
+
 }

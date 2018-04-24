@@ -116,7 +116,7 @@ public abstract class AbstractEntityTranslated<ID, T extends Translation>
 		translation.setEntity(null);
 	}
 
-	@AssertTrue(message = "Please provide all requered translations!")
+	@AssertTrue(message = "{ocs.not.all.translations.provided}")
 	protected boolean isValidRequiredTranslations() {
 		boolean result = false;
 		Collection<String> locales = getRequiredLocales();
