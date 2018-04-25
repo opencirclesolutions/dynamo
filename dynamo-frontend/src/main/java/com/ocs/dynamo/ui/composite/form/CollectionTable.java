@@ -441,12 +441,14 @@ public class CollectionTable<T extends Serializable> extends CustomField<Collect
 		Iterator<Component> component = table.iterator();
 		while (component.hasNext()) {
 			Component next = component.next();
-			try {
-				((AbstractField<?>) next).validate();
-				((AbstractField<?>) next).setComponentError(null);
-			} catch (InvalidValueException ex) {
-				error = true;
-				((AbstractField<?>) next).setComponentError(new UserError(ex.getLocalizedMessage()));
+			if (next instanceof AbstractField) {
+				try {
+					((AbstractField<?>) next).validate();
+					((AbstractField<?>) next).setComponentError(null);
+				} catch (InvalidValueException ex) {
+					error = true;
+					((AbstractField<?>) next).setComponentError(new UserError(ex.getLocalizedMessage()));
+				}
 			}
 		}
 		return error;
