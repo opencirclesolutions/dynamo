@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.dynamoframework</groupId>
 		<artifactId>dynamo-parent</artifactId>
-		<version>1.5-CB3-SNAPSHOT</version>
+		<version>1.4.1-CB3</version>
 	</parent>
 
 	<artifactId>dynamo-test</artifactId>
