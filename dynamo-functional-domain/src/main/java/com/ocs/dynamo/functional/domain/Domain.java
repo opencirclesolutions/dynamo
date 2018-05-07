@@ -25,6 +25,7 @@ import javax.persistence.DiscriminatorColumn;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -37,6 +38,8 @@ import javax.validation.constraints.Size;
 @Inheritance
 @DiscriminatorColumn(name = "TYPE")
 @Entity
+//TODO this should not be in master, temporary fix.
+@Table(name = "domain")
 @Model(displayProperty = "name", sortOrder = "name asc")
 public abstract class Domain extends AbstractEntity<Integer> {
 
