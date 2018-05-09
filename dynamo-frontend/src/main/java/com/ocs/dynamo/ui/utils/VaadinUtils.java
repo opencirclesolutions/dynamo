@@ -506,6 +506,33 @@ public final class VaadinUtils {
     }
 
     /**
+     * Displays a confirmation dialog
+     *
+     * @param messageService
+     * @param question
+     *            the question to be displayed in the dialog
+     * @param whenConfirmed
+     *            the code to execute when the user confirms the dialog
+     * @param whenCanceled
+     *            the code to execute when the user cancels the dialog
+     */
+    public static void showConfirmDialog(MessageService messageService, String question, final Runnable whenConfirmed, final Runnable whenCanceled) {
+        if (UI.getCurrent() != null) {
+            ConfirmDialog.show(UI.getCurrent(), messageService.getMessage("ocs.confirm", getLocale()), question,
+                    messageService.getMessage("ocs.yes", getLocale()), messageService.getMessage("ocs.no", getLocale()),
+                    dialog -> {
+                        if (dialog.isConfirmed()) {
+                            whenConfirmed.run();
+                        } else {
+                            whenCanceled.run();
+                        }
+                    });
+        } else {
+            whenConfirmed.run();
+        }
+    }
+
+    /**
      * Converts a string to a BigDecimal using the built in Vaadin converter
      * 
      * @param percentage
