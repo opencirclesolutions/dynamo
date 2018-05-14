@@ -300,6 +300,9 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory
 		if (field instanceof AbstractComponent) {
 			((AbstractComponent) field).setImmediate(true);
 			field.setCaption(attributeModel.getDisplayName());
+			if (!StringUtils.isBlank(attributeModel.getStyles())) {
+				field.setStyleName(attributeModel.getStyles());
+			}
 		}
 		return field;
 	}

@@ -179,6 +179,9 @@ public @interface Attribute {
     /** @return whether a table can be sorted on this field */
     boolean sortable() default true;
 
+	/** @return one or more references to styles; in Vaadin used to specify stylenames seperated by space */
+	String styles() default "";
+
     /** @return whether to display a text attribute as a text field or a text area */
     AttributeTextFieldMode textFieldMode() default AttributeTextFieldMode.INHERIT;
 

@@ -200,7 +200,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		EntityModel<Entity3> model = factory.getModel(Entity3.class);
 		Assert.assertNotNull(model);
 
-		// the following are overwritten using the message bundle
+		// the following are overwritten using the annotation
 		Assert.assertEquals("dis", model.getDisplayName());
 		Assert.assertEquals("diss", model.getDisplayNamePlural());
 		Assert.assertEquals("desc", model.getDescription());
@@ -213,6 +213,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		Assert.assertEquals("Naampje", nameModel.getDisplayName());
 		Assert.assertEquals("Test", nameModel.getDescription());
 		Assert.assertEquals("Prompt", nameModel.getPrompt());
+		Assert.assertEquals("myStyle", nameModel.getStyles());
 		Assert.assertEquals(String.class, nameModel.getType());
 		Assert.assertNull(nameModel.getDisplayFormat());
 		Assert.assertEquals(AttributeType.BASIC, nameModel.getAttributeType());
@@ -277,6 +278,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 
 		Assert.assertEquals("Override", nameModel.getDisplayName());
 		Assert.assertEquals("Prompt override", nameModel.getPrompt());
+		Assert.assertEquals("Style override", nameModel.getStyles());
 		Assert.assertTrue(nameModel.isReadOnly());
 
 		Assert.assertFalse(model.usesDefaultGroupOnly());
@@ -724,7 +726,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 			@AttributeGroup(messageKey = "group2.key", attributeNames = { "age" }) })
 	public class Entity3 {
 
-		@Attribute(defaultValue = "Bas", description = "Test", displayName = "Naampje", readOnly = true, prompt = "Prompt", searchable = true, main = true, sortable = false)
+		@Attribute(defaultValue = "Bas", description = "Test", displayName = "Naampje", readOnly = true, prompt = "Prompt", searchable = true, main = true, sortable = false, styles = "myStyle")
 		private String name;
 
 		@Attribute(searchCaseSensitive = true, searchPrefixOnly = true, useThousandsGrouping = false)

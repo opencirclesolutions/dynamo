@@ -1073,6 +1073,10 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 				String defaultValue = attribute.defaultValue();
 				setDefaultValue(model, defaultValue);
 			}
+
+			if (!StringUtils.isEmpty(attribute.styles())) {
+				model.setStyles(attribute.styles());
+			}
 		}
 	}
 
@@ -1364,6 +1368,11 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 		msg = getAttributeMessage(entityModel, model, EntityModel.SEARCH_EXACT_VALUE);
 		if (msg != null && !StringUtils.isEmpty(msg)) {
 			model.setSearchForExactValue(Boolean.valueOf(msg));
+		}
+
+		msg = getAttributeMessage(entityModel, model, EntityModel.STYLES);
+		if (msg != null && !StringUtils.isEmpty(msg)) {
+			model.setStyles(msg);
 		}
 
 		setMessageBundleCascadeOverrides(entityModel, model);

@@ -13,6 +13,16 @@
  */
 package com.ocs.dynamo.domain.model.impl;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.apache.commons.lang.builder.ReflectionToStringBuilder;
+
 import com.ocs.dynamo.domain.model.AttributeDateType;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.AttributeSelectMode;
@@ -21,15 +31,6 @@ import com.ocs.dynamo.domain.model.AttributeType;
 import com.ocs.dynamo.domain.model.CascadeMode;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.NumberSelectMode;
-import org.apache.commons.lang.builder.ReflectionToStringBuilder;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * Implementation of the AttributeModel interface - simple container for properties
@@ -131,6 +132,8 @@ public class AttributeModelImpl implements AttributeModel {
     private AttributeSelectMode searchSelectMode;
 
     private AttributeSelectMode selectMode;
+
+	private String styles;
 
     private boolean sortable;
 
@@ -342,7 +345,23 @@ public class AttributeModelImpl implements AttributeModel {
         return selectMode;
     }
 
+	/**
+	 * @return the styles
+	 */
     @Override
+	public String getStyles() {
+		return styles;
+	}
+
+	/**
+	 * @param styles
+	 *            the styles to set
+	 */
+	public void setStyles(String styles) {
+		this.styles = styles;
+	}
+
+	@Override
     public AttributeTextFieldMode getTextFieldMode() {
         return textFieldMode;
     }
@@ -709,6 +728,7 @@ public class AttributeModelImpl implements AttributeModel {
         this.numberSelectMode = numberSelectMode;
     }
 
+	@Override
 	public boolean isTransient() {
 		return trans;
 	}
