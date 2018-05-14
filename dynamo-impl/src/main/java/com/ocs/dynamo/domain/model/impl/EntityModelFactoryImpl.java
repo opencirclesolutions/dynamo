@@ -13,50 +13,6 @@
  */
 package com.ocs.dynamo.domain.model.impl;
 
-import java.beans.PropertyDescriptor;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.stream.Collectors;
-
-import javax.persistence.CollectionTable;
-import javax.persistence.Column;
-import javax.persistence.ElementCollection;
-import javax.persistence.Embedded;
-import javax.persistence.Id;
-import javax.persistence.Lob;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.Transient;
-import javax.validation.constraints.AssertFalse;
-import javax.validation.constraints.AssertTrue;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.google.common.collect.Sets;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeDateType;
@@ -83,6 +39,48 @@ import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.ocs.dynamo.utils.ClassUtils;
 import com.ocs.dynamo.utils.DateUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import javax.persistence.CollectionTable;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.Embedded;
+import javax.persistence.Id;
+import javax.persistence.Lob;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.Transient;
+import javax.validation.constraints.AssertFalse;
+import javax.validation.constraints.AssertTrue;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+import java.beans.PropertyDescriptor;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.stream.Collectors;
 
 /**
  * Implementation of the entity model factory - creates models that hold
@@ -455,7 +453,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 
 	/**
 	 * Constructs the model for an entity
-	 * 
+	 *
 	 * @param entityClass
 	 *            the class of the entity
 	 * @return
@@ -760,7 +758,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 
 	/**
 	 * Constructs the model for an entity
-	 * 
+	 *
 	 * @param entityClass
 	 *            the class of the entity
 	 * @return
@@ -1207,6 +1205,10 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 				model.setExpansionFactor(attribute.expansionFactor());
 			}
 
+			if (!StringUtils.isEmpty(attribute.styles())) {
+				model.setStyles(attribute.styles());
+			}
+
 			model.setCheckboxMode(attribute.checkboxMode());
 			model.setNavigable(attribute.navigable());
 		}
@@ -1527,6 +1529,11 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 		msg = getAttributeMessage(entityModel, model, EntityModel.CHECKBOX_MODE);
 		if (!StringUtils.isEmpty(msg)) {
 			model.setCheckboxMode(CheckboxMode.valueOf(msg));
+		}
+
+		msg = getAttributeMessage(entityModel, model, EntityModel.STYLES);
+		if (msg != null && !StringUtils.isEmpty(msg)) {
+			model.setStyles(msg);
 		}
 
 		setMessageBundleCascadeOverrides(entityModel, model);

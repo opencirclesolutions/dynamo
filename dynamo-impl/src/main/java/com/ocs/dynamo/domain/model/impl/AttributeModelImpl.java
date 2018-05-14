@@ -50,7 +50,7 @@ public class AttributeModelImpl implements AttributeModel {
 	private Map<String, String> cascadeAttributes = new HashMap<>();
 
 	private Map<String, CascadeMode> cascadeModes = new HashMap<>();
-	
+
 	private CheckboxMode checkboxMode;
 
 	private String collectionTableFieldName;
@@ -143,6 +143,8 @@ public class AttributeModelImpl implements AttributeModel {
 
 	private AttributeSelectMode selectMode;
 
+	private String styles;
+
 	private boolean sortable;
 
 	private AttributeTextFieldMode textFieldMode;
@@ -184,9 +186,17 @@ public class AttributeModelImpl implements AttributeModel {
 		return allowedExtensions;
 	}
 
+	public void setAllowedExtensions(Set<String> allowedExtensions) {
+		this.allowedExtensions = allowedExtensions;
+	}
+
 	@Override
 	public AttributeType getAttributeType() {
 		return attributeType;
+	}
+
+	public void setAttributeType(AttributeType attributeType) {
+		this.attributeType = attributeType;
 	}
 
 	@Override
@@ -209,9 +219,17 @@ public class AttributeModelImpl implements AttributeModel {
 		return checkboxMode;
 	}
 
+	public void setCheckboxMode(CheckboxMode checkboxMode) {
+		this.checkboxMode = checkboxMode;
+	}
+
 	@Override
 	public String getCollectionTableFieldName() {
 		return collectionTableFieldName;
+	}
+
+	public void setCollectionTableFieldName(String collectionTableFieldName) {
+		this.collectionTableFieldName = collectionTableFieldName;
 	}
 
 	@Override
@@ -219,9 +237,17 @@ public class AttributeModelImpl implements AttributeModel {
 		return collectionTableName;
 	}
 
+	public void setCollectionTableName(String collectionTableName) {
+		this.collectionTableName = collectionTableName;
+	}
+
 	@Override
 	public AttributeDateType getDateType() {
 		return dateType;
+	}
+
+	public void setDateType(AttributeDateType dateType) {
+		this.dateType = dateType;
 	}
 
 	@Override
@@ -229,9 +255,17 @@ public class AttributeModelImpl implements AttributeModel {
 		return defaultValue;
 	}
 
+	public void setDefaultValue(Object defaultValue) {
+		this.defaultValue = defaultValue;
+	}
+
 	@Override
 	public String getDescription() {
 		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 	@Override
@@ -239,13 +273,25 @@ public class AttributeModelImpl implements AttributeModel {
 		return displayFormat;
 	}
 
+	public void setDisplayFormat(String displayFormat) {
+		this.displayFormat = displayFormat;
+	}
+
 	@Override
 	public String getDisplayName() {
 		return displayName;
 	}
 
+	public void setDisplayName(String displayName) {
+		this.displayName = displayName;
+	}
+
 	public EditableType getEditableType() {
 		return editableType;
+	}
+
+	public void setEditableType(EditableType editableType) {
+		this.editableType = editableType;
 	}
 
 	@Override
@@ -253,9 +299,17 @@ public class AttributeModelImpl implements AttributeModel {
 		return entityModel;
 	}
 
+	public void setEntityModel(EntityModel<?> entityModel) {
+		this.entityModel = entityModel;
+	}
+
 	@Override
 	public float getExpansionFactor() {
 		return expansionFactor;
+	}
+
+	public void setExpansionFactor(float expansionFactor) {
+		this.expansionFactor = expansionFactor;
 	}
 
 	@Override
@@ -263,9 +317,17 @@ public class AttributeModelImpl implements AttributeModel {
 		return falseRepresentation;
 	}
 
+	public void setFalseRepresentation(String falseRepresentation) {
+		this.falseRepresentation = falseRepresentation;
+	}
+
 	@Override
 	public String getFileNameProperty() {
 		return fileNameProperty;
+	}
+
+	public void setFileNameProperty(String fileNameProperty) {
+		this.fileNameProperty = fileNameProperty;
 	}
 
 	@Override
@@ -278,9 +340,17 @@ public class AttributeModelImpl implements AttributeModel {
 		return maxLength;
 	}
 
+	public void setMaxLength(Integer maxLength) {
+		this.maxLength = maxLength;
+	}
+
 	@Override
 	public Integer getMaxLengthInTable() {
 		return maxLengthInTable;
+	}
+
+	public void setMaxLengthInTable(Integer maxLengthInTable) {
+		this.maxLengthInTable = maxLengthInTable;
 	}
 
 	@Override
@@ -288,9 +358,17 @@ public class AttributeModelImpl implements AttributeModel {
 		return maxValue;
 	}
 
+	public void setMaxValue(Long maxValue) {
+		this.maxValue = maxValue;
+	}
+
 	@Override
 	public Class<?> getMemberType() {
 		return memberType;
+	}
+
+	public void setMemberType(Class<?> memberType) {
+		this.memberType = memberType;
 	}
 
 	@Override
@@ -298,9 +376,17 @@ public class AttributeModelImpl implements AttributeModel {
 		return minLength;
 	}
 
+	public void setMinLength(Integer minLength) {
+		this.minLength = minLength;
+	}
+
 	@Override
 	public Long getMinValue() {
 		return minValue;
+	}
+
+	public void setMinValue(Long minValue) {
+		this.minValue = minValue;
 	}
 
 	@Override
@@ -308,9 +394,17 @@ public class AttributeModelImpl implements AttributeModel {
 		return name;
 	}
 
+	public void setName(String name) {
+		this.name = name;
+	}
+
 	@Override
 	public EntityModel<?> getNestedEntityModel() {
 		return nestedEntityModel;
+	}
+
+	public void setNestedEntityModel(EntityModel<?> nestedEntityModel) {
+		this.nestedEntityModel = nestedEntityModel;
 	}
 
 	@Override
@@ -323,9 +417,17 @@ public class AttributeModelImpl implements AttributeModel {
 		return numberSelectMode;
 	}
 
+	public void setNumberSelectMode(NumberSelectMode numberSelectMode) {
+		this.numberSelectMode = numberSelectMode;
+	}
+
 	@Override
 	public Integer getOrder() {
 		return order;
+	}
+
+	public void setOrder(Integer order) {
+		this.order = order;
 	}
 
 	@Override
@@ -345,9 +447,17 @@ public class AttributeModelImpl implements AttributeModel {
 		return precision;
 	}
 
+	public void setPrecision(int precision) {
+		this.precision = precision;
+	}
+
 	@Override
 	public String getPrompt() {
 		return prompt;
+	}
+
+	public void setPrompt(String prompt) {
+		this.prompt = prompt;
 	}
 
 	@Override
@@ -355,9 +465,17 @@ public class AttributeModelImpl implements AttributeModel {
 		return quickAddPropertyName;
 	}
 
+	public void setQuickAddPropertyName(String quickAddPropertyName) {
+		this.quickAddPropertyName = quickAddPropertyName;
+	}
+
 	@Override
 	public String getReplacementSearchPath() {
 		return replacementSearchPath;
+	}
+
+	public void setReplacementSearchPath(String replacementSearchPath) {
+		this.replacementSearchPath = replacementSearchPath;
 	}
 
 	@Override
@@ -365,9 +483,32 @@ public class AttributeModelImpl implements AttributeModel {
 		return searchSelectMode;
 	}
 
+	public void setSearchSelectMode(AttributeSelectMode searchSelectMode) {
+		this.searchSelectMode = searchSelectMode;
+	}
+
 	@Override
 	public AttributeSelectMode getSelectMode() {
 		return selectMode;
+	}
+
+	public void setSelectMode(AttributeSelectMode selectMode) {
+		this.selectMode = selectMode;
+	}
+
+	/**
+	 * @return the styles
+	 */
+	@Override
+	public String getStyles() {
+		return styles;
+	}
+
+	/**
+	 * @param styles the styles to set
+	 */
+	public void setStyles(String styles) {
+		this.styles = styles;
 	}
 
 	@Override
@@ -375,9 +516,17 @@ public class AttributeModelImpl implements AttributeModel {
 		return textFieldMode;
 	}
 
+	public void setTextFieldMode(AttributeTextFieldMode textFieldMode) {
+		this.textFieldMode = textFieldMode;
+	}
+
 	@Override
 	public String getTrueRepresentation() {
 		return trueRepresentation;
+	}
+
+	public void setTrueRepresentation(String trueRepresentation) {
+		this.trueRepresentation = trueRepresentation;
 	}
 
 	@Override
@@ -385,9 +534,17 @@ public class AttributeModelImpl implements AttributeModel {
 		return type;
 	}
 
+	public void setType(Class<?> type) {
+		this.type = type;
+	}
+
 	@Override
 	public boolean isAlreadyGrouped() {
 		return alreadyGrouped;
+	}
+
+	public void setAlreadyGrouped(boolean alreadyGrouped) {
+		this.alreadyGrouped = alreadyGrouped;
 	}
 
 	@Override
@@ -395,9 +552,17 @@ public class AttributeModelImpl implements AttributeModel {
 		return complexEditable;
 	}
 
+	public void setComplexEditable(boolean complexEditable) {
+		this.complexEditable = complexEditable;
+	}
+
 	@Override
 	public boolean isCurrency() {
 		return currency;
+	}
+
+	public void setCurrency(boolean currency) {
+		this.currency = currency;
 	}
 
 	@Override
@@ -405,9 +570,17 @@ public class AttributeModelImpl implements AttributeModel {
 		return directNavigation;
 	}
 
+	public void setDirectNavigation(boolean directNavigation) {
+		this.directNavigation = directNavigation;
+	}
+
 	@Override
 	public boolean isEmail() {
 		return email;
+	}
+
+	public void setEmail(boolean email) {
+		this.email = email;
 	}
 
 	@Override
@@ -420,9 +593,18 @@ public class AttributeModelImpl implements AttributeModel {
 		return image;
 	}
 
+	public void setImage(boolean image) {
+		this.image = image;
+	}
+
 	@Override
 	public boolean isMainAttribute() {
 		return mainAttribute;
+	}
+
+	@Override
+	public void setMainAttribute(boolean mainAttribute) {
+		this.mainAttribute = mainAttribute;
 	}
 
 	@Override
@@ -430,9 +612,17 @@ public class AttributeModelImpl implements AttributeModel {
 		return multipleSearch;
 	}
 
+	public void setMultipleSearch(boolean multipleSearch) {
+		this.multipleSearch = multipleSearch;
+	}
+
 	@Override
 	public boolean isNavigable() {
 		return navigable;
+	}
+
+	public void setNavigable(boolean navigable) {
+		this.navigable = navigable;
 	}
 
 	@Override
@@ -445,9 +635,17 @@ public class AttributeModelImpl implements AttributeModel {
 		return percentage;
 	}
 
+	public void setPercentage(boolean percentage) {
+		this.percentage = percentage;
+	}
+
 	@Override
 	public boolean isQuickAddAllowed() {
 		return quickAddAllowed;
+	}
+
+	public void setQuickAddAllowed(boolean quickAddAllowed) {
+		this.quickAddAllowed = quickAddAllowed;
 	}
 
 	@Override
@@ -455,9 +653,17 @@ public class AttributeModelImpl implements AttributeModel {
 		return required;
 	}
 
+	public void setRequired(boolean required) {
+		this.required = required;
+	}
+
 	@Override
 	public boolean isRequiredForSearching() {
 		return requiredForSearching;
+	}
+
+	public void setRequiredForSearching(boolean requiredForSearching) {
+		this.requiredForSearching = requiredForSearching;
 	}
 
 	@Override
@@ -465,9 +671,17 @@ public class AttributeModelImpl implements AttributeModel {
 		return searchable;
 	}
 
+	public void setSearchable(boolean searchable) {
+		this.searchable = searchable;
+	}
+
 	@Override
 	public boolean isSearchCaseSensitive() {
 		return searchCaseSensitive;
+	}
+
+	public void setSearchCaseSensitive(boolean searchCaseSensitive) {
+		this.searchCaseSensitive = searchCaseSensitive;
 	}
 
 	@Override
@@ -475,9 +689,17 @@ public class AttributeModelImpl implements AttributeModel {
 		return searchForExactValue;
 	}
 
+	public void setSearchForExactValue(boolean searchForExactValue) {
+		this.searchForExactValue = searchForExactValue;
+	}
+
 	@Override
 	public boolean isSearchPrefixOnly() {
 		return searchPrefixOnly;
+	}
+
+	public void setSearchPrefixOnly(boolean searchPrefixOnly) {
+		this.searchPrefixOnly = searchPrefixOnly;
 	}
 
 	@Override
@@ -485,8 +707,16 @@ public class AttributeModelImpl implements AttributeModel {
 		return sortable;
 	}
 
+	public void setSortable(boolean sortable) {
+		this.sortable = sortable;
+	}
+
 	public boolean isTransient() {
 		return trans;
+	}
+
+	public void setTransient(boolean trans) {
+		this.trans = trans;
 	}
 
 	@Override
@@ -494,9 +724,17 @@ public class AttributeModelImpl implements AttributeModel {
 		return url;
 	}
 
+	public void setUrl(boolean url) {
+		this.url = url;
+	}
+
 	@Override
 	public boolean isUseThousandsGrouping() {
 		return useThousandsGrouping;
+	}
+
+	public void setUseThousandsGrouping(boolean useThousandsGrouping) {
+		this.useThousandsGrouping = useThousandsGrouping;
 	}
 
 	@Override
@@ -504,9 +742,17 @@ public class AttributeModelImpl implements AttributeModel {
 		return visible;
 	}
 
+	public void setVisible(boolean visible) {
+		this.visible = visible;
+	}
+
 	@Override
 	public boolean isVisibleInTable() {
 		return visibleInTable;
+	}
+
+	public void setVisibleInTable(boolean visibleInTable) {
+		this.visibleInTable = visibleInTable;
 	}
 
 	@Override
@@ -514,242 +760,13 @@ public class AttributeModelImpl implements AttributeModel {
 		return week;
 	}
 
+	public void setWeek(boolean week) {
+		this.week = week;
+	}
+
 	@Override
 	public void removeCascades() {
 		this.cascadeAttributes.clear();
-	}
-
-	public void setAllowedExtensions(Set<String> allowedExtensions) {
-		this.allowedExtensions = allowedExtensions;
-	}
-
-	public void setAlreadyGrouped(boolean alreadyGrouped) {
-		this.alreadyGrouped = alreadyGrouped;
-	}
-
-	public void setAttributeType(AttributeType attributeType) {
-		this.attributeType = attributeType;
-	}
-
-	public void setCheckboxMode(CheckboxMode checkboxMode) {
-		this.checkboxMode = checkboxMode;
-	}
-
-	public void setCollectionTableFieldName(String collectionTableFieldName) {
-		this.collectionTableFieldName = collectionTableFieldName;
-	}
-
-	public void setCollectionTableName(String collectionTableName) {
-		this.collectionTableName = collectionTableName;
-	}
-
-	public void setComplexEditable(boolean complexEditable) {
-		this.complexEditable = complexEditable;
-	}
-
-	public void setCurrency(boolean currency) {
-		this.currency = currency;
-	}
-
-	public void setDateType(AttributeDateType dateType) {
-		this.dateType = dateType;
-	}
-
-	public void setDefaultValue(Object defaultValue) {
-		this.defaultValue = defaultValue;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
-	public void setDirectNavigation(boolean directNavigation) {
-		this.directNavigation = directNavigation;
-	}
-
-	public void setDisplayFormat(String displayFormat) {
-		this.displayFormat = displayFormat;
-	}
-
-	public void setDisplayName(String displayName) {
-		this.displayName = displayName;
-	}
-
-	public void setEditableType(EditableType editableType) {
-		this.editableType = editableType;
-	}
-
-	public void setEmail(boolean email) {
-		this.email = email;
-	}
-
-	public void setEntityModel(EntityModel<?> entityModel) {
-		this.entityModel = entityModel;
-	}
-
-	public void setExpansionFactor(float expansionFactor) {
-		this.expansionFactor = expansionFactor;
-	}
-
-	public void setFalseRepresentation(String falseRepresentation) {
-		this.falseRepresentation = falseRepresentation;
-	}
-
-	public void setFileNameProperty(String fileNameProperty) {
-		this.fileNameProperty = fileNameProperty;
-	}
-
-	public void setImage(boolean image) {
-		this.image = image;
-	}
-
-	@Override
-	public void setMainAttribute(boolean mainAttribute) {
-		this.mainAttribute = mainAttribute;
-	}
-
-	public void setMaxLength(Integer maxLength) {
-		this.maxLength = maxLength;
-	}
-
-	public void setMaxLengthInTable(Integer maxLengthInTable) {
-		this.maxLengthInTable = maxLengthInTable;
-	}
-
-	public void setMaxValue(Long maxValue) {
-		this.maxValue = maxValue;
-	}
-
-	public void setMemberType(Class<?> memberType) {
-		this.memberType = memberType;
-	}
-
-	public void setMinLength(Integer minLength) {
-		this.minLength = minLength;
-	}
-
-	public void setMinValue(Long minValue) {
-		this.minValue = minValue;
-	}
-
-	public void setMultipleSearch(boolean multipleSearch) {
-		this.multipleSearch = multipleSearch;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public void setNavigable(boolean navigable) {
-		this.navigable = navigable;
-	}
-
-	public void setNestedEntityModel(EntityModel<?> nestedEntityModel) {
-		this.nestedEntityModel = nestedEntityModel;
-	}
-
-	public void setNumberSelectMode(NumberSelectMode numberSelectMode) {
-		this.numberSelectMode = numberSelectMode;
-	}
-
-	public void setOrder(Integer order) {
-		this.order = order;
-	}
-
-	public void setPercentage(boolean percentage) {
-		this.percentage = percentage;
-	}
-
-	public void setPrecision(int precision) {
-		this.precision = precision;
-	}
-
-	public void setPrompt(String prompt) {
-		this.prompt = prompt;
-	}
-
-	public void setQuickAddAllowed(boolean quickAddAllowed) {
-		this.quickAddAllowed = quickAddAllowed;
-	}
-
-	public void setQuickAddPropertyName(String quickAddPropertyName) {
-		this.quickAddPropertyName = quickAddPropertyName;
-	}
-
-	public void setReplacementSearchPath(String replacementSearchPath) {
-		this.replacementSearchPath = replacementSearchPath;
-	}
-
-	public void setRequired(boolean required) {
-		this.required = required;
-	}
-
-	public void setRequiredForSearching(boolean requiredForSearching) {
-		this.requiredForSearching = requiredForSearching;
-	}
-
-	public void setSearchable(boolean searchable) {
-		this.searchable = searchable;
-	}
-
-	public void setSearchCaseSensitive(boolean searchCaseSensitive) {
-		this.searchCaseSensitive = searchCaseSensitive;
-	}
-
-	public void setSearchForExactValue(boolean searchForExactValue) {
-		this.searchForExactValue = searchForExactValue;
-	}
-
-	public void setSearchPrefixOnly(boolean searchPrefixOnly) {
-		this.searchPrefixOnly = searchPrefixOnly;
-	}
-
-	public void setSearchSelectMode(AttributeSelectMode searchSelectMode) {
-		this.searchSelectMode = searchSelectMode;
-	}
-
-	public void setSelectMode(AttributeSelectMode selectMode) {
-		this.selectMode = selectMode;
-	}
-
-	public void setSortable(boolean sortable) {
-		this.sortable = sortable;
-	}
-
-	public void setTextFieldMode(AttributeTextFieldMode textFieldMode) {
-		this.textFieldMode = textFieldMode;
-	}
-
-	public void setTransient(boolean trans) {
-		this.trans = trans;
-	}
-
-	public void setTrueRepresentation(String trueRepresentation) {
-		this.trueRepresentation = trueRepresentation;
-	}
-
-	public void setType(Class<?> type) {
-		this.type = type;
-	}
-
-	public void setUrl(boolean url) {
-		this.url = url;
-	}
-
-	public void setUseThousandsGrouping(boolean useThousandsGrouping) {
-		this.useThousandsGrouping = useThousandsGrouping;
-	}
-
-	public void setVisible(boolean visible) {
-		this.visible = visible;
-	}
-
-	public void setVisibleInTable(boolean visibleInTable) {
-		this.visibleInTable = visibleInTable;
-	}
-
-	public void setWeek(boolean week) {
-		this.week = week;
 	}
 
 	@Override

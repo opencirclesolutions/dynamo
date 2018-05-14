@@ -13,11 +13,6 @@
  */
 package com.ocs.dynamo.domain.model.annotation;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 import com.ocs.dynamo.domain.model.AttributeDateType;
 import com.ocs.dynamo.domain.model.AttributeSelectMode;
 import com.ocs.dynamo.domain.model.AttributeTextFieldMode;
@@ -25,6 +20,11 @@ import com.ocs.dynamo.domain.model.CheckboxMode;
 import com.ocs.dynamo.domain.model.EditableType;
 import com.ocs.dynamo.domain.model.NumberSelectMode;
 import com.ocs.dynamo.domain.model.VisibilityType;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * An interface that can be used to specify the properties of an attribute -
@@ -45,7 +45,7 @@ public @interface Attribute {
 	Cascade[] cascade() default {};
 
 	/**
-	 * 
+	 *
 	 * @return the desired check box mode
 	 */
 	CheckboxMode checkboxMode() default CheckboxMode.CHECKBOX;
@@ -111,7 +111,7 @@ public @interface Attribute {
 	boolean image() default false;
 
 	/**
-	 * 
+	 *
 	 * @return whether this attribute is the main attribute
 	 */
 	boolean main() default false;
@@ -120,7 +120,7 @@ public @interface Attribute {
 	int maxLength() default -1;
 
 	/**
-	 * 
+	 *
 	 * @return the maximum length of the text representation in a table
 	 */
 	int maxLengthInTable() default -1;
@@ -149,13 +149,13 @@ public @interface Attribute {
 	boolean multipleSearch() default false;
 
 	/**
-	 * 
+	 *
 	 * @return whether this attribute is navigable when inside a table
 	 */
 	boolean navigable() default false;
 
 	/**
-	 * 
+	 *
 	 * @return the number select mode (indicates which component to use for editing
 	 *         numbers)
 	 */
@@ -182,7 +182,7 @@ public @interface Attribute {
 	String replacementSearchPath() default "";
 
 	/**
-	 * 
+	 *
 	 * @return whether the attribute is required
 	 */
 	boolean required() default false;
@@ -218,6 +218,11 @@ public @interface Attribute {
 
 	/** @return whether a table can be sorted on this field */
 	boolean sortable() default true;
+
+	/**
+	 * @return one or more references to styles; in Vaadin used to specify stylenames seperated by space
+	 */
+	String styles() default "";
 
 	/**
 	 * @return whether to display a text attribute as a text field or a text area
