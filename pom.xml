@@ -4,7 +4,7 @@
 	<groupId>org.dynamoframework</groupId>
 	<artifactId>dynamo-parent</artifactId>
 	<packaging>pom</packaging>
-	<version>1.5-CB3-SNAPSHOT</version>
+	<version>1.6-CB3-SNAPSHOT</version>
 	<name>Dynamo Framework</name>
 	<description>Dynamo Web Application Accelerator is a development framework that aims to increase productivity.</description>
 	<url>https://github.com/opencirclesolutions/dynamo</url>
