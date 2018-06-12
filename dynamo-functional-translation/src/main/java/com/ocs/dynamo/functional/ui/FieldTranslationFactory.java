@@ -32,9 +32,9 @@ import com.vaadin.ui.Field;
  * This factory can be used to generate TranslationTable objects for attributes in fields which have to be dynamically
  * localized (translated). It expects a generic database table based on entity Translation and attributes to be
  * translated mapped to the translation collection in this entity.
- * 
+ *
  * This class can be used in 2 ways: [1] by hand [2] as a factory delegate as part of the editform.
- * 
+ *
  * @author patrick.deenen@opencircle.solutions
  *
  * @param <ID>

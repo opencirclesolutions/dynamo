@@ -16,9 +16,12 @@ package com.ocs.dynamo.ui.composite.layout;
 import java.io.Serializable;
 import java.util.Collection;
 
+import org.vaadin.addons.lazyquerycontainer.CompositeItem;
+
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
+import com.ocs.dynamo.domain.model.EditableType;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.impl.ModelBasedFieldFactory;
 import com.ocs.dynamo.service.BaseService;
@@ -29,17 +32,21 @@ import com.ocs.dynamo.ui.composite.table.ModelBasedTable;
 import com.ocs.dynamo.ui.composite.table.ServiceResultsTableWrapper;
 import com.ocs.dynamo.ui.container.QueryType;
 import com.ocs.dynamo.ui.container.ServiceContainer;
+import com.ocs.dynamo.ui.utils.FormatUtils;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.data.Container;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.sort.SortOrder;
+import com.vaadin.server.FontAwesome;
+import com.vaadin.server.Resource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 
 /**
- * A page for editing items directly in a table - this is built around the lazy query container
+ * A page for editing items directly in a table - this is built around the lazy
+ * query container
  * 
  * @author bas.rutten
  * @param <ID>
@@ -49,395 +56,434 @@ import com.vaadin.ui.VerticalLayout;
  */
 @SuppressWarnings("serial")
 public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity<ID>>
-        extends BaseCollectionLayout<ID, T> {
+		extends BaseCollectionLayout<ID, T> {
 
-    private static final long serialVersionUID = 4606800218149558500L;
+	/**
+	 * The default page length
+	 */
+	private static final int PAGE_LENGTH = 15;
 
-    /**
-     * The default page length
-     */
-    private static final int PAGE_LENGTH = 15;
+	private static final long serialVersionUID = 4606800218149558500L;
 
-    /**
-     * The add button
-     */
-    private Button addButton;
+	/**
+	 * The add button
+	 */
+	private Button addButton;
 
-    /**
-     * The cancel button
-     */
-    private Button cancelButton;
+	/**
+	 * The cancel button
+	 */
+	private Button cancelButton;
 
-    /**
-     * The edit button
-     */
-    private Button editButton;
+	/**
+	 * The edit button
+	 */
+	private Button editButton;
 
-    /**
-     * The filter that is applied to limit the search results
-     */
-    private Filter filter;
+	/**
+	 * The filter that is applied to limit the search results
+	 */
+	private Filter filter;
 
-    /**
-     * The main layout
-     */
-    private VerticalLayout mainLayout;
+	/**
+	 * The main layout
+	 */
+	private VerticalLayout mainLayout;
 
-    /**
-     * The page length (number of visible rows)
-     */
-    private int pageLength = PAGE_LENGTH;
+	/**
+	 * The page length (number of visible rows)
+	 */
+	private int pageLength = PAGE_LENGTH;
 
-    /**
-     * The save button
-     */
-    private Button saveButton;
+	/**
+	 * The icon to use inside the remove button
+	 */
+	private Resource removeIcon;
 
-    /**
-     * Whether the screen is in view mode
-     */
-    private boolean viewmode;
+	/**
+	 * The message to display inside the "remove" button
+	 */
+	private String removeMessage;
 
-    /**
-     * Constructor
-     * 
-     * @param service
-     *            the service used to query the database
-     * @param entityModel
-     *            the entity model the entity model used to build the table
-     * @param formOptions
-     *            the form options
-     * @param sortOrder
-     *            the first sort order
-     * @param joins
-     *            the desired joins
-     */
-    public TabularEditLayout(BaseService<ID, T> service, EntityModel<T> entityModel, FormOptions formOptions,
-            SortOrder sortOrder, FetchJoinInformation... joins) {
-        super(service, entityModel, formOptions, sortOrder, joins);
-    }
+	/**
+	 * The save button
+	 */
+	private Button saveButton;
 
-    @Override
-    public void attach() {
-        super.attach();
-        build();
-    }
+	/**
+	 * Whether the screen is in view mode
+	 */
+	private boolean viewmode;
 
-    /**
-     * Lazily builds the actual layout
-     */
-    @SuppressWarnings("unchecked")
-    @Override
-    public void build() {
-        this.filter = constructFilter();
-        if (mainLayout == null) {
-            setViewmode(!isEditAllowed() || getFormOptions().isOpenInViewMode());
-            mainLayout = new DefaultVerticalLayout(true, true);
+	/**
+	 * Constructor
+	 * 
+	 * @param service
+	 *            the service used to query the database
+	 * @param entityModel
+	 *            the entity model the entity model used to build the table
+	 * @param formOptions
+	 *            the form options
+	 * @param sortOrder
+	 *            the first sort order
+	 * @param joins
+	 *            the desired joins
+	 */
+	public TabularEditLayout(BaseService<ID, T> service, EntityModel<T> entityModel, FormOptions formOptions,
+			SortOrder sortOrder, FetchJoinInformation... joins) {
+		super(service, entityModel, formOptions, sortOrder, joins);
+	}
 
-            constructTable();
+	@Override
+	public void attach() {
+		super.attach();
+		build();
+	}
 
-            // remove button at the end of the row
-            if (getFormOptions().isShowRemoveButton()) {
+	/**
+	 * Lazily builds the actual layout
+	 */
+	@SuppressWarnings("unchecked")
+	@Override
+	public void build() {
+		this.filter = constructFilter();
+		if (mainLayout == null) {
+			setViewmode(!isEditAllowed() || getFormOptions().isOpenInViewMode());
+			mainLayout = new DefaultVerticalLayout(true, true);
 
-                final String removeMsg = message("ocs.remove");
-                getTableWrapper().getTable().addGeneratedColumn(removeMsg, (source, itemId, columnId) -> {
-                    return isViewmode() ? null : new RemoveButton() {
+			constructTable();
 
-                        @Override
-                        protected void doDelete() {
-                            source.removeItem(itemId);
-                            getContainer().commit();
-                        }
-                    };
-                });
-            }
+			// remove button at the end of the row
+			if (getFormOptions().isShowRemoveButton()) {
 
-            mainLayout.addComponent(getButtonBar());
+				final String defaultMsg = message("ocs.remove");
+				getTableWrapper().getTable().addGeneratedColumn(defaultMsg, (source, itemId, columnId) -> {
+					return isViewmode() ? null : new RemoveButton(removeMessage, removeIcon) {
+						@Override
+						protected void doDelete() {
+							CompositeItem ci = (CompositeItem) source.getItem(itemId);
+							doRemove(VaadinUtils.getEntityFromItem(ci));
+						}
 
-            // add button
-            addButton = new Button(message("ocs.add"));
-            addButton.addClickListener(event -> {
-                // delegate the construction of a new item to the lazy
-                // query container
-                ID id = (ID) getContainer().addItem();
-                createEntity(getEntityFromTable(id));
-                getTableWrapper().getTable().setCurrentPageFirstItemId(id);
-            });
-            getButtonBar().addComponent(addButton);
-            addButton.setVisible(!getFormOptions().isHideAddButton() && isEditAllowed() && !isViewmode());
+						@Override
+						protected String getItemToDelete() {
+							CompositeItem ci = (CompositeItem) source.getItem(itemId);
+							T t = VaadinUtils.getEntityFromItem(ci);
+							return FormatUtils.formatEntity(getEntityModel(), t);
+						}
+					};
+				});
+			}
+			mainLayout.addComponent(getButtonBar());
 
-            // save button
-            saveButton = new Button(message("ocs.save"));
-            saveButton.setEnabled(false);
-            saveButton.addClickListener(event -> {
-                try {
-                    getContainer().commit();
-                    // back to view mode when appropriate
-                    if (getFormOptions().isOpenInViewMode()) {
-                        toggleViewMode(true);
-                    }
-                } catch (RuntimeException ex) {
-                    handleSaveException(ex);
-                }
-            });
-            getButtonBar().addComponent(saveButton);
-            saveButton.setVisible(!isViewmode());
+			// add button
+			addButton = new Button(message("ocs.add"));
+			addButton.setIcon(FontAwesome.PLUS);
+			addButton.addClickListener(event -> {
+				// delegate the construction of a new item to the lazy
+				// query container
+				ID id = (ID) getContainer().addItem();
+				createEntity(getEntityFromTable(id));
+				getTableWrapper().getTable().setCurrentPageFirstItemId(id);
+			});
+			getButtonBar().addComponent(addButton);
+			addButton.setVisible(!getFormOptions().isHideAddButton() && isEditAllowed() && !isViewmode());
 
-            editButton = new Button(message("ocs.edit"));
-            editButton.addClickListener(event -> toggleViewMode(false));
-            editButton.setVisible(isViewmode() && getFormOptions().isEditAllowed());
-            getButtonBar().addComponent(editButton);
+			// save button
+			saveButton = new Button(message("ocs.save"));
+			saveButton.setIcon(FontAwesome.SAVE);
+			saveButton.setEnabled(false);
+			saveButton.addClickListener(event -> {
+				try {
+					getContainer().commit();
+					// back to view mode when appropriate
+					if (getFormOptions().isOpenInViewMode()) {
+						toggleViewMode(true);
+					}
+				} catch (RuntimeException ex) {
+					handleSaveException(ex);
+				}
+			});
+			getButtonBar().addComponent(saveButton);
+			saveButton.setVisible(!isViewmode());
 
-            cancelButton = new Button(message("ocs.cancel"));
-            cancelButton.addClickListener(event -> {
-                reload();
-                toggleViewMode(true);
-            });
-            cancelButton.setVisible(!isViewmode() && getFormOptions().isOpenInViewMode());
-            getButtonBar().addComponent(cancelButton);
+			editButton = new Button(message("ocs.edit"));
+			editButton.setIcon(FontAwesome.PENCIL);
+			editButton.addClickListener(event -> toggleViewMode(false));
+			editButton.setVisible(isViewmode() && getFormOptions().isEditAllowed());
+			getButtonBar().addComponent(editButton);
 
-            postProcessButtonBar(getButtonBar());
-            constructTableDividers();
-            postProcessLayout(mainLayout);
-        }
-        setCompositionRoot(mainLayout);
-    }
+			cancelButton = new Button(message("ocs.cancel"));
+			cancelButton.setIcon(FontAwesome.BAN);
+			cancelButton.addClickListener(event -> {
+				reload();
+				toggleViewMode(true);
+			});
+			cancelButton.setVisible(!isViewmode() && getFormOptions().isOpenInViewMode());
+			getButtonBar().addComponent(cancelButton);
 
-    /**
-     * Creates the filter used for searching
-     * 
-     * @return
-     */
-    protected Filter constructFilter() {
-        return null;
-    }
+			postProcessButtonBar(getButtonBar());
+			constructTableDividers();
+			postProcessLayout(mainLayout);
+		}
+		setCompositionRoot(mainLayout);
+	}
 
-    /**
-     * Initializes the table
-     */
-    protected void constructTable() {
+	/**
+	 * Creates the filter used for searching
+	 * 
+	 * @return
+	 */
+	protected Filter constructFilter() {
+		return null;
+	}
 
-        final Table table = getTableWrapper().getTable();
+	/**
+	 * Initializes the table
+	 */
+	protected void constructTable() {
 
-        // make sure the table can be edited
-        table.setEditable(!isViewmode());
-        // make sure changes are not persisted right away
-        table.setBuffered(true);
-        table.setMultiSelect(false);
-        table.setColumnCollapsingAllowed(false);
-        // set a higher cache rate to allow for smoother scrolling
-        table.setCacheRate(2.0);
-        table.setSortEnabled(isSortEnabled());
-        table.setPageLength(getPageLength());
+		final Table table = getTableWrapper().getTable();
 
-        // default sorting
-        // default sorting
-        if (getSortOrders() != null && !getSortOrders().isEmpty()) {
-            ServiceContainer<ID, T> sc = getContainer();
-            sc.sort(getSortOrders().toArray(new SortOrder[0]));
-        }
+		// make sure the table can be edited
+		table.setEditable(!isViewmode());
+		// make sure changes are not persisted right away
+		table.setBuffered(true);
+		table.setMultiSelect(false);
+		table.setColumnCollapsingAllowed(false);
+		// set a higher cache rate to allow for smoother scrolling
+		table.setCacheRate(2.0);
+		table.setSortEnabled(isSortEnabled());
+		table.setPageLength(getPageLength());
 
-        // overwrite the field factory to handle validation
-        table.setTableFieldFactory(new ModelBasedFieldFactory<T>(getEntityModel(), getMessageService(), true, false) {
+		// default sorting
+		// default sorting
+		if (getSortOrders() != null && !getSortOrders().isEmpty()) {
+			ServiceContainer<ID, T> sc = getContainer();
+			sc.sort(getSortOrders().toArray(new SortOrder[0]));
+		}
 
-            @Override
-            public Field<?> createField(String propertyId, EntityModel<?> fieldEntityModel) {
-                AttributeModel am = getEntityModel().getAttributeModel(propertyId);
+		// overwrite the field factory to handle validation
+		table.setTableFieldFactory(new ModelBasedFieldFactory<T>(getEntityModel(), getMessageService(), true, false) {
 
-                // first try to create a custom field
-                Field<?> custom = constructCustomField(getEntityModel(), am, isViewmode(), false);
+			@Override
+			public Field<?> createField(String propertyId, EntityModel<?> fieldEntityModel) {
+				AttributeModel am = getEntityModel().getAttributeModel(propertyId);
 
-                boolean hasFilter = getFieldFilters().containsKey(propertyId);
-                final Field<?> field = custom != null ? custom
-                        : (hasFilter ? super.constructField(am, getFieldFilters(), fieldEntityModel)
-                                : super.createField(propertyId, fieldEntityModel));
+				// first try to create a custom field
+				Field<?> custom = constructCustomField(getEntityModel(), am, isViewmode(), false);
 
-                // field is editable when not in view mode and not read only
-                if (field instanceof URLField) {
-                    ((URLField) field).setEditable(!isViewmode() && !am.isReadOnly());
-                }
+				boolean hasFilter = getFieldFilters().containsKey(propertyId);
+				final Field<?> field = custom != null ? custom
+						: (hasFilter ? super.constructField(am, getFieldFilters(), fieldEntityModel)
+								: super.createField(propertyId, fieldEntityModel));
 
-                if (field != null && field.isEnabled()) {
-                    field.addValueChangeListener(event -> {
-                        if (saveButton != null) {
-                            saveButton.setEnabled(VaadinUtils.allFixedTableFieldsValid(getTableWrapper().getTable()));
-                        }
-                    });
-                    field.setSizeFull();
-                    postProcessField(am.getPath(), field);
-                }
-                return field;
-            }
-        });
-        mainLayout.addComponent(getTableWrapper());
-    }
+				// field is editable when not in view mode and not read only
+				if (field instanceof URLField) {
+					((URLField) field)
+							.setEditable(!isViewmode() && !EditableType.READ_ONLY.equals(am.getEditableType()));
+				}
 
-    @Override
-    protected BaseTableWrapper<ID, T> constructTableWrapper() {
-        ServiceResultsTableWrapper<ID, T> tableWrapper = new ServiceResultsTableWrapper<ID, T>(getService(),
-                getEntityModel(), QueryType.ID_BASED, filter, getSortOrders(), getFormOptions().isTableExportAllowed(),
-                getJoins()) {
+				if (field != null && field.isEnabled()) {
+					field.addValueChangeListener(event -> {
+						if (saveButton != null) {
+							saveButton.setEnabled(VaadinUtils.allFixedTableFieldsValid(getTableWrapper().getTable()));
+						}
+					});
+					field.setSizeFull();
+					postProcessField(am.getPath(), field);
+				}
+				return field;
+			}
+		});
+		mainLayout.addComponent(getTableWrapper());
+	}
 
-            @Override
-            protected void doConstructContainer(Container container) {
-                TabularEditLayout.this.doConstructContainer(container);
-            }
+	@Override
+	protected BaseTableWrapper<ID, T> constructTableWrapper() {
+		ServiceResultsTableWrapper<ID, T> tableWrapper = new ServiceResultsTableWrapper<ID, T>(getService(),
+				getEntityModel(), QueryType.PAGING, filter, getSortOrders(), getFormOptions().isTableExportAllowed(),
+				getJoins()) {
 
-            @Override
-            protected void onSelect(Object selected) {
-                setSelectedItems(selected);
-                checkButtonState(getSelectedItem());
-            }
-        };
-        tableWrapper.setMaxResults(getMaxResults());
-        tableWrapper.build();
-        return tableWrapper;
-    }
+			@Override
+			protected void doConstructContainer(Container container) {
+				TabularEditLayout.this.doConstructContainer(container);
+			}
 
-    /**
-     * This method does not work for this component since the creation of a new instance is
-     * delegated to the container - use constructEntity instead
-     */
-    @Override
-    protected T createEntity() {
-        throw new UnsupportedOperationException(
-                "This method is not supported for this component - use the parameterized method instead");
-    }
+			@Override
+			protected void onSelect(Object selected) {
+				setSelectedItems(selected);
+				checkButtonState(getSelectedItem());
+			}
+		};
+		tableWrapper.setMaxResults(getMaxResults());
+		tableWrapper.build();
+		return tableWrapper;
+	}
 
-    /**
-     * Method that is called after a new row with a fresh entity is added to the table. Use this
-     * method to perform initialization
-     * 
-     * @param entity
-     *            the newly created entity that has to be initialized
-     * @return the modified entity
-     */
-    protected T createEntity(T entity) {
-        return entity;
-    }
+	/**
+	 * This method does not work for this component since the creation of a new
+	 * instance is delegated to the container - use constructEntity instead
+	 */
+	@Override
+	protected T createEntity() {
+		throw new UnsupportedOperationException(
+				"This method is not supported for this component - use the parameterized method instead");
+	}
 
-    @Override
-    protected void detailsMode(T entity) {
-        // not needed
-    }
+	/**
+	 * Method that is called after a new row with a fresh entity is added to the
+	 * table. Use this method to perform initialization
+	 * 
+	 * @param entity
+	 *            the newly created entity that has to be initialized
+	 * @return the modified entity
+	 */
+	protected T createEntity(T entity) {
+		return entity;
+	}
 
-    /**
-     * Method that is called to remove an item
-     */
-    protected void doRemove() {
-        getTableWrapper().getTable().removeItem(getSelectedItem().getId());
-    }
+	@Override
+	protected void detailsMode(T entity) {
+		// not needed
+	}
 
-    public Button getAddButton() {
-        return addButton;
-    }
+	/**
+	 * Method that is called to remove an item
+	 */
+	protected void doRemove(T t) {
+		getTableWrapper().getTable().removeItem(t.getId());
+		getTableWrapper().getTable().commit();
+	}
 
-    public Button getCancelButton() {
-        return cancelButton;
-    }
+	public Button getAddButton() {
+		return addButton;
+	}
 
-    @SuppressWarnings("unchecked")
-    protected ServiceContainer<ID, T> getContainer() {
-        return (ServiceContainer<ID, T>) getTableWrapper().getContainer();
-    }
+	public Button getCancelButton() {
+		return cancelButton;
+	}
 
-    public Button getEditButton() {
-        return editButton;
-    }
+	@SuppressWarnings("unchecked")
+	protected ServiceContainer<ID, T> getContainer() {
+		return (ServiceContainer<ID, T>) getTableWrapper().getContainer();
+	}
 
-    /**
-     * Retrieves an entity with a certain ID from the lazy query container
-     * 
-     * @param id
-     *            the ID of the entity
-     * @return
-     */
-    protected T getEntityFromTable(ID id) {
-        return VaadinUtils.getEntityFromContainer(getContainer(), id);
-    }
+	public Button getEditButton() {
+		return editButton;
+	}
 
-    @Override
-    public int getPageLength() {
-        return pageLength;
-    }
+	/**
+	 * Retrieves an entity with a certain ID from the lazy query container
+	 * 
+	 * @param id
+	 *            the ID of the entity
+	 * @return
+	 */
+	protected T getEntityFromTable(ID id) {
+		return VaadinUtils.getEntityFromContainer(getContainer(), id);
+	}
 
-    public Button getSaveButton() {
-        return saveButton;
-    }
+	@Override
+	public int getPageLength() {
+		return pageLength;
+	}
 
-    public boolean isViewmode() {
-        return viewmode;
-    }
+	public Resource getRemoveIcon() {
+		return removeIcon;
+	}
 
-    /**
-     * Post processes a field
-     * 
-     * @param propertyId
-     *            the property ID
-     * @param field
-     *            the generated field
-     */
-    protected void postProcessField(Object propertyId, Field<?> field) {
-        // overwrite in subclass
-    }
+	public String getRemoveMessage() {
+		return removeMessage;
+	}
 
-    @Override
-    public void refresh() {
-        // override in subclasses
-    }
+	public Button getSaveButton() {
+		return saveButton;
+	}
 
-    @Override
-    public void reload() {
-        getContainer().search(filter);
-    }
+	public boolean isViewmode() {
+		return viewmode;
+	}
 
-    @Override
-    public void setPageLength(int pageLength) {
-        this.pageLength = pageLength;
-    }
+	/**
+	 * Post processes a field
+	 * 
+	 * @param propertyId
+	 *            the property ID
+	 * @param field
+	 *            the generated field
+	 */
+	protected void postProcessField(Object propertyId, Field<?> field) {
+		// overwrite in subclass
+	}
 
-    @SuppressWarnings("unchecked")
-    public void setSelectedItems(Object selectedItems) {
-        if (selectedItems != null) {
-            if (selectedItems instanceof Collection<?>) {
-                // the lazy query container returns an array of IDs of the
-                // selected items
-                Collection<?> col = (Collection<?>) selectedItems;
-                ID id = (ID) col.iterator().next();
-                setSelectedItem(getEntityFromTable(id));
-            } else {
-                ID id = (ID) selectedItems;
-                setSelectedItem(getEntityFromTable(id));
-            }
-        } else {
-            setSelectedItem(null);
-        }
-    }
+	@Override
+	public void refresh() {
+		// override in subclasses
+	}
 
-    protected void setViewmode(boolean viewmode) {
-        this.viewmode = viewmode;
-    }
+	@Override
+	public void reload() {
+		getContainer().search(constructFilter());
+	}
 
-    /**
-     * Sets the view mode of the screen, and adapts the table and all buttons accordingly
-     * 
-     * @param viewMode
-     */
-    @SuppressWarnings("unchecked")
-    protected void toggleViewMode(boolean viewMode) {
-        setViewmode(viewMode);
-        getTableWrapper().getTable().setEditable(!isViewmode() && isEditAllowed());
-        saveButton.setVisible(!isViewmode());
-        addButton.setVisible(!isViewmode() && !getFormOptions().isHideAddButton() && isEditAllowed());
-        editButton.setVisible(isViewmode() && getFormOptions().isEditAllowed() && isEditAllowed());
-        cancelButton.setVisible(!isViewmode());
+	@Override
+	public void setPageLength(int pageLength) {
+		this.pageLength = pageLength;
+	}
 
-        // create or remove any generated columns for correctly dealing with URL fields
-        if (!viewMode) {
-            ((ModelBasedTable<ID, T>) getTableWrapper().getTable()).removeGeneratedColumns();
-        } else {
-            ((ModelBasedTable<ID, T>) getTableWrapper().getTable()).addGeneratedColumns();
-        }
-    }
+	public void setRemoveIcon(Resource removeIcon) {
+		this.removeIcon = removeIcon;
+	}
+
+	public void setRemoveMessage(String removeMessage) {
+		this.removeMessage = removeMessage;
+	}
+
+	@SuppressWarnings("unchecked")
+	public void setSelectedItems(Object selectedItems) {
+		if (selectedItems != null) {
+			if (selectedItems instanceof Collection<?>) {
+				// the lazy query container returns an array of IDs of the
+				// selected items
+				Collection<?> col = (Collection<?>) selectedItems;
+				ID id = (ID) col.iterator().next();
+				setSelectedItem(getEntityFromTable(id));
+			} else {
+				ID id = (ID) selectedItems;
+				setSelectedItem(getEntityFromTable(id));
+			}
+		} else {
+			setSelectedItem(null);
+		}
+	}
+
+	protected void setViewmode(boolean viewmode) {
+		this.viewmode = viewmode;
+	}
+
+	/**
+	 * Sets the view mode of the screen, and adapts the table and all buttons
+	 * accordingly
+	 * 
+	 * @param viewMode
+	 */
+	@SuppressWarnings("unchecked")
+	protected void toggleViewMode(boolean viewMode) {
+		setViewmode(viewMode);
+		getTableWrapper().getTable().setEditable(!isViewmode() && isEditAllowed());
+		saveButton.setVisible(!isViewmode());
+		addButton.setVisible(!isViewmode() && !getFormOptions().isHideAddButton() && isEditAllowed());
+		editButton.setVisible(isViewmode() && getFormOptions().isEditAllowed() && isEditAllowed());
+		cancelButton.setVisible(!isViewmode());
+
+		// create or remove any generated columns for correctly dealing with URL
+		// fields
+		if (!viewMode) {
+			((ModelBasedTable<ID, T>) getTableWrapper().getTable()).removeGeneratedColumns();
+		} else {
+			((ModelBasedTable<ID, T>) getTableWrapper().getTable()).addGeneratedColumns();
+		}
+	}
 
 }

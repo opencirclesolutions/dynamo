@@ -37,6 +37,7 @@ import com.vaadin.data.util.filter.Or;
 import com.vaadin.event.Action;
 import com.vaadin.event.Action.Handler;
 import com.vaadin.event.ShortcutAction;
+import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Field;
@@ -123,7 +124,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param searchable
 	 * @param entityModel
 	 * @param formOptions
@@ -140,7 +141,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	}
 
 	/**
-	 * Callback method that is called after a successfull search has been
+	 * Callback method that is called after a successful search has been
 	 * performed
 	 */
 	protected void afterSearchPerformed() {
@@ -149,8 +150,9 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 
 	/**
 	 * Callback method that is called when the user toggles the visibility of
-	 * the search form
-	 * 
+	 * the
+	 * search form
+	 *
 	 * @param visible
 	 *            indicates if the search fields are visible now
 	 */
@@ -174,13 +176,13 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 			filterLayout = constructFilterLayout();
 			if (filterLayout.isVisible()) {
 
-				// add a wrapper for adding an action handler
+				// add a wrapper for adding an action handlers
 				wrapperPanel = new Panel();
 				main.addComponent(wrapperPanel);
 
 				wrapperPanel.setContent(filterLayout);
 
-				// action handler for carrying out a search after an Enter press
+				// action handlers for carrying out a search after an Enter press
 				wrapperPanel.addActionHandler(new Handler() {
 
 					private static final long serialVersionUID = -2136828212405809213L;
@@ -251,33 +253,34 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 
 	/**
 	 * Creates buttons and adds them to the button bar
-	 * 
+	 *
 	 * @param buttonBar
 	 *            the button bar
 	 */
 	protected abstract void constructButtonBar(Layout buttonBar);
 
-	/**
-	 * Constructs the "clear" button
-	 * 
-	 * @return
-	 */
-	protected Button constructClearButton() {
-		clearButton = new Button(message("ocs.clear"));
-		clearButton.setImmediate(true);
-		clearButton.addClickListener(this);
-		clearButton.setVisible(!getFormOptions().isHideClearButton());
-		return clearButton;
-	}
+    /**
+     * Constructs the "clear" button
+     * 
+     * @return
+     */
+    protected Button constructClearButton() {
+        clearButton = new Button(message("ocs.clear"));
+        clearButton.setIcon(FontAwesome.ERASER);clearButton.setImmediate(true);
+        clearButton.addClickListener(this);
+        clearButton.setVisible(!getFormOptions().isHideClearButton());
+        return clearButton;
+    }
 
 	/**
 	 * Creates a custom field - override in subclasses if needed
-	 * 
+	 *
 	 * @param entityModel
 	 *            the entity model of the entity to search for
 	 * @param attributeModel
 	 *            the attribute model the attribute model of the property that
-	 *            is bound to the field
+	 *            is
+	 *            bound to the field
 	 * @return
 	 */
 	protected Field<?> constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel) {
@@ -286,41 +289,41 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 
 	/**
 	 * Constructs the layout that holds all the filter components
-	 * 
+	 *
 	 * @return
 	 */
 	protected abstract Layout constructFilterLayout();
 
-	/**
-	 * Constructs the "search" button
-	 * 
-	 * @return
-	 */
-	protected Button constructSearchButton() {
-		searchButton = new Button(message("ocs.search"));
-		searchButton.setImmediate(true);
-		searchButton.addClickListener(this);
-		return searchButton;
-	}
+    /**
+     * Constructs the "search" button
+     * 
+     * @return
+     */
+    protected Button constructSearchButton() {
+        searchButton = new Button(message("ocs.search"));
+        searchButton.setIcon(FontAwesome.SEARCH);searchButton.setImmediate(true);
+        searchButton.addClickListener(this);
+        return searchButton;
+    }
 
-	/**
-	 * Constructs the "toggle" button
-	 * 
-	 * @return
-	 */
-	protected Button constructToggleButton() {
-		toggleButton = new Button(message("ocs.hide"));
-		toggleButton.addClickListener(this);
-		toggleButton.setVisible(getFormOptions().isShowToggleButton());
-		return toggleButton;
-	}
+    /**
+     * Constructs the "toggle" button
+     * 
+     * @return
+     */
+    protected Button constructToggleButton() {
+        toggleButton = new Button(message("ocs.hide"));
+        toggleButton.setIcon(FontAwesome.ARROWS_V);toggleButton.addClickListener(this);
+        toggleButton.setVisible(getFormOptions().isShowToggleButton());
+        return toggleButton;
+    }
 
-	protected Button constructSearchAnyButton() {
-		searchAnyButton = new Button(message("ocs.search.any"));
-		searchAnyButton.setVisible(getFormOptions().isShowSearchAnyButton());
-		searchAnyButton.addClickListener(this);
-		return searchAnyButton;
-	}
+    protected Button constructSearchAnyButton() {
+        searchAnyButton = new Button(message("ocs.search.any"));
+        searchAnyButton.setIcon(FontAwesome.SEARCH);searchAnyButton.setVisible(getFormOptions().isShowSearchAnyButton());
+        searchAnyButton.addClickListener(this);
+        return searchAnyButton;
+    }
 
 	public Filter extractFilter() {
 		return extractFilter(false);
@@ -385,7 +388,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 
 	/**
 	 * Checks whether a filter is set for a certain attribute
-	 * 
+	 *
 	 * @param path
 	 *            the path to the attribute
 	 * @return
@@ -400,7 +403,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	}
 
 	/**
-	 * 
+	 *
 	 * @return the number of filters
 	 */
 	public int getFilterCount() {
@@ -409,8 +412,9 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 
 	/**
 	 * Searching is allowed when there are no required attributes or all
-	 * required attributes are in the composite filter.
-	 * 
+	 * required
+	 * attributes are in the composite filter.
+	 *
 	 * @return
 	 */
 	public boolean isSearchAllowed() {
@@ -434,26 +438,24 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 		// overwrite in subclass
 	}
 
-	/**
-	 * Responds to a filter change
-	 */
-	@Override
-	public void onFilterChange(FilterChangeEvent event) {
-		AttributeModel am = getEntityModel().getAttributeModel(event.getPropertyId());
-		if (am == null || !am.isTransient()) {
-			if (event.getOldFilter() != null) {
-				currentFilters.remove(event.getOldFilter());
-			}
-			if (event.getNewFilter() != null) {
-				currentFilters.add(event.getNewFilter());
-			}
-		}
-		searchButton.setEnabled(isSearchAllowed());
-	}
+    /**
+     * Responds to a filter change
+     */
+    @Override
+    public void onFilterChange(FilterChangeEvent event) {
+        AttributeModel am = getEntityModel().getAttributeModel(event.getPropertyId());
+		if (am == null || !am.isTransient()) {if (event.getOldFilter() != null) {
+            currentFilters.remove(event.getOldFilter());
+        }
+        if (event.getNewFilter() != null) {
+            currentFilters.add(event.getNewFilter());}
+        }
+        searchButton.setEnabled(isSearchAllowed());
+    }
 
 	/**
 	 * Callback method that allows the user to modify the button bar
-	 * 
+	 *
 	 * @param groups
 	 */
 	protected void postProcessButtonBar(Layout buttonBar) {
@@ -462,7 +464,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 
 	/**
 	 * Perform any actions necessary after the layout has been build
-	 * 
+	 *
 	 * @param main
 	 *            the layout
 	 */
@@ -472,8 +474,9 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 
 	/**
 	 * Pre-process the layout - this method is called directly after the main
-	 * layout has been created
-	 * 
+	 * layout
+	 * has been created
+	 *
 	 * @param main
 	 *            the layout
 	 */
@@ -503,13 +506,15 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 
 	/**
 	 * Carries out a search
-	 * 
+	 *
 	 * @param skipValidation
 	 *            whether to skip validation before searching
 	 * @param matchAny
 	 *            whether the search is an 'Or' search or an 'And' search. Where
-	 *            in the former all results matching any predicate are returned
-	 *            and in the latter case all results matching all predicates are
+	 *            in
+	 *            the former all results matching any predicate are returned
+	 *            and in
+	 *            the latter case all results matching all predicates are
 	 *            returned.
 	 *
 	 * @return
@@ -541,7 +546,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 
 	/**
 	 * Sets the searchable
-	 * 
+	 *
 	 * @param searchable
 	 *            the searchable
 	 */
@@ -551,7 +556,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 
 	/**
 	 * Toggles the visibility of the search form
-	 * 
+	 *
 	 * @param show
 	 *            whether to show or hide the form
 	 */
@@ -563,6 +568,10 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 		}
 		wrapperPanel.setVisible(show);
 		afterSearchFieldToggle(wrapperPanel.isVisible());
+	}
+
+	public void setDefaultFilters(List<Filter> defaultFilters) {
+		this.defaultFilters = defaultFilters;
 	}
 
 }

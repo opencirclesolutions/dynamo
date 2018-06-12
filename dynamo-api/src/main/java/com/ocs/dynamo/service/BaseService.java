@@ -189,8 +189,8 @@ public interface BaseService<ID, T extends AbstractEntity<ID>> {
 	List<T> find(Filter filter);
 
 	/**
-	 * Returns all entities that match the provided filter, sorted according to the provided sort
-	 * orders
+	 * Returns all entities that match the provided filter, sorted according to the
+	 * provided sort orders
 	 * 
 	 * @param filter
 	 *            the filter
@@ -221,7 +221,8 @@ public interface BaseService<ID, T extends AbstractEntity<ID>> {
 	 * 
 	 * @param id
 	 *            the ID
-	 * @return the object identified by the ID, or <code>null</code> if it cannot be found
+	 * @return the object identified by the ID, or <code>null</code> if it cannot be
+	 *         found
 	 */
 	T findById(ID id);
 
@@ -239,8 +240,8 @@ public interface BaseService<ID, T extends AbstractEntity<ID>> {
 	T findByUniqueProperty(String propertyName, Object value, boolean caseSensitive);
 
 	/**
-	 * Returns all distinct values that appear in a certain field for all entities that match the
-	 * provided filter
+	 * Returns all distinct values that appear in a certain field for all entities
+	 * that match the provided filter
 	 * 
 	 * @param filter
 	 *            the filter
@@ -314,4 +315,10 @@ public interface BaseService<ID, T extends AbstractEntity<ID>> {
 	 *            to delete
 	 */
 	void update(List<T> toUpdate, List<T> toAdd, List<T> toDelete);
+
+	/**
+	 * 
+	 * @param t
+	 */
+	void validate(T t);
 }

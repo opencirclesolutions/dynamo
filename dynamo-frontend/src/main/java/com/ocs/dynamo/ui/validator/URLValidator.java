@@ -15,6 +15,8 @@ package com.ocs.dynamo.ui.validator;
 
 import java.net.MalformedURLException;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.vaadin.data.Validator;
 
 /**
@@ -24,6 +26,10 @@ import com.vaadin.data.Validator;
  *
  */
 public class URLValidator implements Validator {
+
+	private static final String URL_PREFIX_SECURE = "https://";
+
+	private static final String URL_PREFIX = "http://";
 
 	private String message;
 
@@ -44,13 +50,19 @@ public class URLValidator implements Validator {
 			return;
 		}
 
-		if (!(value instanceof String)) {
-			throw new InvalidValueException(message);
+		String str = (String) value;
+		if (!str.contains(URL_PREFIX) && !str.contains(URL_PREFIX_SECURE)) {
+			str = URL_PREFIX + str;
 		}
 
 		try {
-			new java.net.URL((String) value);
+			new java.net.URL(str);
 		} catch (MalformedURLException ex) {
+			throw new InvalidValueException(message);
+		}
+
+		// assume at least 2 dots
+		if (StringUtils.countMatches(str, ".") < 2) {
 			throw new InvalidValueException(message);
 		}
 	}

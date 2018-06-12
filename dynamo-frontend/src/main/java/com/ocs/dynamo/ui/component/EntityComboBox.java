@@ -83,7 +83,7 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 
 	/**
 	 * Constructor (for a filtering combo box)
-	 * 
+	 *
 	 * @param targetEntityModel
 	 * @param attributeModel
 	 * @param service
@@ -97,7 +97,7 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param targetEntityModel
 	 *            the entity model for the entities that are displayed in the
 	 *            combo box
@@ -112,8 +112,6 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 	 *            optional filters to apply to the search
 	 * @param items
 	 *            the items to display (in fixed mode)
-	 * @param itemCaptionPropertyId
-	 *            the ID of the property to use as the caption
 	 * @param sortOrder
 	 *            the sort order(s) to apply
 	 */
@@ -156,7 +154,7 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 
 	/**
 	 * Constructor - for the "ALL"mode
-	 * 
+	 *
 	 * @param targetEntityModel
 	 *            the entity model for the entities that are displayed
 	 * @param attributeModel
@@ -172,7 +170,7 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 
 	/**
 	 * Constructor - for the "FIXED" mode
-	 * 
+	 *
 	 * @param targetEntityModel
 	 *            the entity model for the entities that are displayed
 	 * @param attributeModel
@@ -187,7 +185,7 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 
 	/**
 	 * Adds an entity to the container
-	 * 
+	 *
 	 * @param entity
 	 */
 	@SuppressWarnings("unchecked")
@@ -285,8 +283,7 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 		return additionalFilter;
 	}
 
-	public void setFilter(Filter filter) {
-		this.filter = filter;
-	}
-
+    public void setFilter(Filter filter) {
+        this.filter = filter;
+    }
 }

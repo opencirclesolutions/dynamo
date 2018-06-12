@@ -33,6 +33,8 @@ import com.ocs.dynamo.domain.model.annotation.Attribute;
 import com.ocs.dynamo.utils.ClassUtils;
 
 /**
+ * Base class for entities that contain a collection of Translations
+ *
  * @author Patrick.Deenen@opencircle.solutions
  *
  */
@@ -60,6 +62,15 @@ public abstract class AbstractEntityTranslated<ID, T extends Translation>
 		return getTranslations(field, locale == null ? null : locale.getCode());
 	}
 
+	/**
+	 * Gets all translations for a certain field for the provided locale
+	 *
+	 * @param field
+	 *            the field
+	 * @param locale
+	 *            the (code of) the locale
+	 * @return
+	 */
 	public T getTranslations(final String field, final String locale) {
 		T translation = null;
 		Set<T> translations = getTranslations(field);
@@ -78,6 +89,13 @@ public abstract class AbstractEntityTranslated<ID, T extends Translation>
 		return translation;
 	}
 
+	/**
+	 * Gets all translations for a certain field
+	 *
+	 * @param field
+	 *            the name of the field
+	 * @return
+	 */
 	public Set<T> getTranslations(final String field) {
 		Set<T> translations = null;
 		if (field != null && !"".equals(field)) {
@@ -91,6 +109,14 @@ public abstract class AbstractEntityTranslated<ID, T extends Translation>
 		return translations;
 	}
 
+	/**
+	 * Sets all translations for a field
+	 *
+	 * @param field
+	 *            the name of the field
+	 * @param translations
+	 *            the translations
+	 */
 	public void setTranslations(final String field, final Set<T> translations) {
 		if (field != null && !"".equals(field)) {
 			for (final T translation : getTranslations()) {
@@ -157,10 +183,18 @@ public abstract class AbstractEntityTranslated<ID, T extends Translation>
 		return result;
 	}
 
+	/**
+	 * 
+	 * @return the required locales
+	 */
 	protected Collection<String> getRequiredLocales() {
 		return null;
 	}
 
+	/**
+	 * 
+	 * @return ??
+	 */
 	protected List<String> findTranslatedFields() {
 		Method[] methods = this.getClass().getDeclaredMethods();
 		ArrayList<String> translatedFields = new ArrayList<>();

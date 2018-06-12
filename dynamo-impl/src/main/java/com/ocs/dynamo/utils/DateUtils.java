@@ -58,7 +58,7 @@ public final class DateUtils {
 	private DateUtils() {
 		// hidden constructor
 	}
-	
+
 	public static Date convertSQLDate(Date d) {
 		// toInstance is not supported on java.sql.Date, so convert to actual
 		// date
@@ -252,6 +252,17 @@ public final class DateUtils {
 	}
 
 	/**
+	 * Formats a date and time according to the specified format
+	 *
+	 * @param date
+	 * @param format
+	 * @return
+	 */
+	public static String formatDateTime(Date date, String format) {
+		return formatDateTime(toLocalDateTime(date), format);
+	}
+
+	/**
 	 * Formats a LocalDate according to the specified format
 	 * 
 	 * @param date
@@ -389,8 +400,8 @@ public final class DateUtils {
 	}
 
 	/**
-	 * Returns the quarter of the year of a date, as an integer (1 to 4).
-	 * Returns -1 in case the argument passed to this function is null
+	 * Returns the quarter of the year of a date, as an integer (1 to 4). Returns -1
+	 * in case the argument passed to this function is null
 	 * 
 	 * @param date
 	 *            the date
@@ -401,8 +412,8 @@ public final class DateUtils {
 	}
 
 	/**
-	 * Returns the quarter of the year of a date, as an integer (1 to 4).
-	 * Returns -1 in case the argument passed to this function is null
+	 * Returns the quarter of the year of a date, as an integer (1 to 4). Returns -1
+	 * in case the argument passed to this function is null
 	 * 
 	 * @param date
 	 *            the date
@@ -425,8 +436,8 @@ public final class DateUtils {
 	}
 
 	/**
-	 * Translates a week code (yyyy-ww) to the starting day (this is taken to be
-	 * a Monday) of that week
+	 * Translates a week code (yyyy-ww) to the starting day (this is taken to be a
+	 * Monday) of that week
 	 * 
 	 * @param weekCode
 	 *            the week code
@@ -489,8 +500,8 @@ public final class DateUtils {
 	}
 
 	/**
-	 * Checks if a class represents a supported Date time. This includes the
-	 * Java 8 date types and the legacy java.util.Date
+	 * Checks if a class represents a supported Date time. This includes the Java 8
+	 * date types and the legacy java.util.Date
 	 * 
 	 * @param clazz
 	 *            the class to check
@@ -501,8 +512,8 @@ public final class DateUtils {
 	}
 
 	/**
-	 * Checks if a string represents a valid week code (yyyy-ww). An empty
-	 * String is considered valid
+	 * Checks if a string represents a valid week code (yyyy-ww). An empty String is
+	 * considered valid
 	 * 
 	 * @param weekCode
 	 *            the week code
@@ -638,8 +649,8 @@ public final class DateUtils {
 	}
 
 	/**
-	 * Creates a LocalDate that represents the first day of the week
-	 * corresponding to the provided week code
+	 * Creates a LocalDate that represents the first day of the week corresponding
+	 * to the provided week code
 	 * 
 	 * @param weekCode
 	 *            the week code
@@ -650,8 +661,8 @@ public final class DateUtils {
 	}
 
 	/**
-	 * Translates a week code (yyyy-ww) to the starting day (this is taken to be
-	 * a Monday) of that week
+	 * Translates a week code (yyyy-ww) to the starting day (this is taken to be a
+	 * Monday) of that week
 	 * 
 	 * @param weekCode
 	 *            the week code
@@ -739,6 +750,5 @@ public final class DateUtils {
 		calendar.set(Calendar.MILLISECOND, 0);
 		return calendar;
 	}
-
 
 }

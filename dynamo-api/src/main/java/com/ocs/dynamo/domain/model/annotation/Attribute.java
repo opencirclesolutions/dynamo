@@ -21,13 +21,15 @@ import java.lang.annotation.Target;
 import com.ocs.dynamo.domain.model.AttributeDateType;
 import com.ocs.dynamo.domain.model.AttributeSelectMode;
 import com.ocs.dynamo.domain.model.AttributeTextFieldMode;
+import com.ocs.dynamo.domain.model.CheckboxMode;
+import com.ocs.dynamo.domain.model.EditableType;
 import com.ocs.dynamo.domain.model.NumberSelectMode;
 import com.ocs.dynamo.domain.model.VisibilityType;
 
 /**
  * An interface that can be used to specify the properties of an attribute - this will override any
  * defaults
- * 
+ *
  * @author bas.rutten
  */
 @Retention(RetentionPolicy.RUNTIME)
@@ -40,8 +42,14 @@ public @interface Attribute {
     /** @return the properties to cascade to when the value of this property changes **/
     Cascade[] cascade() default {};
 
-    /** @return whether a complex attribute is directly editable */
-    boolean complexEditable() default false;
+	/**
+	 *
+	 * @return the desired check box mode
+	 */
+	CheckboxMode checkboxMode() default CheckboxMode.CHECKBOX;
+
+	/** @return whether a complex attribute is directly editable */
+	boolean complexEditable() default false;
 
     /** @return is this a currency field? */
     boolean currency() default false;
@@ -55,19 +63,24 @@ public @interface Attribute {
     /** @return the description (appears as a tooltip) */
     String description() default "";
 
-    /** @return the display format (useful in case of dates) */
-    String displayFormat() default "";
+	/** @return the display format (useful in case of dates) */
+	String displayFormat() default "";
 
     /** @return the display name */
     String displayName() default "";
 
-    /**
-     * @return whether the attribute is embedded
-     */
-    boolean embedded() default false;
+	/** @return when the field can be edited */
+	EditableType editable() default EditableType.EDITABLE;
 
-    /** @return the representation to use instead of "false" */
-    String falseRepresentation() default "";
+	/**
+	 * @return whether the attribute is embedded
+	 */
+	boolean embedded() default false;
+
+	float expansionFactor() default 1.0f;
+
+	/** @return the representation to use instead of "false" */
+	String falseRepresentation() default "";
 
     /** @return the name of the property in which to store the file name (after an upload) */
     String fileNameProperty() default "";
@@ -88,7 +101,7 @@ public @interface Attribute {
     int maxLength() default -1;
 
     /**
-     * 
+     *
      * @return the maximum length of the text representation in a table
      */
     int maxLengthInTable() default -1;
@@ -112,11 +125,18 @@ public @interface Attribute {
      */
     boolean multipleSearch() default false;
 
-    /**
-     * 
-     * @return the number select mode (indicates which component to use for editing numbers)
-     */
-    NumberSelectMode numberSelectMode() default NumberSelectMode.TEXTFIELD;
+	/**
+	 *
+	 * @return whether this attribute is navigable when inside a table
+	 */
+	boolean navigable() default false;
+
+	/**
+	 *
+	 * @return the number select mode (indicates which component to use for editing
+	 *         numbers)
+	 */
+	NumberSelectMode numberSelectMode() default NumberSelectMode.TEXTFIELD;
 
     /** @return is the numeric field a percentage */
     boolean percentage() default false;
@@ -132,9 +152,6 @@ public @interface Attribute {
      */
     String quickAddPropertyName() default "";
 
-    /** @return whether the field is read-only (i.e. does not appear in edit forms) */
-    boolean readOnly() default false;
-
     /**
      * @return the replacement search path to be used when the property does not directly map to a
      *         JPA property
@@ -142,7 +159,7 @@ public @interface Attribute {
     String replacementSearchPath() default "";
 
     /**
-     * 
+     *
      * @return whether the attribute is required
      */
     boolean required() default false;
@@ -179,8 +196,8 @@ public @interface Attribute {
     /** @return whether a table can be sorted on this field */
     boolean sortable() default true;
 
-	/** @return one or more references to styles; in Vaadin used to specify stylenames seperated by space */
-	String styles() default "";
+    /** @return one or more references to styles; in Vaadin used to specify stylenames seperated by space */
+    String styles() default "";
 
     /** @return whether to display a text attribute as a text field or a text area */
     AttributeTextFieldMode textFieldMode() default AttributeTextFieldMode.INHERIT;

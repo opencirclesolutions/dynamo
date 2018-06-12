@@ -86,16 +86,25 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 
 	/**
 	 * 
+	 * @return the desired check box mode (defaults to simply a check box)
+	 */
+	CheckboxMode getCheckboxMode();
+
+	/**
+	 *
 	 * @return the name of the field in the collection table that is used to
-	 *         search on when building a token search field for values in a
-	 *         collection table
+	 *         search
+	 *         on when building a token search field for values in a
+	 *         collection
+	 *         table
 	 */
 	String getCollectionTableFieldName();
 
 	/**
 	 * 
 	 * @return the name of the collection table that is used when building a
-	 *         token search field for values in a collection table
+	 *         token
+	 *         search field for values in a collection table
 	 */
 	String getCollectionTableName();
 
@@ -131,9 +140,21 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	String getDisplayName();
 
 	/**
+	 * @return When the attribute can be edited
+	 */
+	EditableType getEditableType();
+
+	/**
 	 * @return The EntityModel for the entity that contains this attribute
 	 */
 	EntityModel<?> getEntityModel();
+
+	/**
+	 * The expansion factor for sizing components that are rendered on the same row
+	 *
+	 * @return
+	 */
+	float getExpansionFactor();
 
 	/**
 	 * 
@@ -219,7 +240,8 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	/**
 	 * Returns the number select mode
 	 * 
-	 * @return the number select mode
+	 * @return the number select mode (can be used to switch between text field and
+	 *         slider)
 	 */
 	NumberSelectMode getNumberSelectMode();
 
@@ -237,7 +259,8 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 
 	/**
 	 * @return The precision (number of decimals) to use when displaying a
-	 *         decimal number
+	 *         decimal
+	 *         number
 	 */
 	int getPrecision();
 
@@ -304,14 +327,16 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	/**
 	 * 
 	 * @return true if the attribute is already included in a
-	 *         "groupTogetherWith" clause
+	 *         "groupTogetherWith"
+	 *         clause
 	 */
 	boolean isAlreadyGrouped();
 
 	/**
 	 * 
 	 * @return Whether the property is present inside an edit form. By default
-	 *         this is switched off for complex (i.e. MASTER or DETAIL) objects
+	 *         this
+	 *         is switched off for complex (i.e. MASTER or DETAIL) objects
 	 */
 	boolean isComplexEditable();
 
@@ -320,6 +345,12 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	 * @return Whether this property represents a currency
 	 */
 	boolean isCurrency();
+
+	/**
+	 * Indicates whether this attribute allows direct navigation to entity edit
+	 * screen
+	 */
+	boolean isDirectNavigation();
 
 	/**
 	 * 
@@ -351,6 +382,12 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	boolean isMultipleSearch();
 
 	/**
+	 *
+	 * @return
+	 */
+	boolean isNavigable();
+
+	/**
 	 * 
 	 * @return Whether this is a numeric attribute
 	 */
@@ -369,11 +406,6 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	boolean isQuickAddAllowed();
 
 	/**
-	 * @return Whether the attribute is read only
-	 */
-	boolean isReadOnly();
-
-	/**
 	 * @return whether the attribute is a required attribute (entity can only be
 	 *         saved if values for all required attributes have been provided)
 	 */
@@ -382,7 +414,8 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	/**
 	 * 
 	 * @return whether it is required to fill in a value for this attribute
-	 *         before you can carry out a search
+	 *         before
+	 *         you can carry out a search
 	 */
 	boolean isRequiredForSearching();
 
@@ -393,13 +426,15 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 
 	/**
 	 * @return whether searching on this attribute is case sensitive (only
-	 *         applies if this is a String attribute)
+	 *         applies
+	 *         if this is a String attribute)
 	 */
 	boolean isSearchCaseSensitive();
 
 	/**
 	 * @return whether searching for this value is by exact match (rather than
-	 *         using a range). Only applicable to numerical and date field
+	 *         using
+	 *         a range). Only applicable to numerical and date field
 	 */
 	boolean isSearchForExactValue();
 
@@ -417,7 +452,7 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	boolean isSortable();
 
 	/**
-	 * 
+	 *
 	 * @return whether the attribute is transient
 	 */
 	boolean isTransient();
@@ -458,10 +493,9 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	boolean isWeek();
 
 	/**
-	 * Indicates whether this attribute allows direct navigation to entity edit
-	 * screen
+	 * Removes all cascading
 	 */
-	boolean isDirectNavigation();
+	void removeCascades();
 
 	/**
 	 * Marks the attribute as the main attribute

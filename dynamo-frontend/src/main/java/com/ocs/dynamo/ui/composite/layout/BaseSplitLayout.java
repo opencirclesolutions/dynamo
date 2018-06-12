@@ -14,6 +14,7 @@
 package com.ocs.dynamo.ui.composite.layout;
 
 import java.io.Serializable;
+import java.util.function.Consumer;
 
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
@@ -23,7 +24,9 @@ import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
 import com.ocs.dynamo.ui.composite.type.ScreenMode;
+import com.ocs.dynamo.ui.utils.FormatUtils;
 import com.vaadin.data.sort.SortOrder;
+import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Field;
@@ -55,6 +58,9 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	// the add button
 	private Button addButton;
 
+	// custom code to execute instead of the normal save method
+	private Consumer<T> customSaveConsumer;
+
 	// default split position (width of first component in percent)
 	private Integer defaultSplitPosition;
 
@@ -85,7 +91,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param service
 	 *            the service used to query the database
 	 * @param entityModel
@@ -105,7 +111,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	/**
 	 * Perform any actions after the screen reloads after an entity was saved.
 	 * Override in subclasses if needed
-	 * 
+	 *
 	 * @param entity
 	 */
 	protected void afterReload(T entity) {
@@ -215,8 +221,8 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	protected abstract void buildFilter();
 
 	/**
-	 * Check the state of the "main" buttons (add and remove) that are not tied
-	 * to the currently selected item
+	 * Check the state of the "main" buttons (add and remove) that are not tied to
+	 * the currently selected item
 	 */
 	protected void checkMainButtons() {
 		if (getAddButton() != null) {
@@ -228,10 +234,9 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	}
 
 	/**
-	 * Constructs a header layout (displayed above the actual tabular content).
-	 * By defualt this is empty, overwrite in subclasses if you want to modify
-	 * this
-	 * 
+	 * Constructs a header layout (displayed above the actual tabular content). By
+	 * defualt this is empty, overwrite in subclasses if you want to modify this
+	 *
 	 * @return
 	 */
 	protected Component constructHeaderLayout() {
@@ -242,30 +247,36 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	 * Constructs the remove button
 	 */
 	protected final Button constructRemoveButton() {
-		Button rb = new RemoveButton() {
+		Button rb = new RemoveButton(message("ocs.remove"), null) {
 
-			@Override
-			protected void doDelete() {
-				remove();
+            @Override
+            protected void doDelete() {
+                remove();
+            }
+
+        @Override
+			protected String getItemToDelete() {
+				T t = getSelectedItem();
+				return FormatUtils.formatEntity(getEntityModel(), t);
 			}
 		};
-		rb.setVisible(getFormOptions().isShowRemoveButton() && isEditAllowed());
-		return rb;
-	}
+		rb.setIcon(FontAwesome.TRASH);rb.setVisible(getFormOptions().isShowRemoveButton() && isEditAllowed());
+        return rb;
+    }
 
 	/**
 	 * Constructs the quick search field - overridden in subclasses.
-	 * 
+	 *
 	 * Do not override this method as an end user - implement the
 	 * "constructQuickSearchFilter" instead
-	 * 
+	 *
 	 * @return
 	 */
 	protected abstract TextField constructSearchField();
 
 	/**
 	 * Fills the detail part of the screen with a custom component
-	 * 
+	 *
 	 * @param component
 	 *            the custom component
 	 */
@@ -276,7 +287,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 
 	/**
 	 * Shows the details of a selected entity
-	 * 
+	 *
 	 * @param parent
 	 *            the parent of the entity
 	 * @param entity
@@ -309,6 +320,11 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 				@Override
 				protected void afterModeChanged(boolean viewMode) {
 					BaseSplitLayout.this.afterModeChanged(viewMode, editForm);
+				}
+
+				@Override
+				protected void afterTabSelected(int tabIndex) {
+					BaseSplitLayout.this.afterTabSelected(tabIndex);
 				}
 
 				@Override
@@ -349,17 +365,17 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 
 			};
 
-			editForm.setFormTitleWidth(getFormTitleWidth());
-			editForm.setDetailJoins(getDetailJoinsFallBack());
-			editForm.setFieldEntityModels(getFieldEntityModels());
-			editForm.build();
-			detailFormLayout.addComponent(editForm);
-		} else {
-			// reset the form's view mode if needed
-			editForm.setViewMode(getFormOptions().isOpenInViewMode());
-			editForm.setEntity(entity);
-			editForm.resetTab();
-		}
+            editForm.setCustomSaveConsumer(customSaveConsumer);editForm.setFormTitleWidth(getFormTitleWidth());
+            editForm.setDetailJoins(getDetailJoinsFallBack());
+            editForm.setFieldEntityModels(getFieldEntityModels());
+            editForm.build();
+            detailFormLayout.addComponent(editForm);
+        } else {
+            // reset the form's view mode if needed
+            editForm.setViewMode(getFormOptions().isOpenInViewMode());
+            editForm.setEntity(entity);
+            editForm.resetTab();
+        }
 
 		setSelectedItem(entity);
 		checkButtonState(getSelectedItem());
@@ -377,18 +393,24 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 		getService().delete(getSelectedItem());
 	}
 
-	/**
-	 * Clears the detail view
-	 */
-	public void emptyDetailView() {
-		VerticalLayout vLayout = new VerticalLayout();
-		vLayout.addComponent(new Label(message("ocs.select.item", getEntityModel().getDisplayName())));
-		detailLayout.replaceComponent(selectedDetailLayout, vLayout);
-		selectedDetailLayout = vLayout;
-	}
+    public void doSave() {
+		this.editForm.doSave();
+	}/**
+     * Clears the detail view
+     */
+    public void emptyDetailView() {
+        VerticalLayout vLayout = new VerticalLayout();
+        vLayout.addComponent(new Label(message("ocs.select.item", getEntityModel().getDisplayName())));
+        detailLayout.replaceComponent(selectedDetailLayout, vLayout);
+        selectedDetailLayout = vLayout;
+    }
 
 	public Button getAddButton() {
 		return addButton;
+	}
+
+	public Consumer<T> getCustomSaveConsumer() {
+		return customSaveConsumer;
 	}
 
 	public Integer getDefaultSplitPosition() {
@@ -417,7 +439,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 
 	/**
 	 * Indicates whether the panel is in horizontal mode
-	 * 
+	 *
 	 * @return
 	 */
 	protected boolean isHorizontalMode() {
@@ -430,9 +452,9 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	}
 
 	/**
-	 * Replaces the contents of a label by its current value. Use in response to
-	 * an automatic update if a field
-	 * 
+	 * Replaces the contents of a label by its current value. Use in response to an
+	 * automatic update if a field
+	 *
 	 * @param propertyName
 	 *            the name of the property for which to replace the label
 	 */
@@ -442,6 +464,9 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 		}
 	}
 
+	/**
+	 * Reloads the component
+	 */
 	@Override
 	public void reload() {
 		// replace the header layout (if there is one)
@@ -491,7 +516,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 
 	/**
 	 * Reselects the entity
-	 * 
+	 *
 	 * @param t
 	 *            entity to reselect
 	 */
@@ -500,22 +525,27 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 		getTableWrapper().getTable().select(t == null ? null : t.getId());
 	}
 
+	public void setCustomSaveConsumer(Consumer<T> customSaveConsumer) {
+		this.customSaveConsumer = customSaveConsumer;
+	}
+
 	public void setDefaultSplitPosition(Integer defaultSplitPosition) {
 		this.defaultSplitPosition = defaultSplitPosition;
 	}
 
 	public abstract void setSelectedItems(Object selectedItems);
 
-	/**
-	 * Sets the mode of the screen (either view mode or edit mode)
-	 * 
-	 * @param viewMode
-	 *            the desired view mode
-	 */
-	public void setViewMode(boolean viewMode) {
-		if (getSelectedItem() != null) {
-			editForm.setViewMode(viewMode);
-		}
-	}
+    /**
+     * Sets the mode of the screen (either view mode or edit mode)
+     * 
+     * @param viewMode
+     *            the desired view mode
+     */
+    public void setViewMode(boolean viewMode) {
+        if (getSelectedItem() != null) {
+            editForm.setViewMode(viewMode);
+        }
+    }
+
 
 }

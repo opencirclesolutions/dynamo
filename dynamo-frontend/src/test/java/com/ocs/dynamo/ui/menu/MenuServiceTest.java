@@ -16,6 +16,7 @@ package com.ocs.dynamo.ui.menu;
 import javax.inject.Inject;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -25,6 +26,7 @@ import com.vaadin.navigator.Navigator;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.MenuItem;
 
+@Ignore
 public class MenuServiceTest extends BaseIntegrationTest {
 
 	@Inject

@@ -16,6 +16,7 @@ package com.ocs.dynamo.ui.composite.form;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Objects;
 import java.util.Set;
 
@@ -30,10 +31,14 @@ import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.ocs.dynamo.utils.NumberUtils;
 import com.vaadin.data.Container;
+import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.data.util.IndexedContainer;
 import com.vaadin.data.validator.IntegerRangeValidator;
 import com.vaadin.data.validator.LongRangeValidator;
 import com.vaadin.data.validator.StringLengthValidator;
+import com.vaadin.server.FontAwesome;
+import com.vaadin.server.UserError;
+import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
@@ -46,85 +51,77 @@ import com.vaadin.ui.VerticalLayout;
 
 /**
  * A component for editing a property that is annotated as an @ElementCollection
- * 
- * @ElementCollection.
- * 
- * @author bas.rutten
+ *
  * @param <T>
  *            the type of the elements in the table
+ * @author bas.rutten @ElementCollection.
  */
 @SuppressWarnings("serial")
 public class CollectionTable<T extends Serializable> extends CustomField<Collection<T>> implements SignalsParent {
 
 	private static final long serialVersionUID = -1203245694503350276L;
 
-	/**
-	 * The property of the "value" column
+    /**
+     * The property of the "value" column
+     */
+    private static final String VALUE = "value";
+/**
+    * The attribute model
 	 */
-	private static final String VALUE = "value";
-
-	/**
-	 * Button for adding new items to the table
-	 */
-	private Button addButton;
-
-	/**
-	 * The attribute model
-	 */
-	private AttributeModel attributeModel;
-
-	/**
-	 * Form options that determine which buttons and functionalities are
-	 * available
-	 */
-	private FormOptions formOptions;
-
+	private final AttributeModel attributeModel;
 	/**
 	 * The message service
 	 */
-	private MessageService messageService;
-
-	/**
-	 * The number of rows to display
-	 */
-	private int pageLength = SystemPropertyUtils.getDefaultListSelectRows();
-
-	/**
-	 * The parent form in which this component is embedded
-	 */
-	private ModelBasedEditForm<?, ?> parentForm;
-
-	/**
-	 * Whether to propagate change events (disabled during construction)
-	 */
-	private boolean propagateChanges = true;
-
-	/**
-	 * the currently selected item in the table
-	 */
-	private Object selectedItem;
-
+	private final MessageService messageService;
 	/**
 	 * The table for displaying the actual items
 	 */
-	private Table table;
+	private final Table table;/**
+     * Button for adding new items to the table
+     */
+    private Button addButton;
+/**
 
-	/**
-	 * Whether the table is in view mode. If this is the case, editing is not
-	 * allowed
-	 */
-	private boolean viewMode;
+     * Form options that determine which buttons and functionalities are* available
+     */
+    private FormOptions formOptions;
+/**
+
+     * The number of rows to display
+     */
+    private int pageLength = SystemPropertyUtils.getDefaultListSelectRows();
+
+    /**
+     * The parent form in which this component is embedded
+     */
+    private ModelBasedEditForm<?, ?> parentForm;
+
+    /**
+     * Whether to propagate change events (disabled during construction)
+     */
+    private boolean propagateChanges = true;
+/**
+
+     * the currently selected item in the table
+     */
+    private Object selectedItem;
+/**
+
+     * Whether the table is in view mode. If this is the case, editing is not* allowed
+     */
+    private boolean viewMode;
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param viewMode
 	 *            whether to display the component in view (read-only) mode
 	 * @param formOptions
 	 *            FormOptions parameter object that can be used to govern how
-	 *            the component behaves
+	 *            the
+	 *            component behaves
 	 */
-	public CollectionTable(AttributeModel attributeModel, boolean viewMode, FormOptions formOptions) {
+	public CollectionTable(final AttributeModel attributeModel, final boolean viewMode, final FormOptions formOptions) {
 		this.messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
 		this.viewMode = viewMode;
 		this.formOptions = formOptions;
@@ -134,31 +131,32 @@ public class CollectionTable<T extends Serializable> extends CustomField<Collect
 
 	/**
 	 * Constructs the button that is used for adding new items
-	 * 
+	 *
 	 * @param buttonBar
 	 */
-	protected void constructAddButton(Layout buttonBar) {
+	protected void constructAddButton(final Layout buttonBar) {
 		addButton = new Button(messageService.getMessage("ocs.add", VaadinUtils.getLocale()));
+		addButton.setIcon(FontAwesome.PLUS);
 		addButton.addClickListener(event -> {
 			// add a new item then set the validity to false (since an empty
 			// item is never allowed)
 			table.addItem();
 			if (parentForm != null) {
-				parentForm.signalDetailsTableValid(CollectionTable.this, false);
+				parentForm.signalDetailsComponentValid(CollectionTable.this, false);
 			}
 		});
 		buttonBar.addComponent(addButton);
 	}
 
-	/**
-	 * Constructs the button bar
-	 * 
-	 * @param parent
-	 *            the parent layout
-	 */
-	protected void constructButtonBar(Layout parent) {
-		Layout buttonBar = new DefaultHorizontalLayout();
-		parent.addComponent(buttonBar);
+    /**
+     * Constructs the button bar
+     * 
+     * @param parent
+     *            the parent layout
+     */
+    protected void constructButtonBar(final Layout parent) {
+        final Layout buttonBar = new DefaultHorizontalLayout();
+        parent.addComponent(buttonBar);
 
 		// button for adding a row
 		if (!viewMode && !formOptions.isHideAddButton()) {
@@ -168,37 +166,37 @@ public class CollectionTable<T extends Serializable> extends CustomField<Collect
 		postProcessButtonBar(buttonBar);
 	}
 
-	/**
-	 * Constructs the column that holds the "remove" button
-	 */
-	private void constructRemoveColumn() {
-		// add a remove button directly in the table
-		if (!isViewMode() && formOptions.isShowRemoveButton()) {
-			final String removeMsg = messageService.getMessage("ocs.remove", VaadinUtils.getLocale());
-			table.addGeneratedColumn(removeMsg, (source, itemId, columnId) -> {
-				Button remove = new Button(removeMsg);
-				remove.addClickListener(event -> {
-					table.removeItem(itemId);
-					setValue(extractValues());
-					setSelectedItem(null);
-				});
-				return remove;
-			});
-		}
-	}
+    /**
+     * Constructs the column that holds the "remove" button
+     */
+    private void constructRemoveColumn() {
+        // add a remove button directly in the table
+        if (!isViewMode() && formOptions.isShowRemoveButton()) {
+            final String removeMsg = messageService.getMessage("ocs.detail.remove", VaadinUtils.getLocale());
+            table.addGeneratedColumn(removeMsg, (source, itemId, columnId) -> {
+                final Button remove = new Button(removeMsg);remove.setIcon(FontAwesome.TRASH);
+                remove.addClickListener(event -> {
+                    table.removeItem(itemId);
+                    setValue(extractValues());
+                    setSelectedItem(null);
+                });
+                return remove;
+            });
+        }
+    }
 
-	/**
-	 * Extracts the values from the table and returns them as a Set
-	 * 
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	private Set<T> extractValues() {
-		Set<T> set = new HashSet<>();
-		table.getItemIds().stream().map(o -> table.getItem(o).getItemProperty(VALUE).getValue())
-				.filter(Objects::nonNull).forEach(t -> set.add((T) t));
-		return set;
-	}
+    /**
+     * Extracts the values from the table and returns them as a Set
+     * 
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    private Set<T> extractValues() {
+        final Set<T> set = new HashSet<>();
+        table.getItemIds().stream().map(o -> table.getItem(o).getItemProperty(VALUE).getValue())
+                .filter(Objects::nonNull).forEach(t -> set.add((T) t));
+        return set;
+    }
 
 	public Button getAddButton() {
 		return addButton;
@@ -208,9 +206,11 @@ public class CollectionTable<T extends Serializable> extends CustomField<Collect
 		return formOptions;
 	}
 
-	public Integer getMaxLength() {
-		return attributeModel.getMaxLength();
-	}
+    public void setFormOptions(final FormOptions formOptions) {
+		this.formOptions = formOptions;
+	}public Integer getMaxLength() {
+        return attributeModel.getMaxLength();
+    }
 
 	public Long getMaxValue() {
 		return attributeModel.getMaxValue();
@@ -228,17 +228,31 @@ public class CollectionTable<T extends Serializable> extends CustomField<Collect
 		return pageLength;
 	}
 
-	public ModelBasedEditForm<?, ?> getParentForm() {
-		return parentForm;
-	}
+    public void setPageLength(final int pageLength) {
+		this.pageLength = pageLength;
+	}public ModelBasedEditForm<?, ?> getParentForm() {
+        return parentForm;
+    }
 
-	public Object getSelectedItem() {
-		return selectedItem;
-	}
+    /**
+	 * This method is called to store a reference to the parent form
+	 *
+	 * @param parentForm
+	 */
+	private void setParentForm(final ModelBasedEditForm<?, ?> parentForm) {
+		this.parentForm = parentForm;
+		if (parentForm != null) {
+			parentForm.signalDetailsComponentValid(this, VaadinUtils.allFixedTableFieldsValid(table));
+		}
+	}public Object getSelectedItem() {
+        return selectedItem;
+    }
 
-	public Table getTable() {
-		return table;
-	}
+    public void setSelectedItem(final String selectedItem) {
+		this.selectedItem = selectedItem;
+	}public Table getTable() {
+        return table;
+    }
 
 	/**
 	 * Returns the type of the field (inherited form CustomField)
@@ -268,20 +282,20 @@ public class CollectionTable<T extends Serializable> extends CustomField<Collect
 		table.setTableFieldFactory(new DefaultFieldFactory() {
 
 			@Override
-			public Field<?> createField(Container container, Object itemId, Object propertyId, Component uiContext) {
+			public Field<?> createField(final Container container, final Object itemId, final Object propertyId,
+					final Component uiContext) {
 
-				Field<?> f = super.createField(container, itemId, propertyId, uiContext);
-				if (f instanceof TextField) {
-					TextField tf = (TextField) f;
-					tf.setNullRepresentation("");
-					tf.setSizeFull();
-					tf.setConverter(ConverterFactory.createConverterFor(attributeModel.getNormalizedType(),
-							attributeModel, SystemPropertyUtils.useThousandsGroupingInEditMode()));
-					// there is only one property per record so it has to be
+                final Field<?> f = super.createField(container, itemId, propertyId, uiContext);
+                if (f instanceof TextField) {
+                    final TextField tf = (TextField) f;
+                    tf.setNullRepresentation("");
+                    tf.setSizeFull();
+                    tf.setConverter(ConverterFactory.createConverterFor(attributeModel.getNormalizedType(),
+                            attributeModel, SystemPropertyUtils.useThousandsGroupingInEditMode()));
+                // there is only one property per record so it has to be
 					// required
 					tf.setRequired(true);
-					tf.setRequiredError("may not be null");
-				}
+					tf.setRequiredError("may not be null");}
 
 				// add a validator that checks for the maximum length
 				if (attributeModel.getMaxLength() != null) {
@@ -326,21 +340,21 @@ public class CollectionTable<T extends Serializable> extends CustomField<Collect
 					}
 				}
 
-				// value change listener that makes sure the validity of the
-				// parent form is correctly set
-				f.addValueChangeListener(event -> {
-					if (propagateChanges) {
-						propagateChanges = false;
-						setValue(extractValues());
-						parentForm.signalDetailsTableValid(CollectionTable.this,
-								VaadinUtils.allFixedTableFieldsValid(table));
-						propagateChanges = true;
-					}
-				});
+                // value change listener that makes sure the validity of the
+                // parent form is correctly set
+                f.addValueChangeListener(event -> {
+                    if (propagateChanges) {
+                        propagateChanges = false;
+                        setValue(extractValues());
+                        parentForm.signalDetailsComponentValid(CollectionTable.this,
+                                VaadinUtils.allFixedTableFieldsValid(table));
+                        propagateChanges = true;
 
-				return f;
-			}
-		});
+                }
+});
+                return f;
+            }
+        });
 
 		// add a change listener (to make sure the buttons are correctly
 		// enabled/disabled)
@@ -352,16 +366,16 @@ public class CollectionTable<T extends Serializable> extends CustomField<Collect
 		// add a remove button directly in the table
 		constructRemoveColumn();
 
-		VerticalLayout layout = new DefaultVerticalLayout(false, true);
-		layout.addComponent(table);
+        final VerticalLayout layout = new DefaultVerticalLayout(false, true);
+        layout.addComponent(table);
 
 		// add the buttons
 		constructButtonBar(layout);
 
-		// set the reference to the parent so the status of the save button can
-		// be set correctly
-		ModelBasedEditForm<?, ?> parent = VaadinUtils.getParentOfClass(this, ModelBasedEditForm.class);
-		setParentForm(parent);
+        // set the reference to the parent so the status of the save button can
+        // be set correctly
+        final ModelBasedEditForm<?, ?> parent = VaadinUtils.getParentOfClass(this, ModelBasedEditForm.class);
+        setParentForm(parent);
 
 		return layout;
 	}
@@ -370,30 +384,30 @@ public class CollectionTable<T extends Serializable> extends CustomField<Collect
 		return viewMode;
 	}
 
-	/**
-	 * Respond to a selection of an item in the table
-	 */
-	protected void onSelect(Object selected) {
-		// overwrite in subclass if needed
-	}
+    public void setViewMode(final boolean viewMode) {
+		this.viewMode = viewMode;
+	}/**
+     * Respond to a selection of an item in the table
+     */
+    protected void onSelect(final Object selected) {
+        // overwrite in subclass if needed
+    }
 
 	/**
 	 * Add additional buttons to the button bar
-	 * 
+	 *
 	 * @param buttonBar
 	 */
-	protected void postProcessButtonBar(Layout buttonBar) {
+	protected void postProcessButtonBar(final Layout buttonBar) {
 		// overwrite in subclass if needed
 	}
 
-	public void setFormOptions(FormOptions formOptions) {
-		this.formOptions = formOptions;
-	}
 
-	@Override
-	@SuppressWarnings("unchecked")
-	protected void setInternalValue(Collection<T> newValue) {
-		if (propagateChanges && table != null) {
+
+    @Override
+    @SuppressWarnings("unchecked")
+    protected void setInternalValue(final Collection<T> newValue) {
+        if (propagateChanges && table != null) {
 
 			// simply cleaning the container does not work since Vaadin keeps a
 			// reference to a selected item
@@ -406,39 +420,34 @@ public class CollectionTable<T extends Serializable> extends CustomField<Collect
 				constructRemoveColumn();
 			}
 
-			if (newValue != null) {
-				for (T t : newValue) {
-					Object o = table.addItem();
-					table.getItem(o).getItemProperty(VALUE).setValue(t);
-				}
-			}
+            if (newValue != null) {
+                for (final T t : newValue) {
+                    final Object o = table.addItem();
+                    table.getItem(o).getItemProperty(VALUE).setValue(t);
+                }
+            }
 
 		}
 		super.setInternalValue(newValue);
 	}
 
-	public void setPageLength(int pageLength) {
-		this.pageLength = pageLength;
-	}
-
-	/**
-	 * This method is called to store a reference to the parent form
-	 * 
-	 * @param parentForm
-	 */
-	private void setParentForm(ModelBasedEditForm<?, ?> parentForm) {
-		this.parentForm = parentForm;
-		if (parentForm != null) {
-			parentForm.signalDetailsTableValid(this, VaadinUtils.allFixedTableFieldsValid(table));
-		}
-	}
-
-	public void setSelectedItem(String selectedItem) {
-		this.selectedItem = selectedItem;
-	}
-
-	public void setViewMode(boolean viewMode) {
-		this.viewMode = viewMode;
-	}
+    @Override
+     public boolean validateAllFields() {
+     boolean error = false;
+     Iterator<Component> component = table.iterator();
+    while (component.hasNext()) {
+        Component next = component.next();
+        if (next instanceof AbstractField) {
+            try {
+        ((AbstractField<?>) next).validate();
+    ((AbstractField<?>) next).setComponentError(null);
+} catch (InvalidValueException ex) {
+    error = true;
+        ((AbstractField<?>) next).setComponentError(new UserError(ex.getLocalizedMessage()));
+    }
+}
+    }
+        return error;
+    }
 
 }

@@ -13,6 +13,11 @@
  */
 package com.ocs.dynamo.domain.model;
 
+/**
+ * Indicates whether an attribute is visible 
+ * @author Bas Rutten
+ *
+ */
 public enum VisibilityType {
 
     SHOW, HIDE, INHERIT

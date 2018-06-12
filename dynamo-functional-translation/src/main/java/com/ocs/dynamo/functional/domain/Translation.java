@@ -28,6 +28,7 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 import com.ocs.dynamo.domain.AbstractEntity;
+import com.ocs.dynamo.domain.model.EditableType;
 import com.ocs.dynamo.domain.model.VisibilityType;
 import com.ocs.dynamo.domain.model.annotation.Attribute;
 import com.ocs.dynamo.domain.model.annotation.Model;
@@ -116,7 +117,7 @@ public abstract class Translation<E> extends AbstractEntity<Integer> {
 
 	public abstract void setEntity(E entity);
 
-	@Attribute(readOnly = true, visible = VisibilityType.HIDE)
+	@Attribute(editable = EditableType.READ_ONLY, visible = VisibilityType.HIDE)
 	public String getFullDescription() {
 		return StringUtils.camelCaseToHumanFriendly(getField(), false) + " - " + getLocale().getName() + " - "
 				+ getTranslation();
@@ -124,7 +125,7 @@ public abstract class Translation<E> extends AbstractEntity<Integer> {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	@Override

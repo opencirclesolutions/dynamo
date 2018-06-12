@@ -34,9 +34,12 @@ import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
 import com.ocs.dynamo.ui.composite.table.ServiceResultsTableWrapper;
 import com.ocs.dynamo.ui.composite.type.ScreenMode;
 import com.ocs.dynamo.ui.container.QueryType;
+import com.ocs.dynamo.ui.utils.FormatUtils;
 import com.vaadin.data.Container;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.sort.SortOrder;
+import com.vaadin.server.FontAwesome;
+import com.vaadin.server.Resource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Field;
@@ -67,6 +70,8 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	 * Button for adding new items. Displayed by default
 	 */
 	private Button addButton;
+
+	private Button complexDetailModeBackButton;
 
 	/**
 	 * The default filters that are always apply to any query
@@ -130,7 +135,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	private Collection<T> selectedItems;
 
 	/**
-	 * 
+	 *
 	 */
 	private VerticalLayout tabContainerLayout;
 
@@ -193,8 +198,8 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	}
 
 	/**
-	 * Perform any actions that are necessary before carrying out a search. Can
-	 * be used to interfere with the search process
+	 * Perform any actions that are necessary before carrying out a search. Can be
+	 * used to interfere with the search process
 	 * 
 	 * @param filter
 	 *            the current search filter
@@ -284,8 +289,8 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	}
 
 	/**
-	 * Builds a tab layout for the display view. The definition of the tabs has
-	 * to be done in the subclasses
+	 * Builds a tab layout for the display view. The definition of the tabs has to
+	 * be done in the subclasses
 	 * 
 	 * @param entity
 	 *            the currently selected entity
@@ -296,9 +301,10 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 		HorizontalLayout buttonBar = new DefaultHorizontalLayout(false, true, true);
 		tabContainerLayout.addComponent(buttonBar);
 
-		Button backButton = new Button(message("ocs.back"));
-		backButton.addClickListener(e -> searchMode());
-		buttonBar.addComponent(backButton);
+		complexDetailModeBackButton = new Button(message("ocs.back"));
+		complexDetailModeBackButton.setIcon(FontAwesome.BACKWARD);
+		complexDetailModeBackButton.addClickListener(e -> searchMode());
+		buttonBar.addComponent(complexDetailModeBackButton);
 
 		if (getFormOptions().isShowPrevButton()) {
 			prevButton = new Button(message("ocs.previous"));
@@ -349,11 +355,16 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 			}
 
 			@Override
+			protected Resource getIconForTab(int index) {
+				return AbstractSearchLayout.this.getIconForTab(index);
+			}
+
+			@Override
 			protected Component initTab(int index) {
 				// back button and iteration buttons not needed (they are
 				// displayed above
 				// the tabs)
-				return AbstractSearchLayout.this.initTab(getEntity(), index, formOptions);
+				return AbstractSearchLayout.this.initTab(getEntity(), index, formOptions, false);
 			}
 		};
 		tabLayout.build();
@@ -402,6 +413,11 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 			@Override
 			protected void afterModeChanged(boolean viewMode) {
 				AbstractSearchLayout.this.afterModeChanged(viewMode, editForm);
+			}
+
+			@Override
+			protected void afterTabSelected(int tabIndex) {
+				AbstractSearchLayout.this.afterTabSelected(tabIndex);
 			}
 
 			@Override
@@ -484,6 +500,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	protected final Button constructEditButton() {
 		Button eb = new Button(
 				(!getFormOptions().isEditAllowed() || !isEditAllowed()) ? message("ocs.view") : message("ocs.edit"));
+		eb.setIcon(FontAwesome.PENCIL);
 		eb.addClickListener(e -> {
 			if (getSelectedItem() != null) {
 				doEdit();
@@ -524,7 +541,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	 * @return
 	 */
 	protected final Button constructRemoveButton() {
-		Button rb = new RemoveButton() {
+		Button rb = new RemoveButton(message("ocs.remove"), null) {
 
 			private static final long serialVersionUID = -7428844985367616649L;
 
@@ -533,7 +550,14 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 				remove();
 			}
 
+			@Override
+			protected String getItemToDelete() {
+				T t = getSelectedItem();
+				return FormatUtils.formatEntity(getEntityModel(), t);
+			}
+
 		};
+		rb.setIcon(FontAwesome.TRASH);
 		rb.setVisible(isEditAllowed() && getFormOptions().isShowRemoveButton());
 		return rb;
 	}
@@ -617,6 +641,21 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	}
 
 	/**
+	 * Opens the screen in details mode and selects a certain tab
+	 *
+	 * @param entity
+	 * @param selectedTab
+	 */
+	protected void detailsMode(T entity, int selectedTab) {
+		detailsMode(entity);
+		if (editForm != null) {
+			editForm.selectTab(selectedTab);
+		} else if (getFormOptions().isComplexDetailsMode()) {
+			tabLayout.selectTab(selectedTab);
+		}
+	}
+
+	/**
 	 * Open the screen in details mode
 	 * 
 	 * @param entity
@@ -624,6 +663,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	 */
 	@Override
 	protected void detailsMode(T entity) {
+
 		if (mainEditLayout == null) {
 			mainEditLayout = new DefaultVerticalLayout();
 			mainEditLayout.setStyleName(DynamoConstants.CSS_CLASS_HALFSCREEN);
@@ -669,7 +709,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 				mainEditLayout.replaceComponent(selectedDetailLayout, tabContainerLayout);
 			}
 			selectedDetailLayout = tabContainerLayout;
-		} else {
+        } else if (!getFormOptions().isComplexDetailsMode()) {
 			// simple edit form
 			if (editForm == null) {
 				buildEditForm(entity, options);
@@ -684,25 +724,37 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 				mainEditLayout.replaceComponent(selectedDetailLayout, editForm);
 			}
 			selectedDetailLayout = editForm;
+
+		} else {
+			// complex mode, but re-use
+			Component comp = initTab(entity, 0, getFormOptions(), true);
+
+			if (selectedDetailLayout == null) {
+				mainEditLayout.addComponent(comp);
+			} else {
+				mainEditLayout.replaceComponent(selectedDetailLayout, comp);
+			}
+			selectedDetailLayout = comp;
 		}
 
 		checkButtonState(getSelectedItem());
-		afterEntitySelected(editForm, entity);
+		if (editForm != null) {
+			afterEntitySelected(editForm, entity);
+		}
 		setCompositionRoot(mainEditLayout);
+
 	}
 
 	/**
-	 * Callback method that is called when the user presses the edit method.
-	 * Will by default open the screen in edit mode. Overwrite in subclass if
-	 * needed
+	 * Callback method that is called when the user presses the edit method. Will by
+	 * default open the screen in edit mode. Overwrite in subclass if needed
 	 */
 	protected void doEdit() {
 		detailsMode(getSelectedItem());
 	}
 
 	/**
-	 * Performs the actual remove functionality - overwrite in subclass if
-	 * needed
+	 * Performs the actual remove functionality - overwrite in subclass if needed
 	 */
 	protected void doRemove() {
 		getService().delete(getSelectedItem());
@@ -716,6 +768,25 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	public final void edit(T entity) {
 		setSelectedItem(entity);
 		doEdit();
+	}
+
+	/**
+	 * Open in edit mode and select the tab with the provided index
+	 *
+	 * @param entity
+	 *            the entity to select
+	 * @param initialTab
+	 *            the index of the tab to display
+	 */
+	public final void edit(T entity, int initialTab) {
+		setSelectedItem(entity);
+		doEdit();
+
+		if (editForm != null) {
+			editForm.selectTab(initialTab);
+		} else {
+			tabLayout.selectTab(initialTab);
+		}
 	}
 
 	public Button getAddButton() {
@@ -754,6 +825,11 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 
 	public VerticalLayout getMainSearchLayout() {
 		return mainSearchLayout;
+	}
+
+	protected Resource getIconForTab(int index) {
+		// overwrite
+		return null;
 	}
 
 	/**
@@ -858,7 +934,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 		return false;
 	}
 
-	protected Component initTab(T entity, int index, FormOptions fo) {
+	protected Component initTab(T entity, int index, FormOptions fo, boolean newEntity) {
 		// overwrite is subclasses
 		return null;
 	}
@@ -874,6 +950,11 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 		return getSearchForm().isFilterSet(path);
 	}
 
+	/**
+	 * Checks whether the layout is currently in search mode
+	 *
+	 * @return
+	 */
 	public boolean isInSearchMode() {
 		return ObjectUtils.equals(getCompositionRoot(), mainSearchLayout);
 	}
@@ -889,8 +970,8 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	}
 
 	/**
-	 * Refreshes all lookup components but otherwise does not update the state
-	 * of the screen
+	 * Refreshes all lookup components but otherwise does not update the state of
+	 * the screen
 	 */
 	@Override
 	public void refresh() {
@@ -898,7 +979,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	}
 
 	/**
-	 * Refreshes the contents of a label
+	 * Refreshes the contents of a label inside the edit form
 	 * 
 	 * @param propertyName
 	 *            the name of the property for which to refresh the label
@@ -910,7 +991,8 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	}
 
 	/**
-	 * Resets the layout (clears the search form)
+	 * Reloads the entire component, reverting to search mode and clearing the
+	 * search form
 	 */
 	@Override
 	public void reload() {
@@ -950,7 +1032,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	}
 
 	/**
-	 * Puts the screen in search mode
+	 * Puts the screen in search mode (does not reset the search form)
 	 */
 	public void searchMode() {
 		setCompositionRoot(mainSearchLayout);
@@ -994,10 +1076,24 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 		}
 	}
 
+	/**
+	 * Sets the default filters that are always applied to a search query (even
+	 * after all search fields have been cleared)
+	 *
+	 * @param defaultFilters
+	 */
 	public void setDefaultFilters(List<Filter> defaultFilters) {
 		this.defaultFilters = defaultFilters;
+		if (searchForm != null) {
+			searchForm.setDefaultFilters(defaultFilters);
+		}
 	}
 
+	/**
+	 * Sets the query type. Only use before the component is built.
+	 *
+	 * @param queryType
+	 */
 	public void setQueryType(QueryType queryType) {
 		this.queryType = queryType;
 	}
@@ -1026,11 +1122,14 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 
 	/**
 	 * Validate before a search is carried out - if the search criteria are not
-	 * correctly set, throw an OCSValidationException to abort the search
-	 * process
+	 * correctly set, throw an OCSValidationException to abort the search process
 	 */
 	public void validateBeforeSearch() {
 		// overwrite in subclasses
+	}
+
+	public Button getComplexDetailModeBackButton() {
+		return complexDetailModeBackButton;
 	}
 
 }

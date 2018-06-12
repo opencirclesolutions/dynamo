@@ -115,7 +115,7 @@ public class FieldFactoryContextImpl implements Context {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param parentEntity
 	 * @return the parent entity to set
 	 */
@@ -125,7 +125,7 @@ public class FieldFactoryContextImpl implements Context {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param viewMode
 	 * @return the view mode to set
 	 */

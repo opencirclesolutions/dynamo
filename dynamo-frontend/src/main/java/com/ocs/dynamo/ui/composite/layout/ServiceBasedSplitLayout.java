@@ -62,11 +62,13 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param service
 	 *            the service for retrieving data from the database
 	 * @param entityModel
 	 *            the entity model
+	 * @param queryType
+	 *            the desired query type
 	 * @param formOptions
 	 *            the form options
 	 * @param sortOrder
@@ -87,7 +89,7 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
 	/**
 	 * Creates the main search filter - overwrite in subclass if you need to
 	 * actually filter the data
-	 * 
+	 *
 	 * @return
 	 */
 	protected Filter constructFilter() {
@@ -98,7 +100,7 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
 	/**
 	 * Constructs the quick search filter - override if you need a custom filter
 	 * when searching for the main attribute is not sufficient
-	 * 
+	 *
 	 * @param value
 	 *            the value to search for
 	 * @return
@@ -111,8 +113,10 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
 	/**
 	 * Constructs a quick search field - this method will only be called if the
 	 * "showQuickSearchField" form option is enabled. It will then look for a
-	 * custom filter returned by the constructQuickSearchFilter method, and if
-	 * that method returns null it will construct a filter based on the main
+	 * custom
+	 * filter returned by the constructQuickSearchFilter method, and if
+	 * that method
+	 * returns null it will construct a filter based on the main
 	 * attribute
 	 */
 	@Override
@@ -188,12 +192,14 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
 
 	/**
 	 * Reloads the component - this will first rebuild the filter and then
-	 * reload the container using that filter
+	 * reload
+	 * the container using that filter
 	 */
 	@Override
 	public void reload() {
 		buildFilter();
 		super.reload();
+		refresh();
 		getTableWrapper().setFilter(filter);
 	}
 

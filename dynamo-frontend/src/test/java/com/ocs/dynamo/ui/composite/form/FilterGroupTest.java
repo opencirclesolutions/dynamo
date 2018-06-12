@@ -2,6 +2,7 @@ package com.ocs.dynamo.ui.composite.form;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -18,6 +19,7 @@ import com.vaadin.data.util.filter.SimpleStringFilter;
 import com.vaadin.ui.Slider;
 import com.vaadin.ui.TextField;
 
+@Ignore
 public class FilterGroupTest extends BaseIntegrationTest {
 
     @Autowired

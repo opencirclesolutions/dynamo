@@ -55,8 +55,9 @@ public final class ClassUtils {
 
 	/**
 	 * Checks if the specified property can be set for the specified object.
-	 * This method supports nested properties
-	 * 
+	 * This
+	 * method supports nested properties
+	 *
 	 * @param obj
 	 *            the object
 	 * @param fieldName
@@ -84,7 +85,7 @@ public final class ClassUtils {
 
 	/**
 	 * Clears a field
-	 * 
+	 *
 	 * @param obj
 	 *            the object on which to clear the field
 	 * @param fieldName
@@ -113,7 +114,7 @@ public final class ClassUtils {
 	/**
 	 * forClass which doesn't throw an exception and can handle empty class
 	 * names
-	 * 
+	 *
 	 * @param clazz
 	 *            The fully qualified class name
 	 * @return the specified class and null when class is not found
@@ -132,8 +133,9 @@ public final class ClassUtils {
 
 	/**
 	 * Tries to retrieve an annotation, by first looking at the field name, and
-	 * then at the getter method
-	 * 
+	 * then
+	 * at the getter method
+	 *
 	 * @param clazz
 	 *            the class
 	 * @param fieldName
@@ -152,7 +154,7 @@ public final class ClassUtils {
 
 	/**
 	 * Get the value of a field in an annotation
-	 * 
+	 *
 	 * @param field
 	 *            The field with annotations
 	 * @param annotionType
@@ -175,7 +177,7 @@ public final class ClassUtils {
 
 	/**
 	 * Return an annotation on a certain field
-	 * 
+	 *
 	 * @param clazz
 	 *            the class
 	 * @param fieldName
@@ -195,7 +197,7 @@ public final class ClassUtils {
 
 	/**
 	 * Returns an annotation on a certain field
-	 * 
+	 *
 	 * @param field
 	 *            the field
 	 * @param annotationClass
@@ -217,7 +219,7 @@ public final class ClassUtils {
 
 	/**
 	 * Looks for an annotation on a getter method
-	 * 
+	 *
 	 * @param clazz
 	 *            the class
 	 * @param fieldName
@@ -237,7 +239,7 @@ public final class ClassUtils {
 
 	/**
 	 * Looks for an annotation on a (getter) method
-	 * 
+	 *
 	 * @param method
 	 *            the method
 	 * @param annotationClass
@@ -259,7 +261,7 @@ public final class ClassUtils {
 
 	/**
 	 * Retrieves the contents of a field as a byte array
-	 * 
+	 *
 	 * @param obj
 	 * @param fieldName
 	 * @return
@@ -271,7 +273,7 @@ public final class ClassUtils {
 	/**
 	 * Find constructor based on the types of the given arguments used to
 	 * instantiate the class with the found constructor
-	 * 
+	 *
 	 * @param clazz
 	 * @param args
 	 * @return
@@ -298,7 +300,7 @@ public final class ClassUtils {
 
 	/**
 	 * Returns a field with a certain name from a class
-	 * 
+	 *
 	 * @param clazz
 	 *            the class
 	 * @param fieldName
@@ -322,7 +324,7 @@ public final class ClassUtils {
 
 	/**
 	 * Retrieves a field value
-	 * 
+	 *
 	 * @param obj
 	 *            the object from which to retrieve the field value
 	 * @param fieldName
@@ -358,7 +360,7 @@ public final class ClassUtils {
 
 	/**
 	 * Retrieves the getter method for a certain property
-	 * 
+	 *
 	 * @param clazz
 	 *            the class
 	 * @param fieldName
@@ -388,7 +390,7 @@ public final class ClassUtils {
 
 	/**
 	 * Returns the maximum allowed length of a field
-	 * 
+	 *
 	 * @param clazz
 	 * @param fieldName
 	 * @return
@@ -403,7 +405,7 @@ public final class ClassUtils {
 
 	/**
 	 * Returns the property descriptor for a nested property
-	 * 
+	 *
 	 * @param clazz
 	 *            the class
 	 * @param property
@@ -423,13 +425,13 @@ public final class ClassUtils {
 	}
 
 	/**
-	 * Return a Class<?> representing the generic parameter for the given
-	 * indexes. Indexes are zero based; for example given the type Map<Integer,
-	 * List<String>>, getGeneric(0) will access the Integer. Nested generics can
-	 * be accessed by specifying multiple indexes; for example getGeneric(1, 0)
-	 * will access the String from the nested List. For convenience, if no
-	 * indexes are specified the first generic is returned.
-	 * 
+	 * Return a Class<?> representing the generic parameter for the given indexes.
+	 * Indexes are zero based; for example given the type Map<Integer,
+	 * List<String>>, getGeneric(0) will access the Integer. Nested generics can be
+	 * accessed by specifying multiple indexes; for example getGeneric(1, 0) will
+	 * access the String from the nested List. For convenience, if no indexes are
+	 * specified the first generic is returned.
+	 *
 	 * @param type
 	 * @param fieldName
 	 * @param indexes
@@ -453,11 +455,13 @@ public final class ClassUtils {
 	}
 
 	/**
-	 * Return a Class<?> representing the generic parameter for the given indexes. Indexes are zero based; for example
-	 * given the type Map<Integer, List<String>>, getGeneric(0) will access the Integer. Nested generics can be accessed
-	 * by specifying multiple indexes; for example getGeneric(1, 0) will access the String from the nested List. For
-	 * convenience, if no indexes are specified the first generic is returned.
-	 * 
+	 * Return a Class<?> representing the generic parameter for the given indexes.
+	 * Indexes are zero based; for example given the type Map<Integer,
+	 * List<String>>, getGeneric(0) will access the Integer. Nested generics can be
+	 * accessed by specifying multiple indexes; for example getGeneric(1, 0) will
+	 * access the String from the nested List. For convenience, if no indexes are
+	 * specified the first generic is returned.
+	 *
 	 * @param method
 	 *            or method parameter or type
 	 * @param indexes
@@ -490,7 +494,7 @@ public final class ClassUtils {
 
 	/**
 	 * Check if the object has a (public) method that has the specified name
-	 * 
+	 *
 	 * @param obj
 	 * @param methodName
 	 * @return
@@ -507,9 +511,11 @@ public final class ClassUtils {
 
 	/**
 	 * Instantiate a class with the given arguments; assumed is that all
-	 * arguments are not null so the types can be determined and a matching
-	 * constructor can be found. When no constructor is found null is returned.
-	 * 
+	 * arguments
+	 * are not null so the types can be determined and a matching
+	 * constructor can be
+	 * found. When no constructor is found null is returned.
+	 *
 	 * @param clazz
 	 * @param args
 	 * @return

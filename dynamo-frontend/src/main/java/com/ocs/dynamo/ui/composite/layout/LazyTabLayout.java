@@ -23,6 +23,7 @@ import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.ui.CanAssignEntity;
 import com.ocs.dynamo.ui.Reloadable;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
+import com.vaadin.server.Resource;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.Panel;
@@ -45,24 +46,24 @@ public abstract class LazyTabLayout<ID extends Serializable, T extends AbstractE
 	private static final long serialVersionUID = 3788799136302802727L;
 
 	/**
-	 * The entity that is being shown
-	 */
-	private T entity;
-
-	/**
 	 * The captions of the tabs that have already been constructed
 	 */
 	private Set<String> constructedTabs = new HashSet<>();
 
 	/**
-	 * The tab sheet component
+	 * The entity that is being shown
 	 */
-	private TabSheet tabs;
+	private T entity;
 
 	/**
 	 * The panel that surrounds the tab sheet
 	 */
 	private Panel panel;
+
+	/**
+	 * The tab sheet component
+	 */
+	private TabSheet tabs;
 
 	/**
 	 * Constructor
@@ -80,8 +81,8 @@ public abstract class LazyTabLayout<ID extends Serializable, T extends AbstractE
 	}
 
 	/**
-	 * Callback method that is called before a tab is reloaded - use this to
-	 * make sure the correct data is available in the tab
+	 * Callback method that is called before a tab is reloaded - use this to make
+	 * sure the correct data is available in the tab
 	 * 
 	 * @param index
 	 *            the index of the selected tab
@@ -117,8 +118,8 @@ public abstract class LazyTabLayout<ID extends Serializable, T extends AbstractE
 	}
 
 	/**
-	 * Constructs the title of the page. If this method returns null then no
-	 * title will be displayed
+	 * Constructs the title of the page. If this method returns null then no title
+	 * will be displayed
 	 * 
 	 * @return
 	 */
@@ -127,6 +128,15 @@ public abstract class LazyTabLayout<ID extends Serializable, T extends AbstractE
 	public T getEntity() {
 		return entity;
 	}
+
+	/**
+	 * Returns the icon to use inside a certain tab
+	 * 
+	 * @param index
+	 *            the zero-based index of the tab
+	 * @return
+	 */
+	protected abstract Resource getIconForTab(int index);
 
 	/**
 	 * Returns the tab identified by a certain index
@@ -147,7 +157,7 @@ public abstract class LazyTabLayout<ID extends Serializable, T extends AbstractE
 	protected abstract String[] getTabCaptions();
 
 	/**
-	 * Returns the description (tooltip) for a certain tab
+	 * Returns the description (tool tip) for a certain tab
 	 * 
 	 * @param index
 	 *            the index of the tab
@@ -249,6 +259,7 @@ public abstract class LazyTabLayout<ID extends Serializable, T extends AbstractE
 		int i = 0;
 		for (String caption : getTabCaptions()) {
 			Tab t = tabs.addTab(new DefaultVerticalLayout(false, false), caption);
+			t.setIcon(getIconForTab(i));
 			t.setDescription(getTabDescription(i++));
 		}
 

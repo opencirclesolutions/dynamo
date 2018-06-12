@@ -14,7 +14,6 @@
 package com.ocs.dynamo.ui;
 
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
 import com.ocs.dynamo.dao.impl.TestEntityDao;
@@ -22,8 +21,6 @@ import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.service.ServiceLocator;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.test.BaseIntegrationTest;
-
-import junitx.util.PrivateAccessor;
 
 /**
  * Basic test class for the ServiceLocator

@@ -62,7 +62,7 @@ public abstract class ModelBasedExportTemplate<ID extends Serializable, T extend
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param service
 	 *            the service used to retrieve the data
 	 * @param entityModel
@@ -136,7 +136,7 @@ public abstract class ModelBasedExportTemplate<ID extends Serializable, T extend
 
 	/**
 	 * Check whether a certain attribute model must be included in the export
-	 * 
+	 *
 	 * @param am
 	 *            the attribute model
 	 * @return <code>true</code> if the attribute must be included,
@@ -180,7 +180,7 @@ public abstract class ModelBasedExportTemplate<ID extends Serializable, T extend
 					if (show(am)) {
 						Object value = ClassUtils.getFieldValue(entity, am.getPath());
 						EntityModelFactory emf = ServiceLocatorFactory.getServiceLocator().getEntityModelFactory();
-						String str = FormatUtils.formatPropertyValue(emf, am, value);
+						String str = FormatUtils.formatPropertyValue(emf, am, value, ", ");
 						row.add(str);
 					}
 				}

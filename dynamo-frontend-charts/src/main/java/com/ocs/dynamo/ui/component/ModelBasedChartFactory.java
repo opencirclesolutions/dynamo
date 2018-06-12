@@ -22,6 +22,8 @@ import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.ChartEntityModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.FieldFactory;
+import com.ocs.dynamo.domain.model.EntityModel;
+import com.ocs.dynamo.domain.model.FieldFactory;
 import com.ocs.dynamo.ui.container.ServiceContainer;
 import com.ocs.dynamo.ui.container.ServiceQueryDefinition;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
@@ -43,12 +45,10 @@ import com.vaadin.data.Property;
 import com.vaadin.ui.Field;
 
 /**
- * Vaadin chart which is build using the entitymodel.
+ * Vaadin chart which is built using the entitymodel.
  * 
  * @author Patrick.Deenen@OpenCircle.Solutions
  *
- * @param <T>
- *            the type of the entity
  */
 public class ModelBasedChartFactory implements FieldFactory {
 
@@ -88,10 +88,10 @@ public class ModelBasedChartFactory implements FieldFactory {
 	}
 
 	/**
-	 * Use this constructor when you have a ServiceContainer based on a ChartEntityModel
-	 * 
+	 * Use this constructor when you have a ServiceContainer based on a GraphEntityModel
+	 *
 	 * @param container
-	 *            The service container with ChartEntityModel
+	 *            The service container with GraphEntityModel
 	 */
 	public ModelBasedChartFactory(ServiceContainer<?, ?> container) {
 		this(container,
@@ -101,7 +101,7 @@ public class ModelBasedChartFactory implements FieldFactory {
 
 	/**
 	 * Use this constructor when you have a Container and ChartEntityModel
-	 * 
+	 *
 	 * @param container
 	 * @param chartEntityModel
 	 */

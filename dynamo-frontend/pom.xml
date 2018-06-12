@@ -52,6 +52,10 @@
 			<artifactId>guava</artifactId>
 		</dependency>
 		<dependency>
+		   <groupId>org.vaadin.teemu</groupId>
+		   <artifactId>switch</artifactId>
+		</dependency>		
+		<dependency>
 			<groupId>org.eclipse.persistence</groupId>
 			<artifactId>javax.persistence</artifactId>
 		</dependency>
@@ -82,7 +86,7 @@
 			<version>${project.version}</version>
 			<scope>test</scope>
 		</dependency>
-		<!--  -->
+		<!-- -->
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>dynamo-integration-import</artifactId>
@@ -217,10 +221,10 @@
 						</manifestEntries>
 					</archive>
 					<!-- Exclude useless rubbish from JAR (saves 20MB) -->
-					<excludes>
+					<!--<excludes>
 						<exclude>VAADIN/gwt-unitCache/**</exclude>
-						<exclude>VAADIN/widgetsets/WEB-INF/**</exclude>
-					</excludes>
+						&lt;!&ndash;<exclude>VAADIN/widgetsets/WEB-INF/**</exclude>&ndash;&gt;
+					</excludes>-->
 				</configuration>
 			</plugin>
 			<plugin>

@@ -29,19 +29,12 @@ import java.util.TimeZone;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import com.ocs.dynamo.domain.model.*;
 import org.apache.commons.lang.StringUtils;
 
 import com.google.common.collect.Lists;
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.domain.AbstractEntity;
-import com.ocs.dynamo.domain.model.AttributeDateType;
-import com.ocs.dynamo.domain.model.AttributeModel;
-import com.ocs.dynamo.domain.model.AttributeSelectMode;
-import com.ocs.dynamo.domain.model.AttributeTextFieldMode;
-import com.ocs.dynamo.domain.model.AttributeType;
-import com.ocs.dynamo.domain.model.EntityModel;
-import com.ocs.dynamo.domain.model.FieldFactory;
-import com.ocs.dynamo.domain.model.NumberSelectMode;
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.MessageService;
@@ -98,7 +91,7 @@ import com.vaadin.ui.UI;
  * Extension of the standard Vaadin field factory for creating custom fields. Note that creating custom fields may be
  * delegated to other factories by implementing those factories with interface FieldFactory and making sure that these
  * can be found by the service locator.
- * 
+ *
  * @author bas.rutten
  * @param <T>
  *            the type of the entity for which to create a field
@@ -136,7 +129,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param model
 	 *            the entity model
 	 * @param messageService
@@ -149,7 +142,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory
 	 *            has an effect on the construction of some fields)
 	 */
 	public ModelBasedFieldFactory(EntityModel<T> model, MessageService messageService, boolean validate,
-			boolean search) {
+								  boolean search) {
 		this.model = model;
 		this.messageService = messageService;
 		this.validate = validate;
@@ -159,7 +152,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory
 
 	/**
 	 * Returns an appropriate instance from the pool, or creates a new one
-	 * 
+	 *
 	 * @param model
 	 *            the entity model
 	 * @param messageService
@@ -176,7 +169,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory
 
 	/**
 	 * Returns an appropriate instance from the pool, or creates a new one
-	 * 
+	 *
 	 * @param model
 	 * @param messageService
 	 * @return
@@ -191,14 +184,14 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory
 
 	/**
 	 * Returns an appropriate instance from the pool, or creates a new one
-	 * 
+	 *
 	 * @param model
 	 * @param messageService
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
 	public static <T> ModelBasedFieldFactory<T> getValidatingInstance(EntityModel<T> model,
-			MessageService messageService) {
+																	  MessageService messageService) {
 		if (!validatingInstances.containsKey(model.getReference())) {
 			validatingInstances.put(model.getReference(),
 					new ModelBasedFieldFactory<>(model, messageService, true, false));
@@ -209,7 +202,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory
 	/**
 	 * Constructs a combo box- the sort order will be taken from the entity
 	 * model
-	 * 
+	 *
 	 * @param entityModel
 	 *            the entity model to base the combo box on
 	 * @param attributeModel
@@ -233,7 +226,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory
 	/**
 	 * Constructs a field based on an attribute model and possibly a field
 	 * filter
-	 * 
+	 *
 	 * @param attributeModel
 	 *            the attribute model
 	 * @param fieldFilters
@@ -244,7 +237,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public Field<?> constructField(AttributeModel attributeModel, Map<String, Filter> fieldFilters,
-			EntityModel<?> fieldEntityModel) {
+								   EntityModel<?> fieldEntityModel) {
 		FieldFactoryContextImpl c = new FieldFactoryContextImpl().setAttributeModel(attributeModel)
 				.setFieldFilters(fieldFilters).setFieldEntityModel((EntityModel) fieldEntityModel);
 		return constructField(c);
@@ -309,7 +302,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory
 
 	/**
 	 * Constructs a select component for selecting multiple values
-	 * 
+	 *
 	 * @param fieldEntityModel
 	 *            the entity model of the entity to display in the field
 	 * @param attributeModel
@@ -357,7 +350,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory
 
 	/**
 	 * Constructs a lookup field (field that brings up a popup search dialog)
-	 * 
+	 *
 	 * @param overruled
 	 *            the entity model of the entity to display in the field
 	 * @param attributeModel
@@ -389,7 +382,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory
 	/**
 	 * Create a combo box for searching on a boolean. This combo box contains
 	 * three values (yes, no, and null)
-	 * 
+	 *
 	 * @return
 	 */
 	public ComboBox constructSearchBooleanComboBox(AttributeModel am) {
@@ -403,7 +396,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory
 
 	/**
 	 * Construct a combo box that contains a list of String values
-	 * 
+	 *
 	 * @param values
 	 *            the list of values
 	 * @param am
@@ -420,7 +413,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory
 
 	/**
 	 * Constructs a token field for basic attributes (Strings)
-	 * 
+	 *
 	 * @param entityModel
 	 *            the entity model to base the field on
 	 * @param attributeModel
@@ -451,7 +444,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory
 
 	/**
 	 * Constructs the default sort order of a component based on an Entity Model
-	 * 
+	 *
 	 * @param entityModel
 	 *            the entity model
 	 * @return
@@ -468,7 +461,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory
 
 	/**
 	 * Creates a field for displaying an enumeration
-	 * 
+	 *
 	 * @param type
 	 *            the type of enum the values to display
 	 * @param fieldType
@@ -484,7 +477,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory
 
 	/**
 	 * Creates a field - overridden from the default field factory
-	 * 
+	 *
 	 * @param type
 	 *            the type of the property that is bound to the field
 	 * @param fieldType
@@ -513,7 +506,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory
 
 	/**
 	 * Creates a field (called when creating the field inside a table)
-	 * 
+	 *
 	 * @param container
 	 * @param itemId
 	 * @param propertyId
@@ -524,9 +517,9 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory
 	}
 
 	/**
-	 * 
+	 *
 	 * Creates a field for a certain property ID
-	 * 
+	 *
 	 * @param propertyId
 	 *            the property
 	 * @return
@@ -537,7 +530,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory
 
 	/**
 	 * Creates a field
-	 * 
+	 *
 	 * @param propertyId
 	 *            the name of the property that can be edited by this field
 	 * @param fieldEntityModel
@@ -549,7 +542,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory
 		// in case of a read-only field, return <code>null</code> so Vaadin will
 		// render a label instead
 		AttributeModel attributeModel = model.getAttributeModel(propertyId);
-		if (attributeModel.isReadOnly()
+		if (EditableType.READ_ONLY.equals(attributeModel.getEditableType())
 				&& (!attributeModel.isUrl() && !AttributeType.DETAIL.equals(attributeModel.getAttributeType()))
 				&& !search) {
 			return null;
@@ -682,7 +675,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory
 			field.addValidator(new BeanValidator(model.getEntityClass(), propertyId));
 			// disable the field if it cannot be edited
 			if (!attributeModel.isUrl()) {
-				field.setEnabled(!attributeModel.isReadOnly());
+				field.setEnabled(!EditableType.READ_ONLY.equals(attributeModel.getEditableType()));
 			}
 
 			if (attributeModel.isNumerical()) {
@@ -694,7 +687,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory
 
 	/**
 	 * Add additional field settings to a field
-	 * 
+	 *
 	 * @param field
 	 * @param attributeModel
 	 */
@@ -737,7 +730,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory
 
 	/**
 	 * Creates a select field for a single-valued attribute
-	 * 
+	 *
 	 * @param attributeModel
 	 *            the attribute
 	 * @param fieldEntityModel
@@ -747,7 +740,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory
 	 * @return
 	 */
 	protected Field<?> constructSelectField(AttributeModel attributeModel, EntityModel<?> fieldEntityModel,
-			Filter fieldFilter) {
+											Filter fieldFilter) {
 		Field<?> field = null;
 
 		AttributeSelectMode selectMode = search ? attributeModel.getSearchSelectMode() : attributeModel.getSelectMode();
@@ -771,7 +764,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory
 
 	/**
 	 * Fills an enumeration field with messages from the message bundle
-	 * 
+	 *
 	 * @param select
 	 * @param enumClass
 	 */
@@ -814,7 +807,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory
 	 * Resolves an entity model by falling back first to the nested attribute
 	 * model and then to the default model for the normalized type of the
 	 * property
-	 * 
+	 *
 	 * @param entityModel
 	 *            the entity model
 	 * @param attributeModel
@@ -835,10 +828,10 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory
 
 	/**
 	 * Set the appropriate converter on a text field
-	 * 
+	 *
 	 * @param textField
 	 *            the field
-	 * @param attributeModel
+	 * @param am
 	 *            the attribute model of the attribute to bind to the field
 	 */
 	protected void setConverters(AbstractTextField textField, AttributeModel am) {

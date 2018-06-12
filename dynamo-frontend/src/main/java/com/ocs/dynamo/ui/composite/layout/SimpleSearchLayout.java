@@ -124,7 +124,6 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 			protected void validateBeforeSearch() {
 				SimpleSearchLayout.this.validateBeforeSearch();
 			}
-
 		};
 		result.setNrOfColumns(getNrOfColumns());
 		result.setFieldEntityModels(getFieldEntityModels());

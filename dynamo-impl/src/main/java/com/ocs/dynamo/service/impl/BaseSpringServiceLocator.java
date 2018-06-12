@@ -57,19 +57,7 @@ public abstract class BaseSpringServiceLocator implements ServiceLocator {
 		return getContext().getBean(clazz);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.ocs.dynamo.service.ServiceLocator#getServices(java.lang.Class)
-	 */
-	@Override
-	public <T> Collection<T> getServices(Class<T> clazz) {
-		Map<String, T> beans = getContext().getBeansOfType(clazz);
-		if (beans != null && !beans.isEmpty()) {
-			return beans.values();
-		}
-		return null;
-	}
+
 
 	/**
 	 * Retrieves the message service from the context
@@ -110,4 +98,17 @@ public abstract class BaseSpringServiceLocator implements ServiceLocator {
 		return null;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see com.ocs.dynamo.service.ServiceLocator#getServices(java.lang.Class)
+	 */
+	@Override
+	public <T> Collection<T> getServices(Class<T> clazz) {
+		Map<String, T> beans = getContext().getBeansOfType(clazz);
+		if (beans != null && !beans.isEmpty()) {
+			return beans.values();
+		}
+		return null;
+	}
 }

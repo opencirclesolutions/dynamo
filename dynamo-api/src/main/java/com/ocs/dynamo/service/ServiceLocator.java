@@ -35,7 +35,6 @@ public interface ServiceLocator {
 	<T> T getService(Class<T> clazz);
 
 	/**
-	 * Retrieves all services of a certain type
 	 * 
 	 * @param clazz
 	 *            the class of the service

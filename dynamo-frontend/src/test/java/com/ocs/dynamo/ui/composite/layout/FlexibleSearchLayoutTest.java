@@ -7,6 +7,7 @@ import javax.inject.Inject;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.google.common.collect.Lists;
@@ -21,6 +22,7 @@ import com.vaadin.data.sort.SortOrder;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.Table;
 
+@Ignore
 public class FlexibleSearchLayoutTest extends BaseIntegrationTest {
 
     @Inject
