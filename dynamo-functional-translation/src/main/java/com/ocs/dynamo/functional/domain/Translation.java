@@ -13,18 +13,7 @@
  */
 package com.ocs.dynamo.functional.domain;
 
-import javax.persistence.Column;
-import javax.persistence.DiscriminatorColumn;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 import com.ocs.dynamo.domain.AbstractEntity;
@@ -33,6 +22,7 @@ import com.ocs.dynamo.domain.model.VisibilityType;
 import com.ocs.dynamo.domain.model.annotation.Attribute;
 import com.ocs.dynamo.domain.model.annotation.Model;
 import com.ocs.dynamo.utils.StringUtils;
+import org.hibernate.annotations.DiscriminatorOptions;
 
 /**
  * @author Patrick Deenen
@@ -45,6 +35,7 @@ import com.ocs.dynamo.utils.StringUtils;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "type")
 @Model(displayProperty = "fullDescription")
+@DiscriminatorOptions(force=true)
 public abstract class Translation<E> extends AbstractEntity<Integer> {
 
 	private static final long serialVersionUID = 3155835503400960383L;
@@ -64,7 +55,7 @@ public abstract class Translation<E> extends AbstractEntity<Integer> {
 
 	// uni-directional many-to-one association to Domain
 	@NotNull
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "locale")
 	@Attribute(showInTable = VisibilityType.SHOW)
 	private Locale locale;

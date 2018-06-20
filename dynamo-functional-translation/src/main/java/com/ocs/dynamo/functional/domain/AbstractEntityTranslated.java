@@ -21,16 +21,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
-import javax.persistence.FetchType;
-import javax.persistence.MappedSuperclass;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import javax.validation.constraints.AssertTrue;
 
 import com.ocs.dynamo.domain.AbstractAuditableEntity;
 import com.ocs.dynamo.domain.model.VisibilityType;
 import com.ocs.dynamo.domain.model.annotation.Attribute;
 import com.ocs.dynamo.utils.ClassUtils;
+import org.hibernate.annotations.DiscriminatorOptions;
 
 /**
  * Base class for entities that contain a collection of Translations
@@ -40,12 +38,13 @@ import com.ocs.dynamo.utils.ClassUtils;
  */
 @SuppressWarnings("rawtypes")
 @MappedSuperclass
+@DiscriminatorOptions(force=true)
 public abstract class AbstractEntityTranslated<ID, T extends Translation>
 		extends AbstractAuditableEntity<ID> {
 
 	private static final long serialVersionUID = 511877206448482880L;
 
-	@OneToMany(fetch = FetchType.EAGER, cascade = { CascadeType.MERGE,
+	@OneToMany(fetch = FetchType.LAZY, cascade = { CascadeType.MERGE,
 			CascadeType.PERSIST }, mappedBy = "entity", orphanRemoval = true)
 	@Attribute(visible = VisibilityType.HIDE)
 	private Set<T> translations = new HashSet<>();
