@@ -346,7 +346,7 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 		}
 	}
 
-	public void addFetchJoinInformation(FetchJoinInformation[] fetchJoinInformation) {
+	public void addFetchJoinInformation(FetchJoinInformation... fetchJoinInformation) {
 		joins = (FetchJoinInformation[]) ArrayUtils.addAll(joins, fetchJoinInformation);
 	}
 
