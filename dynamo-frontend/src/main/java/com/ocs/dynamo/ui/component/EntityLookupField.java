@@ -38,6 +38,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import org.apache.commons.lang.ArrayUtils;
 
 /**
  * A composite component that displays a selected entity and offers a search
@@ -48,9 +49,6 @@ import com.vaadin.ui.Label;
  *            the type of the primary key
  * @param <T>
  *            the type of the entity
- * @param <Object>
- *            the type of the selected value (can be a single entity or a
- *            collection depending on the use case)
  */
 public class EntityLookupField<ID extends Serializable, T extends AbstractEntity<ID>>
 		extends QuickAddEntityField<ID, T, Object> {
@@ -72,7 +70,7 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 	/**
 	 * The joins to apply to the search in the search dialog
 	 */
-	private final FetchJoinInformation[] joins;
+	private FetchJoinInformation[] joins;
 
 	/**
 	 * The label that displays the currently selected item
@@ -108,11 +106,11 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 	 *            the entity model
 	 * @param attributeModel
 	 *            the attribute mode
-	 * @param filters
+	 * @param filter
 	 *            the filter to apply when searching
 	 * @param search
 	 *            whether the component is used in a search screen
-	 * @param sortOrder
+	 * @param sortOrders
 	 *            the sort order
 	 * @param joins
 	 *            the joins to use when fetching data when filling the popop dialog
@@ -346,6 +344,10 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 		if (label != null) {
 			label.setComponentError(componentError);
 		}
+	}
+
+	public void addFetchJoinInformation(FetchJoinInformation[] fetchJoinInformation) {
+		joins = (FetchJoinInformation[]) ArrayUtils.addAll(joins, fetchJoinInformation);
 	}
 
 }
