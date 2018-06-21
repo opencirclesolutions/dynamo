@@ -143,68 +143,35 @@ public abstract class AbstractEntityTranslated<ID, T extends Translation>
 
 	@AssertTrue(message = "{ocs.not.all.translations.provided}")
 	protected boolean isValidRequiredTranslations() {
-		boolean result = false;
-		Collection<String> locales = getRequiredLocales();
-		if (locales == null) {
-			result = true;
-		} else {
-			// Initialize counts
-			String[] la = locales.toArray(new String[] {});
-			HashMap<String, Integer> countTranslations = new HashMap<>();
-			// Count the nb of translations for each field
-			for (T t : getTranslations()) {
-				for (int i = 0; i < la.length; i++) {
-					if (la[i].equalsIgnoreCase(t.getLocale().getCode())) {
-						if (!countTranslations.containsKey(t.getField())) {
-							countTranslations.put(t.getField(), new Integer(1));
-						} else {
-							Integer cnt = countTranslations.get(t.getField());
-							countTranslations.put(t.getField(), ++cnt);
-						}
-						break;
-					}
-				}
-			}
-			// When not all fields have been found then not valid
-			List<String> tf = findTranslatedFields();
-			if (!countTranslations.keySet().isEmpty() && countTranslations.keySet().size() == tf.size()) {
-				result = true;
-				// When not every field has the required translations then not valid
-				for (String fn : countTranslations.keySet()) {
-					if (la.length != countTranslations.get(fn)) {
-						// Not valid
-						result = false;
-						break;
-					}
-				}
-			}
+		final Collection<Locale> requiredLocales = getRequiredLocales();
+		final Collection<String> requiredTranslatedFields = getRequiredTranslatedFields();
+		if (requiredLocales == null || requiredTranslatedFields == null) {
+			return true;
 		}
-		return result;
+		for (Locale requiredLocale: requiredLocales) {
+			for (String requiredTranslatedField : requiredTranslatedFields) {
+				if (getTranslations(requiredTranslatedField, requiredLocale) == null) {
+					return false;
+				}
+			}
+
+		}
+		return true;
 	}
 
 	/**
 	 * 
 	 * @return the required locales
 	 */
-	protected Collection<String> getRequiredLocales() {
-		return null;
+	protected Collection<Locale> getRequiredLocales() {
+		return new HashSet<>();
 	}
 
 	/**
 	 * 
-	 * @return ??
+	 * @return the translated fields that are required
 	 */
-	protected List<String> findTranslatedFields() {
-		Method[] methods = this.getClass().getDeclaredMethods();
-		ArrayList<String> translatedFields = new ArrayList<>();
-		for (Method m : methods) {
-			if (m.getName().startsWith("get") && Collection.class.isAssignableFrom(m.getReturnType())) {
-				Class<?> ta = ClassUtils.getResolvedType(m, 0);
-				if (ta != null && Translation.class.isAssignableFrom(ta)) {
-					translatedFields.add(m.getName().substring(3).toUpperCase());
-				}
-			}
-		}
-		return translatedFields;
+	protected Collection<String> getRequiredTranslatedFields() {
+		return new HashSet<>();
 	}
 }

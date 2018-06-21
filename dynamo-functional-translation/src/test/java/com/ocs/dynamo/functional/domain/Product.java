@@ -47,12 +47,12 @@ public class Product extends AbstractEntityTranslated<Integer, ProductTranslatio
 	private BigDecimal price;
 
 	@Override
-	protected Collection<String> getRequiredLocales() {
-		return Arrays.asList(new String[] { "NL", "EN" });
+	protected Collection<Locale> getRequiredLocales() {
+		return Arrays.asList(new Locale[] { new Locale("NL", "NL"), new Locale("EN", "EN") });
 	}
 
 	@Override
-	protected List<String> findTranslatedFields() {
+	protected List<String> getRequiredTranslatedFields() {
 		ArrayList<String> enums = new ArrayList<>();
 		for (TranslatedFields f : TranslatedFields.values()) {
 			enums.add(f.name());
