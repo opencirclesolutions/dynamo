@@ -43,7 +43,7 @@ public class TranslationTable<ID, E extends AbstractEntityTranslated<ID, Transla
 	@SuppressWarnings("unchecked")
 	private BaseService<Integer, Translation<E>> translationService = (BaseService<Integer, Translation<E>>) ServiceLocatorFactory
 			.getServiceLocator()
-			.getServiceForEntity(Translation.class);;
+			.getServiceForEntity(Translation.class);
 
 	public TranslationTable(E entity, String fieldName,
 			Collection<Translation<E>> items,
@@ -75,7 +75,10 @@ public class TranslationTable<ID, E extends AbstractEntityTranslated<ID, Transla
 
 	@Override
 	protected void removeEntity(Translation<E> toRemove) {
-		translationService.delete(toRemove);
+		// No need to remove the entity from the database if it has not been saved yet (no id)
+		if(toRemove.getId() != null){
+			translationService.delete(toRemove);
+		}
 		entity.removeTranslation(toRemove);
 	}
 
