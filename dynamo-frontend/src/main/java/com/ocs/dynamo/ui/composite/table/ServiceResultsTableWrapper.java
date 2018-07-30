@@ -96,7 +96,7 @@ public class ServiceResultsTableWrapper<ID extends Serializable, T extends Abstr
 
 	@Override
 	@SuppressWarnings("unchecked")
-	protected void initSortingAndFiltering() {
+	public void initSortingAndFiltering() {
 		// set the filter (using the getQueryView() to prevent a useless query)
 		((ServiceContainer<ID, T>) getContainer()).getQueryView().addFilter(filter);
 		super.initSortingAndFiltering();

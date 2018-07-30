@@ -101,7 +101,7 @@ public class ServiceResultsTreeTableWrapper<ID extends Serializable, T extends A
 	}
 
 	@Override
-	protected void initSortingAndFiltering() {
+	public void initSortingAndFiltering() {
 		if (!getContainer().getHierarchy().isEmpty()) {
 			// get the definition on the lowest level
 			HierarchicalDefinition def = getContainer().getHierarchy().get(getContainer().getHierarchy().size() - 1);

@@ -240,7 +240,7 @@ public abstract class BaseTableWrapper<ID extends Serializable, T extends Abstra
     /**
      * Initializes the sorting and filtering for the table
      */
-    protected void initSortingAndFiltering() {
+	public void initSortingAndFiltering() {
         if (getSortOrders() != null && !getSortOrders().isEmpty()) {
             table.sort(getSortProperties(), getSortDirections());
         } else if (getEntityModel().getSortOrder() != null && !getEntityModel().getSortOrder().keySet().isEmpty()) {
