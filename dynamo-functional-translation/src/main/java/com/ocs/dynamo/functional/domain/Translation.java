@@ -13,8 +13,22 @@
  */
 package com.ocs.dynamo.functional.domain;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorColumn;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+
+import org.hibernate.annotations.DiscriminatorOptions;
 
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.EditableType;
@@ -22,7 +36,6 @@ import com.ocs.dynamo.domain.model.VisibilityType;
 import com.ocs.dynamo.domain.model.annotation.Attribute;
 import com.ocs.dynamo.domain.model.annotation.Model;
 import com.ocs.dynamo.utils.StringUtils;
-import org.hibernate.annotations.DiscriminatorOptions;
 
 /**
  * @author Patrick Deenen
@@ -137,4 +150,13 @@ public abstract class Translation<E> extends AbstractEntity<Integer> {
 		return this.id.equals(other.id);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return getTranslation();
+	}
 }
