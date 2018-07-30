@@ -13,8 +13,14 @@
  */
 package com.ocs.dynamo.ui.utils;
 
+import java.util.ArrayList;
+
 import com.ocs.dynamo.dao.SortOrder.Direction;
+import com.ocs.dynamo.domain.model.AttributeModel;
+import com.ocs.dynamo.domain.model.EntityModel;
+import com.vaadin.data.Container;
 import com.vaadin.data.sort.SortOrder;
+import com.vaadin.data.util.AbstractBeanContainer;
 import com.vaadin.shared.data.sort.SortDirection;
 
 public final class SortUtil {
@@ -23,22 +29,82 @@ public final class SortUtil {
     }
 
     /**
-     * Translates one or more Vaadin sort orders to OCS sort orders
-     * 
-     * @param originalOrders
-     * @return
-     */
+	 * Translates one or more non transient Vaadin sort orders to OCS sort orders
+	 * 
+	 * @param originalOrders
+	 * @return non transient sortorders which can be applied to the service
+	 */
     public static com.ocs.dynamo.dao.SortOrder[] translate(SortOrder... originalOrders) {
+		return translateAndFilterOnTransient(false, null, originalOrders);
+	}
+
+	/**
+	 * Translates one or more (non) transient Vaadin sort orders to OCS sort orders
+	 * 
+	 * @param isTransient
+	 * @param model
+	 * @param originalOrders
+	 * @return the sort orders for which transient is equal to the given isTransient value
+	 */
+	public static <T> com.ocs.dynamo.dao.SortOrder[] translateAndFilterOnTransient(Boolean isTransient,
+			EntityModel<T> model, SortOrder... originalOrders) {
         if (originalOrders != null && originalOrders.length > 0) {
             final com.ocs.dynamo.dao.SortOrder[] orders = new com.ocs.dynamo.dao.SortOrder[originalOrders.length];
-            for (int i = 0; i < originalOrders.length; i++) {
-                orders[i] = new com.ocs.dynamo.dao.SortOrder(
-                        SortDirection.ASCENDING.equals(originalOrders[i].getDirection()) ? Direction.ASC
-                                : Direction.DESC,
-                        originalOrders[i].getPropertyId().toString());
-            }
+			AttributeModel am = null;
+			for (int i = 0; i < originalOrders.length; i++) {
+				if (model != null) {
+					am = model.getAttributeModel(originalOrders[i].getPropertyId().toString());
+				}
+				if (am == null || isTransient == null || am.isTransient() == isTransient) {
+					orders[i] = new com.ocs.dynamo.dao.SortOrder(
+							SortDirection.ASCENDING.equals(originalOrders[i].getDirection()) ? Direction.ASC
+									: Direction.DESC,
+							originalOrders[i].getPropertyId().toString());
+				}
+			}
             return orders;
         }
         return null;
     }
+
+	/**
+	 * Adds sort order to container optionally with only the (non)transient properties when isTransient is supplied
+	 * 
+	 * @param container
+	 * @param isTransient
+	 * @param model
+	 * @param originalOrders
+	 */
+	public static <T> void applyContainerSortOrder(Container.Sortable container, Boolean isTransient,
+			EntityModel<T> model,
+			SortOrder... originalOrders) {
+		if (originalOrders != null && originalOrders.length > 0) {
+			ArrayList<SortOrder> fo = new ArrayList<>();
+			AttributeModel am = null;
+			for (int i = 0; i < originalOrders.length; i++) {
+				if (model != null) {
+					am = model.getAttributeModel(originalOrders[i].getPropertyId().toString());
+				}
+				if (am == null || isTransient == null || am.isTransient() == isTransient) {
+					fo.add(originalOrders[i]);
+				}
+			}
+			if (!fo.isEmpty()) {
+				Object[] propertyIds = new Object[fo.size()];
+				boolean[] asc = new boolean[fo.size()];
+				int i = 0;
+				for (SortOrder so : fo) {
+					propertyIds[i] = so.getPropertyId();
+					asc[i] = SortDirection.ASCENDING.equals(so.getDirection());
+					if (container instanceof AbstractBeanContainer
+							&& i < propertyIds.length
+							&& !container.getContainerPropertyIds().contains(propertyIds[i])) {
+						((AbstractBeanContainer) container).addNestedContainerProperty(propertyIds[i].toString());
+					}
+					i++;
+				}
+				container.sort(propertyIds, asc);
+			}
+		}
+	}
 }

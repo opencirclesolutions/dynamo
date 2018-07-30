@@ -28,8 +28,10 @@ import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.Refreshable;
 import com.ocs.dynamo.ui.utils.SortUtil;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
+import com.vaadin.data.Property;
 import com.vaadin.data.sort.SortOrder;
 import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.data.util.converter.ConverterUtil;
 import com.vaadin.data.util.filter.And;
 import com.vaadin.shared.ui.combobox.FilteringMode;
 import com.vaadin.ui.ComboBox;
@@ -81,6 +83,8 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 
 	private ServiceLocator serviceLocator = ServiceLocatorFactory.getServiceLocator();
 
+	private EntityModel<T> targetEntityModel;
+
 	/**
 	 * Constructor (for a filtering combo box)
 	 *
@@ -123,6 +127,7 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 		this.sortOrder = sortOrder;
 		this.attributeModel = attributeModel;
 		this.filter = filter;
+		this.targetEntityModel = targetEntityModel;
 		if (attributeModel != null) {
 			this.setCaption(attributeModel.getDisplayName());
 		}
@@ -137,15 +142,20 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 		if (SelectMode.ALL.equals(mode)) {
 			// add all items (but sorted)
 			if (sortOrder != null) {
-				container.addAll(service.findAll(SortUtil.translate(sortOrder)));
+				container
+						.addAll(service
+								.findAll(SortUtil.translateAndFilterOnTransient(false, targetEntityModel, sortOrder)));
 			}
 		} else if (SelectMode.FILTERED.equals(mode)) {
 			// add a filtered selection of items
-			items = service.find(new FilterConverter(null).convert(filter), SortUtil.translate(sortOrder));
+			items = service.find(new FilterConverter(null).convert(filter),
+					SortUtil.translateAndFilterOnTransient(false, targetEntityModel, sortOrder));
 			container.addAll(items);
 		} else if (SelectMode.FIXED.equals(mode)) {
 			container.addAll(items);
 		}
+		// Apply sortorder on container when transient attributes are applied
+		SortUtil.applyContainerSortOrder(container, true, targetEntityModel, sortOrder);
 
 		setItemCaptionMode(ItemCaptionMode.PROPERTY);
 		setItemCaptionPropertyId(targetEntityModel.getDisplayProperty());
@@ -251,13 +261,18 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 		if (SelectMode.ALL.equals(selectMode)) {
 			// add all items (but sorted)
 			getContainerDataSource().removeAllItems();
-			((BeanItemContainer<T>) getContainerDataSource()).addAll(service.findAll(SortUtil.translate(sortOrder)));
+			((BeanItemContainer<T>) getContainerDataSource()).addAll(
+					service.findAll(SortUtil.translateAndFilterOnTransient(false, targetEntityModel, sortOrder)));
 		} else if (SelectMode.FILTERED.equals(selectMode)) {
 			// add a filtered selection of items
 			getContainerDataSource().removeAllItems();
-			List<T> list = service.find(new FilterConverter(null).convert(filter), SortUtil.translate(sortOrder));
+			List<T> list = service.find(new FilterConverter(null).convert(filter),
+					SortUtil.translateAndFilterOnTransient(false, targetEntityModel, sortOrder));
 			((BeanItemContainer<T>) getContainerDataSource()).addAll(list);
 		}
+		// Apply sortorder on container when transiant attributes are applied
+		SortUtil.applyContainerSortOrder((BeanItemContainer<T>) getContainerDataSource(), true, targetEntityModel,
+				sortOrder);
 	}
 
 	public void refresh(Filter filter) {
@@ -286,4 +301,30 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
     public void setFilter(Filter filter) {
         this.filter = filter;
     }
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.vaadin.ui.AbstractSelect#getItemCaption(java.lang.Object)
+	 */
+	@Override
+	public String getItemCaption(Object itemId) {
+		if (getItemCaptionMode() == ItemCaptionMode.PROPERTY) {
+			final Property<?> p = getContainerProperty(itemId, getItemCaptionPropertyId());
+			if (p != null) {
+				Object value = p.getValue();
+				if (value != null) {
+					try {
+						value = ConverterUtil.convertFromModel(value, Object.class, getConverter(),
+								getLocale());
+					} catch (Exception e) {
+					}
+					return value.toString();
+				}
+			}
+			return null;
+		}
+		return super.getItemCaption(itemId);
+	}
+
 }
