@@ -444,11 +444,13 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
     @Override
     public void onFilterChange(FilterChangeEvent event) {
         AttributeModel am = getEntityModel().getAttributeModel(event.getPropertyId());
-		if (am == null || !am.isTransient()) {if (event.getOldFilter() != null) {
-            currentFilters.remove(event.getOldFilter());
-        }
-        if (event.getNewFilter() != null) {
-            currentFilters.add(event.getNewFilter());}
+		if (am == null || !am.isTransient()) {
+			if (event.getOldFilter() != null) {
+				currentFilters.remove(event.getOldFilter());
+			}
+			if (event.getNewFilter() != null) {
+				currentFilters.add(event.getNewFilter());
+			}
         }
         searchButton.setEnabled(isSearchAllowed());
     }
