@@ -76,15 +76,17 @@ public class PivotByRowIndexItem implements Item {
 			if (ids.length > 1) {
 				cId = ids[1];
 			}
-			Object itemId = sourceContainer.getIdByIndex(row + i);
-			if (cId == null) {
-				// When columnValue is a number and columnPropertyId is omitted return
-				Object r = VaadinUtils.getEntityFromItem(sourceContainer.getItem(itemId));
-				if (r != null) {
-					result = new ObjectProperty(r);
+			if ((row + i) < sourceContainer.size()) {
+				Object itemId = sourceContainer.getIdByIndex(row + i);
+				if (cId == null) {
+					// When columnValue is a number and columnPropertyId is omitted return
+					Object r = VaadinUtils.getEntityFromItem(sourceContainer.getItem(itemId));
+					if (r != null) {
+						result = new ObjectProperty(r);
+					}
+				} else {
+					result = sourceContainer.getContainerProperty(itemId, cId);
 				}
-			} else {
-				result = sourceContainer.getContainerProperty(itemId, cId);
 			}
 		}
 		return result;
