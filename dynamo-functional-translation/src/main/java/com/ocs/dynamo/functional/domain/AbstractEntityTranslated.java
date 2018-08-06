@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.persistence.*;
 import javax.validation.constraints.AssertTrue;
@@ -155,6 +156,22 @@ public abstract class AbstractEntityTranslated<ID, T extends Translation>
 				}
 			}
 
+		}
+		return true;
+	}
+
+	@AssertTrue(message = "{ocs.multiple.translations.provided}")
+	protected boolean isTranslationsDoesNotContainDuplicates() {
+		final Collection<String> requiredTranslatedFields = getRequiredTranslatedFields();
+		if (requiredTranslatedFields == null) {
+			return true;
+		}
+		for (String requiredTranslatedField : requiredTranslatedFields) {
+			Set<T> translations = getTranslations(requiredTranslatedField);
+			Set<Locale> uniqueLocales = translations.stream().map(translation -> translation.getLocale()).collect(Collectors.toSet());
+			if (translations.size() != uniqueLocales.size()) {
+				return false;
+			}
 		}
 		return true;
 	}
