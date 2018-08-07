@@ -62,6 +62,10 @@ public abstract class Translation<E> extends AbstractEntity<Integer> {
 	@Attribute(visible = VisibilityType.HIDE)
 	private String type;
 
+	@Column(insertable = false, updatable = false)
+	@Attribute(visible = VisibilityType.HIDE)
+	private Integer key;
+
 	@NotNull
 	@Attribute(visible = VisibilityType.HIDE)
 	private String field;
@@ -89,6 +93,13 @@ public abstract class Translation<E> extends AbstractEntity<Integer> {
 
 	public String getType() {
 		return this.type;
+	}
+
+	/**
+	 * @return the key
+	 */
+	public Integer getKey() {
+		return key;
 	}
 
 	public String getField() {

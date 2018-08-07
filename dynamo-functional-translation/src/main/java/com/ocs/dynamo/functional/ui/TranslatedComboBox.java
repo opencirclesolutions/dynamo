@@ -1,0 +1,163 @@
+/*
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+package com.ocs.dynamo.functional.ui;
+
+import java.io.Serializable;
+import java.util.List;
+
+import com.ocs.dynamo.domain.AbstractEntity;
+import com.ocs.dynamo.domain.model.AttributeModel;
+import com.ocs.dynamo.domain.model.EntityModel;
+import com.ocs.dynamo.filter.FilterConverter;
+import com.ocs.dynamo.functional.domain.Translation;
+import com.ocs.dynamo.functional.domain.TranslationService;
+import com.ocs.dynamo.service.BaseService;
+import com.ocs.dynamo.service.ServiceLocatorFactory;
+import com.ocs.dynamo.ui.component.CustomEntityField;
+import com.ocs.dynamo.ui.utils.VaadinUtils;
+import com.vaadin.data.Container.Filter;
+import com.vaadin.data.Item;
+import com.vaadin.data.util.filter.And;
+import com.vaadin.server.ErrorMessage;
+import com.vaadin.shared.ui.combobox.FilteringMode;
+import com.vaadin.ui.AbstractSelect.ItemCaptionMode;
+import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.Component;
+
+/**
+ * @author patrickdeenen
+ *
+ */
+public class TranslatedComboBox<ID extends Serializable, T extends AbstractEntity<ID>>
+		extends CustomEntityField<ID, T, T> {
+
+	private static final long serialVersionUID = 3044650211099305631L;
+	private Filter originalFilter;
+	private Filter additionalFilter;
+	private ComboBox comboBox;
+	
+	public TranslatedComboBox(BaseService<ID, T> service, EntityModel<T> entityModel, AttributeModel attributeModel,
+			Filter filter) {
+		super(service, entityModel, attributeModel, filter);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	protected Component initContent() {
+		comboBox = new ComboBox();
+		if (getAttributeModel() != null) {
+			comboBox.setCaption(getAttributeModel().getDisplayName());
+		}
+		comboBox.setRequiredError(getMessageService().getMessage("ocs.may.not.be.null", VaadinUtils.getLocale()));
+		comboBox.setFilteringMode(FilteringMode.CONTAINS);
+		comboBox.addContainerProperty("key", Integer.class, -1);
+		comboBox.addContainerProperty("translation", String.class, "");
+		comboBox.setItemCaptionMode(ItemCaptionMode.PROPERTY);
+		comboBox.setItemCaptionPropertyId("translation");
+
+		// Select value
+		comboBox.addValueChangeListener(event -> {
+			Item item = comboBox.getItem(event.getProperty().getValue());
+			if (item != null) {
+				T entity = getService().fetchById((ID) item.getItemProperty("key").getValue());
+				setValue(entity);
+			} else {
+				setValue(null);
+			}
+		});
+
+		refresh();
+		return comboBox;
+	}
+
+	@Override
+	public Class<? extends T> getType() {
+		return getEntityModel().getEntityClass();
+	}
+	
+	/**
+	 * @return the comboBox
+	 */
+	public ComboBox getComboBox() {
+		return comboBox;
+	}
+
+	@Override
+	public void clearAdditionalFilter() {
+		this.additionalFilter = null;
+		setFilter( originalFilter);
+		refresh();
+	}
+
+	@Override
+	public Filter getAdditionalFilter() {
+		return additionalFilter;
+	}
+
+	@Override
+	public void setAdditionalFilter(Filter additionalFilter) {
+		setValue(null);
+		this.additionalFilter = additionalFilter;
+		setFilter( originalFilter == null ? additionalFilter : new And(originalFilter, additionalFilter));
+		refresh();
+	}
+
+	@SuppressWarnings("unchecked")
+	public void refresh() {
+		comboBox.removeAllItems();
+		// Query ids
+		List<Integer> ids = (List<Integer>) getService().findIds(new FilterConverter(null).convert(getFilter()));
+		// Query translations
+		TranslationService ts = (TranslationService) ServiceLocatorFactory.getServiceLocator()
+				.getServiceForEntity(Translation.class);
+		List<Object[]> result = ts.fetchByIds(getEntityModel().getEntityClass(), getEntityModel().getDisplayProperty(),
+				VaadinUtils.getLocale().toString(), ids);
+		// Fill combo with translations
+		for (Object[] row : result) {
+			Item newItem = comboBox.getItem(comboBox.addItem());
+			newItem.getItemProperty("key").setValue(row[0]);
+			newItem.getItemProperty("translation").setValue(row[1]);
+		}
+	}
+
+	@Override
+	public void refresh(Filter filter) {
+		this.originalFilter = filter;
+		setFilter( filter);
+		refresh();
+	}
+
+	@Override
+	protected void setInternalValue(T newValue) {
+		super.setInternalValue(newValue);
+		if (comboBox != null) {
+			comboBox.setValue(newValue);
+		}
+	}
+
+	@Override
+	public void setValue(T newFieldValue) {
+		super.setValue(newFieldValue);
+		if (comboBox != null) {
+			comboBox.setValue(newFieldValue);
+		}
+	}
+
+	@Override
+	public void setComponentError(ErrorMessage componentError) {
+		if (comboBox != null) {
+			comboBox.setComponentError(componentError);
+		}
+	}
+}
