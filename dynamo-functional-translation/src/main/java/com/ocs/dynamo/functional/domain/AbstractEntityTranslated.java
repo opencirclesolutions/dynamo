@@ -180,7 +180,7 @@ public abstract class AbstractEntityTranslated<ID, T extends Translation>
 	 * 
 	 * @return the required locales
 	 */
-	protected Collection<Locale> getRequiredLocales() {
+	public Collection<Locale> getRequiredLocales() {
 		return new HashSet<>();
 	}
 

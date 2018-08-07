@@ -14,17 +14,21 @@
 package com.ocs.dynamo.functional.ui;
 
 import java.util.Collection;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.functional.domain.AbstractEntityTranslated;
+import com.ocs.dynamo.functional.domain.Locale;
 import com.ocs.dynamo.functional.domain.Translation;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.CanAssignEntity;
 import com.ocs.dynamo.ui.composite.form.DetailsEditTable;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
-import com.vaadin.ui.Component;;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.Field;
 
 /**
  * @author Patrick.Deenen@opencircle.solutions
@@ -40,6 +44,8 @@ public class TranslationTable<ID, E extends AbstractEntityTranslated<ID, Transla
 
 	private E entity;
 	private String fieldName;
+	private boolean localesRestricted;
+
 	@SuppressWarnings("unchecked")
 	private BaseService<Integer, Translation<E>> translationService = (BaseService<Integer, Translation<E>>) ServiceLocatorFactory
 			.getServiceLocator()
@@ -47,10 +53,13 @@ public class TranslationTable<ID, E extends AbstractEntityTranslated<ID, Transla
 
 	public TranslationTable(E entity, String fieldName,
 			Collection<Translation<E>> items,
-			EntityModel<Translation<E>> entityModel, boolean viewMode) {
-		super(items, entityModel, viewMode, new FormOptions().setShowRemoveButton(true));
+			EntityModel<Translation<E>> entityModel, boolean viewMode, boolean localesRestricted) {
+
+		super(items, entityModel, viewMode, new FormOptions().setHideAddButton(localesRestricted).setShowRemoveButton(!localesRestricted));
+
 		this.entity = entity;
 		this.fieldName = fieldName;
+        this.localesRestricted = localesRestricted;
 	}
 
 	@Override
@@ -62,7 +71,7 @@ public class TranslationTable<ID, E extends AbstractEntityTranslated<ID, Transla
 
 	@Override
 	protected Translation<E> createEntity() {
-		Translation<E> translation = null;
+		Translation<E> translation;
 		try {
 			translation = getEntityModel().getEntityClass().newInstance();
 			translation.setField(fieldName);
@@ -83,8 +92,26 @@ public class TranslationTable<ID, E extends AbstractEntityTranslated<ID, Transla
 	}
 
 	@Override
-	public void assignEntity(E translation) {
-		entity = translation;
+	public void assignEntity(E entity) {
+		if (localesRestricted) {
+			Set<Locale> existingLocales = entity.getTranslations(fieldName).stream().map(
+					eTranslation -> eTranslation.getLocale()).collect(Collectors.toSet());
+			for (Locale locale : entity.getRequiredLocales()) {
+				if (!existingLocales.contains(locale)) {
+					Translation<E> newTranslation = createEntity();
+					newTranslation.setLocale(locale);
+				}
+			}
+		}
+
+		this.entity = entity;
+	}
+
+	@Override
+	public void postProcessTableField(String propertyId, Field<?> field) {
+		if (propertyId.equals("locale") && localesRestricted) {
+			field.setEnabled(false);
+		}
 	}
 
 }

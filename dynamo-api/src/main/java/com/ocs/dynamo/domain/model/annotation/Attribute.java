@@ -94,6 +94,9 @@ public @interface Attribute {
     /** @return whether the component is meant for uploading/displaying images */
     boolean image() default false;
 
+    /** @return whether the component is restricted to only the required locales */
+    boolean localesRestricted() default false;
+
     /** @return whether this field is the main attribute */
     boolean main() default false;
 

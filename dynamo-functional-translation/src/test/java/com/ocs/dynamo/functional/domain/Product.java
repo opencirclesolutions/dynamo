@@ -47,7 +47,7 @@ public class Product extends AbstractEntityTranslated<Integer, ProductTranslatio
 	private BigDecimal price;
 
 	@Override
-	protected Collection<Locale> getRequiredLocales() {
+	public Collection<Locale> getRequiredLocales() {
 		return Arrays.asList(new Locale[] { new Locale("NL", "NL"), new Locale("EN", "EN") });
 	}
 
