@@ -13,22 +13,15 @@
  */
 package com.ocs.dynamo.functional.domain;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import javax.persistence.*;
 import javax.validation.constraints.AssertTrue;
-
 import com.ocs.dynamo.domain.AbstractAuditableEntity;
 import com.ocs.dynamo.domain.model.VisibilityType;
 import com.ocs.dynamo.domain.model.annotation.Attribute;
-import com.ocs.dynamo.utils.ClassUtils;
 import org.hibernate.annotations.DiscriminatorOptions;
 
 /**
@@ -191,4 +184,13 @@ public abstract class AbstractEntityTranslated<ID, T extends Translation>
 	protected Collection<String> getRequiredTranslatedFields() {
 		return new HashSet<>();
 	}
+
+	/**
+	 *
+	 * @return the translated fields that should be rendered as textarea instead of textfield
+	 */
+	public Collection<String> getTextAreaFields() {
+		return new HashSet<>();
+	}
+
 }

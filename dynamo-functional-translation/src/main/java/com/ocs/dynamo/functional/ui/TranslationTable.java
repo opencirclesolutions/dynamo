@@ -16,7 +16,7 @@ package com.ocs.dynamo.functional.ui;
 import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Collectors;
-
+import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.functional.domain.AbstractEntityTranslated;
@@ -29,6 +29,7 @@ import com.ocs.dynamo.ui.composite.form.DetailsEditTable;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Field;
+import com.vaadin.ui.TextArea;
 
 /**
  * @author Patrick.Deenen@opencircle.solutions
@@ -103,7 +104,6 @@ public class TranslationTable<ID, E extends AbstractEntityTranslated<ID, Transla
 				}
 			}
 		}
-
 		this.entity = entity;
 	}
 
@@ -114,4 +114,12 @@ public class TranslationTable<ID, E extends AbstractEntityTranslated<ID, Transla
 		}
 	}
 
+	@Override
+	protected Field<?> constructCustomField(EntityModel<Translation<E>> entityModel, AttributeModel attributeModel, boolean viewMode) {
+		final Collection<String> textAreaFields = entity.getTextAreaFields();
+		if (textAreaFields.contains(fieldName) && attributeModel.getName().equals("translation")) {
+			return new TextArea();
+		}
+		return null;
+	}
 }
