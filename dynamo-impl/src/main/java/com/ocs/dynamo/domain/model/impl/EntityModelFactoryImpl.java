@@ -1040,6 +1040,10 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
                 model.setImage(true);
             }
 
+            if (attribute.localesRestricted()) {
+                model.setLocalesRestricted(true);
+            }
+
             if (attribute.week()) {
                 checkWeekSettingAllowed(model);
                 model.setWeek(true);
@@ -1339,6 +1343,11 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
         msg = getAttributeMessage(entityModel, model, EntityModel.IMAGE);
         if (!StringUtils.isEmpty(msg)) {
             model.setImage(Boolean.valueOf(msg));
+        }
+
+        msg = getAttributeMessage(entityModel, model, EntityModel.LOCALES_RESTRICTED);
+        if (!StringUtils.isEmpty(msg)) {
+            model.setLocalesRestricted(Boolean.valueOf(msg));
         }
 
         msg = getAttributeMessage(entityModel, model, EntityModel.WEEK);

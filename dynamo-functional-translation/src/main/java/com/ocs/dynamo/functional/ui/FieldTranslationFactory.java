@@ -143,8 +143,8 @@ public class FieldTranslationFactory<ID extends Serializable, T extends Abstract
 			final EntityModel<Translation<T>> nem = (EntityModel<Translation<T>>) ServiceLocatorFactory
 					.getServiceLocator().getEntityModelFactory()
 					.getModel(am.getNestedEntityModel().getEntityClass());
-			TranslationTable<ID, T> tt = new TranslationTable<>(context.getParentEntity(),
-					am.getName(), items, nem, context.getViewMode());
+			TranslationTable<ID, T> tt = new TranslationTable<>(context.getParentEntity(), am.getName(), items, nem,
+					context.getViewMode(), am.isLocalesRestricted());
 			tt.setRequired(am.isRequired());
 			tt.setCaption(am.getDisplayName());
 			return tt;

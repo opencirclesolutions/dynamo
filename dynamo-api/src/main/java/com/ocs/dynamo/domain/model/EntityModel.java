@@ -145,6 +145,11 @@ public interface EntityModel<T> {
 	String IMAGE = "image";
 
 	/**
+	 * Whether locales are restricted
+	 */
+	String LOCALES_RESTRICTED = "localesRestricted";
+
+	/**
 	 * Whether the attribute is the main attribute
 	 */
 	String MAIN = "main";
