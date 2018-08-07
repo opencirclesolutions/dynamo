@@ -32,6 +32,7 @@ import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Selection;
 import javax.persistence.metamodel.Attribute;
 
 import com.google.common.collect.Lists;
@@ -327,6 +328,7 @@ public final class JpaQueryBuilder {
 		return query;
 	}
 
+
 	/**
 	 * Create a query for fetching a single object
 	 * 
@@ -518,6 +520,62 @@ public final class JpaQueryBuilder {
 		}
 
 		throw new UnsupportedOperationException("Filter: " + filter.getClass().getName() + " not recognized");
+	}
+
+	/**
+	 * Creates a query that fetches properties instead of entities
+	 * 
+	 * @param filter
+	 *            the filter
+	 * @param entityManager
+	 *            the entity manager
+	 * @param entityClass
+	 *            the entity class
+	 * @param selectProperties
+	 *            the properties to use in the selection
+	 * @param sortOrders
+	 *            the sorting information
+	 * @param fetchJoins
+	 *            the desired fetch joins
+	 * @return
+	 */
+	@SuppressWarnings("rawtypes")
+	public static <ID, T> TypedQuery<Object[]> createSelectQuery(Filter filter, EntityManager entityManager,
+			Class<T> entityClass, String[] selectProperties, SortOrders sortOrders, FetchJoinInformation[] fetchJoins) {
+		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+		CriteriaQuery<Object[]> cq = builder.createQuery(Object[].class);
+		Root<T> root = cq.from(entityClass);
+
+		// Set select
+		if (selectProperties != null && selectProperties.length > 0) {
+			Selection<?>[] selections = new Selection<?>[selectProperties.length];
+			int i = 0;
+			for (String sp : selectProperties) {
+
+				// Support nested properties
+				String[] ppath = sp.split("\\.");
+				Path path = root;
+				for (String prop : ppath) {
+					path = path.get(prop);
+				}
+				selections[i] = path;
+				i++;
+			}
+			cq.select(builder.array(selections));
+		}
+
+		boolean distinct = addFetchJoinInformation(root, fetchJoins);
+		cq.distinct(distinct);
+
+		Map<String, Object> pars = createParameterMap();
+		Predicate p = createPredicate(filter, builder, root, pars);
+		if (p != null) {
+			cq.where(p);
+		}
+		cq = addSortInformation(builder, cq, root, sortOrders == null ? null : sortOrders.toArray());
+		TypedQuery<Object[]> query = entityManager.createQuery(cq);
+		setParameters(query, pars);
+		return query;
 	}
 
 	/**

@@ -88,27 +88,59 @@ public interface BaseDao<ID, T extends AbstractEntity<ID>> {
     List<T> fetch(Filter filter, Pageable pageable, FetchJoinInformation... joins);
 
     /**
-     * Fetches entities that match the provided filter
-     * 
-     * @param filter
-     *            the filter
-     * @param pageable
-     *            the page info
-     * @param joins
-     *            the desired relations to fetch
-     * @return
-     */
+	 * Fetches entities that match the provided filter
+	 * 
+	 * @param filter
+	 *            the filter
+	 * @param orders
+	 *            the sort info
+	 * @param joins
+	 *            the desired relations to fetch
+	 * @return
+	 */
     List<T> fetch(Filter filter, SortOrders orders, FetchJoinInformation... joins);
 
     /**
-     * Fetches an entity (and its relations) based on its ID
-     * 
-     * @param id
-     *            the ID of the entity
-     * @param joins
-     *            the desired relations to fetch
-     * @return
-     */
+	 * Fetches and sorts properties (NOT ENTITIES) that match the provided filter
+	 * 
+	 * @param filter
+	 *            the filter
+	 * @param selectProperties
+	 *            the properties to use in the selection
+	 * @param orders
+	 *            the sort info
+	 * @param joins
+	 *            the desired relations to fetch
+	 * @return
+	 */
+	List<Object[]> fetchSelect(Filter filter, String[] selectProperties, SortOrders orders,
+			FetchJoinInformation... joins);
+
+	/**
+	 * Fetches and sorts properties (NOT ENTITIES) that match the provided filter
+	 * 
+	 * @param filter
+	 *            the filter
+	 * @param selectProperties
+	 *            the properties to use in the selection
+	 * @param pageable
+	 *            object containing the paging data
+	 * @param joins
+	 *            the desired relations to fetch
+	 * @return
+	 */
+	List<Object[]> fetchSelect(Filter filter, String[] selectProperties, Pageable pageable,
+			FetchJoinInformation... joins);
+
+	/**
+	 * Fetches an entity (and its relations) based on its ID
+	 * 
+	 * @param id
+	 *            the ID of the entity
+	 * @param joins
+	 *            the desired relations to fetch
+	 * @return
+	 */
     T fetchById(ID id, FetchJoinInformation... joins);
 
     /**
