@@ -156,7 +156,8 @@ public final class FilterUtil {
      */
     @SafeVarargs
     public static Object extractFilterValue(Filter filter, String propertyId, Class<? extends Filter>... typesToFind) {
-        List<Class<? extends Filter>> types = typesToFind == null || (typesToFind.length == 1 && typesToFind[0] == null)
+		List<Class<? extends Filter>> types = typesToFind == null || typesToFind.length == 0
+				|| (typesToFind.length == 1 && typesToFind[0] == null)
                 ? null : Arrays.asList(typesToFind);
         if (filter instanceof AbstractJunctionFilter) {
             AbstractJunctionFilter junction = (AbstractJunctionFilter) filter;
