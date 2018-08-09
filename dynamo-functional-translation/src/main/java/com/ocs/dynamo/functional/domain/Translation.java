@@ -95,13 +95,6 @@ public abstract class Translation<E> extends AbstractEntity<Integer> {
 		return this.type;
 	}
 
-	/**
-	 * @return the key
-	 */
-	public Integer getKey() {
-		return key;
-	}
-
 	public String getField() {
 		return this.field;
 	}
