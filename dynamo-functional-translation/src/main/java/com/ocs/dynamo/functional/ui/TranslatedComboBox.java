@@ -16,7 +16,7 @@ package com.ocs.dynamo.functional.ui;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Locale;
-
+ 
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;

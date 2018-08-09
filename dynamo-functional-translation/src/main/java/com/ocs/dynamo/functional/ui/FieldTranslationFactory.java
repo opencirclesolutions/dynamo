@@ -16,16 +16,21 @@ package com.ocs.dynamo.functional.ui;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map;
 
+import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.FieldFactory;
 import com.ocs.dynamo.domain.model.impl.FieldFactoryContextImpl;
 import com.ocs.dynamo.functional.domain.AbstractEntityTranslated;
 import com.ocs.dynamo.functional.domain.Translation;
+import com.ocs.dynamo.service.BaseService;
+import com.ocs.dynamo.service.ServiceLocator;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
 import com.ocs.dynamo.utils.ClassUtils;
+import com.vaadin.data.Container.Filter;
 import com.vaadin.ui.Field;
 
 /**
@@ -48,6 +53,7 @@ public class FieldTranslationFactory<ID extends Serializable, T extends Abstract
 	private T entity;
 	private HashMap<String, Field<?>> fields = new HashMap<>();
 	private boolean viewMode;
+	private ServiceLocator serviceLocator = ServiceLocatorFactory.getServiceLocator();
 
 	/**
 	 * Default constructor
@@ -134,21 +140,57 @@ public class FieldTranslationFactory<ID extends Serializable, T extends Abstract
 	@Override
 	public Field<?> constructField(Context context) {
 		AttributeModel am = context.getAttributeModel();
-		if (am.isVisible() && am.getNestedEntityModel() != null
-				&& Translation.class
-						.isAssignableFrom(am.getNestedEntityModel().getEntityClass())
-				&& context.getParentEntity() != null) {
-			Collection<Translation<T>> items = (Collection<Translation<T>>) ClassUtils
-					.getFieldValue(context.getParentEntity(), am.getName());
-			final EntityModel<Translation<T>> nem = (EntityModel<Translation<T>>) ServiceLocatorFactory
-					.getServiceLocator().getEntityModelFactory()
-					.getModel(am.getNestedEntityModel().getEntityClass());
-			TranslationTable<ID, T> tt = new TranslationTable<>(context.getParentEntity(), am.getName(), items, nem,
-					context.getViewMode(), am.isLocalesRestricted());
-			tt.setRequired(am.isRequired());
-			tt.setCaption(am.getDisplayName());
-			return tt;
+		if (am.isVisible()) {
+
+			Map<String, Filter> fieldFilters = context.getFieldFilters();
+			Filter fieldFilter = fieldFilters == null ? null : fieldFilters.get(am.getPath());
+			if ((fieldFilter != null && AbstractEntityTranslated.class.isAssignableFrom(am.getType()))) {
+
+				// construct combobox
+				EntityModel<T> entityModel = (EntityModel<T>) resolveEntityModel(context.getFieldEntityModel(), am);
+				BaseService<ID, T> service = (BaseService<ID, T>) serviceLocator
+						.getServiceForEntity(entityModel.getEntityClass());
+				return new TranslatedComboBox<ID, T>(service, entityModel, am, fieldFilter);
+
+			} else if (am.getNestedEntityModel() != null
+					&& Translation.class.isAssignableFrom(am.getNestedEntityModel().getEntityClass())
+					&& context.getParentEntity() != null) {
+
+				// construct table
+				Collection<Translation<T>> items = (Collection<Translation<T>>) ClassUtils
+						.getFieldValue(context.getParentEntity(), am.getName());
+				final EntityModel<Translation<T>> nem = (EntityModel<Translation<T>>) serviceLocator
+						.getEntityModelFactory()
+						.getModel(am.getNestedEntityModel().getEntityClass());
+				TranslationTable<ID, T> tt = new TranslationTable<>(context.getParentEntity(), am.getName(), items, nem,
+						context.getViewMode(), am.isLocalesRestricted());
+				tt.setRequired(am.isRequired());
+				tt.setCaption(am.getDisplayName());
+				return tt;
+			}
 		}
 		return null;
+	}
+
+	/**
+	 * Resolves an entity model by falling back first to the nested attribute model and then to the default model for
+	 * the normalized type of the property
+	 *
+	 * @param entityModel
+	 *            the entity model
+	 * @param attributeModel
+	 *            the attribute model
+	 * @return
+	 */
+	private EntityModel<?> resolveEntityModel(EntityModel<?> entityModel, AttributeModel attributeModel) {
+		if (entityModel == null) {
+			if (attributeModel.getNestedEntityModel() != null) {
+				entityModel = attributeModel.getNestedEntityModel();
+			} else {
+				Class<?> type = attributeModel.getNormalizedType();
+				entityModel = serviceLocator.getEntityModelFactory().getModel(type.asSubclass(AbstractEntity.class));
+			}
+		}
+		return entityModel;
 	}
 }
