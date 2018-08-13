@@ -72,7 +72,7 @@ public abstract class AbstractEntityTranslated<ID, T extends Translation>
 				translation = translations.iterator().next();
 			} else {
 				for (T t : translations) {
-					if (locale.equalsIgnoreCase(t.getLocale().getCode())) {
+					if (t.getLocale() != null && locale.equalsIgnoreCase(t.getLocale().getCode())) {
 						translation = t;
 						break;
 					}
