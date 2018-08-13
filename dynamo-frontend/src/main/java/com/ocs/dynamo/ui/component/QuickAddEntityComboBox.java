@@ -162,7 +162,7 @@ public class QuickAddEntityComboBox<ID extends Serializable, T extends AbstractE
 	public void setAdditionalFilter(Filter additionalFilter) {
 		super.setAdditionalFilter(additionalFilter);
 		if (comboBox != null) {
-			comboBox.refresh(getFilter() == null ? additionalFilter : new And(getFilter(), additionalFilter));
+			comboBox.refresh(getFilter() == null ? new And(additionalFilter) : new And(getFilter(), additionalFilter));
 		}
 	}
 

@@ -147,7 +147,8 @@ public class FieldTranslationFactory<ID extends Serializable, T extends Abstract
 			if ((fieldFilter != null && AbstractEntityTranslated.class.isAssignableFrom(am.getType()))) {
 
 				// construct combobox
-				EntityModel<T> entityModel = (EntityModel<T>) resolveEntityModel(context.getFieldEntityModel(), am);
+				EntityModel<T> entityModel = (EntityModel<T>) resolveEntityModel(context.getFieldEntityModel(), am,
+						context.isSearch());
 				BaseService<ID, T> service = (BaseService<ID, T>) serviceLocator
 						.getServiceForEntity(entityModel.getEntityClass());
 				return new TranslatedComboBox<ID, T>(service, entityModel, am, fieldFilter);
@@ -180,11 +181,13 @@ public class FieldTranslationFactory<ID extends Serializable, T extends Abstract
 	 *            the entity model
 	 * @param attributeModel
 	 *            the attribute model
+	 * @param search
 	 * @return
 	 */
-	private EntityModel<?> resolveEntityModel(EntityModel<?> entityModel, AttributeModel attributeModel) {
+	private EntityModel<?> resolveEntityModel(EntityModel<?> entityModel, AttributeModel attributeModel,
+			Boolean search) {
 		if (entityModel == null) {
-			if (attributeModel.getNestedEntityModel() != null) {
+			if (!Boolean.TRUE.equals(search) && attributeModel.getNestedEntityModel() != null) {
 				entityModel = attributeModel.getNestedEntityModel();
 			} else {
 				Class<?> type = attributeModel.getNormalizedType();

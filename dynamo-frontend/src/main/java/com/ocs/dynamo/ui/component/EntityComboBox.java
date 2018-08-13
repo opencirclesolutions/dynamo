@@ -148,7 +148,7 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 			}
 		} else if (SelectMode.FILTERED.equals(mode)) {
 			// add a filtered selection of items
-			items = service.find(new FilterConverter(null).convert(filter),
+			items = service.find(new FilterConverter(targetEntityModel).convert(filter),
 					SortUtil.translateAndFilterOnTransient(false, targetEntityModel, sortOrder));
 			container.addAll(items);
 		} else if (SelectMode.FIXED.equals(mode)) {
@@ -266,7 +266,7 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 		} else if (SelectMode.FILTERED.equals(selectMode)) {
 			// add a filtered selection of items
 			getContainerDataSource().removeAllItems();
-			List<T> list = service.find(new FilterConverter(null).convert(filter),
+			List<T> list = service.find(new FilterConverter(targetEntityModel).convert(filter),
 					SortUtil.translateAndFilterOnTransient(false, targetEntityModel, sortOrder));
 			((BeanItemContainer<T>) getContainerDataSource()).addAll(list);
 		}
@@ -285,7 +285,7 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 	public void setAdditionalFilter(Filter additionalFilter) {
 		setValue(null);
 		this.additionalFilter = additionalFilter;
-		this.filter = originalFilter == null ? additionalFilter : new And(originalFilter, additionalFilter);
+		this.filter = originalFilter == null ? new And(additionalFilter) : new And(originalFilter, additionalFilter);
 		refresh();
 	}
 

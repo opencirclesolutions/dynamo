@@ -29,12 +29,20 @@ import java.util.TimeZone;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import com.ocs.dynamo.domain.model.*;
 import org.apache.commons.lang.StringUtils;
 
 import com.google.common.collect.Lists;
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.domain.AbstractEntity;
+import com.ocs.dynamo.domain.model.AttributeDateType;
+import com.ocs.dynamo.domain.model.AttributeModel;
+import com.ocs.dynamo.domain.model.AttributeSelectMode;
+import com.ocs.dynamo.domain.model.AttributeTextFieldMode;
+import com.ocs.dynamo.domain.model.AttributeType;
+import com.ocs.dynamo.domain.model.EditableType;
+import com.ocs.dynamo.domain.model.EntityModel;
+import com.ocs.dynamo.domain.model.FieldFactory;
+import com.ocs.dynamo.domain.model.NumberSelectMode;
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.MessageService;
@@ -215,7 +223,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory
 	@SuppressWarnings("unchecked")
 	public <ID extends Serializable, S extends AbstractEntity<ID>> AbstractField<?> constructComboBox(
 			EntityModel<?> entityModel, AttributeModel attributeModel, Filter filter, boolean search) {
-		entityModel = resolveEntityModel(entityModel, attributeModel);
+		entityModel = resolveEntityModel(entityModel, attributeModel, search);
 		BaseService<ID, S> service = (BaseService<ID, S>) serviceLocator
 				.getServiceForEntity(entityModel.getEntityClass());
 		SortOrder[] sos = constructSortOrder(entityModel);
@@ -239,7 +247,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory
 	public Field<?> constructField(AttributeModel attributeModel, Map<String, Filter> fieldFilters,
 								   EntityModel<?> fieldEntityModel) {
 		FieldFactoryContextImpl c = new FieldFactoryContextImpl().setAttributeModel(attributeModel)
-				.setFieldFilters(fieldFilters).setFieldEntityModel((EntityModel) fieldEntityModel);
+				.setFieldFilters(fieldFilters).setFieldEntityModel((EntityModel) fieldEntityModel).setSearch(search);
 		return constructField(c);
 	}
 
@@ -321,7 +329,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory
 	public <ID extends Serializable, S extends AbstractEntity<ID>> Field<?> constructCollectionSelect(
 			EntityModel<?> fieldEntityModel, AttributeModel attributeModel, Filter fieldFilter, boolean multipleSelect,
 			boolean search) {
-		EntityModel<?> em = resolveEntityModel(fieldEntityModel, attributeModel);
+		EntityModel<?> em = resolveEntityModel(fieldEntityModel, attributeModel, search);
 
 		BaseService<ID, S> service = (BaseService<ID, S>) serviceLocator.getServiceForEntity(em.getEntityClass());
 		SortOrder[] sos = constructSortOrder(em);
@@ -804,19 +812,20 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory
 	}
 
 	/**
-	 * Resolves an entity model by falling back first to the nested attribute
-	 * model and then to the default model for the normalized type of the
-	 * property
+	 * Resolves an entity model by falling back first to the nested attribute model and then to the default model for
+	 * the normalized type of the property
 	 *
 	 * @param entityModel
 	 *            the entity model
 	 * @param attributeModel
 	 *            the attribute model
+	 * @param search
 	 * @return
 	 */
-	private EntityModel<?> resolveEntityModel(EntityModel<?> entityModel, AttributeModel attributeModel) {
+	private EntityModel<?> resolveEntityModel(EntityModel<?> entityModel, AttributeModel attributeModel,
+			Boolean search) {
 		if (entityModel == null) {
-			if (attributeModel.getNestedEntityModel() != null) {
+			if (!Boolean.TRUE.equals(search) && attributeModel.getNestedEntityModel() != null) {
 				entityModel = attributeModel.getNestedEntityModel();
 			} else {
 				Class<?> type = attributeModel.getNormalizedType();

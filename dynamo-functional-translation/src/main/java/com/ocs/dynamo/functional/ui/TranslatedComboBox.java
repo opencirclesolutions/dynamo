@@ -16,7 +16,7 @@ package com.ocs.dynamo.functional.ui;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Locale;
- 
+
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
@@ -117,7 +117,7 @@ public class TranslatedComboBox<ID extends Serializable, T extends AbstractEntit
 	public void setAdditionalFilter(Filter additionalFilter) {
 		setValue(null);
 		this.additionalFilter = additionalFilter;
-		setFilter( originalFilter == null ? additionalFilter : new And(originalFilter, additionalFilter));
+		setFilter(originalFilter == null ? new And(additionalFilter) : new And(originalFilter, additionalFilter));
 		refresh();
 	}
 
@@ -126,7 +126,7 @@ public class TranslatedComboBox<ID extends Serializable, T extends AbstractEntit
 		comboBox.removeAllItems();
 		// Try to find locale in filter
 		String locale = VaadinUtils.getLocale().toString();
-		com.ocs.dynamo.filter.Filter cf = new FilterConverter(null).convert(getFilter());
+		com.ocs.dynamo.filter.Filter cf = new FilterConverter(getEntityModel()).convert(getFilter());
 		if (cf != null) {
 			// Try to extract locale filter
 			com.ocs.dynamo.filter.Filter localeFilter = FilterUtil.extractFilter(cf, TRANSLATION_PROPERTY);

@@ -41,7 +41,9 @@ public class FieldFactoryContextImpl implements Context {
 
 	private Object parentEntity;
 
-	private boolean viewMode;
+	private Boolean viewMode;
+
+	private Boolean search;
 
 	public FieldFactoryContextImpl() {
 	}
@@ -74,7 +76,7 @@ public class FieldFactoryContextImpl implements Context {
 	}
 
 	@Override
-	public boolean getViewMode() {
+	public Boolean getViewMode() {
 		return viewMode;
 	}
 
@@ -131,6 +133,23 @@ public class FieldFactoryContextImpl implements Context {
 	 */
 	public FieldFactoryContextImpl setViewMode(boolean viewMode) {
 		this.viewMode = viewMode;
+		return this;
+	}
+
+	/**
+	 * @return the search
+	 */
+	@Override
+	public Boolean isSearch() {
+		return search;
+	}
+
+	/**
+	 * @param search
+	 *            the search to set
+	 */
+	public FieldFactoryContextImpl setSearch(boolean search) {
+		this.search = search;
 		return this;
 	}
 

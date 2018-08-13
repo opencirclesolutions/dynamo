@@ -45,7 +45,9 @@ public interface FieldFactory {
 
 		<P> P getParentEntity();
 
-		boolean getViewMode();
+		Boolean getViewMode();
+
+		Boolean isSearch();
 
 	}
 
