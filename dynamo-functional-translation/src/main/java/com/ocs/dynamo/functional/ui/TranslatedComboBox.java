@@ -68,6 +68,7 @@ public class TranslatedComboBox<ID extends Serializable, T extends AbstractEntit
 		comboBox.addContainerProperty("translation", String.class, "");
 		comboBox.setItemCaptionMode(ItemCaptionMode.PROPERTY);
 		comboBox.setItemCaptionPropertyId("translation");
+		comboBox.setSizeFull();
 
 		// Select value
 		comboBox.addValueChangeListener(event -> {
