@@ -99,7 +99,9 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
 
 	/**
 	 * Constructs the quick search filter - override if you need a custom filter
-	 * when searching for the main attribute is not sufficient
+	 * when searching for the main attribute is not sufficient. Note that the quick
+	 * search filter is applied in addition to the always active default filter
+	 * returned by the "constructFilter" method
 	 * 
 	 * @param value
 	 *            the value to search for
@@ -117,7 +119,7 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
 	 * returns null it will construct a filter based on the main attribute
 	 */
 	@Override
-	protected TextField constructSearchField() {
+	protected final TextField constructSearchField() {
 		if (getFormOptions().isShowQuickSearchField()) {
 			TextField searchField = new TextField(message("ocs.search"));
 

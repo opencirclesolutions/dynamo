@@ -16,7 +16,6 @@ package com.ocs.dynamo.ui.menu;
 import javax.inject.Inject;
 
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -26,7 +25,6 @@ import com.vaadin.navigator.Navigator;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.MenuItem;
 
-@Ignore
 public class MenuServiceTest extends BaseIntegrationTest {
 
 	@Inject
@@ -67,8 +65,9 @@ public class MenuServiceTest extends BaseIntegrationTest {
 	}
 
 	/**
-	 * Test that an item is disabled if the user does not have the correct role (the "destination"
-	 * in the menu has to match a view name in a view annotated with @SpringView)
+	 * Test that an item is disabled if the user does not have the correct role (the
+	 * "destination" in the menu has to match a view name in a view annotated
+	 * with @SpringView)
 	 */
 	@Test
 	public void testDisableItem() {

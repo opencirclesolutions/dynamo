@@ -54,7 +54,7 @@ public abstract class Domain extends AbstractEntity<Integer> {
 	 * By default, we only use "name" so the code is hidden
 	 */
 	@Attribute(visible = VisibilityType.HIDE)
-	@Size(max = 3)
+	@Size(max = 5)
 	private String code;
 
 	@Size(max = 255)

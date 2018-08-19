@@ -63,6 +63,9 @@ public abstract class FixedSplitLayout<ID extends Serializable, T extends Abstra
         super(service, entityModel, formOptions, sortOrder);
     }
 
+    /**
+     * 
+     */
     @Override
     protected void afterReload(T t) {
         getTableWrapper().getTable().select(t);
@@ -83,7 +86,7 @@ public abstract class FixedSplitLayout<ID extends Serializable, T extends Abstra
     }
 
     @Override
-    protected BaseTableWrapper<ID, T> constructTableWrapper() {
+    protected final BaseTableWrapper<ID, T> constructTableWrapper() {
         FixedTableWrapper<ID, T> tw = new FixedTableWrapper<ID, T>(getService(), getEntityModel(), getItems(),
                 getSortOrders(), getFormOptions().isTableExportAllowed()) {
             @Override

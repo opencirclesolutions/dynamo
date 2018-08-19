@@ -7,7 +7,6 @@ import javax.inject.Inject;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.google.common.collect.Lists;
@@ -34,7 +33,6 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 
-@Ignore
 public class SimpleSearchLayoutTest extends BaseIntegrationTest {
 
 	@Inject

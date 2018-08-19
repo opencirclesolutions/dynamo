@@ -145,7 +145,9 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	}
 
 	/**
-	 * Callback method that is called after a tab has been selected
+	 * Callback method that is called after a tab has been selected in the tab
+	 * sheet that is used in a detail view when the attribute group mode has been
+	 * set to TABSHEET
 	 * 
 	 * @param tabIndex
 	 *            the zero-based index of the selected tab
@@ -347,7 +349,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 
 	/**
 	 * Adds additional buttons to the main button bar (that appears below the
-	 * results table)
+	 * results table in a search layout, split layout, or tabular edit layout)
 	 * 
 	 * @param buttonBar
 	 *            the button bar
@@ -357,7 +359,8 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	}
 
 	/**
-	 * Adds additional buttons to the button bar above/below the detail screen
+	 * Adds additional buttons to the button bar above/below the detail screen. 
+	 *
 	 * 
 	 * @param buttonBar
 	 *            the button bar
@@ -400,6 +403,13 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 		// overwrite in subclasses when needed
 	}
 
+	/**
+	 * Sets the joins to use when retrieving a single object for use in a detail
+	 * form. If not set then the application will use the same joins as for the
+	 * complete result table
+	 * 
+	 * @param detailJoins
+	 */
 	public void setDetailJoins(FetchJoinInformation[] detailJoins) {
 		this.detailJoins = detailJoins;
 	}
@@ -408,10 +418,23 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 		this.dividerProperty = dividerProperty;
 	}
 
+	/**
+	 * Sets the field filters to use. Field filters are used to limit the search
+	 * results when rendering lookup components for complex attributes (e.g. combo
+	 * boxes, lookup fields)
+	 * 
+	 * @param fieldFilters
+	 */
 	public void setFieldFilters(Map<String, Filter> fieldFilters) {
 		this.fieldFilters = fieldFilters;
 	}
 
+	/**
+	 * Sets the maximum number of search results. If a search results in more hits,
+	 * the result set will be truncated
+	 * 
+	 * @param maxResults
+	 */
 	public void setMaxResults(Integer maxResults) {
 		this.maxResults = maxResults;
 	}
@@ -420,16 +443,35 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 		this.multiSelect = multiSelect;
 	}
 
+	/**
+	 * Sets the page length (number of rows to display in a table)
+	 * 
+	 * @param pageLength
+	 *            the desired page length
+	 */
 	public void setPageLength(int pageLength) {
 		this.pageLength = pageLength;
 	}
 
+	/**
+	 * Sets the provided item as the currently selected item in the table
+	 * 
+	 * @param selectedItem
+	 *            the item that you want to become the selected item
+	 */
 	public void setSelectedItem(T selectedItem) {
 		this.selectedItem = selectedItem;
 		checkButtonState(selectedItem);
 	}
 
+	/**
+	 * Specify whether sorting is enabled for the results table
+	 * 
+	 * @param sortEnabled
+	 *            whether sorting is enabled
+	 */
 	public void setSortEnabled(boolean sortEnabled) {
 		this.sortEnabled = sortEnabled;
 	}
 }
+

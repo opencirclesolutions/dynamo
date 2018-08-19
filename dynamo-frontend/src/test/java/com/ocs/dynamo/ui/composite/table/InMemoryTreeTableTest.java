@@ -7,7 +7,6 @@ import javax.inject.Inject;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.google.common.collect.Lists;
@@ -18,7 +17,6 @@ import com.ocs.dynamo.service.TestEntityService;
 import com.ocs.dynamo.test.BaseIntegrationTest;
 import com.ocs.dynamo.utils.ClassUtils;
 
-@Ignore
 public class InMemoryTreeTableTest extends BaseIntegrationTest {
 
 	@Inject

@@ -24,7 +24,6 @@ import javax.inject.Inject;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.ocs.dynamo.domain.AbstractEntity;
@@ -61,7 +60,6 @@ import com.vaadin.ui.Slider;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 
-@Ignore
 public class ModelBasedFieldFactoryTest extends BaseIntegrationTest {
 
 	@Inject

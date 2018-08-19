@@ -16,9 +16,12 @@ package com.ocs.dynamo.ui.composite.dialog;
 import org.apache.log4j.Logger;
 
 import com.ocs.dynamo.constants.DynamoConstants;
+import com.ocs.dynamo.service.MessageService;
+import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.Buildable;
 import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
+import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.server.Page;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Layout;
@@ -39,6 +42,8 @@ public abstract class BaseModalDialog extends Window implements Buildable {
 	private static final Logger LOG = Logger.getLogger(BaseModalDialog.class);
 
 	private static final long serialVersionUID = -2265149201475495504L;
+
+	private MessageService messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
 
 	@Override
 	public void build() {
@@ -94,9 +99,9 @@ public abstract class BaseModalDialog extends Window implements Buildable {
 	protected abstract String getTitle();
 
 	/**
-	 * Shows a notification message - this method will check for the
-	 * availability of a Vaadin Page object and if this is not present, write
-	 * the notification to the log instead
+	 * Shows a notification message - this method will check for the availability of
+	 * a Vaadin Page object and if this is not present, write the notification to
+	 * the log instead
 	 * 
 	 * @param message
 	 *            the message
@@ -109,5 +114,26 @@ public abstract class BaseModalDialog extends Window implements Buildable {
 		} else {
 			LOG.info(message);
 		}
+	}
+	
+	protected String message(String key) {
+		return messageService.getMessage(key, VaadinUtils.getLocale());
+	}
+	
+	/**
+	 * Retrieves a message based on its key
+	 * 
+	 * @param key
+	 *            the key of the message
+	 * @param args
+	 *            any arguments to pass to the message
+	 * @return
+	 */
+	protected String message(String key, Object... args) {
+		return messageService.getMessage(key, VaadinUtils.getLocale(), args);
+	}
+
+	public MessageService getMessageService() {
+		return messageService;
 	}
 }

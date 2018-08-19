@@ -152,8 +152,16 @@ public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractE
 		wrapper.addComponent(searchLayout);
 	}
 
+	public List<Filter> getFilters() {
+		return filters;
+	}
+
 	public Integer getPageLength() {
 		return pageLength;
+	}
+
+	public SimpleSearchLayout<ID, T> getSearchLayout() {
+		return searchLayout;
 	}
 
 	protected T getSelectedItem() {
@@ -168,14 +176,6 @@ public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractE
 	protected String getTitle() {
 		return ServiceLocatorFactory.getServiceLocator().getMessageService().getMessage("ocs.search.title",
 				VaadinUtils.getLocale(), entityModel.getDisplayNamePlural());
-	}
-
-	public void setPageLength(Integer pageLength) {
-		this.pageLength = pageLength;
-	}
-
-	public SimpleSearchLayout<ID, T> getSearchLayout() {
-		return searchLayout;
 	}
 
 	/**
@@ -196,15 +196,15 @@ public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractE
 		}
 	}
 
-	public List<Filter> getFilters() {
-		return filters;
-	}
-
 	public void setFilters(List<Filter> filters) {
 		this.filters = filters;
 		if (searchLayout != null) {
 			searchLayout.setDefaultFilters(filters);
 		}
+	}
+
+	public void setPageLength(Integer pageLength) {
+		this.pageLength = pageLength;
 	}
 
 }

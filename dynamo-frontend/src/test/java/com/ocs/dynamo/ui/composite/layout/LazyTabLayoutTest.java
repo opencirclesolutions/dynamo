@@ -4,7 +4,6 @@ import javax.inject.Inject;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.ocs.dynamo.domain.TestEntity;
@@ -16,7 +15,6 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
 
-@Ignore
 public class LazyTabLayoutTest extends BaseIntegrationTest {
 
 	@Inject

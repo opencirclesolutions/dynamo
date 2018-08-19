@@ -21,7 +21,6 @@ import javax.persistence.TypedQuery;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.google.common.collect.Lists;
@@ -38,7 +37,6 @@ import com.ocs.dynamo.filter.Modulo;
 import com.ocs.dynamo.filter.Or;
 import com.ocs.dynamo.test.BaseIntegrationTest;
 
-@Ignore
 public class JPAQueryBuilderTest extends BaseIntegrationTest {
 
 	@PersistenceContext

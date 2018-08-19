@@ -60,6 +60,11 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 	private boolean directNavigationAllowed;
 
 	/**
+	 * Indicates whether it is allowed to clear the selection
+	 */
+	private boolean clearAllowed;
+	
+	/**
 	 * Indicates whether it is allowed to add items
 	 */
 	private boolean addAllowed;
@@ -124,6 +129,7 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 		this.sortOrders = sortOrders != null ? sortOrders : new ArrayList<>();
 		this.joins = joins;
 		this.multiSelect = multiSelect;
+		this.clearAllowed = true;
 		this.addAllowed = !search && (attributeModel != null && attributeModel.isQuickAddAllowed());
 		this.directNavigationAllowed = !search && (attributeModel != null && attributeModel.isDirectNavigation());
 	}
@@ -177,6 +183,30 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 		return Object.class;
 	}
 
+	protected boolean isDirectNavigationAllowed() {
+		return directNavigationAllowed;
+	}
+
+	protected void setDirectNavigationAllowed(boolean directNavigationAllowed) {
+		this.directNavigationAllowed = directNavigationAllowed;
+	}
+
+	protected boolean isClearAllowed() {
+		return clearAllowed;
+	}
+
+	protected void setClearAllowed(boolean clearAllowed) {
+		this.clearAllowed = clearAllowed;
+	}
+
+	protected boolean isAddAllowed() {
+		return addAllowed;
+	}
+
+	protected void setAddAllowed(boolean addAllowed) {
+		this.addAllowed = addAllowed;
+	}
+
 	@Override
 	protected Component initContent() {
 		HorizontalLayout bar = new DefaultHorizontalLayout(false, true, true);
@@ -202,7 +232,7 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 			}
 
 			ModelBasedSearchDialog<ID, T> dialog = new ModelBasedSearchDialog<ID, T>(getService(), getEntityModel(),
-					filterList, sortOrders, multiSelect, true, joins) {
+					filterList, sortOrders, multiSelect, true, getJoins()) {
 
 				private static final long serialVersionUID = -3432107069929941520L;
 
@@ -236,10 +266,12 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 		bar.addComponent(selectButton);
 
 		// button for clearing the current selection
-		clearButton = new Button(getMessageService().getMessage("ocs.clear", VaadinUtils.getLocale()));
-		clearButton.setIcon(FontAwesome.ERASER);
-		clearButton.addClickListener(event -> setValue(null));
-		bar.addComponent(clearButton);
+		if (clearAllowed) {
+			clearButton = new Button(getMessageService().getMessage("ocs.clear", VaadinUtils.getLocale()));
+			clearButton.setIcon(FontAwesome.ERASER);
+			clearButton.addClickListener(event -> setValue(null));
+			bar.addComponent(clearButton);
+		}
 
 		// quick add button
 		if (addAllowed) {
@@ -277,7 +309,9 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 		super.setEnabled(enabled);
 		if (selectButton != null) {
 			selectButton.setEnabled(enabled);
-			clearButton.setEnabled(enabled);
+			if (getClearButton() != null) {
+				getClearButton().setEnabled(enabled);
+			}
 			if (getAddButton() != null) {
 				getAddButton().setEnabled(enabled);
 			}
@@ -306,27 +340,32 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 	 * @param newValue
 	 *            the new value
 	 */
-	@SuppressWarnings("unchecked")
 	private void updateLabel(Object newValue) {
 		if (label != null) {
 			label.setCaptionAsHtml(true);
 
-			String caption = getMessageService().getMessage("ocs.no.item.selected", VaadinUtils.getLocale());
-			if (newValue instanceof Collection<?>) {
-				Collection<T> col = (Collection<T>) newValue;
-				if (!col.isEmpty()) {
-					caption = EntityModelUtil.getDisplayPropertyValue(col, getEntityModel(),
-							SystemPropertyUtils.getLookupFieldMaxItems(), getMessageService());
-				}
-			} else {
-				// just a single value
-				T t = (T) newValue;
-				if (newValue != null) {
-					caption = EntityModelUtil.getDisplayPropertyValue(t, getEntityModel());
-				}
-			}
+			String caption = getLabel(newValue);
 			label.setCaption(caption.replaceAll(",", StringUtils.HTML_LINE_BREAK));
 		}
+	}
+
+	@SuppressWarnings("unchecked")
+	protected String getLabel(Object newValue) {
+		String caption = getMessageService().getMessage("ocs.no.item.selected", VaadinUtils.getLocale());
+		if (newValue instanceof Collection<?>) {
+			Collection<T> col = (Collection<T>) newValue;
+			if (!col.isEmpty()) {
+				caption = EntityModelUtil.getDisplayPropertyValue(col, getEntityModel(),
+						SystemPropertyUtils.getLookupFieldMaxItems(), getMessageService());
+			}
+		} else {
+			// just a single value
+			T t = (T) newValue;
+			if (newValue != null) {
+				caption = EntityModelUtil.getDisplayPropertyValue(t, getEntityModel());
+			}
+		}
+		return caption;
 	}
 
 	@Override
@@ -345,6 +384,10 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 		if (label != null) {
 			label.setComponentError(componentError);
 		}
+	}
+
+	protected FetchJoinInformation[] getJoins() {
+		return joins;
 	}
 
 }

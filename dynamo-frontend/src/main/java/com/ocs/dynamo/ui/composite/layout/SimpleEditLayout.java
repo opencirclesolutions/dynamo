@@ -111,12 +111,25 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 		}
 	}
 
+	public void afterEntitySet(T entity) {
+		// overwrite in entity
+	}
+
+	/**
+	 * Callback method that is called after one of the layouts of the underlying
+	 * edit form is built for the first time
+	 * 
+	 * @param layout
+	 * @param viewMode
+	 */
 	protected void afterLayoutBuilt(Layout layout, boolean viewMode) {
 		// override in subclass
 	}
 
 	/**
 	 * Callback method that is called after a tab has been selected
+	 * in the tab sheet that is used in a detail form when the attribute group mode
+	 * has been set to TABSHEET
 	 * 
 	 * @param tabIndex
 	 *            the zero-based index of the selected tab
@@ -166,8 +179,9 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 					fieldFilters) {
 
 				@Override
-				protected void afterLayoutBuilt(Layout layout, boolean viewMode) {
-					SimpleEditLayout.this.afterLayoutBuilt(layout, viewMode);
+				protected void afterEditDone(boolean cancel, boolean newObject, T entity) {
+					setEntity(entity);
+					SimpleEditLayout.this.afterEditDone(cancel, newObject, entity);
 				}
 
 				@Override
@@ -176,9 +190,8 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 				}
 
 				@Override
-				protected void afterEditDone(boolean cancel, boolean newObject, T entity) {
-					setEntity(entity);
-					SimpleEditLayout.this.afterEditDone(cancel, newObject, entity);
+				protected void afterLayoutBuilt(Layout layout, boolean viewMode) {
+					SimpleEditLayout.this.afterLayoutBuilt(layout, viewMode);
 				}
 
 				@Override
@@ -252,6 +265,14 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 	 */
 	protected T createEntity() {
 		return getService().createNewEntity();
+	}
+
+	public void doSave() {
+		this.editForm.doSave();
+	}
+
+	public Consumer<T> getCustomSaveConsumer() {
+		return customSaveConsumer;
 	}
 
 	public ModelBasedEditForm<ID, T> getEditForm() {
@@ -380,6 +401,10 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 		editForm.selectTab(index);
 	}
 
+	public void setCustomSaveConsumer(Consumer<T> customSaveConsumer) {
+		this.customSaveConsumer = customSaveConsumer;
+	}
+
 	/**
 	 * Sets the entity
 	 * 
@@ -401,22 +426,6 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 
 	public void setJoins(FetchJoinInformation[] joins) {
 		this.joins = joins;
-	}
-
-	public Consumer<T> getCustomSaveConsumer() {
-		return customSaveConsumer;
-	}
-
-	public void setCustomSaveConsumer(Consumer<T> customSaveConsumer) {
-		this.customSaveConsumer = customSaveConsumer;
-	}
-
-	public void doSave() {
-		this.editForm.doSave();
-	}
-	
-	public void afterEntitySet(T entity) {
-		// overwrite in entity 
 	}
 
 }

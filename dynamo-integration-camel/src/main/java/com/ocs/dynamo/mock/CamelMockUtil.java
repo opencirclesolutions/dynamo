@@ -26,39 +26,43 @@ import org.mockito.Mockito;
  */
 public final class CamelMockUtil {
 
-    private CamelMockUtil() {
-        // hidden constructor
-    }
+	private CamelMockUtil() {
+		// hidden constructor
+	}
 
-    /**
-     * Capture the setting of the body on a camel message
-     * 
-     * @param clazz
-     *            the class of the body
-     * @param message
-     *            the message
-     * @return
-     */
-    public static <X> X captureBodySet(Class<X> clazz, Message message) {
-        ArgumentCaptor<X> captor = ArgumentCaptor.forClass(clazz);
-        Mockito.verify(message).setBody(captor.capture());
-        return captor.getValue();
-    }
+	/**
+	 * Capture the setting of the body on a camel message
+	 * 
+	 * @param clazz
+	 *            the class of the body
+	 * @param message
+	 *            the message
+	 * @return
+	 */
+	public static <X> X captureBodySet(Class<X> clazz, Message message) {
+		ArgumentCaptor<X> captor = ArgumentCaptor.forClass(clazz);
+		Mockito.verify(message).setBody(captor.capture());
+		return captor.getValue();
+	}
 
-    /**
-     * Capture the setting of a header on a Message
-     * 
-     * @param clazz
-     *            the class of the header
-     * @param name
-     *            the name of the header
-     * @param message
-     *            the message on which to set the header
-     * @return
-     */
-    public static <X> X captureHeaderSet(Class<X> clazz, String name, Message message) {
-        ArgumentCaptor<X> captor = ArgumentCaptor.forClass(clazz);
-        Mockito.verify(message).setHeader(Matchers.eq(name), captor.capture());
-        return captor.getValue();
-    }
+	/**
+	 * Capture the setting of a header on a Message
+	 * 
+	 * @param clazz
+	 *            the class of the header
+	 * @param name
+	 *            the name of the header
+	 * @param message
+	 *            the message on which to set the header
+	 * @return
+	 */
+	public static <X> X captureHeaderSet(Class<X> clazz, String name, Message message) {
+		ArgumentCaptor<X> captor = ArgumentCaptor.forClass(clazz);
+		Mockito.verify(message).setHeader(Matchers.eq(name), captor.capture());
+		return captor.getValue();
+	}
+
+	public static void verifyHeaderNotSet(String name, Message message) {
+		Mockito.verify(message, Mockito.times(0)).setHeader(Matchers.eq(name), Matchers.any());
+	}
 }

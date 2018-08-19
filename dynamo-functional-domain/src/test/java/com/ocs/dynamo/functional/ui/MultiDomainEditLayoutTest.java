@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.google.common.collect.Lists;
@@ -24,7 +23,6 @@ import com.vaadin.ui.Layout;
  * @author bas.rutten
  *
  */
-@Ignore
 public class MultiDomainEditLayoutTest extends BaseIntegrationTest {
 
 	@Test

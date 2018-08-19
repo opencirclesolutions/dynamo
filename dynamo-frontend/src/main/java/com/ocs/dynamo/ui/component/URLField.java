@@ -61,7 +61,6 @@ public class URLField extends CustomField<String> {
 		this.textField = textField;
 		this.editable = editable;
 		textField.addValueChangeListener(event -> setValue((String) event.getProperty().getValue()));
-
 	}
 
 	protected Link getLink() {

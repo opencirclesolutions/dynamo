@@ -25,13 +25,16 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.Layout;
 
 /**
- * A layout for nesting multiple other components. Each nested component must implement the Reloadable
- * interface and must be registered using the addNestedComponent method.
+ * A layout for nesting multiple other components. Each nested component must
+ * implement the Reloadable interface and must be registered using the
+ * addNestedComponent method.
  * 
  * @author Bas Rutten
  *
  * @param <ID>
+ *            the type of the ID of the entity
  * @param <T>
+ *            the type of the entity
  */
 public abstract class CompositionLayout<ID extends Serializable, T extends AbstractEntity<ID>>
 		extends BaseCustomComponent implements Reloadable, CanAssignEntity<ID, T> {
@@ -59,6 +62,13 @@ public abstract class CompositionLayout<ID extends Serializable, T extends Abstr
 		setCompositionRoot(main);
 	}
 
+	/**
+	 * Place the logic for constructing the nested components in this method. Do not
+	 * forget to call "addNestedComponent" for each component that you want to
+	 * update automatically
+	 * 
+	 * @param main
+	 */
 	protected abstract void doBuildLayout(Layout main);
 
 	@Override
@@ -66,6 +76,12 @@ public abstract class CompositionLayout<ID extends Serializable, T extends Abstr
 		this.entity = entity;
 	}
 
+	/**
+	 * Register a component with this layout, so that it will automatically be
+	 * reloaded once the CompositionLayout is reloaded
+	 * 
+	 * @param c
+	 */
 	protected void addNestedComponent(Component c) {
 		nestedComponents.add(c);
 	}

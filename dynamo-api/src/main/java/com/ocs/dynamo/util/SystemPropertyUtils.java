@@ -45,7 +45,7 @@ public final class SystemPropertyUtils {
 	}
 
 	/**
-	 * 
+	 * Returns the default caption format 
 	 * 
 	 * @return the default caption format
 	 */
@@ -65,7 +65,7 @@ public final class SystemPropertyUtils {
 	}
 
 	/**
-	 * The default date format
+	 * Return the default format for formatting dates
 	 * 
 	 * @return
 	 */
@@ -167,7 +167,7 @@ public final class SystemPropertyUtils {
 	 * 
 	 * 
 	 * @return the default format for formatting attributes of type LocalTime or
-	 *         Java 7 dates that only consist of a timestamp
+	 *         Java 7 dates that only consist of a time stamp
 	 */
 	public static String getDefaultTimeFormat() {
 		return System.getProperty(DynamoConstants.SP_DEFAULT_TIME_FORMAT, "HH:mm:ss");

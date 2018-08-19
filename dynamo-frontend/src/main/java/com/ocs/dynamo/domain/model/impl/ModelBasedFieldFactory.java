@@ -43,7 +43,6 @@ import com.ocs.dynamo.domain.model.AttributeType;
 import com.ocs.dynamo.domain.model.CheckboxMode;
 import com.ocs.dynamo.domain.model.EditableType;
 import com.ocs.dynamo.domain.model.EntityModel;
-import com.ocs.dynamo.domain.model.FieldFactory;
 import com.ocs.dynamo.domain.model.NumberSelectMode;
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.service.BaseService;
@@ -53,6 +52,7 @@ import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.component.EntityComboBox.SelectMode;
 import com.ocs.dynamo.ui.component.EntityLookupField;
 import com.ocs.dynamo.ui.component.FancyListSelect;
+import com.ocs.dynamo.ui.component.InternalLinkField;
 import com.ocs.dynamo.ui.component.QuickAddEntityComboBox;
 import com.ocs.dynamo.ui.component.QuickAddListSelect;
 import com.ocs.dynamo.ui.component.SimpleTokenFieldSelect;
@@ -120,8 +120,6 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 
 	private ServiceLocator serviceLocator = ServiceLocatorFactory.getServiceLocator();
 
-	private Collection<FieldFactory> fieldFactories;
-
 	// indicates whether the system is in search mode. In search mode,
 	// components for
 	// some attributes are constructed differently (e.g. we render two search
@@ -154,7 +152,6 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 		this.messageService = messageService;
 		this.validate = validate;
 		this.search = search;
-		this.fieldFactories = serviceLocator.getServices(FieldFactory.class);
 	}
 
 	/**
@@ -230,6 +227,22 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 	}
 
 	/**
+	 * Constructs an internal link field
+	 * 
+	 * @param entityModel
+	 * @param attributeModel
+	 * @param filter
+	 * @param search
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public <ID extends Serializable, S extends AbstractEntity<ID>> AbstractField<?> constructInternalLinkField(
+			EntityModel<?> entityModel, AttributeModel attributeModel) {
+		entityModel = resolveEntityModel(entityModel, attributeModel);
+		return new InternalLinkField<>((EntityModel<S>) entityModel, attributeModel);
+	}
+
+	/**
 	 * Constructs a field based on an attribute model and possibly a field filter
 	 * 
 	 * @param attributeModel
@@ -240,45 +253,30 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 	 *            the custom entity model for the field
 	 * @return
 	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public Field<?> constructField(AttributeModel attributeModel, Map<String, Filter> fieldFilters,
 			EntityModel<?> fieldEntityModel) {
 
+		Filter fieldFilter = fieldFilters == null ? null : fieldFilters.get(attributeModel.getPath());
+
 		Field<?> field = null;
-
-		// Are there any delegated component factories that can create this field?
-		if (fieldFactories != null && !fieldFactories.isEmpty()) {
-			for (FieldFactory ff : fieldFactories) {
-				FieldFactoryContextImpl<?> c = new FieldFactoryContextImpl<>().setAttributeModel(attributeModel)
-						.setFieldFilters(fieldFilters).setFieldEntityModel((EntityModel) fieldEntityModel);
-				field = ff.constructField(c);
-				if (field != null) {
-					break;
-				}
-			}
-		}
-
-		if (field == null) {
-			Filter fieldFilter = fieldFilters == null ? null : fieldFilters.get(attributeModel.getPath());
-			if (fieldFilter != null) {
-				if (AttributeType.MASTER.equals(attributeModel.getAttributeType())) {
-					// create a combo box or lookup field
-					field = constructSelectField(attributeModel, fieldEntityModel, fieldFilter);
-				} else if (search && AttributeSelectMode.TOKEN.equals(attributeModel.getSearchSelectMode())
-						&& AttributeType.BASIC.equals(attributeModel.getAttributeType())) {
-					// simple token field (for distinct string values)
-					field = constructSimpleTokenField(
-							fieldEntityModel != null ? fieldEntityModel : attributeModel.getEntityModel(),
-							attributeModel,
-							attributeModel.getPath().substring(attributeModel.getPath().lastIndexOf('.') + 1), false,
-							fieldFilter);
-				} else {
-					// detail relationship, render a multiple select
-					field = this.constructCollectionSelect(fieldEntityModel, attributeModel, fieldFilter, true, search);
-				}
+		if (fieldFilter != null) {
+			if (AttributeType.MASTER.equals(attributeModel.getAttributeType())) {
+				// create a combo box or lookup field
+				field = constructSelectField(attributeModel, fieldEntityModel, fieldFilter);
+			} else if (search && AttributeSelectMode.TOKEN.equals(attributeModel.getSearchSelectMode())
+					&& AttributeType.BASIC.equals(attributeModel.getAttributeType())) {
+				// simple token field (for distinct string values)
+				field = constructSimpleTokenField(
+						fieldEntityModel != null ? fieldEntityModel : attributeModel.getEntityModel(), attributeModel,
+						attributeModel.getPath().substring(attributeModel.getPath().lastIndexOf('.') + 1), false,
+						fieldFilter);
 			} else {
-				field = this.createField(attributeModel.getPath(), fieldEntityModel);
+				// detail relationship, render a multiple select
+				field = this.constructCollectionSelect(fieldEntityModel, attributeModel, fieldFilter, true, search);
 			}
+		} else {
+			// no field filter present - delegate to default construction
+			field = this.createField(attributeModel.getPath(), fieldEntityModel);
 		}
 
 		// Is it a required field?
@@ -533,8 +531,8 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 		// in case of a read-only field, return <code>null</code> so Vaadin will
 		// render a label instead
 		AttributeModel attributeModel = model.getAttributeModel(propertyId);
-		if (EditableType.READ_ONLY.equals(attributeModel.getEditableType())
-				&& (!attributeModel.isUrl() && !AttributeType.DETAIL.equals(attributeModel.getAttributeType()))
+		if (EditableType.READ_ONLY.equals(attributeModel.getEditableType()) && (!attributeModel.isUrl()
+				&& !attributeModel.isNavigable() && !AttributeType.DETAIL.equals(attributeModel.getAttributeType()))
 				&& !search) {
 			return null;
 		}
@@ -565,6 +563,8 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 				slider.setMax(attributeModel.getMaxValue());
 			}
 			field = slider;
+		} else if (attributeModel.isNavigable()) {
+			field = constructInternalLinkField(fieldEntityModel, attributeModel);
 		} else if (attributeModel.isWeek()) {
 			// special case - week field in a table
 			TextField tf = new TextField();
@@ -629,7 +629,7 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 			// use custom time field, potentially with Java 8 date converter
 			TimeField tf = new TimeField();
 			tf.setResolution(Resolution.MINUTE);
-			tf.setLocale(VaadinUtils.getLocale());
+			tf.setLocale(VaadinUtils.getDateLocale());
 			if (DateUtils.isJava8DateType(attributeModel.getType())) {
 				tf.setConverter(ConverterFactory.createLocalTimeConverter());
 			}
@@ -684,13 +684,12 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 	/**
 	 * Add additional field settings to a field
 	 * 
-	 * @param field
-	 * @param attributeModel
+	 * @param field the field
+	 * @param attributeModel the attribute model
 	 */
 	private void postProcessField(Field<?> field, AttributeModel attributeModel) {
 		if (field instanceof AbstractTextField) {
 			AbstractTextField textField = (AbstractTextField) field;
-			textField.setDescription(attributeModel.getDescription());
 			textField.setNullSettingAllowed(true);
 			textField.setNullRepresentation("");
 			if (!StringUtils.isEmpty(attributeModel.getPrompt())) {
@@ -705,7 +704,6 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 				field.addValidator(
 						new EmailValidator(messageService.getMessage("ocs.no.valid.email", VaadinUtils.getLocale())));
 			}
-
 		} else if (field instanceof DateField) {
 			// set a separate format for a date field
 			DateField dateField = (DateField) field;
@@ -716,6 +714,11 @@ public class ModelBasedFieldFactory<T> extends DefaultFieldGroupFieldFactory imp
 			if (AttributeDateType.TIMESTAMP.equals(attributeModel.getDateType())) {
 				dateField.setResolution(Resolution.SECOND);
 			}
+		} 
+		
+		// set description for all fields
+		if (field instanceof AbstractField) {
+			((AbstractField<?>) field).setDescription(attributeModel.getDescription());
 		}
 	}
 

@@ -68,6 +68,9 @@ public abstract class DownloadButton extends Button {
 		downloader.extend(this);
 	}
 
+	/**
+	 * 
+	 */
 	public void update() {
 		downloader.setFileDownloadResource(new StreamResource(new StreamSource() {
 

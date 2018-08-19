@@ -202,6 +202,14 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 		this.formOptions = formOptions;
 	}
 
+	public void addEntity(T t) {
+		container.addBean(t);
+		if (receiver != null) {
+			receiver.signalDetailsComponentValid(DetailsEditTable.this,
+					VaadinUtils.allFixedTableFieldsValid(table));
+		}
+	}
+
 	/**
 	 * Callback method that is called after selecting one or more items using the
 	 * search dialog
@@ -529,6 +537,13 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 	}
 
 	/**
+	 * Perform any necessary post construction
+	 */
+	protected void postConstruct() {
+		// overwrite in subclasses
+	}
+
+	/**
 	 * Callback method that is used to modify the button bar. Override in subclasses
 	 * if needed
 	 * 
@@ -564,13 +579,6 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 	 * @param toRemove
 	 */
 	protected abstract void removeEntity(T toRemove);
-
-	/**
-	 * Perform any necessary post construction
-	 */
-	protected void postConstruct() {
-		// overwrite in subclasses
-	}
 
 	public void setComparator(Comparator<T> comparator) {
 		this.comparator = comparator;

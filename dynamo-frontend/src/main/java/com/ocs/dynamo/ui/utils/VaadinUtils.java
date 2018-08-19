@@ -60,8 +60,18 @@ import com.vaadin.ui.UI;
  */
 public final class VaadinUtils {
 
-	private VaadinUtils() {
-		// hidden constructor
+	/**
+	 * Add attribute from attributemodel to container when not in container already.
+	 * 
+	 * @param container
+	 * @param attributeModel
+	 */
+	public static void addPropertyIdToContainer(Container container, AttributeModel attributeModel) {
+		if (container != null && attributeModel != null && attributeModel.isVisibleInTable()
+				&& !container.getContainerPropertyIds().contains(attributeModel.getPath())) {
+			container.addContainerProperty(attributeModel.getPath(), attributeModel.getType(),
+					attributeModel.getDefaultValue());
+		}
 	}
 
 	/**
@@ -78,30 +88,6 @@ public final class VaadinUtils {
 			addPropertyIdToContainer(container, attributeModel);
 		}
 	}
-
-	/**
-	 * Add attribute from attributemodel to container when not in container already.
-	 * 
-	 * @param container
-	 * @param attributeModel
-	 */
-	public static void addPropertyIdToContainer(Container container, AttributeModel attributeModel) {
-		if (container != null && attributeModel != null && attributeModel.isVisibleInTable()
-				&& !container.getContainerPropertyIds().contains(attributeModel.getPath())) {
-			container.addContainerProperty(attributeModel.getPath(), attributeModel.getType(),
-					attributeModel.getDefaultValue());
-		}
-	}
-
-	/**
-	 * Check if all editable fields that are contained in a (fixed, non-lazy) table
-	 * are valid. This method is needed because simply calling table.isValid() will
-	 * not take into account any editable components within the table
-	 * 
-	 * @param table
-	 *            the table
-	 * @return
-	 */
 
 	/**
 	 * Check if all editable fields that are contained in a (fixed, non-lazy) table
@@ -123,6 +109,16 @@ public final class VaadinUtils {
 		}
 		return allValid;
 	}
+
+	/**
+	 * Check if all editable fields that are contained in a (fixed, non-lazy) table
+	 * are valid. This method is needed because simply calling table.isValid() will
+	 * not take into account any editable components within the table
+	 * 
+	 * @param table
+	 *            the table
+	 * @return
+	 */
 
 	/**
 	 * Converts a BigDecimal value to a String
@@ -229,6 +225,21 @@ public final class VaadinUtils {
 	}
 
 	/**
+	 * Returns the locale to be used inside date picker components. This checks for
+	 * the presence of the DynamoConstants.DATE_LOCALE setting on the session. If
+	 * this is not set, it falls back to the normal locale mechanism
+	 * 
+	 * @return
+	 */
+	public static Locale getDateLocale() {
+		if (VaadinSession.getCurrent() != null
+				&& VaadinSession.getCurrent().getAttribute(DynamoConstants.DATE_LOCALE) != null) {
+			return new Locale((String) VaadinSession.getCurrent().getAttribute(DynamoConstants.DATE_LOCALE));
+		}
+		return getLocale();
+	}
+
+	/**
 	 * Retrieves an entity with a certain ID from a container
 	 * 
 	 * @param container
@@ -277,6 +288,18 @@ public final class VaadinUtils {
 		return getEntityFromItem(nested);
 	}
 
+	@SuppressWarnings("unchecked")
+	public static <T extends Component> T getFirstChildOfClass(Layout layout, Class<T> clazz) {
+		Iterator<Component> it = layout.iterator();
+		while (it.hasNext()) {
+			Component c = it.next();
+			if (clazz.isAssignableFrom(c.getClass())) {
+				return (T) c;
+			}
+		}
+		return null;
+	}
+
 	/**
 	 * Extracts the first value from a map entry that contains a collection
 	 * 
@@ -309,35 +332,40 @@ public final class VaadinUtils {
 	}
 
 	/**
-	 * Returns the locale to be used inside date picker components. This checks for
-	 * the presence of the DynamoConstants.DATE_LOCALE setting on the session. If
-	 * this is not set, it falls back to the normal locale mechanism
+	 * Returns the first parent component of the specified component that is a
+	 * subclass of the specified class
 	 * 
+	 * @param component
+	 *            the component
+	 * @param clazz
+	 *            the class
 	 * @return
 	 */
-	public static Locale getDateLocale() {
-		if (VaadinSession.getCurrent() != null
-				&& VaadinSession.getCurrent().getAttribute(DynamoConstants.DATE_LOCALE) != null) {
-			return new Locale((String) VaadinSession.getCurrent().getAttribute(DynamoConstants.DATE_LOCALE));
+	@SuppressWarnings("unchecked")
+	public static <T> T getParentOfClass(Component component, Class<T> clazz) {
+		while (component.getParent() != null) {
+			component = component.getParent();
+			if (clazz.isAssignableFrom(component.getClass())) {
+				return (T) component;
+			}
 		}
-		return getLocale();
+		return null;
 	}
 
 	/**
-	 * Reads the desired locale for formatting date fields from the system
-	 * properties and stores it in the session
+	 * Returns the first value from a session attribute that contains a map
+	 * 
+	 * @param attributeName
+	 *            the name of the attribute that holds the map
+	 * @param key
+	 *            the map key
+	 * @return
 	 */
-	public static void storeDateLocale() {
-		VaadinSession.getCurrent().setAttribute(DynamoConstants.DATE_LOCALE,
-				SystemPropertyUtils.getDefaultDateLocale());
-	}
-
-	/**
-	 * Stores the default locale configured in the system properties in the Vaadin
-	 * session
-	 */
-	public static void storeLocale() {
-		VaadinSession.getCurrent().setLocale(new Locale(SystemPropertyUtils.getDefaultLocale()));
+	@SuppressWarnings("unchecked")
+	public static String getSessionAttributeValueFromMap(String attributeName, String key) {
+		Map<String, Object> map = (Map<String, Object>) VaadinSession.getCurrent().getSession()
+				.getAttribute(attributeName);
+		return getFirstValueFromCollection(map, key);
 	}
 
 	/**
@@ -359,55 +387,6 @@ public final class VaadinUtils {
 			}
 		}
 		return index;
-	}
-
-	/**
-	 * Returns the first parent component of the specified component that is a
-	 * subclass of the specified class
-	 * 
-	 * @param component
-	 *            the component
-	 * @param clazz
-	 *            the class
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	public static <T> T getParentOfClass(Component component, Class<T> clazz) {
-		while (component.getParent() != null) {
-			component = component.getParent();
-			if (clazz.isAssignableFrom(component.getClass())) {
-				return (T) component;
-			}
-		}
-		return null;
-	}
-
-	@SuppressWarnings("unchecked")
-	public static <T extends Component> T getFirstChildOfClass(Layout layout, Class<T> clazz) {
-		Iterator<Component> it = layout.iterator();
-		while (it.hasNext()) {
-			Component c = it.next();
-			if (clazz.isAssignableFrom(c.getClass())) {
-				return (T) c;
-			}
-		}
-		return null;
-	}
-
-	/**
-	 * Returns the first value from a session attribute that contains a map
-	 * 
-	 * @param attributeName
-	 *            the name of the attribute that holds the map
-	 * @param key
-	 *            the map key
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	public static String getSessionAttributeValueFromMap(String attributeName, String key) {
-		Map<String, Object> map = (Map<String, Object>) VaadinSession.getCurrent().getSession()
-				.getAttribute(attributeName);
-		return getFirstValueFromCollection(map, key);
 	}
 
 	/**
@@ -468,6 +447,58 @@ public final class VaadinUtils {
 	}
 
 	/**
+	 * Executes javascript loaded into a page by code
+	 *
+	 * @param id
+	 *            the ID of the element that will hold the contents
+	 * @param originalInput
+	 *            the HTML contents of the report
+	 * @param requireExternalScript
+	 *            indicates if there is a external library required
+	 * @param execute
+	 *            indicates if the relevant external library is already loaded
+	 */
+	public static void loadScript(String id, String originalInput, boolean requireExternalScript, boolean execute) {
+		// replace whitespace and dubious constructions (including an ESCAPED newline,
+		// see the 4
+		// backspaces)
+		String input;
+		if (!requireExternalScript) {
+
+			input = originalInput.replaceAll("'", "\"").replaceAll("\r\n", "\\\\r\\\\n").replaceAll("\n", "\\\\n")
+					.replaceAll("\\s+", " ").trim();
+
+			// no need to load an external script first
+			Page.getCurrent().getJavaScript().execute("$('#" + id + "').html('" + input + "');");
+		} else {
+			input = originalInput.replaceAll("'", "\"").replaceAll("\r\n", "").replaceAll("\n", "")
+					.replaceAll("\\s+", " ").replaceAll("\\\\n", "-").trim();
+
+			// find the first script tag that points to an external location
+			Pattern pattern = Pattern.compile("<script.*?src=(.*?)></script>");
+			Matcher matcher = pattern.matcher(input);
+
+			if (matcher.find()) {
+				String script = matcher.group(0);
+
+				// replace HTTP by HTTPS to prevent mixed mode warnings
+				String url = matcher.group(1).replaceAll("\"", "").replaceAll("http://", "https://");
+
+				// remove the external script tag
+				input = input.replace(script, "");
+
+				if (!execute) {
+					// execute external library and load the rest of the contents in the callback
+					Page.getCurrent().getJavaScript()
+							.execute("$.getScript('" + url + "', function(){$('#" + id + "').html('" + input + "');})");
+				} else {
+					Page.getCurrent().getJavaScript().execute("$('#" + id + "').html('" + input + "');");
+				}
+			}
+		}
+	}
+
+	/**
 	 * Converts an Long to a String, using the Vaadin converters
 	 * 
 	 * @param grouping
@@ -496,6 +527,25 @@ public final class VaadinUtils {
 		return converter.convertToPresentation(value, String.class, locale);
 	}
 
+	@SuppressWarnings("unchecked")
+	public static <T> String numberToString(AttributeModel attributeModel, Class<?> type, T value, boolean grouping,
+			Locale locale) {
+		Converter<String, T> cv = (Converter<String, T>) ConverterFactory.createConverterFor(type, attributeModel,
+				grouping);
+		if (cv != null) {
+			return cv.convertToPresentation(value, String.class, locale);
+		}
+		return null;
+	}
+
+	public static void removeValidatorsOfType(Field<?> field, Class<?> validatorClass) {
+		for (Validator v : field.getValidators()) {
+			if (v.getClass().equals(validatorClass)) {
+				field.removeValidator(v);
+			}
+		}
+	}
+
 	/**
 	 * Displays a confirmation dialog
 	 * 
@@ -519,19 +569,38 @@ public final class VaadinUtils {
 		}
 	}
 
+	public static void showConfirmDialog(MessageService messageService, String question, final Runnable whenConfirmed,
+			Runnable whenCancelled) {
+		if (UI.getCurrent() != null) {
+			ConfirmDialog.show(UI.getCurrent(), messageService.getMessage("ocs.confirm", getLocale()), question,
+					messageService.getMessage("ocs.yes", getLocale()), messageService.getMessage("ocs.no", getLocale()),
+					dialog -> {
+						if (dialog.isConfirmed()) {
+							whenConfirmed.run();
+						} else {
+							whenCancelled.run();
+						}
+					});
+		} else {
+			whenConfirmed.run();
+		}
+	}
+
 	/**
-	 * Converts a string to a BigDecimal using the built in Vaadin converter
-	 * 
-	 * @param percentage
-	 *            the percentage
-	 * @param value
-	 *            the value to be converted
-	 * @return
+	 * Reads the desired locale for formatting date fields from the system
+	 * properties and stores it in the session
 	 */
-	public static BigDecimal stringToBigDecimal(boolean percentage, boolean useGrouping, boolean currency,
-			String value) {
-		return stringToBigDecimal(percentage, useGrouping, currency, SystemPropertyUtils.getDefaultDecimalPrecision(),
-				value, getLocale());
+	public static void storeDateLocale() {
+		VaadinSession.getCurrent().setAttribute(DynamoConstants.DATE_LOCALE,
+				SystemPropertyUtils.getDefaultDateLocale());
+	}
+
+	/**
+	 * Stores the default locale configured in the system properties in the Vaadin
+	 * session
+	 */
+	public static void storeLocale() {
+		VaadinSession.getCurrent().setLocale(new Locale(SystemPropertyUtils.getDefaultLocale()));
 	}
 
 	/**
@@ -556,15 +625,19 @@ public final class VaadinUtils {
 		return converter.convertToModel(value, BigDecimal.class, locale);
 	}
 
-	@SuppressWarnings("unchecked")
-	public static <T> String numberToString(AttributeModel attributeModel, Class<?> type, T value, boolean grouping,
-			Locale locale) {
-		Converter<String, T> cv = (Converter<String, T>) ConverterFactory.createConverterFor(type, attributeModel,
-				grouping);
-		if (cv != null) {
-			return cv.convertToPresentation(value, String.class, locale);
-		}
-		return null;
+	/**
+	 * Converts a string to a BigDecimal using the built in Vaadin converter
+	 * 
+	 * @param percentage
+	 *            the percentage
+	 * @param value
+	 *            the value to be converted
+	 * @return
+	 */
+	public static BigDecimal stringToBigDecimal(boolean percentage, boolean useGrouping, boolean currency,
+			String value) {
+		return stringToBigDecimal(percentage, useGrouping, currency, SystemPropertyUtils.getDefaultDecimalPrecision(),
+				value, getLocale());
 	}
 
 	/**
@@ -626,66 +699,6 @@ public final class VaadinUtils {
 		return converter.convertToModel(value, Long.class, locale);
 	}
 
-	public static void removeValidatorsOfType(Field<?> field, Class<?> validatorClass) {
-		for (Validator v : field.getValidators()) {
-			if (v.getClass().equals(validatorClass)) {
-				field.removeValidator(v);
-			}
-		}
-	}
-
-	/**
-	 * Executes javascript loaded into a page by code
-	 *
-	 * @param id
-	 *            the ID of the element that will hold the contents
-	 * @param originalInput
-	 *            the HTML contents of the report
-	 * @param requireExternalScript
-	 *            indicates if there is a external library required
-	 * @param execute
-	 *            indicates if the relevant external library is already loaded
-	 */
-	public static void loadScript(String id, String originalInput, boolean requireExternalScript, boolean execute) {
-		// replace whitespace and dubious constructions (including an ESCAPED newline,
-		// see the 4
-		// backspaces)
-		String input;
-		if (!requireExternalScript) {
-
-			input = originalInput.replaceAll("'", "\"").replaceAll("\r\n", "\\\\r\\\\n").replaceAll("\n", "\\\\n")
-					.replaceAll("\\s+", " ").trim();
-
-			// no need to load an external script first
-			Page.getCurrent().getJavaScript().execute("$('#" + id + "').html('" + input + "');");
-		} else {
-			input = originalInput.replaceAll("'", "\"").replaceAll("\r\n", "").replaceAll("\n", "")
-					.replaceAll("\\s+", " ").replaceAll("\\\\n", "-").trim();
-
-			// find the first script tag that points to an external location
-			Pattern pattern = Pattern.compile("<script.*?src=(.*?)></script>");
-			Matcher matcher = pattern.matcher(input);
-
-			if (matcher.find()) {
-				String script = matcher.group(0);
-
-				// replace HTTP by HTTPS to prevent mixed mode warnings
-				String url = matcher.group(1).replaceAll("\"", "").replaceAll("http://", "https://");
-
-				// remove the external script tag
-				input = input.replace(script, "");
-
-				if (!execute) {
-					// execute external library and load the rest of the contents in the callback
-					Page.getCurrent().getJavaScript()
-							.execute("$.getScript('" + url + "', function(){$('#" + id + "').html('" + input + "');})");
-				} else {
-					Page.getCurrent().getJavaScript().execute("$('#" + id + "').html('" + input + "');");
-				}
-			}
-		}
-	}
-
 	/**
 	 * Wraps the provided component inside a form layout
 	 * 
@@ -697,5 +710,9 @@ public final class VaadinUtils {
 		fl.setMargin(false);
 		fl.addComponent(c);
 		return fl;
+	}
+
+	private VaadinUtils() {
+		// hidden constructor
 	}
 }

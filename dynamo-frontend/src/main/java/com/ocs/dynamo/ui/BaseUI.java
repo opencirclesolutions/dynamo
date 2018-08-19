@@ -101,6 +101,12 @@ public abstract class BaseUI extends UI {
 		this.navigator = navigator;
 	}
 
+	/**
+	 * Adds a mapping for carrying out navigation within the application
+	 * 
+	 * @param entityClass
+	 * @param navigateAction
+	 */
 	public void addEntityOnViewMapping(Class<?> entityClass, Consumer<?> navigateAction) {
 		entityOnViewMapping.put(entityClass, navigateAction);
 	}
@@ -115,15 +121,17 @@ public abstract class BaseUI extends UI {
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void navigateToEntityScreenDirectly(Object o) {
-		Consumer navigateToView = entityOnViewMapping.getOrDefault(o.getClass(), err -> Notification
-				.show("No view mapping registered for class: " + o.getClass(), Notification.Type.ERROR_MESSAGE));
-		if (navigateToView != null) {
-			try {
-				navigateToView.accept(o);
-			} catch (Exception e) {
-				Notification.show("An exception occurred while executing the mapped action for class: " + o.getClass()
-						+ " with message: " + e.getMessage(), Notification.Type.ERROR_MESSAGE);
-				throw e;
+		if (o != null) {
+			Consumer navigateToView = entityOnViewMapping.getOrDefault(o.getClass(), err -> Notification
+					.show("No view mapping registered for class: " + o.getClass(), Notification.Type.ERROR_MESSAGE));
+			if (navigateToView != null) {
+				try {
+					navigateToView.accept(o);
+				} catch (Exception e) {
+					Notification.show("An exception occurred while executing the mapped action for class: "
+							+ o.getClass() + " with message: " + e.getMessage(), Notification.Type.ERROR_MESSAGE);
+					throw e;
+				}
 			}
 		}
 	}

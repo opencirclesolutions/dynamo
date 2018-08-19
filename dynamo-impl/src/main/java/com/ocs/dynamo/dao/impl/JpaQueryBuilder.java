@@ -14,6 +14,7 @@
 package com.ocs.dynamo.dao.impl;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +28,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Fetch;
 import javax.persistence.criteria.FetchParent;
+import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Path;
@@ -630,12 +632,21 @@ public final class JpaQueryBuilder {
 	private static Path<Object> getPropertyPath(Root<?> root, Object propertyId) {
 		String[] propertyIdParts = ((String) propertyId).split("\\.");
 
+		Join<?, ?> join = null;
 		Path<Object> path = null;
+		String lastPart = propertyIdParts[propertyIdParts.length - 1];
+
 		for (String part : propertyIdParts) {
 			if (path == null) {
 				path = root.get(part);
+			} else if (join != null) {
+				path = join.get(part);
 			} else {
 				path = path.get(part);
+			}
+
+			if (!part.equals(lastPart) && Collection.class.isAssignableFrom(path.getJavaType())) {
+				join = root.join(part);
 			}
 		}
 		return path;

@@ -170,15 +170,6 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	}
 
 	/**
-	 * Method that is called before saving an entity but after the validation
-	 * 
-	 * @return
-	 */
-	protected boolean beforeSave() {
-		return true;
-	}
-
-	/**
 	 * Checks which buttons in the button bar must be enabled after an item has been
 	 * selected
 	 * 
@@ -261,6 +252,12 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 		}
 	}
 
+	/**
+	 * Removes the custom field entity model for a certain attribute
+	 * 
+	 * @param path
+	 *            the path to the attribute
+	 */
 	public final void removeFieldEntityModel(String path) {
 		fieldEntityModels.remove(path);
 	}

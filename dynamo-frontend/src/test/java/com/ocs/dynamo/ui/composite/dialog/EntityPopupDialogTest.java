@@ -4,7 +4,6 @@ import javax.inject.Inject;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.ocs.dynamo.domain.TestEntity;
@@ -13,7 +12,6 @@ import com.ocs.dynamo.service.TestEntityService;
 import com.ocs.dynamo.test.BaseIntegrationTest;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 
-@Ignore
 public class EntityPopupDialogTest extends BaseIntegrationTest {
 
 	@Inject
