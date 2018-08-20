@@ -116,7 +116,11 @@ public class QuickAddEntityComboBox<ID extends Serializable, T extends AbstractE
 
 		// no caption needed (the wrapping component has the caption)
 		comboBox.setCaption(null);
-		comboBox.addValueChangeListener(event -> setValue((T) event.getProperty().getValue()));
+		comboBox.addValueChangeListener(event -> {
+			if (event.getProperty().getValue() != getValue()) {
+				setValue((T) event.getProperty().getValue());
+			}
+		});
 		comboBox.setSizeFull();
 
 		bar.addComponent(comboBox);
