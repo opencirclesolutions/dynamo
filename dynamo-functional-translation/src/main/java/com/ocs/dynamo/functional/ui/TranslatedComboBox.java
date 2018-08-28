@@ -26,6 +26,7 @@ import com.ocs.dynamo.functional.domain.Translation;
 import com.ocs.dynamo.functional.domain.TranslationService;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
+import com.ocs.dynamo.ui.Refreshable;
 import com.ocs.dynamo.ui.component.CustomEntityField;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.data.Container.Filter;
@@ -46,7 +47,7 @@ import com.vaadin.ui.Component;
  *
  */
 public class TranslatedComboBox<ID extends Serializable, T extends AbstractEntity<ID>>
-		extends CustomEntityField<ID, T, T> {
+		extends CustomEntityField<ID, T, T> implements Refreshable {
 
 	private static final long serialVersionUID = 3044650211099305631L;
 	private static final String TRANSLATION_PROPERTY = "translations.locale";
@@ -123,6 +124,7 @@ public class TranslatedComboBox<ID extends Serializable, T extends AbstractEntit
 	}
 
 	@SuppressWarnings("unchecked")
+	@Override
 	public void refresh() {
 		comboBox.removeAllItems();
 		// Try to find locale in filter
