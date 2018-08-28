@@ -81,6 +81,15 @@ public abstract class Translation<E> extends AbstractEntity<Integer> {
 	@Attribute(showInTable = VisibilityType.SHOW)
 	private String translation;
 
+	public Translation() {
+	}
+
+	public Translation(String field, Locale locale, String translation) {
+		this.field = field;
+		this.locale = locale;
+		this.translation = translation;
+	}
+
 	@Override
 	public Integer getId() {
 		return this.id;
