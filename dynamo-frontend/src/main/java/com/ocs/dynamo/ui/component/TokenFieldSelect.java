@@ -119,6 +119,8 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
 
 	private boolean addAllowed = false;
 
+	private boolean search;
+
 	/**
 	 * Constructor
 	 *
@@ -136,6 +138,7 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
 		comboBox = new EntityComboBox<>(em, attributeModel, service, filter, sortOrders);
 		container = new BeanItemContainer<>(AbstractEntity.class);
 		valueChangeListeners = new ArrayList<>();
+		this.search = search;
 		this.addAllowed = !search && (attributeModel != null && attributeModel.isQuickAddAllowed());
 	}
 
@@ -214,7 +217,6 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
 		Collection<T> values = container.getItemIds();
 		setValue(new HashSet<>(values));
 		setComboBoxWidth();
-
 		validate();
 	}
 
@@ -347,16 +349,18 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
 
 	@Override
 	public void validate() throws InvalidValueException {
-		if (getAttributeModel() != null && getAttributeModel().isRequired() && container.getItemIds().isEmpty()) {
-			throw new Validator.EmptyValueException(getRequiredError());
+		if (!search && getAttributeModel() != null && getAttributeModel().isRequired()
+				&& container.getItemIds().isEmpty()) {
+			throw new Validator.EmptyValueException(
+					getMessageService().getMessage("ocs.value.required", VaadinUtils.getLocale()));
 		}
 		super.validate();
 	}
 
 	@Override
 	public void setComponentError(ErrorMessage componentError) {
-		if (comboBox != null) {
-			comboBox.setComponentError(componentError);
+		if (extTokenField != null) {
+			extTokenField.setComponentError(componentError);
 		}
 	}
 }
