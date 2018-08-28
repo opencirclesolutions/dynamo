@@ -497,7 +497,11 @@ public final class JpaQueryBuilder {
 			return createComparePredicate(builder, root, filter);
 		} else if (filter instanceof IsNull) {
 			IsNull isNull = (IsNull) filter;
-			return builder.isNull(getPropertyPath(root, isNull.getPropertyId()));
+			Path p = getPropertyPath(root, isNull.getPropertyId());
+			if (p.type() != null && java.util.Collection.class.isAssignableFrom(p.type().getJavaType())) {
+				return builder.isEmpty(p);
+			}
+			return builder.isNull(p);
 		} else if (filter instanceof Like) {
 			return createLikePredicate(builder, root, filter);
 		} else if (filter instanceof Contains) {
