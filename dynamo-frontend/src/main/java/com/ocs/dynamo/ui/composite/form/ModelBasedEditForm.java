@@ -49,6 +49,7 @@ import com.ocs.dynamo.ui.CanAssignEntity;
 import com.ocs.dynamo.ui.Refreshable;
 import com.ocs.dynamo.ui.component.Cascadable;
 import com.ocs.dynamo.ui.component.CollapsiblePanel;
+import com.ocs.dynamo.ui.component.CustomEntityField;
 import com.ocs.dynamo.ui.component.DefaultEmbedded;
 import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
@@ -958,7 +959,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
             c.setParentEntity(entity);
             c.setViewMode(viewMode);
 
-            field = fieldFactory.constructField(c);        }
+			field = fieldFactory.constructField(c);
+		}
 
         if (field instanceof URLField) {
             ((URLField) field)
@@ -1675,16 +1677,23 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
     private void setEntity(T entity, boolean checkIterationButtons) {
         this.entity = entity;
+		// refresh any fields that need it
+		for (Field<?> f : groups.get(isViewMode()).getFields()) {
+			Object pid = groups.get(viewMode).getPropertyId(f);
+			if (f instanceof CustomEntityField && getFieldFilters().containsKey(pid)) {
+				Filter ff = getFieldFilters().get(pid);
+				((CustomEntityField) f).refresh(ff);
+			} else if (f instanceof Refreshable) {
+				((Refreshable) f).refresh();
+			}
+		}
+
         // Inform all children
         for (CanAssignEntity<ID, T> field : assignEntityToFields) {
             field.assignEntity(entity);
         }
         afterEntitySet(this.entity);
 
-        // inform all children
-        for (CanAssignEntity<ID, T> field : assignEntityToFields) {
-            field.assignEntity(entity);
-        }
         setViewMode(getFormOptions().isOpenInViewMode() && entity.getId() != null, checkIterationButtons);
 
         // recreate the group
@@ -1712,13 +1721,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
                 Component pv = constructImagePreview(e.getKey());
                 ((Layout) hc).replaceComponent(e.getValue(), pv);
                 previews.get(isViewMode()).put(e.getKey(), pv);
-            }
-        }
-
-        // refresh any fields that need it
-        for (Field<?> f : groups.get(isViewMode()).getFields()) {
-            if (f instanceof Refreshable) {
-                ((Refreshable) f).refresh();
             }
         }
 
@@ -1867,7 +1869,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
      * @param component the component
      * @param valid     whether the component is valid
      */
-    public void signalDetailsComponentValid(SignalsParent component, boolean valid) {
+    @Override
+	public void signalDetailsComponentValid(SignalsParent component, boolean valid) {
         if (ValidationMode.DISABLE_BUTTON.equals(getFormOptions().getValidationMode())) {
             detailComponentsValid.put(component, valid);
             checkSaveButtonState();
@@ -1947,7 +1950,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
      *
      * @return
      */
-    public boolean validateAllFields() {
+    @Override
+	public boolean validateAllFields() {
         boolean error = false;
         if (ValidationMode.VALIDATE_DIRECTLY.equals(getFormOptions().getValidationMode())) {
             for (Field<?> f : groups.get(isViewMode()).getFields()) {

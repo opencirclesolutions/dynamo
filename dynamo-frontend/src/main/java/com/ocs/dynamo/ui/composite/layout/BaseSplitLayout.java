@@ -365,14 +365,14 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 
 			};
 
-            editForm.setCustomSaveConsumer(customSaveConsumer);editForm.setFormTitleWidth(getFormTitleWidth());
+			editForm.setCustomSaveConsumer(customSaveConsumer);
+			editForm.setFormTitleWidth(getFormTitleWidth());
             editForm.setDetailJoins(getDetailJoinsFallBack());
             editForm.setFieldEntityModels(getFieldEntityModels());
             editForm.build();
             detailFormLayout.addComponent(editForm);
         } else {
             // reset the form's view mode if needed
-            editForm.setViewMode(getFormOptions().isOpenInViewMode());
             editForm.setEntity(entity);
             editForm.resetTab();
         }
