@@ -24,6 +24,7 @@ import org.vaadin.addons.lazyquerycontainer.QueryDefinition;
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.dao.SortOrder;
 import com.ocs.dynamo.domain.AbstractEntity;
+import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.filter.Filter;
@@ -131,8 +132,7 @@ public abstract class BaseServiceQuery<ID extends Serializable, T extends Abstra
 	}
 
 	/**
-	 * Sets order clause of Service query according to query definition sort
-	 * states.
+	 * Sets order clause of Service query according to query definition sort states.
 	 * 
 	 * @return an array containing the constructed Order objects
 	 */
@@ -140,6 +140,12 @@ public abstract class BaseServiceQuery<ID extends Serializable, T extends Abstra
 		Object[] sortPropertyIds;
 		boolean[] sortPropertyAscendingStates;
 		QueryDefinition queryDefinition = getCustomQueryDefinition();
+
+		// look up the correct entity model for filter conversion
+		EntityModel<T> em = getCustomQueryDefinition().getEntityModel();
+		if (em == null) {
+			em = entityModelFactory.getModel(getCustomQueryDefinition().getService().getEntityClass());
+		}
 
 		if (queryDefinition.getSortPropertyIds().length == 0) {
 			sortPropertyIds = queryDefinition.getDefaultSortPropertyIds();
@@ -152,9 +158,13 @@ public abstract class BaseServiceQuery<ID extends Serializable, T extends Abstra
 		final SortOrder[] orders = new SortOrder[sortPropertyIds.length];
 		if (sortPropertyIds.length > 0) {
 			for (int i = 0; i < sortPropertyIds.length; i++) {
+				String prop = sortPropertyIds[i].toString();
+				AttributeModel am = em.getAttributeModel(prop);
+				if (am.getReplacementSortPath() != null) {
+					prop = am.getReplacementSortPath();
+				}
 				orders[i] = new SortOrder(
-						sortPropertyAscendingStates[i] ? SortOrder.Direction.ASC : SortOrder.Direction.DESC,
-						sortPropertyIds[i].toString());
+						sortPropertyAscendingStates[i] ? SortOrder.Direction.ASC : SortOrder.Direction.DESC, prop);
 			}
 		}
 		return orders;

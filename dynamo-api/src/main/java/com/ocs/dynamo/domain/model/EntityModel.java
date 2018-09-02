@@ -231,6 +231,11 @@ public interface EntityModel<T> {
 	String REPLACEMENT_SEARCH_PATH = "replacementSearchPath";
 
 	/**
+	 * The path to actually use when sorting
+	 */
+	String REPLACEMENT_SORT_PATH = "replacementSortPath";
+
+	/**
 	 * Whether this attribute is required when performing a search
 	 */
 	String REQUIRED_FOR_SEARCHING = "requiredForSearching";
