@@ -27,6 +27,11 @@
 			<artifactId>dynamo-functional-domain</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>dynamo-frontend</artifactId>
+			<version>${project.version}</version>
+		</dependency>		
 		<!-- Hibernate -->
 		<dependency>
 			<groupId>org.hibernate</groupId>

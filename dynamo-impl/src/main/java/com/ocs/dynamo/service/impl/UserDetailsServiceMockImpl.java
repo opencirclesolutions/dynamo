@@ -25,7 +25,7 @@ public class UserDetailsServiceMockImpl implements UserDetailsService {
 
     @Override
     public String getCurrentUserName() {
-        return null;
+        return "unknown";
     }
 
     @Override

@@ -17,6 +17,9 @@
 		<entry key="hibernate.dialect" value="org.hibernate.dialect.H2Dialect" />
 	</util:map>
 
+	<!-- wrapper around the export -->
+	<bean id="tableExportService" class="com.ocs.dynamo.ui.composite.table.export.TableExportService" />
+
 	<!-- Entity Manager, the use of packagesToScan, jpaPropertyMap and jpaVendorAdapter 
 		prevent the need for an persistence.xml -->
 	<bean id="jpaVendorAdapter"
@@ -62,7 +65,15 @@
 		<property name="fallbackToSystemLocale" value="false" />
 	</bean>
 
-	<!--  Default service and DAO for region -->
+	<bean id="menuService" class="com.ocs.dynamo.ui.menu.MenuService" />
+
+	<bean id="permissionChecker" class="com.ocs.dynamo.ui.auth.impl.DefaultPermissionCheckerImpl">
+		<constructor-arg value="com.ocs.dynamo" />
+	</bean>
+
+	<bean id="userDetailsService" class="com.ocs.dynamo.service.impl.UserDetailsServiceMockImpl"></bean>
+
+    <!--  Default service and DAO for region -->
 	<bean id="regionDao" class="com.ocs.dynamo.functional.dao.DomainDaoImpl">
 		<constructor-arg name="dslRoot">
 			<bean class="com.ocs.dynamo.functional.domain.QRegion">

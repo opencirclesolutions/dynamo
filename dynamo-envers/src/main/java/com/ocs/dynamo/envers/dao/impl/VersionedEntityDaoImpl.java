@@ -50,6 +50,7 @@ import com.ocs.dynamo.envers.domain.RevisionType;
 import com.ocs.dynamo.envers.domain.VersionedEntity;
 import com.ocs.dynamo.filter.And;
 import com.ocs.dynamo.filter.Compare;
+import com.ocs.dynamo.filter.DynamoFilterUtil;
 import com.ocs.dynamo.filter.Filter;
 import com.ocs.dynamo.filter.FilterUtil;
 import com.ocs.dynamo.filter.In;
@@ -100,7 +101,7 @@ public abstract class VersionedEntityDaoImpl<ID, T extends AbstractEntity<ID>, U
 	@SuppressWarnings("unchecked")
 	private void addIdFilter(AuditQuery aq, Filter filter) {
 		if (filter != null) {
-			Filter idFilter = FilterUtil.extractFilter(filter, DynamoConstants.ID);
+			Filter idFilter = DynamoFilterUtil.extractFilter(filter, DynamoConstants.ID);
 			if (idFilter != null) {
 				Compare.Equal comp = (Compare.Equal) idFilter;
 				ID id = (ID) comp.getValue();

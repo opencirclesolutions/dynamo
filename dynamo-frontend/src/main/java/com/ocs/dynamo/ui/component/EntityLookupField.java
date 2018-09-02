@@ -32,7 +32,6 @@ import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.ocs.dynamo.utils.StringUtils;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.sort.SortOrder;
-import com.vaadin.server.ErrorMessage;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -63,7 +62,7 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 	 * Indicates whether it is allowed to clear the selection
 	 */
 	private boolean clearAllowed;
-	
+
 	/**
 	 * Indicates whether it is allowed to add items
 	 */
@@ -217,7 +216,7 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 		// label for displaying selected values
 		label = new Label();
 		updateLabel(getValue());
-		bar.addComponent(label);
+		bar.addComponent(VaadinUtils.wrapInFormLayout(label));
 
 		// button for selecting an entity - brings up the search dialog
 		selectButton = new Button(getMessageService().getMessage("ocs.select", VaadinUtils.getLocale()));
@@ -343,7 +342,6 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 	private void updateLabel(Object newValue) {
 		if (label != null) {
 			label.setCaptionAsHtml(true);
-
 			String caption = getLabel(newValue);
 			label.setCaption(caption.replaceAll(",", StringUtils.HTML_LINE_BREAK));
 		}
@@ -377,13 +375,6 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 	public void setAdditionalFilter(Filter additionalFilter) {
 		setValue(null);
 		super.setAdditionalFilter(additionalFilter);
-	}
-
-	@Override
-	public void setComponentError(ErrorMessage componentError) {
-		if (label != null) {
-			label.setComponentError(componentError);
-		}
 	}
 
 	protected FetchJoinInformation[] getJoins() {

@@ -37,10 +37,10 @@ public class DomainServiceTest extends BaseIntegrationTest {
 
 	@Inject
 	private DomainService domainService;
-	
+
 	@Inject
 	private DomainService regionService;
-	
+
 	@Inject
 	private DefaultServiceImpl<Integer, Currency> currencyService;
 
@@ -86,8 +86,7 @@ public class DomainServiceTest extends BaseIntegrationTest {
 
 	@Test
 	public void testFindAllByType() {
-		List<? extends Domain> all = domainService
-				.findAllByType(Currency.class);
+		List<? extends Domain> all = domainService.findAllByType(Currency.class);
 		Assert.assertEquals(3, all.size());
 	}
 

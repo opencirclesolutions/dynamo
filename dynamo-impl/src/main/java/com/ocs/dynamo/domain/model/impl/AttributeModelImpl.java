@@ -50,7 +50,7 @@ public class AttributeModelImpl implements AttributeModel {
 	private Map<String, String> cascadeAttributes = new HashMap<>();
 
 	private Map<String, CascadeMode> cascadeModes = new HashMap<>();
-	
+
 	private CheckboxMode checkboxMode;
 
 	private String collectionTableFieldName;
@@ -126,6 +126,8 @@ public class AttributeModelImpl implements AttributeModel {
 	private String quickAddPropertyName;
 
 	private String replacementSearchPath;
+
+	private String replacementSortPath;
 
 	private boolean required;
 
@@ -358,6 +360,10 @@ public class AttributeModelImpl implements AttributeModel {
 	@Override
 	public String getReplacementSearchPath() {
 		return replacementSearchPath;
+	}
+
+	public String getReplacementSortPath() {
+		return replacementSortPath;
 	}
 
 	@Override
@@ -678,6 +684,10 @@ public class AttributeModelImpl implements AttributeModel {
 
 	public void setReplacementSearchPath(String replacementSearchPath) {
 		this.replacementSearchPath = replacementSearchPath;
+	}
+
+	public void setReplacementSortPath(String replacementSortPath) {
+		this.replacementSortPath = replacementSortPath;
 	}
 
 	public void setRequired(boolean required) {

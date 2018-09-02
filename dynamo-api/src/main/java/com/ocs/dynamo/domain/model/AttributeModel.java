@@ -281,6 +281,13 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 
 	/**
 	 * 
+	 * @return The path to use for sorting on this attribute when it does not
+	 *         normally support sorting
+	 */
+	String getReplacementSortPath();
+
+	/**
+	 * 
 	 * 
 	 * @return The search select mode (determines which component to render in
 	 *         search screens)

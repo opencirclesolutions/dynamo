@@ -176,6 +176,12 @@ public @interface Attribute {
 	String quickAddPropertyName() default "";
 
 	/**
+	 * @return the replacement path to use for sorting when sorting on the property
+	 *         itself is not directly possible
+	 */
+	String replacementSortPath() default "";
+
+	/**
 	 * @return the replacement search path to be used when the property does not
 	 *         directly map to a JPA property
 	 */
