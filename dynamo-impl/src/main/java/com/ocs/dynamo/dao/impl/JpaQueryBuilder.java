@@ -405,7 +405,7 @@ public final class JpaQueryBuilder {
 			cq.where(p);
 		}
 
-		// When joins are added do distinct query
+		// When joins are added (by getPropertyPath) do distinct query
 		if (!root.getJoins().isEmpty()) {
 			cq.distinct(true);
 		}
