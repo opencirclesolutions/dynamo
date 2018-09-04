@@ -405,6 +405,11 @@ public final class JpaQueryBuilder {
 			cq.where(p);
 		}
 
+		// When joins are added do distinct query
+		if (!root.getJoins().isEmpty()) {
+			cq.distinct(true);
+		}
+
 		// add order clause - this is also important in case of an ID query
 		// since we do need to return the correct IDs!
 		cq = addSortInformation(builder, cq, root, sortOrders);
