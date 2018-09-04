@@ -699,6 +699,9 @@ public final class JpaQueryBuilder {
 			} else {
 				path = path.get(part);
 			}
+			if (java.util.Collection.class.isAssignableFrom(path.type().getJavaType())) {
+				path = root.join(part);
+			}
 		}
 		return path;
 	}
