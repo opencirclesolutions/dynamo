@@ -27,6 +27,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Fetch;
 import javax.persistence.criteria.FetchParent;
+import javax.persistence.criteria.From;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Path;
@@ -704,8 +705,8 @@ public final class JpaQueryBuilder {
 			} else {
 				path = path.get(part);
 			}
-			if (java.util.Collection.class.isAssignableFrom(path.type().getJavaType())) {
-				path = root.join(part);
+			if (path instanceof From<?, ?> && java.util.Collection.class.isAssignableFrom(path.type().getJavaType())) {
+				path = ((From<?, ?>) path).join(part);
 			}
 		}
 		return path;
