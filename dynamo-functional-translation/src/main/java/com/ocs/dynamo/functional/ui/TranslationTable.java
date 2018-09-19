@@ -94,16 +94,6 @@ public class TranslationTable<ID, E extends AbstractEntityTranslated<ID, Transla
 
 	@Override
 	public void assignEntity(E entity) {
-		if (localesRestricted) {
-			Set<Locale> existingLocales = entity.getTranslations(fieldName).stream().map(
-					eTranslation -> eTranslation.getLocale()).collect(Collectors.toSet());
-			for (Locale locale : entity.getRequiredLocales()) {
-				if (!existingLocales.contains(locale)) {
-					Translation<E> newTranslation = createEntity();
-					newTranslation.setLocale(locale);
-				}
-			}
-		}
 		this.entity = entity;
 	}
 
