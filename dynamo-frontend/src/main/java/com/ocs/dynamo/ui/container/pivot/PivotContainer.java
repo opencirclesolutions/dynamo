@@ -312,6 +312,7 @@ public class PivotContainer implements Container, ItemSetChangeListener, Indexed
 		// Reset
 		pivotIdList = null;
 		propIds = null;
+		cache.clear();
 	}
 
 	@Override
