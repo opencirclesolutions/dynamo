@@ -54,7 +54,7 @@ public class Region extends DomainParent<Country, Region> {
     }
 
     @Override
-    @Attribute(visible = VisibilityType.SHOW, required = true)
+    @Attribute(visible = VisibilityType.SHOW)
     public String getCode() {
         return super.getCode();
     }
