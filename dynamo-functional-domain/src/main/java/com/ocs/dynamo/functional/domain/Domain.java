@@ -13,14 +13,7 @@
  */
 package com.ocs.dynamo.functional.domain;
 
-import com.ocs.dynamo.domain.AbstractEntity;
-import com.ocs.dynamo.domain.model.VisibilityType;
-import com.ocs.dynamo.domain.model.annotation.Attribute;
-import com.ocs.dynamo.domain.model.annotation.Model;
-import com.ocs.dynamo.functional.DomainConstants;
-import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.builder.ReflectionToStringBuilder;
-
+import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -32,6 +25,7 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 
 import com.ocs.dynamo.domain.AbstractEntity;
+import com.ocs.dynamo.domain.model.EditableType;
 import com.ocs.dynamo.domain.model.VisibilityType;
 import com.ocs.dynamo.domain.model.annotation.Attribute;
 import com.ocs.dynamo.domain.model.annotation.Model;
@@ -44,7 +38,7 @@ import com.ocs.dynamo.functional.DomainConstants;
  *
  */
 @Inheritance
-@DiscriminatorColumn(name = "TYPE")
+@DiscriminatorColumn(name = "type")
 @Entity(name = "domain")
 @Model(displayProperty = "name", sortOrder = "name asc")
 public abstract class Domain extends AbstractEntity<Integer> {
@@ -57,6 +51,10 @@ public abstract class Domain extends AbstractEntity<Integer> {
 
 	@Id
 	private Integer id;
+
+	@Attribute(visible = VisibilityType.HIDE, editable = EditableType.READ_ONLY)
+	@Column(name = "type", insertable = false, updatable = false)
+	private String type;
 
 	/**
 	 * By default, we only use "name" so the code is hidden
@@ -92,6 +90,10 @@ public abstract class Domain extends AbstractEntity<Integer> {
 	@Override
 	public void setId(final Integer id) {
 		this.id = id;
+	}
+
+	public String getType() {
+		return type;
 	}
 
 	public String getCode() {
