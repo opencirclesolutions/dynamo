@@ -144,7 +144,8 @@ public class FieldTranslationFactory<ID extends Serializable, T extends Abstract
 
 			Map<String, Filter> fieldFilters = context.getFieldFilters();
 			Filter fieldFilter = fieldFilters == null ? null : fieldFilters.get(am.getPath());
-			if ((fieldFilter != null && AbstractEntityTranslated.class.isAssignableFrom(am.getType()))) {
+			if (fieldFilter != null && (AbstractEntityTranslated.class.isAssignableFrom(am.getType())
+					|| AbstractEntityTranslated.class.isAssignableFrom(am.getNestedEntityModel().getEntityClass()))) {
 
 				// construct combobox
 				EntityModel<T> entityModel = (EntityModel<T>) resolveEntityModel(context.getFieldEntityModel(), am,

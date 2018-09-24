@@ -160,9 +160,13 @@ public class TranslatedComboBox<ID extends Serializable, T extends AbstractEntit
 				locale, ids);
 		// Fill combo with translations
 		for (Object[] row : result) {
-			Item newItem = comboBox.addItem(row[0]);
-			newItem.getItemProperty("key").setValue(row[0]);
-			newItem.getItemProperty("translation").setValue(row[1]);
+			if (!comboBox.containsId(row[0])) {
+				Item newItem = comboBox.addItem(row[0]);
+				if (newItem != null) {
+					newItem.getItemProperty("key").setValue(row[0]);
+					newItem.getItemProperty("translation").setValue(row[1]);
+				}
+			}
 		}
 	}
 
