@@ -164,7 +164,8 @@ public final class JpaQueryBuilder {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private static Predicate createComparePredicate(CriteriaBuilder builder, Root<?> root, Filter filter) {
 		Compare compare = (Compare) filter;
-		Expression<Comparable> property = (Expression) getPropertyPath(root, compare.getPropertyId());
+		Path path = getPropertyPath(root, compare.getPropertyId(), true);
+		Expression<Comparable> property = path;
 		Object value = compare.getValue();
 
 		// number representation may contain locale specific separators.
@@ -189,6 +190,10 @@ public final class JpaQueryBuilder {
 
 		switch (compare.getOperation()) {
 		case EQUAL:
+			if (value instanceof Class<?>) {
+				// When instance of class the use type expression
+				return builder.equal(path.type(), builder.literal(value));
+			}
 			return builder.equal(property, value);
 		case GREATER:
 			return builder.greaterThan(property, (Comparable) value);
@@ -696,17 +701,38 @@ public final class JpaQueryBuilder {
 	 * @return the path to property
 	 */
 	private static Path<Object> getPropertyPath(Root<?> root, Object propertyId) {
+		return getPropertyPath(root, propertyId, false);
+	}
+
+	/**
+	 * Gets property path.
+	 * 
+	 * @param root
+	 *            the root where path starts form
+	 * @param propertyId
+	 *            the property ID
+	 * @param join
+	 *            set to true if you want implicit joins to be created for ALL collections
+	 * @return the path to property
+	 */
+	private static Path<Object> getPropertyPath(Root<?> root, Object propertyId, boolean join) {
 		String[] propertyIdParts = ((String) propertyId).split("\\.");
 
 		Path<Object> path = null;
-		for (String part : propertyIdParts) {
+		for (int i = 0; i < propertyIdParts.length; i++) {
+			String part = propertyIdParts[i];
 			if (path == null) {
 				path = root.get(part);
 			} else {
 				path = path.get(part);
 			}
-			if (path instanceof From<?, ?> && java.util.Collection.class.isAssignableFrom(path.type().getJavaType())) {
-				path = ((From<?, ?>) path).join(part);
+			// Just one collection in the path supported!
+			if (join && java.util.Collection.class.isAssignableFrom(path.type().getJavaType())) {
+				path = root.join(propertyIdParts[0]);
+				for (int k = 1; k <= i; k++) {
+					part = propertyIdParts[k];
+					path = ((From<?, ?>) path).join(part);
+				}
 			}
 		}
 		return path;
