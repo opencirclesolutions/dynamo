@@ -293,17 +293,18 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
 	protected void generateColumns(List<AttributeModel> attributeModels) {
 		List<Object> propertyNames = new ArrayList<>();
 		List<String> headerNames = new ArrayList<>();
-
-		for (AttributeModel attributeModel : attributeModels) {
-			addColumn(attributeModel, propertyNames, headerNames);
-			if (attributeModel.getNestedEntityModel() != null) {
-				for (AttributeModel nestedAttributeModel : attributeModel.getNestedEntityModel().getAttributeModels()) {
-					addColumn(nestedAttributeModel, propertyNames, headerNames);
-				}
-			}
-		}
+		generateColumnsRecursive(attributeModels, propertyNames, headerNames);
 		this.setVisibleColumns(propertyNames.toArray());
 		this.setColumnHeaders(headerNames.toArray(new String[0]));
+	}
+
+	private void generateColumnsRecursive(List<AttributeModel> attributeModels, List<Object> propertyNames, List<String> headerNames){
+		for (AttributeModel attributeModel : attributeModels) {
+			addColumn(attributeModel, propertyNames, headerNames);
+			if (attributeModel.getNestedEntityModel() != null){
+				generateColumnsRecursive(attributeModel.getNestedEntityModel().getAttributeModels(), propertyNames, headerNames);
+			}
+		}
 	}
 
 	public Container getContainer() {
@@ -335,12 +336,14 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
 	 * order to remove any generated columns containing URL fields
 	 */
 	public void removeGeneratedColumns() {
-		for (AttributeModel attributeModel : entityModel.getAttributeModels()) {
+		removeGeneratedColumnsRecursive(entityModel.getAttributeModels());
+	}
+
+	private void removeGeneratedColumnsRecursive(List<AttributeModel> attributeModels){
+		for (AttributeModel attributeModel : attributeModels) {
 			removeGeneratedColumn(attributeModel);
-			if (attributeModel.getNestedEntityModel() != null) {
-				for (AttributeModel nestedAttributeModel : attributeModel.getNestedEntityModel().getAttributeModels()) {
-					removeGeneratedColumn(nestedAttributeModel);
-				}
+			if (attributeModel.getNestedEntityModel() != null){
+				removeGeneratedColumnsRecursive(attributeModel.getNestedEntityModel().getAttributeModels());
 			}
 		}
 	}
