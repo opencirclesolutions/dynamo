@@ -110,13 +110,41 @@ public final class JpaQueryBuilder {
 	 */
 	private static <T, R> CriteriaQuery<R> addSortInformation(CriteriaBuilder builder, CriteriaQuery<R> cq,
 			Root<T> root, SortOrder... sortOrders) {
+		return addSortInformation(builder, cq, root, (List<Selection<?>>) null, sortOrders);
+	}
+
+	/**
+	 * Adds the "order by" clause to a JPA 2 criteria query
+	 * 
+	 * @param builder
+	 *            the criteria builder
+	 * @param cq
+	 *            the criteria query
+	 * @param root
+	 *            the query root
+	 * @param multiSelect
+	 *            optional properties, when supplied applied as multi select
+	 * @param sortOrders
+	 *            the sort orders
+	 * @return
+	 */
+	private static <T, R> CriteriaQuery<R> addSortInformation(CriteriaBuilder builder, CriteriaQuery<R> cq,
+			Root<T> root, List<Selection<?>> multiSelect, SortOrder... sortOrders) {
+		List<Selection<?>> ms = new ArrayList<>();
+		if (multiSelect != null && !multiSelect.isEmpty()) {
+			ms.addAll(multiSelect);
+		}
 		if (sortOrders != null && sortOrders.length > 0) {
 			List<javax.persistence.criteria.Order> orders = new ArrayList<>();
 			for (SortOrder sortOrder : sortOrders) {
 				Expression<?> property = getPropertyPath(root, sortOrder.getProperty());
+				ms.add(property);
 				orders.add(sortOrder.isAscending() ? builder.asc(property) : builder.desc(property));
 			}
 			cq.orderBy(orders);
+		}
+		if (multiSelect != null && !ms.isEmpty()) {
+			cq.multiselect(ms);
 		}
 		return cq;
 	}
@@ -402,7 +430,8 @@ public final class JpaQueryBuilder {
 		Root<T> root = cq.from(entityClass);
 
 		// select only the ID
-		cq.multiselect(root.get(DynamoConstants.ID));
+		List<Selection<?>> selection = new ArrayList<>();
+		selection.add(root.get(DynamoConstants.ID));
 
 		// Set where clause
 		Map<String, Object> pars = createParameterMap();
@@ -418,7 +447,7 @@ public final class JpaQueryBuilder {
 
 		// add order clause - this is also important in case of an ID query
 		// since we do need to return the correct IDs!
-		cq = addSortInformation(builder, cq, root, sortOrders);
+		cq = addSortInformation(builder, cq, root, selection, sortOrders);
 		TypedQuery<Tuple> query = entityManager.createQuery(cq);
 		setParameters(query, pars);
 		return query;
