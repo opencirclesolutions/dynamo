@@ -826,6 +826,10 @@ public class TableExportActionHandler implements Handler {
 	 *            the grid to export from
 	 */
 	public void exportFromGrid(Grid grid) {
+		exportFromGrid(grid, null);
+	}
+
+	public void exportFromGrid(Grid grid, Object target) {
 		Table table = new Table();
 		table.setContainerDataSource(grid.getContainerDataSource());
 
@@ -840,8 +844,7 @@ public class TableExportActionHandler implements Handler {
 					caption.add(r.getCell(oid).getText());
 				} catch (Exception ex) {
 					// if it is not text, then it is HTML (very ugly, but seems
-					// to
-					// be the only way)
+					// to be the only way)
 					caption.add(r.getCell(oid).getHtml());
 				}
 			}
@@ -951,6 +954,8 @@ public class TableExportActionHandler implements Handler {
 				}
 			}
 
+		} else if (action == actionExport && sender != null && sender instanceof Grid) {
+			exportFromGrid((Grid) sender, target);
 		}
 	}
 }
