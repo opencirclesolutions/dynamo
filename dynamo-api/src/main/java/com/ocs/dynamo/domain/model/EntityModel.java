@@ -224,7 +224,7 @@ public interface EntityModel<T> {
 	 * The path to actually search for (replaces the standard search path)
 	 */
 	String REPLACEMENT_SEARCH_PATH = "replacementSearchPath";
-	
+
 	/**
 	 * The path to actually use when sorting
 	 */
@@ -322,6 +322,12 @@ public interface EntityModel<T> {
 	 */
 	String DIRECT_NAVIGATION = "directNavigation";
 
+	/**
+	 * Adds an attribute group
+	 * 
+	 * @param attributeGroup
+	 *            the name of the attribute group
+	 */
 	void addAttributeGroup(String attributeGroup);
 
 	/**
@@ -466,7 +472,7 @@ public interface EntityModel<T> {
 	boolean isAttributeGroupVisible(String group, boolean readOnly);
 
 	/**
-	 * @return whether only the default attribute gorup is used
+	 * @return whether only the default attribute group is used
 	 */
 	boolean usesDefaultGroupOnly();
 }

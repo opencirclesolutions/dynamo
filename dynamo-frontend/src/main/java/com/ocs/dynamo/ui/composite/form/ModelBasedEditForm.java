@@ -239,7 +239,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 						ClassUtils.setFieldValue(getEntity(), fileNameFieldName, event.getFilename());
 						refreshLabel(fileNameFieldName);
 					}
-					
+
 					if (afterUploadConsumer != null) {
 						afterUploadConsumer.accept(event.getFilename(), stream.toByteArray());
 					}
@@ -355,7 +355,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	private boolean nestedMode;
 
 	private Consumer<T> customSaveConsumer;
-	
+
 	private BiConsumer<String, byte[]> afterUploadConsumer;
 
 	/**
@@ -1003,7 +1003,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 				Integer fieldWidth = SystemPropertyUtils.getDefaultFieldWidth();
 
 				if (fieldWidth == null || sameRow || field instanceof DetailsEditLayout
-						|| !attributeModel.getGroupTogetherWith().isEmpty()) {
+						|| field instanceof FullWidthField || !attributeModel.getGroupTogetherWith().isEmpty()) {
 					field.setSizeFull();
 				} else {
 					field.setWidth(fieldWidth + "px");
@@ -1184,7 +1184,11 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 						VaadinUtils.showConfirmDialog(getMessageService(), getMessageService().getMessage(
 								"ocs.confirm.save", VaadinUtils.getLocale(), getEntityModel().getDisplayName()), () -> {
 									try {
-										doSave();
+										if (customSaveConsumer != null) {
+											customSaveConsumer.accept(entity);
+										} else {
+											doSave();
+										}
 									} catch (RuntimeException ex) {
 										if (!handleCustomException(ex)) {
 											handleSaveException(ex);
@@ -2022,7 +2026,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	public void setCustomSaveConsumer(Consumer<T> customSaveConsumer) {
 		this.customSaveConsumer = customSaveConsumer;
 	}
-	
+
 	public BiConsumer<String, byte[]> getAfterUploadConsumer() {
 		return afterUploadConsumer;
 	}

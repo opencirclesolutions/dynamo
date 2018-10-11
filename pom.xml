@@ -88,8 +88,6 @@
 		<module>dynamo-functional-translation</module>		
 		<module>dynamo-jasperreports</module>
 		<module>dynamo-jasperreports-fixes</module>
-		<module>dynamo-archetype</module>
-		<module>dynamo-archetype-modules</module>
 	</modules>
 	<properties>
 		<!-- Build settings. -->

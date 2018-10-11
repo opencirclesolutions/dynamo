@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.ocs.dynamo.constants.DynamoConstants;
+import com.ocs.dynamo.domain.AbstractEntity;
+import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.functional.domain.Domain;
@@ -35,6 +37,8 @@ import com.vaadin.data.util.filter.SimpleStringFilter;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.Field;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.VerticalLayout;
@@ -99,6 +103,10 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
 		this.domainClasses = domainClasses;
 	}
 
+	public void afterSelectedDomainChanged() {
+
+	}
+
 	/**
 	 * Adds an entity model override
 	 * 
@@ -156,6 +164,17 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
 		}
 	}
 
+	protected <R extends AbstractEntity<?>> Field<?> constructCustomField(EntityModel<R> entityModel,
+			AttributeModel attributeModel, boolean viewMode) {
+		// overwrite in subclasses
+		return null;
+	}
+
+	protected Component constructHeaderLayout() {
+		// overwrite in subclasses
+		return null;
+	}
+
 	/**
 	 * Construct a split layout for a certain domain
 	 * 
@@ -172,10 +191,21 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
 				.getServiceForEntity(domainClass);
 		if (baseService != null) {
 			EntityModel<T> em = getEntityModel(domainClass);
-			return new ServiceBasedSplitLayout<Integer, T>(baseService, em, QueryType.PAGING, formOptions,
+			return new ServiceBasedSplitLayout<Integer, T>(baseService, em, QueryType.ID_BASED, formOptions,
 					new SortOrder(Domain.ATTRIBUTE_NAME, SortDirection.ASCENDING)) {
 
 				private static final long serialVersionUID = -6504072714662771230L;
+
+				@Override
+				protected Field<?> constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel,
+						boolean viewMode, boolean searchMode) {
+					return MultiDomainEditLayout.this.constructCustomField(entityModel, attributeModel, viewMode);
+				}
+
+				@Override
+				protected Component constructHeaderLayout() {
+					return MultiDomainEditLayout.this.constructHeaderLayout();
+				}
 
 				@Override
 				protected Filter constructQuickSearchFilter(String value) {
@@ -199,6 +229,11 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
 				@Override
 				protected void postProcessButtonBar(Layout buttonBar) {
 					MultiDomainEditLayout.this.postProcessButtonBar(buttonBar);
+				}
+
+				@Override
+				protected void postProcessLayout(Layout main) {
+					MultiDomainEditLayout.this.postProcessSplitLayout(main);
 				}
 			};
 		} else {
@@ -274,6 +309,15 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
 	}
 
 	/**
+	 * Post processes the split layout after it has been created
+	 * 
+	 * @param main
+	 */
+	protected void postProcessSplitLayout(Layout main) {
+		// overwrite in subclasses
+	}
+
+	/**
 	 * Registers a button. The button will be disabled or enabled depending on
 	 * whether an item is selected
 	 * 
@@ -306,5 +350,6 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
 		ServiceBasedSplitLayout<?, ?> layout = constructSplitLayout(clazz, formOptions);
 		selectedDomainLayout.replaceComponent(splitLayout, layout);
 		splitLayout = layout;
+		afterSelectedDomainChanged();
 	}
 }

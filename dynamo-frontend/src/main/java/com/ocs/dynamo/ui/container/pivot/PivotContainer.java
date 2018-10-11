@@ -54,7 +54,7 @@ public class PivotContainer implements Container, ItemSetChangeListener, Indexed
 	private PivotIdList pivotIdList;
 
 	private List<String> pivotedColumnPostFixes;
-	
+
 	private static final int MAX_CACHE_SIZE = 100;
 
 	private Map<Object, PivotItem> cache = new HashMap<>();
@@ -69,11 +69,10 @@ public class PivotContainer implements Container, ItemSetChangeListener, Indexed
 	 *            Mandatory defines the property which contains the column
 	 *            designator
 	 * @param rowPropertyId
-	 *            Mandatory defines the property which contains the row
-	 *            designator
+	 *            Mandatory defines the property which contains the row designator
 	 * @param columnIds
-	 *            Mandatory, size should be at least 1 defines all possible
-	 *            unique column values
+	 *            Mandatory, size should be at least 1 defines all possible unique
+	 *            column values
 	 * @param pivotedColumnPostFixes
 	 *            The identifiers that should be placed behind each column ID in
 	 *            order to generate the columns (this is used to prevent the
@@ -81,8 +80,8 @@ public class PivotContainer implements Container, ItemSetChangeListener, Indexed
 	 * @param rowCount
 	 *            Unsigned number of expected rows
 	 */
-	public PivotContainer(Container sourceContainer, Object columnPropertyId, Object rowPropertyId,
-			List<?> columnIds, List<String> pivotedColumnPostFixes, int rowCount) {
+	public PivotContainer(Container sourceContainer, Object columnPropertyId, Object rowPropertyId, List<?> columnIds,
+			List<String> pivotedColumnPostFixes, int rowCount) {
 		if (sourceContainer == null) {
 			throw new IllegalArgumentException("sourceContainer is mandatory");
 		}
@@ -227,8 +226,7 @@ public class PivotContainer implements Container, ItemSetChangeListener, Indexed
 	}
 
 	/**
-	 * @return the property id to the value in the item that identifies the
-	 *         column
+	 * @return the property id to the value in the item that identifies the column
 	 */
 	protected Object getColumnPropertyId() {
 		return columnPropertyId;
@@ -281,8 +279,7 @@ public class PivotContainer implements Container, ItemSetChangeListener, Indexed
 						// The rowvalue is the same, hence the item is part of
 						// this
 						// row
-						columnItems.put(column.getItemProperty(columnPropertyId).getValue()
-								.toString(), column);
+						columnItems.put(column.getItemProperty(columnPropertyId).getValue().toString(), column);
 					} else {
 						// When the rowvalue is not equal to the first, the item
 						// is
@@ -312,6 +309,7 @@ public class PivotContainer implements Container, ItemSetChangeListener, Indexed
 		// Reset
 		pivotIdList = null;
 		propIds = null;
+		cache.clear();
 	}
 
 	@Override
@@ -395,20 +393,18 @@ public class PivotContainer implements Container, ItemSetChangeListener, Indexed
 	@Override
 	public List<?> getItemIds(int startIndex, int numberOfItems) {
 		if (startIndex < 0) {
-			throw new IndexOutOfBoundsException("Start index cannot be negative! startIndex="
-					+ startIndex);
+			throw new IndexOutOfBoundsException("Start index cannot be negative! startIndex=" + startIndex);
 		}
 		if (startIndex > size()) {
-			throw new IndexOutOfBoundsException("Start index exceeds container size! startIndex="
-					+ startIndex + " containerLastItemIndex=" + (size() - 1));
+			throw new IndexOutOfBoundsException("Start index exceeds container size! startIndex=" + startIndex
+					+ " containerLastItemIndex=" + (size() - 1));
 		}
 
 		if (numberOfItems < 1) {
 			if (numberOfItems == 0) {
 				return Collections.emptyList();
 			}
-			throw new IllegalArgumentException(
-					"Cannot get negative amount of items! numberOfItems=" + numberOfItems);
+			throw new IllegalArgumentException("Cannot get negative amount of items! numberOfItems=" + numberOfItems);
 		}
 
 		int endIndex = startIndex + numberOfItems;

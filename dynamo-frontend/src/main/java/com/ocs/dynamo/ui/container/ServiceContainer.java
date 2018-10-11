@@ -128,7 +128,7 @@ public class ServiceContainer<ID extends Serializable, T extends AbstractEntity<
 	}
 
 	/**
-	 * Perofmrs a sorting operation
+	 * Performs a sorting operation
 	 * 
 	 * @param sortOrder
 	 *            the desired sort order
