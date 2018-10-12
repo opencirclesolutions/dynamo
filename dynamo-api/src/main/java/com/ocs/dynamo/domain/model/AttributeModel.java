@@ -303,6 +303,11 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	AttributeSelectMode getSelectMode();
 
 	/**
+	 * @return the styles to apply for this component
+	 */
+	String getStyles();
+
+	/**
 	 * 
 	 * 
 	 * @return The text field mode (text fiel or text area)

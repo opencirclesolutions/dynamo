@@ -59,8 +59,8 @@
 		</developer>
 	</developers>
 	<scm>
-		<connection>scm:git:https://github.com/opencirclesolutions/dynamo.git</connection>
-		<developerConnection>scm:git:https://github.com/opencirclesolutions/dynamo.git</developerConnection>
+		<connection>scm:git:git@github.com:opencirclesolutions/dynamo.git</connection>
+		<developerConnection>scm:git:git@github.com:opencirclesolutions/dynamo.git</developerConnection>
 		<url>https://github.com/opencirclesolutions/dynamo</url>
 		<tag>HEAD</tag>
 	</scm>
@@ -84,8 +84,8 @@
 		<module>dynamo-frontend</module>
 		<module>dynamo-frontend-charts</module>		
 		<module>dynamo-functional-domain</module>
-		<module>dynamo-functional-domain-frontend</module>			
-		<module>dynamo-functional-translation</module>		
+		<module>dynamo-functional-domain-frontend</module>
+		<module>dynamo-functional-translation</module>
 		<module>dynamo-jasperreports</module>
 		<module>dynamo-jasperreports-fixes</module>
 	</modules>

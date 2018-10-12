@@ -355,6 +355,7 @@ public class ModelBasedFieldFactoryTest extends BaseIntegrationTest {
 		// simple case - simply create the normal field
 		Field<?> f = ff.constructField(model.getAttributeModel("name"), null, null);
 		Assert.assertTrue(f instanceof TextField);
+		Assert.assertEquals("myStyle", f.getStyleName());
 
 		// default case - lookup field (no field filter)
 		f = ff.constructField(model.getAttributeModel("testEntity"), null, null);

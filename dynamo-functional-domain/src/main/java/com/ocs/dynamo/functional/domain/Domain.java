@@ -13,21 +13,21 @@
  */
 package com.ocs.dynamo.functional.domain;
 
-import javax.persistence.DiscriminatorColumn;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Inheritance;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-
-import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.builder.ReflectionToStringBuilder;
-
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.VisibilityType;
 import com.ocs.dynamo.domain.model.annotation.Attribute;
 import com.ocs.dynamo.domain.model.annotation.Model;
 import com.ocs.dynamo.functional.DomainConstants;
+import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.builder.ReflectionToStringBuilder;
+
+import javax.persistence.DiscriminatorColumn;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 /**
  * Base class for reference information.
@@ -38,6 +38,8 @@ import com.ocs.dynamo.functional.DomainConstants;
 @Inheritance
 @DiscriminatorColumn(name = "TYPE")
 @Entity
+//TODO this should not be in master, temporary fix.
+@Table(name = "domain")
 @Model(displayProperty = "name", sortOrder = "name asc")
 public abstract class Domain extends AbstractEntity<Integer> {
 

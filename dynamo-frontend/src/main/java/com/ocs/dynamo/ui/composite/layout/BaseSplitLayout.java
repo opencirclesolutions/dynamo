@@ -306,11 +306,15 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 
 				@Override
 				protected void afterEditDone(boolean cancel, boolean newObject, T entity) {
-					// update the selected item so master and detail are in sync
-					// again
-					reload();
-					detailsMode(entity);
-					afterReload(entity);
+					if (!cancel) {
+						// update the selected item so master and detail are in sync
+						// again
+						reload();
+						detailsMode(entity);
+						afterReload(entity);
+					} else {
+						reload();
+					}
 				}
 
 				@Override

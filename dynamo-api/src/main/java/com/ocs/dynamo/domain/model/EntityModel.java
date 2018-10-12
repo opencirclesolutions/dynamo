@@ -261,6 +261,11 @@ public interface EntityModel<T> {
 	String SEARCHABLE = "searchable";
 
 	/**
+	 * One or more styles for the field
+	 */
+	String STYLES = "styles";
+
+	/**
 	 * Indicates that a lookup field (rather than a combo box) must be used when
 	 * selecting the component
 	 */
