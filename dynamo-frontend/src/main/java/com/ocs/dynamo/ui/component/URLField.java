@@ -15,6 +15,7 @@ package com.ocs.dynamo.ui.component;
 
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.utils.StringUtils;
+import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.shared.ui.BorderStyle;
 import com.vaadin.ui.Component;
@@ -141,6 +142,13 @@ public class URLField extends CustomField<String> {
 			} else {
 				link = null;
 			}
+		}
+	}
+
+	@Override
+	public void validate() throws InvalidValueException {
+		if (textField != null) {
+			super.validate();
 		}
 	}
 
