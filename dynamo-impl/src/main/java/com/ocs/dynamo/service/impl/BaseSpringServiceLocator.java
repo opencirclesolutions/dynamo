@@ -52,15 +52,19 @@ public abstract class BaseSpringServiceLocator implements ServiceLocator {
 	 *            the class of the service
 	 * @return
 	 */
+	@Override
 	public <T> T getService(Class<T> clazz) {
 		return getContext().getBean(clazz);
 	}
+
+
 
 	/**
 	 * Retrieves the message service from the context
 	 * 
 	 * @return
 	 */
+	@Override
 	public MessageService getMessageService() {
 		return getService(MessageService.class);
 	}
@@ -70,6 +74,7 @@ public abstract class BaseSpringServiceLocator implements ServiceLocator {
 	 * 
 	 * @return
 	 */
+	@Override
 	public EntityModelFactory getEntityModelFactory() {
 		return getService(EntityModelFactory.class);
 	}
@@ -81,17 +86,23 @@ public abstract class BaseSpringServiceLocator implements ServiceLocator {
 	 *            the entity class
 	 * @return
 	 */
+	@Override
 	@SuppressWarnings("rawtypes")
 	public BaseService<?, ?> getServiceForEntity(Class<?> entityClass) {
 		Map<String, BaseService> services = getContext().getBeansOfType(BaseService.class, false, true);
 		for (Entry<String, BaseService> e : services.entrySet()) {
 			if (e.getValue().getEntityClass() != null && e.getValue().getEntityClass().equals(entityClass)) {
-				return (BaseService<?, ?>) e.getValue();
+				return e.getValue();
 			}
 		}
 		return null;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see com.ocs.dynamo.service.ServiceLocator#getServices(java.lang.Class)
+	 */
 	@Override
 	public <T> Collection<T> getServices(Class<T> clazz) {
 		Map<String, T> beans = getContext().getBeansOfType(clazz);
@@ -100,5 +111,4 @@ public abstract class BaseSpringServiceLocator implements ServiceLocator {
 		}
 		return null;
 	}
-
 }

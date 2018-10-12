@@ -13,12 +13,6 @@
  */
 package com.ocs.dynamo.ui.composite.layout;
 
-import java.io.Serializable;
-import java.util.Collection;
-import java.util.List;
-
-import org.apache.commons.lang.ObjectUtils;
-
 import com.google.common.collect.Lists;
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.dao.FetchJoinInformation;
@@ -48,6 +42,11 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
+import org.apache.commons.lang.ObjectUtils;
+
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Base class for search layouts. A search layout consists of a search form with
@@ -139,7 +138,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	private Collection<T> selectedItems;
 
 	/**
-	 * 
+	 *
 	 */
 	private VerticalLayout tabContainerLayout;
 
@@ -365,6 +364,9 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 
 			@Override
 			protected Component initTab(int index) {
+				// back button and iteration buttons not needed (they are
+				// displayed above
+				// the tabs)
 				return AbstractSearchLayout.this.initTab(getEntity(), index, formOptions, false);
 			}
 		};
@@ -642,6 +644,21 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	}
 
 	/**
+	 * Opens the screen in details mode and selects a certain tab
+	 *
+	 * @param entity
+	 * @param selectedTab
+	 */
+	protected void detailsMode(T entity, int selectedTab) {
+		detailsMode(entity);
+		if (editForm != null) {
+			editForm.selectTab(selectedTab);
+		} else if (getFormOptions().isComplexDetailsMode()) {
+			tabLayout.selectTab(selectedTab);
+		}
+	}
+
+	/**
 	 * Open the screen in details mode
 	 * 
 	 * @param entity
@@ -664,8 +681,6 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 		options.setShowPrevButton(getFormOptions().isShowPrevButton());
 		options.setPlaceButtonBarAtTop(getFormOptions().isPlaceButtonBarAtTop());
 		options.setFormNested(true);
-		options.setValidationMode(getFormOptions().getValidationMode());
-		options.setConfirmSave(getFormOptions().isConfirmSave());
 
 		// set the form options for the detail form
 		if (getFormOptions().isEditAllowed()) {
@@ -697,7 +712,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 				mainEditLayout.replaceComponent(selectedDetailLayout, tabContainerLayout);
 			}
 			selectedDetailLayout = tabContainerLayout;
-		} else if (!getFormOptions().isComplexDetailsMode()) {
+        } else if (!getFormOptions().isComplexDetailsMode()) {
 			// simple edit form
 			if (editForm == null) {
 				buildEditForm(entity, options);
@@ -734,21 +749,6 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	}
 
 	/**
-	 * Opens the screen in details mode and selects a certain tab
-	 * 
-	 * @param entity
-	 * @param selectedTab
-	 */
-	protected void detailsMode(T entity, int selectedTab) {
-		detailsMode(entity);
-		if (editForm != null) {
-			editForm.selectTab(selectedTab);
-		} else if (getFormOptions().isComplexDetailsMode()) {
-			tabLayout.selectTab(selectedTab);
-		}
-	}
-
-	/**
 	 * Callback method that is called when the user presses the edit method. Will by
 	 * default open the screen in edit mode. Overwrite in subclass if needed
 	 */
@@ -775,7 +775,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 
 	/**
 	 * Open in edit mode and select the tab with the provided index
-	 * 
+	 *
 	 * @param entity
 	 *            the entity to select
 	 * @param initialTab
@@ -806,7 +806,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	/**
 	 * Returns the captions for the tab pages to display within the tab sheet, for a
 	 * search layout for which the complexDetailsEditMode has been set to true
-	 * 
+	 *
 	 * @return
 	 */
 	protected String[] getDetailModeTabCaptions() {
@@ -817,7 +817,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	/**
 	 * Returns the caption to display above the tab sheet, for a search layout for
 	 * which the complexDetailsEditMode has been set to true
-	 * 
+	 *
 	 * @return
 	 */
 	protected String getDetailModeTabTitle() {
@@ -954,7 +954,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 
 	/**
 	 * Constructs a tab sheet for the tab component
-	 * 
+	 *
 	 * @param entity
 	 *            the selected entity
 	 * @param index
@@ -983,7 +983,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 
 	/**
 	 * Checks whether the layout is currently in search mode
-	 * 
+	 *
 	 * @return
 	 */
 	public boolean isInSearchMode() {
@@ -1110,7 +1110,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	/**
 	 * Sets the default filters that are always applied to a search query (even
 	 * after all search fields have been cleared)
-	 * 
+	 *
 	 * @param defaultFilters
 	 */
 	public void setDefaultFilters(List<Filter> defaultFilters) {
@@ -1122,7 +1122,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 
 	/**
 	 * Sets the query type. Only use before the component is built.
-	 * 
+	 *
 	 * @param queryType
 	 */
 	public void setQueryType(QueryType queryType) {
@@ -1153,7 +1153,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 
 	/**
 	 * Sets the tab specified by the provided index to the provided visibility
-	 * 
+	 *
 	 * @param index
 	 *            the index
 	 * @param visible

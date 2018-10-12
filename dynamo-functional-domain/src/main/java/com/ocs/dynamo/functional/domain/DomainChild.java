@@ -13,13 +13,12 @@
  */
 package com.ocs.dynamo.functional.domain;
 
-import java.io.Serializable;
-
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 
 /**
  * The persistent class for the domain entity that manages hierarchical reference information.
@@ -34,7 +33,7 @@ public abstract class DomainChild<C extends DomainChild<C, P>, P extends DomainP
 	private static final long serialVersionUID = 2615942460028599211L;
 
 	@NotNull
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY, targetEntity = DomainParent.class)
 	@JoinColumn(name = "parent")
 	private P parent;
 

@@ -81,19 +81,18 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
 	 */
 	private boolean exportAllowed;
 
-	/**
-	 * Indicate whether to update the caption with the number of items in the table
+    /*** Indicate whether to update the caption with the number of items in the table
 	 */
 	private boolean updateTableCaption = true;
 
-	/**
-	 * The message service
-	 */
-	private MessageService messageService;
+    /**
+     * The message service
+     */
+    private MessageService messageService;
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param container
 	 *            the data container
 	 * @param model
@@ -128,15 +127,13 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
 					false, TableExportMode.CSV, null));
 		}
 
-		// update the table caption to reflect the number of items
-		if (isUpdateTableCaption()) {
-			addItemSetChangeListener(e -> updateTableCaption());
-		}
-	}
+        // update the table caption to reflect the number of items
+        if (isUpdateTableCaption()) {addItemSetChangeListener(e -> updateTableCaption());
+    }}
 
 	/**
 	 * Adds a column to the table
-	 * 
+	 *
 	 * @param attributeModel
 	 *            the (possibly nested) attribute model for which to add a column
 	 * @param propertyNames
@@ -174,7 +171,7 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
 
 	/**
 	 * Adds a generated column
-	 * 
+	 *
 	 * @param attributeModel
 	 *            the attribute model for which to add the column
 	 */
@@ -200,7 +197,7 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
 
 	/**
 	 * Adds an URL field for a certain attribute
-	 * 
+	 *
 	 * @param attributeModel
 	 *            the attribute model
 	 */
@@ -226,7 +223,7 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
 
 	/**
 	 * Adds a button/link for navigation within the application
-	 * 
+	 *
 	 * @param attributeModel.
 	 *            For this to work you must register a navigation rule in the BaseUI
 	 *            at the base of your application
@@ -274,7 +271,7 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
 
 	/**
 	 * Generates the columns of the table based on the entity model
-	 * 
+	 *
 	 * @param container
 	 *            the container
 	 * @param model
@@ -289,24 +286,25 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
 	/**
 	 * Generates the columns of the table based on a select number of attribute
 	 * models
-	 * 
+	 *
 	 * @param attributeModels
 	 *            the attribute models for which to generate columns
 	 */
 	protected void generateColumns(List<AttributeModel> attributeModels) {
 		List<Object> propertyNames = new ArrayList<>();
 		List<String> headerNames = new ArrayList<>();
-
-		for (AttributeModel attributeModel : attributeModels) {
-			addColumn(attributeModel, propertyNames, headerNames);
-			if (attributeModel.getNestedEntityModel() != null) {
-				for (AttributeModel nestedAttributeModel : attributeModel.getNestedEntityModel().getAttributeModels()) {
-					addColumn(nestedAttributeModel, propertyNames, headerNames);
-				}
-			}
-		}
+		generateColumnsRecursive(attributeModels, propertyNames, headerNames);
 		this.setVisibleColumns(propertyNames.toArray());
 		this.setColumnHeaders(headerNames.toArray(new String[0]));
+	}
+
+	private void generateColumnsRecursive(List<AttributeModel> attributeModels, List<Object> propertyNames, List<String> headerNames){
+		for (AttributeModel attributeModel : attributeModels) {
+			addColumn(attributeModel, propertyNames, headerNames);
+			if (attributeModel.getNestedEntityModel() != null){
+				generateColumnsRecursive(attributeModel.getNestedEntityModel().getAttributeModels(), propertyNames, headerNames);
+			}
+		}
 	}
 
 	public Container getContainer() {
@@ -323,7 +321,7 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
 
 	/**
 	 * Removes a generated column
-	 * 
+	 *
 	 * @param attributeModel
 	 *            the attribute model for which to remove the column
 	 */
@@ -338,12 +336,14 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
 	 * order to remove any generated columns containing URL fields
 	 */
 	public void removeGeneratedColumns() {
-		for (AttributeModel attributeModel : entityModel.getAttributeModels()) {
+		removeGeneratedColumnsRecursive(entityModel.getAttributeModels());
+	}
+
+	private void removeGeneratedColumnsRecursive(List<AttributeModel> attributeModels){
+		for (AttributeModel attributeModel : attributeModels) {
 			removeGeneratedColumn(attributeModel);
-			if (attributeModel.getNestedEntityModel() != null) {
-				for (AttributeModel nestedAttributeModel : attributeModel.getNestedEntityModel().getAttributeModels()) {
-					removeGeneratedColumn(nestedAttributeModel);
-				}
+			if (attributeModel.getNestedEntityModel() != null){
+				removeGeneratedColumnsRecursive(attributeModel.getNestedEntityModel().getAttributeModels());
 			}
 		}
 	}
@@ -351,7 +351,7 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
 	/**
 	 * Sets the visibility of a column. This can only be used to show/hide columns
 	 * that would show up in the table based on the entity model
-	 * 
+	 *
 	 * @param propertyId
 	 *            the ID of the column.
 	 * @param visible
@@ -388,4 +388,5 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
 	public void setUpdateTableCaption(boolean updateTableCaption) {
 		this.updateTableCaption = updateTableCaption;
 	}
+
 }

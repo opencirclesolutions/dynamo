@@ -116,6 +116,42 @@ public interface BaseService<ID, T extends AbstractEntity<ID>> {
 	List<T> fetch(Filter filter, int pageNumber, int pageSize, SortOrders sortOrders, FetchJoinInformation... joins);
 
 	/**
+	 * Fetches and sorts properties (NOT ENTITIES) that match the provided filter
+	 * 
+	 * @param filter
+	 *            the filter
+	 * @param selectProperties
+	 *            the properties to use in the selection
+	 * @param sortOrders
+	 *            the sort order
+	 * @param joins
+	 *            the desired relations to fetch
+	 * @return
+	 */
+	List<Object[]> fetchSelect(Filter filter, String[] selectProperties, SortOrders sortOrders,
+			FetchJoinInformation... joins);
+
+	/**
+	 * Fetches and sorts properties (NOT ENTITIES) that match the provided filter
+	 * 
+	 * @param filter
+	 *            the filter
+	 * @param selectProperties
+	 *            the properties to use in the selection
+	 * @param pageNumber
+	 *            the page number of the page to fetch
+	 * @param pageSize
+	 *            the page size
+	 * @param sortOrders
+	 *            the sort order
+	 * @param joins
+	 *            the desired relations to fetch
+	 * @return
+	 */
+	List<Object[]> fetchSelect(Filter filter, String[] selectProperties, int pageNumber, int pageSize,
+			SortOrders sortOrders, FetchJoinInformation... joins);
+
+	/**
 	 * Fetches a list of entities that match the provided filter
 	 * 
 	 * @param filter

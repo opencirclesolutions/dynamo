@@ -13,13 +13,13 @@
  */
 package com.ocs.dynamo.domain.model.impl;
 
-import java.util.List;
-import java.util.Map;
-
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.AttributeType;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * A wrapper that adds lazy loading to an entity model definition
@@ -49,7 +49,7 @@ public class LazyEntityModelWrapper<T> implements EntityModel<T> {
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param factory
 	 *            the entity model factory
 	 * @param reference

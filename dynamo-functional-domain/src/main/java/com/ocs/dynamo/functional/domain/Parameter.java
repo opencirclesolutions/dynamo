@@ -23,10 +23,10 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 
 import com.ocs.dynamo.domain.AbstractAuditableEntity;
-import com.ocs.dynamo.domain.model.EditableType;
 import com.ocs.dynamo.domain.model.annotation.Attribute;
 import com.ocs.dynamo.domain.model.annotation.AttributeOrder;
 import com.ocs.dynamo.domain.model.annotation.Model;
+import com.ocs.dynamo.domain.model.EditableType;
 
 /**
  * Base class for reference information.
@@ -43,8 +43,9 @@ public class Parameter extends AbstractAuditableEntity<Integer> {
 
 	public static final String ATTRIBUTE_NAME = "name";
 
-	@Id
-	private Integer id;
+    @Id
+
+    private Integer id;
 
 	@NotNull
 	@Attribute(main = true, maxLength = 100, searchable = true, editable = EditableType.READ_ONLY)

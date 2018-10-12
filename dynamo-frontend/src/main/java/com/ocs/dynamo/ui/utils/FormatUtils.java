@@ -58,7 +58,7 @@ public final class FormatUtils {
 
 	/**
 	 * Formats an entity
-	 * 
+	 *
 	 * @param entityModel
 	 *            the entity model
 	 * @param value
@@ -80,7 +80,7 @@ public final class FormatUtils {
 	/**
 	 * Formats a collection of entities (turns it into a comma-separated string
 	 * based on the value of the "displayProperty")
-	 * 
+	 *
 	 * @param entityModelFactory
 	 *            the entity model factory
 	 * @param collection
@@ -111,9 +111,10 @@ public final class FormatUtils {
 	}
 
 	/**
-	 * Formats a collection of entities into a comma-separated string that displays
+	 * Formats a collection of entities into a comma-separated string that
+	 * displays
 	 * the meaningful representations of the entities
-	 * 
+	 *
 	 * @param entityModelFactory
 	 *            the entity model factory
 	 * @param attributeModel
@@ -127,25 +128,25 @@ public final class FormatUtils {
 		return formatEntityCollection(entityModelFactory, attributeModel, property.getValue(), "<br/> ");
 	}
 
-	/**
-	 * Formats a property value
-	 * 
-	 * @param entityModelFactory
-	 *            the entity model factory
-	 * @param model
-	 *            the attribute model for the property
-	 * @param value
-	 *            the value of the property
-	 * @return
-	 */
-	public static String formatPropertyValue(EntityModelFactory entityModelFactory, AttributeModel model, Object value,
-			String separator) {
-		return formatPropertyValue(null, entityModelFactory, model, value, VaadinUtils.getLocale(), separator);
-	}
+    /**
+     * Formats a property value
+     * 
+     * @param entityModelFactory
+     *            the entity model factory
+     * @param model
+     *            the attribute model for the property
+     * @param value
+     *            the value of the property
+     * @return
+     */
+    public static String formatPropertyValue(EntityModelFactory entityModelFactory, AttributeModel model,
+            Object value,
+        String separator) {return formatPropertyValue(null, entityModelFactory, model, value, VaadinUtils.getLocale(), separator);
+    }
 
 	/**
 	 * Formats a property value
-	 * 
+	 *
 	 * @param table
 	 *            the table in which the property occurs
 	 * @param entityModelFactory
@@ -166,38 +167,37 @@ public final class FormatUtils {
 				VaadinUtils.getLocale(), separator);
 	}
 
-	/**
-	 * Formats a property value - for use with a hierarchical table
-	 * 
-	 * @param table
-	 * @param entityModelFactory
-	 * @param entityModel
-	 * @param messageService
-	 * @param rowId
-	 * @param colId
-	 * @param property
-	 * @param locale
-	 * @return
-	 */
-	@SuppressWarnings("rawtypes")
-	public static <T> String formatPropertyValue(Table table, EntityModelFactory entityModelFactory,
-			EntityModel<T> entityModel, Object rowId, Object colId, Property<?> property, Locale locale,
-			String separator) {
-		if (table.getContainerDataSource() instanceof ModelBasedHierarchicalContainer) {
-			ModelBasedHierarchicalContainer<?> c = (ModelBasedHierarchicalContainer<?>) table.getContainerDataSource();
-			ModelBasedHierarchicalDefinition def = c.getHierarchicalDefinitionByItemId(rowId);
-			Object path = c.unmapProperty(def, colId);
-			return formatPropertyValue(table, entityModelFactory,
-					path == null ? null : def.getEntityModel().getAttributeModel(path.toString()), property.getValue(),
-					locale, separator);
-		}
-		return formatPropertyValue(table, entityModelFactory, entityModel.getAttributeModel(colId.toString()),
-				property.getValue(), locale, separator);
-	}
+    /**
+     * Formats a property value - for use with a hierarchical table
+     * 
+     * @param table
+     * @param entityModelFactory
+     * @param entityModel
+     * @param messageService
+     * @param rowId
+     * @param colId
+     * @param property
+     * @param locale
+     * @return
+     */
+    @SuppressWarnings("rawtypes")
+    public static <T> String formatPropertyValue(Table table, EntityModelFactory entityModelFactory,
+            EntityModel<T> entityModel, Object rowId, Object colId, Property<?> property, Locale locale,
+        String separator) {if (table.getContainerDataSource() instanceof ModelBasedHierarchicalContainer) {
+            ModelBasedHierarchicalContainer<?> c = (ModelBasedHierarchicalContainer<?>) table.getContainerDataSource();
+            ModelBasedHierarchicalDefinition def = c.getHierarchicalDefinitionByItemId(rowId);
+            Object path = c.unmapProperty(def, colId);
+            return formatPropertyValue(table, entityModelFactory,
+                    path == null ? null : def.getEntityModel().getAttributeModel(path.toString()), property.getValue(),
+                    locale, separator);
+        }
+        return formatPropertyValue(table, entityModelFactory, entityModel.getAttributeModel(colId.toString()),
+                property.getValue(), locale, separator);
+    }
 
 	/**
 	 * Formats a property value
-	 * 
+	 *
 	 * @param entityModelFactory
 	 *            the entity model factory
 	 * @param entityModel
@@ -286,7 +286,7 @@ public final class FormatUtils {
 
 	/**
 	 * Restricts a value to its maximum length defined in the attribute model
-	 * 
+	 *
 	 * @param input
 	 *            the input value
 	 * @param am

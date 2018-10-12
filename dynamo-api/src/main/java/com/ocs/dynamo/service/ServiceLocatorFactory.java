@@ -20,7 +20,7 @@ import com.ocs.dynamo.util.SystemPropertyUtils;
 
 /**
  * Factory class for creating a service locator.
- * 
+ *
  * @author bas.rutten
  *
  */

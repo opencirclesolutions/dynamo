@@ -45,22 +45,18 @@ import com.vaadin.ui.HorizontalLayout;
 public class QuickAddEntityComboBox<ID extends Serializable, T extends AbstractEntity<ID>>
 		extends QuickAddEntityField<ID, T, T> implements Refreshable {
 
-	private static final long serialVersionUID = 4246187881499965296L;
+    private static final long serialVersionUID = 4246187881499965296L;
+    private final boolean quickAddAllowed;
+    private final boolean directNavigationAllowed;
 
-	private final boolean quickAddAllowed;
-
-	private final boolean directNavigationAllowed;
-
-	private static final float BUTTON_EXPAND_RATIO = 0.25f;
-
-	/**
-	 * The combo box that we wrap this component around
-	 */
-	private EntityComboBox<ID, T> comboBox;
+    private static final float BUTTON_EXPAND_RATIO = 0.25f;/**
+     * The combo box that we wrap this component around
+     */
+    private EntityComboBox<ID, T> comboBox;
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param entityModel
 	 *            the entity model
 	 * @param attributeModel
@@ -120,7 +116,11 @@ public class QuickAddEntityComboBox<ID extends Serializable, T extends AbstractE
 
 		// no caption needed (the wrapping component has the caption)
 		comboBox.setCaption(null);
-		comboBox.addValueChangeListener(event -> setValue((T) event.getProperty().getValue()));
+		comboBox.addValueChangeListener(event -> {
+			if (event.getProperty().getValue() != getValue()) {
+				setValue((T) event.getProperty().getValue());
+			}
+		});
 		comboBox.setSizeFull();
 
 		bar.addComponent(comboBox);
@@ -134,19 +134,18 @@ public class QuickAddEntityComboBox<ID extends Serializable, T extends AbstractE
 
 		bar.setExpandRatio(comboBox, comboBoxExpandRatio);
 
-		if (quickAddAllowed) {
-			Button addButton = constructAddButton();
-			addButton.setSizeFull();
-			bar.addComponent(addButton);
-			bar.setExpandRatio(addButton, BUTTON_EXPAND_RATIO);
-		}
-		if (directNavigationAllowed) {
-			Button directNavigationButton = constructDirectNavigationButton();
-			bar.addComponent(directNavigationButton);
-			bar.setExpandRatio(directNavigationButton, 0.10f);
-		}
-		return bar;
-	}
+        if (quickAddAllowed) {
+            Button addButton = constructAddButton();
+            addButton.setSizeFull();bar.addComponent(addButton);
+            bar.setExpandRatio(addButton, BUTTON_EXPAND_RATIO);
+        }
+        if (directNavigationAllowed) {
+            Button directNavigationButton = constructDirectNavigationButton();
+            bar.addComponent(directNavigationButton);
+            bar.setExpandRatio(directNavigationButton, 0.10f);
+        }
+        return bar;
+    }
 
 	@Override
 	public void refresh() {
@@ -167,7 +166,7 @@ public class QuickAddEntityComboBox<ID extends Serializable, T extends AbstractE
 	public void setAdditionalFilter(Filter additionalFilter) {
 		super.setAdditionalFilter(additionalFilter);
 		if (comboBox != null) {
-			comboBox.refresh(getFilter() == null ? additionalFilter : new And(getFilter(), additionalFilter));
+			comboBox.refresh(getFilter() == null ? new And(additionalFilter) : new And(getFilter(), additionalFilter));
 		}
 	}
 
@@ -193,5 +192,4 @@ public class QuickAddEntityComboBox<ID extends Serializable, T extends AbstractE
 			comboBox.setComponentError(componentError);
 		}
 	}
-
 }

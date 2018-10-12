@@ -14,24 +14,28 @@
 package com.ocs.dynamo.functional.ui;
 
 import java.util.Collection;
-
+import java.util.Set;
+import java.util.stream.Collectors;
+import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.functional.domain.AbstractEntityTranslated;
+import com.ocs.dynamo.functional.domain.Locale;
 import com.ocs.dynamo.functional.domain.Translation;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.CanAssignEntity;
 import com.ocs.dynamo.ui.composite.form.DetailsEditTable;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
-import com.vaadin.ui.Component;;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.Field;
+import com.vaadin.ui.TextArea;
 
 /**
  * @author Patrick.Deenen@opencircle.solutions
  * 
- *         Class which provides a generic implementation of a table to translate
- *         attributes of a entity. Should be used in combination with the
- *         FieldTranslationFactory.
+ *         Class which provides a generic implementation of a table to translate attributes of a entity. Should be used
+ *         in combination with the FieldTranslationFactory.
  *
  */
 public class TranslationTable<ID, E extends AbstractEntityTranslated<ID, Translation<E>>>
@@ -40,31 +44,23 @@ public class TranslationTable<ID, E extends AbstractEntityTranslated<ID, Transla
 	private static final long serialVersionUID = 4974840467576193534L;
 
 	private E entity;
-
 	private String fieldName;
+	private boolean localesRestricted;
 
 	@SuppressWarnings("unchecked")
 	private BaseService<Integer, Translation<E>> translationService = (BaseService<Integer, Translation<E>>) ServiceLocatorFactory
-			.getServiceLocator().getServiceForEntity(Translation.class);;
+			.getServiceLocator()
+			.getServiceForEntity(Translation.class);
 
-	/**
-	 * Constructor
-	 * 
-	 * @param entity
-	 *            the parent entity
-	 * @param fieldName
-	 * @param items
-	 *            the list of translations to display
-	 * @param entityModel
-	 *            the entity model for the translation entity
-	 * @param viewMode
-	 *            whether the component is in view mode
-	 */
-	public TranslationTable(E entity, String fieldName, Collection<Translation<E>> items,
-			EntityModel<Translation<E>> entityModel, boolean viewMode) {
-		super(items, entityModel, viewMode, new FormOptions().setShowRemoveButton(true));
+	public TranslationTable(E entity, String fieldName,
+			Collection<Translation<E>> items,
+			EntityModel<Translation<E>> entityModel, boolean viewMode, boolean localesRestricted) {
+
+		super(items, entityModel, viewMode, new FormOptions().setHideAddButton(localesRestricted).setShowRemoveButton(!localesRestricted));
+
 		this.entity = entity;
 		this.fieldName = fieldName;
+        this.localesRestricted = localesRestricted;
 	}
 
 	@Override
@@ -76,7 +72,7 @@ public class TranslationTable<ID, E extends AbstractEntityTranslated<ID, Transla
 
 	@Override
 	protected Translation<E> createEntity() {
-		Translation<E> translation = null;
+		Translation<E> translation;
 		try {
 			translation = getEntityModel().getEntityClass().newInstance();
 			translation.setField(fieldName);
@@ -89,13 +85,31 @@ public class TranslationTable<ID, E extends AbstractEntityTranslated<ID, Transla
 
 	@Override
 	protected void removeEntity(Translation<E> toRemove) {
-		translationService.delete(toRemove);
+		// No need to remove the entity from the database if it has not been saved yet (no id)
+		if(toRemove.getId() != null){
+			translationService.delete(toRemove);
+		}
 		entity.removeTranslation(toRemove);
 	}
 
 	@Override
-	public void assignEntity(E translation) {
-		entity = translation;
+	public void assignEntity(E entity) {
+		this.entity = entity;
 	}
 
+	@Override
+	public void postProcessTableField(String propertyId, Field<?> field) {
+		if (propertyId.equals("locale") && localesRestricted) {
+			field.setEnabled(false);
+		}
+	}
+
+	@Override
+	protected Field<?> constructCustomField(EntityModel<Translation<E>> entityModel, AttributeModel attributeModel, boolean viewMode) {
+		final Collection<String> textAreaFields = entity.getTextAreaFields();
+		if (textAreaFields.contains(fieldName) && attributeModel.getName().equals("translation")) {
+			return new TextArea();
+		}
+		return null;
+	}
 }

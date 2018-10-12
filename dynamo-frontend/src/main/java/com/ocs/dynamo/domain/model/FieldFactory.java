@@ -31,12 +31,9 @@ public interface FieldFactory {
 	 * The context for field generation, all fields are optional, but one should provide as many as possible.
 	 * 
 	 * @author patrickdeenen
-	 * 
-	 * @param <T>
-	 *            The entity type
 	 *
 	 */
-	public interface Context<T> {
+	public interface Context {
 
 		Container getContainer();
 
@@ -44,7 +41,14 @@ public interface FieldFactory {
 
 		Map<String, Filter> getFieldFilters();
 
-		EntityModel<T> getFieldEntityModel();
+		<T> EntityModel<T> getFieldEntityModel();
+
+		<P> P getParentEntity();
+
+		Boolean getViewMode();
+
+		Boolean isSearch();
+
 	}
 
 	/**
@@ -54,6 +58,6 @@ public interface FieldFactory {
 	 *            the generation context
 	 * @return
 	 */
-	<T> Field<?> constructField(Context<T> context);
+	Field<?> constructField(Context context);
 
 }

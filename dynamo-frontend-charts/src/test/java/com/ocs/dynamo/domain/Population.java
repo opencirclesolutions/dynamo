@@ -13,16 +13,14 @@
  */
 package com.ocs.dynamo.domain;
 
+import com.ocs.dynamo.domain.model.annotation.Chart;
+import com.ocs.dynamo.domain.model.annotation.Model;
+import org.apache.commons.lang.builder.ReflectionToStringBuilder;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
-
-import org.apache.commons.lang.builder.ReflectionToStringBuilder;
-
-import com.ocs.dynamo.domain.AbstractEntity;
-import com.ocs.dynamo.domain.model.annotation.Graph;
-import com.ocs.dynamo.domain.model.annotation.Model;
 
 /**
  * Entity used for testing purposes
@@ -32,7 +30,7 @@ import com.ocs.dynamo.domain.model.annotation.Model;
 @Entity
 @Table(name = "population")
 @Model(displayProperty = "World population by region")
-@Graph(subTitle = "Source: Wikipedia.org", seriesPath = "year", namePath = "region", dataPath = "population", tooltip = "this.series.name +': '+ this.y +' millions for region '+this.x")
+@Chart(subTitle = "Source: Wikipedia.org", seriesPath = "year", namePath = "region", dataPath = "population", tooltip = "this.series.name +': '+ this.y +' millions for region '+this.x")
 public class Population extends AbstractEntity<Integer> {
 
 	private static final long serialVersionUID = -9024232769159705990L;

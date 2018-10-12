@@ -193,6 +193,11 @@
 				<version>0.9.4</version>
 			</dependency>
 			<dependency>
+				<groupId>com.vaadin.addon</groupId>
+				<artifactId>vaadin-charts</artifactId>
+				<version>${vaadin.charts.version}</version>
+			</dependency>
+			<dependency>
 			   <groupId>org.vaadin.teemu</groupId>
 			   <artifactId>switch</artifactId>
 			   <version>2.0.3</version>
@@ -534,12 +539,24 @@
 					<version>${com.mysema.maven.plugins.apt.version}</version>
 					<executions>
 						<execution>
+							<id>src</id>
 							<phase>generate-sources</phase>
 							<goals>
 								<goal>process</goal>
 							</goals>
 							<configuration>
 								<outputDirectory>target/generated-sources/querydsl</outputDirectory>
+								<processor>com.mysema.query.apt.jpa.JPAAnnotationProcessor</processor>
+							</configuration>
+						</execution>
+						<execution>
+							<id>src-tst</id>
+							<phase>generate-test-sources</phase>
+							<goals>
+								<goal>test-process</goal>
+							</goals>
+							<configuration>
+								<outputDirectory>target/generated-test-sources/querydsl</outputDirectory>
 								<processor>com.mysema.query.apt.jpa.JPAAnnotationProcessor</processor>
 							</configuration>
 						</execution>

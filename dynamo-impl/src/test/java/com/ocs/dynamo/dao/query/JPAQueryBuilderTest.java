@@ -25,11 +25,14 @@ import org.junit.Test;
 
 import com.google.common.collect.Lists;
 import com.ocs.dynamo.dao.FetchJoinInformation;
+import com.ocs.dynamo.dao.SortOrder;
+import com.ocs.dynamo.dao.SortOrders;
 import com.ocs.dynamo.dao.impl.JpaQueryBuilder;
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.TestEntity2;
 import com.ocs.dynamo.filter.And;
 import com.ocs.dynamo.filter.Compare;
+import com.ocs.dynamo.filter.Filter;
 import com.ocs.dynamo.filter.In;
 import com.ocs.dynamo.filter.IsNull;
 import com.ocs.dynamo.filter.Like;
@@ -226,4 +229,25 @@ public class JPAQueryBuilderTest extends BaseIntegrationTest {
 		TestEntity entity = new TestEntity(name, age);
 		entityManager.persist(entity);
 	}
+
+	@Test
+	public void testCreateSelectQuery() {
+		TestEntity e1 = entityManager.createQuery("from TestEntity t where t.name = 'Bob'", TestEntity.class)
+				.getSingleResult();
+		TestEntity e2 = entityManager.createQuery("from TestEntity t where t.name = 'Pete'", TestEntity.class)
+				.getSingleResult();
+
+		SortOrder sortName=new SortOrder("name");
+		Filter filter = new In("name", Lists.newArrayList(e1.getName(), e2.getName()));
+		TypedQuery<Object[]> tQuery = JpaQueryBuilder.createSelectQuery(filter, entityManager, TestEntity.class,
+				new String[] { "name", "age" }, new SortOrders(sortName), null);
+		List<Object[]> result = tQuery.getResultList();
+
+		Assert.assertEquals(2, result.size());
+		Assert.assertEquals(e1.getName(), result.get(0)[0]);
+		Assert.assertEquals(e1.getAge(), result.get(0)[1]);
+		Assert.assertEquals(e2.getName(), result.get(1)[0]);
+		Assert.assertEquals(e2.getAge(), result.get(1)[1]);
+	}
+
 }

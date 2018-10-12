@@ -15,6 +15,8 @@ package com.ocs.dynamo.domain.model.impl;
 
 import java.util.Map;
 
+import org.apache.poi.ss.formula.functions.T;
+
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.FieldFactory.Context;
@@ -27,7 +29,7 @@ import com.vaadin.data.Container.Filter;
  * @author patrickdeenen
  *
  */
-public class FieldFactoryContextImpl<T> implements Context<T> {
+public class FieldFactoryContextImpl implements Context {
 
 	private Container container;
 
@@ -35,7 +37,13 @@ public class FieldFactoryContextImpl<T> implements Context<T> {
 
 	private Map<String, Filter> fieldFilters;
 
-	private EntityModel<T> fieldEntityModel;
+	private EntityModel<?> fieldEntityModel;
+
+	private Object parentEntity;
+
+	private Boolean viewMode;
+
+	private Boolean search;
 
 	public FieldFactoryContextImpl() {
 	}
@@ -55,16 +63,28 @@ public class FieldFactoryContextImpl<T> implements Context<T> {
 		return fieldFilters;
 	}
 
+	@SuppressWarnings({ "unchecked", "hiding" })
 	@Override
-	public EntityModel<T> getFieldEntityModel() {
-		return fieldEntityModel;
+	public <T> EntityModel<T> getFieldEntityModel() {
+		return (EntityModel<T>) fieldEntityModel;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public <P> P getParentEntity() {
+		return (P) parentEntity;
+	}
+
+	@Override
+	public Boolean getViewMode() {
+		return viewMode;
 	}
 
 	/**
 	 * @param container
 	 *            the container to set
 	 */
-	public FieldFactoryContextImpl<T> setContainer(Container container) {
+	public FieldFactoryContextImpl setContainer(Container container) {
 		this.container = container;
 		return this;
 	}
@@ -73,7 +93,7 @@ public class FieldFactoryContextImpl<T> implements Context<T> {
 	 * @param attributeModel
 	 *            the attributeModel to set
 	 */
-	public FieldFactoryContextImpl<T> setAttributeModel(AttributeModel attributeModel) {
+	public FieldFactoryContextImpl setAttributeModel(AttributeModel attributeModel) {
 		this.attributeModel = attributeModel;
 		return this;
 	}
@@ -82,7 +102,7 @@ public class FieldFactoryContextImpl<T> implements Context<T> {
 	 * @param fieldFilters
 	 *            the fieldFilters to set
 	 */
-	public FieldFactoryContextImpl<T> setFieldFilters(Map<String, Filter> fieldFilters) {
+	public FieldFactoryContextImpl setFieldFilters(Map<String, Filter> fieldFilters) {
 		this.fieldFilters = fieldFilters;
 		return this;
 	}
@@ -91,8 +111,45 @@ public class FieldFactoryContextImpl<T> implements Context<T> {
 	 * @param fieldEntityModel
 	 *            the fieldEntityModel to set
 	 */
-	public FieldFactoryContextImpl<T> setFieldEntityModel(EntityModel<T> fieldEntityModel) {
+	public FieldFactoryContextImpl setFieldEntityModel(EntityModel<T> fieldEntityModel) {
 		this.fieldEntityModel = fieldEntityModel;
+		return this;
+	}
+
+	/**
+	 *
+	 * @param parentEntity
+	 * @return the parent entity to set
+	 */
+	public <P> FieldFactoryContextImpl setParentEntity(P parentEntity) {
+		this.parentEntity = parentEntity;
+		return this;
+	}
+
+	/**
+	 *
+	 * @param viewMode
+	 * @return the view mode to set
+	 */
+	public FieldFactoryContextImpl setViewMode(boolean viewMode) {
+		this.viewMode = viewMode;
+		return this;
+	}
+
+	/**
+	 * @return the search
+	 */
+	@Override
+	public Boolean isSearch() {
+		return search;
+	}
+
+	/**
+	 * @param search
+	 *            the search to set
+	 */
+	public FieldFactoryContextImpl setSearch(boolean search) {
+		this.search = search;
 		return this;
 	}
 

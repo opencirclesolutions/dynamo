@@ -89,7 +89,7 @@ public class ModelBasedTreeTable<ID extends Serializable, T extends AbstractEnti
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param container
 	 *            the container that contains the data for the table
 	 * @param entityModelFactory
@@ -131,7 +131,7 @@ public class ModelBasedTreeTable<ID extends Serializable, T extends AbstractEnti
 
 	/**
 	 * Adds a container property
-	 * 
+	 *
 	 * @param scpId
 	 *            the property
 	 * @param def
@@ -173,7 +173,7 @@ public class ModelBasedTreeTable<ID extends Serializable, T extends AbstractEnti
 
 	/**
 	 * Generates the columns of the table based on the metadata model
-	 * 
+	 *
 	 * @param container
 	 *            the container
 	 * @param model
@@ -261,7 +261,7 @@ public class ModelBasedTreeTable<ID extends Serializable, T extends AbstractEnti
 
 	/**
 	 * Handles an action
-	 * 
+	 *
 	 * @param action
 	 *            the action
 	 * @param sender
@@ -304,7 +304,7 @@ public class ModelBasedTreeTable<ID extends Serializable, T extends AbstractEnti
 	/**
 	 * Recursively sets the collapsed state of the item identified by the provided
 	 * ID and all of its children
-	 * 
+	 *
 	 * @param itemId
 	 *            the ID of the item
 	 * @param collapse

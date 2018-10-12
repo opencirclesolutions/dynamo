@@ -59,7 +59,7 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
 
 	/**
 	 * Wrapper around an item in order to display it as a token in the token field
-	 * 
+	 *
 	 * @author bas.rutten
 	 *
 	 */
@@ -73,7 +73,7 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
 
 		/**
 		 * Constructor
-		 * 
+		 *
 		 * @param item
 		 * @param captionPropertyId
 		 */
@@ -122,7 +122,7 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param em
 	 * @param attributeModel
 	 * @param service

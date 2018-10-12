@@ -13,6 +13,14 @@
  */
 package com.ocs.dynamo.domain.model.impl;
 
+import com.ocs.dynamo.domain.model.AttributeModel;
+import com.ocs.dynamo.domain.model.AttributeType;
+import com.ocs.dynamo.domain.model.EditableType;
+import com.ocs.dynamo.domain.model.EntityModel;
+import com.ocs.dynamo.utils.ClassUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.builder.ReflectionToStringBuilder;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -22,15 +30,6 @@ import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.builder.ReflectionToStringBuilder;
-
-import com.ocs.dynamo.domain.model.AttributeModel;
-import com.ocs.dynamo.domain.model.AttributeType;
-import com.ocs.dynamo.domain.model.EditableType;
-import com.ocs.dynamo.domain.model.EntityModel;
-import com.ocs.dynamo.utils.ClassUtils;
 
 /**
  * An implementation of an entity model - holds metadata about an entity
@@ -60,40 +59,45 @@ public class EntityModelImpl<T> implements EntityModel<T> {
 
 	private Map<AttributeModel, Boolean> sortOrder = new LinkedHashMap<>();
 
+    /**
+	 * Default constructor
+	 */
 	public EntityModelImpl() {
+		super();
 	}
 
 	/**
-	 * Constructor
-	 * 
-	 * @param entityClass
-	 *            the entity class
-	 * @param reference
-	 *            the reference by which this model is known
-	 * @param displayName
-	 *            the display name
-	 * @param displayNamePlural
-	 *            the display name plural
-	 * @param description
-	 *            the description
-	 * @param displayProperty
-	 *            the property to use in lookup components
-	 */
-	public EntityModelImpl(Class<T> entityClass, String reference, String displayName, String displayNamePlural,
-			String description, String displayProperty) {
-		this.entityClass = entityClass;
-		this.displayName = displayName;
-		this.displayNamePlural = displayNamePlural;
-		this.description = description;
-		this.displayProperty = displayProperty;
-		this.reference = reference;
-	}
+     * Constructor
+     * 
+     * @param entityClass
+     *            the entity class
+     * @param reference
+     *            the reference by which this model is known
+     * @param displayName
+     *            the display name
+     * @param displayNamePlural
+     *            the display name plural
+     * @param description
+     *            the description
+     * @param displayProperty
+     *            the property to use in lookup components
+     */
+    public EntityModelImpl(Class<T> entityClass, String reference, String displayName, String displayNamePlural,
+            String description, String displayProperty) {
+        this.entityClass = entityClass;
+        this.displayName = displayName;
+        this.displayNamePlural = displayNamePlural;
+        this.description = description;
+        this.displayProperty = displayProperty;
+        this.reference = reference;
+    }
 
+    @Override
 	public void addAttributeGroup(String attributeGroup) {
-		if (!attributeModels.containsKey(attributeGroup)) {
-			attributeModels.put(attributeGroup, new ArrayList<>());
-		}
-	}
+        if (!attributeModels.containsKey(attributeGroup)) {
+            attributeModels.put(attributeGroup, new ArrayList<>());
+        }
+    }
 
 	public void addAttributeModel(String attributeGroup, AttributeModel model) {
 		attributeModels.get(attributeGroup).add(model);

@@ -36,16 +36,17 @@ public final class SystemPropertyUtils {
 	/**
 	 * 
 	 * 
-	 * @return whether export to Excel or CSV is allowed for all tables. If set to
-	 *         <code>false</code> it will disable exporting for all tables. You can
-	 *         selectively enable it for some tables using the FormOptions object
+	 * @return whether export to Excel or CSV is allowed for all tables. If set
+	 *         to <code>false</code> it will disable exporting for all tables.
+	 *         You can selectively enable it for somet tables using the
+	 *         FormOptions object
 	 */
 	public static boolean allowTableExport() {
 		return Boolean.getBoolean(DynamoConstants.SP_ALLOW_TABLE_EXPORT);
 	}
 
 	/**
-	 * Returns the default caption format 
+	 *Returns the default caption format
 	 * 
 	 * @return the default caption format
 	 */
@@ -55,8 +56,8 @@ public final class SystemPropertyUtils {
 	}
 
 	/**
-	 * 
-	 * 
+	 *
+	 *
 	 * @return the default currency symbol to use for decimale fields that display a
 	 *         currency
 	 */
@@ -124,7 +125,7 @@ public final class SystemPropertyUtils {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return the default width (in pixels) of the title label above an edit from
 	 */
 	public static int getDefaultFormTitleWidth() {
@@ -132,8 +133,8 @@ public final class SystemPropertyUtils {
 	}
 
 	/**
-	 * 
-	 * 
+	 *
+	 *
 	 * @return the default number of rows in a list select component. Also used as
 	 *         the default for collection tables
 	 */
@@ -142,7 +143,7 @@ public final class SystemPropertyUtils {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return the default locale used for e.g. the decimal and thousands separators
 	 */
 	public static String getDefaultLocale() {
@@ -164,8 +165,8 @@ public final class SystemPropertyUtils {
 	}
 
 	/**
-	 * 
-	 * 
+	 *
+	 *
 	 * @return the default format for formatting attributes of type LocalTime or
 	 *         Java 7 dates that only consist of a time stamp
 	 */
@@ -174,7 +175,7 @@ public final class SystemPropertyUtils {
 	}
 
 	/**
-	 * @return the default true representation
+	 * @return default true representation
 	 */
 	public static String getDefaultTrueRepresentation() {
 		return System.getProperty(DynamoConstants.SP_DEFAULT_TRUE_REPRESENTATION, DEFAULT_TRUE_REPRESENTATION);
@@ -190,7 +191,7 @@ public final class SystemPropertyUtils {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return the CSV quote character
 	 */
 	public static String getExportCsvQuoteChar() {
@@ -240,7 +241,7 @@ public final class SystemPropertyUtils {
 	}
 
 	/**
-	 * 
+	 *
 	 * @return the name of the service locator to use. Used internally by the
 	 *         framework, highly unlikely this needs to be modified directly
 	 */
@@ -260,12 +261,12 @@ public final class SystemPropertyUtils {
 	}
 
 	/**
-	 * 
-	 * 
+	 *
+	 *
 	 * @return whether to use the display name of an attribute as the "prompt" value
 	 *         (hint) inside the component
 	 */
-	public static boolean useDefaultPromptValue() {
+	public static boolean isUseDefaultPromptValue() {
 		String temp = System.getProperty(DynamoConstants.SP_USE_DEFAULT_PROMPT_VALUE, "false");
 		return Boolean.valueOf(temp);
 	}

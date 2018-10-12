@@ -22,7 +22,7 @@ public interface EntityModelFactory {
 
 	/**
 	 * Retrieves the entity model for a class
-	 * 
+	 *
 	 * @param entityClass
 	 *            the class of the entity
 	 * @return
@@ -31,7 +31,7 @@ public interface EntityModelFactory {
 
 	/**
 	 * Retrieves a named entity model for a class
-	 * 
+	 *
 	 * @param reference
 	 *            the unique reference
 	 * @param entityClass
@@ -42,7 +42,7 @@ public interface EntityModelFactory {
 
 	/**
 	 * Checks whether the factory can provide a model
-	 * 
+	 *
 	 * @param reference
 	 * @param entityClass
 	 */

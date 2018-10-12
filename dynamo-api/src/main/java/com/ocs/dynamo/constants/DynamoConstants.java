@@ -158,7 +158,7 @@ public final class DynamoConstants {
 	 * Indicates whether to use the display name as the input prompt by default
 	 */
 	public static final String SP_USE_DEFAULT_PROMPT_VALUE = "ocs.use.default.prompt.value";
-	
+
 	/**
 	 * Name of the system property that is used to set the locale used for month
 	 * names in date components
@@ -298,18 +298,18 @@ public final class DynamoConstants {
 	 * separator in edit mode
 	 */
 	public static final String SP_THOUSAND_GROUPING = "ocs.edit.thousands.grouping";
-	
+
 	/**
-	 * Class name for the service locator (override to create a different service locator, e.g. 
+	 * Class name for the service locator (override to create a different service locator, e.g.
 	 * to use a separate service locator for integration tests)
 	 */
 	public static final String SP_SERVICE_LOCATOR_CLASS_NAME = "ocs.service.locator.classname";
-	
+
 	/**
 	 * Default width of input components
 	 */
 	public static final String SP_DEFAULT_FIELD_WIDTH = "ocs.default.field.width";
-	
+
 	/**
 	 * Default validation mode
 	 */

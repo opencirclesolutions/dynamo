@@ -49,7 +49,8 @@ public class AttributeModelImpl implements AttributeModel {
 
 	private final Map<String, String> cascadeAttributes = new HashMap<>();
 
-	private final Map<String, CascadeMode> cascadeModes = new HashMap<>();
+	private Map<String, CascadeMode> cascadeModes = new HashMap<>();
+	
 	private CheckboxMode checkboxMode;
 
 	private String collectionTableFieldName;
@@ -87,6 +88,8 @@ public class AttributeModelImpl implements AttributeModel {
 	private final List<String> groupTogetherWith = new ArrayList<>();
 
 	private boolean image;
+
+	private boolean localesRestricted;
 
 	private boolean mainAttribute;
 
@@ -148,7 +151,7 @@ public class AttributeModelImpl implements AttributeModel {
 
 	private boolean sortable;
 
-	private AttributeTextFieldMode textFieldMode;
+    private AttributeTextFieldMode textFieldMode;
 
 	private boolean trans;
 
@@ -378,22 +381,26 @@ public class AttributeModelImpl implements AttributeModel {
 		return selectMode;
 	}
 
-	@Override
+    /**
+	 * @return the styles
+	 */
+    @Override
 	public String getStyles() {
 		return styles;
 	}
 
 	/**
-	 * @param styles the styles to set
+	 * @param styles
+	 *            the styles to set
 	 */
-	public void setStyles(final String styles) {
+	public void setStyles(String styles) {
 		this.styles = styles;
 	}
 
 	@Override
-	public AttributeTextFieldMode getTextFieldMode() {
-		return textFieldMode;
-	}
+    public AttributeTextFieldMode getTextFieldMode() {
+        return textFieldMode;
+    }
 
 	@Override
 	public String getTrueRepresentation() {
@@ -438,6 +445,11 @@ public class AttributeModelImpl implements AttributeModel {
 	@Override
 	public boolean isImage() {
 		return image;
+	}
+
+	@Override
+	public boolean isLocalesRestricted() {
+		return localesRestricted;
 	}
 
 	@Override
@@ -624,6 +636,10 @@ public class AttributeModelImpl implements AttributeModel {
 		this.image = image;
 	}
 
+	public void setLocalesRestricted(boolean localesRestricted) {
+		this.localesRestricted = localesRestricted;
+	}
+
 	@Override
 	public void setMainAttribute(boolean mainAttribute) {
 		this.mainAttribute = mainAttribute;
@@ -667,10 +683,6 @@ public class AttributeModelImpl implements AttributeModel {
 
 	public void setNestedEntityModel(EntityModel<?> nestedEntityModel) {
 		this.nestedEntityModel = nestedEntityModel;
-	}
-
-	public void setNumberSelectMode(NumberSelectMode numberSelectMode) {
-		this.numberSelectMode = numberSelectMode;
 	}
 
 	public void setOrder(Integer order) {
@@ -782,4 +794,7 @@ public class AttributeModelImpl implements AttributeModel {
 		return ReflectionToStringBuilder.toStringExclude(this, "entityModel");
 	}
 
+    public void setNumberSelectMode(NumberSelectMode numberSelectMode) {
+        this.numberSelectMode = numberSelectMode;
+    }
 }

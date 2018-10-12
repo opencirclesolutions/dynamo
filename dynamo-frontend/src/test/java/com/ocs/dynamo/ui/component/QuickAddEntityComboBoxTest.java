@@ -39,7 +39,8 @@ public class QuickAddEntityComboBoxTest extends BaseMockitoTest {
 
     private TestEntity t3;
 
-    @Before
+    @Override
+	@Before
     public void setUp() {
         t1 = new TestEntity(1, "Kevin", 12L);
         t2 = new TestEntity(2, "Bob", 13L);
@@ -48,8 +49,7 @@ public class QuickAddEntityComboBoxTest extends BaseMockitoTest {
         Mockito.when(service.find(Matchers.isNull(Filter.class), (SortOrder[]) Matchers.anyVararg()))
                 .thenReturn(Lists.newArrayList(t1, t2, t3));
 
-        Filter f = new com.ocs.dynamo.filter.Compare.Equal("name", "Kevin");
-        Mockito.when(service.find(Matchers.eq(f), (SortOrder[]) Matchers.anyVararg()))
+		Mockito.when(service.find(Matchers.isA(com.ocs.dynamo.filter.Filter.class), (SortOrder[]) Matchers.anyVararg()))
                 .thenReturn(Lists.newArrayList(t1));
 
         Mockito.when(service.createNewEntity()).thenReturn(new TestEntity());
@@ -87,7 +87,7 @@ public class QuickAddEntityComboBoxTest extends BaseMockitoTest {
         select.getAddButton().click();
         Mockito.verify(ui).addWindow(captor.capture());
 
-        AddNewValueDialog<Integer, TestEntity> dialog = (AddNewValueDialog<Integer, TestEntity>) captor.getValue();
+        AddNewValueDialog<Integer, TestEntity> dialog = captor.getValue();
 
         dialog.getValueField().setValue("New Item");
 
@@ -115,7 +115,7 @@ public class QuickAddEntityComboBoxTest extends BaseMockitoTest {
         select.getAddButton().click();
         Mockito.verify(ui).addWindow(captor.capture());
 
-        AddNewValueDialog<Integer, TestEntity> dialog = (AddNewValueDialog<Integer, TestEntity>) captor.getValue();
+        AddNewValueDialog<Integer, TestEntity> dialog = captor.getValue();
 
         // try to add an empty value
         dialog.getValueField().setValue(null);
@@ -145,7 +145,7 @@ public class QuickAddEntityComboBoxTest extends BaseMockitoTest {
         select.getAddButton().click();
         Mockito.verify(ui).addWindow(captor.capture());
 
-        AddNewValueDialog<Integer, TestEntity> dialog = (AddNewValueDialog<Integer, TestEntity>) captor.getValue();
+        AddNewValueDialog<Integer, TestEntity> dialog = captor.getValue();
 
         // try to add an empty value
         dialog.getValueField().setValue("LongLongLongLongLongLongLongLongLong");

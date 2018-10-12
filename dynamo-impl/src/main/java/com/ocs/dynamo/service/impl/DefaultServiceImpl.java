@@ -61,7 +61,7 @@ public class DefaultServiceImpl<ID, T extends AbstractEntity<ID>> extends BaseSe
 	 *            the DSL root
 	 * @param entityClass
 	 *            the entity class
-	 * @param uniquePropertyId
+	 * @param uniquePropertyIds
 	 *            the unique property name
 	 */
 	public DefaultServiceImpl(EntityPathBase<T> dslRoot, Class<T> entityClass, String[] uniquePropertyIds) {
@@ -75,7 +75,7 @@ public class DefaultServiceImpl<ID, T extends AbstractEntity<ID>> extends BaseSe
 	 *            the QueryDSL root
 	 * @param entityClass
 	 *            the entity class
-	 * @param uniquePropertyId
+	 * @param uniquePropertyIds
 	 * @param uniqueCaseSensitive
 	 */
 	public DefaultServiceImpl(EntityPathBase<T> dslRoot, Class<T> entityClass, String[] uniquePropertyIds,
@@ -98,7 +98,7 @@ public class DefaultServiceImpl<ID, T extends AbstractEntity<ID>> extends BaseSe
 	 * 
 	 * @param dao
 	 *            the DAO
-	 * @param uniquePropertyId
+	 * @param uniquePropertyIds
 	 *            the name of the property that must be unique
 	 */
 	public DefaultServiceImpl(BaseDao<ID, T> dao, String... uniquePropertyIds) {
@@ -110,7 +110,7 @@ public class DefaultServiceImpl<ID, T extends AbstractEntity<ID>> extends BaseSe
 	 * 
 	 * @param dao
 	 *            the DAO used to retrieve the data
-	 * @param uniquePropertyId
+	 * @param uniquePropertyIds
 	 *            the unique property
 	 * @param uniqueCaseSensitive
 	 *            whether the unique property is case sensitive

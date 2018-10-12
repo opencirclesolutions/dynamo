@@ -1,5 +1,6 @@
 package com.ocs.dynamo.functional.dao.impl;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -14,6 +15,7 @@ public class EntityWithTranslationsDaoImplTest extends BaseIntegrationTest {
 	private EntityWithTranslationsDao dao;
 
 	@Test
+	@Ignore
 	public void test() {
 		EntityWithTranslations entity = new EntityWithTranslations();
 		SomeTranslation t = new SomeTranslation();

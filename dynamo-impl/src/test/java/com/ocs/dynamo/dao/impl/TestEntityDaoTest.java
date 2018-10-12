@@ -32,6 +32,7 @@ import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.filter.And;
 import com.ocs.dynamo.filter.Compare;
 import com.ocs.dynamo.filter.Filter;
+import com.ocs.dynamo.filter.In;
 import com.ocs.dynamo.test.BaseIntegrationTest;
 import com.ocs.dynamo.utils.DateUtils;
 
@@ -249,6 +250,28 @@ public class TestEntityDaoTest extends BaseIntegrationTest {
         List<Long> ages = dao.findDistinctInCollectionTable("test_entity", "age", Long.class);
         Assert.assertEquals(1, ages.size());
     }
+
+	@Test
+	public void testFetchSelect() {
+		save("Pete", 1L);
+		save("Bob", 2L);
+		save("Isaac", 3L);
+		TestEntity e1 = entityManager.createQuery("from TestEntity t where t.name = 'Bob'", TestEntity.class)
+				.getSingleResult();
+		TestEntity e2 = entityManager.createQuery("from TestEntity t where t.name = 'Pete'", TestEntity.class)
+				.getSingleResult();
+
+		SortOrder sortName = new SortOrder("name");
+		Filter filter = new In("name", Lists.newArrayList(e1.getName(), e2.getName()));
+		List<Object[]> result = dao.fetchSelect(filter, new String[] { "name", "age" }, new SortOrders(sortName));
+
+		Assert.assertEquals(2, result.size());
+		Assert.assertEquals(e1.getName(), result.get(0)[0]);
+		Assert.assertEquals(e1.getAge(), result.get(0)[1]);
+		Assert.assertEquals(e2.getName(), result.get(1)[0]);
+		Assert.assertEquals(e2.getAge(), result.get(1)[1]);
+
+	}
 
     public void testFindByBirthDateLocal() {
         List<TestEntity> result = dao.findByBirthDateLocal();

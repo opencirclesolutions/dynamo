@@ -67,8 +67,10 @@ public abstract class BaseExportTemplate<ID extends Serializable, T extends Abst
 	protected static final int TITLE_ROW_HEIGHT = 40;
 
 	/**
-	 * The maximum number of rows that will be created normally. If the number is
-	 * larger, then a streaming writer will be used. This is faster but it will mean
+	 * The maximum number of rows that will be created normally. If the number
+	 * is
+	 * larger, then a streaming writer will be used. This is faster but it
+	 * will mean
 	 * we cannot auto size the columns
 	 */
 	protected static final int MAX_SIZE = 20000;
@@ -113,7 +115,7 @@ public abstract class BaseExportTemplate<ID extends Serializable, T extends Abst
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param service
 	 *            the service used to retrieve the data
 	 * @param sortOrders
@@ -140,7 +142,7 @@ public abstract class BaseExportTemplate<ID extends Serializable, T extends Abst
 
 	/**
 	 * Indicates whether it is possible to resize the columns
-	 * 
+	 *
 	 * @return
 	 */
 	protected boolean canResize() {
@@ -148,9 +150,10 @@ public abstract class BaseExportTemplate<ID extends Serializable, T extends Abst
 	}
 
 	/**
-	 * Creates an Excel cell and applies the correct style. The style to use depends
+	 * Creates an Excel cell and applies the correct style. The style to use
+	 * depends
 	 * on the attribute model and the value to display in the cell
-	 * 
+	 *
 	 * @param row
 	 *            the row to which to add the cell
 	 * @param colIndex
@@ -177,7 +180,7 @@ public abstract class BaseExportTemplate<ID extends Serializable, T extends Abst
 
 	/**
 	 * Creates the style generator
-	 * 
+	 *
 	 * @param workbook
 	 *            the work book that is being created
 	 * @return
@@ -187,10 +190,13 @@ public abstract class BaseExportTemplate<ID extends Serializable, T extends Abst
 	}
 
 	/**
-	 * Creates an appropriate work book - if the size is below the threshold then a
-	 * normal workbook is created. Otherwise a streaming workbook is created. This
-	 * is much faster and more efficient, but you cannot auto resize the columns
-	 * 
+	 * Creates an appropriate work book - if the size is below the threshold
+	 * then a
+	 * normal workbook is created. Otherwise a streaming workbook is
+	 * created. This
+	 * is much faster and more efficient, but you cannot auto
+	 * resize the columns
+	 *
 	 * @param size
 	 *            the number of rows
 	 * @return
@@ -206,7 +212,7 @@ public abstract class BaseExportTemplate<ID extends Serializable, T extends Abst
 
 	/**
 	 * Generates the Excel (XLS) file
-	 * 
+	 *
 	 * @param iterator
 	 *            data set iterator that contains the rows to include
 	 * @return
@@ -232,7 +238,7 @@ public abstract class BaseExportTemplate<ID extends Serializable, T extends Abst
 
 	/**
 	 * Returns the size of a single page of data
-	 * 
+	 *
 	 * @return
 	 */
 	public abstract int getPageSize();
@@ -255,7 +261,7 @@ public abstract class BaseExportTemplate<ID extends Serializable, T extends Abst
 
 	/**
 	 * Processes the input and creates a file
-	 * 
+	 *
 	 * @param xls
 	 * @return
 	 * @throws IOException
@@ -283,7 +289,7 @@ public abstract class BaseExportTemplate<ID extends Serializable, T extends Abst
 
 	/**
 	 * Resizes all columns on a sheet if possible
-	 * 
+	 *
 	 * @param sheet
 	 *            the sheet
 	 */

@@ -53,7 +53,7 @@ public abstract class BaseCustomComponent extends CustomComponent implements Bui
 
 	/**
 	 * Constructs a (formatted) label based on the attribute model
-	 * 
+	 *
 	 * @param entity
 	 *            the entity that is being displayed
 	 * @param attributeModel
@@ -64,7 +64,7 @@ public abstract class BaseCustomComponent extends CustomComponent implements Bui
 		Label fieldLabel = new Label("", ContentMode.HTML);
 		fieldLabel.setCaption(attributeModel.getDisplayName());
 		Object value = ClassUtils.getFieldValue(entity, attributeModel.getName());
-		String formatted = FormatUtils.formatPropertyValue(getEntityModelFactory(), attributeModel, value, 
+		String formatted = FormatUtils.formatPropertyValue(getEntityModelFactory(), attributeModel, value,
 				"<br/>");
 		fieldLabel.setValue(formatted);
 		return fieldLabel;
@@ -84,7 +84,7 @@ public abstract class BaseCustomComponent extends CustomComponent implements Bui
 
 	/**
 	 * Generic handling of error messages after a save operation
-	 * 
+	 *
 	 * @param ex
 	 *            the exception that occurred
 	 */
@@ -110,7 +110,7 @@ public abstract class BaseCustomComponent extends CustomComponent implements Bui
 
 	/**
 	 * Retrieves a message from the message bundle
-	 * 
+	 *
 	 * @param key
 	 *            the key of the message
 	 * @return
@@ -121,7 +121,7 @@ public abstract class BaseCustomComponent extends CustomComponent implements Bui
 
 	/**
 	 * Retrieves a message from the message bundle
-	 * 
+	 *
 	 * @param key
 	 *            the key of the message
 	 * @param args
@@ -134,7 +134,7 @@ public abstract class BaseCustomComponent extends CustomComponent implements Bui
 
 	/**
 	 * Navigates to the specified view
-	 * 
+	 *
 	 * @param view
 	 *            the ID of the view
 	 */
@@ -144,10 +144,12 @@ public abstract class BaseCustomComponent extends CustomComponent implements Bui
 	}
 
 	/**
-	 * Shows a notification message - this method will check for the availability of
-	 * a Vaadin Page object and if this is not present, write the notification to
+	 * Shows a notification message - this method will check for the
+	 * availability of
+	 * a Vaadin Page object and if this is not present, write
+	 * the notification to
 	 * the log instead
-	 * 
+	 *
 	 * @param message
 	 *            the message
 	 * @param type

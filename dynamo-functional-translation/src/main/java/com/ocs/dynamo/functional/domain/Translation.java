@@ -16,6 +16,7 @@ package com.ocs.dynamo.functional.domain;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -26,6 +27,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+
+import org.hibernate.annotations.DiscriminatorOptions;
 
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.EditableType;
@@ -45,23 +48,31 @@ import com.ocs.dynamo.utils.StringUtils;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "type")
 @Model(displayProperty = "fullDescription")
+@DiscriminatorOptions(force=true)
 public abstract class Translation<E> extends AbstractEntity<Integer> {
 
 	private static final long serialVersionUID = 3155835503400960383L;
 
 	@Id
+	@SequenceGenerator(name = "translation_id_seq", sequenceName = "translation_id_seq")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "translation_id_seq")
 	private Integer id;
 
 	@Column(insertable = false, updatable = false)
 	@Attribute(visible = VisibilityType.HIDE)
 	private String type;
 
+	@Column(insertable = false, updatable = false)
+	@Attribute(visible = VisibilityType.HIDE)
+	private Integer key;
+
 	@NotNull
 	@Attribute(visible = VisibilityType.HIDE)
 	private String field;
 
+	// uni-directional many-to-one association to Domain
 	@NotNull
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "locale")
 	@Attribute(showInTable = VisibilityType.SHOW)
 	private Locale locale;
@@ -69,6 +80,15 @@ public abstract class Translation<E> extends AbstractEntity<Integer> {
 	@NotNull
 	@Attribute(showInTable = VisibilityType.SHOW)
 	private String translation;
+
+	public Translation() {
+	}
+
+	public Translation(String field, Locale locale, String translation) {
+		this.field = field;
+		this.locale = locale;
+		this.translation = translation;
+	}
 
 	@Override
 	public Integer getId() {
@@ -82,6 +102,13 @@ public abstract class Translation<E> extends AbstractEntity<Integer> {
 
 	public String getType() {
 		return this.type;
+	}
+
+	/**
+	 * @return the key
+	 */
+	public Integer getKey() {
+		return key;
 	}
 
 	public String getField() {
@@ -118,5 +145,38 @@ public abstract class Translation<E> extends AbstractEntity<Integer> {
 	public String getFullDescription() {
 		return StringUtils.camelCaseToHumanFriendly(getField(), false) + " - " + getLocale().getName() + " - "
 				+ getTranslation();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (!super.equals(obj)) {
+			return false;
+		}
+		if (!(obj instanceof Translation)) {
+			return false;
+		}
+		Translation<?> other = (Translation<?>) obj;
+		if (this.id == null || other.id == null) {
+			return false;
+		}
+		return this.id.equals(other.id);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return getTranslation();
 	}
 }

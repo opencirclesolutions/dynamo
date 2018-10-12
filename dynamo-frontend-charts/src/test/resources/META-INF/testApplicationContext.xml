@@ -46,7 +46,7 @@
 	<!-- The entity model factory -->
 	<bean id="entityModelFactory" class="com.ocs.dynamo.domain.model.impl.EntityModelFactoryImpl">
 		<constructor-arg index="0">
-			<bean class="com.ocs.dynamo.domain.model.impl.GraphEntityModelFactory"/>
+			<bean class="com.ocs.dynamo.domain.model.impl.ChartEntityModelFactory"/>
 		</constructor-arg>
 	</bean>
 

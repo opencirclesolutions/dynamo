@@ -279,6 +279,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 
 		Assert.assertEquals("Override", nameModel.getDisplayName());
 		Assert.assertEquals("Prompt override", nameModel.getPrompt());
+		Assert.assertEquals("Style override", nameModel.getStyles());
 		Assert.assertEquals(EditableType.CREATE_ONLY, nameModel.getEditableType());
 		Assert.assertEquals("Style override", nameModel.getStyles());
 

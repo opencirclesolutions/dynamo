@@ -13,18 +13,16 @@
  */
 package com.ocs.dynamo.domain;
 
-import java.util.Set;
+import com.ocs.dynamo.domain.model.annotation.Attribute;
+import com.ocs.dynamo.domain.model.annotation.Model;
+import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-
-import org.apache.commons.lang.builder.ReflectionToStringBuilder;
-
-import com.ocs.dynamo.domain.model.annotation.Attribute;
-import com.ocs.dynamo.domain.model.annotation.Model;
+import java.util.Set;
 
 /**
  * Entity used for testing purposes
@@ -33,7 +31,7 @@ import com.ocs.dynamo.domain.model.annotation.Model;
  */
 @Entity
 @Table(name = "worldpopulation")
-@Model(displayProperty = "World population")
+@Model(displayName = "World population")
 public class WorldPopulation extends AbstractEntity<Integer> {
 
 	private static final long serialVersionUID = -3910599511872410346L;

@@ -104,7 +104,8 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 	private Map<String, Filter> fieldFilters = new HashMap<>();
 
 	/**
-	 * Form options that determine which buttons and functionalities are available
+	 * Form options that determine which buttons and functionalities are
+	 * available
 	 */
 	private FormOptions formOptions;
 
@@ -173,17 +174,15 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 	 */
 	private UI ui = UI.getCurrent();
 
-	private ModelBasedSearchDialog<ID, T> dialog;
-
-	/**
-	 * Whether the table is in view mode. If this is the case, editing is not
-	 * allowed and no buttons will be displayed
-	 */
-	private boolean viewMode;
+    private ModelBasedSearchDialog<ID, T> dialog;/**
+     * Whether the table is in view mode. If this is the case, editing is not* allowed and no buttons
+      will be displayed
+     */
+    private boolean viewMode;
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param items
 	 *            the entities to display
 	 * @param entityModel
@@ -211,9 +210,10 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 	}
 
 	/**
-	 * Callback method that is called after selecting one or more items using the
+	 * Callback method that is called after selecting one or more items using
+	 * the
 	 * search dialog
-	 * 
+	 *
 	 * @param selectedItems
 	 */
 	public void afterItemsSelected(Collection<T> selectedItems) {
@@ -222,7 +222,7 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 
 	/**
 	 * Checks which buttons in the button bar must be enabled
-	 * 
+	 *
 	 * @param selectedItem
 	 */
 	protected void checkButtonState(T selectedItem) {
@@ -231,30 +231,28 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 		}
 	}
 
-	/**
-	 * Constructs the button that is used for adding new items
-	 * 
-	 * @param buttonBar
-	 *            the button bar
-	 */
-	protected void constructAddButton(Layout buttonBar) {
-		addButton = new Button(messageService.getMessage("ocs.add", VaadinUtils.getLocale()));
-		addButton.setIcon(FontAwesome.PLUS);
-		addButton.addClickListener(event -> {
-			T t = createEntity();
-			container.addBean(t);
-			if (receiver != null) {
-				receiver.signalDetailsComponentValid(DetailsEditTable.this,
-						VaadinUtils.allFixedTableFieldsValid(table));
-			}
-		});
-		addButton.setVisible(isTableEditEnabled() && !formOptions.isHideAddButton());
-		buttonBar.addComponent(addButton);
-	}
+    /**
+     * Constructs the button that is used for adding new items
+     *
+     * @param buttonBar
+     *            the button bar
+     */
+    protected void constructAddButton(Layout buttonBar) {
+        addButton = new Button(messageService.getMessage("ocs.add", VaadinUtils.getLocale()));
+        addButton.setIcon(FontAwesome.PLUS);addButton.addClickListener(event -> {
+            T t = createEntity();
+            container.addBean(t);
+            if (receiver != null) {
+                receiver.signalDetailsComponentValid(DetailsEditTable.this, VaadinUtils.allFixedTableFieldsValid(table));
+            }
+        });
+        addButton.setVisible(isTableEditEnabled() && !formOptions.isHideAddButton());
+        buttonBar.addComponent(addButton);
+    }
 
 	/**
 	 * Constructs the button bar
-	 * 
+	 *
 	 * @param parent
 	 *            the layout to which to add the button bar
 	 */
@@ -271,11 +269,12 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 	/**
 	 * Method that is called to create a custom field. Override in subclasses if
 	 * needed
-	 * 
+	 *
 	 * @param entityModel
 	 *            the entity model of the entity that is displayed in the table
 	 * @param attributeModel
-	 *            the attribute model of the attribute for which we are constructing
+	 *            the attribute model of the attribute for which we are
+	 *            constructing
 	 *            a field
 	 * @param viewMode
 	 *            whether the form is in view mode
@@ -288,15 +287,14 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 
 	/**
 	 * Constructs a button that brings up a search dialog
-	 * 
+	 *
 	 * @param buttonBar
 	 */
 	protected void constructSearchButton(Layout buttonBar) {
 
-		searchDialogButton = new Button(messageService.getMessage("ocs.search", VaadinUtils.getLocale()));
-		searchDialogButton.setIcon(FontAwesome.SEARCH);
-		searchDialogButton.setDescription(messageService.getMessage("ocs.search.description", VaadinUtils.getLocale()));
-		searchDialogButton.addClickListener(event -> {
+        searchDialogButton = new Button(messageService.getMessage("ocs.search", VaadinUtils.getLocale()));
+        searchDialogButton.setIcon(FontAwesome.SEARCH);searchDialogButton.setDescription(messageService.getMessage("ocs.search.description", VaadinUtils.getLocale()));
+        searchDialogButton.addClickListener(event -> {
 
 			// service must be specified
 			if (service == null) {
@@ -304,11 +302,11 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 						messageService.getMessage("ocs.no.service.specified", VaadinUtils.getLocale()));
 			}
 
-			dialog = new ModelBasedSearchDialog<ID, T>(service,
-					searchDialogEntityModel != null ? searchDialogEntityModel : entityModel, searchDialogFilters,
-					searchDialogSortOrder == null ? null : Lists.newArrayList(searchDialogSortOrder), true, true) {
-				@Override
-				protected boolean doClose() {
+             dialog = new ModelBasedSearchDialog<ID, T>(service,
+                    searchDialogEntityModel != null ? searchDialogEntityModel : entityModel, searchDialogFilters,
+                    searchDialogSortOrder == null ? null : Lists.newArrayList(searchDialogSortOrder), true, true) {
+                @Override
+                protected boolean doClose() {
 
 					// add the selected items to the table
 					Collection<T> selected = getSelectedItems();
@@ -330,7 +328,7 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 
 	/**
 	 * Creates a new entity - override in subclass
-	 * 
+	 *
 	 * @return
 	 */
 	protected abstract T createEntity();
@@ -411,22 +409,21 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 
 		table = new ModelBasedTable<>(container, entityModel, false);
 
-		// add a remove button directly in the table
-		if (!isViewMode() && formOptions.isShowRemoveButton()) {
-			final String removeMsg = messageService.getMessage("ocs.detail.remove", VaadinUtils.getLocale());
-			table.addGeneratedColumn(removeMsg, (ColumnGenerator) (source, itemId, columnId) -> {
-				Button remove = new Button(removeMsg);
-				remove.setIcon(FontAwesome.TRASH);
-				remove.addClickListener(event -> {
-					container.removeItem(itemId);
-					items.remove(itemId);
-					// callback method so the entity can be removed from its
-					// parent
-					removeEntity((T) itemId);
-					if (receiver != null) {
-						receiver.signalDetailsComponentValid(DetailsEditTable.this,
-								VaadinUtils.allFixedTableFieldsValid(table));
-					}
+        // add a remove button directly in the table
+        if (!isViewMode() && formOptions.isShowRemoveButton()) {
+            final String removeMsg = messageService.getMessage("ocs.detail.remove", VaadinUtils.getLocale());
+            table.addGeneratedColumn(removeMsg, (ColumnGenerator) (source, itemId, columnId) -> {
+                Button remove = new Button(removeMsg);remove.setIcon(FontAwesome.TRASH);
+                remove.addClickListener(event -> {
+                    container.removeItem(itemId);
+                    items.remove(itemId);
+                    // callback method so the entity can be removed from its
+                    // parent
+                    removeEntity((T) itemId);
+                    if (receiver != null) {
+                        receiver.signalDetailsComponentValid(DetailsEditTable.this,
+                                VaadinUtils.allFixedTableFieldsValid(table));
+                    }
 
 				});
 				return remove;
@@ -457,15 +454,15 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 					field.setEnabled(isTableEditEnabled());
 					field.setSizeFull();
 
-					// adds a value change listener (for updating the save
-					// button)
-					if (!viewMode) {
-						field.addValueChangeListener(event -> {
-							if (receiver != null) {
-								receiver.signalDetailsComponentValid(DetailsEditTable.this,
-										VaadinUtils.allFixedTableFieldsValid(table));
-							}
-						});
+                    // adds a value change listener (for updating the save
+                    // button)
+                    if (!viewMode) {
+                        field.addValueChangeListener(event -> {
+                            if (receiver != null) {
+                                receiver.signalDetailsComponentValid(DetailsEditTable.this,
+                                        VaadinUtils.allFixedTableFieldsValid(table));
+                            }
+                        });
 
 						postProcessTableField(propertyId, field);
 					}
@@ -494,19 +491,20 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 		// add the buttons
 		constructButtonBar(layout);
 
-		// set the reference to the parent so the status of the save button can
-		// be set correctly
-		ReceivesSignal receiver = VaadinUtils.getParentOfClass(this, ReceivesSignal.class);
-		setReceiver(receiver);
+        // set the reference to the parent so the status of the save button can
+        // be set correctly
+        ReceivesSignal receiver = VaadinUtils.getParentOfClass(this, ReceivesSignal.class);
+        setReceiver(receiver);
 
 		postConstruct();
 
-		return layout;
-	}
+        postConstruct();return layout;
+    }
 
 	/**
-	 * Indicates whether it is possible to add/modify items directly via the table
-	 * 
+	 * Indicates whether it is possible to add/modify items directly via the
+	 * table
+	 *
 	 * @return
 	 */
 	private boolean isTableEditEnabled() {
@@ -518,9 +516,10 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 	}
 
 	/**
-	 * Method that is called in order to enable/disable a button after selecting an
+	 * Method that is called in order to enable/disable a button after selecting
+	 * an
 	 * item in the table
-	 * 
+	 *
 	 * @param button
 	 * @return
 	 */
@@ -544,9 +543,10 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 	}
 
 	/**
-	 * Callback method that is used to modify the button bar. Override in subclasses
+	 * Callback method that is used to modify the button bar. Override in
+	 * subclasses
 	 * if needed
-	 * 
+	 *
 	 * @param buttonBar
 	 */
 	protected void postProcessButtonBar(Layout buttonBar) {
@@ -558,10 +558,12 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 	}
 
 	/**
-	 * Registers a button that must be enabled/disabled after an item is selected.
-	 * use the "mustEnableButton" callback method to impose additional constraints
+	 * Registers a button that must be enabled/disabled after an item is
+	 * selected.
+	 * use the "mustEnableButton" callback method to impose additional
+	 * constraints
 	 * on when the button must be enabled
-	 * 
+	 *
 	 * @param button
 	 *            the button to register
 	 */
@@ -575,7 +577,7 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 	/**
 	 * Callback method that is called when the remove button is clicked - allows
 	 * decoupling the entity from its master
-	 * 
+	 *
 	 * @param toRemove
 	 */
 	protected abstract void removeEntity(T toRemove);
@@ -600,7 +602,7 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 
 	/**
 	 * Refreshes the items that are displayed in the table
-	 * 
+	 *
 	 * @param items
 	 *            the new set of items to be displayed
 	 */
@@ -625,28 +627,27 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 		this.pageLength = pageLength;
 	}
 
-	/**
-	 * This method is called to store a reference to the parent form
-	 * 
-	 * @param parentForm
-	 */
-	private void setReceiver(ReceivesSignal receiver) {
-		this.receiver = receiver;
-		if (receiver != null) {
-			receiver.signalDetailsComponentValid(this, VaadinUtils.allFixedTableFieldsValid(table));
-		}
-	}
+    /**
+     * This method is called to store a reference to the parent form
+     *
+     * @param parentForm
+     */
+    private void setReceiver(ReceivesSignal receiver) {
+        this.receiver = receiver;
+        if (receiver != null) {
+            receiver.signalDetailsComponentValid(this, VaadinUtils.allFixedTableFieldsValid(table));
+        }
+    }
 
 	public void setSearchDialogEntityModel(EntityModel<T> searchDialogEntityModel) {
 		this.searchDialogEntityModel = searchDialogEntityModel;
 	}
 
-	public void setSearchDialogFilters(List<Filter> searchDialogFilters) {
-		this.searchDialogFilters = searchDialogFilters;
-		if (dialog != null) {
+    public void setSearchDialogFilters(List<Filter> searchDialogFilters) {
+        this.searchDialogFilters = searchDialogFilters;
+    if (dialog != null) {
 			dialog.setFilters(searchDialogFilters);
-		}
-	}
+		}}
 
 	public void setSearchDialogSortOrder(SortOrder searchDialogSortOrder) {
 		this.searchDialogSortOrder = searchDialogSortOrder;

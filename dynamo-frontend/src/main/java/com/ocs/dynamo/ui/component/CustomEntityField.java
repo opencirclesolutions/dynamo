@@ -80,7 +80,7 @@ public abstract class CustomEntityField<ID extends Serializable, T extends Abstr
 		this.entityModel = entityModel;
 		this.attributeModel = attributeModel;
 		this.messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
-		this.filter = filter;
+		setFilter(filter);
 	}
 
 	public AttributeModel getAttributeModel() {

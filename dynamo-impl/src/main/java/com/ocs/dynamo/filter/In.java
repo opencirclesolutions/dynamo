@@ -32,8 +32,8 @@ public class In extends AbstractFilter implements PropertyFilter {
 	/**
 	 * @param propertyId
 	 *            the property that represents the collection
-	 * @param value
-	 *            the object that needs to be checked
+	 * @param values
+	 *            the objects that needs to be checked
 	 */
 	public In(String propertyId, Collection<?> values) {
 		this.propertyId = propertyId;

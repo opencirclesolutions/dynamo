@@ -37,6 +37,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import org.apache.commons.lang.ArrayUtils;
 
 /**
  * A composite component that displays a selected entity and offers a search
@@ -47,9 +48,6 @@ import com.vaadin.ui.Label;
  *            the type of the primary key
  * @param <T>
  *            the type of the entity
- * @param <Object>
- *            the type of the selected value (can be a single entity or a
- *            collection depending on the use case)
  */
 public class EntityLookupField<ID extends Serializable, T extends AbstractEntity<ID>>
 		extends QuickAddEntityField<ID, T, Object> {
@@ -76,7 +74,7 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 	/**
 	 * The joins to apply to the search in the search dialog
 	 */
-	private final FetchJoinInformation[] joins;
+	private FetchJoinInformation[] joins;
 
 	/**
 	 * The label that displays the currently selected item
@@ -105,18 +103,18 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param service
 	 *            the service used to query the database
 	 * @param entityModel
 	 *            the entity model
 	 * @param attributeModel
 	 *            the attribute mode
-	 * @param filters
+	 * @param filter
 	 *            the filter to apply when searching
 	 * @param search
 	 *            whether the component is used in a search screen
-	 * @param sortOrder
+	 * @param sortOrders
 	 *            the sort order
 	 * @param joins
 	 *            the joins to use when fetching data when filling the popop dialog
@@ -135,7 +133,7 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 
 	/**
 	 * Adds a sort order
-	 * 
+	 *
 	 * @param sortOrder
 	 *            the sort order to add
 	 */
@@ -235,34 +233,35 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 
 				private static final long serialVersionUID = -3432107069929941520L;
 
-				@Override
-				protected boolean doClose() {
-					if (multiSelect) {
-						if (getValue() == null) {
-							setValue(getSelectedItems());
-						} else {
-							// get current value
-							Collection<T> current = (Collection<T>) EntityLookupField.this.getValue();
-							// add new values
-							for (T t : getSelectedItems()) {
-								if (!current.contains(t)) {
-									current.add(t);
-								}
-							}
-							EntityLookupField.this.setValue(current);
-						}
-					} else {
-						// single value select
-						setValue(getSelectedItem());
-					}
-					return true;
-				}
-			};
-			dialog.setPageLength(pageLength);
-			dialog.build();
-			getUi().addWindow(dialog);
-		});
-		bar.addComponent(selectButton);
+                @Override
+
+                protected boolean doClose() {
+                    if (multiSelect) {
+                        if (getValue() == null) {
+                            setValue(getSelectedItems());
+                        } else {
+                            // get current value
+                            Collection<T> current = (Collection<T>) EntityLookupField.this.getValue();
+                            // add new values
+                            for (T t : getSelectedItems()) {
+                                if (!current.contains(t)) {
+                                    current.add(t);
+                                }
+                            }
+                            EntityLookupField.this.setValue(current);
+                        }
+                    } else {
+                        // single value select
+                        setValue(getSelectedItem());
+                    }
+                    return true;
+                }
+            };
+            dialog.setPageLength(pageLength);
+            dialog.build();
+            getUi().addWindow(dialog);
+        });
+        bar.addComponent(selectButton);
 
 		// button for clearing the current selection
 		if (clearAllowed) {
@@ -286,7 +285,7 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 
 	/**
 	 * Makes sure any currently selected values are highlighted in the search dialog
-	 * 
+	 *
 	 * @param dialog
 	 *            the dialog
 	 */
@@ -335,7 +334,7 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 
 	/**
 	 * Updates the value that is displayed in the label
-	 * 
+	 *
 	 * @param newValue
 	 *            the new value
 	 */
@@ -379,6 +378,10 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 
 	protected FetchJoinInformation[] getJoins() {
 		return joins;
+	}
+
+	public void addFetchJoinInformation(FetchJoinInformation... fetchJoinInformation) {
+		joins = (FetchJoinInformation[]) ArrayUtils.addAll(joins, fetchJoinInformation);
 	}
 
 }

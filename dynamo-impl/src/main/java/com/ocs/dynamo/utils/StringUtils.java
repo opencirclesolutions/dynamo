@@ -31,12 +31,13 @@ public final class StringUtils {
 
 	/**
 	 * Converts CamelCase string to human friendly
-	 * 
+	 *
 	 * @param camelCaseString
 	 *            the Camel Case string to convert
 	 * @param capitalize
 	 *            indicates whether to capitalize every word (if set to
-	 *            <code>false</code> then only the first word will be capitalized
+	 *            <code>false</code> then only the first word will be
+	 *            capitalized
 	 * @return
 	 */
 	public static String camelCaseToHumanFriendly(String camelCaseString, boolean capitalize) {
@@ -57,7 +58,7 @@ public final class StringUtils {
 
 	/**
 	 * Capitalize a String
-	 * 
+	 *
 	 * @param string
 	 *            the String to capitalize
 	 * @return
@@ -79,9 +80,10 @@ public final class StringUtils {
 	}
 
 	/**
-	 * Checks if an value is a valid email address - this is actually a very simple
+	 * Checks if an value is a valid email address - this is actually a very
+	 * simple
 	 * check that only checks for the @-sign
-	 * 
+	 *
 	 * @param value
 	 *            the value to check
 	 */
@@ -94,7 +96,7 @@ public final class StringUtils {
 
 	/**
 	 * Indicates whether a word ends at position i in the string
-	 * 
+	 *
 	 * @param camelCaseString
 	 *            the string
 	 * @param i
@@ -116,8 +118,9 @@ public final class StringUtils {
 	}
 
 	/**
-	 * Prepends the default protocol ("http://") to a value that represents a URL
-	 * 
+	 * Prepends the default protocol ("http://") to a value that represents a
+	 * URL
+	 *
 	 * @param value
 	 *            the value
 	 * @return
@@ -134,8 +137,8 @@ public final class StringUtils {
 	}
 
 	/**
-	 * Converts a propertyId to a human friendly form
-	 * 
+	 * Converts a propertyId to a
+	 *
 	 * @param propertyId
 	 *            the ID of the property
 	 * @return
@@ -175,7 +178,7 @@ public final class StringUtils {
 
 	/**
 	 * Restricts a string value to the maximum length of a certain field
-	 * 
+	 *
 	 * @param value
 	 * @param clazz
 	 * @param fieldName
@@ -195,7 +198,7 @@ public final class StringUtils {
 
 	/**
 	 * Splits a CamelCase String into words
-	 * 
+	 *
 	 * @param camelCaseString
 	 *            the String to split
 	 * @return

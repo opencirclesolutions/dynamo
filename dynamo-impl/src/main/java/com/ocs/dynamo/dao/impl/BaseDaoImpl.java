@@ -165,6 +165,39 @@ public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements B
 		return fetch(filter, null, sortOrders, joins);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.ocs.dynamo.dao.BaseDao#fetchSelect(com.ocs.dynamo.filter.Filter, java.lang.String[],
+	 * com.ocs.dynamo.dao.SortOrders, com.ocs.dynamo.dao.FetchJoinInformation[])
+	 */
+	@Override
+	public List<Object[]> fetchSelect(Filter filter, String[] selectProperties, SortOrders orders,
+			FetchJoinInformation... joins) {
+		TypedQuery<Object[]> query = JpaQueryBuilder.createSelectQuery(filter, getEntityManager(), getEntityClass(),
+				selectProperties, orders, (joins != null && joins.length > 0) ? joins : getFetchJoins());
+		return query.getResultList();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.ocs.dynamo.dao.BaseDao#fetchSelect(com.ocs.dynamo.filter.Filter, java.lang.String[],
+	 * com.ocs.dynamo.dao.Pageable, com.ocs.dynamo.dao.FetchJoinInformation[])
+	 */
+	@Override
+	public List<Object[]> fetchSelect(Filter filter, String[] selectProperties, Pageable pageable,
+			FetchJoinInformation... joins) {
+		SortOrders sortOrders = pageable == null ? null : pageable.getSortOrders();
+		TypedQuery<Object[]> query = JpaQueryBuilder.createSelectQuery(filter, getEntityManager(), getEntityClass(),
+				selectProperties, sortOrders, (joins != null && joins.length > 0) ? joins : getFetchJoins());
+		if (pageable != null) {
+			query.setFirstResult(pageable.getOffset());
+			query.setMaxResults(pageable.getPageSize());
+		}
+		return query.getResultList();
+	}
+
 	@Override
 	public T fetchById(ID id, FetchJoinInformation... joins) {
 		TypedQuery<T> query = JpaQueryBuilder.createFetchSingleObjectQuery(entityManager, getEntityClass(), id,
@@ -284,7 +317,7 @@ public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements B
 	public <S> List<S> findDistinctInCollectionTable(String tableName, String distinctField, Class<S> elementType) {
 		String query = "select distinct " + StringEscapeUtils.escapeSql(distinctField) + " from "
 				+ StringEscapeUtils.escapeSql(tableName);
-		return (List<S>) getEntityManager().createNativeQuery(query).getResultList();
+		return getEntityManager().createNativeQuery(query).getResultList();
 	}
 
 	@Override

@@ -30,6 +30,7 @@ import com.ocs.dynamo.filter.listener.FilterListener;
 import com.ocs.dynamo.ui.Refreshable;
 import com.ocs.dynamo.ui.Searchable;
 import com.ocs.dynamo.ui.component.Cascadable;
+import com.ocs.dynamo.ui.component.CustomEntityField;
 import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
@@ -443,7 +444,13 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 	public void refresh() {
 		for (FilterGroup group : getGroups().values()) {
 			if (group.getField() instanceof Refreshable) {
-				((Refreshable) group.getField()).refresh();
+				if (getFieldFilters().containsKey(group.getPropertyId())
+						&& group.getField() instanceof CustomEntityField) {
+					Filter ff = getFieldFilters().get(group.getPropertyId());
+					((CustomEntityField) group.getField()).refresh(ff);
+				} else {
+					((Refreshable) group.getField()).refresh();
+				}
 			}
 		}
 	}

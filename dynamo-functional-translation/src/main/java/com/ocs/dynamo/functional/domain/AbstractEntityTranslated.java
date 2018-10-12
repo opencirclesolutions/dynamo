@@ -13,38 +13,32 @@
  */
 package com.ocs.dynamo.functional.domain;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
-
-import javax.persistence.CascadeType;
-import javax.persistence.FetchType;
-import javax.persistence.MappedSuperclass;
-import javax.persistence.OneToMany;
+import java.util.stream.Collectors;
+import javax.persistence.*;
 import javax.validation.constraints.AssertTrue;
-
 import com.ocs.dynamo.domain.AbstractAuditableEntity;
 import com.ocs.dynamo.domain.model.VisibilityType;
 import com.ocs.dynamo.domain.model.annotation.Attribute;
-import com.ocs.dynamo.utils.ClassUtils;
+import org.hibernate.annotations.DiscriminatorOptions;
 
 /**
  * Base class for entities that contain a collection of Translations
- * 
+ *
  * @author Patrick.Deenen@opencircle.solutions
  *
  */
 @SuppressWarnings("rawtypes")
 @MappedSuperclass
-public abstract class AbstractEntityTranslated<ID, T extends Translation> extends AbstractAuditableEntity<ID> {
+@DiscriminatorOptions(force=true)
+public abstract class AbstractEntityTranslated<ID, T extends Translation>
+		extends AbstractAuditableEntity<ID> {
 
 	private static final long serialVersionUID = 511877206448482880L;
 
-	@OneToMany(fetch = FetchType.EAGER, cascade = { CascadeType.MERGE,
+	@OneToMany(fetch = FetchType.LAZY, cascade = { CascadeType.MERGE,
 			CascadeType.PERSIST }, mappedBy = "entity", orphanRemoval = true)
 	@Attribute(visible = VisibilityType.HIDE)
 	private Set<T> translations = new HashSet<>();
@@ -63,7 +57,7 @@ public abstract class AbstractEntityTranslated<ID, T extends Translation> extend
 
 	/**
 	 * Gets all translations for a certain field for the provided locale
-	 * 
+	 *
 	 * @param field
 	 *            the field
 	 * @param locale
@@ -78,7 +72,7 @@ public abstract class AbstractEntityTranslated<ID, T extends Translation> extend
 				translation = translations.iterator().next();
 			} else {
 				for (T t : translations) {
-					if (locale.equalsIgnoreCase(t.getLocale().getCode())) {
+					if (t.getLocale() != null && locale.equalsIgnoreCase(t.getLocale().getCode())) {
 						translation = t;
 						break;
 					}
@@ -90,7 +84,7 @@ public abstract class AbstractEntityTranslated<ID, T extends Translation> extend
 
 	/**
 	 * Gets all translations for a certain field
-	 * 
+	 *
 	 * @param field
 	 *            the name of the field
 	 * @return
@@ -110,7 +104,7 @@ public abstract class AbstractEntityTranslated<ID, T extends Translation> extend
 
 	/**
 	 * Sets all translations for a field
-	 * 
+	 *
 	 * @param field
 	 *            the name of the field
 	 * @param translations
@@ -141,71 +135,62 @@ public abstract class AbstractEntityTranslated<ID, T extends Translation> extend
 		translation.setEntity(null);
 	}
 
-	@AssertTrue(message = "Please provide all requered translations!")
+	@AssertTrue(message = "{ocs.not.all.translations.provided}")
 	protected boolean isValidRequiredTranslations() {
-		boolean result = false;
-		Collection<String> locales = getRequiredLocales();
-		if (locales == null) {
-			result = true;
-		} else {
-			// Initialize counts
-			String[] la = locales.toArray(new String[] {});
-			HashMap<String, Integer> countTranslations = new HashMap<>();
-			// Count the nb of translations for each field
-			for (T t : getTranslations()) {
-				for (int i = 0; i < la.length; i++) {
-					if (la[i].equalsIgnoreCase(t.getLocale().getCode())) {
-						if (!countTranslations.containsKey(t.getField())) {
-							countTranslations.put(t.getField(), new Integer(1));
-						} else {
-							Integer cnt = countTranslations.get(t.getField());
-							countTranslations.put(t.getField(), ++cnt);
-						}
-						break;
-					}
+		final Collection<Locale> requiredLocales = getRequiredLocales();
+		final Collection<String> requiredTranslatedFields = getRequiredTranslatedFields();
+		if (requiredLocales == null || requiredTranslatedFields == null) {
+			return true;
+		}
+		for (Locale requiredLocale: requiredLocales) {
+			for (String requiredTranslatedField : requiredTranslatedFields) {
+				if (getTranslations(requiredTranslatedField, requiredLocale) == null) {
+					return false;
 				}
 			}
-			// When not all fields have been found then not valid
-			List<String> tf = findTranslatedFields();
-			if (!countTranslations.keySet().isEmpty() && countTranslations.keySet().size() == tf.size()) {
-				result = true;
-				// When not every field has the required translations then not valid
-				for (String fn : countTranslations.keySet()) {
-					if (la.length != countTranslations.get(fn)) {
-						// Not valid
-						result = false;
-						break;
-					}
-				}
+
+		}
+		return true;
+	}
+
+	@AssertTrue(message = "{ocs.multiple.translations.provided}")
+	protected boolean isTranslationsDoesNotContainDuplicates() {
+		final Collection<String> requiredTranslatedFields = getRequiredTranslatedFields();
+		if (requiredTranslatedFields == null) {
+			return true;
+		}
+		for (String requiredTranslatedField : requiredTranslatedFields) {
+			Set<T> translations = getTranslations(requiredTranslatedField);
+			Set<Locale> uniqueLocales = translations.stream().map(translation -> translation.getLocale()).collect(Collectors.toSet());
+			if (translations.size() != uniqueLocales.size()) {
+				return false;
 			}
 		}
-		return result;
+		return true;
 	}
 
 	/**
 	 * 
 	 * @return the required locales
 	 */
-	protected Collection<String> getRequiredLocales() {
-		// overwrite in subclassF
-		return null;
+	public Collection<Locale> getRequiredLocales() {
+		return new HashSet<>();
 	}
 
 	/**
 	 * 
-	 * @return ??
+	 * @return the translated fields that are required
 	 */
-	protected List<String> findTranslatedFields() {
-		Method[] methods = this.getClass().getDeclaredMethods();
-		ArrayList<String> translatedFields = new ArrayList<>();
-		for (Method m : methods) {
-			if (m.getName().startsWith("get") && Collection.class.isAssignableFrom(m.getReturnType())) {
-				Class<?> ta = ClassUtils.getResolvedType(m, 0);
-				if (ta != null && Translation.class.isAssignableFrom(ta)) {
-					translatedFields.add(m.getName().substring(3).toUpperCase());
-				}
-			}
-		}
-		return translatedFields;
+	protected Collection<String> getRequiredTranslatedFields() {
+		return new HashSet<>();
 	}
+
+	/**
+	 *
+	 * @return the translated fields that should be rendered as textarea instead of textfield
+	 */
+	public Collection<String> getTextAreaFields() {
+		return new HashSet<>();
+	}
+
 }

@@ -13,29 +13,6 @@
  */
 package com.ocs.dynamo.dao.impl;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import javax.persistence.EntityManager;
-import javax.persistence.Tuple;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Fetch;
-import javax.persistence.criteria.FetchParent;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.ParameterExpression;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.metamodel.Attribute;
-
 import com.google.common.collect.Lists;
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.dao.FetchJoinInformation;
@@ -52,6 +29,28 @@ import com.ocs.dynamo.filter.Like;
 import com.ocs.dynamo.filter.Modulo;
 import com.ocs.dynamo.filter.Not;
 import com.ocs.dynamo.filter.Or;
+
+import javax.persistence.EntityManager;
+import javax.persistence.Tuple;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Fetch;
+import javax.persistence.criteria.FetchParent;
+import javax.persistence.criteria.From;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.ParameterExpression;
+import javax.persistence.criteria.Path;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Selection;
+import javax.persistence.metamodel.Attribute;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * @author patrick.deenen
@@ -110,13 +109,41 @@ public final class JpaQueryBuilder {
 	 */
 	private static <T, R> CriteriaQuery<R> addSortInformation(CriteriaBuilder builder, CriteriaQuery<R> cq,
 			Root<T> root, SortOrder... sortOrders) {
+		return addSortInformation(builder, cq, root, (List<Selection<?>>) null, sortOrders);
+	}
+
+	/**
+	 * Adds the "order by" clause to a JPA 2 criteria query
+	 *
+	 * @param builder
+	 *            the criteria builder
+	 * @param cq
+	 *            the criteria query
+	 * @param root
+	 *            the query root
+	 * @param multiSelect
+	 *            optional properties, when supplied applied as multi select
+	 * @param sortOrders
+	 *            the sort orders
+	 * @return
+	 */
+	private static <T, R> CriteriaQuery<R> addSortInformation(CriteriaBuilder builder, CriteriaQuery<R> cq,
+			Root<T> root, List<Selection<?>> multiSelect, SortOrder... sortOrders) {
+		List<Selection<?>> ms = new ArrayList<>();
+		if (multiSelect != null && !multiSelect.isEmpty()) {
+			ms.addAll(multiSelect);
+		}
 		if (sortOrders != null && sortOrders.length > 0) {
 			List<javax.persistence.criteria.Order> orders = new ArrayList<>();
 			for (SortOrder sortOrder : sortOrders) {
 				Expression<?> property = getPropertyPath(root, sortOrder.getProperty());
+				ms.add(property);
 				orders.add(sortOrder.isAscending() ? builder.asc(property) : builder.desc(property));
 			}
 			cq.orderBy(orders);
+		}
+		if (multiSelect != null && !ms.isEmpty()) {
+			cq.multiselect(ms);
 		}
 		return cq;
 	}
@@ -164,7 +191,8 @@ public final class JpaQueryBuilder {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private static Predicate createComparePredicate(CriteriaBuilder builder, Root<?> root, Filter filter) {
 		Compare compare = (Compare) filter;
-		Expression<Comparable> property = (Expression) getPropertyPath(root, compare.getPropertyId());
+		Path path = getPropertyPath(root, compare.getPropertyId(), true);
+		Expression<Comparable> property = path;
 		Object value = compare.getValue();
 
 		// number representation may contain locale specific separators.
@@ -189,6 +217,10 @@ public final class JpaQueryBuilder {
 
 		switch (compare.getOperation()) {
 		case EQUAL:
+			if (value instanceof Class<?>) {
+				// When instance of class the use type expression
+				return builder.equal(path.type(), builder.literal(value));
+			}
 			return builder.equal(property, value);
 		case GREATER:
 			return builder.greaterThan(property, (Comparable) value);
@@ -329,6 +361,7 @@ public final class JpaQueryBuilder {
 		return query;
 	}
 
+
 	/**
 	 * Create a query for fetching a single object
 	 * 
@@ -396,7 +429,8 @@ public final class JpaQueryBuilder {
 		Root<T> root = cq.from(entityClass);
 
 		// select only the ID
-		cq.multiselect(root.get(DynamoConstants.ID));
+		List<Selection<?>> selection = new ArrayList<>();
+		selection.add(root.get(DynamoConstants.ID));
 
 		// Set where clause
 		Map<String, Object> pars = createParameterMap();
@@ -405,9 +439,14 @@ public final class JpaQueryBuilder {
 			cq.where(p);
 		}
 
+		// When joins are added (by getPropertyPath) do distinct query
+		if (!root.getJoins().isEmpty()) {
+			cq.distinct(true);
+		}
+
 		// add order clause - this is also important in case of an ID query
 		// since we do need to return the correct IDs!
-		cq = addSortInformation(builder, cq, root, sortOrders);
+		cq = addSortInformation(builder, cq, root, selection, sortOrders);
 		TypedQuery<Tuple> query = entityManager.createQuery(cq);
 		setParameters(query, pars);
 		return query;
@@ -497,7 +536,11 @@ public final class JpaQueryBuilder {
 			return createComparePredicate(builder, root, filter);
 		} else if (filter instanceof IsNull) {
 			IsNull isNull = (IsNull) filter;
-			return builder.isNull(getPropertyPath(root, isNull.getPropertyId()));
+			Path p = getPropertyPath(root, isNull.getPropertyId());
+			if (p.type() != null && java.util.Collection.class.isAssignableFrom(p.type().getJavaType())) {
+				return builder.isEmpty(p);
+			}
+			return builder.isNull(p);
 		} else if (filter instanceof Like) {
 			return createLikePredicate(builder, root, filter);
 		} else if (filter instanceof Contains) {
@@ -520,6 +563,62 @@ public final class JpaQueryBuilder {
 		}
 
 		throw new UnsupportedOperationException("Filter: " + filter.getClass().getName() + " not recognized");
+	}
+
+	/**
+	 * Creates a query that fetches properties instead of entities
+	 *
+	 * @param filter
+	 *            the filter
+	 * @param entityManager
+	 *            the entity manager
+	 * @param entityClass
+	 *            the entity class
+	 * @param selectProperties
+	 *            the properties to use in the selection
+	 * @param sortOrders
+	 *            the sorting information
+	 * @param fetchJoins
+	 *            the desired fetch joins
+	 * @return
+	 */
+	@SuppressWarnings("rawtypes")
+	public static <ID, T> TypedQuery<Object[]> createSelectQuery(Filter filter, EntityManager entityManager,
+			Class<T> entityClass, String[] selectProperties, SortOrders sortOrders, FetchJoinInformation[] fetchJoins) {
+		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+		CriteriaQuery<Object[]> cq = builder.createQuery(Object[].class);
+		Root<T> root = cq.from(entityClass);
+
+		// Set select
+		if (selectProperties != null && selectProperties.length > 0) {
+			Selection<?>[] selections = new Selection<?>[selectProperties.length];
+			int i = 0;
+			for (String sp : selectProperties) {
+
+				// Support nested properties
+				String[] ppath = sp.split("\\.");
+				Path path = root;
+				for (String prop : ppath) {
+					path = path.get(prop);
+				}
+				selections[i] = path;
+				i++;
+			}
+			cq.select(builder.array(selections));
+		}
+
+		boolean distinct = addFetchJoinInformation(root, fetchJoins);
+		cq.distinct(distinct);
+
+		Map<String, Object> pars = createParameterMap();
+		Predicate p = createPredicate(filter, builder, root, pars);
+		if (p != null) {
+			cq.where(p);
+		}
+		cq = addSortInformation(builder, cq, root, sortOrders == null ? null : sortOrders.toArray());
+		TypedQuery<Object[]> query = entityManager.createQuery(cq);
+		setParameters(query, pars);
+		return query;
 	}
 
 	/**
@@ -630,23 +729,38 @@ public final class JpaQueryBuilder {
 	 * @return the path to property
 	 */
 	private static Path<Object> getPropertyPath(Root<?> root, Object propertyId) {
+		return getPropertyPath(root, propertyId, false);
+	}
+
+	/**
+	 * Gets property path.
+	 *
+	 * @param root
+	 *            the root where path starts form
+	 * @param propertyId
+	 *            the property ID
+	 * @param join
+	 *            set to true if you want implicit joins to be created for ALL collections
+	 * @return the path to property
+	 */
+	private static Path<Object> getPropertyPath(Root<?> root, Object propertyId, boolean join) {
 		String[] propertyIdParts = ((String) propertyId).split("\\.");
 
-		Join<?, ?> join = null;
 		Path<Object> path = null;
-		String lastPart = propertyIdParts[propertyIdParts.length - 1];
-
-		for (String part : propertyIdParts) {
+		for (int i = 0; i < propertyIdParts.length; i++) {
+			String part = propertyIdParts[i];
 			if (path == null) {
 				path = root.get(part);
-			} else if (join != null) {
-				path = join.get(part);
 			} else {
 				path = path.get(part);
 			}
-
-			if (!part.equals(lastPart) && Collection.class.isAssignableFrom(path.getJavaType())) {
-				join = root.join(part);
+			// Just one collection in the path supported!
+			if (join && java.util.Collection.class.isAssignableFrom(path.type().getJavaType())) {
+				path = root.join(propertyIdParts[0]);
+				for (int k = 1; k <= i; k++) {
+					part = propertyIdParts[k];
+					path = ((From<?, ?>) path).join(part);
+				}
 			}
 		}
 		return path;

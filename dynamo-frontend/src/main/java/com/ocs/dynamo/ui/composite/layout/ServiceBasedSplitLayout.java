@@ -62,7 +62,7 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param service
 	 *            the service for retrieving data from the database
 	 * @param entityModel
@@ -89,7 +89,7 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
 	/**
 	 * Creates the main search filter - overwrite in subclass if you need to
 	 * actually filter the data
-	 * 
+	 *
 	 * @return
 	 */
 	protected Filter constructFilter() {
@@ -102,7 +102,7 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
 	 * when searching for the main attribute is not sufficient. Note that the quick
 	 * search filter is applied in addition to the always active default filter
 	 * returned by the "constructFilter" method
-	 * 
+	 *
 	 * @param value
 	 *            the value to search for
 	 * @return
@@ -114,9 +114,12 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
 
 	/**
 	 * Constructs a quick search field - this method will only be called if the
-	 * "showQuickSearchField" form option is enabled. It will then look for a custom
-	 * filter returned by the constructQuickSearchFilter method, and if that method
-	 * returns null it will construct a filter based on the main attribute
+	 * "showQuickSearchField" form option is enabled. It will then look for a
+	 * custom
+	 * filter returned by the constructQuickSearchFilter method, and if
+	 * that method
+	 * returns null it will construct a filter based on the main
+	 * attribute
 	 */
 	@Override
 	protected final TextField constructSearchField() {
@@ -190,7 +193,8 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
 	}
 
 	/**
-	 * Reloads the component - this will first rebuild the filter and then reload
+	 * Reloads the component - this will first rebuild the filter and then
+	 * reload
 	 * the container using that filter
 	 */
 	@Override

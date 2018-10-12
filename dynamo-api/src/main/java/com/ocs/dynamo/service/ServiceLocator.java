@@ -33,10 +33,11 @@ public interface ServiceLocator {
 	 * @return
 	 */
 	<T> T getService(Class<T> clazz);
-	
+
 	/**
 	 * 
 	 * @param clazz
+	 *            the class of the service
 	 * @return
 	 */
 	<T> Collection<T> getServices(Class<T> clazz);

@@ -62,7 +62,7 @@ public final class VaadinUtils {
 
 	/**
 	 * Add attribute from attributemodel to container when not in container already.
-	 * 
+	 *
 	 * @param container
 	 * @param attributeModel
 	 */
@@ -74,9 +74,9 @@ public final class VaadinUtils {
 		}
 	}
 
-	/**
-	 * Add attribute from entity model to container when not in container already.
-	 * 
+    /**
+	 * Add attribute from entitymodel to container when not in container already.
+	 *
 	 * @param container
 	 * @param entityModel
 	 * @param attributeName
@@ -90,31 +90,30 @@ public final class VaadinUtils {
 	}
 
 	/**
-	 * Check if all editable fields that are contained in a (fixed, non-lazy) table
-	 * are valid. This method is needed because simply calling table.isValid() will
-	 * not take into account any editable components within the table
-	 * 
+	 * Check if all editable fields that are contained in a (fixed, non-lazy) table are valid. This method is needed
+	 * because simply calling table.isValid() will not take into account any editable components within the table
+	 *
 	 * @param table
 	 *            the table
 	 * @return
 	 */
-	public static boolean allFixedTableFieldsValid(Table table) {
-		boolean allValid = true;
-		Iterator<Component> component = table.iterator();
-		while (component.hasNext() && allValid) {
-			Component next = component.next();
-			if (next instanceof Field) {
-				allValid &= ((Field<?>) next).isValid();
-			}
-		}
-		return allValid;
-	}
+    public static boolean allFixedTableFieldsValid(Table table) {
+        boolean allValid = true;
+        Iterator<Component> component = table.iterator();
+        while (component.hasNext() && allValid) {
+            Component next = component.next();
+            if (next instanceof Field) {
+                allValid &= ((Field<?>) next).isValid();
+            }
+        }
+        return allValid;
+    }
 
 	/**
 	 * Check if all editable fields that are contained in a (fixed, non-lazy) table
 	 * are valid. This method is needed because simply calling table.isValid() will
 	 * not take into account any editable components within the table
-	 * 
+	 *
 	 * @param table
 	 *            the table
 	 * @return
@@ -122,7 +121,7 @@ public final class VaadinUtils {
 
 	/**
 	 * Converts a BigDecimal value to a String
-	 * 
+	 *
 	 * @param percentage
 	 *            whether the value represents a percentage
 	 * @param useGrouping
@@ -139,10 +138,10 @@ public final class VaadinUtils {
 	}
 
 	/**
-	 * 
+	 *
 	 * Converts a BigDecimal value to a String (shortcut for values that are not
 	 * currency and not percentage)
-	 * 
+	 *
 	 * @param percentage
 	 *            whether the value represents a percentage
 	 * @param useGrouping
@@ -159,7 +158,7 @@ public final class VaadinUtils {
 
 	/**
 	 * * Converts a BigDecimal value to a String
-	 * 
+	 *
 	 * @param currency
 	 *            whether the value represents a currency
 	 * @param percentage
@@ -178,7 +177,7 @@ public final class VaadinUtils {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param currency
 	 * @param percentage
 	 * @param useGrouping
@@ -211,7 +210,7 @@ public final class VaadinUtils {
 	/**
 	 * Returns the currency symbol to be used - by default this is looked up from
 	 * the session, with a fallback to the system property "default.currency.symbol"
-	 * 
+	 *
 	 * @return
 	 */
 	public static String getCurrencySymbol() {
@@ -225,23 +224,8 @@ public final class VaadinUtils {
 	}
 
 	/**
-	 * Returns the locale to be used inside date picker components. This checks for
-	 * the presence of the DynamoConstants.DATE_LOCALE setting on the session. If
-	 * this is not set, it falls back to the normal locale mechanism
-	 * 
-	 * @return
-	 */
-	public static Locale getDateLocale() {
-		if (VaadinSession.getCurrent() != null
-				&& VaadinSession.getCurrent().getAttribute(DynamoConstants.DATE_LOCALE) != null) {
-			return new Locale((String) VaadinSession.getCurrent().getAttribute(DynamoConstants.DATE_LOCALE));
-		}
-		return getLocale();
-	}
-
-	/**
 	 * Retrieves an entity with a certain ID from a container
-	 * 
+	 *
 	 * @param container
 	 *            the container
 	 * @param id
@@ -255,7 +239,7 @@ public final class VaadinUtils {
 
 	/**
 	 * Extract an entity from a Vaadin Item object
-	 * 
+	 *
 	 * @param obj
 	 *            the Item object (can be either a CompositeItem or a BeanItem)
 	 * @return
@@ -275,7 +259,7 @@ public final class VaadinUtils {
 
 	/**
 	 * Extracts an entity from a PivotItem
-	 * 
+	 *
 	 * @param item
 	 *            the PivotItem
 	 * @param column
@@ -302,7 +286,7 @@ public final class VaadinUtils {
 
 	/**
 	 * Extracts the first value from a map entry that contains a collection
-	 * 
+	 *
 	 * @param map
 	 *            the map
 	 * @param key
@@ -321,7 +305,7 @@ public final class VaadinUtils {
 
 	/**
 	 * Returns the locale associated with the current Vaadin session
-	 * 
+	 *
 	 * @return
 	 */
 	public static Locale getLocale() {
@@ -332,40 +316,35 @@ public final class VaadinUtils {
 	}
 
 	/**
-	 * Returns the first parent component of the specified component that is a
-	 * subclass of the specified class
+	 * Returns the locale to be used inside date picker components. This checks for
+	 * the presence of the DynamoConstants.DATE_LOCALE setting on the session. If
+	 * this is not set, it falls back to the normal locale mechanism
 	 * 
-	 * @param component
-	 *            the component
-	 * @param clazz
-	 *            the class
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
-	public static <T> T getParentOfClass(Component component, Class<T> clazz) {
-		while (component.getParent() != null) {
-			component = component.getParent();
-			if (clazz.isAssignableFrom(component.getClass())) {
-				return (T) component;
-			}
+	public static Locale getDateLocale() {
+		if (VaadinSession.getCurrent() != null
+				&& VaadinSession.getCurrent().getAttribute(DynamoConstants.DATE_LOCALE) != null) {
+			return new Locale((String) VaadinSession.getCurrent().getAttribute(DynamoConstants.DATE_LOCALE));
 		}
-		return null;
+		return getLocale();
 	}
 
 	/**
-	 * Returns the first value from a session attribute that contains a map
-	 * 
-	 * @param attributeName
-	 *            the name of the attribute that holds the map
-	 * @param key
-	 *            the map key
-	 * @return
+	 * Reads the desired locale for formatting date fields from the system
+	 * properties and stores it in the session
 	 */
-	@SuppressWarnings("unchecked")
-	public static String getSessionAttributeValueFromMap(String attributeName, String key) {
-		Map<String, Object> map = (Map<String, Object>) VaadinSession.getCurrent().getSession()
-				.getAttribute(attributeName);
-		return getFirstValueFromCollection(map, key);
+	public static void storeDateLocale() {
+		VaadinSession.getCurrent().setAttribute(DynamoConstants.DATE_LOCALE,
+				SystemPropertyUtils.getDefaultDateLocale());
+	}
+
+	/**
+	 * Stores the default locale configured in the system properties in the Vaadin
+	 * session
+	 */
+	public static void storeLocale() {
+		VaadinSession.getCurrent().setLocale(new Locale(SystemPropertyUtils.getDefaultLocale()));
 	}
 
 	/**
@@ -390,10 +369,47 @@ public final class VaadinUtils {
 	}
 
 	/**
+	 * Returns the first parent component of the specified component that is a
+	 * subclass of the specified class
+	 *
+	 * @param component
+	 *            the component
+	 * @param clazz
+	 *            the class
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static <T> T getParentOfClass(Component component, Class<T> clazz) {
+		while (component.getParent() != null) {
+			component = component.getParent();
+			if (clazz.isAssignableFrom(component.getClass())) {
+				return (T) component;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Returns the first value from a session attribute that contains a map
+	 *
+	 * @param attributeName
+	 *            the name of the attribute that holds the map
+	 * @param key
+	 *            the map key
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static String getSessionAttributeValueFromMap(String attributeName, String key) {
+		Map<String, Object> map = (Map<String, Object>) VaadinSession.getCurrent().getSession()
+				.getAttribute(attributeName);
+		return getFirstValueFromCollection(map, key);
+	}
+
+	/**
 	 * Returns the user's time zone (based on the offset). The result of this method
 	 * can be passed to a date converter or simple date format to make sure the date
 	 * is properly formatted
-	 * 
+	 *
 	 * @return
 	 */
 	public static TimeZone getTimeZone(UI ui) {
@@ -419,7 +435,7 @@ public final class VaadinUtils {
 
 	/**
 	 * Converts an Integer to a String, using the Vaadin converters
-	 * 
+	 *
 	 * @param grouping
 	 *            indicates whether grouping separators must be used
 	 * @param value
@@ -432,7 +448,7 @@ public final class VaadinUtils {
 
 	/**
 	 * Converts an Integer to a String, using the Vaadin converters
-	 * 
+	 *
 	 * @param grouping
 	 *            indicates whether grouping separators must be used
 	 * @param value
@@ -500,7 +516,7 @@ public final class VaadinUtils {
 
 	/**
 	 * Converts an Long to a String, using the Vaadin converters
-	 * 
+	 *
 	 * @param grouping
 	 *            indicates whether grouping separators must be used
 	 * @param value
@@ -513,7 +529,7 @@ public final class VaadinUtils {
 
 	/**
 	 * Converts an Long to a String, using the Vaadin converters
-	 * 
+	 *
 	 * @param grouping
 	 *            indicates whether grouping separators must be used
 	 * @param value
@@ -548,7 +564,7 @@ public final class VaadinUtils {
 
 	/**
 	 * Displays a confirmation dialog
-	 * 
+	 *
 	 * @param messageService
 	 * @param question
 	 *            the question to be displayed in the dialog
@@ -569,43 +585,36 @@ public final class VaadinUtils {
 		}
 	}
 
-	public static void showConfirmDialog(MessageService messageService, String question, final Runnable whenConfirmed,
-			Runnable whenCancelled) {
-		if (UI.getCurrent() != null) {
-			ConfirmDialog.show(UI.getCurrent(), messageService.getMessage("ocs.confirm", getLocale()), question,
-					messageService.getMessage("ocs.yes", getLocale()), messageService.getMessage("ocs.no", getLocale()),
-					dialog -> {
-						if (dialog.isConfirmed()) {
-							whenConfirmed.run();
-						} else {
-							whenCancelled.run();
-						}
-					});
-		} else {
-			whenConfirmed.run();
-		}
-	}
-
-	/**
-	 * Reads the desired locale for formatting date fields from the system
-	 * properties and stores it in the session
-	 */
-	public static void storeDateLocale() {
-		VaadinSession.getCurrent().setAttribute(DynamoConstants.DATE_LOCALE,
-				SystemPropertyUtils.getDefaultDateLocale());
-	}
-
-	/**
-	 * Stores the default locale configured in the system properties in the Vaadin
-	 * session
-	 */
-	public static void storeLocale() {
-		VaadinSession.getCurrent().setLocale(new Locale(SystemPropertyUtils.getDefaultLocale()));
-	}
+    /**
+     * Displays a confirmation dialog
+     *
+     * @param messageService
+     * @param question
+     *            the question to be displayed in the dialog
+     * @param whenConfirmed
+     *            the code to execute when the user confirms the dialog
+     * @param whenCanceled
+     *            the code to execute when the user cancels the dialog
+     */
+    public static void showConfirmDialog(MessageService messageService, String question, final Runnable whenConfirmed, final Runnable whenCanceled) {
+        if (UI.getCurrent() != null) {
+            ConfirmDialog.show(UI.getCurrent(), messageService.getMessage("ocs.confirm", getLocale()), question,
+                    messageService.getMessage("ocs.yes", getLocale()), messageService.getMessage("ocs.no", getLocale()),
+                    dialog -> {
+                        if (dialog.isConfirmed()) {
+                            whenConfirmed.run();
+                        } else {
+                            whenCanceled.run();
+                        }
+                    });
+        } else {
+            whenConfirmed.run();
+        }
+    }
 
 	/**
 	 * Converts a string to a big decimal
-	 * 
+	 *
 	 * @param percentage
 	 *            is it a percentage value
 	 * @param useGrouping
@@ -627,7 +636,7 @@ public final class VaadinUtils {
 
 	/**
 	 * Converts a string to a BigDecimal using the built in Vaadin converter
-	 * 
+	 *
 	 * @param percentage
 	 *            the percentage
 	 * @param value
@@ -642,7 +651,7 @@ public final class VaadinUtils {
 
 	/**
 	 * Converts a String to an Integer
-	 * 
+	 *
 	 * @param grouping
 	 *            whether to include a thousands grouping separator
 	 * @param value
@@ -655,7 +664,7 @@ public final class VaadinUtils {
 
 	/**
 	 * Converts a String to an Integer
-	 * 
+	 *
 	 * @param grouping
 	 *            indicates whether the string could contain grouping separators
 	 * @param value
@@ -671,7 +680,7 @@ public final class VaadinUtils {
 
 	/**
 	 * Converts a String to a Long
-	 * 
+	 *
 	 * @param grouping
 	 *            indicates if a thousands separator is used
 	 * @param value
@@ -685,7 +694,7 @@ public final class VaadinUtils {
 
 	/**
 	 * Converts a String to a Long
-	 * 
+	 *
 	 * @param grouping
 	 *            indicates if a thousands separator is used
 	 * @param value
@@ -701,7 +710,7 @@ public final class VaadinUtils {
 
 	/**
 	 * Wraps the provided component inside a form layout
-	 * 
+	 *
 	 * @param c
 	 * @return
 	 */

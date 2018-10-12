@@ -253,7 +253,7 @@ public final class DateUtils {
 
 	/**
 	 * Formats a date and time according to the specified format
-	 * 
+	 *
 	 * @param date
 	 * @param format
 	 * @return
