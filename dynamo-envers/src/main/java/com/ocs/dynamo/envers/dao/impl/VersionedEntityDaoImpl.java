@@ -13,29 +13,6 @@
  */
 package com.ocs.dynamo.envers.dao.impl;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
-import javax.annotation.PostConstruct;
-import javax.persistence.NoResultException;
-
-import org.hibernate.envers.AuditReader;
-import org.hibernate.envers.AuditReaderFactory;
-import org.hibernate.envers.query.AuditEntity;
-import org.hibernate.envers.query.AuditQuery;
-import org.hibernate.envers.query.criteria.AuditConjunction;
-import org.hibernate.envers.query.criteria.AuditCriterion;
-import org.hibernate.envers.query.criteria.AuditDisjunction;
-import org.hibernate.envers.query.criteria.AuditProperty;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.mysema.query.types.path.EntityPathBase;
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.dao.Pageable;
@@ -52,12 +29,32 @@ import com.ocs.dynamo.filter.And;
 import com.ocs.dynamo.filter.Compare;
 import com.ocs.dynamo.filter.DynamoFilterUtil;
 import com.ocs.dynamo.filter.Filter;
-import com.ocs.dynamo.filter.FilterUtil;
 import com.ocs.dynamo.filter.In;
 import com.ocs.dynamo.filter.Like;
 import com.ocs.dynamo.filter.Not;
 import com.ocs.dynamo.filter.Or;
 import com.ocs.dynamo.utils.DateUtils;
+import com.querydsl.core.types.dsl.EntityPathBase;
+import org.hibernate.envers.AuditReader;
+import org.hibernate.envers.AuditReaderFactory;
+import org.hibernate.envers.query.AuditEntity;
+import org.hibernate.envers.query.AuditQuery;
+import org.hibernate.envers.query.criteria.AuditConjunction;
+import org.hibernate.envers.query.criteria.AuditCriterion;
+import org.hibernate.envers.query.criteria.AuditDisjunction;
+import org.hibernate.envers.query.criteria.AuditProperty;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.annotation.PostConstruct;
+import javax.persistence.NoResultException;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Implementation of Data Access object for versioned entities

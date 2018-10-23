@@ -13,15 +13,13 @@
  */
 package com.ocs.dynamo.envers.domain;
 
-import java.time.Instant;
+import com.ocs.dynamo.envers.listener.DynamoRevisionListener;
+import com.querydsl.core.annotations.QueryExclude;
+import org.hibernate.envers.DefaultRevisionEntity;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
-
-import org.hibernate.envers.DefaultRevisionEntity;
-
-import com.mysema.query.annotations.QueryExclude;
-import com.ocs.dynamo.envers.listener.DynamoRevisionListener;
+import java.time.Instant;
 
 /**
  * Custom revision entity for use with Envers - stores user name in addition to

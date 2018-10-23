@@ -110,8 +110,8 @@
 			</plugin>
 			<!-- Generate Query Objects. -->
 			<plugin>
-				<groupId>com.mysema.maven</groupId>
-				<artifactId>apt-maven-plugin</artifactId>
+				<groupId>com.querydsl</groupId>
+				<artifactId>querydsl-maven-plugin</artifactId>
 			</plugin>
 			<!-- Code coverage. -->
 			<plugin>

@@ -13,12 +13,12 @@
  */
 package com.ocs.dynamo.dao.impl;
 
-import java.util.List;
-
-import com.mysema.query.jpa.impl.JPAQuery;
-import com.mysema.query.types.path.EntityPathBase;
 import com.ocs.dynamo.dao.TreeDao;
 import com.ocs.dynamo.domain.AbstractEntity;
+import com.querydsl.core.types.dsl.EntityPathBase;
+import com.querydsl.jpa.impl.JPAQuery;
+
+import java.util.List;
 
 /**
  * Base implementation of a DAO with tree support
@@ -39,16 +39,16 @@ public abstract class TreeDaoImpl<ID, T extends AbstractEntity<ID>> extends Base
 
     @Override
     public List<T> findByParentIsNull() {
-        JPAQuery query = createQuery();
+        JPAQuery<T> query = createQuery();
         query.where(getParentPath().isNull());
-        return query.list(getDslRoot());
+        return query.from(getDslRoot()).fetch();
     }
 
     @Override
     public List<T> findByParent(T parent) {
-        JPAQuery query = createQuery();
+        JPAQuery<T> query = createQuery();
         query.where(getParentPath().eq(parent));
-        return query.list(getDslRoot());
+        return query.from(getDslRoot()).fetch();
     }
 
 }

@@ -13,11 +13,11 @@
  */
 package com.ocs.dynamo.service.impl;
 
-import com.mysema.query.types.path.EntityPathBase;
 import com.ocs.dynamo.dao.BaseDao;
 import com.ocs.dynamo.dao.impl.DefaultDaoImpl;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.utils.ClassUtils;
+import com.querydsl.core.types.dsl.EntityPathBase;
 
 /**
  * Default service implementation that uses the DefaultDaoImpl when no other

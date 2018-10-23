@@ -13,20 +13,18 @@
  */
 package com.ocs.dynamo.functional.dao;
 
-import java.util.List;
-
-import javax.persistence.criteria.CriteriaQuery;
-
-import org.springframework.stereotype.Repository;
-
-import com.mysema.query.jpa.impl.JPAQuery;
-import com.mysema.query.types.path.EntityPathBase;
 import com.ocs.dynamo.dao.impl.DefaultDaoImpl;
 import com.ocs.dynamo.functional.domain.Domain;
 import com.ocs.dynamo.functional.domain.DomainChild;
 import com.ocs.dynamo.functional.domain.DomainParent;
 import com.ocs.dynamo.functional.domain.QDomain;
 import com.ocs.dynamo.functional.domain.QDomainChild;
+import com.querydsl.core.types.dsl.EntityPathBase;
+import com.querydsl.jpa.impl.JPAQuery;
+import org.springframework.stereotype.Repository;
+
+import javax.persistence.criteria.CriteriaQuery;
+import java.util.List;
 
 /**
  * Data access implementation for managing domain entities.
@@ -48,9 +46,9 @@ public class DomainDaoImpl extends DefaultDaoImpl<Integer, Domain> implements Do
 	@SuppressWarnings({ "unchecked" })
 	@Override
 	public <C extends DomainChild<C, P>, P extends DomainParent<C, P>> List<C> findChildren(P parent) {
-		JPAQuery query = new JPAQuery(getEntityManager()).from(QDomainChild.domainChild);
+		JPAQuery query = new JPAQuery<>(getEntityManager()).from(QDomainChild.domainChild);
 		query.where(QDomainChild.domainChild.parent.eq(parent));
-		return (List<C>) query.list(QDomainChild.domainChild);
+		return query.from(QDomainChild.domainChild).fetch();
 	}
 
 	@Override

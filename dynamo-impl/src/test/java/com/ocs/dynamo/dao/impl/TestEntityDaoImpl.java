@@ -13,14 +13,13 @@
  */
 package com.ocs.dynamo.dao.impl;
 
-import java.util.List;
-
-import org.springframework.stereotype.Repository;
-
-import com.mysema.query.jpa.impl.JPAQuery;
-import com.mysema.query.types.path.EntityPathBase;
 import com.ocs.dynamo.domain.QTestEntity;
 import com.ocs.dynamo.domain.TestEntity;
+import com.querydsl.core.types.dsl.EntityPathBase;
+import com.querydsl.jpa.impl.JPAQuery;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 @Repository("testEntityDao")
 public class TestEntityDaoImpl extends TreeDaoImpl<Integer, TestEntity> implements TestEntityDao {
@@ -42,8 +41,8 @@ public class TestEntityDaoImpl extends TreeDaoImpl<Integer, TestEntity> implemen
 
 	@Override
 	public List<TestEntity> findByBirthDateLocal() {
-		JPAQuery query = createQuery();
+		JPAQuery<TestEntity> query = createQuery();
 		query.where(QTestEntity.testEntity.birthDateLocal.isNotNull());
-		return query.list(QTestEntity.testEntity);
+		return query.from(QTestEntity.testEntity).fetch();
 	}
 }

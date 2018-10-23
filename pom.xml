@@ -103,10 +103,10 @@
 		<vaadin.charts.version>3.2.1</vaadin.charts.version>		
 		<tableexport-for-vaadin.version>1.5.1.5</tableexport-for-vaadin.version>
 		<vaadin.confirmdialog.version>2.1.3</vaadin.confirmdialog.version>
-		<hibernate.version>5.3.6.Final</hibernate.version>
+		<hibernate.version>5.3.7.Final</hibernate.version>
 		<hibernate.validator.version>6.0.13.Final</hibernate.validator.version>
 		<spring.version>4.3.18.RELEASE</spring.version>
-		<querydsl.version>3.7.4</querydsl.version>
+		<querydsl.version>4.2.1</querydsl.version>
 		<slf4j.version>1.7.25</slf4j.version>
 		<log4j.version>1.2.17</log4j.version>
 		<junit.version>4.12</junit.version>
@@ -129,7 +129,7 @@
 		<org.apache.maven.plugins.jar.version>3.0.2</org.apache.maven.plugins.jar.version>
 		<org.apache.maven.plugins.source.version>3.0.1</org.apache.maven.plugins.source.version>
 		<org.apache.maven.plugins.javadoc.version>2.10.4</org.apache.maven.plugins.javadoc.version>
-		<com.mysema.maven.plugins.apt.version>1.1.3</com.mysema.maven.plugins.apt.version>
+		<com.maven.plugins.apt.version>1.1.3</com.maven.plugins.apt.version>
 		<org.apache.maven.plugins.release.version>2.5.3</org.apache.maven.plugins.release.version>
 		<org.apache.maven.plugins.checkstyle.version>2.17</org.apache.maven.plugins.checkstyle.version>
 		<org.apache.maven.plugins.findbugs.version>3.0.3</org.apache.maven.plugins.findbugs.version>
@@ -353,17 +353,17 @@
 			</dependency>
 			<!-- QueryDSL -->
 			<dependency>
-				<groupId>com.mysema.querydsl</groupId>
+				<groupId>com.querydsl</groupId>
 				<artifactId>querydsl-core</artifactId>
 				<version>${querydsl.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.mysema.querydsl</groupId>
+				<groupId>com.querydsl</groupId>
 				<artifactId>querydsl-jpa</artifactId>
 				<version>${querydsl.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.mysema.querydsl</groupId>
+				<groupId>com.querydsl</groupId>
 				<artifactId>querydsl-apt</artifactId>
 				<version>${querydsl.version}</version>
 			</dependency>
@@ -547,7 +547,7 @@
 				<plugin>
 					<groupId>com.mysema.maven</groupId>
 					<artifactId>apt-maven-plugin</artifactId>
-					<version>${com.mysema.maven.plugins.apt.version}</version>
+					<version>${com.maven.plugins.apt.version}</version>
 					<executions>
 						<execution>
 							<id>src</id>
@@ -557,7 +557,7 @@
 							</goals>
 							<configuration>
 								<outputDirectory>target/generated-sources/querydsl</outputDirectory>
-								<processor>com.mysema.query.apt.jpa.JPAAnnotationProcessor</processor>
+								<processor>com.querydsl.apt.jpa.JPAAnnotationProcessor</processor>
 							</configuration>
 						</execution>
 						<execution>
@@ -568,7 +568,7 @@
 							</goals>
 							<configuration>
 								<outputDirectory>target/generated-test-sources/querydsl</outputDirectory>
-								<processor>com.mysema.query.apt.jpa.JPAAnnotationProcessor</processor>
+								<processor>com.querydsl.apt.jpa.JPAAnnotationProcessor</processor>
 							</configuration>
 						</execution>
 					</executions>

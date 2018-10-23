@@ -1,9 +1,8 @@
 package com.ocs.dynamo.dao.impl;
 
-import org.springframework.stereotype.Repository;
-
-import com.mysema.query.types.path.EntityPathBase;
 import com.ocs.dynamo.domain.CascadeEntity;
+import com.querydsl.core.types.dsl.EntityPathBase;
+import org.springframework.stereotype.Repository;
 
 @Repository("cascadeEntityDao")
 public class CascadeEntityDaoImpl extends BaseDaoImpl<Integer, CascadeEntity> implements CascadeEntityDao {

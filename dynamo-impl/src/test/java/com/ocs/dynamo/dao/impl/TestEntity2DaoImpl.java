@@ -13,11 +13,10 @@
  */
 package com.ocs.dynamo.dao.impl;
 
-import org.springframework.stereotype.Repository;
-
-import com.mysema.query.types.path.EntityPathBase;
 import com.ocs.dynamo.domain.QTestEntity2;
 import com.ocs.dynamo.domain.TestEntity2;
+import com.querydsl.core.types.dsl.EntityPathBase;
+import org.springframework.stereotype.Repository;
 
 @Repository("testEntityDao2")
 public class TestEntity2DaoImpl extends BaseDaoImpl<Integer, TestEntity2>
