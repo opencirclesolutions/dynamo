@@ -1,13 +1,5 @@
 package com.ocs.dynamo.envers.dao.impl;
 
-import java.time.LocalDateTime;
-import java.util.List;
-
-import org.junit.Assert;
-import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.TransactionStatus;
-
 import com.ocs.dynamo.dao.Pageable;
 import com.ocs.dynamo.dao.PageableImpl;
 import com.ocs.dynamo.dao.SortOrder;
@@ -23,6 +15,13 @@ import com.ocs.dynamo.filter.Compare;
 import com.ocs.dynamo.filter.Not;
 import com.ocs.dynamo.filter.Or;
 import com.ocs.dynamo.test.BaseIntegrationTest;
+import org.junit.Assert;
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.TransactionStatus;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 public class PersonRevisionDaoImplTest extends BaseIntegrationTest {
 
@@ -50,7 +49,7 @@ public class PersonRevisionDaoImplTest extends BaseIntegrationTest {
 		List<PersonRevision> list = personRevisionDao.fetch(new Compare.Equal("id", person.getId()), (Pageable) null);
 		Assert.assertEquals(1, list.size());
 
-		Assert.assertEquals(1, list.get(0).getRevision());
+		Assert.assertEquals(2, list.get(0).getRevision());
 		Assert.assertEquals(person.getId(), list.get(0).getId().getId());
 		Assert.assertEquals("Bas", list.get(0).getEntity().getName());
 		Assert.assertEquals(RevisionType.ADD, list.get(0).getRevisionType());
@@ -67,7 +66,7 @@ public class PersonRevisionDaoImplTest extends BaseIntegrationTest {
 		list = personRevisionDao.fetch(new Compare.Equal("id", person.getId()), (Pageable) null);
 		Assert.assertEquals(2, list.size());
 
-		Assert.assertEquals(2, list.get(1).getRevision());
+		Assert.assertEquals(3, list.get(1).getRevision());
 		Assert.assertEquals(person.getId(), list.get(1).getId().getId());
 		Assert.assertEquals("Jeroen", list.get(1).getEntity().getName());
 		Assert.assertEquals(RevisionType.MOD, list.get(1).getRevisionType());
@@ -106,7 +105,7 @@ public class PersonRevisionDaoImplTest extends BaseIntegrationTest {
 		Assert.assertEquals(3, list.size());
 
 		// fetch non existing
-		key = new RevisionKey<>(person.getId(), 4);
+		key = new RevisionKey<>(person.getId(), 5);
 		pr = personRevisionDao.fetchById(key);
 		Assert.assertNull(pr);
 
@@ -117,7 +116,7 @@ public class PersonRevisionDaoImplTest extends BaseIntegrationTest {
 
 		// check last revision number
 		Number revNumber = personRevisionDao.findRevisionNumber(LocalDateTime.now());
-		Assert.assertEquals(3, revNumber);
+		Assert.assertEquals(4, revNumber);
 	}
 
 	@Test

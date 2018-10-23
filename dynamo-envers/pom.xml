@@ -79,6 +79,16 @@
 			<groupId>com.mysema.querydsl</groupId>
 			<artifactId>querydsl-apt</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>javax.el</groupId>
+			<artifactId>javax.el-api</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.glassfish</groupId>
+			<artifactId>javax.el</artifactId>
+			<scope>test</scope>
+		</dependency>
 		<!-- Test -->
 		<dependency>
 			<groupId>${project.groupId}</groupId>
