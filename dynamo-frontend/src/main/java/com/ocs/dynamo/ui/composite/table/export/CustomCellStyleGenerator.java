@@ -17,7 +17,7 @@ import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Workbook;
 
 import com.ocs.dynamo.domain.model.AttributeModel;
-import com.vaadin.data.Item;
+import com.vaadin.v7.data.Item;
 
 /**
  * A custom cell style generator that can be used to configure the styling of a cell that is

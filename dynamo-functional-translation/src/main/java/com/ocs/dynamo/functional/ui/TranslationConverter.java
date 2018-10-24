@@ -8,7 +8,7 @@ import java.util.Locale;
 import java.util.Set;
 
 import com.ocs.dynamo.functional.domain.Translation;
-import com.vaadin.data.util.converter.Converter;
+import com.vaadin.v7.data.util.converter.Converter;
 
 /**
  * @author patrickdeenen

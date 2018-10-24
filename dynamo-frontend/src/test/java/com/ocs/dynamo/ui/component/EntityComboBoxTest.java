@@ -25,82 +25,76 @@ import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.domain.model.impl.EntityModelFactoryImpl;
+import com.ocs.dynamo.filter.CompareFilter;
 import com.ocs.dynamo.service.TestEntityService;
 import com.ocs.dynamo.test.BaseMockitoTest;
-import com.vaadin.data.Container.Filter;
-import com.vaadin.data.util.filter.Compare;
-import com.vaadin.shared.ui.combobox.FilteringMode;
 
 public class EntityComboBoxTest extends BaseMockitoTest {
 
-    private EntityModelFactory factory = new EntityModelFactoryImpl();
+	private EntityModelFactory factory = new EntityModelFactoryImpl();
 
-    @Mock
-    private TestEntityService service;
+	@Mock
+	private TestEntityService service;
 
-    @Test
-    public void testAll() {
-        AttributeModel am = factory.getModel(TestEntity.class).getAttributeModel("name");
+	@Test
+	public void testAll() {
+		AttributeModel am = factory.getModel(TestEntity.class).getAttributeModel("name");
+		EntityComboBox<Integer, TestEntity> select = new EntityComboBox<>(factory.getModel(TestEntity.class), am,
+				service);
+		Assert.assertEquals(EntityComboBox.SelectMode.ALL, select.getSelectMode());
+		Assert.assertEquals(am, select.getAttributeModel());
+		select.refresh();
+		Mockito.verify(service, Mockito.times(2)).findAll((SortOrder[]) null);
+	}
 
-        EntityComboBox<Integer, TestEntity> select = new EntityComboBox<>(
-                factory.getModel(TestEntity.class), am, service);
-        Assert.assertEquals(EntityComboBox.SelectMode.ALL, select.getSelectMode());
-        Assert.assertEquals(am, select.getAttributeModel());
+	@Test
+	public void testFixed() {
+		EntityComboBox<Integer, TestEntity> select = new EntityComboBox<>(factory.getModel(TestEntity.class), null,
+				Lists.newArrayList(new TestEntity()));
+		Assert.assertEquals(EntityComboBox.SelectMode.FIXED, select.getSelectMode());
+		Mockito.verifyZeroInteractions(service);
+	}
 
-        select.refresh();
+	@Test
+	public void testFilter() {
+		EntityComboBox<Integer, TestEntity> select = new EntityComboBox<>(factory.getModel(TestEntity.class), null,
+				service, new CompareFilter<TestEntity>("name", "Bob"));
+		Assert.assertEquals(EntityComboBox.SelectMode.FILTERED, select.getSelectMode());
 
-        Mockito.verify(service, Mockito.times(2)).findAll((SortOrder[]) null);
-    }
+		select.refresh();
 
-    @Test
-    public void testFixed() {
-        EntityComboBox<Integer, TestEntity> select = new EntityComboBox<>(
-                factory.getModel(TestEntity.class), null, Lists.newArrayList(new TestEntity()));
-        Assert.assertEquals(EntityComboBox.SelectMode.FIXED, select.getSelectMode());
+		// data must have been retrieved twice - once during creation and once during
+		// request
+		Mockito.verify(service, Mockito.times(2)).find(Matchers.any(com.ocs.dynamo.filter.Filter.class),
+				Matchers.any(com.ocs.dynamo.dao.SortOrder[].class));
+	}
 
-        Mockito.verifyZeroInteractions(service);
-    }
+	@Test
+	public void testAddEntity() {
+		EntityComboBox<Integer, TestEntity> select = new EntityComboBox<>(factory.getModel(TestEntity.class), null,
+				service, new CompareFilter<TestEntity>("name", "Bob"));
+		Assert.assertEquals(0, select.getDataProviderSize());
 
-    @Test
-    public void testFilter() {
-        EntityComboBox<Integer, TestEntity> select = new EntityComboBox<>(
-                factory.getModel(TestEntity.class), null, service, new Compare.Equal("name", "Bob"));
-        Assert.assertEquals(EntityComboBox.SelectMode.FILTERED, select.getSelectMode());
+		TestEntity te = new TestEntity("stewart", 77L);
+		select.addEntity(te);
 
-        select.refresh();
+		Assert.assertEquals(1, select.getDataProviderSize());
+		Assert.assertEquals(te, select.getFirstItem());
+	}
 
-        // data must have been retrieved twice - once during creation and once during request
-        Mockito.verify(service, Mockito.times(2)).find(
-                Matchers.any(com.ocs.dynamo.filter.Filter.class),
-                Matchers.any(com.ocs.dynamo.dao.SortOrder[].class));
-    }
-
-    @Test
-    public void testAddEntity() {
-        EntityComboBox<Integer, TestEntity> select = new EntityComboBox<>(
-                factory.getModel(TestEntity.class), null, service, new Compare.Equal("name", "Bob"));
-        Assert.assertEquals(0, select.getContainerDataSource().size());
-
-        TestEntity te = new TestEntity("stewart", 77L);
-        select.addEntity(te);
-
-        Assert.assertEquals(1, select.getContainerDataSource().size());
-
-        Assert.assertEquals(te, select.getFirstItem());
-    }
-
-    @Test
-    public void testBuildFilter() {
-        EntityComboBox<Integer, TestEntity> select = new EntityComboBox<>(
-                factory.getModel(TestEntity.class), null, service, new Compare.Equal("name", "Bob"));
-
-        Filter ft = select.buildFilter("abc", FilteringMode.STARTSWITH);
-        Assert.assertTrue(ft instanceof IgnoreDiacriticsStringFilter);
-
-        ft = select.buildFilter("abc", FilteringMode.CONTAINS);
-        Assert.assertTrue(ft instanceof IgnoreDiacriticsStringFilter);
-
-        ft = select.buildFilter("abc", FilteringMode.OFF);
-        Assert.assertNull(ft);
-    }
+	// @Test
+	// public void testBuildFilter() {
+	// EntityComboBox<Integer, TestEntity> select = new
+	// EntityComboBox<>(factory.getModel(TestEntity.class), null,
+	// service, new CompareFilter<TestEntity>("name", "Bob"));
+	//
+	// Filter ft = select.buildFilter("abc", FilteringMode.STARTSWITH);
+	// Assert.assertTrue(ft instanceof IgnoreDiacriticsStringFilter);
+	//
+	// ft = select.buildFilter("abc", FilteringMode.CONTAINS);
+	// Assert.assertTrue(ft instanceof IgnoreDiacriticsStringFilter);
+	//
+	// ft = select.buildFilter("abc", FilteringMode.OFF);
+	// Assert.assertNull(ft);
+	// }
 }

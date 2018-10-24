@@ -21,11 +21,12 @@ import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
-import com.vaadin.data.Container.Filter;
+import com.vaadin.server.SerializablePredicate;
 import com.vaadin.ui.CustomField;
 
 /**
- * A custom field that can be used to edit an AbstractEntity or collection thereof
+ * A custom field that can be used to edit an AbstractEntity or collection
+ * thereof
  * 
  * @author bas.rutten
  *
@@ -34,18 +35,18 @@ import com.vaadin.ui.CustomField;
  * @param <T>
  *            the type of the entity
  * @param <U>
- *            the type of the value of the component (can typically be an entity or a collection of
- *            entities)
+ *            the type of the value of the component (can typically be an entity
+ *            or a collection of entities)
  */
-public abstract class CustomEntityField<ID extends Serializable, T extends AbstractEntity<ID>, U> extends
-        CustomField<U> implements Cascadable {
+public abstract class CustomEntityField<ID extends Serializable, T extends AbstractEntity<ID>, U> extends CustomField<U>
+		implements Cascadable<T> {
 
 	private static final long serialVersionUID = 8898382056620026384L;
 
 	/**
 	 * The filter used to limit the entities to choose from
 	 */
-	private Filter filter;
+	private SerializablePredicate<T> filter;
 
 	/**
 	 * The service
@@ -74,8 +75,8 @@ public abstract class CustomEntityField<ID extends Serializable, T extends Abstr
 	 * @param entityModel
 	 * @param attributeModel
 	 */
-	public CustomEntityField(BaseService<ID, T> service, EntityModel<T> entityModel, AttributeModel attributeModel, 
-			Filter filter) {
+	public CustomEntityField(BaseService<ID, T> service, EntityModel<T> entityModel, AttributeModel attributeModel,
+			SerializablePredicate<T> filter) {
 		this.service = service;
 		this.entityModel = entityModel;
 		this.attributeModel = attributeModel;
@@ -91,7 +92,7 @@ public abstract class CustomEntityField<ID extends Serializable, T extends Abstr
 		return entityModel;
 	}
 
-	public Filter getFilter() {
+	public SerializablePredicate<T> getFilter() {
 		return filter;
 	}
 
@@ -109,9 +110,9 @@ public abstract class CustomEntityField<ID extends Serializable, T extends Abstr
 	 * @param filter
 	 *            the new filter
 	 */
-	public abstract void refresh(Filter filter);
+	public abstract void refresh(SerializablePredicate<T> filter);
 
-	public void setFilter(Filter filter) {
+	public void setFilter(SerializablePredicate<T> filter) {
 		this.filter = filter;
 	}
 

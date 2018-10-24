@@ -32,7 +32,6 @@ import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.ocs.dynamo.utils.ClassUtils;
-import com.vaadin.ui.DefaultFieldFactory;
 
 /**
  * @author bas.rutten
@@ -251,7 +250,9 @@ public final class EntityModelUtil {
 	 * @see SystemPropertyUtils
 	 */
 	public static String getCaptionByPropertyId(String fieldName) {
-		String displayName = DefaultFieldFactory.createCaptionByPropertyId(fieldName);
+		// String displayName =
+		// DefaultFieldFactory.createCaptionByPropertyId(fieldName);
+		String displayName = fieldName;
 		if (SystemPropertyUtils.getDefaultCaptionFormat().equals(DynamoConstants.SP_DEFAULT_CAPTION_FORMAT_VAADIN)) {
 			return displayName;
 		} else {

@@ -21,8 +21,8 @@ import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.BaseUI;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
-import com.vaadin.data.Container.Filter;
-import com.vaadin.server.FontAwesome;
+import com.vaadin.icons.VaadinIcons;
+import com.vaadin.server.SerializablePredicate;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.UI;
 
@@ -53,14 +53,14 @@ public abstract class QuickAddEntityField<ID extends Serializable, T extends Abs
 	private Button addButton;
 
 	/**
-	 * The button that navigates directly to detailscreen of the selected entity
+	 * The button that navigates directly to detail screen of the selected entity
 	 */
 	private Button directNavigationButton;
 
 	/**
 	 * Additional filter for cascading
 	 */
-	private Filter additionalFilter;
+	private SerializablePredicate<T> additionalFilter;
 
 	/**
 	 * Constructor
@@ -75,7 +75,7 @@ public abstract class QuickAddEntityField<ID extends Serializable, T extends Abs
 	 *            the search filter
 	 */
 	public QuickAddEntityField(BaseService<ID, T> service, EntityModel<T> entityModel, AttributeModel attributeModel,
-			Filter filter) {
+			SerializablePredicate<T> filter) {
 		super(service, entityModel, attributeModel, filter);
 	}
 
@@ -87,6 +87,11 @@ public abstract class QuickAddEntityField<ID extends Serializable, T extends Abs
 	 */
 	protected abstract void afterNewEntityAdded(T entity);
 
+	@Override
+	public void clearAdditionalFilter() {
+		this.additionalFilter = null;
+	}
+
 	/**
 	 * Constructs the button that brings up the dialog that allows the user to add a
 	 * new item
@@ -95,7 +100,7 @@ public abstract class QuickAddEntityField<ID extends Serializable, T extends Abs
 	 */
 	protected Button constructAddButton() {
 		addButton = new Button(getMessageService().getMessage("ocs.add", VaadinUtils.getLocale()));
-		addButton.setIcon(FontAwesome.PLUS);
+		addButton.setIcon(VaadinIcons.PLUS);
 		addButton.addClickListener(event -> {
 			AddNewValueDialog<ID, T> dialog = new AddNewValueDialog<ID, T>(getEntityModel(), getAttributeModel(),
 					getService(), getMessageService()) {
@@ -130,13 +135,13 @@ public abstract class QuickAddEntityField<ID extends Serializable, T extends Abs
 		return addButton;
 	}
 
-	public Button getDirectNavigationButton() {
-		return directNavigationButton;
+	@Override
+	public SerializablePredicate<T> getAdditionalFilter() {
+		return additionalFilter;
 	}
 
-	@Override
-	public Filter getAdditionalFilter() {
-		return additionalFilter;
+	public Button getDirectNavigationButton() {
+		return directNavigationButton;
 	}
 
 	public UI getUi() {
@@ -144,13 +149,8 @@ public abstract class QuickAddEntityField<ID extends Serializable, T extends Abs
 	}
 
 	@Override
-	public void setAdditionalFilter(Filter additionalFilter) {
+	public void setAdditionalFilter(SerializablePredicate<T> additionalFilter) {
 		this.additionalFilter = additionalFilter;
-	}
-
-	@Override
-	public void clearAdditionalFilter() {
-		this.additionalFilter = null;
 	}
 
 }

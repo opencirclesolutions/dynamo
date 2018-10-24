@@ -69,11 +69,6 @@ public class InternalLinkField<ID extends Serializable, T extends AbstractEntity
 	}
 
 	@Override
-	public Class<? extends T> getType() {
-		return entityModel.getEntityClass();
-	}
-
-	@Override
 	public void setValue(T newValue) {
 		super.setValue(newValue);
 		String str = FormatUtils.formatEntity(attributeModel.getNestedEntityModel(), newValue);
@@ -81,10 +76,9 @@ public class InternalLinkField<ID extends Serializable, T extends AbstractEntity
 	}
 
 	@Override
-	protected void setInternalValue(T newValue) {
-		super.setInternalValue(newValue);
+	protected void doSetValue(T value) {
 		if (linkButton != null) {
-			String str = FormatUtils.formatEntity(attributeModel.getNestedEntityModel(), newValue);
+			String str = FormatUtils.formatEntity(attributeModel.getNestedEntityModel(), value);
 			linkButton.setCaption(str);
 		}
 	}
@@ -93,5 +87,10 @@ public class InternalLinkField<ID extends Serializable, T extends AbstractEntity
 	public void setEnabled(boolean enabled) {
 		// field is always enabled
 		super.setEnabled(true);
+	}
+
+	@Override
+	public T getValue() {
+		return null;
 	}
 }

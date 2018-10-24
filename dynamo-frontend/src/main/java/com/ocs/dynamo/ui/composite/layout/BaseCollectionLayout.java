@@ -20,8 +20,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.ObjectUtils;
-
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
@@ -30,17 +28,14 @@ import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.Refreshable;
 import com.ocs.dynamo.ui.Reloadable;
 import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
-import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
-import com.ocs.dynamo.ui.composite.table.BaseTableWrapper;
-import com.vaadin.data.Container;
-import com.vaadin.data.Container.Filter;
-import com.vaadin.data.Property;
-import com.vaadin.data.sort.SortOrder;
-import com.vaadin.server.FontAwesome;
+import com.ocs.dynamo.ui.composite.table.BaseGridWrapper;
+import com.vaadin.data.provider.DataProvider;
+import com.vaadin.data.provider.SortOrder;
+import com.vaadin.icons.VaadinIcons;
+import com.vaadin.server.SerializablePredicate;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Layout;
-import com.vaadin.ui.Table;
 
 /**
  * A base class for a composite layout that displays a collection of data
@@ -70,7 +65,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	private String dividerProperty;
 
 	// filters to apply to individual search fields
-	private Map<String, Filter> fieldFilters = new HashMap<>();
+	private Map<String, SerializablePredicate<?>> fieldFilters = new HashMap<>();
 
 	// the joins to use when fetching data
 	private FetchJoinInformation[] joins;
@@ -94,10 +89,10 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	private boolean sortEnabled = true;
 
 	// the sort orders
-	private List<SortOrder> sortOrders = new ArrayList<>();
+	private List<SortOrder<?>> sortOrders = new ArrayList<>();
 
 	// the table wrapper
-	private BaseTableWrapper<ID, T> tableWrapper;
+	private BaseGridWrapper<ID, T> tableWrapper;
 
 	/**
 	 * Constructor
@@ -114,7 +109,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	 *            the joins to use when fetching data
 	 */
 	public BaseCollectionLayout(BaseService<ID, T> service, EntityModel<T> entityModel, FormOptions formOptions,
-			SortOrder sortOrder, FetchJoinInformation... joins) {
+			SortOrder<?> sortOrder, FetchJoinInformation... joins) {
 		super(service, entityModel, formOptions);
 		this.joins = joins;
 		if (sortOrder != null) {
@@ -128,7 +123,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	 * @param sortOrder
 	 *            the sort order to add
 	 */
-	public final void addSortOrder(SortOrder sortOrder) {
+	public final void addSortOrder(SortOrder<?> sortOrder) {
 		this.sortOrders.add(sortOrder);
 	}
 
@@ -145,9 +140,9 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	}
 
 	/**
-	 * Callback method that is called after a tab has been selected in the tab
-	 * sheet that is used in a detail view when the attribute group mode has been
-	 * set to TABSHEET
+	 * Callback method that is called after a tab has been selected in the tab sheet
+	 * that is used in a detail view when the attribute group mode has been set to
+	 * TABSHEET
 	 * 
 	 * @param tabIndex
 	 *            the zero-based index of the selected tab
@@ -171,7 +166,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	 */
 	protected final Button constructAddButton() {
 		Button ab = new Button(message("ocs.add"));
-		ab.setIcon(FontAwesome.PLUS);
+		ab.setIcon(VaadinIcons.PLUS);
 		ab.addClickListener(e -> doAdd());
 		ab.setVisible(!getFormOptions().isHideAddButton() && isEditAllowed());
 		return ab;
@@ -182,21 +177,22 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	 */
 	protected final void constructTableDividers() {
 		if (dividerProperty != null) {
-			getTableWrapper().getTable().setStyleName(DynamoConstants.CSS_DIVIDER);
-			getTableWrapper().getTable().setCellStyleGenerator((Table source, Object itemId, Object propertyId) -> {
-				String result = null;
-				if (itemId != null) {
-					Property<?> prop = source.getItem(itemId).getItemProperty(dividerProperty);
-					if (prop != null) {
-						Object obj = prop.getValue();
-						if (!ObjectUtils.equals(obj, previousDividerValue)) {
-							result = DynamoConstants.CSS_DIVIDER;
-						}
-						previousDividerValue = obj;
-					}
-				}
-				return result;
-			});
+			getTableWrapper().getGrid().setStyleName(DynamoConstants.CSS_DIVIDER);
+			// getTableWrapper().getGrid().setCellStyleGenerator((Grid<T> source, Object
+			// itemId, Object propertyId) -> {
+			// String result = null;
+			// if (itemId != null) {
+			// Property<?> prop = source.getItem(itemId).getItemProperty(dividerProperty);
+			// if (prop != null) {
+			// Object obj = prop.getValue();
+			// if (!ObjectUtils.equals(obj, previousDividerValue)) {
+			// result = DynamoConstants.CSS_DIVIDER;
+			// }
+			// previousDividerValue = obj;
+			// }
+			// }
+			// return result;
+			// });
 		}
 	}
 
@@ -206,7 +202,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	 * 
 	 * @return
 	 */
-	protected abstract BaseTableWrapper<ID, T> constructTableWrapper();
+	protected abstract BaseGridWrapper<ID, T> constructTableWrapper();
 
 	/**
 	 * Creates a new entity - override in subclass if needed
@@ -241,7 +237,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	 * 
 	 * @param container
 	 */
-	protected void doConstructContainer(Container container) {
+	protected void doConstructDataProvider(DataProvider<T, SerializablePredicate<T>> provider) {
 		// overwrite in subclasses
 	}
 
@@ -261,7 +257,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 		return dividerProperty;
 	}
 
-	public Map<String, Filter> getFieldFilters() {
+	public Map<String, SerializablePredicate<?>> getFieldFilters() {
 		return fieldFilters;
 	}
 
@@ -313,7 +309,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	 * 
 	 * @return the currently configured sort orders
 	 */
-	public List<SortOrder> getSortOrders() {
+	public List<SortOrder<?>> getSortOrders() {
 		return Collections.unmodifiableList(sortOrders);
 	}
 
@@ -321,7 +317,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	 * 
 	 * @return the table wrapper (constructed lazily)
 	 */
-	public BaseTableWrapper<ID, T> getTableWrapper() {
+	public BaseGridWrapper<ID, T> getTableWrapper() {
 		if (tableWrapper == null) {
 			tableWrapper = constructTableWrapper();
 			postProcessTableWrapper(tableWrapper);
@@ -359,7 +355,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	}
 
 	/**
-	 * Adds additional buttons to the button bar above/below the detail screen. 
+	 * Adds additional buttons to the button bar above/below the detail screen.
 	 *
 	 * 
 	 * @param buttonBar
@@ -378,9 +374,9 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	 * 
 	 * @param editForm
 	 */
-	protected void postProcessEditFields(ModelBasedEditForm<ID, T> editForm) {
-		// override in subclasses
-	}
+//	protected void postProcessEditFields(ModelBasedEditForm<ID, T> editForm) {
+//		// override in subclasses
+//	}
 
 	/**
 	 * Method that is called after the entire layout has been constructed. Use this
@@ -399,7 +395,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	 * 
 	 * @param wrapper
 	 */
-	protected void postProcessTableWrapper(BaseTableWrapper<ID, T> wrapper) {
+	protected void postProcessTableWrapper(BaseGridWrapper<ID, T> wrapper) {
 		// overwrite in subclasses when needed
 	}
 
@@ -425,7 +421,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	 * 
 	 * @param fieldFilters
 	 */
-	public void setFieldFilters(Map<String, Filter> fieldFilters) {
+	public void setFieldFilters(Map<String, SerializablePredicate<?>> fieldFilters) {
 		this.fieldFilters = fieldFilters;
 	}
 
@@ -474,4 +470,3 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 		this.sortEnabled = sortEnabled;
 	}
 }
-

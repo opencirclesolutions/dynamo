@@ -17,31 +17,31 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.ProgressBar;
 
 /**
- * Interface for a component that supports the display of a progress bar. This interface is used to
- * be passed to an instance of ProgressBarUpdate
+ * Interface for a component that supports the display of a progress bar. This
+ * interface is used to be passed to an instance of ProgressBarUpdate
  * 
  * @author bas.rutten
  */
 public interface Progressable {
 
-    /**
-     * Estimates the current progress of the process
-     * 
-     * @return
-     */
-    int estimateCurrentProgress();
+	/**
+	 * Estimates the current progress of the process
+	 * 
+	 * @return
+	 */
+	int estimateCurrentProgress();
 
-    /**
-     * Retrieves the progress bar
-     * 
-     * @return
-     */
-    ProgressBar getProgressBar();
+	/**
+	 * Retrieves the progress bar
+	 * 
+	 * @return
+	 */
+	ProgressBar getProgressBar();
 
-    /**
-     * Retrieves the status label
-     * 
-     * @return
-     */
-    Label getStatusLabel();
+	/**
+	 * Retrieves the status label
+	 * 
+	 * @return
+	 */
+	Label getStatusLabel();
 }

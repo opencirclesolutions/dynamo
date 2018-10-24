@@ -15,19 +15,22 @@ package com.ocs.dynamo.ui.composite.table;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.stream.Stream;
 
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
+import com.ocs.dynamo.filter.FilterConverter;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.Searchable;
 import com.ocs.dynamo.ui.container.QueryType;
-import com.ocs.dynamo.ui.container.ServiceContainer;
-import com.ocs.dynamo.ui.container.ServiceQueryDefinition;
-import com.vaadin.data.Container;
-import com.vaadin.data.Container.Filter;
-import com.vaadin.data.sort.SortOrder;
+import com.vaadin.data.provider.DataProvider;
+import com.vaadin.data.provider.DataProviderListener;
+import com.vaadin.data.provider.Query;
+import com.vaadin.data.provider.SortOrder;
+import com.vaadin.server.SerializablePredicate;
+import com.vaadin.shared.Registration;
 
 /**
  * A wrapper for a table that retrieves its data directly from the database
@@ -39,14 +42,14 @@ import com.vaadin.data.sort.SortOrder;
  *            type of the entity
  */
 public class ServiceResultsTableWrapper<ID extends Serializable, T extends AbstractEntity<ID>>
-		extends BaseTableWrapper<ID, T> implements Searchable {
+		extends BaseGridWrapper<ID, T> implements Searchable<T> {
 
 	private static final long serialVersionUID = -4691108261565306844L;
 
 	/**
 	 * The search filter that is applied to the table
 	 */
-	private Filter filter;
+	private SerializablePredicate<T> filter;
 
 	private Integer maxResults;
 
@@ -63,25 +66,60 @@ public class ServiceResultsTableWrapper<ID extends Serializable, T extends Abstr
 	 *            options list of fetch joins to include in the query
 	 */
 	public ServiceResultsTableWrapper(BaseService<ID, T> service, EntityModel<T> entityModel, QueryType queryType,
-			Filter filter, List<SortOrder> sortOrders, boolean allowExport, FetchJoinInformation... joins) {
+			SerializablePredicate<T> filter, List<SortOrder<?>> sortOrders, boolean allowExport,
+			FetchJoinInformation... joins) {
 		super(service, entityModel, queryType, sortOrders, allowExport, joins);
 		this.filter = filter;
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
-	protected Container constructContainer() {
-		ServiceContainer<ID, T> container = new ServiceContainer<>(getService(), getEntityModel(),
-				DynamoConstants.PAGE_SIZE, getQueryType(), getJoins());
-		if (getMaxResults() != null) {
-			((ServiceQueryDefinition<ID, T>) container.getQueryView().getQueryDefinition())
-					.setMaxQuerySize(getMaxResults());
-		}
-		doConstructContainer(container);
-		return container;
+	protected DataProvider<T, SerializablePredicate<T>> constructDataProvider() {
+		DataProvider<T, SerializablePredicate<T>> provider = new DataProvider<T, SerializablePredicate<T>>() {
+
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public boolean isInMemory() {
+				return false;
+			}
+
+			@Override
+			public int size(Query<T, SerializablePredicate<T>> query) {
+				FilterConverter<T> converter = new FilterConverter<>(getEntityModel());
+				return (int) getService().count(converter.convert(query.getFilter().orElse(null)), false);
+			}
+
+			@Override
+			public void refreshItem(T item) {
+
+			}
+
+			@Override
+			public void refreshAll() {
+				// TODO
+			}
+
+			@Override
+			public Registration addDataProviderListener(DataProviderListener<T> listener) {
+				return null;
+			}
+
+			@Override
+			public Stream<T> fetch(Query<T, SerializablePredicate<T>> query) {
+				FilterConverter<T> converter = new FilterConverter<>(getEntityModel());
+				int offset = query.getOffset();
+				int limit = query.getLimit();
+
+				List<T> result = getService().fetch(converter.convert(query.getFilter().orElse(null)), offset, limit,
+						getJoins());
+				return result.stream();
+			}
+		};
+		doConstructDataProvider(provider);
+		return provider;
 	}
 
-	protected Filter getFilter() {
+	protected SerializablePredicate<T> getFilter() {
 		return filter;
 	}
 
@@ -91,29 +129,29 @@ public class ServiceResultsTableWrapper<ID extends Serializable, T extends Abstr
 
 	@SuppressWarnings("unchecked")
 	public ModelBasedTable<ID, T> getModelBasedTable() {
-		return (ModelBasedTable<ID, T>) super.getTable();
+		return (ModelBasedTable<ID, T>) super.getGrid();
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
 	public void initSortingAndFiltering() {
 		// set the filter (using the getQueryView() to prevent a useless query)
-		((ServiceContainer<ID, T>) getContainer()).getQueryView().addFilter(filter);
+		// ((ServiceContainer<ID, T>) getContainer()).getQueryView().addFilter(filter);
 		super.initSortingAndFiltering();
 	}
 
 	@Override
-	public void reloadContainer() {
-		if (getContainer() instanceof Searchable) {
-			((Searchable) getContainer()).search(filter);
+	public void reloadDataProvider() {
+		if (getDataProvider() instanceof Searchable) {
+			// ((Searchable) getContainer()).search(filter);
 		}
 	}
 
 	@Override
-	public void search(Filter filter) {
-		Filter temp = beforeSearchPerformed(filter);
-		if (getContainer() instanceof Searchable) {
-			((Searchable) getContainer()).search(temp != null ? temp : filter);
+	public void search(SerializablePredicate<T> filter) {
+		SerializablePredicate<T> temp = beforeSearchPerformed(filter);
+		if (getDataProvider() instanceof Searchable) {
+			// ((Searchable) getDataProvider()).search(temp != null ? temp : filter);
 		}
 	}
 
@@ -123,7 +161,7 @@ public class ServiceResultsTableWrapper<ID extends Serializable, T extends Abstr
 	 * 
 	 * @param filter
 	 */
-	public void setFilter(Filter filter) {
+	public void setFilter(SerializablePredicate<T> filter) {
 		this.filter = filter;
 		search(filter);
 	}

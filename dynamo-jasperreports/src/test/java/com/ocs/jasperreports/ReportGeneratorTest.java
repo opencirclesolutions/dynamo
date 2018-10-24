@@ -17,9 +17,9 @@ import com.ocs.dynamo.jasperreports.Customer;
 import com.ocs.dynamo.jasperreports.JRIndexedContainerDataSource;
 import com.ocs.dynamo.jasperreports.JRUtils;
 import com.ocs.dynamo.jasperreports.Person;
-import com.vaadin.data.util.BeanContainer;
-import com.vaadin.data.util.filter.And;
-import com.vaadin.data.util.filter.Compare;
+import com.vaadin.v7.data.util.BeanContainer;
+import com.vaadin.v7.data.util.filter.And;
+import com.vaadin.v7.data.util.filter.Compare;
 
 import net.sf.jasperreports.engine.JasperReport;
 

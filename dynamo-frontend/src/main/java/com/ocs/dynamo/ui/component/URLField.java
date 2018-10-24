@@ -15,7 +15,6 @@ package com.ocs.dynamo.ui.component;
 
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.utils.StringUtils;
-import com.vaadin.data.Validator.InvalidValueException;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.shared.ui.BorderStyle;
 import com.vaadin.ui.Component;
@@ -61,7 +60,7 @@ public class URLField extends CustomField<String> {
 		this.attributeModel = attributeModel;
 		this.textField = textField;
 		this.editable = editable;
-		textField.addValueChangeListener(event -> setValue((String) event.getProperty().getValue()));
+		textField.addValueChangeListener(event -> setValue((String) event.getValue()));
 	}
 
 	protected Link getLink() {
@@ -70,11 +69,6 @@ public class URLField extends CustomField<String> {
 
 	public TextField getTextField() {
 		return textField;
-	}
-
-	@Override
-	public Class<? extends String> getType() {
-		return String.class;
 	}
 
 	@Override
@@ -98,10 +92,13 @@ public class URLField extends CustomField<String> {
 	}
 
 	@Override
-	protected void setInternalValue(String newValue) {
-		super.setInternalValue(newValue);
-		updateLink(newValue);
-		textField.setValue(newValue);
+	protected void doSetValue(String value) {
+		updateLink(value);
+		if (value == null) {
+			textField.clear();
+		} else {
+			textField.setValue(value);
+		}
 	}
 
 	/**
@@ -146,10 +143,15 @@ public class URLField extends CustomField<String> {
 	}
 
 	@Override
-	public void validate() throws InvalidValueException {
-		if (textField != null) {
-			super.validate();
-		}
+	public String getValue() {
+		return textField.getValue();
 	}
+
+	// @Override
+	// public void validate() throws InvalidValueException {
+	// if (textField != null) {
+	// super.validate();
+	// }
+	// }
 
 }

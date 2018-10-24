@@ -15,9 +15,9 @@ package com.ocs.dynamo.ui.composite.grid;
 
 import java.util.Collection;
 
-import com.vaadin.data.Item;
-import com.vaadin.data.Property;
-import com.vaadin.data.util.PropertyValueGenerator;
+import com.vaadin.v7.data.Item;
+import com.vaadin.v7.data.Property;
+import com.vaadin.v7.data.util.PropertyValueGenerator;
 
 /**
  * A property value generator for summing up a collection of Integers

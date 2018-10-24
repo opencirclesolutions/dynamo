@@ -23,27 +23,27 @@ import com.vaadin.ui.HorizontalLayout;
  */
 public class DefaultHorizontalLayout extends HorizontalLayout {
 
-    private static final long serialVersionUID = 9070636803023696052L;
+	private static final long serialVersionUID = 9070636803023696052L;
 
-    public DefaultHorizontalLayout() {
-        this(false, true, true);
-    }
+	public DefaultHorizontalLayout() {
+		this(false, true, true);
+	}
 
-    /**
-     * Constructor
-     * 
-     * @param margin
-     *            whether to include a margin
-     * @param spacing
-     *            wether to include spacing
-     * @param wrap
-     *            whether to wrap the buttons if there is not enough room
-     */
-    public DefaultHorizontalLayout(boolean margin, boolean spacing, boolean wrap) {
-        setMargin(margin);
-        setSpacing(spacing);
-        if (wrap) {
-            setStyleName(DynamoConstants.CSS_BUTTON_BAR);
-        }
-    }
+	/**
+	 * Constructor
+	 * 
+	 * @param margin
+	 *            whether to include a margin
+	 * @param spacing
+	 *            wether to include spacing
+	 * @param wrap
+	 *            whether to wrap the buttons if there is not enough room
+	 */
+	public DefaultHorizontalLayout(boolean margin, boolean spacing, boolean wrap) {
+		setMargin(margin);
+		setSpacing(spacing);
+		if (wrap) {
+			setStyleName(DynamoConstants.CSS_BUTTON_BAR);
+		}
+	}
 }

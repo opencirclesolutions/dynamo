@@ -13,10 +13,10 @@
  */
 package com.ocs.dynamo.ui.container.pivot;
 
-import com.vaadin.data.Container;
-import com.vaadin.data.Item;
-import com.vaadin.data.Property;
-import com.vaadin.data.util.ObjectProperty;
+import com.vaadin.v7.data.Container;
+import com.vaadin.v7.data.Item;
+import com.vaadin.v7.data.Property;
+import com.vaadin.v7.data.util.ObjectProperty;
 
 import java.util.Collection;
 import java.util.Map;
@@ -86,8 +86,8 @@ public class PivotItem implements Item {
 		if (nid != null) {
 			Item ni = sc.getItem(nid);
 			Item c = columns.values().iterator().next();
-			ni.getItemProperty(pivotContainer.getRowPropertyId()).setValue(
-			        c.getItemProperty(pivotContainer.getRowPropertyId()).getValue());
+			ni.getItemProperty(pivotContainer.getRowPropertyId())
+					.setValue(c.getItemProperty(pivotContainer.getRowPropertyId()).getValue());
 			ni.getItemProperty(pivotContainer.getColumnPropertyId()).setValue(columnId);
 			ni.getItemProperty(propertyId).setValue(columnValue);
 			columns.put(columnId, ni);
@@ -112,9 +112,10 @@ public class PivotItem implements Item {
 	}
 
 	/**
-	 * Get the property in the row. When the name is in the form "columnValue_columnPropertyId" then
-	 * a property in the column designated by the columnValue is assumed. Otherwise the property is
-	 * assumed to be equal over all columns and will be taken from the first item.
+	 * Get the property in the row. When the name is in the form
+	 * "columnValue_columnPropertyId" then a property in the column designated by
+	 * the columnValue is assumed. Otherwise the property is assumed to be equal
+	 * over all columns and will be taken from the first item.
 	 * 
 	 * @see com.vaadin.data.Item#getItemProperty(java.lang.Object)
 	 */
@@ -144,20 +145,16 @@ public class PivotItem implements Item {
 		return result;
 	}
 
-	/*
-	 * (non-Javadoc)
+	/**
 	 * 
-	 * @see com.vaadin.data.Item#getItemPropertyIds()
 	 */
 	@Override
 	public Collection<?> getItemPropertyIds() {
 		return pivotContainer.getPropertyIds();
 	}
 
-	/*
-	 * (non-Javadoc)
+	/**
 	 * 
-	 * @see com.vaadin.data.Item#removeItemProperty(java.lang.Object)
 	 */
 	@Override
 	public boolean removeItemProperty(Object id) {

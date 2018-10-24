@@ -16,7 +16,7 @@ package com.ocs.dynamo.ui.composite.dialog;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
-import com.vaadin.server.FontAwesome;
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 
@@ -48,7 +48,7 @@ public abstract class SimpleModalDialog extends BaseModalDialog {
 	@Override
 	protected void doBuildButtonBar(HorizontalLayout buttonBar) {
 		cancelButton = new Button(message("ocs.cancel"));
-		cancelButton.setIcon(FontAwesome.BAN);
+		cancelButton.setIcon(VaadinIcons.BAN);
 		cancelButton.addClickListener((Button.ClickListener) event -> {
 			doCancel();
 			SimpleModalDialog.this.close();
@@ -57,7 +57,7 @@ public abstract class SimpleModalDialog extends BaseModalDialog {
 		buttonBar.addComponent(cancelButton);
 
 		okButton = new Button(message("ocs.ok"));
-		okButton.setIcon(FontAwesome.CHECK);
+		okButton.setIcon(VaadinIcons.CHECK);
 		okButton.addClickListener((Button.ClickListener) event -> {
 			if (doClose()) {
 				SimpleModalDialog.this.close();

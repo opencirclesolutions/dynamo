@@ -13,25 +13,26 @@
  */
 package com.ocs.dynamo.ui.converter;
 
-import java.util.Locale;
+import com.vaadin.data.Result;
+import com.vaadin.data.ValueContext;
 
 public class PercentageIntegerConverter extends GroupingStringToIntegerConverter {
 
-    private static final long serialVersionUID = -3063510923788897054L;
+	private static final long serialVersionUID = -3063510923788897054L;
 
-    public PercentageIntegerConverter(boolean useGrouping) {
-        super(useGrouping);
-    }
+	public PercentageIntegerConverter(boolean useGrouping) {
+		super(useGrouping);
+	}
 
-    @Override
-    public String convertToPresentation(Integer value, Class<? extends String> targetType, Locale locale) {
-        String result = super.convertToPresentation(value, targetType, locale);
-        return result == null ? null : result + "%";
-    }
+	@Override
+	public String convertToPresentation(Integer value, ValueContext context) {
+		String result = super.convertToPresentation(value, context);
+		return result == null ? null : result + "%";
+	}
 
-    @Override
-    public Integer convertToModel(String value, Class<? extends Integer> targetType, Locale locale) {
-        value = value == null ? null : value.replaceAll("%", "");
-        return super.convertToModel(value, targetType, locale);
-    }
+	@Override
+	public Result<Integer> convertToModel(String value, ValueContext context) {
+		value = value == null ? null : value.replaceAll("%", "");
+		return super.convertToModel(value, context);
+	}
 }

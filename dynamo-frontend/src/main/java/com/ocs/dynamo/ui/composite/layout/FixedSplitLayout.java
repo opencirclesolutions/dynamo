@@ -19,16 +19,17 @@ import java.util.Collection;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
-import com.ocs.dynamo.ui.composite.table.BaseTableWrapper;
+import com.ocs.dynamo.ui.composite.table.BaseGridWrapper;
 import com.ocs.dynamo.ui.composite.table.FixedTableWrapper;
-import com.vaadin.data.Container;
-import com.vaadin.data.sort.SortOrder;
-import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.data.provider.DataProvider;
+import com.vaadin.data.provider.ListDataProvider;
+import com.vaadin.data.provider.SortOrder;
+import com.vaadin.server.SerializablePredicate;
 import com.vaadin.ui.TextField;
 
 /**
- * A layout for displaying a fixed collection of items, that contains both a table view and a
- * details view
+ * A layout for displaying a fixed collection of items, that contains both a
+ * table view and a details view
  * 
  * @author bas.rutten
  * @param <ID>
@@ -38,116 +39,119 @@ import com.vaadin.ui.TextField;
  */
 @SuppressWarnings("serial")
 public abstract class FixedSplitLayout<ID extends Serializable, T extends AbstractEntity<ID>>
-        extends BaseSplitLayout<ID, T> {
+		extends BaseSplitLayout<ID, T> {
 
-    private static final long serialVersionUID = 4606800218149558500L;
+	private static final long serialVersionUID = 4606800218149558500L;
 
-    // the items to display in the table
-    private Collection<T> items;
+	// the items to display in the table
+	private Collection<T> items;
 
-    /**
-     * Constructor
-     * 
-     * @param service
-     *            the service
-     * @param entityModel
-     *            the entity model that is used to construct the layout
-     * @param formOptions
-     *            formoptions that govern how the screen behaves
-     * @param fieldFilters
-     *            field filters applied to fields in the detail view
-     * @param sortOrder
-     */
-    public FixedSplitLayout(BaseService<ID, T> service, EntityModel<T> entityModel, FormOptions formOptions,
-            SortOrder sortOrder) {
-        super(service, entityModel, formOptions, sortOrder);
-    }
+	/**
+	 * Constructor
+	 * 
+	 * @param service
+	 *            the service
+	 * @param entityModel
+	 *            the entity model that is used to construct the layout
+	 * @param formOptions
+	 *            formoptions that govern how the screen behaves
+	 * @param fieldFilters
+	 *            field filters applied to fields in the detail view
+	 * @param sortOrder
+	 */
+	public FixedSplitLayout(BaseService<ID, T> service, EntityModel<T> entityModel, FormOptions formOptions,
+			SortOrder<?> sortOrder) {
+		super(service, entityModel, formOptions, sortOrder);
+	}
 
-    /**
-     * 
-     */
-    @Override
-    protected void afterReload(T t) {
-        getTableWrapper().getTable().select(t);
-    }
+	/**
+	 * 
+	 */
+	@Override
+	protected void afterReload(T t) {
+		getTableWrapper().getGrid().select(t);
+	}
 
-    /**
-     * The initialization consists of retrieving the required items
-     */
-    @Override
-    public void buildFilter() {
-        this.items = loadItems();
-    }
+	/**
+	 * The initialization consists of retrieving the required items
+	 */
+	@Override
+	public void buildFilter() {
+		this.items = loadItems();
+	}
 
-    @Override
-    protected final TextField constructSearchField() {
-        // do nothing - not supported for this component
-        return null;
-    }
+	@Override
+	protected final TextField constructSearchField() {
+		// do nothing - not supported for this component
+		return null;
+	}
 
-    @Override
-    protected final BaseTableWrapper<ID, T> constructTableWrapper() {
-        FixedTableWrapper<ID, T> tw = new FixedTableWrapper<ID, T>(getService(), getEntityModel(), getItems(),
-                getSortOrders(), getFormOptions().isTableExportAllowed()) {
-            @Override
-            protected void doConstructContainer(Container container) {
-                FixedSplitLayout.this.doConstructContainer(container);
-            }
+	@Override
+	protected final BaseGridWrapper<ID, T> constructTableWrapper() {
+		FixedTableWrapper<ID, T> tw = new FixedTableWrapper<ID, T>(getService(), getEntityModel(), getItems(),
+				getSortOrders(), getFormOptions().isTableExportAllowed()) {
 
-            @Override
-            protected void onSelect(Object selected) {
-                setSelectedItems(selected);
-                checkButtonState(getSelectedItem());
-                if (getSelectedItem() != null) {
-                    detailsMode(getSelectedItem());
-                }
-            }
-        };
-        tw.build();
-        return tw;
-    }
+			@Override
+			protected void doConstructDataProvider(DataProvider<T, SerializablePredicate<T>> provider) {
+				FixedSplitLayout.this.doConstructDataProvider(provider);
+			}
 
-    public Collection<T> getItems() {
-        return items;
-    }
+			@Override
+			protected void onSelect(Object selected) {
+				setSelectedItems(selected);
+				checkButtonState(getSelectedItem());
+				if (getSelectedItem() != null) {
+					detailsMode(getSelectedItem());
+				}
+			}
+		};
+		tw.build();
+		return tw;
+	}
 
-    /**
-     * Loads the items that are to be displayed
-     */
-    protected abstract Collection<T> loadItems();
+	public Collection<T> getItems() {
+		return items;
+	}
 
-    /**
-     * Reloads the data after an update
-     */
-    @Override
-    @SuppressWarnings("unchecked")
-    public void reload() {
-        buildFilter();
-        super.reload();
-        // remove all items from the container and add the new ones
-        BeanItemContainer<T> beanContainer = (BeanItemContainer<T>) getTableWrapper().getContainer();
-        beanContainer.removeAllItems();
-        beanContainer.addAll(getItems());
-        setSelectedItem(null);
-    }
+	/**
+	 * Loads the items that are to be displayed
+	 */
+	protected abstract Collection<T> loadItems();
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public void setSelectedItems(Object selectedItems) {
-        if (selectedItems != null) {
-            if (selectedItems instanceof Collection<?>) {
-                Collection<?> col = (Collection<?>) selectedItems;
-                T t = (T) col.iterator().next();
-                // fetch the item again so that any details are loaded
-                setSelectedItem(getService().fetchById(t.getId()));
-            } else {
-                // single item selected
-                T t = (T) selectedItems;
-                setSelectedItem(t);
-            }
-        } else {
-            setSelectedItem(null);
-            emptyDetailView();
-        }
-    }
+	/**
+	 * Reloads the data after an update
+	 */
+	@Override
+	@SuppressWarnings("unchecked")
+	public void reload() {
+		buildFilter();
+		super.reload();
+		// remove all items from the container and add the new ones
+		// BeanItemContainer<T> beanContainer = (BeanItemContainer<T>)
+		// getTableWrapper().getContainer();
+		ListDataProvider<T> provider = (ListDataProvider<T>) getTableWrapper().getDataProvider();
+		provider.getItems().clear();
+		provider.getItems().addAll(items);
+		setSelectedItem(null);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public void setSelectedItems(Object selectedItems) {
+		if (selectedItems != null) {
+			if (selectedItems instanceof Collection<?>) {
+				Collection<?> col = (Collection<?>) selectedItems;
+				T t = (T) col.iterator().next();
+				// fetch the item again so that any details are loaded
+				setSelectedItem(getService().fetchById(t.getId()));
+			} else {
+				// single item selected
+				T t = (T) selectedItems;
+				setSelectedItem(t);
+			}
+		} else {
+			setSelectedItem(null);
+			emptyDetailView();
+		}
+	}
 }

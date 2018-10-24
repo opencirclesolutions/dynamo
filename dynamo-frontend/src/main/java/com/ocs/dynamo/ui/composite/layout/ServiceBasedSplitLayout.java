@@ -22,15 +22,12 @@ import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
-import com.ocs.dynamo.ui.composite.table.BaseTableWrapper;
+import com.ocs.dynamo.ui.composite.table.BaseGridWrapper;
 import com.ocs.dynamo.ui.composite.table.ServiceResultsTableWrapper;
 import com.ocs.dynamo.ui.container.QueryType;
-import com.ocs.dynamo.ui.container.ServiceContainer;
-import com.vaadin.data.Container;
-import com.vaadin.data.Container.Filter;
-import com.vaadin.data.sort.SortOrder;
-import com.vaadin.data.util.filter.And;
-import com.vaadin.data.util.filter.Like;
+import com.vaadin.data.provider.DataProvider;
+import com.vaadin.data.provider.SortOrder;
+import com.vaadin.server.SerializablePredicate;
 import com.vaadin.ui.TextField;
 
 /**
@@ -53,7 +50,7 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
 	 * The filter used to restrict the search results. Override the
 	 * <code>constructFilter</code> method to set this filter.
 	 */
-	private Filter filter;
+	private SerializablePredicate<T> filter;
 
 	/**
 	 * The query type (ID based or paging) used to query the database
@@ -76,7 +73,7 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
 	 * @param joins
 	 */
 	public ServiceBasedSplitLayout(BaseService<ID, T> service, EntityModel<T> entityModel, QueryType queryType,
-			FormOptions formOptions, SortOrder sortOrder, FetchJoinInformation... joins) {
+			FormOptions formOptions, SortOrder<?> sortOrder, FetchJoinInformation... joins) {
 		super(service, entityModel, formOptions, sortOrder, joins);
 		this.queryType = queryType;
 	}
@@ -92,7 +89,7 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
 	 *
 	 * @return
 	 */
-	protected Filter constructFilter() {
+	protected SerializablePredicate<T> constructFilter() {
 		// overwrite in subclass
 		return null;
 	}
@@ -107,19 +104,16 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
 	 *            the value to search for
 	 * @return
 	 */
-	protected Filter constructQuickSearchFilter(String value) {
+	protected SerializablePredicate<T> constructQuickSearchFilter(String value) {
 		// override in subclasses
 		return null;
 	}
 
 	/**
 	 * Constructs a quick search field - this method will only be called if the
-	 * "showQuickSearchField" form option is enabled. It will then look for a
-	 * custom
-	 * filter returned by the constructQuickSearchFilter method, and if
-	 * that method
-	 * returns null it will construct a filter based on the main
-	 * attribute
+	 * "showQuickSearchField" form option is enabled. It will then look for a custom
+	 * filter returned by the constructQuickSearchFilter method, and if that method
+	 * returns null it will construct a filter based on the main attribute
 	 */
 	@Override
 	protected final TextField constructSearchField() {
@@ -127,37 +121,39 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
 			TextField searchField = new TextField(message("ocs.search"));
 
 			// respond to the user entering a search term
-			searchField.addTextChangeListener(event -> {
-				String text = event.getText();
-				if (!StringUtils.isEmpty(text)) {
-					Filter quickFilter = constructQuickSearchFilter(text);
-					if (quickFilter == null && getEntityModel().getMainAttributeModel() != null) {
-						quickFilter = new Like(getEntityModel().getMainAttributeModel().getPath(), "%" + text + "%",
-								false);
-					}
-
-					Filter temp = quickFilter;
-					if (getFilter() != null) {
-						temp = new And(quickFilter, getFilter());
-					}
-					getContainer().search(temp);
-				} else {
-					getContainer().search(filter);
-				}
-			});
+			// searchField.addTextChangeListener(event -> {
+			// String text = event.getText();
+			// if (!StringUtils.isEmpty(text)) {
+			// Filter quickFilter = constructQuickSearchFilter(text);
+			// if (quickFilter == null && getEntityModel().getMainAttributeModel() != null)
+			// {
+			// quickFilter = new Like(getEntityModel().getMainAttributeModel().getPath(),
+			// "%" + text + "%",
+			// false);
+			// }
+			//
+			// Filter temp = quickFilter;
+			// if (getFilter() != null) {
+			// temp = new And(quickFilter, getFilter());
+			// }
+			// getContainer().search(temp);
+			// } else {
+			// getContainer().search(filter);
+			// }
+			// });
 			return searchField;
 		}
 		return null;
 	}
 
 	@Override
-	protected BaseTableWrapper<ID, T> constructTableWrapper() {
+	protected BaseGridWrapper<ID, T> constructTableWrapper() {
 		ServiceResultsTableWrapper<ID, T> tw = new ServiceResultsTableWrapper<ID, T>(getService(), getEntityModel(),
 				getQueryType(), filter, getSortOrders(), getFormOptions().isTableExportAllowed(), getJoins()) {
 
 			@Override
-			protected void doConstructContainer(Container container) {
-				ServiceBasedSplitLayout.this.doConstructContainer(container);
+			protected void doConstructDataProvider(DataProvider<T, SerializablePredicate<T>> provider) {
+				ServiceBasedSplitLayout.this.doConstructDataProvider(provider);
 			}
 
 			@Override
@@ -175,11 +171,11 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
 	}
 
 	@SuppressWarnings("unchecked")
-	protected ServiceContainer<ID, T> getContainer() {
-		return (ServiceContainer<ID, T>) getTableWrapper().getContainer();
+	protected DataProvider<T, SerializablePredicate<T>> getContainer() {
+		return getTableWrapper().getDataProvider();
 	}
 
-	public Filter getFilter() {
+	public SerializablePredicate<T> getFilter() {
 		return filter;
 	}
 
@@ -193,8 +189,7 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
 	}
 
 	/**
-	 * Reloads the component - this will first rebuild the filter and then
-	 * reload
+	 * Reloads the component - this will first rebuild the filter and then reload
 	 * the container using that filter
 	 */
 	@Override

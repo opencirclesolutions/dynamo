@@ -17,28 +17,29 @@ import java.text.NumberFormat;
 import java.util.Locale;
 
 import com.ocs.dynamo.ui.utils.VaadinUtils;
-import com.vaadin.data.util.converter.StringToIntegerConverter;
+import com.vaadin.data.converter.StringToIntegerConverter;
 
 /**
- * A string to integer converter that allows support the user to specify whether a thousands
- * separator must be used
+ * A string to integer converter that allows support the user to specify whether
+ * a thousands separator must be used
  * 
  * @author bas.rutten
  */
 public class GroupingStringToIntegerConverter extends StringToIntegerConverter {
 
-    private static final long serialVersionUID = -281060172465120956L;
+	private static final long serialVersionUID = -281060172465120956L;
 
-    private boolean useGrouping;
+	private boolean useGrouping;
 
-    public GroupingStringToIntegerConverter(boolean useGrouping) {
-        this.useGrouping = useGrouping;
-    }
+	public GroupingStringToIntegerConverter(boolean useGrouping) {
+		super("Some error message");
+		this.useGrouping = useGrouping;
+	}
 
-    @Override
-    protected NumberFormat getFormat(Locale locale) {
-        NumberFormat format = super.getFormat(locale == null ? VaadinUtils.getLocale() : locale);
-        format.setGroupingUsed(useGrouping);
-        return format;
-    }
+	@Override
+	protected NumberFormat getFormat(Locale locale) {
+		NumberFormat format = super.getFormat(locale == null ? VaadinUtils.getLocale() : locale);
+		format.setGroupingUsed(useGrouping);
+		return format;
+	}
 }

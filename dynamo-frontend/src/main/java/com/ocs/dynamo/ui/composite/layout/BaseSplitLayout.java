@@ -22,14 +22,13 @@ import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
-import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
 import com.ocs.dynamo.ui.composite.type.ScreenMode;
 import com.ocs.dynamo.ui.utils.FormatUtils;
-import com.vaadin.data.sort.SortOrder;
-import com.vaadin.server.FontAwesome;
+import com.vaadin.data.provider.SortOrder;
+import com.vaadin.icons.VaadinIcons;
+import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.Field;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.HorizontalSplitPanel;
 import com.vaadin.ui.Label;
@@ -71,7 +70,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	private Layout detailLayout;
 
 	// the edit form
-	private ModelBasedEditForm<ID, T> editForm;
+	//private ModelBasedEditForm<ID, T> editForm;
 
 	// layout that is placed above the table view
 	private Component headerLayout;
@@ -104,7 +103,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	 *            the joins used to query the database
 	 */
 	public BaseSplitLayout(BaseService<ID, T> service, EntityModel<T> entityModel, FormOptions formOptions,
-			SortOrder sortOrder, FetchJoinInformation... joins) {
+			SortOrder<?> sortOrder, FetchJoinInformation... joins) {
 		super(service, entityModel, formOptions, sortOrder, joins);
 	}
 
@@ -154,8 +153,8 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 			}
 
 			// table init
-			getTableWrapper().getTable().setPageLength(getPageLength());
-			getTableWrapper().getTable().setSortEnabled(isSortEnabled());
+			// getTableWrapper().getGrid().setPageLength(getPageLength());
+			// getTableWrapper().getGrid().setSortEnabled(isSortEnabled());
 			constructTableDividers();
 
 			// extra splitter (for horizontal mode)
@@ -249,20 +248,21 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	protected final Button constructRemoveButton() {
 		Button rb = new RemoveButton(message("ocs.remove"), null) {
 
-            @Override
-            protected void doDelete() {
-                remove();
-            }
+			@Override
+			protected void doDelete() {
+				remove();
+			}
 
-        @Override
+			@Override
 			protected String getItemToDelete() {
 				T t = getSelectedItem();
 				return FormatUtils.formatEntity(getEntityModel(), t);
 			}
 		};
-		rb.setIcon(FontAwesome.TRASH);rb.setVisible(getFormOptions().isShowRemoveButton() && isEditAllowed());
-        return rb;
-    }
+		rb.setIcon(VaadinIcons.TRASH);
+		rb.setVisible(getFormOptions().isShowRemoveButton() && isEditAllowed());
+		return rb;
+	}
 
 	/**
 	 * Constructs the quick search field - overridden in subclasses.
@@ -300,114 +300,115 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 
 			// canceling is not needed in the inline view
 			getFormOptions().setHideCancelButton(true).setPreserveSelectedTab(true);
-			editForm = new ModelBasedEditForm<ID, T>(entity, getService(), getEntityModel(), getFormOptions(),
-					getFieldFilters()) {
-
-				@Override
-				protected void afterEditDone(boolean cancel, boolean newObject, T entity) {
-					if (!cancel) {
-						// update the selected item so master and detail are in sync
-						// again
-						reload();
-						detailsMode(entity);
-						afterReload(entity);
-					} else {
-						reload();
-					}
-				}
-
-				@Override
-				protected void afterEntitySet(T entity) {
-					BaseSplitLayout.this.afterEntitySet(entity);
-				}
-
-				@Override
-				protected void afterModeChanged(boolean viewMode) {
-					BaseSplitLayout.this.afterModeChanged(viewMode, editForm);
-				}
-
-				@Override
-				protected void afterTabSelected(int tabIndex) {
-					BaseSplitLayout.this.afterTabSelected(tabIndex);
-				}
-
-				@Override
-				protected Field<?> constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel,
-						boolean viewMode) {
-					return BaseSplitLayout.this.constructCustomField(entityModel, attributeModel, viewMode, false);
-				}
-
-				@Override
-				protected String getParentGroup(String childGroup) {
-					return BaseSplitLayout.this.getParentGroup(childGroup);
-				}
-
-				@Override
-				protected String[] getParentGroupHeaders() {
-					return BaseSplitLayout.this.getParentGroupHeaders();
-				}
-
-				@Override
-				protected boolean handleCustomException(RuntimeException ex) {
-					return BaseSplitLayout.this.handleCustomException(ex);
-				}
-
-				@Override
-				protected boolean isEditAllowed() {
-					return BaseSplitLayout.this.isEditAllowed();
-				}
-
-				@Override
-				protected void postProcessButtonBar(HorizontalLayout buttonBar, boolean viewMode) {
-					BaseSplitLayout.this.postProcessDetailButtonBar(buttonBar, viewMode);
-				}
-
-				@Override
-				protected void postProcessEditFields() {
-					BaseSplitLayout.this.postProcessEditFields(editForm);
-				}
-
-			};
-
-			editForm.setCustomSaveConsumer(customSaveConsumer);
-			editForm.setFormTitleWidth(getFormTitleWidth());
-            editForm.setDetailJoins(getDetailJoinsFallBack());
-            editForm.setFieldEntityModels(getFieldEntityModels());
-            editForm.build();
-            detailFormLayout.addComponent(editForm);
-        } else {
-            // reset the form's view mode if needed
-            editForm.setEntity(entity);
-            editForm.resetTab();
-        }
+//			editForm = new ModelBasedEditForm<ID, T>(entity, getService(), getEntityModel(), getFormOptions(),
+//					getFieldFilters()) {
+//
+//				@Override
+//				protected void afterEditDone(boolean cancel, boolean newObject, T entity) {
+//					if (!cancel) {
+//						// update the selected item so master and detail are in sync
+//						// again
+//						reload();
+//						detailsMode(entity);
+//						afterReload(entity);
+//					} else {
+//						reload();
+//					}
+//				}
+//
+//				@Override
+//				protected void afterEntitySet(T entity) {
+//					BaseSplitLayout.this.afterEntitySet(entity);
+//				}
+//
+//				@Override
+//				protected void afterModeChanged(boolean viewMode) {
+//					BaseSplitLayout.this.afterModeChanged(viewMode, editForm);
+//				}
+//
+//				@Override
+//				protected void afterTabSelected(int tabIndex) {
+//					BaseSplitLayout.this.afterTabSelected(tabIndex);
+//				}
+//
+//				@Override
+//				protected AbstractField<?> constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel,
+//						boolean viewMode) {
+//					return BaseSplitLayout.this.constructCustomField(entityModel, attributeModel, viewMode, false);
+//				}
+//
+//				@Override
+//				protected String getParentGroup(String childGroup) {
+//					return BaseSplitLayout.this.getParentGroup(childGroup);
+//				}
+//
+//				@Override
+//				protected String[] getParentGroupHeaders() {
+//					return BaseSplitLayout.this.getParentGroupHeaders();
+//				}
+//
+//				@Override
+//				protected boolean handleCustomException(RuntimeException ex) {
+//					return BaseSplitLayout.this.handleCustomException(ex);
+//				}
+//
+//				@Override
+//				protected boolean isEditAllowed() {
+//					return BaseSplitLayout.this.isEditAllowed();
+//				}
+//
+//				@Override
+//				protected void postProcessButtonBar(HorizontalLayout buttonBar, boolean viewMode) {
+//					BaseSplitLayout.this.postProcessDetailButtonBar(buttonBar, viewMode);
+//				}
+//
+//				@Override
+//				protected void postProcessEditFields() {
+//					BaseSplitLayout.this.postProcessEditFields(editForm);
+//				}
+//
+//			};
+//
+//			editForm.setCustomSaveConsumer(customSaveConsumer);
+//			editForm.setFormTitleWidth(getFormTitleWidth());
+//			editForm.setDetailJoins(getDetailJoinsFallBack());
+//			editForm.setFieldEntityModels(getFieldEntityModels());
+//			editForm.build();
+//			detailFormLayout.addComponent(editForm);
+		} else {
+			// reset the form's view mode if needed
+			//editForm.setEntity(entity);
+			//editForm.resetTab();
+		}
 
 		setSelectedItem(entity);
 		checkButtonState(getSelectedItem());
-		afterEntitySelected(editForm, entity);
+		//afterEntitySelected(editForm, entity);
 
 		detailLayout.replaceComponent(selectedDetailLayout, detailFormLayout);
 		selectedDetailLayout = detailFormLayout;
 	}
 
 	/**
-	 * Performs the actual remove functionality - overwrite in subclass if
-	 * needed
+	 * Performs the actual remove functionality - overwrite in subclass if needed
 	 */
 	protected void doRemove() {
 		getService().delete(getSelectedItem());
 	}
 
-    public void doSave() {
-		this.editForm.doSave();
-	}/**
-     * Clears the detail view
-     */
-    public void emptyDetailView() {
-        VerticalLayout vLayout = new VerticalLayout();
-        vLayout.addComponent(new Label(message("ocs.select.item", getEntityModel().getDisplayName())));
-        detailLayout.replaceComponent(selectedDetailLayout, vLayout);
-        selectedDetailLayout = vLayout;
-    }
+	public void doSave() {
+		//this.editForm.doSave();
+	}
+
+	/**
+	 * Clears the detail view
+	 */
+	public void emptyDetailView() {
+		VerticalLayout vLayout = new VerticalLayout();
+		vLayout.addComponent(new Label(message("ocs.select.item", getEntityModel().getDisplayName())));
+		detailLayout.replaceComponent(selectedDetailLayout, vLayout);
+		selectedDetailLayout = vLayout;
+	}
 
 	public Button getAddButton() {
 		return addButton;
@@ -425,9 +426,9 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 		return detailLayout;
 	}
 
-	public ModelBasedEditForm<ID, T> getEditForm() {
-		return editForm;
-	}
+//	public ModelBasedEditForm<ID, T> getEditForm() {
+//		return editForm;
+//	}
 
 	public TextField getQuickSearchField() {
 		return quickSearchField;
@@ -463,9 +464,9 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	 *            the name of the property for which to replace the label
 	 */
 	public void refreshLabel(String propertyName) {
-		if (editForm != null) {
-			editForm.refreshLabel(propertyName);
-		}
+//		if (editForm != null) {
+//			editForm.refreshLabel(propertyName);
+//		}
 	}
 
 	/**
@@ -490,7 +491,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 			quickSearchField.setValue("");
 		}
 
-		getTableWrapper().reloadContainer();
+		getTableWrapper().reloadDataProvider();
 
 		// clear the details
 		setSelectedItem(null);
@@ -504,7 +505,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	public void reloadDetails() {
 		this.setSelectedItem(getService().fetchById(this.getSelectedItem().getId(), getDetailJoinsFallBack()));
 		detailsMode(getSelectedItem());
-		getTableWrapper().reloadContainer();
+		getTableWrapper().reloadDataProvider();
 	}
 
 	/**
@@ -526,7 +527,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	 */
 	protected void reselect(T t) {
 		detailsMode(t);
-		getTableWrapper().getTable().select(t == null ? null : t.getId());
+		//getTableWrapper().getGrid().select(t == null ? null : t.getId());
 	}
 
 	public void setCustomSaveConsumer(Consumer<T> customSaveConsumer) {
@@ -539,17 +540,16 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 
 	public abstract void setSelectedItems(Object selectedItems);
 
-    /**
-     * Sets the mode of the screen (either view mode or edit mode)
-     * 
-     * @param viewMode
-     *            the desired view mode
-     */
-    public void setViewMode(boolean viewMode) {
-        if (getSelectedItem() != null) {
-            editForm.setViewMode(viewMode);
-        }
-    }
-
+	/**
+	 * Sets the mode of the screen (either view mode or edit mode)
+	 * 
+	 * @param viewMode
+	 *            the desired view mode
+	 */
+	public void setViewMode(boolean viewMode) {
+		if (getSelectedItem() != null) {
+			//editForm.setViewMode(viewMode);
+		}
+	}
 
 }

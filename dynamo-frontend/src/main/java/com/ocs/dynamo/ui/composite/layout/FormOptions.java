@@ -32,12 +32,9 @@ public class FormOptions implements Serializable {
 	private static final long serialVersionUID = 7383335254540591298L;
 
 	/**
-	 * How to display the various attribute groups. The default is PANEL
-	 * (related
-	 * fields are shown in a panel, the panels are placed below each
-	 * other), but it
-	 * can be changed to TABSHEET (related attributes are placed
-	 * on separate tabs)
+	 * How to display the various attribute groups. The default is PANEL (related
+	 * fields are shown in a panel, the panels are placed below each other), but it
+	 * can be changed to TABSHEET (related attributes are placed on separate tabs)
 	 */
 	private AttributeGroupMode attributeGroupMode = AttributeGroupMode.PANEL;
 
@@ -94,20 +91,20 @@ public class FormOptions implements Serializable {
 	 */
 	private boolean hideClearButton;
 
-    /**
-
-     * Whether to open the form in view (read-only) mode
-     */
-    private boolean openInViewMode;
+	/**
+	 * 
+	 * Whether to open the form in view (read-only) mode
+	 */
+	private boolean openInViewMode;
 
 	/**
-	 * Whether to place the button bar at the top of the title label (rather than behind it)
+	 * Whether to place the button bar at the top of the title label (rather than
+	 * behind it)
 	 */
 	private boolean placeButtonBarAtTop;
 
 	/**
-	 * Whether the form is shown as part of a popup - this is normally set by
-	 * the
+	 * Whether the form is shown as part of a popup - this is normally set by the
 	 * framework when appropriate
 	 */
 	private boolean popup;
@@ -118,21 +115,16 @@ public class FormOptions implements Serializable {
 	private boolean preserveSelectedTab;
 
 	/**
-	 * Whether to display the screen in complete read-only mode. Settings
-	 * readOnly
-	 * to true will automatically adapt all other necessary settings
-	 * (e.g. it will
+	 * Whether to display the screen in complete read-only mode. Settings readOnly
+	 * to true will automatically adapt all other necessary settings (e.g. it will
 	 * set "openInViewMode" to true)
 	 */
 	private boolean readOnly;
 
 	/**
-	 * The orientation of the screen (horizontal or vertical). This is relevant
-	 * for
-	 * the split layout. In the HORIZONTAL view the table and form are
-	 * displayed
-	 * next to each other, in the VERTICAL view they are below each
-	 * other
+	 * The orientation of the screen (horizontal or vertical). This is relevant for
+	 * the split layout. In the HORIZONTAL view the table and form are displayed
+	 * next to each other, in the VERTICAL view they are below each other
 	 */
 	private ScreenMode screenMode = ScreenMode.HORIZONTAL;
 
@@ -142,8 +134,8 @@ public class FormOptions implements Serializable {
 	private boolean searchImmediately = true;
 
 	/**
-	 * Whether to display a back button inside an edit form. Usually managed by
-	 * the framework.
+	 * Whether to display a back button inside an edit form. Usually managed by the
+	 * framework.
 	 */
 	private boolean showBackButton;
 
@@ -152,11 +144,11 @@ public class FormOptions implements Serializable {
 	 */
 	private boolean showNextButton;
 
-    /**
-
-     * Whether to display a "previous" buttoninside an edit form
-     */
-    private boolean showPrevButton ;
+	/**
+	 * 
+	 * Whether to display a "previous" button inside an edit form
+	 */
+	private boolean showPrevButton;
 
 	/**
 	 * Whether to include an quick search field
@@ -178,11 +170,11 @@ public class FormOptions implements Serializable {
 	 */
 	private boolean showToggleButton;
 
-    /**
-
-     * Indicates whether table export is allowed (read from system property)
-     */
-    private boolean tableExportAllowed = SystemPropertyUtils.allowTableExport();
+	/**
+	 * 
+	 * Indicates whether table export is allowed (read from system property)
+	 */
+	private boolean tableExportAllowed = SystemPropertyUtils.allowTableExport();
 
 	/**
 	 * The form validation mode
@@ -215,12 +207,14 @@ public class FormOptions implements Serializable {
 		fo.setShowToggleButton(isShowToggleButton());
 		fo.setTableExportAllowed(isTableExportAllowed());
 		fo.setFormNested(isFormNested());
-        fo.setValidationMode(getValidationMode());
-        fo.setConfirmSave(isConfirmSave());
+		fo.setValidationMode(getValidationMode());
+		fo.setConfirmSave(isConfirmSave());
 		return fo;
-	}public AttributeGroupMode getAttributeGroupMode() {
-        return attributeGroupMode;
-    }
+	}
+
+	public AttributeGroupMode getAttributeGroupMode() {
+		return attributeGroupMode;
+	}
 
 	public ScreenMode getScreenMode() {
 		return screenMode;
@@ -238,13 +232,13 @@ public class FormOptions implements Serializable {
 		return confirmClear;
 	}
 
-    public boolean isConfirmSave() {
+	public boolean isConfirmSave() {
 		return confirmSave;
 	}
 
 	public boolean isDetailsTableSearchMode() {
-        return detailsTableSearchMode;
-    }
+		return detailsTableSearchMode;
+	}
 
 	public boolean isDoubleClickSelectAllowed() {
 		return doubleClickSelectAllowed;
@@ -367,9 +361,9 @@ public class FormOptions implements Serializable {
 	}
 
 	public FormOptions setHideAddButton(boolean hideAddButton) {
-        this.hideAddButton = hideAddButton;
-        return this;
-    }
+		this.hideAddButton = hideAddButton;
+		return this;
+	}
 
 	public FormOptions setHideCancelButton(boolean hideCancelButton) {
 		this.hideCancelButton = hideCancelButton;
@@ -402,8 +396,7 @@ public class FormOptions implements Serializable {
 	}
 
 	/**
-	 * Sets the screen to strict read-only modus. Will hide any add buttons and
-	 * set
+	 * Sets the screen to strict read-only modus. Will hide any add buttons and set
 	 * the screen to read only
 	 *
 	 * @param readOnly
@@ -472,9 +465,9 @@ public class FormOptions implements Serializable {
 	}
 
 	public FormOptions setShowToggleButton(boolean showToggleButton) {
-        this.showToggleButton = showToggleButton;
-        return this;
-    }
+		this.showToggleButton = showToggleButton;
+		return this;
+	}
 
 	public FormOptions setTableExportAllowed(boolean tableExportAllowed) {
 		this.tableExportAllowed = tableExportAllowed;

@@ -24,73 +24,71 @@ import com.ocs.dynamo.dao.SortOrder;
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.domain.model.impl.EntityModelFactoryImpl;
+import com.ocs.dynamo.filter.CompareFilter;
 import com.ocs.dynamo.service.TestEntityService;
 import com.ocs.dynamo.test.BaseMockitoTest;
-import com.vaadin.data.util.filter.Compare;
 
 public class EntityListSelectTest extends BaseMockitoTest {
 
-    private EntityModelFactory factory = new EntityModelFactoryImpl();
+	private EntityModelFactory factory = new EntityModelFactoryImpl();
 
-    @Mock
-    private TestEntityService service;
+	@Mock
+	private TestEntityService service;
 
-    @Test
-    public void testAll() {
+	@Test
+	public void testAll() {
 
-        EntityListSelect<Integer, TestEntity> select = new EntityListSelect<>(
-                factory.getModel(TestEntity.class), null, service);
-        Assert.assertEquals(EntityListSelect.SelectMode.ALL, select.getSelectMode());
+		EntityListSelect<Integer, TestEntity> select = new EntityListSelect<>(factory.getModel(TestEntity.class), null,
+				service);
+		Assert.assertEquals(EntityListSelect.SelectMode.ALL, select.getSelectMode());
 
-        Mockito.verify(service).findAll((SortOrder[]) null);
-    }
+		Mockito.verify(service).findAll((SortOrder[]) null);
+	}
 
-    @Test
-    public void testFixed() {
+	@Test
+	public void testFixed() {
 
-        EntityListSelect<Integer, TestEntity> select = new EntityListSelect<>(
-                factory.getModel(TestEntity.class), null, Lists.newArrayList(new TestEntity()));
-        Assert.assertEquals(EntityListSelect.SelectMode.FIXED, select.getSelectMode());
+		EntityListSelect<Integer, TestEntity> select = new EntityListSelect<>(factory.getModel(TestEntity.class), null,
+				Lists.newArrayList(new TestEntity()));
+		Assert.assertEquals(EntityListSelect.SelectMode.FIXED, select.getSelectMode());
 
-        Mockito.verifyZeroInteractions(service);
-    }
+		Mockito.verifyZeroInteractions(service);
+	}
 
-    @Test
-    public void testFilter() {
+	@Test
+	public void testFilter() {
 
-        EntityListSelect<Integer, TestEntity> select = new EntityListSelect<>(
-                factory.getModel(TestEntity.class), null, service, new Compare.Equal("name", "Bob"));
-        Assert.assertEquals(EntityListSelect.SelectMode.FILTERED, select.getSelectMode());
+		EntityListSelect<Integer, TestEntity> select = new EntityListSelect<>(factory.getModel(TestEntity.class), null,
+				service, new CompareFilter<TestEntity>("name", "Bob"));
+		Assert.assertEquals(EntityListSelect.SelectMode.FILTERED, select.getSelectMode());
 
-        Mockito.verify(service).find(Matchers.any(com.ocs.dynamo.filter.Filter.class),
-                Matchers.any(com.ocs.dynamo.dao.SortOrder[].class));
-    }
+		Mockito.verify(service).find(Matchers.any(com.ocs.dynamo.filter.Filter.class),
+				Matchers.any(com.ocs.dynamo.dao.SortOrder[].class));
+	}
 
-    @Test
-    public void testRefreshFiltered() {
+	@Test
+	public void testRefreshFiltered() {
 
-        EntityListSelect<Integer, TestEntity> select = new EntityListSelect<>(
-                factory.getModel(TestEntity.class), null, service, new Compare.Equal("name", "Bob"));
-        Assert.assertEquals(EntityListSelect.SelectMode.FILTERED, select.getSelectMode());
+		EntityListSelect<Integer, TestEntity> select = new EntityListSelect<>(factory.getModel(TestEntity.class), null,
+				service, new CompareFilter<TestEntity>("name", "Bob"));
+		Assert.assertEquals(EntityListSelect.SelectMode.FILTERED, select.getSelectMode());
 
-        select.refresh();
+		select.refresh();
 
-        Mockito.verify(service, Mockito.times(2)).find(
-                Matchers.any(com.ocs.dynamo.filter.Filter.class),
-                Matchers.any(com.ocs.dynamo.dao.SortOrder[].class));
-    }
+		Mockito.verify(service, Mockito.times(2)).find(Matchers.any(com.ocs.dynamo.filter.Filter.class),
+				Matchers.any(com.ocs.dynamo.dao.SortOrder[].class));
+	}
 
-    @Test
-    public void testRefreshAll() {
+	@Test
+	public void testRefreshAll() {
 
-        EntityListSelect<Integer, TestEntity> select = new EntityListSelect<>(
-                factory.getModel(TestEntity.class), null, service, new Compare.Equal("name", "Bob"));
-        Assert.assertEquals(EntityListSelect.SelectMode.FILTERED, select.getSelectMode());
+		EntityListSelect<Integer, TestEntity> select = new EntityListSelect<>(factory.getModel(TestEntity.class), null,
+				service, new CompareFilter<TestEntity>("name", "Bob"));
+		Assert.assertEquals(EntityListSelect.SelectMode.FILTERED, select.getSelectMode());
 
-        select.refresh();
+		select.refresh();
 
-        Mockito.verify(service, Mockito.times(2)).find(
-                Matchers.any(com.ocs.dynamo.filter.Filter.class),
-                Matchers.any(com.ocs.dynamo.dao.SortOrder[].class));
-    }
+		Mockito.verify(service, Mockito.times(2)).find(Matchers.any(com.ocs.dynamo.filter.Filter.class),
+				Matchers.any(com.ocs.dynamo.dao.SortOrder[].class));
+	}
 }

@@ -29,9 +29,9 @@ import com.ocs.dynamo.domain.model.impl.EntityModelFactoryImpl;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.test.BaseMockitoTest;
 import com.ocs.dynamo.test.MockUtil;
-import com.vaadin.data.util.converter.Converter;
-import com.vaadin.data.util.converter.StringToIntegerConverter;
-import com.vaadin.data.util.converter.StringToLongConverter;
+import com.vaadin.data.Converter;
+import com.vaadin.data.converter.StringToIntegerConverter;
+import com.vaadin.data.converter.StringToLongConverter;
 
 public class ConverterFactoryTest extends BaseMockitoTest {
 

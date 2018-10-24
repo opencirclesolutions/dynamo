@@ -35,9 +35,9 @@ import com.vaadin.addon.charts.model.Tooltip;
 import com.vaadin.addon.charts.model.VerticalAlign;
 import com.vaadin.addon.charts.model.XAxis;
 import com.vaadin.addon.charts.model.YAxis;
-import com.vaadin.data.util.converter.Converter.ConversionException;
+import com.vaadin.v7.data.util.converter.Converter.ConversionException;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.CustomField;
+import com.vaadin.v7.ui.CustomField;
 
 /**
  * Custom field for displaying charts

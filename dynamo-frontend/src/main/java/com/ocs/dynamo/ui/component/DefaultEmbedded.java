@@ -20,28 +20,29 @@ import com.vaadin.ui.Embedded;
 import java.io.ByteArrayInputStream;
 
 /**
- * An embedded component that is initialized using a byte array and that can be used to display an
- * image
+ * An embedded component that is initialized using a byte array and that can be
+ * used to display an image
  * 
  * @author bas.rutten
  */
 public class DefaultEmbedded extends Embedded {
 
-    private static final long serialVersionUID = 4282321844504066376L;
+	private static final long serialVersionUID = 4282321844504066376L;
 
-    /**
-     * Constructor
-     * 
-     * @param caption
-     *            the caption of the component
-     * @param bytes
-     *            the bytes that represent the
-     */
-    public DefaultEmbedded(String caption, final byte[] bytes) {
-        super(caption);
-        if (bytes != null) {
-            setSource(new StreamResource((StreamSource) () -> new ByteArrayInputStream(bytes), System.nanoTime() + ".png"));
-        }
-    }
+	/**
+	 * Constructor
+	 * 
+	 * @param caption
+	 *            the caption of the component
+	 * @param bytes
+	 *            the bytes that represent the
+	 */
+	public DefaultEmbedded(String caption, final byte[] bytes) {
+		super(caption);
+		if (bytes != null) {
+			setSource(new StreamResource((StreamSource) () -> new ByteArrayInputStream(bytes),
+					System.nanoTime() + ".png"));
+		}
+	}
 
 }

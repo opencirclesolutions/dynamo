@@ -23,7 +23,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.vaadin.data.util.BeanContainer;
+import com.vaadin.v7.data.util.BeanContainer;
 
 /**
  * @author patrick.deenen@opencircle.solutions

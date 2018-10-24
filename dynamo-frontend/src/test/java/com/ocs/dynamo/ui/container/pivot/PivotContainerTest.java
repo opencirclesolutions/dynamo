@@ -28,8 +28,8 @@ import org.junit.Test;
 
 import com.google.common.collect.Lists;
 import com.ocs.dynamo.ui.container.EnergyUsage;
-import com.vaadin.data.Property;
-import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.v7.data.Property;
+import com.vaadin.v7.data.util.BeanItemContainer;
 
 public class PivotContainerTest {
 

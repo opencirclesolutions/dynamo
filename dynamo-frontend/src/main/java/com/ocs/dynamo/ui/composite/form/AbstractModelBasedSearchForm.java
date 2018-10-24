@@ -21,7 +21,6 @@ import java.util.Map;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
-import com.ocs.dynamo.domain.model.impl.ModelBasedFieldFactory;
 import com.ocs.dynamo.exception.OCSValidationException;
 import com.ocs.dynamo.filter.listener.FilterChangeEvent;
 import com.ocs.dynamo.filter.listener.FilterListener;
@@ -31,16 +30,14 @@ import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
-import com.vaadin.data.Container.Filter;
-import com.vaadin.data.util.filter.And;
-import com.vaadin.data.util.filter.Or;
 import com.vaadin.event.Action;
 import com.vaadin.event.Action.Handler;
 import com.vaadin.event.ShortcutAction;
-import com.vaadin.server.FontAwesome;
+import com.vaadin.icons.VaadinIcons;
+import com.vaadin.server.SerializablePredicate;
+import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Field;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.Notification;
@@ -67,7 +64,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	 * Any filters that will always be applied to any search query (use these to
 	 * restrict the result set beforehand)
 	 */
-	private List<Filter> defaultFilters = new ArrayList<>();
+	private List<SerializablePredicate<T>> defaultFilters = new ArrayList<>();
 
 	/**
 	 * Button to clear the search form
@@ -77,12 +74,12 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	/**
 	 * The list of currently active search filters
 	 */
-	private List<Filter> currentFilters = new ArrayList<>();
+	private List<SerializablePredicate<T>> currentFilters = new ArrayList<>();
 
 	/**
 	 * Field factory used for constructing search fields
 	 */
-	private ModelBasedFieldFactory<T> fieldFactory;
+	// private ModelBasedFieldFactory<T> fieldFactory;
 
 	/**
 	 * The layout that holds the various filters
@@ -90,10 +87,9 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	private Layout filterLayout;
 
 	/**
-	 * The object that will be searched when the user presses the "Search"
-	 * button
+	 * The object that will be searched when the user presses the "Search" button
 	 */
-	private Searchable searchable;
+	private Searchable<T> searchable;
 
 	/**
 	 * The "search" button
@@ -131,26 +127,25 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	 * @param defaultFilters
 	 * @param fieldFilters
 	 */
-	public AbstractModelBasedSearchForm(Searchable searchable, EntityModel<T> entityModel, FormOptions formOptions,
-			List<Filter> defaultFilters, Map<String, Filter> fieldFilters) {
+	public AbstractModelBasedSearchForm(Searchable<T> searchable, EntityModel<T> entityModel, FormOptions formOptions,
+			List<SerializablePredicate<T>> defaultFilters, Map<String, SerializablePredicate<?>> fieldFilters) {
 		super(formOptions, fieldFilters, entityModel);
-		this.fieldFactory = ModelBasedFieldFactory.getSearchInstance(entityModel, getMessageService());
+		// this.fieldFactory = ModelBasedFieldFactory.getSearchInstance(entityModel,
+		// getMessageService());
 		this.defaultFilters = defaultFilters == null ? new ArrayList<>() : defaultFilters;
 		this.currentFilters.addAll(this.defaultFilters);
 		this.searchable = searchable;
 	}
 
 	/**
-	 * Callback method that is called after a successful search has been
-	 * performed
+	 * Callback method that is called after a successful search has been performed
 	 */
 	protected void afterSearchPerformed() {
 		// override in subclasses
 	}
 
 	/**
-	 * Callback method that is called when the user toggles the visibility of
-	 * the
+	 * Callback method that is called when the user toggles the visibility of the
 	 * search form
 	 *
 	 * @param visible
@@ -259,18 +254,18 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	 */
 	protected abstract void constructButtonBar(Layout buttonBar);
 
-    /**
-     * Constructs the "clear" button
-     * 
-     * @return
-     */
-    protected Button constructClearButton() {
-        clearButton = new Button(message("ocs.clear"));
-        clearButton.setIcon(FontAwesome.ERASER);clearButton.setImmediate(true);
-        clearButton.addClickListener(this);
-        clearButton.setVisible(!getFormOptions().isHideClearButton());
-        return clearButton;
-    }
+	/**
+	 * Constructs the "clear" button
+	 * 
+	 * @return
+	 */
+	protected Button constructClearButton() {
+		clearButton = new Button(message("ocs.clear"));
+		clearButton.setIcon(VaadinIcons.ERASER);
+		clearButton.addClickListener(this);
+		clearButton.setVisible(!getFormOptions().isHideClearButton());
+		return clearButton;
+	}
 
 	/**
 	 * Creates a custom field - override in subclasses if needed
@@ -278,12 +273,11 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	 * @param entityModel
 	 *            the entity model of the entity to search for
 	 * @param attributeModel
-	 *            the attribute model the attribute model of the property that
-	 *            is
+	 *            the attribute model the attribute model of the property that is
 	 *            bound to the field
 	 * @return
 	 */
-	protected Field<?> constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel) {
+	protected AbstractField<?> constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel) {
 		return null;
 	}
 
@@ -294,63 +288,69 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	 */
 	protected abstract Layout constructFilterLayout();
 
-    /**
-     * Constructs the "search" button
-     * 
-     * @return
-     */
-    protected Button constructSearchButton() {
-        searchButton = new Button(message("ocs.search"));
-        searchButton.setIcon(FontAwesome.SEARCH);searchButton.setImmediate(true);
-        searchButton.addClickListener(this);
-        return searchButton;
-    }
+	/**
+	 * Constructs the "search" button
+	 * 
+	 * @return
+	 */
+	protected Button constructSearchButton() {
+		searchButton = new Button(message("ocs.search"));
+		searchButton.setIcon(VaadinIcons.SEARCH);
+		// searchButton.setImmediate(true);
+		searchButton.addClickListener(this);
+		return searchButton;
+	}
 
-    /**
-     * Constructs the "toggle" button
-     * 
-     * @return
-     */
-    protected Button constructToggleButton() {
-        toggleButton = new Button(message("ocs.hide"));
-        toggleButton.setIcon(FontAwesome.ARROWS_V);toggleButton.addClickListener(this);
-        toggleButton.setVisible(getFormOptions().isShowToggleButton());
-        return toggleButton;
-    }
+	/**
+	 * Constructs the "toggle" button
+	 * 
+	 * @return
+	 */
+	protected Button constructToggleButton() {
+		toggleButton = new Button(message("ocs.hide"));
+		toggleButton.setIcon(VaadinIcons.ARROWS);
+		toggleButton.addClickListener(this);
+		toggleButton.setVisible(getFormOptions().isShowToggleButton());
+		return toggleButton;
+	}
 
-    protected Button constructSearchAnyButton() {
-        searchAnyButton = new Button(message("ocs.search.any"));
-        searchAnyButton.setIcon(FontAwesome.SEARCH);searchAnyButton.setVisible(getFormOptions().isShowSearchAnyButton());
-        searchAnyButton.addClickListener(this);
-        return searchAnyButton;
-    }
+	protected Button constructSearchAnyButton() {
+		searchAnyButton = new Button(message("ocs.search.any"));
+		searchAnyButton.setIcon(VaadinIcons.SEARCH);
+		searchAnyButton.setVisible(getFormOptions().isShowSearchAnyButton());
+		searchAnyButton.addClickListener(this);
+		return searchAnyButton;
+	}
 
-	public Filter extractFilter() {
+	public SerializablePredicate<T> extractFilter() {
 		return extractFilter(false);
 	}
 
-	private Filter extractFilter(boolean matchAny) {
-		if (!currentFilters.isEmpty()) {
-			Filter defaultFilter = null;
-			if (!defaultFilters.isEmpty()) {
-				defaultFilter = new And(defaultFilters.toArray(new Filter[0]));
-			}
-			List<Filter> customFilters = new ArrayList<>(currentFilters);
-			customFilters.removeAll(defaultFilters);
-			if (currentFilters.isEmpty()) {
-				return defaultFilter;
-			}
-			Filter currentFilter = matchAny ? new Or(currentFilters.toArray(new Filter[0]))
-					: new And(currentFilters.toArray(new Filter[0]));
-			if (defaultFilter != null) {
-				return new And(defaultFilter, currentFilter);
-			}
-			return currentFilter;
-		}
+	private SerializablePredicate<T> extractFilter(boolean matchAny) {
+		// if (!currentFilters.isEmpty()) {
+		// SerializablePredicate<T> defaultFilter = null;
+		// if (!defaultFilters.isEmpty()) {
+		// defaultFilter = defaultFilters.toArray(new SerializablePredicate[0]);
+		// }
+		// List<SerializablePredicate<T>> customFilters = new
+		// ArrayList<>(currentFilters);
+		// customFilters.removeAll(defaultFilters);
+		// if (currentFilters.isEmpty()) {
+		// return defaultFilter;
+		// }
+		// SerializablePredicate<T> currentFilter = matchAny ? new
+		// Or(currentFilters.toArray(new Filter[0]))
+		// : new And(currentFilters.toArray(new SerializablePredicate<T>[0]));
+		// if (defaultFilter != null) {
+		// return new And(defaultFilter, currentFilter);
+		// }
+		// return currentFilter;
+		// }
+		// return null;
 		return null;
 	}
 
-	public List<Filter> getDefaultFilters() {
+	public List<SerializablePredicate<T>> getDefaultFilters() {
 		return defaultFilters;
 	}
 
@@ -362,19 +362,19 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 		return clearButton;
 	}
 
-	public List<Filter> getCurrentFilters() {
+	public List<SerializablePredicate<T>> getCurrentFilters() {
 		return currentFilters;
 	}
 
-	public ModelBasedFieldFactory<T> getFieldFactory() {
-		return fieldFactory;
-	}
+	// public ModelBasedFieldFactory<T> getFieldFactory() {
+	// return fieldFactory;
+	// }
 
 	public Layout getFilterLayout() {
 		return filterLayout;
 	}
 
-	public Searchable getSearchable() {
+	public Searchable<T> getSearchable() {
 		return searchable;
 	}
 
@@ -394,10 +394,10 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	 * @return
 	 */
 	public boolean isFilterSet(String path) {
-		for (Filter filter : currentFilters) {
-			if (filter.appliesToProperty(path)) {
-				return true;
-			}
+		for (SerializablePredicate<T> filter : currentFilters) {
+			// if (filter.appliesToProperty(path)) {
+			return true;
+			// }
 		}
 		return false;
 	}
@@ -411,8 +411,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	}
 
 	/**
-	 * Searching is allowed when there are no required attributes or all
-	 * required
+	 * Searching is allowed when there are no required attributes or all required
 	 * attributes are in the composite filter.
 	 *
 	 * @return
@@ -429,8 +428,10 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 			return false;
 		}
 
-		int matches = (int) requiredAttributes.stream()
-				.filter(am -> currentFilters.stream().anyMatch(f -> f.appliesToProperty(am.getPath()))).count();
+		// int matches = (int) requiredAttributes.stream()
+		// .filter(am -> currentFilters.stream().anyMatch(f ->
+		// f.appliesToProperty(am.getPath()))).count();
+		int matches = 0;
 		return matches == requiredAttributes.size();
 	}
 
@@ -438,22 +439,22 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 		// overwrite in subclass
 	}
 
-    /**
-     * Responds to a filter change
-     */
-    @Override
-    public void onFilterChange(FilterChangeEvent event) {
-        AttributeModel am = getEntityModel().getAttributeModel(event.getPropertyId());
+	/**
+	 * Responds to a filter change
+	 */
+	@Override
+	public void onFilterChange(FilterChangeEvent event) {
+		AttributeModel am = getEntityModel().getAttributeModel(event.getPropertyId());
 		if (am == null || !am.isTransient()) {
 			if (event.getOldFilter() != null) {
 				currentFilters.remove(event.getOldFilter());
 			}
 			if (event.getNewFilter() != null) {
-				currentFilters.add(event.getNewFilter());
+				// currentFilters.add(event.getNewFilter());
 			}
-        }
-        searchButton.setEnabled(isSearchAllowed());
-    }
+		}
+		searchButton.setEnabled(isSearchAllowed());
+	}
 
 	/**
 	 * Callback method that allows the user to modify the button bar
@@ -475,8 +476,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	}
 
 	/**
-	 * Pre-process the layout - this method is called directly after the main
-	 * layout
+	 * Pre-process the layout - this method is called directly after the main layout
 	 * has been created
 	 *
 	 * @param main
@@ -512,12 +512,9 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	 * @param skipValidation
 	 *            whether to skip validation before searching
 	 * @param matchAny
-	 *            whether the search is an 'Or' search or an 'And' search. Where
-	 *            in
-	 *            the former all results matching any predicate are returned
-	 *            and in
-	 *            the latter case all results matching all predicates are
-	 *            returned.
+	 *            whether the search is an 'Or' search or an 'And' search. Where in
+	 *            the former all results matching any predicate are returned and in
+	 *            the latter case all results matching all predicates are returned.
 	 *
 	 * @return
 	 */
@@ -552,7 +549,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	 * @param searchable
 	 *            the searchable
 	 */
-	public void setSearchable(Searchable searchable) {
+	public void setSearchable(Searchable<T> searchable) {
 		this.searchable = searchable;
 	}
 
@@ -572,7 +569,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 		afterSearchFieldToggle(wrapperPanel.isVisible());
 	}
 
-	public void setDefaultFilters(List<Filter> defaultFilters) {
+	public void setDefaultFilters(List<SerializablePredicate<T>> defaultFilters) {
 		this.defaultFilters = defaultFilters;
 	}
 

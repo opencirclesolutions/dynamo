@@ -11,6 +11,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.ocs.dynamo.dao.SortOrder;
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
@@ -45,8 +46,8 @@ public class FancyListSelectTest extends BaseMockitoTest {
 		t2 = new TestEntity(2, "Bob", 13L);
 		t3 = new TestEntity(3, "Stewart", 14L);
 
-		Mockito.when(service.find(Matchers.any(Filter.class), (SortOrder[]) Matchers.anyVararg())).thenReturn(
-		        Lists.newArrayList(t1, t2, t3));
+		Mockito.when(service.find(Matchers.any(Filter.class), (SortOrder[]) Matchers.anyVararg()))
+				.thenReturn(Lists.newArrayList(t1, t2, t3));
 
 		Mockito.when(service.createNewEntity()).thenReturn(new TestEntity());
 		MockUtil.mockServiceSave(service, TestEntity.class);
@@ -61,14 +62,14 @@ public class FancyListSelectTest extends BaseMockitoTest {
 		AttributeModel am = factory.getModel(TestEntity.class).getAttributeModel("name");
 		EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
 
-		FancyListSelect<Integer, TestEntity> select = new FancyListSelect<>(service,
-		        factory.getModel(TestEntity.class), am, null, false);
+		FancyListSelect<Integer, TestEntity> select = new FancyListSelect<>(service, factory.getModel(TestEntity.class),
+				am, null, false);
 		select.initContent();
 
 		Assert.assertEquals(am, select.getAttributeModel());
 		Assert.assertEquals(em, select.getEntityModel());
 
-		Assert.assertEquals(3, select.getComboBox().getContainerDataSource().size());
+		Assert.assertEquals(3, select.getComboBox().getDataProviderSize());
 
 		select.getComboBox().setValue(t1);
 		select.getSelectButton().click();
@@ -78,7 +79,7 @@ public class FancyListSelectTest extends BaseMockitoTest {
 		Assert.assertTrue(col.contains(t1));
 
 		// test the removal of a value
-		select.getListSelect().setValue(Lists.newArrayList(t1));
+		select.getListSelect().setValue(Sets.newHashSet(t1));
 		select.getRemoveButton().click();
 
 		col = (Collection<TestEntity>) select.getValue();
@@ -108,22 +109,23 @@ public class FancyListSelectTest extends BaseMockitoTest {
 		EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
 		AttributeModel am = em.getAttributeModel("testDomain");
 
-		FancyListSelect<Integer, TestEntity> select = new FancyListSelect<>(service,
-		        factory.getModel(TestEntity.class), am, null, false);
+		FancyListSelect<Integer, TestEntity> select = new FancyListSelect<>(service, factory.getModel(TestEntity.class),
+				am, null, false);
 		select.initContent();
 		MockUtil.injectUI(select, ui);
 
-		Assert.assertEquals(3, select.getComboBox().getContainerDataSource().size());
+		Assert.assertEquals(3, select.getComboBox().getDataProviderSize());
 
 		// bring up the add dialog
 		addNewValue(select, "New Item");
 
 		// check that a new item has been added
-		Assert.assertEquals(4, select.getComboBox().getContainerDataSource().size());
+		Assert.assertEquals(4, select.getComboBox().getDataProviderSize());
 	}
 
 	/**
-	 * Test the addition of a new value that is too long (will result in an exception)
+	 * Test the addition of a new value that is too long (will result in an
+	 * exception)
 	 */
 	@Test
 	public void testAddTooLong() {
@@ -134,12 +136,12 @@ public class FancyListSelectTest extends BaseMockitoTest {
 		select.initContent();
 		MockUtil.injectUI(select, ui);
 
-		Assert.assertEquals(3, select.getComboBox().getContainerDataSource().size());
+		Assert.assertEquals(3, select.getComboBox().getDataProviderSize());
 
 		// bring up the add dialog and add a value that is too long
 		addNewValue(select, "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
 
-		Assert.assertEquals(3, select.getComboBox().getContainerDataSource().size());
+		Assert.assertEquals(3, select.getComboBox().getDataProviderSize());
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })

@@ -5,25 +5,28 @@ import java.math.BigDecimal;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class BigDecimalToDoubleConverterTest {
+import com.ocs.dynamo.exception.OCSRuntimeException;
+import com.vaadin.data.Result;
+
+public class BigDecimalToDoubleConverterTest extends BaseConverterTest {
 
 	@Test
 	public void testConvertToModel() {
 		BigDecimalToDoubleConverter converter = new BigDecimalToDoubleConverter();
 
-		Assert.assertNull(converter.convertToModel(null, BigDecimal.class, null));
+		Assert.assertNull(converter.convertToModel(null, createContext()).getOrThrow(r -> new OCSRuntimeException()));
 
-		BigDecimal bd = converter.convertToModel(1.2, BigDecimal.class, null);
-		Assert.assertEquals(1.2, bd.doubleValue(), 0.001);
+		Result<BigDecimal> bd = converter.convertToModel(1.2, createContext());
+		Assert.assertEquals(1.2, bd.getOrThrow(r -> new OCSRuntimeException()).doubleValue(), 0.001);
 	}
 
 	@Test
 	public void testConvertToPresentation() {
 		BigDecimalToDoubleConverter converter = new BigDecimalToDoubleConverter();
 
-		Assert.assertNull(converter.convertToPresentation(null, Double.class, null));
+		Assert.assertNull(converter.convertToPresentation(null, createContext()));
 
-		Double d = converter.convertToPresentation(BigDecimal.valueOf(7.01), Double.class, null);
+		Double d = converter.convertToPresentation(BigDecimal.valueOf(7.01), createContext());
 		Assert.assertEquals(7.01, d, 0.001);
 	}
 }

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.dynamoframework</groupId>
 	<artifactId>dynamo-parent</artifactId>
@@ -77,16 +78,17 @@
 		<module>dynamo-api</module>
 		<module>dynamo-impl</module>
 		<module>dynamo-test</module>
-		<module>dynamo-envers</module>
 		<module>dynamo-integration-camel</module>
 		<module>dynamo-integration-import</module>
-		<module>dynamo-frontend</module>
-		<module>dynamo-frontend-charts</module>		
 		<module>dynamo-functional-domain</module>
-		<module>dynamo-functional-domain-frontend</module>
+		<module>dynamo-frontend</module>
+		<!-- <module>dynamo-envers</module> -->
+		<!-- <module>dynamo-frontend-charts</module>-->
+		<!--  <module>dynamo-functional-domain-frontend</module>
 		<module>dynamo-functional-translation</module>
 		<module>dynamo-jasperreports</module>
 		<module>dynamo-jasperreports-fixes</module>
+		-->
 	</modules>
 	<properties>
 		<!-- Build settings. -->
@@ -96,17 +98,17 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
 		<!-- Dependency versions. -->
-		<vaadin.version>7.7.15</vaadin.version>
+		<vaadin.version>8.5.2</vaadin.version>
 		<vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
 		<vaadin.lazycontainer.version>7.6.1.3</vaadin.lazycontainer.version>
 		<vaadin-spring.version>1.2.0</vaadin-spring.version>
-		<vaadin.charts.version>3.2.1</vaadin.charts.version>		
-		<tableexport-for-vaadin.version>1.5.1.5</tableexport-for-vaadin.version>
-		<vaadin.confirmdialog.version>2.1.3</vaadin.confirmdialog.version>
+		<vaadin.charts.version>4.0.5</vaadin.charts.version>
+		<!-- <tableexport-for-vaadin.version>1.5.1.5</tableexport-for-vaadin.version> -->
+		<vaadin.confirmdialog.version>3.2.0</vaadin.confirmdialog.version>
 		<hibernate.version>4.3.2.Final</hibernate.version>
 		<hibernate.validator.version>4.3.2.Final</hibernate.validator.version>
 		<hibernate.jpa20.api.version>1.0.1.Final</hibernate.jpa20.api.version>
-		<spring.version>4.3.18.RELEASE</spring.version>
+		<spring.version>4.3.19.RELEASE</spring.version>
 		<querydsl.version>3.7.4</querydsl.version>
 		<slf4j.version>1.7.25</slf4j.version>
 		<log4j.version>1.2.17</log4j.version>
@@ -140,7 +142,7 @@
 		<github-release-plugin.version>1.1.1</github-release-plugin.version>
 		<!-- Make sure you are using the latest version here. -->
 		<org.sonatype.plugins.version>1.6.7</org.sonatype.plugins.version>
-		<vaadin.extended-token-field.version>0.2.0</vaadin.extended-token-field.version>
+		<vaadin.extended-token-field.version>0.3.0</vaadin.extended-token-field.version>
 	</properties>
 
 	<dependencyManagement>
@@ -153,29 +155,34 @@
 			</dependency>
 			<dependency>
 				<groupId>com.vaadin</groupId>
+				<artifactId>vaadin-compatibility-server</artifactId>
+				<version>${vaadin.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.vaadin</groupId>
 				<artifactId>vaadin-client-compiled</artifactId>
 				<version>${vaadin.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.vaadin</groupId>
+				<artifactId>vaadin-icons</artifactId>
+				<version>3.0.1</version>
 			</dependency>
 			<dependency>
 				<groupId>com.vaadin</groupId>
 				<artifactId>vaadin-themes</artifactId>
 				<version>${vaadin.version}</version>
 			</dependency>
-			<dependency>
-				<groupId>org.vaadin.addons.lazyquerycontainer</groupId>
-				<artifactId>vaadin-lazyquerycontainer</artifactId>
-				<version>${vaadin.lazycontainer.version}</version>
-			</dependency>
+			<!-- <dependency> <groupId>org.vaadin.addons.lazyquerycontainer</groupId> 
+				<artifactId>vaadin-lazyquerycontainer</artifactId> <version>${vaadin.lazycontainer.version}</version> 
+				</dependency> -->
 			<dependency>
 				<groupId>com.vaadin</groupId>
 				<artifactId>vaadin-spring</artifactId>
 				<version>${vaadin-spring.version}</version>
 			</dependency>
-			<dependency>
-				<groupId>org.vaadin.addon</groupId>
-				<artifactId>tableexport-for-vaadin</artifactId>
-				<version>${tableexport-for-vaadin.version}</version>
-			</dependency>
+			<!-- <dependency> <groupId>org.vaadin.addon</groupId> <artifactId>tableexport-for-vaadin</artifactId> 
+				<version>${tableexport-for-vaadin.version}</version> </dependency> -->
 			<dependency>
 				<groupId>org.vaadin.addon</groupId>
 				<artifactId>confirmdialog</artifactId>
@@ -191,21 +198,23 @@
 				<artifactId>gantt-addon</artifactId>
 				<version>0.9.4</version>
 			</dependency>
+			<!--  
 			<dependency>
 				<groupId>com.vaadin.addon</groupId>
 				<artifactId>vaadin-charts</artifactId>
 				<version>${vaadin.charts.version}</version>
 			</dependency>
+			-->
 			<dependency>
-			   <groupId>org.vaadin.teemu</groupId>
-			   <artifactId>switch</artifactId>
-			   <version>2.0.3</version>
-			</dependency>	
+				<groupId>org.vaadin.teemu</groupId>
+				<artifactId>switch</artifactId>
+				<version>3.0.0</version>
+			</dependency>
 			<dependency>
 				<groupId>com.vaadin.addon</groupId>
 				<artifactId>vaadin-charts</artifactId>
 				<version>${vaadin.charts.version}</version>
-			</dependency>					
+			</dependency>
 			<!-- Bean Validation API -->
 			<dependency>
 				<groupId>javax.validation</groupId>
@@ -331,8 +340,8 @@
 				<groupId>org.hibernate</groupId>
 				<artifactId>hibernate-envers</artifactId>
 				<version>${hibernate.version}</version>
-				<scope>provided</scope>				
-			</dependency>				
+				<scope>provided</scope>
+			</dependency>
 			<dependency>
 				<groupId>org.hibernate</groupId>
 				<artifactId>hibernate-validator</artifactId>
@@ -705,8 +714,8 @@
 					<version>${vaadin.plugin.version}</version>
 					<configuration>
 						<extraJvmArgs>-Xmx512M -Xss1024k</extraJvmArgs>
-						<!--<webappDirectory>${project.basedir}/target/classes/VAADIN/widgetsets</webappDirectory>-->
-						 <webappDirectory>${project.basedir}/src/main/resources/VAADIN/widgetsets</webappDirectory>
+						<!--<webappDirectory>${project.basedir}/target/classes/VAADIN/widgetsets</webappDirectory> -->
+						<webappDirectory>${project.basedir}/src/main/resources/VAADIN/widgetsets</webappDirectory>
 						<hostedWebapp>${project.basedir}/src/main/resources/VAADIN/widgetsets</hostedWebapp>
 						<compileReport>false</compileReport>
 						<draftCompile>false</draftCompile>
@@ -717,7 +726,7 @@
 						<execution>
 							<goals>
 								<goal>resources</goal>
-								<!--<goal>update-theme</goal>-->
+								<!--<goal>update-theme</goal> -->
 								<goal>compile</goal>
 							</goals>
 						</execution>

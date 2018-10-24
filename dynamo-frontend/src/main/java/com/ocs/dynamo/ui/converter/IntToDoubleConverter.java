@@ -13,12 +13,12 @@
  */
 package com.ocs.dynamo.ui.converter;
 
-import java.util.Locale;
-
-import com.vaadin.data.util.converter.Converter;
+import com.vaadin.data.Converter;
+import com.vaadin.data.Result;
+import com.vaadin.data.ValueContext;
 
 /**
- * Converter for converting between integers and doubles - used to be able to use
+ * Converter for converting between integers and doubles
  * 
  * @author bas.rutten
  *
@@ -28,29 +28,18 @@ public class IntToDoubleConverter implements Converter<Double, Integer> {
 	private static final long serialVersionUID = -7643776654167662622L;
 
 	@Override
-	public Integer convertToModel(Double value, Class<? extends Integer> targetType, Locale locale) {
+	public Result<Integer> convertToModel(Double value, ValueContext context) {
 		if (value == null) {
 			return null;
 		}
-		return value.intValue();
+		return Result.ok(value.intValue());
 	}
 
 	@Override
-	public Double convertToPresentation(Integer value, Class<? extends Double> targetType, Locale locale) {
+	public Double convertToPresentation(Integer value, ValueContext context) {
 		if (value == null) {
 			return null;
 		}
 		return value.doubleValue();
 	}
-
-	@Override
-	public Class<Integer> getModelType() {
-		return Integer.class;
-	}
-
-	@Override
-	public Class<Double> getPresentationType() {
-		return Double.class;
-	}
-
 }

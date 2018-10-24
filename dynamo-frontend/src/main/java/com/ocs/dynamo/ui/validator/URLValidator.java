@@ -17,15 +17,17 @@ import java.net.MalformedURLException;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.vaadin.data.ValidationResult;
 import com.vaadin.data.Validator;
+import com.vaadin.data.ValueContext;
 
 /**
- * Vaadin validator for checking if an field value is a vallid URL
+ * Vaadin validator for checking if an field value is a valid URL
  * 
  * @author bas.rutten
  *
  */
-public class URLValidator implements Validator {
+public class URLValidator implements Validator<String> {
 
 	private static final String URL_PREFIX_SECURE = "https://";
 
@@ -45,9 +47,9 @@ public class URLValidator implements Validator {
 	}
 
 	@Override
-	public void validate(Object value) {
+	public ValidationResult apply(String value, ValueContext context) {
 		if (value == null || "".equals(value)) {
-			return;
+			return ValidationResult.ok();
 		}
 
 		String str = (String) value;
@@ -58,13 +60,15 @@ public class URLValidator implements Validator {
 		try {
 			new java.net.URL(str);
 		} catch (MalformedURLException ex) {
-			throw new InvalidValueException(message);
+			return ValidationResult.error(message);
 		}
 
 		// assume at least 2 dots
 		if (StringUtils.countMatches(str, ".") < 2) {
-			throw new InvalidValueException(message);
+			return ValidationResult.error(message);
 		}
+
+		return ValidationResult.ok();
 	}
 
 }

@@ -30,8 +30,8 @@ import com.ocs.dynamo.service.ServiceLocator;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
 import com.ocs.dynamo.utils.ClassUtils;
-import com.vaadin.data.Container.Filter;
-import com.vaadin.ui.Field;
+import com.vaadin.v7.data.Container.Filter;
+import com.vaadin.v7.ui.Field;
 
 /**
  * This factory can be used to generate TranslationTable objects for attributes in fields which have to be dynamically

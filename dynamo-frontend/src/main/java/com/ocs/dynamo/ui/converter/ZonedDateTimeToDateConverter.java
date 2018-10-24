@@ -16,10 +16,11 @@ package com.ocs.dynamo.ui.converter;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Date;
-import java.util.Locale;
 
 import com.ocs.dynamo.utils.DateUtils;
-import com.vaadin.data.util.converter.Converter;
+import com.vaadin.data.Converter;
+import com.vaadin.data.Result;
+import com.vaadin.data.ValueContext;
 
 /**
  * 
@@ -31,28 +32,19 @@ public class ZonedDateTimeToDateConverter implements Converter<Date, ZonedDateTi
 	private static final long serialVersionUID = -830307549693107753L;
 
 	@Override
-	public ZonedDateTime convertToModel(Date value, Class<? extends ZonedDateTime> targetType, Locale locale) {
+	public Result<ZonedDateTime> convertToModel(Date value, ValueContext context) {
 		if (value == null) {
 			return null;
 		}
-		return DateUtils.convertSQLDate(value).toInstant().atZone(ZoneId.systemDefault());
+		return Result.ok(DateUtils.convertSQLDate(value).toInstant().atZone(ZoneId.systemDefault()));
 	}
 
 	@Override
-	public Date convertToPresentation(ZonedDateTime value, Class<? extends Date> targetType, Locale locale) {
+	public Date convertToPresentation(ZonedDateTime value, ValueContext context) {
 		if (value == null) {
 			return null;
 		}
 		return Date.from(value.toInstant());
 	}
 
-	@Override
-	public Class<ZonedDateTime> getModelType() {
-		return ZonedDateTime.class;
-	}
-
-	@Override
-	public Class<Date> getPresentationType() {
-		return Date.class;
-	}
 }

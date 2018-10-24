@@ -1,38 +1,47 @@
 package com.ocs.dynamo.ui.validator;
 
+import static org.junit.Assert.assertTrue;
+
+import org.junit.Assert;
 import org.junit.Test;
 
-import com.vaadin.data.Validator.InvalidValueException;
+import com.vaadin.data.ValidationResult;
+import com.vaadin.data.ValueContext;
 
 public class URLValidatorTest {
 
-	@Test(expected = InvalidValueException.class)
+	@Test
 	public void testFalse1() {
 		URLValidator validator = new URLValidator("Not a valid URL");
-		validator.validate("test");
+		ValidationResult result = validator.apply("test", new ValueContext());
+		Assert.assertTrue(result.isError());
 	}
 
-	@Test(expected = InvalidValueException.class)
+	@Test()
 	public void testFalse2() {
 		URLValidator validator = new URLValidator("Not a valid URL");
-		validator.validate("44");
+		ValidationResult result = validator.apply("44", new ValueContext());
+		Assert.assertTrue(result.isError());
 	}
 
 	@Test
 	public void testCorrect1() {
 		URLValidator validator = new URLValidator("Not a valid URL");
-		validator.validate("http://www.google.nl");
+		ValidationResult result = validator.apply("http://www.google.nl", new ValueContext());
+		Assert.assertFalse(result.isError());
 	}
 
 	@Test
 	public void testCorrect2() {
 		URLValidator validator = new URLValidator("Not a valid URL");
-		validator.validate("www.google.nl");
+		ValidationResult result = validator.apply("www.google.nl", new ValueContext());
+		Assert.assertFalse(result.isError());
 	}
 
 	@Test
 	public void testCorrect3() {
 		URLValidator validator = new URLValidator("Not a valid URL");
-		validator.validate("mijn.site.nl");
+		ValidationResult result = validator.apply("mijn.site.nl", new ValueContext());
+		Assert.assertFalse(result.isError());
 	}
 }

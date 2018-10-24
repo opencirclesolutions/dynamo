@@ -17,8 +17,8 @@ import java.util.Locale;
 
 import org.apache.log4j.Logger;
 
-import com.vaadin.event.FieldEvents.TextChangeEvent;
-import com.vaadin.ui.Table;
+import com.vaadin.v7.event.FieldEvents.TextChangeEvent;
+import com.vaadin.v7.ui.Table;
 
 /**
  * A template for handling a paste into a text field. The template will try to split up the input

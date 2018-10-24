@@ -21,8 +21,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import com.vaadin.data.Container;
-import com.vaadin.data.Item;
+import com.vaadin.v7.data.Container;
+import com.vaadin.v7.data.Item;
 
 /**
  * @author Patrick Deenen

@@ -24,9 +24,9 @@ import org.apache.commons.lang.StringUtils;
 
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.filter.FilterUtil;
-import com.vaadin.data.Container;
-import com.vaadin.data.Container.Filter;
-import com.vaadin.data.util.AbstractBeanContainer;
+import com.vaadin.v7.data.Container;
+import com.vaadin.v7.data.Container.Filter;
+import com.vaadin.v7.data.util.AbstractBeanContainer;
 
 import net.sf.jasperreports.engine.JRField;
 import net.sf.jasperreports.engine.JRParameter;

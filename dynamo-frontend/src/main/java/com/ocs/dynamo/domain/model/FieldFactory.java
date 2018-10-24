@@ -15,9 +15,9 @@ package com.ocs.dynamo.domain.model;
 
 import java.util.Map;
 
-import com.vaadin.data.Container;
-import com.vaadin.data.Container.Filter;
-import com.vaadin.ui.Field;
+import com.vaadin.data.provider.DataProvider;
+import com.vaadin.server.SerializablePredicate;
+import com.vaadin.ui.AbstractField;
 
 /**
  * Interface for model based component factories
@@ -28,20 +28,20 @@ import com.vaadin.ui.Field;
 public interface FieldFactory {
 
 	/**
-	 * The context for field generation, all fields are optional, but one should provide as many as possible.
 	 * 
-	 * @author patrickdeenen
+	 * @author Bas Rutten
 	 *
+	 * @param <T>
 	 */
-	public interface Context {
+	public interface Context<T> {
 
-		Container getContainer();
+		DataProvider<T, SerializablePredicate<T>> getDataProvider();
 
 		AttributeModel getAttributeModel();
 
-		Map<String, Filter> getFieldFilters();
+		Map<String, SerializablePredicate<T>> getFieldFilters();
 
-		<T> EntityModel<T> getFieldEntityModel();
+		<U> EntityModel<U> getFieldEntityModel();
 
 		<P> P getParentEntity();
 
@@ -58,6 +58,6 @@ public interface FieldFactory {
 	 *            the generation context
 	 * @return
 	 */
-	Field<?> constructField(Context context);
+	AbstractField<?> constructField(Context<?> context);
 
 }

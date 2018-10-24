@@ -16,10 +16,11 @@ package com.ocs.dynamo.ui.converter;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
-import java.util.Locale;
 
 import com.ocs.dynamo.ui.utils.VaadinUtils;
-import com.vaadin.data.util.converter.Converter;
+import com.vaadin.data.Converter;
+import com.vaadin.data.Result;
+import com.vaadin.data.ValueContext;
 import com.vaadin.ui.UI;
 
 /**
@@ -33,16 +34,7 @@ public class LocalDateToDateConverter implements Converter<Date, LocalDate> {
 	private static final long serialVersionUID = -830307549693107753L;
 
 	@Override
-	public LocalDate convertToModel(Date value, Class<? extends LocalDate> targetType, Locale locale) {
-		if (value == null) {
-			return null;
-		}
-		ZoneId tz = VaadinUtils.getTimeZone(UI.getCurrent()).toZoneId();
-		return value.toInstant().atZone(tz).toLocalDate();
-	}
-
-	@Override
-	public Date convertToPresentation(LocalDate value, Class<? extends Date> targetType, Locale locale) {
+	public Date convertToPresentation(LocalDate value, ValueContext context) {
 		if (value == null) {
 			return null;
 		}
@@ -51,13 +43,12 @@ public class LocalDateToDateConverter implements Converter<Date, LocalDate> {
 	}
 
 	@Override
-	public Class<LocalDate> getModelType() {
-		return LocalDate.class;
-	}
-
-	@Override
-	public Class<Date> getPresentationType() {
-		return Date.class;
+	public Result<LocalDate> convertToModel(Date value, ValueContext context) {
+		if (value == null) {
+			return null;
+		}
+		ZoneId tz = VaadinUtils.getTimeZone(UI.getCurrent()).toZoneId();
+		return Result.ok(value.toInstant().atZone(tz).toLocalDate());
 	}
 
 }

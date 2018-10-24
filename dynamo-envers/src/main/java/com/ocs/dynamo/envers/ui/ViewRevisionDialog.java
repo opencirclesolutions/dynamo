@@ -29,11 +29,11 @@ import com.ocs.dynamo.ui.composite.type.AttributeGroupMode;
 import com.ocs.dynamo.ui.composite.type.ScreenMode;
 import com.ocs.dynamo.ui.container.QueryType;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
-import com.vaadin.data.Container.Filter;
-import com.vaadin.data.util.filter.Compare;
+import com.vaadin.v7.data.Container.Filter;
+import com.vaadin.v7.data.util.filter.Compare;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Field;
-import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.v7.ui.Field;
+import com.vaadin.v7.ui.HorizontalLayout;
 import com.vaadin.ui.Layout;
 
 /**

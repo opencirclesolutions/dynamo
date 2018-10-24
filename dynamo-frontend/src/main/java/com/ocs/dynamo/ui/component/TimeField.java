@@ -17,11 +17,11 @@ import java.text.DateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import com.vaadin.shared.ui.datefield.Resolution;
+import com.vaadin.v7.shared.ui.datefield.Resolution;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.CustomField;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.NativeSelect;
+import com.vaadin.v7.ui.CustomField;
+import com.vaadin.v7.ui.HorizontalLayout;
+import com.vaadin.v7.ui.NativeSelect;
 
 /**
  * A custom field for displaying a time - renders an hour combo box and a minute combo box

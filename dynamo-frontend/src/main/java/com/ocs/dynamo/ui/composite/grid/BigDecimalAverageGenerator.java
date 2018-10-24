@@ -17,9 +17,9 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Collection;
 
-import com.vaadin.data.Item;
-import com.vaadin.data.Property;
-import com.vaadin.data.util.PropertyValueGenerator;
+import com.vaadin.v7.data.Item;
+import com.vaadin.v7.data.Property;
+import com.vaadin.v7.data.util.PropertyValueGenerator;
 
 /**
  * A property value generator for computing the average of a range of BigDecimals

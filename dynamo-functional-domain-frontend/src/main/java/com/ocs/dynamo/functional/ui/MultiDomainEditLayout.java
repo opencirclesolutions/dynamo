@@ -30,18 +30,18 @@ import com.ocs.dynamo.ui.composite.layout.BaseCustomComponent;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.composite.layout.ServiceBasedSplitLayout;
 import com.ocs.dynamo.ui.container.QueryType;
-import com.vaadin.data.Container.Filter;
-import com.vaadin.data.sort.SortOrder;
-import com.vaadin.data.util.filter.Or;
-import com.vaadin.data.util.filter.SimpleStringFilter;
+import com.vaadin.v7.data.Container.Filter;
+import com.vaadin.v7.data.sort.SortOrder;
+import com.vaadin.v7.data.util.filter.Or;
+import com.vaadin.v7.data.util.filter.SimpleStringFilter;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.ComboBox;
+import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.Field;
+import com.vaadin.v7.ui.Field;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.Layout;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.v7.ui.VerticalLayout;
 
 /**
  * A layout that allows the user to easily manage multiple domains. The list of

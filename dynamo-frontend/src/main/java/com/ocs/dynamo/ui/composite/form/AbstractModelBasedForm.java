@@ -22,7 +22,7 @@ import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.ui.composite.layout.BaseCustomComponent;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
-import com.vaadin.data.Container.Filter;
+import com.vaadin.server.SerializablePredicate;
 
 /**
  * Abstract base class for model based forms
@@ -51,7 +51,7 @@ public abstract class AbstractModelBasedForm<ID extends Serializable, T extends 
 	/**
 	 * Field filters for easily building filtered combo boxes
 	 */
-	private Map<String, Filter> fieldFilters = new HashMap<>();
+	private Map<String, SerializablePredicate<?>> fieldFilters = new HashMap<>();
 
 	/**
 	 * The form options
@@ -61,7 +61,7 @@ public abstract class AbstractModelBasedForm<ID extends Serializable, T extends 
 	/**
 	 * Constructor
 	 */
-	public AbstractModelBasedForm(FormOptions formOptions, Map<String, Filter> fieldFilters,
+	public AbstractModelBasedForm(FormOptions formOptions, Map<String, SerializablePredicate<?>> fieldFilters,
 			EntityModel<T> entityModel) {
 		this.formOptions = formOptions;
 		this.fieldFilters = fieldFilters == null ? new HashMap<>() : fieldFilters;
@@ -90,7 +90,7 @@ public abstract class AbstractModelBasedForm<ID extends Serializable, T extends 
 		return fieldEntityModels;
 	}
 
-	public Map<String, Filter> getFieldFilters() {
+	public Map<String, SerializablePredicate<?>> getFieldFilters() {
 		return fieldFilters;
 	}
 
@@ -106,7 +106,7 @@ public abstract class AbstractModelBasedForm<ID extends Serializable, T extends 
 		this.fieldEntityModels = fieldEntityModels;
 	}
 
-	public void setFieldFilters(Map<String, Filter> fieldFilters) {
+	public void setFieldFilters(Map<String, SerializablePredicate<?>> fieldFilters) {
 		this.fieldFilters = fieldFilters;
 	}
 

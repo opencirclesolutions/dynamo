@@ -16,10 +16,11 @@ package com.ocs.dynamo.ui.component;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.ocs.dynamo.test.BaseIntegrationTest;
 import com.ocs.dynamo.ui.composite.dialog.SimpleModalDialog;
 import com.vaadin.ui.Layout;
 
-public class SimpleModalDialogTest {
+public class SimpleModalDialogTest extends BaseIntegrationTest {
 
     @Test
     public void testShowCancelButton() {

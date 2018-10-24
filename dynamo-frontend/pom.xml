@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>dynamo-frontend</artifactId>
 	<packaging>jar</packaging>
@@ -52,8 +53,8 @@
 			<artifactId>guava</artifactId>
 		</dependency>
 		<dependency>
-		   <groupId>org.vaadin.teemu</groupId>
-		   <artifactId>switch</artifactId>
+			<groupId>org.vaadin.teemu</groupId>
+			<artifactId>switch</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.persistence</groupId>
@@ -88,6 +89,14 @@
 			<artifactId>dynamo-integration-import</artifactId>
 			<version>${project.version}</version>
 			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.vaadin</groupId>
+			<artifactId>vaadin-icons</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.vaadin</groupId>
+			<artifactId>vaadin-compatibility-server</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.vaadin</groupId>
@@ -149,10 +158,8 @@
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>org.vaadin.addons.lazyquerycontainer</groupId>
-			<artifactId>vaadin-lazyquerycontainer</artifactId>
-		</dependency>
+		<!-- <dependency> <groupId>org.vaadin.addons.lazyquerycontainer</groupId> 
+			<artifactId>vaadin-lazyquerycontainer</artifactId> </dependency> -->
 		<dependency>
 			<groupId>net.sf.opencsv</groupId>
 			<artifactId>opencsv</artifactId>
@@ -165,10 +172,8 @@
 			<groupId>javax.validation</groupId>
 			<artifactId>validation-api</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>org.vaadin.addon</groupId>
-			<artifactId>tableexport-for-vaadin</artifactId>
-		</dependency>
+		<!-- <dependency> <groupId>org.vaadin.addon</groupId> <artifactId>tableexport-for-vaadin</artifactId> 
+			</dependency> -->
 		<dependency>
 			<groupId>org.vaadin.addon</groupId>
 			<artifactId>confirmdialog</artifactId>
@@ -217,10 +222,8 @@
 						</manifestEntries>
 					</archive>
 					<!-- Exclude useless rubbish from JAR (saves 20MB) -->
-					<!--<excludes>
-						<exclude>VAADIN/gwt-unitCache/**</exclude>
-						&lt;!&ndash;<exclude>VAADIN/widgetsets/WEB-INF/**</exclude>&ndash;&gt;
-					</excludes>-->
+					<!--<excludes> <exclude>VAADIN/gwt-unitCache/**</exclude> &lt;!&ndash;<exclude>VAADIN/widgetsets/WEB-INF/**</exclude>&ndash;&gt; 
+						</excludes> -->
 				</configuration>
 			</plugin>
 			<plugin>

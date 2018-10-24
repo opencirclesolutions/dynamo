@@ -33,13 +33,11 @@ import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.composite.table.TableUtils;
-import com.ocs.dynamo.ui.container.hierarchical.ModelBasedHierarchicalContainer;
-import com.ocs.dynamo.ui.container.hierarchical.ModelBasedHierarchicalContainer.ModelBasedHierarchicalDefinition;
 import com.ocs.dynamo.utils.ClassUtils;
 import com.ocs.dynamo.utils.DateUtils;
 import com.ocs.dynamo.utils.NumberUtils;
-import com.vaadin.data.Property;
-import com.vaadin.ui.Table;
+import com.vaadin.v7.data.Property;
+import com.vaadin.v7.ui.Table;
 import com.vaadin.ui.UI;
 
 /**
@@ -111,8 +109,7 @@ public final class FormatUtils {
 	}
 
 	/**
-	 * Formats a collection of entities into a comma-separated string that
-	 * displays
+	 * Formats a collection of entities into a comma-separated string that displays
 	 * the meaningful representations of the entities
 	 *
 	 * @param entityModelFactory
@@ -128,21 +125,21 @@ public final class FormatUtils {
 		return formatEntityCollection(entityModelFactory, attributeModel, property.getValue(), "<br/> ");
 	}
 
-    /**
-     * Formats a property value
-     * 
-     * @param entityModelFactory
-     *            the entity model factory
-     * @param model
-     *            the attribute model for the property
-     * @param value
-     *            the value of the property
-     * @return
-     */
-    public static String formatPropertyValue(EntityModelFactory entityModelFactory, AttributeModel model,
-            Object value,
-        String separator) {return formatPropertyValue(null, entityModelFactory, model, value, VaadinUtils.getLocale(), separator);
-    }
+	/**
+	 * Formats a property value
+	 * 
+	 * @param entityModelFactory
+	 *            the entity model factory
+	 * @param model
+	 *            the attribute model for the property
+	 * @param value
+	 *            the value of the property
+	 * @return
+	 */
+	public static String formatPropertyValue(EntityModelFactory entityModelFactory, AttributeModel model, Object value,
+			String separator) {
+		return formatPropertyValue(null, entityModelFactory, model, value, VaadinUtils.getLocale(), separator);
+	}
 
 	/**
 	 * Formats a property value
@@ -167,33 +164,38 @@ public final class FormatUtils {
 				VaadinUtils.getLocale(), separator);
 	}
 
-    /**
-     * Formats a property value - for use with a hierarchical table
-     * 
-     * @param table
-     * @param entityModelFactory
-     * @param entityModel
-     * @param messageService
-     * @param rowId
-     * @param colId
-     * @param property
-     * @param locale
-     * @return
-     */
-    @SuppressWarnings("rawtypes")
-    public static <T> String formatPropertyValue(Table table, EntityModelFactory entityModelFactory,
-            EntityModel<T> entityModel, Object rowId, Object colId, Property<?> property, Locale locale,
-        String separator) {if (table.getContainerDataSource() instanceof ModelBasedHierarchicalContainer) {
-            ModelBasedHierarchicalContainer<?> c = (ModelBasedHierarchicalContainer<?>) table.getContainerDataSource();
-            ModelBasedHierarchicalDefinition def = c.getHierarchicalDefinitionByItemId(rowId);
-            Object path = c.unmapProperty(def, colId);
-            return formatPropertyValue(table, entityModelFactory,
-                    path == null ? null : def.getEntityModel().getAttributeModel(path.toString()), property.getValue(),
-                    locale, separator);
-        }
-        return formatPropertyValue(table, entityModelFactory, entityModel.getAttributeModel(colId.toString()),
-                property.getValue(), locale, separator);
-    }
+	/**
+	 * Formats a property value - for use with a hierarchical table
+	 * 
+	 * @param table
+	 * @param entityModelFactory
+	 * @param entityModel
+	 * @param messageService
+	 * @param rowId
+	 * @param colId
+	 * @param property
+	 * @param locale
+	 * @return
+	 */
+	@SuppressWarnings("rawtypes")
+	public static <T> String formatPropertyValue(Table table, EntityModelFactory entityModelFactory,
+			EntityModel<T> entityModel, Object rowId, Object colId, Property<?> property, Locale locale,
+			String separator) {
+		// if (table.getContainerDataSource() instanceof
+		// ModelBasedHierarchicalContainer) {
+		// ModelBasedHierarchicalContainer<?> c = (ModelBasedHierarchicalContainer<?>)
+		// table.getContainerDataSource();
+		// ModelBasedHierarchicalDefinition def =
+		// c.getHierarchicalDefinitionByItemId(rowId);
+		// Object path = c.unmapProperty(def, colId);
+		// return formatPropertyValue(table, entityModelFactory,
+		// path == null ? null :
+		// def.getEntityModel().getAttributeModel(path.toString()), property.getValue(),
+		// locale, separator);
+		// }
+		return formatPropertyValue(table, entityModelFactory, entityModel.getAttributeModel(colId.toString()),
+				property.getValue(), locale, separator);
+	}
 
 	/**
 	 * Formats a property value
@@ -238,7 +240,8 @@ public final class FormatUtils {
 			} else if (DateUtils.isJava8DateType(model.getType())) {
 				return DateUtils.formatJava8Date(model.getType(), value, model.getDisplayFormat());
 			} else if (BigDecimal.class.equals(model.getType())) {
-				String cs = TableUtils.getCurrencySymbol(table);
+				//String cs = TableUtils.getCurrencySymbol(table);
+				String cs = "";
 				return VaadinUtils.bigDecimalToString(model.isCurrency(), model.isPercentage(),
 						model.isUseThousandsGrouping(), model.getPrecision(), (BigDecimal) value, locale, cs);
 			} else if (NumberUtils.isNumeric(model.getType())) {

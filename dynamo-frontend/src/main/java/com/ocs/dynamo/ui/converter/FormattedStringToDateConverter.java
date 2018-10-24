@@ -18,7 +18,7 @@ import java.text.SimpleDateFormat;
 import java.util.Locale;
 import java.util.TimeZone;
 
-import com.vaadin.data.util.converter.StringToDateConverter;
+import com.vaadin.data.converter.StringToDateConverter;
 
 /**
  * A converter for converting between Strings and Dates, using a predetermined format

@@ -15,35 +15,33 @@ import com.vaadin.ui.TextField;
 
 public class URLFieldTest extends BaseMockitoTest {
 
-    private static final String URL = "http://www.google.nl";
+	private static final String URL = "http://www.google.nl";
 
-    @Mock
-    private TestEntityService service;
+	@Mock
+	private TestEntityService service;
 
-    private EntityModelFactory factory = new EntityModelFactoryImpl();
+	private EntityModelFactory factory = new EntityModelFactoryImpl();
 
-    @Test
-    public void test() {
-        EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
+	@Test
+	public void test() {
+		EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
 
-        TextField tf = new TextField();
+		TextField tf = new TextField();
 
-        URLField field = new URLField(tf, em.getAttributeModel("url"), true);
-        field.initContent();
+		URLField field = new URLField(tf, em.getAttributeModel("url"), true);
+		field.initContent();
 
-        Assert.assertEquals(tf, field.getTextField());
+		Assert.assertEquals(tf, field.getTextField());
+		//Assert.assertNull(field.getValue());
 
-        Assert.assertEquals(String.class, field.getType());
-        Assert.assertNull(field.getValue());
+		field.doSetValue(URL);
+		Assert.assertNotNull(field.getLink());
 
-        field.setInternalValue(URL);
-        Assert.assertNotNull(field.getLink());
+		ExternalResource resource = (ExternalResource) field.getLink().getResource();
+		Assert.assertEquals(URL, resource.getURL());
+		Assert.assertEquals(URL, tf.getValue());
 
-        ExternalResource resource = (ExternalResource) field.getLink().getResource();
-        Assert.assertEquals(URL, resource.getURL());
-        Assert.assertEquals(URL, tf.getValue());
-
-        field.setInternalValue(null);
-        Assert.assertNull(field.getLink());
-    }
+		field.doSetValue(null);
+		Assert.assertNull(field.getLink());
+	}
 }

@@ -13,7 +13,7 @@
  */
 package com.ocs.dynamo.ui.component;
 
-import com.vaadin.server.FontAwesome;
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.FontIcon;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -24,9 +24,9 @@ public class CollapsiblePanel extends VerticalLayout {
 
 	private static final long serialVersionUID = -7979238391035057707L;
 
-	private FontIcon closedIcon = FontAwesome.PLUS_CIRCLE;
+	private FontIcon closedIcon = VaadinIcons.PLUS_CIRCLE;
 
-	private FontIcon openIcon = FontAwesome.MINUS_CIRCLE;
+	private FontIcon openIcon = VaadinIcons.MINUS_CIRCLE;
 
 	private Button toggle = new Button(openIcon);
 

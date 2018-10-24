@@ -13,48 +13,47 @@
  */
 package com.ocs.dynamo.ui.converter;
 
-import java.util.Locale;
-
 import org.junit.Assert;
 import org.junit.Test;
 
-public class GroupingStringToLongConverterTest {
+import com.ocs.dynamo.exception.OCSRuntimeException;
+import com.vaadin.data.Result;
 
-    GroupingStringToLongConverter converter = new GroupingStringToLongConverter(false);
+public class GroupingStringToLongConverterTest extends BaseConverterTest {
 
-    @Test
-    public void testToModel() {
-        Long value = converter.convertToModel("3000", Long.class, new Locale("nl"));
-        Assert.assertEquals(3000L, value.longValue());
-    }
+	GroupingStringToLongConverter converter = new GroupingStringToLongConverter(false);
 
-    /**
-     * Make sure there is no grouping indicator
-     */
-    @Test
-    public void testToPresentation() {
-        String value = converter.convertToPresentation(3000L, String.class, new Locale("nl"));
-        Assert.assertEquals("3000", value);
-    }
+	@Test
+	public void testToModel() {
+		Result<Long> value = converter.convertToModel("3000", createContext());
+		Assert.assertEquals(3000L, value.getOrThrow(r -> new OCSRuntimeException()).longValue());
+	}
 
-    /**
-     * Make sure there is a grouping indicator
-     */
-    @Test
-    public void testToPresentationWithGrouping_ToPresentation() {
-        String value = new GroupingStringToLongConverter(true).convertToPresentation(3000L,
-                String.class, new Locale("nl"));
-        Assert.assertEquals("3.000", value);
-    }
+	/**
+	 * Make sure there is no grouping indicator
+	 */
+	@Test
+	public void testToPresentation() {
+		String value = converter.convertToPresentation(3000L, createContext());
+		Assert.assertEquals("3000", value);
+	}
 
-    /**
-     * Make sure there is a grouping indicator
-     */
-    @Test
-    public void testToPresentationWithGrouping_ToModel() {
-        Long value = new GroupingStringToLongConverter(true).convertToModel("3.000", Long.class,
-                new Locale("nl"));
-        Assert.assertEquals(3000L, value.longValue());
-    }
+	/**
+	 * Make sure there is a grouping indicator
+	 */
+	@Test
+	public void testToPresentationWithGrouping_ToPresentation() {
+		String value = new GroupingStringToLongConverter(true).convertToPresentation(3000L, createContext());
+		Assert.assertEquals("3.000", value);
+	}
+
+	/**
+	 * Make sure there is a grouping indicator
+	 */
+	@Test
+	public void testToPresentationWithGrouping_ToModel() {
+		Result<Long> value = new GroupingStringToLongConverter(true).convertToModel("3.000", createContext());
+		Assert.assertEquals(3000L, value.getOrThrow(r -> new OCSRuntimeException()).longValue());
+	}
 
 }

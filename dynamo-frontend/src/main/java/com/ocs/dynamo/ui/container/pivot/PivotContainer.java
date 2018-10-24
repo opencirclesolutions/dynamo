@@ -13,12 +13,12 @@
  */
 package com.ocs.dynamo.ui.container.pivot;
 
-import com.vaadin.data.Container;
-import com.vaadin.data.Container.Indexed;
-import com.vaadin.data.Container.ItemSetChangeListener;
-import com.vaadin.data.Container.Sortable;
-import com.vaadin.data.Item;
-import com.vaadin.data.Property;
+import com.vaadin.v7.data.Container;
+import com.vaadin.v7.data.Container.Indexed;
+import com.vaadin.v7.data.Container.ItemSetChangeListener;
+import com.vaadin.v7.data.Container.Sortable;
+import com.vaadin.v7.data.Item;
+import com.vaadin.v7.data.Property;
 
 import java.util.ArrayList;
 import java.util.Collection;

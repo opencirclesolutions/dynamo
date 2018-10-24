@@ -20,6 +20,10 @@ import java.util.Locale;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.ocs.dynamo.ui.utils.VaadinUtils;
+import com.vaadin.data.Result;
+import com.vaadin.data.ValueContext;
+
 /**
  * A converter for a BigDecimal field that includes a currency symbol.
  * 
@@ -27,48 +31,48 @@ import org.apache.commons.lang.StringUtils;
  */
 public class CurrencyBigDecimalConverter extends BigDecimalConverter {
 
-    private static final long serialVersionUID = -8785156070280947096L;
+	private static final long serialVersionUID = -8785156070280947096L;
 
-    private String currencySymbol;
+	private String currencySymbol;
 
-    /**
-     * 
-     * Constructor for CurrencyBigDecimalConverter.
-     * 
-     * @param precision
-     * @param useGrouping
-     * @param currencySymbol
-     */
-    public CurrencyBigDecimalConverter(int precision, boolean useGrouping, String currencySymbol) {
-        super(precision, useGrouping);
-        this.currencySymbol = currencySymbol;
-    }
+	/**
+	 * 
+	 * Constructor for CurrencyBigDecimalConverter.
+	 * 
+	 * @param precision
+	 * @param useGrouping
+	 * @param currencySymbol
+	 */
+	public CurrencyBigDecimalConverter(int precision, boolean useGrouping, String currencySymbol) {
+		super(precision, useGrouping);
+		this.currencySymbol = currencySymbol;
+	}
 
-    @Override
-    public BigDecimal convertToModel(String value, Class<? extends BigDecimal> targetType,
-            Locale locale) {
-        if (value == null) {
-            return null;
-        }
+	@Override
+	public Result<BigDecimal> convertToModel(String value, ValueContext context) {
+		if (value == null) {
+			return null;
+		}
 
-        if (!StringUtils.isEmpty(value) && !value.startsWith(currencySymbol)) {
-            String oldValue = value.trim();
-            value = currencySymbol;
-            value += this.getDecimalFormat(locale).getPositivePrefix().length() > 1 ? " " : "";
-            value += oldValue;
-        }
-        return super.convertToModel(value, targetType, locale);
-    }
+		if (!StringUtils.isEmpty(value) && !value.startsWith(currencySymbol)) {
+			String oldValue = value.trim();
+			value = currencySymbol;
+			value += this.getDecimalFormat(context.getLocale().orElse(VaadinUtils.getLocale())).getPositivePrefix()
+					.length() > 1 ? " " : "";
+			value += oldValue;
+		}
+		return super.convertToModel(value, context);
+	}
 
-    @Override
-    protected DecimalFormat constructFormat(Locale locale) {
-        // ignore the locale that is passed as a parameter, and use the default
-        // locale instead so
-        // that the number formatting is always the same
-        DecimalFormat nf = (DecimalFormat) DecimalFormat.getCurrencyInstance(locale);
-        DecimalFormatSymbols s = nf.getDecimalFormatSymbols();
-        s.setCurrencySymbol(currencySymbol);
-        nf.setDecimalFormatSymbols(s);
-        return nf;
-    }
+	@Override
+	protected DecimalFormat constructFormat(Locale locale) {
+		// ignore the locale that is passed as a parameter, and use the default
+		// locale instead so
+		// that the number formatting is always the same
+		DecimalFormat nf = (DecimalFormat) DecimalFormat.getCurrencyInstance(locale);
+		DecimalFormatSymbols s = nf.getDecimalFormatSymbols();
+		s.setCurrencySymbol(currencySymbol);
+		nf.setDecimalFormatSymbols(s);
+		return nf;
+	}
 }

@@ -24,6 +24,7 @@ import com.ocs.dynamo.ui.converter.WeekCodeConverter;
 import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.ocs.dynamo.utils.DateUtils;
 import com.ocs.dynamo.utils.NumberUtils;
+import com.vaadin.data.ValueContext;
 
 /**
  * Utility for converting between data types
@@ -33,77 +34,77 @@ import com.ocs.dynamo.utils.NumberUtils;
  */
 public final class ConvertUtil {
 
-    private ConvertUtil() {
-    }
+	private ConvertUtil() {
+	}
 
-    /**
-     * Converts a value to its presentation value
-     * 
-     * @param attributeModel
-     *            the attribute model
-     * @param input
-     *            the input value
-     * @return
-     */
-    public static Object convertToPresentationValue(AttributeModel attributeModel, Object input) {
-        if (input == null) {
-            return null;
-        }
+	/**
+	 * Converts a value to its presentation value
+	 * 
+	 * @param attributeModel
+	 *            the attribute model
+	 * @param input
+	 *            the input value
+	 * @return
+	 */
+	public static Object convertToPresentationValue(AttributeModel attributeModel, Object input) {
+		if (input == null) {
+			return null;
+		}
 
-        Locale locale = VaadinUtils.getLocale();
-        boolean grouping = SystemPropertyUtils.useThousandsGroupingInEditMode();
-        boolean percentage = attributeModel.isPercentage();
+		Locale locale = VaadinUtils.getLocale();
+		boolean grouping = SystemPropertyUtils.useThousandsGroupingInEditMode();
+		boolean percentage = attributeModel.isPercentage();
 
-        if (attributeModel.isWeek()) {
-            WeekCodeConverter converter = new WeekCodeConverter();
-            return converter.convertToPresentation((Date) input, String.class, locale);
-        } else if (Integer.class.equals(attributeModel.getType())) {
-            return VaadinUtils.integerToString(grouping, percentage, (Integer) input);
-        } else if (Long.class.equals(attributeModel.getType())) {
-            return VaadinUtils.longToString(grouping, percentage, (Long) input);
-        } else if (BigDecimal.class.equals(attributeModel.getType())) {
-            return VaadinUtils.bigDecimalToString(attributeModel.isCurrency(), attributeModel.isPercentage(), grouping,
-                    attributeModel.getPrecision(), (BigDecimal) input, locale);
-        } else if (input instanceof Temporal) {
-            return DateUtils.toLegacyDate((Temporal) input);
-        }
-        return input;
-    }
+		if (attributeModel.isWeek()) {
+			WeekCodeConverter converter = new WeekCodeConverter();
+			return converter.convertToPresentation((Date) input, new ValueContext(locale));
+		} else if (Integer.class.equals(attributeModel.getType())) {
+			return VaadinUtils.integerToString(grouping, percentage, (Integer) input);
+		} else if (Long.class.equals(attributeModel.getType())) {
+			return VaadinUtils.longToString(grouping, percentage, (Long) input);
+		} else if (BigDecimal.class.equals(attributeModel.getType())) {
+			return VaadinUtils.bigDecimalToString(attributeModel.isCurrency(), attributeModel.isPercentage(), grouping,
+					attributeModel.getPrecision(), (BigDecimal) input, locale);
+		} else if (input instanceof Temporal) {
+			return DateUtils.toLegacyDate((Temporal) input);
+		}
+		return input;
+	}
 
-    /**
-     * Converts the search value from the presentation to the model
-     * 
-     * @param attributeModel
-     *            the attribute model that governs the conversion
-     * @param input
-     *            the search value to convert
-     * @return
-     */
-    public static Object convertSearchValue(AttributeModel attributeModel, Object input) {
-        if (input == null) {
-            return null;
-        }
+	/**
+	 * Converts the search value from the presentation to the model
+	 * 
+	 * @param attributeModel
+	 *            the attribute model that governs the conversion
+	 * @param input
+	 *            the search value to convert
+	 * @return
+	 */
+	public static Object convertSearchValue(AttributeModel attributeModel, Object input) {
+		if (input == null) {
+			return null;
+		}
 
-        boolean grouping = SystemPropertyUtils.useThousandsGroupingInEditMode();
-        Locale locale = VaadinUtils.getLocale();
+		boolean grouping = SystemPropertyUtils.useThousandsGroupingInEditMode();
+		Locale locale = VaadinUtils.getLocale();
 
-        if (attributeModel.isWeek()) {
-            WeekCodeConverter converter = new WeekCodeConverter();
-            return converter.convertToModel((String) input, Date.class, locale);
-        } else if (NumberUtils.isInteger(attributeModel.getType())) {
-            if (NumberSelectMode.TEXTFIELD.equals(attributeModel.getNumberSelectMode())) {
-                return VaadinUtils.stringToInteger(grouping, (String) input, locale);
-            }
-        } else if (NumberUtils.isLong(attributeModel.getType())) {
-            if (NumberSelectMode.TEXTFIELD.equals(attributeModel.getNumberSelectMode())) {
-                return VaadinUtils.stringToLong(grouping, (String) input, locale);
-            }
-        } else if (BigDecimal.class.equals(attributeModel.getType())) {
-            if (NumberSelectMode.TEXTFIELD.equals(attributeModel.getNumberSelectMode())) {
-                return VaadinUtils.stringToBigDecimal(attributeModel.isPercentage(), grouping,
-                        attributeModel.isCurrency(), attributeModel.getPrecision(), (String) input, locale);
-            }
-        }
-        return input;
-    }
+		if (attributeModel.isWeek()) {
+			WeekCodeConverter converter = new WeekCodeConverter();
+			return converter.convertToModel((String) input, new ValueContext(locale));
+		} else if (NumberUtils.isInteger(attributeModel.getType())) {
+			if (NumberSelectMode.TEXTFIELD.equals(attributeModel.getNumberSelectMode())) {
+				return VaadinUtils.stringToInteger(grouping, (String) input, locale);
+			}
+		} else if (NumberUtils.isLong(attributeModel.getType())) {
+			if (NumberSelectMode.TEXTFIELD.equals(attributeModel.getNumberSelectMode())) {
+				return VaadinUtils.stringToLong(grouping, (String) input, locale);
+			}
+		} else if (BigDecimal.class.equals(attributeModel.getType())) {
+			if (NumberSelectMode.TEXTFIELD.equals(attributeModel.getNumberSelectMode())) {
+				return VaadinUtils.stringToBigDecimal(attributeModel.isPercentage(), grouping,
+						attributeModel.isCurrency(), attributeModel.getPrecision(), (String) input, locale);
+			}
+		}
+		return input;
+	}
 }

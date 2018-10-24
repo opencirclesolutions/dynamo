@@ -13,7 +13,8 @@
  */
 package com.ocs.dynamo.ui.converter;
 
-import java.util.Locale;
+import com.vaadin.data.Result;
+import com.vaadin.data.ValueContext;
 
 /**
  * 
@@ -22,22 +23,22 @@ import java.util.Locale;
  */
 public class PercentageLongConverter extends GroupingStringToLongConverter {
 
-    private static final long serialVersionUID = 2538721945689033561L;
+	private static final long serialVersionUID = 2538721945689033561L;
 
-    public PercentageLongConverter(boolean useGrouping) {
-        super(useGrouping);
-    }
+	public PercentageLongConverter(boolean useGrouping) {
+		super(useGrouping);
+	}
 
-    @Override
-    public String convertToPresentation(Long value, Class<? extends String> targetType, Locale locale) {
-        String result = super.convertToPresentation(value, targetType, locale);
-        return result == null ? null : result + "%";
-    }
+	@Override
+	public String convertToPresentation(Long value, ValueContext context) {
+		String result = super.convertToPresentation(value, context);
+		return result == null ? null : result + "%";
+	}
 
-    @Override
-    public Long convertToModel(String value, Class<? extends Long> targetType, Locale locale) {
-        value = value == null ? null : value.replaceAll("%", "");
-        return super.convertToModel(value, targetType, locale);
-    }
+	@Override
+	public Result<Long> convertToModel(String value, ValueContext context) {
+		value = value == null ? null : value.replaceAll("%", "");
+		return super.convertToModel(value, context);
+	}
 
 }

@@ -38,7 +38,7 @@ import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.test.BaseMockitoTest;
 import com.ocs.dynamo.test.MockUtil;
 import com.ocs.dynamo.utils.DateUtils;
-import com.vaadin.ui.Label;
+import com.vaadin.v7.ui.Label;
 
 import junitx.util.PrivateAccessor;
 

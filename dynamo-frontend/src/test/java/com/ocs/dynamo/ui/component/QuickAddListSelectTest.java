@@ -15,106 +15,108 @@ import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.domain.model.impl.EntityModelFactoryImpl;
+import com.ocs.dynamo.filter.CompareFilter;
 import com.ocs.dynamo.filter.Filter;
 import com.ocs.dynamo.service.TestEntityService;
 import com.ocs.dynamo.test.BaseMockitoTest;
 import com.ocs.dynamo.test.MockUtil;
-import com.vaadin.data.util.filter.Compare;
 import com.vaadin.ui.UI;
 
 public class QuickAddListSelectTest extends BaseMockitoTest {
 
-    private EntityModelFactory factory = new EntityModelFactoryImpl();
+	private EntityModelFactory factory = new EntityModelFactoryImpl();
 
-    @Mock
-    private UI ui;
+	@Mock
+	private UI ui;
 
-    @Mock
-    private TestEntityService service;
+	@Mock
+	private TestEntityService service;
 
-    private TestEntity t1;
+	private TestEntity t1;
 
-    private TestEntity t2;
+	private TestEntity t2;
 
-    private TestEntity t3;
+	private TestEntity t3;
 
-    @Before
-    public void setUp() {
-        t1 = new TestEntity(1, "Kevin", 12L);
-        t2 = new TestEntity(2, "Bob", 13L);
-        t3 = new TestEntity(3, "Stewart", 14L);
+	@Before
+	public void setUp() {
+		t1 = new TestEntity(1, "Kevin", 12L);
+		t2 = new TestEntity(2, "Bob", 13L);
+		t3 = new TestEntity(3, "Stewart", 14L);
 
-        Mockito.when(service.find(Matchers.isNull(Filter.class), (SortOrder[]) Matchers.anyVararg()))
-                .thenReturn(Lists.newArrayList(t1, t2, t3));
+		Mockito.when(service.find(Matchers.isNull(Filter.class), (SortOrder[]) Matchers.anyVararg()))
+				.thenReturn(Lists.newArrayList(t1, t2, t3));
+		Mockito.when(service.find(Matchers.isNull(Filter.class))).thenReturn(Lists.newArrayList(t1, t2, t3));
 
-        Filter f = new com.ocs.dynamo.filter.Compare.Equal("name", "Kevin");
-        Mockito.when(service.find(Matchers.eq(f), (SortOrder[]) Matchers.anyVararg()))
-                .thenReturn(Lists.newArrayList(t1));
+		Filter f = new com.ocs.dynamo.filter.Compare.Equal("name", "Kevin");
+		Mockito.when(service.find(Matchers.eq(f), (SortOrder[]) Matchers.anyVararg()))
+				.thenReturn(Lists.newArrayList(t1));
+		Mockito.when(service.find(Matchers.eq(f))).thenReturn(Lists.newArrayList(t1));
 
-        Mockito.when(service.createNewEntity()).thenReturn(new TestEntity());
-        MockUtil.mockServiceSave(service, TestEntity.class);
-    }
+		Mockito.when(service.createNewEntity()).thenReturn(new TestEntity());
+		MockUtil.mockServiceSave(service, TestEntity.class);
+	}
 
-    /**
-     * Test the creation of the component and a simple selection
-     */
-    @Test
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void testCreateAndSelect() {
-        EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
-        AttributeModel am = em.getAttributeModel("testDomain");
+	/**
+	 * Test the creation of the component and a simple selection
+	 */
+	@Test
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public void testCreateAndSelect() {
+		EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
+		AttributeModel am = em.getAttributeModel("testDomain");
 
-        QuickAddListSelect<Integer, TestEntity> select = new QuickAddListSelect<>(em, am, service, null, false, 3);
-        select.initContent();
-        MockUtil.injectUI(select, ui);
+		QuickAddListSelect<Integer, TestEntity> select = new QuickAddListSelect<>(em, am, service, null, false, 3);
+		select.initContent();
+		MockUtil.injectUI(select, ui);
 
-        // list must contain 3 items
-        Assert.assertEquals(3, select.getListSelect().getContainerDataSource().size());
+		// list must contain 3 items
+		Assert.assertEquals(3, select.getListSelect().getDataProviderSize());
 
-        // test propagation of the value
-        select.setValue(t1);
-        Assert.assertEquals(t1, select.getListSelect().getValue());
+		// test propagation of the value
+		select.getListSelect().select(t1);
+		Assert.assertTrue(select.getListSelect().getValue().contains(t1));
 
-        // .. and the other way around
-        select.getListSelect().setValue(t2);
-        Assert.assertEquals(t2, select.getValue());
+		// .. and the other way around
+		select.getListSelect().select(t2);
+		Assert.assertTrue(select.getListSelect().getValue().contains(t2));
 
-        // bring up the add dialog
-        ArgumentCaptor<AddNewValueDialog> captor = ArgumentCaptor.forClass(AddNewValueDialog.class);
+		// bring up the add dialog
+		ArgumentCaptor<AddNewValueDialog> captor = ArgumentCaptor.forClass(AddNewValueDialog.class);
 
-        select.getAddButton().click();
-        Mockito.verify(ui).addWindow(captor.capture());
+		select.getAddButton().click();
+		Mockito.verify(ui).addWindow(captor.capture());
 
-        AddNewValueDialog<Integer, TestEntity> dialog = (AddNewValueDialog<Integer, TestEntity>) captor.getValue();
+		AddNewValueDialog<Integer, TestEntity> dialog = (AddNewValueDialog<Integer, TestEntity>) captor.getValue();
 
-        dialog.getValueField().setValue("New Item");
+		dialog.getValueField().setValue("New Item");
 
-        dialog.getOkButton().click();
+		dialog.getOkButton().click();
 
-        // list must now contain an extra item
-        Assert.assertEquals(4, select.getListSelect().getContainerDataSource().size());
-    }
+		// list must now contain an extra item
+		Assert.assertEquals(4, select.getListSelect().getDataProviderSize());
+	}
 
-    @Test
-    public void testAdditionalFilter() {
+	@Test
+	public void testAdditionalFilter() {
 
-        EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
-        AttributeModel am = em.getAttributeModel("testDomain");
+		EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
+		AttributeModel am = em.getAttributeModel("testDomain");
 
-        QuickAddListSelect<Integer, TestEntity> select = new QuickAddListSelect<>(em, am, service, null, false, 3);
-        select.initContent();
-        MockUtil.injectUI(select, ui);
+		QuickAddListSelect<Integer, TestEntity> select = new QuickAddListSelect<>(em, am, service, null, false, 3);
+		select.initContent();
+		MockUtil.injectUI(select, ui);
 
-        // list must contain 3 items
-        Assert.assertEquals(3, select.getListSelect().getContainerDataSource().size());
+		// list must contain 3 items
+		Assert.assertEquals(3, select.getListSelect().getDataProviderSize());
 
-        select.setAdditionalFilter(new Compare.Equal("name", "Kevin"));
+		select.setAdditionalFilter(new CompareFilter<TestEntity>("name", "Kevin"));
 
-        // after filter there must be 1 item left
-        Assert.assertEquals(1, select.getListSelect().getItemIds().size());
+		// after filter there must be 1 item left
+		Assert.assertEquals(1, select.getListSelect().getDataProviderSize());
 
-        // clear filter again
-        select.clearAdditionalFilter();
-        Assert.assertEquals(3, select.getListSelect().getContainerDataSource().size());
-    }
+		// clear filter again
+		select.clearAdditionalFilter();
+		Assert.assertEquals(3, select.getListSelect().getDataProviderSize());
+	}
 }

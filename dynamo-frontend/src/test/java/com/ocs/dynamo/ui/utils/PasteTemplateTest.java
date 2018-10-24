@@ -23,8 +23,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import com.ocs.dynamo.test.BaseMockitoTest;
-import com.vaadin.event.FieldEvents.TextChangeEvent;
-import com.vaadin.ui.Table;
+import com.vaadin.v7.event.FieldEvents.TextChangeEvent;
+import com.vaadin.v7.ui.Table;
 
 public class PasteTemplateTest extends BaseMockitoTest {
 

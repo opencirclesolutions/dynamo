@@ -20,8 +20,8 @@ import org.junit.Test;
 
 import com.google.common.collect.Lists;
 import com.ocs.dynamo.ui.composite.grid.IntegerSumGenerator;
-import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.ui.Table;
+import com.vaadin.v7.data.util.BeanItemContainer;
+import com.vaadin.v7.ui.Table;
 
 public class IntegerSumGeneratorTest {
 

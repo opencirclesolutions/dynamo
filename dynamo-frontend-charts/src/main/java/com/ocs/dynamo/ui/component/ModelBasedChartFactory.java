@@ -40,9 +40,9 @@ import com.vaadin.addon.charts.model.Tooltip;
 import com.vaadin.addon.charts.model.VerticalAlign;
 import com.vaadin.addon.charts.model.XAxis;
 import com.vaadin.addon.charts.model.YAxis;
-import com.vaadin.data.Container;
-import com.vaadin.data.Property;
-import com.vaadin.ui.Field;
+import com.vaadin.v7.data.Container;
+import com.vaadin.v7.data.Property;
+import com.vaadin.v7.ui.Field;
 
 /**
  * Vaadin chart which is built using the entitymodel.

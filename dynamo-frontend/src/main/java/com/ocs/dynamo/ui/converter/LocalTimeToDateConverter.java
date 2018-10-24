@@ -18,7 +18,7 @@ import java.util.Date;
 import java.util.Locale;
 
 import com.ocs.dynamo.utils.DateUtils;
-import com.vaadin.data.util.converter.Converter;
+import com.vaadin.v7.data.util.converter.Converter;
 
 /**
  * Vaadin Converter for converting between LocalTime and java.util.Date

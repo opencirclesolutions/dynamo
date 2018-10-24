@@ -37,7 +37,7 @@ public abstract class Compare extends AbstractFilter implements PropertyFilter {
      * 
      * @author bas.rutten
      */
-    public static final class Equal extends Compare {
+	public static final class Equal extends Compare {
 
         /**
          * Constructor

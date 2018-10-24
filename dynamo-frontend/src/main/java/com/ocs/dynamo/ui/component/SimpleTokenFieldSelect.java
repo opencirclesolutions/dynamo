@@ -30,13 +30,10 @@ import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.Refreshable;
 import com.ocs.dynamo.ui.utils.SortUtil;
-import com.vaadin.data.Container;
-import com.vaadin.data.Container.Filter;
-import com.vaadin.data.sort.SortOrder;
-import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.data.util.IndexedContainer;
-import com.vaadin.data.util.ItemSorter;
-import com.vaadin.shared.ui.combobox.FilteringMode;
+import com.vaadin.data.provider.ListDataProvider;
+import com.vaadin.data.provider.SortOrder;
+import com.vaadin.server.SerializablePredicate;
+import com.vaadin.shared.Registration;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
@@ -54,46 +51,48 @@ import com.vaadin.ui.CustomField;
  * @param <T>
  *            the type of the basic property
  */
-public class SimpleTokenFieldSelect<ID extends Serializable, S extends AbstractEntity<ID>, T extends Comparable<T>>
+public class SimpleTokenFieldSelect<ID extends Serializable, T extends AbstractEntity<ID>>
 		extends CustomField<Collection<T>> implements Refreshable {
 
-	private class SimpleItemSorter implements ItemSorter {
-
-		private static final long serialVersionUID = -2397932123434432733L;
-
-		private boolean sortOrderAscending;
-
-		@Override
-		@SuppressWarnings("unchecked")
-		public int compare(Object itemId1, Object itemId2) {
-			T item1 = (T) itemId1;
-			T item2 = (T) itemId2;
-
-			/*
-			 * Items can be null if the container is filtered. Null is
-			 * considered "less" than not-null.
-			 */
-			if (item1 == null) {
-				if (item2 == null) {
-					return 0;
-				} else {
-					return 1;
-				}
-			} else if (item2 == null) {
-				return -1;
-			}
-
-			return this.sortOrderAscending ? item1.compareTo(item2) : item2.compareTo(item1);
-		}
-
-		@Override
-		public void setSortProperties(Container.Sortable container, Object[] propertyId, boolean[] ascending) {
-			sortOrderAscending = true;
-			if (ascending != null) {
-				sortOrderAscending = ascending[0];
-			}
-		}
-	}
+	// private class SimpleItemSorter implements ItemSorter {
+	//
+	// private static final long serialVersionUID = -2397932123434432733L;
+	//
+	// private boolean sortOrderAscending;
+	//
+	// @Override
+	// @SuppressWarnings("unchecked")
+	// public int compare(Object itemId1, Object itemId2) {
+	// T item1 = (T) itemId1;
+	// T item2 = (T) itemId2;
+	//
+	// /*
+	// * Items can be null if the container is filtered. Null is
+	// * considered "less" than not-null.
+	// */
+	// if (item1 == null) {
+	// if (item2 == null) {
+	// return 0;
+	// } else {
+	// return 1;
+	// }
+	// } else if (item2 == null) {
+	// return -1;
+	// }
+	//
+	// return this.sortOrderAscending ? item1.compareTo(item2) :
+	// item2.compareTo(item1);
+	// }
+	//
+	// @Override
+	// public void setSortProperties(Container.Sortable container, Object[]
+	// propertyId, boolean[] ascending) {
+	// sortOrderAscending = true;
+	// if (ascending != null) {
+	// sortOrderAscending = ascending[0];
+	// }
+	// }
+	// }
 
 	private static final long serialVersionUID = -1490179285573442827L;
 
@@ -103,11 +102,11 @@ public class SimpleTokenFieldSelect<ID extends Serializable, S extends AbstractE
 
 	private final boolean elementCollection;
 
-	private final ComboBox comboBox;
+	private final ComboBox<T> comboBox;
 
-	private final BeanItemContainer<T> container;
+	private final ListDataProvider<T> dataProvider;
 
-	private final Collection<ValueChangeListener> valueChangeListeners;
+	private final Collection<ValueChangeListener<?>> valueChangeListeners;
 
 	private List<Object> sortProperties;
 
@@ -117,15 +116,15 @@ public class SimpleTokenFieldSelect<ID extends Serializable, S extends AbstractE
 
 	private GenericTokenFieldUtil.TokenizableFactory<T> tokenizableFactory;
 
-	private BaseService<ID, S> service;
+	private BaseService<ID, T> service;
 
-	private EntityModel<S> entityModel;
+	private EntityModel<T> entityModel;
 
-	private Filter fieldFilter;
+	private SerializablePredicate<T> fieldFilter;
 
 	private String distinctField;
 
-	private SortOrder[] sortOrders;
+	private SortOrder<T>[] sortOrders;
 
 	private Class<T> elementType;
 
@@ -146,9 +145,10 @@ public class SimpleTokenFieldSelect<ID extends Serializable, S extends AbstractE
 	 * @param sortOrders
 	 *            sort orders to apply
 	 */
-	public SimpleTokenFieldSelect(BaseService<ID, S> service, EntityModel<S> entityModel, AttributeModel attributeModel,
-			Filter fieldFilter, String distinctField, Class<T> elementType, boolean elementCollection,
-			SortOrder... sortOrders) {
+	@SafeVarargs
+	public SimpleTokenFieldSelect(BaseService<ID, T> service, EntityModel<T> entityModel, AttributeModel attributeModel,
+			SerializablePredicate<T> fieldFilter, String distinctField, Class<T> elementType, boolean elementCollection,
+			SortOrder<T>... sortOrders) {
 		this.messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
 		this.service = service;
 		this.entityModel = entityModel;
@@ -163,23 +163,24 @@ public class SimpleTokenFieldSelect<ID extends Serializable, S extends AbstractE
 
 		extTokenField = new ExtTokenField();
 
-		comboBox = new ComboBox();
-		comboBox.setFilteringMode(FilteringMode.CONTAINS);
+		comboBox = new ComboBox<T>();
+		// comboBox.setFilteringMode(FilteringMode.CONTAINS);
 		fillComboBox(this.elementCollection);
 
 		sortProperties = new ArrayList<>();
 		sortOrdering = new ArrayList<>();
 		GenericTokenFieldUtil.initializeOrdering(sortOrders, sortProperties, sortOrdering);
 
-		((IndexedContainer) comboBox.getContainerDataSource()).setItemSorter(new SimpleItemSorter());
+		// ((IndexedContainer) comboBox.getContainerDataSource()).setItemSorter(new
+		// SimpleItemSorter());
 
-		container = new BeanItemContainer<>(elementType);
+		dataProvider = new ListDataProvider<T>(new ArrayList<>());
 		valueChangeListeners = new ArrayList<>();
 
 		tokenizableFactory = new GenericTokenFieldUtil.TokenizableFactory<T>() {
 			@Override
-			public void addTokenToComboBox(Tokenizable tokenizable, ComboBox comboBox) {
-				comboBox.addItem(tokenizable.getStringValue());
+			public void addTokenToComboBox(Tokenizable tokenizable, ComboBox<T> comboBox) {
+				// comboBox.getIte(tokenizable.getStringValue());
 			}
 
 			@Override
@@ -188,15 +189,16 @@ public class SimpleTokenFieldSelect<ID extends Serializable, S extends AbstractE
 			}
 
 			@Override
-			public void removeTokenFromContainer(Tokenizable tokenizable, BeanItemContainer<T> container) {
-				container.removeItem(tokenizable.getStringValue());
+			public void removeTokenFromContainer(Tokenizable tokenizable, ListDataProvider<T> container) {
+				// container.removeItem(tokenizable.getStringValue());
 			}
 		};
 	}
 
 	@Override
-	public void addValueChangeListener(final ValueChangeListener listener) {
+	public Registration addValueChangeListener(final ValueChangeListener listener) {
 		valueChangeListeners.add(listener);
+		return null;
 	}
 
 	private void fillComboBox(boolean elementCollection) {
@@ -205,43 +207,37 @@ public class SimpleTokenFieldSelect<ID extends Serializable, S extends AbstractE
 			items = service.findDistinctInCollectionTable(attributeModel.getCollectionTableName(),
 					attributeModel.getCollectionTableFieldName(), elementType);
 		} else {
-			items = service.findDistinct(new FilterConverter(entityModel).convert(fieldFilter), distinctField,
+			items = service.findDistinct(new FilterConverter<T>(entityModel).convert(fieldFilter), distinctField,
 					elementType, SortUtil.translate(sortOrders));
 		}
-		comboBox.removeAllItems();
-		comboBox.addItems(items);
+		// comboBox.removeAllItems();
+		// comboBox.addItems(items);
 	}
 
-	public ComboBox getComboBox() {
+	public ComboBox<T> getComboBox() {
 		return comboBox;
 	}
 
-	@Override
-	protected List<T> getInternalValue() {
-		if (container.size() == 0) {
-			return null;
-		}
-		return container.getItemIds();
-	}
+	// @Override
+	// protected List<T> getInternalValue() {
+	// if (container.size() == 0) {
+	// return null;
+	// }
+	// return container.getItemIds();
+	// }
 
 	public ExtTokenField getTokenField() {
 		return extTokenField;
 	}
 
-	@Override
-	@SuppressWarnings("unchecked")
-	public Class<Collection<T>> getType() {
-		return (Class<Collection<T>>) (Object) Collection.class;
-	}
-
-	@Override
-	public List<T> getValue() {
-		return getInternalValue();
-	}
+	// @Override
+	// public List<T> getValue() {
+	// return getInternalValue();
+	// }
 
 	@Override
 	protected Component initContent() {
-		return GenericTokenFieldUtil.initContent(comboBox, messageService, extTokenField, container,
+		return GenericTokenFieldUtil.initContent(comboBox, messageService, extTokenField, dataProvider,
 				valueChangeListeners, this, sortProperties, sortOrdering, layout -> {
 					// nothing to do
 				}, tokenizableFactory);
@@ -254,27 +250,39 @@ public class SimpleTokenFieldSelect<ID extends Serializable, S extends AbstractE
 		}
 	}
 
-	@Override
-	protected void setInternalValue(Collection<T> values) {
-		super.setInternalValue(values);
-
-		if (values == null && !container.getItemIds().isEmpty()) {
-			// restore all item in the comboBox
-			for (T item : container.getItemIds()) {
-				comboBox.getContainerDataSource().addItem(item);
-			}
-			GenericTokenFieldUtil.sortComboBox(comboBox, sortProperties, sortOrdering);
-		}
-		container.removeAllItems();
-		if (values != null) {
-			container.addAll(values);
-		}
-	}
+	// @Override
+	// protected void setInternalValue(Collection<T> values) {
+	// super.setInternalValue(values);
+	//
+	// if (values == null && !container.getItemIds().isEmpty()) {
+	// // restore all item in the comboBox
+	// for (T item : container.getItemIds()) {
+	// comboBox.getContainerDataSource().addItem(item);
+	// }
+	// GenericTokenFieldUtil.sortComboBox(comboBox, sortProperties, sortOrdering);
+	// }
+	// container.removeAllItems();
+	// if (values != null) {
+	// container.addAll(values);
+	// }
+	// }
 
 	@Override
 	public void setValue(Collection<T> values) {
 		super.setValue(values);
-		setInternalValue(values);
+		// setInternalValue(values);
+	}
+
+	@Override
+	protected void doSetValue(Collection<T> value) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public Collection<T> getValue() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

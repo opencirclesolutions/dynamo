@@ -22,7 +22,9 @@ import java.util.Locale;
 import org.apache.commons.lang.StringUtils;
 
 import com.ocs.dynamo.ui.utils.VaadinUtils;
-import com.vaadin.data.util.converter.StringToBigDecimalConverter;
+import com.vaadin.data.Result;
+import com.vaadin.data.ValueContext;
+import com.vaadin.data.converter.StringToBigDecimalConverter;
 
 /**
  * A converter for converting between Strings and BigDecimals
@@ -52,6 +54,7 @@ public class BigDecimalConverter extends StringToBigDecimalConverter {
 	 *            will be applied to the decimalFormat of this converter.
 	 */
 	public BigDecimalConverter(final String pattern) {
+		super("Some error message");
 		this.pattern = pattern;
 	}
 
@@ -59,18 +62,18 @@ public class BigDecimalConverter extends StringToBigDecimalConverter {
 	 * Constructor - for use with a precision and grouping setting
 	 */
 	public BigDecimalConverter(int precision, boolean useGrouping) {
+		super("Some error message");
 		this.precision = precision;
 		this.useGrouping = useGrouping;
 	}
 
 	@Override
-	public BigDecimal convertToModel(String value, Class<? extends BigDecimal> targetType, Locale locale) {
-		// the original Vaadin code curiously returns a Double here and casts
-		// that to a BigDecimal.
-		// That is not correct, so we use this additional step here
-		Number number = convertToNumber(value, BigDecimal.class, locale);
-		return number == null ? null : BigDecimal.valueOf(number.doubleValue()).setScale(precision,
-		        RoundingMode.HALF_UP);
+	public Result<BigDecimal> convertToModel(String value, ValueContext context) {
+		Result<Number> number = convertToNumber(value, context);
+		return number.flatMap(r -> {
+			BigDecimal bd = BigDecimal.valueOf(r.doubleValue()).setScale(precision, RoundingMode.HALF_UP);
+			return Result.ok(bd);
+		});
 	}
 
 	@Override
@@ -86,7 +89,7 @@ public class BigDecimalConverter extends StringToBigDecimalConverter {
 	 * @return
 	 */
 	public DecimalFormat getDecimalFormat(Locale locale) {
-		locale = locale != null ? locale : VaadinUtils.getLocale();
+		locale = locale != null ? null : VaadinUtils.getLocale();
 		DecimalFormat decimalFormat = constructFormat(locale);
 
 		if (!StringUtils.isEmpty(pattern)) {

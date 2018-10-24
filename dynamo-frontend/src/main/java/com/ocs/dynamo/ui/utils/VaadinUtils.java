@@ -23,34 +23,33 @@ import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.vaadin.addons.lazyquerycontainer.CompositeItem;
-import org.vaadin.addons.lazyquerycontainer.NestingBeanItem;
 import org.vaadin.dialogs.ConfirmDialog;
 
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
+import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.ui.container.pivot.PivotItem;
 import com.ocs.dynamo.ui.converter.BigDecimalConverter;
 import com.ocs.dynamo.ui.converter.ConverterFactory;
 import com.ocs.dynamo.util.SystemPropertyUtils;
-import com.vaadin.data.Container;
-import com.vaadin.data.Item;
+import com.vaadin.data.Converter;
 import com.vaadin.data.Validator;
-import com.vaadin.data.util.BeanItem;
-import com.vaadin.data.util.converter.Converter;
-import com.vaadin.data.util.converter.StringToIntegerConverter;
-import com.vaadin.data.util.converter.StringToLongConverter;
+import com.vaadin.data.ValueContext;
+import com.vaadin.data.converter.StringToIntegerConverter;
+import com.vaadin.data.converter.StringToLongConverter;
+import com.vaadin.data.provider.DataProvider;
 import com.vaadin.server.Page;
+import com.vaadin.server.SerializablePredicate;
 import com.vaadin.server.VaadinSession;
+import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.Field;
 import com.vaadin.ui.FormLayout;
+import com.vaadin.ui.Grid;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.Tab;
-import com.vaadin.ui.Table;
 import com.vaadin.ui.UI;
 
 /**
@@ -66,23 +65,24 @@ public final class VaadinUtils {
 	 * @param container
 	 * @param attributeModel
 	 */
-	public static void addPropertyIdToContainer(Container container, AttributeModel attributeModel) {
-		if (container != null && attributeModel != null && attributeModel.isVisibleInTable()
-				&& !container.getContainerPropertyIds().contains(attributeModel.getPath())) {
-			container.addContainerProperty(attributeModel.getPath(), attributeModel.getType(),
-					attributeModel.getDefaultValue());
-		}
+	public static <T> void addPropertyIdToContainer(DataProvider<T, SerializablePredicate<T>> provider,
+			AttributeModel attributeModel) {
+//		if (provider != null && attributeModel != null && attributeModel.isVisibleInTable()
+//				&& !provider.getContainerPropertyIds().contains(attributeModel.getPath())) {
+//			provider.addContainerProperty(attributeModel.getPath(), attributeModel.getType(),
+//					attributeModel.getDefaultValue());
+//		}
 	}
 
-    /**
-	 * Add attribute from entitymodel to container when not in container already.
+	/**
+	 * Add attribute from entity model to container when not in container already.
 	 *
 	 * @param container
 	 * @param entityModel
 	 * @param attributeName
 	 */
-	public static <T> void addPropertyIdToContainer(Container container, EntityModel<T> entityModel,
-			String attributeName) {
+	public static <T> void addPropertyIdToContainer(DataProvider<T, SerializablePredicate<T>> container,
+			EntityModel<T> entityModel, String attributeName) {
 		if (entityModel != null) {
 			AttributeModel attributeModel = entityModel.getAttributeModel(attributeName);
 			addPropertyIdToContainer(container, attributeModel);
@@ -90,24 +90,25 @@ public final class VaadinUtils {
 	}
 
 	/**
-	 * Check if all editable fields that are contained in a (fixed, non-lazy) table are valid. This method is needed
-	 * because simply calling table.isValid() will not take into account any editable components within the table
+	 * Check if all editable fields that are contained in a (fixed, non-lazy) table
+	 * are valid. This method is needed because simply calling table.isValid() will
+	 * not take into account any editable components within the table
 	 *
 	 * @param table
 	 *            the table
 	 * @return
 	 */
-    public static boolean allFixedTableFieldsValid(Table table) {
-        boolean allValid = true;
-        Iterator<Component> component = table.iterator();
-        while (component.hasNext() && allValid) {
-            Component next = component.next();
-            if (next instanceof Field) {
-                allValid &= ((Field<?>) next).isValid();
-            }
-        }
-        return allValid;
-    }
+	public static <T> boolean allFixedTableFieldsValid(Grid<T> grid) {
+		boolean allValid = true;
+		Iterator<Component> component = grid.iterator();
+		while (component.hasNext() && allValid) {
+			Component next = component.next();
+			if (next instanceof AbstractField) {
+				//allValid &= ((AbstractField<?>) next).isValid();
+			}
+		}
+		return allValid;
+	}
 
 	/**
 	 * Check if all editable fields that are contained in a (fixed, non-lazy) table
@@ -191,7 +192,7 @@ public final class VaadinUtils {
 			BigDecimal value, Locale locale, String currencySymbol) {
 		BigDecimalConverter converter = ConverterFactory.createBigDecimalConverter(currency, percentage, useGrouping,
 				precision, currencySymbol);
-		return converter.convertToPresentation(value, String.class, locale);
+		return converter.convertToPresentation(value, new ValueContext(locale));
 	}
 
 	/**
@@ -232,10 +233,10 @@ public final class VaadinUtils {
 	 *            the ID of the entity
 	 * @return
 	 */
-	public static <ID, T> T getEntityFromContainer(Container container, ID id) {
-		Object obj = container.getItem(id);
-		return getEntityFromItem(obj);
-	}
+	// public static <ID, T> T getEntityFromContainer(Container container, ID id) {
+	// Object obj = container.getItem(id);
+	// return getEntityFromItem(obj);
+	// }
 
 	/**
 	 * Extract an entity from a Vaadin Item object
@@ -244,18 +245,18 @@ public final class VaadinUtils {
 	 *            the Item object (can be either a CompositeItem or a BeanItem)
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
-	public static <T> T getEntityFromItem(Object obj) {
-		if (obj instanceof CompositeItem) {
-			CompositeItem item = (CompositeItem) obj;
-			NestingBeanItem<T> bi = (NestingBeanItem<T>) item.getItem("bean");
-			return bi.getBean();
-		} else if (obj instanceof BeanItem) {
-			BeanItem<T> bi = (BeanItem<T>) obj;
-			return bi.getBean();
-		}
-		return null;
-	}
+//	@SuppressWarnings("unchecked")
+//	public static <T> T getEntityFromItem(Object obj) {
+//		if (obj instanceof CompositeItem) {
+//			CompositeItem item = (CompositeItem) obj;
+//			NestingBeanItem<T> bi = (NestingBeanItem<T>) item.getItem("bean");
+//			return bi.getBean();
+//		} else if (obj instanceof BeanItem) {
+//			BeanItem<T> bi = (BeanItem<T>) obj;
+//			return bi.getBean();
+//		}
+//		return null;
+//	}
 
 	/**
 	 * Extracts an entity from a PivotItem
@@ -266,11 +267,11 @@ public final class VaadinUtils {
 	 *            the name of the column to extract
 	 * @return
 	 */
-	public static <T> T getEntityFromPivotItem(Item item, String column) {
-		PivotItem pi = (PivotItem) item;
-		Item nested = pi.getColumn(column);
-		return getEntityFromItem(nested);
-	}
+//	public static <T> T getEntityFromPivotItem(Item item, String column) {
+//		PivotItem pi = (PivotItem) item;
+//		Item nested = pi.getColumn(column);
+//		return getEntityFromItem(nested);
+//	}
 
 	@SuppressWarnings("unchecked")
 	public static <T extends Component> T getFirstChildOfClass(Layout layout, Class<T> clazz) {
@@ -459,7 +460,7 @@ public final class VaadinUtils {
 	 */
 	public static String integerToString(boolean grouping, boolean percentage, Integer value, Locale locale) {
 		StringToIntegerConverter converter = ConverterFactory.createIntegerConverter(grouping, percentage);
-		return converter.convertToPresentation(value, String.class, locale);
+		return converter.convertToPresentation(value, new ValueContext(locale));
 	}
 
 	/**
@@ -540,7 +541,7 @@ public final class VaadinUtils {
 	 */
 	public static String longToString(boolean grouping, boolean percentage, Long value, Locale locale) {
 		StringToLongConverter converter = ConverterFactory.createLongConverter(grouping, percentage);
-		return converter.convertToPresentation(value, String.class, locale);
+		return converter.convertToPresentation(value, new ValueContext(locale));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -549,18 +550,19 @@ public final class VaadinUtils {
 		Converter<String, T> cv = (Converter<String, T>) ConverterFactory.createConverterFor(type, attributeModel,
 				grouping);
 		if (cv != null) {
-			return cv.convertToPresentation(value, String.class, locale);
+			return cv.convertToPresentation(value, new ValueContext(locale));
 		}
 		return null;
 	}
 
-	public static void removeValidatorsOfType(Field<?> field, Class<?> validatorClass) {
-		for (Validator v : field.getValidators()) {
-			if (v.getClass().equals(validatorClass)) {
-				field.removeValidator(v);
-			}
-		}
-	}
+	// public static <T> void removeValidatorsOfType(AbstractField<?> field,
+	// Class<?> validatorClass) {
+	// for (Validator<T> v : field.getValidators()) {
+	// if (v.getClass().equals(validatorClass)) {
+	// field.removeValidator(v);
+	// }
+	// }
+	// }
 
 	/**
 	 * Displays a confirmation dialog
@@ -585,32 +587,33 @@ public final class VaadinUtils {
 		}
 	}
 
-    /**
-     * Displays a confirmation dialog
-     *
-     * @param messageService
-     * @param question
-     *            the question to be displayed in the dialog
-     * @param whenConfirmed
-     *            the code to execute when the user confirms the dialog
-     * @param whenCanceled
-     *            the code to execute when the user cancels the dialog
-     */
-    public static void showConfirmDialog(MessageService messageService, String question, final Runnable whenConfirmed, final Runnable whenCanceled) {
-        if (UI.getCurrent() != null) {
-            ConfirmDialog.show(UI.getCurrent(), messageService.getMessage("ocs.confirm", getLocale()), question,
-                    messageService.getMessage("ocs.yes", getLocale()), messageService.getMessage("ocs.no", getLocale()),
-                    dialog -> {
-                        if (dialog.isConfirmed()) {
-                            whenConfirmed.run();
-                        } else {
-                            whenCanceled.run();
-                        }
-                    });
-        } else {
-            whenConfirmed.run();
-        }
-    }
+	/**
+	 * Displays a confirmation dialog
+	 *
+	 * @param messageService
+	 * @param question
+	 *            the question to be displayed in the dialog
+	 * @param whenConfirmed
+	 *            the code to execute when the user confirms the dialog
+	 * @param whenCanceled
+	 *            the code to execute when the user cancels the dialog
+	 */
+	public static void showConfirmDialog(MessageService messageService, String question, final Runnable whenConfirmed,
+			final Runnable whenCanceled) {
+		if (UI.getCurrent() != null) {
+			ConfirmDialog.show(UI.getCurrent(), messageService.getMessage("ocs.confirm", getLocale()), question,
+					messageService.getMessage("ocs.yes", getLocale()), messageService.getMessage("ocs.no", getLocale()),
+					dialog -> {
+						if (dialog.isConfirmed()) {
+							whenConfirmed.run();
+						} else {
+							whenCanceled.run();
+						}
+					});
+		} else {
+			whenConfirmed.run();
+		}
+	}
 
 	/**
 	 * Converts a string to a big decimal
@@ -631,7 +634,7 @@ public final class VaadinUtils {
 			int precision, String value, Locale locale) {
 		BigDecimalConverter converter = ConverterFactory.createBigDecimalConverter(currency, percentage, useGrouping,
 				precision, VaadinUtils.getCurrencySymbol());
-		return converter.convertToModel(value, BigDecimal.class, locale);
+		return converter.convertToModel(value, new ValueContext(locale)).getOrThrow(r -> new OCSRuntimeException());
 	}
 
 	/**
@@ -675,7 +678,7 @@ public final class VaadinUtils {
 	 */
 	public static Integer stringToInteger(boolean grouping, String value, Locale locale) {
 		StringToIntegerConverter converter = ConverterFactory.createIntegerConverter(grouping, false);
-		return converter.convertToModel(value, Integer.class, locale);
+		return converter.convertToModel(value, new ValueContext(locale)).getOrThrow(r -> new OCSRuntimeException());
 	}
 
 	/**
@@ -689,7 +692,8 @@ public final class VaadinUtils {
 	 */
 	public static Long stringToLong(boolean grouping, String value) {
 		StringToLongConverter converter = ConverterFactory.createLongConverter(grouping, false);
-		return converter.convertToModel(value, Long.class, getLocale());
+		return converter.convertToModel(value, new ValueContext(getLocale()))
+				.getOrThrow(r -> new OCSRuntimeException());
 	}
 
 	/**
@@ -705,7 +709,7 @@ public final class VaadinUtils {
 	 */
 	public static Long stringToLong(boolean grouping, String value, Locale locale) {
 		StringToLongConverter converter = ConverterFactory.createLongConverter(grouping, false);
-		return converter.convertToModel(value, Long.class, locale);
+		return converter.convertToModel(value, new ValueContext(locale)).getOrThrow(r -> new OCSRuntimeException());
 	}
 
 	/**

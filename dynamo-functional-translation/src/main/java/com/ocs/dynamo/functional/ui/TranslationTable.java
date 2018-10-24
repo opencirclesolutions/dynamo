@@ -28,8 +28,8 @@ import com.ocs.dynamo.ui.CanAssignEntity;
 import com.ocs.dynamo.ui.composite.form.DetailsEditTable;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.Field;
-import com.vaadin.ui.TextArea;
+import com.vaadin.v7.ui.Field;
+import com.vaadin.v7.ui.TextArea;
 
 /**
  * @author Patrick.Deenen@opencircle.solutions

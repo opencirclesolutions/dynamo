@@ -14,47 +14,39 @@
 package com.ocs.dynamo.ui.converter;
 
 import java.time.LocalDate;
-import java.util.Locale;
 
 import org.apache.commons.lang.StringUtils;
 
 import com.ocs.dynamo.utils.DateUtils;
-import com.vaadin.data.util.converter.Converter;
+import com.vaadin.data.Converter;
+import com.vaadin.data.Result;
+import com.vaadin.data.ValueContext;
 
 /**
- * Converter for converting between a String (representing a week code) and a LocalDate
+ * Converter for converting between a String (representing a week code) and a
+ * LocalDate
  * 
  * @author bas.rutten
  *
  */
 public class LocalDateWeekCodeConverter implements Converter<String, LocalDate> {
 
-    private static final long serialVersionUID = -3286439685884522679L;
+	private static final long serialVersionUID = -3286439685884522679L;
 
-    @Override
-    public LocalDate convertToModel(String value, Class<? extends LocalDate> targetType, Locale locale) {
-        if (StringUtils.isEmpty(value)) {
-            return null;
-        }
-        return DateUtils.toStartDateOfWeek(value);
-    }
+	@Override
+	public Result<LocalDate> convertToModel(String value, ValueContext context) {
+		if (StringUtils.isEmpty(value)) {
+			return null;
+		}
+		return Result.ok(DateUtils.toStartDateOfWeek(value));
+	}
 
-    @Override
-    public String convertToPresentation(LocalDate value, Class<? extends String> targetType, Locale locale) {
-        if (value == null) {
-            return null;
-        }
-        return DateUtils.toWeekCode(value);
-    }
-
-    @Override
-    public Class<LocalDate> getModelType() {
-        return LocalDate.class;
-    }
-
-    @Override
-    public Class<String> getPresentationType() {
-        return String.class;
-    }
+	@Override
+	public String convertToPresentation(LocalDate value, ValueContext context) {
+		if (value == null) {
+			return null;
+		}
+		return DateUtils.toWeekCode(value);
+	}
 
 }

@@ -13,13 +13,13 @@
  */
 package com.ocs.dynamo.filter;
 
-import com.vaadin.data.Container.Filter;
-import com.vaadin.data.util.filter.AbstractJunctionFilter;
-import com.vaadin.data.util.filter.Between;
-import com.vaadin.data.util.filter.Compare;
-import com.vaadin.data.util.filter.Compare.Equal;
-import com.vaadin.data.util.filter.Like;
-import com.vaadin.data.util.filter.SimpleStringFilter;
+import com.vaadin.v7.data.Container.Filter;
+import com.vaadin.v7.data.util.filter.AbstractJunctionFilter;
+import com.vaadin.v7.data.util.filter.Between;
+import com.vaadin.v7.data.util.filter.Compare;
+import com.vaadin.v7.data.util.filter.Compare.Equal;
+import com.vaadin.v7.data.util.filter.Like;
+import com.vaadin.v7.data.util.filter.SimpleStringFilter;
 import org.springframework.util.StringUtils;
 
 import java.util.Arrays;
@@ -111,15 +111,14 @@ public final class FilterUtil {
 					return found;
 				}
 			}
-		} else if (filter instanceof com.vaadin.data.util.filter.Compare
-				&& (types == null || types.contains(filter.getClass()))) {
-			com.vaadin.data.util.filter.Compare compare = (com.vaadin.data.util.filter.Compare) filter;
+		} else if (filter instanceof Compare && (types == null || types.contains(filter.getClass()))) {
+			Compare compare = (Compare) filter;
 			if (compare.getPropertyId().equals(propertyId)) {
 				return compare;
 			}
-		} else if (filter instanceof com.vaadin.data.util.filter.Like
+		} else if (filter instanceof com.vaadin.v7.data.util.filter.Like
 				&& (types == null || types.contains(filter.getClass()))) {
-			com.vaadin.data.util.filter.Like like = (com.vaadin.data.util.filter.Like) filter;
+			Like like = (Like) filter;
 			if (like.getPropertyId().equals(propertyId)) {
 				return like;
 			}
@@ -150,9 +149,7 @@ public final class FilterUtil {
 	@SafeVarargs
 	public static Object extractFilterValue(Filter filter, String propertyId, Class<? extends Filter>... typesToFind) {
 		List<Class<? extends Filter>> types = typesToFind == null || typesToFind.length == 0
-				|| (typesToFind.length == 1 && typesToFind[0] == null)
-				? null
-				: Arrays.asList(typesToFind);
+				|| (typesToFind.length == 1 && typesToFind[0] == null) ? null : Arrays.asList(typesToFind);
 		if (filter instanceof AbstractJunctionFilter) {
 			AbstractJunctionFilter junction = (AbstractJunctionFilter) filter;
 			for (Filter child : junction.getFilters()) {
@@ -164,15 +161,14 @@ public final class FilterUtil {
 					}
 				}
 			}
-		} else if (filter instanceof com.vaadin.data.util.filter.Compare
+		} else if (filter instanceof com.vaadin.v7.data.util.filter.Compare
 				&& (types == null || types.contains(filter.getClass()))) {
-			com.vaadin.data.util.filter.Compare compare = (com.vaadin.data.util.filter.Compare) filter;
+			Compare compare = (Compare) filter;
 			if (compare.getPropertyId().equals(propertyId)) {
 				return compare.getValue();
 			}
-		} else if (filter instanceof com.vaadin.data.util.filter.Like
-				&& (types == null || types.contains(filter.getClass()))) {
-			com.vaadin.data.util.filter.Like like = (com.vaadin.data.util.filter.Like) filter;
+		} else if (filter instanceof Like && (types == null || types.contains(filter.getClass()))) {
+			Like like = (Like) filter;
 			if (like.getPropertyId().equals(propertyId)) {
 				return like.getValue();
 			}

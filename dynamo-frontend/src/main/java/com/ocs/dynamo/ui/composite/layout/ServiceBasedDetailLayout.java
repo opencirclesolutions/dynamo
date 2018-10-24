@@ -21,7 +21,7 @@ import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.CanAssignEntity;
 import com.ocs.dynamo.ui.container.QueryType;
-import com.vaadin.data.sort.SortOrder;
+import com.vaadin.data.provider.SortOrder;
 
 /**
  * A split layout that contains a reference to the parent object
@@ -61,7 +61,7 @@ public class ServiceBasedDetailLayout<ID extends Serializable, T extends Abstrac
 	 * @param joins
 	 */
 	public ServiceBasedDetailLayout(BaseService<ID, T> service, Q parentEntity, BaseService<ID2, Q> parentService,
-			EntityModel<T> entityModel, QueryType queryType, FormOptions formOptions, SortOrder sortOrder,
+			EntityModel<T> entityModel, QueryType queryType, FormOptions formOptions, SortOrder<?> sortOrder,
 			FetchJoinInformation... joins) {
 		super(service, entityModel, queryType, formOptions, sortOrder, joins);
 		this.parentEntity = parentEntity;

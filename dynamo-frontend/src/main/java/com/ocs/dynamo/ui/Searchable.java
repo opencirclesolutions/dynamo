@@ -13,22 +13,23 @@
  */
 package com.ocs.dynamo.ui;
 
-import com.vaadin.data.Container.Filter;
+import com.vaadin.server.SerializablePredicate;
 
 /**
  * An interface for objects that can receive search requests
  * 
+ * @param <T>
  * @author bas.rutten
  */
 @FunctionalInterface
-public interface Searchable {
+public interface Searchable<T> {
 
-    /**
-     * Perform the search
-     * 
-     * @param filter
-     *            the filter to apply to the search
-     */
-    void search(Filter filter);
+	/**
+	 * Perform the search
+	 * 
+	 * @param filter
+	 *            the filter to apply to the search
+	 */
+	void search(SerializablePredicate<T> filter);
 
 }

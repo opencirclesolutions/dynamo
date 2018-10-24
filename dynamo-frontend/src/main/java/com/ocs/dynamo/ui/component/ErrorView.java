@@ -20,6 +20,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 
+
 /**
  * A view that is displayed when the user navigates to a non-existing view or a view for which the
  * user is not authorized

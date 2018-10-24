@@ -82,7 +82,7 @@ public class CustomNavigator extends Navigator {
 		providers.add(provider);
 	}
 
-	private ViewProvider getViewProvider(String state) {
+	protected ViewProvider getViewProvider(String state) {
 		String longestViewName = null;
 		ViewProvider longestViewNameProvider = null;
 		for (ViewProvider provider : providers) {

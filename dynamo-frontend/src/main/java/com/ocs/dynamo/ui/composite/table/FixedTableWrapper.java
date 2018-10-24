@@ -21,10 +21,10 @@ import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.container.QueryType;
-import com.vaadin.data.Container;
-import com.vaadin.data.Container.Filter;
-import com.vaadin.data.sort.SortOrder;
-import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.data.provider.DataProvider;
+import com.vaadin.data.provider.ListDataProvider;
+import com.vaadin.data.provider.SortOrder;
+import com.vaadin.server.SerializablePredicate;
 
 /**
  * A wrapper for a table that displays a fixed number of items
@@ -35,48 +35,45 @@ import com.vaadin.data.util.BeanItemContainer;
  * @param <T>
  *            type of the entity
  */
-public class FixedTableWrapper<ID extends Serializable, T extends AbstractEntity<ID>> extends BaseTableWrapper<ID, T> {
+public class FixedTableWrapper<ID extends Serializable, T extends AbstractEntity<ID>> extends BaseGridWrapper<ID, T> {
 
-    private static final long serialVersionUID = -6711832174203817230L;
+	private static final long serialVersionUID = -6711832174203817230L;
 
-    /**
-     * The items to display in the table
-     */
-    private Collection<T> items;
+	/**
+	 * The items to display in the table
+	 */
+	private Collection<T> items;
 
-    /**
-     * Constructor
-     * 
-     * @param service
-     *            the service
-     * @param entityModel
-     *            the entity model of the items to display in the table
-     * @param items
-     *            the items to display
-     * @param sortOrder
-     *            optional sort order
-     */
-    public FixedTableWrapper(BaseService<ID, T> service, EntityModel<T> entityModel, Collection<T> items,
-            List<SortOrder> sortOrders, boolean allowExport) {
-        super(service, entityModel, QueryType.NONE, sortOrders, allowExport);
-        this.items = items;
-    }
+	/**
+	 * Constructor
+	 * 
+	 * @param service
+	 *            the service
+	 * @param entityModel
+	 *            the entity model of the items to display in the table
+	 * @param items
+	 *            the items to display
+	 * @param sortOrder
+	 *            optional sort order
+	 */
+	public FixedTableWrapper(BaseService<ID, T> service, EntityModel<T> entityModel, Collection<T> items,
+			List<SortOrder<?>> sortOrders, boolean allowExport) {
+		super(service, entityModel, QueryType.NONE, sortOrders, allowExport);
+		this.items = items;
+	}
 
-    @Override
-    protected Container constructContainer() {
-        BeanItemContainer<T> container = new BeanItemContainer<>(getService().getEntityClass());
-        doConstructContainer(container);
-        container.addAll(items);
-        return container;
-    }
+	@Override
+	protected DataProvider<T, SerializablePredicate<T>> constructDataProvider() {
+		return new ListDataProvider<T>(items);
+	}
 
-    @Override
-    public void reloadContainer() {
-        // do nothing
-    }
+	@Override
+	public void reloadDataProvider() {
+		// do nothing
+	}
 
-    @Override
-    public void search(Filter filter) {
-        // do nothing
-    }
+	@Override
+	public void search(SerializablePredicate<T> filter) {
+		// do nothing
+	}
 }

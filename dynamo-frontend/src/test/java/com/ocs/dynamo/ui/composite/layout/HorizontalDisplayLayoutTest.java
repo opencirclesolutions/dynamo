@@ -11,7 +11,7 @@ import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.service.TestEntityService;
 import com.ocs.dynamo.test.BaseIntegrationTest;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.v7.ui.HorizontalLayout;
 
 public class HorizontalDisplayLayoutTest extends BaseIntegrationTest {
 

@@ -15,21 +15,17 @@ package com.ocs.dynamo.ui.component;
 
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.HashSet;
 
+import com.google.gwt.thirdparty.guava.common.collect.Lists;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.Refreshable;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
-import com.vaadin.data.Container.Filter;
-import com.vaadin.data.Validator;
-import com.vaadin.data.Validator.InvalidValueException;
-import com.vaadin.data.sort.SortOrder;
-import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.data.util.filter.And;
-import com.vaadin.ui.AbstractSelect.ItemCaptionMode;
+import com.vaadin.data.provider.ListDataProvider;
+import com.vaadin.data.provider.SortOrder;
+import com.vaadin.server.SerializablePredicate;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
@@ -73,12 +69,12 @@ public class FancyListSelect<ID extends Serializable, T extends AbstractEntity<I
 	/**
 	 * the bean containers that holds the selected values
 	 */
-	private BeanItemContainer<T> container;
+	private ListDataProvider<T> dataProvider;
 
 	/**
 	 * The ListSelect component that shows the selected values
 	 */
-	private ListSelect listSelect;
+	private ListSelect<T> listSelect;
 
 	/**
 	 * The button for removing an item
@@ -93,7 +89,7 @@ public class FancyListSelect<ID extends Serializable, T extends AbstractEntity<I
 	/**
 	 * The sort order to apply to the combo box
 	 */
-	private SortOrder[] sortOrders;
+	private SortOrder<?>[] sortOrders;
 
 	private boolean search;
 
@@ -116,21 +112,21 @@ public class FancyListSelect<ID extends Serializable, T extends AbstractEntity<I
 	 *            the joins to use when fetching data when filling the popup dialog
 	 */
 	public FancyListSelect(BaseService<ID, T> service, EntityModel<T> entityModel, AttributeModel attributeModel,
-			Filter filter, boolean search, SortOrder... sortOrders) {
+			SerializablePredicate<T> filter, boolean search, SortOrder<?>... sortOrders) {
 		super(service, entityModel, attributeModel, filter);
 		this.sortOrders = sortOrders;
 		this.search = search;
 		this.addAllowed = !search && (attributeModel != null && attributeModel.isQuickAddAllowed());
-		container = new BeanItemContainer<>(getEntityModel().getEntityClass());
-		listSelect = new ListSelect(null, container);
+		dataProvider = new ListDataProvider<T>(Lists.newArrayList());
+		listSelect = new ListSelect<T>();
+		listSelect.setDataProvider(dataProvider);
 		comboBox = new EntityComboBox<>(getEntityModel(), getAttributeModel(), getService(), getFilter(), sortOrders);
 	}
 
 	@Override
 	protected void afterNewEntityAdded(T entity) {
 		comboBox.addEntity(entity);
-		container.addBean(entity);
-		copyValueFromContainer();
+		dataProvider.getItems().add(entity);
 	}
 
 	@Override
@@ -139,15 +135,6 @@ public class FancyListSelect<ID extends Serializable, T extends AbstractEntity<I
 		if (comboBox != null) {
 			comboBox.refresh(getFilter());
 		}
-	}
-
-	/**
-	 * Copies the selected values from the container behind the ListSelect to the
-	 * component value
-	 */
-	private void copyValueFromContainer() {
-		Collection<T> values = container.getItemIds();
-		setValue(new HashSet<>(values));
 	}
 
 	@Override
@@ -166,7 +153,7 @@ public class FancyListSelect<ID extends Serializable, T extends AbstractEntity<I
 		return comboBox;
 	}
 
-	public ListSelect getListSelect() {
+	public ListSelect<T> getListSelect() {
 		return listSelect;
 	}
 
@@ -178,13 +165,8 @@ public class FancyListSelect<ID extends Serializable, T extends AbstractEntity<I
 		return selectButton;
 	}
 
-	public SortOrder[] getSortOrders() {
+	public SortOrder<?>[] getSortOrders() {
 		return sortOrders;
-	}
-
-	@Override
-	public Class<?> getType() {
-		return Object.class;
 	}
 
 	@Override
@@ -207,9 +189,10 @@ public class FancyListSelect<ID extends Serializable, T extends AbstractEntity<I
 		// button for selecting an item
 		selectButton = new Button(getMessageService().getMessage("ocs.select", VaadinUtils.getLocale()));
 		selectButton.addClickListener(event -> {
-			if (comboBox.getValue() != null && !container.containsId(comboBox.getValue())) {
-				container.addBean((T) comboBox.getValue());
-				copyValueFromContainer();
+			if (comboBox.getValue() != null && !dataProvider.getItems().contains(comboBox.getValue())) {
+				dataProvider.getItems().add(comboBox.getValue());
+				// copyValueFromContainer();
+				listSelect.select(comboBox.getValue());
 			}
 			comboBox.setValue(null);
 		});
@@ -222,8 +205,8 @@ public class FancyListSelect<ID extends Serializable, T extends AbstractEntity<I
 			if (value instanceof Collection) {
 				Collection<T> col = (Collection<T>) value;
 				for (T t : col) {
-					container.removeItem(t);
-					copyValueFromContainer();
+					listSelect.deselect(t);
+					dataProvider.getItems().remove(t);
 				}
 			}
 		});
@@ -233,8 +216,8 @@ public class FancyListSelect<ID extends Serializable, T extends AbstractEntity<I
 		clearButton = new Button(getMessageService().getMessage("ocs.clear", VaadinUtils.getLocale()));
 		clearButton.addClickListener(event -> {
 			// clear the container
-			setValue(new HashSet<>());
-			copyValueFromContainer();
+			listSelect.deselectAll();
+			dataProvider.getItems().clear();
 		});
 		secondBar.addComponent(clearButton);
 
@@ -246,10 +229,10 @@ public class FancyListSelect<ID extends Serializable, T extends AbstractEntity<I
 
 		// the list select component shows the currently selected values
 		listSelect.setSizeFull();
-		listSelect.setNullSelectionAllowed(false);
-		listSelect.setItemCaptionMode(ItemCaptionMode.PROPERTY);
-		listSelect.setItemCaptionPropertyId(getEntityModel().getDisplayProperty());
-		listSelect.setMultiSelect(true);
+		// listSelect.setNullSelectionAllowed(false);
+		// listSelect.setItemCaptionMode(ItemCaptionMode.PROPERTY);
+		// listSelect.setItemCaptionPropertyId(getEntityModel().getDisplayProperty());
+		// listSelect.setMultiSelect(true);
 		layout.addComponent(listSelect);
 
 		return layout;
@@ -263,7 +246,7 @@ public class FancyListSelect<ID extends Serializable, T extends AbstractEntity<I
 	}
 
 	@Override
-	public void refresh(Filter filter) {
+	public void refresh(SerializablePredicate<T> filter) {
 		setFilter(filter);
 		if (comboBox != null) {
 			comboBox.refresh(filter);
@@ -277,27 +260,26 @@ public class FancyListSelect<ID extends Serializable, T extends AbstractEntity<I
 	 */
 	@SuppressWarnings("unchecked")
 	private void repopulateContainer(Object value) {
-		if (container != null) {
-			container.removeAllItems();
+		if (dataProvider != null) {
+			dataProvider.getItems().clear();
 			if (value != null && value instanceof Collection) {
-				container.addAll((Collection<T>) value);
+				dataProvider.getItems().addAll((Collection<T>) value);
 			}
 		}
 	}
 
 	@Override
-	public void setAdditionalFilter(Filter additionalFilter) {
+	public void setAdditionalFilter(SerializablePredicate<T> additionalFilter) {
 		super.setAdditionalFilter(additionalFilter);
 		if (comboBox != null) {
 			comboBox.setValue(null);
-			comboBox.refresh(getFilter() == null ? additionalFilter : new And(getFilter(), additionalFilter));
+			comboBox.refresh(getFilter() == null ? additionalFilter : getFilter().and(additionalFilter));
 		}
 	}
 
 	@Override
-	protected void setInternalValue(Object newValue) {
-		super.setInternalValue(newValue);
-		repopulateContainer(newValue);
+	protected void doSetValue(Object value) {
+		repopulateContainer(value);
 	}
 
 	public void setRows(int rows) {
@@ -313,13 +295,27 @@ public class FancyListSelect<ID extends Serializable, T extends AbstractEntity<I
 	}
 
 	@Override
-	public void validate() throws InvalidValueException {
-		if (!search && getAttributeModel() != null && getAttributeModel().isRequired()
-				&& container.getItemIds().isEmpty()) {
-			throw new Validator.EmptyValueException(
-					getMessageService().getMessage("ocs.value.required", VaadinUtils.getLocale()));
+	public Object getValue() {
+		if (listSelect != null) {
+			return listSelect.getValue();
 		}
-		super.validate();
+		return null;
+	}
+
+	// @Override
+	// public void validate() throws InvalidValueException {
+	// if (!search && getAttributeModel() != null &&
+	// getAttributeModel().isRequired()
+	// && container.getItemIds().isEmpty()) {
+	// throw new Validator.EmptyValueException(
+	// getMessageService().getMessage("ocs.value.required",
+	// VaadinUtils.getLocale()));
+	// }
+	// super.validate();
+	// }
+
+	public int getDataProviderSize() {
+		return dataProvider.getItems().size();
 	}
 
 }

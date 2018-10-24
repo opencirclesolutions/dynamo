@@ -17,28 +17,29 @@ import java.text.NumberFormat;
 import java.util.Locale;
 
 import com.ocs.dynamo.ui.utils.VaadinUtils;
-import com.vaadin.data.util.converter.StringToLongConverter;
+import com.vaadin.data.converter.StringToLongConverter;
 
 /**
- * A converter from String to Long that allows the user to specify whether a grouping separator must
- * be used
+ * A converter from String to Long that allows the user to specify whether a
+ * grouping separator must be used
  * 
  * @author bas.rutten
  */
 public class GroupingStringToLongConverter extends StringToLongConverter {
 
-    private static final long serialVersionUID = -281060172465120956L;
+	private static final long serialVersionUID = -281060172465120956L;
 
-    private boolean useGrouping;
+	private boolean useGrouping;
 
-    public GroupingStringToLongConverter(boolean useGrouping) {
-        this.useGrouping = useGrouping;
-    }
+	public GroupingStringToLongConverter(boolean useGrouping) {
+		super("TODO");
+		this.useGrouping = useGrouping;
+	}
 
-    @Override
-    protected NumberFormat getFormat(Locale locale) {
-        NumberFormat format = super.getFormat(locale == null ? VaadinUtils.getLocale() : locale);
-        format.setGroupingUsed(useGrouping);
-        return format;
-    }
+	@Override
+	protected NumberFormat getFormat(Locale locale) {
+		NumberFormat format = super.getFormat(locale == null ? VaadinUtils.getLocale() : locale);
+		format.setGroupingUsed(useGrouping);
+		return format;
+	}
 }

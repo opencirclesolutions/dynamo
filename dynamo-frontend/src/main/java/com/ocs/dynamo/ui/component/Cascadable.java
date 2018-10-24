@@ -13,33 +13,36 @@
  */
 package com.ocs.dynamo.ui.component;
 
-import com.vaadin.data.Container.Filter;
+import com.vaadin.server.SerializablePredicate;
 
 /**
- * Interface for selection fields that support cascading search (i.e. they change their selection
- * options in response to a value change of another field)
+ * Interface for selection fields that support cascading search (i.e. they
+ * change their selection options in response to a value change of another
+ * field)
  * 
  * @author bas.rutten
- *
+ * @param <T>
+ *            type parameter
  */
-public interface Cascadable {
+public interface Cascadable<T> {
 
 	/**
-	 * Add the provided filter to the current filter for the component. Used for cascading
+	 * Add the provided filter to the current filter for the component. Used for
+	 * cascading
 	 * 
 	 * @param additionalFilter
 	 *            the additional filter to set
 	 */
-	void setAdditionalFilter(Filter additionalFilter);
+	void setAdditionalFilter(SerializablePredicate<T> additionalFilter);
 
 	/**
 	 * Removes the additional filter
 	 */
 	void clearAdditionalFilter();
-	
+
 	/**
 	 * 
 	 * @return
 	 */
-	Filter getAdditionalFilter();
+	SerializablePredicate<T> getAdditionalFilter();
 }

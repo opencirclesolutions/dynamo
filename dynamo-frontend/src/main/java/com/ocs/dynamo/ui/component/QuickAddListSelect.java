@@ -13,25 +13,25 @@
  */
 package com.ocs.dynamo.ui.component;
 
+import java.io.Serializable;
+import java.util.Set;
+
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.Refreshable;
-import com.vaadin.data.Container.Filter;
-import com.vaadin.data.sort.SortOrder;
-import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.data.util.filter.And;
+import com.vaadin.data.provider.ListDataProvider;
+import com.vaadin.data.provider.SortOrder;
+import com.vaadin.server.SerializablePredicate;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 
-import java.io.Serializable;
-
 /**
  * 
- * A ListSelect field that allows the quick addition of simple entities. Supports both multiple
- * select and single select use cases
+ * A ListSelect field that allows the quick addition of simple entities.
+ * Supports both multiple select and single select use cases
  * 
  * @author bas.rutten
  *
@@ -41,154 +41,165 @@ import java.io.Serializable;
  *            the type of the entity that is being displayed
  */
 public class QuickAddListSelect<ID extends Serializable, T extends AbstractEntity<ID>>
-        extends QuickAddEntityField<ID, T, Object> implements Refreshable {
+		extends QuickAddEntityField<ID, T, Object> implements Refreshable {
 
-    private static final long serialVersionUID = 4246187881499965296L;
+	private static final long serialVersionUID = 4246187881499965296L;
 
-    /**
-     * The list select component
-     */
-    private EntityListSelect<ID, T> listSelect;
+	/**
+	 * The list select component
+	 */
+	private EntityListSelect<ID, T> listSelect;
 
-    /**
-     * Whether the component is in view mode
-     */
-    private boolean viewMode;
+	/**
+	 * Whether the component is in view mode
+	 */
+	private boolean viewMode;
 
-    private boolean quickAddAllowed;
+	private boolean quickAddAllowed;
 
-    private boolean directNavigationAllowed;
+	private boolean directNavigationAllowed;
 
-    /**
-     * Constructor
-     * 
-     * @param entityModel
-     * @param attributeModel
-     * @param service
-     * @param filter
-     * @param multiSelect
-     * @param rows
-     * @param sortOrder
-     */
-    public QuickAddListSelect(EntityModel<T> entityModel, AttributeModel attributeModel, BaseService<ID, T> service,
-            Filter filter, boolean multiSelect, int rows, SortOrder... sortOrder) {
-        super(service, entityModel, attributeModel, filter);
-        listSelect = new EntityListSelect<>(entityModel, attributeModel, service, filter, sortOrder);
-        listSelect.setMultiSelect(multiSelect);
-        listSelect.setRows(rows);
-        this.quickAddAllowed = attributeModel != null && attributeModel.isQuickAddAllowed();
-        this.directNavigationAllowed = attributeModel != null && attributeModel.isDirectNavigation();
-    }
+	/**
+	 * Constructor
+	 * 
+	 * @param entityModel
+	 * @param attributeModel
+	 * @param service
+	 * @param filter
+	 * @param multiSelect
+	 * @param rows
+	 * @param sortOrder
+	 */
+	@SafeVarargs
+	public QuickAddListSelect(EntityModel<T> entityModel, AttributeModel attributeModel, BaseService<ID, T> service,
+			SerializablePredicate<T> filter, boolean multiSelect, int rows, SortOrder<T>... sortOrder) {
+		super(service, entityModel, attributeModel, filter);
+		listSelect = new EntityListSelect<>(entityModel, attributeModel, service, filter, sortOrder);
+		// listSelect.setMultiSelect(multiSelect);
+		listSelect.setRows(rows);
+		this.quickAddAllowed = attributeModel != null && attributeModel.isQuickAddAllowed();
+		this.directNavigationAllowed = attributeModel != null && attributeModel.isDirectNavigation();
+	}
 
-    @Override
-    @SuppressWarnings("unchecked")
-    protected void afterNewEntityAdded(T entity) {
-        // add to the container
-        BeanItemContainer<T> container = (BeanItemContainer<T>) listSelect.getContainerDataSource();
-        container.addBean(entity);
-        listSelect.select(entity);
-    }
+	@Override
+	@SuppressWarnings("unchecked")
+	protected void afterNewEntityAdded(T entity) {
+		// add to the container
+		ListDataProvider<T> provider = (ListDataProvider<T>) listSelect.getDataProvider();
+		provider.getItems().add(entity);
+		listSelect.select(entity);
+	}
 
-    @Override
-    public void clearAdditionalFilter() {
-        super.clearAdditionalFilter();
-        if (listSelect != null) {
-            listSelect.refresh(getFilter());
-        }
-    }
+	@Override
+	public void clearAdditionalFilter() {
+		super.clearAdditionalFilter();
+		if (listSelect != null) {
+			listSelect.refresh(getFilter());
+		}
+	}
 
-    public EntityListSelect<ID, T> getListSelect() {
-        return listSelect;
-    }
+	public EntityListSelect<ID, T> getListSelect() {
+		return listSelect;
+	}
 
-    @Override
-    public Class<?> getType() {
-        return Object.class;
-    }
+	@Override
+	protected Component initContent() {
+		HorizontalLayout bar = new DefaultHorizontalLayout(false, true, true);
+		bar.setSizeFull();
 
-    @Override
-    protected Component initContent() {
-        HorizontalLayout bar = new DefaultHorizontalLayout(false, true, true);
-        bar.setSizeFull();
+		if (this.getAttributeModel() != null) {
+			this.setCaption(getAttributeModel().getDisplayName());
+		}
 
-        if (this.getAttributeModel() != null) {
-            this.setCaption(getAttributeModel().getDisplayName());
-        }
+		// no caption needed (the wrapping component has the caption)
+		listSelect.setCaption(null);
+		listSelect.setSizeFull();
+		listSelect.addValueChangeListener(event -> setValue(event.getValue()));
 
-        // no caption needed (the wrapping component has the caption)
-        listSelect.setCaption(null);
-        listSelect.setSizeFull();
-        listSelect.addValueChangeListener(event -> setValue(event.getProperty().getValue()));
+		bar.addComponent(listSelect);
 
-        bar.addComponent(listSelect);
+		float listExpandRatio = 1f;
+		if (quickAddAllowed && !viewMode) {
+			listExpandRatio -= 0.10f;
+		}
+		if (directNavigationAllowed) {
+			listExpandRatio -= 0.05f;
+		}
 
-        float listExpandRatio = 1f;
-        if (quickAddAllowed && !viewMode) {
-            listExpandRatio -= 0.10f;
-        }
-        if (directNavigationAllowed) {
-            listExpandRatio -= 0.05f;
-        }
+		bar.setExpandRatio(listSelect, listExpandRatio);
 
-        bar.setExpandRatio(listSelect, listExpandRatio);
+		if (!viewMode && quickAddAllowed) {
+			Button addButton = constructAddButton();
+			bar.addComponent(addButton);
+			bar.setExpandRatio(addButton, 0.10f);
+		}
+		if (directNavigationAllowed) {
+			Button directNavigationButton = constructDirectNavigationButton();
+			bar.addComponent(directNavigationButton);
+			bar.setExpandRatio(directNavigationButton, 0.05f);
+		}
+		return bar;
+	}
 
-        if (!viewMode && quickAddAllowed) {
-            Button addButton = constructAddButton();
-            bar.addComponent(addButton);
-            bar.setExpandRatio(addButton, 0.10f);
-        }
-        if (directNavigationAllowed) {
-            Button directNavigationButton = constructDirectNavigationButton();
-            bar.addComponent(directNavigationButton);
-            bar.setExpandRatio(directNavigationButton, 0.05f);
-        }
-        return bar;
-    }
+	/**
+	 * Refreshes the data in the list
+	 */
+	@Override
+	public void refresh() {
+		if (listSelect != null) {
+			listSelect.refresh();
+		}
+	}
 
-    /**
-     * Refreshes the data in the list
-     */
-    @Override
-    public void refresh() {
-        if (listSelect != null) {
-            listSelect.refresh();
-        }
-    }
+	@Override
+	public void refresh(SerializablePredicate<T> filter) {
+		setFilter(filter);
+		if (listSelect != null) {
+			listSelect.refresh(filter);
+		}
+	}
 
-    @Override
-    public void refresh(Filter filter) {
-        setFilter(filter);
-        if (listSelect != null) {
-            listSelect.refresh(filter);
-        }
-    }
+	@Override
+	public void setAdditionalFilter(SerializablePredicate<T> additionalFilter) {
+		super.setAdditionalFilter(additionalFilter);
+		if (listSelect != null) {
+			listSelect.refresh(getFilter() == null ? additionalFilter : getFilter().and(additionalFilter));
+		}
+	}
 
-    @Override
-    public void setAdditionalFilter(Filter additionalFilter) {
-        super.setAdditionalFilter(additionalFilter);
-        if (listSelect != null) {
-            listSelect.refresh(getFilter() == null ? additionalFilter : new And(getFilter(), additionalFilter));
-        }
-    }
+	// @Override
+	// protected void setInternalValue(Object newValue) {
+	// super.setInternalValue(newValue);
+	// if (listSelect != null) {
+	// listSelect.setValue(newValue);
+	// }
+	// }
 
-    @Override
-    protected void setInternalValue(Object newValue) {
-        super.setInternalValue(newValue);
-        if (listSelect != null) {
-            listSelect.setValue(newValue);
-        }
-    }
+	@Override
+	public void setValue(Object newFieldValue) {
+		super.setValue(newFieldValue);
+		if (listSelect != null) {
+			listSelect.setValue((Set<T>) newFieldValue);
+		}
+	}
 
-    @Override
-    public void setValue(Object newFieldValue) {
-        super.setValue(newFieldValue);
-        if (listSelect != null) {
-            listSelect.setValue(newFieldValue);
-        }
-    }
+	public void setViewMode(boolean viewMode) {
+		this.viewMode = viewMode;
+	}
 
-    public void setViewMode(boolean viewMode) {
-        this.viewMode = viewMode;
-    }
+	@Override
+	public Object getValue() {
+		if (listSelect != null) {
+			return listSelect.getValue();
+		}
+		return null;
+	}
+
+	@Override
+	protected void doSetValue(Object value) {
+		if (listSelect != null) {
+			listSelect.setValue((Set<T>) value);
+		}
+	}
 
 }

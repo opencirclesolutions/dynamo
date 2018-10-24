@@ -15,33 +15,19 @@ package com.ocs.dynamo.ui.composite.table;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
-
-import org.vaadin.addons.lazyquerycontainer.LazyQueryContainer;
 
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.AttributeType;
-import com.ocs.dynamo.domain.model.EditableType;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
-import com.ocs.dynamo.domain.model.impl.ModelBasedFieldFactory;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
-import com.ocs.dynamo.ui.BaseUI;
-import com.ocs.dynamo.ui.component.URLField;
-import com.ocs.dynamo.ui.composite.table.export.TableExportActionHandler;
-import com.ocs.dynamo.ui.composite.table.export.TableExportMode;
-import com.ocs.dynamo.ui.utils.FormatUtils;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
-import com.vaadin.data.Container;
-import com.vaadin.data.Property;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.data.provider.DataProvider;
+import com.vaadin.server.SerializablePredicate;
+import com.vaadin.ui.Grid;
 
 /**
  * A Table that bases its columns on the meta model of an entity
@@ -52,14 +38,14 @@ import com.vaadin.ui.themes.ValoTheme;
  * @param <T>
  *            type of the entity
  */
-public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<ID>> extends Table {
+public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<ID>> extends Grid<T> {
 
 	private static final long serialVersionUID = 6946260934644731038L;
 
 	/**
-	 * The container that hold the data for the table
+	 * The data provider that holds the data
 	 */
-	private Container container;
+	private DataProvider<T, SerializablePredicate<T>> dataProvider;
 
 	/**
 	 * Custom currency symbol to be used for this table
@@ -81,14 +67,15 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
 	 */
 	private boolean exportAllowed;
 
-    /*** Indicate whether to update the caption with the number of items in the table
+	/***
+	 * Indicate whether to update the caption with the number of items in the table
 	 */
 	private boolean updateTableCaption = true;
 
-    /**
-     * The message service
-     */
-    private MessageService messageService;
+	/**
+	 * The message service
+	 */
+	private MessageService messageService;
 
 	/**
 	 * Constructor
@@ -100,9 +87,9 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
 	 * @param exportAllowed
 	 *            whether export of the table is allowed
 	 */
-	public ModelBasedTable(Container container, EntityModel<T> model, boolean exportAllowed) {
-		super("", container);
-		this.container = container;
+	public ModelBasedTable(DataProvider<T, SerializablePredicate<T>> dataProvider, EntityModel<T> model,
+			boolean exportAllowed) {
+		this.dataProvider = dataProvider;
 		this.entityModel = model;
 		this.messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
 		this.entityModelFactory = ServiceLocatorFactory.getServiceLocator().getEntityModelFactory();
@@ -112,24 +99,30 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
 
 		// add a custom field factory that takes care of special cases and
 		// validation
-		this.setTableFieldFactory(ModelBasedFieldFactory.getInstance(entityModel, messageService));
+		// this.setTableFieldFactory(ModelBasedFieldFactory.getInstance(entityModel,
+		// messageService));
 		generateColumns(model);
 
 		// add export functionality
 		if (isExportAllowed()) {
 			List<EntityModel<?>> list = new ArrayList<>();
 			list.add(model);
-			addActionHandler(new TableExportActionHandler(UI.getCurrent(), list, model.getDisplayNamePlural(), null,
-					false, TableExportMode.EXCEL, null));
-			addActionHandler(new TableExportActionHandler(UI.getCurrent(), list, model.getDisplayNamePlural(), null,
-					false, TableExportMode.EXCEL_SIMPLIFIED, null));
-			addActionHandler(new TableExportActionHandler(UI.getCurrent(), list, model.getDisplayNamePlural(), null,
-					false, TableExportMode.CSV, null));
+			// addActionHandler(new TableExportActionHandler(UI.getCurrent(), list,
+			// model.getDisplayNamePlural(), null,
+			// false, TableExportMode.EXCEL, null));
+			// addActionHandler(new TableExportActionHandler(UI.getCurrent(), list,
+			// model.getDisplayNamePlural(), null,
+			// false, TableExportMode.EXCEL_SIMPLIFIED, null));
+			// addActionHandler(new TableExportActionHandler(UI.getCurrent(), list,
+			// model.getDisplayNamePlural(), null,
+			// false, TableExportMode.CSV, null));
 		}
 
-        // update the table caption to reflect the number of items
-        if (isUpdateTableCaption()) {addItemSetChangeListener(e -> updateTableCaption());
-    }}
+		// update the table caption to reflect the number of items
+		if (isUpdateTableCaption()) {
+			// addItemSetChangeListener(e -> updateTableCaption());
+		}
+	}
 
 	/**
 	 * Adds a column to the table
@@ -149,22 +142,25 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
 			// for the lazy query container we explicitly have to add the
 			// properties - for the standard Bean container this is not
 			// needed
-			if (container instanceof LazyQueryContainer) {
-				LazyQueryContainer lazyContainer = (LazyQueryContainer) container;
-				if (!lazyContainer.getContainerPropertyIds().contains(attributeModel.getPath())) {
-					lazyContainer.addContainerProperty(attributeModel.getPath(), attributeModel.getType(),
-							attributeModel.getDefaultValue(),
-							EditableType.READ_ONLY.equals(attributeModel.getEditableType()),
-							attributeModel.isSortable());
-				}
-			}
+			// if (container instanceof LazyQueryContainer) {
+			// LazyQueryContainer lazyContainer = (LazyQueryContainer) container;
+			// if
+			// (!lazyContainer.getContainerPropertyIds().contains(attributeModel.getPath()))
+			// {
+			// lazyContainer.addContainerProperty(attributeModel.getPath(),
+			// attributeModel.getType(),
+			// attributeModel.getDefaultValue(),
+			// EditableType.READ_ONLY.equals(attributeModel.getEditableType()),
+			// attributeModel.isSortable());
+			// }
+			// }
 
 			// generated column with clickable URL (only in view mode)
 			addUrlField(attributeModel);
 			addInternalLinkField(attributeModel);
 
 			if (attributeModel.isNumerical()) {
-				this.setColumnAlignment(attributeModel.getPath(), Table.Align.RIGHT);
+				// this.setColumnAlignment(attributeModel.getPath(), Table.Align.RIGHT);
 			}
 		}
 	}
@@ -202,23 +198,36 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
 	 *            the attribute model
 	 */
 	private void addUrlField(final AttributeModel attributeModel) {
-		if (attributeModel.isUrl() && !isEditable()) {
-			this.addGeneratedColumn(attributeModel.getPath(), new ColumnGenerator() {
+		// if (attributeModel.isUrl() && !isEnabled()) {
+		// Column<URLField> generated = this.addComponentColumn(T t -> {
+		// URLField field = (URLField) ((ModelBasedFieldFactory<?>)
+		// getTableFieldFactory())
+		// .createField(attributeModel.getPath(), null);
+		// if (field != null) {
+		// String val = (String) getItem(itemId).getItemProperty(columnId).getValue();
+		// field.setValue(val);
+		// }
+		// return field;
+		// });
 
-				private static final long serialVersionUID = -3191235289754428914L;
-
-				@Override
-				public Object generateCell(Table source, final Object itemId, Object columnId) {
-					URLField field = (URLField) ((ModelBasedFieldFactory<?>) getTableFieldFactory())
-							.createField(attributeModel.getPath(), null);
-					if (field != null) {
-						String val = (String) getItem(itemId).getItemProperty(columnId).getValue();
-						field.setValue(val);
-					}
-					return field;
-				}
-			});
-		}
+		// this.addGeneratedColumn(attributeModel.getPath(), new ColumnGenerator() {
+		//
+		// private static final long serialVersionUID = -3191235289754428914L;
+		//
+		// @Override
+		// public Object generateCell(Table source, final Object itemId, Object
+		// columnId) {
+		// URLField field = (URLField) ((ModelBasedFieldFactory<?>)
+		// getTableFieldFactory())
+		// .createField(attributeModel.getPath(), null);
+		// if (field != null) {
+		// String val = (String) getItem(itemId).getItemProperty(columnId).getValue();
+		// field.setValue(val);
+		// }
+		// return field;
+		// }
+		// });
+		// }
 	}
 
 	/**
@@ -229,45 +238,47 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
 	 *            at the base of your application
 	 */
 	private void addInternalLinkField(final AttributeModel attributeModel) {
-		if (attributeModel.isNavigable() && !isEditable()
-				&& AttributeType.MASTER.equals(attributeModel.getAttributeType())) {
-			this.addGeneratedColumn(attributeModel.getPath(), new ColumnGenerator() {
-
-				private static final long serialVersionUID = -3191235289754428914L;
-
-				@Override
-				public Object generateCell(Table source, final Object itemId, Object columnId) {
-					Object val = getItem(itemId).getItemProperty(columnId).getValue();
-					if (val != null) {
-
-						String str = FormatUtils.formatEntity(attributeModel.getNestedEntityModel(), val);
-						Button button = new Button(str);
-						button.setStyleName(ValoTheme.BUTTON_LINK);
-						button.addClickListener(event -> {
-							BaseUI ui = (BaseUI) UI.getCurrent();
-							ui.navigateToEntityScreenDirectly(val);
-						});
-
-						return button;
-					}
-					return null;
-				}
-			});
+		if (attributeModel.isNavigable() && AttributeType.MASTER.equals(attributeModel.getAttributeType())) {
+			// this.addGeneratedColumn(attributeModel.getPath(), new ColumnGenerator() {
+			//
+			// private static final long serialVersionUID = -3191235289754428914L;
+			//
+			// @Override
+			// public Object generateCell(Table source, final Object itemId, Object
+			// columnId) {
+			// Object val = getItem(itemId).getItemProperty(columnId).getValue();
+			// if (val != null) {
+			//
+			// String str = FormatUtils.formatEntity(attributeModel.getNestedEntityModel(),
+			// val);
+			// Button button = new Button(str);
+			// button.setStyleName(ValoTheme.BUTTON_LINK);
+			// button.addClickListener(event -> {
+			// BaseUI ui = (BaseUI) UI.getCurrent();
+			// ui.navigateToEntityScreenDirectly(val);
+			// });
+			//
+			// return button;
+			// }
+			// return null;
+			// }
+			// });
 		}
 	}
 
-	/**
-	 * Overridden to deal with custom formatting
-	 */
-	@Override
-	protected String formatPropertyValue(Object rowId, Object colId, Property<?> property) {
-		String result = FormatUtils.formatPropertyValue(this, entityModelFactory, entityModel, rowId, colId, property,
-				", ");
-		if (result != null) {
-			return result;
-		}
-		return super.formatPropertyValue(rowId, colId, property);
-	}
+//	/**
+//	 * Overridden to deal with custom formatting
+//	 */
+//	@Override
+//	protected String formatPropertyValue(Object rowId, Object colId, Property<?> property) {
+//		String result = FormatUtils.formatPropertyValue(this, entityModelFactory, entityModel, rowId, colId, property,
+//				", ");
+//		if (result != null) {
+//			return result;
+//		}
+//		return super.formatPropertyValue(rowId, colId, property);
+//	}
+	
 
 	/**
 	 * Generates the columns of the table based on the entity model
@@ -294,21 +305,23 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
 		List<Object> propertyNames = new ArrayList<>();
 		List<String> headerNames = new ArrayList<>();
 		generateColumnsRecursive(attributeModels, propertyNames, headerNames);
-		this.setVisibleColumns(propertyNames.toArray());
-		this.setColumnHeaders(headerNames.toArray(new String[0]));
+		//this.setVisibleColumns(propertyNames.toArray());
+		//this.setColumnHeaders(headerNames.toArray(new String[0]));
 	}
 
-	private void generateColumnsRecursive(List<AttributeModel> attributeModels, List<Object> propertyNames, List<String> headerNames){
+	private void generateColumnsRecursive(List<AttributeModel> attributeModels, List<Object> propertyNames,
+			List<String> headerNames) {
 		for (AttributeModel attributeModel : attributeModels) {
 			addColumn(attributeModel, propertyNames, headerNames);
-			if (attributeModel.getNestedEntityModel() != null){
-				generateColumnsRecursive(attributeModel.getNestedEntityModel().getAttributeModels(), propertyNames, headerNames);
+			if (attributeModel.getNestedEntityModel() != null) {
+				generateColumnsRecursive(attributeModel.getNestedEntityModel().getAttributeModels(), propertyNames,
+						headerNames);
 			}
 		}
 	}
 
-	public Container getContainer() {
-		return container;
+	public DataProvider<T, SerializablePredicate<T>> getDataProvider() {
+		return dataProvider;
 	}
 
 	public String getCurrencySymbol() {
@@ -327,7 +340,8 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
 	 */
 	private void removeGeneratedColumn(final AttributeModel attributeModel) {
 		if (attributeModel.isVisibleInTable() && attributeModel.isUrl()) {
-			removeGeneratedColumn(attributeModel.getPath());
+			// removeGeneratedColumn(attributeModel.getPath());
+			removeColumn(attributeModel.getPath());
 		}
 	}
 
@@ -339,10 +353,10 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
 		removeGeneratedColumnsRecursive(entityModel.getAttributeModels());
 	}
 
-	private void removeGeneratedColumnsRecursive(List<AttributeModel> attributeModels){
+	private void removeGeneratedColumnsRecursive(List<AttributeModel> attributeModels) {
 		for (AttributeModel attributeModel : attributeModels) {
 			removeGeneratedColumn(attributeModel);
-			if (attributeModel.getNestedEntityModel() != null){
+			if (attributeModel.getNestedEntityModel() != null) {
 				removeGeneratedColumnsRecursive(attributeModel.getNestedEntityModel().getAttributeModels());
 			}
 		}
@@ -358,15 +372,17 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
 	 *            whether the column must be visible
 	 */
 	public void setColumnVisible(Object propertyId, boolean visible) {
-		Object[] visibleCols = getVisibleColumns();
-		List<Object> temp = Arrays.stream(visibleCols).filter(c -> !c.equals(propertyId)).collect(Collectors.toList());
-		boolean alreadyVisible = Arrays.stream(visibleCols).anyMatch(c -> c.equals(propertyId));
-
-		// add column if not already visible
-		if (!alreadyVisible || visible) {
-			temp.add(propertyId);
-		}
-		setVisibleColumns(temp.toArray(new Object[0]));
+		//Object[] visibleCols = getVisibleColumns();
+		// List<Object> temp = Arrays.stream(visibleCols).filter(c ->
+		// !c.equals(propertyId)).collect(Collectors.toList());
+		// boolean alreadyVisible = Arrays.stream(visibleCols).anyMatch(c ->
+		// c.equals(propertyId));
+		//
+		// // add column if not already visible
+		// if (!alreadyVisible || visible) {
+		// temp.add(propertyId);
+		// }
+		// setVisibleColumns(temp.toArray(new Object[0]));
 	}
 
 	public void setCurrencySymbol(String currencySymbol) {
@@ -378,7 +394,7 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
 	 */
 	public void updateTableCaption() {
 		setCaption(entityModel.getDisplayNamePlural() + " " + messageService.getMessage("ocs.showing.results",
-				VaadinUtils.getLocale(), getContainerDataSource().size()));
+				VaadinUtils.getLocale(), getDataProvider().size(null)));
 	}
 
 	public boolean isUpdateTableCaption() {
