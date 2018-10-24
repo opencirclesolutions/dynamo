@@ -1,11 +1,10 @@
 package com.ocs.dynamo.functional.dao.impl;
 
-import org.springframework.stereotype.Repository;
-
-import com.mysema.query.types.path.EntityPathBase;
 import com.ocs.dynamo.dao.impl.BaseDaoImpl;
 import com.ocs.dynamo.functional.dao.EntityWithTranslationsDao;
 import com.ocs.dynamo.functional.domain.EntityWithTranslations;
+import com.querydsl.core.types.dsl.EntityPathBase;
+import org.springframework.stereotype.Repository;
 
 @Repository
 public class EntityWithTranslationsDaoImpl extends BaseDaoImpl<Integer, EntityWithTranslations>

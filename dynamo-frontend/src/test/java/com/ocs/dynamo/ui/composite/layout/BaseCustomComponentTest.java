@@ -38,7 +38,7 @@ import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.test.BaseMockitoTest;
 import com.ocs.dynamo.test.MockUtil;
 import com.ocs.dynamo.utils.DateUtils;
-import com.vaadin.v7.ui.Label;
+import com.vaadin.ui.Label;
 
 import junitx.util.PrivateAccessor;
 
@@ -69,7 +69,7 @@ public class BaseCustomComponentTest extends BaseMockitoTest {
 	public void test() {
 		EntityModel<TestEntity> model = factory.getModel(TestEntity.class);
 
-		DecimalFormatSymbols sym = DecimalFormatSymbols.getInstance(new Locale("de"));
+		DecimalFormatSymbols sym = DecimalFormatSymbols.getInstance(new Locale("nl"));
 
 		TestEntity e = new TestEntity("Kevin", 12L);
 		e.setDiscount(BigDecimal.valueOf(12.34));

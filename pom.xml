@@ -100,27 +100,24 @@
 		<!-- Dependency versions. -->
 		<vaadin.version>8.5.2</vaadin.version>
 		<vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
-		<vaadin.lazycontainer.version>7.6.1.3</vaadin.lazycontainer.version>
-		<vaadin-spring.version>1.2.0</vaadin-spring.version>
-		<vaadin.charts.version>4.0.5</vaadin.charts.version>
-		<!-- <tableexport-for-vaadin.version>1.5.1.5</tableexport-for-vaadin.version> -->
-		<vaadin.confirmdialog.version>3.2.0</vaadin.confirmdialog.version>
-		<hibernate.version>4.3.2.Final</hibernate.version>
-		<hibernate.validator.version>4.3.2.Final</hibernate.validator.version>
-		<hibernate.jpa20.api.version>1.0.1.Final</hibernate.jpa20.api.version>
-		<spring.version>4.3.19.RELEASE</spring.version>
-		<querydsl.version>3.7.4</querydsl.version>
+		<vaadin-spring.version>3.1.1</vaadin-spring.version>
+		<vaadin.charts.version>4.0.5</vaadin.charts.version>		
+		<vaadin.confirmdialog.version>2.1.3</vaadin.confirmdialog.version>
+		<hibernate.version>5.3.7.Final</hibernate.version>
+		<hibernate.validator.version>6.0.13.Final</hibernate.validator.version>
+		<spring.version>5.1.1.RELEASE</spring.version>
+		<querydsl.version>4.2.1</querydsl.version>
 		<slf4j.version>1.7.25</slf4j.version>
 		<log4j.version>1.2.17</log4j.version>
 		<junit.version>4.12</junit.version>
 		<mockito.version>1.10.19</mockito.version>
 		<commons.io.version>2.5</commons.io.version>
 		<commons.lang.version>2.6</commons.lang.version>
-		<h2.version>1.4.194</h2.version>
+		<h2.version>1.4.197</h2.version>
 		<poi.version>3.13</poi.version>
 		<opencsv.version>2.3</opencsv.version>
 		<javax.servlet.api.version>3.1.0</javax.servlet.api.version>
-		<javax.validation.api.version>1.0.0.GA</javax.validation.api.version>
+		<javax.validation.api.version>2.0.1.Final</javax.validation.api.version>
 		<xlsx-streamer.version>0.2.9</xlsx-streamer.version>
 		<junit-addons.version>1.4</junit-addons.version>
 		<aspectj.version>1.6.12</aspectj.version>
@@ -132,7 +129,7 @@
 		<org.apache.maven.plugins.jar.version>3.0.2</org.apache.maven.plugins.jar.version>
 		<org.apache.maven.plugins.source.version>3.0.1</org.apache.maven.plugins.source.version>
 		<org.apache.maven.plugins.javadoc.version>2.10.4</org.apache.maven.plugins.javadoc.version>
-		<com.mysema.maven.plugins.apt.version>1.1.3</com.mysema.maven.plugins.apt.version>
+		<com.maven.plugins.apt.version>1.1.3</com.maven.plugins.apt.version>
 		<org.apache.maven.plugins.release.version>2.5.3</org.apache.maven.plugins.release.version>
 		<org.apache.maven.plugins.checkstyle.version>2.17</org.apache.maven.plugins.checkstyle.version>
 		<org.apache.maven.plugins.findbugs.version>3.0.3</org.apache.maven.plugins.findbugs.version>
@@ -143,6 +140,8 @@
 		<!-- Make sure you are using the latest version here. -->
 		<org.sonatype.plugins.version>1.6.7</org.sonatype.plugins.version>
 		<vaadin.extended-token-field.version>0.3.0</vaadin.extended-token-field.version>
+		<javax.el-api.version>3.0.0</javax.el-api.version>
+		<glassfish.javax.el.version>3.0.1-b08</glassfish.javax.el.version>
 	</properties>
 
 	<dependencyManagement>
@@ -225,7 +224,18 @@
 			<dependency>
 				<groupId>org.eclipse.persistence</groupId>
 				<artifactId>javax.persistence</artifactId>
-				<version>2.1.0</version>
+				<version>2.2.0</version>
+			</dependency>
+			<dependency>
+				<groupId>javax.el</groupId>
+				<artifactId>javax.el-api</artifactId>
+				<version>${javax.el-api.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.glassfish</groupId>
+				<artifactId>javax.el</artifactId>
+				<version>${glassfish.javax.el.version}</version>
+				<scope>test</scope>
 			</dependency>
 			<!-- Spring -->
 			<dependency>
@@ -350,17 +360,17 @@
 			</dependency>
 			<!-- QueryDSL -->
 			<dependency>
-				<groupId>com.mysema.querydsl</groupId>
+				<groupId>com.querydsl</groupId>
 				<artifactId>querydsl-core</artifactId>
 				<version>${querydsl.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.mysema.querydsl</groupId>
+				<groupId>com.querydsl</groupId>
 				<artifactId>querydsl-jpa</artifactId>
 				<version>${querydsl.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.mysema.querydsl</groupId>
+				<groupId>com.querydsl</groupId>
 				<artifactId>querydsl-apt</artifactId>
 				<version>${querydsl.version}</version>
 			</dependency>
@@ -544,7 +554,7 @@
 				<plugin>
 					<groupId>com.mysema.maven</groupId>
 					<artifactId>apt-maven-plugin</artifactId>
-					<version>${com.mysema.maven.plugins.apt.version}</version>
+					<version>${com.maven.plugins.apt.version}</version>
 					<executions>
 						<execution>
 							<id>src</id>
@@ -554,7 +564,7 @@
 							</goals>
 							<configuration>
 								<outputDirectory>target/generated-sources/querydsl</outputDirectory>
-								<processor>com.mysema.query.apt.jpa.JPAAnnotationProcessor</processor>
+								<processor>com.querydsl.apt.jpa.JPAAnnotationProcessor</processor>
 							</configuration>
 						</execution>
 						<execution>
@@ -565,7 +575,7 @@
 							</goals>
 							<configuration>
 								<outputDirectory>target/generated-test-sources/querydsl</outputDirectory>
-								<processor>com.mysema.query.apt.jpa.JPAAnnotationProcessor</processor>
+								<processor>com.querydsl.apt.jpa.JPAAnnotationProcessor</processor>
 							</configuration>
 						</execution>
 					</executions>
@@ -861,10 +871,6 @@
 
 	<repositories>
 		<repository>
-			<id>vaadin-addons</id>
-			<url>http://maven.vaadin.com/vaadin-addons</url>
-		</repository>
-		<repository>
 			<id>central</id>
 			<name>Maven Central Repository</name>
 			<layout>default</layout>
@@ -908,6 +914,10 @@
 			<id>jasperreports-third-party</id>
 			<url>http://jaspersoft.artifactoryonline.com/jaspersoft/third-party-ce-artifacts/</url>
 		</repository>
+		<repository>
+			<id>vaadin-addons</id>
+			<url>http://maven.vaadin.com/vaadin-addons</url>
+		</repository>		
 	</repositories>
 
 </project>

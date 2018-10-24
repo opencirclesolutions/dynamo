@@ -1,4 +1,4 @@
-B6AEC6CECE03F32B5753337CDB310AA5.cache.js
+0F42654767C12187BDF8075E098A64AD.cache.js
 ClientBundle.enableInlining true
 audioElementSupport maybe
 canvasElementSupport maybe
@@ -8,6 +8,7 @@ compiler.stackMode native
 compiler.useSourceMaps false
 compiler.useSymbolMaps false
 dragEventSupport maybe
+gwt.cspCompatModeEnabled false
 gwt.enableDebugId false
 gwt.forceBidi false
 gwt.logging.consoleHandler ENABLED
@@ -15,9 +16,21 @@ gwt.logging.developmentModeHandler ENABLED
 gwt.logging.enabled TRUE
 gwt.logging.hasWidgetsHandler DISABLED
 gwt.logging.logLevel INFO
+gwt.logging.simpleConsoleHandler DISABLED
 gwt.logging.simpleRemoteHandler DISABLED
 gwt.logging.systemHandler DISABLED
 gwt.suppressNonStaticFinalFieldWarnings false
+gwt.uncaughtexceptionhandler.windowonerror REPORT_IF_NO_HANDLER
+history.noDoubleEncoding false
+jre.checkedMode DISABLED
+jre.checks.api AUTO
+jre.checks.bounds AUTO
+jre.checks.checkLevel NORMAL
+jre.checks.numeric AUTO
+jre.checks.type AUTO
+jre.debugMode DISABLED
+jre.logging.logLevel ALL
+jre.logging.simpleConsoleHandler DISABLED
 locale default
 modernie none
 rpc.XserializeFinalFields false
@@ -28,7 +41,7 @@ vaadin.profiler false
 videoElementSupport maybe
 webApiUsage modern
 
-B6AEC6CECE03F32B5753337CDB310AA5.cache.js
+0F42654767C12187BDF8075E098A64AD.cache.js
 ClientBundle.enableInlining true
 audioElementSupport maybe
 canvasElementSupport maybe
@@ -38,6 +51,7 @@ compiler.stackMode native
 compiler.useSourceMaps false
 compiler.useSymbolMaps false
 dragEventSupport maybe
+gwt.cspCompatModeEnabled false
 gwt.enableDebugId false
 gwt.forceBidi false
 gwt.logging.consoleHandler ENABLED
@@ -45,9 +59,21 @@ gwt.logging.developmentModeHandler ENABLED
 gwt.logging.enabled TRUE
 gwt.logging.hasWidgetsHandler DISABLED
 gwt.logging.logLevel INFO
+gwt.logging.simpleConsoleHandler DISABLED
 gwt.logging.simpleRemoteHandler DISABLED
 gwt.logging.systemHandler DISABLED
 gwt.suppressNonStaticFinalFieldWarnings false
+gwt.uncaughtexceptionhandler.windowonerror REPORT_IF_NO_HANDLER
+history.noDoubleEncoding false
+jre.checkedMode DISABLED
+jre.checks.api AUTO
+jre.checks.bounds AUTO
+jre.checks.checkLevel NORMAL
+jre.checks.numeric AUTO
+jre.checks.type AUTO
+jre.debugMode DISABLED
+jre.logging.logLevel ALL
+jre.logging.simpleConsoleHandler DISABLED
 locale default
 modernie yes
 rpc.XserializeFinalFields false
@@ -58,7 +84,7 @@ vaadin.profiler false
 videoElementSupport maybe
 webApiUsage modern
 
-B6AEC6CECE03F32B5753337CDB310AA5.cache.js
+0F42654767C12187BDF8075E098A64AD.cache.js
 ClientBundle.enableInlining true
 audioElementSupport maybe
 canvasElementSupport maybe
@@ -68,6 +94,7 @@ compiler.stackMode native
 compiler.useSourceMaps false
 compiler.useSymbolMaps false
 dragEventSupport maybe
+gwt.cspCompatModeEnabled false
 gwt.enableDebugId false
 gwt.forceBidi false
 gwt.logging.consoleHandler ENABLED
@@ -75,99 +102,21 @@ gwt.logging.developmentModeHandler ENABLED
 gwt.logging.enabled TRUE
 gwt.logging.hasWidgetsHandler DISABLED
 gwt.logging.logLevel INFO
+gwt.logging.simpleConsoleHandler DISABLED
 gwt.logging.simpleRemoteHandler DISABLED
 gwt.logging.systemHandler DISABLED
 gwt.suppressNonStaticFinalFieldWarnings false
-locale default
-modernie none
-rpc.XserializeFinalFields false
-superdevmode off
-touchEventSupport no
-user.agent ie10
-vaadin.profiler false
-videoElementSupport maybe
-webApiUsage modern
-
-B6AEC6CECE03F32B5753337CDB310AA5.cache.js
-ClientBundle.enableInlining true
-audioElementSupport no
-canvasElementSupport no
-compiler.emulatedStack false
-compiler.predeclare.cross.fragment.references false
-compiler.stackMode native
-compiler.useSourceMaps false
-compiler.useSymbolMaps false
-dragEventSupport no
-gwt.enableDebugId false
-gwt.forceBidi false
-gwt.logging.consoleHandler ENABLED
-gwt.logging.developmentModeHandler ENABLED
-gwt.logging.enabled TRUE
-gwt.logging.hasWidgetsHandler DISABLED
-gwt.logging.logLevel INFO
-gwt.logging.simpleRemoteHandler DISABLED
-gwt.logging.systemHandler DISABLED
-gwt.suppressNonStaticFinalFieldWarnings false
-locale default
-modernie none
-rpc.XserializeFinalFields false
-superdevmode off
-touchEventSupport no
-user.agent ie8
-vaadin.profiler false
-videoElementSupport no
-webApiUsage modern
-
-B6AEC6CECE03F32B5753337CDB310AA5.cache.js
-ClientBundle.enableInlining true
-audioElementSupport maybe
-canvasElementSupport maybe
-compiler.emulatedStack false
-compiler.predeclare.cross.fragment.references false
-compiler.stackMode native
-compiler.useSourceMaps false
-compiler.useSymbolMaps false
-dragEventSupport maybe
-gwt.enableDebugId false
-gwt.forceBidi false
-gwt.logging.consoleHandler ENABLED
-gwt.logging.developmentModeHandler ENABLED
-gwt.logging.enabled TRUE
-gwt.logging.hasWidgetsHandler DISABLED
-gwt.logging.logLevel INFO
-gwt.logging.simpleRemoteHandler DISABLED
-gwt.logging.systemHandler DISABLED
-gwt.suppressNonStaticFinalFieldWarnings false
-locale default
-modernie none
-rpc.XserializeFinalFields false
-superdevmode off
-touchEventSupport no
-user.agent ie9
-vaadin.profiler false
-videoElementSupport maybe
-webApiUsage modern
-
-B6AEC6CECE03F32B5753337CDB310AA5.cache.js
-ClientBundle.enableInlining true
-audioElementSupport maybe
-canvasElementSupport maybe
-compiler.emulatedStack false
-compiler.predeclare.cross.fragment.references false
-compiler.stackMode native
-compiler.useSourceMaps false
-compiler.useSymbolMaps false
-dragEventSupport maybe
-gwt.enableDebugId false
-gwt.forceBidi false
-gwt.logging.consoleHandler ENABLED
-gwt.logging.developmentModeHandler ENABLED
-gwt.logging.enabled TRUE
-gwt.logging.hasWidgetsHandler DISABLED
-gwt.logging.logLevel INFO
-gwt.logging.simpleRemoteHandler DISABLED
-gwt.logging.systemHandler DISABLED
-gwt.suppressNonStaticFinalFieldWarnings false
+gwt.uncaughtexceptionhandler.windowonerror REPORT_IF_NO_HANDLER
+history.noDoubleEncoding false
+jre.checkedMode DISABLED
+jre.checks.api AUTO
+jre.checks.bounds AUTO
+jre.checks.checkLevel NORMAL
+jre.checks.numeric AUTO
+jre.checks.type AUTO
+jre.debugMode DISABLED
+jre.logging.logLevel ALL
+jre.logging.simpleConsoleHandler DISABLED
 locale default
 modernie none
 rpc.XserializeFinalFields false

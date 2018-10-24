@@ -25,7 +25,7 @@ import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.domain.model.impl.EntityModelFactoryImpl;
-import com.ocs.dynamo.filter.CompareFilter;
+import com.ocs.dynamo.filter.EqualsPredicate;
 import com.ocs.dynamo.service.TestEntityService;
 import com.ocs.dynamo.test.BaseMockitoTest;
 
@@ -58,21 +58,21 @@ public class EntityComboBoxTest extends BaseMockitoTest {
 	@Test
 	public void testFilter() {
 		EntityComboBox<Integer, TestEntity> select = new EntityComboBox<>(factory.getModel(TestEntity.class), null,
-				service, new CompareFilter<TestEntity>("name", "Bob"));
+				service, new EqualsPredicate<TestEntity>("name", "Bob"));
 		Assert.assertEquals(EntityComboBox.SelectMode.FILTERED, select.getSelectMode());
 
 		select.refresh();
 
 		// data must have been retrieved twice - once during creation and once during
 		// request
-		Mockito.verify(service, Mockito.times(2)).find(Matchers.any(com.ocs.dynamo.filter.Filter.class),
+		Mockito.verify(service, Mockito.times(1)).find(Matchers.any(com.ocs.dynamo.filter.Filter.class),
 				Matchers.any(com.ocs.dynamo.dao.SortOrder[].class));
 	}
 
 	@Test
 	public void testAddEntity() {
 		EntityComboBox<Integer, TestEntity> select = new EntityComboBox<>(factory.getModel(TestEntity.class), null,
-				service, new CompareFilter<TestEntity>("name", "Bob"));
+				service, new EqualsPredicate<TestEntity>("name", "Bob"));
 		Assert.assertEquals(0, select.getDataProviderSize());
 
 		TestEntity te = new TestEntity("stewart", 77L);
@@ -82,19 +82,18 @@ public class EntityComboBoxTest extends BaseMockitoTest {
 		Assert.assertEquals(te, select.getFirstItem());
 	}
 
-	// @Test
-	// public void testBuildFilter() {
-	// EntityComboBox<Integer, TestEntity> select = new
-	// EntityComboBox<>(factory.getModel(TestEntity.class), null,
-	// service, new CompareFilter<TestEntity>("name", "Bob"));
-	//
-	// Filter ft = select.buildFilter("abc", FilteringMode.STARTSWITH);
-	// Assert.assertTrue(ft instanceof IgnoreDiacriticsStringFilter);
-	//
-	// ft = select.buildFilter("abc", FilteringMode.CONTAINS);
-	// Assert.assertTrue(ft instanceof IgnoreDiacriticsStringFilter);
-	//
-	// ft = select.buildFilter("abc", FilteringMode.OFF);
-	// Assert.assertNull(ft);
-	// }
+	@Test
+	public void testAdditionalFilter() {
+		EntityComboBox<Integer, TestEntity> select = new EntityComboBox<>(factory.getModel(TestEntity.class), null,
+				service, new EqualsPredicate<TestEntity>("name", "Bob"));
+		Assert.assertEquals(EntityComboBox.SelectMode.FILTERED, select.getSelectMode());
+
+		select.setAdditionalFilter(new EqualsPredicate<TestEntity>("name", "Henk"));
+
+		// data must have been retrieved twice - once during creation and once during
+		// request
+		Mockito.verify(service, Mockito.times(1)).find(Matchers.any(com.ocs.dynamo.filter.Filter.class),
+				Matchers.any(com.ocs.dynamo.dao.SortOrder[].class));
+	}
+
 }

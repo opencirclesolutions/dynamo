@@ -50,8 +50,7 @@ public class BigDecimalConverter extends StringToBigDecimalConverter {
 	/**
 	 * Constructor - for use with a pattern
 	 * 
-	 * @param pattern
-	 *            will be applied to the decimalFormat of this converter.
+	 * @param pattern will be applied to the decimalFormat of this converter.
 	 */
 	public BigDecimalConverter(final String pattern) {
 		super("Some error message");
@@ -69,6 +68,10 @@ public class BigDecimalConverter extends StringToBigDecimalConverter {
 
 	@Override
 	public Result<BigDecimal> convertToModel(String value, ValueContext context) {
+		if (value == null) {
+			return null;
+		}
+
 		Result<Number> number = convertToNumber(value, context);
 		return number.flatMap(r -> {
 			BigDecimal bd = BigDecimal.valueOf(r.doubleValue()).setScale(precision, RoundingMode.HALF_UP);
@@ -84,12 +87,11 @@ public class BigDecimalConverter extends StringToBigDecimalConverter {
 	/**
 	 * Constructs the DecimalFormat to use for formatting the values
 	 * 
-	 * @param locale
-	 *            the desired locale to use for the formatting
+	 * @param locale the desired locale to use for the formatting
 	 * @return
 	 */
 	public DecimalFormat getDecimalFormat(Locale locale) {
-		locale = locale != null ? null : VaadinUtils.getLocale();
+		locale = locale != null ? locale : VaadinUtils.getLocale();
 		DecimalFormat decimalFormat = constructFormat(locale);
 
 		if (!StringUtils.isEmpty(pattern)) {

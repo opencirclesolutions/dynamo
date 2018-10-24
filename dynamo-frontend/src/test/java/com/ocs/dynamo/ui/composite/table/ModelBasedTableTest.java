@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -81,6 +82,7 @@ public class ModelBasedTableTest extends BaseMockitoTest {
 	}
 
 	@Test
+	@Ignore
 	public void testFixedTableWrapper() {
 		TestEntity entity = new TestEntity();
 

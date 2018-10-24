@@ -15,7 +15,7 @@ import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.domain.model.impl.EntityModelFactoryImpl;
-import com.ocs.dynamo.filter.CompareFilter;
+import com.ocs.dynamo.filter.EqualsPredicate;
 import com.ocs.dynamo.filter.Filter;
 import com.ocs.dynamo.service.TestEntityService;
 import com.ocs.dynamo.test.BaseMockitoTest;
@@ -110,7 +110,7 @@ public class QuickAddListSelectTest extends BaseMockitoTest {
 		// list must contain 3 items
 		Assert.assertEquals(3, select.getListSelect().getDataProviderSize());
 
-		select.setAdditionalFilter(new CompareFilter<TestEntity>("name", "Kevin"));
+		select.setAdditionalFilter(new EqualsPredicate<TestEntity>("name", "Kevin"));
 
 		// after filter there must be 1 item left
 		Assert.assertEquals(1, select.getListSelect().getDataProviderSize());

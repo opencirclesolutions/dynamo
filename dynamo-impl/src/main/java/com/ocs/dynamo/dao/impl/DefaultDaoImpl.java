@@ -13,11 +13,10 @@
  */
 package com.ocs.dynamo.dao.impl;
 
-import org.springframework.transaction.annotation.Transactional;
-
-import com.mysema.query.types.path.EntityPathBase;
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
+import com.querydsl.core.types.dsl.EntityPathBase;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * A default DAO implementation

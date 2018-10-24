@@ -21,14 +21,18 @@ import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 /**
- * The persistent class for the domain entity that manages hierarchical reference information.
+ * A domain object that is the child of another domain object
  * 
- * @author Patrick Deenen (patrick@opencircle.solutions)
- * 
+ * @author Bas Rutten
+ *
+ * @param <C>
+ *            the type of the child
+ * @param <P>
+ *            the type of the parent
  */
 @Entity
-public abstract class DomainChild<C extends DomainChild<C, P>, P extends DomainParent<C, P>> extends Domain implements
-        Serializable {
+public abstract class DomainChild<C extends DomainChild<C, P>, P extends DomainParent<C, P>> extends Domain
+		implements Serializable {
 
 	private static final long serialVersionUID = 2615942460028599211L;
 

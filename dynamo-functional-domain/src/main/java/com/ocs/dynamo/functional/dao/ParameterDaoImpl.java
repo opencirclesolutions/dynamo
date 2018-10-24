@@ -13,12 +13,11 @@
  */
 package com.ocs.dynamo.functional.dao;
 
-import org.springframework.stereotype.Repository;
-
-import com.mysema.query.types.path.EntityPathBase;
 import com.ocs.dynamo.dao.impl.BaseDaoImpl;
 import com.ocs.dynamo.functional.domain.Parameter;
 import com.ocs.dynamo.functional.domain.QParameter;
+import com.querydsl.core.types.dsl.EntityPathBase;
+import org.springframework.stereotype.Repository;
 
 /**
  * Created by R.E.M. Claassen on 6-4-2017.

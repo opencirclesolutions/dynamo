@@ -40,9 +40,38 @@ public class FilterConverter<T> implements Converter<SerializablePredicate<T>, c
 			return null;
 		}
 
-		if (filter instanceof CompareFilter) {
-			CompareFilter<T> cf = (CompareFilter<T>) filter;
-			return new Compare.Equal(cf.getProperty(), cf.getValue());
+		if (filter instanceof LikePredicate) {
+			LikePredicate<T> p = (LikePredicate<T>) filter;
+			return new Like(p.getProperty(), (String) p.getValue(), p.isCaseSensitive());
+		} else if (filter instanceof EqualsPredicate) {
+			EqualsPredicate<T> p = (EqualsPredicate<T>) filter;
+			return new Compare.Equal(p.getProperty(), p.getValue());
+		} else if (filter instanceof GreaterThanPredicate) {
+			GreaterThanPredicate<T> p = (GreaterThanPredicate<T>) filter;
+			return new Compare.Greater(p.getProperty(), p.getValue());
+		} else if (filter instanceof LessThanPredicate) {
+			LessThanPredicate<T> p = (LessThanPredicate<T>) filter;
+			return new Compare.Less(p.getProperty(), p.getValue());
+		} else if (filter instanceof AndPredicate) {
+			AndPredicate<T> p = (AndPredicate<T>) filter;
+			And and = new And();
+			for (SerializablePredicate<T> operand : p.getOperands()) {
+				Filter converted = convert(operand);
+				if (converted != null) {
+					and.getFilters().add(converted);
+				}
+			}
+			return and;
+		} else if (filter instanceof OrPredicate) {
+			OrPredicate<T> p = (OrPredicate<T>) filter;
+			Or or = new Or();
+			for (SerializablePredicate<T> operand : p.getOperands()) {
+				Filter converted = convert(operand);
+				if (converted != null) {
+					or.getFilters().add(converted);
+				}
+			}
+			return or;
 		}
 
 		//

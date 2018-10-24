@@ -13,6 +13,11 @@
  */
 package com.ocs.dynamo.dao;
 
+/**
+ * Query join types
+ * @author Bas Rutten
+ *
+ */
 public enum JoinType {
 
     INNER, LEFT, RIGHT;

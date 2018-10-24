@@ -49,17 +49,12 @@ public final class EntityModelUtil {
 	 * Compares two entities based on the entity model and reports a list of the
 	 * differences
 	 * 
-	 * @param oldEntity
-	 *            the old entity
-	 * @param newEntity
-	 *            the new entity
-	 * @param model
-	 *            the entity model
+	 * @param oldEntity          the old entity
+	 * @param newEntity          the new entity
+	 * @param model              the entity model
 	 * @param entityModelFactory
-	 * @param messageService
-	 *            the message service
-	 * @param ignore
-	 *            the names of the fields to ignore
+	 * @param messageService     the message service
+	 * @param ignore             the names of the fields to ignore
 	 */
 	public static List<String> compare(Object oldEntity, Object newEntity, EntityModel<?> model,
 			EntityModelFactory entityModelFactory, MessageService messageService, String... ignore) {
@@ -123,10 +118,8 @@ public final class EntityModelUtil {
 	/**
 	 * Copies all simple attribute values from one entity to the other
 	 * 
-	 * @param source
-	 *            the source entity
-	 * @param target
-	 *            the target entity
+	 * @param source the source entity
+	 * @param target the target entity
 	 * @param model
 	 */
 	public static <T> void copySimpleAttributes(T source, T target, EntityModel<T> model, String... ignore) {
@@ -173,14 +166,11 @@ public final class EntityModelUtil {
 	 * Returns a comma separated String containing the display properties of the
 	 * specified entities
 	 * 
-	 * @param entities
-	 *            the entities
-	 * @param model
-	 *            the model
-	 * @param maxItems
-	 *            the maximum number of items before the description is truncated
-	 * @param messageService
-	 *            message service
+	 * @param entities       the entities
+	 * @param model          the model
+	 * @param maxItems       the maximum number of items before the description is
+	 *                       truncated
+	 * @param messageService message service
 	 * @return
 	 */
 	public static <T> String getDisplayPropertyValue(Collection<T> entities, EntityModel<T> model, int maxItems,
@@ -209,13 +199,14 @@ public final class EntityModelUtil {
 	/**
 	 * Returns the value of the main attribute of an entity
 	 * 
-	 * @param entity
-	 *            the entity
-	 * @param model
-	 *            the entity model
+	 * @param entity the entity
+	 * @param model  the entity model
 	 * @return
 	 */
 	public static <T> String getDisplayPropertyValue(T entity, EntityModel<T> model) {
+		if (entity == null || model.getDisplayProperty() == null) {
+			return null;
+		}
 		String property = model.getDisplayProperty();
 		return ClassUtils.getFieldValueAsString(entity, property);
 	}
@@ -223,10 +214,8 @@ public final class EntityModelUtil {
 	/**
 	 * Returns the value of the main attribute of an entity
 	 * 
-	 * @param entity
-	 *            the entity
-	 * @param model
-	 *            the entity model
+	 * @param entity the entity
+	 * @param model  the entity model
 	 * @return
 	 */
 	public static <T> String getMainAttributeValue(T entity, EntityModel<T> model) {
@@ -244,8 +233,7 @@ public final class EntityModelUtil {
 	 * other - Match camel case for words. Only first word starts with a
 	 * capital.<br/>
 	 *
-	 * @param fieldName
-	 *            java property name.
+	 * @param fieldName java property name.
 	 * @return the caption for the given field.
 	 * @see SystemPropertyUtils
 	 */

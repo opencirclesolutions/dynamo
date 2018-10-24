@@ -13,6 +13,17 @@
  */
 package com.ocs.dynamo.ui.auth.impl;
 
+import com.ocs.dynamo.service.UserDetailsService;
+import com.ocs.dynamo.ui.auth.Authorized;
+import com.ocs.dynamo.ui.auth.PermissionChecker;
+import com.vaadin.spring.annotation.SpringView;
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
+import org.springframework.core.type.filter.AnnotationTypeFilter;
+
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -21,21 +32,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-
-import org.apache.log4j.Logger;
-import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
-import org.springframework.core.type.filter.AnnotationTypeFilter;
-
-import com.ocs.dynamo.service.UserDetailsService;
-import com.ocs.dynamo.ui.auth.Authorized;
-import com.ocs.dynamo.ui.auth.PermissionChecker;
-import com.vaadin.spring.annotation.SpringView;
-
 /**
- * Default permission checker - checks if the user has the correct role to access a view
+ * Default permission checker - checks if the user has the correct role to
+ * access a view
  * 
  * @author bas.rutten
  */
@@ -104,8 +103,8 @@ public class DefaultPermissionCheckerImpl implements PermissionChecker {
 	}
 
 	/**
-	 * Checks whether the view is an "edit only" view that can be hidden if the user doesn't have
-	 * certain edit rights
+	 * Checks whether the view is an "edit only" view that can be hidden if the user
+	 * doesn't have certain edit rights
 	 * 
 	 * @param viewName
 	 *            the name of the view
@@ -129,7 +128,8 @@ public class DefaultPermissionCheckerImpl implements PermissionChecker {
 		Set<BeanDefinition> views = provider.findCandidateComponents(basePackage);
 		for (BeanDefinition d : views) {
 			try {
-				Class<?> clazz = Class.forName(d.getBeanClassName());
+				final String beanClassName = d.getBeanClassName();
+				Class<?> clazz = Class.forName(beanClassName);
 
 				SpringView view = clazz.getAnnotation(SpringView.class);
 
@@ -139,9 +139,11 @@ public class DefaultPermissionCheckerImpl implements PermissionChecker {
 				// to the authentication framework!
 				Authorized auth = clazz.getAnnotation(Authorized.class);
 				if (auth != null && auth.roles().length > 0) {
-					int p = d.getBeanClassName().lastIndexOf('.');
-					permissions.put(d.getBeanClassName().substring(p + 1), Arrays.asList(auth.roles()));
-					editOnly.put(d.getBeanClassName().substring(p + 1), auth.editOnly());
+					if (beanClassName != null) {
+						int p = beanClassName.lastIndexOf('.');
+						permissions.put(beanClassName.substring(p + 1), Arrays.asList(auth.roles()));
+						editOnly.put(beanClassName.substring(p + 1), auth.editOnly());
+					}
 					permissions.put(view.name(), Arrays.asList(auth.roles()));
 					editOnly.put(view.name(), auth.editOnly());
 				}

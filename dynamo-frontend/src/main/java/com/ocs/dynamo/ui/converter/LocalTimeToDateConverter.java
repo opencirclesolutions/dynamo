@@ -15,10 +15,11 @@ package com.ocs.dynamo.ui.converter;
 
 import java.time.LocalTime;
 import java.util.Date;
-import java.util.Locale;
 
 import com.ocs.dynamo.utils.DateUtils;
-import com.vaadin.v7.data.util.converter.Converter;
+import com.vaadin.data.Converter;
+import com.vaadin.data.Result;
+import com.vaadin.data.ValueContext;
 
 /**
  * Vaadin Converter for converting between LocalTime and java.util.Date
@@ -28,26 +29,16 @@ import com.vaadin.v7.data.util.converter.Converter;
  */
 public class LocalTimeToDateConverter implements Converter<Date, LocalTime> {
 
-    private static final long serialVersionUID = -830307549693107753L;
+	private static final long serialVersionUID = -830307549693107753L;
 
-    @Override
-    public LocalTime convertToModel(Date value, Class<? extends LocalTime> targetType, Locale locale) {
-        return DateUtils.toLocalTime(value);
-    }
+	@Override
+	public Result<LocalTime> convertToModel(Date value, ValueContext context) {
+		return Result.ok(DateUtils.toLocalTime(value));
+	}
 
-    @Override
-    public Date convertToPresentation(LocalTime value, Class<? extends Date> targetType, Locale locale) {
-        return DateUtils.toLegacyTime(value);
-    }
-
-    @Override
-    public Class<LocalTime> getModelType() {
-        return LocalTime.class;
-    }
-
-    @Override
-    public Class<Date> getPresentationType() {
-        return Date.class;
-    }
+	@Override
+	public Date convertToPresentation(LocalTime value, ValueContext context) {
+		return DateUtils.toLegacyTime(value);
+	}
 
 }

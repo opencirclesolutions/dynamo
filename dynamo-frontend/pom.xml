@@ -64,6 +64,13 @@
 			<groupId>${project.groupId}</groupId>
 			<artifactId>dynamo-api</artifactId>
 			<version>${project.version}</version>
+			<exclusions>
+				<!--  exclude compiler to avoid class path problems when compiling widget set -->
+				<exclusion>
+					<groupId>org.eclipse.jdt.core.compiler</groupId>
+					<artifactId>ecj</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
@@ -185,6 +192,16 @@
 		<dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi-ooxml</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>javax.el</groupId>
+			<artifactId>javax.el-api</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.glassfish</groupId>
+			<artifactId>javax.el</artifactId>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 	<build>

@@ -112,6 +112,10 @@ public abstract class CustomEntityField<ID extends Serializable, T extends Abstr
 	 */
 	public abstract void refresh(SerializablePredicate<T> filter);
 
+	/**
+	 * 
+	 * @param filter
+	 */
 	public void setFilter(SerializablePredicate<T> filter) {
 		this.filter = filter;
 	}

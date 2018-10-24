@@ -13,8 +13,19 @@
  */
 package com.ocs.dynamo.dao.impl;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.ocs.dynamo.dao.BaseDao;
+import com.ocs.dynamo.dao.FetchJoinInformation;
+import com.ocs.dynamo.dao.Pageable;
+import com.ocs.dynamo.dao.SortOrder;
+import com.ocs.dynamo.dao.SortOrders;
+import com.ocs.dynamo.domain.AbstractEntity;
+import com.ocs.dynamo.exception.OCSRuntimeException;
+import com.ocs.dynamo.filter.Filter;
+import com.querydsl.core.types.dsl.EntityPathBase;
+import com.querydsl.jpa.impl.JPADeleteClause;
+import com.querydsl.jpa.impl.JPAQuery;
+import com.querydsl.jpa.impl.JPAUpdateClause;
+import org.apache.commons.lang.StringEscapeUtils;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -24,21 +35,8 @@ import javax.persistence.Query;
 import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaQuery;
-
-import org.apache.commons.lang.StringEscapeUtils;
-
-import com.mysema.query.jpa.impl.JPADeleteClause;
-import com.mysema.query.jpa.impl.JPAQuery;
-import com.mysema.query.jpa.impl.JPAUpdateClause;
-import com.mysema.query.types.path.EntityPathBase;
-import com.ocs.dynamo.dao.BaseDao;
-import com.ocs.dynamo.dao.FetchJoinInformation;
-import com.ocs.dynamo.dao.Pageable;
-import com.ocs.dynamo.dao.SortOrder;
-import com.ocs.dynamo.dao.SortOrders;
-import com.ocs.dynamo.domain.AbstractEntity;
-import com.ocs.dynamo.exception.OCSRuntimeException;
-import com.ocs.dynamo.filter.Filter;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Base class for all DAO implementations
@@ -72,7 +70,7 @@ public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements B
 
 	@Override
 	public long count() {
-		return createQuery().count();
+		return createQuery().fetchCount();
 	}
 
 	@Override
@@ -96,8 +94,8 @@ public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements B
 	 * 
 	 * @return
 	 */
-	protected JPAQuery createQuery() {
-		JPAQuery query = new JPAQuery(entityManager);
+	protected JPAQuery<T> createQuery() {
+		JPAQuery<T> query = new JPAQuery<>(entityManager);
 		query.from(getDslRoot());
 		return query;
 	}
@@ -364,7 +362,7 @@ public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements B
 
 	/**
 	 * Returns the first value of a list
-	 * 
+	 *
 	 * @param list
 	 *            the list
 	 * @return the first value of the list, or <code>null</code> if this does
