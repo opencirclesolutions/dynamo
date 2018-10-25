@@ -19,6 +19,7 @@ import java.util.List;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
+import com.ocs.dynamo.filter.AndPredicate;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.Refreshable;
 import com.ocs.dynamo.ui.component.EntityComboBox.SelectMode;
@@ -36,37 +37,30 @@ import com.vaadin.ui.HorizontalLayout;
  * 
  * @author bas.rutten
  *
- * @param <ID>
- *            the type of the primary key of the entity
- * @param <T>
- *            the type of the entity
+ * @param <ID> the type of the primary key of the entity
+ * @param <T> the type of the entity
  */
 public class QuickAddEntityComboBox<ID extends Serializable, T extends AbstractEntity<ID>>
 		extends QuickAddEntityField<ID, T, T> implements Refreshable {
 
 	private static final long serialVersionUID = 4246187881499965296L;
 
+	private static final float BUTTON_EXPAND_RATIO = 0.25f;
+
 	private final boolean quickAddAllowed;
 
 	private final boolean directNavigationAllowed;
-
-	private static final float BUTTON_EXPAND_RATIO = 0.25f;
 
 	private EntityComboBox<ID, T> comboBox;
 
 	/**
 	 * Constructor
 	 *
-	 * @param entityModel
-	 *            the entity model
-	 * @param attributeModel
-	 *            the attribute model
-	 * @param service
-	 *            the service
-	 * @param mode
-	 *            the mode
-	 * @param filter
-	 *            the filter that is used for filtering the data
+	 * @param entityModel    the entity model
+	 * @param attributeModel the attribute model
+	 * @param service        the service
+	 * @param mode           the mode
+	 * @param filter         the filter that is used for filtering the data
 	 * @param items
 	 * @param sortOrder
 	 */
@@ -96,8 +90,20 @@ public class QuickAddEntityComboBox<ID extends Serializable, T extends AbstractE
 		}
 	}
 
+	@Override
+	protected void doSetValue(T value) {
+		if (comboBox != null) {
+			comboBox.setValue(value);
+		}
+	}
+
 	public EntityComboBox<ID, T> getComboBox() {
 		return comboBox;
+	}
+
+	@Override
+	public T getValue() {
+		return comboBox.getValue();
 	}
 
 	@Override
@@ -163,23 +169,8 @@ public class QuickAddEntityComboBox<ID extends Serializable, T extends AbstractE
 	public void setAdditionalFilter(SerializablePredicate<T> additionalFilter) {
 		super.setAdditionalFilter(additionalFilter);
 		if (comboBox != null) {
-			comboBox.refresh(getFilter() == null ? additionalFilter : getFilter().and(additionalFilter));
-		}
-	}
-
-	// @Override
-	// protected void setInternalValue(T newValue) {
-	// super.setInternalValue(newValue);
-	// if (comboBox != null) {
-	// comboBox.setValue(newValue);
-	// }
-	// }
-
-	@Override
-	public void setValue(T newFieldValue) {
-		super.setValue(newFieldValue);
-		if (comboBox != null) {
-			comboBox.setValue(newFieldValue);
+			comboBox.refresh(
+					getFilter() == null ? additionalFilter : new AndPredicate<T>(getFilter(), additionalFilter));
 		}
 	}
 
@@ -191,14 +182,10 @@ public class QuickAddEntityComboBox<ID extends Serializable, T extends AbstractE
 	}
 
 	@Override
-	public T getValue() {
-		return comboBox.getValue();
-	}
-
-	@Override
-	protected void doSetValue(T value) {
+	public void setValue(T newFieldValue) {
+		super.setValue(newFieldValue);
 		if (comboBox != null) {
-			comboBox.setValue(value);
+			comboBox.setValue(newFieldValue);
 		}
 	}
 }

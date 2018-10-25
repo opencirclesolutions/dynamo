@@ -107,9 +107,6 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 		if (attributeModel != null) {
 			this.setCaption(attributeModel.getDisplayName());
 		}
-		// this.setRequiredError(
-		// serviceLocator.getMessageService().getMessage("ocs.may.not.be.null",
-		// VaadinUtils.getLocale()));
 
 		setFilter(filter);
 		ListDataProvider<T> provider = null;
@@ -275,10 +272,6 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 				provider.getItems().addAll(list);
 			}
 		}
-		// Apply sortorder on container when transient attributes are applied
-		// SortUtil.applyContainerSortOrder((BeanItemContainer<T>)
-		// getContainerDataSource(), true, targetEntityModel,
-		// sortOrders);
 	}
 
 	public void refresh(SerializablePredicate<T> filter) {
@@ -298,27 +291,6 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 	public void setFilter(SerializablePredicate<T> filter) {
 		this.filter = filter;
 	}
-
-	// @Override
-	// public String getItemCaption(Object itemId) {
-	// if (getItemCaptionMode() == ItemCaptionMode.PROPERTY) {
-	// final Property<?> p = getContainerProperty(itemId,
-	// getItemCaptionPropertyId());
-	// if (p != null) {
-	// Object value = p.getValue();
-	// if (value != null) {
-	// try {
-	// value = ConverterUtil.convertFromModel(value, Object.class, getConverter(),
-	// getLocale());
-	// } catch (Exception e) {
-	// }
-	// return value.toString();
-	// }
-	// }
-	// return null;
-	// }
-	// return super.getItemCaption(itemId);
-	// }
 
 	public void setSelectMode(SelectMode selectMode) {
 		this.selectMode = selectMode;

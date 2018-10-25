@@ -13,6 +13,8 @@
  */
 package com.ocs.dynamo.filter;
 
+import java.util.function.Predicate;
+
 import com.vaadin.server.SerializablePredicate;
 
 /**
@@ -42,6 +44,12 @@ public abstract class PropertyPredicate<T> implements SerializablePredicate<T> {
 
 	public Object getValue() {
 		return value;
+	}
+
+	@Override
+	public AndPredicate<T> and(Predicate<? super T> other) {
+		AndPredicate<T> and = new AndPredicate<T>(this, (SerializablePredicate<T>) other);
+		return and;
 	}
 
 }

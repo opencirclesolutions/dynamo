@@ -44,10 +44,8 @@ import com.vaadin.ui.Label;
  * dialog to search for another one
  * 
  * @author bas.rutten
- * @param <ID>
- *            the type of the primary key
- * @param <T>
- *            the type of the entity
+ * @param <ID> the type of the primary key
+ * @param <T> the type of the entity
  */
 public class EntityLookupField<ID extends Serializable, T extends AbstractEntity<ID>>
 		extends QuickAddEntityField<ID, T, Object> {
@@ -104,20 +102,14 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 	/**
 	 * Constructor
 	 *
-	 * @param service
-	 *            the service used to query the database
-	 * @param entityModel
-	 *            the entity model
-	 * @param attributeModel
-	 *            the attribute mode
-	 * @param filter
-	 *            the filter to apply when searching
-	 * @param search
-	 *            whether the component is used in a search screen
-	 * @param sortOrders
-	 *            the sort order
-	 * @param joins
-	 *            the joins to use when fetching data when filling the popop dialog
+	 * @param service        the service used to query the database
+	 * @param entityModel    the entity model
+	 * @param attributeModel the attribute mode
+	 * @param filter         the filter to apply when searching
+	 * @param search         whether the component is used in a search screen
+	 * @param sortOrders     the sort order
+	 * @param joins          the joins to use when fetching data when filling the
+	 *                       popop dialog
 	 */
 	public EntityLookupField(BaseService<ID, T> service, EntityModel<T> entityModel, AttributeModel attributeModel,
 			SerializablePredicate<T> filter, boolean search, boolean multiSelect, List<SortOrder<?>> sortOrders,
@@ -134,8 +126,7 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 	/**
 	 * Adds a sort order
 	 *
-	 * @param sortOrder
-	 *            the sort order to add
+	 * @param sortOrder the sort order to add
 	 */
 	public void addSortOrder(SortOrder<T> sortOrder) {
 		this.sortOrders.add(sortOrder);
@@ -281,8 +272,7 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 	/**
 	 * Makes sure any currently selected values are highlighted in the search dialog
 	 *
-	 * @param dialog
-	 *            the dialog
+	 * @param dialog the dialog
 	 */
 //	public void selectValuesInDialog(ModelBasedSearchDialog<ID, T> dialog) {
 //		// select any previously selected values in the dialog
@@ -328,8 +318,7 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 	/**
 	 * Updates the value that is displayed in the label
 	 *
-	 * @param newValue
-	 *            the new value
+	 * @param newValue the new value
 	 */
 	private void updateLabel(Object newValue) {
 		if (label != null) {
@@ -382,5 +371,4 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 		return null;
 	}
 
-	
 }

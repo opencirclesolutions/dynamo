@@ -32,6 +32,15 @@ public class OrPredicate<T> implements SerializablePredicate<T> {
 
 	private final List<SerializablePredicate<T>> operands = new ArrayList<>();
 
+	@SafeVarargs
+	public OrPredicate(SerializablePredicate<T>... predicates) {
+		if (predicates != null) {
+			for (SerializablePredicate<T> p : predicates) {
+				operands.add(p);
+			}
+		}
+	}
+
 	@Override
 	public boolean test(T t) {
 		return operands.stream().anyMatch(o -> o.test(t));
@@ -39,9 +48,9 @@ public class OrPredicate<T> implements SerializablePredicate<T> {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public Predicate<T> and(Predicate<? super T> other) {
+	public Predicate<T> or(Predicate<? super T> other) {
 		operands.add((SerializablePredicate<T>) other);
-		return SerializablePredicate.super.and(other);
+		return SerializablePredicate.super.or(other);
 	}
 
 	public List<SerializablePredicate<T>> getOperands() {

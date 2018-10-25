@@ -32,13 +32,10 @@ import com.vaadin.ui.UI;
  * 
  * @author bas.rutten
  *
- * @param <ID>
- *            the type of the primary key
- * @param <T>
- *            the type of the entity
- * @param <U>
- *            the type of the value of the component (can be an entity, or a
- *            collection of entities)
+ * @param <ID> the type of the primary key
+ * @param <T> the type of the entity
+ * @param <U> the type of the value of the component (can be an entity, or a
+ *        collection of entities)
  */
 public abstract class QuickAddEntityField<ID extends Serializable, T extends AbstractEntity<ID>, U>
 		extends CustomEntityField<ID, T, U> {
@@ -65,14 +62,10 @@ public abstract class QuickAddEntityField<ID extends Serializable, T extends Abs
 	/**
 	 * Constructor
 	 * 
-	 * @param service
-	 *            the service used to interact with the storage
-	 * @param entityModel
-	 *            the entity model of the entity that is being displayed
-	 * @param attributeModel
-	 *            the attribute model
-	 * @param filter
-	 *            the search filter
+	 * @param service        the service used to interact with the storage
+	 * @param entityModel    the entity model of the entity that is being displayed
+	 * @param attributeModel the attribute model
+	 * @param filter         the search filter
 	 */
 	public QuickAddEntityField(BaseService<ID, T> service, EntityModel<T> entityModel, AttributeModel attributeModel,
 			SerializablePredicate<T> filter) {

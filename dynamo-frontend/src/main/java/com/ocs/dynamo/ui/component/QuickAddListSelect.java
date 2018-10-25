@@ -14,8 +14,9 @@
 package com.ocs.dynamo.ui.component;
 
 import java.io.Serializable;
-import java.util.Set;
+import java.util.Collection;
 
+import com.google.gwt.thirdparty.guava.common.collect.Sets;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
@@ -35,13 +36,11 @@ import com.vaadin.ui.HorizontalLayout;
  * 
  * @author bas.rutten
  *
- * @param <ID>
- *            the type of the primary key of the entity that is being displayed
- * @param <T>
- *            the type of the entity that is being displayed
+ * @param <ID> the type of the primary key of the entity that is being displayed
+ * @param <T> the type of the entity that is being displayed
  */
 public class QuickAddListSelect<ID extends Serializable, T extends AbstractEntity<ID>>
-		extends QuickAddEntityField<ID, T, Object> implements Refreshable {
+		extends QuickAddEntityField<ID, T, Collection<T>> implements Refreshable {
 
 	private static final long serialVersionUID = 4246187881499965296L;
 
@@ -55,8 +54,14 @@ public class QuickAddListSelect<ID extends Serializable, T extends AbstractEntit
 	 */
 	private boolean viewMode;
 
+	/**
+	 * Whether quick adding is allowed
+	 */
 	private boolean quickAddAllowed;
 
+	/**
+	 * Whether direct navigation is allowed
+	 */
 	private boolean directNavigationAllowed;
 
 	/**
@@ -75,7 +80,6 @@ public class QuickAddListSelect<ID extends Serializable, T extends AbstractEntit
 			SerializablePredicate<T> filter, boolean multiSelect, int rows, SortOrder<T>... sortOrder) {
 		super(service, entityModel, attributeModel, filter);
 		listSelect = new EntityListSelect<>(entityModel, attributeModel, service, filter, sortOrder);
-		// listSelect.setMultiSelect(multiSelect);
 		listSelect.setRows(rows);
 		this.quickAddAllowed = attributeModel != null && attributeModel.isQuickAddAllowed();
 		this.directNavigationAllowed = attributeModel != null && attributeModel.isDirectNavigation();
@@ -167,19 +171,11 @@ public class QuickAddListSelect<ID extends Serializable, T extends AbstractEntit
 		}
 	}
 
-	// @Override
-	// protected void setInternalValue(Object newValue) {
-	// super.setInternalValue(newValue);
-	// if (listSelect != null) {
-	// listSelect.setValue(newValue);
-	// }
-	// }
-
 	@Override
-	public void setValue(Object newFieldValue) {
-		super.setValue(newFieldValue);
+	public void setValue(Collection<T> value) {
+		super.setValue(value);
 		if (listSelect != null) {
-			listSelect.setValue((Set<T>) newFieldValue);
+			listSelect.setValue(Sets.newHashSet(value));
 		}
 	}
 
@@ -188,7 +184,7 @@ public class QuickAddListSelect<ID extends Serializable, T extends AbstractEntit
 	}
 
 	@Override
-	public Object getValue() {
+	public Collection<T> getValue() {
 		if (listSelect != null) {
 			return listSelect.getValue();
 		}
@@ -196,9 +192,9 @@ public class QuickAddListSelect<ID extends Serializable, T extends AbstractEntit
 	}
 
 	@Override
-	protected void doSetValue(Object value) {
+	protected void doSetValue(Collection<T> value) {
 		if (listSelect != null) {
-			listSelect.setValue((Set<T>) value);
+			listSelect.setValue(Sets.newHashSet(value));
 		}
 	}
 

@@ -19,9 +19,11 @@ import java.util.List;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
+import com.ocs.dynamo.filter.AndPredicate;
 import com.ocs.dynamo.filter.FilterConverter;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.Refreshable;
+import com.ocs.dynamo.ui.utils.EntityModelUtil;
 import com.ocs.dynamo.ui.utils.SortUtil;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.data.provider.SortOrder;
@@ -32,10 +34,8 @@ import com.vaadin.ui.ListSelect;
  * Custom ListSelect component for displaying a collection of entities.
  * 
  * @author bas.rutten
- * @param <ID>
- *            type of the primary key of the entity
- * @param <T>
- *            type of the entity
+ * @param <ID> type of the primary key of the entity
+ * @param <T> type of the entity
  */
 public class EntityListSelect<ID extends Serializable, T extends AbstractEntity<ID>> extends ListSelect<T>
 		implements Refreshable, Cascadable<T> {
@@ -121,25 +121,20 @@ public class EntityListSelect<ID extends Serializable, T extends AbstractEntity<
 		}
 		setDataProvider(provider);
 
-		// setItemCaptionMode(ItemCaptionMode.PROPERTY);
-		// setItemCaptionPropertyId(targetEntityModel.getDisplayProperty());
+		setItemCaptionGenerator(t -> EntityModelUtil.getDisplayPropertyValue(t, targetEntityModel));
 		setSizeFull();
 	}
 
 	/**
 	 * Constructor - for the "FILTERED" mode
 	 * 
-	 * @param targetEntityModel
-	 *            the entity model of the entities that are to be displayed
-	 * @param attributeModel
-	 *            the attribute model for the property that is bound to this
-	 *            component
-	 * @param service
-	 *            the service used to retrieve the entities
-	 * @param filter
-	 *            the filter used to filter the entities
-	 * @param sortOrder
-	 *            the sort order used to sort the entities
+	 * @param targetEntityModel the entity model of the entities that are to be
+	 *                          displayed
+	 * @param attributeModel    the attribute model for the property that is bound
+	 *                          to this component
+	 * @param service           the service used to retrieve the entities
+	 * @param filter            the filter used to filter the entities
+	 * @param sortOrder         the sort order used to sort the entities
 	 */
 	@SafeVarargs
 	public EntityListSelect(EntityModel<T> targetEntityModel, AttributeModel attributeModel, BaseService<ID, T> service,
@@ -150,13 +145,11 @@ public class EntityListSelect<ID extends Serializable, T extends AbstractEntity<
 	/**
 	 * Constructor - for the "ALL" mode
 	 * 
-	 * @param targetEntityModel
-	 *            the entity model of the entities that are to be displayed
-	 * @param attributeModel
-	 *            the attribute model for the property that is bound to this
-	 *            component
-	 * @param service
-	 *            the service used to retrieve entities
+	 * @param targetEntityModel the entity model of the entities that are to be
+	 *                          displayed
+	 * @param attributeModel    the attribute model for the property that is bound
+	 *                          to this component
+	 * @param service           the service used to retrieve entities
 	 */
 	@SafeVarargs
 	public EntityListSelect(EntityModel<T> targetEntityModel, AttributeModel attributeModel, BaseService<ID, T> service,
@@ -167,13 +160,11 @@ public class EntityListSelect<ID extends Serializable, T extends AbstractEntity<
 	/**
 	 * Constructor - for the "FIXED" mode
 	 * 
-	 * @param targetEntityModel
-	 *            the entity model of the entities that are to be displayed
-	 * @param attributeModel
-	 *            the attribute model for the property that is bound to this
-	 *            component
-	 * @param items
-	 *            the list of entities to display
+	 * @param targetEntityModel the entity model of the entities that are to be
+	 *                          displayed
+	 * @param attributeModel    the attribute model for the property that is bound
+	 *                          to this component
+	 * @param items             the list of entities to display
 	 */
 	public EntityListSelect(EntityModel<T> targetEntityModel, AttributeModel attributeModel, List<T> items) {
 		this(targetEntityModel, attributeModel, null, SelectMode.FIXED, null, items);
@@ -248,7 +239,7 @@ public class EntityListSelect<ID extends Serializable, T extends AbstractEntity<
 	public void setAdditionalFilter(SerializablePredicate<T> additionalFilter) {
 		setValue(null);
 		this.additionalFilter = additionalFilter;
-		this.filter = originalFilter == null ? additionalFilter : originalFilter.and(additionalFilter);
+		this.filter = originalFilter == null ? additionalFilter : new AndPredicate<T>(originalFilter, additionalFilter);
 		refresh();
 	}
 

@@ -16,20 +16,17 @@ package com.ocs.dynamo.ui.component;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
 
 import com.explicatis.ext_token_field.ExtTokenField;
 import com.explicatis.ext_token_field.Tokenizable;
+import com.google.common.collect.Sets;
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.Refreshable;
-import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.utils.ClassUtils;
-
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.data.provider.SortOrder;
 import com.vaadin.server.ErrorMessage;
@@ -45,10 +42,8 @@ import com.vaadin.ui.HorizontalLayout;
  * 
  * @author bas.rutten
  *
- * @param <ID>
- *            the type of the primary key
- * @param <T>
- *            the type of the entity
+ * @param <ID> the type of the primary key
+ * @param <T> the type of the entity
  * 
  */
 public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<ID>>
@@ -146,7 +141,7 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
 		extTokenField.clear();
 		if (provider.getItems().size() > 0) {
 			for (T item : provider.getItems()) {
-				Tokenizable token = new BeanItemTokenizable(item, "TODO");
+				Tokenizable token = new BeanItemTokenizable(item, "fullName");
 				extTokenField.addTokenizable(token);
 			}
 		}
@@ -162,11 +157,8 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	protected void afterNewEntityAdded(T entity) {
-		// comboBox.addEntity(entity);
-		// container.addBean(entity);
-		// copyValueFromContainer();
-
 		ListDataProvider<T> provider = (ListDataProvider<T>) comboBox.getDataProvider();
 		provider.getItems().add(entity);
 		comboBox.setValue(entity);
@@ -180,8 +172,8 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
 		comboBox.addValueChangeListener(event -> {
 			Object selectedObject = event.getValue();
 			if (selectedObject != null) {
-				T abstractEntity = (T) selectedObject;
-				// container.addBean(abstractEntity);
+				T t = (T) selectedObject;
+				provider.getItems().add(t);
 
 				// reset the combo box
 				comboBox.setValue(null);
@@ -216,9 +208,9 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
 	 * Copies the values from the container to the component
 	 */
 	private void copyValueFromContainer() {
-		// Collection<T> values = container.getItemIds();
-		// setValue(new HashSet<>(values));
-		// setComboBoxWidth();
+		Collection<T> values = provider.getItems();
+		setValue(Sets.newHashSet(values));
+		setComboBoxWidth();
 		// validate();
 	}
 
@@ -317,26 +309,24 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
 		}
 	}
 
-	// @Override
-	// protected void setInternalValue(Collection<T> values) {
-	// super.setInternalValue(values);
-	// container.removeAllItems();
-	// if (values != null) {
-	// container.addAll(values);
-	// }
-	// }
 
 	/**
 	 * Update token selections
 	 */
 	private void setupContainerFieldSync() {
-		// provider.addItemSetChangeListener(e -> addTokens());
+		provider.addDataProviderListener(event -> {
+			System.out.println("Adding tokens");
+			addTokens();
+		});
 	}
 
 	@Override
 	public void setValue(Collection<T> values) {
 		super.setValue(values);
-		// setInternalValue(values);
+		provider.getItems().clear();
+		if (values != null) {
+			provider.getItems().addAll(values);
+		}
 	}
 
 	// @Override
