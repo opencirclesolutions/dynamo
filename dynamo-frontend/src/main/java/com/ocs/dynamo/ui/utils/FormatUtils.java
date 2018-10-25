@@ -32,13 +32,12 @@ import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
-import com.ocs.dynamo.ui.composite.table.GridUtils;
 import com.ocs.dynamo.utils.ClassUtils;
 import com.ocs.dynamo.utils.DateUtils;
 import com.ocs.dynamo.utils.NumberUtils;
+import com.vaadin.ui.UI;
 import com.vaadin.v7.data.Property;
 import com.vaadin.v7.ui.Table;
-import com.vaadin.ui.UI;
 
 /**
  * Utilities for formatting property values
@@ -57,9 +56,15 @@ public final class FormatUtils {
 		// private constructor
 	}
 
-	public static String extractAndFormat(AttributeModel am, Object value) {
-		Object object = ClassUtils.getFieldValue(value, am.getPath());
-		return formatPropertyValue(entityModelFactory, am, object, ",");
+	/**
+	 * Extracts a field value and formats it
+	 * @param am the attribute model
+	 * @param obj the object from which to extract the value
+	 * @return
+	 */
+	public static String extractAndFormat(AttributeModel am, Object obj) {
+		Object value = ClassUtils.getFieldValue(obj, am.getPath());
+		return formatPropertyValue(entityModelFactory, am, value, ",");
 	}
 
 	/**
@@ -110,20 +115,6 @@ public final class FormatUtils {
 			}
 		}
 		return result.stream().collect(Collectors.joining(separator));
-	}
-
-	/**
-	 * Formats a collection of entities into a comma-separated string that displays
-	 * the meaningful representations of the entities
-	 *
-	 * @param entityModelFactory the entity model factory
-	 * @param attributeModel     the attribute model
-	 * @param property           the property
-	 * @return
-	 */
-	public static String formatEntityCollection(EntityModelFactory entityModelFactory, AttributeModel attributeModel,
-			Property<?> property) {
-		return formatEntityCollection(entityModelFactory, attributeModel, property.getValue(), "<br/> ");
 	}
 
 	/**
