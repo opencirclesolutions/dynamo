@@ -24,28 +24,34 @@ import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
+import com.ocs.dynamo.ui.component.URLField;
+import com.ocs.dynamo.ui.utils.FormatUtils;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
+import com.ocs.dynamo.utils.ClassUtils;
+import com.vaadin.data.BeanPropertySet;
+import com.vaadin.data.PropertyFilterDefinition;
+import com.vaadin.data.PropertySet;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.server.SerializablePredicate;
 import com.vaadin.ui.Grid;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.renderers.ComponentRenderer;
 
 /**
  * A Table that bases its columns on the meta model of an entity
  * 
  * @author bas.rutten
- * @param <ID>
- *            type of the primary key
- * @param <T>
- *            type of the entity
+ * @param <ID> type of the primary key
+ * @param <T> type of the entity
  */
-public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<ID>> extends Grid<T> {
+public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID>> extends Grid<T> {
 
 	private static final long serialVersionUID = 6946260934644731038L;
 
 	/**
 	 * The data provider that holds the data
 	 */
-	private DataProvider<T, SerializablePredicate<T>> dataProvider;
+	// private DataProvider<T, SerializablePredicate<T>> dataProvider;
 
 	/**
 	 * Custom currency symbol to be used for this table
@@ -80,27 +86,26 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
 	/**
 	 * Constructor
 	 *
-	 * @param container
-	 *            the data container
-	 * @param model
-	 *            the entity model that determines what to display
-	 * @param exportAllowed
-	 *            whether export of the table is allowed
+	 * @param container     the data container
+	 * @param model         the entity model that determines what to display
+	 * @param exportAllowed whether export of the table is allowed
 	 */
-	public ModelBasedTable(DataProvider<T, SerializablePredicate<T>> dataProvider, EntityModel<T> model,
+	public ModelBasedGrid(DataProvider<T, SerializablePredicate<T>> dataProvider, EntityModel<T> model,
 			boolean exportAllowed) {
-		this.dataProvider = dataProvider;
+		setDataProvider(dataProvider);
+
+		// we need to pre-populate the table with the available properties
+		PropertySet<T> ps = BeanPropertySet.get(model.getEntityClass(), true,
+				new PropertyFilterDefinition(3, new ArrayList<>()));
+		setPropertySet(ps);
+
 		this.entityModel = model;
 		this.messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
 		this.entityModelFactory = ServiceLocatorFactory.getServiceLocator().getEntityModelFactory();
 		this.exportAllowed = exportAllowed;
 
-		TableUtils.defaultInitialization(this);
+		GridUtils.defaultInitialization(this);
 
-		// add a custom field factory that takes care of special cases and
-		// validation
-		// this.setTableFieldFactory(ModelBasedFieldFactory.getInstance(entityModel,
-		// messageService));
 		generateColumns(model);
 
 		// add export functionality
@@ -120,56 +125,44 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
 
 		// update the table caption to reflect the number of items
 		if (isUpdateTableCaption()) {
-			// addItemSetChangeListener(e -> updateTableCaption());
+			getDataProvider().addDataProviderListener(e -> updateTableCaption());
 		}
 	}
 
 	/**
 	 * Adds a column to the table
 	 *
-	 * @param attributeModel
-	 *            the (possibly nested) attribute model for which to add a column
-	 * @param propertyNames
-	 *            the properties to be added
-	 * @param headerNames
-	 *            the headers to be added
+	 * @param attributeModel the (possibly nested) attribute model for which to add
+	 *                       a column
+	 * @param propertyNames  the properties to be added
+	 * @param headerNames    the headers to be added
 	 */
 	private void addColumn(final AttributeModel attributeModel, List<Object> propertyNames, List<String> headerNames) {
 		if (attributeModel.isVisibleInTable()) {
 			propertyNames.add(attributeModel.getPath());
 			headerNames.add(attributeModel.getDisplayName());
 
-			// for the lazy query container we explicitly have to add the
-			// properties - for the standard Bean container this is not
-			// needed
-			// if (container instanceof LazyQueryContainer) {
-			// LazyQueryContainer lazyContainer = (LazyQueryContainer) container;
-			// if
-			// (!lazyContainer.getContainerPropertyIds().contains(attributeModel.getPath()))
-			// {
-			// lazyContainer.addContainerProperty(attributeModel.getPath(),
-			// attributeModel.getType(),
-			// attributeModel.getDefaultValue(),
-			// EditableType.READ_ONLY.equals(attributeModel.getEditableType()),
-			// attributeModel.isSortable());
-			// }
-			// }
+			// rather complicated way of creating a formatted column
+			if (attributeModel.isUrl()) {
+				addColumn(t -> new URLField(
+						new TextField("", ClassUtils.getFieldValueAsString(t, attributeModel.getPath(), "")),
+						attributeModel, false), new ComponentRenderer()).setCaption(attributeModel.getDisplayName());
+			} else {
+				addColumn(t -> FormatUtils.extractAndFormat(attributeModel, t))
+						.setCaption(attributeModel.getDisplayName())
+						.setStyleGenerator(item -> attributeModel.isNumerical() ? "v-align-right" : "");
+			}
 
 			// generated column with clickable URL (only in view mode)
 			addUrlField(attributeModel);
 			addInternalLinkField(attributeModel);
-
-			if (attributeModel.isNumerical()) {
-				// this.setColumnAlignment(attributeModel.getPath(), Table.Align.RIGHT);
-			}
 		}
 	}
 
 	/**
 	 * Adds a generated column
 	 *
-	 * @param attributeModel
-	 *            the attribute model for which to add the column
+	 * @param attributeModel the attribute model for which to add the column
 	 */
 	private void addGeneratedColumn(final AttributeModel attributeModel) {
 		if (attributeModel.isVisibleInTable() && attributeModel.isUrl()) {
@@ -194,48 +187,45 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
 	/**
 	 * Adds an URL field for a certain attribute
 	 *
-	 * @param attributeModel
-	 *            the attribute model
+	 * @param attributeModel the attribute model
 	 */
 	private void addUrlField(final AttributeModel attributeModel) {
-		// if (attributeModel.isUrl() && !isEnabled()) {
-		// Column<URLField> generated = this.addComponentColumn(T t -> {
-		// URLField field = (URLField) ((ModelBasedFieldFactory<?>)
-		// getTableFieldFactory())
-		// .createField(attributeModel.getPath(), null);
-		// if (field != null) {
-		// String val = (String) getItem(itemId).getItemProperty(columnId).getValue();
-		// field.setValue(val);
-		// }
-		// return field;
-		// });
+//		 if (attributeModel.isUrl() && !isEnabled()) {
+//		 Column<URLField> generated = this.addComponentColumn(T t -> {
+//		 URLField field = (URLField) ((ModelBasedFieldFactory<?>)
+//		 getTableFieldFactory())
+//		 .createField(attributeModel.getPath(), null);
+//		 if (field != null) {
+//		 String val = (String) getItem(itemId).getItemProperty(columnId).getValue();
+//		 field.setValue(val);
+//		 }
+//		 return field;
+//		 });
+//
+//		this.addGeneratedColumn(attributeModel.getPath(), new ColumnGenerator() {
+//
+//			private static final long serialVersionUID = -3191235289754428914L;
+//
+//			@Override
+//			public Object generateCell(Table source, final Object itemId, Object columnId) {
+//				URLField field = (URLField) ((ModelBasedFieldFactory<?>) getTableFieldFactory())
+//						.createField(attributeModel.getPath(), null);
+//				if (field != null) {
+//					String val = (String) getItem(itemId).getItemProperty(columnId).getValue();
+//					field.setValue(val);
+//				}
+//				return field;
+//			}
+//		});
+//	}
 
-		// this.addGeneratedColumn(attributeModel.getPath(), new ColumnGenerator() {
-		//
-		// private static final long serialVersionUID = -3191235289754428914L;
-		//
-		// @Override
-		// public Object generateCell(Table source, final Object itemId, Object
-		// columnId) {
-		// URLField field = (URLField) ((ModelBasedFieldFactory<?>)
-		// getTableFieldFactory())
-		// .createField(attributeModel.getPath(), null);
-		// if (field != null) {
-		// String val = (String) getItem(itemId).getItemProperty(columnId).getValue();
-		// field.setValue(val);
-		// }
-		// return field;
-		// }
-		// });
-		// }
 	}
 
 	/**
 	 * Adds a button/link for navigation within the application
 	 *
-	 * @param attributeModel.
-	 *            For this to work you must register a navigation rule in the BaseUI
-	 *            at the base of your application
+	 * @param attributeModel. For this to work you must register a navigation rule
+	 *        in the BaseUI at the base of your application
 	 */
 	private void addInternalLinkField(final AttributeModel attributeModel) {
 		if (attributeModel.isNavigable() && AttributeType.MASTER.equals(attributeModel.getAttributeType())) {
@@ -278,15 +268,12 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
 //		}
 //		return super.formatPropertyValue(rowId, colId, property);
 //	}
-	
 
 	/**
 	 * Generates the columns of the table based on the entity model
 	 *
-	 * @param container
-	 *            the container
-	 * @param model
-	 *            the entity model
+	 * @param container the container
+	 * @param model     the entity model
 	 */
 	protected void generateColumns(EntityModel<T> model) {
 		generateColumns(model.getAttributeModels());
@@ -298,15 +285,14 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
 	 * Generates the columns of the table based on a select number of attribute
 	 * models
 	 *
-	 * @param attributeModels
-	 *            the attribute models for which to generate columns
+	 * @param attributeModels the attribute models for which to generate columns
 	 */
 	protected void generateColumns(List<AttributeModel> attributeModels) {
 		List<Object> propertyNames = new ArrayList<>();
 		List<String> headerNames = new ArrayList<>();
 		generateColumnsRecursive(attributeModels, propertyNames, headerNames);
-		//this.setVisibleColumns(propertyNames.toArray());
-		//this.setColumnHeaders(headerNames.toArray(new String[0]));
+		// this.setVisibleColumns(propertyNames.toArray());
+		// this.setColumnHeaders(headerNames.toArray(new String[0]));
 	}
 
 	private void generateColumnsRecursive(List<AttributeModel> attributeModels, List<Object> propertyNames,
@@ -320,9 +306,9 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
 		}
 	}
 
-	public DataProvider<T, SerializablePredicate<T>> getDataProvider() {
-		return dataProvider;
-	}
+//	public DataProvider<T, SerializablePredicate<T>> getDataProvider() {
+//		return dataProvider;
+//	}
 
 	public String getCurrencySymbol() {
 		return currencySymbol;
@@ -335,8 +321,7 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
 	/**
 	 * Removes a generated column
 	 *
-	 * @param attributeModel
-	 *            the attribute model for which to remove the column
+	 * @param attributeModel the attribute model for which to remove the column
 	 */
 	private void removeGeneratedColumn(final AttributeModel attributeModel) {
 		if (attributeModel.isVisibleInTable() && attributeModel.isUrl()) {
@@ -366,13 +351,11 @@ public class ModelBasedTable<ID extends Serializable, T extends AbstractEntity<I
 	 * Sets the visibility of a column. This can only be used to show/hide columns
 	 * that would show up in the table based on the entity model
 	 *
-	 * @param propertyId
-	 *            the ID of the column.
-	 * @param visible
-	 *            whether the column must be visible
+	 * @param propertyId the ID of the column.
+	 * @param visible    whether the column must be visible
 	 */
 	public void setColumnVisible(Object propertyId, boolean visible) {
-		//Object[] visibleCols = getVisibleColumns();
+		// Object[] visibleCols = getVisibleColumns();
 		// List<Object> temp = Arrays.stream(visibleCols).filter(c ->
 		// !c.equals(propertyId)).collect(Collectors.toList());
 		// boolean alreadyVisible = Arrays.stream(visibleCols).anyMatch(c ->

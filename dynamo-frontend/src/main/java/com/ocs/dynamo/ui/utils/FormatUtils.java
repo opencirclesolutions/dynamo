@@ -32,7 +32,7 @@ import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
-import com.ocs.dynamo.ui.composite.table.TableUtils;
+import com.ocs.dynamo.ui.composite.table.GridUtils;
 import com.ocs.dynamo.utils.ClassUtils;
 import com.ocs.dynamo.utils.DateUtils;
 import com.ocs.dynamo.utils.NumberUtils;
@@ -50,17 +50,23 @@ public final class FormatUtils {
 
 	private static MessageService messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
 
+	private static EntityModelFactory entityModelFactory = ServiceLocatorFactory.getServiceLocator()
+			.getEntityModelFactory();
+
 	private FormatUtils() {
 		// private constructor
+	}
+
+	public static String extractAndFormat(AttributeModel am, Object value) {
+		Object object = ClassUtils.getFieldValue(value, am.getPath());
+		return formatPropertyValue(entityModelFactory, am, object, ",");
 	}
 
 	/**
 	 * Formats an entity
 	 *
-	 * @param entityModel
-	 *            the entity model
-	 * @param value
-	 *            the value (must be an instance of AbstractEntity)
+	 * @param entityModel the entity model
+	 * @param value       the value (must be an instance of AbstractEntity)
 	 * @return
 	 */
 	public static String formatEntity(EntityModel<?> entityModel, Object value) {
@@ -79,10 +85,8 @@ public final class FormatUtils {
 	 * Formats a collection of entities (turns it into a comma-separated string
 	 * based on the value of the "displayProperty")
 	 *
-	 * @param entityModelFactory
-	 *            the entity model factory
-	 * @param collection
-	 *            the collection of entities to format
+	 * @param entityModelFactory the entity model factory
+	 * @param collection         the collection of entities to format
 	 * @return
 	 */
 	public static String formatEntityCollection(EntityModelFactory entityModelFactory, AttributeModel attributeModel,
@@ -112,12 +116,9 @@ public final class FormatUtils {
 	 * Formats a collection of entities into a comma-separated string that displays
 	 * the meaningful representations of the entities
 	 *
-	 * @param entityModelFactory
-	 *            the entity model factory
-	 * @param attributeModel
-	 *            the attribute model
-	 * @param property
-	 *            the property
+	 * @param entityModelFactory the entity model factory
+	 * @param attributeModel     the attribute model
+	 * @param property           the property
 	 * @return
 	 */
 	public static String formatEntityCollection(EntityModelFactory entityModelFactory, AttributeModel attributeModel,
@@ -128,12 +129,9 @@ public final class FormatUtils {
 	/**
 	 * Formats a property value
 	 * 
-	 * @param entityModelFactory
-	 *            the entity model factory
-	 * @param model
-	 *            the attribute model for the property
-	 * @param value
-	 *            the value of the property
+	 * @param entityModelFactory the entity model factory
+	 * @param model              the attribute model for the property
+	 * @param value              the value of the property
 	 * @return
 	 */
 	public static String formatPropertyValue(EntityModelFactory entityModelFactory, AttributeModel model, Object value,
@@ -144,18 +142,12 @@ public final class FormatUtils {
 	/**
 	 * Formats a property value
 	 *
-	 * @param table
-	 *            the table in which the property occurs
-	 * @param entityModelFactory
-	 *            the entity model factor
-	 * @param entityModel
-	 *            the entity model
-	 * @param rowId
-	 *            the row ID of the property
-	 * @param colId
-	 *            the column ID/property
-	 * @param property
-	 *            the property
+	 * @param table              the table in which the property occurs
+	 * @param entityModelFactory the entity model factor
+	 * @param entityModel        the entity model
+	 * @param rowId              the row ID of the property
+	 * @param colId              the column ID/property
+	 * @param property           the property
 	 * @return
 	 */
 	public static <T> String formatPropertyValue(Table table, EntityModelFactory entityModelFactory,
@@ -200,16 +192,11 @@ public final class FormatUtils {
 	/**
 	 * Formats a property value
 	 *
-	 * @param entityModelFactory
-	 *            the entity model factory
-	 * @param entityModel
-	 *            the entity model
-	 * @param model
-	 *            the attribute model
-	 * @param value
-	 *            the property value
-	 * @param locale
-	 *            the locale to use
+	 * @param entityModelFactory the entity model factory
+	 * @param entityModel        the entity model
+	 * @param model              the attribute model
+	 * @param value              the property value
+	 * @param locale             the locale to use
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
@@ -240,7 +227,7 @@ public final class FormatUtils {
 			} else if (DateUtils.isJava8DateType(model.getType())) {
 				return DateUtils.formatJava8Date(model.getType(), value, model.getDisplayFormat());
 			} else if (BigDecimal.class.equals(model.getType())) {
-				//String cs = TableUtils.getCurrencySymbol(table);
+				// String cs = TableUtils.getCurrencySymbol(table);
 				String cs = "";
 				return VaadinUtils.bigDecimalToString(model.isCurrency(), model.isPercentage(),
 						model.isUseThousandsGrouping(), model.getPrecision(), (BigDecimal) value, locale, cs);
@@ -290,10 +277,8 @@ public final class FormatUtils {
 	/**
 	 * Restricts a value to its maximum length defined in the attribute model
 	 *
-	 * @param input
-	 *            the input value
-	 * @param am
-	 *            the attribute model
+	 * @param input the input value
+	 * @param am    the attribute model
 	 * @return
 	 */
 	private static String restrictToMaxLength(String input, AttributeModel am) {
