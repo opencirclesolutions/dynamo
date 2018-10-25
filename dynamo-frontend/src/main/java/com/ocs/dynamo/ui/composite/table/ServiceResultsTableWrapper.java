@@ -128,8 +128,8 @@ public class ServiceResultsTableWrapper<ID extends Serializable, T extends Abstr
 	}
 
 	@SuppressWarnings("unchecked")
-	public ModelBasedTable<ID, T> getModelBasedTable() {
-		return (ModelBasedTable<ID, T>) super.getGrid();
+	public ModelBasedGrid<ID, T> getModelBasedTable() {
+		return (ModelBasedGrid<ID, T>) super.getGrid();
 	}
 
 	@Override

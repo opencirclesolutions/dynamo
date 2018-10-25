@@ -35,7 +35,7 @@ import com.vaadin.server.SerializablePredicate;
  * @param <T>
  *            type of the entity
  */
-public class FixedTableWrapper<ID extends Serializable, T extends AbstractEntity<ID>> extends BaseGridWrapper<ID, T> {
+public class FixedGridWrapper<ID extends Serializable, T extends AbstractEntity<ID>> extends BaseGridWrapper<ID, T> {
 
 	private static final long serialVersionUID = -6711832174203817230L;
 
@@ -56,7 +56,7 @@ public class FixedTableWrapper<ID extends Serializable, T extends AbstractEntity
 	 * @param sortOrder
 	 *            optional sort order
 	 */
-	public FixedTableWrapper(BaseService<ID, T> service, EntityModel<T> entityModel, Collection<T> items,
+	public FixedGridWrapper(BaseService<ID, T> service, EntityModel<T> entityModel, Collection<T> items,
 			List<SortOrder<?>> sortOrders, boolean allowExport) {
 		super(service, entityModel, QueryType.NONE, sortOrders, allowExport);
 		this.items = items;

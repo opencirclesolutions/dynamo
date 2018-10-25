@@ -15,16 +15,16 @@ package com.ocs.dynamo.ui.composite.table;
 
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.ui.Grid;
+import com.vaadin.ui.Grid.SelectionMode;
 
 /**
- * Several table related functions to reuse on both Table and TreeTable
- * subclasses.
- * 
- * @author Patrick Deenen (patrick.deenen@opencirclesolutions.nl)
+ * Utilities for dealing with the grid
+ * @author Bas Rutten
+ *
  */
-public final class TableUtils {
+public final class GridUtils {
 
-	private TableUtils() {
+	private GridUtils() {
 		// hidden constructor
 	}
 
@@ -37,12 +37,7 @@ public final class TableUtils {
 	public static <T> void defaultInitialization(Grid<T> grid) {
 		grid.setSizeFull();
 		grid.setColumnReorderingAllowed(true);
-		// grid.setImmediate(true);
-		// grid.setRea
-		// grid.setMultiSelect(false);
-		// grid.setSelectable(true);
-		// grid.setColumnCollapsingAllowed(true);
-		// grid.setSortEnabled(true);
+		grid.setSelectionMode(SelectionMode.SINGLE);
 	}
 
 	/**
@@ -56,8 +51,8 @@ public final class TableUtils {
 	 */
 	public static <T> String getCurrencySymbol(Grid<T> grid) {
 		String cs = null;
-		if (grid instanceof ModelBasedTable) {
-			cs = ((ModelBasedTable<?, ?>) grid).getCurrencySymbol();
+		if (grid instanceof ModelBasedGrid) {
+			cs = ((ModelBasedGrid<?, ?>) grid).getCurrencySymbol();
 		}
 		// } else if (table instanceof ModelBasedTreeTable) {
 		// cs = ((ModelBasedTreeTable<?, ?>) table).getCurrencySymbol();

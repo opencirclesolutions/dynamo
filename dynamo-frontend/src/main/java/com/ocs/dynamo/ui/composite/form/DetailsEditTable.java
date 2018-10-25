@@ -32,7 +32,7 @@ import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
-import com.ocs.dynamo.ui.composite.table.ModelBasedTable;
+import com.ocs.dynamo.ui.composite.table.ModelBasedGrid;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.data.provider.SortOrder;
@@ -156,7 +156,7 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 	/**
 	 * The table for displaying the actual items
 	 */
-	private ModelBasedTable<ID, T> table;
+	private ModelBasedGrid<ID, T> table;
 
 	/**
 	 * List of buttons to update after a detail is selected
@@ -380,7 +380,7 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 		return service;
 	}
 
-	public ModelBasedTable<ID, T> getTable() {
+	public ModelBasedGrid<ID, T> getTable() {
 		return table;
 	}
 
@@ -390,7 +390,7 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 	@Override
 	protected Component initContent() {
 		provider = new ListDataProvider<>(items);
-		table = new ModelBasedTable<>(provider, entityModel, false);
+		table = new ModelBasedGrid<>(provider, entityModel, false);
 
 		// add a remove button directly in the table
 		if (!isViewMode() && formOptions.isShowRemoveButton()) {

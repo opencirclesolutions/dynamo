@@ -54,14 +54,11 @@ public final class ClassUtils {
 	}
 
 	/**
-	 * Checks if the specified property can be set for the specified object.
-	 * This
+	 * Checks if the specified property can be set for the specified object. This
 	 * method supports nested properties
 	 *
-	 * @param obj
-	 *            the object
-	 * @param fieldName
-	 *            the name of the field
+	 * @param obj       the object
+	 * @param fieldName the name of the field
 	 * @return
 	 */
 	public static boolean canSetProperty(Object obj, String fieldName) {
@@ -86,10 +83,8 @@ public final class ClassUtils {
 	/**
 	 * Clears a field
 	 *
-	 * @param obj
-	 *            the object on which to clear the field
-	 * @param fieldName
-	 *            the name of the field
+	 * @param obj       the object on which to clear the field
+	 * @param fieldName the name of the field
 	 * @param argType
 	 */
 	public static void clearFieldValue(Object obj, String fieldName, Class<?> argType) {
@@ -112,11 +107,9 @@ public final class ClassUtils {
 	}
 
 	/**
-	 * forClass which doesn't throw an exception and can handle empty class
-	 * names
+	 * forClass which doesn't throw an exception and can handle empty class names
 	 *
-	 * @param clazz
-	 *            The fully qualified class name
+	 * @param clazz The fully qualified class name
 	 * @return the specified class and null when class is not found
 	 */
 	public static Class<?> forClass(final String clazz) {
@@ -132,16 +125,12 @@ public final class ClassUtils {
 	}
 
 	/**
-	 * Tries to retrieve an annotation, by first looking at the field name, and
-	 * then
+	 * Tries to retrieve an annotation, by first looking at the field name, and then
 	 * at the getter method
 	 *
-	 * @param clazz
-	 *            the class
-	 * @param fieldName
-	 *            the name of the field
-	 * @param annotationClass
-	 *            the annotation class to look for
+	 * @param clazz           the class
+	 * @param fieldName       the name of the field
+	 * @param annotationClass the annotation class to look for
 	 * @return
 	 */
 	public static <T extends Annotation> T getAnnotation(Class<?> clazz, String fieldName, Class<T> annotationClass) {
@@ -155,13 +144,10 @@ public final class ClassUtils {
 	/**
 	 * Get the value of a field in an annotation
 	 *
-	 * @param field
-	 *            The field with annotations
-	 * @param annotionType
-	 *            The name of the annotation type to find
-	 * @param attributeName
-	 *            The name of the attribute on the annotation type to find the
-	 *            value
+	 * @param field         The field with annotations
+	 * @param annotionType  The name of the annotation type to find
+	 * @param attributeName The name of the attribute on the annotation type to find
+	 *                      the value
 	 * @return the value of the field of the annotation or null when not found
 	 */
 	@SuppressWarnings("unchecked")
@@ -178,12 +164,9 @@ public final class ClassUtils {
 	/**
 	 * Return an annotation on a certain field
 	 *
-	 * @param clazz
-	 *            the class
-	 * @param fieldName
-	 *            the field name
-	 * @param annotationClass
-	 *            the class of the annotation
+	 * @param clazz           the class
+	 * @param fieldName       the field name
+	 * @param annotationClass the class of the annotation
 	 * @return
 	 */
 	public static <T extends Annotation> T getAnnotationOnField(Class<?> clazz, String fieldName,
@@ -198,10 +181,8 @@ public final class ClassUtils {
 	/**
 	 * Returns an annotation on a certain field
 	 *
-	 * @param field
-	 *            the field
-	 * @param annotationClass
-	 *            the annotation class
+	 * @param field           the field
+	 * @param annotationClass the annotation class
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
@@ -220,12 +201,9 @@ public final class ClassUtils {
 	/**
 	 * Looks for an annotation on a getter method
 	 *
-	 * @param clazz
-	 *            the class
-	 * @param fieldName
-	 *            the name of the field (will be prepended with "get")
-	 * @param annotationClass
-	 *            the class of the annotation to look for
+	 * @param clazz           the class
+	 * @param fieldName       the name of the field (will be prepended with "get")
+	 * @param annotationClass the class of the annotation to look for
 	 * @return
 	 */
 	public static <T extends Annotation> T getAnnotationOnMethod(Class<?> clazz, String fieldName,
@@ -240,10 +218,8 @@ public final class ClassUtils {
 	/**
 	 * Looks for an annotation on a (getter) method
 	 *
-	 * @param method
-	 *            the method
-	 * @param annotationClass
-	 *            the class of the annotation
+	 * @param method          the method
+	 * @param annotationClass the class of the annotation
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
@@ -301,10 +277,8 @@ public final class ClassUtils {
 	/**
 	 * Returns a field with a certain name from a class
 	 *
-	 * @param clazz
-	 *            the class
-	 * @param fieldName
-	 *            the name of the filed
+	 * @param clazz     the class
+	 * @param fieldName the name of the filed
 	 * @return
 	 */
 	public static Field getField(Class<?> clazz, String fieldName) {
@@ -325,10 +299,8 @@ public final class ClassUtils {
 	/**
 	 * Retrieves a field value
 	 *
-	 * @param obj
-	 *            the object from which to retrieve the field value
-	 * @param fieldName
-	 *            the name of the field
+	 * @param obj       the object from which to retrieve the field value
+	 * @param fieldName the name of the field
 	 * @return
 	 */
 	public static Object getFieldValue(Object obj, String fieldName) {
@@ -353,18 +325,35 @@ public final class ClassUtils {
 		}
 	}
 
+	/**
+	 * Returns a field value as a String
+	 * 
+	 * @param obj       the object
+	 * @param fieldName the name of the field
+	 * @return
+	 */
 	public static String getFieldValueAsString(Object obj, String fieldName) {
+		return getFieldValueAsString(obj, fieldName, null);
+	}
+
+	/**
+	 * Returns a field value as a String
+	 * 
+	 * @param obj       the object
+	 * @param fieldName the name of the field
+	 * @param defValue  the default value that is used in case of a null value
+	 * @return
+	 */
+	public static String getFieldValueAsString(Object obj, String fieldName, String defValue) {
 		Object temp = getFieldValue(obj, fieldName);
-		return temp == null ? null : temp.toString();
+		return temp == null ? defValue : temp.toString();
 	}
 
 	/**
 	 * Retrieves the getter method for a certain property
 	 *
-	 * @param clazz
-	 *            the class
-	 * @param fieldName
-	 *            the name of the property
+	 * @param clazz     the class
+	 * @param fieldName the name of the property
 	 * @return
 	 */
 	public static Method getGetterMethod(Class<?> clazz, String fieldName) {
@@ -406,10 +395,8 @@ public final class ClassUtils {
 	/**
 	 * Returns the property descriptor for a nested property
 	 *
-	 * @param clazz
-	 *            the class
-	 * @param property
-	 *            the name of the property
+	 * @param clazz    the class
+	 * @param property the name of the property
 	 * @return
 	 */
 	public static PropertyDescriptor getPropertyDescriptorForNestedProperty(Class<?> clazz, String property) {
@@ -462,8 +449,7 @@ public final class ClassUtils {
 	 * access the String from the nested List. For convenience, if no indexes are
 	 * specified the first generic is returned.
 	 *
-	 * @param method
-	 *            or method parameter or type
+	 * @param method  or method parameter or type
 	 * @param indexes
 	 * @return
 	 */
@@ -510,10 +496,8 @@ public final class ClassUtils {
 	}
 
 	/**
-	 * Instantiate a class with the given arguments; assumed is that all
-	 * arguments
-	 * are not null so the types can be determined and a matching
-	 * constructor can be
+	 * Instantiate a class with the given arguments; assumed is that all arguments
+	 * are not null so the types can be determined and a matching constructor can be
 	 * found. When no constructor is found null is returned.
 	 *
 	 * @param clazz

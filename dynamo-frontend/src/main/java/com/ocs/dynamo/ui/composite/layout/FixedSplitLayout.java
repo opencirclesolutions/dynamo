@@ -20,7 +20,7 @@ import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.composite.table.BaseGridWrapper;
-import com.ocs.dynamo.ui.composite.table.FixedTableWrapper;
+import com.ocs.dynamo.ui.composite.table.FixedGridWrapper;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.data.provider.SortOrder;
@@ -88,7 +88,7 @@ public abstract class FixedSplitLayout<ID extends Serializable, T extends Abstra
 
 	@Override
 	protected final BaseGridWrapper<ID, T> constructTableWrapper() {
-		FixedTableWrapper<ID, T> tw = new FixedTableWrapper<ID, T>(getService(), getEntityModel(), getItems(),
+		FixedGridWrapper<ID, T> tw = new FixedGridWrapper<ID, T>(getService(), getEntityModel(), getItems(),
 				getSortOrders(), getFormOptions().isTableExportAllowed()) {
 
 			@Override

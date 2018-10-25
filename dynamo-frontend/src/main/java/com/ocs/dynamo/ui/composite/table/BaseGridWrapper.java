@@ -38,13 +38,11 @@ import com.vaadin.ui.VerticalLayout;
  * A base class for objects that wrap around a ModelBasedTable
  * 
  * @author bas.rutten
- * @param <ID>
- *            type of the primary key
- * @param <T>
- *            type of the entity
+ * @param <ID> type of the primary key
+ * @param <T> type of the entity
  */
-public abstract class BaseGridWrapper<ID extends Serializable, T extends AbstractEntity<ID>>
-		extends BaseCustomComponent implements Searchable<T> {
+public abstract class BaseGridWrapper<ID extends Serializable, T extends AbstractEntity<ID>> extends BaseCustomComponent
+		implements Searchable<T> {
 
 	private static final long serialVersionUID = -4691108261565306844L;
 
@@ -91,16 +89,12 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 	/**
 	 * Constructor
 	 * 
-	 * @param service
-	 *            the service used to query the repository
-	 * @param entityModel
-	 *            the entity model for the items that are displayed in the table
-	 * @param queryType
-	 *            the type of query
-	 * @param sortOrders
-	 *            the sort order
-	 * @param joins
-	 *            the fetch joins to use when executing the query
+	 * @param service     the service used to query the repository
+	 * @param entityModel the entity model for the items that are displayed in the
+	 *                    table
+	 * @param queryType   the type of query
+	 * @param sortOrders  the sort order
+	 * @param joins       the fetch joins to use when executing the query
 	 */
 	public BaseGridWrapper(BaseService<ID, T> service, EntityModel<T> entityModel, QueryType queryType,
 			List<SortOrder<?>> sortOrders, boolean allowExport, FetchJoinInformation... joins) {
@@ -156,7 +150,7 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 	 * @return
 	 */
 	protected Grid<T> constructGrid() {
-		return new ModelBasedTable<ID, T>(this.dataProvider, entityModel, allowExport);
+		return new ModelBasedGrid<ID, T>(this.dataProvider, entityModel, allowExport);
 	}
 
 	/**
