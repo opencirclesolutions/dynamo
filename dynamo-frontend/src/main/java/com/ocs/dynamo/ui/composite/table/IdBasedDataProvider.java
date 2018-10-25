@@ -6,16 +6,13 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import com.ocs.dynamo.dao.FetchJoinInformation;
-import com.ocs.dynamo.dao.SortOrder.Direction;
 import com.ocs.dynamo.dao.SortOrders;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.filter.FilterConverter;
 import com.ocs.dynamo.service.BaseService;
 import com.vaadin.data.provider.Query;
-import com.vaadin.data.provider.QuerySortOrder;
 import com.vaadin.server.SerializablePredicate;
-import com.vaadin.shared.data.sort.SortDirection;
 
 public class IdBasedDataProvider<ID extends Serializable, T extends AbstractEntity<ID>>
 		extends AbstractDataProvider<ID, T> {

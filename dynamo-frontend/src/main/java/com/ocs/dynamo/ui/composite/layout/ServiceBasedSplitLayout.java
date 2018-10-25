@@ -23,7 +23,7 @@ import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.composite.table.BaseGridWrapper;
-import com.ocs.dynamo.ui.composite.table.ServiceResultsTableWrapper;
+import com.ocs.dynamo.ui.composite.table.ServiceBasedGridWrapper;
 import com.ocs.dynamo.ui.container.QueryType;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.SortOrder;
@@ -148,7 +148,7 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
 
 	@Override
 	protected BaseGridWrapper<ID, T> constructTableWrapper() {
-		ServiceResultsTableWrapper<ID, T> tw = new ServiceResultsTableWrapper<ID, T>(getService(), getEntityModel(),
+		ServiceBasedGridWrapper<ID, T> tw = new ServiceBasedGridWrapper<ID, T>(getService(), getEntityModel(),
 				getQueryType(), filter, getSortOrders(), getFormOptions().isTableExportAllowed(), getJoins()) {
 
 			@Override
@@ -184,8 +184,8 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
 	}
 
 	@Override
-	public ServiceResultsTableWrapper<ID, T> getTableWrapper() {
-		return (ServiceResultsTableWrapper<ID, T>) super.getTableWrapper();
+	public ServiceBasedGridWrapper<ID, T> getTableWrapper() {
+		return (ServiceBasedGridWrapper<ID, T>) super.getTableWrapper();
 	}
 
 	/**

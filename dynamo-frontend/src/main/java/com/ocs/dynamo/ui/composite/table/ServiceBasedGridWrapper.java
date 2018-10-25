@@ -36,12 +36,10 @@ import com.vaadin.shared.Registration;
  * A wrapper for a table that retrieves its data directly from the database
  * 
  * @author bas.rutten
- * @param <ID>
- *            type of the primary key of the entity
- * @param <T>
- *            type of the entity
+ * @param <ID> type of the primary key of the entity
+ * @param <T> type of the entity
  */
-public class ServiceResultsTableWrapper<ID extends Serializable, T extends AbstractEntity<ID>>
+public class ServiceBasedGridWrapper<ID extends Serializable, T extends AbstractEntity<ID>>
 		extends BaseGridWrapper<ID, T> implements Searchable<T> {
 
 	private static final long serialVersionUID = -4691108261565306844L;
@@ -54,18 +52,13 @@ public class ServiceResultsTableWrapper<ID extends Serializable, T extends Abstr
 	private Integer maxResults;
 
 	/**
-	 * @param service
-	 *            the service object
-	 * @param entityModel
-	 *            the entity model
-	 * @param queryType
-	 *            the query type to use
-	 * @param order
-	 *            the default sort order
-	 * @param joins
-	 *            options list of fetch joins to include in the query
+	 * @param service     the service object
+	 * @param entityModel the entity model
+	 * @param queryType   the query type to use
+	 * @param order       the default sort order
+	 * @param joins       options list of fetch joins to include in the query
 	 */
-	public ServiceResultsTableWrapper(BaseService<ID, T> service, EntityModel<T> entityModel, QueryType queryType,
+	public ServiceBasedGridWrapper(BaseService<ID, T> service, EntityModel<T> entityModel, QueryType queryType,
 			SerializablePredicate<T> filter, List<SortOrder<?>> sortOrders, boolean allowExport,
 			FetchJoinInformation... joins) {
 		super(service, entityModel, queryType, sortOrders, allowExport, joins);
@@ -74,47 +67,9 @@ public class ServiceResultsTableWrapper<ID extends Serializable, T extends Abstr
 
 	@Override
 	protected DataProvider<T, SerializablePredicate<T>> constructDataProvider() {
-		DataProvider<T, SerializablePredicate<T>> provider = new DataProvider<T, SerializablePredicate<T>>() {
-
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public boolean isInMemory() {
-				return false;
-			}
-
-			@Override
-			public int size(Query<T, SerializablePredicate<T>> query) {
-				FilterConverter<T> converter = new FilterConverter<>(getEntityModel());
-				return (int) getService().count(converter.convert(query.getFilter().orElse(null)), false);
-			}
-
-			@Override
-			public void refreshItem(T item) {
-
-			}
-
-			@Override
-			public void refreshAll() {
-				// TODO
-			}
-
-			@Override
-			public Registration addDataProviderListener(DataProviderListener<T> listener) {
-				return null;
-			}
-
-			@Override
-			public Stream<T> fetch(Query<T, SerializablePredicate<T>> query) {
-				FilterConverter<T> converter = new FilterConverter<>(getEntityModel());
-				int offset = query.getOffset();
-				int limit = query.getLimit();
-
-				List<T> result = getService().fetch(converter.convert(query.getFilter().orElse(null)), offset, limit,
-						getJoins());
-				return result.stream();
-			}
-		};
+		// TODO: take query type into account
+		DataProvider<T, SerializablePredicate<T>> provider = new PagingDataProvider<>(getService(), getEntityModel(),
+				getJoins());
 		doConstructDataProvider(provider);
 		return provider;
 	}
@@ -133,7 +88,6 @@ public class ServiceResultsTableWrapper<ID extends Serializable, T extends Abstr
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public void initSortingAndFiltering() {
 		// set the filter (using the getQueryView() to prevent a useless query)
 		// ((ServiceContainer<ID, T>) getContainer()).getQueryView().addFilter(filter);
