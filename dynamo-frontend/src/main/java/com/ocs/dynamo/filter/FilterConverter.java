@@ -87,33 +87,10 @@ public class FilterConverter<T> implements Converter<SerializablePredicate<T>, c
 		} else if (filter instanceof BetweenPredicate) {
 			BetweenPredicate<T> p = (BetweenPredicate<T>) filter;
 			return new Between(((BetweenPredicate<T>) filter).getProperty(), p.getFromValue(), p.getToValue());
+		} else if (filter instanceof SimpleStringPredicate) {
+			SimpleStringPredicate<T> p = (SimpleStringPredicate<T>) filter;
+			return new Like(p.getProperty(), (p.isOnlyMatchPrefix() ? "" : "%") + p.getValue() + "%", p.isCaseSensitive());
 		}
-
-		//
-		//
-		// com.ocs.dynamo.filter.Filter result = null;
-		// } else if (filter instanceof Between) {
-		// final Between between = (Between) filter;
-		// result = new
-		// com.ocs.dynamo.filter.Between(between.getPropertyId().toString(),
-		// between.getStartValue(),
-		// between.getEndValue());
-		// }  else if (filter instanceof SimpleStringFilter) {
-		// final SimpleStringFilter like = (SimpleStringFilter) filter;
-		// result = new com.ocs.dynamo.filter.Like(like.getPropertyId().toString(),
-		// (like.isOnlyMatchPrefix() ? "" : "%") + like.getFilterString() + "%",
-		// !like.isIgnoreCase());
-		// } else {
-		// throw new UnsupportedOperationException("Filter: " +
-		// filter.getClass().getName() + " is not supported.");
-		// }
-		//
-		// // replace any filters for searching detail fields by Contains-filters
-		// if (entityModel != null) {
-		// DynamoFilterUtil.replaceMasterAndDetailFilters(result, entityModel);
-		// }
-		//
-		// return result;
 
 		return null;
 	}
