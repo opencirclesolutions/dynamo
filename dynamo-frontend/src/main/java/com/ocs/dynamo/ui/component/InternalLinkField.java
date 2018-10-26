@@ -12,9 +12,7 @@
    limitations under the License.
  */
 package com.ocs.dynamo.ui.component;
-
-import java.io.Serializable;
-
+//TODO
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
@@ -25,6 +23,8 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.ValoTheme;
+
+import java.io.Serializable;
 
 /**
  * A field for displaying an internal link
