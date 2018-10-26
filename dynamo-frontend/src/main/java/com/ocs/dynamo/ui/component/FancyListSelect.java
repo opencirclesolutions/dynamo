@@ -13,15 +13,13 @@
  */
 package com.ocs.dynamo.ui.component;
 
-import java.io.Serializable;
-import java.util.Collection;
-
 import com.google.gwt.thirdparty.guava.common.collect.Lists;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.Refreshable;
+import com.ocs.dynamo.ui.utils.EntityModelUtil;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.data.provider.SortOrder;
@@ -31,6 +29,9 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.ListSelect;
 import com.vaadin.ui.VerticalLayout;
+
+import java.io.Serializable;
+import java.util.Collection;
 
 /**
  * A ListSelect component with an extra combo box for easily searching items.
@@ -102,14 +103,12 @@ public class FancyListSelect<ID extends Serializable, T extends AbstractEntity<I
 	 *            the entity model
 	 * @param attributeModel
 	 *            the attribute mode
-	 * @param filters
+	 * @param filter
 	 *            the filter to apply when searching
 	 * @param search
 	 *            whether the component is used in a search screen
-	 * @param sortOrder
+	 * @param sortOrders
 	 *            the sort order
-	 * @param joins
-	 *            the joins to use when fetching data when filling the popup dialog
 	 */
 	public FancyListSelect(BaseService<ID, T> service, EntityModel<T> entityModel, AttributeModel attributeModel,
 			SerializablePredicate<T> filter, boolean search, SortOrder<?>... sortOrders) {
@@ -117,8 +116,8 @@ public class FancyListSelect<ID extends Serializable, T extends AbstractEntity<I
 		this.sortOrders = sortOrders;
 		this.search = search;
 		this.addAllowed = !search && (attributeModel != null && attributeModel.isQuickAddAllowed());
-		dataProvider = new ListDataProvider<T>(Lists.newArrayList());
-		listSelect = new ListSelect<T>();
+		dataProvider = new ListDataProvider<>(Lists.newArrayList());
+		listSelect = new ListSelect<>();
 		listSelect.setDataProvider(dataProvider);
 		comboBox = new EntityComboBox<>(getEntityModel(), getAttributeModel(), getService(), getFilter(), sortOrders);
 	}
@@ -229,10 +228,7 @@ public class FancyListSelect<ID extends Serializable, T extends AbstractEntity<I
 
 		// the list select component shows the currently selected values
 		listSelect.setSizeFull();
-		// listSelect.setNullSelectionAllowed(false);
-		// listSelect.setItemCaptionMode(ItemCaptionMode.PROPERTY);
-		// listSelect.setItemCaptionPropertyId(getEntityModel().getDisplayProperty());
-		// listSelect.setMultiSelect(true);
+		listSelect.setItemCaptionGenerator(t -> EntityModelUtil.getDisplayPropertyValue(t, getEntityModel()));
 		layout.addComponent(listSelect);
 
 		return layout;
