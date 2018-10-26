@@ -15,25 +15,19 @@ package com.ocs.dynamo.ui.composite.table;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.stream.Stream;
 
-import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
-import com.ocs.dynamo.filter.FilterConverter;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.Searchable;
 import com.ocs.dynamo.ui.container.QueryType;
 import com.vaadin.data.provider.DataProvider;
-import com.vaadin.data.provider.DataProviderListener;
-import com.vaadin.data.provider.Query;
 import com.vaadin.data.provider.SortOrder;
 import com.vaadin.server.SerializablePredicate;
-import com.vaadin.shared.Registration;
 
 /**
- * A wrapper for a table that retrieves its data directly from the database
+ * A wrapper for a grid that retrieves its data directly from the database
  * 
  * @author bas.rutten
  * @param <ID> type of the primary key of the entity
@@ -49,6 +43,9 @@ public class ServiceBasedGridWrapper<ID extends Serializable, T extends Abstract
 	 */
 	private SerializablePredicate<T> filter;
 
+	/**
+	 * The maximum number of results
+	 */
 	private Integer maxResults;
 
 	/**
@@ -67,9 +64,12 @@ public class ServiceBasedGridWrapper<ID extends Serializable, T extends Abstract
 
 	@Override
 	protected DataProvider<T, SerializablePredicate<T>> constructDataProvider() {
-		// TODO: take query type into account
-		DataProvider<T, SerializablePredicate<T>> provider = new PagingDataProvider<>(getService(), getEntityModel(),
-				getJoins());
+		DataProvider<T, SerializablePredicate<T>> provider;
+		if (QueryType.PAGING.equals(getQueryType())) {
+			provider = new PagingDataProvider<>(getService(), getEntityModel(), getJoins());
+		} else {
+			provider = new IdBasedDataProvider<>(getService(), getEntityModel(), getJoins());
+		}
 		doConstructDataProvider(provider);
 		return provider;
 	}
@@ -83,7 +83,7 @@ public class ServiceBasedGridWrapper<ID extends Serializable, T extends Abstract
 	}
 
 	@SuppressWarnings("unchecked")
-	public ModelBasedGrid<ID, T> getModelBasedTable() {
+	public ModelBasedGrid<ID, T> getModelBasedGrid() {
 		return (ModelBasedGrid<ID, T>) super.getGrid();
 	}
 
@@ -97,7 +97,7 @@ public class ServiceBasedGridWrapper<ID extends Serializable, T extends Abstract
 	@Override
 	public void reloadDataProvider() {
 		if (getDataProvider() instanceof Searchable) {
-			// ((Searchable) getContainer()).search(filter);
+			// TODO
 		}
 	}
 

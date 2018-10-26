@@ -41,9 +41,9 @@ public final class GridUtils {
 	}
 
 	/**
-	 * Returns the currency symbol to be used in a certain table. This will return
+	 * Returns the currency symbol to be used in a certain grid. This will return
 	 * the custom currency symbol for a certain table, or the default currency
-	 * symbol if no custmo currency symbol is set
+	 * symbol if no custom currency symbol is set
 	 * 
 	 * @param table
 	 *            the table

@@ -32,14 +32,17 @@ import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
+import com.ocs.dynamo.ui.composite.table.GridUtils;
 import com.ocs.dynamo.utils.ClassUtils;
 import com.ocs.dynamo.utils.DateUtils;
 import com.ocs.dynamo.utils.NumberUtils;
+import com.vaadin.ui.Grid;
 import com.vaadin.ui.UI;
 import com.vaadin.v7.data.Property;
-import com.vaadin.v7.ui.Table;
 
 /**
+ * TODO: do we need all these additional formatting methods?
+ * 
  * Utilities for formatting property values
  * 
  * @author bas.rutten
@@ -57,21 +60,22 @@ public final class FormatUtils {
 	}
 
 	/**
-	 * Extracts a field value and formats it
-	 * @param am the attribute model
+	 * Extracts a field value from an object and formats it
+	 * 
+	 * @param am  the attribute model
 	 * @param obj the object from which to extract the value
 	 * @return
 	 */
-	public static String extractAndFormat(AttributeModel am, Object obj) {
+	public static <T> String extractAndFormat(Grid<T> grid, AttributeModel am, Object obj) {
 		Object value = ClassUtils.getFieldValue(obj, am.getPath());
-		return formatPropertyValue(entityModelFactory, am, value, ",");
+		return formatPropertyValue(grid, entityModelFactory, am, value, VaadinUtils.getLocale(), ",");
 	}
 
 	/**
-	 * Formats an entity
-	 *
-	 * @param entityModel the entity model
-	 * @param value       the value (must be an instance of AbstractEntity)
+	 * Formats and entity
+	 * 
+	 * @param entityModel the entity model for the entity
+	 * @param value       the entity
 	 * @return
 	 */
 	public static String formatEntity(EntityModel<?> entityModel, Object value) {
@@ -141,14 +145,14 @@ public final class FormatUtils {
 	 * @param property           the property
 	 * @return
 	 */
-	public static <T> String formatPropertyValue(Table table, EntityModelFactory entityModelFactory,
+	public static <T> String formatPropertyValue(Grid<T> table, EntityModelFactory entityModelFactory,
 			EntityModel<T> entityModel, Object rowId, Object colId, Property<?> property, String separator) {
 		return formatPropertyValue(table, entityModelFactory, entityModel, rowId, colId, property,
 				VaadinUtils.getLocale(), separator);
 	}
 
 	/**
-	 * Formats a property value - for use with a hierarchical table
+	 * Formats a property value - for use with a hierarchical grid
 	 * 
 	 * @param table
 	 * @param entityModelFactory
@@ -161,7 +165,7 @@ public final class FormatUtils {
 	 * @return
 	 */
 	@SuppressWarnings("rawtypes")
-	public static <T> String formatPropertyValue(Table table, EntityModelFactory entityModelFactory,
+	public static <T> String formatPropertyValue(Grid<T> grid, EntityModelFactory entityModelFactory,
 			EntityModel<T> entityModel, Object rowId, Object colId, Property<?> property, Locale locale,
 			String separator) {
 		// if (table.getContainerDataSource() instanceof
@@ -176,7 +180,7 @@ public final class FormatUtils {
 		// def.getEntityModel().getAttributeModel(path.toString()), property.getValue(),
 		// locale, separator);
 		// }
-		return formatPropertyValue(table, entityModelFactory, entityModel.getAttributeModel(colId.toString()),
+		return formatPropertyValue(grid, entityModelFactory, entityModel.getAttributeModel(colId.toString()),
 				property.getValue(), locale, separator);
 	}
 
@@ -191,8 +195,8 @@ public final class FormatUtils {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static String formatPropertyValue(Table table, EntityModelFactory entityModelFactory, AttributeModel model,
-			Object value, Locale locale, String separator) {
+	public static <T> String formatPropertyValue(Grid<T> grid, EntityModelFactory entityModelFactory,
+			AttributeModel model, Object value, Locale locale, String separator) {
 		if (model != null && value != null) {
 			if (model.isWeek()) {
 				if (value instanceof Date) {
@@ -218,8 +222,7 @@ public final class FormatUtils {
 			} else if (DateUtils.isJava8DateType(model.getType())) {
 				return DateUtils.formatJava8Date(model.getType(), value, model.getDisplayFormat());
 			} else if (BigDecimal.class.equals(model.getType())) {
-				// String cs = TableUtils.getCurrencySymbol(table);
-				String cs = "";
+				String cs = GridUtils.getCurrencySymbol(grid);
 				return VaadinUtils.bigDecimalToString(model.isCurrency(), model.isPercentage(),
 						model.isUseThousandsGrouping(), model.getPrecision(), (BigDecimal) value, locale, cs);
 			} else if (NumberUtils.isNumeric(model.getType())) {
@@ -236,7 +239,7 @@ public final class FormatUtils {
 				}
 			} else if (value instanceof Iterable) {
 				String result = formatEntityCollection(entityModelFactory, model, value, separator);
-				return table == null ? result : restrictToMaxLength(result, model);
+				return grid == null ? result : restrictToMaxLength(result, model);
 			} else if (AbstractEntity.class.isAssignableFrom(model.getType())) {
 				EntityModel<?> detailEntityModel = model.getNestedEntityModel();
 				if (detailEntityModel == null) {
@@ -248,7 +251,7 @@ public final class FormatUtils {
 							"No displayProperty set for entity " + detailEntityModel.getEntityClass());
 				}
 				AttributeModel detailModel = detailEntityModel.getAttributeModel(displayProperty);
-				return formatPropertyValue(table, entityModelFactory, detailModel,
+				return formatPropertyValue(grid, entityModelFactory, detailModel,
 						ClassUtils.getFieldValue(value, displayProperty), locale, separator);
 			} else if (value instanceof AbstractEntity) {
 				// single entity
@@ -256,10 +259,10 @@ public final class FormatUtils {
 				if (result == null) {
 					return null;
 				}
-				return table == null ? result.toString() : restrictToMaxLength(result.toString(), model);
+				return grid == null ? result.toString() : restrictToMaxLength(result.toString(), model);
 			} else {
 				// just use the String value
-				return table == null ? value.toString() : restrictToMaxLength(value.toString(), model);
+				return grid == null ? value.toString() : restrictToMaxLength(value.toString(), model);
 			}
 		}
 		return null;

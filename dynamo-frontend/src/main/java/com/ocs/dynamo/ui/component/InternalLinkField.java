@@ -39,16 +39,18 @@ public class InternalLinkField<ID extends Serializable, T extends AbstractEntity
 
 	private Button linkButton;
 
-	private EntityModel<T> entityModel;
+	private T value;
 
 	private AttributeModel attributeModel;
 
 	/**
+	 * Constructor
 	 * 
-	 * @param attributeModel
+	 * @param attributeModel the attribute model
+	 * @param value          the initial value
 	 */
-	public InternalLinkField(EntityModel<T> entityModel, AttributeModel attributeModel) {
-		this.entityModel = entityModel;
+	public InternalLinkField(AttributeModel attributeModel, T value) {
+		this.value = value;
 		this.attributeModel = attributeModel;
 	}
 
@@ -69,14 +71,8 @@ public class InternalLinkField<ID extends Serializable, T extends AbstractEntity
 	}
 
 	@Override
-	public void setValue(T newValue) {
-		super.setValue(newValue);
-		String str = FormatUtils.formatEntity(attributeModel.getNestedEntityModel(), newValue);
-		linkButton.setCaption(str);
-	}
-
-	@Override
 	protected void doSetValue(T value) {
+		this.value = value;
 		if (linkButton != null) {
 			String str = FormatUtils.formatEntity(attributeModel.getNestedEntityModel(), value);
 			linkButton.setCaption(str);
@@ -91,6 +87,7 @@ public class InternalLinkField<ID extends Serializable, T extends AbstractEntity
 
 	@Override
 	public T getValue() {
-		return null;
+		return value;
 	}
+
 }

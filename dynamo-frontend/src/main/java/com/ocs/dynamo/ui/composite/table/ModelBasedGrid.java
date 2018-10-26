@@ -21,9 +21,9 @@ import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.AttributeType;
 import com.ocs.dynamo.domain.model.EntityModel;
-import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
+import com.ocs.dynamo.ui.component.InternalLinkField;
 import com.ocs.dynamo.ui.component.URLField;
 import com.ocs.dynamo.ui.utils.FormatUtils;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
@@ -59,12 +59,7 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 	private EntityModel<T> entityModel;
 
 	/**
-	 * The entity model factory
-	 */
-	private EntityModelFactory entityModelFactory;
-
-	/**
-	 * Indicated whether table export is allowed
+	 * Indicates whether table export is allowed
 	 */
 	private boolean exportAllowed;
 
@@ -96,7 +91,6 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 
 		this.entityModel = model;
 		this.messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
-		this.entityModelFactory = ServiceLocatorFactory.getServiceLocator().getEntityModelFactory();
 		this.exportAllowed = exportAllowed;
 
 		GridUtils.defaultInitialization(this);
@@ -135,86 +129,24 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 	private void addColumn(final AttributeModel attributeModel) {
 		if (attributeModel.isVisibleInTable()) {
 
-			Column<?, ?> addColumn;
+			Column<?, ?> column;
 			if (attributeModel.isUrl()) {
 				// URL field
-				addColumn = addColumn(t -> new URLField(
+				column = addColumn(t -> new URLField(
 						new TextField("", ClassUtils.getFieldValueAsString(t, attributeModel.getPath(), "")),
 						attributeModel, false), new ComponentRenderer());
+			} else if (attributeModel.isNavigable() && AttributeType.MASTER.equals(attributeModel.getAttributeType())) {
+				column = addColumn(t -> generateInternalLinkField(attributeModel,
+						ClassUtils.getFieldValue(t, attributeModel.getPath())), new ComponentRenderer());
 			} else {
-				addColumn = addColumn(t -> FormatUtils.extractAndFormat(attributeModel, t));
+				column = addColumn(t -> FormatUtils.extractAndFormat(this, attributeModel, t));
 			}
 
-			addColumn.setCaption(attributeModel.getDisplayName()).setSortable(attributeModel.isSortable())
+			column.setCaption(attributeModel.getDisplayName()).setSortable(attributeModel.isSortable())
 					.setSortProperty(attributeModel.getPath())
 					.setStyleGenerator(item -> attributeModel.isNumerical() ? "v-align-right" : "");
-
-			// generated column with clickable URL (only in view mode)
-			addInternalLinkField(attributeModel);
 		}
 	}
-
-	/**
-	 * Adds any generated columns (URL fields) in response to a change to view mode
-	 */
-//	public void addGeneratedColumns() {
-//		for (AttributeModel attributeModel : entityModel.getAttributeModels()) {
-//			addGeneratedColumn(attributeModel);
-//			if (attributeModel.getNestedEntityModel() != null) {
-//				for (AttributeModel nestedAttributeModel : attributeModel.getNestedEntityModel().getAttributeModels()) {
-//					addGeneratedColumn(nestedAttributeModel);
-//				}
-//			}
-//		}
-//	}
-
-	/**
-	 * Adds a button/link for navigation within the application
-	 *
-	 * @param attributeModel. For this to work you must register a navigation rule
-	 *        in the BaseUI at the base of your application
-	 */
-	private void addInternalLinkField(final AttributeModel attributeModel) {
-		if (attributeModel.isNavigable() && AttributeType.MASTER.equals(attributeModel.getAttributeType())) {
-			// this.addGeneratedColumn(attributeModel.getPath(), new ColumnGenerator() {
-			//
-			// private static final long serialVersionUID = -3191235289754428914L;
-			//
-			// @Override
-			// public Object generateCell(Table source, final Object itemId, Object
-			// columnId) {
-			// Object val = getItem(itemId).getItemProperty(columnId).getValue();
-			// if (val != null) {
-			//
-			// String str = FormatUtils.formatEntity(attributeModel.getNestedEntityModel(),
-			// val);
-			// Button button = new Button(str);
-			// button.setStyleName(ValoTheme.BUTTON_LINK);
-			// button.addClickListener(event -> {
-			// BaseUI ui = (BaseUI) UI.getCurrent();
-			// ui.navigateToEntityScreenDirectly(val);
-			// });
-			//
-			// return button;
-			// }
-			// return null;
-			// }
-			// });
-		}
-	}
-
-//	/**
-//	 * Overridden to deal with custom formatting
-//	 */
-//	@Override
-//	protected String formatPropertyValue(Object rowId, Object colId, Property<?> property) {
-//		String result = FormatUtils.formatPropertyValue(this, entityModelFactory, entityModel, rowId, colId, property,
-//				", ");
-//		if (result != null) {
-//			return result;
-//		}
-//		return super.formatPropertyValue(rowId, colId, property);
-//	}
 
 	/**
 	 * Generates the columns of the table based on the entity model
@@ -252,12 +184,22 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 		}
 	}
 
+	@SuppressWarnings("unchecked")
+	private <ID2 extends Serializable, S extends AbstractEntity<ID2>> InternalLinkField<ID2, S> generateInternalLinkField(
+			AttributeModel attributeModel, Object value) {
+		return new InternalLinkField<ID2, S>(attributeModel, (S) value);
+	}
+
 	public String getCurrencySymbol() {
 		return currencySymbol;
 	}
 
 	public boolean isExportAllowed() {
 		return exportAllowed;
+	}
+
+	public boolean isUpdateTableCaption() {
+		return updateTableCaption;
 	}
 
 	/**
@@ -308,12 +250,16 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 //		 temp.add(propertyId);
 //		 }
 //		 setVisibleColumns(temp.toArray(new Object[0]));
-		 
-		 getColumn((String)propertyId).setHidden(!visible);
+
+		getColumn((String) propertyId).setHidden(!visible);
 	}
 
 	public void setCurrencySymbol(String currencySymbol) {
 		this.currencySymbol = currencySymbol;
+	}
+
+	public void setUpdateTableCaption(boolean updateTableCaption) {
+		this.updateTableCaption = updateTableCaption;
 	}
 
 	/**
@@ -322,14 +268,6 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 	public void updateTableCaption() {
 		setCaption(entityModel.getDisplayNamePlural() + " " + messageService.getMessage("ocs.showing.results",
 				VaadinUtils.getLocale(), getDataProvider().size(null)));
-	}
-
-	public boolean isUpdateTableCaption() {
-		return updateTableCaption;
-	}
-
-	public void setUpdateTableCaption(boolean updateTableCaption) {
-		this.updateTableCaption = updateTableCaption;
 	}
 
 }

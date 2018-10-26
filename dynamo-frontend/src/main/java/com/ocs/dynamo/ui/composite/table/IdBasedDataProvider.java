@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang.ObjectUtils;
+
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.dao.SortOrders;
 import com.ocs.dynamo.domain.AbstractEntity;
@@ -21,6 +23,8 @@ public class IdBasedDataProvider<ID extends Serializable, T extends AbstractEnti
 
 	private List<ID> ids;
 
+	private SortOrders oldSortOrder = null;
+
 	public IdBasedDataProvider(BaseService<ID, T> service, EntityModel<T> entityModel, FetchJoinInformation... joins) {
 		super(service, entityModel, joins);
 	}
@@ -28,7 +32,8 @@ public class IdBasedDataProvider<ID extends Serializable, T extends AbstractEnti
 	@Override
 	public int size(Query<T, SerializablePredicate<T>> query) {
 		SortOrders so = createSortOrder(query);
-		FilterConverter<T> converter = new FilterConverter<>(getEntityModel());
+
+		FilterConverter<T> converter = getFilterConverter();
 		ids = getService().findIds(converter.convert(query.getFilter().orElse(null)), so.toArray());
 //		if (getCustomQueryDefinition().getMaxQuerySize() > 0
 //				&& ids.size() >= getCustomQueryDefinition().getMaxQuerySize()) {
@@ -40,6 +45,14 @@ public class IdBasedDataProvider<ID extends Serializable, T extends AbstractEnti
 
 	@Override
 	public Stream<T> fetch(Query<T, SerializablePredicate<T>> query) {
+
+		// when sort order changes, ID have to be fetched again
+		SortOrders so = createSortOrder(query);
+		if (!ObjectUtils.equals(so, oldSortOrder)) {
+			size(query);
+		}
+		oldSortOrder = so;
+
 		List<ID> results = new ArrayList<>();
 		int index = query.getOffset();
 
@@ -55,7 +68,6 @@ public class IdBasedDataProvider<ID extends Serializable, T extends AbstractEnti
 				index++;
 			}
 		}
-		SortOrders so = createSortOrder(query);
 		return getService().fetchByIds(results, so, getJoins()).stream();
 	}
 

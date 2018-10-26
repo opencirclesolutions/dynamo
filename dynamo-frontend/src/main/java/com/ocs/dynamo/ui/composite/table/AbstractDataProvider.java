@@ -4,11 +4,14 @@ import java.io.Serializable;
 import java.util.List;
 
 import com.ocs.dynamo.dao.FetchJoinInformation;
-import com.ocs.dynamo.dao.SortOrders;
 import com.ocs.dynamo.dao.SortOrder.Direction;
+import com.ocs.dynamo.dao.SortOrders;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
+import com.ocs.dynamo.domain.model.EntityModelFactory;
+import com.ocs.dynamo.filter.FilterConverter;
 import com.ocs.dynamo.service.BaseService;
+import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.DataProviderListener;
 import com.vaadin.data.provider.Query;
@@ -35,6 +38,8 @@ public abstract class AbstractDataProvider<ID extends Serializable, T extends Ab
 	private final EntityModel<T> entityModel;
 
 	private final FetchJoinInformation[] joins;
+
+	private EntityModelFactory entityModelFactory = ServiceLocatorFactory.getServiceLocator().getEntityModelFactory();
 
 	/**
 	 * 
@@ -68,6 +73,14 @@ public abstract class AbstractDataProvider<ID extends Serializable, T extends Ab
 		return entityModel;
 	}
 
+	protected FilterConverter<T> getFilterConverter() {
+		EntityModel<T> em = getEntityModel();
+		if (em == null) {
+			em = entityModelFactory.getModel(getService().getEntityClass());
+		}
+		return new FilterConverter<>(em);
+	}
+
 	public FetchJoinInformation[] getJoins() {
 		return joins;
 	}
@@ -83,9 +96,9 @@ public abstract class AbstractDataProvider<ID extends Serializable, T extends Ab
 
 	@Override
 	public void refreshAll() {
-		// TODO not clear when needed
+		// TODO: do we need this
 	}
-	
+
 	@Override
 	public void refreshItem(T item) {
 		// TODO not clear when needed

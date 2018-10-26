@@ -24,47 +24,75 @@ import java.util.List;
  */
 public class SortOrders {
 
-    private List<SortOrder> orders = new ArrayList<>();
+	private List<SortOrder> orders = new ArrayList<>();
 
-    /**
-     * Constructor
-     */
-    public SortOrders(SortOrder... orders) {
-        if (orders != null) {
-            for (SortOrder o : orders) {
-                if (o != null && o.getProperty() != null) {
-                    addSortOrder(o);
-                }
-            }
-        }
-    }
+	/**
+	 * Constructor
+	 */
+	public SortOrders(SortOrder... orders) {
+		if (orders != null) {
+			for (SortOrder o : orders) {
+				if (o != null && o.getProperty() != null) {
+					addSortOrder(o);
+				}
+			}
+		}
+	}
 
-    /**
-     * Adds a sort order
-     * 
-     * @param order
-     *            the sort order to add
-     * @return
-     */
-    public SortOrders addSortOrder(SortOrder order) {
-        if (order != null && order.getProperty() != null) {
-            this.orders.add(order);
-        }
-        return this;
-    }
+	/**
+	 * Adds a sort order
+	 * 
+	 * @param order the sort order to add
+	 * @return
+	 */
+	public SortOrders addSortOrder(SortOrder order) {
+		if (order != null && order.getProperty() != null) {
+			this.orders.add(order);
+		}
+		return this;
+	}
 
-    /**
-     * Returns the first sort order for the specified property
-     * 
-     * @param property
-     *            the property
-     * @return
-     */
-    public SortOrder getOrderFor(String property) {
-        return orders.stream().filter(o -> o.getProperty().equals(property)).findAny().orElse(null);
-    }
+	/**
+	 * Returns the first sort order for the specified property
+	 * 
+	 * @param property the property
+	 * @return
+	 */
+	public SortOrder getOrderFor(String property) {
+		return orders.stream().filter(o -> o.getProperty().equals(property)).findAny().orElse(null);
+	}
 
-    public SortOrder[] toArray() {
-        return orders.toArray(new SortOrder[0]);
-    }
+	public SortOrder[] toArray() {
+		return orders.toArray(new SortOrder[0]);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == this) {
+			return true;
+		}
+
+		if (!(obj instanceof SortOrders)) {
+			return false;
+		}
+
+		SortOrders other = (SortOrders) obj;
+		if (other.toArray().length != this.toArray().length) {
+			return false;
+		}
+
+		for (int i = 0; i < toArray().length; i++) {
+			SortOrder so1 = toArray()[i];
+			SortOrder so2 = other.toArray()[i];
+			if (!so1.equals(so2)) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	@Override
+	public int hashCode() {
+		return super.hashCode();
+	}
 }

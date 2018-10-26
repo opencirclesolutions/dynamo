@@ -37,7 +37,7 @@ import com.vaadin.ui.Grid;
 
 import junitx.util.PrivateAccessor;
 
-public class ModelBasedTableTest extends BaseMockitoTest {
+public class ModelBasedGridTest extends BaseMockitoTest {
 
 	private EntityModelFactory entityModelFactory = new EntityModelFactoryImpl();
 
@@ -71,10 +71,6 @@ public class ModelBasedTableTest extends BaseMockitoTest {
 
 		Assert.assertEquals("Persons", grid.getCaption());
 		Assert.assertEquals("Person", grid.getDescription());
-		// Assert.assertEquals(4, table.getVisibleColumns().length);
-
-		// numeric column aligned to the right
-		// Assert.assertEquals.Align.RIGHT, table.getColumnAlignment("age"));
 
 		// String result = grid.formatPropertyValue(person, "age",
 		// grid.getItem(person).getItemProperty("age"));
@@ -94,7 +90,6 @@ public class ModelBasedTableTest extends BaseMockitoTest {
 		Grid<TestEntity> grid = wrapper.getGrid();
 		Assert.assertNotNull(grid);
 
-		// Assert.assertEquals(1, wrapper.getGrid().getDataProvider());
 	}
 
 //	@Test

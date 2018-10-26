@@ -43,7 +43,7 @@ public class PagingDataProvider<ID extends Serializable, T extends AbstractEntit
 
 	@Override
 	public Stream<T> fetch(Query<T, SerializablePredicate<T>> query) {
-		FilterConverter<T> converter = new FilterConverter<>(getEntityModel());
+		FilterConverter<T> converter = getFilterConverter();
 		int offset = query.getOffset();
 		int page = offset / query.getLimit();
 
@@ -52,7 +52,5 @@ public class PagingDataProvider<ID extends Serializable, T extends AbstractEntit
 				so, getJoins());
 		return result.stream();
 	}
-
-
 
 }
