@@ -49,11 +49,6 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 	private static final long serialVersionUID = 6946260934644731038L;
 
 	/**
-	 * The data provider that holds the data
-	 */
-	// private DataProvider<T, SerializablePredicate<T>> dataProvider;
-
-	/**
 	 * Custom currency symbol to be used for this table
 	 */
 	private String currencySymbol;
@@ -137,89 +132,41 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 	 * @param propertyNames  the properties to be added
 	 * @param headerNames    the headers to be added
 	 */
-	private void addColumn(final AttributeModel attributeModel, List<Object> propertyNames, List<String> headerNames) {
+	private void addColumn(final AttributeModel attributeModel) {
 		if (attributeModel.isVisibleInTable()) {
-			propertyNames.add(attributeModel.getPath());
-			headerNames.add(attributeModel.getDisplayName());
 
-			// rather complicated way of creating a formatted column
+			Column<?, ?> addColumn;
 			if (attributeModel.isUrl()) {
-				addColumn(t -> new URLField(
+				// URL field
+				addColumn = addColumn(t -> new URLField(
 						new TextField("", ClassUtils.getFieldValueAsString(t, attributeModel.getPath(), "")),
-						attributeModel, false), new ComponentRenderer()).setCaption(attributeModel.getDisplayName());
+						attributeModel, false), new ComponentRenderer());
 			} else {
-				addColumn(t -> FormatUtils.extractAndFormat(attributeModel, t))
-						.setCaption(attributeModel.getDisplayName())
-						.setStyleGenerator(item -> attributeModel.isNumerical() ? "v-align-right" : "");
+				addColumn = addColumn(t -> FormatUtils.extractAndFormat(attributeModel, t));
 			}
 
-			// generated column with clickable URL (only in view mode)
-			addUrlField(attributeModel);
-			addInternalLinkField(attributeModel);
-		}
-	}
+			addColumn.setCaption(attributeModel.getDisplayName()).setSortable(attributeModel.isSortable())
+					.setSortProperty(attributeModel.getPath())
+					.setStyleGenerator(item -> attributeModel.isNumerical() ? "v-align-right" : "");
 
-	/**
-	 * Adds a generated column
-	 *
-	 * @param attributeModel the attribute model for which to add the column
-	 */
-	private void addGeneratedColumn(final AttributeModel attributeModel) {
-		if (attributeModel.isVisibleInTable() && attributeModel.isUrl()) {
-			addUrlField(attributeModel);
+			// generated column with clickable URL (only in view mode)
+			addInternalLinkField(attributeModel);
 		}
 	}
 
 	/**
 	 * Adds any generated columns (URL fields) in response to a change to view mode
 	 */
-	public void addGeneratedColumns() {
-		for (AttributeModel attributeModel : entityModel.getAttributeModels()) {
-			addGeneratedColumn(attributeModel);
-			if (attributeModel.getNestedEntityModel() != null) {
-				for (AttributeModel nestedAttributeModel : attributeModel.getNestedEntityModel().getAttributeModels()) {
-					addGeneratedColumn(nestedAttributeModel);
-				}
-			}
-		}
-	}
-
-	/**
-	 * Adds an URL field for a certain attribute
-	 *
-	 * @param attributeModel the attribute model
-	 */
-	private void addUrlField(final AttributeModel attributeModel) {
-//		 if (attributeModel.isUrl() && !isEnabled()) {
-//		 Column<URLField> generated = this.addComponentColumn(T t -> {
-//		 URLField field = (URLField) ((ModelBasedFieldFactory<?>)
-//		 getTableFieldFactory())
-//		 .createField(attributeModel.getPath(), null);
-//		 if (field != null) {
-//		 String val = (String) getItem(itemId).getItemProperty(columnId).getValue();
-//		 field.setValue(val);
-//		 }
-//		 return field;
-//		 });
-//
-//		this.addGeneratedColumn(attributeModel.getPath(), new ColumnGenerator() {
-//
-//			private static final long serialVersionUID = -3191235289754428914L;
-//
-//			@Override
-//			public Object generateCell(Table source, final Object itemId, Object columnId) {
-//				URLField field = (URLField) ((ModelBasedFieldFactory<?>) getTableFieldFactory())
-//						.createField(attributeModel.getPath(), null);
-//				if (field != null) {
-//					String val = (String) getItem(itemId).getItemProperty(columnId).getValue();
-//					field.setValue(val);
+//	public void addGeneratedColumns() {
+//		for (AttributeModel attributeModel : entityModel.getAttributeModels()) {
+//			addGeneratedColumn(attributeModel);
+//			if (attributeModel.getNestedEntityModel() != null) {
+//				for (AttributeModel nestedAttributeModel : attributeModel.getNestedEntityModel().getAttributeModels()) {
+//					addGeneratedColumn(nestedAttributeModel);
 //				}
-//				return field;
 //			}
-//		});
+//		}
 //	}
-
-	}
 
 	/**
 	 * Adds a button/link for navigation within the application
@@ -288,27 +235,22 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 	 * @param attributeModels the attribute models for which to generate columns
 	 */
 	protected void generateColumns(List<AttributeModel> attributeModels) {
-		List<Object> propertyNames = new ArrayList<>();
-		List<String> headerNames = new ArrayList<>();
-		generateColumnsRecursive(attributeModels, propertyNames, headerNames);
-		// this.setVisibleColumns(propertyNames.toArray());
-		// this.setColumnHeaders(headerNames.toArray(new String[0]));
+		generateColumnsRecursive(attributeModels);
 	}
 
-	private void generateColumnsRecursive(List<AttributeModel> attributeModels, List<Object> propertyNames,
-			List<String> headerNames) {
+	/**
+	 * Recursively generate columns for the provided attribute models
+	 * 
+	 * @param attributeModels
+	 */
+	private void generateColumnsRecursive(List<AttributeModel> attributeModels) {
 		for (AttributeModel attributeModel : attributeModels) {
-			addColumn(attributeModel, propertyNames, headerNames);
+			addColumn(attributeModel);
 			if (attributeModel.getNestedEntityModel() != null) {
-				generateColumnsRecursive(attributeModel.getNestedEntityModel().getAttributeModels(), propertyNames,
-						headerNames);
+				generateColumnsRecursive(attributeModel.getNestedEntityModel().getAttributeModels());
 			}
 		}
 	}
-
-//	public DataProvider<T, SerializablePredicate<T>> getDataProvider() {
-//		return dataProvider;
-//	}
 
 	public String getCurrencySymbol() {
 		return currencySymbol;
@@ -355,17 +297,19 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 	 * @param visible    whether the column must be visible
 	 */
 	public void setColumnVisible(Object propertyId, boolean visible) {
-		// Object[] visibleCols = getVisibleColumns();
-		// List<Object> temp = Arrays.stream(visibleCols).filter(c ->
-		// !c.equals(propertyId)).collect(Collectors.toList());
-		// boolean alreadyVisible = Arrays.stream(visibleCols).anyMatch(c ->
-		// c.equals(propertyId));
-		//
-		// // add column if not already visible
-		// if (!alreadyVisible || visible) {
-		// temp.add(propertyId);
-		// }
-		// setVisibleColumns(temp.toArray(new Object[0]));
+//		 Object[] visibleCols = getVisibleColumns();
+//		 List<Object> temp = Arrays.stream(visibleCols).filter(c ->
+//		 !c.equals(propertyId)).collect(Collectors.toList());
+//		 boolean alreadyVisible = Arrays.stream(visibleCols).anyMatch(c ->
+//		 c.equals(propertyId));
+//		
+//		 // add column if not already visible
+//		 if (!alreadyVisible || visible) {
+//		 temp.add(propertyId);
+//		 }
+//		 setVisibleColumns(temp.toArray(new Object[0]));
+		 
+		 getColumn((String)propertyId).setHidden(!visible);
 	}
 
 	public void setCurrencySymbol(String currencySymbol) {
