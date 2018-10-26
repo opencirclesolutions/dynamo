@@ -93,9 +93,16 @@ public class FilterConverter<T> implements Converter<SerializablePredicate<T>, c
 		} else if (filter instanceof InPredicate) {
 			InPredicate<T> p = (InPredicate<T>) filter;
 			return new In(p.getProperty(), p.getValue());
-		} else if (filter instanceof ContainsPredicate){
+		} else if (filter instanceof ContainsPredicate) {
 			ContainsPredicate<T> p = (ContainsPredicate<T>) filter;
 			return new Contains(p.getProperty(), p.getValue());
+		} else if (filter instanceof ModuloPredicate) {
+			ModuloPredicate<T> p = (ModuloPredicate<T>) filter;
+			if (p.getModExpression() != null) {
+				return new Modulo(p.getProperty(),p.getModExpression(), p.getValue());
+			} else {
+				return new Modulo(p.getProperty(), p.getModValue(), p.getValue());
+			}
 		}
 
 		return null;
