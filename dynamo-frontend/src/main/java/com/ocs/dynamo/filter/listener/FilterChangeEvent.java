@@ -16,37 +16,34 @@ package com.ocs.dynamo.filter.listener;
 import java.io.Serializable;
 
 import com.vaadin.server.SerializablePredicate;
+
 /**
  * An event used to indicate that the value of a filter in a search form has
  * changed
  * 
  * @author bas.rutten
  */
-public class FilterChangeEvent implements Serializable {
+public class FilterChangeEvent<T> implements Serializable {
 
 	private static final long serialVersionUID = 7833584773075924736L;
 
 	private final String propertyId;
 
-	private final SerializablePredicate<?> oldFilter;
+	private final SerializablePredicate<T> oldFilter;
 
-	private final SerializablePredicate<?> newFilter;
+	private final SerializablePredicate<T> newFilter;
 
 	private final transient Object value;
 
 	/**
 	 * Constructor
 	 * 
-	 * @param propertyId
-	 *            the name of the property
-	 * @param oldFilter
-	 *            the old filter
-	 * @param newFilter
-	 *            the new filter
-	 * @param value
-	 *            the new value
+	 * @param propertyId the name of the property
+	 * @param oldFilter  the old filter
+	 * @param newFilter  the new filter
+	 * @param value      the new value
 	 */
-	public FilterChangeEvent(String propertyId, SerializablePredicate<?> oldFilter, SerializablePredicate<?> newFilter,
+	public FilterChangeEvent(String propertyId, SerializablePredicate<T> oldFilter, SerializablePredicate<T> newFilter,
 			Object value) {
 		this.propertyId = propertyId;
 		this.oldFilter = oldFilter;
@@ -54,11 +51,11 @@ public class FilterChangeEvent implements Serializable {
 		this.value = value;
 	}
 
-	public SerializablePredicate<?> getOldFilter() {
+	public SerializablePredicate<T> getOldFilter() {
 		return oldFilter;
 	}
 
-	public SerializablePredicate<?> getNewFilter() {
+	public SerializablePredicate<T> getNewFilter() {
 		return newFilter;
 	}
 

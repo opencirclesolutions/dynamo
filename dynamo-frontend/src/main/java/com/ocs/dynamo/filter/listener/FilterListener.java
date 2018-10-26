@@ -21,14 +21,13 @@ import java.io.Serializable;
  * @author bas.rutten
  */
 @FunctionalInterface
-public interface FilterListener extends Serializable {
+public interface FilterListener<T> extends Serializable {
 
-    /**
-     * Method that is called when a change of a filter occurs
-     * 
-     * @param event
-     *            the filter change event
-     */
-    void onFilterChange(FilterChangeEvent event);
+	/**
+	 * Method that is called when a change of a filter occurs
+	 * 
+	 * @param event the filter change event
+	 */
+	void onFilterChange(FilterChangeEvent<T> event);
 
 }
