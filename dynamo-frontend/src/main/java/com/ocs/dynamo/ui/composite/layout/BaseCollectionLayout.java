@@ -92,7 +92,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	private List<SortOrder<?>> sortOrders = new ArrayList<>();
 
 	// the table wrapper
-	private BaseGridWrapper<ID, T> tableWrapper;
+	private BaseGridWrapper<ID, T> gridWrapper;
 
 	/**
 	 * Constructor
@@ -177,7 +177,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	 */
 	protected final void constructTableDividers() {
 		if (dividerProperty != null) {
-			getTableWrapper().getGrid().setStyleName(DynamoConstants.CSS_DIVIDER);
+			getGridWrapper().getGrid().setStyleName(DynamoConstants.CSS_DIVIDER);
 			// getTableWrapper().getGrid().setCellStyleGenerator((Grid<T> source, Object
 			// itemId, Object propertyId) -> {
 			// String result = null;
@@ -317,12 +317,12 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	 * 
 	 * @return the table wrapper (constructed lazily)
 	 */
-	public BaseGridWrapper<ID, T> getTableWrapper() {
-		if (tableWrapper == null) {
-			tableWrapper = constructTableWrapper();
-			postProcessTableWrapper(tableWrapper);
+	public BaseGridWrapper<ID, T> getGridWrapper() {
+		if (gridWrapper == null) {
+			gridWrapper = constructTableWrapper();
+			postProcessTableWrapper(gridWrapper);
 		}
-		return tableWrapper;
+		return gridWrapper;
 	}
 
 	/**

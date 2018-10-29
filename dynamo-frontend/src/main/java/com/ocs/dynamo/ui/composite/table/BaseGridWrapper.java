@@ -268,4 +268,8 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 	protected void setGrid(Grid<T> grid) {
 		this.grid = grid;
 	}
+
+	public void setDataProvider(DataProvider<T, SerializablePredicate<T>> dataProvider) {
+		this.dataProvider = dataProvider;
+	}
 }

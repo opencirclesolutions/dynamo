@@ -3,13 +3,17 @@ package com.ocs.dynamo.domain.model.impl;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import com.google.common.collect.Lists;
 import com.ocs.dynamo.domain.model.AttributeDateType;
 import com.ocs.dynamo.domain.model.AttributeModel;
+import com.ocs.dynamo.domain.model.AttributeTextFieldMode;
 import com.ocs.dynamo.domain.model.AttributeType;
 import com.ocs.dynamo.domain.model.EditableType;
 import com.ocs.dynamo.domain.model.EntityModel;
@@ -18,19 +22,21 @@ import com.ocs.dynamo.domain.model.NumberSelectMode;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.service.ServiceLocator;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
-import com.ocs.dynamo.ui.converter.BigDecimalToDoubleConverter;
 import com.ocs.dynamo.ui.converter.ConverterFactory;
-import com.ocs.dynamo.ui.converter.IntToDoubleConverter;
-import com.ocs.dynamo.ui.converter.LongToDoubleConverter;
+import com.ocs.dynamo.ui.converter.LocalDateWeekCodeConverter;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.ocs.dynamo.utils.NumberUtils;
 import com.vaadin.data.Binder;
+import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.server.SerializablePredicate;
+import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.AbstractTextField;
+import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.Slider;
+import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 
 public class FieldFactoryImpl<T> implements FieldFactory {
@@ -136,9 +142,9 @@ public class FieldFactoryImpl<T> implements FieldFactory {
 		return null;
 	}
 
-	public <S> AbstractField<?> constructField(AttributeModel am, Map<String, SerializablePredicate<?>> fieldFilters,
+	public AbstractComponent constructField(AttributeModel am, Map<String, SerializablePredicate<?>> fieldFilters,
 			EntityModel<?> entityModel) {
-		AbstractField<?> field = null;
+		AbstractComponent field = null;
 
 		// in certain cases, never render a field
 		if (EditableType.READ_ONLY.equals(am.getEditableType())
@@ -146,18 +152,32 @@ public class FieldFactoryImpl<T> implements FieldFactory {
 			return null;
 		}
 
-		if ((NumberUtils.isLong(am.getType()) || NumberUtils.isInteger(am.getType())
+		if (AttributeTextFieldMode.TEXTAREA.equals(am.getTextFieldMode()) && !search) {
+			field = new TextArea();
+		} else if (Enum.class.isAssignableFrom(am.getType())) {
+			field = constructEnumComboBox(am.getType().asSubclass(Enum.class));
+		} else if (am.isWeek()) {
+			// special case - week field in a table
+			TextField tf = new TextField();
+			Binder<T> binder = new Binder<>();
+			binder.forField(tf).withConverter(new LocalDateWeekCodeConverter());
+			field = tf;
+		} else if (search && (am.getType().equals(Boolean.class) || am.getType().equals(boolean.class))) {
+			// in a search screen, we need to offer the true, false, and
+			// undefined options
+			field = constructSearchBooleanComboBox(am);
+		} else if ((NumberUtils.isLong(am.getType()) || NumberUtils.isInteger(am.getType())
 				|| BigDecimal.class.equals(am.getType())) && NumberSelectMode.SLIDER.equals(am.getNumberSelectMode())) {
 			final Slider slider = new Slider(am.getDisplayName());
 
-			if (NumberUtils.isInteger(am.getType())) {
-				// binder.forField(slider).withConverter(new IntToDoubleConverter());
-			} else if (NumberUtils.isLong(am.getType())) {
-				// binder.forField(slider).withConverter(new LongToDoubleConverter());
-			} else {
-				// binder.forField(slider).withConverter(new BigDecimalToDoubleConverter());
-				slider.setResolution(am.getPrecision());
-			}
+//			if (NumberUtils.isInteger(am.getType())) {
+//				// binder.forField(slider).withConverter(new IntToDoubleConverter());
+//			} else if (NumberUtils.isLong(am.getType())) {
+//				// binder.forField(slider).withConverter(new LongToDoubleConverter());
+//			} else {
+//				// binder.forField(slider).withConverter(new BigDecimalToDoubleConverter());
+//				slider.setResolution(am.getPrecision());
+//			}
 
 			if (am.getMinValue() != null) {
 				slider.setMin(am.getMinValue());
@@ -179,7 +199,28 @@ public class FieldFactoryImpl<T> implements FieldFactory {
 		return field;
 	}
 
-	private void postProcessField(final AbstractField<?> field, final AttributeModel am) {
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public <E extends Enum> ComboBox constructEnumComboBox(final Class<E> enumClass) {
+		ComboBox cb = new ComboBox<>();
+
+		// select.addContainerProperty(CAPTION_PROPERTY_ID, String.class, "");
+		// select.setItemCaptionPropertyId(CAPTION_PROPERTY_ID);
+
+		// sort on the description
+		final List<E> list = Arrays.asList(enumClass.getEnumConstants());
+		list.sort((a, b) -> {
+			final String msg1 = messageService.getEnumMessage(enumClass, a, VaadinUtils.getLocale());
+			final String msg2 = messageService.getEnumMessage(enumClass, b, VaadinUtils.getLocale());
+			return msg1.compareToIgnoreCase(msg2);
+		});
+
+		cb.setDataProvider(new ListDataProvider<E>(list));
+		cb.setItemCaptionGenerator(e -> messageService.getEnumMessage(enumClass, (E) e, VaadinUtils.getLocale()));
+
+		return cb;
+	}
+
+	private void postProcessField(final AbstractComponent field, final AttributeModel am) {
 		field.setCaption(am.getDisplayName());
 		field.setDescription(am.getDescription());
 
@@ -232,6 +273,22 @@ public class FieldFactoryImpl<T> implements FieldFactory {
 			binder.forField(textField).withConverter(ConverterFactory
 					.createLongConverter(SystemPropertyUtils.useThousandsGroupingInEditMode(), am.isPercentage()));
 		}
+	}
+
+	/**
+	 * Constructs a combo box for filtering on a boolean
+	 * 
+	 * @param am
+	 * @return
+	 */
+	public ComboBox<Boolean> constructSearchBooleanComboBox(final AttributeModel am) {
+		final ComboBox<Boolean> cb = new ComboBox<Boolean>();
+
+		ListDataProvider<Boolean> provider = new ListDataProvider<>(Lists.newArrayList(Boolean.TRUE, Boolean.FALSE));
+		cb.setDataProvider(provider);
+		cb.setItemCaptionGenerator(
+				b -> Boolean.TRUE.equals(b) ? am.getTrueRepresentation() : am.getFalseRepresentation());
+		return cb;
 	}
 
 }

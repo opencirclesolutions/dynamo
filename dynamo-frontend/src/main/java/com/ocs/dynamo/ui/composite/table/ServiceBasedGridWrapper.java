@@ -105,7 +105,8 @@ public class ServiceBasedGridWrapper<ID extends Serializable, T extends Abstract
 	public void search(SerializablePredicate<T> filter) {
 		SerializablePredicate<T> temp = beforeSearchPerformed(filter);
 		if (getDataProvider() instanceof Searchable) {
-			// ((Searchable) getDataProvider()).search(temp != null ? temp : filter);
+			setDataProvider(constructDataProvider());
+			getGrid().getDataCommunicator().setDataProvider(getDataProvider(), temp != null ? temp : filter);
 		}
 	}
 

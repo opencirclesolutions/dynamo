@@ -17,7 +17,7 @@ import java.util.Map;
 
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.server.SerializablePredicate;
-import com.vaadin.ui.AbstractField;
+import com.vaadin.ui.AbstractComponent;
 
 /**
  * Interface for model based component factories
@@ -58,6 +58,6 @@ public interface FieldFactory {
 	 *            the generation context
 	 * @return
 	 */
-	AbstractField<?> constructField(Context<?> context);
+	AbstractComponent constructField(Context<?> context);
 
 }

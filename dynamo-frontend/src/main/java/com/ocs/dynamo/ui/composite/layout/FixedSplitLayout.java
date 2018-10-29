@@ -69,7 +69,7 @@ public abstract class FixedSplitLayout<ID extends Serializable, T extends Abstra
 	 */
 	@Override
 	protected void afterReload(T t) {
-		getTableWrapper().getGrid().select(t);
+		getGridWrapper().getGrid().select(t);
 	}
 
 	/**
@@ -129,7 +129,7 @@ public abstract class FixedSplitLayout<ID extends Serializable, T extends Abstra
 		// remove all items from the container and add the new ones
 		// BeanItemContainer<T> beanContainer = (BeanItemContainer<T>)
 		// getTableWrapper().getContainer();
-		ListDataProvider<T> provider = (ListDataProvider<T>) getTableWrapper().getDataProvider();
+		ListDataProvider<T> provider = (ListDataProvider<T>) getGridWrapper().getDataProvider();
 		provider.getItems().clear();
 		provider.getItems().addAll(items);
 		setSelectedItem(null);

@@ -12,12 +12,10 @@ import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.filter.FilterConverter;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
-import com.vaadin.data.provider.DataProvider;
-import com.vaadin.data.provider.DataProviderListener;
+import com.ocs.dynamo.ui.Searchable;
 import com.vaadin.data.provider.Query;
 import com.vaadin.data.provider.QuerySortOrder;
 import com.vaadin.server.SerializablePredicate;
-import com.vaadin.shared.Registration;
 import com.vaadin.shared.data.sort.SortDirection;
 
 /**
@@ -28,8 +26,8 @@ import com.vaadin.shared.data.sort.SortDirection;
  * @param <ID> the type of the primary key
  * @param <T> the type of the entity
  */
-public abstract class AbstractDataProvider<ID extends Serializable, T extends AbstractEntity<ID>>
-		implements DataProvider<T, SerializablePredicate<T>> {
+public abstract class BaseDataProvider<ID extends Serializable, T extends AbstractEntity<ID>>
+		extends com.vaadin.data.provider.AbstractDataProvider<T, SerializablePredicate<T>> implements Searchable<T> {
 
 	private static final long serialVersionUID = 7409567551591729117L;
 
@@ -47,15 +45,10 @@ public abstract class AbstractDataProvider<ID extends Serializable, T extends Ab
 	 * @param entityModel
 	 * @param joins
 	 */
-	public AbstractDataProvider(BaseService<ID, T> service, EntityModel<T> entityModel, FetchJoinInformation... joins) {
+	public BaseDataProvider(BaseService<ID, T> service, EntityModel<T> entityModel, FetchJoinInformation... joins) {
 		this.service = service;
 		this.entityModel = entityModel;
 		this.joins = joins;
-	}
-
-	@Override
-	public Registration addDataProviderListener(DataProviderListener<T> listener) {
-		return null;
 	}
 
 	protected SortOrders createSortOrder(Query<T, SerializablePredicate<T>> query) {
@@ -95,12 +88,7 @@ public abstract class AbstractDataProvider<ID extends Serializable, T extends Ab
 	}
 
 	@Override
-	public void refreshAll() {
-		// TODO: do we need this
-	}
-
-	@Override
-	public void refreshItem(T item) {
-		// TODO not clear when needed
+	public void search(SerializablePredicate<T> filter) {
+		refreshAll();
 	}
 }

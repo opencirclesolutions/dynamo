@@ -21,7 +21,7 @@ import com.vaadin.server.SerializablePredicate;
  * @param <T>
  */
 public class PagingDataProvider<ID extends Serializable, T extends AbstractEntity<ID>>
-		extends AbstractDataProvider<ID, T> {
+		extends BaseDataProvider<ID, T> {
 
 	private static final long serialVersionUID = 8238057223431007376L;
 

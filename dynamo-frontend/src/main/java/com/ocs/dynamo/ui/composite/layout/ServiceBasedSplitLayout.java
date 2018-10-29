@@ -172,7 +172,7 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
 
 	@SuppressWarnings("unchecked")
 	protected DataProvider<T, SerializablePredicate<T>> getContainer() {
-		return getTableWrapper().getDataProvider();
+		return getGridWrapper().getDataProvider();
 	}
 
 	public SerializablePredicate<T> getFilter() {
@@ -184,8 +184,8 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
 	}
 
 	@Override
-	public ServiceBasedGridWrapper<ID, T> getTableWrapper() {
-		return (ServiceBasedGridWrapper<ID, T>) super.getTableWrapper();
+	public ServiceBasedGridWrapper<ID, T> getGridWrapper() {
+		return (ServiceBasedGridWrapper<ID, T>) super.getGridWrapper();
 	}
 
 	/**
@@ -197,7 +197,7 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
 		buildFilter();
 		super.reload();
 		refresh();
-		getTableWrapper().setFilter(filter);
+		getGridWrapper().setFilter(filter);
 	}
 
 	@SuppressWarnings("unchecked")

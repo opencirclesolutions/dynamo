@@ -28,8 +28,9 @@ import com.ocs.dynamo.filter.listener.FilterChangeEvent;
 import com.ocs.dynamo.filter.listener.FilterListener;
 import com.ocs.dynamo.ui.composite.form.ModelBasedSearchForm.FilterType;
 import com.ocs.dynamo.ui.utils.ConvertUtil;
+import com.vaadin.data.HasValue;
 import com.vaadin.server.SerializablePredicate;
-import com.vaadin.ui.AbstractField;
+import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Slider;
 
@@ -53,7 +54,7 @@ public class FilterGroup<T> {
 	private final Component filterComponent;
 
 	// the main search field
-	private final AbstractField<?> field;
+	private final AbstractComponent field;
 
 	// the currently active filter - constructing by composing the main filter
 	// and the aux filter
@@ -63,7 +64,7 @@ public class FilterGroup<T> {
 	private SerializablePredicate<T> mainFilter;
 
 	// auxiliary field (in case of range searches)
-	private final AbstractField<?> auxField;
+	private final AbstractComponent auxField;
 
 	// filter on the auxiliary field
 	private SerializablePredicate<T> auxFieldFilter;
@@ -83,7 +84,7 @@ public class FilterGroup<T> {
 	 * @param auxField        the auxiliary filter field
 	 */
 	public FilterGroup(AttributeModel attributeModel, FilterType filterType, Component filterComponent,
-			AbstractField<?> field, AbstractField<?> auxField) {
+			AbstractComponent field, AbstractComponent auxField) {
 		this.attributeModel = attributeModel;
 		this.propertyId = attributeModel.getPath();
 		this.filterType = filterType;
@@ -92,19 +93,21 @@ public class FilterGroup<T> {
 		this.auxField = auxField;
 
 		// respond to a change of the main field
-		field.addValueChangeListener(event -> {
-			// try {
-			FilterGroup.this.valueChange(FilterGroup.this.field,
-					ConvertUtil.convertSearchValue(FilterGroup.this.attributeModel, event.getValue()));
-			// } catch (ConversionException ex) {
-			// // do nothing (this results in a nicer exception being
-			// // displayed)
-			// }
-		});
+		if (field instanceof HasValue) {
+			((HasValue<?>) field).addValueChangeListener(event -> {
+				// try {
+				FilterGroup.this.valueChange(FilterGroup.this.field,
+						ConvertUtil.convertSearchValue(FilterGroup.this.attributeModel, event.getValue()));
+				// } catch (ConversionException ex) {
+				// // do nothing (this results in a nicer exception being
+				// // displayed)
+				// }
+			});
+		}
 
 		// respond to a change of the auxiliary field
-		if (auxField != null) {
-			auxField.addValueChangeListener(event -> {
+		if (auxField != null && auxField instanceof HasValue) {
+			((HasValue<?>) auxField).addValueChangeListener(event -> {
 				// try {
 				FilterGroup.this.valueChange(FilterGroup.this.auxField,
 						ConvertUtil.convertSearchValue(FilterGroup.this.attributeModel, event.getValue()));
@@ -113,6 +116,7 @@ public class FilterGroup<T> {
 				// displayed)
 				// }
 			});
+
 		}
 	}
 
@@ -136,14 +140,12 @@ public class FilterGroup<T> {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
-	public AbstractField<Object> getAuxField() {
-		return (AbstractField<Object>) auxField;
+	public AbstractComponent getAuxField() {
+		return (AbstractComponent) auxField;
 	}
 
-	@SuppressWarnings("unchecked")
-	public AbstractField<Object> getField() {
-		return (AbstractField<Object>) field;
+	public AbstractComponent getField() {
+		return (AbstractComponent) field;
 	}
 
 	public Component getFilterComponent() {
@@ -166,8 +168,8 @@ public class FilterGroup<T> {
 			// slider does not support null value
 			Slider slider = (Slider) field;
 			slider.setValue(slider.getMin());
-		} else {
-			field.clear();
+		} else if (field instanceof HasValue) {
+			((HasValue<?>) field).clear();
 		}
 
 		if (auxField != null) {
@@ -175,8 +177,8 @@ public class FilterGroup<T> {
 				// slider does not support null value
 				Slider slider = (Slider) auxField;
 				slider.setValue(slider.getMin());
-			} else {
-				auxField.clear();
+			} else if (field instanceof HasValue) {
+				((HasValue<?>) field).clear();
 			}
 		}
 	}
@@ -199,7 +201,7 @@ public class FilterGroup<T> {
 	 *              field)
 	 * @param value the new field value
 	 */
-	public void valueChange(AbstractField<?> field, Object value) {
+	public void valueChange(AbstractComponent field, Object value) {
 		// store the current filter
 		SerializablePredicate<T> oldFilter = fieldFilter;
 		SerializablePredicate<T> filter = null;

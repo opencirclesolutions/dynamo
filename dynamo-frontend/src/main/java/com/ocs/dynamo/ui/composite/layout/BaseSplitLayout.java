@@ -167,14 +167,14 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 					splitterLayout.addComponent(quickSearchField);
 				}
 
-				splitterLayout.addComponent(getTableWrapper());
+				splitterLayout.addComponent(getGridWrapper());
 				splitter.setFirstComponent(splitterLayout);
 
 				if (defaultSplitPosition != null) {
 					splitter.setSplitPosition(defaultSplitPosition);
 				}
 			} else {
-				mainLayout.addComponent(getTableWrapper());
+				mainLayout.addComponent(getGridWrapper());
 			}
 
 			if (isHorizontalMode()) {
@@ -491,7 +491,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 			quickSearchField.setValue("");
 		}
 
-		getTableWrapper().reloadDataProvider();
+		getGridWrapper().reloadDataProvider();
 
 		// clear the details
 		setSelectedItem(null);
@@ -505,7 +505,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	public void reloadDetails() {
 		this.setSelectedItem(getService().fetchById(this.getSelectedItem().getId(), getDetailJoinsFallBack()));
 		detailsMode(getSelectedItem());
-		getTableWrapper().reloadDataProvider();
+		getGridWrapper().reloadDataProvider();
 	}
 
 	/**

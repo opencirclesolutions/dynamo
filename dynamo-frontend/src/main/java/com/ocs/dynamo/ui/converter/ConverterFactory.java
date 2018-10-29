@@ -14,10 +14,6 @@
 package com.ocs.dynamo.ui.converter;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.Date;
 
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.util.SystemPropertyUtils;
@@ -30,20 +26,15 @@ public final class ConverterFactory {
 	private ConverterFactory() {
 		// hidden constructor
 	}
-	
+
 	/**
 	 * Creates a BigDecimalConverter
 	 * 
-	 * @param currency
-	 *            whether the field is a currency field
-	 * @param percentage
-	 *            whether to include a percentage sign
-	 * @param useGrouping
-	 *            whether to uses a thousands grouping
-	 * @param precision
-	 *            the desired decimal precision
-	 * @param currencySymbol
-	 *            the currency symbol to include
+	 * @param currency       whether the field is a currency field
+	 * @param percentage     whether to include a percentage sign
+	 * @param useGrouping    whether to uses a thousands grouping
+	 * @param precision      the desired decimal precision
+	 * @param currencySymbol the currency symbol to include
 	 * @return
 	 */
 	public static BigDecimalConverter createBigDecimalConverter(boolean currency, boolean percentage,
@@ -59,10 +50,8 @@ public final class ConverterFactory {
 	/**
 	 * Create a converter for a certain type
 	 * 
-	 * @param clazz
-	 *            the type
-	 * @param attributeModel
-	 *            the attribute model
+	 * @param clazz          the type
+	 * @param attributeModel the attribute model
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
@@ -81,29 +70,9 @@ public final class ConverterFactory {
 	}
 
 	/**
-	 * Creates a date converter for a Java 8 date/time class
-	 * 
-	 * @param clazz
-	 *            the class of the property for which to create the converter
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	public static <T> Converter<Date, T> createDateConverter(Class<T> clazz) {
-		if (clazz.equals(LocalDateTime.class)) {
-			return (Converter<Date, T>) createLocalDateTimeConverter();
-		} else if (clazz.equals(LocalDate.class)) {
-			return (Converter<Date, T>) createLocalDateConverter();
-		} else if (clazz.equals(LocalTime.class)) {
-			return (Converter<Date, T>) createLocalTimeConverter();
-		}
-		return null;
-	}
-
-	/**
 	 * Creates a converter for converting between integer and String
 	 * 
-	 * @param useGrouping
-	 *            whether to use the thousands grouping separator
+	 * @param useGrouping whether to use the thousands grouping separator
 	 * @return
 	 */
 	public static StringToIntegerConverter createIntegerConverter(boolean useGrouping, boolean percentage) {
@@ -141,10 +110,8 @@ public final class ConverterFactory {
 	/**
 	 * Creates a converter for converting between long and String
 	 * 
-	 * @param useGrouping
-	 *            whether to use a grouping
-	 * @param percentage
-	 *            whether to include a percentage sign
+	 * @param useGrouping whether to use a grouping
+	 * @param percentage  whether to include a percentage sign
 	 * @return
 	 */
 	public static StringToLongConverter createLongConverter(boolean useGrouping, boolean percentage) {

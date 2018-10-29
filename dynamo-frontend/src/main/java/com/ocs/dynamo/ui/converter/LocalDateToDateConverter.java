@@ -24,7 +24,8 @@ import com.vaadin.data.ValueContext;
 import com.vaadin.ui.UI;
 
 /**
- * Vaadin converter for converting a legacy date to a LocalDate
+ * Vaadin converter for converting a legacy date to a LocalDate TODO: is this
+ * still needed in Vaadin 8
  * 
  * @author bas.rutten
  *

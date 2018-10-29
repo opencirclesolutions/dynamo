@@ -17,7 +17,7 @@ import com.vaadin.data.provider.Query;
 import com.vaadin.server.SerializablePredicate;
 
 public class IdBasedDataProvider<ID extends Serializable, T extends AbstractEntity<ID>>
-		extends AbstractDataProvider<ID, T> {
+		extends BaseDataProvider<ID, T> {
 
 	private static final long serialVersionUID = -5693366456446998962L;
 

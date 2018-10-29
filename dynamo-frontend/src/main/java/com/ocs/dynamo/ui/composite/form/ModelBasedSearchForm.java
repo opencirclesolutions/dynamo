@@ -35,9 +35,10 @@ import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.util.SystemPropertyUtils;
+import com.vaadin.data.HasValue;
 import com.vaadin.data.HasValue.ValueChangeEvent;
 import com.vaadin.server.SerializablePredicate;
-import com.vaadin.ui.AbstractField;
+import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.GridLayout;
@@ -75,7 +76,7 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 	/**
 	 * The various filter groups
 	 */
-	private Map<String, FilterGroup<?>> groups = new HashMap<>();
+	private Map<String, FilterGroup<T>> groups = new HashMap<>();
 
 	/**
 	 * The number of search columns
@@ -138,12 +139,14 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 	protected void constructCascadeListeners() {
 		for (final AttributeModel am : getEntityModel().getCascadeAttributeModels()) {
 			if (am.isSearchable()) {
-				AbstractField<?> field = groups.get(am.getPath()).getField();
-				field.addValueChangeListener(event -> {
-					for (String cascadePath : am.getCascadeAttributes()) {
-						handleCascade(event, am, cascadePath);
-					}
-				});
+				AbstractComponent field = groups.get(am.getPath()).getField();
+				if (field instanceof HasValue) {
+					((HasValue<?>) field).addValueChangeListener(event -> {
+						for (String cascadePath : am.getCascadeAttributes()) {
+							handleCascade(event, am, cascadePath);
+						}
+					});
+				}
 			}
 		}
 	}
@@ -166,8 +169,8 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 	 *                       that is bound to the field
 	 * @return
 	 */
-	protected AbstractField<?> constructField(EntityModel<T> entityModel, AttributeModel attributeModel) {
-		AbstractField<?> field = constructCustomField(entityModel, attributeModel);
+	protected AbstractComponent constructField(EntityModel<T> entityModel, AttributeModel attributeModel) {
+		AbstractComponent field = constructCustomField(entityModel, attributeModel);
 		if (field == null) {
 			EntityModel<?> em = getFieldEntityModel(attributeModel);
 			field = getFieldFactory().constructField(attributeModel, getFieldFilters(), em);
@@ -187,7 +190,7 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 	 * @return
 	 */
 	protected FilterGroup<T> constructFilterGroup(EntityModel<T> entityModel, AttributeModel attributeModel) {
-		AbstractField<?> field = this.constructField(entityModel, attributeModel);
+		AbstractComponent field = this.constructField(entityModel, attributeModel);
 		if (field != null) {
 			FilterType filterType = FilterType.BETWEEN;
 			if (String.class.isAssignableFrom(attributeModel.getType())) {
@@ -208,7 +211,7 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 			}
 
 			Component comp = field;
-			AbstractField<?> auxField = null;
+			AbstractComponent auxField = null;
 			if (FilterType.BETWEEN.equals(filterType)) {
 				// in case of a between value, construct two fields for the
 				// lower
@@ -303,7 +306,7 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 	 * @param upper      the upper bound
 	 */
 	public void forceSearch(String propertyId, Object lower, Object upper) {
-		setSearchValue(propertyId, lower, upper);
+		// setSearchValue(propertyId, lower, upper);
 		search();
 	}
 
@@ -312,7 +315,7 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 	 * 
 	 * @return
 	 */
-	public Map<String, FilterGroup<?>> getGroups() {
+	public Map<String, FilterGroup<T>> getGroups() {
 		return groups;
 	}
 
@@ -331,7 +334,7 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 	private void handleCascade(ValueChangeEvent<?> event, AttributeModel am, String cascadePath) {
 		CascadeMode cm = am.getCascadeMode(cascadePath);
 		if (CascadeMode.BOTH.equals(cm) || CascadeMode.SEARCH.equals(cm)) {
-			AbstractField<?> cascadeField = groups.get(cascadePath).getField();
+			HasValue<?> cascadeField = (HasValue<?>) groups.get(cascadePath).getField();
 			if (cascadeField instanceof Cascadable) {
 				Cascadable ca = (Cascadable) cascadeField;
 				if (event.getValue() == null) {
@@ -393,7 +396,7 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 	 * 
 	 * @param groups the filter groups
 	 */
-	protected void postProcessFilterGroups(Map<String, FilterGroup<?>> groups) {
+	protected void postProcessFilterGroups(Map<String, FilterGroup<T>> groups) {
 		// overwrite in subclasses
 	}
 
@@ -442,7 +445,7 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 	 * @param value      the desired value
 	 */
 	public void setSearchValue(String propertyId, Object value) {
-		setSearchValue(propertyId, value, null);
+		// setSearchValue(propertyId, value, null);
 	}
 
 	/**
@@ -452,12 +455,12 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 	 * @param value      the desired value for the main field
 	 * @param auxValue   the desired value for the auxiliary field
 	 */
-	public void setSearchValue(String propertyId, Object value, Object auxValue) {
-		FilterGroup group = groups.get(propertyId);
-		group.getField().setValue(value);
-		if (group.getAuxField() != null) {
-			group.getAuxField().setValue(auxValue);
-		}
-	}
+//	public void setSearchValue(String propertyId, Object value, Object auxValue) {
+//		FilterGroup<T> group = groups.get(propertyId);
+//		((HasValue<?>) group.getField()).setValue(value);
+//		if (group.getAuxField() != null) {
+//			((HasValue<?>) group.getField()).setValue(auxValue);
+//		}
+//	}
 
 }

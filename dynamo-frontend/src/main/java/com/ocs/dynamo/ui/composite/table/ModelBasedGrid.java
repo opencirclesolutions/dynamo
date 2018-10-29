@@ -266,8 +266,8 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 	 * Updates the table caption in response to a change of the data set
 	 */
 	public void updateTableCaption() {
-		setCaption(entityModel.getDisplayNamePlural() + " " + messageService.getMessage("ocs.showing.results",
-				VaadinUtils.getLocale(), getDataProvider().size(null)));
+//		setCaption(entityModel.getDisplayNamePlural() + " " + messageService.getMessage("ocs.showing.results",
+//				VaadinUtils.getLocale(), getDataProvider().size(null)));
 	}
 
 }

@@ -25,6 +25,7 @@ import com.ocs.dynamo.domain.model.impl.FieldFactoryImpl;
 import com.ocs.dynamo.exception.OCSValidationException;
 import com.ocs.dynamo.filter.AndPredicate;
 import com.ocs.dynamo.filter.OrPredicate;
+import com.ocs.dynamo.filter.PropertyPredicate;
 import com.ocs.dynamo.filter.listener.FilterChangeEvent;
 import com.ocs.dynamo.filter.listener.FilterListener;
 import com.ocs.dynamo.ui.Refreshable;
@@ -38,7 +39,7 @@ import com.vaadin.event.Action.Handler;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.SerializablePredicate;
-import com.vaadin.ui.AbstractField;
+import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.HorizontalLayout;
@@ -273,7 +274,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	 *                       that is bound to the field
 	 * @return
 	 */
-	protected AbstractField<?> constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel) {
+	protected AbstractComponent constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel) {
 		return null;
 	}
 
@@ -322,6 +323,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 		return extractFilter(false);
 	}
 
+	@SuppressWarnings("unchecked")
 	private SerializablePredicate<T> extractFilter(boolean matchAny) {
 		if (!currentFilters.isEmpty()) {
 			SerializablePredicate<T> defaultFilter = null;
@@ -334,10 +336,10 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 				return defaultFilter;
 			}
 			SerializablePredicate<T> currentFilter = matchAny
-					? new OrPredicate<T>(currentFilters.toArray(new SerializablePredicate[0]))
-					: new AndPredicate(currentFilters.toArray(new SerializablePredicate[0]));
+					? new OrPredicate<>(currentFilters.toArray(new SerializablePredicate[0]))
+					: new AndPredicate<>(currentFilters.toArray(new SerializablePredicate[0]));
 			if (defaultFilter != null) {
-				return new AndPredicate(defaultFilter, currentFilter);
+				return new AndPredicate<>(defaultFilter, currentFilter);
 			}
 			return currentFilter;
 		}
@@ -381,16 +383,16 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	}
 
 	/**
-	 * Checks whether a filter is set for a certain attribute
+	 * Checks whether a filter has been set for a certain attribute
 	 *
-	 * @param path the path to the attribute
+	 * @param path the path of the attribute
 	 * @return
 	 */
 	public boolean isFilterSet(String path) {
 		for (SerializablePredicate<T> filter : currentFilters) {
-			// if (filter.appliesToProperty(path)) {
-			return true;
-			// }
+			if (filter instanceof PropertyPredicate && ((PropertyPredicate<T>) filter).appliesToProperty(path)) {
+				return true;
+			}
 		}
 		return false;
 	}
