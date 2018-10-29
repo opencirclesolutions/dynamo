@@ -27,6 +27,7 @@ import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.data.provider.SortOrder;
 import com.vaadin.server.ErrorMessage;
 import com.vaadin.server.SerializablePredicate;
+import com.vaadin.shared.Registration;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
@@ -61,8 +62,8 @@ public class QuickAddEntityComboBox<ID extends Serializable, T extends AbstractE
 	 * @param service        the service
 	 * @param mode           the mode
 	 * @param filter         the filter that is used for filtering the data
-	 * @param items
-	 * @param sortOrder
+	 * @param items          the fixed collection of items to display
+	 * @param sortOrder      the desired sort order
 	 */
 	@SafeVarargs
 	public QuickAddEntityComboBox(EntityModel<T> entityModel, AttributeModel attributeModel, BaseService<ID, T> service,
@@ -117,12 +118,6 @@ public class QuickAddEntityComboBox<ID extends Serializable, T extends AbstractE
 
 		// no caption needed (the wrapping component has the caption)
 		comboBox.setCaption(null);
-		comboBox.addValueChangeListener(event -> {
-			// TODO: questionable. why do we need this?
-			if (event.getValue() != event.getOldValue()) {
-				setValue(event.getValue());
-			}
-		});
 		comboBox.setSizeFull();
 
 		bar.addComponent(comboBox);
@@ -183,9 +178,16 @@ public class QuickAddEntityComboBox<ID extends Serializable, T extends AbstractE
 
 	@Override
 	public void setValue(T newFieldValue) {
-		super.setValue(newFieldValue);
 		if (comboBox != null) {
 			comboBox.setValue(newFieldValue);
 		}
+	}
+
+	@Override
+	public Registration addValueChangeListener(ValueChangeListener<T> listener) {
+		if (comboBox != null) {
+			return comboBox.addValueChangeListener(listener);
+		}
+		return null;
 	}
 }

@@ -423,10 +423,11 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 			return false;
 		}
 
-		// int matches = (int) requiredAttributes.stream()
-		// .filter(am -> currentFilters.stream().anyMatch(f ->
-		// f.appliesToProperty(am.getPath()))).count();
-		int matches = 0;
+		// check if required properties have been set
+		int matches = (int) requiredAttributes.stream()
+				.filter(am -> currentFilters.stream().filter(f -> f instanceof PropertyPredicate)
+						.map(f -> (PropertyPredicate<T>) f).anyMatch(f -> f.appliesToProperty(am.getPath())))
+				.count();
 		return matches == requiredAttributes.size();
 	}
 

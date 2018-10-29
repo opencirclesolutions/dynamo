@@ -119,12 +119,15 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 	@Override
 	public void clear() {
 		// Clear all filter groups
-		for (FilterGroup<?> group : groups.values()) {
+		for (FilterGroup<T> group : groups.values()) {
 			group.reset();
 		}
 		super.clear();
 	}
 
+	/**
+	 * Concstrucs the button bar for the search form
+	 */
 	@Override
 	protected void constructButtonBar(Layout buttonBar) {
 		buttonBar.addComponent(constructSearchButton());
@@ -173,7 +176,7 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 		AbstractComponent field = constructCustomField(entityModel, attributeModel);
 		if (field == null) {
 			EntityModel<?> em = getFieldEntityModel(attributeModel);
-			field = getFieldFactory().constructField(attributeModel, getFieldFilters(), em);
+			field = getFieldFactory().constructField(attributeModel, em, getFieldFilters());
 		}
 
 		if (field != null) {
@@ -293,7 +296,7 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 	 * @param propertyId the property ID to search on
 	 * @param value      the value of the property
 	 */
-	public void forceSearch(String propertyId, Object value) {
+	public <R> void forceSearch(String propertyId, R value) {
 		setSearchValue(propertyId, value);
 		search();
 	}
@@ -305,8 +308,8 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 	 * @param lower      the lower bound
 	 * @param upper      the upper bound
 	 */
-	public void forceSearch(String propertyId, Object lower, Object upper) {
-		// setSearchValue(propertyId, lower, upper);
+	public <R> void forceSearch(String propertyId, R lower, R upper) {
+		setSearchValue(propertyId, lower, upper);
 		search();
 	}
 
@@ -336,7 +339,7 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 		if (CascadeMode.BOTH.equals(cm) || CascadeMode.SEARCH.equals(cm)) {
 			HasValue<?> cascadeField = (HasValue<?>) groups.get(cascadePath).getField();
 			if (cascadeField instanceof Cascadable) {
-				Cascadable ca = (Cascadable) cascadeField;
+				Cascadable<T> ca = (Cascadable<T>) cascadeField;
 				if (event.getValue() == null) {
 					ca.clearAdditionalFilter();
 				} else {
@@ -354,7 +357,6 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 	 * Recursively iterate over the attribute models (including nested models) and
 	 * add search fields if the fields are searchable
 	 * 
-	 * @param form            the form to add the search fields to
 	 * @param attributeModels the attribute models to iterate over
 	 */
 	private void iterate(List<AttributeModel> attributeModels) {
@@ -415,6 +417,7 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 	 * Refreshes any fields that are susceptible to this
 	 */
 	@Override
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void refresh() {
 		for (FilterGroup<?> group : getGroups().values()) {
 			if (group.getField() instanceof Refreshable) {
@@ -439,13 +442,14 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 	}
 
 	/**
-	 * Manually set the value for a certain search field
+	 * Manually set the value for a certain search field (and clear the value of the
+	 * auxiliary search field if present)
 	 * 
 	 * @param propertyId the ID of the property
 	 * @param value      the desired value
 	 */
-	public void setSearchValue(String propertyId, Object value) {
-		// setSearchValue(propertyId, value, null);
+	public <R> void setSearchValue(String propertyId, R value) {
+		setSearchValue(propertyId, value, null);
 	}
 
 	/**
@@ -455,12 +459,23 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 	 * @param value      the desired value for the main field
 	 * @param auxValue   the desired value for the auxiliary field
 	 */
-//	public void setSearchValue(String propertyId, Object value, Object auxValue) {
-//		FilterGroup<T> group = groups.get(propertyId);
-//		((HasValue<?>) group.getField()).setValue(value);
-//		if (group.getAuxField() != null) {
-//			((HasValue<?>) group.getField()).setValue(auxValue);
-//		}
-//	}
+	@SuppressWarnings("unchecked")
+	public <R> void setSearchValue(String propertyId, R value, R auxValue) {
+		FilterGroup<T> group = groups.get(propertyId);
+
+		if (value != null) {
+			((HasValue<R>) group.getField()).setValue(value);
+		} else {
+			((HasValue<R>) group.getField()).clear();
+		}
+
+		if (group.getAuxField() != null) {
+			if (auxValue != null) {
+				((HasValue<R>) group.getField()).setValue(auxValue);
+			} else {
+				((HasValue<R>) group.getField()).clear();
+			}
+		}
+	}
 
 }

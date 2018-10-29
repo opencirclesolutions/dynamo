@@ -136,7 +136,8 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	private Collection<T> selectedItems;
 
 	/**
-	 *
+	 * The layout that holds the tab sheet when the component is in complex details
+	 * mode
 	 */
 	private VerticalLayout tabContainerLayout;
 
@@ -912,7 +913,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	 */
 	protected boolean hasNextEntity(T current) {
 		if (current != null) {
-			//return getGridWrapper().getGrid().nextItemId(current.getId()) != null;
+			// return getGridWrapper().getGrid().nextItemId(current.getId()) != null;
 		}
 		return false;
 	}
@@ -925,7 +926,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	 */
 	protected boolean hasPrevEntity(T current) {
 		if (current != null) {
-			//return getGridWrapper().getGrid().prevItemId(current.getId()) != null;
+			// return getGridWrapper().getGrid().prevItemId(current.getId()) != null;
 		}
 		return false;
 	}

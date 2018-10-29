@@ -163,6 +163,6 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 	 */
 	@Override
 	public void setSearchValue(String propertyId, Object value, Object auxValue) {
-		//getSearchForm().setSearchValue(propertyId, value, auxValue);
+		getSearchForm().setSearchValue(propertyId, value, auxValue);
 	}
 }

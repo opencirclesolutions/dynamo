@@ -1,5 +1,6 @@
 package com.ocs.dynamo.domain.model.impl;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -11,17 +12,22 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import com.google.common.collect.Lists;
+import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeDateType;
 import com.ocs.dynamo.domain.model.AttributeModel;
+import com.ocs.dynamo.domain.model.AttributeSelectMode;
 import com.ocs.dynamo.domain.model.AttributeTextFieldMode;
 import com.ocs.dynamo.domain.model.AttributeType;
 import com.ocs.dynamo.domain.model.EditableType;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.FieldFactory;
 import com.ocs.dynamo.domain.model.NumberSelectMode;
+import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.service.ServiceLocator;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
+import com.ocs.dynamo.ui.component.EntityComboBox.SelectMode;
+import com.ocs.dynamo.ui.component.QuickAddEntityComboBox;
 import com.ocs.dynamo.ui.converter.ConverterFactory;
 import com.ocs.dynamo.ui.converter.LocalDateWeekCodeConverter;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
@@ -29,7 +35,9 @@ import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.ocs.dynamo.utils.NumberUtils;
 import com.vaadin.data.Binder;
 import com.vaadin.data.provider.ListDataProvider;
+import com.vaadin.data.provider.SortOrder;
 import com.vaadin.server.SerializablePredicate;
+import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.AbstractTextField;
@@ -48,45 +56,6 @@ public class FieldFactoryImpl<T> implements FieldFactory {
 	private static final ConcurrentMap<String, FieldFactoryImpl<?>> searchInstances = new ConcurrentHashMap<>();
 
 	private static final ConcurrentMap<String, FieldFactoryImpl<?>> validatingInstances = new ConcurrentHashMap<>();
-
-	private final MessageService messageService;
-
-	private final EntityModel<T> model;
-
-	private final ServiceLocator serviceLocator = ServiceLocatorFactory.getServiceLocator();
-
-	private final Collection<FieldFactory> fieldFactories;
-
-	// indicates whether the system is in search mode. In search mode,
-	// components for
-	// some attributes are constructed differently (e.g. we render two search
-	// fields to be able to
-	// search for a range of integers)
-	private final boolean search;
-
-	// indicates whether extra validators must be added. This is the case when
-	// using the field factory in an
-	// editable table
-	private final boolean validate;
-
-	/**
-	 * Constructor
-	 *
-	 * @param model          the entity model
-	 * @param messageService the message service
-	 * @param validate       whether to add extra validators (this is the case when
-	 *                       the field is displayed inside a table)
-	 * @param search         whether the fields are displayed inside a search form
-	 *                       (this has an effect on the construction of some fields)
-	 */
-	public FieldFactoryImpl(final EntityModel<T> model, final MessageService messageService, final boolean validate,
-			final boolean search) {
-		this.model = model;
-		this.messageService = messageService;
-		this.validate = validate;
-		this.search = search;
-		this.fieldFactories = serviceLocator.getServices(FieldFactory.class);
-	}
 
 	/**
 	 * Returns an appropriate instance from the pool, or creates a new one
@@ -136,14 +105,84 @@ public class FieldFactoryImpl<T> implements FieldFactory {
 		return (FieldFactoryImpl<T>) validatingInstances.get(model.getReference());
 	}
 
-	@Override
-	public AbstractField<?> constructField(Context<?> context) {
-		// TODO Auto-generated method stub
-		return null;
+	private final MessageService messageService;
+
+	private final EntityModel<T> model;
+
+	private final ServiceLocator serviceLocator = ServiceLocatorFactory.getServiceLocator();
+
+	private final Collection<FieldFactory> fieldFactories;
+
+	// indicates whether the system is in search mode. In search mode,
+	// components for
+	// some attributes are constructed differently (e.g. we render two search
+	// fields to be able to
+	// search for a range of integers)
+	private final boolean search;
+
+	// indicates whether extra validators must be added. This is the case when
+	// using the field factory in an
+	// editable table
+	private final boolean validate;
+
+	/**
+	 * Constructor
+	 *
+	 * @param model          the entity model
+	 * @param messageService the message service
+	 * @param validate       whether to add extra validators (this is the case when
+	 *                       the field is displayed inside a table)
+	 * @param search         whether the fields are displayed inside a search form
+	 *                       (this has an effect on the construction of some fields)
+	 */
+	public FieldFactoryImpl(final EntityModel<T> model, final MessageService messageService, final boolean validate,
+			final boolean search) {
+		this.model = model;
+		this.messageService = messageService;
+		this.validate = validate;
+		this.search = search;
+		this.fieldFactories = serviceLocator.getServices(FieldFactory.class);
 	}
 
-	public AbstractComponent constructField(AttributeModel am, Map<String, SerializablePredicate<?>> fieldFilters,
-			EntityModel<?> entityModel) {
+	@SuppressWarnings("unchecked")
+	private <ID extends Serializable, S extends AbstractEntity<ID>> QuickAddEntityComboBox<ID, S> constructComboBox(
+			AttributeModel am, EntityModel<?> entityModel, SerializablePredicate<?> fieldFilter, boolean search) {
+		entityModel = resolveEntityModel(entityModel, am, search);
+		final BaseService<ID, S> service = (BaseService<ID, S>) serviceLocator
+				.getServiceForEntity(entityModel.getEntityClass());
+		final SortOrder<?>[] sos = constructSortOrder(entityModel);
+		return new QuickAddEntityComboBox<ID, S>((EntityModel<S>) entityModel, am, service, SelectMode.FILTERED,
+				(SerializablePredicate<S>) fieldFilter, search, null, sos);
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private <E extends Enum> ComboBox constructEnumComboBox(final Class<E> enumClass) {
+		ComboBox cb = new ComboBox<>();
+
+		// sort on the description
+		final List<E> list = Arrays.asList(enumClass.getEnumConstants());
+		list.sort((a, b) -> {
+			final String msg1 = messageService.getEnumMessage(enumClass, a, VaadinUtils.getLocale());
+			final String msg2 = messageService.getEnumMessage(enumClass, b, VaadinUtils.getLocale());
+			return msg1.compareToIgnoreCase(msg2);
+		});
+
+		// set data provider and caption generator
+		cb.setDataProvider(new ListDataProvider<E>(list));
+		cb.setItemCaptionGenerator(e -> messageService.getEnumMessage(enumClass, (E) e, VaadinUtils.getLocale()));
+		return cb;
+	}
+
+	/**
+	 * Constructs a
+	 * 
+	 * @param am
+	 * @param fieldEntityModel
+	 * @param fieldFilters
+	 * @return
+	 */
+	public AbstractComponent constructField(AttributeModel am, EntityModel<?> fieldEntityModel,
+			Map<String, SerializablePredicate<?>> fieldFilters) {
 		AbstractComponent field = null;
 
 		// in certain cases, never render a field
@@ -152,7 +191,10 @@ public class FieldFactoryImpl<T> implements FieldFactory {
 			return null;
 		}
 
-		if (AttributeTextFieldMode.TEXTAREA.equals(am.getTextFieldMode()) && !search) {
+		if (AbstractEntity.class.isAssignableFrom(am.getType())) {
+			// lookup or combo field for an entity
+			field = constructSelectField(am, fieldEntityModel, null);
+		} else if (AttributeTextFieldMode.TEXTAREA.equals(am.getTextFieldMode()) && !search) {
 			field = new TextArea();
 		} else if (Enum.class.isAssignableFrom(am.getType())) {
 			field = constructEnumComboBox(am.getType().asSubclass(Enum.class));
@@ -199,25 +241,62 @@ public class FieldFactoryImpl<T> implements FieldFactory {
 		return field;
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public <E extends Enum> ComboBox constructEnumComboBox(final Class<E> enumClass) {
-		ComboBox cb = new ComboBox<>();
+	@Override
+	public AbstractField<?> constructField(Context<?> context) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-		// select.addContainerProperty(CAPTION_PROPERTY_ID, String.class, "");
-		// select.setItemCaptionPropertyId(CAPTION_PROPERTY_ID);
+	/**
+	 * Constructs a combo box for filtering on a boolean
+	 * 
+	 * @param am the attribute model
+	 * @return
+	 */
+	private ComboBox<Boolean> constructSearchBooleanComboBox(final AttributeModel am) {
+		final ComboBox<Boolean> cb = new ComboBox<Boolean>();
 
-		// sort on the description
-		final List<E> list = Arrays.asList(enumClass.getEnumConstants());
-		list.sort((a, b) -> {
-			final String msg1 = messageService.getEnumMessage(enumClass, a, VaadinUtils.getLocale());
-			final String msg2 = messageService.getEnumMessage(enumClass, b, VaadinUtils.getLocale());
-			return msg1.compareToIgnoreCase(msg2);
-		});
-
-		cb.setDataProvider(new ListDataProvider<E>(list));
-		cb.setItemCaptionGenerator(e -> messageService.getEnumMessage(enumClass, (E) e, VaadinUtils.getLocale()));
-
+		ListDataProvider<Boolean> provider = new ListDataProvider<>(Lists.newArrayList(Boolean.TRUE, Boolean.FALSE));
+		cb.setDataProvider(provider);
+		cb.setItemCaptionGenerator(
+				b -> Boolean.TRUE.equals(b) ? am.getTrueRepresentation() : am.getFalseRepresentation());
 		return cb;
+	}
+
+	private AbstractComponent constructSelectField(final AttributeModel am, final EntityModel<?> fieldEntityModel,
+			final SerializablePredicate<?> fieldFilter) {
+		AbstractComponent field = null;
+		AttributeSelectMode selectMode = search ? am.getSearchSelectMode() : am.getSelectMode();
+
+		if (search && am.isMultipleSearch()) {
+			// in case of multiple search, defer to the
+			// "constructCollectionSelect" method
+			// field = this.constructCollectionSelect(fieldEntityModel, am, fieldFilter,
+			// true, search);
+		} else if (AttributeSelectMode.COMBO.equals(selectMode)) {
+			// combo box
+			field = constructComboBox(am, fieldEntityModel, fieldFilter, search);
+		} else if (AttributeSelectMode.LOOKUP.equals(selectMode)) {
+			// single select lookup field
+			// field = constructLookupField(fieldEntityModel, am, fieldFilter, search,
+			// false);
+		} else {
+			// list select (single select)
+			// field = this.constructCollectionSelect(fieldEntityModel, am, fieldFilter,
+			// false, search);
+		}
+		return field;
+	}
+
+	@SuppressWarnings("unchecked")
+	private SortOrder<String>[] constructSortOrder(final EntityModel<?> entityModel) {
+		final SortOrder<String>[] sos = new SortOrder[entityModel.getSortOrder().size()];
+		int i = 0;
+		for (final AttributeModel am : entityModel.getSortOrder().keySet()) {
+			sos[i++] = new SortOrder<>(am.getName(),
+					entityModel.getSortOrder().get(am) ? SortDirection.ASCENDING : SortDirection.DESCENDING);
+		}
+		return sos;
 	}
 
 	private void postProcessField(final AbstractComponent field, final AttributeModel am) {
@@ -251,6 +330,23 @@ public class FieldFactoryImpl<T> implements FieldFactory {
 			}
 		}
 
+		if (field instanceof AbstractField) {
+			AbstractField<?> af = (AbstractField<?>) field;
+			af.setRequiredIndicatorVisible(search ? am.isRequiredForSearching() : am.isRequired());
+		}
+
+	}
+
+	private EntityModel<?> resolveEntityModel(EntityModel<?> entityModel, final AttributeModel am, Boolean search) {
+		if (entityModel == null) {
+			if (!Boolean.TRUE.equals(search) && am.getNestedEntityModel() != null) {
+				entityModel = am.getNestedEntityModel();
+			} else {
+				final Class<?> type = am.getNormalizedType();
+				entityModel = serviceLocator.getEntityModelFactory().getModel(type.asSubclass(AbstractEntity.class));
+			}
+		}
+		return entityModel;
 	}
 
 	/**
@@ -259,7 +355,7 @@ public class FieldFactoryImpl<T> implements FieldFactory {
 	 * @param textField the text field
 	 * @param am        the attribute model
 	 */
-	protected void setConverters(final AbstractTextField textField, final AttributeModel am) {
+	private void setConverters(final AbstractTextField textField, final AttributeModel am) {
 		Binder<T> binder = new Binder<>();
 		if (am.getType().equals(BigDecimal.class)) {
 			binder.forField(textField)
@@ -273,22 +369,6 @@ public class FieldFactoryImpl<T> implements FieldFactory {
 			binder.forField(textField).withConverter(ConverterFactory
 					.createLongConverter(SystemPropertyUtils.useThousandsGroupingInEditMode(), am.isPercentage()));
 		}
-	}
-
-	/**
-	 * Constructs a combo box for filtering on a boolean
-	 * 
-	 * @param am
-	 * @return
-	 */
-	public ComboBox<Boolean> constructSearchBooleanComboBox(final AttributeModel am) {
-		final ComboBox<Boolean> cb = new ComboBox<Boolean>();
-
-		ListDataProvider<Boolean> provider = new ListDataProvider<>(Lists.newArrayList(Boolean.TRUE, Boolean.FALSE));
-		cb.setDataProvider(provider);
-		cb.setItemCaptionGenerator(
-				b -> Boolean.TRUE.equals(b) ? am.getTrueRepresentation() : am.getFalseRepresentation());
-		return cb;
 	}
 
 }

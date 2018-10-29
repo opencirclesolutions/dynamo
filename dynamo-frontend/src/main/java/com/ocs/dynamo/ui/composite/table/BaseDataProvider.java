@@ -40,10 +40,11 @@ public abstract class BaseDataProvider<ID extends Serializable, T extends Abstra
 	private EntityModelFactory entityModelFactory = ServiceLocatorFactory.getServiceLocator().getEntityModelFactory();
 
 	/**
+	 * Constructor
 	 * 
-	 * @param service
-	 * @param entityModel
-	 * @param joins
+	 * @param service     the service used for retrieving data from the database
+	 * @param entityModel the entity model
+	 * @param joins       the join data to use
 	 */
 	public BaseDataProvider(BaseService<ID, T> service, EntityModel<T> entityModel, FetchJoinInformation... joins) {
 		this.service = service;
@@ -51,6 +52,12 @@ public abstract class BaseDataProvider<ID extends Serializable, T extends Abstra
 		this.joins = joins;
 	}
 
+	/**
+	 * Creates sort orders based on the Vaadin query
+	 * 
+	 * @param query the vaadin query
+	 * @return
+	 */
 	protected SortOrders createSortOrder(Query<T, SerializablePredicate<T>> query) {
 		List<QuerySortOrder> orders = query.getSortOrders();
 		SortOrders so = new SortOrders();
