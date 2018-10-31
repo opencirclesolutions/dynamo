@@ -30,7 +30,7 @@ public class IntToDoubleConverter implements Converter<Double, Integer> {
 	@Override
 	public Result<Integer> convertToModel(Double value, ValueContext context) {
 		if (value == null) {
-			return null;
+			return Result.ok(null);
 		}
 		return Result.ok(value.intValue());
 	}

@@ -48,7 +48,8 @@ public class PercentageBigDecimalConverterTest {
 				result.getOrThrow(r -> new OCSRuntimeException()));
 
 		// null check
-		Assert.assertNull(converter.convertToModel(null, new ValueContext(new Locale("nl"))));
+		Assert.assertNull(converter.convertToModel(null, new ValueContext(new Locale("nl")))
+				.getOrThrow(r -> new OCSRuntimeException()));
 	}
 
 	/**

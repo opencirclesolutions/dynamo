@@ -23,12 +23,14 @@ import com.google.common.collect.Lists;
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
+import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.exception.OCSValidationException;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.composite.form.AbstractModelBasedSearchForm;
+import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
 import com.ocs.dynamo.ui.composite.table.ServiceBasedGridWrapper;
 import com.ocs.dynamo.ui.composite.type.ScreenMode;
 import com.ocs.dynamo.ui.container.QueryType;
@@ -37,14 +39,15 @@ import com.vaadin.data.provider.DataProvider;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.Resource;
 import com.vaadin.server.SerializablePredicate;
+import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.Grid.SelectionMode;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Grid.SelectionMode;
 
 /**
  * Base class for search layouts. A search layout consists of a search form with
@@ -85,7 +88,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	/**
 	 * The edit form for editing a single object
 	 */
-	// private ModelBasedEditForm<ID, T> editForm;
+	private ModelBasedEditForm<ID, T> editForm;
 
 	/**
 	 * The main layout (in edit mode)
@@ -374,112 +377,112 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	 * @param options the form options
 	 */
 	protected void buildEditForm(T entity, FormOptions options) {
-//		editForm = new ModelBasedEditForm<ID, T>(entity, getService(), getEntityModel(), options, getFieldFilters()) {
-//
-//			private static final long serialVersionUID = 6485097089659928131L;
-//
-//			@Override
-//			protected void afterEditDone(boolean cancel, boolean newObject, T entity) {
-//				if (getFormOptions().isOpenInViewMode()) {
-//					if (newObject) {
-//						back();
-//					} else {
-//						// if details screen opens in view mode, simply switch
-//						// to view mode
-//						setViewMode(true);
-//						detailsMode(entity);
-//					}
-//				} else {
-//					// otherwise go back to the main screen
-//					if (cancel || newObject
-//							|| (!getFormOptions().isShowNextButton() && !getFormOptions().isShowPrevButton())) {
-//						back();
-//					}
-//				}
-//			}
-//
-//			@Override
-//			protected void afterEntitySet(T entity) {
-//				AbstractSearchLayout.this.afterEntitySet(entity);
-//			}
-//
-//			@Override
-//			protected void afterModeChanged(boolean viewMode) {
-//				AbstractSearchLayout.this.afterModeChanged(viewMode, editForm);
-//			}
-//
-//			@Override
-//			protected void afterTabSelected(int tabIndex) {
-//				AbstractSearchLayout.this.afterTabSelected(tabIndex);
-//			}
-//
-//			@Override
-//			protected void back() {
-//				searchMode();
-//			}
-//
-//			@Override
-//			protected Field<?> constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel,
-//					boolean viewMode) {
-//				return AbstractSearchLayout.this.constructCustomField(entityModel, attributeModel, viewMode, false);
-//			}
-//
-//			@Override
-//			protected T getNextEntity(T current) {
-//				return AbstractSearchLayout.this.getNextEntity(current);
-//			}
-//
-//			@Override
-//			protected String getParentGroup(String childGroup) {
-//				return AbstractSearchLayout.this.getParentGroup(childGroup);
-//			}
-//
-//			@Override
-//			protected String[] getParentGroupHeaders() {
-//				return AbstractSearchLayout.this.getParentGroupHeaders();
-//			}
-//
-//			@Override
-//			protected T getPrevEntity(T current) {
-//				return AbstractSearchLayout.this.getPrevEntity(current);
-//			}
-//
-//			@Override
-//			protected boolean handleCustomException(RuntimeException ex) {
-//				return AbstractSearchLayout.this.handleCustomException(ex);
-//			}
-//
-//			@Override
-//			protected boolean hasNextEntity(T current) {
-//				return AbstractSearchLayout.this.hasNextEntity(current);
-//			}
-//
-//			@Override
-//			protected boolean hasPrevEntity(T current) {
-//				return AbstractSearchLayout.this.hasPrevEntity(current);
-//			}
-//
-//			@Override
-//			protected boolean isEditAllowed() {
-//				return AbstractSearchLayout.this.isEditAllowed();
-//			}
-//
-//			@Override
-//			protected void postProcessButtonBar(HorizontalLayout buttonBar, boolean viewMode) {
-//				AbstractSearchLayout.this.postProcessDetailButtonBar(buttonBar, viewMode);
-//			}
-//
-//			@Override
-//			protected void postProcessEditFields() {
-//				AbstractSearchLayout.this.postProcessEditFields(editForm);
-//			}
-//
-//		};
-//		editForm.setFormTitleWidth(getFormTitleWidth());
-//		editForm.setSupportsIteration(true);
-//		editForm.setDetailJoins(getDetailJoinsFallBack());
-//		editForm.setFieldEntityModels(getFieldEntityModels());
-//		editForm.build();
+		editForm = new ModelBasedEditForm<ID, T>(entity, getService(), getEntityModel(), options, getFieldFilters()) {
+
+			private static final long serialVersionUID = 6485097089659928131L;
+
+			@Override
+			protected void afterEditDone(boolean cancel, boolean newObject, T entity) {
+				if (getFormOptions().isOpenInViewMode()) {
+					if (newObject) {
+						back();
+					} else {
+						// if details screen opens in view mode, simply switch
+						// to view mode
+						setViewMode(true);
+						detailsMode(entity);
+					}
+				} else {
+					// otherwise go back to the main screen
+					if (cancel || newObject
+							|| (!getFormOptions().isShowNextButton() && !getFormOptions().isShowPrevButton())) {
+						back();
+					}
+				}
+			}
+
+			@Override
+			protected void afterEntitySet(T entity) {
+				AbstractSearchLayout.this.afterEntitySet(entity);
+			}
+
+			@Override
+			protected void afterModeChanged(boolean viewMode) {
+				// AbstractSearchLayout.this.afterModeChanged(viewMode, editForm);
+			}
+
+			@Override
+			protected void afterTabSelected(int tabIndex) {
+				AbstractSearchLayout.this.afterTabSelected(tabIndex);
+			}
+
+			@Override
+			protected void back() {
+				searchMode();
+			}
+
+			@Override
+			protected AbstractComponent constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel,
+					boolean viewMode) {
+				return AbstractSearchLayout.this.constructCustomField(entityModel, attributeModel, viewMode, false);
+			}
+
+			@Override
+			protected T getNextEntity(T current) {
+				return AbstractSearchLayout.this.getNextEntity(current);
+			}
+
+			@Override
+			protected String getParentGroup(String childGroup) {
+				return AbstractSearchLayout.this.getParentGroup(childGroup);
+			}
+
+			@Override
+			protected String[] getParentGroupHeaders() {
+				return AbstractSearchLayout.this.getParentGroupHeaders();
+			}
+
+			@Override
+			protected T getPrevEntity(T current) {
+				return AbstractSearchLayout.this.getPrevEntity(current);
+			}
+
+			@Override
+			protected boolean handleCustomException(RuntimeException ex) {
+				return AbstractSearchLayout.this.handleCustomException(ex);
+			}
+
+			@Override
+			protected boolean hasNextEntity(T current) {
+				return AbstractSearchLayout.this.hasNextEntity(current);
+			}
+
+			@Override
+			protected boolean hasPrevEntity(T current) {
+				return AbstractSearchLayout.this.hasPrevEntity(current);
+			}
+
+			@Override
+			protected boolean isEditAllowed() {
+				return AbstractSearchLayout.this.isEditAllowed();
+			}
+
+			@Override
+			protected void postProcessButtonBar(HorizontalLayout buttonBar, boolean viewMode) {
+				AbstractSearchLayout.this.postProcessDetailButtonBar(buttonBar, viewMode);
+			}
+
+			@Override
+			protected void postProcessEditFields() {
+				// AbstractSearchLayout.this.postProcessEditFields(editForm);
+			}
+
+		};
+		editForm.setFormTitleWidth(getFormTitleWidth());
+		editForm.setSupportsIteration(true);
+		editForm.setDetailJoins(getDetailJoinsFallBack());
+		editForm.setFieldEntityModels(getFieldEntityModels());
+		editForm.build();
 	}
 
 	/**
@@ -639,12 +642,12 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	 * @param selectedTab
 	 */
 	protected void detailsMode(T entity, int selectedTab) {
-//		detailsMode(entity);
-//		if (editForm != null) {
-//			editForm.selectTab(selectedTab);
-//		} else if (getFormOptions().isComplexDetailsMode()) {
-//			tabLayout.selectTab(selectedTab);
-//		}
+		detailsMode(entity);
+		if (editForm != null) {
+			editForm.selectTab(selectedTab);
+		} else if (getFormOptions().isComplexDetailsMode()) {
+			tabLayout.selectTab(selectedTab);
+		}
 	}
 
 	/**
@@ -702,19 +705,19 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 			selectedDetailLayout = tabContainerLayout;
 		} else if (!getFormOptions().isComplexDetailsMode()) {
 			// simple edit form
-//			if (editForm == null) {
-//				buildEditForm(entity, options);
-//			} else {
-//				editForm.setViewMode(options.isOpenInViewMode());
-//				editForm.setEntity(entity);
-//				editForm.resetTab();
-//			}
-//			if (selectedDetailLayout == null) {
-//				mainEditLayout.addComponent(editForm);
-//			} else {
-//				mainEditLayout.replaceComponent(selectedDetailLayout, editForm);
-//			}
-//			selectedDetailLayout = editForm;
+			if (editForm == null) {
+				buildEditForm(entity, options);
+			} else {
+				editForm.setViewMode(options.isOpenInViewMode());
+				editForm.setEntity(entity);
+				editForm.resetTab();
+			}
+			if (selectedDetailLayout == null) {
+				mainEditLayout.addComponent(editForm);
+			} else {
+				mainEditLayout.replaceComponent(selectedDetailLayout, editForm);
+			}
+			selectedDetailLayout = editForm;
 
 		} else {
 			// complex mode, but re-use
@@ -815,9 +818,9 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 		return editButton;
 	}
 
-//	public ModelBasedEditForm<ID, T> getEditForm() {
-//		return editForm;
-//	}
+	public ModelBasedEditForm<ID, T> getEditForm() {
+		return editForm;
+	}
 
 	/**
 	 * 
@@ -989,9 +992,9 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	 * @param propertyName the name of the property for which to refresh the label
 	 */
 	public void refreshLabel(String propertyName) {
-//		if (editForm != null) {
-//			editForm.refreshLabel(propertyName);
-//		}
+		if (editForm != null) {
+			editForm.refreshLabel(propertyName);
+		}
 	}
 
 	/**
@@ -1030,7 +1033,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	public void search() {
 		boolean searched = searchForm.search();
 		if (searched) {
-			getGridWrapper().getGrid().select(null);
+			getGridWrapper().getGrid().deselectAll();
 			setSelectedItem(null);
 		}
 	}
