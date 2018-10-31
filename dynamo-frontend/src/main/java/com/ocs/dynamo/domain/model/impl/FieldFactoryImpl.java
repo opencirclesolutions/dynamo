@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -42,6 +41,7 @@ import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.AbstractTextField;
+import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.DateTimeField;
@@ -244,6 +244,8 @@ public class FieldFactoryImpl<T> implements FieldFactory {
 			field = new TextArea();
 		} else if (Enum.class.isAssignableFrom(am.getType())) {
 			field = constructEnumComboBox(am.getType().asSubclass(Enum.class));
+		} else if (Boolean.class.equals(am.getType()) || boolean.class.equals(am.getType())) {
+			field = new CheckBox();
 		} else if (am.isWeek()) {
 			// special case - week field in a table
 			field = new TextField();

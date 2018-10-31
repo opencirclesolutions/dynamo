@@ -117,7 +117,7 @@
 		<poi.version>3.13</poi.version>
 		<opencsv.version>2.3</opencsv.version>
 		<javax.servlet.api.version>4.0.0</javax.servlet.api.version>
-		<javax.validation.api.version>2.0.1.FINAL</javax.validation.api.version>
+		<javax.validation.api.version>2.0.1.Final</javax.validation.api.version>
 		<xlsx-streamer.version>0.2.9</xlsx-streamer.version>
 		<junit-addons.version>1.4</junit-addons.version>
 		<aspectj.version>1.6.12</aspectj.version>
