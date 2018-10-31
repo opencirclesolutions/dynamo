@@ -27,6 +27,7 @@ import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.service.ServiceLocator;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.component.EntityComboBox.SelectMode;
+import com.ocs.dynamo.ui.component.EntityLookupField;
 import com.ocs.dynamo.ui.component.QuickAddEntityComboBox;
 import com.ocs.dynamo.ui.converter.ConverterFactory;
 import com.ocs.dynamo.ui.converter.LocalDateWeekCodeConverter;
@@ -155,6 +156,48 @@ public class FieldFactoryImpl<T> implements FieldFactory {
 				(SerializablePredicate<S>) fieldFilter, search, null, sos);
 	}
 
+	/**
+	 * Constructs a field for selecting multiple values from a collection
+	 * 
+	 * @param am               the attribute model
+	 * @param fieldEntityModel the entity model
+	 * @param fieldFilter      the field filter to apply
+	 * @param search           whether the field is in search mode
+	 * @param multipleSelect   whether multiple select is allowed
+	 * @return
+	 */
+	private <ID extends Serializable, S extends AbstractEntity<ID>> AbstractField<?> constructCollectionSelect(
+			AttributeModel am, EntityModel<?> fieldEntityModel, SerializablePredicate<?> fieldFilter, boolean search,
+			boolean multipleSelect) {
+		final EntityModel<?> em = resolveEntityModel(fieldEntityModel, am, search);
+
+		final BaseService<ID, S> service = (BaseService<ID, S>) serviceLocator.getServiceForEntity(em.getEntityClass());
+		final SortOrder<?>[] sos = constructSortOrder(em);
+
+		// mode depends on whether we are searching
+		final AttributeSelectMode mode = search ? am.getSearchSelectMode() : am.getSelectMode();
+
+		if (AttributeSelectMode.LOOKUP.equals(mode)) {
+			// lookup field
+			return constructLookupField(am, fieldEntityModel, fieldFilter, search, true);
+		} else if (AttributeSelectMode.FANCY_LIST.equals(mode)) {
+			// fancy list select
+//			FancyListSelect<ID, S> listSelect = new FancyListSelect<ID, S>(service, (EntityModel<S>) em, attributeModel,
+//					fieldFilter, search, sos);
+//			listSelect.setRows(SystemPropertyUtils.getDefaultListSelectRows());
+//			return listSelect;
+		} else if (AttributeSelectMode.LIST.equals(mode)) {
+			// simple list select if everything else fails or is not applicable
+//			return new QuickAddListSelect<>((EntityModel<S>) em, attributeModel, service, fieldFilter, multipleSelect,
+//					SystemPropertyUtils.getDefaultListSelectRows(), sos);
+		} else {
+			// by default, use a token field
+			// return new TokenFieldSelect<ID, S>((EntityModel<S>) em, attributeModel,
+			// service, fieldFilter, search, sos);
+		}
+		return null;
+	}
+
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private <E extends Enum> ComboBox constructEnumComboBox(final Class<E> enumClass) {
 		ComboBox cb = new ComboBox<>();
@@ -190,10 +233,12 @@ public class FieldFactoryImpl<T> implements FieldFactory {
 				&& (!am.isUrl() && !AttributeType.DETAIL.equals(am.getAttributeType())) && !search) {
 			return null;
 		}
+		
+		SerializablePredicate<?> fieldFilter = fieldFilters.get(am.getPath());
 
 		if (AbstractEntity.class.isAssignableFrom(am.getType())) {
 			// lookup or combo field for an entity
-			field = constructSelectField(am, fieldEntityModel, null);
+			field = constructSelect(am, fieldEntityModel, fieldFilter);
 		} else if (AttributeTextFieldMode.TEXTAREA.equals(am.getTextFieldMode()) && !search) {
 			field = new TextArea();
 		} else if (Enum.class.isAssignableFrom(am.getType())) {
@@ -247,6 +292,26 @@ public class FieldFactoryImpl<T> implements FieldFactory {
 		return null;
 	}
 
+	@SuppressWarnings("unchecked")
+	private <ID extends Serializable, S extends AbstractEntity<ID>> EntityLookupField<ID, S> constructLookupField(
+			AttributeModel am, EntityModel<?> overruled, SerializablePredicate<?> fieldFilter, boolean search,
+			boolean multiSelect) {
+
+		// for a lookup field, don't use the nested model but the base model -
+		// this is
+		// because the search in the pop-up screen is conducted on a "clean",
+		// unnested entity list so
+		// using a path from the parent entity makes no sense here
+		final EntityModel<?> entityModel = overruled != null ? overruled
+				: serviceLocator.getEntityModelFactory().getModel(am.getNormalizedType());
+		final BaseService<ID, S> service = (BaseService<ID, S>) serviceLocator
+				.getServiceForEntity(am.getMemberType() != null ? am.getMemberType() : entityModel.getEntityClass());
+		final SortOrder<?>[] sos = constructSortOrder(entityModel);
+		return new EntityLookupField<ID, S>(service, (EntityModel<S>) entityModel, am,
+				(SerializablePredicate<S>) fieldFilter, search, multiSelect,
+				sos.length == 0 ? null : Lists.newArrayList(sos));
+	}
+
 	/**
 	 * Constructs a combo box for filtering on a boolean
 	 * 
@@ -263,7 +328,7 @@ public class FieldFactoryImpl<T> implements FieldFactory {
 		return cb;
 	}
 
-	private AbstractComponent constructSelectField(final AttributeModel am, final EntityModel<?> fieldEntityModel,
+	private AbstractComponent constructSelect(final AttributeModel am, final EntityModel<?> fieldEntityModel,
 			final SerializablePredicate<?> fieldFilter) {
 		AbstractComponent field = null;
 		AttributeSelectMode selectMode = search ? am.getSearchSelectMode() : am.getSelectMode();
@@ -271,15 +336,13 @@ public class FieldFactoryImpl<T> implements FieldFactory {
 		if (search && am.isMultipleSearch()) {
 			// in case of multiple search, defer to the
 			// "constructCollectionSelect" method
-			// field = this.constructCollectionSelect(fieldEntityModel, am, fieldFilter,
-			// true, search);
+			field = this.constructCollectionSelect(am, fieldEntityModel, fieldFilter, search, true);
 		} else if (AttributeSelectMode.COMBO.equals(selectMode)) {
 			// combo box
 			field = constructComboBox(am, fieldEntityModel, fieldFilter, search);
 		} else if (AttributeSelectMode.LOOKUP.equals(selectMode)) {
 			// single select lookup field
-			// field = constructLookupField(fieldEntityModel, am, fieldFilter, search,
-			// false);
+			field = constructLookupField(am, fieldEntityModel, fieldFilter, search, false);
 		} else {
 			// list select (single select)
 			// field = this.constructCollectionSelect(fieldEntityModel, am, fieldFilter,

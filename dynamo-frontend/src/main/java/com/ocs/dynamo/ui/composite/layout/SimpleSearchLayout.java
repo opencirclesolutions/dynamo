@@ -100,7 +100,8 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 			}
 
 			@Override
-			protected AbstractComponent constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel) {
+			protected AbstractComponent constructCustomField(EntityModel<T> entityModel,
+					AttributeModel attributeModel) {
 				return SimpleSearchLayout.this.constructCustomField(entityModel, attributeModel, false, true);
 			}
 
@@ -144,7 +145,7 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 	}
 
 	/**
-	 * Sets a certain search value
+	 * Sets a certain search value (for a property with a single value to search on)
 	 * 
 	 * @param propertyId the property to search for
 	 * @param value      the desired value

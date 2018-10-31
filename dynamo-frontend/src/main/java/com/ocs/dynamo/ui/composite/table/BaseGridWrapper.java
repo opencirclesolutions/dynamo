@@ -173,6 +173,18 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 		return entityModel;
 	}
 
+	/**
+	 * Lazily construct and return the grid
+	 * 
+	 * @return
+	 */
+	public Grid<T> getGrid() {
+		if (grid == null) {
+			grid = constructGrid();
+		}
+		return grid;
+	}
+
 	public FetchJoinInformation[] getJoins() {
 		return joins;
 	}
@@ -205,21 +217,9 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 	}
 
 	/**
-	 * Lazily construct and return the grid
-	 * 
-	 * @return
-	 */
-	public Grid<T> getGrid() {
-		if (grid == null) {
-			grid = constructGrid();
-		}
-		return grid;
-	}
-
-	/**
 	 * Initializes the sorting and filtering for the grid
 	 */
-	public void initSortingAndFiltering() {
+	protected void initSortingAndFiltering() {
 		if (getSortOrders() != null && !getSortOrders().isEmpty()) {
 			GridSortOrderBuilder<T> builder = new GridSortOrderBuilder<>();
 			for (SortOrder<?> o : getSortOrders()) {
@@ -257,19 +257,19 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 	 */
 	public abstract void reloadDataProvider();
 
-	public void setJoins(FetchJoinInformation[] joins) {
-		this.joins = joins;
-	}
-
-	public void setSortOrders(List<SortOrder<?>> sortOrders) {
-		this.sortOrders = sortOrders;
+	public void setDataProvider(DataProvider<T, SerializablePredicate<T>> dataProvider) {
+		this.dataProvider = dataProvider;
 	}
 
 	protected void setGrid(Grid<T> grid) {
 		this.grid = grid;
 	}
 
-	public void setDataProvider(DataProvider<T, SerializablePredicate<T>> dataProvider) {
-		this.dataProvider = dataProvider;
+	public void setJoins(FetchJoinInformation[] joins) {
+		this.joins = joins;
+	}
+
+	public void setSortOrders(List<SortOrder<?>> sortOrders) {
+		this.sortOrders = sortOrders;
 	}
 }

@@ -27,6 +27,7 @@ import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
+import com.ocs.dynamo.ui.composite.dialog.ModelBasedSearchDialog;
 import com.ocs.dynamo.ui.utils.EntityModelUtil;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.util.SystemPropertyUtils;
@@ -52,6 +53,9 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 
 	private static final long serialVersionUID = 5377765863515463622L;
 
+	/**
+	 * 
+	 */
 	private boolean directNavigationAllowed;
 
 	/**
@@ -100,6 +104,11 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 	private List<SortOrder<?>> sortOrders = new ArrayList<>();
 
 	/**
+	 * The current value of the component. This can either be a single item or a set
+	 */
+	private Object value;
+
+	/**
 	 * Constructor
 	 *
 	 * @param service        the service used to query the database
@@ -109,7 +118,7 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 	 * @param search         whether the component is used in a search screen
 	 * @param sortOrders     the sort order
 	 * @param joins          the joins to use when fetching data when filling the
-	 *                       popop dialog
+	 *                       pop-up dialog
 	 */
 	public EntityLookupField(BaseService<ID, T> service, EntityModel<T> entityModel, AttributeModel attributeModel,
 			SerializablePredicate<T> filter, boolean search, boolean multiSelect, List<SortOrder<?>> sortOrders,
@@ -121,6 +130,14 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 		this.clearAllowed = true;
 		this.addAllowed = !search && (attributeModel != null && attributeModel.isQuickAddAllowed());
 		this.directNavigationAllowed = !search && (attributeModel != null && attributeModel.isDirectNavigation());
+	}
+
+	/**
+	 * 
+	 * @param fetchJoinInformation
+	 */
+	public void addFetchJoinInformation(FetchJoinInformation... fetchJoinInformation) {
+		joins = (FetchJoinInformation[]) ArrayUtils.addAll(joins, fetchJoinInformation);
 	}
 
 	/**
@@ -150,8 +167,44 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 		}
 	}
 
+	@Override
+	protected void doSetValue(Object value) {
+		this.value = value;
+		updateLabel(value);
+	}
+
 	public Button getClearButton() {
 		return clearButton;
+	}
+
+	protected FetchJoinInformation[] getJoins() {
+		return joins;
+	}
+
+	/**
+	 * Gets the value that must be displayed on the label that shows which items are
+	 * currently selected
+	 * 
+	 * @param newValue
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	protected String getLabel(Object newValue) {
+		String caption = getMessageService().getMessage("ocs.no.item.selected", VaadinUtils.getLocale());
+		if (newValue instanceof Collection<?>) {
+			Collection<T> col = (Collection<T>) newValue;
+			if (!col.isEmpty()) {
+				caption = EntityModelUtil.getDisplayPropertyValue(col, getEntityModel(),
+						SystemPropertyUtils.getLookupFieldMaxItems(), getMessageService());
+			}
+		} else {
+			// just a single value
+			T t = (T) newValue;
+			if (newValue != null) {
+				caption = EntityModelUtil.getDisplayPropertyValue(t, getEntityModel());
+			}
+		}
+		return caption;
 	}
 
 	public Integer getPageLength() {
@@ -166,28 +219,9 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 		return Collections.unmodifiableList(sortOrders);
 	}
 
-	protected boolean isDirectNavigationAllowed() {
-		return directNavigationAllowed;
-	}
-
-	protected void setDirectNavigationAllowed(boolean directNavigationAllowed) {
-		this.directNavigationAllowed = directNavigationAllowed;
-	}
-
-	protected boolean isClearAllowed() {
-		return clearAllowed;
-	}
-
-	protected void setClearAllowed(boolean clearAllowed) {
-		this.clearAllowed = clearAllowed;
-	}
-
-	protected boolean isAddAllowed() {
-		return addAllowed;
-	}
-
-	protected void setAddAllowed(boolean addAllowed) {
-		this.addAllowed = addAllowed;
+	@Override
+	public Object getValue() {
+		return value;
 	}
 
 	@Override
@@ -214,38 +248,26 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 				filterList.add(getAdditionalFilter());
 			}
 
-//			ModelBasedSearchDialog<ID, T> dialog = new ModelBasedSearchDialog<ID, T>(getService(), getEntityModel(),
-//					filterList, sortOrders, multiSelect, true, getJoins()) {
-//
-//				private static final long serialVersionUID = -3432107069929941520L;
-//
-//				@Override
-//
-//				protected boolean doClose() {
-//					if (multiSelect) {
-//						if (getValue() == null) {
-//							setValue(getSelectedItems());
-//						} else {
-//							// get current value
-//							Collection<T> current = (Collection<T>) EntityLookupField.this.getValue();
-//							// add new values
-//							for (T t : getSelectedItems()) {
-//								if (!current.contains(t)) {
-//									current.add(t);
-//								}
-//							}
-//							EntityLookupField.this.setValue(current);
-//						}
-//					} else {
-//						// single value select
-//						setValue(getSelectedItem());
-//					}
-//					return true;
-//				}
-//			};
-//			dialog.setPageLength(pageLength);
-//			dialog.build();
-//			getUi().addWindow(dialog);
+			ModelBasedSearchDialog<ID, T> dialog = new ModelBasedSearchDialog<ID, T>(getService(), getEntityModel(),
+					filterList, sortOrders, multiSelect, true, getJoins()) {
+
+				private static final long serialVersionUID = -3432107069929941520L;
+
+				@Override
+				protected boolean doClose() {
+					if (multiSelect) {
+						EntityLookupField.this.setValue(getSelectedItems());
+					} else {
+						// single value select
+						EntityLookupField.this.setValue(getSelectedItem());
+					}
+					return true;
+				}
+			};
+			dialog.setPageLength(pageLength);
+			dialog.build();
+			selectValuesInDialog(dialog);
+			getUi().addWindow(dialog);
 		});
 		bar.addComponent(selectButton);
 
@@ -262,6 +284,8 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 			Button addButton = constructAddButton();
 			bar.addComponent(addButton);
 		}
+
+		// direct navigation link
 		if (directNavigationAllowed) {
 			Button directNavigationButton = constructDirectNavigationButton();
 			bar.addComponent(directNavigationButton);
@@ -269,22 +293,54 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 		return bar;
 	}
 
+	protected boolean isAddAllowed() {
+		return addAllowed;
+	}
+
+	protected boolean isClearAllowed() {
+		return clearAllowed;
+	}
+
+	protected boolean isDirectNavigationAllowed() {
+		return directNavigationAllowed;
+	}
+
+	@Override
+	public void refresh(SerializablePredicate<T> filter) {
+		setFilter(filter);
+	}
+
 	/**
 	 * Makes sure any currently selected values are highlighted in the search dialog
 	 *
 	 * @param dialog the dialog
 	 */
-//	public void selectValuesInDialog(ModelBasedSearchDialog<ID, T> dialog) {
-//		// select any previously selected values in the dialog
-//		if (multiSelect && getValue() != null && getValue() instanceof Collection) {
-//			List<ID> ids = new ArrayList<>();
-//			Collection<T> col = (Collection<T>) getValue();
-//			for (T t : col) {
-//				ids.add(t.getId());
-//			}
-//			dialog.select(ids);
-//		}
-//	}
+	@SuppressWarnings("unchecked")
+	public void selectValuesInDialog(ModelBasedSearchDialog<ID, T> dialog) {
+		// select any previously selected values in the dialog
+		if (multiSelect && getValue() != null && getValue() instanceof Collection) {
+			Collection<T> col = (Collection<T>) getValue();
+			dialog.select(col);
+		}
+	}
+
+	protected void setAddAllowed(boolean addAllowed) {
+		this.addAllowed = addAllowed;
+	}
+
+	@Override
+	public void setAdditionalFilter(SerializablePredicate<T> additionalFilter) {
+		setValue(null);
+		super.setAdditionalFilter(additionalFilter);
+	}
+
+	protected void setClearAllowed(boolean clearAllowed) {
+		this.clearAllowed = clearAllowed;
+	}
+
+	protected void setDirectNavigationAllowed(boolean directNavigationAllowed) {
+		this.directNavigationAllowed = directNavigationAllowed;
+	}
 
 	@Override
 	public void setEnabled(boolean enabled) {
@@ -300,19 +356,14 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 		}
 	}
 
-	@Override
-	protected void doSetValue(Object value) {
-		updateLabel(value);
-	}
-
 	public void setPageLength(Integer pageLength) {
 		this.pageLength = pageLength;
 	}
 
 	@Override
-	public void setValue(Object newFieldValue) {
-		super.setValue(newFieldValue);
-		updateLabel(newFieldValue);
+	public void setValue(Object value) {
+		super.setValue(value);
+		updateLabel(value);
 	}
 
 	/**
@@ -326,49 +377,6 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 			String caption = getLabel(newValue);
 			label.setCaption(caption.replaceAll(",", StringUtils.HTML_LINE_BREAK));
 		}
-	}
-
-	@SuppressWarnings("unchecked")
-	protected String getLabel(Object newValue) {
-		String caption = getMessageService().getMessage("ocs.no.item.selected", VaadinUtils.getLocale());
-		if (newValue instanceof Collection<?>) {
-			Collection<T> col = (Collection<T>) newValue;
-			if (!col.isEmpty()) {
-				caption = EntityModelUtil.getDisplayPropertyValue(col, getEntityModel(),
-						SystemPropertyUtils.getLookupFieldMaxItems(), getMessageService());
-			}
-		} else {
-			// just a single value
-			T t = (T) newValue;
-			if (newValue != null) {
-				caption = EntityModelUtil.getDisplayPropertyValue(t, getEntityModel());
-			}
-		}
-		return caption;
-	}
-
-	@Override
-	public void refresh(SerializablePredicate<T> filter) {
-		setFilter(filter);
-	}
-
-	@Override
-	public void setAdditionalFilter(SerializablePredicate<T> additionalFilter) {
-		setValue(null);
-		super.setAdditionalFilter(additionalFilter);
-	}
-
-	protected FetchJoinInformation[] getJoins() {
-		return joins;
-	}
-
-	public void addFetchJoinInformation(FetchJoinInformation... fetchJoinInformation) {
-		joins = (FetchJoinInformation[]) ArrayUtils.addAll(joins, fetchJoinInformation);
-	}
-
-	@Override
-	public Object getValue() {
-		return null;
 	}
 
 }

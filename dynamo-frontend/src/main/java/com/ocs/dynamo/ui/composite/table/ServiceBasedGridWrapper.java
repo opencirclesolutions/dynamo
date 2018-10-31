@@ -88,10 +88,10 @@ public class ServiceBasedGridWrapper<ID extends Serializable, T extends Abstract
 	}
 
 	@Override
-	public void initSortingAndFiltering() {
-		// set the filter (using the getQueryView() to prevent a useless query)
-		// ((ServiceContainer<ID, T>) getContainer()).getQueryView().addFilter(filter);
+	protected void initSortingAndFiltering() {
 		super.initSortingAndFiltering();
+		// sets the initial filter
+		getGrid().getDataCommunicator().setDataProvider(getDataProvider(), filter);
 	}
 
 	@Override

@@ -44,6 +44,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Grid.SelectionMode;
 
 /**
  * Base class for search layouts. A search layout consists of a search form with
@@ -567,11 +568,11 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 		// construct table and set properties
 		// getGridWrapper().getGrid().setPageLength(getPageLength());
 		// getGridWrapper().getGrid().setSortEnabled(isSortEnabled());
-		// getGridWrapper().getGrid().setMultiSelect(isMultiSelect());
+		getGridWrapper().getGrid().setSelectionMode(isMultiSelect() ? SelectionMode.MULTI : SelectionMode.SINGLE);
 
 		// add a listener to respond to the selection of an item
 		getGridWrapper().getGrid().addSelectionListener(e -> {
-			// select(getGridWrapper().getGrid().getSelectedItems());
+			select(getGridWrapper().getGrid().getSelectedItems());
 			checkButtonState(getSelectedItem());
 		});
 
@@ -580,7 +581,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 		if (!getFormOptions().isPopup() && getFormOptions().isDoubleClickSelectAllowed()) {
 			getGridWrapper().getGrid().addItemClickListener(event -> {
 				if (event.getMouseEventDetails().isDoubleClick()) {
-					// select(event.getItem().getItemProperty(DynamoConstants.ID).getValue());
+					select(event.getItem());
 					doEdit();
 				}
 			});
@@ -1057,21 +1058,21 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 
 				Collection<?> col = (Collection<?>) selectedItems;
 				if (col.size() == 1) {
-					ID id = (ID) col.iterator().next();
-					setSelectedItem(getService().fetchById(id, getDetailJoinsFallBack()));
+					T t = (T) col.iterator().next();
+					setSelectedItem(getService().fetchById(t.getId(), getDetailJoinsFallBack()));
 					this.selectedItems = Lists.newArrayList(getSelectedItem());
 				} else if (col.size() > 1) {
 					// deal with the selection of multiple items
 					List<ID> ids = Lists.newArrayList();
 					for (Object c : col) {
-						ids.add((ID) c);
+						ids.add(((T) c).getId());
 					}
 					this.selectedItems = getService().fetchByIds(ids, getDetailJoinsFallBack());
 				}
 			} else {
 				// single item has been selected
-				ID id = (ID) selectedItems;
-				setSelectedItem(getService().fetchById(id, getDetailJoinsFallBack()));
+				T t = (T) selectedItems;
+				setSelectedItem(getService().fetchById(t.getId(), getDetailJoinsFallBack()));
 			}
 		} else {
 			setSelectedItem(null);
