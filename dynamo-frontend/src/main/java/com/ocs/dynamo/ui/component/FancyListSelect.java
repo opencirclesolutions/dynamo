@@ -24,6 +24,7 @@ import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.data.provider.SortOrder;
 import com.vaadin.server.SerializablePredicate;
+import com.vaadin.shared.Registration;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
@@ -32,6 +33,7 @@ import com.vaadin.ui.VerticalLayout;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Set;
 
 /**
  * A ListSelect component with an extra combo box for easily searching items.
@@ -44,11 +46,11 @@ import java.util.Collection;
  *            the type of the ID of the entity
  * @param <T>
  *            the type of the entity
- * @param <Object>
+ * @param Set<T>
  *            the type of the value (can be a single object or a collection)
  */
 public class FancyListSelect<ID extends Serializable, T extends AbstractEntity<ID>>
-		extends QuickAddEntityField<ID, T, Object> implements Refreshable {
+		extends QuickAddEntityField<ID, T, Set<T>> implements Refreshable {
 
 	private static final long serialVersionUID = 8129335343598146079L;
 
@@ -274,7 +276,7 @@ public class FancyListSelect<ID extends Serializable, T extends AbstractEntity<I
 	}
 
 	@Override
-	protected void doSetValue(Object value) {
+	protected void doSetValue(Set<T> value) {
 		repopulateContainer(value);
 	}
 
@@ -285,13 +287,13 @@ public class FancyListSelect<ID extends Serializable, T extends AbstractEntity<I
 	}
 
 	@Override
-	public void setValue(Object newFieldValue) {
+	public void setValue(Set<T> newFieldValue) {
 		super.setValue(newFieldValue);
 		repopulateContainer(newFieldValue);
 	}
 
 	@Override
-	public Object getValue() {
+	public Set<T> getValue() {
 		if (listSelect != null) {
 			return listSelect.getValue();
 		}
@@ -314,4 +316,11 @@ public class FancyListSelect<ID extends Serializable, T extends AbstractEntity<I
 		return dataProvider.getItems().size();
 	}
 
+	@Override
+	public Registration addValueChangeListener(final ValueChangeListener<Set<T>> listener) {
+		if (listSelect != null) {
+			return listSelect.addValueChangeListener(listener);
+		}
+		return null;
+	}
 }

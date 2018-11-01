@@ -102,9 +102,9 @@ public class FilterConverter<T> implements Converter<SerializablePredicate<T>, c
 		} else if (filter instanceof ModuloPredicate) {
 			ModuloPredicate<T> p = (ModuloPredicate<T>) filter;
 			if (p.getModExpression() != null) {
-				return new Modulo(p.getProperty(), p.getModExpression(), p.getValue());
+				result = new Modulo(p.getProperty(), p.getModExpression(), p.getValue());
 			} else {
-				return new Modulo(p.getProperty(), p.getModValue(), p.getValue());
+				result = new Modulo(p.getProperty(), p.getModValue(), p.getValue());
 			}
 		}
 

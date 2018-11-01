@@ -47,6 +47,7 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 import javax.persistence.metamodel.Attribute;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -551,7 +552,7 @@ public final class JpaQueryBuilder {
 			if (in.getValues() != null && !in.getValues().isEmpty()) {
 				Expression<?> exp = getPropertyPath(root, in.getPropertyId());
 				String parName = in.getPropertyId().replace('.', '_');
-				ParameterExpression<List> p = builder.parameter(List.class, parName);
+				ParameterExpression<Collection> p = builder.parameter(Collection.class, parName);
 				parameters.put(parName, in.getValues());
 				return exp.in(p);
 			} else {

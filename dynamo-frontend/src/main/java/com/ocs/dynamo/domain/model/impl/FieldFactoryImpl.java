@@ -1,16 +1,5 @@
 package com.ocs.dynamo.domain.model.impl;
 
-import java.io.Serializable;
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-
 import com.google.common.collect.Lists;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeDateType;
@@ -28,6 +17,7 @@ import com.ocs.dynamo.service.ServiceLocator;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.component.EntityComboBox.SelectMode;
 import com.ocs.dynamo.ui.component.EntityLookupField;
+import com.ocs.dynamo.ui.component.FancyListSelect;
 import com.ocs.dynamo.ui.component.QuickAddEntityComboBox;
 import com.ocs.dynamo.ui.converter.ConverterFactory;
 import com.ocs.dynamo.ui.converter.LocalDateWeekCodeConverter;
@@ -47,6 +37,17 @@ import com.vaadin.ui.DateField;
 import com.vaadin.ui.Slider;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
+
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 public class FieldFactoryImpl<T> implements FieldFactory {
 
@@ -182,18 +183,18 @@ public class FieldFactoryImpl<T> implements FieldFactory {
 			return constructLookupField(am, fieldEntityModel, fieldFilter, search, true);
 		} else if (AttributeSelectMode.FANCY_LIST.equals(mode)) {
 			// fancy list select
-//			FancyListSelect<ID, S> listSelect = new FancyListSelect<ID, S>(service, (EntityModel<S>) em, attributeModel,
-//					fieldFilter, search, sos);
-//			listSelect.setRows(SystemPropertyUtils.getDefaultListSelectRows());
-//			return listSelect;
+			FancyListSelect<ID, S> listSelect = new FancyListSelect<ID, S>(service, (EntityModel<S>) em, am,
+					(SerializablePredicate<S>)fieldFilter, search, sos);
+			listSelect.setRows(SystemPropertyUtils.getDefaultListSelectRows());
+			return listSelect;
 		} else if (AttributeSelectMode.LIST.equals(mode)) {
 			// simple list select if everything else fails or is not applicable
 //			return new QuickAddListSelect<>((EntityModel<S>) em, attributeModel, service, fieldFilter, multipleSelect,
 //					SystemPropertyUtils.getDefaultListSelectRows(), sos);
 		} else {
 			// by default, use a token field
-			// return new TokenFieldSelect<ID, S>((EntityModel<S>) em, attributeModel,
-			// service, fieldFilter, search, sos);
+//			 return new TokenFieldSelect<ID, S>((EntityModel<S>) em, am,
+//			 service, (SerializablePredicate<S>)fieldFilter, search, sos);
 		}
 		return null;
 	}

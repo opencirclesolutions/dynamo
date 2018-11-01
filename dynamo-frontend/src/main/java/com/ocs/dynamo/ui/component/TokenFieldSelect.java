@@ -13,10 +13,6 @@
  */
 package com.ocs.dynamo.ui.component;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-
 import com.explicatis.ext_token_field.ExtTokenField;
 import com.explicatis.ext_token_field.Tokenizable;
 import com.google.common.collect.Sets;
@@ -35,6 +31,10 @@ import com.vaadin.shared.Registration;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * A multiple select component that displays tags/tokens to indicate which
@@ -124,7 +124,7 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
 	 */
 	@SafeVarargs
 	public TokenFieldSelect(EntityModel<T> em, AttributeModel attributeModel, BaseService<ID, T> service,
-			SerializablePredicate<T> filter, boolean search, SortOrder<T>... sortOrders) {
+			SerializablePredicate<T> filter, boolean search, SortOrder<?>... sortOrders) {
 		super(service, em, attributeModel, filter);
 		extTokenField = new ExtTokenField();
 		comboBox = new EntityComboBox<>(em, attributeModel, service, filter, sortOrders);
@@ -350,13 +350,17 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
 
 	@Override
 	protected void doSetValue(Collection<T> value) {
-		// TODO Auto-generated method stub
+		if (provider != null) {
+			provider.getItems().clear();
+			if (value != null && value instanceof Collection) {
+				provider.getItems().addAll(value);
+			}
+		}
 
 	}
 
 	@Override
 	public Collection<T> getValue() {
-		// TODO Auto-generated method stub
-		return null;
+		return provider.getItems();
 	}
 }
