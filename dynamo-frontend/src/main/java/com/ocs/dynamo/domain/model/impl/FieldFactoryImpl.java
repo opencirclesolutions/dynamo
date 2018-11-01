@@ -15,6 +15,7 @@ import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.service.ServiceLocator;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
+import com.ocs.dynamo.ui.component.TimeField;
 import com.ocs.dynamo.ui.component.EntityComboBox.SelectMode;
 import com.ocs.dynamo.ui.component.EntityLookupField;
 import com.ocs.dynamo.ui.component.FancyListSelect;
@@ -43,6 +44,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -274,6 +276,9 @@ public class FieldFactoryImpl<T> implements FieldFactory {
 			DateField df = new DateField();
 			df.setDateFormat(am.getDisplayFormat());
 			field = df;
+		} else if (LocalTime.class.equals(am.getType())){
+			TimeField tf = new TimeField(am);
+			field = tf;
 		} else if (String.class.equals(am.getType()) || NumberUtils.isNumeric(am.getType())) {
 			field = new TextField();
 		}

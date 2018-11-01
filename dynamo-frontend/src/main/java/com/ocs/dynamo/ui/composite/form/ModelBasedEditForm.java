@@ -12,31 +12,6 @@
  */
 package com.ocs.dynamo.ui.composite.form;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.OutputStream;
-import java.io.Serializable;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
-
-import javax.persistence.CollectionTable;
-
-import org.apache.commons.io.FilenameUtils;
-import org.vaadin.teemu.switchui.Switch;
-
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
@@ -58,7 +33,9 @@ import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.composite.type.AttributeGroupMode;
 import com.ocs.dynamo.ui.composite.type.ScreenMode;
 import com.ocs.dynamo.ui.converter.ConverterFactory;
+import com.ocs.dynamo.ui.converter.IntToDoubleConverter;
 import com.ocs.dynamo.ui.converter.LocalDateWeekCodeConverter;
+import com.ocs.dynamo.ui.converter.LongToDoubleConverter;
 import com.ocs.dynamo.ui.utils.EntityModelUtil;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.util.SystemPropertyUtils;
@@ -88,6 +65,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.Slider;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.Upload;
@@ -95,6 +73,29 @@ import com.vaadin.ui.Upload.Receiver;
 import com.vaadin.ui.Upload.SucceededEvent;
 import com.vaadin.ui.Upload.SucceededListener;
 import com.vaadin.ui.VerticalLayout;
+import org.apache.commons.io.FilenameUtils;
+import org.vaadin.teemu.switchui.Switch;
+
+import javax.persistence.CollectionTable;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 /**
  * An edit form that is constructed based on an entity model
@@ -1084,6 +1085,14 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			} else if (NumberUtils.isLong(am.getType())) {
 				sBuilder.withConverter(ConverterFactory
 						.createLongConverter(SystemPropertyUtils.useThousandsGroupingInEditMode(), am.isPercentage()));
+			}
+		} else if (builder.getField() instanceof Slider) {
+			BindingBuilder<T, Double> sBuilder = (BindingBuilder<T, Double>) builder;
+			sBuilder.withNullRepresentation(0.0);
+			if (am.getType().equals(Integer.class)) {
+				sBuilder.withConverter(new IntToDoubleConverter());
+			} else if (am.getType().equals(Long.class)) {
+				sBuilder.withConverter(new LongToDoubleConverter());
 			}
 		}
 	}
