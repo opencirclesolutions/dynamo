@@ -46,7 +46,6 @@ import com.vaadin.ui.CustomField;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.v7.data.Validator.InvalidValueException;
 
 /**
  * A complex table component for the in-place editing of a one-to-many relation.
@@ -663,16 +662,16 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 		boolean error = false;
 		Iterator<Component> component = table.iterator();
 		while (component.hasNext()) {
-			Component next = component.next();
-			try {
-				if (next instanceof AbstractField) {
-					//((AbstractField<?>) next).validate();
-					((AbstractField<?>) next).setComponentError(null);
-				}
-			} catch (InvalidValueException ex) {
-				error = true;
-				((AbstractField<?>) next).setComponentError(new UserError(ex.getLocalizedMessage()));
-			}
+//			Component next = component.next();
+//			try {
+//				if (next instanceof AbstractField) {
+//					//((AbstractField<?>) next).validate();
+//					((AbstractField<?>) next).setComponentError(null);
+//				}
+//			} catch (InvalidValueException ex) {
+//				error = true;
+//				((AbstractField<?>) next).setComponentError(new UserError(ex.getLocalizedMessage()));
+//			}
 
 		}
 		return error;

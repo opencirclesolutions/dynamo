@@ -7,6 +7,7 @@ import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.AttributeSelectMode;
 import com.ocs.dynamo.domain.model.AttributeTextFieldMode;
 import com.ocs.dynamo.domain.model.AttributeType;
+import com.ocs.dynamo.domain.model.CheckboxMode;
 import com.ocs.dynamo.domain.model.EditableType;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.FieldFactory;
@@ -52,6 +53,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+
+import org.vaadin.teemu.switchui.Switch;
 
 public class FieldFactoryImpl<T> implements FieldFactory {
 
@@ -171,6 +174,7 @@ public class FieldFactoryImpl<T> implements FieldFactory {
 	 * @param multipleSelect   whether multiple select is allowed
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	private <ID extends Serializable, S extends AbstractEntity<ID>> AbstractField<?> constructCollectionSelect(
 			AttributeModel am, EntityModel<?> fieldEntityModel, SerializablePredicate<?> fieldFilter, boolean search,
 			boolean multipleSelect) {
@@ -188,7 +192,7 @@ public class FieldFactoryImpl<T> implements FieldFactory {
 		} else if (AttributeSelectMode.FANCY_LIST.equals(mode)) {
 			// fancy list select
 			FancyListSelect<ID, S> listSelect = new FancyListSelect<ID, S>(service, (EntityModel<S>) em, am,
-					(SerializablePredicate<S>)fieldFilter, search, sos);
+					(SerializablePredicate<S>) fieldFilter, search, sos);
 			listSelect.setRows(SystemPropertyUtils.getDefaultListSelectRows());
 			return listSelect;
 		} else if (AttributeSelectMode.LIST.equals(mode)) {
@@ -248,15 +252,20 @@ public class FieldFactoryImpl<T> implements FieldFactory {
 			field = new TextArea();
 		} else if (Enum.class.isAssignableFrom(am.getType())) {
 			field = constructEnumComboBox(am.getType().asSubclass(Enum.class));
-		} else if (Boolean.class.equals(am.getType()) || boolean.class.equals(am.getType())) {
-			field = new CheckBox();
-		} else if (am.isWeek()) {
-			// special case - week field in a table
-			field = new TextField();
 		} else if (search && (am.getType().equals(Boolean.class) || am.getType().equals(boolean.class))) {
 			// in a search screen, we need to offer the true, false, and
 			// undefined options
 			field = constructSearchBooleanComboBox(am);
+		} else if (Boolean.class.equals(am.getType()) || boolean.class.equals(am.getType())) {
+			// regular boolean (not search mode)
+			if (CheckboxMode.SWITCH.equals(am.getCheckboxMode())) {
+				field = new Switch();
+			} else {
+				field = new CheckBox();
+			}
+		} else if (am.isWeek()) {
+			// special case - week field in a table
+			field = new TextField();
 		} else if ((NumberUtils.isLong(am.getType()) || NumberUtils.isInteger(am.getType())
 				|| BigDecimal.class.equals(am.getType())) && NumberSelectMode.SLIDER.equals(am.getNumberSelectMode())) {
 			final Slider slider = new Slider(am.getDisplayName());
@@ -277,14 +286,14 @@ public class FieldFactoryImpl<T> implements FieldFactory {
 			DateField df = new DateField();
 			df.setDateFormat(am.getDisplayFormat());
 			field = df;
-		} else if (LocalTime.class.equals(am.getType())){
+		} else if (LocalTime.class.equals(am.getType())) {
 			TimeField tf = new TimeField(am);
 			field = tf;
 		} else if (String.class.equals(am.getType()) || NumberUtils.isNumeric(am.getType())) {
-			if (am.isUrl()){
+			if (am.isUrl()) {
 				final TextField textField = new TextField();
 				textField.setSizeFull();
-				field = new URLField(textField,am, false);
+				field = new URLField(textField, am, false);
 			} else {
 				field = new TextField();
 			}
@@ -421,28 +430,6 @@ public class FieldFactoryImpl<T> implements FieldFactory {
 			}
 		}
 		return entityModel;
-	}
-
-	/**
-	 * Sets the appropriate converter on a text field
-	 * 
-	 * @param textField the text field
-	 * @param am        the attribute model
-	 */
-	private void setConverters(final AbstractTextField textField, final AttributeModel am) {
-		Binder<T> binder = new Binder<>();
-		if (am.getType().equals(BigDecimal.class)) {
-			binder.forField(textField)
-					.withConverter(ConverterFactory.createBigDecimalConverter(am.isCurrency(), am.isPercentage(),
-							SystemPropertyUtils.useThousandsGroupingInEditMode(), am.getPrecision(),
-							VaadinUtils.getCurrencySymbol()));
-		} else if (NumberUtils.isInteger(am.getType())) {
-			binder.forField(textField).withConverter(ConverterFactory
-					.createIntegerConverter(SystemPropertyUtils.useThousandsGroupingInEditMode(), am.isPercentage()));
-		} else if (NumberUtils.isLong(am.getType())) {
-			binder.forField(textField).withConverter(ConverterFactory
-					.createLongConverter(SystemPropertyUtils.useThousandsGroupingInEditMode(), am.isPercentage()));
-		}
 	}
 
 }

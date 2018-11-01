@@ -24,6 +24,7 @@ import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.service.BaseService;
+import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.server.Resource;
 import com.vaadin.ui.AbstractField;
@@ -34,10 +35,8 @@ import com.vaadin.ui.Notification;
  * Base class for UI components that need/have access to a Service that can read
  * from the database
  *
- * @param <ID>
- *            type of the primary key
- * @param <T>
- *            type of the entity
+ * @param <ID> type of the primary key
+ * @param <T> type of the entity
  * @author bas.rutten
  */
 public abstract class BaseServiceCustomComponent<ID extends Serializable, T extends AbstractEntity<ID>>
@@ -114,12 +113,9 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	/**
 	 * Constructor
 	 *
-	 * @param service
-	 *            the service used to query the database
-	 * @param entityModel
-	 *            the entity model
-	 * @param formOptions
-	 *            the form options that govern how the component behaves
+	 * @param service     the service used to query the database
+	 * @param entityModel the entity model
+	 * @param formOptions the form options that govern how the component behaves
 	 */
 	public BaseServiceCustomComponent(BaseService<ID, T> service, EntityModel<T> entityModel, FormOptions formOptions) {
 		this.service = service;
@@ -132,10 +128,8 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	 * model that is used for rendering complex selection components (lookup
 	 * dialogs)
 	 *
-	 * @param path
-	 *            the path to the field
-	 * @param reference
-	 *            the unique ID of the entity model
+	 * @param path      the path to the field
+	 * @param reference the unique ID of the entity model
 	 */
 	public final void addFieldEntityModel(String path, String reference) {
 		fieldEntityModels.put(path, reference);
@@ -145,27 +139,23 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	 * Method that is called after the user selects an entity to view in Details
 	 * mode
 	 *
-	 * @param editForm
-	 *            the edit form which displays the entity
-	 * @param entity
-	 *            the selected entity
+	 * @param editForm the edit form which displays the entity
+	 * @param entity   the selected entity
 	 */
-//	protected void afterEntitySelected(ModelBasedEditForm<ID, T> editForm, T entity) {
-//		// override in subclass
-//	}
+	protected void afterEntitySelected(ModelBasedEditForm<ID, T> editForm, T entity) {
+		// override in subclass
+	}
 
 	/**
 	 * Method that is called after the mode is changed (from editable to read only
 	 * or vice versa)
 	 *
-	 * @param viewMode
-	 *            whether the component is now in view mode (after the change)
-	 * @param editForm
-	 *            the edit form
+	 * @param viewMode whether the component is now in view mode (after the change)
+	 * @param editForm the edit form
 	 */
-//	protected void afterModeChanged(boolean viewMode, ModelBasedEditForm<ID, T> editForm) {
-//		// override in subclasses
-//	}
+	protected void afterModeChanged(boolean viewMode, ModelBasedEditForm<ID, T> editForm) {
+		// override in subclasses
+	}
 
 	/**
 	 * Method that is called before saving an entity but after the validation
@@ -180,8 +170,7 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	 * Checks which buttons in the button bar must be enabled after an item has been
 	 * selected
 	 *
-	 * @param selectedItem
-	 *            the selected item
+	 * @param selectedItem the selected item
 	 */
 	protected void checkButtonState(T selectedItem) {
 		for (Button b : toUpdate) {
@@ -193,18 +182,14 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	/**
 	 * Creates a custom field - override in subclass
 	 *
-	 * @param entityModel
-	 *            the entity model of the entity to display
-	 * @param attributeModel
-	 *            the attribute model of the entity to display
-	 * @param viewMode
-	 *            indicates whether the screen is in read only mode
-	 * @param searchMode
-	 *            indicates whether the screen is in search mode
+	 * @param entityModel    the entity model of the entity to display
+	 * @param attributeModel the attribute model of the entity to display
+	 * @param viewMode       indicates whether the screen is in read only mode
+	 * @param searchMode     indicates whether the screen is in search mode
 	 * @return
 	 */
-	protected AbstractField<?> constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel, boolean viewMode,
-			boolean searchMode) {
+	protected AbstractField<?> constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel,
+			boolean viewMode, boolean searchMode) {
 		// overwrite in subclass
 		return null;
 	}
@@ -233,10 +218,8 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	 * Method that is called in order to enable/disable a button after selecting an
 	 * item table
 	 *
-	 * @param button
-	 *            the button
-	 * @param selectedItem
-	 *            the currently selected item
+	 * @param button       the button
+	 * @param selectedItem the currently selected item
 	 * @return
 	 */
 	protected boolean mustEnableButton(Button button, T selectedItem) {
@@ -249,8 +232,7 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	 * use the "mustEnableButton" callback method to impose additional constraints
 	 * on when the button must be enabled
 	 *
-	 * @param button
-	 *            the button to register
+	 * @param button the button to register
 	 */
 	public final void registerButton(Button button) {
 		if (button != null) {
@@ -262,8 +244,7 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	/**
 	 * Removes the custom field entity model for a certain attribute
 	 *
-	 * @param path
-	 *            the path to the attribute
+	 * @param path the path to the attribute
 	 */
 	public final void removeFieldEntityModel(String path) {
 		fieldEntityModels.remove(path);

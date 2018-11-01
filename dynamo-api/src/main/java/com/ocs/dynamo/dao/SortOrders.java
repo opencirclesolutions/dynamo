@@ -16,6 +16,8 @@ package com.ocs.dynamo.dao;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.builder.ReflectionToStringBuilder;
+
 /**
  * A list of SortOrder objects
  * 
@@ -94,5 +96,10 @@ public class SortOrders {
 	@Override
 	public int hashCode() {
 		return super.hashCode();
+	}
+	
+	@Override
+	public String toString() {
+		return ReflectionToStringBuilder.toString(this);
 	}
 }

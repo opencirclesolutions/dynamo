@@ -22,11 +22,12 @@ import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
+import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
 import com.ocs.dynamo.ui.composite.type.ScreenMode;
 import com.ocs.dynamo.ui.utils.FormatUtils;
 import com.vaadin.data.provider.SortOrder;
 import com.vaadin.icons.VaadinIcons;
-import com.vaadin.ui.AbstractField;
+import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
@@ -43,12 +44,9 @@ import com.vaadin.ui.VerticalLayout;
  * other or below each other
  * 
  * @author bas.rutten
- * @param <ID>
- *            type of the primary key
- * @param <T>
- *            type of the entity
+ * @param <ID> type of the primary key
+ * @param <T> type of the entity
  */
-@SuppressWarnings("serial")
 public abstract class BaseSplitLayout<ID extends Serializable, T extends AbstractEntity<ID>>
 		extends BaseCollectionLayout<ID, T> {
 
@@ -70,7 +68,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	private Layout detailLayout;
 
 	// the edit form
-	//private ModelBasedEditForm<ID, T> editForm;
+	private ModelBasedEditForm<ID, T> editForm;
 
 	// layout that is placed above the table view
 	private Component headerLayout;
@@ -91,16 +89,11 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	/**
 	 * Constructor
 	 *
-	 * @param service
-	 *            the service used to query the database
-	 * @param entityModel
-	 *            the entity model
-	 * @param formOptions
-	 *            the form options
-	 * @param sortOrder
-	 *            the sort order
-	 * @param joins
-	 *            the joins used to query the database
+	 * @param service     the service used to query the database
+	 * @param entityModel the entity model
+	 * @param formOptions the form options
+	 * @param sortOrder   the sort order
+	 * @param joins       the joins used to query the database
 	 */
 	public BaseSplitLayout(BaseService<ID, T> service, EntityModel<T> entityModel, FormOptions formOptions,
 			SortOrder<?> sortOrder, FetchJoinInformation... joins) {
@@ -154,7 +147,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 
 			// table init
 			// getTableWrapper().getGrid().setPageLength(getPageLength());
-			// getTableWrapper().getGrid().setSortEnabled(isSortEnabled());
+			disableGridSorting();
 			constructTableDividers();
 
 			// extra splitter (for horizontal mode)
@@ -234,7 +227,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 
 	/**
 	 * Constructs a header layout (displayed above the actual tabular content). By
-	 * defualt this is empty, overwrite in subclasses if you want to modify this
+	 * default this is empty, overwrite in subclasses if you want to modify this
 	 *
 	 * @return
 	 */
@@ -247,6 +240,8 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	 */
 	protected final Button constructRemoveButton() {
 		Button rb = new RemoveButton(message("ocs.remove"), null) {
+
+			private static final long serialVersionUID = 6489940330122182935L;
 
 			@Override
 			protected void doDelete() {
@@ -277,8 +272,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	/**
 	 * Fills the detail part of the screen with a custom component
 	 *
-	 * @param component
-	 *            the custom component
+	 * @param component the custom component
 	 */
 	protected void customDetailView(Component component) {
 		detailLayout.replaceComponent(selectedDetailLayout, component);
@@ -288,102 +282,102 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	/**
 	 * Shows the details of a selected entity
 	 *
-	 * @param parent
-	 *            the parent of the entity
-	 * @param entity
-	 *            the entity
+	 * @param parent the parent of the entity
+	 * @param entity the entity
 	 */
 	@Override
 	protected void detailsMode(T entity) {
 		if (detailFormLayout == null) {
 			detailFormLayout = new DefaultVerticalLayout(false, false);
 
-			// canceling is not needed in the inline view
+			// canceling is not needed in the in-line view
 			getFormOptions().setHideCancelButton(true).setPreserveSelectedTab(true);
-//			editForm = new ModelBasedEditForm<ID, T>(entity, getService(), getEntityModel(), getFormOptions(),
-//					getFieldFilters()) {
-//
-//				@Override
-//				protected void afterEditDone(boolean cancel, boolean newObject, T entity) {
-//					if (!cancel) {
-//						// update the selected item so master and detail are in sync
-//						// again
-//						reload();
-//						detailsMode(entity);
-//						afterReload(entity);
-//					} else {
-//						reload();
-//					}
-//				}
-//
-//				@Override
-//				protected void afterEntitySet(T entity) {
-//					BaseSplitLayout.this.afterEntitySet(entity);
-//				}
-//
-//				@Override
-//				protected void afterModeChanged(boolean viewMode) {
-//					BaseSplitLayout.this.afterModeChanged(viewMode, editForm);
-//				}
-//
-//				@Override
-//				protected void afterTabSelected(int tabIndex) {
-//					BaseSplitLayout.this.afterTabSelected(tabIndex);
-//				}
-//
-//				@Override
-//				protected AbstractField<?> constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel,
-//						boolean viewMode) {
-//					return BaseSplitLayout.this.constructCustomField(entityModel, attributeModel, viewMode, false);
-//				}
-//
-//				@Override
-//				protected String getParentGroup(String childGroup) {
-//					return BaseSplitLayout.this.getParentGroup(childGroup);
-//				}
-//
-//				@Override
-//				protected String[] getParentGroupHeaders() {
-//					return BaseSplitLayout.this.getParentGroupHeaders();
-//				}
-//
-//				@Override
-//				protected boolean handleCustomException(RuntimeException ex) {
-//					return BaseSplitLayout.this.handleCustomException(ex);
-//				}
-//
-//				@Override
-//				protected boolean isEditAllowed() {
-//					return BaseSplitLayout.this.isEditAllowed();
-//				}
-//
-//				@Override
-//				protected void postProcessButtonBar(HorizontalLayout buttonBar, boolean viewMode) {
-//					BaseSplitLayout.this.postProcessDetailButtonBar(buttonBar, viewMode);
-//				}
-//
-//				@Override
-//				protected void postProcessEditFields() {
-//					BaseSplitLayout.this.postProcessEditFields(editForm);
-//				}
-//
-//			};
-//
-//			editForm.setCustomSaveConsumer(customSaveConsumer);
-//			editForm.setFormTitleWidth(getFormTitleWidth());
-//			editForm.setDetailJoins(getDetailJoinsFallBack());
-//			editForm.setFieldEntityModels(getFieldEntityModels());
-//			editForm.build();
-//			detailFormLayout.addComponent(editForm);
+			editForm = new ModelBasedEditForm<ID, T>(entity, getService(), getEntityModel(), getFormOptions(),
+					getFieldFilters()) {
+
+				private static final long serialVersionUID = 6642035999999009278L;
+
+				@Override
+				protected void afterEditDone(boolean cancel, boolean newObject, T entity) {
+					if (!cancel) {
+						// update the selected item so master and detail are in sync
+						// again
+						reload();
+						detailsMode(entity);
+						afterReload(entity);
+					} else {
+						reload();
+					}
+				}
+
+				@Override
+				protected void afterEntitySet(T entity) {
+					BaseSplitLayout.this.afterEntitySet(entity);
+				}
+
+				@Override
+				protected void afterModeChanged(boolean viewMode) {
+					BaseSplitLayout.this.afterModeChanged(viewMode, editForm);
+				}
+
+				@Override
+				protected void afterTabSelected(int tabIndex) {
+					BaseSplitLayout.this.afterTabSelected(tabIndex);
+				}
+
+				@Override
+				protected AbstractComponent constructCustomField(EntityModel<T> entityModel,
+						AttributeModel attributeModel, boolean viewMode) {
+					return BaseSplitLayout.this.constructCustomField(entityModel, attributeModel, viewMode, false);
+				}
+
+				@Override
+				protected String getParentGroup(String childGroup) {
+					return BaseSplitLayout.this.getParentGroup(childGroup);
+				}
+
+				@Override
+				protected String[] getParentGroupHeaders() {
+					return BaseSplitLayout.this.getParentGroupHeaders();
+				}
+
+				@Override
+				protected boolean handleCustomException(RuntimeException ex) {
+					return BaseSplitLayout.this.handleCustomException(ex);
+				}
+
+				@Override
+				protected boolean isEditAllowed() {
+					return BaseSplitLayout.this.isEditAllowed();
+				}
+
+				@Override
+				protected void postProcessButtonBar(HorizontalLayout buttonBar, boolean viewMode) {
+					BaseSplitLayout.this.postProcessDetailButtonBar(buttonBar, viewMode);
+				}
+
+				@Override
+				protected void postProcessEditFields() {
+					BaseSplitLayout.this.postProcessEditFields(editForm);
+				}
+
+			};
+
+			editForm.setCustomSaveConsumer(customSaveConsumer);
+			editForm.setFormTitleWidth(getFormTitleWidth());
+			editForm.setDetailJoins(getDetailJoinsFallBack());
+			editForm.setFieldEntityModels(getFieldEntityModels());
+			editForm.build();
+			detailFormLayout.addComponent(editForm);
 		} else {
 			// reset the form's view mode if needed
-			//editForm.setEntity(entity);
-			//editForm.resetTab();
+			editForm.setEntity(entity);
+			editForm.resetTab();
 		}
 
 		setSelectedItem(entity);
 		checkButtonState(getSelectedItem());
-		//afterEntitySelected(editForm, entity);
+		afterEntitySelected(editForm, entity);
 
 		detailLayout.replaceComponent(selectedDetailLayout, detailFormLayout);
 		selectedDetailLayout = detailFormLayout;
@@ -397,7 +391,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	}
 
 	public void doSave() {
-		//this.editForm.doSave();
+		// this.editForm.doSave();
 	}
 
 	/**
@@ -426,9 +420,9 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 		return detailLayout;
 	}
 
-//	public ModelBasedEditForm<ID, T> getEditForm() {
-//		return editForm;
-//	}
+	public ModelBasedEditForm<ID, T> getEditForm() {
+		return editForm;
+	}
 
 	public TextField getQuickSearchField() {
 		return quickSearchField;
@@ -460,13 +454,12 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	 * Replaces the contents of a label by its current value. Use in response to an
 	 * automatic update if a field
 	 *
-	 * @param propertyName
-	 *            the name of the property for which to replace the label
+	 * @param propertyName the name of the property for which to replace the label
 	 */
 	public void refreshLabel(String propertyName) {
-//		if (editForm != null) {
-//			editForm.refreshLabel(propertyName);
-//		}
+		if (editForm != null) {
+			editForm.refreshLabel(propertyName);
+		}
 	}
 
 	/**
@@ -522,12 +515,15 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	/**
 	 * Reselects the entity
 	 *
-	 * @param t
-	 *            entity to reselect
+	 * @param t entity to reselect
 	 */
 	protected void reselect(T t) {
 		detailsMode(t);
-		//getTableWrapper().getGrid().select(t == null ? null : t.getId());
+		if (t == null) {
+			getGridWrapper().getGrid().deselectAll();
+		} else {
+			getGridWrapper().getGrid().select(t);
+		}
 	}
 
 	public void setCustomSaveConsumer(Consumer<T> customSaveConsumer) {
@@ -543,12 +539,11 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	/**
 	 * Sets the mode of the screen (either view mode or edit mode)
 	 * 
-	 * @param viewMode
-	 *            the desired view mode
+	 * @param viewMode the desired view mode
 	 */
 	public void setViewMode(boolean viewMode) {
 		if (getSelectedItem() != null) {
-			//editForm.setViewMode(viewMode);
+			editForm.setViewMode(viewMode);
 		}
 	}
 

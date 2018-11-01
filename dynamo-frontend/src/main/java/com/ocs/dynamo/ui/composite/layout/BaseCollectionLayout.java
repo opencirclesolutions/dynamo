@@ -20,6 +20,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.ObjectUtils;
+
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
@@ -28,7 +30,9 @@ import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.Refreshable;
 import com.ocs.dynamo.ui.Reloadable;
 import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
+import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
 import com.ocs.dynamo.ui.composite.table.BaseGridWrapper;
+import com.ocs.dynamo.utils.ClassUtils;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.SortOrder;
 import com.vaadin.icons.VaadinIcons;
@@ -36,16 +40,16 @@ import com.vaadin.server.SerializablePredicate;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Layout;
+import com.vaadin.ui.StyleGenerator;
+import com.vaadin.ui.Grid.Column;
 
 /**
  * A base class for a composite layout that displays a collection of data
  * (rather than an single object)
  * 
  * @author bas.rutten
- * @param <ID>
- *            the type of the primary key
- * @param <T>
- *            the type of the entity
+ * @param <ID> the type of the primary key
+ * @param <T> the type of the entity
  */
 public abstract class BaseCollectionLayout<ID extends Serializable, T extends AbstractEntity<ID>>
 		extends BaseServiceCustomComponent<ID, T> implements Reloadable, Refreshable {
@@ -97,16 +101,11 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	/**
 	 * Constructor
 	 * 
-	 * @param service
-	 *            the service
-	 * @param entityModel
-	 *            the entity model
-	 * @param formOptions
-	 *            the form options
-	 * @param sortOrder
-	 *            the sort order
-	 * @param joins
-	 *            the joins to use when fetching data
+	 * @param service     the service
+	 * @param entityModel the entity model
+	 * @param formOptions the form options
+	 * @param sortOrder   the sort order
+	 * @param joins       the joins to use when fetching data
 	 */
 	public BaseCollectionLayout(BaseService<ID, T> service, EntityModel<T> entityModel, FormOptions formOptions,
 			SortOrder<?> sortOrder, FetchJoinInformation... joins) {
@@ -120,8 +119,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	/**
 	 * Adds an additional sort order
 	 * 
-	 * @param sortOrder
-	 *            the sort order to add
+	 * @param sortOrder the sort order to add
 	 */
 	public final void addSortOrder(SortOrder<?> sortOrder) {
 		this.sortOrders.add(sortOrder);
@@ -132,8 +130,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	 * fetch additional data if required. This method is called before the
 	 * "afterDetailSelected" method is called
 	 * 
-	 * @param entity
-	 *            the entity
+	 * @param entity the entity
 	 */
 	protected void afterEntitySet(T entity) {
 		// override in subclass
@@ -144,8 +141,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	 * that is used in a detail view when the attribute group mode has been set to
 	 * TABSHEET
 	 * 
-	 * @param tabIndex
-	 *            the zero-based index of the selected tab
+	 * @param tabIndex the zero-based index of the selected tab
 	 */
 	protected void afterTabSelected(int tabIndex) {
 		// overwrite in subclasses
@@ -178,21 +174,25 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	protected final void constructTableDividers() {
 		if (dividerProperty != null) {
 			getGridWrapper().getGrid().setStyleName(DynamoConstants.CSS_DIVIDER);
-			// getTableWrapper().getGrid().setCellStyleGenerator((Grid<T> source, Object
-			// itemId, Object propertyId) -> {
-			// String result = null;
-			// if (itemId != null) {
-			// Property<?> prop = source.getItem(itemId).getItemProperty(dividerProperty);
-			// if (prop != null) {
-			// Object obj = prop.getValue();
-			// if (!ObjectUtils.equals(obj, previousDividerValue)) {
-			// result = DynamoConstants.CSS_DIVIDER;
-			// }
-			// previousDividerValue = obj;
-			// }
-			// }
-			// return result;
-			// });
+			getGridWrapper().getGrid().setStyleGenerator(new StyleGenerator<T>() {
+
+				private static final long serialVersionUID = 4727496497958798590L;
+
+				@Override
+				public String apply(T item) {
+					String result = null;
+					if (item != null) {
+						Object value = ClassUtils.getFieldValue(item, dividerProperty);
+						if (value != null) {
+							if (!ObjectUtils.equals(value, previousDividerValue)) {
+								result = DynamoConstants.CSS_DIVIDER;
+							}
+							previousDividerValue = value;
+						}
+					}
+					return result;
+				}
+			});
 		}
 	}
 
@@ -217,10 +217,20 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	 * Switches to the detail mode (which displays the attributes of a single
 	 * entity)
 	 * 
-	 * @param entity
-	 *            the entity to display
+	 * @param entity the entity to display
 	 */
 	protected abstract void detailsMode(T entity);
+	
+	/**
+	 * Disables sorting for the grid if needed
+	 */
+	protected void disableGridSorting() {
+		if (!isSortEnabled()) {
+			for (Column<?, ?> c : getGridWrapper().getGrid().getColumns()) {
+				c.setSortable(false);
+			}
+		}
+	}
 
 	/**
 	 * Method that is called when the Add button is clicked. Can be overridden in
@@ -261,6 +271,18 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 		return fieldFilters;
 	}
 
+	/**
+	 * 
+	 * @return the table wrapper (constructed lazily)
+	 */
+	public BaseGridWrapper<ID, T> getGridWrapper() {
+		if (gridWrapper == null) {
+			gridWrapper = constructTableWrapper();
+			postProcessTableWrapper(gridWrapper);
+		}
+		return gridWrapper;
+	}
+
 	public FetchJoinInformation[] getJoins() {
 		return joins;
 	}
@@ -277,8 +299,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	 * Returns the parent group (which must be returned by the getParentGroupHeaders
 	 * method) to which a certain child group belongs
 	 * 
-	 * @param childGroup
-	 *            the name of the child group
+	 * @param childGroup the name of the child group
 	 * @return
 	 */
 	protected String getParentGroup(String childGroup) {
@@ -314,18 +335,6 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	}
 
 	/**
-	 * 
-	 * @return the table wrapper (constructed lazily)
-	 */
-	public BaseGridWrapper<ID, T> getGridWrapper() {
-		if (gridWrapper == null) {
-			gridWrapper = constructTableWrapper();
-			postProcessTableWrapper(gridWrapper);
-		}
-		return gridWrapper;
-	}
-
-	/**
 	 * Indicates whether editing is allowed. This defaults to TRUE but you can
 	 * overwrite it in subclasses if needed
 	 * 
@@ -347,8 +356,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	 * Adds additional buttons to the main button bar (that appears below the
 	 * results table in a search layout, split layout, or tabular edit layout)
 	 * 
-	 * @param buttonBar
-	 *            the button bar
+	 * @param buttonBar the button bar
 	 */
 	protected void postProcessButtonBar(Layout buttonBar) {
 		// overwrite in subclass if needed
@@ -358,10 +366,8 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	 * Adds additional buttons to the button bar above/below the detail screen.
 	 *
 	 * 
-	 * @param buttonBar
-	 *            the button bar
-	 * @param viewMode
-	 *            indicates whether the form is in view mode
+	 * @param buttonBar the button bar
+	 * @param viewMode  indicates whether the form is in view mode
 	 */
 	protected void postProcessDetailButtonBar(Layout buttonBar, boolean viewMode) {
 		// overwrite in subclass if needed
@@ -374,17 +380,16 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	 * 
 	 * @param editForm
 	 */
-//	protected void postProcessEditFields(ModelBasedEditForm<ID, T> editForm) {
-//		// override in subclasses
-//	}
+	protected void postProcessEditFields(ModelBasedEditForm<ID, T> editForm) {
+		// override in subclasses
+	}
 
 	/**
 	 * Method that is called after the entire layout has been constructed. Use this
 	 * to e.g. add additional components to the bottom of the layout or to modify
 	 * button captions
 	 * 
-	 * @param main
-	 *            the main layout
+	 * @param main the main layout
 	 */
 	protected void postProcessLayout(Layout main) {
 		// override in subclasses
@@ -442,8 +447,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	/**
 	 * Sets the page length (number of rows to display in a table)
 	 * 
-	 * @param pageLength
-	 *            the desired page length
+	 * @param pageLength the desired page length
 	 */
 	public void setPageLength(int pageLength) {
 		this.pageLength = pageLength;
@@ -452,8 +456,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	/**
 	 * Sets the provided item as the currently selected item in the table
 	 * 
-	 * @param selectedItem
-	 *            the item that you want to become the selected item
+	 * @param selectedItem the item that you want to become the selected item
 	 */
 	public void setSelectedItem(T selectedItem) {
 		this.selectedItem = selectedItem;
@@ -463,8 +466,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	/**
 	 * Specify whether sorting is enabled for the results table
 	 * 
-	 * @param sortEnabled
-	 *            whether sorting is enabled
+	 * @param sortEnabled whether sorting is enabled
 	 */
 	public void setSortEnabled(boolean sortEnabled) {
 		this.sortEnabled = sortEnabled;

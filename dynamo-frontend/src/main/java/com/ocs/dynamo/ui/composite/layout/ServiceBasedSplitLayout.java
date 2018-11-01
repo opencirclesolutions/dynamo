@@ -21,6 +21,8 @@ import org.springframework.util.StringUtils;
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
+import com.ocs.dynamo.filter.AndPredicate;
+import com.ocs.dynamo.filter.LikePredicate;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.composite.table.BaseGridWrapper;
 import com.ocs.dynamo.ui.composite.table.ServiceBasedGridWrapper;
@@ -35,10 +37,8 @@ import com.vaadin.ui.TextField;
  * service to fetch data
  * 
  * @author bas.rutten
- * @param <ID>
- *            type of the primary key
- * @param <T>
- *            type of the entity
+ * @param <ID> type of the primary key
+ * @param <T> type of the entity
  */
 @SuppressWarnings("serial")
 public class ServiceBasedSplitLayout<ID extends Serializable, T extends AbstractEntity<ID>>
@@ -60,16 +60,11 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
 	/**
 	 * Constructor
 	 *
-	 * @param service
-	 *            the service for retrieving data from the database
-	 * @param entityModel
-	 *            the entity model
-	 * @param queryType
-	 *            the desired query type
-	 * @param formOptions
-	 *            the form options
-	 * @param sortOrder
-	 *            the sort order
+	 * @param service     the service for retrieving data from the database
+	 * @param entityModel the entity model
+	 * @param queryType   the desired query type
+	 * @param formOptions the form options
+	 * @param sortOrder   the sort order
 	 * @param joins
 	 */
 	public ServiceBasedSplitLayout(BaseService<ID, T> service, EntityModel<T> entityModel, QueryType queryType,
@@ -100,8 +95,7 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
 	 * search filter is applied in addition to the always active default filter
 	 * returned by the "constructFilter" method
 	 *
-	 * @param value
-	 *            the value to search for
+	 * @param value the value to search for
 	 * @return
 	 */
 	protected SerializablePredicate<T> constructQuickSearchFilter(String value) {
@@ -121,26 +115,24 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
 			TextField searchField = new TextField(message("ocs.search"));
 
 			// respond to the user entering a search term
-			// searchField.addTextChangeListener(event -> {
-			// String text = event.getText();
-			// if (!StringUtils.isEmpty(text)) {
-			// Filter quickFilter = constructQuickSearchFilter(text);
-			// if (quickFilter == null && getEntityModel().getMainAttributeModel() != null)
-			// {
-			// quickFilter = new Like(getEntityModel().getMainAttributeModel().getPath(),
-			// "%" + text + "%",
-			// false);
-			// }
-			//
-			// Filter temp = quickFilter;
-			// if (getFilter() != null) {
-			// temp = new And(quickFilter, getFilter());
-			// }
-			// getContainer().search(temp);
-			// } else {
-			// getContainer().search(filter);
-			// }
-			// });
+			searchField.addValueChangeListener(event -> {
+				String text = event.getValue();
+				if (!StringUtils.isEmpty(text)) {
+					SerializablePredicate<T> quickFilter = constructQuickSearchFilter(text);
+					if (quickFilter == null && getEntityModel().getMainAttributeModel() != null) {
+						quickFilter = new LikePredicate<T>(getEntityModel().getMainAttributeModel().getPath(),
+								"%" + text + "%", false);
+					}
+
+					SerializablePredicate<T> temp = quickFilter;
+					if (getFilter() != null) {
+						temp = new AndPredicate<T>(quickFilter, getFilter());
+					}
+					getGridWrapper().search(temp);
+				} else {
+					getGridWrapper().search(filter);
+				}
+			});
 			return searchField;
 		}
 		return null;
@@ -170,8 +162,7 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
 		return tw;
 	}
 
-	@SuppressWarnings("unchecked")
-	protected DataProvider<T, SerializablePredicate<T>> getContainer() {
+	protected DataProvider<T, SerializablePredicate<T>> getDataProvider() {
 		return getGridWrapper().getDataProvider();
 	}
 
@@ -205,14 +196,17 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
 	public void setSelectedItems(Object selectedItems) {
 		if (selectedItems != null) {
 			if (selectedItems instanceof Collection<?>) {
-				// the lazy query container returns an array of IDs of the
-				// selected items
 				Collection<?> col = (Collection<?>) selectedItems;
-				ID id = (ID) col.iterator().next();
-				setSelectedItem(getService().fetchById(id, getDetailJoinsFallBack()));
+				if (col.iterator().hasNext()) {
+					T t = (T) col.iterator().next();
+					setSelectedItem(getService().fetchById(t.getId(), getDetailJoinsFallBack()));
+				} else {
+					setSelectedItem(null);
+					emptyDetailView();
+				}
 			} else {
-				ID id = (ID) selectedItems;
-				setSelectedItem(getService().fetchById(id, getDetailJoinsFallBack()));
+				T t = (T) selectedItems;
+				setSelectedItem(getService().fetchById(t.getId(), getDetailJoinsFallBack()));
 			}
 		} else {
 			// nothing selected

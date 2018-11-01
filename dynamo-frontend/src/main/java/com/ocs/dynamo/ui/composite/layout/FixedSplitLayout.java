@@ -32,10 +32,8 @@ import com.vaadin.ui.TextField;
  * table view and a details view
  * 
  * @author bas.rutten
- * @param <ID>
- *            the type of the primary key
- * @param <T>
- *            the type of the entity
+ * @param <ID> the type of the primary key
+ * @param <T> the type of the entity
  */
 @SuppressWarnings("serial")
 public abstract class FixedSplitLayout<ID extends Serializable, T extends AbstractEntity<ID>>
@@ -43,21 +41,19 @@ public abstract class FixedSplitLayout<ID extends Serializable, T extends Abstra
 
 	private static final long serialVersionUID = 4606800218149558500L;
 
-	// the items to display in the table
+	/**
+	 * The fixed collection of items that is displayed in the table
+	 */
 	private Collection<T> items;
 
 	/**
 	 * Constructor
 	 * 
-	 * @param service
-	 *            the service
-	 * @param entityModel
-	 *            the entity model that is used to construct the layout
-	 * @param formOptions
-	 *            formoptions that govern how the screen behaves
-	 * @param fieldFilters
-	 *            field filters applied to fields in the detail view
-	 * @param sortOrder
+	 * @param service      the service
+	 * @param entityModel  the entity model that is used to construct the layout
+	 * @param formOptions  the form options that govern how the screen behaves
+	 * @param fieldFilters field filters applied to fields in the detail view
+	 * @param sortOrder    the sort order
 	 */
 	public FixedSplitLayout(BaseService<ID, T> service, EntityModel<T> entityModel, FormOptions formOptions,
 			SortOrder<?> sortOrder) {
@@ -65,11 +61,16 @@ public abstract class FixedSplitLayout<ID extends Serializable, T extends Abstra
 	}
 
 	/**
-	 * 
+	 * Callback method that is excecuted after re
 	 */
 	@Override
 	protected void afterReload(T t) {
-		getGridWrapper().getGrid().select(t);
+		if (t != null) {
+			getGridWrapper().getGrid().select(t);
+		}
+		else {
+			getGridWrapper().getGrid().deselectAll();
+		}
 	}
 
 	/**
@@ -122,13 +123,10 @@ public abstract class FixedSplitLayout<ID extends Serializable, T extends Abstra
 	 * Reloads the data after an update
 	 */
 	@Override
-	@SuppressWarnings("unchecked")
 	public void reload() {
 		buildFilter();
 		super.reload();
 		// remove all items from the container and add the new ones
-		// BeanItemContainer<T> beanContainer = (BeanItemContainer<T>)
-		// getTableWrapper().getContainer();
 		ListDataProvider<T> provider = (ListDataProvider<T>) getGridWrapper().getDataProvider();
 		provider.getItems().clear();
 		provider.getItems().addAll(items);

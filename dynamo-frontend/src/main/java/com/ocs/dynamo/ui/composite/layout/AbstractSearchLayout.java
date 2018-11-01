@@ -42,6 +42,7 @@ import com.vaadin.server.SerializablePredicate;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.Grid.Column;
 import com.vaadin.ui.Grid.SelectionMode;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -570,7 +571,8 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	public final void constructSearchLayout() {
 		// construct table and set properties
 		// getGridWrapper().getGrid().setPageLength(getPageLength());
-		// getGridWrapper().getGrid().setSortEnabled(isSortEnabled());
+
+		disableGridSorting();
 		getGridWrapper().getGrid().setSelectionMode(isMultiSelect() ? SelectionMode.MULTI : SelectionMode.SINGLE);
 
 		// add a listener to respond to the selection of an item
