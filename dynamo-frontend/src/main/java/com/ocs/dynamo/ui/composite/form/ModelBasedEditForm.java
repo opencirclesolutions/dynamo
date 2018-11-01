@@ -1094,6 +1094,9 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			} else if (am.getType().equals(Long.class)) {
 				sBuilder.withConverter(new LongToDoubleConverter());
 			}
+		} else if (builder.getField() instanceof URLField){
+			BindingBuilder<T,String> sBuilder = (BindingBuilder<T, String>) builder;
+			sBuilder.withNullRepresentation("");
 		}
 	}
 

@@ -20,6 +20,7 @@ import com.ocs.dynamo.ui.component.EntityComboBox.SelectMode;
 import com.ocs.dynamo.ui.component.EntityLookupField;
 import com.ocs.dynamo.ui.component.FancyListSelect;
 import com.ocs.dynamo.ui.component.QuickAddEntityComboBox;
+import com.ocs.dynamo.ui.component.URLField;
 import com.ocs.dynamo.ui.converter.ConverterFactory;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.util.SystemPropertyUtils;
@@ -280,7 +281,13 @@ public class FieldFactoryImpl<T> implements FieldFactory {
 			TimeField tf = new TimeField(am);
 			field = tf;
 		} else if (String.class.equals(am.getType()) || NumberUtils.isNumeric(am.getType())) {
-			field = new TextField();
+			if (am.isUrl()){
+				final TextField textField = new TextField();
+				textField.setSizeFull();
+				field = new URLField(textField,am, false);
+			} else {
+				field = new TextField();
+			}
 		}
 
 		if (field != null) {

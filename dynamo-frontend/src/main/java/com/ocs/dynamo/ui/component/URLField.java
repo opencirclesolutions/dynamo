@@ -16,13 +16,14 @@ package com.ocs.dynamo.ui.component;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.utils.StringUtils;
 import com.vaadin.server.ExternalResource;
+import com.vaadin.shared.Registration;
 import com.vaadin.shared.ui.BorderStyle;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.CustomField;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Link;
 import com.vaadin.ui.TextField;
-import com.vaadin.ui.VerticalLayout;
 
 /**
  * A custom field for displaying a clickable URL
@@ -42,7 +43,7 @@ public class URLField extends CustomField<String> {
 
 	private Link link;
 
-	private VerticalLayout main;
+	private CssLayout main;
 
 	private TextField textField;
 
@@ -60,7 +61,7 @@ public class URLField extends CustomField<String> {
 		this.attributeModel = attributeModel;
 		this.textField = textField;
 		this.editable = editable;
-		textField.addValueChangeListener(event -> setValue((String) event.getValue()));
+		textField.addValueChangeListener(event -> setValue(event.getValue()));
 	}
 
 	protected Link getLink() {
@@ -73,7 +74,7 @@ public class URLField extends CustomField<String> {
 
 	@Override
 	protected Component initContent() {
-		main = new VerticalLayout();
+		main = new CssLayout();
 		setCaption(attributeModel.getDisplayName());
 
 		bar = new DefaultHorizontalLayout(false, true, true);
@@ -145,6 +146,11 @@ public class URLField extends CustomField<String> {
 	@Override
 	public String getValue() {
 		return textField.getValue();
+	}
+
+	@Override
+	public Registration addValueChangeListener(final ValueChangeListener<String> listener) {
+		return textField.addValueChangeListener(listener);
 	}
 
 	// @Override
