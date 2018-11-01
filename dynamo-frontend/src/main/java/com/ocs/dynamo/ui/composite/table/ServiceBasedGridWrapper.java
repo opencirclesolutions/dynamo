@@ -106,7 +106,6 @@ public class ServiceBasedGridWrapper<ID extends Serializable, T extends Abstract
 		SerializablePredicate<T> temp = beforeSearchPerformed(filter);
 		setDataProvider(constructDataProvider());
 		getGrid().getDataCommunicator().setDataProvider(getDataProvider(), temp != null ? temp : filter);
-
 	}
 
 	/**

@@ -17,7 +17,7 @@ public class LocalDateWeekCodeConverterTest {
 	@Test
 	public void testToModel() {
 		Result<LocalDate> date = converter.convertToModel(null, new ValueContext());
-		Assert.assertNull(date);
+		Assert.assertNull(date.getOrThrow(r -> new OCSRuntimeException()));
 
 		date = converter.convertToModel("2014-52", new ValueContext());
 		Assert.assertEquals(DateUtils.createLocalDate("22122014"), date.getOrThrow(r -> new OCSRuntimeException()));
@@ -41,7 +41,7 @@ public class LocalDateWeekCodeConverterTest {
 	@Test
 	public void testToPresentation() {
 		String str = converter.convertToPresentation(null, new ValueContext());
-		Assert.assertNull(str);
+		Assert.assertEquals("", str);
 
 		str = converter.convertToPresentation(DateUtils.createLocalDate("22122014"), new ValueContext());
 		Assert.assertEquals("2014-52", str);

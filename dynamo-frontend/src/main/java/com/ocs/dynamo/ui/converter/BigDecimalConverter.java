@@ -69,7 +69,7 @@ public class BigDecimalConverter extends StringToBigDecimalConverter {
 	@Override
 	public Result<BigDecimal> convertToModel(String value, ValueContext context) {
 		if (value == null) {
-			return null;
+			return Result.ok(null);
 		}
 
 		Result<Number> number = convertToNumber(value, context);

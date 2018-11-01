@@ -20,7 +20,6 @@ import com.ocs.dynamo.ui.component.EntityLookupField;
 import com.ocs.dynamo.ui.component.FancyListSelect;
 import com.ocs.dynamo.ui.component.QuickAddEntityComboBox;
 import com.ocs.dynamo.ui.converter.ConverterFactory;
-import com.ocs.dynamo.ui.converter.LocalDateWeekCodeConverter;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.ocs.dynamo.utils.NumberUtils;
@@ -32,8 +31,10 @@ import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.AbstractTextField;
+import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.DateField;
+import com.vaadin.ui.DateTimeField;
 import com.vaadin.ui.Slider;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
@@ -218,11 +219,11 @@ public class FieldFactoryImpl<T> implements FieldFactory {
 	}
 
 	/**
-	 * Constructs a
+	 * Constructs a field
 	 * 
-	 * @param am
-	 * @param fieldEntityModel
-	 * @param fieldFilters
+	 * @param am               the attribute model
+	 * @param fieldEntityModel the entity model used for the field
+	 * @param fieldFilters     the set of field filters
 	 * @return
 	 */
 	public AbstractComponent constructField(AttributeModel am, EntityModel<?> fieldEntityModel,
@@ -234,7 +235,7 @@ public class FieldFactoryImpl<T> implements FieldFactory {
 				&& (!am.isUrl() && !AttributeType.DETAIL.equals(am.getAttributeType())) && !search) {
 			return null;
 		}
-		
+
 		SerializablePredicate<?> fieldFilter = fieldFilters.get(am.getPath());
 
 		if (AbstractEntity.class.isAssignableFrom(am.getType())) {
@@ -244,12 +245,11 @@ public class FieldFactoryImpl<T> implements FieldFactory {
 			field = new TextArea();
 		} else if (Enum.class.isAssignableFrom(am.getType())) {
 			field = constructEnumComboBox(am.getType().asSubclass(Enum.class));
+		} else if (Boolean.class.equals(am.getType()) || boolean.class.equals(am.getType())) {
+			field = new CheckBox();
 		} else if (am.isWeek()) {
 			// special case - week field in a table
-			TextField tf = new TextField();
-			Binder<T> binder = new Binder<>();
-			binder.forField(tf).withConverter(new LocalDateWeekCodeConverter());
-			field = tf;
+			field = new TextField();
 		} else if (search && (am.getType().equals(Boolean.class) || am.getType().equals(boolean.class))) {
 			// in a search screen, we need to offer the true, false, and
 			// undefined options
@@ -258,15 +258,6 @@ public class FieldFactoryImpl<T> implements FieldFactory {
 				|| BigDecimal.class.equals(am.getType())) && NumberSelectMode.SLIDER.equals(am.getNumberSelectMode())) {
 			final Slider slider = new Slider(am.getDisplayName());
 
-//			if (NumberUtils.isInteger(am.getType())) {
-//				// binder.forField(slider).withConverter(new IntToDoubleConverter());
-//			} else if (NumberUtils.isLong(am.getType())) {
-//				// binder.forField(slider).withConverter(new LongToDoubleConverter());
-//			} else {
-//				// binder.forField(slider).withConverter(new BigDecimalToDoubleConverter());
-//				slider.setResolution(am.getPrecision());
-//			}
-
 			if (am.getMinValue() != null) {
 				slider.setMin(am.getMinValue());
 			}
@@ -274,8 +265,15 @@ public class FieldFactoryImpl<T> implements FieldFactory {
 				slider.setMax(am.getMaxValue());
 			}
 			field = slider;
-		} else if (LocalDate.class.equals(am.getType()) || LocalDateTime.class.equals(am.getType())) {
-			field = new DateField();
+		} else if (LocalDateTime.class.equals(am.getType())) {
+			DateTimeField df = new DateTimeField();
+			df.setDateFormat(am.getDisplayFormat());
+			field = df;
+		} else if (LocalDate.class.equals(am.getType())) {
+			// date field
+			DateField df = new DateField();
+			df.setDateFormat(am.getDisplayFormat());
+			field = df;
 		} else if (String.class.equals(am.getType()) || NumberUtils.isNumeric(am.getType())) {
 			field = new TextField();
 		}
@@ -375,7 +373,7 @@ public class FieldFactoryImpl<T> implements FieldFactory {
 //			}
 
 			// set converters
-			setConverters(textField, am);
+			// setConverters(textField, am);
 
 			// add email validator
 //			if (am.isEmail()) {

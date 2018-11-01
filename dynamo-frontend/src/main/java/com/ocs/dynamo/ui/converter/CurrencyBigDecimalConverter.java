@@ -51,7 +51,7 @@ public class CurrencyBigDecimalConverter extends BigDecimalConverter {
 	@Override
 	public Result<BigDecimal> convertToModel(String value, ValueContext context) {
 		if (value == null) {
-			return null;
+			return Result.ok(null);
 		}
 
 		if (!StringUtils.isEmpty(value) && !value.startsWith(currencySymbol)) {

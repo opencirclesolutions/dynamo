@@ -36,7 +36,7 @@ public class LocalDateWeekCodeConverter implements Converter<String, LocalDate> 
 	@Override
 	public Result<LocalDate> convertToModel(String value, ValueContext context) {
 		if (StringUtils.isEmpty(value)) {
-			return null;
+			return Result.ok(null);
 		}
 		return Result.ok(DateUtils.toStartDateOfWeek(value));
 	}
@@ -44,7 +44,7 @@ public class LocalDateWeekCodeConverter implements Converter<String, LocalDate> 
 	@Override
 	public String convertToPresentation(LocalDate value, ValueContext context) {
 		if (value == null) {
-			return null;
+			return "";
 		}
 		return DateUtils.toWeekCode(value);
 	}
