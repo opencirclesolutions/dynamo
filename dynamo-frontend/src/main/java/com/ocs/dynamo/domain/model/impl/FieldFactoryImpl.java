@@ -21,6 +21,7 @@ import com.ocs.dynamo.ui.component.EntityLookupField;
 import com.ocs.dynamo.ui.component.FancyListSelect;
 import com.ocs.dynamo.ui.component.QuickAddEntityComboBox;
 import com.ocs.dynamo.ui.component.QuickAddListSelect;
+import com.ocs.dynamo.ui.component.QuickAddListSingleSelect;
 import com.ocs.dynamo.ui.component.TimeField;
 import com.ocs.dynamo.ui.component.URLField;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
@@ -195,8 +196,15 @@ public class FieldFactoryImpl<T> implements FieldFactory {
 			return listSelect;
 		} else if (AttributeSelectMode.LIST.equals(mode)) {
 			// simple list select if everything else fails or is not applicable
-			return new QuickAddListSelect<ID,S>((EntityModel<S>) em, am, service, (SerializablePredicate<S>)fieldFilter, multipleSelect,
-					SystemPropertyUtils.getDefaultListSelectRows(), sos);
+			if (multipleSelect) {
+				return new QuickAddListSelect<ID, S>((EntityModel<S>) em, am, service,
+						(SerializablePredicate<S>) fieldFilter,
+						SystemPropertyUtils.getDefaultListSelectRows(), sos);
+			} else {
+				return new QuickAddListSingleSelect<>((EntityModel<S>) em, am, service,
+						(SerializablePredicate<S>) fieldFilter,
+						SystemPropertyUtils.getDefaultListSelectRows(), sos);
+			}
 		} else {
 			// by default, use a token field
 //			 return new TokenFieldSelect<ID, S>((EntityModel<S>) em, am,

@@ -13,7 +13,6 @@
  */
 package com.ocs.dynamo.ui.component;
 
-import com.google.gwt.thirdparty.guava.common.collect.Sets;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
@@ -28,28 +27,24 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 
 import java.io.Serializable;
-import java.util.Collection;
-import java.util.Collections;
 
 /**
  * 
  * A ListSelect field that allows the quick addition of simple entities.
- * Supports multiple select use cases
- * 
- * @author bas.rutten
+ * Supports single select use cases
  *
  * @param <ID> the type of the primary key of the entity that is being displayed
  * @param <T> the type of the entity that is being displayed
  */
-public class QuickAddListSelect<ID extends Serializable, T extends AbstractEntity<ID>>
-		extends QuickAddEntityField<ID, T, Collection<T>> implements Refreshable {
+public class QuickAddListSingleSelect<ID extends Serializable, T extends AbstractEntity<ID>>
+		extends QuickAddEntityField<ID, T, T> implements Refreshable {
 
 	private static final long serialVersionUID = 4246187881499965296L;
 
 	/**
 	 * The list select component
 	 */
-	private EntityListSelect<ID, T> listSelect;
+	private EntityListSingleSelect<ID, T> listSelect;
 
 	/**
 	 * Whether the component is in view mode
@@ -68,7 +63,7 @@ public class QuickAddListSelect<ID extends Serializable, T extends AbstractEntit
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param entityModel
 	 * @param attributeModel
 	 * @param service
@@ -78,11 +73,11 @@ public class QuickAddListSelect<ID extends Serializable, T extends AbstractEntit
 	 * @param sortOrder
 	 */
 	@SafeVarargs
-	public QuickAddListSelect(EntityModel<T> entityModel, AttributeModel attributeModel, BaseService<ID, T> service,
+	public QuickAddListSingleSelect(EntityModel<T> entityModel, AttributeModel attributeModel, BaseService<ID, T> service,
 			SerializablePredicate<T> filter, int rows, SortOrder<?>... sortOrder) {
 		super(service, entityModel, attributeModel, filter);
-		listSelect = new EntityListSelect<>(entityModel, attributeModel, service, filter, sortOrder);
-		listSelect.setRows(rows);
+		listSelect = new EntityListSingleSelect<>(entityModel, attributeModel, service, filter, sortOrder);
+		listSelect.setVisibleItemCount(rows);
 		this.quickAddAllowed = attributeModel != null && attributeModel.isQuickAddAllowed();
 		this.directNavigationAllowed = attributeModel != null && attributeModel.isDirectNavigation();
 	}
@@ -93,7 +88,7 @@ public class QuickAddListSelect<ID extends Serializable, T extends AbstractEntit
 		// add to the container
 		ListDataProvider<T> provider = (ListDataProvider<T>) listSelect.getDataProvider();
 		provider.getItems().add(entity);
-		listSelect.select(entity);
+		listSelect.setValue(entity);
 	}
 
 	@Override
@@ -104,7 +99,7 @@ public class QuickAddListSelect<ID extends Serializable, T extends AbstractEntit
 		}
 	}
 
-	public EntityListSelect<ID, T> getListSelect() {
+	public EntityListSingleSelect<ID, T> getListSelect() {
 		return listSelect;
 	}
 
@@ -174,13 +169,11 @@ public class QuickAddListSelect<ID extends Serializable, T extends AbstractEntit
 	}
 
 	@Override
-	public void setValue(Collection<T> value) {
+	public void setValue(T value) {
 		super.setValue(value);
 		if (listSelect != null) {
-			if (value == null){
-				value = Collections.emptyList();
-			}
-			listSelect.setValue(Sets.newHashSet(value));
+
+			listSelect.setValue(value);
 		}
 	}
 
@@ -189,7 +182,7 @@ public class QuickAddListSelect<ID extends Serializable, T extends AbstractEntit
 	}
 
 	@Override
-	public Collection<T> getValue() {
+	public T getValue() {
 		if (listSelect != null) {
 			return listSelect.getValue();
 		}
@@ -197,17 +190,14 @@ public class QuickAddListSelect<ID extends Serializable, T extends AbstractEntit
 	}
 
 	@Override
-	protected void doSetValue(Collection<T> value) {
+	protected void doSetValue(T value) {
 		if (listSelect != null) {
-			if (value == null){
-				value = Collections.emptyList();
-			}
-			listSelect.setValue(Sets.newHashSet(value));
+			listSelect.setValue(value);
 		}
 	}
 
 	@Override
-	public Registration addValueChangeListener(final ValueChangeListener<Collection<T>> listener) {
+	public Registration addValueChangeListener(final ValueChangeListener<T> listener) {
 
 		return listSelect.addValueChangeListener(event -> {
 			listener.valueChange(new ValueChangeEvent<>(this, this, null, false ));
