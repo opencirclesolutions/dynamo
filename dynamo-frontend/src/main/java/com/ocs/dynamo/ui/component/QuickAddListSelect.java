@@ -13,9 +13,6 @@
  */
 package com.ocs.dynamo.ui.component;
 
-import java.io.Serializable;
-import java.util.Collection;
-
 import com.google.gwt.thirdparty.guava.common.collect.Sets;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
@@ -25,9 +22,14 @@ import com.ocs.dynamo.ui.Refreshable;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.data.provider.SortOrder;
 import com.vaadin.server.SerializablePredicate;
+import com.vaadin.shared.Registration;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
+
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * 
@@ -77,7 +79,7 @@ public class QuickAddListSelect<ID extends Serializable, T extends AbstractEntit
 	 */
 	@SafeVarargs
 	public QuickAddListSelect(EntityModel<T> entityModel, AttributeModel attributeModel, BaseService<ID, T> service,
-			SerializablePredicate<T> filter, boolean multiSelect, int rows, SortOrder<T>... sortOrder) {
+			SerializablePredicate<T> filter, boolean multiSelect, int rows, SortOrder<?>... sortOrder) {
 		super(service, entityModel, attributeModel, filter);
 		listSelect = new EntityListSelect<>(entityModel, attributeModel, service, filter, sortOrder);
 		listSelect.setRows(rows);
@@ -175,6 +177,9 @@ public class QuickAddListSelect<ID extends Serializable, T extends AbstractEntit
 	public void setValue(Collection<T> value) {
 		super.setValue(value);
 		if (listSelect != null) {
+			if (value == null){
+				value = Collections.emptyList();
+			}
 			listSelect.setValue(Sets.newHashSet(value));
 		}
 	}
@@ -194,8 +199,18 @@ public class QuickAddListSelect<ID extends Serializable, T extends AbstractEntit
 	@Override
 	protected void doSetValue(Collection<T> value) {
 		if (listSelect != null) {
+			if (value == null){
+				value = Collections.emptyList();
+			}
 			listSelect.setValue(Sets.newHashSet(value));
 		}
 	}
 
+	@Override
+	public Registration addValueChangeListener(final ValueChangeListener<Collection<T>> listener) {
+
+		return listSelect.addValueChangeListener(event -> {
+			listener.valueChange(new ValueChangeEvent<>(this, this, null, false ));
+		});
+	}
 }

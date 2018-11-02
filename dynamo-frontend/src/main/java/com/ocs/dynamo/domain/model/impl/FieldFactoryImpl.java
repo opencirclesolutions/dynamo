@@ -16,17 +16,16 @@ import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.service.ServiceLocator;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
-import com.ocs.dynamo.ui.component.TimeField;
 import com.ocs.dynamo.ui.component.EntityComboBox.SelectMode;
 import com.ocs.dynamo.ui.component.EntityLookupField;
 import com.ocs.dynamo.ui.component.FancyListSelect;
 import com.ocs.dynamo.ui.component.QuickAddEntityComboBox;
+import com.ocs.dynamo.ui.component.QuickAddListSelect;
+import com.ocs.dynamo.ui.component.TimeField;
 import com.ocs.dynamo.ui.component.URLField;
-import com.ocs.dynamo.ui.converter.ConverterFactory;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.ocs.dynamo.utils.NumberUtils;
-import com.vaadin.data.Binder;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.data.provider.SortOrder;
 import com.vaadin.server.SerializablePredicate;
@@ -41,6 +40,7 @@ import com.vaadin.ui.DateTimeField;
 import com.vaadin.ui.Slider;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
+import org.vaadin.teemu.switchui.Switch;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -53,8 +53,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-
-import org.vaadin.teemu.switchui.Switch;
 
 public class FieldFactoryImpl<T> implements FieldFactory {
 
@@ -197,8 +195,8 @@ public class FieldFactoryImpl<T> implements FieldFactory {
 			return listSelect;
 		} else if (AttributeSelectMode.LIST.equals(mode)) {
 			// simple list select if everything else fails or is not applicable
-//			return new QuickAddListSelect<>((EntityModel<S>) em, attributeModel, service, fieldFilter, multipleSelect,
-//					SystemPropertyUtils.getDefaultListSelectRows(), sos);
+			return new QuickAddListSelect<ID,S>((EntityModel<S>) em, am, service, (SerializablePredicate<S>)fieldFilter, multipleSelect,
+					SystemPropertyUtils.getDefaultListSelectRows(), sos);
 		} else {
 			// by default, use a token field
 //			 return new TokenFieldSelect<ID, S>((EntityModel<S>) em, am,
@@ -364,9 +362,9 @@ public class FieldFactoryImpl<T> implements FieldFactory {
 			// single select lookup field
 			field = constructLookupField(am, fieldEntityModel, fieldFilter, search, false);
 		} else {
-			// list select (single select)
-			// field = this.constructCollectionSelect(fieldEntityModel, am, fieldFilter,
-			// false, search);
+			 //list select (single select)
+			 field = this.constructCollectionSelect(am, fieldEntityModel, fieldFilter,
+			 false, search);
 		}
 		return field;
 	}
