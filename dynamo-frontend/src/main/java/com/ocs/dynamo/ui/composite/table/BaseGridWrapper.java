@@ -150,7 +150,7 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 	 * @return
 	 */
 	protected Grid<T> constructGrid() {
-		return new ModelBasedGrid<ID, T>(this.dataProvider, entityModel, allowExport);
+		return new ModelBasedGrid<ID, T>(this.dataProvider, entityModel, allowExport, false);
 	}
 
 	/**

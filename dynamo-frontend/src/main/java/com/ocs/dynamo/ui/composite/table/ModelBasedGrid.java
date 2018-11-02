@@ -21,18 +21,21 @@ import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.AttributeType;
 import com.ocs.dynamo.domain.model.EntityModel;
+import com.ocs.dynamo.domain.model.impl.FieldFactoryImpl;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.component.InternalLinkField;
 import com.ocs.dynamo.ui.component.URLField;
 import com.ocs.dynamo.ui.utils.FormatUtils;
-import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.utils.ClassUtils;
 import com.vaadin.data.BeanPropertySet;
+import com.vaadin.data.Binder;
+import com.vaadin.data.HasValue;
 import com.vaadin.data.PropertyFilterDefinition;
 import com.vaadin.data.PropertySet;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.server.SerializablePredicate;
+import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.renderers.ComponentRenderer;
@@ -68,10 +71,14 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 	 */
 	private boolean updateTableCaption = true;
 
+	private boolean editable = false;
+
 	/**
 	 * The message service
 	 */
 	private MessageService messageService;
+
+	private FieldFactoryImpl<T> factory;
 
 	/**
 	 * Constructor
@@ -81,8 +88,10 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 	 * @param exportAllowed whether export of the table is allowed
 	 */
 	public ModelBasedGrid(DataProvider<T, SerializablePredicate<T>> dataProvider, EntityModel<T> model,
-			boolean exportAllowed) {
+			boolean exportAllowed, boolean editable) {
 		setDataProvider(dataProvider);
+		this.editable = editable;
+		getEditor().setEnabled(editable);
 
 		// we need to pre-populate the table with the available properties
 		PropertySet<T> ps = BeanPropertySet.get(model.getEntityClass(), true,
@@ -91,6 +100,7 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 
 		this.entityModel = model;
 		this.messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
+		this.factory = FieldFactoryImpl.getInstance(model, messageService);
 		this.exportAllowed = exportAllowed;
 
 		GridUtils.defaultInitialization(this);
@@ -129,7 +139,9 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 	private void addColumn(final AttributeModel attributeModel) {
 		if (attributeModel.isVisibleInTable()) {
 
-			Column<?, ?> column;
+			Binder<T> binder = getEditor().getBinder();
+
+			Column<T, ?> column;
 			if (attributeModel.isUrl()) {
 				// URL field
 				column = addColumn(t -> new URLField(
@@ -138,6 +150,18 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 			} else if (attributeModel.isNavigable() && AttributeType.MASTER.equals(attributeModel.getAttributeType())) {
 				column = addColumn(t -> generateInternalLinkField(attributeModel,
 						ClassUtils.getFieldValue(t, attributeModel.getPath())), new ComponentRenderer());
+			} else if (editable) {
+				column = addColumn(t -> {
+					// value change listener to copy value back to backing bean (Vaadin binding
+					// doesn't really
+					// seem to work
+					HasValue<?> comp = (HasValue<?>) createField(t, attributeModel);
+					comp.addValueChangeListener(event -> {
+						ClassUtils.setFieldValue(t, attributeModel.getPath(), event.getValue());
+					});
+					return (AbstractComponent) comp;
+				}, new ComponentRenderer());
+
 			} else {
 				column = addColumn(t -> FormatUtils.extractAndFormat(this, attributeModel, t));
 			}
@@ -146,6 +170,23 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 					.setSortProperty(attributeModel.getPath())
 					.setStyleGenerator(item -> attributeModel.isNumerical() ? "v-align-right" : "");
 		}
+	}
+
+	/**
+	 * Creates a field and fills it with the desireed value
+	 * 
+	 * @param t              the entity
+	 * @param attributeModel the attribute model
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	private <S> AbstractComponent createField(T t, AttributeModel attributeModel) {
+		AbstractComponent comp = factory.constructField(attributeModel, null, null);
+		S value = (S) ClassUtils.getFieldValue(t, attributeModel.getPath());
+		if (value != null) {
+			((HasValue<S>) comp).setValue(value);
+		}
+		return comp;
 	}
 
 	/**

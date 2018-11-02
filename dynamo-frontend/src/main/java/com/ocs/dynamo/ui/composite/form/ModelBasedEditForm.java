@@ -22,6 +22,7 @@ import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.impl.FieldFactoryContextImpl;
 import com.ocs.dynamo.domain.model.impl.FieldFactoryImpl;
 import com.ocs.dynamo.service.BaseService;
+import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.CanAssignEntity;
 import com.ocs.dynamo.ui.component.CollapsiblePanel;
 import com.ocs.dynamo.ui.component.DefaultEmbedded;
@@ -339,6 +340,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	private Map<Integer, AbstractField<?>> firstFields = new HashMap<>();
 
 	private ReceivesSignal receiver;
+
 	/**
 	 * The width of the title caption above the form (in pixels)
 	 */
@@ -383,7 +385,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		Class<T> clazz = service.getEntityClass();
 
 		// set the custom field factory
-		this.fieldFactory = FieldFactoryImpl.getValidatingInstance(getEntityModel(), getMessageService());
+		this.fieldFactory = FieldFactoryImpl.getValidatingInstance(getEntityModel(),
+				ServiceLocatorFactory.getServiceLocator().getMessageService());
 
 		// open in view mode when this is requested, and it is not a new object
 		this.viewMode = !isEditAllowed() || (formOptions.isOpenInViewMode() && entity.getId() != null);
@@ -1000,7 +1003,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			}
 
 			BindingBuilder<T, ?> builder = groups.get(viewMode).forField((HasValue<?>) field);
-		
+
 			setConverters(builder, attributeModel);
 			builder.bind(attributeModel.getPath());
 
@@ -1094,8 +1097,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			} else if (am.getType().equals(Long.class)) {
 				sBuilder.withConverter(new LongToDoubleConverter());
 			}
-		} else if (builder.getField() instanceof URLField){
-			BindingBuilder<T,String> sBuilder = (BindingBuilder<T, String>) builder;
+		} else if (builder.getField() instanceof URLField) {
+			BindingBuilder<T, String> sBuilder = (BindingBuilder<T, String>) builder;
 			sBuilder.withNullRepresentation("");
 		}
 	}
