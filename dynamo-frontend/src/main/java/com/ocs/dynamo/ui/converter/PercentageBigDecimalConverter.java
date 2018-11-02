@@ -30,8 +30,8 @@ public class PercentageBigDecimalConverter extends BigDecimalConverter {
 	/**
 	 * Constructor
 	 * 
-	 * @param precision
-	 * @param useGrouping
+	 * @param precision the desired precision
+	 * @param useGrouping whether to use thousands grouping
 	 */
 	public PercentageBigDecimalConverter(int precision, boolean useGrouping) {
 		super(precision, useGrouping);

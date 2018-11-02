@@ -250,7 +250,7 @@ public class FieldFactoryImpl<T> implements FieldFactory {
 			return null;
 		}
 
-		SerializablePredicate<?> fieldFilter = fieldFilters.get(am.getPath());
+		SerializablePredicate<?> fieldFilter = fieldFilters == null ? null : fieldFilters.get(am.getPath());
 
 		if (AbstractEntity.class.isAssignableFrom(am.getType())) {
 			// lookup or combo field for an entity
