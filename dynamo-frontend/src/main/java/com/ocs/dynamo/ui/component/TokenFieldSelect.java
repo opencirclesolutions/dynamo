@@ -141,19 +141,13 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
 		extTokenField.clear();
 		if (provider.getItems().size() > 0) {
 			for (T item : provider.getItems()) {
-				Tokenizable token = new BeanItemTokenizable(item, "fullName");
+				Tokenizable token = new BeanItemTokenizable(item, getEntityModel().getDisplayProperty());
 				extTokenField.addTokenizable(token);
 			}
 		}
 		for (ValueChangeListener valueChangeListener : valueChangeListeners) {
 			valueChangeListener.valueChange(new ValueChangeEvent(TokenFieldSelect.this, "OLD", false));
 		}
-	}
-
-	@Override
-	public Registration addValueChangeListener(ValueChangeListener<Collection<T>> listener) {
-		valueChangeListeners.add(listener);
-		return null;
 	}
 
 	@Override
@@ -327,6 +321,7 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
 		if (values != null) {
 			provider.getItems().addAll(values);
 		}
+		//addTokens();
 	}
 
 	// @Override
@@ -362,5 +357,12 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
 	@Override
 	public Collection<T> getValue() {
 		return provider.getItems();
+	}
+
+
+	@Override
+	public Registration addValueChangeListener(ValueChangeListener<Collection<T>> listener) {
+		return extTokenField.addValueChangeListener(event ->
+			listener.valueChange(new ValueChangeEvent<>(this, this, null, false)));
 	}
 }

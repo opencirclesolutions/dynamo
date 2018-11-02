@@ -23,6 +23,7 @@ import com.ocs.dynamo.ui.component.QuickAddEntityComboBox;
 import com.ocs.dynamo.ui.component.QuickAddListSelect;
 import com.ocs.dynamo.ui.component.QuickAddListSingleSelect;
 import com.ocs.dynamo.ui.component.TimeField;
+import com.ocs.dynamo.ui.component.TokenFieldSelect;
 import com.ocs.dynamo.ui.component.URLField;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.util.SystemPropertyUtils;
@@ -207,10 +208,10 @@ public class FieldFactoryImpl<T> implements FieldFactory {
 			}
 		} else {
 			// by default, use a token field
-//			 return new TokenFieldSelect<ID, S>((EntityModel<S>) em, am,
-//			 service, (SerializablePredicate<S>)fieldFilter, search, sos);
+			 return new TokenFieldSelect<ID, S>((EntityModel<S>) em, am,
+			 service, (SerializablePredicate<S>)fieldFilter, search, sos);
 		}
-		return null;
+		//return null;
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
