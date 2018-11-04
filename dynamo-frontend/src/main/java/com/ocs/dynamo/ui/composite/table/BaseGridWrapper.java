@@ -31,7 +31,6 @@ import com.vaadin.data.provider.GridSortOrderBuilder;
 import com.vaadin.data.provider.SortOrder;
 import com.vaadin.server.SerializablePredicate;
 import com.vaadin.shared.data.sort.SortDirection;
-import com.vaadin.ui.Grid;
 import com.vaadin.ui.VerticalLayout;
 
 /**
