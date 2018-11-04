@@ -13,6 +13,9 @@
  */
 package com.ocs.dynamo.ui.component;
 
+import java.io.Serializable;
+import java.util.List;
+
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
@@ -25,11 +28,7 @@ import com.ocs.dynamo.ui.utils.SortUtil;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.data.provider.SortOrder;
 import com.vaadin.server.SerializablePredicate;
-import com.vaadin.ui.ListSelect;
 import com.vaadin.ui.NativeSelect;
-
-import java.io.Serializable;
-import java.util.List;
 
 /**
  * Custom ListSingleSelect component for displaying a collection of entities.

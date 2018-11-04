@@ -1,5 +1,19 @@
 package com.ocs.dynamo.domain.model.impl;
 
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+
+import org.vaadin.teemu.switchui.Switch;
+
 import com.google.common.collect.Lists;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeDateType;
@@ -19,6 +33,7 @@ import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.component.EntityComboBox.SelectMode;
 import com.ocs.dynamo.ui.component.EntityLookupField;
 import com.ocs.dynamo.ui.component.FancyListSelect;
+import com.ocs.dynamo.ui.component.InternalLinkField;
 import com.ocs.dynamo.ui.component.QuickAddEntityComboBox;
 import com.ocs.dynamo.ui.component.QuickAddListSelect;
 import com.ocs.dynamo.ui.component.QuickAddListSingleSelect;
@@ -42,19 +57,6 @@ import com.vaadin.ui.DateTimeField;
 import com.vaadin.ui.Slider;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
-import org.vaadin.teemu.switchui.Switch;
-
-import java.io.Serializable;
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 public class FieldFactoryImpl<T> implements FieldFactory {
 
@@ -153,17 +155,6 @@ public class FieldFactoryImpl<T> implements FieldFactory {
 		this.fieldFactories = serviceLocator.getServices(FieldFactory.class);
 	}
 
-	@SuppressWarnings("unchecked")
-	private <ID extends Serializable, S extends AbstractEntity<ID>> QuickAddEntityComboBox<ID, S> constructComboBox(
-			AttributeModel am, EntityModel<?> entityModel, SerializablePredicate<?> fieldFilter, boolean search) {
-		entityModel = resolveEntityModel(entityModel, am, search);
-		final BaseService<ID, S> service = (BaseService<ID, S>) serviceLocator
-				.getServiceForEntity(entityModel.getEntityClass());
-		final SortOrder<?>[] sos = constructSortOrder(entityModel);
-		return new QuickAddEntityComboBox<ID, S>((EntityModel<S>) entityModel, am, service, SelectMode.FILTERED,
-				(SerializablePredicate<S>) fieldFilter, search, null, sos);
-	}
-
 	/**
 	 * Constructs a field for selecting multiple values from a collection
 	 * 
@@ -211,6 +202,17 @@ public class FieldFactoryImpl<T> implements FieldFactory {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
+	private <ID extends Serializable, S extends AbstractEntity<ID>> QuickAddEntityComboBox<ID, S> constructComboBox(
+			AttributeModel am, EntityModel<?> entityModel, SerializablePredicate<?> fieldFilter, boolean search) {
+		entityModel = resolveEntityModel(entityModel, am, search);
+		final BaseService<ID, S> service = (BaseService<ID, S>) serviceLocator
+				.getServiceForEntity(entityModel.getEntityClass());
+		final SortOrder<?>[] sos = constructSortOrder(entityModel);
+		return new QuickAddEntityComboBox<ID, S>((EntityModel<S>) entityModel, am, service, SelectMode.FILTERED,
+				(SerializablePredicate<S>) fieldFilter, search, null, sos);
+	}
+
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private <E extends Enum> ComboBox constructEnumComboBox(final Class<E> enumClass) {
 		ComboBox cb = new ComboBox<>();
@@ -243,13 +245,19 @@ public class FieldFactoryImpl<T> implements FieldFactory {
 
 		// in certain cases, never render a field
 		if (EditableType.READ_ONLY.equals(am.getEditableType())
-				&& (!am.isUrl() && !AttributeType.DETAIL.equals(am.getAttributeType())) && !search) {
+				&& (!am.isUrl() && !am.isNavigable() && !AttributeType.DETAIL.equals(am.getAttributeType()))
+				&& !search) {
 			return null;
 		}
 
 		SerializablePredicate<?> fieldFilter = fieldFilters == null ? null : fieldFilters.get(am.getPath());
 
-		if (AbstractEntity.class.isAssignableFrom(am.getType())) {
+		if (am.isNavigable()) {
+			// navigable link (note: place this BEFORE checking for an entity or entity
+			// collections, the link
+			// (in view mode) beats any selection components
+			field = constructInternalLinkField(am, fieldEntityModel);
+		} else if (AbstractEntity.class.isAssignableFrom(am.getType())) {
 			// lookup or combo field for an entity
 			field = constructSelect(am, fieldEntityModel, fieldFilter);
 		} else if (Collection.class.isAssignableFrom(am.getType())) {
@@ -317,6 +325,20 @@ public class FieldFactoryImpl<T> implements FieldFactory {
 	public AbstractField<?> constructField(Context<?> context) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	/**
+	 * Constructs an internal link field
+	 * 
+	 * @param am
+	 * @param entityModel
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public <ID extends Serializable, S extends AbstractEntity<ID>> AbstractField<?> constructInternalLinkField(
+			AttributeModel am, EntityModel<?> entityModel) {
+		EntityModel<?> em = resolveEntityModel(entityModel, am, true);
+		return new InternalLinkField<>(am, (EntityModel<S>) em, null);
 	}
 
 	@SuppressWarnings("unchecked")

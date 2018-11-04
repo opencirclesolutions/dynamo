@@ -12,7 +12,7 @@
    limitations under the License.
  */
 package com.ocs.dynamo.ui.component;
-//TODO
+
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.utils.StringUtils;
 import com.vaadin.server.ExternalResource;
@@ -135,7 +135,6 @@ public class URLField extends CustomField<String> {
 			if (!org.apache.commons.lang.StringUtils.isEmpty(value)) {
 				String temp = StringUtils.prependProtocol(value);
 				link = new Link(temp, new ExternalResource(temp), "_blank", 0, 0, BorderStyle.DEFAULT);
-
 				bar.addComponent(link);
 			} else {
 				link = null;

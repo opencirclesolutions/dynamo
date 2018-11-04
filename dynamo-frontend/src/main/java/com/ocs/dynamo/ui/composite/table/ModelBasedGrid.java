@@ -222,7 +222,7 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 	@SuppressWarnings("unchecked")
 	private <ID2 extends Serializable, S extends AbstractEntity<ID2>> InternalLinkField<ID2, S> generateInternalLinkField(
 			AttributeModel attributeModel, Object value) {
-		return new InternalLinkField<ID2, S>(attributeModel, (S) value);
+		return new InternalLinkField<ID2, S>(attributeModel, null, (S) value);
 	}
 
 	public String getCurrencySymbol() {

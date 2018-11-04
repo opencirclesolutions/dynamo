@@ -431,7 +431,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 				&& (AttributeType.BASIC.equals(type) || AttributeType.LOB.equals(type)
 						|| attributeModel.isComplexEditable())) {
 			if (EditableType.READ_ONLY.equals(attributeModel.getEditableType()) || isViewMode()) {
-				if (attributeModel.isUrl()) {
+				if (attributeModel.isUrl() || attributeModel.isNavigable()) {
 					// display a complex component even in read-only mode
 					constructField(parent, entityModel, attributeModel, true, tabIndex, sameRow);
 				} else if (AttributeType.LOB.equals(type) && attributeModel.isImage()) {
@@ -960,7 +960,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	 * @param attributeModel the attribute model
 	 * @param viewMode       whether the screen is in view mode
 	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({ "unchecked" })
 	private void constructField(Layout parent, EntityModel<T> entityModel, AttributeModel attributeModel,
 			boolean viewMode, int tabIndex, boolean sameRow) {
 
@@ -968,14 +968,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		// allow the user to override the construction of a field
 		AbstractComponent field = constructCustomField(entityModel, attributeModel, viewMode);
 		if (field == null) {
-			// if no custom field is defined, then use the default
-			FieldFactoryContextImpl c = new FieldFactoryContextImpl()
-					.setFieldEntityModel((EntityModel) getFieldEntityModel(attributeModel));
-			c.setAttributeModel(attributeModel);
-			c.setFieldFilters(getFieldFilters());
-			c.setParentEntity(entity);
-			c.setViewMode(viewMode);
-
 			field = fieldFactory.constructField(attributeModel, fieldEntityModel, getFieldFilters());
 		}
 
@@ -1010,6 +1002,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 			BindingBuilder<T, ?> builder = groups.get(viewMode).forField((HasValue<?>) field);
 
+			// TODO:  maybe move this to field factory as well?
 			setConverters(builder, attributeModel);
 			builder.bind(attributeModel.getPath());
 

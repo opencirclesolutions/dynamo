@@ -12,6 +12,9 @@
    limitations under the License.
  */
 package com.ocs.dynamo.ui.component;
+
+import java.io.Serializable;
+
 //TODO
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
@@ -23,8 +26,6 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.ValoTheme;
-
-import java.io.Serializable;
 
 /**
  * A field for displaying an internal link
@@ -43,22 +44,26 @@ public class InternalLinkField<ID extends Serializable, T extends AbstractEntity
 
 	private AttributeModel attributeModel;
 
+	private EntityModel<T> entityModel;
+
 	/**
 	 * Constructor
 	 * 
 	 * @param attributeModel the attribute model
 	 * @param value          the initial value
 	 */
-	public InternalLinkField(AttributeModel attributeModel, T value) {
+	public InternalLinkField(AttributeModel attributeModel, EntityModel<T> entityModel, T value) {
 		this.value = value;
 		this.attributeModel = attributeModel;
+		this.entityModel = entityModel;
 	}
 
 	@Override
 	protected Component initContent() {
 
 		T t = getValue();
-		String str = FormatUtils.formatEntity(attributeModel.getNestedEntityModel(), t);
+		String str = FormatUtils.formatEntity(entityModel != null ? entityModel : attributeModel.getNestedEntityModel(),
+				t);
 		linkButton = new Button(str);
 		linkButton.setSizeFull();
 		linkButton.setStyleName(ValoTheme.BUTTON_LINK);
