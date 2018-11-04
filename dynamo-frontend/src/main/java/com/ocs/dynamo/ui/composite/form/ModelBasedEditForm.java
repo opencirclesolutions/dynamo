@@ -1002,7 +1002,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 			BindingBuilder<T, ?> builder = groups.get(viewMode).forField((HasValue<?>) field);
 
-			// TODO:  maybe move this to field factory as well?
+			// TODO: maybe move this to field factory as well?
 			setConverters(builder, attributeModel);
 			builder.bind(attributeModel.getPath());
 
@@ -2003,15 +2003,15 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		if (ValidationMode.VALIDATE_DIRECTLY.equals(getFormOptions().getValidationMode())) {
 
 			BinderValidationStatus<T> status = groups.get(isViewMode()).validate();
+			error = !status.isOk();
 
-			groups.get(isViewMode()).getFields().forEach(f -> {
+			// validate nested form and components
+			error |= groups.get(isViewMode()).getFields().anyMatch(f -> {
 				if (f instanceof SignalsParent) {
-					((SignalsParent) f).validateAllFields();
+					return ((SignalsParent) f).validateAllFields();
 				}
-
+				return false;
 			});
-
-			// TODO: what to do with the validation result
 
 		}
 		return error;

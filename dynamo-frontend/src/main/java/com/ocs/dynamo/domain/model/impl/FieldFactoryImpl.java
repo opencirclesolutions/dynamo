@@ -232,7 +232,8 @@ public class FieldFactoryImpl<T> implements FieldFactory {
 	}
 
 	/**
-	 * Constructs a field
+	 * Constructs a field - this is the main method that must be called to construct
+	 * a field
 	 * 
 	 * @param am               the attribute model
 	 * @param fieldEntityModel the entity model used for the field
