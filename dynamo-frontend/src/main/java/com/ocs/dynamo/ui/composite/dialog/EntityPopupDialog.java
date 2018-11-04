@@ -21,6 +21,7 @@ import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
+import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.composite.layout.SimpleEditLayout;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
@@ -29,8 +30,8 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Layout;
 
 /**
- * A popup dialog for adding a new entity or viewing the details of an existing
- * entrty
+ * A pop-up dialog for adding a new entity or viewing the details of an existing
+ * entry
  * 
  * @author bas.rutten
  *
@@ -160,9 +161,16 @@ public class EntityPopupDialog<ID extends Serializable, T extends AbstractEntity
 		return layout.getEntity();
 	}
 
+	public SimpleEditLayout<ID, T> getLayout() {
+		return layout;
+	}
+
+	public Button getOkButton() {
+		return okButton;
+	}
+
 	public List<Button> getSaveButtons() {
-		// return layout.getEditForm().getSaveButtons();
-		return null;
+		return layout.getEditForm().getSaveButtons();
 	}
 
 	@Override
@@ -174,16 +182,8 @@ public class EntityPopupDialog<ID extends Serializable, T extends AbstractEntity
 		// overwrite in subclasses when needed
 	}
 
-	// protected void postProcessEditFields(ModelBasedEditForm<ID, T> editForm) {
-	// // overwrite in subclasses when needed
-	// }
-
-	public SimpleEditLayout<ID, T> getLayout() {
-		return layout;
-	}
-
-	public Button getOkButton() {
-		return okButton;
+	protected void postProcessEditFields(ModelBasedEditForm<ID, T> editForm) {
+		// overwrite in subclasses when needed
 	}
 
 }
