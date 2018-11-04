@@ -17,6 +17,13 @@ import org.apache.commons.lang.ObjectUtils;
 
 import com.ocs.dynamo.utils.ClassUtils;
 
+/**
+ * A predicate for comparing whether a property value matches the provided value
+ * 
+ * @author Bas Rutten
+ *
+ * @param <T>
+ */
 public class EqualsPredicate<T> extends ComparePredicate<T> {
 
 	private static final long serialVersionUID = -3417965590759648041L;

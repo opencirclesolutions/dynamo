@@ -28,5 +28,9 @@ import com.ocs.dynamo.domain.AbstractEntity;
 @FunctionalInterface
 public interface CanAssignEntity<ID, T extends AbstractEntity<ID>> {
 
+	/**
+	 * Assigns the new entity to the component
+	 * @param t the entity to assignF
+	 */
     void assignEntity(T t);
 }

@@ -253,6 +253,7 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 	@SuppressWarnings("unchecked")
 	@Override
 	public void refresh() {
+		clear();
 		ListDataProvider<T> provider = (ListDataProvider<T>) getDataProvider();
 		if (SelectMode.ALL.equals(selectMode)) {
 			// add all items (but sorted)
@@ -272,6 +273,7 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 				provider.getItems().addAll(list);
 			}
 		}
+		provider.refreshAll();
 	}
 
 	public void refresh(SerializablePredicate<T> filter) {

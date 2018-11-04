@@ -21,8 +21,7 @@ import com.vaadin.server.SerializablePredicate;
  * field)
  * 
  * @author bas.rutten
- * @param <T>
- *            type parameter
+ * @param <T> the type of the object
  */
 public interface Cascadable<T> {
 
@@ -30,8 +29,7 @@ public interface Cascadable<T> {
 	 * Add the provided filter to the current filter for the component. Used for
 	 * cascading
 	 * 
-	 * @param additionalFilter
-	 *            the additional filter to set
+	 * @param additionalFilter the additional filter to set
 	 */
 	void setAdditionalFilter(SerializablePredicate<T> additionalFilter);
 

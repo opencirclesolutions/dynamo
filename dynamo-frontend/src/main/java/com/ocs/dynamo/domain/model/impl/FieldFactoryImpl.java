@@ -199,19 +199,16 @@ public class FieldFactoryImpl<T> implements FieldFactory {
 			// simple list select if everything else fails or is not applicable
 			if (multipleSelect) {
 				return new QuickAddListSelect<ID, S>((EntityModel<S>) em, am, service,
-						(SerializablePredicate<S>) fieldFilter,
-						SystemPropertyUtils.getDefaultListSelectRows(), sos);
+						(SerializablePredicate<S>) fieldFilter, SystemPropertyUtils.getDefaultListSelectRows(), sos);
 			} else {
 				return new QuickAddListSingleSelect<>((EntityModel<S>) em, am, service,
-						(SerializablePredicate<S>) fieldFilter,
-						SystemPropertyUtils.getDefaultListSelectRows(), sos);
+						(SerializablePredicate<S>) fieldFilter, SystemPropertyUtils.getDefaultListSelectRows(), sos);
 			}
 		} else {
 			// by default, use a token field
-			 return new TokenFieldSelect<ID, S>((EntityModel<S>) em, am,
-			 service, (SerializablePredicate<S>)fieldFilter, search, sos);
+			return new TokenFieldSelect<ID, S>((EntityModel<S>) em, am, service, (SerializablePredicate<S>) fieldFilter,
+					search, sos);
 		}
-		//return null;
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -255,6 +252,9 @@ public class FieldFactoryImpl<T> implements FieldFactory {
 		if (AbstractEntity.class.isAssignableFrom(am.getType())) {
 			// lookup or combo field for an entity
 			field = constructSelect(am, fieldEntityModel, fieldFilter);
+		} else if (Collection.class.isAssignableFrom(am.getType())) {
+			// render a multiple select component for a collection
+			field = constructCollectionSelect(am, fieldEntityModel, null, true, search);
 		} else if (AttributeTextFieldMode.TEXTAREA.equals(am.getTextFieldMode()) && !search) {
 			field = new TextArea();
 		} else if (Enum.class.isAssignableFrom(am.getType())) {
@@ -371,9 +371,8 @@ public class FieldFactoryImpl<T> implements FieldFactory {
 			// single select lookup field
 			field = constructLookupField(am, fieldEntityModel, fieldFilter, search, false);
 		} else {
-			 //list select (single select)
-			 field = this.constructCollectionSelect(am, fieldEntityModel, fieldFilter,
-			 false, search);
+			// list select (single select)
+			field = this.constructCollectionSelect(am, fieldEntityModel, fieldFilter, false, search);
 		}
 		return field;
 	}

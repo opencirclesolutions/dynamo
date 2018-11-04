@@ -82,11 +82,6 @@ public class ServiceBasedGridWrapper<ID extends Serializable, T extends Abstract
 		return maxResults;
 	}
 
-	@SuppressWarnings("unchecked")
-	public ModelBasedGrid<ID, T> getModelBasedGrid() {
-		return (ModelBasedGrid<ID, T>) super.getGrid();
-	}
-
 	@Override
 	protected void initSortingAndFiltering() {
 		super.initSortingAndFiltering();

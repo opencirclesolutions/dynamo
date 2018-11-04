@@ -27,13 +27,20 @@ public class FilterChangeEvent<T> implements Serializable {
 
 	private static final long serialVersionUID = 7833584773075924736L;
 
+	/**
+	 * The property to search on
+	 */
 	private final String propertyId;
 
+	/**
+	 * The old filter value
+	 */
 	private final SerializablePredicate<T> oldFilter;
 
+	/**
+	 * The new filter value
+	 */
 	private final SerializablePredicate<T> newFilter;
-
-	private final transient Object value;
 
 	/**
 	 * Constructor
@@ -43,12 +50,11 @@ public class FilterChangeEvent<T> implements Serializable {
 	 * @param newFilter  the new filter
 	 * @param value      the new value
 	 */
-	public FilterChangeEvent(String propertyId, SerializablePredicate<T> oldFilter, SerializablePredicate<T> newFilter,
-			Object value) {
+	public FilterChangeEvent(String propertyId, SerializablePredicate<T> oldFilter,
+			SerializablePredicate<T> newFilter) {
 		this.propertyId = propertyId;
 		this.oldFilter = oldFilter;
 		this.newFilter = newFilter;
-		this.value = value;
 	}
 
 	public SerializablePredicate<T> getOldFilter() {
@@ -63,7 +69,4 @@ public class FilterChangeEvent<T> implements Serializable {
 		return propertyId;
 	}
 
-	public Object getValue() {
-		return value;
-	}
 }

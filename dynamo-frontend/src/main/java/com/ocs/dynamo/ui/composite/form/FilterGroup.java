@@ -263,7 +263,7 @@ public class FilterGroup<T> {
 
 		// propagate the change (this will trigger the actual search action)
 		if (!listeners.isEmpty()) {
-			broadcast(new FilterChangeEvent<T>(propertyId, oldFilter, filter, value));
+			broadcast(new FilterChangeEvent<T>(propertyId, oldFilter, filter));
 		}
 	}
 

@@ -16,9 +16,12 @@ package com.ocs.dynamo.filter.listener;
 import java.io.Serializable;
 
 /**
- * Interface for components that have to respond to a filter change
+ * An interface for indicating that a component is interested in a filter value
+ * change
  * 
- * @author bas.rutten
+ * @author Bas Rutten
+ *
+ * @param <T> the type of the object that is being filtered
  */
 @FunctionalInterface
 public interface FilterListener<T> extends Serializable {
