@@ -1020,7 +1020,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 				// add the first field (without caption, unless it's a checkbox)
 				if (!(field instanceof CheckBox)) {
-					((CheckBox) field).setCaption("");
+					field.setCaption("");
 				}
 
 				// calculate expansion factors
@@ -1306,6 +1306,10 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			return (AbstractComponent) binding.get().getField();
 		}
 		return null;
+	}
+
+	public AbstractComponent getField(String fieldName) {
+		return getField(isViewMode(), fieldName);
 	}
 
 	private List<Button> filterButtons(String data) {
