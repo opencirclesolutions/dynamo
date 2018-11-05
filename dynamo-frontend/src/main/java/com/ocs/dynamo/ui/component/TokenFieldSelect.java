@@ -321,7 +321,7 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
 		if (values != null) {
 			provider.getItems().addAll(values);
 		}
-		//addTokens();
+		addTokens();
 	}
 
 	// @Override
