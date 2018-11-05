@@ -1071,6 +1071,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 	@SuppressWarnings("unchecked")
 	private void setConverters(BindingBuilder<T, ?> builder, AttributeModel am) {
+
 		if (am.isWeek()) {
 			BindingBuilder<T, String> sBuilder = (BindingBuilder<T, String>) builder;
 			sBuilder.withConverter(new LocalDateWeekCodeConverter());

@@ -106,7 +106,7 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
 
 	private final ListDataProvider<T> provider;
 
-	private final Collection<ValueChangeListener> valueChangeListeners;
+	private final Collection<ValueChangeListener<Collection<T>>> valueChangeListeners;
 
 	private boolean addAllowed = false;
 
@@ -145,8 +145,9 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
 				extTokenField.addTokenizable(token);
 			}
 		}
-		for (ValueChangeListener valueChangeListener : valueChangeListeners) {
-			valueChangeListener.valueChange(new ValueChangeEvent(TokenFieldSelect.this, "OLD", false));
+
+		for (ValueChangeListener<Collection<T>> valueChangeListener : valueChangeListeners) {
+			valueChangeListener.valueChange(new ValueChangeEvent<Collection<T>>(TokenFieldSelect.this, null, false));
 		}
 	}
 
@@ -219,14 +220,6 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
 	public EntityComboBox<ID, T> getComboBox() {
 		return comboBox;
 	}
-
-	// @Override
-	// protected List<T> getInternalValue() {
-	// if (container.size() == 0) {
-	// return new ArrayList<>();
-	// }
-	// return container.getItemIds();
-	// }
 
 	public ExtTokenField getTokenField() {
 		return extTokenField;
@@ -303,13 +296,11 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
 		}
 	}
 
-
 	/**
 	 * Update token selections
 	 */
 	private void setupContainerFieldSync() {
 		provider.addDataProviderListener(event -> {
-			System.out.println("Adding tokens");
 			addTokens();
 		});
 	}
@@ -351,18 +342,17 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
 				provider.getItems().addAll(value);
 			}
 		}
-
 	}
 
 	@Override
 	public Collection<T> getValue() {
-		return provider.getItems();
+		System.out.println(provider.getItems().size());
+		return Sets.newHashSet(provider.getItems());
 	}
-
 
 	@Override
 	public Registration addValueChangeListener(ValueChangeListener<Collection<T>> listener) {
-		return extTokenField.addValueChangeListener(event ->
-			listener.valueChange(new ValueChangeEvent<>(this, this, null, false)));
+		return extTokenField
+				.addValueChangeListener(event -> listener.valueChange(new ValueChangeEvent<>(this, this, null, false)));
 	}
 }

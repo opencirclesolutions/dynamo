@@ -177,7 +177,7 @@ public class QuickAddListSelect<ID extends Serializable, T extends AbstractEntit
 	public void setValue(Collection<T> value) {
 		super.setValue(value);
 		if (listSelect != null) {
-			if (value == null){
+			if (value == null) {
 				value = Collections.emptyList();
 			}
 			listSelect.setValue(Sets.newHashSet(value));
@@ -199,7 +199,7 @@ public class QuickAddListSelect<ID extends Serializable, T extends AbstractEntit
 	@Override
 	protected void doSetValue(Collection<T> value) {
 		if (listSelect != null) {
-			if (value == null){
+			if (value == null) {
 				value = Collections.emptyList();
 			}
 			listSelect.setValue(Sets.newHashSet(value));
@@ -207,10 +207,9 @@ public class QuickAddListSelect<ID extends Serializable, T extends AbstractEntit
 	}
 
 	@Override
-	public Registration addValueChangeListener(final ValueChangeListener<Collection<T>> listener) {
-
+	public Registration addValueChangeListener(ValueChangeListener<Collection<T>> listener) {
 		return listSelect.addValueChangeListener(event -> {
-			listener.valueChange(new ValueChangeEvent<>(this, this, null, false ));
+			listener.valueChange(new ValueChangeEvent<>(this, event.getOldValue(), false));
 		});
 	}
 }
