@@ -74,6 +74,7 @@ public abstract class CustomEntityField<ID extends Serializable, T extends Abstr
 	 * @param service
 	 * @param entityModel
 	 * @param attributeModel
+	 * @param filter 
 	 */
 	public CustomEntityField(BaseService<ID, T> service, EntityModel<T> entityModel, AttributeModel attributeModel,
 			SerializablePredicate<T> filter) {

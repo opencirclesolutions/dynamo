@@ -17,6 +17,7 @@ import java.time.LocalDate;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.utils.DateUtils;
 import com.vaadin.data.Converter;
 import com.vaadin.data.Result;
@@ -38,7 +39,12 @@ public class LocalDateWeekCodeConverter implements Converter<String, LocalDate> 
 		if (StringUtils.isEmpty(value)) {
 			return Result.ok(null);
 		}
-		return Result.ok(DateUtils.toStartDateOfWeek(value));
+
+		try {
+			return Result.ok(DateUtils.toStartDateOfWeek(value));
+		} catch (OCSRuntimeException ex) {
+			return Result.error(ex.getMessage());
+		}
 	}
 
 	@Override

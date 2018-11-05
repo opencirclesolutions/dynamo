@@ -251,6 +251,9 @@ public class DateUtilsTest {
 
 	@Test
 	public void testGetStartDateOfWeek() {
+		
+		System.out.println("2014-01".matches("\\d{4}-\\d{2}"));
+		
 		Assert.assertEquals(DateUtils.createLocalDate("30122013"), DateUtils.toStartDateOfWeek("2014-01"));
 		Assert.assertEquals(DateUtils.createLocalDate("06012014"), DateUtils.toStartDateOfWeek("2014-02"));
 		Assert.assertEquals(DateUtils.createLocalDate("29122014"), DateUtils.toStartDateOfWeek("2015-01"));
@@ -300,6 +303,7 @@ public class DateUtilsTest {
 
 		Assert.assertTrue(DateUtils.isValidWeekCode(null));
 
+		Assert.assertFalse(DateUtils.isValidWeekCode("abc"));
 		Assert.assertFalse(DateUtils.isValidWeekCode("2013"));
 		Assert.assertFalse(DateUtils.isValidWeekCode("2013-1"));
 
@@ -308,7 +312,6 @@ public class DateUtilsTest {
 		Assert.assertTrue(DateUtils.isValidWeekCode("2013-02"));
 		Assert.assertTrue(DateUtils.isValidWeekCode("2013-52"));
 		Assert.assertFalse(DateUtils.isValidWeekCode("2013-53"));
-
 		Assert.assertFalse(DateUtils.isValidWeekCode("2014-53"));
 
 		// 2015 actually has a week 53

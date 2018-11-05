@@ -27,13 +27,14 @@ import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.component.InternalLinkField;
 import com.ocs.dynamo.ui.component.URLField;
 import com.ocs.dynamo.ui.utils.FormatUtils;
+import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.utils.ClassUtils;
 import com.vaadin.data.BeanPropertySet;
-import com.vaadin.data.Binder;
 import com.vaadin.data.HasValue;
 import com.vaadin.data.PropertyFilterDefinition;
 import com.vaadin.data.PropertySet;
 import com.vaadin.data.provider.DataProvider;
+import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.server.SerializablePredicate;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Grid;
@@ -122,10 +123,6 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 			// false, TableExportMode.CSV, null));
 		}
 
-		// update the table caption to reflect the number of items
-		if (isUpdateTableCaption()) {
-			getDataProvider().addDataProviderListener(e -> updateTableCaption());
-		}
 	}
 
 	/**
@@ -138,9 +135,6 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 	 */
 	private void addColumn(final AttributeModel attributeModel) {
 		if (attributeModel.isVisibleInTable()) {
-
-			Binder<T> binder = getEditor().getBinder();
-
 			Column<T, ?> column;
 			if (attributeModel.isUrl()) {
 				// URL field
@@ -228,7 +222,7 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 	@SuppressWarnings("unchecked")
 	private <ID2 extends Serializable, S extends AbstractEntity<ID2>> InternalLinkField<ID2, S> generateInternalLinkField(
 			AttributeModel attributeModel, Object value) {
-		return new InternalLinkField<ID2, S>(attributeModel, (S) value);
+		return new InternalLinkField<ID2, S>(attributeModel, null, (S) value);
 	}
 
 	public String getCurrencySymbol() {
@@ -306,9 +300,19 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 	/**
 	 * Updates the table caption in response to a change of the data set
 	 */
+	@SuppressWarnings("unchecked")
 	public void updateTableCaption() {
-//		setCaption(entityModel.getDisplayNamePlural() + " " + messageService.getMessage("ocs.showing.results",
-//				VaadinUtils.getLocale(), getDataProvider().size(null)));
+		if (updateTableCaption) {
+			int size = 0;
+			DataProvider<?, ?> dp = getDataCommunicator().getDataProvider();
+			if (dp instanceof ListDataProvider) {
+				size = ((ListDataProvider<T>) dp).getItems().size();
+			} else {
+				size = ((BaseDataProvider<ID, T>) dp).getSize();
+			}
+			setCaption(entityModel.getDisplayNamePlural() + " "
+					+ messageService.getMessage("ocs.showing.results", VaadinUtils.getLocale(), size));
+		}
 	}
 
 }

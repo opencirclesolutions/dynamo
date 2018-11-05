@@ -12,18 +12,47 @@
  */
 package com.ocs.dynamo.ui.composite.form;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
+
+import javax.persistence.CollectionTable;
+
+import org.apache.commons.io.FilenameUtils;
+import org.vaadin.teemu.switchui.Switch;
+
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.AttributeType;
+import com.ocs.dynamo.domain.model.CascadeMode;
 import com.ocs.dynamo.domain.model.EditableType;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.impl.FieldFactoryContextImpl;
 import com.ocs.dynamo.domain.model.impl.FieldFactoryImpl;
+import com.ocs.dynamo.exception.OCSRuntimeException;
+import com.ocs.dynamo.filter.EqualsPredicate;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.CanAssignEntity;
+import com.ocs.dynamo.ui.component.Cascadable;
 import com.ocs.dynamo.ui.component.CollapsiblePanel;
 import com.ocs.dynamo.ui.component.DefaultEmbedded;
 import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
@@ -74,29 +103,6 @@ import com.vaadin.ui.Upload.Receiver;
 import com.vaadin.ui.Upload.SucceededEvent;
 import com.vaadin.ui.Upload.SucceededListener;
 import com.vaadin.ui.VerticalLayout;
-import org.apache.commons.io.FilenameUtils;
-import org.vaadin.teemu.switchui.Switch;
-
-import javax.persistence.CollectionTable;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.OutputStream;
-import java.io.Serializable;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 /**
  * An edit form that is constructed based on an entity model
@@ -425,7 +431,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 				&& (AttributeType.BASIC.equals(type) || AttributeType.LOB.equals(type)
 						|| attributeModel.isComplexEditable())) {
 			if (EditableType.READ_ONLY.equals(attributeModel.getEditableType()) || isViewMode()) {
-				if (attributeModel.isUrl()) {
+				if (attributeModel.isUrl() || attributeModel.isNavigable()) {
 					// display a complex component even in read-only mode
 					constructField(parent, entityModel, attributeModel, true, tabIndex, sameRow);
 				} else if (AttributeType.LOB.equals(type) && attributeModel.isImage()) {
@@ -895,34 +901,34 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	/**
 	 * Adds any value change listeners for taking care of cascading search
 	 */
-	private void constructCascadeListeners() {
-//		for (final AttributeModel am : getEntityModel().getCascadeAttributeModels()) {
-//			HasValue<?> field = groups.get(isViewMode()).getBinding(am.getPath()).get().getField();
-//			if (field != null) {
-//				field.addValueChangeListener(event -> {
-//					for (String cascadePath : am.getCascadeAttributes()) {
-//						CascadeMode cm = am.getCascadeMode(cascadePath);
-//						if (CascadeMode.BOTH.equals(cm) || CascadeMode.EDIT.equals(cm)) {
-//							AbstractField<?> cascadeField = groups.get(isViewMode()).getFields().(cascadePath);
-//							if (cascadeField instanceof Cascadable) {
-//								Cascadable<?> ca = (Cascadable<?>) cascadeField;
-//								if (event.getValue() == null) {
-//									ca.clearAdditionalFilter();
-//								} else {
-//									ca.setAdditionalFilter(new EqualsPredicate
-//											<T>(am.getCascadeFilterPath(cascadePath),
-//											event.getValue()));
-//								}
-//							} else {
-//								// field not found or does not support cascading
-//								throw new OCSRuntimeException(
-//										"Cannot setup cascading from " + am.getPath() + " to " + cascadePath);
-//							}
-//						}
-//					}
-//				});
-//			}
-//		}
+	@SuppressWarnings("unchecked")
+	private <S> void constructCascadeListeners() {
+		for (final AttributeModel am : getEntityModel().getCascadeAttributeModels()) {
+			HasValue<S> field = (HasValue<S>) getField(isViewMode(), am.getPath());
+			if (field != null) {
+				field.addValueChangeListener(event -> {
+					for (String cascadePath : am.getCascadeAttributes()) {
+						CascadeMode cm = am.getCascadeMode(cascadePath);
+						if (CascadeMode.BOTH.equals(cm) || CascadeMode.EDIT.equals(cm)) {
+							AbstractComponent cascadeField = getField(isViewMode(), cascadePath);
+							if (cascadeField instanceof Cascadable) {
+								Cascadable<S> ca = (Cascadable<S>) cascadeField;
+								if (event.getValue() == null) {
+									ca.clearAdditionalFilter();
+								} else {
+									ca.setAdditionalFilter(new EqualsPredicate<S>(am.getCascadeFilterPath(cascadePath),
+											event.getValue()));
+								}
+							} else {
+								// field not found or does not support cascading
+								throw new OCSRuntimeException(
+										"Cannot setup cascading from " + am.getPath() + " to " + cascadePath);
+							}
+						}
+					}
+				});
+			}
+		}
 	}
 
 	/**
@@ -954,7 +960,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	 * @param attributeModel the attribute model
 	 * @param viewMode       whether the screen is in view mode
 	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({ "unchecked" })
 	private void constructField(Layout parent, EntityModel<T> entityModel, AttributeModel attributeModel,
 			boolean viewMode, int tabIndex, boolean sameRow) {
 
@@ -962,14 +968,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		// allow the user to override the construction of a field
 		AbstractComponent field = constructCustomField(entityModel, attributeModel, viewMode);
 		if (field == null) {
-			// if no custom field is defined, then use the default
-			FieldFactoryContextImpl c = new FieldFactoryContextImpl()
-					.setFieldEntityModel((EntityModel) getFieldEntityModel(attributeModel));
-			c.setAttributeModel(attributeModel);
-			c.setFieldFilters(getFieldFilters());
-			c.setParentEntity(entity);
-			c.setViewMode(viewMode);
-
 			field = fieldFactory.constructField(attributeModel, fieldEntityModel, getFieldFilters());
 		}
 
@@ -1004,6 +1002,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 			BindingBuilder<T, ?> builder = groups.get(viewMode).forField((HasValue<?>) field);
 
+			// TODO: maybe move this to field factory as well?
 			setConverters(builder, attributeModel);
 			builder.bind(attributeModel.getPath());
 
@@ -2008,15 +2007,15 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		if (ValidationMode.VALIDATE_DIRECTLY.equals(getFormOptions().getValidationMode())) {
 
 			BinderValidationStatus<T> status = groups.get(isViewMode()).validate();
+			error = !status.isOk();
 
-			groups.get(isViewMode()).getFields().forEach(f -> {
+			// validate nested form and components
+			error |= groups.get(isViewMode()).getFields().anyMatch(f -> {
 				if (f instanceof SignalsParent) {
-					((SignalsParent) f).validateAllFields();
+					return ((SignalsParent) f).validateAllFields();
 				}
-
+				return false;
 			});
-
-			// TODO: what to do with the validation result
 
 		}
 		return error;

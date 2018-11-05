@@ -74,6 +74,6 @@ public class FixedGridWrapper<ID extends Serializable, T extends AbstractEntity<
 
 	@Override
 	public void search(SerializablePredicate<T> filter) {
-		// do nothing
+		// do nothing (collection of items is fixed)
 	}
 }

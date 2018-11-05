@@ -31,7 +31,6 @@ import com.vaadin.data.provider.GridSortOrderBuilder;
 import com.vaadin.data.provider.SortOrder;
 import com.vaadin.server.SerializablePredicate;
 import com.vaadin.shared.data.sort.SortDirection;
-import com.vaadin.ui.Grid;
 import com.vaadin.ui.VerticalLayout;
 
 /**
@@ -84,7 +83,7 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 	/**
 	 * The wrapped grid component
 	 */
-	private Grid<T> grid;
+	private ModelBasedGrid<ID, T> grid;
 
 	/**
 	 * Constructor
@@ -149,7 +148,7 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 	 * 
 	 * @return
 	 */
-	protected Grid<T> constructGrid() {
+	protected ModelBasedGrid<ID, T> constructGrid() {
 		return new ModelBasedGrid<ID, T>(this.dataProvider, entityModel, allowExport, false);
 	}
 
@@ -178,7 +177,7 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 	 * 
 	 * @return
 	 */
-	public Grid<T> getGrid() {
+	public ModelBasedGrid<ID, T> getGrid() {
 		if (grid == null) {
 			grid = constructGrid();
 		}
@@ -261,7 +260,7 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 		this.dataProvider = dataProvider;
 	}
 
-	protected void setGrid(Grid<T> grid) {
+	protected void setGrid(ModelBasedGrid<ID, T> grid) {
 		this.grid = grid;
 	}
 

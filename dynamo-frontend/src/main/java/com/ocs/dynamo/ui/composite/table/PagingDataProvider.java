@@ -20,10 +20,11 @@ import com.vaadin.server.SerializablePredicate;
  * @param <ID>
  * @param <T>
  */
-public class PagingDataProvider<ID extends Serializable, T extends AbstractEntity<ID>>
-		extends BaseDataProvider<ID, T> {
+public class PagingDataProvider<ID extends Serializable, T extends AbstractEntity<ID>> extends BaseDataProvider<ID, T> {
 
 	private static final long serialVersionUID = 8238057223431007376L;
+
+	private int size;
 
 	/**
 	 * 
@@ -38,7 +39,8 @@ public class PagingDataProvider<ID extends Serializable, T extends AbstractEntit
 	@Override
 	public int size(Query<T, SerializablePredicate<T>> query) {
 		FilterConverter<T> converter = new FilterConverter<>(getEntityModel());
-		return (int) getService().count(converter.convert(query.getFilter().orElse(null)), false);
+		size = (int) getService().count(converter.convert(query.getFilter().orElse(null)), false);
+		return size;
 	}
 
 	@Override
@@ -51,6 +53,11 @@ public class PagingDataProvider<ID extends Serializable, T extends AbstractEntit
 		List<T> result = getService().fetch(converter.convert(query.getFilter().orElse(null)), page, query.getLimit(),
 				so, getJoins());
 		return result.stream();
+	}
+
+	@Override
+	protected int getSize() {
+		return size;
 	}
 
 }

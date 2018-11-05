@@ -71,4 +71,9 @@ public class IdBasedDataProvider<ID extends Serializable, T extends AbstractEnti
 		return getService().fetchByIds(results, so, getJoins()).stream();
 	}
 
+	@Override
+	protected int getSize() {
+		return ids == null ? 0: ids.size();
+	}
+
 }

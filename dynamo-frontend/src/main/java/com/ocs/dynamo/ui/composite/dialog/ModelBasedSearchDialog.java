@@ -98,7 +98,7 @@ public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractE
 	 * @param sortOrders        the sort orders
 	 * @param multiSelect       whether multiple selection is allowed
 	 * @param searchImmediately whether to search immediately after the screen is
-	 *                          openend
+	 *                          opened
 	 * @param joins
 	 */
 	public ModelBasedSearchDialog(BaseService<ID, T> service, EntityModel<T> entityModel,

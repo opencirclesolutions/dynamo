@@ -207,6 +207,7 @@ public class EntityListSelect<ID extends Serializable, T extends AbstractEntity<
 	@SuppressWarnings("unchecked")
 	@Override
 	public void refresh() {
+		clear();
 		ListDataProvider<T> provider = (ListDataProvider<T>) getDataProvider();
 		if (SelectMode.ALL.equals(selectMode)) {
 			// add all items (but sorted)
@@ -225,8 +226,8 @@ public class EntityListSelect<ID extends Serializable, T extends AbstractEntity<
 				List<T> list = service.find(new FilterConverter<T>(targetEntityModel).convert(filter));
 				provider.getItems().addAll(list);
 			}
-
 		}
+		provider.refreshAll();
 	}
 
 	public void refresh(SerializablePredicate<T> filter) {

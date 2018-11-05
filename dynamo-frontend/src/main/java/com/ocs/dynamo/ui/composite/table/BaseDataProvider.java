@@ -12,6 +12,7 @@ import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.filter.FilterConverter;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
+import com.vaadin.data.provider.AbstractDataProvider;
 import com.vaadin.data.provider.Query;
 import com.vaadin.data.provider.QuerySortOrder;
 import com.vaadin.server.SerializablePredicate;
@@ -26,7 +27,7 @@ import com.vaadin.shared.data.sort.SortDirection;
  * @param <T> the type of the entity
  */
 public abstract class BaseDataProvider<ID extends Serializable, T extends AbstractEntity<ID>>
-		extends com.vaadin.data.provider.AbstractDataProvider<T, SerializablePredicate<T>> {
+		extends AbstractDataProvider<T, SerializablePredicate<T>> {
 
 	private static final long serialVersionUID = 7409567551591729117L;
 
@@ -88,9 +89,14 @@ public abstract class BaseDataProvider<ID extends Serializable, T extends Abstra
 		return service;
 	}
 
+	/**
+	 * Returns the number of items 
+	 * @return
+	 */
+	protected abstract int getSize();
+
 	@Override
 	public boolean isInMemory() {
 		return false;
 	}
-
 }

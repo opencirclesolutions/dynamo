@@ -334,17 +334,18 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 	 *                    cascade
 	 * @param cascadePath the path to the property that is the target of the cascade
 	 */
-	private void handleCascade(ValueChangeEvent<?> event, AttributeModel am, String cascadePath) {
+	@SuppressWarnings("unchecked")
+	private <S> void handleCascade(ValueChangeEvent<?> event, AttributeModel am, String cascadePath) {
 		CascadeMode cm = am.getCascadeMode(cascadePath);
 		if (CascadeMode.BOTH.equals(cm) || CascadeMode.SEARCH.equals(cm)) {
 			HasValue<?> cascadeField = (HasValue<?>) groups.get(cascadePath).getField();
 			if (cascadeField instanceof Cascadable) {
-				Cascadable<T> ca = (Cascadable<T>) cascadeField;
+				Cascadable<S> ca = (Cascadable<S>) cascadeField;
 				if (event.getValue() == null) {
 					ca.clearAdditionalFilter();
 				} else {
 					ca.setAdditionalFilter(
-							new EqualsPredicate<T>(am.getCascadeFilterPath(cascadePath), event.getValue()));
+							new EqualsPredicate<S>(am.getCascadeFilterPath(cascadePath), event.getValue()));
 				}
 			} else {
 				// field not found or does not support cascading
