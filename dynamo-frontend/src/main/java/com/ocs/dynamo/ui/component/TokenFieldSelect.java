@@ -127,6 +127,9 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
 			SerializablePredicate<T> filter, boolean search, SortOrder<?>... sortOrders) {
 		super(service, em, attributeModel, filter);
 		extTokenField = new ExtTokenField(){
+
+			private static final long serialVersionUID = -4833421353349484216L;
+
 			@Override
 			public void removeTokenizable(final Tokenizable tokenizable) {
 				provider.getItems().remove(((BeanItemTokenizable)tokenizable).getItem());
@@ -350,6 +353,9 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
 		}
 	}
 
+	/**
+	 * TODO: returning null here works for searching but might break other code
+	 */
 	@Override
 	public Collection<T> getValue() {
 		if (provider.getItems().isEmpty()){

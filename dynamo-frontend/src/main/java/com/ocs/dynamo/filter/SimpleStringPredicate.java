@@ -19,9 +19,15 @@ public class SimpleStringPredicate<T> extends PropertyPredicate<T> {
 
 	private static final long serialVersionUID = -5077087872701525001L;
 
-	private boolean caseSensitive;
+	/**
+	 * Whether to perform case-sensitive search
+	 */
+	private final boolean caseSensitive;
 
-	private boolean onlyMatchPrefix;
+	/**
+	 * Whether to only match the prefix
+	 */
+	private final boolean onlyMatchPrefix;
 
 	public SimpleStringPredicate(String property, String value, boolean onlyMatchPrefix, boolean caseSensitive) {
 		super(property, value);
@@ -39,7 +45,7 @@ public class SimpleStringPredicate<T> extends PropertyPredicate<T> {
 		}
 		String value = caseSensitive ? v.toString() : v.toString().toLowerCase();
 		String match = caseSensitive ? getValue().toString() : getValue().toString().toLowerCase();
-		if (onlyMatchPrefix){
+		if (onlyMatchPrefix) {
 			return value.startsWith(match);
 		} else {
 			return value.contains(match);

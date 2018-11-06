@@ -74,7 +74,8 @@ public class BigDecimalConverter extends StringToBigDecimalConverter {
 
 		Result<Number> number = convertToNumber(value, context);
 		return number.flatMap(r -> {
-			BigDecimal bd = BigDecimal.valueOf(r.doubleValue()).setScale(precision, RoundingMode.HALF_UP);
+			BigDecimal bd = r == null ? null
+					: BigDecimal.valueOf(r.doubleValue()).setScale(precision, RoundingMode.HALF_UP);
 			return Result.ok(bd);
 		});
 	}

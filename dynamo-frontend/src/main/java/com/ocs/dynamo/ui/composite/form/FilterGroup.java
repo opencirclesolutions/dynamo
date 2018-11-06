@@ -246,7 +246,8 @@ public class FilterGroup<T> {
 					String valueStr = value.toString();
 					if (StringUtils.isNotEmpty(valueStr)) {
 						filter = new SimpleStringPredicate<>(propertyId, valueStr,
-								!attributeModel.isSearchCaseSensitive(), attributeModel.isSearchPrefixOnly());
+								attributeModel.isSearchPrefixOnly(), 
+								attributeModel.isSearchCaseSensitive());
 					}
 				}
 			}

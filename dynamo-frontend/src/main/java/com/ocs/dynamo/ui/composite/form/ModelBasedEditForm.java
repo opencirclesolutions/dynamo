@@ -75,6 +75,7 @@ import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.ocs.dynamo.util.ValidationMode;
 import com.ocs.dynamo.utils.ClassUtils;
 import com.ocs.dynamo.utils.NumberUtils;
+import com.vaadin.data.BeanValidationBinder;
 import com.vaadin.data.Binder;
 import com.vaadin.data.Binder.Binding;
 import com.vaadin.data.Binder.BindingBuilder;
@@ -402,11 +403,11 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		this.viewMode = !isEditAllowed() || (formOptions.isOpenInViewMode() && entity.getId() != null);
 
 		// set up a bean field group for automatic binding and validation
-		Binder<T> binder = new Binder<>(clazz);
+		Binder<T> binder = new BeanValidationBinder<>(clazz);
 		binder.setBean(entity);
 		groups.put(Boolean.FALSE, binder);
 
-		binder = new Binder<>(clazz);
+		binder = new BeanValidationBinder<>(clazz);
 		binder.setBean(entity);
 		groups.put(Boolean.TRUE, binder);
 
