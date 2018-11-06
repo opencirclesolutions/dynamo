@@ -12,6 +12,34 @@
  */
 package com.ocs.dynamo.ui.composite.form;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
+
+import javax.persistence.CollectionTable;
+
+import org.apache.commons.io.FilenameUtils;
+import org.vaadin.teemu.switchui.Switch;
+
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
@@ -40,6 +68,7 @@ import com.ocs.dynamo.ui.converter.ConverterFactory;
 import com.ocs.dynamo.ui.converter.IntToDoubleConverter;
 import com.ocs.dynamo.ui.converter.LocalDateWeekCodeConverter;
 import com.ocs.dynamo.ui.converter.LongToDoubleConverter;
+import com.ocs.dynamo.ui.converter.ZonedDateTimeToLocalDateTimeConverter;
 import com.ocs.dynamo.ui.utils.EntityModelUtil;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.util.SystemPropertyUtils;
@@ -62,6 +91,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
+import com.vaadin.ui.DateTimeField;
 import com.vaadin.ui.Embedded;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HasComponents;
@@ -77,29 +107,6 @@ import com.vaadin.ui.Upload.Receiver;
 import com.vaadin.ui.Upload.SucceededEvent;
 import com.vaadin.ui.Upload.SucceededListener;
 import com.vaadin.ui.VerticalLayout;
-import org.apache.commons.io.FilenameUtils;
-import org.vaadin.teemu.switchui.Switch;
-
-import javax.persistence.CollectionTable;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.OutputStream;
-import java.io.Serializable;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 /**
  * An edit form that is constructed based on an entity model
@@ -965,7 +972,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		// allow the user to override the construction of a field
 		AbstractComponent field = constructCustomField(entityModel, attributeModel, viewMode);
 		if (field == null) {
-			field = fieldFactory.constructField(attributeModel, fieldEntityModel, getFieldFilters());
+			field = fieldFactory.constructField(attributeModel, fieldEntityModel, getFieldFilters(), viewMode);
 		}
 
 		if (field instanceof URLField) {
@@ -1097,6 +1104,9 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		} else if (builder.getField() instanceof URLField) {
 			BindingBuilder<T, String> sBuilder = (BindingBuilder<T, String>) builder;
 			sBuilder.withNullRepresentation("");
+		} else if (builder.getField() instanceof DateTimeField && ZonedDateTime.class.equals(am.getType())) {
+			BindingBuilder<T, LocalDateTime> sBuilder = (BindingBuilder<T, LocalDateTime>) builder;
+			sBuilder.withConverter(new ZonedDateTimeToLocalDateTimeConverter(ZoneId.systemDefault()));
 		}
 	}
 

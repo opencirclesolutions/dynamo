@@ -20,6 +20,7 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 
 import com.ocs.dynamo.domain.model.AttributeModel;
+import com.ocs.dynamo.filter.AndPredicate;
 import com.ocs.dynamo.filter.EqualsPredicate;
 import com.ocs.dynamo.filter.GreaterOrEqualPredicate;
 import com.ocs.dynamo.filter.LessOrEqualPredicate;
@@ -161,7 +162,7 @@ public class FilterGroup<T> {
 	}
 
 	/**
-	 * Resets both filters
+	 * Resets the search filters for both fields
 	 */
 	public void reset() {
 		if (field instanceof Slider) {
@@ -177,8 +178,8 @@ public class FilterGroup<T> {
 				// slider does not support null value
 				Slider slider = (Slider) auxField;
 				slider.setValue(slider.getMin());
-			} else if (field instanceof HasValue) {
-				((HasValue<?>) field).clear();
+			} else if (auxField instanceof HasValue) {
+				((HasValue<?>) auxField).clear();
 			}
 		}
 	}
@@ -228,7 +229,7 @@ public class FilterGroup<T> {
 
 			// construct the aggregate filter
 			if (auxFieldFilter != null && mainFilter != null) {
-				filter = mainFilter.and(auxFieldFilter);
+				filter = new AndPredicate<>(mainFilter, auxFieldFilter);
 			} else if (auxFieldFilter != null) {
 				filter = auxFieldFilter;
 			} else {

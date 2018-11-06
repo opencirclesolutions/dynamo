@@ -25,6 +25,7 @@ import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.AttributeType;
 import com.ocs.dynamo.domain.model.CascadeMode;
 import com.ocs.dynamo.domain.model.EntityModel;
+import com.ocs.dynamo.exception.OCSException;
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.filter.EqualsPredicate;
 import com.ocs.dynamo.ui.Refreshable;
@@ -176,12 +177,15 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 		AbstractComponent field = constructCustomField(entityModel, attributeModel);
 		if (field == null) {
 			EntityModel<?> em = getFieldEntityModel(attributeModel);
-			field = getFieldFactory().constructField(attributeModel, em, getFieldFilters());
+			field = getFieldFactory().constructField(attributeModel, em, getFieldFilters(), false);
 		}
 
 		if (field != null) {
 			field.setSizeFull();
+		} else {
+			throw new OCSRuntimeException("No field could be constructed for " + attributeModel.getPath());
 		}
+
 		return field;
 	}
 

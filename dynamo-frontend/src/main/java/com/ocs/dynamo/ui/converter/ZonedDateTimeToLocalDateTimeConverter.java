@@ -13,38 +13,44 @@
  */
 package com.ocs.dynamo.ui.converter;
 
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.Date;
 
-import com.ocs.dynamo.utils.DateUtils;
 import com.vaadin.data.Converter;
 import com.vaadin.data.Result;
 import com.vaadin.data.ValueContext;
 
 /**
+ * Converter for converting between ZonedDateTime and LocalDateTime
  * 
  * @author bas.rutten
  *
  */
-public class ZonedDateTimeToDateConverter implements Converter<Date, ZonedDateTime> {
+public class ZonedDateTimeToLocalDateTimeConverter implements Converter<LocalDateTime, ZonedDateTime> {
 
 	private static final long serialVersionUID = -830307549693107753L;
 
-	@Override
-	public Result<ZonedDateTime> convertToModel(Date value, ValueContext context) {
-		if (value == null) {
-			return null;
-		}
-		return Result.ok(DateUtils.convertSQLDate(value).toInstant().atZone(ZoneId.systemDefault()));
+	private ZoneId zoneId;
+
+	public ZonedDateTimeToLocalDateTimeConverter(ZoneId zoneId) {
+		this.zoneId = zoneId;
 	}
 
 	@Override
-	public Date convertToPresentation(ZonedDateTime value, ValueContext context) {
+	public Result<ZonedDateTime> convertToModel(LocalDateTime value, ValueContext context) {
+		if (value == null) {
+			return Result.ok(null);
+		}
+		return Result.ok(value.atZone(zoneId));
+	}
+
+	@Override
+	public LocalDateTime convertToPresentation(ZonedDateTime value, ValueContext context) {
 		if (value == null) {
 			return null;
 		}
-		return Date.from(value.toInstant());
+		return value.toLocalDateTime();
 	}
 
 }

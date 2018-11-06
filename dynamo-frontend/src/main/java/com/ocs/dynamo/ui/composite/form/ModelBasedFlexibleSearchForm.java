@@ -69,10 +69,8 @@ import java.util.stream.Collectors;
  *
  * @author bas.rutten
  *
- * @param <ID>
- *            the type of the primary key
- * @param <T>
- *            the type of the entity
+ * @param <ID> the type of the primary key
+ * @param <T> the type of the entity
  */
 public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends AbstractEntity<ID>>
 		extends AbstractModelBasedSearchForm<ID, T> {
@@ -86,8 +84,8 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 	private class FilterRegion {
 
 		/**
-		 * Indicates whether we are restoring an existing definition - if this
-		 * is the case the we do not need to set a default filter value
+		 * Indicates whether we are restoring an existing definition - if this is the
+		 * case the we do not need to set a default filter value
 		 */
 		private boolean restoring;
 
@@ -107,8 +105,8 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 		private HasValue auxValueComponent;
 
 		/**
-		 * The currently active filter for the entire region (calculated by
-		 * composing the mainFilter and the auxFieldFilter)
+		 * The currently active filter for the entire region (calculated by composing
+		 * the mainFilter and the auxFieldFilter)
 		 */
 		private SerializablePredicate<?> fieldFilter;
 
@@ -160,8 +158,7 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 		/**
 		 * Constructor
 		 *
-		 * @param listener
-		 *            the filter listener
+		 * @param listener the filter listener
 		 */
 		FilterRegion(FilterListener listener) {
 			this.listener = listener;
@@ -177,25 +174,24 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 
 				// remove the filter
 				if (am != null) {
-					FilterRegion.this.listener
-							.onFilterChange(new FilterChangeEvent(am.getPath(), fieldFilter, null));
+					FilterRegion.this.listener.onFilterChange(new FilterChangeEvent(am.getPath(), fieldFilter, null));
 				}
 			});
 			layout.addComponent(removeButton);
 
 			attributeFilterComboBox = new ComboBox(message("ocs.filter"));
 			attributeFilterComboBox.setStyleName(DynamoConstants.CSS_NESTED);
-			//attributeFilterComboBox.setFilteringMode(FilteringMode.CONTAINS);
+			// attributeFilterComboBox.setFilteringMode(FilteringMode.CONTAINS);
 
 			// find out which attributes can be search on and sort them in
 			// alphabetical order
 			List<AttributeModel> filteredModels = iterate(getEntityModel().getAttributeModels());
 			filteredModels.sort((o1, o2) -> o1.getDisplayName().compareToIgnoreCase(o2.getDisplayName()));
 			// add any attribute models that are not required
-			attributeFilterComboBox.setItems(filteredModels.stream().filter(a -> !a.isRequiredForSearching() || !hasFilter(a)).collect(
-					Collectors.toList()));
-			attributeFilterComboBox.setItemCaptionGenerator(
-					(ItemCaptionGenerator) item -> ((AttributeModel)item).getDisplayName());
+			attributeFilterComboBox.setItems(filteredModels.stream()
+					.filter(a -> !a.isRequiredForSearching() || !hasFilter(a)).collect(Collectors.toList()));
+			attributeFilterComboBox
+					.setItemCaptionGenerator((ItemCaptionGenerator) item -> ((AttributeModel) item).getDisplayName());
 
 			// add a value change listener that fills the filter type combo box
 			// after a change
@@ -210,10 +206,8 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 		/**
 		 * Creates a SimpleStringFilter with certain characteristics
 		 *
-		 * @param value
-		 *            the value to search on
-		 * @param prefixOnly
-		 *            whether to search by prefix only
+		 * @param value      the value to search on
+		 * @param prefixOnly whether to search by prefix only
 		 * @return
 		 */
 		private SimpleStringPredicate<?> createStringFilter(Object value, boolean prefixOnly) {
@@ -227,18 +221,16 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 		/**
 		 * Change the filter attribute
 		 *
-		 * @param attributeModel
-		 *            the selected attribute model
-		 * @param restoring
-		 *            whether we are restoring an existing filter
+		 * @param attributeModel the selected attribute model
+		 * @param restoring      whether we are restoring an existing filter
 		 */
 		private void filterAttributeChange(AttributeModel attributeModel, boolean restoring) {
 			this.am = attributeModel;
 			if (am != null) {
 				ComboBox newTypeFilterCombo = new ComboBox(message("ocs.type"));
-				//newTypeFilterCombo.setNullSelectionAllowed(false);
+				// newTypeFilterCombo.setNullSelectionAllowed(false);
 				newTypeFilterCombo.addValueChangeListener(
-						event -> handleFilterTypeChange((FlexibleFilterType)event.getSource().getValue()));
+						event -> handleFilterTypeChange((FlexibleFilterType) event.getSource().getValue()));
 				newTypeFilterCombo.setStyleName(DynamoConstants.CSS_NESTED);
 
 				newTypeFilterCombo.setItems(getFilterTypes(am));
@@ -255,10 +247,10 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 
 				// hide the value component after a filter change
 				if (mainValueComponent != null) {
-					layout.removeComponent((AbstractComponent)mainValueComponent);
+					layout.removeComponent((AbstractComponent) mainValueComponent);
 				}
 				if (auxValueComponent != null) {
-					layout.removeComponent((AbstractComponent)auxValueComponent);
+					layout.removeComponent((AbstractComponent) auxValueComponent);
 				}
 
 				typeFilterCombo = newTypeFilterCombo;
@@ -280,10 +272,10 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 					layout.removeComponent(typeFilterCombo);
 				}
 				if (mainValueComponent != null) {
-					layout.removeComponent((AbstractComponent)mainValueComponent);
+					layout.removeComponent((AbstractComponent) mainValueComponent);
 				}
 				if (auxValueComponent != null) {
-					layout.removeComponent((AbstractComponent)auxValueComponent);
+					layout.removeComponent((AbstractComponent) auxValueComponent);
 				}
 			}
 			noFilterLabel.setVisible(this.am == null);
@@ -293,8 +285,7 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 		/**
 		 * Returns the available filter types for a certain attribute model
 		 *
-		 * @param am
-		 *            the attribute model
+		 * @param am the attribute model
 		 * @return
 		 */
 		private List<FlexibleFilterType> getFilterTypes(AttributeModel am) {
@@ -341,8 +332,7 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 		/**
 		 * Handle a change of the attribute to filter on
 		 *
-		 * @param event
-		 *            the event
+		 * @param event the event
 		 */
 		private void handleFilterAttributeChange(HasValue.ValueChangeEvent event, boolean restoring) {
 			AttributeModel temp = (AttributeModel) event.getValue();
@@ -352,8 +342,7 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 		/**
 		 * Handle a change of the filter
 		 *
-		 * @param type
-		 *            the selected filter type
+		 * @param type the selected filter type
 		 */
 		@SuppressWarnings("unchecked")
 		private void handleFilterTypeChange(FlexibleFilterType type) {
@@ -365,7 +354,7 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 			// construct the field
 			AbstractComponent custom = constructCustomField(getEntityModel(), am);
 			final AbstractComponent newComponent = custom != null ? custom
-					: getFieldFactory().constructField(am, getFieldEntityModel(am), getFieldFilters());
+					: getFieldFactory().constructField(am, getFieldEntityModel(am), getFieldFilters(), false);
 
 			if (newComponent instanceof FancyListSelect) {
 				FancyListSelect<?, ?> fls = (FancyListSelect<?, ?>) newComponent;
@@ -373,37 +362,38 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 				fls.getComboBox().setStyleName(DynamoConstants.CSS_NESTED);
 			}
 
-			if (newComponent instanceof HasValue){
-				((HasValue)newComponent).addValueChangeListener(event -> handleValueChange(event.getSource(), event.getValue()));
+			if (newComponent instanceof HasValue) {
+				((HasValue) newComponent)
+						.addValueChangeListener(event -> handleValueChange(event.getSource(), event.getValue()));
 			}
-
 
 			if (mainValueComponent == null) {
 				layout.addComponent(newComponent);
 			} else {
-				layout.replaceComponent((AbstractComponent)mainValueComponent, newComponent);
+				layout.replaceComponent((AbstractComponent) mainValueComponent, newComponent);
 			}
 
-			mainValueComponent = (HasValue) newComponent;
+			mainValueComponent = (HasValue<?>) newComponent;
 
 			if (FlexibleFilterType.BETWEEN.equals(filterType)) {
 				newComponent.setCaption(am.getDisplayName() + " " + message("ocs.from"));
 
-				final AbstractComponent newAuxComponent =  getFieldFactory().constructField(am, getFieldEntityModel(am), getFieldFilters());
-				((AbstractField) newAuxComponent).addValueChangeListener(
-						event -> handleValueChange((HasValue)newAuxComponent, event.getSource().getValue()));
+				final AbstractComponent newAuxComponent = getFieldFactory().constructField(am, getFieldEntityModel(am),
+						getFieldFilters(), false);
+				((HasValue<?>) newAuxComponent).addValueChangeListener(
+						event -> handleValueChange((HasValue<?>) newAuxComponent, event.getSource().getValue()));
 				newAuxComponent.setCaption(am.getDisplayName() + " " + message("ocs.to"));
 
 				if (auxValueComponent == null) {
 					layout.addComponent(newAuxComponent);
 				} else {
-					layout.replaceComponent((AbstractComponent)auxValueComponent, newAuxComponent);
+					layout.replaceComponent((AbstractComponent) auxValueComponent, newAuxComponent);
 				}
-				auxValueComponent = (HasValue)newAuxComponent;
+				auxValueComponent = (HasValue<?>) newAuxComponent;
 			} else {
 				// no need for the auxiliary field
 				if (auxValueComponent != null) {
-					layout.removeComponent((AbstractComponent)auxValueComponent);
+					layout.removeComponent((AbstractComponent) auxValueComponent);
 					auxValueComponent = null;
 				}
 			}
@@ -425,11 +415,9 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 		/**
 		 * Respond to a value change
 		 *
-		 * @param field
-		 *            the changed field (can either be the main field or the
-		 *            auxiliary field)
-		 * @param value
-		 *            the new field value
+		 * @param field the changed field (can either be the main field or the auxiliary
+		 *              field)
+		 * @param value the new field value
 		 */
 		private void handleValueChange(HasValue field, Object value) {
 			// store the current filter
@@ -460,7 +448,8 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 
 				// construct the aggregate filter
 				if (auxFilter != null && mainFilter != null) {
-					filter = new BetweenPredicate<>(am.getPath(), (Comparable<?>) ((GreaterOrEqualPredicate<?>) mainFilter).getValue(),
+					filter = new BetweenPredicate<>(am.getPath(),
+							(Comparable<?>) ((GreaterOrEqualPredicate<?>) mainFilter).getValue(),
 							(Comparable<?>) ((LessOrEqualPredicate<?>) auxFilter).getValue());
 				} else if (auxFilter != null) {
 					filter = auxFilter;
@@ -561,16 +550,11 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 	/**
 	 * Constructor
 	 *
-	 * @param searchable
-	 *            the component on which to carry out the search
-	 * @param entityModel
-	 *            the entity model
-	 * @param formOptions
-	 *            the form options
-	 * @param defaultFilters
-	 *            the additional filters to apply to every search action
-	 * @param fieldFilters
-	 *            a map of filters to apply to the individual fields
+	 * @param searchable     the component on which to carry out the search
+	 * @param entityModel    the entity model
+	 * @param formOptions    the form options
+	 * @param defaultFilters the additional filters to apply to every search action
+	 * @param fieldFilters   a map of filters to apply to the individual fields
 	 */
 	public ModelBasedFlexibleSearchForm(Searchable searchable, EntityModel<T> entityModel, FormOptions formOptions,
 			List<SerializablePredicate<T>> defaultFilters, Map<String, SerializablePredicate<?>> fieldFilters) {
@@ -589,17 +573,13 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 
 	/**
 	 * Programmatically add a search filter for a property if there is no filter
-	 * present yet. Otherwise, set the value(s) of the already present filter to
-	 * the provided values
+	 * present yet. Otherwise, set the value(s) of the already present filter to the
+	 * provided values
 	 *
-	 * @param attributeModel
-	 *            the attribute model to base the filter on
-	 * @param filterType
-	 *            the type of the filter
-	 * @param value
-	 *            the value of the filter
-	 * @param auxValue
-	 *            the auxiliary value
+	 * @param attributeModel the attribute model to base the filter on
+	 * @param filterType     the type of the filter
+	 * @param value          the value of the filter
+	 * @param auxValue       the auxiliary value
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void addFilter(AttributeModel attributeModel, FlexibleFilterType filterType, Object value, Object auxValue) {
@@ -683,8 +663,8 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 	}
 
 	/**
-	 * Extracts a list of FlexibleFilterDefinitions form the currently active
-	 * search filters
+	 * Extracts a list of FlexibleFilterDefinitions form the currently active search
+	 * filters
 	 */
 	public List<FlexibleFilterDefinition> extractFilterDefinitions() {
 		return regions.stream().map(FilterRegion::toDefinition).filter(Objects::nonNull).collect(Collectors.toList());
@@ -701,8 +681,7 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 	/**
 	 * Returns the default filter type for a certain attribute model
 	 *
-	 * @param am
-	 *            the attribute model
+	 * @param am the attribute model
 	 */
 	public FlexibleFilterType getDefaultFilterType(AttributeModel am) {
 		if (AttributeType.BASIC.equals(am.getAttributeType())) {
@@ -719,11 +698,10 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 	}
 
 	/**
-	 * Indicates whether the search form already contains a filter for the
-	 * provided attribute model
+	 * Indicates whether the search form already contains a filter for the provided
+	 * attribute model
 	 *
-	 * @param attributeModel
-	 *            the attribute model
+	 * @param attributeModel the attribute model
 	 * @return
 	 */
 	public boolean hasFilter(AttributeModel attributeModel) {
@@ -745,8 +723,7 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 	 * Iterates over the available attribute models and construct a list of the
 	 * attributes that can be searched
 	 *
-	 * @param attributeModels
-	 *            the attribute models
+	 * @param attributeModels the attribute models
 	 * @return
 	 */
 	private List<AttributeModel> iterate(List<AttributeModel> attributeModels) {
@@ -780,8 +757,7 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 	/**
 	 * Restores any previously stored filters
 	 *
-	 * @param definitions
-	 *            the filter definitions to restore
+	 * @param definitions the filter definitions to restore
 	 */
 	public void restoreFilterDefinitions(List<FlexibleFilterDefinition> definitions) {
 		for (FlexibleFilterDefinition def : definitions) {

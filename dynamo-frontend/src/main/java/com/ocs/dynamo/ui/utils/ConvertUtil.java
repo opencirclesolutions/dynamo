@@ -15,7 +15,9 @@ package com.ocs.dynamo.ui.utils;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.temporal.Temporal;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Locale;
 
 import com.ocs.dynamo.domain.model.AttributeModel;
@@ -23,7 +25,6 @@ import com.ocs.dynamo.domain.model.NumberSelectMode;
 import com.ocs.dynamo.exception.OCSValidationException;
 import com.ocs.dynamo.ui.converter.LocalDateWeekCodeConverter;
 import com.ocs.dynamo.util.SystemPropertyUtils;
-import com.ocs.dynamo.utils.DateUtils;
 import com.ocs.dynamo.utils.NumberUtils;
 import com.vaadin.data.Result;
 import com.vaadin.data.ValueContext;
@@ -65,8 +66,9 @@ public final class ConvertUtil {
 		} else if (BigDecimal.class.equals(attributeModel.getType())) {
 			return VaadinUtils.bigDecimalToString(attributeModel.isCurrency(), attributeModel.isPercentage(), grouping,
 					attributeModel.getPrecision(), (BigDecimal) input, locale);
-		} else if (input instanceof Temporal) {
-			return DateUtils.toLegacyDate((Temporal) input);
+		} else if (ZonedDateTime.class.equals(attributeModel.getType())) {
+			ZonedDateTime zdt = (ZonedDateTime) input;
+			return zdt.toLocalDateTime();
 		}
 		return input;
 	}
@@ -103,6 +105,9 @@ public final class ConvertUtil {
 				return VaadinUtils.stringToBigDecimal(attributeModel.isPercentage(), grouping,
 						attributeModel.isCurrency(), attributeModel.getPrecision(), (String) input, locale);
 			}
+		} else if (ZonedDateTime.class.equals(attributeModel.getType())) {
+			LocalDateTime ldt = (LocalDateTime) input;
+			return ldt.atZone(ZoneId.systemDefault());
 		}
 		return input;
 	}

@@ -14,6 +14,7 @@
 package com.ocs.dynamo.ui.converter;
 
 import java.math.BigDecimal;
+import java.time.ZoneId;
 
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.util.SystemPropertyUtils;
@@ -123,7 +124,7 @@ public final class ConverterFactory {
 	 * 
 	 * @return
 	 */
-	public static ZonedDateTimeToDateConverter createZonedDateTimeConverter() {
-		return new ZonedDateTimeToDateConverter();
+	public static ZonedDateTimeToLocalDateTimeConverter createZonedDateTimeConverter(ZoneId zoneId) {
+		return new ZonedDateTimeToLocalDateTimeConverter(zoneId);
 	}
 }

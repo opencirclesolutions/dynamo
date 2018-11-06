@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -72,7 +73,7 @@ public class FieldFactoryImpl<T> implements FieldFactory {
 	 * Returns an appropriate instance from the pool, or creates a new one
 	 *
 	 * @param model          the entity model
-	 * @param messageService
+	 * @param messageService the message service
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
@@ -241,7 +242,7 @@ public class FieldFactoryImpl<T> implements FieldFactory {
 	 * @return
 	 */
 	public AbstractComponent constructField(AttributeModel am, EntityModel<?> fieldEntityModel,
-			Map<String, SerializablePredicate<?>> fieldFilters) {
+			Map<String, SerializablePredicate<?>> fieldFilters, boolean viewMode) {
 		AbstractComponent field = null;
 
 		// in certain cases, never render a field
@@ -253,7 +254,7 @@ public class FieldFactoryImpl<T> implements FieldFactory {
 
 		SerializablePredicate<?> fieldFilter = fieldFilters == null ? null : fieldFilters.get(am.getPath());
 
-		if (am.isNavigable()) {
+		if (am.isNavigable() && viewMode) {
 			// navigable link (note: place this BEFORE checking for an entity or entity
 			// collections, the link
 			// (in view mode) beats any selection components
@@ -293,7 +294,7 @@ public class FieldFactoryImpl<T> implements FieldFactory {
 				slider.setMax(am.getMaxValue());
 			}
 			field = slider;
-		} else if (LocalDateTime.class.equals(am.getType())) {
+		} else if (LocalDateTime.class.equals(am.getType()) || ZonedDateTime.class.equals(am.getType())) {
 			DateTimeField df = new DateTimeField();
 			df.setDateFormat(am.getDisplayFormat());
 			field = df;

@@ -175,7 +175,7 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 	 */
 	@SuppressWarnings("unchecked")
 	private <S> AbstractComponent createField(T t, AttributeModel attributeModel) {
-		AbstractComponent comp = factory.constructField(attributeModel, null, null);
+		AbstractComponent comp = factory.constructField(attributeModel, null, null, true);
 		S value = (S) ClassUtils.getFieldValue(t, attributeModel.getPath());
 		if (value != null) {
 			((HasValue<S>) comp).setValue(value);

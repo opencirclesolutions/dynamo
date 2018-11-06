@@ -396,13 +396,12 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 
 		// add a remove button directly in the table
 		if (!isViewMode() && formOptions.isShowRemoveButton()) {
-			 final String removeMsg = messageService.getMessage("ocs.detail.remove",
-			 VaadinUtils.getLocale());
-			 getGrid().addComponentColumn((ValueProvider<T, Component>) t -> {
-				 Button remove = new Button(removeMsg);
-				 remove.setIcon(VaadinIcons.TRASH);
-				 remove.addClickListener(event -> {
-				 	provider.getItems().remove(t);
+			final String removeMsg = messageService.getMessage("ocs.detail.remove", VaadinUtils.getLocale());
+			getGrid().addComponentColumn((ValueProvider<T, Component>) t -> {
+				Button remove = new Button(removeMsg);
+				remove.setIcon(VaadinIcons.TRASH);
+				remove.addClickListener(event -> {
+					provider.getItems().remove(t);
 					provider.refreshAll();
 					items.remove(t.getId());
 					// callback method so the entity can be removed from its
@@ -410,11 +409,11 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 					removeEntity((T) t);
 					if (receiver != null) {
 						receiver.signalDetailsComponentValid(DetailsEditTable.this,
-							 VaadinUtils.allFixedTableFieldsValid(getGrid()));
+								VaadinUtils.allFixedTableFieldsValid(getGrid()));
 					}
-				 });
-				 return remove;
-			 });
+				});
+				return remove;
+			});
 		}
 
 		// set the custom field factory
@@ -610,10 +609,11 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 		if (provider != null) {
 			provider.getItems().clear();
 			provider.getItems().addAll(this.items);
+			provider.refreshAll();
 		}
 		// clear the selection
 		setSelectedItem(null);
-		provider.refreshAll();
+
 	}
 
 	public void setPageLength(int pageLength) {

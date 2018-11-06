@@ -3,7 +3,7 @@ package com.ocs.dynamo.ui.utils;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
+import java.time.format.DateTimeFormatter;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -70,12 +70,11 @@ public class ConvertUtilTest {
 		// LocalDate
 		Object s = ConvertUtil.convertToPresentationValue(model.getAttributeModel("birthDateLocal"),
 				LocalDate.of(2014, 1, 1));
-		Assert.assertEquals("01-01-2014", DateUtils.formatDate((Date) s, "dd-MM-yyyy"));
+		Assert.assertEquals("01-01-2014", ((LocalDate) s).format(DateTimeFormatter.ofPattern("dd-MM-yyyy")));
 
 		// LocalDateTime
 		s = ConvertUtil.convertToPresentationValue(model.getAttributeModel("registrationTime"),
 				LocalDateTime.of(2014, 1, 1, 13, 14, 0));
-		Assert.assertTrue(s.toString().contains("Jan 01 13:14:00"));
-		Assert.assertTrue(s.toString().contains("2014"));
+		Assert.assertEquals("2014-01-01T13:14", s.toString());
 	}
 }
