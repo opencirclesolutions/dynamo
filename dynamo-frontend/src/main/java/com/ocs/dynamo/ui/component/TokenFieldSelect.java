@@ -126,7 +126,13 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
 	public TokenFieldSelect(EntityModel<T> em, AttributeModel attributeModel, BaseService<ID, T> service,
 			SerializablePredicate<T> filter, boolean search, SortOrder<?>... sortOrders) {
 		super(service, em, attributeModel, filter);
-		extTokenField = new ExtTokenField();
+		extTokenField = new ExtTokenField(){
+			@Override
+			public void removeTokenizable(final Tokenizable tokenizable) {
+				provider.getItems().remove(((BeanItemTokenizable)tokenizable).getItem());
+				super.removeTokenizable(tokenizable);
+			}
+		};
 		comboBox = new EntityComboBox<>(em, attributeModel, service, filter, sortOrders);
 		provider = new ListDataProvider<>(new ArrayList<>());
 		valueChangeListeners = new ArrayList<>();
@@ -147,7 +153,7 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
 		}
 
 		for (ValueChangeListener<Collection<T>> valueChangeListener : valueChangeListeners) {
-			valueChangeListener.valueChange(new ValueChangeEvent<Collection<T>>(TokenFieldSelect.this, null, false));
+			valueChangeListener.valueChange(new ValueChangeEvent<>(TokenFieldSelect.this, null, false));
 		}
 	}
 
@@ -346,13 +352,15 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
 
 	@Override
 	public Collection<T> getValue() {
-		System.out.println(provider.getItems().size());
+		if (provider.getItems().isEmpty()){
+			return null;
+		}
 		return Sets.newHashSet(provider.getItems());
 	}
 
 	@Override
 	public Registration addValueChangeListener(ValueChangeListener<Collection<T>> listener) {
-		return extTokenField
-				.addValueChangeListener(event -> listener.valueChange(new ValueChangeEvent<>(this, this, null, false)));
+		valueChangeListeners.add(listener);
+		return null; //extTokenField.addValueChangeListener(event -> listener.valueChange(new ValueChangeEvent<>(this, this, null, false)));
 	}
 }
