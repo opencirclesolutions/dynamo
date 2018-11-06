@@ -13,15 +13,6 @@
  */
 package com.ocs.dynamo.ui.composite.form;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
 import com.google.common.collect.Lists;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
@@ -37,10 +28,13 @@ import com.ocs.dynamo.ui.composite.dialog.ModelBasedSearchDialog;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.composite.table.ModelBasedGrid;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
+import com.vaadin.data.ValueProvider;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.data.provider.SortOrder;
 import com.vaadin.icons.VaadinIcons;
+import com.vaadin.server.FontAwesome;
 import com.vaadin.server.SerializablePredicate;
+import com.vaadin.shared.Registration;
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -48,7 +42,15 @@ import com.vaadin.ui.CustomField;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.renderers.ComponentRenderer;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A complex table component for the in-place editing of a one-to-many relation.
@@ -394,26 +396,25 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 
 		// add a remove button directly in the table
 		if (!isViewMode() && formOptions.isShowRemoveButton()) {
-			// final String removeMsg = messageService.getMessage("ocs.detail.remove",
-			// VaadinUtils.getLocale());
-			// table.addGeneratedColumn(removeMsg, (ColumnGenerator) (source, itemId,
-			// columnId) -> {
-			// Button remove = new Button(removeMsg);
-			// remove.setIcon(FontAwesome.TRASH);
-			// remove.addClickListener(event -> {
-			// container.removeItem(itemId);
-			// items.remove(itemId);
-			// // callback method so the entity can be removed from its
-			// // parent
-			// removeEntity((T) itemId);
-			// if (receiver != null) {
-			// receiver.signalDetailsComponentValid(DetailsEditTable.this,
-			// VaadinUtils.allFixedTableFieldsValid(table));
-			// }
-			//
-			// });
-			// return remove;
-			// });
+			 final String removeMsg = messageService.getMessage("ocs.detail.remove",
+			 VaadinUtils.getLocale());
+			 getGrid().addComponentColumn((ValueProvider<T, Component>) t -> {
+				 Button remove = new Button(removeMsg);
+				 remove.setIcon(VaadinIcons.TRASH);
+				 remove.addClickListener(event -> {
+				 	provider.getItems().remove(t);
+					provider.refreshAll();
+					items.remove(t.getId());
+					// callback method so the entity can be removed from its
+					// parent
+					removeEntity((T) t);
+					if (receiver != null) {
+						receiver.signalDetailsComponentValid(DetailsEditTable.this,
+							 VaadinUtils.allFixedTableFieldsValid(getGrid()));
+					}
+				 });
+				 return remove;
+			 });
 		}
 
 		// set the custom field factory
@@ -612,6 +613,7 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 		}
 		// clear the selection
 		setSelectedItem(null);
+		provider.refreshAll();
 	}
 
 	public void setPageLength(int pageLength) {
@@ -690,4 +692,5 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 		provider.getItems().clear();
 		provider.getItems().addAll(value);
 	}
+
 }
