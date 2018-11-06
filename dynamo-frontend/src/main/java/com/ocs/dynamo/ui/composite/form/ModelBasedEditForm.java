@@ -1068,6 +1068,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 	@SuppressWarnings("unchecked")
 	private void setConverters(BindingBuilder<T, ?> builder, AttributeModel am) {
+
 		if (am.isWeek()) {
 			BindingBuilder<T, String> sBuilder = (BindingBuilder<T, String>) builder;
 			sBuilder.withConverter(new LocalDateWeekCodeConverter());
@@ -1291,9 +1292,10 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	}
 
 	/**
+	 * Retrieves a field for a certain property
 	 * 
-	 * @param viewMode
-	 * @param fieldName
+	 * @param viewMode  whether the screen is in view mode
+	 * @param fieldName the name of the field/property
 	 * @return
 	 */
 	private AbstractComponent getField(boolean viewMode, String fieldName) {

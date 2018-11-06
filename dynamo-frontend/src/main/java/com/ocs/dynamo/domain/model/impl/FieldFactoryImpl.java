@@ -188,7 +188,7 @@ public class FieldFactoryImpl<T> implements FieldFactory {
 			return listSelect;
 		} else if (AttributeSelectMode.LIST.equals(mode)) {
 			// simple list select if everything else fails or is not applicable
-			if (multipleSelect) {
+			if (multipleSelect || Collection.class.isAssignableFrom(am.getType())) {
 				return new QuickAddListSelect<ID, S>((EntityModel<S>) em, am, service,
 						(SerializablePredicate<S>) fieldFilter, SystemPropertyUtils.getDefaultListSelectRows(), sos);
 			} else {
