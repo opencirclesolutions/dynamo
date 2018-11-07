@@ -43,7 +43,7 @@ public class DomainDaoImpl extends DefaultDaoImpl<Integer, Domain> implements Do
 		super(dslRoot, entityClass);
 	}
 
-	@SuppressWarnings({ "unchecked" })
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public <C extends DomainChild<C, P>, P extends DomainParent<C, P>> List<C> findChildren(P parent) {
 		JPAQuery query = new JPAQuery<>(getEntityManager()).from(QDomainChild.domainChild);

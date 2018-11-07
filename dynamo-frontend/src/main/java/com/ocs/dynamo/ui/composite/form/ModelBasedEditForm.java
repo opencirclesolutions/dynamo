@@ -71,6 +71,7 @@ import com.ocs.dynamo.ui.converter.LongToDoubleConverter;
 import com.ocs.dynamo.ui.converter.ZonedDateTimeToLocalDateTimeConverter;
 import com.ocs.dynamo.ui.utils.EntityModelUtil;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
+import com.ocs.dynamo.ui.validator.URLValidator;
 import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.ocs.dynamo.util.ValidationMode;
 import com.ocs.dynamo.utils.ClassUtils;
@@ -1104,7 +1105,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			}
 		} else if (builder.getField() instanceof URLField) {
 			BindingBuilder<T, String> sBuilder = (BindingBuilder<T, String>) builder;
-			sBuilder.withNullRepresentation("");
+			sBuilder.withNullRepresentation("").withValidator(new URLValidator(message("ocs.no.valid.url")));
 		} else if (builder.getField() instanceof DateTimeField && ZonedDateTime.class.equals(am.getType())) {
 			BindingBuilder<T, LocalDateTime> sBuilder = (BindingBuilder<T, LocalDateTime>) builder;
 			sBuilder.withConverter(new ZonedDateTimeToLocalDateTimeConverter(ZoneId.systemDefault()));

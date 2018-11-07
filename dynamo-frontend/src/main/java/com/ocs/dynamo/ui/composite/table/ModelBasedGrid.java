@@ -161,7 +161,7 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 			}
 
 			column.setCaption(attributeModel.getDisplayName()).setSortable(attributeModel.isSortable())
-					.setSortProperty(attributeModel.getPath())
+					.setSortProperty(attributeModel.getPath()).setId(attributeModel.getPath())
 					.setStyleGenerator(item -> attributeModel.isNumerical() ? "v-align-right" : "");
 		}
 	}

@@ -15,6 +15,7 @@ package com.ocs.dynamo.ui.component;
 
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.utils.StringUtils;
+import com.vaadin.server.ErrorMessage;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.shared.Registration;
 import com.vaadin.shared.ui.BorderStyle;
@@ -50,12 +51,9 @@ public class URLField extends CustomField<String> {
 	/**
 	 * Constructor
 	 * 
-	 * @param textField
-	 *            the text field that this component wraps around
-	 * @param attributeModel
-	 *            the attribute model used to construct the compoent
-	 * @param editable
-	 *            whether to display the field in editable mode
+	 * @param textField      the text field that this component wraps around
+	 * @param attributeModel the attribute model used to construct the compoent
+	 * @param editable       whether to display the field in editable mode
 	 */
 	public URLField(TextField textField, AttributeModel attributeModel, boolean editable) {
 		this.attributeModel = attributeModel;
@@ -152,11 +150,11 @@ public class URLField extends CustomField<String> {
 		return textField.addValueChangeListener(listener);
 	}
 
-	// @Override
-	// public void validate() throws InvalidValueException {
-	// if (textField != null) {
-	// super.validate();
-	// }
-	// }
+	@Override
+	public void setComponentError(ErrorMessage componentError) {
+		if (textField != null) {
+			textField.setComponentError(componentError);
+		}
+	}
 
 }

@@ -48,8 +48,8 @@ public class Country extends DomainChild<Country, Region> {
 	}
 
 	/**
-	 * The region - note that this is not a JPA attribute and you must use "parent" instead in
-	 * queries
+	 * The region - note that this is not a JPA attribute and you must use "parent"
+	 * instead in queries
 	 * 
 	 * @return
 	 */

@@ -36,6 +36,7 @@ import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.ocs.dynamo.utils.StringUtils;
 import com.vaadin.data.provider.SortOrder;
 import com.vaadin.icons.VaadinIcons;
+import com.vaadin.server.ErrorMessage;
 import com.vaadin.server.SerializablePredicate;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -400,6 +401,14 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 			label.setCaptionAsHtml(true);
 			String caption = getLabel(newValue);
 			label.setCaption(caption.replaceAll(",", StringUtils.HTML_LINE_BREAK));
+		}
+	}
+
+	@Override
+	public void setComponentError(ErrorMessage componentError) {
+		if (label != null) {
+			label.setComponentError(componentError);
+			selectButton.setComponentError(componentError);
 		}
 	}
 
