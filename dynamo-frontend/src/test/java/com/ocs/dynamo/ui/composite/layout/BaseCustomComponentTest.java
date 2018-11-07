@@ -13,18 +13,6 @@
  */
 package com.ocs.dynamo.ui.composite.layout;
 
-import java.math.BigDecimal;
-import java.text.DecimalFormatSymbols;
-import java.util.Calendar;
-import java.util.Locale;
-
-import javax.persistence.OptimisticLockException;
-
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mock;
-
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.TestEntity.TestEnum;
@@ -39,8 +27,18 @@ import com.ocs.dynamo.test.BaseMockitoTest;
 import com.ocs.dynamo.test.MockUtil;
 import com.ocs.dynamo.utils.DateUtils;
 import com.vaadin.ui.Label;
-
 import junitx.util.PrivateAccessor;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mock;
+
+import javax.persistence.OptimisticLockException;
+import java.math.BigDecimal;
+import java.text.DecimalFormatSymbols;
+import java.time.LocalTime;
+import java.util.Calendar;
+import java.util.Locale;
 
 public class BaseCustomComponentTest extends BaseMockitoTest {
 
@@ -73,15 +71,11 @@ public class BaseCustomComponentTest extends BaseMockitoTest {
 
 		TestEntity e = new TestEntity("Kevin", 12L);
 		e.setDiscount(BigDecimal.valueOf(12.34));
-		e.setBirthDate(DateUtils.createDate("04052016"));
-		e.setBirthWeek(DateUtils.createDate("04052016"));
+		e.setBirthDate(DateUtils.createLocalDate("04052016"));
+		e.setBirthWeek(DateUtils.createLocalDate("04052016"));
 		e.setSomeInt(1234);
 
-		Calendar cal = Calendar.getInstance();
-		cal.set(Calendar.HOUR_OF_DAY, 14);
-		cal.set(Calendar.MINUTE, 25);
-		cal.set(Calendar.SECOND, 37);
-		e.setSomeTime(cal.getTime());
+		e.setSomeTime(LocalTime.of(14,25,37));
 
 		e.setSomeEnum(TestEnum.A);
 		e.setSomeBoolean(Boolean.TRUE);

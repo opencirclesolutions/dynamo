@@ -16,6 +16,7 @@ package com.ocs.dynamo.ui.utils;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -211,14 +212,15 @@ public final class FormatUtils {
 					return model.getFalseRepresentation();
 				}
 				return Boolean.toString(Boolean.TRUE.equals(value));
-			} else if (Date.class.equals(model.getType())) {
+			} else if (LocalDate.class.equals(model.getType())) {
 				// in case of a date field, use the entered display format
-				SimpleDateFormat format = new SimpleDateFormat(model.getDisplayFormat());
+				DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(model.getDisplayFormat());
+
 				// set time zone for a time stamp field
 				if (AttributeDateType.TIMESTAMP.equals(model.getDateType())) {
-					format.setTimeZone(VaadinUtils.getTimeZone(UI.getCurrent()));
+					dateTimeFormatter = dateTimeFormatter.withZone(VaadinUtils.getTimeZone(UI.getCurrent()));
 				}
-				return format.format((Date) value);
+				return dateTimeFormatter.format((LocalDate)value);
 			} else if (DateUtils.isJava8DateType(model.getType())) {
 				return DateUtils.formatJava8Date(model.getType(), value, model.getDisplayFormat());
 			} else if (BigDecimal.class.equals(model.getType())) {

@@ -13,15 +13,15 @@
  */
 package com.ocs.dynamo.ui.converter;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.Date;
-
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.data.Converter;
 import com.vaadin.data.Result;
 import com.vaadin.data.ValueContext;
 import com.vaadin.ui.UI;
+
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 
 /**
  * Vaadin converter for converting between legacy date and
@@ -40,7 +40,7 @@ public class LocalDateTimeToDateConverter implements Converter<Date, LocalDateTi
 		if (value == null) {
 			return null;
 		}
-		ZoneId tz = VaadinUtils.getTimeZone(UI.getCurrent()).toZoneId();
+		ZoneId tz = VaadinUtils.getTimeZone(UI.getCurrent());
 		return Result.ok(value.toInstant().atZone(tz).toLocalDateTime());
 	}
 
@@ -49,7 +49,7 @@ public class LocalDateTimeToDateConverter implements Converter<Date, LocalDateTi
 		if (value == null) {
 			return null;
 		}
-		ZoneId tz = VaadinUtils.getTimeZone(UI.getCurrent()).toZoneId();
+		ZoneId tz = VaadinUtils.getTimeZone(UI.getCurrent());
 		return Date.from(value.atZone(tz).toInstant());
 	}
 

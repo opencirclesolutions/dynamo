@@ -13,15 +13,13 @@
  */
 package com.ocs.dynamo.importer.impl;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
-import org.springframework.util.StringUtils;
-
 import com.ocs.dynamo.exception.OCSImportException;
 import com.ocs.dynamo.importer.ImportField;
 import com.ocs.dynamo.util.SystemPropertyUtils;
+import org.springframework.util.StringUtils;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 /**
  * Base class for importers that read data from a text file
@@ -65,14 +63,11 @@ public abstract class BaseTextImporter extends BaseImporter<String[], String> {
 	 *            the String value to convert
 	 * @return
 	 */
-	protected Date getDateValue(String unit) {
+	protected LocalDate getDateValue(String unit) {
 		String value = unit;
 		if (!StringUtils.isEmpty(value)) {
-			try {
-				return new SimpleDateFormat(SystemPropertyUtils.getDefaultDateFormat()).parse(value);
-			} catch (ParseException e) {
-				throw new OCSImportException(value + " cannot be converted to a date");
-			}
+			return LocalDate.parse(value, DateTimeFormatter.ofPattern(SystemPropertyUtils.getDefaultDateFormat()));
+
 		}
 		return null;
 	}
@@ -81,14 +76,10 @@ public abstract class BaseTextImporter extends BaseImporter<String[], String> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected Date getDateValueWithDefault(String unit, ImportField field) {
-		Date value = getDateValue(unit);
+	protected LocalDate getDateValueWithDefault(String unit, ImportField field) {
+		LocalDate value = getDateValue(unit);
 		if (value == null && field.defaultValue() != null) {
-			try {
-				return new SimpleDateFormat(SystemPropertyUtils.getDefaultDateFormat()).parse(field.defaultValue());
-			} catch (ParseException e) {
-				throw new OCSImportException(field.defaultValue() + " cannot be converted to a date");
-			}
+			return getDateValue(field.defaultValue());
 		}
 		return value;
 	}

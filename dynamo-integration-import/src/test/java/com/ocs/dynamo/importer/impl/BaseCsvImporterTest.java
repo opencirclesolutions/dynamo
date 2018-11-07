@@ -13,18 +13,16 @@
  */
 package com.ocs.dynamo.importer.impl;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-
+import com.ocs.dynamo.exception.OCSImportException;
+import com.ocs.dynamo.importer.impl.PersonDTO.Gender;
+import com.ocs.dynamo.utils.DateUtils;
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.ocs.dynamo.exception.OCSImportException;
-import com.ocs.dynamo.importer.impl.BaseCsvImporter;
-import com.ocs.dynamo.importer.impl.PersonDTO.Gender;
-import com.ocs.dynamo.utils.DateUtils;
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
 
 public class BaseCsvImporterTest {
 
@@ -68,7 +66,7 @@ public class BaseCsvImporterTest {
 		Assert.assertNotNull(dto);
 		Assert.assertEquals("Endy", dto.getName());
 		Assert.assertEquals(-3, dto.getNumber().intValue());
-		Assert.assertEquals(DateUtils.createDate("01012015"), dto.getDate());
+		Assert.assertEquals(DateUtils.createLocalDate("01012015"), dto.getDate());
 	}
 
 	@Test

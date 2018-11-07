@@ -274,14 +274,14 @@ public class TestEntityDaoTest extends BaseIntegrationTest {
 	}
 
     public void testFindByBirthDateLocal() {
-        List<TestEntity> result = dao.findByBirthDateLocal();
+        List<TestEntity> result = dao.findByBirthDate();
         Assert.assertEquals(0, result.size());
 
         TestEntity bob = save("Bob", 55L);
-        bob.setBirthDateLocal(DateUtils.createLocalDate("10081980"));
+        bob.setBirthDate(DateUtils.createLocalDate("10081980"));
         bob = dao.save(bob);
 
-        result = dao.findByBirthDateLocal();
+        result = dao.findByBirthDate();
         Assert.assertEquals(1, result.size());
     }
 

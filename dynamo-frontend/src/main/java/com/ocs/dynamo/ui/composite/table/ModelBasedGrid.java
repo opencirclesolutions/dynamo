@@ -40,6 +40,8 @@ import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.renderers.ComponentRenderer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A Table that bases its columns on the meta model of an entity
@@ -49,6 +51,8 @@ import com.vaadin.ui.renderers.ComponentRenderer;
  * @param <T> type of the entity
  */
 public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID>> extends Grid<T> {
+
+	private static final Logger LOG = LoggerFactory.getLogger(ModelBasedGrid.class);
 
 	private static final long serialVersionUID = 6946260934644731038L;
 
@@ -178,6 +182,7 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 		AbstractComponent comp = factory.constructField(attributeModel, null, null, true);
 		S value = (S) ClassUtils.getFieldValue(t, attributeModel.getPath());
 		if (value != null) {
+			LOG.info(value.toString());
 			((HasValue<S>) comp).setValue(value);
 		}
 		return comp;

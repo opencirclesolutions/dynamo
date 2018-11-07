@@ -29,7 +29,7 @@
 	<field name="name" class="java.lang.String">
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
-	<field name="birthDate" class="java.util.Date"/>
+	<field name="birthDate" class="java.time.LocalDate"/>
 	<field name="email" class="java.lang.String">
 		<property name="com.ocs.dynamo.containerPropertyName" value="customer.email"/>
 		<fieldDescription><![CDATA[]]></fieldDescription>

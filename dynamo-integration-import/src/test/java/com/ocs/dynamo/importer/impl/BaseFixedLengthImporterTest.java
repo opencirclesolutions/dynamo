@@ -13,18 +13,17 @@
  */
 package com.ocs.dynamo.importer.impl;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-
-import org.apache.commons.io.FileUtils;
-import org.junit.Assert;
-import org.junit.Test;
-
 import com.google.common.collect.Lists;
 import com.ocs.dynamo.exception.OCSImportException;
 import com.ocs.dynamo.importer.impl.PersonDTO.Gender;
 import com.ocs.dynamo.utils.DateUtils;
+import org.apache.commons.io.FileUtils;
+import org.junit.Assert;
+import org.junit.Test;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
 
 public class BaseFixedLengthImporterTest {
 
@@ -55,7 +54,7 @@ public class BaseFixedLengthImporterTest {
         Assert.assertEquals("abc", dto.getRandom());
         Assert.assertEquals(Gender.M, dto.getGender());
         Assert.assertEquals(1.50, dto.getPercentage().doubleValue(), 0.001);
-        Assert.assertEquals(DateUtils.createDate("01022016"), dto.getDate());
+        Assert.assertEquals(DateUtils.createLocalDate("01022016"), dto.getDate());
 
         // check that default values are set
         dto = importer.processRow(1, lines.get(1), PersonDTO.class);
@@ -63,7 +62,7 @@ public class BaseFixedLengthImporterTest {
         Assert.assertEquals("Unknown", dto.getName());
         Assert.assertEquals(2, dto.getNumber().intValue());
         Assert.assertEquals(1.0, dto.getFactor().doubleValue(), 0.001);
-        Assert.assertEquals(DateUtils.createDate("01022015"), dto.getDate());
+        Assert.assertEquals(DateUtils.createLocalDate("01022015"), dto.getDate());
 
         // check negative values
         dto = importer.processRow(1, lines.get(2), PersonDTO.class);

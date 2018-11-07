@@ -1,19 +1,18 @@
 package com.ocs.dynamo.importer.impl;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
+import com.ocs.dynamo.service.MessageService;
+import com.ocs.dynamo.test.BaseMockitoTest;
+import com.ocs.dynamo.test.MockUtil;
+import com.ocs.dynamo.utils.DateUtils;
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mock;
 
-import com.ocs.dynamo.service.MessageService;
-import com.ocs.dynamo.test.BaseMockitoTest;
-import com.ocs.dynamo.test.MockUtil;
-import com.ocs.dynamo.utils.DateUtils;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class XlsRowImportTemplateTest extends BaseMockitoTest {
 
@@ -49,7 +48,7 @@ public class XlsRowImportTemplateTest extends BaseMockitoTest {
         PersonDTO person = result.get(0);
         Assert.assertEquals("Bas", person.getName());
         Assert.assertEquals(com.ocs.dynamo.importer.impl.PersonDTO.Gender.M, person.getGender());
-        Assert.assertEquals(DateUtils.createDate("04042014"), person.getDate());
+        Assert.assertEquals(DateUtils.createLocalDate("04042014"), person.getDate());
         Assert.assertEquals(2.4, person.getFactor().doubleValue(), 0.001);
         Assert.assertEquals(Boolean.TRUE, person.getAbool());
     }

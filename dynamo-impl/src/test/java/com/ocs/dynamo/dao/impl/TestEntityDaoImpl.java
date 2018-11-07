@@ -40,9 +40,9 @@ public class TestEntityDaoImpl extends TreeDaoImpl<Integer, TestEntity> implemen
 	}
 
 	@Override
-	public List<TestEntity> findByBirthDateLocal() {
+	public List<TestEntity> findByBirthDate() {
 		JPAQuery<TestEntity> query = createQuery();
-		query.where(QTestEntity.testEntity.birthDateLocal.isNotNull());
+		query.where(QTestEntity.testEntity.birthDate.isNotNull());
 		return query.from(QTestEntity.testEntity).fetch();
 	}
 }

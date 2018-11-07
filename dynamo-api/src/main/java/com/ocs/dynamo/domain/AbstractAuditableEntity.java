@@ -13,16 +13,13 @@
  */
 package com.ocs.dynamo.domain;
 
-import java.util.Date;
-
-import javax.persistence.Column;
-import javax.persistence.MappedSuperclass;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-
 import com.ocs.dynamo.domain.model.EditableType;
 import com.ocs.dynamo.domain.model.VisibilityType;
 import com.ocs.dynamo.domain.model.annotation.Attribute;
+
+import javax.persistence.Column;
+import javax.persistence.MappedSuperclass;
+import java.time.ZonedDateTime;
 
 /**
  * Base class for entities that store auditing information
@@ -42,8 +39,7 @@ public abstract class AbstractAuditableEntity<ID> extends AbstractEntity<ID> {
 
 	@Attribute(editable = EditableType.READ_ONLY)
 	@Column(name = "created_on")
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date createdOn;
+	private ZonedDateTime createdOn;
 
 	@Attribute(editable = EditableType.READ_ONLY, showInTable = VisibilityType.HIDE)
 	@Column(name = "changed_by")
@@ -51,8 +47,7 @@ public abstract class AbstractAuditableEntity<ID> extends AbstractEntity<ID> {
 
 	@Attribute(editable = EditableType.READ_ONLY, showInTable = VisibilityType.HIDE)
 	@Column(name = "changed_on")
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date changedOn;
+	private ZonedDateTime changedOn;
 
 	public String getCreatedBy() {
 		return createdBy;
@@ -62,11 +57,11 @@ public abstract class AbstractAuditableEntity<ID> extends AbstractEntity<ID> {
 		this.createdBy = createdBy;
 	}
 
-	public Date getCreatedOn() {
+	public ZonedDateTime getCreatedOn() {
 		return createdOn;
 	}
 
-	public void setCreatedOn(Date createdOn) {
+	public void setCreatedOn(ZonedDateTime createdOn) {
 		this.createdOn = createdOn;
 	}
 
@@ -78,11 +73,11 @@ public abstract class AbstractAuditableEntity<ID> extends AbstractEntity<ID> {
 		this.changedBy = changedBy;
 	}
 
-	public Date getChangedOn() {
+	public ZonedDateTime getChangedOn() {
 		return changedOn;
 	}
 
-	public void setChangedOn(Date changedOn) {
+	public void setChangedOn(ZonedDateTime changedOn) {
 		this.changedOn = changedOn;
 	}
 

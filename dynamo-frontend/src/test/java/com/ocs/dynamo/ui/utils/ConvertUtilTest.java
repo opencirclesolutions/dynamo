@@ -1,19 +1,18 @@
 package com.ocs.dynamo.ui.utils;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.domain.model.impl.EntityModelFactoryImpl;
 import com.ocs.dynamo.utils.DateUtils;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class ConvertUtilTest {
 
@@ -68,7 +67,7 @@ public class ConvertUtilTest {
 		EntityModel<TestEntity> model = emf.getModel(TestEntity.class);
 
 		// LocalDate
-		Object s = ConvertUtil.convertToPresentationValue(model.getAttributeModel("birthDateLocal"),
+		Object s = ConvertUtil.convertToPresentationValue(model.getAttributeModel("birthDate"),
 				LocalDate.of(2014, 1, 1));
 		Assert.assertEquals("01-01-2014", ((LocalDate) s).format(DateTimeFormatter.ofPattern("dd-MM-yyyy")));
 

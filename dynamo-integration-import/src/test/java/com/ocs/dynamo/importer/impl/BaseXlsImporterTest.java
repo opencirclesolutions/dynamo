@@ -13,10 +13,10 @@
  */
 package com.ocs.dynamo.importer.impl;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Iterator;
-
+import com.monitorjbl.xlsx.StreamingReader;
+import com.ocs.dynamo.exception.OCSImportException;
+import com.ocs.dynamo.importer.impl.PersonDTO.Gender;
+import com.ocs.dynamo.utils.DateUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -24,10 +24,9 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.monitorjbl.xlsx.StreamingReader;
-import com.ocs.dynamo.exception.OCSImportException;
-import com.ocs.dynamo.importer.impl.PersonDTO.Gender;
-import com.ocs.dynamo.utils.DateUtils;
+import java.io.File;
+import java.io.IOException;
+import java.util.Iterator;
 
 public class BaseXlsImporterTest {
 
@@ -67,7 +66,7 @@ public class BaseXlsImporterTest {
 		Assert.assertEquals(Gender.M, dto.getGender());
 		Assert.assertEquals(1.50, dto.getPercentage().doubleValue(), 0.001);
 		Assert.assertTrue(dto.getAbool());
-		Assert.assertEquals(DateUtils.createDate("04042014"), dto.getDate());
+		Assert.assertEquals(DateUtils.createLocalDate("04042014"), dto.getDate());
 
 		// check that default values are set
 		dto = importer.processRow(1, sheet.getRow(1), PersonDTO.class);
@@ -77,7 +76,7 @@ public class BaseXlsImporterTest {
 		Assert.assertEquals(2, dto.getNumber().intValue());
 		Assert.assertEquals(1.0, dto.getFactor().doubleValue(), 0.001);
 		Assert.assertFalse(dto.getAbool());
-		Assert.assertEquals(DateUtils.createDate("05052015"), dto.getDate());
+		Assert.assertEquals(DateUtils.createLocalDate("05052015"), dto.getDate());
 
 		// check negative values
 		dto = importer.processRow(2, sheet.getRow(2), PersonDTO.class);
@@ -85,7 +84,7 @@ public class BaseXlsImporterTest {
 		Assert.assertEquals(2, dto.getRowNum());
 		Assert.assertEquals("Endy", dto.getName());
 		Assert.assertEquals(-3, dto.getNumber().intValue());
-		Assert.assertEquals(DateUtils.createDate("01012015"), dto.getDate());
+		Assert.assertEquals(DateUtils.createLocalDate("01012015"), dto.getDate());
 
 	}
 

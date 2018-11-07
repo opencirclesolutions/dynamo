@@ -1,16 +1,5 @@
 package com.ocs.dynamo.ui.utils;
 
-import java.math.BigDecimal;
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.Set;
-
-import javax.persistence.ElementCollection;
-
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
 import com.google.common.collect.Sets;
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.domain.AbstractEntity;
@@ -24,6 +13,15 @@ import com.ocs.dynamo.domain.model.annotation.Model;
 import com.ocs.dynamo.domain.model.impl.EntityModelFactoryImpl;
 import com.ocs.dynamo.test.BaseMockitoTest;
 import com.ocs.dynamo.utils.DateUtils;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import javax.persistence.ElementCollection;
+import java.math.BigDecimal;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Set;
 
 public class FormatUtilsTest extends BaseMockitoTest {
 
@@ -75,11 +73,11 @@ public class FormatUtilsTest extends BaseMockitoTest {
 
 		// date
 		Assert.assertEquals("12/10/2015", FormatUtils.formatPropertyValue(null, factory,
-				model.getAttributeModel("birthDate"), DateUtils.createDate("12102015"), LOCALE, ", "));
+				model.getAttributeModel("birthDate"), DateUtils.createLocalDate("12102015"), LOCALE, ", "));
 
 		// date (as week)
 		Assert.assertEquals("2015-42", FormatUtils.formatPropertyValue(null, factory,
-				model.getAttributeModel("birthWeek"), DateUtils.createDate("12102015"), LOCALE, ", "));
+				model.getAttributeModel("birthWeek"), DateUtils.createLocalDate("12102015"), LOCALE, ", "));
 
 		// integer (with grouping)
 		Assert.assertEquals("1.234",

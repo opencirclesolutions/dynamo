@@ -52,7 +52,6 @@ import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
-import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.validation.constraints.AssertFalse;
@@ -60,8 +59,6 @@ import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.beans.PropertyDescriptor;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -70,7 +67,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -127,13 +123,13 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
     }
 
     /**
-     * Check that the"week" setting is only allowed for java.util.Date or java.time.LocalDate
+     * Check that the"week" setting is only allowed for java.time.LocalDate
      *
      * @param model
      */
     protected void checkWeekSettingAllowed(AttributeModel model) {
-        if (!Date.class.equals(model.getType()) && !LocalDate.class.equals(model.getType())) {
-            throw new OCSRuntimeException("'Week' setting only allowed for attributes of type Date and LocalDate");
+        if (!LocalDate.class.equals(model.getType())) {
+            throw new OCSRuntimeException("'Week' setting only allowed for attributes of type LocalDate");
         }
     }
 
@@ -676,7 +672,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
     /**
      * Determines the "dateType" for an attribute
      *
-     * @param modelType   the type of the attribute. Can be either java.util.Date or a java
+     * @param modelType   the type of the attribute. Can be a java
      *                    8 LocalX type
      * @param entityClass the class of the entity
      * @param fieldName   the name of the attribute
@@ -685,25 +681,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
     protected <T> AttributeDateType determineDateType(final Class<?> modelType, final Class<T> entityClass,
 			final String fieldName) {
         // set the date type
-        if (Date.class.equals(modelType)) {
-            final Temporal temporal = ClassUtils.getAnnotation(entityClass, fieldName, Temporal.class);
-
-            final Attribute attribute = ClassUtils.getAnnotation(entityClass, fieldName, Attribute.class);
-
-            final boolean customAttributeDateTypeSet = attribute != null
-                    && attribute.dateType() != AttributeDateType.INHERIT;
-            if (temporal != null && !customAttributeDateTypeSet) {
-                // use the @Temporal annotation when available and not
-                // overridden by Attribute
-                return translateDateType(temporal.value());
-            } else {
-                if (customAttributeDateTypeSet) {
-                    return attribute.dateType();
-                }
-                // by default use date
-                return AttributeDateType.DATE;
-            }
-        } else if (LocalDate.class.equals(modelType)) {
+        if (LocalDate.class.equals(modelType)) {
             return AttributeDateType.DATE;
         } else if (LocalDateTime.class.equals(modelType)) {
             return AttributeDateType.TIMESTAMP;
@@ -724,19 +702,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
      */
     protected String determineDefaultDisplayFormat(final Class<?> type, final AttributeDateType dateType) {
         String format = null;
-        if (Date.class.isAssignableFrom(type)) {
-            switch (dateType) {
-                case TIME:
-                    format = SystemPropertyUtils.getDefaultTimeFormat();
-                    break;
-                case TIMESTAMP:
-                    format = SystemPropertyUtils.getDefaultDateTimeFormat();
-                    break;
-                default:
-                    // by default use a date
-                    format = SystemPropertyUtils.getDefaultDateFormat();
-            }
-        } else if (LocalDate.class.isAssignableFrom(type)) {
+        if (LocalDate.class.isAssignableFrom(type)) {
             format = SystemPropertyUtils.getDefaultDateFormat();
         } else if (LocalDateTime.class.isAssignableFrom(type)) {
             format = SystemPropertyUtils.getDefaultDateTimeFormat();
@@ -1107,15 +1073,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 		if (model.getType().isEnum()) {
 			final Class<? extends Enum> enumType = model.getType().asSubclass(Enum.class);
 			model.setDefaultValue(Enum.valueOf(enumType, defaultValue));
-		} else if (model.getType().equals(Date.class)) {
-			final SimpleDateFormat fmt = new SimpleDateFormat(model.getDisplayFormat());
-			try {
-				model.setDefaultValue(fmt.parseObject(defaultValue));
-			} catch (final ParseException e) {
-				throw new OCSRuntimeException("Cannot parse default date value: " + defaultValue + " with format: "
-						+ model.getDisplayFormat());
-			}
-		} else if (DateUtils.isJava8DateType(model.getType())) {
+		} if (DateUtils.isJava8DateType(model.getType())) {
 			final Object o = DateUtils.createJava8Date(model.getType(), defaultValue, model.getDisplayFormat());
 			model.setDefaultValue(o);
 		} else {

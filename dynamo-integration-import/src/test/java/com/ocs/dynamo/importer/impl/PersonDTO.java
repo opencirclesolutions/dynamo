@@ -13,11 +13,11 @@
  */
 package com.ocs.dynamo.importer.impl;
 
-import java.math.BigDecimal;
-import java.util.Date;
-
 import com.ocs.dynamo.importer.ImportField;
 import com.ocs.dynamo.importer.dto.AbstractDTO;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
 
 public class PersonDTO extends AbstractDTO {
 
@@ -52,7 +52,7 @@ public class PersonDTO extends AbstractDTO {
 	private Boolean abool;
 
 	@ImportField(index = 7, defaultValue = "01-01-2015")
-	private Date date;
+	private LocalDate date;
 
 	public String getName() {
 		return name;
@@ -110,11 +110,11 @@ public class PersonDTO extends AbstractDTO {
 		this.abool = abool;
 	}
 
-	public Date getDate() {
+	public LocalDate getDate() {
 		return date;
 	}
 
-	public void setDate(Date date) {
+	public void setDate(LocalDate date) {
 		this.date = date;
 	}
 

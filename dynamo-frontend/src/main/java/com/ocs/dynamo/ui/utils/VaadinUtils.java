@@ -13,29 +13,15 @@
  */
 package com.ocs.dynamo.ui.utils;
 
-import java.math.BigDecimal;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.Locale;
-import java.util.Map;
-import java.util.TimeZone;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import org.vaadin.dialogs.ConfirmDialog;
-
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.service.MessageService;
-import com.ocs.dynamo.ui.container.pivot.PivotItem;
 import com.ocs.dynamo.ui.converter.BigDecimalConverter;
 import com.ocs.dynamo.ui.converter.ConverterFactory;
 import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.vaadin.data.Converter;
-import com.vaadin.data.Validator;
 import com.vaadin.data.ValueContext;
 import com.vaadin.data.converter.StringToIntegerConverter;
 import com.vaadin.data.converter.StringToLongConverter;
@@ -51,6 +37,18 @@ import com.vaadin.ui.Layout;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.UI;
+import org.vaadin.dialogs.ConfirmDialog;
+
+import java.math.BigDecimal;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Locale;
+import java.util.Map;
+import java.util.TimeZone;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Utility class for Vaadin-related functionality
@@ -413,25 +411,30 @@ public final class VaadinUtils {
 	 *
 	 * @return
 	 */
-	public static TimeZone getTimeZone(UI ui) {
+	public static ZoneId getTimeZone(UI ui) {
 		if (ui != null) {
 			int offset = ui.getPage().getWebBrowser().getRawTimezoneOffset();
 			boolean dst = ui.getPage().getWebBrowser().isDSTInEffect();
+			String zoneId = ui.getPage().getWebBrowser().getTimeZoneId();
+			if (zoneId != null && !zoneId.isEmpty()){
+				return ZoneId.of(zoneId);
+			}
 
 			String[] zones = TimeZone.getAvailableIDs(offset);
 			if (zones != null && zones.length > 0) {
 				for (String zone : zones) {
-					TimeZone tz = TimeZone.getTimeZone(zone);
+					ZoneId tz = ZoneId.of(zone);
+
 					// look for the first time zone with the right offset that
 					// also
 					// has a matching DST setting
-					if (tz.inDaylightTime(new Date()) == dst) {
+					if (tz.getRules().isDaylightSavings(Instant.now()) == dst){
 						return tz;
 					}
 				}
 			}
 		}
-		return TimeZone.getTimeZone("CET");
+		return ZoneId.of("CET");
 	}
 
 	/**

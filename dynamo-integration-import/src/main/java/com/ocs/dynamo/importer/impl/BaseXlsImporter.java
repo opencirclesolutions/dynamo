@@ -21,7 +21,6 @@ import com.ocs.dynamo.importer.ImportField;
 import com.ocs.dynamo.importer.dto.AbstractDTO;
 import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.ocs.dynamo.utils.ClassUtils;
-
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.OfficeXmlFileException;
 import org.apache.poi.ss.usermodel.Cell;
@@ -35,9 +34,9 @@ import org.springframework.util.StringUtils;
 import java.beans.PropertyDescriptor;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 
 /**
  * Base class for services that can be used to import Excel files.
@@ -170,11 +169,12 @@ public class BaseXlsImporter extends BaseImporter<Row, Cell> {
 	 *            the cell to extract the value from
 	 * @return
 	 */
-	protected Date getDateValue(Cell cell) {
+	protected LocalDate getDateValue(Cell cell) {
 		if (cell != null
 		        && (Cell.CELL_TYPE_NUMERIC == cell.getCellType() || Cell.CELL_TYPE_BLANK == cell.getCellType())) {
 			try {
-				return cell.getDateCellValue();
+
+				return LocalDate.from(cell.getDateCellValue().toInstant().atZone(ZoneId.systemDefault()));
 			} catch (NullPointerException nex) {
 				// horrible code throws NPE in case of empty cell
 				return null;
@@ -187,14 +187,10 @@ public class BaseXlsImporter extends BaseImporter<Row, Cell> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected Date getDateValueWithDefault(Cell cell, ImportField field) {
-		Date value = getDateValue(cell);
+	protected LocalDate getDateValueWithDefault(Cell cell, ImportField field) {
+		LocalDate value = getDateValue(cell);
 		if (value == null && field.defaultValue() != null && !"".equals(field.defaultValue())) {
-			try {
-				value = new SimpleDateFormat(SystemPropertyUtils.getDefaultDateFormat()).parse(field.defaultValue());
-			} catch (ParseException e) {
-				throw new OCSImportException(field.defaultValue() + " cannot be converted to a date");
-			}
+			value = LocalDate.parse(field.defaultValue(), DateTimeFormatter.ofPattern(SystemPropertyUtils.getDefaultDateFormat()));
 		}
 		return value;
 	}
@@ -256,8 +252,8 @@ public class BaseXlsImporter extends BaseImporter<Row, Cell> {
 	 *            the cell to extract the value from
 	 * @return
 	 */
-	protected Date getRequiredDateValue(Cell cell) {
-		Date result = getDateValue(cell);
+	protected LocalDate getRequiredDateValue(Cell cell) {
+		LocalDate result = getDateValue(cell);
 		if (result == null) {
 			throw new OCSValidationException("Required value not set: " + cell.getColumnIndex());
 		}

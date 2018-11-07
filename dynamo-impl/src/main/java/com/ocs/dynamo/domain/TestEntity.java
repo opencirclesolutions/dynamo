@@ -13,13 +13,12 @@
  */
 package com.ocs.dynamo.domain;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import com.ocs.dynamo.domain.model.AttributeTextFieldMode;
+import com.ocs.dynamo.domain.model.NumberSelectMode;
+import com.ocs.dynamo.domain.model.VisibilityType;
+import com.ocs.dynamo.domain.model.annotation.Attribute;
+import com.ocs.dynamo.domain.model.annotation.Model;
+import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 
 import javax.persistence.CascadeType;
 import javax.persistence.ElementCollection;
@@ -29,19 +28,16 @@ import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-
-import org.apache.commons.lang.builder.ReflectionToStringBuilder;
-
-import com.ocs.dynamo.domain.model.AttributeTextFieldMode;
-import com.ocs.dynamo.domain.model.NumberSelectMode;
-import com.ocs.dynamo.domain.model.VisibilityType;
-import com.ocs.dynamo.domain.model.annotation.Attribute;
-import com.ocs.dynamo.domain.model.annotation.Model;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZonedDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Entity used for testing purposes - has to be included in src/main/java
@@ -79,14 +75,12 @@ public class TestEntity extends AbstractTreeEntity<Integer, TestEntity> {
 	private BigDecimal rate;
 
 	@Attribute(displayFormat = "dd/MM/yyyy", searchable = true)
-	private Date birthDate;
-
-	private LocalDate birthDateLocal;
+	private LocalDate birthDate;
 
 	private LocalDateTime registrationTime;
 
 	@Attribute(week = true)
-	private Date birthWeek;
+	private LocalDate birthWeek;
 
 	@Attribute(searchable = true)
 	private TestEnum someEnum;
@@ -117,8 +111,7 @@ public class TestEntity extends AbstractTreeEntity<Integer, TestEntity> {
 	private Set<TestEntity2> testEntities = new HashSet<>();
 
 	@Attribute(displayFormat = "HH:mm:ss")
-	@Temporal(TemporalType.TIME)
-	private Date someTime;
+	private LocalTime someTime;
 
 	@ElementCollection
 	@Attribute(maxLength = 25)
@@ -188,19 +181,19 @@ public class TestEntity extends AbstractTreeEntity<Integer, TestEntity> {
 		this.discount = discount;
 	}
 
-	public Date getBirthDate() {
+	public LocalDate getBirthDate() {
 		return birthDate;
 	}
 
-	public void setBirthDate(Date birthDate) {
+	public void setBirthDate(LocalDate birthDate) {
 		this.birthDate = birthDate;
 	}
 
-	public Date getBirthWeek() {
+	public LocalDate getBirthWeek() {
 		return birthWeek;
 	}
 
-	public void setBirthWeek(Date birthWeek) {
+	public void setBirthWeek(LocalDate birthWeek) {
 		this.birthWeek = birthWeek;
 	}
 
@@ -278,11 +271,11 @@ public class TestEntity extends AbstractTreeEntity<Integer, TestEntity> {
 		entity2.setTestEntity(this);
 	}
 
-	public Date getSomeTime() {
+	public LocalTime getSomeTime() {
 		return someTime;
 	}
 
-	public void setSomeTime(Date someTime) {
+	public void setSomeTime(LocalTime someTime) {
 		this.someTime = someTime;
 	}
 
@@ -353,14 +346,6 @@ public class TestEntity extends AbstractTreeEntity<Integer, TestEntity> {
 
 	public void setSomeLongSlider(Long someLongSlider) {
 		this.someLongSlider = someLongSlider;
-	}
-
-	public LocalDate getBirthDateLocal() {
-		return birthDateLocal;
-	}
-
-	public void setBirthDateLocal(LocalDate birthDateLocal) {
-		this.birthDateLocal = birthDateLocal;
 	}
 
 	public LocalDateTime getRegistrationTime() {

@@ -50,8 +50,6 @@ import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.NotNull;
@@ -61,7 +59,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -128,7 +125,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		Assert.assertNull(birthDateModel.getDefaultValue());
 		Assert.assertEquals("Birth Date", birthDateModel.getDisplayName());
 		Assert.assertEquals(1, birthDateModel.getOrder().intValue());
-		Assert.assertEquals(Date.class, birthDateModel.getType());
+		Assert.assertEquals(LocalDate.class, birthDateModel.getType());
 		Assert.assertNotNull(birthDateModel.getDisplayFormat());
 		Assert.assertEquals(AttributeType.BASIC, birthDateModel.getAttributeType());
 
@@ -492,7 +489,6 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		Assert.assertEquals(AttributeDateType.TIMESTAMP, am.getDateType());
 		Assert.assertEquals("dd-MM-yyyy HH:mm:ss", am.getDisplayFormat());
 
-		// overridden @Temporal annotation
 		am = model.getAttributeModel("date3");
 		Assert.assertEquals(AttributeDateType.TIME, am.getDateType());
 		Assert.assertEquals("HH:mm:ss", am.getDisplayFormat());
@@ -618,8 +614,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 
 		private BigDecimal weight;
 
-		@Temporal(TemporalType.DATE)
-		private Date birthDate;
+		private LocalDate birthDate;
 
 		@Attribute(trueRepresentation = "Yes", falseRepresentation = "No", checkboxMode = CheckboxMode.SWITCH)
 		private Boolean bool;
@@ -646,11 +641,11 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 			this.age = age;
 		}
 
-		public Date getBirthDate() {
+		public LocalDate getBirthDate() {
 			return birthDate;
 		}
 
-		public void setBirthDate(final Date birthDate) {
+		public void setBirthDate(final LocalDate birthDate) {
 			this.birthDate = birthDate;
 		}
 
@@ -695,8 +690,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 
 		private Integer age;
 
-		@Temporal(TemporalType.DATE)
-		private Date birthDate;
+		private LocalDate birthDate;
 
 		public String getName() {
 			return name;
@@ -714,11 +708,11 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 			this.age = age;
 		}
 
-		public Date getBirthDate() {
+		public LocalDate getBirthDate() {
 			return birthDate;
 		}
 
-		public void setBirthDate(final Date birthDate) {
+		public void setBirthDate(final LocalDate birthDate) {
 			this.birthDate = birthDate;
 		}
 	}
@@ -743,8 +737,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		private Integer age;
 
 		@Attribute(displayFormat = "dd/MM/yyyy")
-		@Temporal(TemporalType.DATE)
-		private Date birthDate;
+		private LocalDate birthDate;
 
 		@OneToOne
 		@Attribute(complexEditable = true, navigable = true)
@@ -772,11 +765,11 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 			this.age = age;
 		}
 
-		public Date getBirthDate() {
+		public LocalDate getBirthDate() {
 			return birthDate;
 		}
 
-		public void setBirthDate(final Date birthDate) {
+		public void setBirthDate(final LocalDate birthDate) {
 			this.birthDate = birthDate;
 		}
 
@@ -817,7 +810,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 
 		private Integer age;
 
-		private Date birthDate;
+		private LocalDate birthDate;
 
 		public String getName() {
 			return name;
@@ -835,11 +828,11 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 			this.age = age;
 		}
 
-		public Date getBirthDate() {
+		public LocalDate getBirthDate() {
 			return birthDate;
 		}
 
-		public void setBirthDate(final Date birthDate) {
+		public void setBirthDate(final LocalDate birthDate) {
 			this.birthDate = birthDate;
 		}
 
@@ -889,69 +882,67 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 
 	public class Entity8 {
 
-		private Date date1;
+		private LocalDate date1;
 
-		@Temporal(TemporalType.TIMESTAMP)
-		private Date date2;
+		private LocalDateTime date2;
 
-		@Temporal(TemporalType.DATE)
 		@Attribute(dateType = AttributeDateType.TIME)
-		private Date date3;
+		private LocalTime date3;
 
 		@Attribute(dateType = AttributeDateType.TIME, displayFormat = "ss:mm:HH")
-		private Date date4;
+		private LocalTime date4;
 
 		@Attribute(displayFormat = "yyyy-dd-MM ss:mm:HH")
-		private Date date5;
+		private LocalDate date5;
 
 		@Attribute
-		private Date date6;
+		private LocalDate date6;
 
-		public Date getDate1() {
+		public LocalDate getDate1() {
 			return date1;
 		}
 
-		public void setDate1(final Date date1) {
+		public void setDate1(final LocalDate date1) {
 			this.date1 = date1;
 		}
 
-		public Date getDate2() {
+		public LocalDateTime getDate2() {
 			return date2;
 		}
 
-		public void setDate2(final Date date2) {
+		public void setDate2(final LocalDateTime date2) {
 			this.date2 = date2;
 		}
 
-		public Date getDate3() {
+		public LocalTime getDate3() {
 			return date3;
 		}
 
-		public void setDate3(final Date date3) {
+		public void setDate3(final LocalTime date3) {
 			this.date3 = date3;
 		}
 
-		public Date getDate4() {
+		public LocalTime getDate4() {
 			return date4;
 		}
 
-		public void setDate4(final Date date4) {
+		public void setDate4(final LocalTime date4) {
 			this.date4 = date4;
 		}
 
-		public Date getDate5() {
+		public LocalDate getDate5() {
 			return date5;
 		}
 
-		public void setDate5(final Date date5) {
+		public void setDate5(final LocalDate date5) {
 			this.date5 = date5;
 		}
 
-		public Date getDate6() {
+		public LocalDate getDate6() {
 			return date6;
 		}
 
-		public void setDate6(final Date date6) {
+		public void setDate6(final LocalDate date6) {
 			this.date6 = date6;
 		}
 	}

@@ -13,8 +13,8 @@
  */
 package com.ocs.dynamo.aop;
 
-import java.util.Date;
-
+import com.ocs.dynamo.domain.AbstractAuditableEntity;
+import com.ocs.dynamo.service.UserDetailsService;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -22,8 +22,7 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.ocs.dynamo.domain.AbstractAuditableEntity;
-import com.ocs.dynamo.service.UserDetailsService;
+import java.time.ZonedDateTime;
 
 /**
  * Aspect for intercepting calls and automatically setting audit information (created by/created on
@@ -76,9 +75,9 @@ public class AuditAspect {
         String userName = userDetailsService.getCurrentUserName();
         if (entity.getId() == null) {
             entity.setCreatedBy(userName);
-            entity.setCreatedOn(new Date());
+            entity.setCreatedOn(ZonedDateTime.now());
         }
         entity.setChangedBy(userName);
-        entity.setChangedOn(new Date());
+        entity.setChangedOn(ZonedDateTime.now());
     }
 }
