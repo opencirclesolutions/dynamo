@@ -25,7 +25,6 @@ import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.AttributeType;
 import com.ocs.dynamo.domain.model.CascadeMode;
 import com.ocs.dynamo.domain.model.EntityModel;
-import com.ocs.dynamo.exception.OCSException;
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.filter.EqualsPredicate;
 import com.ocs.dynamo.ui.Refreshable;

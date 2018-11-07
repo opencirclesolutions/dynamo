@@ -251,14 +251,8 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
 		return extTokenField;
 	}
 
-	/**
-	 * TODO: returning null here works for searching but might break other code
-	 */
 	@Override
 	public Collection<T> getValue() {
-		if (provider.getItems().isEmpty()) {
-			return null;
-		}
 		return Sets.newHashSet(provider.getItems());
 	}
 
@@ -268,7 +262,6 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
 
 		// comboBox.setInputPrompt(getMessageService().getMessage("ocs.type.to.add",
 		// VaadinUtils.getLocale()));
-		// comboBox.setFilteringMode(FilteringMode.CONTAINS);
 		comboBox.setHeightUndefined();
 		setComboBoxWidth();
 

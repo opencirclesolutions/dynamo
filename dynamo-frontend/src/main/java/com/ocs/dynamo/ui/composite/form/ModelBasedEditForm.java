@@ -71,6 +71,7 @@ import com.ocs.dynamo.ui.converter.LongToDoubleConverter;
 import com.ocs.dynamo.ui.converter.ZonedDateTimeToLocalDateTimeConverter;
 import com.ocs.dynamo.ui.utils.EntityModelUtil;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
+import com.ocs.dynamo.ui.validator.EmailValidator;
 import com.ocs.dynamo.ui.validator.URLValidator;
 import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.ocs.dynamo.util.ValidationMode;
@@ -1078,7 +1079,10 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	@SuppressWarnings("unchecked")
 	private void setConverters(BindingBuilder<T, ?> builder, AttributeModel am) {
 
-		if (am.isWeek()) {
+		if (am.isEmail()) {
+			BindingBuilder<T, String> sBuilder = (BindingBuilder<T, String>) builder;
+			sBuilder.withNullRepresentation("").withValidator(new EmailValidator(message("ocs.no.valid.email")));
+		} else if (am.isWeek()) {
 			BindingBuilder<T, String> sBuilder = (BindingBuilder<T, String>) builder;
 			sBuilder.withConverter(new LocalDateWeekCodeConverter());
 		} else if (builder.getField() instanceof AbstractTextField) {
@@ -1110,6 +1114,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			BindingBuilder<T, LocalDateTime> sBuilder = (BindingBuilder<T, LocalDateTime>) builder;
 			sBuilder.withConverter(new ZonedDateTimeToLocalDateTimeConverter(ZoneId.systemDefault()));
 		}
+
 	}
 
 	/**

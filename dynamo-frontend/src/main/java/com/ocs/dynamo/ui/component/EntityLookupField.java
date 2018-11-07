@@ -57,7 +57,7 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 	private static final long serialVersionUID = 5377765863515463622L;
 
 	/**
-	 * 
+	 * Whether direct navigation via internal link is allowed
 	 */
 	private boolean directNavigationAllowed;
 
@@ -224,19 +224,7 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 
 	@Override
 	public Object getValue() {
-		if (value == null) {
-			return null;
-		}
-
-		if (Set.class.isAssignableFrom(getAttributeModel().getType())) {
-			Collection<T> col = (Collection<T>) value;
-			return Sets.newHashSet(col);
-		} else if (List.class.isAssignableFrom(getAttributeModel().getType())) {
-			Collection<T> col = (Collection<T>) value;
-			return Lists.newArrayList(col);
-		} else {
-			return value;
-		}
+		return convertToCorrectCollection(value);
 	}
 
 	@Override

@@ -13,6 +13,10 @@
  */
 package com.ocs.dynamo.ui.component;
 
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.Set;
+
 import com.google.gwt.thirdparty.guava.common.collect.Lists;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
@@ -23,6 +27,7 @@ import com.ocs.dynamo.ui.utils.EntityModelUtil;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.data.provider.SortOrder;
+import com.vaadin.server.ErrorMessage;
 import com.vaadin.server.SerializablePredicate;
 import com.vaadin.shared.Registration;
 import com.vaadin.ui.Button;
@@ -31,10 +36,6 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.ListSelect;
 import com.vaadin.ui.VerticalLayout;
 
-import java.io.Serializable;
-import java.util.Collection;
-import java.util.Set;
-
 /**
  * A ListSelect component with an extra combo box for easily searching items.
  * The combo box holds the list of available items. Items that are selected, are
@@ -42,15 +43,12 @@ import java.util.Set;
  * 
  * @author bas.rutten
  *
- * @param <ID>
- *            the type of the ID of the entity
- * @param <T>
- *            the type of the entity
- * @param Set<T>
- *            the type of the value (can be a single object or a collection)
+ * @param <ID> the type of the ID of the entity
+ * @param <T> the type of the entity
+ * @param Set<T> the type of the value (can be a single object or a collection)
  */
 public class FancyListSelect<ID extends Serializable, T extends AbstractEntity<ID>>
-		extends QuickAddEntityField<ID, T, Set<T>> implements Refreshable {
+		extends QuickAddEntityField<ID, T, Collection<T>> implements Refreshable {
 
 	private static final long serialVersionUID = 8129335343598146079L;
 
@@ -99,18 +97,12 @@ public class FancyListSelect<ID extends Serializable, T extends AbstractEntity<I
 	/**
 	 * Constructor
 	 * 
-	 * @param service
-	 *            the service used to query the database
-	 * @param entityModel
-	 *            the entity model
-	 * @param attributeModel
-	 *            the attribute mode
-	 * @param filter
-	 *            the filter to apply when searching
-	 * @param search
-	 *            whether the component is used in a search screen
-	 * @param sortOrders
-	 *            the sort order
+	 * @param service        the service used to query the database
+	 * @param entityModel    the entity model
+	 * @param attributeModel the attribute mode
+	 * @param filter         the filter to apply when searching
+	 * @param search         whether the component is used in a search screen
+	 * @param sortOrders     the sort order
 	 */
 	public FancyListSelect(BaseService<ID, T> service, EntityModel<T> entityModel, AttributeModel attributeModel,
 			SerializablePredicate<T> filter, boolean search, SortOrder<?>... sortOrders) {
@@ -125,9 +117,20 @@ public class FancyListSelect<ID extends Serializable, T extends AbstractEntity<I
 	}
 
 	@Override
+	public Registration addValueChangeListener(ValueChangeListener<Collection<T>> listener) {
+		if (listSelect != null) {
+			ValueChangeListener<Set<T>> list = event -> listener.valueChange(new ValueChangeEvent<Collection<T>>(
+					FancyListSelect.this, FancyListSelect.this, (Collection<T>) listSelect.getValue(), true));
+			return listSelect.addValueChangeListener(list);
+		}
+		return null;
+	}
+
+	@Override
 	protected void afterNewEntityAdded(T entity) {
 		comboBox.addEntity(entity);
 		dataProvider.getItems().add(entity);
+		listSelect.getDataProvider().refreshAll();
 	}
 
 	@Override
@@ -136,6 +139,11 @@ public class FancyListSelect<ID extends Serializable, T extends AbstractEntity<I
 		if (comboBox != null) {
 			comboBox.refresh(getFilter());
 		}
+	}
+
+	@Override
+	protected void doSetValue(Collection<T> value) {
+		repopulateContainer(value);
 	}
 
 	@Override
@@ -154,6 +162,10 @@ public class FancyListSelect<ID extends Serializable, T extends AbstractEntity<I
 		return comboBox;
 	}
 
+	public int getDataProviderSize() {
+		return dataProvider.getItems().size();
+	}
+
 	public ListSelect<T> getListSelect() {
 		return listSelect;
 	}
@@ -168,6 +180,15 @@ public class FancyListSelect<ID extends Serializable, T extends AbstractEntity<I
 
 	public SortOrder<?>[] getSortOrders() {
 		return sortOrders;
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public Collection<T> getValue() {
+		if (listSelect != null) {
+			return (Collection<T>) convertToCorrectCollection(listSelect.getValue());
+		}
+		return null;
 	}
 
 	@Override
@@ -219,6 +240,7 @@ public class FancyListSelect<ID extends Serializable, T extends AbstractEntity<I
 			// clear the container
 			listSelect.deselectAll();
 			dataProvider.getItems().clear();
+			listSelect.getDataProvider().refreshAll();
 		});
 		secondBar.addComponent(clearButton);
 
@@ -275,31 +297,6 @@ public class FancyListSelect<ID extends Serializable, T extends AbstractEntity<I
 		}
 	}
 
-	@Override
-	protected void doSetValue(Set<T> value) {
-		repopulateContainer(value);
-	}
-
-	public void setRows(int rows) {
-		if (listSelect != null) {
-			listSelect.setRows(rows);
-		}
-	}
-
-	@Override
-	public void setValue(Set<T> newFieldValue) {
-		super.setValue(newFieldValue);
-		repopulateContainer(newFieldValue);
-	}
-
-	@Override
-	public Set<T> getValue() {
-		if (listSelect != null) {
-			return listSelect.getValue();
-		}
-		return null;
-	}
-
 	// @Override
 	// public void validate() throws InvalidValueException {
 	// if (!search && getAttributeModel() != null &&
@@ -312,15 +309,23 @@ public class FancyListSelect<ID extends Serializable, T extends AbstractEntity<I
 	// super.validate();
 	// }
 
-	public int getDataProviderSize() {
-		return dataProvider.getItems().size();
+	@Override
+	public void setComponentError(ErrorMessage componentError) {
+		if (listSelect != null) {
+			comboBox.setComponentError(componentError);
+			listSelect.setComponentError(componentError);
+		}
+	}
+
+	public void setRows(int rows) {
+		if (listSelect != null) {
+			listSelect.setRows(rows);
+		}
 	}
 
 	@Override
-	public Registration addValueChangeListener(final ValueChangeListener<Set<T>> listener) {
-		if (listSelect != null) {
-			return listSelect.addValueChangeListener(listener);
-		}
-		return null;
+	public void setValue(Collection<T> newFieldValue) {
+		super.setValue(newFieldValue);
+		repopulateContainer(newFieldValue);
 	}
 }
