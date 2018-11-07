@@ -126,13 +126,13 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
 	public TokenFieldSelect(EntityModel<T> em, AttributeModel attributeModel, BaseService<ID, T> service,
 			SerializablePredicate<T> filter, boolean search, SortOrder<?>... sortOrders) {
 		super(service, em, attributeModel, filter);
-		extTokenField = new ExtTokenField(){
+		extTokenField = new ExtTokenField() {
 
 			private static final long serialVersionUID = -4833421353349484216L;
 
 			@Override
 			public void removeTokenizable(final Tokenizable tokenizable) {
-				provider.getItems().remove(((BeanItemTokenizable)tokenizable).getItem());
+				provider.getItems().remove(((BeanItemTokenizable) tokenizable).getItem());
 				super.removeTokenizable(tokenizable);
 			}
 		};
@@ -158,6 +158,13 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
 		for (ValueChangeListener<Collection<T>> valueChangeListener : valueChangeListeners) {
 			valueChangeListener.valueChange(new ValueChangeEvent<>(TokenFieldSelect.this, null, false));
 		}
+	}
+
+	@Override
+	public Registration addValueChangeListener(ValueChangeListener<Collection<T>> listener) {
+		valueChangeListeners.add(listener);
+		return null; // extTokenField.addValueChangeListener(event -> listener.valueChange(new
+						// ValueChangeEvent<>(this, this, null, false)));
 	}
 
 	@Override
@@ -219,6 +226,16 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
 	}
 
 	@Override
+	protected void doSetValue(Collection<T> value) {
+		if (provider != null) {
+			provider.getItems().clear();
+			if (value != null && value instanceof Collection) {
+				provider.getItems().addAll(value);
+			}
+		}
+	}
+
+	@Override
 	public void focus() {
 		super.focus();
 		if (comboBox != null) {
@@ -235,12 +252,16 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
 	}
 
 	@Override
+	public Collection<T> getValue() {
+		return Sets.newHashSet(provider.getItems());
+	}
+
+	@Override
 	protected Component initContent() {
 		HorizontalLayout layout = new DefaultHorizontalLayout(false, true, false);
 
 		// comboBox.setInputPrompt(getMessageService().getMessage("ocs.type.to.add",
 		// VaadinUtils.getLocale()));
-		// comboBox.setFilteringMode(FilteringMode.CONTAINS);
 		comboBox.setHeightUndefined();
 		setComboBoxWidth();
 
@@ -305,6 +326,13 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
 		}
 	}
 
+	@Override
+	public void setComponentError(ErrorMessage componentError) {
+		if (extTokenField != null) {
+			extTokenField.setComponentError(componentError);
+		}
+	}
+
 	/**
 	 * Update token selections
 	 */
@@ -322,51 +350,5 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
 			provider.getItems().addAll(values);
 		}
 		addTokens();
-	}
-
-	// @Override
-	// public void validate() throws InvalidValueException {
-	// if (!search && getAttributeModel() != null &&
-	// getAttributeModel().isRequired()
-	// && container.getItemIds().isEmpty()) {
-	// throw new Validator.EmptyValueException(
-	// getMessageService().getMessage("ocs.value.required",
-	// VaadinUtils.getLocale()));
-	// }
-	// super.validate();
-	// }
-
-	@Override
-	public void setComponentError(ErrorMessage componentError) {
-		if (extTokenField != null) {
-			extTokenField.setComponentError(componentError);
-		}
-	}
-
-	@Override
-	protected void doSetValue(Collection<T> value) {
-		if (provider != null) {
-			provider.getItems().clear();
-			if (value != null && value instanceof Collection) {
-				provider.getItems().addAll(value);
-			}
-		}
-	}
-
-	/**
-	 * TODO: returning null here works for searching but might break other code
-	 */
-	@Override
-	public Collection<T> getValue() {
-		if (provider.getItems().isEmpty()){
-			return null;
-		}
-		return Sets.newHashSet(provider.getItems());
-	}
-
-	@Override
-	public Registration addValueChangeListener(ValueChangeListener<Collection<T>> listener) {
-		valueChangeListeners.add(listener);
-		return null; //extTokenField.addValueChangeListener(event -> listener.valueChange(new ValueChangeEvent<>(this, this, null, false)));
 	}
 }

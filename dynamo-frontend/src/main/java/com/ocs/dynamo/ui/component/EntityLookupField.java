@@ -36,6 +36,7 @@ import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.ocs.dynamo.utils.StringUtils;
 import com.vaadin.data.provider.SortOrder;
 import com.vaadin.icons.VaadinIcons;
+import com.vaadin.server.ErrorMessage;
 import com.vaadin.server.SerializablePredicate;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -56,7 +57,7 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 	private static final long serialVersionUID = 5377765863515463622L;
 
 	/**
-	 * 
+	 * Whether direct navigation via internal link is allowed
 	 */
 	private boolean directNavigationAllowed;
 
@@ -223,19 +224,7 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 
 	@Override
 	public Object getValue() {
-		if (value == null) {
-			return null;
-		}
-
-		if (Set.class.isAssignableFrom(getAttributeModel().getType())) {
-			Collection<T> col = (Collection<T>) value;
-			return Sets.newHashSet(col);
-		} else if (List.class.isAssignableFrom(getAttributeModel().getType())) {
-			Collection<T> col = (Collection<T>) value;
-			return Lists.newArrayList(col);
-		} else {
-			return value;
-		}
+		return convertToCorrectCollection(value);
 	}
 
 	@Override
@@ -400,6 +389,14 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 			label.setCaptionAsHtml(true);
 			String caption = getLabel(newValue);
 			label.setCaption(caption.replaceAll(",", StringUtils.HTML_LINE_BREAK));
+		}
+	}
+
+	@Override
+	public void setComponentError(ErrorMessage componentError) {
+		if (label != null) {
+			label.setComponentError(componentError);
+			selectButton.setComponentError(componentError);
 		}
 	}
 

@@ -181,7 +181,6 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 
 			attributeFilterComboBox = new ComboBox<>(message("ocs.filter"));
 			attributeFilterComboBox.setStyleName(DynamoConstants.CSS_NESTED);
-			// attributeFilterComboBox.setFilteringMode(FilteringMode.CONTAINS);
 
 			// find out which attributes can be search on and sort them in
 			// alphabetical order
@@ -485,8 +484,8 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 				filter = new NotPredicate<>(createStringFilter(value, true));
 				break;
 			default:
-				// by default, simply use an "equal" filter
-				if (value != null) {
+				// by default, simply use an "equals" predicate
+				if (value != null && !(value instanceof Collection && ((Collection<?>) value).isEmpty())) {
 					filter = new EqualsPredicate<>(am.getPath(), value);
 				}
 				break;

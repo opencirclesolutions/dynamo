@@ -31,6 +31,7 @@ import com.vaadin.data.provider.GridSortOrderBuilder;
 import com.vaadin.data.provider.SortOrder;
 import com.vaadin.server.SerializablePredicate;
 import com.vaadin.shared.data.sort.SortDirection;
+import com.vaadin.ui.Grid.Column;
 import com.vaadin.ui.VerticalLayout;
 
 /**
@@ -235,9 +236,9 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 			for (AttributeModel am : entityModel.getSortOrder().keySet()) {
 				boolean asc = entityModel.getSortOrder().get(am);
 				if (asc) {
-					builder.thenAsc(grid.getColumn(am.getName()));
+					builder.thenAsc(grid.getColumn(am.getPath()));
 				} else {
-					builder.thenDesc(grid.getColumn(am.getName()));
+					builder.thenDesc(grid.getColumn(am.getPath()));
 				}
 			}
 			grid.setSortOrder(builder);
