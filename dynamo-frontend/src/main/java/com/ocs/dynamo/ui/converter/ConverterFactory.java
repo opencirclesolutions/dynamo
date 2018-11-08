@@ -82,30 +82,12 @@ public final class ConverterFactory {
 	}
 
 	/**
-	 * Creates a converter for a LocalDate
-	 * 
-	 * @return
-	 */
-	public static LocalDateToDateConverter createLocalDateConverter() {
-		return new LocalDateToDateConverter();
-	}
-
-	/**
 	 * Creates a converter for a LocalDateTimeConverter
 	 * 
 	 * @return
 	 */
 	public static LocalDateTimeToDateConverter createLocalDateTimeConverter() {
 		return new LocalDateTimeToDateConverter();
-	}
-
-	/**
-	 * Creates a converter for a LocalTime
-	 * 
-	 * @return
-	 */
-	public static LocalTimeToDateConverter createLocalTimeConverter() {
-		return new LocalTimeToDateConverter();
 	}
 
 	/**

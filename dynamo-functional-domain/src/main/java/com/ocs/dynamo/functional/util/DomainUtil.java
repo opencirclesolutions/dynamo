@@ -39,17 +39,12 @@ public final class DomainUtil {
 	}
 
 	/**
-	 * Creates a new item if it does not exist. Otherwise, returns the existing
-	 * item
+	 * Creates a new item if it does not exist. Otherwise, returns the existing item
 	 * 
-	 * @param service
-	 *            the service used to retrieve the item
-	 * @param clazz
-	 *            the domain class
-	 * @param value
-	 *            the value of the "name" attribute
-	 * @param caseSensitive
-	 *            whether to check for case-sensitive values
+	 * @param service       the service used to retrieve the item
+	 * @param clazz         the domain class
+	 * @param value         the value of the "name" attribute
+	 * @param caseSensitive whether to check for case-sensitive values
 	 * @return
 	 */
 	public static <T extends Domain> T createIfNotExists(BaseService<?, T> service, Class<T> clazz, String value,
@@ -66,14 +61,12 @@ public final class DomainUtil {
 	/**
 	 * Returns all domain value that match the specified type
 	 * 
-	 * @param clazz
-	 *            the type
-	 * @param domains
-	 *            the set of all domain values
+	 * @param clazz   the type
+	 * @param domains the set of all domain values
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T extends Domain> Set<T> filterDomains(Class<T> clazz, Set<Domain> domains) {
+	public static <T extends Domain> Set<T> filterDomains(Class<T> clazz, Collection<Domain> domains) {
 		Set<T> result = new HashSet<>();
 		if (domains != null) {
 			for (Domain d : domains) {
@@ -86,17 +79,15 @@ public final class DomainUtil {
 	}
 
 	/**
-	 * Updates a certain category of domain items, removing all current values
-	 * and replacing them by the new ones
+	 * Updates a certain category of domain items, removing all current values and
+	 * replacing them by the new ones
 	 * 
-	 * @param clazz
-	 *            the domain type
-	 * @param domains
-	 *            all current domain values
-	 * @param newValues
-	 *            the set of new values
+	 * @param clazz     the domain type
+	 * @param domains   all current domain values
+	 * @param newValues the set of new values
 	 */
-	public static <T extends Domain> void updateDomains(Class<T> clazz, Set<Domain> domains, Set<T> newValues) {
+	public static <T extends Domain> void updateDomains(Class<T> clazz, Collection<Domain> domains,
+			Collection<T> newValues) {
 		domains.removeIf(domain -> domain != null && domain.getClass().isAssignableFrom(clazz));
 		if (newValues != null) {
 			newValues.stream().filter(Objects::nonNull).forEach(v -> domains.add(v));
@@ -104,11 +95,10 @@ public final class DomainUtil {
 	}
 
 	/**
-	 * Returns a string containing the descriptions of the supplied domain
-	 * objects (truncated after a number of items)
+	 * Returns a string containing the descriptions of the supplied domain objects
+	 * (truncated after a number of items)
 	 * 
-	 * @param domains
-	 *            the domains
+	 * @param domains the domains
 	 * @return
 	 */
 	public static <T extends Domain> String getDomainDescriptions(MessageService messageService, Collection<T> domains,

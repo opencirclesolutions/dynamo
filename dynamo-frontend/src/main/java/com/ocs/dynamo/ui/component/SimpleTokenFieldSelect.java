@@ -164,7 +164,6 @@ public class SimpleTokenFieldSelect<ID extends Serializable, T extends AbstractE
 		extTokenField = new ExtTokenField();
 
 		comboBox = new ComboBox<T>();
-		// comboBox.setFilteringMode(FilteringMode.CONTAINS);
 		fillComboBox(this.elementCollection);
 
 		sortProperties = new ArrayList<>();

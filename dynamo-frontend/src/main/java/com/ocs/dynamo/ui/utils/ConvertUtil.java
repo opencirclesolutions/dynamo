@@ -22,12 +22,15 @@ import java.util.Locale;
 
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.NumberSelectMode;
-import com.ocs.dynamo.exception.OCSValidationException;
+import com.ocs.dynamo.ui.converter.BigDecimalConverter;
+import com.ocs.dynamo.ui.converter.ConverterFactory;
 import com.ocs.dynamo.ui.converter.LocalDateWeekCodeConverter;
 import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.ocs.dynamo.utils.NumberUtils;
 import com.vaadin.data.Result;
 import com.vaadin.data.ValueContext;
+import com.vaadin.data.converter.StringToIntegerConverter;
+import com.vaadin.data.converter.StringToLongConverter;
 
 /**
  * Utility for converting between data types
@@ -80,35 +83,38 @@ public final class ConvertUtil {
 	 * @param input          the search value to convert
 	 * @return
 	 */
-	public static Object convertSearchValue(AttributeModel attributeModel, Object input) {
-		if (input == null) {
-			return null;
+	public static Result<? extends Object> convertSearchValue(AttributeModel am, Object value) {
+		if (value == null) {
+			return Result.ok(null);
 		}
 
 		boolean grouping = SystemPropertyUtils.useThousandsGroupingInEditMode();
 		Locale locale = VaadinUtils.getLocale();
 
-		if (attributeModel.isWeek()) {
+		if (am.isWeek()) {
 			LocalDateWeekCodeConverter converter = new LocalDateWeekCodeConverter();
-			Result<LocalDate> locDate = converter.convertToModel((String) input, new ValueContext(locale));
-			return locDate.getOrThrow(e -> new OCSValidationException("Conversion error"));
-		} else if (NumberUtils.isInteger(attributeModel.getType())) {
-			if (NumberSelectMode.TEXTFIELD.equals(attributeModel.getNumberSelectMode())) {
-				return VaadinUtils.stringToInteger(grouping, (String) input, locale);
+			Result<LocalDate> locDate = converter.convertToModel((String) value, new ValueContext(locale));
+			return locDate;
+		} else if (NumberUtils.isInteger(am.getType())) {
+			if (NumberSelectMode.TEXTFIELD.equals(am.getNumberSelectMode())) {
+				StringToIntegerConverter converter = ConverterFactory.createIntegerConverter(grouping, false);
+				return converter.convertToModel((String) value, new ValueContext(locale));
 			}
-		} else if (NumberUtils.isLong(attributeModel.getType())) {
-			if (NumberSelectMode.TEXTFIELD.equals(attributeModel.getNumberSelectMode())) {
-				return VaadinUtils.stringToLong(grouping, (String) input, locale);
+		} else if (NumberUtils.isLong(am.getType())) {
+			if (NumberSelectMode.TEXTFIELD.equals(am.getNumberSelectMode())) {
+				StringToLongConverter converter = ConverterFactory.createLongConverter(grouping, false);
+				return converter.convertToModel((String) value, new ValueContext(locale));
 			}
-		} else if (BigDecimal.class.equals(attributeModel.getType())) {
-			if (NumberSelectMode.TEXTFIELD.equals(attributeModel.getNumberSelectMode())) {
-				return VaadinUtils.stringToBigDecimal(attributeModel.isPercentage(), grouping,
-						attributeModel.isCurrency(), attributeModel.getPrecision(), (String) input, locale);
+		} else if (BigDecimal.class.equals(am.getType())) {
+			if (NumberSelectMode.TEXTFIELD.equals(am.getNumberSelectMode())) {
+				BigDecimalConverter converter = ConverterFactory.createBigDecimalConverter(am.isCurrency(),
+						am.isPercentage(), grouping, am.getPrecision(), SystemPropertyUtils.getDefaultCurrencySymbol());
+				return converter.convertToModel((String) value, new ValueContext(locale));
 			}
-		} else if (ZonedDateTime.class.equals(attributeModel.getType())) {
-			LocalDateTime ldt = (LocalDateTime) input;
-			return ldt.atZone(ZoneId.systemDefault());
+		} else if (ZonedDateTime.class.equals(am.getType())) {
+			LocalDateTime ldt = (LocalDateTime) value;
+			return Result.ok(ldt.atZone(ZoneId.systemDefault()));
 		}
-		return input;
+		return Result.ok(value);
 	}
 }

@@ -92,8 +92,6 @@ public class FancyListSelect<ID extends Serializable, T extends AbstractEntity<I
 	 */
 	private SortOrder<?>[] sortOrders;
 
-	private boolean search;
-
 	/**
 	 * Constructor
 	 * 
@@ -108,7 +106,6 @@ public class FancyListSelect<ID extends Serializable, T extends AbstractEntity<I
 			SerializablePredicate<T> filter, boolean search, SortOrder<?>... sortOrders) {
 		super(service, entityModel, attributeModel, filter);
 		this.sortOrders = sortOrders;
-		this.search = search;
 		this.addAllowed = !search && (attributeModel != null && attributeModel.isQuickAddAllowed());
 		dataProvider = new ListDataProvider<>(Lists.newArrayList());
 		listSelect = new ListSelect<>();

@@ -264,7 +264,7 @@ public class FieldFactoryImpl<T> implements FieldFactory {
 			field = constructSelect(am, fieldEntityModel, fieldFilter);
 		} else if (Collection.class.isAssignableFrom(am.getType())) {
 			// render a multiple select component for a collection
-			field = constructCollectionSelect(am, fieldEntityModel, null, true, search);
+			field = constructCollectionSelect(am, fieldEntityModel, fieldFilter, search, true);
 		} else if (AttributeTextFieldMode.TEXTAREA.equals(am.getTextFieldMode()) && !search) {
 			field = new TextArea();
 		} else if (Enum.class.isAssignableFrom(am.getType())) {
@@ -396,7 +396,7 @@ public class FieldFactoryImpl<T> implements FieldFactory {
 			field = constructLookupField(am, fieldEntityModel, fieldFilter, search, false);
 		} else {
 			// list select (single select)
-			field = this.constructCollectionSelect(am, fieldEntityModel, fieldFilter, false, search);
+			field = this.constructCollectionSelect(am, fieldEntityModel, fieldFilter, search, false);
 		}
 		return field;
 	}
