@@ -13,11 +13,6 @@
  */
 package com.ocs.dynamo.ui.composite.table;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
@@ -31,8 +26,13 @@ import com.vaadin.data.provider.GridSortOrderBuilder;
 import com.vaadin.data.provider.SortOrder;
 import com.vaadin.server.SerializablePredicate;
 import com.vaadin.shared.data.sort.SortDirection;
-import com.vaadin.ui.Grid.Column;
+import com.vaadin.ui.Layout;
 import com.vaadin.ui.VerticalLayout;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * A base class for objects that wrap around a ModelBasedTable
@@ -85,6 +85,7 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 	 * The wrapped grid component
 	 */
 	private ModelBasedGrid<ID, T> grid;
+	private VerticalLayout layout;
 
 	/**
 	 * Constructor
@@ -121,19 +122,18 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 	 */
 	@Override
 	public void build() {
-		VerticalLayout main = new VerticalLayout();
+		layout = new VerticalLayout();
 
 		this.dataProvider = constructDataProvider();
-
 		// init the grid
 		grid = getGrid();
+		grid.setHeight(100, Unit.PERCENTAGE);
 		initSortingAndFiltering();
-		main.addComponent(grid);
-
+		layout.addComponent(grid);
 		// add a change listener that responds to the selection of an item
 		grid.addSelectionListener(event -> onSelect(grid.getSelectedItems()));
 
-		setCompositionRoot(main);
+		setCompositionRoot(layout);
 	}
 
 	/**
@@ -272,4 +272,9 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 	public void setSortOrders(List<SortOrder<?>> sortOrders) {
 		this.sortOrders = sortOrders;
 	}
+
+	public Layout getLayout(){
+		return layout;
+	}
+
 }
