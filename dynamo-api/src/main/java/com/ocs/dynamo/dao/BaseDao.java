@@ -235,11 +235,24 @@ public interface BaseDao<ID, T extends AbstractEntity<ID>> {
      * 
      * @param filter
      *            the filter
-     * @param sort
+     * @param orders
      *            the desired sorting
      * @return
      */
     List<ID> findIds(Filter filter, SortOrder... orders);
+
+	/**
+	 * Returns the IDS of the entities that match the provided filter
+	 *
+	 * @param filter
+	 *            the filter
+	 * @param maxResults
+	 * 			  limit the amount of results
+	 * @param orders
+	 *            the desired sorting
+	 * @return
+	 */
+	List<ID> findIds(Filter filter, Integer maxResults, SortOrder... orders);
 
     /**
      * Flushes and clears the entity manager (useful after an explicit update or delete)

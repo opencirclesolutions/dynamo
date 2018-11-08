@@ -309,11 +309,24 @@ public interface BaseService<ID, T extends AbstractEntity<ID>> {
 	 * 
 	 * @param filter
 	 *            the filter
-	 * @param sort
+	 * @param orders
 	 *            the desired sorting
 	 * @return
 	 */
 	List<ID> findIds(Filter filter, SortOrder... orders);
+
+	/**
+	 * Returns the IDs of the entities that match the provided filter
+	 *
+	 * @param filter
+	 *            the filter
+	 * @param maxResults
+	 * 			  limit the amount of results
+	 * @param orders
+	 *            the desired sorting
+	 * @return
+	 */
+	List<ID> findIds(Filter filter, Integer maxResults, SortOrder... orders);
 
 	/**
 	 * Returns the class of the entity managed by this DAO

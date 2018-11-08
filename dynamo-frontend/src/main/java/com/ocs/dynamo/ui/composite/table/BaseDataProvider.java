@@ -1,8 +1,5 @@
 package com.ocs.dynamo.ui.composite.table;
 
-import java.io.Serializable;
-import java.util.List;
-
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.dao.SortOrder.Direction;
 import com.ocs.dynamo.dao.SortOrders;
@@ -11,12 +8,16 @@ import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.filter.FilterConverter;
 import com.ocs.dynamo.service.BaseService;
+import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.vaadin.data.provider.AbstractDataProvider;
 import com.vaadin.data.provider.Query;
 import com.vaadin.data.provider.QuerySortOrder;
 import com.vaadin.server.SerializablePredicate;
 import com.vaadin.shared.data.sort.SortDirection;
+
+import java.io.Serializable;
+import java.util.List;
 
 /**
  * Abstract class for data providers
@@ -35,9 +36,13 @@ public abstract class BaseDataProvider<ID extends Serializable, T extends Abstra
 
 	private final EntityModel<T> entityModel;
 
+	private Integer maxResults;
+
 	private final FetchJoinInformation[] joins;
 
 	private EntityModelFactory entityModelFactory = ServiceLocatorFactory.getServiceLocator().getEntityModelFactory();
+
+	private MessageService messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
 
 	/**
 	 * Constructor
@@ -98,5 +103,17 @@ public abstract class BaseDataProvider<ID extends Serializable, T extends Abstra
 	@Override
 	public boolean isInMemory() {
 		return false;
+	}
+
+	public Integer getMaxResults() {
+		return maxResults;
+	}
+
+	public void setMaxResults(final Integer maxResults) {
+		this.maxResults = maxResults;
+	}
+
+	public MessageService getMessageService() {
+		return messageService;
 	}
 }

@@ -70,6 +70,7 @@ public class ServiceBasedGridWrapper<ID extends Serializable, T extends Abstract
 		} else {
 			provider = new IdBasedDataProvider<>(getService(), getEntityModel(), getJoins());
 		}
+		((BaseDataProvider<ID, T>) provider).setMaxResults(maxResults);
 		doConstructDataProvider(provider);
 		return provider;
 	}

@@ -1,20 +1,22 @@
 package com.ocs.dynamo.ui.composite.table;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Stream;
-
-import org.apache.commons.lang.ObjectUtils;
-
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.dao.SortOrders;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
+import com.ocs.dynamo.filter.Filter;
 import com.ocs.dynamo.filter.FilterConverter;
 import com.ocs.dynamo.service.BaseService;
+import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.data.provider.Query;
 import com.vaadin.server.SerializablePredicate;
+import com.vaadin.ui.Notification;
+import org.apache.commons.lang.ObjectUtils;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Stream;
 
 public class IdBasedDataProvider<ID extends Serializable, T extends AbstractEntity<ID>>
 		extends BaseDataProvider<ID, T> {
@@ -34,12 +36,14 @@ public class IdBasedDataProvider<ID extends Serializable, T extends AbstractEnti
 		SortOrders so = createSortOrder(query);
 
 		FilterConverter<T> converter = getFilterConverter();
-		ids = getService().findIds(converter.convert(query.getFilter().orElse(null)), so.toArray());
-//		if (getCustomQueryDefinition().getMaxQuerySize() > 0
-//				&& ids.size() >= getCustomQueryDefinition().getMaxQuerySize()) {
-//			Notification.show(getMessageService().getMessage("ocs.too.many.results", VaadinUtils.getLocale(),
-//					getCustomQueryDefinition().getMaxQuerySize()), Notification.Type.ERROR_MESSAGE);
-//		}
+		final Filter filter = converter.convert(query.getFilter().orElse(null));
+		Long count = getService().count(filter, false);
+		if (getMaxResults() != null
+				&& count >= getMaxResults()) {
+			Notification.show(getMessageService().getMessage("ocs.too.many.results", VaadinUtils.getLocale(),
+					getMaxResults()), Notification.Type.ERROR_MESSAGE);
+		}
+		ids = getService().findIds(filter, getMaxResults(), so.toArray());
 		return ids.size();
 	}
 

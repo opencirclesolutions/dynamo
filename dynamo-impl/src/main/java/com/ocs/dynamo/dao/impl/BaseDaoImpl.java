@@ -321,7 +321,16 @@ public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements B
 	@Override
 	@SuppressWarnings("unchecked")
 	public List<ID> findIds(Filter filter, SortOrder... sortOrders) {
+		return findIds(filter, null, sortOrders);
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public List<ID> findIds(Filter filter, Integer maxResults, SortOrder... sortOrders) {
 		TypedQuery<Tuple> query = JpaQueryBuilder.createIdQuery(entityManager, getEntityClass(), filter, sortOrders);
+		if (maxResults != null){
+			query = query.setMaxResults(maxResults);
+		}
 		List<Tuple> temp = query.getResultList();
 		List<ID> result = new ArrayList<>();
 

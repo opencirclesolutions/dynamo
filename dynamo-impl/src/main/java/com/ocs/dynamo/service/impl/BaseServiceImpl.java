@@ -13,21 +13,6 @@
  */
 package com.ocs.dynamo.service.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-
-import javax.inject.Inject;
-import javax.validation.ConstraintViolation;
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
-import javax.validation.constraints.AssertFalse;
-import javax.validation.constraints.AssertTrue;
-
-import org.apache.log4j.Logger;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.ocs.dynamo.dao.BaseDao;
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.dao.Pageable;
@@ -42,6 +27,19 @@ import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.ocs.dynamo.utils.ClassUtils;
+import org.apache.log4j.Logger;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.inject.Inject;
+import javax.validation.ConstraintViolation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
+import javax.validation.constraints.AssertFalse;
+import javax.validation.constraints.AssertTrue;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
 
 /**
  * Base service implementation
@@ -222,6 +220,11 @@ public abstract class BaseServiceImpl<ID, T extends AbstractEntity<ID>> implemen
 	@Override
 	public List<ID> findIds(Filter filter, SortOrder... orders) {
 		return getDao().findIds(filter, orders);
+	}
+
+	@Override
+	public List<ID> findIds(Filter filter, Integer maxResults, SortOrder... orders) {
+		return getDao().findIds(filter, maxResults, orders);
 	}
 
 	protected abstract BaseDao<ID, T> getDao();
