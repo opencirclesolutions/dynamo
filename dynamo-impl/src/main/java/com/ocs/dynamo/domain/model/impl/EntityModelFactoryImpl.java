@@ -674,8 +674,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 	/**
 	 * Determines the "dateType" for an attribute
 	 *
-	 * @param modelType   the type of the attribute. Can be either java.util.Date or
-	 *                    a java 8 LocalX type
+	 * @param modelType   the type of the attribute. Can be a java 8 LocalX type
 	 * @param entityClass the class of the entity
 	 * @param fieldName   the name of the attribute
 	 * @return

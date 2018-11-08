@@ -82,7 +82,7 @@ public interface EntityModel<T> {
 	String CURRENCY = "currency";
 
 	/**
-	 * The date type (date, time, or time stamp) of a value of type java.util.Date
+	 * The date type (date, time, or time stamp) of a value from java.time.*
 	 */
 	String DATE_TYPE = "dateType";
 

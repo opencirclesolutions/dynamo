@@ -13,21 +13,6 @@
  */
 package com.ocs.dynamo.ui.composite.form;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.StringUtils;
-
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
@@ -59,6 +44,19 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Layout;
+import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -692,8 +690,7 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 				return FlexibleFilterType.CONTAINS;
 			} else if (Enum.class.isAssignableFrom(am.getType())) {
 				return FlexibleFilterType.EQUALS;
-			} else if (Number.class.isAssignableFrom(am.getType()) || Date.class.isAssignableFrom(am.getType())
-					|| DateUtils.isJava8DateType(am.getType())) {
+			} else if (Number.class.isAssignableFrom(am.getType()) || DateUtils.isJava8DateType(am.getType())) {
 				return FlexibleFilterType.BETWEEN;
 			}
 		}
