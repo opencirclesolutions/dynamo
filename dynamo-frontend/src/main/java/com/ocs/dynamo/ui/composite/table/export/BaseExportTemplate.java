@@ -13,23 +13,6 @@
  */
 package com.ocs.dynamo.ui.composite.table.export;
 
-import java.io.IOException;
-import java.io.Serializable;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.List;
-
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.streaming.SXSSFWorkbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.dao.SortOrder;
@@ -44,8 +27,23 @@ import com.ocs.dynamo.filter.Filter;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.utils.FormatUtils;
-import com.ocs.dynamo.utils.DateUtils;
 import com.ocs.dynamo.utils.MathUtils;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+import java.io.IOException;
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Base class for entity model based exports to Excel or CSV
@@ -316,9 +314,11 @@ public abstract class BaseExportTemplate<ID extends Serializable, T extends Abst
 		} else if (value instanceof Date && (am == null || !am.isWeek())) {
 			cell.setCellValue((Date) value);
 		} else if (value instanceof LocalDate) {
-			cell.setCellValue(DateUtils.toLegacyDate((LocalDate) value));
+			//TODO fix with new version of POI
+			//cell.setCellValue(DateUtils.toDate((LocalDate) value));
 		} else if (value instanceof LocalDateTime) {
-			cell.setCellValue(DateUtils.toLegacyDate((LocalDateTime) value));
+			//TODO fix with new version of POI
+			//cell.setCellValue(DateUtils.toLegacyDate((LocalDateTime) value));
 		} else if (value instanceof BigDecimal) {
 			boolean isPercentage = am != null && am.isPercentage();
 			if (isPercentage) {

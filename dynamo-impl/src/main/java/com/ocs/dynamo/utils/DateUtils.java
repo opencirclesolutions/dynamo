@@ -13,26 +13,19 @@
  */
 package com.ocs.dynamo.utils;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import com.ocs.dynamo.util.SystemPropertyUtils;
+import org.apache.commons.lang.StringUtils;
+
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
+import java.time.Month;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
-import java.time.temporal.Temporal;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-
-import org.apache.commons.lang.StringUtils;
-
-import com.ocs.dynamo.constants.DynamoConstants;
-import com.ocs.dynamo.exception.OCSRuntimeException;
-import com.ocs.dynamo.util.SystemPropertyUtils;
+import java.time.temporal.TemporalAdjusters;
+import java.time.temporal.WeekFields;
 
 /**
  * Date utility class
@@ -59,36 +52,6 @@ public final class DateUtils {
 		// hidden constructor
 	}
 
-	public static Date convertSQLDate(Date d) {
-		// toInstance is not supported on java.sql.Date, so convert to actual
-		// date
-		if (d instanceof java.sql.Date) {
-			Date temp = new Date();
-			temp.setTime(d.getTime());
-			return temp;
-		}
-		return d;
-	}
-
-	/**
-	 * Creates a java.util.Date based on a String representation
-	 * 
-	 * @param dateStr the string (in the format ddMMyyyy)
-	 * @return
-	 */
-	public static Date createDate(String dateStr) {
-		return toLegacyDate(createLocalDate(dateStr));
-	}
-
-	/**
-	 * Creates a java.util.Date based on a String representation
-	 * 
-	 * @param dateTimeStr the String (in the format ddMMyyyy HHmmss)
-	 * @return
-	 */
-	public static Date createDateTime(String dateTimeStr) {
-		return toLegacyDate(createLocalDateTime(dateTimeStr));
-	}
 
 	@SuppressWarnings("unchecked")
 	public static <T> T createJava8Date(Class<T> clazz, String dateStr, String format) {
@@ -179,24 +142,6 @@ public final class DateUtils {
 		return LocalTime.from(fmt.parse(timeStr));
 	}
 
-	/**
-	 * Creates a Date that hold a time based on a String representation
-	 * 
-	 * @param timeStr the String representation (HHmmss)
-	 * @return
-	 */
-	public static Date createTime(String timeStr) {
-		if (timeStr == null) {
-			return null;
-		}
-		SimpleDateFormat format = new SimpleDateFormat(TIME_FORMAT);
-		format.setLenient(false);
-		try {
-			return format.parse(timeStr);
-		} catch (ParseException e) {
-			throw new OCSRuntimeException(e.getMessage(), e);
-		}
-	}
 
 	/**
 	 * Create a ZonedDateTime based from a String, using the default format
@@ -221,28 +166,6 @@ public final class DateUtils {
 		}
 		DateTimeFormatter fmt = DateTimeFormatter.ofPattern(format);
 		return ZonedDateTime.from(fmt.parse(dateTimeStr));
-	}
-
-	/**
-	 * Formats a date according to the specified format
-	 * 
-	 * @param date   the date
-	 * @param format the format
-	 * @return
-	 */
-	public static String formatDate(Date date, String format) {
-		return formatDate(toLocalDate(date), format);
-	}
-
-	/**
-	 * Formats a date and time according to the specified format
-	 *
-	 * @param date
-	 * @param format
-	 * @return
-	 */
-	public static String formatDateTime(Date date, String format) {
-		return formatDateTime(toLocalDateTime(date), format);
 	}
 
 	/**
@@ -327,22 +250,18 @@ public final class DateUtils {
 	}
 
 	/**
-	 * Return the week nuymber (1 - 53) of the last week of the specified year
+	 * Return the week number (1 - 53) of the last week of the specified year
 	 * 
 	 * @param year the year
 	 * @return
 	 */
 	public static int getLastWeekOfYear(int year) {
-		Date date = createDate("3112" + year);
-		Calendar calendar = Calendar.getInstance(DynamoConstants.DEFAULT_LOCALE);
-		calendar.setTime(date);
-
-		// it is possible for the last day of a year to actually be part of the
-		// first week of next year. We have to compensate for this
-		int weekNumber = calendar.get(Calendar.WEEK_OF_YEAR);
-		while (weekNumber == 1) {
-			calendar.add(Calendar.DATE, -1);
-			weekNumber = calendar.get(Calendar.WEEK_OF_YEAR);
+		LocalDate date = createLocalDate("3112" + year);
+		WeekFields weekFields = WeekFields.ISO;
+		int weekNumber = date.get(weekFields.weekOfWeekBasedYear());
+		while (weekNumber == 1){
+			date =date.minusDays(1);
+			weekNumber = date.get(weekFields.weekOfWeekBasedYear());
 		}
 		return weekNumber;
 	}
@@ -376,17 +295,6 @@ public final class DateUtils {
 	 * @param date the date
 	 * @return
 	 */
-	public static int getQuarter(Date date) {
-		return getQuarter(toLocalDate(date));
-	}
-
-	/**
-	 * Returns the quarter of the year of a date, as an integer (1 to 4). Returns -1
-	 * in case the argument passed to this function is null
-	 * 
-	 * @param date the date
-	 * @return
-	 */
 	public static int getQuarter(LocalDate date) {
 		if (date == null) {
 			return -1;
@@ -395,32 +303,23 @@ public final class DateUtils {
 	}
 
 	/**
-	 * 
-	 * @param weekCode
-	 * @return
-	 */
-	public static LocalDate getStartDateOfWeek(String weekCode) {
-		return toLocalDate(getStartDateOfWeekLegacy(weekCode));
-	}
-
-	/**
 	 * Translates a week code (yyyy-ww) to the starting day (this is taken to be a
 	 * Monday) of that week
-	 * 
+	 *
 	 * @param weekCode the week code
 	 * @return the date
 	 */
-	public static Date getStartDateOfWeekLegacy(String weekCode) {
+	public static LocalDate getStartDateOfWeek(String weekCode) {
 		if (weekCode != null && weekCode.matches(WEEK_CODE_PATTERN)) {
 			int year = getYearFromWeekCode(weekCode);
 			int week = getWeekFromWeekCode(weekCode);
+			WeekFields weekFields = WeekFields.ISO;
+			LocalDate firstDayOfWeek = LocalDate.ofYearDay(year, 1)
+										.with(weekFields.weekOfYear(), week)
+										.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
 
-			Calendar calendar = new GregorianCalendar(DynamoConstants.DEFAULT_LOCALE);
-			calendar.set(Calendar.YEAR, year);
-			calendar.set(Calendar.WEEK_OF_YEAR, week);
-			calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
 
-			return truncate(calendar).getTime();
+			return firstDayOfWeek;
 		}
 		return null;
 	}
@@ -429,18 +328,6 @@ public final class DateUtils {
 		return Integer.parseInt(weekCode.substring(5));
 	}
 
-	/**
-	 * Retrieves the date from a year
-	 * 
-	 * @param date the date
-	 * @return
-	 */
-	public static Integer getYearFromDate(Date date) {
-		if (date == null) {
-			return null;
-		}
-		return toLocalDate(date).getYear();
-	}
 
 	/**
 	 * Retrieves the year part from a week code (yyyy-ww)
@@ -466,12 +353,12 @@ public final class DateUtils {
 	/**
 	 * Checks if a class represents a supported Date time. This includes the Java 8
 	 * date types and the legacy java.util.Date
-	 * 
+	 *
 	 * @param clazz the class to check
 	 * @return
 	 */
 	public static boolean isSupportedDateType(Class<?> clazz) {
-		return Date.class.isAssignableFrom(clazz) || isJava8DateType(clazz);
+		return isJava8DateType(clazz);
 	}
 
 	/**
@@ -499,209 +386,33 @@ public final class DateUtils {
 	}
 
 	/**
-	 * Converts a java.time.LocalDate to a java.util.Date
-	 * 
-	 * @param d the date
-	 * @return
-	 */
-	public static Date toLegacyDate(LocalDate d) {
-		if (d == null) {
-			return null;
-		}
-		return Date.from(d.atStartOfDay(ZoneId.systemDefault()).toInstant());
-	}
-
-	/**
-	 * Converts a java.time.LocalDateTime to a java.util.Date
-	 * 
-	 * @param d the LocalDatetime to convert
-	 * @return
-	 */
-	public static Date toLegacyDate(LocalDateTime ldt) {
-		if (ldt == null) {
-			return null;
-		}
-		return Date.from(ldt.atZone(ZoneId.systemDefault()).toInstant());
-	}
-
-	/**
-	 * Converts any of the Java 8 date type to a legacy java.util.Date
-	 * 
-	 * @param t the date to convert
-	 * @return
-	 */
-	public static Date toLegacyDate(Temporal t) {
-		if (t instanceof LocalDate) {
-			return toLegacyDate((LocalDate) t);
-		} else if (t instanceof LocalDateTime) {
-			return toLegacyDate((LocalDateTime) t);
-		} else if (t instanceof LocalTime) {
-			return toLegacyTime((LocalTime) t);
-		} else if (t instanceof ZonedDateTime) {
-			return toLegacyDate((ZonedDateTime) t);
-		}
-		return null;
-	}
-
-	/**
-	 * Converts a java.time.LocalDateTime to a java.util.Date
-	 * 
-	 * @param d the LocalDatetime to convert
-	 * @return
-	 */
-	public static Date toLegacyDate(ZonedDateTime zdt) {
-		if (zdt == null) {
-			return null;
-		}
-		return Date.from(zdt.toInstant());
-	}
-
-	/**
-	 * Converts a java.time.LocalTime to a legacy date
-	 * 
-	 * @param lt the LocalTime to convert
-	 * @return
-	 */
-	public static Date toLegacyTime(LocalTime lt) {
-		if (lt == null) {
-			return null;
-		}
-		return Date.from(lt.atDate(createLocalDate("01012000")).atZone(ZoneId.systemDefault()).toInstant());
-	}
-
-	/**
-	 * Converts a java.util.Date to a LocalDate
-	 * 
-	 * @param d the date to convert
-	 * @return
-	 */
-	public static LocalDate toLocalDate(Date d) {
-		if (d == null) {
-			return null;
-		}
-
-		return convertSQLDate(d).toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-	}
-
-	/**
-	 * Converts a java.util.Date to a LocalDateTime
-	 * 
-	 * @param d the date
-	 * @return
-	 */
-	public static LocalDateTime toLocalDateTime(Date d) {
-		if (d == null) {
-			return null;
-		}
-		return convertSQLDate(d).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-	}
-
-	public static LocalTime toLocalTime(Date d) {
-		if (d == null) {
-			return null;
-		}
-		return convertSQLDate(d).toInstant().atZone(ZoneId.systemDefault()).toLocalTime();
-	}
-
-	/**
-	 * Creates a LocalDate that represents the first day of the week corresponding
-	 * to the provided week code
-	 * 
-	 * @param weekCode the week code
-	 * @return
-	 */
-	public static LocalDate toStartDateOfWeek(String weekCode) {
-		return toLocalDate(toStartDateOfWeekLegacy(weekCode));
-	}
-
-	/**
-	 * Translates a week code (yyyy-ww) to the starting day (this is taken to be a
-	 * Monday) of that week
-	 * 
-	 * @param weekCode the week code
-	 * @return the date
-	 */
-	public static Date toStartDateOfWeekLegacy(String weekCode) {
-		if (weekCode == null) {
-			return null;
-		} else if (weekCode.matches(WEEK_CODE_PATTERN)) {
-			int year = getYearFromWeekCode(weekCode);
-			int week = getWeekFromWeekCode(weekCode);
-
-			Calendar calendar = new GregorianCalendar(DynamoConstants.DEFAULT_LOCALE);
-			calendar.set(Calendar.YEAR, year);
-			calendar.set(Calendar.WEEK_OF_YEAR, week);
-			calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
-			return truncate(calendar).getTime();
-		}
-		throw new OCSRuntimeException(weekCode + " is not valid");
-	}
-
-	/**
 	 * Converts a date to its corresponding week code
 	 * 
 	 * @param date the date
 	 * @return
 	 */
-	public static String toWeekCode(Date date) {
+	public static String toWeekCode(LocalDate date) {
 		if (date != null) {
-			Calendar calendar = new GregorianCalendar(DynamoConstants.DEFAULT_LOCALE);
-			calendar.setTime(date);
-			int year = calendar.get(Calendar.YEAR);
-			int week = calendar.get(Calendar.WEEK_OF_YEAR);
-			int month = calendar.get(Calendar.MONTH);
+			WeekFields weekFields = WeekFields.ISO;
+			int year = date.getYear();
+			int week = date.get(weekFields.weekOfWeekBasedYear());
+			Month month = date.getMonth();
 
 			// if the week number is reported as 1, but we are in December,
 			// then we have an "overflow"
-			if (week == FIRST_WEEK_NUMBER && month == Calendar.DECEMBER) {
+			if (week == FIRST_WEEK_NUMBER && month == Month.DECEMBER) {
 				year++;
 			}
 
 			// if the week number is 53 but we are in January, then reduce the
 			// year by one
-			if ((week == LAST_WEEK_NUMBER || week == LAST_WEEK_NUMBER - 1) && month == Calendar.JANUARY) {
+			if ((week == LAST_WEEK_NUMBER || week == LAST_WEEK_NUMBER - 1) && month == Month.JANUARY) {
 				year--;
 			}
 
 			return year + "-" + StringUtils.leftPad(Integer.toString(week), 2, "0");
 		}
 		return null;
-	}
-
-	/**
-	 * Converts the provided LocalDate to a week code
-	 * 
-	 * @param d date
-	 * @return
-	 */
-	public static String toWeekCode(LocalDate d) {
-		return toWeekCode(toLegacyDate(d));
-	}
-
-	/**
-	 * 
-	 * @param d
-	 * @return
-	 */
-	public static ZonedDateTime toZonedDateTime(Date d) {
-		if (d == null) {
-			return null;
-		}
-		return convertSQLDate(d).toInstant().atOffset(ZoneOffset.UTC).toZonedDateTime();
-	}
-
-	/**
-	 * Truncates a calendar object, setting all time fields to zero
-	 * 
-	 * @param calendar
-	 * @return
-	 */
-	public static Calendar truncate(Calendar calendar) {
-		calendar.set(Calendar.HOUR_OF_DAY, 0);
-		calendar.set(Calendar.MINUTE, 0);
-		calendar.set(Calendar.SECOND, 0);
-		calendar.set(Calendar.MILLISECOND, 0);
-		return calendar;
 	}
 
 }
