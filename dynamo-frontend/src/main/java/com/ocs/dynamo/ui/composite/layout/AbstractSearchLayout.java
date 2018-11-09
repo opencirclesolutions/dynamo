@@ -13,12 +13,6 @@
  */
 package com.ocs.dynamo.ui.composite.layout;
 
-import java.io.Serializable;
-import java.util.Collection;
-import java.util.List;
-
-import org.apache.commons.lang.ObjectUtils;
-
 import com.google.common.collect.Lists;
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.dao.FetchJoinInformation;
@@ -48,6 +42,11 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
+import org.apache.commons.lang.ObjectUtils;
+
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Base class for search layouts. A search layout consists of a search form with
@@ -602,7 +601,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	public ServiceBasedGridWrapper<ID, T> constructTableWrapper() {
 		ServiceBasedGridWrapper<ID, T> result = new ServiceBasedGridWrapper<ID, T>(this.getService(), getEntityModel(),
 				getQueryType(), getSearchForm().extractFilter(), getSortOrders(),
-				getFormOptions().isTableExportAllowed(), getJoins()) {
+				getFormOptions().isTableExportAllowed(), false, getJoins()) {
 
 			private static final long serialVersionUID = 6343267378913526151L;
 

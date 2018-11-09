@@ -13,11 +13,6 @@
  */
 package com.ocs.dynamo.ui.composite.layout;
 
-import java.io.Serializable;
-import java.util.Collection;
-
-import org.springframework.util.StringUtils;
-
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
@@ -31,6 +26,10 @@ import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.SortOrder;
 import com.vaadin.server.SerializablePredicate;
 import com.vaadin.ui.TextField;
+import org.springframework.util.StringUtils;
+
+import java.io.Serializable;
+import java.util.Collection;
 
 /**
  * A split layout - contains both a table and a details view - that uses a
@@ -141,7 +140,7 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
 	@Override
 	protected BaseGridWrapper<ID, T> constructTableWrapper() {
 		ServiceBasedGridWrapper<ID, T> tw = new ServiceBasedGridWrapper<ID, T>(getService(), getEntityModel(),
-				getQueryType(), filter, getSortOrders(), getFormOptions().isTableExportAllowed(), getJoins()) {
+				getQueryType(), filter, getSortOrders(), getFormOptions().isTableExportAllowed(), false, getJoins()) {
 
 			@Override
 			protected void doConstructDataProvider(DataProvider<T, SerializablePredicate<T>> provider) {

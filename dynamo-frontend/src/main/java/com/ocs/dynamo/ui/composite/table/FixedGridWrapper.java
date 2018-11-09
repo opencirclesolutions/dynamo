@@ -58,7 +58,7 @@ public class FixedGridWrapper<ID extends Serializable, T extends AbstractEntity<
 	 */
 	public FixedGridWrapper(BaseService<ID, T> service, EntityModel<T> entityModel, Collection<T> items,
 			List<SortOrder<?>> sortOrders, boolean allowExport) {
-		super(service, entityModel, QueryType.NONE, sortOrders, allowExport);
+		super(service, entityModel, QueryType.NONE, sortOrders, allowExport, false);
 		this.items = items;
 	}
 

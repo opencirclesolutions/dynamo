@@ -56,9 +56,9 @@ public class ServiceBasedGridWrapper<ID extends Serializable, T extends Abstract
 	 * @param joins       options list of fetch joins to include in the query
 	 */
 	public ServiceBasedGridWrapper(BaseService<ID, T> service, EntityModel<T> entityModel, QueryType queryType,
-			SerializablePredicate<T> filter, List<SortOrder<?>> sortOrders, boolean allowExport,
+			SerializablePredicate<T> filter, List<SortOrder<?>> sortOrders, boolean allowExport, boolean editable,
 			FetchJoinInformation... joins) {
-		super(service, entityModel, queryType, sortOrders, allowExport, joins);
+		super(service, entityModel, queryType, sortOrders, allowExport, editable, joins);
 		this.filter = filter;
 	}
 

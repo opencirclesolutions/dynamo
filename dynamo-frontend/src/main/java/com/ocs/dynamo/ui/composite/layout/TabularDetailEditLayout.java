@@ -25,7 +25,7 @@
 ///**
 // * A tabular edit layout that keeps a reference to a parent object of the
 // * collection being edited
-// * 
+// *
 // * @author bas.rutten
 // * @param <ID>
 // * @param <T>
@@ -48,7 +48,7 @@
 //
 //	/**
 //	 * Constructor
-//	 * 
+//	 *
 //	 * @param service
 //	 *            the service for retrieving the child entities
 //	 * @param parentEntity
