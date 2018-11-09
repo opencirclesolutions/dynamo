@@ -193,6 +193,8 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 		}
 	}
 
+	//TODO this code is duplicate from ModelBasedEditForm, both should be removed and put on a place reachable for both
+	//usages.
 	private void setConverters(Binder.BindingBuilder<T, ?> builder , AttributeModel am) {
 
 		if (am.isEmail()) {
