@@ -110,8 +110,6 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
 
 	private boolean addAllowed = false;
 
-	private boolean search;
-
 	/**
 	 * Constructor
 	 *
@@ -131,6 +129,7 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
 			private static final long serialVersionUID = -4833421353349484216L;
 
 			@Override
+			@SuppressWarnings("unchecked")
 			public void removeTokenizable(final Tokenizable tokenizable) {
 				provider.getItems().remove(((BeanItemTokenizable) tokenizable).getItem());
 				super.removeTokenizable(tokenizable);
@@ -139,7 +138,6 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
 		comboBox = new EntityComboBox<>(em, attributeModel, service, filter, sortOrders);
 		provider = new ListDataProvider<>(new ArrayList<>());
 		valueChangeListeners = new ArrayList<>();
-		this.search = search;
 		this.addAllowed = !search && (attributeModel != null && attributeModel.isQuickAddAllowed());
 	}
 
@@ -163,8 +161,7 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
 	@Override
 	public Registration addValueChangeListener(ValueChangeListener<Collection<T>> listener) {
 		valueChangeListeners.add(listener);
-		return null; // extTokenField.addValueChangeListener(event -> listener.valueChange(new
-						// ValueChangeEvent<>(this, this, null, false)));
+		return null;
 	}
 
 	@Override
@@ -222,7 +219,6 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
 		Collection<T> values = provider.getItems();
 		setValue(Sets.newHashSet(values));
 		setComboBoxWidth();
-		// validate();
 	}
 
 	@Override
@@ -252,16 +248,15 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	public Collection<T> getValue() {
-		return Sets.newHashSet(provider.getItems());
+		return (Collection<T>) convertToCorrectCollection(provider.getItems());
 	}
 
 	@Override
 	protected Component initContent() {
 		HorizontalLayout layout = new DefaultHorizontalLayout(false, true, false);
 
-		// comboBox.setInputPrompt(getMessageService().getMessage("ocs.type.to.add",
-		// VaadinUtils.getLocale()));
 		comboBox.setHeightUndefined();
 		setComboBoxWidth();
 

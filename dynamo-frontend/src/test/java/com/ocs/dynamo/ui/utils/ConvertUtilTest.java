@@ -1,18 +1,21 @@
 package com.ocs.dynamo.ui.utils;
 
-import com.ocs.dynamo.domain.TestEntity;
-import com.ocs.dynamo.domain.model.EntityModel;
-import com.ocs.dynamo.domain.model.EntityModelFactory;
-import com.ocs.dynamo.domain.model.impl.EntityModelFactoryImpl;
-import com.ocs.dynamo.utils.DateUtils;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import com.ocs.dynamo.domain.TestEntity;
+import com.ocs.dynamo.domain.model.EntityModel;
+import com.ocs.dynamo.domain.model.EntityModelFactory;
+import com.ocs.dynamo.domain.model.impl.EntityModelFactoryImpl;
+import com.ocs.dynamo.exception.OCSRuntimeException;
+import com.ocs.dynamo.utils.DateUtils;
+import com.vaadin.data.Result;
 
 public class ConvertUtilTest {
 
@@ -27,21 +30,25 @@ public class ConvertUtilTest {
 	public void testConvertSearchValue() {
 		EntityModel<TestEntity> model = emf.getModel(TestEntity.class);
 
-		Object obj = ConvertUtil.convertSearchValue(model.getAttributeModel("age"), "12");
+		Result<?> result = ConvertUtil.convertSearchValue(model.getAttributeModel("age"), "12");
+		Object obj = result.getOrThrow(r -> new OCSRuntimeException());
 		Assert.assertTrue(obj instanceof Long);
 		Assert.assertEquals(12L, ((Long) obj).longValue());
 
-		obj = ConvertUtil.convertSearchValue(model.getAttributeModel("discount"), "12,34");
+		result = ConvertUtil.convertSearchValue(model.getAttributeModel("discount"), "12,34");
+		obj = result.getOrThrow(r -> new OCSRuntimeException());
 		Assert.assertTrue(obj instanceof BigDecimal);
 		Assert.assertEquals(12.34, ((BigDecimal) obj).doubleValue(), 0.0001);
 
-		obj = ConvertUtil.convertSearchValue(model.getAttributeModel("id"), "17");
+		result = ConvertUtil.convertSearchValue(model.getAttributeModel("id"), "17");
+		obj = result.getOrThrow(r -> new OCSRuntimeException());
 		Assert.assertTrue(obj instanceof Integer);
 		Assert.assertEquals(17, ((Integer) obj).intValue());
 
-//        obj = ConvertUtil.convertSearchValue(model.getAttributeModel("birthWeek"), "2015-05");
-//        Assert.assertTrue(obj instanceof Date);
-//        Assert.assertEquals(DateUtils.createDate("26012015"), obj);
+		result = ConvertUtil.convertSearchValue(model.getAttributeModel("birthWeek"), "2015-05");
+		obj = result.getOrThrow(r -> new OCSRuntimeException());
+		Assert.assertTrue(obj instanceof LocalDate);
+		Assert.assertEquals(LocalDate.of(2015, 1, 26), obj);
 	}
 
 	@Test

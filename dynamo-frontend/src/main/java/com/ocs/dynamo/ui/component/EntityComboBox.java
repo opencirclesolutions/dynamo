@@ -183,6 +183,7 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 	public void addEntity(T entity) {
 		ListDataProvider<T> bic = (ListDataProvider<T>) this.getDataProvider();
 		bic.getItems().add(entity);
+		bic.refreshAll();
 	}
 
 	/**

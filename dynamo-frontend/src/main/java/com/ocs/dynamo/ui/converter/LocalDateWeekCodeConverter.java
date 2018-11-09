@@ -35,7 +35,7 @@ public class LocalDateWeekCodeConverter implements Converter<String, LocalDate> 
 
 	@Override
 	public Result<LocalDate> convertToModel(String value, ValueContext context) {
-			if (StringUtils.isEmpty(value)) {
+		if (StringUtils.isEmpty(value)) {
 			return Result.ok(null);
 		}
 

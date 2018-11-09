@@ -88,6 +88,13 @@ public class QuickAddListSelect<ID extends Serializable, T extends AbstractEntit
 	}
 
 	@Override
+	public Registration addValueChangeListener(ValueChangeListener<Collection<T>> listener) {
+		return listSelect.addValueChangeListener(event -> {
+			listener.valueChange(new ValueChangeEvent<>(this, event.getOldValue(), false));
+		});
+	}
+
+	@Override
 	@SuppressWarnings("unchecked")
 	protected void afterNewEntityAdded(T entity) {
 		// add to the container
@@ -104,8 +111,27 @@ public class QuickAddListSelect<ID extends Serializable, T extends AbstractEntit
 		}
 	}
 
+	@Override
+	protected void doSetValue(Collection<T> value) {
+		if (listSelect != null) {
+			if (value == null) {
+				value = Collections.emptyList();
+			}
+			listSelect.setValue(Sets.newHashSet(value));
+		}
+	}
+
 	public EntityListSelect<ID, T> getListSelect() {
 		return listSelect;
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public Collection<T> getValue() {
+		if (listSelect != null) {
+			return (Collection<T>) convertToCorrectCollection(listSelect.getValue());
+		}
+		return null;
 	}
 
 	@Override
@@ -186,30 +212,5 @@ public class QuickAddListSelect<ID extends Serializable, T extends AbstractEntit
 
 	public void setViewMode(boolean viewMode) {
 		this.viewMode = viewMode;
-	}
-
-	@Override
-	public Collection<T> getValue() {
-		if (listSelect != null) {
-			return listSelect.getValue();
-		}
-		return null;
-	}
-
-	@Override
-	protected void doSetValue(Collection<T> value) {
-		if (listSelect != null) {
-			if (value == null) {
-				value = Collections.emptyList();
-			}
-			listSelect.setValue(Sets.newHashSet(value));
-		}
-	}
-
-	@Override
-	public Registration addValueChangeListener(ValueChangeListener<Collection<T>> listener) {
-		return listSelect.addValueChangeListener(event -> {
-			listener.valueChange(new ValueChangeEvent<>(this, event.getOldValue(), false));
-		});
 	}
 }
