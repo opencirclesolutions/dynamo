@@ -35,8 +35,6 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import javax.persistence.CollectionTable;
-
 import org.apache.commons.io.FilenameUtils;
 import org.vaadin.teemu.switchui.Switch;
 
@@ -983,14 +981,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 					.setEditable(!isViewMode() && !EditableType.CREATE_ONLY.equals(attributeModel.getEditableType()));
 		}
 
-		// collection tables are normally rendered in both edit and view mode so
-		// they must
-		// be explicitly enabled/disabled
-		if (field instanceof CollectionTable) {
-			// ((CollectionTable<?>) field).setViewMode(isViewMode());
-		}
-
-		// set view mode if appropriate
+		// set view mode if appropriate - TODO: is this still needed?
 		if (field instanceof QuickAddListSelect) {
 			((QuickAddListSelect<?, ?>) field).setViewMode(isViewMode());
 		}
@@ -1011,6 +1002,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 			// TODO: maybe move this to field factory as well?
 			setConverters(builder, attributeModel);
+			
 			builder.bind(attributeModel.getPath());
 
 			if (!attributeModel.getGroupTogetherWith().isEmpty()) {

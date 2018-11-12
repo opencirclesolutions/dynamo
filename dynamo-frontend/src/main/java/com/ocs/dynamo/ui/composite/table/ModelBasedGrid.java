@@ -182,7 +182,6 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 		AbstractComponent comp = factory.constructField(attributeModel, null, null, true);
 		S value = (S) ClassUtils.getFieldValue(t, attributeModel.getPath());
 		if (value != null) {
-			LOG.info(value.toString());
 			((HasValue<S>) comp).setValue(value);
 		}
 		return comp;

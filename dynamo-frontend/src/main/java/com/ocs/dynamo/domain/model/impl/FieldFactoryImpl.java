@@ -27,6 +27,7 @@ import com.ocs.dynamo.domain.model.EditableType;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.FieldFactory;
 import com.ocs.dynamo.domain.model.NumberSelectMode;
+import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.service.ServiceLocator;
@@ -41,6 +42,8 @@ import com.ocs.dynamo.ui.component.QuickAddListSingleSelect;
 import com.ocs.dynamo.ui.component.TimeField;
 import com.ocs.dynamo.ui.component.TokenFieldSelect;
 import com.ocs.dynamo.ui.component.URLField;
+import com.ocs.dynamo.ui.composite.form.CollectionTable;
+import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.ocs.dynamo.utils.NumberUtils;
@@ -259,6 +262,25 @@ public class FieldFactoryImpl<T> implements FieldFactory {
 			// collections, the link
 			// (in view mode) beats any selection components
 			field = constructInternalLinkField(am, fieldEntityModel);
+		} else if (AttributeType.ELEMENT_COLLECTION.equals(am.getAttributeType())) {
+			if (!search) {
+				// use a "collection table" for an element collection
+				final FormOptions fo = new FormOptions().setShowRemoveButton(true);
+				if (String.class.equals(am.getMemberType()) || NumberUtils.isNumeric(am.getMemberType())) {
+					CollectionTable<String> table = new CollectionTable<>(am, false, fo);
+					table.setCreateEntitySupplier(() -> new String());
+					
+					field = table;
+				} else {
+					// other types not supported for now
+					throw new OCSRuntimeException("Element collections of this type are currently not supported");
+				}
+			} else {
+				// TODO: search field
+//				field = constructSimpleTokenField(
+//						fieldEntityModel != null ? fieldEntityModel : am.getEntityModel(), am,
+//						propertyId.substring(propertyId.lastIndexOf('.') + 1), true, null);
+			}
 		} else if (AbstractEntity.class.isAssignableFrom(am.getType())) {
 			// lookup or combo field for an entity
 			field = constructSelect(am, fieldEntityModel, fieldFilter);

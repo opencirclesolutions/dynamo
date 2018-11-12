@@ -85,7 +85,7 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 	private Comparator<T> comparator;
 
 	/**
-	 * The container
+	 * The data provider
 	 */
 	private ListDataProvider<T> provider;
 
@@ -103,11 +103,6 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 	 * Form options that determine which buttons and functionalities are available
 	 */
 	private FormOptions formOptions;
-
-	/**
-	 * The list of items to display
-	 */
-	private Collection<T> items;
 
 	/**
 	 * The message service
@@ -180,8 +175,6 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 	 */
 	private boolean viewMode;
 
-	private FieldFactoryImpl<T> factory;
-
 	/**
 	 * Constructor
 	 *
@@ -195,7 +188,7 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 		this.provider = new ListDataProvider<>(items);
 		this.entityModel = entityModel;
 		this.messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
-		this.items = items;
+		// this.items = items;
 		this.viewMode = viewMode;
 		this.formOptions = formOptions;
 	}
@@ -351,10 +344,6 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 		return formOptions;
 	}
 
-	public Collection<T> getItems() {
-		return items;
-	}
-
 	public ReceivesSignal getReceiver() {
 		return receiver;
 	}
@@ -403,7 +392,6 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 				remove.addClickListener(event -> {
 					provider.getItems().remove(t);
 					provider.refreshAll();
-					items.remove(t.getId());
 					// callback method so the entity can be removed from its
 					// parent
 					removeEntity((T) t);
@@ -592,29 +580,15 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 	// super.setInternalValue(newValue);
 	// }
 
-	/**
-	 * Refreshes the items that are displayed in the table
-	 *
-	 * @param items the new set of items to be displayed
-	 */
-	public void setItems(Collection<T> items) {
-
-		List<T> list = new ArrayList<>();
-		list.addAll(items);
-		if (comparator != null) {
-			list.sort(comparator);
-		}
-
-		this.items = list;
-		if (provider != null) {
-			provider.getItems().clear();
-			provider.getItems().addAll(this.items);
-			provider.refreshAll();
-		}
-		// clear the selection
-		setSelectedItem(null);
-
-	}
+//	/**
+//	 * Refreshes the items that are displayed in the table
+//	 *
+//	 * @param items the new set of items to be displayed
+//	 */
+//	public void setItems(Collection<T> items) {
+//
+//
+//	}
 
 	public void setPageLength(int pageLength) {
 		this.pageLength = pageLength;
@@ -658,7 +632,7 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 
 	@Override
 	public void setValue(Collection<T> newFieldValue) {
-		setItems(newFieldValue);
+		// setItems(newFieldValue);
 		super.setValue(newFieldValue);
 	}
 
@@ -689,8 +663,19 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 
 	@Override
 	protected void doSetValue(Collection<T> value) {
-		provider.getItems().clear();
-		provider.getItems().addAll(value);
+		List<T> list = new ArrayList<>();
+		list.addAll(value);
+		if (comparator != null) {
+			list.sort(comparator);
+		}
+
+		if (provider != null) {
+			provider.getItems().clear();
+			provider.getItems().addAll(list);
+			provider.refreshAll();
+		}
+		// clear the selection
+		setSelectedItem(null);
 	}
 
 }
