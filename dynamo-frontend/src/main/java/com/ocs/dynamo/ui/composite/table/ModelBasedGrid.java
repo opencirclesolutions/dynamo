@@ -13,6 +13,17 @@
  */
 package com.ocs.dynamo.ui.composite.table;
 
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.AttributeType;
@@ -35,6 +46,7 @@ import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.ocs.dynamo.utils.ClassUtils;
 import com.ocs.dynamo.utils.NumberUtils;
 import com.vaadin.data.BeanPropertySet;
+import com.vaadin.data.BeanValidationBinder;
 import com.vaadin.data.Binder;
 import com.vaadin.data.HasValue;
 import com.vaadin.data.PropertyFilterDefinition;
@@ -44,22 +56,11 @@ import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.server.SerializablePredicate;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.AbstractTextField;
-import com.vaadin.ui.Component;
 import com.vaadin.ui.DateTimeField;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.Slider;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.renderers.ComponentRenderer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.Serializable;
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * A Table that bases its columns on the meta model of an entity
@@ -175,15 +176,15 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 			}
 
 			if (editable) {
-				Binder binder = getEditor().getBinder();
+				Binder<T> binder = getEditor().getBinder();
 				final AbstractComponent abstractComponent = factory.constructField(attributeModel, null, null, false);
 
 				final Binder.BindingBuilder bindingBuilder = binder.forField((HasValue) abstractComponent);
 				setConverters(bindingBuilder, attributeModel);
 
-				final Binder.Binding binding = bindingBuilder
-						.bind(t -> ClassUtils.getFieldValue(t, attributeModel.getPath()),
-								(t, o) -> ClassUtils.setFieldValue(t, attributeModel.getPath(), o));
+				final Binder.Binding binding = bindingBuilder.bind(
+						t -> ClassUtils.getFieldValue(t, attributeModel.getPath()),
+						(t, o) -> ClassUtils.setFieldValue(t, attributeModel.getPath(), o));
 				column.setEditorBinding(binding);
 
 			}
@@ -193,13 +194,15 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 		}
 	}
 
-	//TODO this code is duplicate from ModelBasedEditForm, both should be removed and put on a place reachable for both
-	//usages.
-	private void setConverters(Binder.BindingBuilder<T, ?> builder , AttributeModel am) {
+	// TODO this code is duplicate from ModelBasedEditForm, both should be removed
+	// and put on a place reachable for both
+	// usages.
+	private void setConverters(Binder.BindingBuilder<T, ?> builder, AttributeModel am) {
 
 		if (am.isEmail()) {
 			Binder.BindingBuilder<T, String> sBuilder = (Binder.BindingBuilder<T, String>) builder;
-			sBuilder.withNullRepresentation("").withValidator(new EmailValidator(getMessageService().getMessage("ocs.no.valid.email", VaadinUtils.getLocale())));
+			sBuilder.withNullRepresentation("").withValidator(
+					new EmailValidator(getMessageService().getMessage("ocs.no.valid.email", VaadinUtils.getLocale())));
 		} else if (am.isWeek()) {
 			Binder.BindingBuilder<T, String> sBuilder = (Binder.BindingBuilder<T, String>) builder;
 			sBuilder.withConverter(new LocalDateWeekCodeConverter());
@@ -227,7 +230,8 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 			}
 		} else if (builder.getField() instanceof URLField) {
 			Binder.BindingBuilder<T, String> sBuilder = (Binder.BindingBuilder<T, String>) builder;
-			sBuilder.withNullRepresentation("").withValidator(new URLValidator(getMessageService().getMessage("ocs.no.valid.url", VaadinUtils.getLocale())));
+			sBuilder.withNullRepresentation("").withValidator(
+					new URLValidator(getMessageService().getMessage("ocs.no.valid.url", VaadinUtils.getLocale())));
 		} else if (builder.getField() instanceof DateTimeField && ZonedDateTime.class.equals(am.getType())) {
 			Binder.BindingBuilder<T, LocalDateTime> sBuilder = (Binder.BindingBuilder<T, LocalDateTime>) builder;
 			sBuilder.withConverter(new ZonedDateTimeToLocalDateTimeConverter(ZoneId.systemDefault()));

@@ -140,12 +140,6 @@ public class CollectionTable<T extends Serializable> extends CustomField<Collect
 		addButton = new Button(messageService.getMessage("ocs.add", VaadinUtils.getLocale()));
 		addButton.setIcon(VaadinIcons.PLUS);
 		addButton.addClickListener(event -> {
-			// add a new item then set the validity to false (since an empty
-			// item is never allowed)
-//			grid.addItem();
-//			if (parentForm != null) {
-//				parentForm.signalDetailsComponentValid(CollectionTable.this, false);
-//			}
 
 			T t = createEntitySupplier.get();
 			provider.getItems().add(t);
@@ -293,8 +287,6 @@ public class CollectionTable<T extends Serializable> extends CustomField<Collect
 	@Override
 	protected Component initContent() {
 		// set up a very basic table with one column
-		// table.addContainerProperty(VALUE, attributeModel.getNormalizedType(), null);
-
 		// Binder<T> binder = grid.getEditor().getBinder();
 
 		Column<T, TextField> column = grid.addColumn(t -> {
@@ -307,9 +299,9 @@ public class CollectionTable<T extends Serializable> extends CustomField<Collect
 					if (next instanceof TextField) {
 						HasValue<T> hasValue = (HasValue<T>) next;
 						provider.getItems().add(hasValue.getValue());
-						provider.refreshAll();
 					}
 				}
+				provider.refreshAll();
 			});
 
 			return tf;
@@ -431,12 +423,6 @@ public class CollectionTable<T extends Serializable> extends CustomField<Collect
 		return viewMode;
 	}
 
-	@Override
-	public void setValue(Collection<T> newFieldValue) {
-		// setItems(newFieldValue);
-		super.setValue(newFieldValue);
-	}
-
 	public void setViewMode(final boolean viewMode) {
 		this.viewMode = viewMode;
 	}
@@ -461,41 +447,14 @@ public class CollectionTable<T extends Serializable> extends CustomField<Collect
 	protected void doSetValue(Collection<T> value) {
 		provider.getItems().clear();
 		provider.getItems().addAll(value);
-		provider.refreshAll();
+		grid.setDataProvider(provider);
 	}
-
-//	@Override
-//	@SuppressWarnings("unchecked")
-//	protected void setInternalValue(final Collection<T> newValue) {
-//		if (propagateChanges && table != null) {
-//
-//			// simply cleaning the container does not work since Vaadin keeps a
-//			// reference to a selected item
-//			// that cannot be removed - so instead unfortunately we have to
-//			// recreate the container
-//			table.setContainerDataSource(new IndexedContainer());
-//			table.addContainerProperty(VALUE, attributeModel.getNormalizedType(), null);
-//
-//			if (table.removeGeneratedColumn(messageService.getMessage("ocs.remove", VaadinUtils.getLocale()))) {
-//				constructRemoveColumn();
-//			}
-//
-//			if (newValue != null) {
-//				for (final T t : newValue) {
-//					final Object o = table.addItem();
-//					table.getItem(o).getItemProperty(VALUE).setValue(t);
-//				}
-//			}
-//
-//		}
-//		super.setInternalValue(newValue);
-//	}
 
 	@Override
 	public boolean validateAllFields() {
 //		boolean error = false;
 //		Iterator<Component> component = grid.iterator();
-//		while (component.hasNext()) {
+//		while (component.hasNext()) {add
 //			Component next = component.next();
 //			if (next instanceof AbstractField) {
 //				try {

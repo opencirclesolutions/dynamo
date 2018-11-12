@@ -13,11 +13,19 @@
  */
 package com.ocs.dynamo.ui.composite.form;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 import com.google.common.collect.Lists;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
-import com.ocs.dynamo.domain.model.impl.FieldFactoryImpl;
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.MessageService;
@@ -32,9 +40,7 @@ import com.vaadin.data.ValueProvider;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.data.provider.SortOrder;
 import com.vaadin.icons.VaadinIcons;
-import com.vaadin.server.FontAwesome;
 import com.vaadin.server.SerializablePredicate;
-import com.vaadin.shared.Registration;
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -42,15 +48,6 @@ import com.vaadin.ui.CustomField;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
 /**
  * A complex table component for the in-place editing of a one-to-many relation.
@@ -188,7 +185,6 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 		this.provider = new ListDataProvider<>(items);
 		this.entityModel = entityModel;
 		this.messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
-		// this.items = items;
 		this.viewMode = viewMode;
 		this.formOptions = formOptions;
 	}
@@ -405,9 +401,6 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 		}
 
 		// set the custom field factory
-		this.factory = FieldFactoryImpl.getValidatingInstance(getEntityModel(),
-				ServiceLocatorFactory.getServiceLocator().getMessageService());
-
 		// overwrite the field factory to deal with validation
 		// table.setTableFieldFactory(new ModelBasedFieldFactory<T>(entityModel,
 		// messageService, true, false) {
@@ -672,7 +665,7 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 		if (provider != null) {
 			provider.getItems().clear();
 			provider.getItems().addAll(list);
-			provider.refreshAll();
+			grid.setDataProvider(provider);
 		}
 		// clear the selection
 		setSelectedItem(null);
