@@ -13,14 +13,14 @@
  */
 package com.ocs.dynamo.ui.converter;
 
-import java.math.BigDecimal;
-import java.time.ZoneId;
-
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.vaadin.data.Converter;
 import com.vaadin.data.converter.StringToIntegerConverter;
 import com.vaadin.data.converter.StringToLongConverter;
+
+import java.math.BigDecimal;
+import java.time.ZoneId;
 
 public final class ConverterFactory {
 
@@ -79,15 +79,6 @@ public final class ConverterFactory {
 	public static StringToIntegerConverter createIntegerConverter(boolean useGrouping, boolean percentage) {
 		return percentage ? new PercentageIntegerConverter(useGrouping)
 				: new GroupingStringToIntegerConverter(useGrouping);
-	}
-
-	/**
-	 * Creates a converter for a LocalDateTimeConverter
-	 * 
-	 * @return
-	 */
-	public static LocalDateTimeToDateConverter createLocalDateTimeConverter() {
-		return new LocalDateTimeToDateConverter();
 	}
 
 	/**

@@ -40,7 +40,7 @@ public class LocalDateWeekCodeConverter implements Converter<String, LocalDate> 
 		}
 
 		try {
-			return Result.ok(DateUtils.toStartDateOfWeek(value));
+			return Result.ok(DateUtils.getStartDateOfWeek(value));
 		} catch (OCSRuntimeException ex) {
 			return Result.error(ex.getMessage());
 		}

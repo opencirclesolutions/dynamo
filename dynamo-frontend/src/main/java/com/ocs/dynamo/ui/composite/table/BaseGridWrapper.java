@@ -87,6 +87,8 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 	private ModelBasedGrid<ID, T> grid;
 	private VerticalLayout layout;
 
+	private boolean editable;
+
 	/**
 	 * Constructor
 	 * 
@@ -98,12 +100,13 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 	 * @param joins       the fetch joins to use when executing the query
 	 */
 	public BaseGridWrapper(BaseService<ID, T> service, EntityModel<T> entityModel, QueryType queryType,
-			List<SortOrder<?>> sortOrders, boolean allowExport, FetchJoinInformation... joins) {
+			List<SortOrder<?>> sortOrders, boolean allowExport, boolean editable, FetchJoinInformation... joins) {
 		this.service = service;
 		this.entityModel = entityModel;
 		this.queryType = queryType;
 		this.sortOrders = sortOrders != null ? sortOrders : new ArrayList<>();
 		this.joins = joins;
+		this.editable = editable;
 		this.allowExport = allowExport;
 	}
 
@@ -150,7 +153,7 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 	 * @return
 	 */
 	protected ModelBasedGrid<ID, T> constructGrid() {
-		return new ModelBasedGrid<ID, T>(this.dataProvider, entityModel, allowExport, false);
+		return new ModelBasedGrid<ID, T>(this.dataProvider, entityModel, allowExport, editable);
 	}
 
 	/**

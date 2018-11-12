@@ -14,11 +14,9 @@
 package com.ocs.dynamo.ui.utils;
 
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
@@ -200,9 +198,7 @@ public final class FormatUtils {
 			AttributeModel model, Object value, Locale locale, String separator) {
 		if (model != null && value != null) {
 			if (model.isWeek()) {
-				if (value instanceof Date) {
-					return DateUtils.toWeekCode((Date) value);
-				} else if (value instanceof LocalDate) {
+				if (value instanceof LocalDate) {
 					return DateUtils.toWeekCode((LocalDate) value);
 				}
 			} else if (Boolean.class.equals(model.getType()) || boolean.class.equals(model.getType())) {
