@@ -21,6 +21,7 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.vaadin.ui.components.grid.Editor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -184,7 +185,15 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 
 				final Binder.Binding binding = bindingBuilder.bind(
 						t -> ClassUtils.getFieldValue(t, attributeModel.getPath()),
-						(t, o) -> ClassUtils.setFieldValue(t, attributeModel.getPath(), o));
+						(t, o) -> {
+							if (ClassUtils.canSetProperty(t, attributeModel.getName())) {
+								if (o != null) {
+									ClassUtils.setFieldValue(t, attributeModel.getName(), o);
+								} else {
+									ClassUtils.clearFieldValue(t, attributeModel.getName(), attributeModel.getType());
+								}
+							}
+						});
 				column.setEditorBinding(binding);
 
 			}
@@ -193,6 +202,8 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 					.setStyleGenerator(item -> attributeModel.isNumerical() ? "v-align-right" : "");
 		}
 	}
+
+
 
 	// TODO this code is duplicate from ModelBasedEditForm, both should be removed
 	// and put on a place reachable for both
@@ -387,5 +398,7 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 					+ messageService.getMessage("ocs.showing.results", VaadinUtils.getLocale(), size));
 		}
 	}
+
+
 
 }

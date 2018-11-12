@@ -63,16 +63,6 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 	private Button addButton;
 
 	/**
-	 * The cancel button
-	 */
-	private Button cancelButton;
-
-	/**
-	 * The edit button
-	 */
-	private Button editButton;
-
-	/**
 	 * The filter that is applied to limit the search results
 	 */
 	private SerializablePredicate<T> filter;
@@ -140,7 +130,8 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 	public void build() {
 		this.filter = constructFilter();
 		if (mainLayout == null) {
-			setViewmode(!isEditAllowed() || getFormOptions().isOpenInViewMode());
+			setViewmode(false);
+			//setViewmode(!isEditAllowed() || getFormOptions().isOpenInViewMode());
 			mainLayout = new DefaultVerticalLayout(true, true);
 
 			constructTable();
@@ -197,21 +188,6 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 			getButtonBar().addComponent(saveButton);
 			saveButton.setVisible(!isViewmode());
 
-			editButton = new Button(message("ocs.edit"));
-			editButton.setIcon(VaadinIcons.PENCIL);
-			editButton.addClickListener(event -> toggleViewMode(false));
-			editButton.setVisible(isViewmode() && getFormOptions().isEditAllowed());
-			getButtonBar().addComponent(editButton);
-
-			cancelButton = new Button(message("ocs.cancel"));
-			cancelButton.setIcon(VaadinIcons.BAN);
-			cancelButton.addClickListener(event -> {
-				reload();
-				toggleViewMode(true);
-			});
-			cancelButton.setVisible(!isViewmode() && getFormOptions().isOpenInViewMode());
-			getButtonBar().addComponent(cancelButton);
-
 			postProcessButtonBar(getButtonBar());
 			constructTableDividers();
 			postProcessLayout(mainLayout);
@@ -237,6 +213,8 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 
 		// make sure the table can be edited
 		grid.getGrid().getEditor().setEnabled(!isViewmode());
+		grid.getGrid().getEditor().addSaveListener(event ->
+				getService().save((T)event.getBean()));
 		// make sure changes are not persisted right away
 		grid.getGrid().getEditor().setBuffered(true);
 		grid.getGrid().setSelectionMode(Grid.SelectionMode.SINGLE);
@@ -344,16 +322,8 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 		return addButton;
 	}
 
-	public Button getCancelButton() {
-		return cancelButton;
-	}
-
 	protected DataProvider<T, SerializablePredicate<T>> getDataProvider() {
 		return getGridWrapper().getDataProvider();
-	}
-
-	public Button getEditButton() {
-		return editButton;
 	}
 
 	/**
@@ -457,9 +427,6 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 		getGridWrapper().getGrid().getEditor().setEnabled(!isViewmode() && isEditAllowed());
 		saveButton.setVisible(!isViewmode());
 		addButton.setVisible(!isViewmode() && !getFormOptions().isHideAddButton() && isEditAllowed());
-		editButton.setVisible(isViewmode() && getFormOptions().isEditAllowed() && isEditAllowed());
-		cancelButton.setVisible(!isViewmode());
-
 		// create or remove any generated columns for correctly dealing with URL
 		// fields
 //		if (!viewMode) {
