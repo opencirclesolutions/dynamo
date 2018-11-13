@@ -13,16 +13,6 @@
  */
 package com.ocs.dynamo.ui.composite.table;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
-
-import org.junit.Assert;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-
 import com.google.common.collect.Lists;
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
@@ -34,8 +24,15 @@ import com.ocs.dynamo.test.BaseMockitoTest;
 import com.ocs.dynamo.test.MockUtil;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.ui.Grid;
-
 import junitx.util.PrivateAccessor;
+import org.junit.Assert;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
 
 public class ModelBasedGridTest extends BaseMockitoTest {
 
@@ -67,7 +64,7 @@ public class ModelBasedGridTest extends BaseMockitoTest {
 		Person person = new Person(1, "Bob", 50, BigDecimal.valueOf(76.4), BigDecimal.valueOf(44.4));
 		provider.getItems().add(person);
 
-		ModelBasedGrid<Integer, Person> grid = new ModelBasedGrid<>(provider, model, false, false);
+		ModelBasedGrid<Integer, Person> grid = new ModelBasedGrid<>(provider, model, false, false, false);
 
 		Assert.assertEquals("Persons", grid.getCaption());
 		Assert.assertEquals("Person", grid.getDescription());

@@ -96,7 +96,9 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 	 */
 	private boolean updateTableCaption = true;
 
-	private boolean editable = false;
+	private boolean editable;
+
+	private boolean fullTableEditor;
 
 	/**
 	 * The message service
@@ -113,10 +115,12 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 	 * @param exportAllowed whether export of the table is allowed
 	 */
 	public ModelBasedGrid(DataProvider<T, SerializablePredicate<T>> dataProvider, EntityModel<T> model,
-			boolean exportAllowed, boolean editable) {
+			boolean exportAllowed, boolean editable, boolean fullTableEditor) {
 		setDataProvider(dataProvider);
 		this.editable = editable;
+		this.fullTableEditor = fullTableEditor;
 		getEditor().setEnabled(editable);
+		getEditor().setBinder(new BeanValidationBinder<>(model.getEntityClass()));
 
 		// we need to pre-populate the table with the available properties
 		PropertySet<T> ps = BeanPropertySet.get(model.getEntityClass(), true,
@@ -168,15 +172,28 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 				// URL field
 				column = addColumn(t -> new URLField(
 						new TextField("", ClassUtils.getFieldValueAsString(t, attributeModel.getPath(), "")),
-						attributeModel, false), new ComponentRenderer());
+						attributeModel, editable && fullTableEditor), new ComponentRenderer());
 			} else if (attributeModel.isNavigable() && AttributeType.MASTER.equals(attributeModel.getAttributeType())) {
 				column = addColumn(t -> generateInternalLinkField(attributeModel,
 						ClassUtils.getFieldValue(t, attributeModel.getPath())), new ComponentRenderer());
 			} else {
-				column = addColumn(t -> FormatUtils.extractAndFormat(this, attributeModel, t));
+				if (editable && fullTableEditor){
+					column = addColumn(t -> {
+						// value change listener to copy value back to backing bean (Vaadin binding
+						// doesn't really
+						// seem to work
+						HasValue<?> comp = (HasValue<?>) createField(t, attributeModel);
+						comp.addValueChangeListener(event -> {
+							ClassUtils.setFieldValue(t, attributeModel.getPath(), event.getValue());
+						});
+						return (AbstractComponent) comp;
+					}, new ComponentRenderer());
+				} else {
+					column = addColumn(t -> FormatUtils.extractAndFormat(this, attributeModel, t));
+				}
 			}
 
-			if (editable) {
+			if (editable && !fullTableEditor) {
 				Binder<T> binder = getEditor().getBinder();
 				final AbstractComponent abstractComponent = factory.constructField(attributeModel, null, null, false);
 
