@@ -36,6 +36,10 @@ import com.ocs.dynamo.ui.composite.dialog.ModelBasedSearchDialog;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.composite.table.ModelBasedGrid;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
+import com.vaadin.data.BeanValidationBinder;
+import com.vaadin.data.Binder;
+import com.vaadin.data.Binder.BindingBuilder;
+import com.vaadin.data.HasValue;
 import com.vaadin.data.ValueProvider;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.data.provider.SortOrder;
@@ -174,6 +178,11 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 	private boolean viewMode;
 
 	/**
+	 * 
+	 */
+	private Map<T, Binder<T>> binders = new HashMap<>();
+
+	/**
 	 * Constructor
 	 *
 	 * @param items       the entities to display
@@ -254,7 +263,6 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 
 		constructAddButton(buttonBar);
 		constructSearchButton(buttonBar);
-
 		postProcessButtonBar(buttonBar);
 	}
 
@@ -271,6 +279,7 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 	 */
 	protected AbstractComponent constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel,
 			boolean viewMode) {
+		// overwrite in subclasses
 		return null;
 	}
 
@@ -392,6 +401,16 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 					AttributeModel attributeModel) {
 				return DetailsEditTable.this.constructCustomField(entityModel, attributeModel, false);
 			}
+
+			@Override
+			protected BindingBuilder<T, ?> doBind(T t, AbstractComponent field) {
+				if (!binders.containsKey(t)) {
+					binders.put(t, new BeanValidationBinder<>(entityModel.getEntityClass()));
+					binders.get(t).setBean(t);
+				}
+				Binder<T> binder = binders.get(t);
+				return binder.forField((HasValue<?>) field);
+			}
 		};
 
 		// add a remove button directly in the table
@@ -469,7 +488,7 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 
 		VerticalLayout layout = new DefaultVerticalLayout(false, true);
 		layout.addComponent(grid);
-		//grid.setEnabled(isGridEditEnabled());
+		// grid.setEnabled(isGridEditEnabled());
 
 		// add a change listener (to make sure the buttons are correctly
 		// enabled/disabled)
@@ -583,22 +602,6 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 		this.formOptions = formOptions;
 	}
 
-	// @Override
-	// protected void setInternalValue(Collection<T> newValue) {
-	// setItems(newValue);
-	// super.setInternalValue(newValue);
-	// }
-
-//	/**
-//	 * Refreshes the items that are displayed in the table
-//	 *
-//	 * @param items the new set of items to be displayed
-//	 */
-//	public void setItems(Collection<T> items) {
-//
-//
-//	}
-
 	public void setPageLength(int pageLength) {
 		this.pageLength = pageLength;
 	}
@@ -641,7 +644,6 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 
 	@Override
 	public void setValue(Collection<T> newFieldValue) {
-		// setItems(newFieldValue);
 		super.setValue(newFieldValue);
 	}
 
@@ -664,8 +666,6 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 		}
 		return error;
 	}
-	
-	
 
 	@Override
 	public Collection<T> getValue() {
@@ -683,8 +683,10 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 		if (provider != null) {
 			provider.getItems().clear();
 			provider.getItems().addAll(list);
-			grid.setDataProvider(provider);
+			provider.refreshAll();
+			binders.clear();
 		}
+
 		// clear the selection
 		setSelectedItem(null);
 	}

@@ -19,7 +19,9 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
@@ -44,12 +46,13 @@ import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.ocs.dynamo.utils.ClassUtils;
 import com.ocs.dynamo.utils.NumberUtils;
 import com.vaadin.data.BeanPropertySet;
-import com.vaadin.data.BeanValidationBinder;
 import com.vaadin.data.Binder;
 import com.vaadin.data.HasValue;
 import com.vaadin.data.PropertyFilterDefinition;
 import com.vaadin.data.PropertySet;
 import com.vaadin.data.Result;
+import com.vaadin.data.Binder.Binding;
+import com.vaadin.data.Binder.BindingBuilder;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.server.SerializablePredicate;
@@ -106,6 +109,8 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 	private MessageService messageService;
 
 	private FieldFactoryImpl<T> factory;
+
+	private Map<T, Binder<T>> binders = new HashMap<>();
 
 	/**
 	 * Constructor
@@ -178,16 +183,13 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 			} else {
 				if (editable && fullTableEditor) {
 					column = addColumn(t -> {
-						// value change listener to copy value back to backing bean (Vaadin binding
-						// doesn't really
-						// seem to work
-						HasValue<?> comp = (HasValue<?>) createField(t, attributeModel);
-						comp.addValueChangeListener(event -> {
-							Result<? extends Object> result = ConvertUtil.convertToModelValue(attributeModel,
-									event.getValue());
-							result.ifOk(r -> ClassUtils.setFieldValue(t, attributeModel.getPath(), r));
-							result.ifError(r -> ((AbstractComponent) comp).setComponentError(new UserError(r)));
-						});
+						AbstractComponent comp = constructCustomField(entityModel, attributeModel);
+						if (comp == null) {
+							comp = factory.constructField(attributeModel, null, null, true);
+						}
+						BindingBuilder<T, ?> builder = doBind(t, (AbstractComponent) comp);
+						setConverters(builder, attributeModel);
+						builder.bind(attributeModel.getPath());
 						return (AbstractComponent) comp;
 					}, new ComponentRenderer());
 				} else {
@@ -425,6 +427,10 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 	}
 
 	protected AbstractComponent constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel) {
+		return null;
+	}
+
+	protected BindingBuilder<T, ?> doBind(T t, AbstractComponent field) {
 		return null;
 	}
 

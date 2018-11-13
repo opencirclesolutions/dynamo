@@ -1756,7 +1756,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		setViewMode(getFormOptions().isOpenInViewMode() && entity.getId() != null, checkIterationButtons);
 
 		// recreate the group
-		// BeanItem<T> beanItem = new BeanItem<>(entity);
 		groups.get(isViewMode()).setBean(entity);
 
 		// "rebuild" so that the correct layout is displayed
