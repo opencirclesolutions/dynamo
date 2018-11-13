@@ -41,6 +41,7 @@ import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.data.provider.SortOrder;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.SerializablePredicate;
+import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -189,6 +190,11 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 		this.formOptions = formOptions;
 	}
 
+	/**
+	 * Adds a new entity
+	 * 
+	 * @param t
+	 */
 	public void addEntity(T t) {
 		provider.getItems().add(t);
 		if (receiver != null) {
@@ -233,7 +239,7 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 				receiver.signalDetailsComponentValid(DetailsEditTable.this, VaadinUtils.allFixedTableFieldsValid(grid));
 			}
 		});
-		addButton.setVisible(isTableEditEnabled() && !formOptions.isHideAddButton());
+		addButton.setVisible(isGridEditEnabled() && !formOptions.isHideAddButton());
 		buttonBar.addComponent(addButton);
 	}
 
@@ -263,7 +269,7 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 	 * @param viewMode       whether the form is in view mode
 	 * @return
 	 */
-	protected AbstractField<?> constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel,
+	protected AbstractComponent constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel,
 			boolean viewMode) {
 		return null;
 	}
@@ -377,7 +383,16 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 	 */
 	@Override
 	protected Component initContent() {
-		grid = new ModelBasedGrid<>(provider, entityModel, false, !isViewMode(), true);
+		grid = new ModelBasedGrid<ID, T>(provider, entityModel, false, !isViewMode(), true) {
+
+			private static final long serialVersionUID = 6143503902550597524L;
+
+			@Override
+			protected AbstractComponent constructCustomField(EntityModel<T> entityModel,
+					AttributeModel attributeModel) {
+				return DetailsEditTable.this.constructCustomField(entityModel, attributeModel, false);
+			}
+		};
 
 		// add a remove button directly in the table
 		if (!isViewMode() && formOptions.isShowRemoveButton()) {
@@ -454,6 +469,7 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 
 		VerticalLayout layout = new DefaultVerticalLayout(false, true);
 		layout.addComponent(grid);
+		//grid.setEnabled(isGridEditEnabled());
 
 		// add a change listener (to make sure the buttons are correctly
 		// enabled/disabled)
@@ -480,7 +496,7 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 	 *
 	 * @return
 	 */
-	private boolean isTableEditEnabled() {
+	private boolean isGridEditEnabled() {
 		return !viewMode && !formOptions.isDetailsTableSearchMode() && !formOptions.isReadOnly();
 	}
 
@@ -648,6 +664,8 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 		}
 		return error;
 	}
+	
+	
 
 	@Override
 	public Collection<T> getValue() {

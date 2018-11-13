@@ -63,6 +63,7 @@ public class ServiceBasedGridWrapper<ID extends Serializable, T extends Abstract
 	}
 
 	@Override
+	@SuppressWarnings("unchecked")
 	protected DataProvider<T, SerializablePredicate<T>> constructDataProvider() {
 		DataProvider<T, SerializablePredicate<T>> provider;
 		if (QueryType.PAGING.equals(getQueryType())) {
@@ -92,9 +93,7 @@ public class ServiceBasedGridWrapper<ID extends Serializable, T extends Abstract
 
 	@Override
 	public void reloadDataProvider() {
-		if (getDataProvider() instanceof Searchable) {
-			// TODO
-		}
+		search(getFilter());
 	}
 
 	@Override

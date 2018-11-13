@@ -21,10 +21,6 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.vaadin.ui.components.grid.Editor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.AttributeType;
@@ -39,6 +35,7 @@ import com.ocs.dynamo.ui.converter.IntToDoubleConverter;
 import com.ocs.dynamo.ui.converter.LocalDateWeekCodeConverter;
 import com.ocs.dynamo.ui.converter.LongToDoubleConverter;
 import com.ocs.dynamo.ui.converter.ZonedDateTimeToLocalDateTimeConverter;
+import com.ocs.dynamo.ui.utils.ConvertUtil;
 import com.ocs.dynamo.ui.utils.FormatUtils;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.ui.validator.EmailValidator;
@@ -52,9 +49,11 @@ import com.vaadin.data.Binder;
 import com.vaadin.data.HasValue;
 import com.vaadin.data.PropertyFilterDefinition;
 import com.vaadin.data.PropertySet;
+import com.vaadin.data.Result;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.server.SerializablePredicate;
+import com.vaadin.server.UserError;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.AbstractTextField;
 import com.vaadin.ui.DateTimeField;
@@ -71,8 +70,6 @@ import com.vaadin.ui.renderers.ComponentRenderer;
  * @param <T> type of the entity
  */
 public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID>> extends Grid<T> {
-
-	private static final Logger LOG = LoggerFactory.getLogger(ModelBasedGrid.class);
 
 	private static final long serialVersionUID = 6946260934644731038L;
 
@@ -98,6 +95,9 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 
 	private boolean editable;
 
+	/**
+	 * Indicates whether the full grid can be edited at once
+	 */
 	private boolean fullTableEditor;
 
 	/**
@@ -120,7 +120,6 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 		this.editable = editable;
 		this.fullTableEditor = fullTableEditor;
 		getEditor().setEnabled(editable);
-		getEditor().setBinder(new BeanValidationBinder<>(model.getEntityClass()));
 
 		// we need to pre-populate the table with the available properties
 		PropertySet<T> ps = BeanPropertySet.get(model.getEntityClass(), true,
@@ -177,14 +176,17 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 				column = addColumn(t -> generateInternalLinkField(attributeModel,
 						ClassUtils.getFieldValue(t, attributeModel.getPath())), new ComponentRenderer());
 			} else {
-				if (editable && fullTableEditor){
+				if (editable && fullTableEditor) {
 					column = addColumn(t -> {
 						// value change listener to copy value back to backing bean (Vaadin binding
 						// doesn't really
 						// seem to work
 						HasValue<?> comp = (HasValue<?>) createField(t, attributeModel);
 						comp.addValueChangeListener(event -> {
-							ClassUtils.setFieldValue(t, attributeModel.getPath(), event.getValue());
+							Result<? extends Object> result = ConvertUtil.convertToModelValue(attributeModel,
+									event.getValue());
+							result.ifOk(r -> ClassUtils.setFieldValue(t, attributeModel.getPath(), r));
+							result.ifError(r -> ((AbstractComponent) comp).setComponentError(new UserError(r)));
 						});
 						return (AbstractComponent) comp;
 					}, new ComponentRenderer());
@@ -200,9 +202,8 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 				final Binder.BindingBuilder bindingBuilder = binder.forField((HasValue) abstractComponent);
 				setConverters(bindingBuilder, attributeModel);
 
-				final Binder.Binding binding = bindingBuilder.bind(
-						t -> ClassUtils.getFieldValue(t, attributeModel.getPath()),
-						(t, o) -> {
+				final Binder.Binding binding = bindingBuilder
+						.bind(t -> ClassUtils.getFieldValue(t, attributeModel.getPath()), (t, o) -> {
 							if (ClassUtils.canSetProperty(t, attributeModel.getName())) {
 								if (o != null) {
 									ClassUtils.setFieldValue(t, attributeModel.getName(), o);
@@ -220,12 +221,15 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 		}
 	}
 
-
-
 	// TODO this code is duplicate from ModelBasedEditForm, both should be removed
 	// and put on a place reachable for both
 	// usages.
 	private void setConverters(Binder.BindingBuilder<T, ?> builder, AttributeModel am) {
+
+		// set required validation
+		if (am.isRequired()) {
+			builder.asRequired();
+		}
 
 		if (am.isEmail()) {
 			Binder.BindingBuilder<T, String> sBuilder = (Binder.BindingBuilder<T, String>) builder;
@@ -276,10 +280,15 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 	 */
 	@SuppressWarnings("unchecked")
 	private <S> AbstractComponent createField(T t, AttributeModel attributeModel) {
-		AbstractComponent comp = factory.constructField(attributeModel, null, null, true);
+		AbstractComponent comp = constructCustomField(entityModel, attributeModel);
+
+		if (comp == null) {
+			comp = factory.constructField(attributeModel, null, null, true);
+		}
 		S value = (S) ClassUtils.getFieldValue(t, attributeModel.getPath());
 		if (value != null) {
-			((HasValue<S>) comp).setValue(value);
+			Object obj = ConvertUtil.convertToPresentationValue(attributeModel, value);
+			((HasValue<S>) comp).setValue((S) obj);
 		}
 		return comp;
 	}
@@ -345,7 +354,6 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 	 */
 	private void removeGeneratedColumn(final AttributeModel attributeModel) {
 		if (attributeModel.isVisibleInTable() && attributeModel.isUrl()) {
-			// removeGeneratedColumn(attributeModel.getPath());
 			removeColumn(attributeModel.getPath());
 		}
 	}
@@ -416,6 +424,8 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 		}
 	}
 
-
+	protected AbstractComponent constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel) {
+		return null;
+	}
 
 }

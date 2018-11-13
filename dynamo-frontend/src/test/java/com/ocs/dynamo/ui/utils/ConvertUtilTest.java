@@ -30,22 +30,22 @@ public class ConvertUtilTest {
 	public void testConvertSearchValue() {
 		EntityModel<TestEntity> model = emf.getModel(TestEntity.class);
 
-		Result<?> result = ConvertUtil.convertSearchValue(model.getAttributeModel("age"), "12");
+		Result<?> result = ConvertUtil.convertToModelValue(model.getAttributeModel("age"), "12");
 		Object obj = result.getOrThrow(r -> new OCSRuntimeException());
 		Assert.assertTrue(obj instanceof Long);
 		Assert.assertEquals(12L, ((Long) obj).longValue());
 
-		result = ConvertUtil.convertSearchValue(model.getAttributeModel("discount"), "12,34");
+		result = ConvertUtil.convertToModelValue(model.getAttributeModel("discount"), "12,34");
 		obj = result.getOrThrow(r -> new OCSRuntimeException());
 		Assert.assertTrue(obj instanceof BigDecimal);
 		Assert.assertEquals(12.34, ((BigDecimal) obj).doubleValue(), 0.0001);
 
-		result = ConvertUtil.convertSearchValue(model.getAttributeModel("id"), "17");
+		result = ConvertUtil.convertToModelValue(model.getAttributeModel("id"), "17");
 		obj = result.getOrThrow(r -> new OCSRuntimeException());
 		Assert.assertTrue(obj instanceof Integer);
 		Assert.assertEquals(17, ((Integer) obj).intValue());
 
-		result = ConvertUtil.convertSearchValue(model.getAttributeModel("birthWeek"), "2015-05");
+		result = ConvertUtil.convertToModelValue(model.getAttributeModel("birthWeek"), "2015-05");
 		obj = result.getOrThrow(r -> new OCSRuntimeException());
 		Assert.assertTrue(obj instanceof LocalDate);
 		Assert.assertEquals(LocalDate.of(2015, 1, 26), obj);
