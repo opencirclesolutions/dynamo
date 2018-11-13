@@ -44,12 +44,9 @@ import com.vaadin.ui.CustomField;
  * 
  * @author bas.rutten
  *
- * @param <ID>
- *            the type of the primary key
- * @param <S>
- *            the type of the entity
- * @param <T>
- *            the type of the basic property
+ * @param <ID> the type of the primary key
+ * @param <S> the type of the entity
+ * @param <T> the type of the basic property
  */
 public class SimpleTokenFieldSelect<ID extends Serializable, T extends AbstractEntity<ID>>
 		extends CustomField<Collection<T>> implements Refreshable {
@@ -135,15 +132,11 @@ public class SimpleTokenFieldSelect<ID extends Serializable, T extends AbstractE
 	 *
 	 * @param entityModel
 	 *
-	 * @param attributeModel
-	 *            the attribute model
-	 * @param fieldFilter
-	 *            the list of items to display
+	 * @param attributeModel the attribute model
+	 * @param fieldFilter    the list of items to display
 	 * @param distinctField
-	 * @param elementType
-	 *            the type of the items to display
-	 * @param sortOrders
-	 *            sort orders to apply
+	 * @param elementType    the type of the items to display
+	 * @param sortOrders     sort orders to apply
 	 */
 	@SafeVarargs
 	public SimpleTokenFieldSelect(BaseService<ID, T> service, EntityModel<T> entityModel, AttributeModel attributeModel,
@@ -169,9 +162,6 @@ public class SimpleTokenFieldSelect<ID extends Serializable, T extends AbstractE
 		sortProperties = new ArrayList<>();
 		sortOrdering = new ArrayList<>();
 		GenericTokenFieldUtil.initializeOrdering(sortOrders, sortProperties, sortOrdering);
-
-		// ((IndexedContainer) comboBox.getContainerDataSource()).setItemSorter(new
-		// SimpleItemSorter());
 
 		dataProvider = new ListDataProvider<T>(new ArrayList<>());
 		valueChangeListeners = new ArrayList<>();

@@ -53,7 +53,6 @@ import com.vaadin.ui.renderers.ComponentRenderer;
  * @param <T> the type of the elements in the table
  * @author bas.rutten @ElementCollection.
  */
-@SuppressWarnings("serial")
 public class CollectionTable<T extends Serializable> extends CustomField<Collection<T>> implements SignalsParent {
 
 	private static final long serialVersionUID = -1203245694503350276L;

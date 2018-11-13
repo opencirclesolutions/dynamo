@@ -18,7 +18,6 @@ import java.io.Serializable;
 import com.ocs.dynamo.ui.composite.type.AttributeGroupMode;
 import com.ocs.dynamo.ui.composite.type.ScreenMode;
 import com.ocs.dynamo.util.SystemPropertyUtils;
-import com.ocs.dynamo.util.ValidationMode;
 
 /**
  * Parameter object that can be passed along when creating a page - this object
@@ -176,11 +175,6 @@ public class FormOptions implements Serializable {
 	 */
 	private boolean tableExportAllowed = SystemPropertyUtils.allowTableExport();
 
-	/**
-	 * The form validation mode
-	 */
-	private ValidationMode validationMode = SystemPropertyUtils.getDefaultValidationMode();
-
 	public FormOptions createCopy() {
 		FormOptions fo = new FormOptions();
 		fo.setAttributeGroupMode(getAttributeGroupMode());
@@ -207,7 +201,6 @@ public class FormOptions implements Serializable {
 		fo.setShowToggleButton(isShowToggleButton());
 		fo.setTableExportAllowed(isTableExportAllowed());
 		fo.setFormNested(isFormNested());
-		fo.setValidationMode(getValidationMode());
 		fo.setConfirmSave(isConfirmSave());
 		return fo;
 	}
@@ -218,10 +211,6 @@ public class FormOptions implements Serializable {
 
 	public ScreenMode getScreenMode() {
 		return screenMode;
-	}
-
-	public ValidationMode getValidationMode() {
-		return validationMode;
 	}
 
 	public boolean isComplexDetailsMode() {
@@ -471,11 +460,6 @@ public class FormOptions implements Serializable {
 
 	public FormOptions setTableExportAllowed(boolean tableExportAllowed) {
 		this.tableExportAllowed = tableExportAllowed;
-		return this;
-	}
-
-	public FormOptions setValidationMode(ValidationMode validationMode) {
-		this.validationMode = validationMode;
 		return this;
 	}
 
