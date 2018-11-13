@@ -377,7 +377,7 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 	 */
 	@Override
 	protected Component initContent() {
-		grid = new ModelBasedGrid<>(provider, entityModel, false, !isViewMode());
+		grid = new ModelBasedGrid<>(provider, entityModel, false, !isViewMode(), true);
 
 		// add a remove button directly in the table
 		if (!isViewMode() && formOptions.isShowRemoveButton()) {
