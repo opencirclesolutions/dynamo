@@ -20,7 +20,6 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 
 import com.ocs.dynamo.domain.model.AttributeModel;
-import com.ocs.dynamo.exception.OCSValidationException;
 import com.ocs.dynamo.filter.AndPredicate;
 import com.ocs.dynamo.filter.EqualsPredicate;
 import com.ocs.dynamo.filter.GreaterOrEqualPredicate;
@@ -32,10 +31,8 @@ import com.ocs.dynamo.ui.composite.form.ModelBasedSearchForm.FilterType;
 import com.ocs.dynamo.ui.utils.ConvertUtil;
 import com.vaadin.data.HasValue;
 import com.vaadin.data.Result;
-import com.vaadin.server.ErrorMessage;
 import com.vaadin.server.SerializablePredicate;
 import com.vaadin.server.UserError;
-import com.vaadin.shared.ui.ErrorLevel;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Slider;

@@ -11,7 +11,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-package com.ocs.dynamo.ui.composite.table;
+package com.ocs.dynamo.ui.composite.grid;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -19,9 +19,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
@@ -47,16 +45,13 @@ import com.ocs.dynamo.utils.ClassUtils;
 import com.ocs.dynamo.utils.NumberUtils;
 import com.vaadin.data.BeanPropertySet;
 import com.vaadin.data.Binder;
+import com.vaadin.data.Binder.BindingBuilder;
 import com.vaadin.data.HasValue;
 import com.vaadin.data.PropertyFilterDefinition;
 import com.vaadin.data.PropertySet;
-import com.vaadin.data.Result;
-import com.vaadin.data.Binder.Binding;
-import com.vaadin.data.Binder.BindingBuilder;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.server.SerializablePredicate;
-import com.vaadin.server.UserError;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.AbstractTextField;
 import com.vaadin.ui.DateTimeField;
@@ -94,8 +89,11 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 	/***
 	 * Indicate whether to update the caption with the number of items in the table
 	 */
-	private boolean updateTableCaption = true;
+	private boolean updateCaption = true;
 
+	/**
+	 * Whether the grid is editable
+	 */
 	private boolean editable;
 
 	/**
@@ -109,8 +107,6 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 	private MessageService messageService;
 
 	private FieldFactoryImpl<T> factory;
-
-	private Map<T, Binder<T>> binders = new HashMap<>();
 
 	/**
 	 * Constructor
@@ -228,11 +224,6 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 	// usages.
 	private void setConverters(Binder.BindingBuilder<T, ?> builder, AttributeModel am) {
 
-		// set required validation
-		if (am.isRequired()) {
-			builder.asRequired();
-		}
-
 		if (am.isEmail()) {
 			Binder.BindingBuilder<T, String> sBuilder = (Binder.BindingBuilder<T, String>) builder;
 			sBuilder.withNullRepresentation("").withValidator(
@@ -274,7 +265,7 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 	}
 
 	/**
-	 * Creates a field and fills it with the desireed value
+	 * Creates a field and fills it with the desired value
 	 * 
 	 * @param t              the entity
 	 * @param attributeModel the attribute model
@@ -346,7 +337,7 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 	}
 
 	public boolean isUpdateTableCaption() {
-		return updateTableCaption;
+		return updateCaption;
 	}
 
 	/**
@@ -405,15 +396,15 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 	}
 
 	public void setUpdateTableCaption(boolean updateTableCaption) {
-		this.updateTableCaption = updateTableCaption;
+		this.updateCaption = updateTableCaption;
 	}
 
 	/**
 	 * Updates the table caption in response to a change of the data set
 	 */
 	@SuppressWarnings("unchecked")
-	public void updateTableCaption() {
-		if (updateTableCaption) {
+	public void updateCaption() {
+		if (updateCaption) {
 			int size = 0;
 			DataProvider<?, ?> dp = getDataCommunicator().getDataProvider();
 			if (dp instanceof ListDataProvider) {

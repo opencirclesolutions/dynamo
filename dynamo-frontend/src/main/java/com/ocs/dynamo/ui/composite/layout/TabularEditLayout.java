@@ -22,8 +22,8 @@ import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.exception.OCSValidationException;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
-import com.ocs.dynamo.ui.composite.table.BaseGridWrapper;
-import com.ocs.dynamo.ui.composite.table.ServiceBasedGridWrapper;
+import com.ocs.dynamo.ui.composite.grid.BaseGridWrapper;
+import com.ocs.dynamo.ui.composite.grid.ServiceBasedGridWrapper;
 import com.ocs.dynamo.ui.container.QueryType;
 import com.ocs.dynamo.ui.utils.FormatUtils;
 import com.vaadin.data.ValueProvider;
@@ -224,7 +224,7 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 
 		// set a higher cache rate to allow for smoother scrolling
 		// table.setSortEnabled(isSortEnabled());
-		// table.setPageLength(getPageLength());
+		grid.getGrid().setHeightByRows(getPageLength());
 
 		// default sorting
 		if (getSortOrders() != null && !getSortOrders().isEmpty()) {

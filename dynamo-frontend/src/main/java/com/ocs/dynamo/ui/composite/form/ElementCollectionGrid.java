@@ -53,7 +53,7 @@ import com.vaadin.ui.renderers.ComponentRenderer;
  * @param <T> the type of the elements in the table
  * @author bas.rutten @ElementCollection.
  */
-public class CollectionTable<T extends Serializable> extends CustomField<Collection<T>> implements SignalsParent {
+public class ElementCollectionGrid<T extends Serializable> extends CustomField<Collection<T>> implements SignalsParent {
 
 	private static final long serialVersionUID = -1203245694503350276L;
 
@@ -121,7 +121,7 @@ public class CollectionTable<T extends Serializable> extends CustomField<Collect
 	 * @param formOptions FormOptions parameter object that can be used to govern
 	 *                    how the component behaves
 	 */
-	public CollectionTable(final AttributeModel attributeModel, final boolean viewMode, final FormOptions formOptions) {
+	public ElementCollectionGrid(final AttributeModel attributeModel, final boolean viewMode, final FormOptions formOptions) {
 		this.messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
 		this.viewMode = viewMode;
 		this.formOptions = formOptions;
@@ -145,7 +145,7 @@ public class CollectionTable<T extends Serializable> extends CustomField<Collect
 			grid.setDataProvider(provider);
 
 			if (receiver != null) {
-				receiver.signalDetailsComponentValid(CollectionTable.this, VaadinUtils.allFixedTableFieldsValid(grid));
+				receiver.signalDetailsComponentValid(ElementCollectionGrid.this, VaadinUtils.allFixedTableFieldsValid(grid));
 			}
 
 		});
@@ -200,7 +200,7 @@ public class CollectionTable<T extends Serializable> extends CustomField<Collect
 					// parent
 					// removeEntity((T) t);
 					if (receiver != null) {
-						receiver.signalDetailsComponentValid(CollectionTable.this,
+						receiver.signalDetailsComponentValid(ElementCollectionGrid.this,
 								VaadinUtils.allFixedTableFieldsValid(grid));
 					}
 				});

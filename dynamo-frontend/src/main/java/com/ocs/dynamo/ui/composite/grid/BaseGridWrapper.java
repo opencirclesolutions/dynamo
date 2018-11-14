@@ -11,7 +11,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-package com.ocs.dynamo.ui.composite.table;
+package com.ocs.dynamo.ui.composite.grid;
 
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
@@ -85,6 +85,10 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 	 * The wrapped grid component
 	 */
 	private ModelBasedGrid<ID, T> grid;
+	
+	/**
+	 * 
+	 */
 	private VerticalLayout layout;
 
 	private boolean editable;

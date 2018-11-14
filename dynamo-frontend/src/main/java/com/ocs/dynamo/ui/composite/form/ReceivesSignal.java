@@ -14,11 +14,19 @@
 package com.ocs.dynamo.ui.composite.form;
 
 /**
+ * TODO: is this still needed after we phased out the old form of validation?
  * Marker interface for a parent component that receives a signal
  * 
  * @author bas.rutten
  */
 public interface ReceivesSignal {
 
+	/**
+	 * Receive a singal from a detail component whether all nested components are
+	 * valid
+	 * 
+	 * @param component
+	 * @param valid
+	 */
 	void signalDetailsComponentValid(SignalsParent component, boolean valid);
 }

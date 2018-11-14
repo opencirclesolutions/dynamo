@@ -42,7 +42,7 @@ import com.ocs.dynamo.ui.component.QuickAddListSingleSelect;
 import com.ocs.dynamo.ui.component.TimeField;
 import com.ocs.dynamo.ui.component.TokenFieldSelect;
 import com.ocs.dynamo.ui.component.URLField;
-import com.ocs.dynamo.ui.composite.form.CollectionTable;
+import com.ocs.dynamo.ui.composite.form.ElementCollectionGrid;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.util.SystemPropertyUtils;
@@ -267,7 +267,7 @@ public class FieldFactoryImpl<T> implements FieldFactory {
 				// use a "collection table" for an element collection
 				final FormOptions fo = new FormOptions().setShowRemoveButton(true);
 				if (String.class.equals(am.getMemberType()) || NumberUtils.isNumeric(am.getMemberType())) {
-					CollectionTable<String> table = new CollectionTable<>(am, false, fo);
+					ElementCollectionGrid<String> table = new ElementCollectionGrid<>(am, false, fo);
 					table.setCreateEntitySupplier(() -> new String());
 					
 					field = table;

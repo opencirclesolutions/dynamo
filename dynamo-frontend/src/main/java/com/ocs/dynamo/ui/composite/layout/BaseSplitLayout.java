@@ -146,7 +146,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 			}
 
 			// table init
-			// getTableWrapper().getGrid().setPageLength(getPageLength());
+			getGridWrapper().getGrid().setHeightByRows(getPageLength());
 			disableGridSorting();
 			constructTableDividers();
 

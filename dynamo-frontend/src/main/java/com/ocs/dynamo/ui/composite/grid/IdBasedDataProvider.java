@@ -1,4 +1,4 @@
-package com.ocs.dynamo.ui.composite.table;
+package com.ocs.dynamo.ui.composite.grid;
 
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.dao.SortOrders;

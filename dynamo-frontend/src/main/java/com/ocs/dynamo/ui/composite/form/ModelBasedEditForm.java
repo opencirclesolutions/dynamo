@@ -452,7 +452,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 					previews.get(isViewMode()).put(attributeModel, c);
 				} else if (AttributeType.DETAIL.equals(type) && attributeModel.isComplexEditable()) {
 					AbstractComponent f = constructCustomField(entityModel, attributeModel, viewMode);
-					if (f instanceof DetailsEditTable) {
+					if (f instanceof DetailsEditGrid) {
 						// a details edit table or details edit layout must always be displayed
 						constructField(parent, entityModel, attributeModel, true, tabIndex, sameRow);
 					} else {

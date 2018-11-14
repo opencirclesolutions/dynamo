@@ -31,7 +31,7 @@ import com.ocs.dynamo.ui.Refreshable;
 import com.ocs.dynamo.ui.Reloadable;
 import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
 import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
-import com.ocs.dynamo.ui.composite.table.BaseGridWrapper;
+import com.ocs.dynamo.ui.composite.grid.BaseGridWrapper;
 import com.ocs.dynamo.utils.ClassUtils;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.SortOrder;

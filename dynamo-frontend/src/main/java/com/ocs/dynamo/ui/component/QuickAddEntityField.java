@@ -151,6 +151,12 @@ public abstract class QuickAddEntityField<ID extends Serializable, T extends Abs
 		this.additionalFilter = additionalFilter;
 	}
 
+	/**
+	 * Converts a value (can be a collection but in some cases also a single value)
+	 * 
+	 * @param value
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
 	protected Object convertToCorrectCollection(Object value) {
 		if (value == null) {

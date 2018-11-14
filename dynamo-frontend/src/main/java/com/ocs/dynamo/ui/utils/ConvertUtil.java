@@ -18,8 +18,13 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.Collection;
+import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
+import com.google.common.collect.Lists;
+import com.google.gwt.thirdparty.guava.common.collect.Sets;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.NumberSelectMode;
 import com.ocs.dynamo.ui.converter.BigDecimalConverter;
@@ -122,5 +127,19 @@ public final class ConvertUtil {
 			return Result.ok(ldt.atZone(ZoneId.systemDefault()));
 		}
 		return Result.ok(value);
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T> Collection<T> convertCollection(Object value, AttributeModel am) {
+		if (value == null) {
+			return null;
+		} else if (Set.class.isAssignableFrom(am.getType())) {
+			Collection<T> col = (Collection<T>) value;
+			return Sets.newHashSet(col);
+		} else if (List.class.isAssignableFrom(am.getType())) {
+			Collection<T> col = (Collection<T>) value;
+			return Lists.newArrayList(col);
+		}
+		return null;
 	}
 }

@@ -56,7 +56,7 @@ public class FormOptions implements Serializable {
 	/**
 	 * Whether to display a button for opening a search dialog
 	 */
-	private boolean detailsTableSearchMode;
+	private boolean detailsGridSearchMode;
 
 	/**
 	 * Whether you can navigate to a detail screen by double clicking on a row in a
@@ -180,7 +180,7 @@ public class FormOptions implements Serializable {
 		fo.setAttributeGroupMode(getAttributeGroupMode());
 		fo.setComplexDetailsMode(isComplexDetailsMode());
 		fo.setConfirmClear(isConfirmClear());
-		fo.setDetailsTableSearchMode(isDetailsTableSearchMode());
+		fo.setDetailsGridSearchMode(isDetailsGridSearchMode());
 		fo.setDoubleClickSelectAllowed(isDoubleClickSelectAllowed());
 		fo.setEditAllowed(isEditAllowed());
 		fo.setHideAddButton(isHideAddButton());
@@ -225,8 +225,8 @@ public class FormOptions implements Serializable {
 		return confirmSave;
 	}
 
-	public boolean isDetailsTableSearchMode() {
-		return detailsTableSearchMode;
+	public boolean isDetailsGridSearchMode() {
+		return detailsGridSearchMode;
 	}
 
 	public boolean isDoubleClickSelectAllowed() {
@@ -329,8 +329,8 @@ public class FormOptions implements Serializable {
 		return this;
 	}
 
-	public FormOptions setDetailsTableSearchMode(boolean detailsTableSearchMode) {
-		this.detailsTableSearchMode = detailsTableSearchMode;
+	public FormOptions setDetailsGridSearchMode(boolean detailsGridSearchMode) {
+		this.detailsGridSearchMode = detailsGridSearchMode;
 		return this;
 	}
 
