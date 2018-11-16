@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -33,24 +32,32 @@ import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.composite.dialog.ModelBasedSearchDialog;
+import com.ocs.dynamo.ui.composite.grid.ModelBasedGrid;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
-import com.ocs.dynamo.ui.composite.table.ModelBasedGrid;
+import com.ocs.dynamo.ui.utils.ConvertUtil;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
+import com.ocs.dynamo.util.SystemPropertyUtils;
+import com.vaadin.data.BeanValidationBinder;
+import com.vaadin.data.Binder;
+import com.vaadin.data.Binder.BindingBuilder;
+import com.vaadin.data.BinderValidationStatus;
+import com.vaadin.data.HasValue;
 import com.vaadin.data.ValueProvider;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.data.provider.SortOrder;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.SerializablePredicate;
-import com.vaadin.ui.AbstractField;
+import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
+import com.vaadin.ui.Grid.SelectionMode;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
 /**
- * A complex table component for the in-place editing of a one-to-many relation.
+ * A complex grid component for the in-place editing of a one-to-many relation.
  * It can also be used to manage a many-to-many relation but in this case the
  * "setDetailsTableSearchMode" on the FormOptions must be set to true. You can
  * then use the setSearchXXX methods to configure the behaviour of the search
@@ -66,13 +73,13 @@ import com.vaadin.ui.VerticalLayout;
  * @param <ID> the type of the primary key
  * @param <T> the type of the entity
  */
-public abstract class DetailsEditTable<ID extends Serializable, T extends AbstractEntity<ID>>
+public abstract class DetailsEditGrid<ID extends Serializable, T extends AbstractEntity<ID>>
 		extends CustomField<Collection<T>> implements SignalsParent, UseInViewMode {
 
 	private static final long serialVersionUID = -1203245694503350276L;
 
 	/**
-	 * The button that can be used to add rows to the table
+	 * The button that can be used to add rows to the grid
 	 */
 	private Button addButton;
 
@@ -109,12 +116,7 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 	/**
 	 * The number of rows to display - this default to 3 but can be overwritten
 	 */
-	private int pageLength = 3;
-
-	/**
-	 * The parent form in which this component is embedded
-	 */
-	private ReceivesSignal receiver;
+	private int pageLength = SystemPropertyUtils.getDefaultListSelectRows();
 
 	/**
 	 * Button used to open the search dialog
@@ -137,7 +139,7 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 	private SortOrder<T> searchDialogSortOrder;
 
 	/**
-	 * the currently selected item in the table
+	 * the currently selected item
 	 */
 	private T selectedItem;
 
@@ -147,7 +149,7 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 	private BaseService<ID, T> service;
 
 	/**
-	 * The table for displaying the actual items
+	 * The grid for displaying the actual items
 	 */
 	private ModelBasedGrid<ID, T> grid;
 
@@ -167,33 +169,37 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 	private ModelBasedSearchDialog<ID, T> dialog;
 
 	/**
-	 * Whether the table is in view mode. If this is the case, editing is not*
+	 * Whether the component is in view mode. If this is the case, editing is not
 	 * allowed and no buttons will be displayed
 	 */
 	private boolean viewMode;
 
 	/**
+	 * Map with a binder for every row
+	 */
+	private Map<T, Binder<T>> binders = new HashMap<>();
+
+	/**
+	 * The attribute model
+	 */
+	private AttributeModel attributeModel;
+
+	/**
 	 * Constructor
 	 *
-	 * @param items       the entities to display
-	 * @param entityModel the entity model of the entities to display
-	 * @param viewMode    the view mode
-	 * @param formOptions the form options that determine how the table
+	 * @param entityModel    the entity model of the entities to display
+	 * @param attributeModel the attribute model of the attribute to display
+	 * @param viewMode       the view mode
+	 * @param formOptions    the form options that determine how the grid behaves
 	 */
-	public DetailsEditTable(Collection<T> items, EntityModel<T> entityModel, boolean viewMode,
+	public DetailsEditGrid(EntityModel<T> entityModel, AttributeModel attributeModel, boolean viewMode,
 			FormOptions formOptions) {
-		this.provider = new ListDataProvider<>(items);
+		this.attributeModel = attributeModel;
+		this.provider = new ListDataProvider<>(new ArrayList<>());
 		this.entityModel = entityModel;
 		this.messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
 		this.viewMode = viewMode;
 		this.formOptions = formOptions;
-	}
-
-	public void addEntity(T t) {
-		provider.getItems().add(t);
-		if (receiver != null) {
-			receiver.signalDetailsComponentValid(DetailsEditTable.this, VaadinUtils.allFixedTableFieldsValid(grid));
-		}
 	}
 
 	/**
@@ -228,12 +234,10 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 		addButton.addClickListener(event -> {
 			T t = createEntity();
 			provider.getItems().add(t);
-			grid.setDataProvider(provider);
-			if (receiver != null) {
-				receiver.signalDetailsComponentValid(DetailsEditTable.this, VaadinUtils.allFixedTableFieldsValid(grid));
-			}
+			provider.refreshAll();
+
 		});
-		addButton.setVisible(isTableEditEnabled() && !formOptions.isHideAddButton());
+		addButton.setVisible(isGridEditEnabled() && !formOptions.isHideAddButton());
 		buttonBar.addComponent(addButton);
 	}
 
@@ -248,7 +252,6 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 
 		constructAddButton(buttonBar);
 		constructSearchButton(buttonBar);
-
 		postProcessButtonBar(buttonBar);
 	}
 
@@ -257,14 +260,15 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 	 * needed
 	 *
 	 * @param entityModel    the entity model of the entity that is displayed in the
-	 *                       table
+	 *                       grid
 	 * @param attributeModel the attribute model of the attribute for which we are
 	 *                       constructing a field
 	 * @param viewMode       whether the form is in view mode
 	 * @return
 	 */
-	protected AbstractField<?> constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel,
+	protected AbstractComponent constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel,
 			boolean viewMode) {
+		// overwrite in subclasses
 		return null;
 	}
 
@@ -294,14 +298,14 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 
 				@Override
 				protected boolean doClose() {
-
-					// add the selected items to the table
+					// add the selected items to the grid
 					Collection<T> selected = getSelectedItems();
 					if (selected != null) {
 						afterItemsSelected(selected);
 						for (T t : selected) {
 							provider.getItems().add(t);
 						}
+						provider.refreshAll();
 					}
 					return true;
 				}
@@ -309,12 +313,12 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 			dialog.build();
 			ui.addWindow(dialog);
 		});
-		searchDialogButton.setVisible(!viewMode && formOptions.isDetailsTableSearchMode());
+		searchDialogButton.setVisible(!viewMode && formOptions.isDetailsGridSearchMode());
 		buttonBar.addComponent(searchDialogButton);
 	}
 
 	/**
-	 * Creates a new entity - override in subclass
+	 * Creates a new entity and wire it to the parent entity - override in subclass
 	 *
 	 * @return
 	 */
@@ -338,10 +342,6 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 
 	public FormOptions getFormOptions() {
 		return formOptions;
-	}
-
-	public ReceivesSignal getReceiver() {
-		return receiver;
 	}
 
 	public Button getSearchDialogButton() {
@@ -377,9 +377,28 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 	 */
 	@Override
 	protected Component initContent() {
-		grid = new ModelBasedGrid<>(provider, entityModel, false, !isViewMode(), true);
+		grid = new ModelBasedGrid<ID, T>(provider, entityModel, false, isGridEditEnabled(), true) {
 
-		// add a remove button directly in the table
+			private static final long serialVersionUID = 6143503902550597524L;
+
+			@Override
+			protected AbstractComponent constructCustomField(EntityModel<T> entityModel,
+					AttributeModel attributeModel) {
+				return DetailsEditGrid.this.constructCustomField(entityModel, attributeModel, false);
+			}
+
+			@Override
+			protected BindingBuilder<T, ?> doBind(T t, AbstractComponent field) {
+				if (!binders.containsKey(t)) {
+					binders.put(t, new BeanValidationBinder<>(entityModel.getEntityClass()));
+					binders.get(t).setBean(t);
+				}
+				Binder<T> binder = binders.get(t);
+				return binder.forField((HasValue<?>) field);
+			}
+		};
+
+		// add a remove button directly in the grid
 		if (!isViewMode() && formOptions.isShowRemoveButton()) {
 			final String removeMsg = messageService.getMessage("ocs.detail.remove", VaadinUtils.getLocale());
 			getGrid().addComponentColumn((ValueProvider<T, Component>) t -> {
@@ -387,90 +406,35 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 				remove.setIcon(VaadinIcons.TRASH);
 				remove.addClickListener(event -> {
 					provider.getItems().remove(t);
+					binders.remove(t);
 					provider.refreshAll();
 					// callback method so the entity can be removed from its
 					// parent
 					removeEntity((T) t);
-					if (receiver != null) {
-						receiver.signalDetailsComponentValid(DetailsEditTable.this,
-								VaadinUtils.allFixedTableFieldsValid(getGrid()));
-					}
 				});
 				return remove;
 			});
 		}
 
-		// set the custom field factory
-		// overwrite the field factory to deal with validation
-		// table.setTableFieldFactory(new ModelBasedFieldFactory<T>(entityModel,
-		// messageService, true, false) {
-		//
-		// @Override
-		// public AbstractField<?> createField(String propertyId, EntityModel<?>
-		// fieldEntityModel) {
-		// AttributeModel attributeModel = entityModel.getAttributeModel(propertyId);
-		//
-		// AbstractField<?> field = constructCustomField(entityModel, attributeModel,
-		// isTableEditEnabled());
-		// if (field == null) {
-		// Filter filter = fieldFilters == null ? null :
-		// fieldFilters.get(attributeModel.getName());
-		// if (filter != null) {
-		// // create a filtered combo box
-		// field = constructComboBox(attributeModel.getNestedEntityModel(),
-		// attributeModel, filter, false);
-		// } else {
-		// // delegate to the field factory
-		// field = super.createField(propertyId, fieldEntityModel);
-		// }
-		// }
-		//
-		// if (field != null) {
-		// // add a bean validator
-		// field.setEnabled(isTableEditEnabled());
-		// field.setSizeFull();
-		//
-		// // adds a value change listener (for updating the save
-		// // button)
-		// if (!viewMode) {
-		// field.addValueChangeListener(event -> {
-		// if (receiver != null) {
-		// receiver.signalDetailsComponentValid(DetailsEditTable.this,
-		// VaadinUtils.allFixedTableFieldsValid(table));
-		// }
-		// });
-		//
-		// postProcessTableField(propertyId, field);
-		// }
-		// }
-		// return field;
-		// }
-		// });
-
-		// table.setEditable(isTableEditEnabled());
-		// table.setMultiSelect(false);
-		// table.setPageLength(pageLength);
-		// table.setColumnCollapsingAllowed(false);
+		grid.setHeightByRows(pageLength);
+		grid.setSelectionMode(SelectionMode.SINGLE);
 
 		VerticalLayout layout = new DefaultVerticalLayout(false, true);
 		layout.addComponent(grid);
 
 		// add a change listener (to make sure the buttons are correctly
 		// enabled/disabled)
-//		grid.addSelectionListener(event -> {
-//			selectedItem = (T) grid.getSelectedItems().iterator().next();
-//			onSelect(selectedItem);
-//			checkButtonState(selectedItem);
-//		});
-//		grid.updateTableCaption();
+		grid.addSelectionListener(event -> {
+			selectedItem = (T) grid.getSelectedItems().iterator().next();
+			onSelect(selectedItem);
+			checkButtonState(selectedItem);
+		});
+		grid.getDataProvider().addDataProviderListener(event -> grid.updateCaption());
+		grid.updateCaption();
 
 		// add the buttons
 		constructButtonBar(layout);
 
-		// set the reference to the parent so the status of the save button can
-		// be set correctly
-		ReceivesSignal receiver = VaadinUtils.getParentOfClass(this, ReceivesSignal.class);
-		setReceiver(receiver);
 		postConstruct();
 		return layout;
 	}
@@ -480,8 +444,8 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 	 *
 	 * @return
 	 */
-	private boolean isTableEditEnabled() {
-		return !viewMode && !formOptions.isDetailsTableSearchMode() && !formOptions.isReadOnly();
+	private boolean isGridEditEnabled() {
+		return !viewMode && !formOptions.isDetailsGridSearchMode() && !formOptions.isReadOnly();
 	}
 
 	public boolean isViewMode() {
@@ -525,15 +489,6 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 	}
 
 	/**
-	 * 
-	 * @param propertyId
-	 * @param field
-	 */
-	public void postProcessTableField(String propertyId, AbstractField<?> field) {
-
-	}
-
-	/**
 	 * Registers a button that must be enabled/disabled after an item is selected.
 	 * use the "mustEnableButton" callback method to impose additional constraints
 	 * on when the button must be enabled
@@ -567,36 +522,8 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 		this.formOptions = formOptions;
 	}
 
-	// @Override
-	// protected void setInternalValue(Collection<T> newValue) {
-	// setItems(newValue);
-	// super.setInternalValue(newValue);
-	// }
-
-//	/**
-//	 * Refreshes the items that are displayed in the table
-//	 *
-//	 * @param items the new set of items to be displayed
-//	 */
-//	public void setItems(Collection<T> items) {
-//
-//
-//	}
-
 	public void setPageLength(int pageLength) {
 		this.pageLength = pageLength;
-	}
-
-	/**
-	 * This method is called to store a reference to the parent form
-	 *
-	 * @param parentForm
-	 */
-	private void setReceiver(ReceivesSignal receiver) {
-		this.receiver = receiver;
-		if (receiver != null) {
-			receiver.signalDetailsComponentValid(this, VaadinUtils.allFixedTableFieldsValid(grid));
-		}
 	}
 
 	public void setSearchDialogEntityModel(EntityModel<T> searchDialogEntityModel) {
@@ -605,9 +532,9 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 
 	public void setSearchDialogFilters(List<SerializablePredicate<T>> searchDialogFilters) {
 		this.searchDialogFilters = searchDialogFilters;
-//		if (dialog != null) {
-//			dialog.setFilters(searchDialogFilters);
-//		}
+		if (dialog != null) {
+			dialog.setFilters(searchDialogFilters);
+		}
 	}
 
 	public void setSearchDialogSortOrder(SortOrder<T> searchDialogSortOrder) {
@@ -625,33 +552,23 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 
 	@Override
 	public void setValue(Collection<T> newFieldValue) {
-		// setItems(newFieldValue);
 		super.setValue(newFieldValue);
 	}
 
 	@Override
 	public boolean validateAllFields() {
 		boolean error = false;
-		Iterator<Component> component = grid.iterator();
-		while (component.hasNext()) {
-			Component next = component.next();
-//			try {
-//				if (next instanceof AbstractField) {
-//					//((AbstractField<?>) next).validate();
-//					((AbstractField<?>) next).setComponentError(null);
-//				}
-//			} catch (InvalidValueException ex) {
-//				error = true;
-//				((AbstractField<?>) next).setComponentError(new UserError(ex.getLocalizedMessage()));
-//			}
-
+		for (Binder<T> binder : binders.values()) {
+			BinderValidationStatus<T> status = binder.validate();
+			error |= !status.isOk();
 		}
 		return error;
 	}
 
 	@Override
 	public Collection<T> getValue() {
-		return provider == null ? new ArrayList<>() : provider.getItems();
+		return provider == null ? new ArrayList<>()
+				: ConvertUtil.convertCollection(provider.getItems(), attributeModel);
 	}
 
 	@Override
@@ -665,8 +582,10 @@ public abstract class DetailsEditTable<ID extends Serializable, T extends Abstra
 		if (provider != null) {
 			provider.getItems().clear();
 			provider.getItems().addAll(list);
-			grid.setDataProvider(provider);
+			provider.refreshAll();
+			binders.clear();
 		}
+
 		// clear the selection
 		setSelectedItem(null);
 	}

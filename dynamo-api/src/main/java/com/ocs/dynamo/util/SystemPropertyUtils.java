@@ -36,17 +36,16 @@ public final class SystemPropertyUtils {
 	/**
 	 * 
 	 * 
-	 * @return whether export to Excel or CSV is allowed for all tables. If set
-	 *         to <code>false</code> it will disable exporting for all tables.
-	 *         You can selectively enable it for somet tables using the
-	 *         FormOptions object
+	 * @return whether export to Excel or CSV is allowed for all tables. If set to
+	 *         <code>false</code> it will disable exporting for all tables. You can
+	 *         selectively enable it for somet tables using the FormOptions object
 	 */
 	public static boolean allowTableExport() {
 		return Boolean.getBoolean(DynamoConstants.SP_ALLOW_TABLE_EXPORT);
 	}
 
 	/**
-	 *Returns the default caption format
+	 * Returns the default caption format
 	 * 
 	 * @return the default caption format
 	 */
@@ -179,15 +178,6 @@ public final class SystemPropertyUtils {
 	 */
 	public static String getDefaultTrueRepresentation() {
 		return System.getProperty(DynamoConstants.SP_DEFAULT_TRUE_REPRESENTATION, DEFAULT_TRUE_REPRESENTATION);
-	}
-
-	/**
-	 * 
-	 * @return the default validation mode
-	 */
-	public static ValidationMode getDefaultValidationMode() {
-		return ValidationMode
-				.valueOf(System.getProperty(DynamoConstants.SP_DEFAULT_VALIDATION_MODE, "VALIDATE_DIRECTLY"));
 	}
 
 	/**

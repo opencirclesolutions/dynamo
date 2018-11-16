@@ -36,7 +36,6 @@ import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.ocs.dynamo.utils.StringUtils;
 import com.vaadin.data.provider.SortOrder;
 import com.vaadin.icons.VaadinIcons;
-import com.vaadin.server.ErrorMessage;
 import com.vaadin.server.SerializablePredicate;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -278,7 +277,7 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 		if (clearAllowed) {
 			clearButton = new Button(getMessageService().getMessage("ocs.clear", VaadinUtils.getLocale()));
 			clearButton.setIcon(VaadinIcons.ERASER);
-			clearButton.addClickListener(event -> setValue(null));
+			clearButton.addClickListener(event -> clearValue());
 			bar.addComponent(clearButton);
 		}
 
@@ -363,7 +362,18 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 		this.pageLength = pageLength;
 	}
 
+	public void clearValue() {
+		if (Set.class.isAssignableFrom(getAttributeModel().getType())) {
+			setValue(Sets.newHashSet());
+		} else if (List.class.isAssignableFrom(getAttributeModel().getType())) {
+			setValue(Lists.newArrayList());
+		} else {
+			setValue(null);
+		}
+	}
+
 	@Override
+	@SuppressWarnings("unchecked")
 	public void setValue(Object value) {
 		if (value == null) {
 			super.setValue(null);
@@ -389,14 +399,6 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 			label.setCaptionAsHtml(true);
 			String caption = getLabel(newValue);
 			label.setCaption(caption.replaceAll(",", StringUtils.HTML_LINE_BREAK));
-		}
-	}
-
-	@Override
-	public void setComponentError(ErrorMessage componentError) {
-		if (label != null) {
-			label.setComponentError(componentError);
-			selectButton.setComponentError(componentError);
 		}
 	}
 

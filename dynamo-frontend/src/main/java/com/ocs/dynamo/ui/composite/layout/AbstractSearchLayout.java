@@ -25,7 +25,7 @@ import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.composite.form.AbstractModelBasedSearchForm;
 import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
-import com.ocs.dynamo.ui.composite.table.ServiceBasedGridWrapper;
+import com.ocs.dynamo.ui.composite.grid.ServiceBasedGridWrapper;
 import com.ocs.dynamo.ui.composite.type.ScreenMode;
 import com.ocs.dynamo.ui.container.QueryType;
 import com.ocs.dynamo.ui.utils.FormatUtils;
@@ -568,9 +568,8 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	 */
 	public final void constructSearchLayout() {
 		// construct table and set properties
-		// getGridWrapper().getGrid().setPageLength(getPageLength());
-
 		disableGridSorting();
+		getGridWrapper().getGrid().setHeightByRows(getPageLength());
 		getGridWrapper().getGrid().setSelectionMode(isMultiSelect() ? SelectionMode.MULTI : SelectionMode.SINGLE);
 
 		// add a listener to respond to the selection of an item

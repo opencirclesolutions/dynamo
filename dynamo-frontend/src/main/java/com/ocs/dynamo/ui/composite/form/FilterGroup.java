@@ -20,7 +20,6 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 
 import com.ocs.dynamo.domain.model.AttributeModel;
-import com.ocs.dynamo.exception.OCSValidationException;
 import com.ocs.dynamo.filter.AndPredicate;
 import com.ocs.dynamo.filter.EqualsPredicate;
 import com.ocs.dynamo.filter.GreaterOrEqualPredicate;
@@ -32,10 +31,8 @@ import com.ocs.dynamo.ui.composite.form.ModelBasedSearchForm.FilterType;
 import com.ocs.dynamo.ui.utils.ConvertUtil;
 import com.vaadin.data.HasValue;
 import com.vaadin.data.Result;
-import com.vaadin.server.ErrorMessage;
 import com.vaadin.server.SerializablePredicate;
 import com.vaadin.server.UserError;
-import com.vaadin.shared.ui.ErrorLevel;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Slider;
@@ -101,7 +98,7 @@ public class FilterGroup<T> {
 		// respond to a change of the main field
 		if (field instanceof HasValue) {
 			((HasValue<?>) field).addValueChangeListener(event -> {
-				Result<?> result = ConvertUtil.convertSearchValue(FilterGroup.this.attributeModel, event.getValue());
+				Result<?> result = ConvertUtil.convertToModelValue(FilterGroup.this.attributeModel, event.getValue());
 				result.ifError(r -> field.setComponentError(new UserError(r)));
 				result.ifOk(r -> FilterGroup.this.valueChange(FilterGroup.this.field, r));
 			});
@@ -110,7 +107,7 @@ public class FilterGroup<T> {
 		// respond to a change of the auxiliary field
 		if (auxField != null && auxField instanceof HasValue) {
 			((HasValue<?>) auxField).addValueChangeListener(event -> {
-				Result<?> result = ConvertUtil.convertSearchValue(FilterGroup.this.attributeModel, event.getValue());
+				Result<?> result = ConvertUtil.convertToModelValue(FilterGroup.this.attributeModel, event.getValue());
 				result.ifError(r -> auxField.setComponentError(new UserError(r)));
 				result.ifOk(r -> FilterGroup.this.valueChange(FilterGroup.this.auxField, r));
 

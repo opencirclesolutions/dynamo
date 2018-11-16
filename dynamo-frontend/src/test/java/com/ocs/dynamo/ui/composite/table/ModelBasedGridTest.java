@@ -22,6 +22,8 @@ import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.service.TestEntityService;
 import com.ocs.dynamo.test.BaseMockitoTest;
 import com.ocs.dynamo.test.MockUtil;
+import com.ocs.dynamo.ui.composite.grid.FixedGridWrapper;
+import com.ocs.dynamo.ui.composite.grid.ModelBasedGrid;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.ui.Grid;
 import junitx.util.PrivateAccessor;

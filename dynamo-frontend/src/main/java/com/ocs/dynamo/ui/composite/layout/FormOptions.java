@@ -18,7 +18,6 @@ import java.io.Serializable;
 import com.ocs.dynamo.ui.composite.type.AttributeGroupMode;
 import com.ocs.dynamo.ui.composite.type.ScreenMode;
 import com.ocs.dynamo.util.SystemPropertyUtils;
-import com.ocs.dynamo.util.ValidationMode;
 
 /**
  * Parameter object that can be passed along when creating a page - this object
@@ -57,7 +56,7 @@ public class FormOptions implements Serializable {
 	/**
 	 * Whether to display a button for opening a search dialog
 	 */
-	private boolean detailsTableSearchMode;
+	private boolean detailsGridSearchMode;
 
 	/**
 	 * Whether you can navigate to a detail screen by double clicking on a row in a
@@ -176,17 +175,12 @@ public class FormOptions implements Serializable {
 	 */
 	private boolean tableExportAllowed = SystemPropertyUtils.allowTableExport();
 
-	/**
-	 * The form validation mode
-	 */
-	private ValidationMode validationMode = SystemPropertyUtils.getDefaultValidationMode();
-
 	public FormOptions createCopy() {
 		FormOptions fo = new FormOptions();
 		fo.setAttributeGroupMode(getAttributeGroupMode());
 		fo.setComplexDetailsMode(isComplexDetailsMode());
 		fo.setConfirmClear(isConfirmClear());
-		fo.setDetailsTableSearchMode(isDetailsTableSearchMode());
+		fo.setDetailsGridSearchMode(isDetailsGridSearchMode());
 		fo.setDoubleClickSelectAllowed(isDoubleClickSelectAllowed());
 		fo.setEditAllowed(isEditAllowed());
 		fo.setHideAddButton(isHideAddButton());
@@ -207,7 +201,6 @@ public class FormOptions implements Serializable {
 		fo.setShowToggleButton(isShowToggleButton());
 		fo.setTableExportAllowed(isTableExportAllowed());
 		fo.setFormNested(isFormNested());
-		fo.setValidationMode(getValidationMode());
 		fo.setConfirmSave(isConfirmSave());
 		return fo;
 	}
@@ -218,10 +211,6 @@ public class FormOptions implements Serializable {
 
 	public ScreenMode getScreenMode() {
 		return screenMode;
-	}
-
-	public ValidationMode getValidationMode() {
-		return validationMode;
 	}
 
 	public boolean isComplexDetailsMode() {
@@ -236,8 +225,8 @@ public class FormOptions implements Serializable {
 		return confirmSave;
 	}
 
-	public boolean isDetailsTableSearchMode() {
-		return detailsTableSearchMode;
+	public boolean isDetailsGridSearchMode() {
+		return detailsGridSearchMode;
 	}
 
 	public boolean isDoubleClickSelectAllowed() {
@@ -340,8 +329,8 @@ public class FormOptions implements Serializable {
 		return this;
 	}
 
-	public FormOptions setDetailsTableSearchMode(boolean detailsTableSearchMode) {
-		this.detailsTableSearchMode = detailsTableSearchMode;
+	public FormOptions setDetailsGridSearchMode(boolean detailsGridSearchMode) {
+		this.detailsGridSearchMode = detailsGridSearchMode;
 		return this;
 	}
 
@@ -471,11 +460,6 @@ public class FormOptions implements Serializable {
 
 	public FormOptions setTableExportAllowed(boolean tableExportAllowed) {
 		this.tableExportAllowed = tableExportAllowed;
-		return this;
-	}
-
-	public FormOptions setValidationMode(ValidationMode validationMode) {
-		this.validationMode = validationMode;
 		return this;
 	}
 

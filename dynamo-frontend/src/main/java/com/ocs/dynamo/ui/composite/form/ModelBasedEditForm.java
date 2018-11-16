@@ -57,6 +57,7 @@ import com.ocs.dynamo.ui.component.CollapsiblePanel;
 import com.ocs.dynamo.ui.component.DefaultEmbedded;
 import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
+import com.ocs.dynamo.ui.component.EntityLookupField;
 import com.ocs.dynamo.ui.component.QuickAddListSelect;
 import com.ocs.dynamo.ui.component.URLField;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
@@ -69,10 +70,10 @@ import com.ocs.dynamo.ui.converter.LongToDoubleConverter;
 import com.ocs.dynamo.ui.converter.ZonedDateTimeToLocalDateTimeConverter;
 import com.ocs.dynamo.ui.utils.EntityModelUtil;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
+import com.ocs.dynamo.ui.validator.CollectionSizeValidator;
 import com.ocs.dynamo.ui.validator.EmailValidator;
 import com.ocs.dynamo.ui.validator.URLValidator;
 import com.ocs.dynamo.util.SystemPropertyUtils;
-import com.ocs.dynamo.util.ValidationMode;
 import com.ocs.dynamo.utils.ClassUtils;
 import com.ocs.dynamo.utils.NumberUtils;
 import com.vaadin.data.BeanValidationBinder;
@@ -451,7 +452,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 					previews.get(isViewMode()).put(attributeModel, c);
 				} else if (AttributeType.DETAIL.equals(type) && attributeModel.isComplexEditable()) {
 					AbstractComponent f = constructCustomField(entityModel, attributeModel, viewMode);
-					if (f instanceof DetailsEditTable) {
+					if (f instanceof DetailsEditGrid) {
 						// a details edit table or details edit layout must always be displayed
 						constructField(parent, entityModel, attributeModel, true, tabIndex, sameRow);
 					} else {
@@ -713,8 +714,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			// no button bar needed, but we do need value change listeners
 			groups.get(isViewMode()).getFields().forEach(f -> {
 				f.addValueChangeListener(event -> {
-					if (receiver != null
-							&& ValidationMode.DISABLE_BUTTON.equals(getFormOptions().getValidationMode())) {
+					if (receiver != null) {
 						receiver.signalDetailsComponentValid(this, this.isValid());
 					}
 					// always clear validation errors
@@ -762,17 +762,13 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	private void checkSaveButtonState() {
 		for (Button saveButton : buttons.get(isViewMode())) {
 			if (SAVE_BUTTON_DATA.equals(saveButton.getData())) {
-				if (ValidationMode.DISABLE_BUTTON.equals(getFormOptions().getValidationMode())) {
-					saveButton.setEnabled(isValid());
-				} else {
-					saveButton.setEnabled(true);
-				}
+				saveButton.setEnabled(true);
 			}
 		}
 	}
 
 	/**
-	 * Check if the form isvalid *
+	 * Check if the form is valid
 	 *
 	 * @return
 	 */
@@ -1002,7 +998,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 			// TODO: maybe move this to field factory as well?
 			setConverters(builder, attributeModel);
-			
+
 			builder.bind(attributeModel.getPath());
 
 			if (!attributeModel.getGroupTogetherWith().isEmpty()) {
@@ -1105,6 +1101,9 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		} else if (builder.getField() instanceof DateTimeField && ZonedDateTime.class.equals(am.getType())) {
 			BindingBuilder<T, LocalDateTime> sBuilder = (BindingBuilder<T, LocalDateTime>) builder;
 			sBuilder.withConverter(new ZonedDateTimeToLocalDateTimeConverter(ZoneId.systemDefault()));
+		} else if (builder.getField() instanceof EntityLookupField && Collection.class.isAssignableFrom(am.getType())) {
+			BindingBuilder<T, Collection<?>> sBuilder = (BindingBuilder<T, Collection<?>>) builder;
+			sBuilder.withValidator(new CollectionSizeValidator(message("ocs.collection.not.empty")));
 		}
 
 	}
@@ -1757,7 +1756,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		setViewMode(getFormOptions().isOpenInViewMode() && entity.getId() != null, checkIterationButtons);
 
 		// recreate the group
-		// BeanItem<T> beanItem = new BeanItem<>(entity);
 		groups.get(isViewMode()).setBean(entity);
 
 		// "rebuild" so that the correct layout is displayed
@@ -1930,12 +1928,10 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	 */
 	@Override
 	public void signalDetailsComponentValid(SignalsParent component, boolean valid) {
-		if (ValidationMode.DISABLE_BUTTON.equals(getFormOptions().getValidationMode())) {
-			detailComponentsValid.put(component, valid);
-			checkSaveButtonState();
-			if (receiver != null) {
-				receiver.signalDetailsComponentValid(this, isValid());
-			}
+		detailComponentsValid.put(component, valid);
+		checkSaveButtonState();
+		if (receiver != null) {
+			receiver.signalDetailsComponentValid(this, isValid());
 		}
 	}
 
@@ -2012,20 +2008,17 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	@Override
 	public boolean validateAllFields() {
 		boolean error = false;
-		if (ValidationMode.VALIDATE_DIRECTLY.equals(getFormOptions().getValidationMode())) {
 
-			BinderValidationStatus<T> status = groups.get(isViewMode()).validate();
-			error = !status.isOk();
+		BinderValidationStatus<T> status = groups.get(isViewMode()).validate();
+		error = !status.isOk();
 
-			// validate nested form and components
-			error |= groups.get(isViewMode()).getFields().anyMatch(f -> {
-				if (f instanceof SignalsParent) {
-					return ((SignalsParent) f).validateAllFields();
-				}
-				return false;
-			});
-
-		}
+		// validate nested form and components
+		error |= groups.get(isViewMode()).getFields().anyMatch(f -> {
+			if (f instanceof SignalsParent) {
+				return ((SignalsParent) f).validateAllFields();
+			}
+			return false;
+		});
 		return error;
 	}
 

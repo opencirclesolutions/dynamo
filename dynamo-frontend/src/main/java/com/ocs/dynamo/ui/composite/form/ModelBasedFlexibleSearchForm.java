@@ -38,7 +38,9 @@ import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.utils.ConvertUtil;
 import com.ocs.dynamo.utils.DateUtils;
 import com.vaadin.data.HasValue;
+import com.vaadin.data.Result;
 import com.vaadin.server.SerializablePredicate;
+import com.vaadin.server.UserError;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
@@ -197,6 +199,80 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 			noFilterLabel = new Label(message("ocs.select.filter"));
 			noFilterLabel.setCaption("");
 			layout.addComponent(noFilterLabel);
+		}
+
+		private SerializablePredicate<T> constructFilter(HasValue<?> field, Object value) {
+			SerializablePredicate<T> filter = null;
+
+			switch (this.filterType) {
+			case BETWEEN:
+				// construct new filter for the selected field (or clear it)
+				if (field == this.auxValueComponent) {
+					// filter for the auxiliary field
+					if (value != null) {
+						auxFilter = new LessOrEqualPredicate<>(am.getPath(), value);
+					} else {
+						auxFilter = null;
+					}
+				} else {
+					// filter for the main field
+					if (value != null) {
+						mainFilter = new GreaterOrEqualPredicate<>(am.getPath(), value);
+					} else {
+						mainFilter = null;
+					}
+				}
+
+				// construct the aggregate filter
+				if (auxFilter != null && mainFilter != null) {
+					filter = new BetweenPredicate<>(am.getPath(),
+							(Comparable<?>) ((GreaterOrEqualPredicate<?>) mainFilter).getValue(),
+							(Comparable<?>) ((LessOrEqualPredicate<?>) auxFilter).getValue());
+				} else if (auxFilter != null) {
+					filter = auxFilter;
+				} else {
+					filter = mainFilter;
+				}
+
+				break;
+			case LESS_OR_EQUAL:
+				filter = new LessOrEqualPredicate<>(am.getPath(), value);
+				break;
+			case LESS_THAN:
+				filter = new LessThanPredicate<>(am.getPath(), value);
+				break;
+			case GREATER_OR_EQUAL:
+				filter = new GreaterOrEqualPredicate<>(am.getPath(), value);
+				break;
+			case GREATER_THAN:
+				filter = new GreaterThanPredicate<>(am.getPath(), value);
+				break;
+			case CONTAINS:
+				// like filter for comparing string fields
+				filter = createStringFilter(value, false);
+				break;
+			case NOT_EQUAL:
+				filter = new NotPredicate<>(new EqualsPredicate<>(am.getPath(), value));
+				break;
+			case STARTS_WITH:
+				// like filter for comparing string fields
+				filter = createStringFilter(value, true);
+				break;
+			case NOT_CONTAINS:
+				filter = new NotPredicate<>(createStringFilter(value, false));
+				break;
+			case NOT_STARTS_WITH:
+				filter = new NotPredicate<>(createStringFilter(value, true));
+				break;
+			default:
+				// by default, simply use an "equals" predicate
+				if (value != null && !(value instanceof Collection && ((Collection<?>) value).isEmpty())) {
+					filter = new EqualsPredicate<>(am.getPath(), value);
+				}
+				break;
+			}
+
+			return filter;
 		}
 
 		/**
@@ -403,7 +479,6 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 			} catch (Exception ex) {
 				// do nothing
 			}
-
 		}
 
 		/**
@@ -416,84 +491,17 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 		private void handleValueChange(HasValue<?> field, Object value) {
 			// store the current filter
 			SerializablePredicate<T> oldFilter = fieldFilter;
-			SerializablePredicate<T> filter = null;
-
 			// convert the value to its actual representation
-			value = ConvertUtil.convertSearchValue(am, value);
-
-			switch (this.filterType) {
-			case BETWEEN:
-				// construct new filter for the selected field (or clear it)
-				if (field == this.auxValueComponent) {
-					// filter for the auxiliary field
-					if (value != null) {
-						auxFilter = new LessOrEqualPredicate<>(am.getPath(), value);
-					} else {
-						auxFilter = null;
-					}
-				} else {
-					// filter for the main field
-					if (value != null) {
-						mainFilter = new GreaterOrEqualPredicate<>(am.getPath(), value);
-					} else {
-						mainFilter = null;
-					}
-				}
-
-				// construct the aggregate filter
-				if (auxFilter != null && mainFilter != null) {
-					filter = new BetweenPredicate<>(am.getPath(),
-							(Comparable<?>) ((GreaterOrEqualPredicate<?>) mainFilter).getValue(),
-							(Comparable<?>) ((LessOrEqualPredicate<?>) auxFilter).getValue());
-				} else if (auxFilter != null) {
-					filter = auxFilter;
-				} else {
-					filter = mainFilter;
-				}
-
-				break;
-			case LESS_OR_EQUAL:
-				filter = new LessOrEqualPredicate<>(am.getPath(), value);
-				break;
-			case LESS_THAN:
-				filter = new LessThanPredicate<>(am.getPath(), value);
-				break;
-			case GREATER_OR_EQUAL:
-				filter = new GreaterOrEqualPredicate<>(am.getPath(), value);
-				break;
-			case GREATER_THAN:
-				filter = new GreaterThanPredicate<>(am.getPath(), value);
-				break;
-			case CONTAINS:
-				// like filter for comparing string fields
-				filter = createStringFilter(value, false);
-				break;
-			case NOT_EQUAL:
-				filter = new NotPredicate<>(new EqualsPredicate<>(am.getPath(), value));
-				break;
-			case STARTS_WITH:
-				// like filter for comparing string fields
-				filter = createStringFilter(value, true);
-				break;
-			case NOT_CONTAINS:
-				filter = new NotPredicate<>(createStringFilter(value, false));
-				break;
-			case NOT_STARTS_WITH:
-				filter = new NotPredicate<>(createStringFilter(value, true));
-				break;
-			default:
-				// by default, simply use an "equals" predicate
-				if (value != null && !(value instanceof Collection && ((Collection<?>) value).isEmpty())) {
-					filter = new EqualsPredicate<>(am.getPath(), value);
-				}
-				break;
-			}
-
-			// store the current filter
-			this.fieldFilter = filter;
-
-			// propagate the change (this will trigger the actual search action)
-			listener.onFilterChange(new FilterChangeEvent<>(am.getPath(), oldFilter, filter));
+			Result<?> result = ConvertUtil.convertToModelValue(am, value);
+			result.ifOk(r -> {
+				((AbstractComponent) field).setComponentError(null);
+				SerializablePredicate<T> filter = constructFilter(field, value);
+				// store the current filter
+				this.fieldFilter = filter;
+				// propagate the change (this will trigger the actual search action)
+				listener.onFilterChange(new FilterChangeEvent<>(am.getPath(), oldFilter, filter));
+			});
+			result.ifError(r -> ((AbstractComponent) field).setComponentError(new UserError(r)));
 		}
 
 		/**
@@ -506,9 +514,9 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 				FlexibleFilterDefinition definition = new FlexibleFilterDefinition();
 				definition.setFlexibleFilterType(filterType);
 				definition.setAttributeModel(am);
-				definition.setValue(ConvertUtil.convertSearchValue(am, mainValueComponent.getValue()));
+				definition.setValue(ConvertUtil.convertToModelValue(am, mainValueComponent.getValue()));
 				if (auxValueComponent != null) {
-					definition.setValueTo(ConvertUtil.convertSearchValue(am, auxValueComponent.getValue()));
+					definition.setValueTo(ConvertUtil.convertToModelValue(am, auxValueComponent.getValue()));
 				}
 				return definition;
 			}

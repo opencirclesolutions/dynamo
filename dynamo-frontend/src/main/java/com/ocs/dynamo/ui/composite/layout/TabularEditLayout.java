@@ -13,13 +13,17 @@
  */
 package com.ocs.dynamo.ui.composite.layout;
 
+import java.io.Serializable;
+import java.util.Collection;
+
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
+import com.ocs.dynamo.exception.OCSValidationException;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
-import com.ocs.dynamo.ui.composite.table.BaseGridWrapper;
-import com.ocs.dynamo.ui.composite.table.ServiceBasedGridWrapper;
+import com.ocs.dynamo.ui.composite.grid.BaseGridWrapper;
+import com.ocs.dynamo.ui.composite.grid.ServiceBasedGridWrapper;
 import com.ocs.dynamo.ui.container.QueryType;
 import com.ocs.dynamo.ui.utils.FormatUtils;
 import com.vaadin.data.ValueProvider;
@@ -31,20 +35,17 @@ import com.vaadin.server.SerializablePredicate;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Grid;
+import com.vaadin.ui.Grid.Column;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
-
-import java.io.Serializable;
-import java.util.Collection;
 
 /**
  * A page for editing items directly in a table - this is built around the lazy
  * query container
  *
  * @author bas.rutten
- * @param <ID>
- *            type of the primary key
- * @param <T>
- *            type of the entity
+ * @param <ID> type of the primary key
+ * @param <T> type of the entity
  */
 @SuppressWarnings("serial")
 public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity<ID>>
@@ -80,7 +81,7 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 	/**
 	 * The icon to use inside the remove button
 	 */
-	private Resource removeIcon;
+	private Resource removeIcon = VaadinIcons.TRASH;
 
 	/**
 	 * The message to display inside the "remove" button
@@ -95,19 +96,14 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 	/**
 	 * Constructor
 	 *
-	 * @param service
-	 *            the service used to query the database
-	 * @param entityModel
-	 *            the entity model the entity model used to build the table
-	 * @param formOptions
-	 *            the form options
-	 * @param sortOrder
-	 *            the first sort order
-	 * @param joins
-	 *            the desired joins
+	 * @param service     the service used to query the database
+	 * @param entityModel the entity model the entity model used to build the table
+	 * @param formOptions the form options
+	 * @param sortOrder   the first sort order
+	 * @param joins       the desired joins
 	 */
 	public TabularEditLayout(BaseService<ID, T> service, EntityModel<T> entityModel, FormOptions formOptions,
-			SortOrder sortOrder, FetchJoinInformation... joins) {
+			SortOrder<?> sortOrder, FetchJoinInformation... joins) {
 		super(service, entityModel, formOptions, sortOrder, joins);
 	}
 
@@ -120,13 +116,12 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 	/**
 	 * Lazily builds the actual layout
 	 */
-	@SuppressWarnings("unchecked")
 	@Override
 	public void build() {
 		this.filter = constructFilter();
 		if (mainLayout == null) {
 			setViewmode(false);
-			//setViewmode(!isEditAllowed() || getFormOptions().isOpenInViewMode());
+			// setViewmode(!isEditAllowed() || getFormOptions().isOpenInViewMode());
 			mainLayout = new DefaultVerticalLayout(true, true);
 
 			constructTable();
@@ -135,18 +130,21 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 			if (getFormOptions().isShowRemoveButton()) {
 
 				final String defaultMsg = message("ocs.remove");
-				getGridWrapper().getGrid().addComponentColumn(
-						(ValueProvider<T, Component>) t -> isViewmode() ? null : new RemoveButton(removeMessage, removeIcon) {
-							@Override
-							protected void doDelete() {
-								doRemove(t);
-							}
+				Column<T, Component> removeColumn = getGridWrapper().getGrid()
+						.addComponentColumn((ValueProvider<T, Component>) t -> isViewmode() ? null
+								: new RemoveButton(removeMessage, removeIcon) {
+									@Override
+									protected void doDelete() {
+										doRemove(t);
+									}
 
-							@Override
-							protected String getItemToDelete() {
-								return FormatUtils.formatEntity(getEntityModel(), t);
-							}
-						});
+									@Override
+									protected String getItemToDelete() {
+										return FormatUtils.formatEntity(getEntityModel(), t);
+									}
+								});
+				removeColumn.setCaption(defaultMsg);
+
 			}
 			mainLayout.addComponent(getButtonBar());
 
@@ -185,12 +183,17 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 	 */
 	protected void constructTable() {
 
-		final BaseGridWrapper grid = getGridWrapper();
+		final BaseGridWrapper<ID, T> grid = getGridWrapper();
 
 		// make sure the table can be edited
 		grid.getGrid().getEditor().setEnabled(!isViewmode());
-		grid.getGrid().getEditor().addSaveListener(event ->
-				getService().save((T)event.getBean()));
+		grid.getGrid().getEditor().addSaveListener(event -> {
+			try {
+				getService().save((T) event.getBean());
+			} catch (OCSValidationException ex) {
+				Notification.show(ex.getMessage(), Notification.Type.ERROR_MESSAGE);
+			}
+		});
 		// make sure changes are not persisted right away
 		grid.getGrid().getEditor().setBuffered(true);
 		grid.getGrid().setSelectionMode(Grid.SelectionMode.SINGLE);
@@ -206,9 +209,8 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 
 	@Override
 	protected BaseGridWrapper<ID, T> constructTableWrapper() {
-		ServiceBasedGridWrapper<ID, T> tableWrapper = new ServiceBasedGridWrapper<ID,T>(getService(),
-				getEntityModel(), QueryType.PAGING, filter, getSortOrders(), getFormOptions().isTableExportAllowed(), true,
-				getJoins()){
+		ServiceBasedGridWrapper<ID, T> tableWrapper = new ServiceBasedGridWrapper<ID, T>(getService(), getEntityModel(),
+				QueryType.PAGING, filter, getSortOrders(), getFormOptions().isTableExportAllowed(), true, getJoins()) {
 			@Override
 			protected void doConstructDataProvider(final DataProvider<T, SerializablePredicate<T>> provider) {
 				TabularEditLayout.this.doConstructDataProvider(provider);
@@ -234,8 +236,7 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 	 * Method that is called after a new row with a fresh entity is added to the
 	 * table. Use this method to perform initialization
 	 *
-	 * @param entity
-	 *            the newly created entity that has to be initialized
+	 * @param entity the newly created entity that has to be initialized
 	 * @return the modified entity
 	 */
 	protected T createEntity(T entity) {
@@ -251,8 +252,8 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 	 * Method that is called to remove an item
 	 */
 	protected void doRemove(T t) {
-		//getTableWrapper().getTable().removeItem(t.getId());
-		//getTableWrapper().getTable().commit();
+		getService().delete(t);
+		getGridWrapper().reloadDataProvider();
 	}
 
 	public Button getAddButton() {
@@ -266,8 +267,7 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 	/**
 	 * Retrieves an entity with a certain ID from the lazy query container
 	 *
-	 * @param id
-	 *            the ID of the entity
+	 * @param id the ID of the entity
 	 * @return
 	 */
 	protected T getEntityFromTable(ID id) {

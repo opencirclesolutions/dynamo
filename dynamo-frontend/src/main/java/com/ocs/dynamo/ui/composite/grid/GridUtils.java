@@ -11,7 +11,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-package com.ocs.dynamo.ui.composite.table;
+package com.ocs.dynamo.ui.composite.grid;
 
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.ui.Grid;

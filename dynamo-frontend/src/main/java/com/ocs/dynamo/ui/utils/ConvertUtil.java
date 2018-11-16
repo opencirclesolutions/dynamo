@@ -18,13 +18,20 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.Collection;
+import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
+import com.google.common.collect.Lists;
+import com.google.gwt.thirdparty.guava.common.collect.Sets;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.NumberSelectMode;
 import com.ocs.dynamo.ui.converter.BigDecimalConverter;
 import com.ocs.dynamo.ui.converter.ConverterFactory;
+import com.ocs.dynamo.ui.converter.IntToDoubleConverter;
 import com.ocs.dynamo.ui.converter.LocalDateWeekCodeConverter;
+import com.ocs.dynamo.ui.converter.LongToDoubleConverter;
 import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.ocs.dynamo.utils.NumberUtils;
 import com.vaadin.data.Result;
@@ -83,7 +90,7 @@ public final class ConvertUtil {
 	 * @param input          the search value to convert
 	 * @return
 	 */
-	public static Result<? extends Object> convertSearchValue(AttributeModel am, Object value) {
+	public static Result<? extends Object> convertToModelValue(AttributeModel am, Object value) {
 		if (value == null) {
 			return Result.ok(null);
 		}
@@ -96,14 +103,18 @@ public final class ConvertUtil {
 			Result<LocalDate> locDate = converter.convertToModel((String) value, new ValueContext(locale));
 			return locDate;
 		} else if (NumberUtils.isInteger(am.getType())) {
-			if (NumberSelectMode.TEXTFIELD.equals(am.getNumberSelectMode())) {
+			if (value instanceof String) {
 				StringToIntegerConverter converter = ConverterFactory.createIntegerConverter(grouping, false);
 				return converter.convertToModel((String) value, new ValueContext(locale));
+			} else if (value instanceof Double) {
+				return new IntToDoubleConverter().convertToModel((Double) value, new ValueContext(locale));
 			}
 		} else if (NumberUtils.isLong(am.getType())) {
-			if (NumberSelectMode.TEXTFIELD.equals(am.getNumberSelectMode())) {
+			if (value instanceof String) {
 				StringToLongConverter converter = ConverterFactory.createLongConverter(grouping, false);
 				return converter.convertToModel((String) value, new ValueContext(locale));
+			} else if (value instanceof Double) {
+				return new LongToDoubleConverter().convertToModel((Double) value, new ValueContext(locale));
 			}
 		} else if (BigDecimal.class.equals(am.getType())) {
 			if (NumberSelectMode.TEXTFIELD.equals(am.getNumberSelectMode())) {
@@ -116,5 +127,19 @@ public final class ConvertUtil {
 			return Result.ok(ldt.atZone(ZoneId.systemDefault()));
 		}
 		return Result.ok(value);
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T> Collection<T> convertCollection(Object value, AttributeModel am) {
+		if (value == null) {
+			return null;
+		} else if (Set.class.isAssignableFrom(am.getType())) {
+			Collection<T> col = (Collection<T>) value;
+			return Sets.newHashSet(col);
+		} else if (List.class.isAssignableFrom(am.getType())) {
+			Collection<T> col = (Collection<T>) value;
+			return Lists.newArrayList(col);
+		}
+		return null;
 	}
 }

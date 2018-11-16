@@ -16,30 +16,35 @@ package com.ocs.dynamo.ui.component;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Logger;
 
+import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.Component;
-import com.vaadin.v7.ui.CustomField;
-import com.vaadin.v7.ui.Field;
-import com.vaadin.v7.ui.HorizontalLayout;
+import com.vaadin.ui.CustomField;
+import com.vaadin.ui.HorizontalLayout;
 
 public class PairField<L, R> extends CustomField<Pair<L, R>> {
+
+	private static final long serialVersionUID = -8008364520978553938L;
+
 	@SuppressWarnings("unused")
 	private static final Logger LOGGER = Logger.getLogger(PairField.class);
 
-	private Field<L> left;
-	private Field<R> right;
+	private AbstractField<L> left;
+
+	private AbstractField<R> right;
+
 	private Component middle;
 
 	private boolean maskChanges = false;
 
-	public PairField(Field<L> left) {
+	public PairField(AbstractField<L> left) {
 		this(left, null);
 	}
 
-	public PairField(Field<L> left, Field<R> right) {
+	public PairField(AbstractField<L> left, AbstractField<R> right) {
 		this(left, right, null);
 	}
 
-	public PairField(Field<L> left, Field<R> right, Component middle) {
+	public PairField(AbstractField<L> left, AbstractField<R> right, Component middle) {
 		this.left = left;
 		this.right = right;
 		this.middle = middle;
@@ -76,11 +81,6 @@ public class PairField<L, R> extends CustomField<Pair<L, R>> {
 		});
 	}
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -8008364520978553938L;
-
 	@Override
 	protected Component initContent() {
 		HorizontalLayout root = new HorizontalLayout();
@@ -99,9 +99,16 @@ public class PairField<L, R> extends CustomField<Pair<L, R>> {
 		return root;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public Class<? extends Pair<L, R>> getType() {
-		return (Class<Pair<L, R>>) (Class<?>) Pair.class;
+	public Pair<L, R> getValue() {
+		// TODO Auto-generated method stub
+		return null;
 	}
+
+	@Override
+	protected void doSetValue(Pair<L, R> value) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }
