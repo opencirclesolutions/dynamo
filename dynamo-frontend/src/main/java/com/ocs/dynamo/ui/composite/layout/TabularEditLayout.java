@@ -88,11 +88,6 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 	private String removeMessage;
 
 	/**
-	 * The save button
-	 */
-	private Button saveButton;
-
-	/**
 	 * Whether the screen is in view mode
 	 */
 	private boolean viewmode;
@@ -169,25 +164,6 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 			getButtonBar().addComponent(addButton);
 			addButton.setVisible(!getFormOptions().isHideAddButton() && isEditAllowed() && !isViewmode());
 
-			// save button
-			saveButton = new Button(message("ocs.save"));
-			saveButton.setIcon(VaadinIcons.SAFE);
-			saveButton.setEnabled(false);
-			saveButton.addClickListener(event -> {
-//				try {
-//					getContainer().commit();
-//
-//					// back to view mode when appropriate
-//					if (getFormOptions().isOpenInViewMode()) {
-//						toggleViewMode(true);
-//					}
-//				} catch (RuntimeException ex) {
-//					handleSaveException(ex);
-//				}
-			});
-			getButtonBar().addComponent(saveButton);
-			saveButton.setVisible(!isViewmode());
-
 			postProcessButtonBar(getButtonBar());
 			constructTableDividers();
 			postProcessLayout(mainLayout);
@@ -219,51 +195,12 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 		grid.getGrid().getEditor().setBuffered(true);
 		grid.getGrid().setSelectionMode(Grid.SelectionMode.SINGLE);
 
-		// set a higher cache rate to allow for smoother scrolling
-		//table.setCacheRate(2.0);
-		//table.setSortEnabled(isSortEnabled());
-		//table.setPageLength(getPageLength());
-
 		// default sorting
 		// default sorting
-		if (getSortOrders() != null && !getSortOrders().isEmpty()) {
-			DataProvider<T, SerializablePredicate<T>> sc = getDataProvider();
-			//sc.sort(getSortOrders().toArray(new SortOrder[0]));
-		}
-
-		// overwrite the field factory to handle validation
-//		grid.setTableFieldFactory(new ModelBasedFieldFactory<T>(getEntityModel(), getMessageService(), true, false) {
-//
-//			@Override
-//			public Field<?> createField(String propertyId, EntityModel<?> fieldEntityModel) {
-//				AttributeModel am = getEntityModel().getAttributeModel(propertyId);
-//
-//				// first try to create a custom field
-//				Field<?> custom = constructCustomField(getEntityModel(), am, isViewmode(), false);
-//
-//				boolean hasFilter = getFieldFilters().containsKey(propertyId);
-//				final Field<?> field = custom != null ? custom
-//						: (hasFilter ? super.constructField(am, getFieldFilters(), fieldEntityModel)
-//								: super.createField(propertyId, fieldEntityModel));
-//
-//				// field is editable when not in view mode and not read only
-//				if (field instanceof URLField) {
-//					((URLField) field)
-//							.setEditable(!isViewmode() && !EditableType.READ_ONLY.equals(am.getEditableType()));
-//				}
-//
-//				if (field != null && field.isEnabled()) {
-//					field.addValueChangeListener(event -> {
-//						if (saveButton != null) {
-//							saveButton.setEnabled(VaadinUtils.allFixedTableFieldsValid(getTableWrapper().getTable()));
-//						}
-//					});
-//					field.setSizeFull();
-//					postProcessField(am.getPath(), field);
-//				}
-//				return field;
-//			}
-//		});
+//		if (getSortOrders() != null && !getSortOrders().isEmpty()) {
+//			DataProvider<T, SerializablePredicate<T>> sc = getDataProvider();
+//			sc.sort(getSortOrders().toArray(new SortOrder[0]));
+//		}
 		mainLayout.addComponent(getGridWrapper());
 	}
 
@@ -350,10 +287,6 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 		return removeMessage;
 	}
 
-	public Button getSaveButton() {
-		return saveButton;
-	}
-
 	public boolean isViewmode() {
 		return viewmode;
 	}
@@ -425,15 +358,8 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 	protected void toggleViewMode(boolean viewMode) {
 		setViewmode(viewMode);
 		getGridWrapper().getGrid().getEditor().setEnabled(!isViewmode() && isEditAllowed());
-		saveButton.setVisible(!isViewmode());
+		//saveButton.setVisible(!isViewmode());
 		addButton.setVisible(!isViewmode() && !getFormOptions().isHideAddButton() && isEditAllowed());
-		// create or remove any generated columns for correctly dealing with URL
-		// fields
-//		if (!viewMode) {
-//			getGridWrapper().getGrid().removeGeneratedColumns();}
-//		} else {
-//			getGridWrapper().getGrid().getEditor().
-//		}
 	}
 
 }

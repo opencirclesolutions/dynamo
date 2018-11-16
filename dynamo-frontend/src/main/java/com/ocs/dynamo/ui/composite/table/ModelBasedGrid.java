@@ -21,7 +21,6 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.vaadin.ui.components.grid.Editor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -165,6 +164,7 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 	 * @param propertyNames  the properties to be added
 	 * @param headerNames    the headers to be added
 	 */
+	@SuppressWarnings("unchecked")
 	private void addColumn(final AttributeModel attributeModel) {
 		if (attributeModel.isVisibleInTable()) {
 			Column<T, ?> column;
@@ -179,9 +179,6 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 			} else {
 				if (editable && fullTableEditor){
 					column = addColumn(t -> {
-						// value change listener to copy value back to backing bean (Vaadin binding
-						// doesn't really
-						// seem to work
 						HasValue<?> comp = (HasValue<?>) createField(t, attributeModel);
 						comp.addValueChangeListener(event -> {
 							ClassUtils.setFieldValue(t, attributeModel.getPath(), event.getValue());
@@ -225,6 +222,7 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 	// TODO this code is duplicate from ModelBasedEditForm, both should be removed
 	// and put on a place reachable for both
 	// usages.
+	@SuppressWarnings("unchecked")
 	private void setConverters(Binder.BindingBuilder<T, ?> builder, AttributeModel am) {
 
 		if (am.isEmail()) {
@@ -375,17 +373,6 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 	 * @param visible    whether the column must be visible
 	 */
 	public void setColumnVisible(Object propertyId, boolean visible) {
-//		 Object[] visibleCols = getVisibleColumns();
-//		 List<Object> temp = Arrays.stream(visibleCols).filter(c ->
-//		 !c.equals(propertyId)).collect(Collectors.toList());
-//		 boolean alreadyVisible = Arrays.stream(visibleCols).anyMatch(c ->
-//		 c.equals(propertyId));
-//		
-//		 // add column if not already visible
-//		 if (!alreadyVisible || visible) {
-//		 temp.add(propertyId);
-//		 }
-//		 setVisibleColumns(temp.toArray(new Object[0]));
 
 		getColumn((String) propertyId).setHidden(!visible);
 	}
