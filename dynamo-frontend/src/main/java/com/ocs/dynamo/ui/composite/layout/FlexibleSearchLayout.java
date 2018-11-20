@@ -13,6 +13,10 @@
  */
 package com.ocs.dynamo.ui.composite.layout;
 
+import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
+
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
@@ -23,12 +27,8 @@ import com.ocs.dynamo.ui.composite.form.FlexibleFilterType;
 import com.ocs.dynamo.ui.composite.form.ModelBasedFlexibleSearchForm;
 import com.ocs.dynamo.ui.container.QueryType;
 import com.vaadin.data.provider.SortOrder;
-import com.vaadin.ui.AbstractField;
+import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Layout;
-
-import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * A search layout that allows a user to click together the search criteria
@@ -90,7 +90,7 @@ public class FlexibleSearchLayout<ID extends Serializable, T extends AbstractEnt
             }
 
             @Override
-            protected AbstractField<?> constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel) {
+            protected AbstractComponent constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel) {
                 return FlexibleSearchLayout.this.constructCustomField(entityModel, attributeModel, false, true);
             }
 

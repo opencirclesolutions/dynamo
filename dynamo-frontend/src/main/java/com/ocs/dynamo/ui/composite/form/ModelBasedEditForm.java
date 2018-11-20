@@ -452,7 +452,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 					previews.get(isViewMode()).put(attributeModel, c);
 				} else if (AttributeType.DETAIL.equals(type) && attributeModel.isComplexEditable()) {
 					AbstractComponent f = constructCustomField(entityModel, attributeModel, viewMode);
-					if (f instanceof DetailsEditGrid) {
+					if (f instanceof UseInViewMode) {
 						// a details edit table or details edit layout must always be displayed
 						constructField(parent, entityModel, attributeModel, true, tabIndex, sameRow);
 					} else {
@@ -986,8 +986,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			// set explicit field width
 			if (!(field instanceof Switch)) {
 				Integer fieldWidth = SystemPropertyUtils.getDefaultFieldWidth();
-				if (fieldWidth == null || sameRow /* || field instanceof DetailsEditLayout */
-						|| field instanceof FullWidthField || !attributeModel.getGroupTogetherWith().isEmpty()) {
+				if (fieldWidth == null || sameRow || field instanceof FullWidthField
+						|| !attributeModel.getGroupTogetherWith().isEmpty()) {
 					field.setSizeFull();
 				} else {
 					field.setWidth(fieldWidth + "px");
@@ -1101,7 +1101,9 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		} else if (builder.getField() instanceof DateTimeField && ZonedDateTime.class.equals(am.getType())) {
 			BindingBuilder<T, LocalDateTime> sBuilder = (BindingBuilder<T, LocalDateTime>) builder;
 			sBuilder.withConverter(new ZonedDateTimeToLocalDateTimeConverter(ZoneId.systemDefault()));
-		} else if (builder.getField() instanceof EntityLookupField && Collection.class.isAssignableFrom(am.getType())) {
+		} else if ((builder.getField() instanceof ElementCollectionGrid
+				|| builder.getField() instanceof EntityLookupField)
+				&& Collection.class.isAssignableFrom(am.getType())) {
 			BindingBuilder<T, Collection<?>> sBuilder = (BindingBuilder<T, Collection<?>>) builder;
 			sBuilder.withValidator(new CollectionSizeValidator(message("ocs.collection.not.empty")));
 		}
@@ -1316,6 +1318,10 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 	public AbstractComponent getField(String fieldName) {
 		return getField(isViewMode(), fieldName);
+	}
+
+	public Optional<AbstractComponent> getFieldOptional(String fieldName) {
+		return Optional.ofNullable(getField(isViewMode(), fieldName));
 	}
 
 	private List<Button> filterButtons(String data) {

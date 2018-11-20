@@ -27,7 +27,7 @@ import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.server.Resource;
-import com.vaadin.ui.AbstractField;
+import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Notification;
 
@@ -188,7 +188,7 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	 * @param searchMode     indicates whether the screen is in search mode
 	 * @return
 	 */
-	protected AbstractField<?> constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel,
+	protected AbstractComponent constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel,
 			boolean viewMode, boolean searchMode) {
 		// overwrite in subclass
 		return null;

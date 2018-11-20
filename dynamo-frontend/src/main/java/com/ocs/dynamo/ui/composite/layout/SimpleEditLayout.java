@@ -13,6 +13,11 @@
  */
 package com.ocs.dynamo.ui.composite.layout;
 
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Consumer;
+
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
@@ -24,15 +29,10 @@ import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
 import com.ocs.dynamo.ui.composite.type.ScreenMode;
 import com.vaadin.server.SerializablePredicate;
-import com.vaadin.ui.AbstractField;
+import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.VerticalLayout;
-
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Consumer;
 
 /**
  * A layout for editing a single entity (can either be an existing or a new
@@ -210,7 +210,7 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 				}
 
 				@Override
-				protected AbstractField<?> constructCustomField(EntityModel<T> entityModel,
+				protected AbstractComponent constructCustomField(EntityModel<T> entityModel,
 						AttributeModel attributeModel, boolean viewMode) {
 					return SimpleEditLayout.this.constructCustomField(entityModel, attributeModel, viewMode, false);
 				}

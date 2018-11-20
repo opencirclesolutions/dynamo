@@ -16,23 +16,22 @@ package com.ocs.dynamo.ui.composite.form;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
-import com.google.common.collect.Lists;
-import com.google.gwt.thirdparty.guava.common.collect.Sets;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
+import com.ocs.dynamo.ui.utils.ConvertUtil;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.util.SystemPropertyUtils;
-import com.vaadin.data.HasValue;
+import com.vaadin.data.BeanValidationBinder;
+import com.vaadin.data.Binder;
 import com.vaadin.data.ValueProvider;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.icons.VaadinIcons;
@@ -70,12 +69,12 @@ public class ElementCollectionGrid<T extends Serializable> extends CustomField<C
 	/**
 	 * The data provider
 	 */
-	private ListDataProvider<T> provider;
+	private ListDataProvider<ValueHolder<T>> provider;
 
 	/**
 	 * The grid for displaying the actual items
 	 */
-	private final Grid<T> grid;
+	private Grid<ValueHolder<T>> grid;
 	/**
 	 * Button for adding new items to the table
 	 */
@@ -100,11 +99,13 @@ public class ElementCollectionGrid<T extends Serializable> extends CustomField<C
 	 * Whether to propagate change events (disabled during construction)
 	 */
 	private boolean propagateChanges = true;
+
 	/**
 	 * 
 	 * the currently selected item in the table
 	 */
 	private Object selectedItem;
+
 	/**
 	 * 
 	 * Whether the table is in view mode. If this is the case, editing is not*
@@ -112,22 +113,28 @@ public class ElementCollectionGrid<T extends Serializable> extends CustomField<C
 	 */
 	private boolean viewMode;
 
+	/**
+	 * 
+	 */
 	private Supplier<T> createEntitySupplier;
+
+	private Map<ValueHolder<T>, Binder<ValueHolder<T>>> binders = new HashMap<>();
 
 	/**
 	 * Constructor
-	 *
-	 * @param viewMode    whether to display the component in view (read-only) mode
-	 * @param formOptions FormOptions parameter object that can be used to govern
-	 *                    how the component behaves
+	 * 
+	 * @param attributeModel the attribute model
+	 * @param viewMode       whether the component is in view mode
+	 * @param formOptions
 	 */
-	public ElementCollectionGrid(final AttributeModel attributeModel, final boolean viewMode, final FormOptions formOptions) {
+	public ElementCollectionGrid(final AttributeModel attributeModel, final boolean viewMode,
+			final FormOptions formOptions) {
 		this.messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
 		this.viewMode = viewMode;
 		this.formOptions = formOptions;
 		this.attributeModel = attributeModel;
 		this.provider = new ListDataProvider<>(new ArrayList<>());
-		grid = new Grid<T>("", provider);
+
 	}
 
 	/**
@@ -141,11 +148,18 @@ public class ElementCollectionGrid<T extends Serializable> extends CustomField<C
 		addButton.addClickListener(event -> {
 
 			T t = createEntitySupplier.get();
-			provider.getItems().add(t);
-			grid.setDataProvider(provider);
+
+			ValueHolder<T> vh = new ValueHolder<T>(null);
+			provider.getItems().add(vh);
+
+			Binder<ValueHolder<T>> binder = new BeanValidationBinder(ValueHolder.class);
+			binder.setBean(vh);
+			binders.put(vh, binder);
+			provider.refreshAll();
 
 			if (receiver != null) {
-				receiver.signalDetailsComponentValid(ElementCollectionGrid.this, VaadinUtils.allFixedTableFieldsValid(grid));
+				receiver.signalDetailsComponentValid(ElementCollectionGrid.this,
+						VaadinUtils.allFixedTableFieldsValid(grid));
 			}
 
 		});
@@ -169,20 +183,6 @@ public class ElementCollectionGrid<T extends Serializable> extends CustomField<C
 		postProcessButtonBar(buttonBar);
 	}
 
-	public void setItems(Collection<T> items) {
-
-		List<T> list = new ArrayList<>();
-		list.addAll(items);
-
-		if (provider != null) {
-			provider.getItems().clear();
-			provider.getItems().addAll(list);
-			provider.refreshAll();
-		}
-		// clear the selection
-		setSelectedItem(null);
-	}
-
 	/**
 	 * Constructs the column that holds the "remove" button
 	 */
@@ -190,7 +190,7 @@ public class ElementCollectionGrid<T extends Serializable> extends CustomField<C
 		// add a remove button directly in the table
 		if (!viewMode && formOptions.isShowRemoveButton()) {
 			final String removeMsg = messageService.getMessage("ocs.detail.remove", VaadinUtils.getLocale());
-			grid.addComponentColumn((ValueProvider<T, Component>) t -> {
+			grid.addComponentColumn((ValueProvider<ValueHolder<T>, Component>) t -> {
 				Button remove = new Button(removeMsg);
 				remove.setIcon(VaadinIcons.TRASH);
 				remove.addClickListener(event -> {
@@ -207,18 +207,6 @@ public class ElementCollectionGrid<T extends Serializable> extends CustomField<C
 				return remove;
 			});
 		}
-	}
-
-	/**
-	 * Extracts the values from the table and returns them as a Set
-	 * 
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	private Set<T> extractValues() {
-		final Set<T> set = new HashSet<>();
-		// TODO:
-		return set;
 	}
 
 	public Button getAddButton() {
@@ -276,46 +264,30 @@ public class ElementCollectionGrid<T extends Serializable> extends CustomField<C
 		this.selectedItem = selectedItem;
 	}
 
-	public Grid<T> getGrid() {
-		return grid;
-	}
-
 	/**
 	 * Constructs the actual component
 	 */
 	@Override
 	protected Component initContent() {
-		// set up a very basic table with one column
-		// Binder<T> binder = grid.getEditor().getBinder();
 
-		Column<T, TextField> column = grid.addColumn(t -> {
-			TextField tf = new TextField("", t.toString());
-			tf.addValueChangeListener(e -> {
-				provider.getItems().clear();
-				Iterator<Component> it = grid.iterator();
-				while (it.hasNext()) {
-					Component next = it.next();
-					if (next instanceof TextField) {
-						HasValue<T> hasValue = (HasValue<T>) next;
-						provider.getItems().add(hasValue.getValue());
-					}
-				}
-				provider.refreshAll();
-			});
+		grid = new Grid<ValueHolder<T>>("", provider) {
 
+			private static final long serialVersionUID = -4045946516131771973L;
+
+		};
+
+		Column<ValueHolder<T>, TextField> column = grid.addColumn(vh -> {
+			TextField tf = new TextField("");
+			Binder<ValueHolder<T>> binder = binders.get(vh);
+			binder.forField(tf).asRequired().bind("value");
 			return tf;
 		}, new ComponentRenderer());
 
 		column.setCaption(messageService.getMessage("ocs.value", VaadinUtils.getLocale()));
 
-		// table.setColumnHeader(VALUE, messageService.getMessage("ocs.value",
-		// VaadinUtils.getLocale()));
-
-		grid.getEditor().setEnabled(!isViewMode());
+		grid.setHeightByRows(pageLength);
 		grid.setSelectionMode(SelectionMode.SINGLE);
 
-		// table.setPageLength(pageLength);
-		grid.setSizeFull();
 //		table.setTableFieldFactory(new DefaultFieldFactory() {
 //
 //			@Override
@@ -396,10 +368,10 @@ public class ElementCollectionGrid<T extends Serializable> extends CustomField<C
 
 		// add a change listener (to make sure the buttons are correctly
 		// enabled/disabled)
-//		grid.addSelectionListener(event -> {
-//			selectedItem = grid.getSelectedItems()
-//			onSelect(grid.getValue());
-//		});
+		grid.addSelectionListener(event -> {
+			ValueHolder<T> vh = grid.getSelectedItems().iterator().next();
+			onSelect(vh.getValue());
+		});
 
 		// add a remove button directly in the table
 		constructRemoveColumn();
@@ -445,34 +417,34 @@ public class ElementCollectionGrid<T extends Serializable> extends CustomField<C
 	@Override
 	protected void doSetValue(Collection<T> value) {
 		provider.getItems().clear();
-		provider.getItems().addAll(value);
-		grid.setDataProvider(provider);
+		provider.refreshAll();
+		binders.clear();
+
+		for (T t : value) {
+			ValueHolder<T> vh = new ValueHolder<T>(t);
+			provider.getItems().add(vh);
+			Binder<ValueHolder<T>> binder = new BeanValidationBinder(ValueHolder.class);
+			binder.setBean(vh);
+			binders.put(vh, binder);
+		}
 	}
 
 	@Override
 	public boolean validateAllFields() {
-//		boolean error = false;
-//		Iterator<Component> component = grid.iterator();
-//		while (component.hasNext()) {add
-//			Component next = component.next();
-//			if (next instanceof AbstractField) {
-//				try {
-//					((AbstractField<?>) next).validate();
-//					((AbstractField<?>) next).setComponentError(null);
-//				} catch (InvalidValueException ex) {
-//					error = true;
-//					((AbstractField<?>) next).setComponentError(new UserError(ex.getLocalizedMessage()));
-//				}
-//			}
-//		}
-//		return error;
-
-		return false;
+		boolean error = false;
+		for (Binder<ValueHolder<T>> binder : binders.values()) {
+			error |= !binder.validate().isOk();
+		}
+		return error;
 	}
 
 	@Override
 	public Collection<T> getValue() {
-		return (Collection<T>) convertToCorrectCollection(provider.getItems());
+
+		Collection<T> col = provider.getItems().stream().map(vh -> vh.getValue()).collect(Collectors.toList());
+		Collection<T> col2 = ConvertUtil.convertCollection(col, attributeModel);
+		System.out.println("Selected: " + col2);
+		return col2;
 	}
 
 	public Supplier<T> getCreateEntitySupplier() {
@@ -481,21 +453,6 @@ public class ElementCollectionGrid<T extends Serializable> extends CustomField<C
 
 	public void setCreateEntitySupplier(Supplier<T> createEntitySupplier) {
 		this.createEntitySupplier = createEntitySupplier;
-	}
-
-	@SuppressWarnings("unchecked")
-	protected Object convertToCorrectCollection(Object value) {
-		if (value == null) {
-			return null;
-		} else if (Set.class.isAssignableFrom(attributeModel.getType())) {
-			Collection<T> col = (Collection<T>) value;
-			return Sets.newHashSet(col);
-		} else if (List.class.isAssignableFrom(attributeModel.getType())) {
-			Collection<T> col = (Collection<T>) value;
-			return Lists.newArrayList(col);
-		} else {
-			return value;
-		}
 	}
 
 }

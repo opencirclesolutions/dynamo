@@ -34,8 +34,6 @@ public class PairField<L, R> extends CustomField<Pair<L, R>> {
 
 	private Component middle;
 
-	private boolean maskChanges = false;
-
 	public PairField(AbstractField<L> left) {
 		this(left, null);
 	}
@@ -48,37 +46,6 @@ public class PairField<L, R> extends CustomField<Pair<L, R>> {
 		this.left = left;
 		this.right = right;
 		this.middle = middle;
-
-		ValueChangeListener listener = e -> {
-			synchronized (PairField.this) {
-				if (!maskChanges) {
-					maskChanges = true;
-					setValue(Pair.of(left == null ? null : left.getValue(), right == null ? null : right.getValue()));
-					maskChanges = false;
-				}
-			}
-		};
-		if (left != null) {
-			left.addValueChangeListener(listener);
-		}
-		if (right != null) {
-			right.addValueChangeListener(listener);
-		}
-
-		addValueChangeListener(e -> {
-			synchronized (PairField.this) {
-				if (!maskChanges) {
-					maskChanges = true;
-					if (left != null) {
-						left.setValue(getValue().getLeft());
-					}
-					if (right != null) {
-						right.setValue(getValue().getRight());
-					}
-					maskChanges = false;
-				}
-			}
-		});
 	}
 
 	@Override
@@ -101,14 +68,22 @@ public class PairField<L, R> extends CustomField<Pair<L, R>> {
 
 	@Override
 	public Pair<L, R> getValue() {
-		// TODO Auto-generated method stub
-		return null;
+		return Pair.of(left.getValue(), right.getValue());
 	}
 
 	@Override
 	protected void doSetValue(Pair<L, R> value) {
-		// TODO Auto-generated method stub
-		
+		if (value == null || value.getLeft() == null) {
+			left.clear();
+		} else {
+			left.setValue(value.getLeft());
+		}
+
+		if (value == null || value.getRight() == null) {
+			right.clear();
+		} else {
+			right.setValue(value.getRight());
+		}
 	}
 
 }
