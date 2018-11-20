@@ -977,11 +977,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 					.setEditable(!isViewMode() && !EditableType.CREATE_ONLY.equals(attributeModel.getEditableType()));
 		}
 
-		// set view mode if appropriate - TODO: is this still needed?
-		if (field instanceof QuickAddListSelect) {
-			((QuickAddListSelect<?, ?>) field).setViewMode(isViewMode());
-		}
-
 		if (field != null) {
 			// set explicit field width
 			if (!(field instanceof Switch)) {
@@ -1101,11 +1096,11 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		} else if (builder.getField() instanceof DateTimeField && ZonedDateTime.class.equals(am.getType())) {
 			BindingBuilder<T, LocalDateTime> sBuilder = (BindingBuilder<T, LocalDateTime>) builder;
 			sBuilder.withConverter(new ZonedDateTimeToLocalDateTimeConverter(ZoneId.systemDefault()));
-		} else if ((builder.getField() instanceof ElementCollectionGrid
-				|| builder.getField() instanceof EntityLookupField)
-				&& Collection.class.isAssignableFrom(am.getType())) {
-			BindingBuilder<T, Collection<?>> sBuilder = (BindingBuilder<T, Collection<?>>) builder;
-			sBuilder.withValidator(new CollectionSizeValidator(message("ocs.collection.not.empty")));
+		} else if (builder.getField() instanceof EntityLookupField && Collection.class.isAssignableFrom(am.getType())) {
+			// BindingBuilder<T, Collection<?>> sBuilder = (BindingBuilder<T,
+			// Collection<?>>) builder;
+			// sBuilder.withValidator(new
+			// CollectionSizeValidator(message("ocs.collection.not.empty")));
 		}
 
 	}

@@ -21,6 +21,7 @@ import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.Refreshable;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.data.provider.SortOrder;
+import com.vaadin.server.ErrorMessage;
 import com.vaadin.server.SerializablePredicate;
 import com.vaadin.shared.Registration;
 import com.vaadin.ui.Button;
@@ -52,11 +53,6 @@ public class QuickAddListSelect<ID extends Serializable, T extends AbstractEntit
 	private EntityListSelect<ID, T> listSelect;
 
 	/**
-	 * Whether the component is in view mode
-	 */
-	private boolean viewMode;
-
-	/**
 	 * Whether quick adding is allowed
 	 */
 	private boolean quickAddAllowed;
@@ -79,12 +75,12 @@ public class QuickAddListSelect<ID extends Serializable, T extends AbstractEntit
 	 */
 	@SafeVarargs
 	public QuickAddListSelect(EntityModel<T> entityModel, AttributeModel attributeModel, BaseService<ID, T> service,
-			SerializablePredicate<T> filter, int rows, SortOrder<?>... sortOrder) {
+			SerializablePredicate<T> filter, boolean search, int rows, SortOrder<?>... sortOrder) {
 		super(service, entityModel, attributeModel, filter);
 		listSelect = new EntityListSelect<>(entityModel, attributeModel, service, filter, sortOrder);
 		listSelect.setRows(rows);
-		this.quickAddAllowed = attributeModel != null && attributeModel.isQuickAddAllowed();
-		this.directNavigationAllowed = attributeModel != null && attributeModel.isDirectNavigation();
+		this.quickAddAllowed = !search && attributeModel != null && attributeModel.isQuickAddAllowed();
+		this.directNavigationAllowed = !search && attributeModel != null && attributeModel.isDirectNavigation();
 	}
 
 	@Override
@@ -151,24 +147,24 @@ public class QuickAddListSelect<ID extends Serializable, T extends AbstractEntit
 		bar.addComponent(listSelect);
 
 		float listExpandRatio = 1f;
-		if (quickAddAllowed && !viewMode) {
-			listExpandRatio -= 0.10f;
+		if (quickAddAllowed) {
+			listExpandRatio -= 0.15f;
 		}
 		if (directNavigationAllowed) {
-			listExpandRatio -= 0.05f;
+			listExpandRatio -= 0.10f;
 		}
 
 		bar.setExpandRatio(listSelect, listExpandRatio);
 
-		if (!viewMode && quickAddAllowed) {
+		if (quickAddAllowed) {
 			Button addButton = constructAddButton();
 			bar.addComponent(addButton);
-			bar.setExpandRatio(addButton, 0.10f);
+			bar.setExpandRatio(addButton, 0.15f);
 		}
 		if (directNavigationAllowed) {
 			Button directNavigationButton = constructDirectNavigationButton();
 			bar.addComponent(directNavigationButton);
-			bar.setExpandRatio(directNavigationButton, 0.05f);
+			bar.setExpandRatio(directNavigationButton, 0.10f);
 		}
 		return bar;
 	}
@@ -200,6 +196,13 @@ public class QuickAddListSelect<ID extends Serializable, T extends AbstractEntit
 	}
 
 	@Override
+	public void setComponentError(ErrorMessage componentError) {
+		if (listSelect != null) {
+			listSelect.setComponentError(componentError);
+		}
+	}
+
+	@Override
 	public void setValue(Collection<T> value) {
 		super.setValue(value);
 		if (listSelect != null) {
@@ -210,7 +213,4 @@ public class QuickAddListSelect<ID extends Serializable, T extends AbstractEntit
 		}
 	}
 
-	public void setViewMode(boolean viewMode) {
-		this.viewMode = viewMode;
-	}
 }

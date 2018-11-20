@@ -66,7 +66,7 @@ public class QuickAddListSelectTest extends BaseMockitoTest {
 		EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
 		AttributeModel am = em.getAttributeModel("testDomain");
 
-		QuickAddListSelect<Integer, TestEntity> select = new QuickAddListSelect<>(em, am, service, null, 3);
+		QuickAddListSelect<Integer, TestEntity> select = new QuickAddListSelect<>(em, am, service, null, false, 3);
 		select.initContent();
 		MockUtil.injectUI(select, ui);
 
@@ -103,7 +103,7 @@ public class QuickAddListSelectTest extends BaseMockitoTest {
 		EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
 		AttributeModel am = em.getAttributeModel("testDomain");
 
-		QuickAddListSelect<Integer, TestEntity> select = new QuickAddListSelect<>(em, am, service, null, 3);
+		QuickAddListSelect<Integer, TestEntity> select = new QuickAddListSelect<>(em, am, service, null, false, 3);
 		select.initContent();
 		MockUtil.injectUI(select, ui);
 

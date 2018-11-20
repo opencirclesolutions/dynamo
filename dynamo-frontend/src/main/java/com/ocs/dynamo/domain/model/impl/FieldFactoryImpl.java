@@ -194,10 +194,12 @@ public class FieldFactoryImpl<T> implements FieldFactory {
 			// simple list select if everything else fails or is not applicable
 			if (multipleSelect || Collection.class.isAssignableFrom(am.getType())) {
 				return new QuickAddListSelect<ID, S>((EntityModel<S>) em, am, service,
-						(SerializablePredicate<S>) fieldFilter, SystemPropertyUtils.getDefaultListSelectRows(), sos);
+						(SerializablePredicate<S>) fieldFilter, search, SystemPropertyUtils.getDefaultListSelectRows(),
+						sos);
 			} else {
 				return new QuickAddListSingleSelect<>((EntityModel<S>) em, am, service,
-						(SerializablePredicate<S>) fieldFilter, SystemPropertyUtils.getDefaultListSelectRows(), sos);
+						(SerializablePredicate<S>) fieldFilter, search, SystemPropertyUtils.getDefaultListSelectRows(),
+						sos);
 			}
 		} else {
 			// by default, use a token field
@@ -268,8 +270,7 @@ public class FieldFactoryImpl<T> implements FieldFactory {
 				final FormOptions fo = new FormOptions().setShowRemoveButton(true);
 				if (String.class.equals(am.getMemberType()) || NumberUtils.isNumeric(am.getMemberType())) {
 					ElementCollectionGrid<String> table = new ElementCollectionGrid<>(am, false, fo);
-					table.setCreateEntitySupplier(() -> new String());
-					
+
 					field = table;
 				} else {
 					// other types not supported for now

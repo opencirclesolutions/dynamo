@@ -113,11 +113,6 @@ public class ElementCollectionGrid<T extends Serializable> extends CustomField<C
 	 */
 	private boolean viewMode;
 
-	/**
-	 * 
-	 */
-	private Supplier<T> createEntitySupplier;
-
 	private Map<ValueHolder<T>, Binder<ValueHolder<T>>> binders = new HashMap<>();
 
 	/**
@@ -146,8 +141,6 @@ public class ElementCollectionGrid<T extends Serializable> extends CustomField<C
 		addButton = new Button(messageService.getMessage("ocs.add", VaadinUtils.getLocale()));
 		addButton.setIcon(VaadinIcons.PLUS);
 		addButton.addClickListener(event -> {
-
-			T t = createEntitySupplier.get();
 
 			ValueHolder<T> vh = new ValueHolder<T>(null);
 			provider.getItems().add(vh);
@@ -440,19 +433,10 @@ public class ElementCollectionGrid<T extends Serializable> extends CustomField<C
 
 	@Override
 	public Collection<T> getValue() {
-
 		Collection<T> col = provider.getItems().stream().map(vh -> vh.getValue()).collect(Collectors.toList());
 		Collection<T> col2 = ConvertUtil.convertCollection(col, attributeModel);
 		System.out.println("Selected: " + col2);
 		return col2;
-	}
-
-	public Supplier<T> getCreateEntitySupplier() {
-		return createEntitySupplier;
-	}
-
-	public void setCreateEntitySupplier(Supplier<T> createEntitySupplier) {
-		this.createEntitySupplier = createEntitySupplier;
 	}
 
 }
