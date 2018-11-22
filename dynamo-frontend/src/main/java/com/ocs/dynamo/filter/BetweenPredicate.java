@@ -21,7 +21,7 @@ import com.ocs.dynamo.utils.ClassUtils;
  * 
  * @author Bas Rutten
  *
- * @param <T>
+ * @param <T> the type of the entity to filter
  */
 public class BetweenPredicate<T> extends PropertyPredicate<T> {
 

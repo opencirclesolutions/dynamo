@@ -13,6 +13,14 @@
  */
 package com.ocs.dynamo.filter;
 
+/**
+ * 
+ * A predicate for checking that a certain property has an exact value
+ * 
+ * @author Bas Rutten
+ *
+ * @param <T> the type of the entity to filter
+ */
 public abstract class ComparePredicate<T> extends PropertyPredicate<T> {
 
 	private static final long serialVersionUID = -1140861553052524418L;

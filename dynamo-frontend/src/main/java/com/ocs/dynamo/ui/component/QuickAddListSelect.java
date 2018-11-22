@@ -117,6 +117,13 @@ public class QuickAddListSelect<ID extends Serializable, T extends AbstractEntit
 		}
 	}
 
+	@Override
+	public void focus() {
+		if (listSelect != null) {
+			listSelect.focus();
+		}
+	}
+
 	public EntityListSelect<ID, T> getListSelect() {
 		return listSelect;
 	}
@@ -201,7 +208,7 @@ public class QuickAddListSelect<ID extends Serializable, T extends AbstractEntit
 			listSelect.setComponentError(componentError);
 		}
 	}
-
+	
 	@Override
 	public void setValue(Collection<T> value) {
 		super.setValue(value);

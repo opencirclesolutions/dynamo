@@ -14,10 +14,6 @@
 package com.ocs.dynamo.ui.composite.grid;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,20 +26,11 @@ import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.component.InternalLinkField;
 import com.ocs.dynamo.ui.component.URLField;
-import com.ocs.dynamo.ui.converter.ConverterFactory;
-import com.ocs.dynamo.ui.converter.IntToDoubleConverter;
-import com.ocs.dynamo.ui.converter.LocalDateWeekCodeConverter;
-import com.ocs.dynamo.ui.converter.LongToDoubleConverter;
-import com.ocs.dynamo.ui.converter.ZonedDateTimeToLocalDateTimeConverter;
 import com.ocs.dynamo.ui.provider.BaseDataProvider;
 import com.ocs.dynamo.ui.utils.ConvertUtil;
 import com.ocs.dynamo.ui.utils.FormatUtils;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
-import com.ocs.dynamo.ui.validator.EmailValidator;
-import com.ocs.dynamo.ui.validator.URLValidator;
-import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.ocs.dynamo.utils.ClassUtils;
-import com.ocs.dynamo.utils.NumberUtils;
 import com.vaadin.data.BeanPropertySet;
 import com.vaadin.data.Binder;
 import com.vaadin.data.Binder.BindingBuilder;
@@ -54,10 +41,7 @@ import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.server.SerializablePredicate;
 import com.vaadin.ui.AbstractComponent;
-import com.vaadin.ui.AbstractTextField;
-import com.vaadin.ui.DateTimeField;
 import com.vaadin.ui.Grid;
-import com.vaadin.ui.Slider;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.renderers.ComponentRenderer;
 
@@ -180,13 +164,16 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 						ClassUtils.getFieldValue(t, attributeModel.getPath())), new ComponentRenderer());
 			} else {
 				if (editable && fullTableEditor) {
+					// edit all tables at once
 					column = addColumn(t -> {
 						AbstractComponent comp = constructCustomField(entityModel, attributeModel);
 						if (comp == null) {
 							comp = factory.constructField(attributeModel, null, null, true);
 						}
+
+						// delegate the binding to the enveloping component
 						BindingBuilder<T, ?> builder = doBind(t, (AbstractComponent) comp);
-						setConverters(builder, attributeModel);
+						FieldFactoryImpl.addConvertsAndValidators(builder, attributeModel);
 						builder.bind(attributeModel.getPath());
 						return (AbstractComponent) comp;
 					}, new ComponentRenderer());
@@ -199,11 +186,11 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 				Binder<T> binder = getEditor().getBinder();
 				final AbstractComponent abstractComponent = factory.constructField(attributeModel, null, null, false);
 
-				final Binder.BindingBuilder bindingBuilder = binder.forField((HasValue) abstractComponent);
-				setConverters(bindingBuilder, attributeModel);
+				final Binder.BindingBuilder builder = binder.forField((HasValue<?>) abstractComponent);
+				FieldFactoryImpl.addConvertsAndValidators(builder, attributeModel);
 
-				final Binder.Binding binding = bindingBuilder
-						.bind(t -> ClassUtils.getFieldValue(t, attributeModel.getPath()), (t, o) -> {
+				final Binder.Binding binding = builder.bind(t -> ClassUtils.getFieldValue(t, attributeModel.getPath()),
+						(t, o) -> {
 							if (ClassUtils.canSetProperty(t, attributeModel.getName())) {
 								if (o != null) {
 									ClassUtils.setFieldValue(t, attributeModel.getName(), o);
@@ -213,58 +200,11 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 							}
 						});
 				column.setEditorBinding(binding);
-
 			}
 			column.setCaption(attributeModel.getDisplayName()).setSortable(attributeModel.isSortable())
 					.setSortProperty(attributeModel.getPath()).setId(attributeModel.getPath())
 					.setStyleGenerator(item -> attributeModel.isNumerical() ? "v-align-right" : "");
 		}
-	}
-
-	// TODO this code is duplicate from ModelBasedEditForm, both should be removed
-	// and put on a place reachable for both
-	// usages.
-	@SuppressWarnings("unchecked")
-	private void setConverters(Binder.BindingBuilder<T, ?> builder, AttributeModel am) {
-
-		if (am.isEmail()) {
-			Binder.BindingBuilder<T, String> sBuilder = (Binder.BindingBuilder<T, String>) builder;
-			sBuilder.withNullRepresentation("").withValidator(
-					new EmailValidator(getMessageService().getMessage("ocs.no.valid.email", VaadinUtils.getLocale())));
-		} else if (am.isWeek()) {
-			Binder.BindingBuilder<T, String> sBuilder = (Binder.BindingBuilder<T, String>) builder;
-			sBuilder.withConverter(new LocalDateWeekCodeConverter());
-		} else if (builder.getField() instanceof AbstractTextField) {
-			Binder.BindingBuilder<T, String> sBuilder = (Binder.BindingBuilder<T, String>) builder;
-			sBuilder.withNullRepresentation("");
-			if (am.getType().equals(BigDecimal.class)) {
-				sBuilder.withConverter(ConverterFactory.createBigDecimalConverter(am.isCurrency(), am.isPercentage(),
-						SystemPropertyUtils.useThousandsGroupingInEditMode(), am.getPrecision(),
-						VaadinUtils.getCurrencySymbol()));
-			} else if (NumberUtils.isInteger(am.getType())) {
-				sBuilder.withConverter(ConverterFactory.createIntegerConverter(
-						SystemPropertyUtils.useThousandsGroupingInEditMode(), am.isPercentage()));
-			} else if (NumberUtils.isLong(am.getType())) {
-				sBuilder.withConverter(ConverterFactory
-						.createLongConverter(SystemPropertyUtils.useThousandsGroupingInEditMode(), am.isPercentage()));
-			}
-		} else if (builder.getField() instanceof Slider) {
-			Binder.BindingBuilder<T, Double> sBuilder = (Binder.BindingBuilder<T, Double>) builder;
-			sBuilder.withNullRepresentation(0.0);
-			if (am.getType().equals(Integer.class)) {
-				sBuilder.withConverter(new IntToDoubleConverter());
-			} else if (am.getType().equals(Long.class)) {
-				sBuilder.withConverter(new LongToDoubleConverter());
-			}
-		} else if (builder.getField() instanceof URLField) {
-			Binder.BindingBuilder<T, String> sBuilder = (Binder.BindingBuilder<T, String>) builder;
-			sBuilder.withNullRepresentation("").withValidator(
-					new URLValidator(getMessageService().getMessage("ocs.no.valid.url", VaadinUtils.getLocale())));
-		} else if (builder.getField() instanceof DateTimeField && ZonedDateTime.class.equals(am.getType())) {
-			Binder.BindingBuilder<T, LocalDateTime> sBuilder = (Binder.BindingBuilder<T, LocalDateTime>) builder;
-			sBuilder.withConverter(new ZonedDateTimeToLocalDateTimeConverter(ZoneId.systemDefault()));
-		}
-
 	}
 
 	/**

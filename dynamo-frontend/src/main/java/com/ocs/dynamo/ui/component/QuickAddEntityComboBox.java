@@ -190,4 +190,11 @@ public class QuickAddEntityComboBox<ID extends Serializable, T extends AbstractE
 		}
 		return null;
 	}
+
+	@Override
+	public void focus() {
+		if (comboBox != null) {
+			comboBox.focus();
+		}
+	}
 }

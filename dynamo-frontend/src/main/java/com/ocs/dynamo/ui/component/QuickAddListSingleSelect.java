@@ -201,4 +201,11 @@ public class QuickAddListSingleSelect<ID extends Serializable, T extends Abstrac
 		}
 	}
 
+	@Override
+	public void focus() {
+		if (listSelect != null) {
+			listSelect.focus();
+		}
+	}
+
 }

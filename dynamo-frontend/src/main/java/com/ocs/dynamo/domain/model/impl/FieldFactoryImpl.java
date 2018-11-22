@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Collection;
@@ -45,9 +46,17 @@ import com.ocs.dynamo.ui.component.TokenFieldSelect;
 import com.ocs.dynamo.ui.component.URLField;
 import com.ocs.dynamo.ui.composite.form.ElementCollectionGrid;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
+import com.ocs.dynamo.ui.converter.ConverterFactory;
+import com.ocs.dynamo.ui.converter.IntToDoubleConverter;
+import com.ocs.dynamo.ui.converter.LocalDateWeekCodeConverter;
+import com.ocs.dynamo.ui.converter.LongToDoubleConverter;
+import com.ocs.dynamo.ui.converter.ZonedDateTimeToLocalDateTimeConverter;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
+import com.ocs.dynamo.ui.validator.EmailValidator;
+import com.ocs.dynamo.ui.validator.URLValidator;
 import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.ocs.dynamo.utils.NumberUtils;
+import com.vaadin.data.Binder.BindingBuilder;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.data.provider.SortOrder;
 import com.vaadin.server.SerializablePredicate;
@@ -509,4 +518,46 @@ public class FieldFactoryImpl<T> implements FieldFactory {
 		return entityModel;
 	}
 
+	@SuppressWarnings("unchecked")
+	public static <U> void addConvertsAndValidators(BindingBuilder<U, ?> builder, AttributeModel am) {
+		MessageService messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
+
+		if (am.isEmail()) {
+			BindingBuilder<U, String> sBuilder = (BindingBuilder<U, String>) builder;
+			sBuilder.withNullRepresentation("").withValidator(
+					new EmailValidator(messageService.getMessage("ocs.no.valid.email", VaadinUtils.getLocale())));
+		} else if (am.isWeek()) {
+			BindingBuilder<U, String> sBuilder = (BindingBuilder<U, String>) builder;
+			sBuilder.withConverter(new LocalDateWeekCodeConverter());
+		} else if (builder.getField() instanceof AbstractTextField) {
+			BindingBuilder<U, String> sBuilder = (BindingBuilder<U, String>) builder;
+			sBuilder.withNullRepresentation("");
+			if (am.getType().equals(BigDecimal.class)) {
+				sBuilder.withConverter(ConverterFactory.createBigDecimalConverter(am.isCurrency(), am.isPercentage(),
+						SystemPropertyUtils.useThousandsGroupingInEditMode(), am.getPrecision(),
+						VaadinUtils.getCurrencySymbol()));
+			} else if (NumberUtils.isInteger(am.getType())) {
+				sBuilder.withConverter(ConverterFactory.createIntegerConverter(
+						SystemPropertyUtils.useThousandsGroupingInEditMode(), am.isPercentage()));
+			} else if (NumberUtils.isLong(am.getType())) {
+				sBuilder.withConverter(ConverterFactory
+						.createLongConverter(SystemPropertyUtils.useThousandsGroupingInEditMode(), am.isPercentage()));
+			}
+		} else if (builder.getField() instanceof Slider) {
+			BindingBuilder<U, Double> sBuilder = (BindingBuilder<U, Double>) builder;
+			sBuilder.withNullRepresentation(0.0);
+			if (am.getType().equals(Integer.class)) {
+				sBuilder.withConverter(new IntToDoubleConverter());
+			} else if (am.getType().equals(Long.class)) {
+				sBuilder.withConverter(new LongToDoubleConverter());
+			}
+		} else if (builder.getField() instanceof URLField) {
+			BindingBuilder<U, String> sBuilder = (BindingBuilder<U, String>) builder;
+			sBuilder.withNullRepresentation("").withValidator(
+					new URLValidator(messageService.getMessage("ocs.no.valid.url", VaadinUtils.getLocale())));
+		} else if (builder.getField() instanceof DateTimeField && ZonedDateTime.class.equals(am.getType())) {
+			BindingBuilder<U, LocalDateTime> sBuilder = (BindingBuilder<U, LocalDateTime>) builder;
+			sBuilder.withConverter(new ZonedDateTimeToLocalDateTimeConverter(ZoneId.systemDefault()));
+		}
+	}
 }

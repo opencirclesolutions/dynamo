@@ -13,6 +13,9 @@
  */
 package com.ocs.dynamo.ui.component;
 
+import java.time.LocalTime;
+import java.util.stream.IntStream;
+
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.vaadin.shared.Registration;
 import com.vaadin.ui.ComboBox;
@@ -21,11 +24,9 @@ import com.vaadin.ui.CustomField;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 
-import java.time.LocalTime;
-import java.util.stream.IntStream;
-
 /**
- * A custom field for displaying a time - renders an hour combo box and a minute combo box
+ * A custom field for displaying a time - renders an hour combo box and a minute
+ * combo box
  *
  */
 public class TimeField extends CustomField<LocalTime> {
@@ -43,12 +44,9 @@ public class TimeField extends CustomField<LocalTime> {
 	/**
 	 * Constructor
 	 *
-	 * @param textField
-	 *            the text field that this component wraps around
-	 * @param attributeModel
-	 *            the attribute model used to construct the compoent
-	 * @param editable
-	 *            whether to display the field in editable mode
+	 * @param textField      the text field that this component wraps around
+	 * @param attributeModel the attribute model used to construct the compoent
+	 * @param editable       whether to display the field in editable mode
 	 */
 	public TimeField(AttributeModel attributeModel) {
 		this.attributeModel = attributeModel;
@@ -73,7 +71,7 @@ public class TimeField extends CustomField<LocalTime> {
 	protected void doSetValue(LocalTime value) {
 		if (value == null) {
 			hourSelect.clear();
-			minuteSelect.clear();
+			minuteSelect.setValue(0);
 		} else {
 			hourSelect.setValue(value.getHour());
 			minuteSelect.setValue(value.getMinute());
@@ -85,10 +83,9 @@ public class TimeField extends CustomField<LocalTime> {
 		super.setValue(newValue);
 	}
 
-
 	@Override
 	public LocalTime getValue() {
-		if (hourSelect.getValue() == null || minuteSelect.getValue() == null){
+		if (hourSelect.getValue() == null || minuteSelect.getValue() == null) {
 			return null;
 		}
 		int hour = hourSelect.getValue();
@@ -98,7 +95,9 @@ public class TimeField extends CustomField<LocalTime> {
 
 	@Override
 	public Registration addValueChangeListener(final ValueChangeListener<LocalTime> listener) {
-		hourSelect.addValueChangeListener(valueChangeEvent -> listener.valueChange(new ValueChangeEvent<>(this, this, null, false)));
-		return minuteSelect.addValueChangeListener(valueChangeEvent -> listener.valueChange(new ValueChangeEvent<>(this, this, null, false)));
+		hourSelect.addValueChangeListener(
+				valueChangeEvent -> listener.valueChange(new ValueChangeEvent<>(this, this, null, false)));
+		return minuteSelect.addValueChangeListener(
+				valueChangeEvent -> listener.valueChange(new ValueChangeEvent<>(this, this, null, false)));
 	}
 }

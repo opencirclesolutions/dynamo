@@ -17,6 +17,12 @@ import com.ocs.dynamo.utils.ClassUtils;
 
 import java.util.Collection;
 
+/**
+ * 
+ * @author Bas Rutten
+ *
+ * @param <T> the type of the entity to filter
+ */
 public class ContainsPredicate<T> extends PropertyPredicate<T> {
 
 	private static final long serialVersionUID = -2480590128514763691L;
