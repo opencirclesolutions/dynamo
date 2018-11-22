@@ -971,6 +971,13 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 
 			if (!AttributeSelectMode.INHERIT.equals(attribute.searchSelectMode())) {
 				model.setSearchSelectMode(attribute.searchSelectMode());
+
+				// for a basic attribute, automatically set multiple search when a token field
+				// is selected
+				if (AttributeType.BASIC.equals(model.getAttributeType())
+						&& AttributeSelectMode.TOKEN.equals(model.getSearchSelectMode())) {
+					model.setMultipleSearch(true);
+				}
 			}
 
 			model.setSearchCaseSensitive(attribute.searchCaseSensitive());
