@@ -39,6 +39,7 @@ import com.ocs.dynamo.ui.component.InternalLinkField;
 import com.ocs.dynamo.ui.component.QuickAddEntityComboBox;
 import com.ocs.dynamo.ui.component.QuickAddListSelect;
 import com.ocs.dynamo.ui.component.QuickAddListSingleSelect;
+import com.ocs.dynamo.ui.component.SimpleTokenFieldSelect;
 import com.ocs.dynamo.ui.component.TimeField;
 import com.ocs.dynamo.ui.component.TokenFieldSelect;
 import com.ocs.dynamo.ui.component.URLField;
@@ -283,9 +284,8 @@ public class FieldFactoryImpl<T> implements FieldFactory {
 				}
 			} else {
 				// TODO: search field
-//				field = constructSimpleTokenField(
-//						fieldEntityModel != null ? fieldEntityModel : am.getEntityModel(), am,
-//						propertyId.substring(propertyId.lastIndexOf('.') + 1), true, null);
+				field = constructSimpleTokenField(fieldEntityModel != null ? fieldEntityModel : am.getEntityModel(), am,
+						am.getPath().substring(am.getPath().lastIndexOf('.') + 1), true, null);
 			}
 		} else if (AbstractEntity.class.isAssignableFrom(am.getType()))
 
@@ -313,6 +313,11 @@ public class FieldFactoryImpl<T> implements FieldFactory {
 		} else if (am.isWeek()) {
 			// special case - week field in a table
 			field = new TextField();
+		} else if (search && AttributeSelectMode.TOKEN.equals(am.getSearchSelectMode())
+				&& AttributeType.BASIC.equals(am.getAttributeType())) {
+			// token field for searching distinct values
+			field = constructSimpleTokenField(fieldEntityModel != null ? fieldEntityModel : am.getEntityModel(), am,
+					am.getPath().substring(am.getPath().lastIndexOf('.') + 1), false, null);
 		} else if ((NumberUtils.isLong(am.getType()) || NumberUtils.isInteger(am.getType())
 				|| BigDecimal.class.equals(am.getType())) && NumberSelectMode.SLIDER.equals(am.getNumberSelectMode())) {
 			final Slider slider = new Slider(am.getDisplayName());
@@ -431,6 +436,27 @@ public class FieldFactoryImpl<T> implements FieldFactory {
 		return field;
 	}
 
+	/**
+	 * Constructs a field for looking up simple values (Strings, ints) from a table
+	 * field or a collection table
+	 * 
+	 * @param entityModel       the entity model
+	 * @param am                the attribute model
+	 * @param distinctField
+	 * @param elementCollection
+	 * @param fieldFilter
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	private <ID extends Serializable, S extends AbstractEntity<ID>, O extends Comparable<O>> SimpleTokenFieldSelect<ID, S, O> constructSimpleTokenField(
+			EntityModel<?> entityModel, AttributeModel am, String distinctField, boolean elementCollection,
+			SerializablePredicate<S> fieldFilter) {
+		BaseService<ID, S> service = (BaseService<ID, S>) serviceLocator
+				.getServiceForEntity(entityModel.getEntityClass());
+		return new SimpleTokenFieldSelect<ID, S, O>(service, (EntityModel<S>) entityModel, am, fieldFilter,
+				distinctField, (Class<O>) am.getNormalizedType(), elementCollection);
+	}
+
 	@SuppressWarnings("unchecked")
 	private SortOrder<String>[] constructSortOrder(final EntityModel<?> entityModel) {
 		final SortOrder<String>[] sos = new SortOrder[entityModel.getSortOrder().size()];
@@ -449,27 +475,11 @@ public class FieldFactoryImpl<T> implements FieldFactory {
 		if (field instanceof AbstractTextField) {
 			final AbstractTextField textField = (AbstractTextField) field;
 			textField.setDescription(am.getDescription());
-//			if (!StringUtils.isEmpty(am.getPrompt())) {
-//				textField.setInputPrompt(am.getPrompt());
-//			}
-
-			// set converters
-			// setConverters(textField, am);
-
-			// add email validator
-//			if (am.isEmail()) {
-//				field.addValidator(
-//						new EmailValidator(messageService.getMessage("ocs.no.valid.email", VaadinUtils.getLocale())));
-//			}
 		} else if (field instanceof DateField) {
 			// set a separate format for a date field
-			final DateField dateField = (DateField) field;
+			DateField dateField = (DateField) field;
 			if (am.getDisplayFormat() != null) {
 				dateField.setDateFormat(am.getDisplayFormat());
-			}
-
-			if (AttributeDateType.TIMESTAMP.equals(am.getDateType())) {
-				// dateField.setResolution(Resolution.SECOND);
 			}
 		}
 
@@ -480,6 +490,13 @@ public class FieldFactoryImpl<T> implements FieldFactory {
 
 	}
 
+	/**
+	 * 
+	 * @param entityModel
+	 * @param am
+	 * @param search
+	 * @return
+	 */
 	private EntityModel<?> resolveEntityModel(EntityModel<?> entityModel, final AttributeModel am, Boolean search) {
 		if (entityModel == null) {
 			if (!Boolean.TRUE.equals(search) && am.getNestedEntityModel() != null) {

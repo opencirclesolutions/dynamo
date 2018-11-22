@@ -16,7 +16,9 @@ package com.ocs.dynamo.ui.component;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.explicatis.ext_token_field.ExtTokenField;
 import com.explicatis.ext_token_field.SimpleTokenizable;
@@ -26,10 +28,7 @@ import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.filter.FilterConverter;
 import com.ocs.dynamo.service.BaseService;
-import com.ocs.dynamo.service.MessageService;
-import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.Refreshable;
-import com.ocs.dynamo.ui.utils.SortUtil;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.data.provider.SortOrder;
 import com.vaadin.server.SerializablePredicate;
@@ -37,6 +36,7 @@ import com.vaadin.shared.Registration;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
+import com.vaadin.ui.HorizontalLayout;
 
 /**
  * A token field that displays the distinct values for a basic property of an
@@ -48,82 +48,59 @@ import com.vaadin.ui.CustomField;
  * @param <S> the type of the entity
  * @param <T> the type of the basic property
  */
-public class SimpleTokenFieldSelect<ID extends Serializable, T extends AbstractEntity<ID>>
+public class SimpleTokenFieldSelect<ID extends Serializable, S extends AbstractEntity<ID>, T extends Comparable<T>>
 		extends CustomField<Collection<T>> implements Refreshable {
-
-	// private class SimpleItemSorter implements ItemSorter {
-	//
-	// private static final long serialVersionUID = -2397932123434432733L;
-	//
-	// private boolean sortOrderAscending;
-	//
-	// @Override
-	// @SuppressWarnings("unchecked")
-	// public int compare(Object itemId1, Object itemId2) {
-	// T item1 = (T) itemId1;
-	// T item2 = (T) itemId2;
-	//
-	// /*
-	// * Items can be null if the container is filtered. Null is
-	// * considered "less" than not-null.
-	// */
-	// if (item1 == null) {
-	// if (item2 == null) {
-	// return 0;
-	// } else {
-	// return 1;
-	// }
-	// } else if (item2 == null) {
-	// return -1;
-	// }
-	//
-	// return this.sortOrderAscending ? item1.compareTo(item2) :
-	// item2.compareTo(item1);
-	// }
-	//
-	// @Override
-	// public void setSortProperties(Container.Sortable container, Object[]
-	// propertyId, boolean[] ascending) {
-	// sortOrderAscending = true;
-	// if (ascending != null) {
-	// sortOrderAscending = ascending[0];
-	// }
-	// }
-	// }
 
 	private static final long serialVersionUID = -1490179285573442827L;
 
+	/**
+	 * The attribute model
+	 */
 	private AttributeModel attributeModel;
 
-	private final ExtTokenField extTokenField;
-
-	private final boolean elementCollection;
-
+	/**
+	 * The combo box that holds the values to select from
+	 */
 	private final ComboBox<T> comboBox;
-
-	private final ListDataProvider<T> dataProvider;
-
-	private final Collection<ValueChangeListener<?>> valueChangeListeners;
-
-	private List<Object> sortProperties;
-
-	private List<Boolean> sortOrdering;
-
-	private MessageService messageService;
-
-	private GenericTokenFieldUtil.TokenizableFactory<T> tokenizableFactory;
-
-	private BaseService<ID, T> service;
-
-	private EntityModel<T> entityModel;
-
-	private SerializablePredicate<T> fieldFilter;
 
 	private String distinctField;
 
-	private SortOrder<T>[] sortOrders;
+	/**
+	 * Whether to take the values from an element collection table
+	 */
+	private final boolean elementCollection;
 
 	private Class<T> elementType;
+
+	/**
+	 * The entity model
+	 */
+	private EntityModel<S> entityModel;
+
+	/**
+	 * The token field
+	 */
+	private final ExtTokenField extTokenField;
+
+	/**
+	 * 
+	 */
+	private SerializablePredicate<S> fieldFilter;
+
+	/**
+	 * Data provider that contains the selected items
+	 */
+	private final ListDataProvider<T> provider;
+
+	/**
+	 * Service for querying the database
+	 */
+	private BaseService<ID, S> service;
+
+	/**
+	 * Value change listeners
+	 */
+	private final Collection<ValueChangeListener<Collection<T>>> valueChangeListeners;
 
 	/**
 	 * Constructor
@@ -138,16 +115,13 @@ public class SimpleTokenFieldSelect<ID extends Serializable, T extends AbstractE
 	 * @param elementType    the type of the items to display
 	 * @param sortOrders     sort orders to apply
 	 */
-	@SafeVarargs
-	public SimpleTokenFieldSelect(BaseService<ID, T> service, EntityModel<T> entityModel, AttributeModel attributeModel,
-			SerializablePredicate<T> fieldFilter, String distinctField, Class<T> elementType, boolean elementCollection,
-			SortOrder<T>... sortOrders) {
-		this.messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
+	public SimpleTokenFieldSelect(BaseService<ID, S> service, EntityModel<S> entityModel, AttributeModel attributeModel,
+			SerializablePredicate<S> fieldFilter, String distinctField, Class<T> elementType,
+			boolean elementCollection) {
 		this.service = service;
 		this.entityModel = entityModel;
 		this.fieldFilter = fieldFilter;
 		this.distinctField = distinctField;
-		this.sortOrders = sortOrders;
 		this.elementType = elementType;
 		this.elementCollection = elementCollection;
 		this.attributeModel = attributeModel;
@@ -156,80 +130,127 @@ public class SimpleTokenFieldSelect<ID extends Serializable, T extends AbstractE
 
 		extTokenField = new ExtTokenField();
 
+		provider = new ListDataProvider<T>(new ArrayList<>());
 		comboBox = new ComboBox<T>();
+
 		fillComboBox(this.elementCollection);
-
-		sortProperties = new ArrayList<>();
-		sortOrdering = new ArrayList<>();
-		GenericTokenFieldUtil.initializeOrdering(sortOrders, sortProperties, sortOrdering);
-
-		dataProvider = new ListDataProvider<T>(new ArrayList<>());
 		valueChangeListeners = new ArrayList<>();
+	}
 
-		tokenizableFactory = new GenericTokenFieldUtil.TokenizableFactory<T>() {
-			@Override
-			public void addTokenToComboBox(Tokenizable tokenizable, ComboBox<T> comboBox) {
-				// comboBox.getIte(tokenizable.getStringValue());
+	private void addTokens() {
+		extTokenField.clear();
+		if (provider.getItems().size() > 0) {
+			for (T item : provider.getItems()) {
+				Tokenizable token = new SimpleTokenizable(System.nanoTime(), item.toString());
+				extTokenField.addTokenizable(token);
 			}
+		}
 
-			@Override
-			public Tokenizable createToken(T item) {
-				return new SimpleTokenizable(System.nanoTime(), item.toString());
-			}
-
-			@Override
-			public void removeTokenFromContainer(Tokenizable tokenizable, ListDataProvider<T> container) {
-				// container.removeItem(tokenizable.getStringValue());
-			}
-		};
+		for (ValueChangeListener<Collection<T>> valueChangeListener : valueChangeListeners) {
+			valueChangeListener.valueChange(new ValueChangeEvent<>(SimpleTokenFieldSelect.this, null, false));
+		}
 	}
 
 	@Override
-	public Registration addValueChangeListener(final ValueChangeListener listener) {
+	public Registration addValueChangeListener(ValueChangeListener<Collection<T>> listener) {
 		valueChangeListeners.add(listener);
 		return null;
 	}
 
+	/**
+	 * Sets up a listener that adds a token in response to a selection in the combo
+	 * box
+	 */
+	@SuppressWarnings("unchecked")
+	private void attachComboBoxValueChange() {
+		comboBox.addValueChangeListener(event -> {
+			Object selectedObject = event.getValue();
+			if (selectedObject != null) {
+				T t = (T) selectedObject;
+				provider.getItems().add(t);
+				// reset the combo box
+				comboBox.setValue(null);
+				provider.refreshAll();
+			}
+		});
+	}
+
+	/**
+	 * Respond to a token removal by also removing the corresponding value from the
+	 * container
+	 */
+	private void attachTokenFieldValueChange() {
+		extTokenField.addTokenRemovedListener(event -> {
+			final SimpleTokenizable tokenizable = (SimpleTokenizable) event.getTokenizable();
+			provider.getItems().remove(tokenizable.getStringValue());
+			provider.refreshAll();
+		});
+	}
+
+	@Override
+	protected void doSetValue(Collection<T> value) {
+		if (provider != null) {
+			provider.getItems().clear();
+			if (value != null && value instanceof Collection) {
+				provider.getItems().addAll(value);
+			}
+			provider.refreshAll();
+		}
+	}
+
+	/**
+	 * Fills the combo box with the avaiable values
+	 * 
+	 * @param elementCollection
+	 */
 	private void fillComboBox(boolean elementCollection) {
 		List<T> items = null;
 		if (elementCollection) {
+			// search element collection table
 			items = service.findDistinctInCollectionTable(attributeModel.getCollectionTableName(),
 					attributeModel.getCollectionTableFieldName(), elementType);
 		} else {
-			items = service.findDistinct(new FilterConverter<T>(entityModel).convert(fieldFilter), distinctField,
-					elementType, SortUtil.translate(sortOrders));
+			// search field in regular table
+			items = service.findDistinct(new FilterConverter<S>(entityModel).convert(fieldFilter), distinctField,
+					elementType);
 		}
-		// comboBox.removeAllItems();
-		// comboBox.addItems(items);
+
+		items = items.stream().filter(i -> i != null).collect(Collectors.toList());
+		items.sort(Comparator.naturalOrder());
+		comboBox.setDataProvider(new ListDataProvider<T>(items));
+
 	}
 
 	public ComboBox<T> getComboBox() {
 		return comboBox;
 	}
 
-	// @Override
-	// protected List<T> getInternalValue() {
-	// if (container.size() == 0) {
-	// return null;
-	// }
-	// return container.getItemIds();
-	// }
-
 	public ExtTokenField getTokenField() {
 		return extTokenField;
 	}
 
-	// @Override
-	// public List<T> getValue() {
-	// return getInternalValue();
-	// }
+	@Override
+	public Collection<T> getValue() {
+		return provider.getItems();
+	}
 
 	@Override
 	protected Component initContent() {
-		return GenericTokenFieldUtil.initContent(comboBox, messageService, extTokenField, dataProvider,
-				valueChangeListeners, this, sortProperties, sortOrdering, layout -> {
-					// nothing to do
-				}, tokenizableFactory);
+		HorizontalLayout layout = new DefaultHorizontalLayout(false, true, false);
+
+		comboBox.setHeightUndefined();
+
+		extTokenField.setInputField(comboBox);
+		extTokenField.setEnableDefaultDeleteTokenAction(true);
+
+		attachComboBoxValueChange();
+		attachTokenFieldValueChange();
+		setupProviderSync();
+
+		layout.addComponent(extTokenField);
+		layout.setSizeFull();
+
+		return layout;
 	}
 
 	@Override
@@ -239,39 +260,13 @@ public class SimpleTokenFieldSelect<ID extends Serializable, T extends AbstractE
 		}
 	}
 
-	// @Override
-	// protected void setInternalValue(Collection<T> values) {
-	// super.setInternalValue(values);
-	//
-	// if (values == null && !container.getItemIds().isEmpty()) {
-	// // restore all item in the comboBox
-	// for (T item : container.getItemIds()) {
-	// comboBox.getContainerDataSource().addItem(item);
-	// }
-	// GenericTokenFieldUtil.sortComboBox(comboBox, sortProperties, sortOrdering);
-	// }
-	// container.removeAllItems();
-	// if (values != null) {
-	// container.addAll(values);
-	// }
-	// }
-
-	@Override
-	public void setValue(Collection<T> values) {
-		super.setValue(values);
-		// setInternalValue(values);
-	}
-
-	@Override
-	protected void doSetValue(Collection<T> value) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public Collection<T> getValue() {
-		// TODO Auto-generated method stub
-		return null;
+	/**
+	 * Update token selections
+	 */
+	private void setupProviderSync() {
+		provider.addDataProviderListener(event -> {
+			addTokens();
+		});
 	}
 
 }

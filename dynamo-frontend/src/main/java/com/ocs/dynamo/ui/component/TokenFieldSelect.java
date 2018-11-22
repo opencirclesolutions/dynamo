@@ -197,7 +197,7 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
 	@SuppressWarnings("unchecked")
 	private void attachTokenFieldValueChange() {
 		extTokenField.addTokenRemovedListener(event -> {
-			final BeanItemTokenizable tokenizable = (BeanItemTokenizable) event.getTokenizable();
+			BeanItemTokenizable tokenizable = (BeanItemTokenizable) event.getTokenizable();
 			provider.getItems().remove(tokenizable.getItem());
 			copyValueFromContainer();
 		});
