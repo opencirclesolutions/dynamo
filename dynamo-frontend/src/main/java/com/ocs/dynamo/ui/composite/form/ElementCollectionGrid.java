@@ -18,22 +18,28 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
+import com.ocs.dynamo.ui.CanAssignEntity;
 import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
+import com.ocs.dynamo.ui.converter.ConverterFactory;
 import com.ocs.dynamo.ui.utils.ConvertUtil;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.util.SystemPropertyUtils;
+import com.ocs.dynamo.utils.ClassUtils;
+import com.ocs.dynamo.utils.NumberUtils;
 import com.vaadin.data.BeanValidationBinder;
 import com.vaadin.data.Binder;
+import com.vaadin.data.Binder.BindingBuilder;
 import com.vaadin.data.ValueProvider;
 import com.vaadin.data.provider.ListDataProvider;
+import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -47,12 +53,16 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.renderers.ComponentRenderer;
 
 /**
- * A component for editing a property that is annotated as an @ElementCollection
+ * A grid for editing a collection of simple values stored in a collection table
+ * 
+ * @author Bas Rutten
  *
- * @param <T> the type of the elements in the table
- * @author bas.rutten @ElementCollection.
+ * @param <ID> the type of the key of the entity
+ * @param <U> the type of the entity on which the collection is stored
+ * @param <T> the type of the elements in the collection
  */
-public class ElementCollectionGrid<T extends Serializable> extends CustomField<Collection<T>> implements SignalsParent {
+public class ElementCollectionGrid<ID extends Serializable, U extends AbstractEntity<ID>, T extends Serializable>
+		extends CustomField<Collection<T>> implements SignalsParent, CanAssignEntity<ID, U> {
 
 	private static final long serialVersionUID = -1203245694503350276L;
 
@@ -75,30 +85,23 @@ public class ElementCollectionGrid<T extends Serializable> extends CustomField<C
 	 * The grid for displaying the actual items
 	 */
 	private Grid<ValueHolder<T>> grid;
+
 	/**
 	 * Button for adding new items to the table
 	 */
 	private Button addButton;
+
 	/**
 	 * 
 	 * Form options that determine which buttons and functionalities are* available
 	 */
 	private FormOptions formOptions;
+
 	/**
 	 * 
 	 * The number of rows to display
 	 */
 	private int pageLength = SystemPropertyUtils.getDefaultListSelectRows();
-
-	/**
-	 * The parent form in which this component is embedded
-	 */
-	private ReceivesSignal receiver;
-
-	/**
-	 * Whether to propagate change events (disabled during construction)
-	 */
-	private boolean propagateChanges = true;
 
 	/**
 	 * 
@@ -113,23 +116,37 @@ public class ElementCollectionGrid<T extends Serializable> extends CustomField<C
 	 */
 	private boolean viewMode;
 
+	/**
+	 * The entity on to which to store the values. This should not normally be
+	 * needed but for some reason the normal binding mechanisms don't work so we
+	 * need to set the values ourselves
+	 */
+	private U entity;
+
+	/**
+	 * Map of bindings. Contains one binding for each row
+	 */
 	private Map<ValueHolder<T>, Binder<ValueHolder<T>>> binders = new HashMap<>();
 
 	/**
 	 * Constructor
 	 * 
 	 * @param attributeModel the attribute model
-	 * @param viewMode       whether the component is in view mode
-	 * @param formOptions
+	 * @param formOptions    the form options that govern how the table behaves
 	 */
-	public ElementCollectionGrid(final AttributeModel attributeModel, final boolean viewMode,
-			final FormOptions formOptions) {
+	public ElementCollectionGrid(AttributeModel attributeModel, FormOptions formOptions) {
 		this.messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
-		this.viewMode = viewMode;
 		this.formOptions = formOptions;
 		this.attributeModel = attributeModel;
 		this.provider = new ListDataProvider<>(new ArrayList<>());
+	}
 
+	/**
+	 * Assigns the parent entity
+	 */
+	@Override
+	public void assignEntity(U t) {
+		this.entity = t;
 	}
 
 	/**
@@ -145,15 +162,11 @@ public class ElementCollectionGrid<T extends Serializable> extends CustomField<C
 			ValueHolder<T> vh = new ValueHolder<T>(null);
 			provider.getItems().add(vh);
 
+			@SuppressWarnings({ "rawtypes", "unchecked" })
 			Binder<ValueHolder<T>> binder = new BeanValidationBinder(ValueHolder.class);
 			binder.setBean(vh);
 			binders.put(vh, binder);
 			provider.refreshAll();
-
-			if (receiver != null) {
-				receiver.signalDetailsComponentValid(ElementCollectionGrid.this,
-						VaadinUtils.allFixedTableFieldsValid(grid));
-			}
 
 		});
 		buttonBar.addComponent(addButton);
@@ -182,23 +195,32 @@ public class ElementCollectionGrid<T extends Serializable> extends CustomField<C
 	private void constructRemoveColumn() {
 		// add a remove button directly in the table
 		if (!viewMode && formOptions.isShowRemoveButton()) {
-			final String removeMsg = messageService.getMessage("ocs.detail.remove", VaadinUtils.getLocale());
+			final String removeMsg = message("ocs.detail.remove");
 			grid.addComponentColumn((ValueProvider<ValueHolder<T>, Component>) t -> {
 				Button remove = new Button(removeMsg);
 				remove.setIcon(VaadinIcons.TRASH);
 				remove.addClickListener(event -> {
 					provider.getItems().remove(t);
 					provider.refreshAll();
-					// callback method so the entity can be removed from its
-					// parent
-					// removeEntity((T) t);
-					if (receiver != null) {
-						receiver.signalDetailsComponentValid(ElementCollectionGrid.this,
-								VaadinUtils.allFixedTableFieldsValid(grid));
-					}
 				});
 				return remove;
 			});
+		}
+	}
+
+	@Override
+	protected void doSetValue(Collection<T> value) {
+		provider.getItems().clear();
+		provider.refreshAll();
+		binders.clear();
+
+		for (T t : value) {
+			ValueHolder<T> vh = new ValueHolder<T>(t);
+			provider.getItems().add(vh);
+			@SuppressWarnings({ "rawtypes", "unchecked" })
+			Binder<ValueHolder<T>> binder = new BeanValidationBinder(ValueHolder.class);
+			binder.setBean(vh);
+			binders.put(vh, binder);
 		}
 	}
 
@@ -206,12 +228,12 @@ public class ElementCollectionGrid<T extends Serializable> extends CustomField<C
 		return addButton;
 	}
 
-	public FormOptions getFormOptions() {
-		return formOptions;
+	public U getEntity() {
+		return entity;
 	}
 
-	public void setFormOptions(final FormOptions formOptions) {
-		this.formOptions = formOptions;
+	public FormOptions getFormOptions() {
+		return formOptions;
 	}
 
 	public Integer getMaxLength() {
@@ -234,27 +256,18 @@ public class ElementCollectionGrid<T extends Serializable> extends CustomField<C
 		return pageLength;
 	}
 
-	public void setPageLength(final int pageLength) {
-		this.pageLength = pageLength;
-	}
-
-	public ReceivesSignal getReceiver() {
-		return receiver;
-	}
-
-	public void setReceiver(ReceivesSignal receiver) {
-		this.receiver = receiver;
-		if (receiver != null) {
-			receiver.signalDetailsComponentValid(this, VaadinUtils.allFixedTableFieldsValid(grid));
-		}
-	}
-
 	public Object getSelectedItem() {
 		return selectedItem;
 	}
 
-	public void setSelectedItem(final String selectedItem) {
-		this.selectedItem = selectedItem;
+	@Override
+	public Collection<T> getValue() {
+		Collection<T> col = provider.getItems().stream().map(vh -> vh.getValue()).collect(Collectors.toList());
+		Collection<T> converted = ConvertUtil.convertCollection(col, attributeModel);
+		if (entity != null) {
+			ClassUtils.setFieldValue(entity, attributeModel.getPath(), converted);
+		}
+		return converted;
 	}
 
 	/**
@@ -272,7 +285,30 @@ public class ElementCollectionGrid<T extends Serializable> extends CustomField<C
 		Column<ValueHolder<T>, TextField> column = grid.addColumn(vh -> {
 			TextField tf = new TextField("");
 			Binder<ValueHolder<T>> binder = binders.get(vh);
-			binder.forField(tf).asRequired().bind("value");
+
+			BindingBuilder<ValueHolder<T>, String> builder = binder.forField(tf);
+			builder.withNullRepresentation("");
+
+			if (String.class.equals(attributeModel.getMemberType())) {
+				// string length validation
+				if (attributeModel.getMaxLength() != null) {
+					builder.withValidator(
+							new StringLengthValidator(message("ocs.value.too.long", attributeModel.getMaxLength()),
+									null, attributeModel.getMaxLength()));
+				}
+				if (attributeModel.getMinLength() != null) {
+					builder.withValidator(
+							new StringLengthValidator(message("ocs.value.too.short", attributeModel.getMinLength()),
+									attributeModel.getMinLength(), null));
+				}
+			} else if (NumberUtils.isInteger(attributeModel.getMemberType())) {
+				builder.withConverter(ConverterFactory.createIntegerConverter(
+						SystemPropertyUtils.useThousandsGroupingInEditMode(), attributeModel.isPercentage()));
+			} else if (NumberUtils.isLong(attributeModel.getMemberType())) {
+				builder.withConverter(ConverterFactory.createLongConverter(
+						SystemPropertyUtils.useThousandsGroupingInEditMode(), attributeModel.isPercentage()));
+			}
+			builder.asRequired().bind("value");
 			return tf;
 		}, new ComponentRenderer());
 
@@ -280,84 +316,6 @@ public class ElementCollectionGrid<T extends Serializable> extends CustomField<C
 
 		grid.setHeightByRows(pageLength);
 		grid.setSelectionMode(SelectionMode.SINGLE);
-
-//		table.setTableFieldFactory(new DefaultFieldFactory() {
-//
-//			@Override
-//			public Field<?> createField(final Container container, final Object itemId, final Object propertyId,
-//					final Component uiContext) {
-//
-//				final Field<?> f = super.createField(container, itemId, propertyId, uiContext);
-//				if (f instanceof TextField) {
-//					final TextField tf = (TextField) f;
-//					tf.setNullRepresentation("");
-//					tf.setSizeFull();
-//					tf.setConverter(ConverterFactory.createConverterFor(attributeModel.getNormalizedType(),
-//							attributeModel, SystemPropertyUtils.useThousandsGroupingInEditMode()));
-//					// there is only one property per record so it has to be
-//					// required
-//					tf.setRequired(true);
-//					tf.setRequiredError("may not be null");
-//				}
-//
-//				// add a validator that checks for the maximum length
-//				if (attributeModel.getMaxLength() != null) {
-//					f.addValidator(new StringLengthValidator(messageService.getMessage("ocs.value.too.long",
-//							VaadinUtils.getLocale(), attributeModel.getMaxLength()), 0, attributeModel.getMaxLength(),
-//							true));
-//				}
-//
-//				// add a validator that checks for the minimum length
-//				if (attributeModel.getMinLength() != null) {
-//					f.addValidator(new StringLengthValidator(
-//							messageService.getMessage("ocs.value.too.short", VaadinUtils.getLocale(),
-//									attributeModel.getMinLength()),
-//							attributeModel.getMinLength(), Integer.MAX_VALUE, true));
-//				}
-//
-//				if (attributeModel.getMinValue() != null) {
-//					if (NumberUtils.isInteger(attributeModel.getNormalizedType())) {
-//						f.addValidator(
-//								new IntegerRangeValidator(
-//										messageService.getMessage("ocs.value.too.low", VaadinUtils.getLocale(),
-//												attributeModel.getMinValue()),
-//										attributeModel.getMinValue().intValue(), null));
-//					} else if (NumberUtils.isLong(attributeModel.getNormalizedType())) {
-//						f.addValidator(new LongRangeValidator(messageService.getMessage("ocs.value.too.low",
-//								VaadinUtils.getLocale(), attributeModel.getMinValue()), attributeModel.getMinValue(),
-//								null));
-//					}
-//				}
-//
-//				if (attributeModel.getMaxValue() != null) {
-//					if (NumberUtils.isInteger(attributeModel.getNormalizedType())) {
-//						f.addValidator(
-//								new IntegerRangeValidator(
-//										messageService.getMessage("ocs.value.too.high", VaadinUtils.getLocale(),
-//												attributeModel.getMaxValue()),
-//										null, attributeModel.getMaxValue().intValue()));
-//					} else if (NumberUtils.isLong(attributeModel.getNormalizedType())) {
-//						f.addValidator(new LongRangeValidator(messageService.getMessage("ocs.value.too.high",
-//								VaadinUtils.getLocale(), attributeModel.getMaxValue()), null,
-//								attributeModel.getMaxValue()));
-//					}
-//				}
-//
-//				// value change listener that makes sure the validity of the
-//				// parent form is correctly set
-//				f.addValueChangeListener(event -> {
-//					if (propagateChanges) {
-//						propagateChanges = false;
-//						setValue(extractValues());
-//						parentForm.signalDetailsComponentValid(CollectionTable.this,
-//								VaadinUtils.allFixedTableFieldsValid(table));
-//						propagateChanges = true;
-//
-//					}
-//				});
-//				return f;
-//			}
-//		});
 
 		// add a change listener (to make sure the buttons are correctly
 		// enabled/disabled)
@@ -375,11 +333,6 @@ public class ElementCollectionGrid<T extends Serializable> extends CustomField<C
 		// add the buttons
 		constructButtonBar(layout);
 
-		// set the reference to the parent so the status of the save button can
-		// be set correctly
-		final ModelBasedEditForm<?, ?> receiver = VaadinUtils.getParentOfClass(this, ModelBasedEditForm.class);
-		setReceiver(receiver);
-
 		return layout;
 	}
 
@@ -387,8 +340,8 @@ public class ElementCollectionGrid<T extends Serializable> extends CustomField<C
 		return viewMode;
 	}
 
-	public void setViewMode(final boolean viewMode) {
-		this.viewMode = viewMode;
+	private String message(String key, Object... values) {
+		return messageService.getMessage(key, VaadinUtils.getLocale(), values);
 	}
 
 	/**
@@ -407,19 +360,24 @@ public class ElementCollectionGrid<T extends Serializable> extends CustomField<C
 		// overwrite in subclass if needed
 	}
 
-	@Override
-	protected void doSetValue(Collection<T> value) {
-		provider.getItems().clear();
-		provider.refreshAll();
-		binders.clear();
+	public void setEntity(U entity) {
+		this.entity = entity;
+	}
 
-		for (T t : value) {
-			ValueHolder<T> vh = new ValueHolder<T>(t);
-			provider.getItems().add(vh);
-			Binder<ValueHolder<T>> binder = new BeanValidationBinder(ValueHolder.class);
-			binder.setBean(vh);
-			binders.put(vh, binder);
-		}
+	public void setFormOptions(final FormOptions formOptions) {
+		this.formOptions = formOptions;
+	}
+
+	public void setPageLength(final int pageLength) {
+		this.pageLength = pageLength;
+	}
+
+	public void setSelectedItem(final String selectedItem) {
+		this.selectedItem = selectedItem;
+	}
+
+	public void setViewMode(final boolean viewMode) {
+		this.viewMode = viewMode;
 	}
 
 	@Override
@@ -431,12 +389,7 @@ public class ElementCollectionGrid<T extends Serializable> extends CustomField<C
 		return error;
 	}
 
-	@Override
-	public Collection<T> getValue() {
-		Collection<T> col = provider.getItems().stream().map(vh -> vh.getValue()).collect(Collectors.toList());
-		Collection<T> col2 = ConvertUtil.convertCollection(col, attributeModel);
-		System.out.println("Selected: " + col2);
-		return col2;
+	public Grid<ValueHolder<T>> getGrid() {
+		return grid;
 	}
-
 }

@@ -268,10 +268,15 @@ public class FieldFactoryImpl<T> implements FieldFactory {
 			if (!search) {
 				// use a "collection table" for an element collection
 				final FormOptions fo = new FormOptions().setShowRemoveButton(true);
-				if (String.class.equals(am.getMemberType()) || NumberUtils.isNumeric(am.getMemberType())) {
-					ElementCollectionGrid<String> table = new ElementCollectionGrid<>(am, false, fo);
-
-					field = table;
+				if (String.class.equals(am.getMemberType())) {
+					ElementCollectionGrid<?, ?, String> grid = new ElementCollectionGrid<>(am, fo);
+					field = grid;
+				} else if (NumberUtils.isInteger(am.getMemberType())) {
+					ElementCollectionGrid<?, ?, Integer> grid = new ElementCollectionGrid<>(am, fo);
+					field = grid;
+				} else if (NumberUtils.isLong(am.getMemberType())) {
+					ElementCollectionGrid<?, ?, Long> grid = new ElementCollectionGrid<>(am, fo);
+					field = grid;
 				} else {
 					// other types not supported for now
 					throw new OCSRuntimeException("Element collections of this type are currently not supported");
@@ -282,7 +287,9 @@ public class FieldFactoryImpl<T> implements FieldFactory {
 //						fieldEntityModel != null ? fieldEntityModel : am.getEntityModel(), am,
 //						propertyId.substring(propertyId.lastIndexOf('.') + 1), true, null);
 			}
-		} else if (AbstractEntity.class.isAssignableFrom(am.getType())) {
+		} else if (AbstractEntity.class.isAssignableFrom(am.getType()))
+
+		{
 			// lookup or combo field for an entity
 			field = constructSelect(am, fieldEntityModel, fieldFilter);
 		} else if (Collection.class.isAssignableFrom(am.getType())) {

@@ -365,6 +365,9 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	 */
 	private boolean viewMode;
 
+	/**
+	 * 
+	 */
 	private List<CanAssignEntity<ID, T>> assignEntityToFields = new ArrayList<>();
 
 	/**
@@ -585,6 +588,9 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 				previews.put(Boolean.FALSE, previewMap);
 
 				mainEditLayout = buildMainLayout(getEntityModel());
+				for (CanAssignEntity<ID, T> field : assignEntityToFields) {
+					field.assignEntity(entity);
+				}
 
 				if (!fieldsProcessed) {
 					postProcessEditFields();
@@ -1094,7 +1100,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			BindingBuilder<T, LocalDateTime> sBuilder = (BindingBuilder<T, LocalDateTime>) builder;
 			sBuilder.withConverter(new ZonedDateTimeToLocalDateTimeConverter(ZoneId.systemDefault()));
 		}
-
 	}
 
 	/**
@@ -1730,15 +1735,15 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	private void setEntity(T entity, boolean checkIterationButtons) {
 		this.entity = entity;
 		// refresh any fields that need it
-		groups.get(isViewMode()).getFields().forEach(f -> {
-//			Object pid = groups.get(viewMode).getPropertyId(f);
+//		groups.get(isViewMode()).getFields().forEach(f -> {
+//			Object pid = f
 //			if (f instanceof CustomEntityField && getFieldFilters().containsKey(pid)) {
 //				SerializablePredicate<?> ff = getFieldFilters().get(pid);
 //				((CustomEntityField) f).refresh(ff);
 //			} else if (f instanceof Refreshable) {
 //				((Refreshable) f).refresh();
 //			}
-		});
+//		});
 
 		// Inform all children
 		for (CanAssignEntity<ID, T> field : assignEntityToFields) {
