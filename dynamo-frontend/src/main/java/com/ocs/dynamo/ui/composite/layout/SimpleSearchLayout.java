@@ -23,7 +23,7 @@ import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.composite.form.ModelBasedSearchForm;
-import com.ocs.dynamo.ui.container.QueryType;
+import com.ocs.dynamo.ui.provider.QueryType;
 import com.vaadin.data.provider.SortOrder;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Component;

@@ -25,7 +25,7 @@ import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.composite.form.AbstractModelBasedSearchForm;
 import com.ocs.dynamo.ui.composite.form.FlexibleFilterType;
 import com.ocs.dynamo.ui.composite.form.ModelBasedFlexibleSearchForm;
-import com.ocs.dynamo.ui.container.QueryType;
+import com.ocs.dynamo.ui.provider.QueryType;
 import com.vaadin.data.provider.SortOrder;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Layout;

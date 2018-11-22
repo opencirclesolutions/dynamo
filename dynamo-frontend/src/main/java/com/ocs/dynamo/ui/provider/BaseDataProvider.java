@@ -1,4 +1,4 @@
-package com.ocs.dynamo.ui.composite.grid;
+package com.ocs.dynamo.ui.provider;
 
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.dao.SortOrder.Direction;
@@ -32,17 +32,17 @@ public abstract class BaseDataProvider<ID extends Serializable, T extends Abstra
 
 	private static final long serialVersionUID = 7409567551591729117L;
 
-	private final BaseService<ID, T> service;
-
 	private final EntityModel<T> entityModel;
-
-	private Integer maxResults;
-
-	private final FetchJoinInformation[] joins;
 
 	private EntityModelFactory entityModelFactory = ServiceLocatorFactory.getServiceLocator().getEntityModelFactory();
 
+	private final FetchJoinInformation[] joins;
+
+	private Integer maxResults;
+
 	private MessageService messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
+
+	private final BaseService<ID, T> service;
 
 	/**
 	 * Constructor
@@ -90,6 +90,14 @@ public abstract class BaseDataProvider<ID extends Serializable, T extends Abstra
 		return joins;
 	}
 
+	public Integer getMaxResults() {
+		return maxResults;
+	}
+
+	public MessageService getMessageService() {
+		return messageService;
+	}
+
 	public BaseService<ID, T> getService() {
 		return service;
 	}
@@ -98,22 +106,14 @@ public abstract class BaseDataProvider<ID extends Serializable, T extends Abstra
 	 * Returns the number of items 
 	 * @return
 	 */
-	protected abstract int getSize();
+	public abstract int getSize();
 
 	@Override
 	public boolean isInMemory() {
 		return false;
 	}
 
-	public Integer getMaxResults() {
-		return maxResults;
-	}
-
 	public void setMaxResults(final Integer maxResults) {
 		this.maxResults = maxResults;
-	}
-
-	public MessageService getMessageService() {
-		return messageService;
 	}
 }

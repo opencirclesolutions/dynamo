@@ -1,4 +1,4 @@
-package com.ocs.dynamo.ui.composite.grid;
+package com.ocs.dynamo.ui.provider;
 
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.dao.SortOrders;
@@ -32,22 +32,6 @@ public class IdBasedDataProvider<ID extends Serializable, T extends AbstractEnti
 	}
 
 	@Override
-	public int size(Query<T, SerializablePredicate<T>> query) {
-		SortOrders so = createSortOrder(query);
-
-		FilterConverter<T> converter = getFilterConverter();
-		final Filter filter = converter.convert(query.getFilter().orElse(null));
-		Long count = getService().count(filter, false);
-		if (getMaxResults() != null
-				&& count >= getMaxResults()) {
-			Notification.show(getMessageService().getMessage("ocs.too.many.results", VaadinUtils.getLocale(),
-					getMaxResults()), Notification.Type.ERROR_MESSAGE);
-		}
-		ids = getService().findIds(filter, getMaxResults(), so.toArray());
-		return ids.size();
-	}
-
-	@Override
 	public Stream<T> fetch(Query<T, SerializablePredicate<T>> query) {
 
 		// when sort order changes, ID have to be fetched again
@@ -76,8 +60,24 @@ public class IdBasedDataProvider<ID extends Serializable, T extends AbstractEnti
 	}
 
 	@Override
-	protected int getSize() {
+	public int getSize() {
 		return ids == null ? 0: ids.size();
+	}
+
+	@Override
+	public int size(Query<T, SerializablePredicate<T>> query) {
+		SortOrders so = createSortOrder(query);
+
+		FilterConverter<T> converter = getFilterConverter();
+		final Filter filter = converter.convert(query.getFilter().orElse(null));
+		Long count = getService().count(filter, false);
+		if (getMaxResults() != null
+				&& count >= getMaxResults()) {
+			Notification.show(getMessageService().getMessage("ocs.too.many.results", VaadinUtils.getLocale(),
+					getMaxResults()), Notification.Type.ERROR_MESSAGE);
+		}
+		ids = getService().findIds(filter, getMaxResults(), so.toArray());
+		return ids.size();
 	}
 
 }
