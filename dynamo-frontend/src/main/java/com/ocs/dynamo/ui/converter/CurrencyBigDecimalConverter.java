@@ -43,8 +43,8 @@ public class CurrencyBigDecimalConverter extends BigDecimalConverter {
 	 * @param useGrouping
 	 * @param currencySymbol
 	 */
-	public CurrencyBigDecimalConverter(int precision, boolean useGrouping, String currencySymbol) {
-		super(precision, useGrouping);
+	public CurrencyBigDecimalConverter(String message, int precision, boolean useGrouping, String currencySymbol) {
+		super(message, precision, useGrouping);
 		this.currencySymbol = currencySymbol;
 	}
 

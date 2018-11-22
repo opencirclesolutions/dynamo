@@ -52,16 +52,16 @@ public class BigDecimalConverter extends StringToBigDecimalConverter {
 	 * 
 	 * @param pattern will be applied to the decimalFormat of this converter.
 	 */
-	public BigDecimalConverter(final String pattern) {
-		super("Some error message");
+	public BigDecimalConverter(String message, String pattern) {
+		super(message);
 		this.pattern = pattern;
 	}
 
 	/**
 	 * Constructor - for use with a precision and grouping setting
 	 */
-	public BigDecimalConverter(int precision, boolean useGrouping) {
-		super("Some error message");
+	public BigDecimalConverter(String message, int precision, boolean useGrouping) {
+		super(message);
 		this.precision = precision;
 		this.useGrouping = useGrouping;
 	}

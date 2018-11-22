@@ -25,8 +25,8 @@ public class PercentageLongConverter extends GroupingStringToLongConverter {
 
 	private static final long serialVersionUID = 2538721945689033561L;
 
-	public PercentageLongConverter(boolean useGrouping) {
-		super(useGrouping);
+	public PercentageLongConverter(String message, boolean useGrouping) {
+		super(message, useGrouping);
 	}
 
 	@Override

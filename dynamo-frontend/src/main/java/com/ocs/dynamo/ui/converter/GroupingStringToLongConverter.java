@@ -31,8 +31,8 @@ public class GroupingStringToLongConverter extends StringToLongConverter {
 
 	private boolean useGrouping;
 
-	public GroupingStringToLongConverter(boolean useGrouping) {
-		super("TODO");
+	public GroupingStringToLongConverter(String message, boolean useGrouping) {
+		super(message);
 		this.useGrouping = useGrouping;
 	}
 

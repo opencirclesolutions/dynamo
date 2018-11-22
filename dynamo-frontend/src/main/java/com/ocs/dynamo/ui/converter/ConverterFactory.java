@@ -13,16 +13,21 @@
  */
 package com.ocs.dynamo.ui.converter;
 
+import java.math.BigDecimal;
+import java.time.ZoneId;
+
 import com.ocs.dynamo.domain.model.AttributeModel;
+import com.ocs.dynamo.service.MessageService;
+import com.ocs.dynamo.service.ServiceLocatorFactory;
+import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.vaadin.data.Converter;
 import com.vaadin.data.converter.StringToIntegerConverter;
 import com.vaadin.data.converter.StringToLongConverter;
 
-import java.math.BigDecimal;
-import java.time.ZoneId;
-
 public final class ConverterFactory {
+
+	private static MessageService messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
 
 	private ConverterFactory() {
 		// hidden constructor
@@ -40,12 +45,14 @@ public final class ConverterFactory {
 	 */
 	public static BigDecimalConverter createBigDecimalConverter(boolean currency, boolean percentage,
 			boolean useGrouping, int precision, String currencySymbol) {
+		String msg = messageService.getMessage("ocs.cannot.convert", VaadinUtils.getLocale());
 		if (currency) {
-			return new CurrencyBigDecimalConverter(precision, useGrouping, currencySymbol);
+			return new CurrencyBigDecimalConverter(msg, precision, useGrouping, currencySymbol);
 		} else if (percentage) {
-			return new PercentageBigDecimalConverter(precision, useGrouping);
+			return new PercentageBigDecimalConverter(msg, precision, useGrouping);
+		} else {
+			return new BigDecimalConverter(msg, precision, useGrouping);
 		}
-		return new BigDecimalConverter(precision, useGrouping);
 	}
 
 	/**
@@ -77,8 +84,9 @@ public final class ConverterFactory {
 	 * @return
 	 */
 	public static StringToIntegerConverter createIntegerConverter(boolean useGrouping, boolean percentage) {
-		return percentage ? new PercentageIntegerConverter(useGrouping)
-				: new GroupingStringToIntegerConverter(useGrouping);
+		String msg = messageService.getMessage("ocs.cannot.convert", VaadinUtils.getLocale());
+		return percentage ? new PercentageIntegerConverter(msg, useGrouping)
+				: new GroupingStringToIntegerConverter(msg, useGrouping);
 	}
 
 	/**
@@ -89,7 +97,9 @@ public final class ConverterFactory {
 	 * @return
 	 */
 	public static StringToLongConverter createLongConverter(boolean useGrouping, boolean percentage) {
-		return percentage ? new PercentageLongConverter(useGrouping) : new GroupingStringToLongConverter(useGrouping);
+		String msg = messageService.getMessage("ocs.cannot.convert", VaadinUtils.getLocale());
+		return percentage ? new PercentageLongConverter(msg, useGrouping)
+				: new GroupingStringToLongConverter(msg, useGrouping);
 	}
 
 	/**

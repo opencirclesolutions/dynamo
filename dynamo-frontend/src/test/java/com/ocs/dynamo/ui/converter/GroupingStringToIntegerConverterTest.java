@@ -26,7 +26,7 @@ import com.vaadin.data.Result;
  */
 public class GroupingStringToIntegerConverterTest extends BaseConverterTest {
 
-	GroupingStringToIntegerConverter converter = new GroupingStringToIntegerConverter(false);
+	GroupingStringToIntegerConverter converter = new GroupingStringToIntegerConverter("message", false);
 
 	@Test
 	public void testToModel() {
@@ -48,13 +48,15 @@ public class GroupingStringToIntegerConverterTest extends BaseConverterTest {
 	 */
 	@Test
 	public void testToPresentationWithGrouping() {
-		String value = new GroupingStringToIntegerConverter(true).convertToPresentation(3000, createContext());
+		String value = new GroupingStringToIntegerConverter("message", true).convertToPresentation(3000,
+				createContext());
 		Assert.assertEquals("3.000", value);
 	}
 
 	@Test
 	public void testToModelWithGrouping() {
-		Result<Integer> value = new GroupingStringToIntegerConverter(true).convertToModel("3.000", createContext());
+		Result<Integer> value = new GroupingStringToIntegerConverter("message", true).convertToModel("3.000",
+				createContext());
 		Assert.assertEquals(3000, value.getOrThrow(r -> new OCSRuntimeException()).intValue());
 	}
 }

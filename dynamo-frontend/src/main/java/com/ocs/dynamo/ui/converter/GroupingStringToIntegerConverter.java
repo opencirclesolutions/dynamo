@@ -31,8 +31,8 @@ public class GroupingStringToIntegerConverter extends StringToIntegerConverter {
 
 	private boolean useGrouping;
 
-	public GroupingStringToIntegerConverter(boolean useGrouping) {
-		super("Some error message");
+	public GroupingStringToIntegerConverter(String message, boolean useGrouping) {
+		super(message);
 		this.useGrouping = useGrouping;
 	}
 

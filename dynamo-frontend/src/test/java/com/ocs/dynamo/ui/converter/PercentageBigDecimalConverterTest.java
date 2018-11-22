@@ -31,7 +31,7 @@ public class PercentageBigDecimalConverterTest {
 	 */
 	@Test
 	public void testConvertToModel() {
-		BigDecimalConverter converter = new PercentageBigDecimalConverter(2, false);
+		BigDecimalConverter converter = new PercentageBigDecimalConverter("message", 2, false);
 		Result<BigDecimal> result = converter.convertToModel("3,14%", new ValueContext(new Locale("nl")));
 		Assert.assertEquals(BigDecimal.valueOf(3.14).setScale(2, RoundingMode.HALF_EVEN),
 				result.getOrThrow(r -> new OCSRuntimeException()));
@@ -42,7 +42,7 @@ public class PercentageBigDecimalConverterTest {
 				result.getOrThrow(r -> new OCSRuntimeException()));
 
 		// check for a different locale
-		converter = new PercentageBigDecimalConverter(2, false);
+		converter = new PercentageBigDecimalConverter("message", 2, false);
 		result = converter.convertToModel("3.14%", new ValueContext(Locale.US));
 		Assert.assertEquals(BigDecimal.valueOf(3.14).setScale(2, RoundingMode.HALF_EVEN),
 				result.getOrThrow(r -> new OCSRuntimeException()));
@@ -57,7 +57,7 @@ public class PercentageBigDecimalConverterTest {
 	 */
 	@Test
 	public void testConvertToPresentation() {
-		BigDecimalConverter converter = new PercentageBigDecimalConverter(2, false);
+		BigDecimalConverter converter = new PercentageBigDecimalConverter("message", 2, false);
 		String result = converter.convertToPresentation(BigDecimal.valueOf(3.143), new ValueContext(new Locale("nl")));
 		Assert.assertEquals("3,14%", result);
 
@@ -65,16 +65,16 @@ public class PercentageBigDecimalConverterTest {
 		Assert.assertEquals("3000,14%", result);
 
 		// test thousands grouping
-		converter = new PercentageBigDecimalConverter(2, true);
+		converter = new PercentageBigDecimalConverter("message", 2, true);
 		result = converter.convertToPresentation(BigDecimal.valueOf(3000.14), new ValueContext(new Locale("nl")));
 		Assert.assertEquals("3.000,14%", result);
 
-		converter = new PercentageBigDecimalConverter(2, false);
+		converter = new PercentageBigDecimalConverter("message", 2, false);
 		result = converter.convertToPresentation(BigDecimal.valueOf(3.14), new ValueContext(Locale.US));
 		Assert.assertEquals("3.14%", result);
 
 		// test thousands grouping
-		converter = new PercentageBigDecimalConverter(2, true);
+		converter = new PercentageBigDecimalConverter("message", 2, true);
 		result = converter.convertToPresentation(BigDecimal.valueOf(3000.14), new ValueContext(Locale.US));
 		Assert.assertEquals("3,000.14%", result);
 

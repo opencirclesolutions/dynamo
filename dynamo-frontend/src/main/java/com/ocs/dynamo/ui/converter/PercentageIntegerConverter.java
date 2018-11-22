@@ -16,12 +16,19 @@ package com.ocs.dynamo.ui.converter;
 import com.vaadin.data.Result;
 import com.vaadin.data.ValueContext;
 
+/**
+ * Converter for converting between integer and string - adds percentage sign
+ * when needed
+ * 
+ * @author Bas Rutten
+ *
+ */
 public class PercentageIntegerConverter extends GroupingStringToIntegerConverter {
 
 	private static final long serialVersionUID = -3063510923788897054L;
 
-	public PercentageIntegerConverter(boolean useGrouping) {
-		super(useGrouping);
+	public PercentageIntegerConverter(String message, boolean useGrouping) {
+		super(message, useGrouping);
 	}
 
 	@Override

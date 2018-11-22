@@ -13,6 +13,7 @@
  */
 package com.ocs.dynamo.utils;
 
+import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.util.SystemPropertyUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -51,7 +52,6 @@ public final class DateUtils {
 	private DateUtils() {
 		// hidden constructor
 	}
-
 
 	@SuppressWarnings("unchecked")
 	public static <T> T createJava8Date(Class<T> clazz, String dateStr, String format) {
@@ -141,7 +141,6 @@ public final class DateUtils {
 		DateTimeFormatter fmt = new DateTimeFormatterBuilder().appendPattern(format).parseStrict().toFormatter();
 		return LocalTime.from(fmt.parse(timeStr));
 	}
-
 
 	/**
 	 * Create a ZonedDateTime based from a String, using the default format
@@ -259,8 +258,8 @@ public final class DateUtils {
 		LocalDate date = createLocalDate("3112" + year);
 		WeekFields weekFields = WeekFields.ISO;
 		int weekNumber = date.get(weekFields.weekOfWeekBasedYear());
-		while (weekNumber == 1){
-			date =date.minusDays(1);
+		while (weekNumber == 1) {
+			date = date.minusDays(1);
 			weekNumber = date.get(weekFields.weekOfWeekBasedYear());
 		}
 		return weekNumber;
@@ -310,24 +309,24 @@ public final class DateUtils {
 	 * @return the date
 	 */
 	public static LocalDate getStartDateOfWeek(String weekCode) {
-		if (weekCode != null && weekCode.matches(WEEK_CODE_PATTERN)) {
+		if (weekCode == null) {
+			return null;
+		}
+		if (weekCode.matches(WEEK_CODE_PATTERN)) {
 			int year = getYearFromWeekCode(weekCode);
 			int week = getWeekFromWeekCode(weekCode);
 			WeekFields weekFields = WeekFields.ISO;
-			LocalDate firstDayOfWeek = LocalDate.ofYearDay(year, 1)
-										.with(weekFields.weekOfYear(), week)
-										.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
-
+			LocalDate firstDayOfWeek = LocalDate.ofYearDay(year, 1).with(weekFields.weekOfYear(), week)
+					.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
 
 			return firstDayOfWeek;
 		}
-		return null;
+		throw new OCSRuntimeException("Cannot convert");
 	}
 
 	private static int getWeekFromWeekCode(String weekCode) {
 		return Integer.parseInt(weekCode.substring(5));
 	}
-
 
 	/**
 	 * Retrieves the year part from a week code (yyyy-ww)

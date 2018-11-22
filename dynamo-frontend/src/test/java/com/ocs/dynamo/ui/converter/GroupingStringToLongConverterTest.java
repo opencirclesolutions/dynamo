@@ -21,7 +21,7 @@ import com.vaadin.data.Result;
 
 public class GroupingStringToLongConverterTest extends BaseConverterTest {
 
-	GroupingStringToLongConverter converter = new GroupingStringToLongConverter(false);
+	GroupingStringToLongConverter converter = new GroupingStringToLongConverter("message", false);
 
 	@Test
 	public void testToModel() {
@@ -43,7 +43,7 @@ public class GroupingStringToLongConverterTest extends BaseConverterTest {
 	 */
 	@Test
 	public void testToPresentationWithGrouping_ToPresentation() {
-		String value = new GroupingStringToLongConverter(true).convertToPresentation(3000L, createContext());
+		String value = new GroupingStringToLongConverter("message", true).convertToPresentation(3000L, createContext());
 		Assert.assertEquals("3.000", value);
 	}
 
@@ -52,7 +52,8 @@ public class GroupingStringToLongConverterTest extends BaseConverterTest {
 	 */
 	@Test
 	public void testToPresentationWithGrouping_ToModel() {
-		Result<Long> value = new GroupingStringToLongConverter(true).convertToModel("3.000", createContext());
+		Result<Long> value = new GroupingStringToLongConverter("message", true).convertToModel("3.000",
+				createContext());
 		Assert.assertEquals(3000L, value.getOrThrow(r -> new OCSRuntimeException()).longValue());
 	}
 
