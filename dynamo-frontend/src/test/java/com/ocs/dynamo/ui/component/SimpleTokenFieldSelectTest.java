@@ -75,7 +75,7 @@ public class SimpleTokenFieldSelectTest extends BaseMockitoTest {
 	}
 
 	@Test
-	
+	@SuppressWarnings("unchecked")
 	public void testElementCollection() {
 
 		List<String> items = Lists.newArrayList("Kevin", "Stuart", "Bob");

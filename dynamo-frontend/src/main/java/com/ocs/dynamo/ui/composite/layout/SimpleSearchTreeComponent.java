@@ -26,10 +26,10 @@
 //import com.ocs.dynamo.ui.composite.form.ModelBasedSearchForm;
 //import com.ocs.dynamo.ui.composite.table.ServiceResultsTableWrapper;
 //import com.ocs.dynamo.ui.composite.table.ServiceResultsTreeTableWrapper;
-//import com.ocs.dynamo.ui.container.QueryType;
 //import com.ocs.dynamo.ui.container.hierarchical.HierarchicalFetchJoinInformation;
 //import com.ocs.dynamo.ui.container.hierarchical.ModelBasedHierarchicalContainer;
 //import com.ocs.dynamo.ui.container.hierarchical.ModelBasedHierarchicalContainer.ModelBasedHierarchicalDefinition;
+//import com.ocs.dynamo.ui.provider.QueryType;
 //import com.vaadin.v7.data.Container;
 //import com.vaadin.v7.data.Container.Filter;
 //import com.vaadin.v7.data.Item;

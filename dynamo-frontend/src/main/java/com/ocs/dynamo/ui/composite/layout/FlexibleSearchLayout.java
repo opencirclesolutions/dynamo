@@ -68,7 +68,7 @@ public class FlexibleSearchLayout<ID extends Serializable, T extends AbstractEnt
      *            relations to fetch
      */
     public FlexibleSearchLayout(BaseService<ID, T> service, EntityModel<T> entityModel, QueryType queryType,
-            FormOptions formOptions, SortOrder sortOrder, FetchJoinInformation... joins) {
+            FormOptions formOptions, SortOrder<?> sortOrder, FetchJoinInformation... joins) {
         super(service, entityModel, queryType, formOptions, sortOrder, joins);
     }
 
