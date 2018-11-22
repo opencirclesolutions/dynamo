@@ -50,7 +50,7 @@ public class AttributeModelImpl implements AttributeModel {
 	private final Map<String, String> cascadeAttributes = new HashMap<>();
 
 	private Map<String, CascadeMode> cascadeModes = new HashMap<>();
-	
+
 	private CheckboxMode checkboxMode;
 
 	private String collectionTableFieldName;
@@ -93,6 +93,8 @@ public class AttributeModelImpl implements AttributeModel {
 
 	private boolean mainAttribute;
 
+	private Integer maxCollectionSize;
+
 	private Integer maxLength;
 
 	private Integer maxLengthInTable;
@@ -100,6 +102,8 @@ public class AttributeModelImpl implements AttributeModel {
 	private Long maxValue;
 
 	private Class<?> memberType;
+
+	private Integer minCollectionSize;
 
 	private Integer minLength;
 
@@ -147,11 +151,11 @@ public class AttributeModelImpl implements AttributeModel {
 
 	private AttributeSelectMode selectMode;
 
-	private String styles;
-
 	private boolean sortable;
 
-    private AttributeTextFieldMode textFieldMode;
+	private String styles;
+
+	private AttributeTextFieldMode textFieldMode;
 
 	private boolean trans;
 
@@ -280,6 +284,10 @@ public class AttributeModelImpl implements AttributeModel {
 		return Collections.unmodifiableList(groupTogetherWith);
 	}
 
+	public Integer getMaxCollectionSize() {
+		return maxCollectionSize;
+	}
+
 	@Override
 	public Integer getMaxLength() {
 		return maxLength;
@@ -298,6 +306,10 @@ public class AttributeModelImpl implements AttributeModel {
 	@Override
 	public Class<?> getMemberType() {
 		return memberType;
+	}
+
+	public Integer getMinCollectionSize() {
+		return minCollectionSize;
 	}
 
 	@Override
@@ -381,26 +393,18 @@ public class AttributeModelImpl implements AttributeModel {
 		return selectMode;
 	}
 
-    /**
+	/**
 	 * @return the styles
 	 */
-    @Override
+	@Override
 	public String getStyles() {
 		return styles;
 	}
 
-	/**
-	 * @param styles
-	 *            the styles to set
-	 */
-	public void setStyles(String styles) {
-		this.styles = styles;
-	}
-
 	@Override
-    public AttributeTextFieldMode getTextFieldMode() {
-        return textFieldMode;
-    }
+	public AttributeTextFieldMode getTextFieldMode() {
+		return textFieldMode;
+	}
 
 	@Override
 	public String getTrueRepresentation() {
@@ -645,6 +649,10 @@ public class AttributeModelImpl implements AttributeModel {
 		this.mainAttribute = mainAttribute;
 	}
 
+	public void setMaxCollectionSize(Integer maxCollectionSize) {
+		this.maxCollectionSize = maxCollectionSize;
+	}
+
 	public void setMaxLength(Integer maxLength) {
 		this.maxLength = maxLength;
 	}
@@ -659,6 +667,10 @@ public class AttributeModelImpl implements AttributeModel {
 
 	public void setMemberType(Class<?> memberType) {
 		this.memberType = memberType;
+	}
+
+	public void setMinCollectionSize(Integer minCollectionSize) {
+		this.minCollectionSize = minCollectionSize;
 	}
 
 	public void setMinLength(Integer minLength) {
@@ -683,6 +695,10 @@ public class AttributeModelImpl implements AttributeModel {
 
 	public void setNestedEntityModel(EntityModel<?> nestedEntityModel) {
 		this.nestedEntityModel = nestedEntityModel;
+	}
+
+	public void setNumberSelectMode(NumberSelectMode numberSelectMode) {
+		this.numberSelectMode = numberSelectMode;
 	}
 
 	public void setOrder(Integer order) {
@@ -753,6 +769,13 @@ public class AttributeModelImpl implements AttributeModel {
 		this.sortable = sortable;
 	}
 
+	/**
+	 * @param styles the styles to set
+	 */
+	public void setStyles(String styles) {
+		this.styles = styles;
+	}
+
 	public void setTextFieldMode(AttributeTextFieldMode textFieldMode) {
 		this.textFieldMode = textFieldMode;
 	}
@@ -793,8 +816,4 @@ public class AttributeModelImpl implements AttributeModel {
 	public String toString() {
 		return ReflectionToStringBuilder.toStringExclude(this, "entityModel");
 	}
-
-    public void setNumberSelectMode(NumberSelectMode numberSelectMode) {
-        this.numberSelectMode = numberSelectMode;
-    }
 }

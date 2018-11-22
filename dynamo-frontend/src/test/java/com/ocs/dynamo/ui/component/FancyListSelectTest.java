@@ -57,7 +57,6 @@ public class FancyListSelectTest extends BaseMockitoTest {
 	 * Test the creation of the component and a simple selection
 	 */
 	@Test
-	@SuppressWarnings("unchecked")
 	public void testCreateAndSelect() {
 		AttributeModel am = factory.getModel(TestEntity.class).getAttributeModel("name");
 		EntityModel<TestEntity> em = factory.getModel(TestEntity.class);

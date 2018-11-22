@@ -30,12 +30,9 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	/**
 	 * Adds a cascade option
 	 * 
-	 * @param cascadeTo
-	 *            the path to the attribute to cascade to
-	 * @param filterPath
-	 *            the path used to filter on
-	 * @param mode
-	 *            the mode (search, edit, or both)
+	 * @param cascadeTo  the path to the attribute to cascade to
+	 * @param filterPath the path used to filter on
+	 * @param mode       the mode (search, edit, or both)
 	 */
 	void addCascade(String cascadeTo, String filterPath, CascadeMode mode);
 
@@ -44,8 +41,7 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	 * "group together with" attributes will be rendered on the same line as the
 	 * attribute for which this model is defined
 	 * 
-	 * @param path
-	 *            the path to the attribute to group with
+	 * @param path the path to the attribute to group with
 	 */
 	void addGroupTogetherWith(String path);
 
@@ -61,16 +57,14 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 
 	/**
 	 * 
-	 * @return the attributes to cascade to when the value of this attribute
-	 *         changes
+	 * @return the attributes to cascade to when the value of this attribute changes
 	 */
 	Set<String> getCascadeAttributes();
 
 	/**
 	 * Returns the path to filter on when applying a cascade
 	 * 
-	 * @param cascadeTo
-	 *            the path of the property to which to apply cascading
+	 * @param cascadeTo the path of the property to which to apply cascading
 	 * @return the path to filter on
 	 */
 	String getCascadeFilterPath(String cascadeTo);
@@ -78,8 +72,7 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	/**
 	 * Returns the cascade mode
 	 * 
-	 * @param cascadeTo
-	 *            the path of the property to which to apply cascading
+	 * @param cascadeTo the path of the property to which to apply cascading
 	 * @return when to apply cascading - in search mode, edit mode, or both
 	 */
 	CascadeMode getCascadeMode(String cascadeTo);
@@ -92,18 +85,15 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 
 	/**
 	 *
-	 * @return the name of the field in the collection table that is used to
-	 *         search
-	 *         on when building a token search field for values in a
-	 *         collection
+	 * @return the name of the field in the collection table that is used to search
+	 *         on when building a token search field for values in a collection
 	 *         table
 	 */
 	String getCollectionTableFieldName();
 
 	/**
 	 * 
-	 * @return the name of the collection table that is used when building a
-	 *         token
+	 * @return the name of the collection table that is used when building a token
 	 *         search field for values in a collection table
 	 */
 	String getCollectionTableName();
@@ -177,6 +167,13 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	List<String> getGroupTogetherWith();
 
 	/**
+	 * The maximum size of a collection
+	 * 
+	 * @return
+	 */
+	Integer getMaxCollectionSize();
+
+	/**
 	 * 
 	 * @return The maximum allowed length of the attribute (inside a collection
 	 *         table)
@@ -203,6 +200,13 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	 *         collection of values
 	 */
 	Class<?> getMemberType();
+
+	/**
+	 * The minimum size of the collection
+	 * 
+	 * @return
+	 */
+	Integer getMinCollectionSize();
 
 	/**
 	 * 
@@ -258,15 +262,13 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	String getPath();
 
 	/**
-	 * @return The precision (number of decimals) to use when displaying a
-	 *         decimal
+	 * @return The precision (number of decimals) to use when displaying a decimal
 	 *         number
 	 */
 	int getPrecision();
 
 	/**
-	 * @return The value to display as the input prompt value inside an edit
-	 *         field
+	 * @return The value to display as the input prompt value inside an edit field
 	 */
 	String getPrompt();
 
@@ -333,16 +335,14 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 
 	/**
 	 * 
-	 * @return true if the attribute is already included in a
-	 *         "groupTogetherWith"
+	 * @return true if the attribute is already included in a "groupTogetherWith"
 	 *         clause
 	 */
 	boolean isAlreadyGrouped();
 
 	/**
 	 * 
-	 * @return Whether the property is present inside an edit form. By default
-	 *         this
+	 * @return Whether the property is present inside an edit form. By default this
 	 *         is switched off for complex (i.e. MASTER or DETAIL) objects
 	 */
 	boolean isComplexEditable();
@@ -378,7 +378,8 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	boolean isImage();
 
 	/**
-	 * @return Whether translated fields can and must be used for only the required locales
+	 * @return Whether translated fields can and must be used for only the required
+	 *         locales
 	 */
 	boolean isLocalesRestricted();
 
@@ -425,8 +426,7 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 
 	/**
 	 * 
-	 * @return whether it is required to fill in a value for this attribute
-	 *         before
+	 * @return whether it is required to fill in a value for this attribute before
 	 *         you can carry out a search
 	 */
 	boolean isRequiredForSearching();
@@ -437,15 +437,13 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	boolean isSearchable();
 
 	/**
-	 * @return whether searching on this attribute is case sensitive (only
-	 *         applies
+	 * @return whether searching on this attribute is case sensitive (only applies
 	 *         if this is a String attribute)
 	 */
 	boolean isSearchCaseSensitive();
 
 	/**
-	 * @return whether searching for this value is by exact match (rather than
-	 *         using
+	 * @return whether searching for this value is by exact match (rather than using
 	 *         a range). Only applicable to numerical and date field
 	 */
 	boolean isSearchForExactValue();
@@ -512,8 +510,7 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	/**
 	 * Marks the attribute as the main attribute
 	 * 
-	 * @param main
-	 *            whether the attribute is the main attribute
+	 * @param main whether the attribute is the main attribute
 	 * @return
 	 */
 	void setMainAttribute(boolean main);

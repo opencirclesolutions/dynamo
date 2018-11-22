@@ -123,16 +123,16 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 		this.delegatedModelFactories = delegatedModelFactories;
 	}
 
-    /**
-     * Check that the"week" setting is only allowed for java.time.LocalDate
-     *
-     * @param model
-     */
-    protected void checkWeekSettingAllowed(AttributeModel model) {
-        if (!LocalDate.class.equals(model.getType())) {
-            throw new OCSRuntimeException("'Week' setting only allowed for attributes of type LocalDate");
-        }
-    }
+	/**
+	 * Check that the"week" setting is only allowed for java.time.LocalDate
+	 *
+	 * @param model
+	 */
+	protected void checkWeekSettingAllowed(AttributeModel model) {
+		if (!LocalDate.class.equals(model.getType())) {
+			throw new OCSRuntimeException("'Week' setting only allowed for attributes of type LocalDate");
+		}
+	}
 
 	/**
 	 * Constructs an attribute model for a property
@@ -243,6 +243,13 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 			final Email email = ClassUtils.getAnnotation(entityModel.getEntityClass(), fieldName, Email.class);
 			if (email != null) {
 				model.setEmail(true);
+			}
+
+			// collection size
+			final Size sz = ClassUtils.getAnnotation(pClass, fieldName, Size.class);
+			if (sz != null) {
+				model.setMinCollectionSize(sz.min());
+				model.setMaxCollectionSize(sz.max());
 			}
 
 			// override the defaults with annotation values
@@ -1073,7 +1080,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 		if (model.getType().isEnum()) {
 			final Class<? extends Enum> enumType = model.getType().asSubclass(Enum.class);
 			model.setDefaultValue(Enum.valueOf(enumType, defaultValue));
-		} if (DateUtils.isJava8DateType(model.getType())) {
+		}
+		if (DateUtils.isJava8DateType(model.getType())) {
 			final Object o = DateUtils.createJava8Date(model.getType(), defaultValue, model.getDisplayFormat());
 			model.setDefaultValue(o);
 		} else {

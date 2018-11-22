@@ -57,8 +57,6 @@ import com.ocs.dynamo.ui.component.CollapsiblePanel;
 import com.ocs.dynamo.ui.component.DefaultEmbedded;
 import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
-import com.ocs.dynamo.ui.component.EntityLookupField;
-import com.ocs.dynamo.ui.component.QuickAddListSelect;
 import com.ocs.dynamo.ui.component.URLField;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.composite.type.AttributeGroupMode;
@@ -70,7 +68,6 @@ import com.ocs.dynamo.ui.converter.LongToDoubleConverter;
 import com.ocs.dynamo.ui.converter.ZonedDateTimeToLocalDateTimeConverter;
 import com.ocs.dynamo.ui.utils.EntityModelUtil;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
-import com.ocs.dynamo.ui.validator.CollectionSizeValidator;
 import com.ocs.dynamo.ui.validator.EmailValidator;
 import com.ocs.dynamo.ui.validator.URLValidator;
 import com.ocs.dynamo.util.SystemPropertyUtils;
@@ -1096,11 +1093,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		} else if (builder.getField() instanceof DateTimeField && ZonedDateTime.class.equals(am.getType())) {
 			BindingBuilder<T, LocalDateTime> sBuilder = (BindingBuilder<T, LocalDateTime>) builder;
 			sBuilder.withConverter(new ZonedDateTimeToLocalDateTimeConverter(ZoneId.systemDefault()));
-		} else if (builder.getField() instanceof EntityLookupField && Collection.class.isAssignableFrom(am.getType())) {
-			// BindingBuilder<T, Collection<?>> sBuilder = (BindingBuilder<T,
-			// Collection<?>>) builder;
-			// sBuilder.withValidator(new
-			// CollectionSizeValidator(message("ocs.collection.not.empty")));
 		}
 
 	}
