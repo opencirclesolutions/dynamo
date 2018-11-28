@@ -23,14 +23,16 @@ import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 
 /**
- * The persistent class for the domain entity that manages hierarchical reference information.
+ * A domain entity that is the parent of another domain entity
  * 
- * @author Patrick Deenen (patrick@opencircle.solutions)
- * 
+ * @author Bas Rutten
+ *
+ * @param <C> the child entity class
+ * @param <P> the parent entity class
  */
 @Entity
-public abstract class DomainParent<C extends DomainChild<C, P>, P extends DomainParent<C, P>> extends Domain implements
-        Serializable {
+public abstract class DomainParent<C extends DomainChild<C, P>, P extends DomainParent<C, P>> extends Domain
+		implements Serializable {
 
 	private static final long serialVersionUID = 20446010658685722L;
 

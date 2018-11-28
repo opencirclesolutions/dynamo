@@ -13,20 +13,23 @@
  */
 package com.ocs.dynamo.utils;
 
-import com.ocs.dynamo.exception.OCSRuntimeException;
-import com.ocs.dynamo.util.SystemPropertyUtils;
-import org.apache.commons.lang.StringUtils;
-
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Month;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.temporal.TemporalAdjusters;
 import java.time.temporal.WeekFields;
+import java.util.Date;
+
+import org.apache.commons.lang.StringUtils;
+
+import com.ocs.dynamo.exception.OCSRuntimeException;
+import com.ocs.dynamo.util.SystemPropertyUtils;
 
 /**
  * Date utility class
@@ -383,6 +386,34 @@ public final class DateUtils {
 		int lastWeekOfYear = getLastWeekOfYear(year);
 		return FIRST_WEEK_NUMBER <= week && week <= lastWeekOfYear;
 	}
+
+	/**
+	 * Converts a LocalDate to a legacy java.util.Date
+	 * 
+	 * @param d the LocalDate to convert
+	 * @return
+	 */
+	public static Date toLegacyDate(LocalDate d) {
+		if (d == null) {
+			return null;
+		}
+		return Date.from(d.atStartOfDay(ZoneId.systemDefault()).toInstant());
+	}
+	
+	/**
+	 * Converts a java.time.LocalDateTime to a java.util.Date
+	 * 
+	 * @param d
+	 *            the LocalDatetime to convert
+	 * @return
+	 */
+	public static Date toLegacyDate(LocalDateTime ldt) {
+		if (ldt == null) {
+			return null;
+		}
+		return Date.from(ldt.atZone(ZoneId.systemDefault()).toInstant());
+	}
+
 
 	/**
 	 * Converts a date to its corresponding week code

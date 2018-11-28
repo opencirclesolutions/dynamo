@@ -61,9 +61,9 @@ import java.util.concurrent.ConcurrentHashMap;
  * 
  * @author bas.rutten
  *
- * @param <ID>
- * @param <T>
- * @param <U>
+ * @param <ID> the type of the primary key
+ * @param <T> the type of the original entity
+ * @param <U> the type of the versioned entity
  */
 public abstract class VersionedEntityDaoImpl<ID, T extends AbstractEntity<ID>, U extends VersionedEntity<ID, T>>
 		extends BaseDaoImpl<RevisionKey<ID>, U> implements VersionedEntityDao<ID, T, U> {
@@ -75,10 +75,8 @@ public abstract class VersionedEntityDaoImpl<ID, T extends AbstractEntity<ID>, U
 	/**
 	 * Adds any additional filters to an AuditQuery
 	 * 
-	 * @param aq
-	 *            the AuditQuery to which to add the filters
-	 * @param filter
-	 *            the filter to translate
+	 * @param aq     the AuditQuery to which to add the filters
+	 * @param filter the filter to translate
 	 */
 	private void addAdditionalFilters(AuditQuery aq, Filter filter) {
 		AuditCriterion ac = createAuditCriterion(filter);
@@ -90,10 +88,8 @@ public abstract class VersionedEntityDaoImpl<ID, T extends AbstractEntity<ID>, U
 	/**
 	 * Adds a filter on the ID field to an audit query
 	 * 
-	 * @param aq
-	 *            the audit query
-	 * @param filter
-	 *            the overall filter
+	 * @param aq     the audit query
+	 * @param filter the overall filter
 	 */
 	@SuppressWarnings("unchecked")
 	private void addIdFilter(AuditQuery aq, Filter filter) {
@@ -179,9 +175,9 @@ public abstract class VersionedEntityDaoImpl<ID, T extends AbstractEntity<ID>, U
 	}
 
 	/**
-	 * Translates a prperoty name to an AuditProperty
+	 * Translates a property name to an AuditProperty
 	 * 
-	 * @param prop
+	 * @param prop the name of the property
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
@@ -333,8 +329,7 @@ public abstract class VersionedEntityDaoImpl<ID, T extends AbstractEntity<ID>, U
 	 * structure contains of the snapshot data (position 0), the revision data
 	 * (position 1) and the modification type (position 2)
 	 * 
-	 * @param rev
-	 *            the data structure to map
+	 * @param rev the data structure to map
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")

@@ -24,9 +24,9 @@ public enum RevisionType {
 	ADD, MOD, DEL;
 
 	/**
-	 * Translates the Envers revision type to the Dymnamo revision type
+	 * Translates the Envers revision type to the Dynamo revision type
 	 * 
-	 * @param t
+	 * @param t the revision type to translate
 	 * @return
 	 */
 	public static RevisionType fromInternal(org.hibernate.envers.RevisionType t) {

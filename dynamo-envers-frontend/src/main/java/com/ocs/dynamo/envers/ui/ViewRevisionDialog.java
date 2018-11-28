@@ -19,6 +19,7 @@ import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.envers.domain.RevisionKey;
 import com.ocs.dynamo.envers.domain.VersionedEntity;
+import com.ocs.dynamo.filter.EqualsPredicate;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
@@ -27,19 +28,22 @@ import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.composite.layout.ServiceBasedSplitLayout;
 import com.ocs.dynamo.ui.composite.type.AttributeGroupMode;
 import com.ocs.dynamo.ui.composite.type.ScreenMode;
-import com.ocs.dynamo.ui.container.QueryType;
+import com.ocs.dynamo.ui.provider.QueryType;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
-import com.vaadin.v7.data.Container.Filter;
-import com.vaadin.v7.data.util.filter.Compare;
+import com.vaadin.server.SerializablePredicate;
+import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Button;
-import com.vaadin.v7.ui.Field;
-import com.vaadin.v7.ui.HorizontalLayout;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Layout;
 
 /**
+ * A dialog for viewing the revisions of an entity
  * 
- * @author bas.rutten
+ * @author Bas Rutten
  *
+ * @param <ID> the type of the primary key of the entity
+ * @param <T> the type of the entity
+ * @param <U> the type of the revision entity
  */
 public class ViewRevisionDialog<ID, T extends AbstractEntity<ID>, U extends VersionedEntity<ID, T>>
 		extends BaseModalDialog {
@@ -56,20 +60,35 @@ public class ViewRevisionDialog<ID, T extends AbstractEntity<ID>, U extends Vers
 
 	private MessageService messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
 
+	/**
+	 * The ID of the entity
+	 */
 	private ID id;
 
 	/**
 	 * Constructor
 	 * 
-	 * @param service
-	 * @param entityModel
-	 * @param id
+	 * @param service     the service used to access the database
+	 * @param entityModel the entity model
+	 * @param id          the ID of the entity
 	 */
 	public ViewRevisionDialog(BaseService<RevisionKey<ID>, U> service, EntityModel<U> entityModel, ID id) {
 		this.service = service;
 		this.entityModel = entityModel;
 		this.id = id;
 		setStyleName("revisionDialog");
+	}
+
+	/**
+	 * Constructs a custom field for use in the details form
+	 * 
+	 * @param entityModel
+	 * @param attributeModel
+	 * @return
+	 */
+	protected AbstractComponent constructCustomField(EntityModel<U> entityModel, AttributeModel attributeModel) {
+		// override in subclasses
+		return null;
 	}
 
 	@Override
@@ -81,15 +100,15 @@ public class ViewRevisionDialog<ID, T extends AbstractEntity<ID>, U extends Vers
 			private static final long serialVersionUID = -5302678717934028964L;
 
 			@Override
-			protected Filter constructFilter() {
-				// always filter on ID
-				return new Compare.Equal(DynamoConstants.ID, id);
+			protected AbstractComponent constructCustomField(EntityModel<U> entityModel, AttributeModel attributeModel,
+					boolean viewMode, boolean searchMode) {
+				return ViewRevisionDialog.this.constructCustomField(entityModel, attributeModel);
 			}
 
 			@Override
-			protected Field<?> constructCustomField(EntityModel<U> entityModel, AttributeModel attributeModel,
-					boolean viewMode, boolean searchMode) {
-				return ViewRevisionDialog.this.constructCustomField(entityModel, attributeModel);
+			protected SerializablePredicate<U> constructFilter() {
+				// always filter on ID
+				return new EqualsPredicate<U>(DynamoConstants.ID, id);
 			}
 		};
 		layout.setPageLength(PAGE_SIZE);
@@ -106,11 +125,6 @@ public class ViewRevisionDialog<ID, T extends AbstractEntity<ID>, U extends Vers
 	@Override
 	protected String getTitle() {
 		return messageService.getMessage("ocs.revision.history", VaadinUtils.getLocale());
-	}
-
-	protected Field<?> constructCustomField(EntityModel<U> entityModel, AttributeModel attributeModel) {
-		// override in subclasses
-		return null;
 	}
 
 }

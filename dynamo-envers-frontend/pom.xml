@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<artifactId>dynamo-envers</artifactId>
+	<artifactId>dynamo-envers-frontend</artifactId>
 	<packaging>jar</packaging>
-	<name>Dynamo Framework - Envers</name>
+	<name>Dynamo Framework - Envers Frontend</name>
 	<url>https://github.com/opencirclesolutions/dynamo</url>
 	<parent>
 		<groupId>org.dynamoframework</groupId>
@@ -24,14 +22,20 @@
 		</license>
 	</licenses>
 	<dependencies>
+		<!-- Hibernate -->
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<scope>provided</scope>
+		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>dynamo-api</artifactId>
+			<artifactId>dynamo-envers</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>dynamo-impl</artifactId>
+			<artifactId>dynamo-frontend</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>

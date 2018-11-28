@@ -82,7 +82,8 @@
 		<module>dynamo-integration-import</module>
 		<module>dynamo-functional-domain</module>
 		<module>dynamo-frontend</module>
-		<!-- <module>dynamo-envers</module> -->
+		<module>dynamo-envers</module>
+		<module>dynamo-envers-frontend</module>
 		<!-- <module>dynamo-frontend-charts</module>-->
 		<module>dynamo-functional-domain-frontend</module>
 		<!-- <module>dynamo-functional-translation</module>

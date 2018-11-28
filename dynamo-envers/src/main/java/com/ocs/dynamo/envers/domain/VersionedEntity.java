@@ -34,15 +34,27 @@ public abstract class VersionedEntity<ID, T extends AbstractEntity<ID>> extends 
 
 	private static final long serialVersionUID = 4784364096429184957L;
 
+	/**
+	 * The Envers revision number
+	 */
 	@Attribute(sortable = true, displayName = "Revision number")
 	private int revision;
 
+	/**
+	 * The entity
+	 */
 	@Attribute(sortable = false)
 	private T entity;
 
+	/**
+	 * The revision time stamp
+	 */
 	@Attribute(sortable = true)
 	private ZonedDateTime revisionTimeStamp;
 
+	/**
+	 * The revision user
+	 */
 	@Attribute(sortable = true)
 	private String user;
 
@@ -54,10 +66,8 @@ public abstract class VersionedEntity<ID, T extends AbstractEntity<ID>> extends 
 	/**
 	 * Constructor
 	 * 
-	 * @param entity
-	 *            the original entity
-	 * @param revision
-	 *            the revision number
+	 * @param entity   the original entity
+	 * @param revision the revision number
 	 */
 	public VersionedEntity(T entity, int revision) {
 		this.entity = entity;
