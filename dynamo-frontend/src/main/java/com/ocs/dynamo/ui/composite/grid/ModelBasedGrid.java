@@ -27,7 +27,6 @@ import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.component.InternalLinkField;
 import com.ocs.dynamo.ui.component.URLField;
 import com.ocs.dynamo.ui.provider.BaseDataProvider;
-import com.ocs.dynamo.ui.utils.ConvertUtil;
 import com.ocs.dynamo.ui.utils.FormatUtils;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.utils.ClassUtils;
@@ -46,7 +45,7 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.renderers.ComponentRenderer;
 
 /**
- * A Table that bases its columns on the meta model of an entity
+ * A Grid that bases its columns on the meta model of an entity
  * 
  * @author bas.rutten
  * @param <ID> type of the primary key
@@ -57,22 +56,22 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 	private static final long serialVersionUID = 6946260934644731038L;
 
 	/**
-	 * Custom currency symbol to be used for this table
+	 * Custom currency symbol to be used for this grid
 	 */
 	private String currencySymbol;
 
 	/**
-	 * The entity model of the entities to display in the table
+	 * The entity model of the entities to display in the grid
 	 */
 	private EntityModel<T> entityModel;
 
 	/**
-	 * Indicates whether table export is allowed
+	 * Indicates whether export is allowed
 	 */
 	private boolean exportAllowed;
 
 	/***
-	 * Indicate whether to update the caption with the number of items in the table
+	 * Indicate whether to update the caption with the number of items in the grid
 	 */
 	private boolean updateCaption = true;
 
@@ -84,13 +83,16 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 	/**
 	 * Indicates whether the full grid can be edited at once
 	 */
-	private boolean fullTableEditor;
+	private boolean fullGridEditor;
 
 	/**
 	 * The message service
 	 */
 	private MessageService messageService;
 
+	/**
+	 * The field factory
+	 */
 	private FieldFactoryImpl<T> factory;
 
 	/**
@@ -98,19 +100,19 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 	 *
 	 * @param container     the data container
 	 * @param model         the entity model that determines what to display
-	 * @param exportAllowed whether export of the table is allowed
+	 * @param exportAllowed whether export of the grid contents is allowed
 	 */
 	public ModelBasedGrid(DataProvider<T, SerializablePredicate<T>> dataProvider, EntityModel<T> model,
-			boolean exportAllowed, boolean editable, boolean fullTableEditor) {
+			boolean exportAllowed, boolean editable, boolean fullGridEditor) {
 		setDataProvider(dataProvider);
 		this.editable = editable;
-		this.fullTableEditor = fullTableEditor;
+		this.fullGridEditor = fullGridEditor;
 		this.entityModel = model;
 		this.messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
 		this.factory = FieldFactoryImpl.getInstance(model, messageService);
 		this.exportAllowed = exportAllowed;
 
-		// we need to pre-populate the table with the available properties
+		// we need to prepopulate the grid with the available properties
 		PropertySet<T> ps = BeanPropertySet.get(model.getEntityClass(), true,
 				new PropertyFilterDefinition(3, new ArrayList<>()));
 		setPropertySet(ps);
@@ -139,19 +141,11 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 
 	}
 
-	public MessageService getMessageService() {
-		return messageService;
-	}
-
 	/**
-	 * Adds a column to the table
-	 *
-	 * @param attributeModel the (possibly nested) attribute model for which to add
-	 *                       a column
-	 * @param propertyNames  the properties to be added
-	 * @param headerNames    the headers to be added
+	 * Adds a column to the grid
+	 * 
+	 * @param attributeModel the attribute model on which to base the column
 	 */
-	@SuppressWarnings("unchecked")
 	private void addColumn(final AttributeModel attributeModel) {
 		if (attributeModel.isVisibleInTable()) {
 			Column<T, ?> column;
@@ -159,12 +153,12 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 				// URL field
 				column = addColumn(t -> new URLField(
 						new TextField("", ClassUtils.getFieldValueAsString(t, attributeModel.getPath(), "")),
-						attributeModel, editable && fullTableEditor), new ComponentRenderer());
+						attributeModel, editable && fullGridEditor), new ComponentRenderer());
 			} else if (attributeModel.isNavigable() && AttributeType.MASTER.equals(attributeModel.getAttributeType())) {
 				column = addColumn(t -> generateInternalLinkField(attributeModel,
 						ClassUtils.getFieldValue(t, attributeModel.getPath())), new ComponentRenderer());
 			} else {
-				if (editable && fullTableEditor) {
+				if (editable && fullGridEditor) {
 					// edit all tables at once
 					column = addColumn(t -> {
 						AbstractComponent comp = constructCustomField(entityModel, attributeModel);
@@ -183,24 +177,13 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 				}
 			}
 
-			if (editable && !fullTableEditor) {
+			if (editable && !fullGridEditor) {
 				Binder<T> binder = getEditor().getBinder();
 				final AbstractComponent abstractComponent = factory.constructField(attributeModel, null, null, false);
 
-				final Binder.BindingBuilder builder = binder.forField((HasValue<?>) abstractComponent);
+				final Binder.BindingBuilder<T, ?> builder = binder.forField((HasValue<?>) abstractComponent);
 				FieldFactoryImpl.addConvertsAndValidators(builder, attributeModel);
-
-				final Binder.Binding binding = builder.bind(t -> ClassUtils.getFieldValue(t, attributeModel.getPath()),
-						(t, o) -> {
-							if (ClassUtils.canSetProperty(t, attributeModel.getName())) {
-								if (o != null) {
-									ClassUtils.setFieldValue(t, attributeModel.getName(), o);
-								} else {
-									ClassUtils.clearFieldValue(t, attributeModel.getName(), attributeModel.getType());
-								}
-							}
-						});
-				column.setEditorBinding(binding);
+				column.setEditorBinding(builder.bind(attributeModel.getPath()));
 			}
 			column.setCaption(attributeModel.getDisplayName()).setSortable(attributeModel.isSortable())
 					.setSortProperty(attributeModel.getPath()).setId(attributeModel.getPath())
@@ -209,29 +192,30 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 	}
 
 	/**
-	 * Creates a field and fills it with the desired value
+	 * Constructs a custom field
 	 * 
-	 * @param t              the entity
-	 * @param attributeModel the attribute model
+	 * @param entityModel    the entity model of the main entity
+	 * @param attributeModel the attribute model to base the field on
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
-	private <S> AbstractComponent createField(T t, AttributeModel attributeModel) {
-		AbstractComponent comp = constructCustomField(entityModel, attributeModel);
-
-		if (comp == null) {
-			comp = factory.constructField(attributeModel, null, null, true);
-		}
-		S value = (S) ClassUtils.getFieldValue(t, attributeModel.getPath());
-		if (value != null) {
-			Object obj = ConvertUtil.convertToPresentationValue(attributeModel, value);
-			((HasValue<S>) comp).setValue((S) obj);
-		}
-		return comp;
+	protected AbstractComponent constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel) {
+		return null;
 	}
 
 	/**
-	 * Generates the columns of the table based on the entity model
+	 * Callback method for components that incorporate this grid component but do
+	 * the binding themselves
+	 * 
+	 * @param t     the entity
+	 * @param field the field to bind
+	 * @return
+	 */
+	protected BindingBuilder<T, ?> doBind(T t, AbstractComponent field) {
+		return null;
+	}
+
+	/**
+	 * Generates the columns of the grid based on the entity model
 	 *
 	 * @param container the container
 	 * @param model     the entity model
@@ -243,7 +227,7 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 	}
 
 	/**
-	 * Generates the columns of the table based on a select number of attribute
+	 * Generates the columns of the grid based on a select number of attribute
 	 * models
 	 *
 	 * @param attributeModels the attribute models for which to generate columns
@@ -276,51 +260,26 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 		return currencySymbol;
 	}
 
+	public MessageService getMessageService() {
+		return messageService;
+	}
+
 	public boolean isExportAllowed() {
 		return exportAllowed;
 	}
 
-	public boolean isUpdateTableCaption() {
+	public boolean isUpdateCaption() {
 		return updateCaption;
 	}
 
 	/**
-	 * Removes a generated column
-	 *
-	 * @param attributeModel the attribute model for which to remove the column
-	 */
-	private void removeGeneratedColumn(final AttributeModel attributeModel) {
-		if (attributeModel.isVisibleInTable() && attributeModel.isUrl()) {
-			removeColumn(attributeModel.getPath());
-		}
-	}
-
-	/**
-	 * Remove any generated columns - this is used when switching between modes in
-	 * order to remove any generated columns containing URL fields
-	 */
-	public void removeGeneratedColumns() {
-		removeGeneratedColumnsRecursive(entityModel.getAttributeModels());
-	}
-
-	private void removeGeneratedColumnsRecursive(List<AttributeModel> attributeModels) {
-		for (AttributeModel attributeModel : attributeModels) {
-			removeGeneratedColumn(attributeModel);
-			if (attributeModel.getNestedEntityModel() != null) {
-				removeGeneratedColumnsRecursive(attributeModel.getNestedEntityModel().getAttributeModels());
-			}
-		}
-	}
-
-	/**
 	 * Sets the visibility of a column. This can only be used to show/hide columns
-	 * that would show up in the table based on the entity model
+	 * that would show up in the grid based on the entity model
 	 *
 	 * @param propertyId the ID of the column.
 	 * @param visible    whether the column must be visible
 	 */
 	public void setColumnVisible(Object propertyId, boolean visible) {
-
 		getColumn((String) propertyId).setHidden(!visible);
 	}
 
@@ -328,12 +287,12 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 		this.currencySymbol = currencySymbol;
 	}
 
-	public void setUpdateTableCaption(boolean updateTableCaption) {
-		this.updateCaption = updateTableCaption;
+	public void setUpdateCaption(boolean updateCaption) {
+		this.updateCaption = updateCaption;
 	}
 
 	/**
-	 * Updates the table caption in response to a change of the data set
+	 * Updates the grid caption in response to a change of the data set
 	 */
 	@SuppressWarnings("unchecked")
 	public void updateCaption() {
@@ -350,12 +309,11 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 		}
 	}
 
-	protected AbstractComponent constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel) {
-		return null;
-	}
-
-	protected BindingBuilder<T, ?> doBind(T t, AbstractComponent field) {
-		return null;
+	public void updateCaption(int size) {
+		if (updateCaption) {
+			setCaption(entityModel.getDisplayNamePlural() + " "
+					+ messageService.getMessage("ocs.showing.results", VaadinUtils.getLocale(), size));
+		}
 	}
 
 }

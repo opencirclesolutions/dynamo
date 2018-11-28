@@ -128,7 +128,7 @@ public abstract class BaseDataProvider<ID extends Serializable, T extends Abstra
 	}
 
 	/**
-	 * Returns the number of items
+	 * Returns the number of items in the provider
 	 * 
 	 * @return
 	 */
@@ -146,4 +146,5 @@ public abstract class BaseDataProvider<ID extends Serializable, T extends Abstra
 	public void setMaxResults(final Integer maxResults) {
 		this.maxResults = maxResults;
 	}
+
 }

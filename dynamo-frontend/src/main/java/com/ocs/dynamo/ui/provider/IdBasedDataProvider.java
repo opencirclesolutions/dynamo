@@ -54,7 +54,8 @@ public class IdBasedDataProvider<ID extends Serializable, T extends AbstractEnti
 				index++;
 			}
 		}
-		return getService().fetchByIds(results, so, getJoins()).stream();
+		List<T> result = getService().fetchByIds(results, so, getJoins());
+		return result.stream();
 	}
 
 	@Override
@@ -77,7 +78,5 @@ public class IdBasedDataProvider<ID extends Serializable, T extends AbstractEnti
 		ids = getService().findIds(filter, getMaxResults(), so.toArray());
 		return ids.size();
 	}
-
-	
 
 }

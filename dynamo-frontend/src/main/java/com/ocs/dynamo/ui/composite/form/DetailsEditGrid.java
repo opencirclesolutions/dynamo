@@ -324,6 +324,25 @@ public abstract class DetailsEditGrid<ID extends Serializable, T extends Abstrac
 	 */
 	protected abstract T createEntity();
 
+	@Override
+	protected void doSetValue(Collection<T> value) {
+		List<T> list = new ArrayList<>();
+		list.addAll(value);
+		if (comparator != null) {
+			list.sort(comparator);
+		}
+
+		if (provider != null) {
+			provider.getItems().clear();
+			provider.getItems().addAll(list);
+			provider.refreshAll();
+			binders.clear();
+		}
+
+		// clear the selection
+		setSelectedItem(null);
+	}
+
 	public Button getAddButton() {
 		return addButton;
 	}
@@ -342,6 +361,10 @@ public abstract class DetailsEditGrid<ID extends Serializable, T extends Abstrac
 
 	public FormOptions getFormOptions() {
 		return formOptions;
+	}
+
+	public ModelBasedGrid<ID, T> getGrid() {
+		return grid;
 	}
 
 	public Button getSearchDialogButton() {
@@ -368,8 +391,14 @@ public abstract class DetailsEditGrid<ID extends Serializable, T extends Abstrac
 		return service;
 	}
 
-	public ModelBasedGrid<ID, T> getGrid() {
-		return grid;
+	public int getItemCount() {
+		return provider.getItems().size();
+	}
+
+	@Override
+	public Collection<T> getValue() {
+		return provider == null ? new ArrayList<>()
+				: ConvertUtil.convertCollection(provider.getItems(), attributeModel);
 	}
 
 	/**
@@ -554,7 +583,7 @@ public abstract class DetailsEditGrid<ID extends Serializable, T extends Abstrac
 	public void setValue(Collection<T> newFieldValue) {
 		super.setValue(newFieldValue);
 	}
-
+	
 	@Override
 	public boolean validateAllFields() {
 		boolean error = false;
@@ -563,31 +592,6 @@ public abstract class DetailsEditGrid<ID extends Serializable, T extends Abstrac
 			error |= !status.isOk();
 		}
 		return error;
-	}
-
-	@Override
-	public Collection<T> getValue() {
-		return provider == null ? new ArrayList<>()
-				: ConvertUtil.convertCollection(provider.getItems(), attributeModel);
-	}
-
-	@Override
-	protected void doSetValue(Collection<T> value) {
-		List<T> list = new ArrayList<>();
-		list.addAll(value);
-		if (comparator != null) {
-			list.sort(comparator);
-		}
-
-		if (provider != null) {
-			provider.getItems().clear();
-			provider.getItems().addAll(list);
-			provider.refreshAll();
-			binders.clear();
-		}
-
-		// clear the selection
-		setSelectedItem(null);
 	}
 
 }

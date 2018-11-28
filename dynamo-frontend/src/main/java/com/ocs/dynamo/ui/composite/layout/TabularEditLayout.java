@@ -189,7 +189,10 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 		grid.getGrid().getEditor().setEnabled(!isViewmode());
 		grid.getGrid().getEditor().addSaveListener(event -> {
 			try {
-				getService().save((T) event.getBean());
+				T t = getService().save((T) event.getBean());
+				// reassign to avoid optimistic lock 
+				grid.getGrid().getEditor().getBinder().setBean(t);
+				grid.getGrid().getDataProvider().refreshAll();
 			} catch (OCSValidationException ex) {
 				Notification.show(ex.getMessage(), Notification.Type.ERROR_MESSAGE);
 			}
@@ -358,7 +361,7 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 	protected void toggleViewMode(boolean viewMode) {
 		setViewmode(viewMode);
 		getGridWrapper().getGrid().getEditor().setEnabled(!isViewmode() && isEditAllowed());
-		//saveButton.setVisible(!isViewmode());
+		// saveButton.setVisible(!isViewmode());
 		addButton.setVisible(!isViewmode() && !getFormOptions().isHideAddButton() && isEditAllowed());
 	}
 
