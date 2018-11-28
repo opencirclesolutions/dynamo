@@ -37,10 +37,8 @@ import com.ocs.dynamo.utils.DateUtils;
 import com.ocs.dynamo.utils.NumberUtils;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.UI;
-import com.vaadin.v7.data.Property;
 
 /**
- * TODO: do we need all these additional formatting methods?
  * 
  * Utilities for formatting property values
  * 
@@ -61,8 +59,9 @@ public final class FormatUtils {
 	/**
 	 * Extracts a field value from an object and formats it
 	 * 
-	 * @param am  the attribute model
-	 * @param obj the object from which to extract the value
+	 * @param grid the grid in which the value is displayed
+	 * @param am   the attribute model
+	 * @param obj  the object from which to extract the value
 	 * @return
 	 */
 	public static <T> String extractAndFormat(Grid<T> grid, AttributeModel am, Object obj) {
@@ -136,56 +135,7 @@ public final class FormatUtils {
 	/**
 	 * Formats a property value
 	 *
-	 * @param table              the table in which the property occurs
-	 * @param entityModelFactory the entity model factor
-	 * @param entityModel        the entity model
-	 * @param rowId              the row ID of the property
-	 * @param colId              the column ID/property
-	 * @param property           the property
-	 * @return
-	 */
-	public static <T> String formatPropertyValue(Grid<T> table, EntityModelFactory entityModelFactory,
-			EntityModel<T> entityModel, Object rowId, Object colId, Property<?> property, String separator) {
-		return formatPropertyValue(table, entityModelFactory, entityModel, rowId, colId, property,
-				VaadinUtils.getLocale(), separator);
-	}
-
-	/**
-	 * Formats a property value - for use with a hierarchical grid
-	 * 
-	 * @param table
-	 * @param entityModelFactory
-	 * @param entityModel
-	 * @param messageService
-	 * @param rowId
-	 * @param colId
-	 * @param property
-	 * @param locale
-	 * @return
-	 */
-	@SuppressWarnings("rawtypes")
-	public static <T> String formatPropertyValue(Grid<T> grid, EntityModelFactory entityModelFactory,
-			EntityModel<T> entityModel, Object rowId, Object colId, Property<?> property, Locale locale,
-			String separator) {
-		// if (table.getContainerDataSource() instanceof
-		// ModelBasedHierarchicalContainer) {
-		// ModelBasedHierarchicalContainer<?> c = (ModelBasedHierarchicalContainer<?>)
-		// table.getContainerDataSource();
-		// ModelBasedHierarchicalDefinition def =
-		// c.getHierarchicalDefinitionByItemId(rowId);
-		// Object path = c.unmapProperty(def, colId);
-		// return formatPropertyValue(table, entityModelFactory,
-		// path == null ? null :
-		// def.getEntityModel().getAttributeModel(path.toString()), property.getValue(),
-		// locale, separator);
-		// }
-		return formatPropertyValue(grid, entityModelFactory, entityModel.getAttributeModel(colId.toString()),
-				property.getValue(), locale, separator);
-	}
-
-	/**
-	 * Formats a property value
-	 *
+	 * @param grid               the grid that the value is displayed in
 	 * @param entityModelFactory the entity model factory
 	 * @param entityModel        the entity model
 	 * @param model              the attribute model
@@ -202,6 +152,7 @@ public final class FormatUtils {
 					return DateUtils.toWeekCode((LocalDate) value);
 				}
 			} else if (Boolean.class.equals(model.getType()) || boolean.class.equals(model.getType())) {
+				// translate boolean to String representation
 				if (!StringUtils.isEmpty(model.getTrueRepresentation()) && Boolean.TRUE.equals(value)) {
 					return model.getTrueRepresentation();
 				} else if (!StringUtils.isEmpty(model.getFalseRepresentation()) && Boolean.FALSE.equals(value)) {
@@ -216,7 +167,7 @@ public final class FormatUtils {
 				if (AttributeDateType.TIMESTAMP.equals(model.getDateType())) {
 					dateTimeFormatter = dateTimeFormatter.withZone(VaadinUtils.getTimeZone(UI.getCurrent()));
 				}
-				return dateTimeFormatter.format((LocalDate)value);
+				return dateTimeFormatter.format((LocalDate) value);
 			} else if (DateUtils.isJava8DateType(model.getType())) {
 				return DateUtils.formatJava8Date(model.getType(), value, model.getDisplayFormat());
 			} else if (BigDecimal.class.equals(model.getType())) {
@@ -239,6 +190,7 @@ public final class FormatUtils {
 				String result = formatEntityCollection(entityModelFactory, model, value, separator);
 				return grid == null ? result : restrictToMaxLength(result, model);
 			} else if (AbstractEntity.class.isAssignableFrom(model.getType())) {
+				// entity -> translate using the "displayProperty"
 				EntityModel<?> detailEntityModel = model.getNestedEntityModel();
 				if (detailEntityModel == null) {
 					detailEntityModel = entityModelFactory.getModel(model.getType());
