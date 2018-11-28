@@ -20,6 +20,7 @@ import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.Searchable;
 import com.ocs.dynamo.ui.composite.layout.BaseCustomComponent;
+import com.ocs.dynamo.ui.provider.BaseDataProvider;
 import com.ocs.dynamo.ui.provider.QueryType;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.GridSortOrderBuilder;
@@ -85,7 +86,7 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 	 * The wrapped grid component
 	 */
 	private ModelBasedGrid<ID, T> grid;
-	
+
 	/**
 	 * 
 	 */
@@ -171,6 +172,12 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 
 	public DataProvider<T, SerializablePredicate<T>> getDataProvider() {
 		return dataProvider;
+	}
+
+	@SuppressWarnings("unchecked")
+	public int getDataProviderSize() {
+		BaseDataProvider<ID, T> provider = (BaseDataProvider<ID, T>) dataProvider;
+		return provider.getSize();
 	}
 
 	/**
@@ -280,7 +287,7 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 		this.sortOrders = sortOrders;
 	}
 
-	public Layout getLayout(){
+	public Layout getLayout() {
 		return layout;
 	}
 

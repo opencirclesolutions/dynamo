@@ -11,21 +11,21 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-package com.ocs.dynamo.ui.composite.table;
+package com.ocs.dynamo.ui.composite.grid;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.math.BigDecimal;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
 import com.ocs.dynamo.domain.AbstractEntity;
+import com.ocs.dynamo.domain.model.annotation.Attribute;
 
 @Entity
-public class Department extends AbstractEntity<Integer> {
+public class Person extends AbstractEntity<Integer> {
 
-    private static final long serialVersionUID = -2436328464507840946L;
+    private static final long serialVersionUID = 5251680526340104915L;
 
     @Id
     @GeneratedValue
@@ -33,7 +33,20 @@ public class Department extends AbstractEntity<Integer> {
 
     private String name;
 
-    private Set<Person> employees = new HashSet<>();
+    private Integer age;
+
+    private BigDecimal weight;
+
+    @Attribute(percentage = true)
+    private BigDecimal percentage;
+
+    public Person(Integer id, String name, Integer age, BigDecimal weight, BigDecimal percentage) {
+        this.id = id;
+        this.name = name;
+        this.age = age;
+        this.weight = weight;
+        this.percentage = percentage;
+    }
 
     public String getName() {
         return name;
@@ -43,22 +56,36 @@ public class Department extends AbstractEntity<Integer> {
         this.name = name;
     }
 
-    public Set<Person> getEmployees() {
-        return employees;
+    public Integer getAge() {
+        return age;
     }
 
-    public void setEmployees(Set<Person> employees) {
-        this.employees = employees;
+    public void setAge(Integer age) {
+        this.age = age;
     }
 
-    @Override
+    public BigDecimal getWeight() {
+        return weight;
+    }
+
+    public void setWeight(BigDecimal weight) {
+        this.weight = weight;
+    }
+
     public Integer getId() {
         return id;
     }
 
-    @Override
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public BigDecimal getPercentage() {
+        return percentage;
+    }
+
+    public void setPercentage(BigDecimal percentage) {
+        this.percentage = percentage;
     }
 
 }

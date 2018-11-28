@@ -43,6 +43,7 @@ import com.vaadin.server.SerializablePredicate;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.TextField;
+import com.vaadin.ui.Grid.SelectionMode;
 import com.vaadin.ui.renderers.ComponentRenderer;
 
 /**
@@ -105,19 +106,20 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 		setDataProvider(dataProvider);
 		this.editable = editable;
 		this.fullTableEditor = fullTableEditor;
-		getEditor().setEnabled(editable);
-
-		// we need to pre-populate the table with the available properties
-		PropertySet<T> ps = BeanPropertySet.get(model.getEntityClass(), true,
-				new PropertyFilterDefinition(3, new ArrayList<>()));
-		setPropertySet(ps);
-
 		this.entityModel = model;
 		this.messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
 		this.factory = FieldFactoryImpl.getInstance(model, messageService);
 		this.exportAllowed = exportAllowed;
 
-		GridUtils.defaultInitialization(this);
+		// we need to pre-populate the table with the available properties
+		PropertySet<T> ps = BeanPropertySet.get(model.getEntityClass(), true,
+				new PropertyFilterDefinition(3, new ArrayList<>()));
+		setPropertySet(ps);
+		getEditor().setEnabled(editable);
+
+		setSizeFull();
+		setColumnReorderingAllowed(true);
+		setSelectionMode(SelectionMode.SINGLE);
 
 		generateColumns(model);
 

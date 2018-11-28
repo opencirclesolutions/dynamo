@@ -46,21 +46,18 @@ import com.vaadin.ui.components.grid.FooterRow;
  * @param <V> type of the parent entity
  */
 @SuppressWarnings({ "serial", "unchecked" })
-public abstract class InMemoryTreeTable<T, ID, C extends AbstractEntity<ID>, ID2, P extends AbstractEntity<ID2>>
+public abstract class InMemoryTreeGrid<T, ID, C extends AbstractEntity<ID>, ID2, P extends AbstractEntity<ID2>>
 		extends TreeGrid<T> implements Buildable {
 
 	// the message service
 	private MessageService messageService;
-
-	// mapping from column name to column (used to add footers)
-	private Map<String, Column<?, ?>> columns = new HashMap<>();
 
 	/**
 	 * Constructor
 	 * 
 	 * @param exportAllowed
 	 */
-	public InMemoryTreeTable() {
+	public InMemoryTreeGrid() {
 		this.messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
 	}
 
@@ -77,11 +74,11 @@ public abstract class InMemoryTreeTable<T, ID, C extends AbstractEntity<ID>, ID2
 	 * @param alignRight   whether to align the column to the right
 	 */
 	public void addReadOnlyColumn(String propertyName, String caption, boolean alignRight) {
-		Column<?, ?> col = this.addColumn(t -> ClassUtils.getFieldValueAsString(t, propertyName)).setCaption(caption);
+		Column<?, ?> col = this.addColumn(t -> ClassUtils.getFieldValueAsString(t, propertyName)).setCaption(caption)
+				.setId(propertyName);
 		if (alignRight) {
 			col.setStyleGenerator(item -> "v-align-right");
 		}
-		columns.put(propertyName, col);
 	}
 
 	@Override
@@ -117,12 +114,6 @@ public abstract class InMemoryTreeTable<T, ID, C extends AbstractEntity<ID>, ID2
 			totalSumMap.put(s, BigDecimal.ZERO);
 		}
 
-		// sum on the parent level
-		Map<String, BigDecimal> sumMap = new HashMap<>();
-		for (String s : sumColumns) {
-			sumMap.put(s, BigDecimal.ZERO);
-		}
-
 		// retrieve the parent rows to display
 		final List<P> parentCollection = getParentCollection();
 		for (P parent : parentCollection) {
@@ -137,28 +128,27 @@ public abstract class InMemoryTreeTable<T, ID, C extends AbstractEntity<ID>, ID2
 				data.addItem(t, t2);
 			}
 			expand(t);
-
-			// update the sum columns on the parent level
-			for (String column : sumColumns) {
-				for (T pRow : data.getRootItems()) {
-					List<T> cRows = data.getChildren(pRow);
-					BigDecimal sum = cRows.stream().map(c -> (Number) ClassUtils.getFieldValue(c, column))
-							.map(n -> toBigDecimal(n)).reduce(BigDecimal.ZERO, (a, b) -> a.add(b));
-					sumMap.put(column, toBigDecimal(sum));
-					ClassUtils.setFieldValue(pRow, column, convertNumber(sum, column));
-					BigDecimal ts = totalSumMap.get(column);
-					totalSumMap.put(column, ts.add(sum));
-				}
-			}
-			provider.refreshAll();
 		}
+
+		// update the sum columns on the parent level
+		for (String column : sumColumns) {
+			for (T pRow : data.getRootItems()) {
+				List<T> cRows = data.getChildren(pRow);
+				BigDecimal sum = cRows.stream().map(c -> (Number) ClassUtils.getFieldValue(c, column))
+						.map(n -> toBigDecimal(n)).reduce(BigDecimal.ZERO, (a, b) -> a.add(b));
+				ClassUtils.setFieldValue(pRow, column, convertNumber(sum, column));
+				BigDecimal ts = totalSumMap.get(column);
+				totalSumMap.put(column, ts.add(sum));
+			}
+		}
+
+		provider.refreshAll();
 
 		// update the footer sums
 		for (String column : sumColumns) {
 			BigDecimal bd = totalSumMap.get(column);
 			FooterRow footerRow = appendFooterRow();
-			Column<?, ?> col = columns.get(column);
-			footerRow.getCell(col).setText(convertToString(bd, column));
+			footerRow.getCell(column).setText(convertToString(bd, column));
 		}
 
 		if (sumColumns.length > 0) {

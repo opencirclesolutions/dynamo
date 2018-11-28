@@ -15,10 +15,10 @@ package com.ocs.dynamo.ui.composite.grid;
 
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.ui.Grid;
-import com.vaadin.ui.Grid.SelectionMode;
 
 /**
  * Utilities for dealing with the grid
+ * 
  * @author Bas Rutten
  *
  */
@@ -29,24 +29,9 @@ public final class GridUtils {
 	}
 
 	/**
-	 * Perform the default initialization for a table
+	 * Returns the custom currency symbol for a grid
 	 * 
-	 * @param table
-	 *            the table to initialize
-	 */
-	public static <T> void defaultInitialization(Grid<T> grid) {
-		grid.setSizeFull();
-		grid.setColumnReorderingAllowed(true);
-		grid.setSelectionMode(SelectionMode.SINGLE);
-	}
-
-	/**
-	 * Returns the currency symbol to be used in a certain grid. This will return
-	 * the custom currency symbol for a certain table, or the default currency
-	 * symbol if no custom currency symbol is set
-	 * 
-	 * @param table
-	 *            the table
+	 * @param grid the grid
 	 * @return
 	 */
 	public static <T> String getCurrencySymbol(Grid<T> grid) {
