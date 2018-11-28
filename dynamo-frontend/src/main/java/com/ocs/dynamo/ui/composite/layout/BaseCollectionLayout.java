@@ -38,10 +38,9 @@ import com.vaadin.data.provider.SortOrder;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.SerializablePredicate;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Grid.Column;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Layout;
-import com.vaadin.ui.StyleGenerator;
-import com.vaadin.ui.Grid.Column;
 
 /**
  * A base class for a composite layout that displays a collection of data
@@ -54,12 +53,16 @@ import com.vaadin.ui.Grid.Column;
 public abstract class BaseCollectionLayout<ID extends Serializable, T extends AbstractEntity<ID>>
 		extends BaseServiceCustomComponent<ID, T> implements Reloadable, Refreshable {
 
-	// the default page length
-	private static final int PAGE_LENGTH = 15;
-
 	private static final long serialVersionUID = -2864711994829582000L;
 
-	// the button bar
+	/**
+	 * The default page length
+	 */
+	private static final int PAGE_LENGTH = 15;
+
+	/**
+	 * The main button bar that appears below the search results grid
+	 */
 	private HorizontalLayout buttonBar = new DefaultHorizontalLayout();
 
 	// the relations to fetch when displaying a single entity
@@ -80,7 +83,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	// whether the selection of multiple values is allowed
 	private boolean multiSelect = false;
 
-	// the page length (number of rows that is displayed in the table)
+	// the page length (number of rows that is displayed in the grid)
 	private int pageLength = PAGE_LENGTH;
 
 	// the value from the previous row used when drawing divider rows
@@ -89,13 +92,15 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	// the currently selected item
 	private T selectedItem;
 
-	// whether the table can manually be sorted
+	// whether the grid can manually be sorted
 	private boolean sortEnabled = true;
 
 	// the sort orders
 	private List<SortOrder<?>> sortOrders = new ArrayList<>();
 
-	// the table wrapper
+	/**
+	 * The grid wrapper
+	 */
 	private BaseGridWrapper<ID, T> gridWrapper;
 
 	/**
@@ -169,40 +174,34 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	}
 
 	/**
-	 * Add divider rows to the table based on the value of the "dividerProperty"
+	 * Add divider rows to the grid based on the value of the "dividerProperty"
 	 */
-	protected final void constructTableDividers() {
+	protected final void constructGridDividers() {
 		if (dividerProperty != null) {
 			getGridWrapper().getGrid().setStyleName(DynamoConstants.CSS_DIVIDER);
-			getGridWrapper().getGrid().setStyleGenerator(new StyleGenerator<T>() {
-
-				private static final long serialVersionUID = 4727496497958798590L;
-
-				@Override
-				public String apply(T item) {
-					String result = null;
-					if (item != null) {
-						Object value = ClassUtils.getFieldValue(item, dividerProperty);
-						if (value != null) {
-							if (!ObjectUtils.equals(value, previousDividerValue)) {
-								result = DynamoConstants.CSS_DIVIDER;
-							}
-							previousDividerValue = value;
+			getGridWrapper().getGrid().setStyleGenerator(item -> {
+				String result = null;
+				if (item != null) {
+					Object value = ClassUtils.getFieldValue(item, dividerProperty);
+					if (value != null) {
+						if (!ObjectUtils.equals(value, previousDividerValue)) {
+							result = DynamoConstants.CSS_DIVIDER;
 						}
+						previousDividerValue = value;
 					}
-					return result;
 				}
+				return result;
 			});
 		}
 	}
 
 	/**
-	 * Lazily constructs the table wrapper - implement in subclasses in order to
+	 * Lazily constructs the grid wrapper - implement in subclasses in order to
 	 * create the right type of wrapper
 	 * 
 	 * @return
 	 */
-	protected abstract BaseGridWrapper<ID, T> constructTableWrapper();
+	protected abstract BaseGridWrapper<ID, T> constructGridWrapper();
 
 	/**
 	 * Creates a new entity - override in subclass if needed
@@ -220,7 +219,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	 * @param entity the entity to display
 	 */
 	protected abstract void detailsMode(T entity);
-	
+
 	/**
 	 * Disables sorting for the grid if needed
 	 */
@@ -272,13 +271,14 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	}
 
 	/**
+	 * Lazily fetches the grip wrapper
 	 * 
-	 * @return the table wrapper (constructed lazily)
+	 * @return
 	 */
 	public BaseGridWrapper<ID, T> getGridWrapper() {
 		if (gridWrapper == null) {
-			gridWrapper = constructTableWrapper();
-			postProcessTableWrapper(gridWrapper);
+			gridWrapper = constructGridWrapper();
+			postProcessGridWrapper(gridWrapper);
 		}
 		return gridWrapper;
 	}
@@ -354,7 +354,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 
 	/**
 	 * Adds additional buttons to the main button bar (that appears below the
-	 * results table in a search layout, split layout, or tabular edit layout)
+	 * results grid in a search layout, split layout, or tabular edit layout)
 	 * 
 	 * @param buttonBar the button bar
 	 */
@@ -385,7 +385,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	}
 
 	/**
-	 * Method that is called after the entire layout has been constructed. Use this
+	 * Callback method that is called after the entire layout has been constructed. Use this
 	 * to e.g. add additional components to the bottom of the layout or to modify
 	 * button captions
 	 * 
@@ -396,18 +396,18 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	}
 
 	/**
-	 * Method that is called after the table wrapper has been constructed
+	 * Method that is called after the grid wrapper has been constructed
 	 * 
 	 * @param wrapper
 	 */
-	protected void postProcessTableWrapper(BaseGridWrapper<ID, T> wrapper) {
+	protected void postProcessGridWrapper(BaseGridWrapper<ID, T> wrapper) {
 		// overwrite in subclasses when needed
 	}
 
 	/**
 	 * Sets the joins to use when retrieving a single object for use in a detail
 	 * form. If not set then the application will use the same joins as for the
-	 * complete result table
+	 * complete result grid
 	 * 
 	 * @param detailJoins
 	 */
@@ -445,7 +445,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	}
 
 	/**
-	 * Sets the page length (number of rows to display in a table)
+	 * Sets the page length (number of rows to display in the search results grid)
 	 * 
 	 * @param pageLength the desired page length
 	 */
@@ -454,7 +454,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	}
 
 	/**
-	 * Sets the provided item as the currently selected item in the table
+	 * Sets the provided item as the currently selected item in the grid
 	 * 
 	 * @param selectedItem the item that you want to become the selected item
 	 */
@@ -464,7 +464,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	}
 
 	/**
-	 * Specify whether sorting is enabled for the results table
+	 * Specify whether sorting is enabled for the results grid
 	 * 
 	 * @param sortEnabled whether sorting is enabled
 	 */

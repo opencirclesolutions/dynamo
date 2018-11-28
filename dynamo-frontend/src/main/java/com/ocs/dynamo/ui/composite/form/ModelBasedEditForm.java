@@ -831,11 +831,11 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		Button prevButton = new Button(message("ocs.previous"));
 		prevButton.setIcon(VaadinIcons.ARROW_LEFT);
 		prevButton.addClickListener(e -> {
-			T prev = getPrevEntity(getEntity());
+			T prev = getPreviousEntity();
 			if (prev != null) {
 				setEntity(prev, true);
 			} else {
-				prevButton.setEnabled(false);
+				filterButtons(PREV_BUTTON_DATA).stream().forEach(b -> b.setEnabled(false));
 			}
 		});
 		prevButton.setData(PREV_BUTTON_DATA);
@@ -846,11 +846,11 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		Button nextButton = new Button(message("ocs.next"));
 		nextButton.setIcon(VaadinIcons.ARROW_RIGHT);
 		nextButton.addClickListener(e -> {
-			T next = getNextEntity(getEntity());
+			T next = getNextEntity();
 			if (next != null) {
 				setEntity(next, true);
 			} else {
-				nextButton.setEnabled(false);
+				filterButtons(NEXT_BUTTON_DATA).stream().forEach(b -> b.setEnabled(false));
 			}
 		});
 		nextButton.setData(NEXT_BUTTON_DATA);
@@ -1325,12 +1325,11 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	}
 
 	/**
-	 * Method that is called to select the next entity in a data set
-	 *
-	 * @param current the currently selected entity
+	 * Returns the next entity from the encapsulating layout
+	 * 
 	 * @return
 	 */
-	protected T getNextEntity(T current) {
+	protected T getNextEntity() {
 		// overwrite in subclass
 		return null;
 	}
@@ -1360,12 +1359,11 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	}
 
 	/**
-	 * Method that is called to select the previous entity in a data set
-	 *
-	 * @param current the currently selected entity
+	 * Returns the previous entity from the encapsulating layout
+	 * 
 	 * @return
 	 */
-	protected T getPrevEntity(T current) {
+	protected T getPreviousEntity() {
 		// overwrite in subclass
 		return null;
 	}

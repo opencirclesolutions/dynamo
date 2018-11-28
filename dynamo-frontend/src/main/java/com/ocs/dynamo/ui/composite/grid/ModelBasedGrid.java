@@ -43,7 +43,6 @@ import com.vaadin.server.SerializablePredicate;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.TextField;
-import com.vaadin.ui.Grid.SelectionMode;
 import com.vaadin.ui.renderers.ComponentRenderer;
 
 /**

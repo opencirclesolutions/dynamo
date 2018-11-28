@@ -13,6 +13,12 @@
  */
 package com.ocs.dynamo.ui.composite.layout;
 
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.List;
+
+import org.apache.commons.lang.ObjectUtils;
+
 import com.google.common.collect.Lists;
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.dao.FetchJoinInformation;
@@ -27,6 +33,7 @@ import com.ocs.dynamo.ui.composite.form.AbstractModelBasedSearchForm;
 import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
 import com.ocs.dynamo.ui.composite.grid.ServiceBasedGridWrapper;
 import com.ocs.dynamo.ui.composite.type.ScreenMode;
+import com.ocs.dynamo.ui.provider.BaseDataProvider;
 import com.ocs.dynamo.ui.provider.QueryType;
 import com.ocs.dynamo.ui.utils.FormatUtils;
 import com.vaadin.data.provider.DataProvider;
@@ -42,15 +49,10 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
-import org.apache.commons.lang.ObjectUtils;
-
-import java.io.Serializable;
-import java.util.Collection;
-import java.util.List;
 
 /**
  * Base class for search layouts. A search layout consists of a search form with
- * a results table below it. From the result table the user can select an entity
+ * a results grid below it. From the result grid the user can select an entity
  * and then navigate to a detail screen for managing that entity
  * 
  * @author bas.rutten
@@ -124,7 +126,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	private boolean searchLayoutConstructed;
 
 	/**
-	 * The layout that contains the search results table
+	 * The layout that contains the grid that contains the search results
 	 */
 	private VerticalLayout searchResultsLayout;
 
@@ -134,7 +136,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	private Component selectedDetailLayout;
 
 	/**
-	 * The currently selected items in the search results table
+	 * The currently selected items in the search results grid
 	 */
 	private Collection<T> selectedItems;
 
@@ -148,6 +150,8 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	 * Tabbed layout for complex detail mode
 	 */
 	private LazyTabLayout<ID, T> tabLayout;
+
+	private int selectedRowIndex = -1;
 
 	/**
 	 * Constructor
@@ -217,7 +221,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 		if (mainSearchLayout == null) {
 			mainSearchLayout = new DefaultVerticalLayout();
 
-			// if search immediately, construct the search results table
+			// if search immediately, construct the search results grid
 			if (getFormOptions().isSearchImmediately()) {
 				constructSearchLayout();
 				searchLayoutConstructed = true;
@@ -228,7 +232,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 			if (getSearchForm().getClearButton() != null) {
 				if (!getFormOptions().isSearchImmediately()) {
 					getSearchForm().getClearButton().addClickListener(e -> {
-						// hide the search results table and add the label again
+						// hide the search results grid and add the label again
 						Label noSearchYetLabel = new Label(message("ocs.no.search.yet"));
 						searchResultsLayout.removeAllComponents();
 						searchResultsLayout.addComponent(noSearchYetLabel);
@@ -243,14 +247,14 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 			mainSearchLayout.addComponent(searchResultsLayout);
 
 			if (getFormOptions().isSearchImmediately()) {
-				// immediately construct the search results table
+				// immediately construct the search results grid
 				searchResultsLayout.addComponent(getGridWrapper());
 			} else {
-				// do not construct the search results table yet
+				// do not construct the search results grid yet
 				Label noSearchYetLabel = new Label(message("ocs.no.search.yet"));
 				searchResultsLayout.addComponent(noSearchYetLabel);
 
-				// set up a click listener that will construct the table when
+				// set up a click listener that will construct the grid when
 				// needed in case of a
 				// deferred search
 				// set up a click listener that will set the searchable when
@@ -306,7 +310,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 		if (getFormOptions().isShowPrevButton()) {
 			prevButton = new Button(message("ocs.previous"));
 			prevButton.addClickListener(e -> {
-				T prev = getPrevEntity(tabLayout.getEntity());
+				T prev = getPreviousEntity();
 				if (prev != null) {
 					tabLayout.setEntity(prev);
 					tabLayout.reload();
@@ -323,7 +327,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 		if (getFormOptions().isShowNextButton()) {
 			nextButton = new Button(message("ocs.next"));
 			nextButton.addClickListener(e -> {
-				T next = getNextEntity(tabLayout.getEntity());
+				T next = getNextEntity();
 				if (next != null) {
 					tabLayout.setEntity(next);
 					tabLayout.reload();
@@ -407,7 +411,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 
 			@Override
 			protected void afterModeChanged(boolean viewMode) {
-				// AbstractSearchLayout.this.afterModeChanged(viewMode, editForm);
+				AbstractSearchLayout.this.afterModeChanged(viewMode, editForm);
 			}
 
 			@Override
@@ -427,8 +431,8 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 			}
 
 			@Override
-			protected T getNextEntity(T current) {
-				return AbstractSearchLayout.this.getNextEntity(current);
+			protected T getNextEntity() {
+				return AbstractSearchLayout.this.getNextEntity();
 			}
 
 			@Override
@@ -442,8 +446,8 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 			}
 
 			@Override
-			protected T getPrevEntity(T current) {
-				return AbstractSearchLayout.this.getPrevEntity(current);
+			protected T getPreviousEntity() {
+				return AbstractSearchLayout.this.getPreviousEntity();
 			}
 
 			@Override
@@ -453,12 +457,12 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 
 			@Override
 			protected boolean hasNextEntity(T current) {
-				return AbstractSearchLayout.this.hasNextEntity(current);
+				return AbstractSearchLayout.this.hasNextEntity();
 			}
 
 			@Override
 			protected boolean hasPrevEntity(T current) {
-				return AbstractSearchLayout.this.hasPrevEntity(current);
+				return AbstractSearchLayout.this.hasPrevEntity();
 			}
 
 			@Override
@@ -473,7 +477,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 
 			@Override
 			protected void postProcessEditFields() {
-				// AbstractSearchLayout.this.postProcessEditFields(editForm);
+				AbstractSearchLayout.this.postProcessEditFields(editForm);
 			}
 
 		};
@@ -567,7 +571,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	 * Constructs the search layout
 	 */
 	public final void constructSearchLayout() {
-		// construct table and set properties
+		// construct grid and set properties
 		disableGridSorting();
 		getGridWrapper().getGrid().setHeightByRows(getPageLength());
 		getGridWrapper().getGrid().setSelectionMode(isMultiSelect() ? SelectionMode.MULTI : SelectionMode.SINGLE);
@@ -582,25 +586,29 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 		// windows)
 		if (!getFormOptions().isPopup() && getFormOptions().isDoubleClickSelectAllowed()) {
 			getGridWrapper().getGrid().addItemClickListener(event -> {
+				selectedRowIndex = event.getRowIndex();
+				@SuppressWarnings("unchecked")
+				BaseDataProvider<ID, T> provider = (BaseDataProvider<ID, T>) getGridWrapper().getDataProvider();
+				provider.setCurrentlySelectedId(event.getItem().getId());
+
+				getGridWrapper().getDataProvider();
 				if (event.getMouseEventDetails().isDoubleClick()) {
 					select(event.getItem());
 					doEdit();
 				}
 			});
 		}
-
-		// table dividers
-		constructTableDividers();
+		constructGridDividers();
 	}
 
 	/**
-	 * Lazily constructs the table wrapper
+	 * Lazily constructs the grid wrapper
 	 */
 	@Override
-	public ServiceBasedGridWrapper<ID, T> constructTableWrapper() {
+	public ServiceBasedGridWrapper<ID, T> constructGridWrapper() {
 		ServiceBasedGridWrapper<ID, T> result = new ServiceBasedGridWrapper<ID, T>(this.getService(), getEntityModel(),
 				getQueryType(), getSearchForm().extractFilter(), getSortOrders(),
-				getFormOptions().isTableExportAllowed(), false, getJoins()) {
+				getFormOptions().isExportAllowed(), false, getJoins()) {
 
 			private static final long serialVersionUID = 6343267378913526151L;
 
@@ -616,12 +624,12 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 
 		};
 		result.setMaxResults(getMaxResults());
+		result.build();
 
 		if (getFormOptions().isSearchImmediately()) {
 			getSearchForm().setSearchable(result);
 		}
 
-		result.build();
 		return result;
 	}
 
@@ -839,41 +847,41 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	}
 
 	/**
-	 * Returns the next entity in the container
+	 * Returns the next item that is available in the data provider
 	 * 
-	 * @param current the currently selected entity
 	 * @return
 	 */
-	protected T getNextEntity(T current) {
-		if (current != null) {
-//			ID id = (ID) getGridWrapper().getGrid().nextItemId(current.getId());
-//			if (id != null) {
-//				T next = getService().fetchById(id, getDetailJoinsFallBack());
-//				getGridWrapper().getTable().select(next.getId());
-//				afterEntitySelected(getEditForm(), next);
-//				return next;
-//			}
+	@SuppressWarnings("unchecked")
+	protected T getNextEntity() {
+		BaseDataProvider<ID, T> provider = (BaseDataProvider<ID, T>) getGridWrapper().getDataProvider();
+		ID nextId = provider.getNextItemId();
+		T next = null;
+		if (nextId != null) {
+			next = getService().fetchById(nextId, getDetailJoinsFallBack());
+			getGridWrapper().getGrid().select(next);
+			afterEntitySelected(getEditForm(), next);
+			selectedRowIndex++;
 		}
-		return null;
+		return next;
 	}
 
 	/**
-	 * Returns the previous entity in the container
+	 * Returns the previous entity that is available in the data provider
 	 * 
-	 * @param current the currently selected entity
 	 * @return
 	 */
-	protected T getPrevEntity(T current) {
-		if (current != null) {
-//			ID id = (ID) getGridWrapper().getGrid().prevItemId(current.getId());
-//			if (id != null) {
-//				T prev = getService().fetchById(id, getDetailJoinsFallBack());
-//				getGridWrapper().getTable().select(prev.getId());
-//				afterEntitySelected(getEditForm(), prev);
-//				return prev;
-//			}
+	@SuppressWarnings("unchecked")
+	protected T getPreviousEntity() {
+		BaseDataProvider<ID, T> provider = (BaseDataProvider<ID, T>) getGridWrapper().getDataProvider();
+		ID prevId = provider.getPreviousItemId();
+		T prev = null;
+		if (prevId != null) {
+			prev = getService().fetchById(prevId, getDetailJoinsFallBack());
+			getGridWrapper().getGrid().select(prev);
+			afterEntitySelected(getEditForm(), prev);
+			selectedRowIndex--;
 		}
-		return null;
+		return prev;
 	}
 
 	public QueryType getQueryType() {
@@ -914,24 +922,18 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	 * @param current the currently selected entity
 	 * @return
 	 */
-	protected boolean hasNextEntity(T current) {
-		if (current != null) {
-			// return getGridWrapper().getGrid().nextItemId(current.getId()) != null;
-		}
-		return false;
+	protected boolean hasNextEntity() {
+		return selectedRowIndex < getGridWrapper().getDataProviderSize() - 1;
 	}
 
 	/**
-	 * Check whether the container contains a previous entity
+	 * Check whether the data provider contains a previous entity
 	 * 
 	 * @param current the currently selected entity
 	 * @return
 	 */
-	protected boolean hasPrevEntity(T current) {
-		if (current != null) {
-			// return getGridWrapper().getGrid().prevItemId(current.getId()) != null;
-		}
-		return false;
+	protected boolean hasPrevEntity() {
+		return selectedRowIndex > 0;
 	}
 
 	/**
@@ -1124,7 +1126,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	 * Sets the tab specified by the provided index to the provided visibility
 	 *
 	 * @param index   the index
-	 * @param visible
+	 * @param visible whether the tabs must be visible
 	 */
 	public void setDetailsTabVisible(int index, boolean visible) {
 		if (tabLayout != null) {

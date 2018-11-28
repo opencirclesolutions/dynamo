@@ -45,6 +45,13 @@ public abstract class BaseDataProvider<ID extends Serializable, T extends Abstra
 	private final BaseService<ID, T> service;
 
 	/**
+	 * ID of the currently selected item
+	 */
+	private ID currentlySelectedId;
+
+	protected List<ID> ids;
+
+	/**
 	 * Constructor
 	 * 
 	 * @param service     the service used for retrieving data from the database
@@ -60,7 +67,7 @@ public abstract class BaseDataProvider<ID extends Serializable, T extends Abstra
 	/**
 	 * Creates sort orders based on the Vaadin query
 	 * 
-	 * @param query the vaadin query
+	 * @param query the Vaadin query
 	 * @return
 	 */
 	protected SortOrders createSortOrder(Query<T, SerializablePredicate<T>> query) {
@@ -98,12 +105,31 @@ public abstract class BaseDataProvider<ID extends Serializable, T extends Abstra
 		return messageService;
 	}
 
+	public ID getNextItemId() {
+		int index = ids.indexOf(currentlySelectedId);
+		if (index < ids.size() - 1) {
+			currentlySelectedId = ids.get(index + 1);
+			return currentlySelectedId;
+		}
+		return null;
+	}
+
+	public ID getPreviousItemId() {
+		int index = ids.indexOf(currentlySelectedId);
+		if (index > 0) {
+			currentlySelectedId = ids.get(index - 1);
+			return currentlySelectedId;
+		}
+		return null;
+	}
+
 	public BaseService<ID, T> getService() {
 		return service;
 	}
 
 	/**
-	 * Returns the number of items 
+	 * Returns the number of items
+	 * 
 	 * @return
 	 */
 	public abstract int getSize();
@@ -111,6 +137,10 @@ public abstract class BaseDataProvider<ID extends Serializable, T extends Abstra
 	@Override
 	public boolean isInMemory() {
 		return false;
+	}
+
+	public void setCurrentlySelectedId(ID id) {
+		this.currentlySelectedId = id;
 	}
 
 	public void setMaxResults(final Integer maxResults) {

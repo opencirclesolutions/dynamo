@@ -148,7 +148,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 			// table init
 			getGridWrapper().getGrid().setHeightByRows(getPageLength());
 			disableGridSorting();
-			constructTableDividers();
+			constructGridDividers();
 
 			// extra splitter (for horizontal mode)
 			if (isHorizontalMode()) {

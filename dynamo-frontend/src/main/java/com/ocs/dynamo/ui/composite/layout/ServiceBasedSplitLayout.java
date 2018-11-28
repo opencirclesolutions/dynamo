@@ -138,9 +138,9 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
 	}
 
 	@Override
-	protected BaseGridWrapper<ID, T> constructTableWrapper() {
+	protected BaseGridWrapper<ID, T> constructGridWrapper() {
 		ServiceBasedGridWrapper<ID, T> tw = new ServiceBasedGridWrapper<ID, T>(getService(), getEntityModel(),
-				getQueryType(), filter, getSortOrders(), getFormOptions().isTableExportAllowed(), false, getJoins()) {
+				getQueryType(), filter, getSortOrders(), getFormOptions().isExportAllowed(), false, getJoins()) {
 
 			@Override
 			protected void doConstructDataProvider(DataProvider<T, SerializablePredicate<T>> provider) {

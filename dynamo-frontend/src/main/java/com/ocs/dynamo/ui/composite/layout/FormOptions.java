@@ -100,7 +100,7 @@ public class FormOptions implements Serializable {
 	 * Whether to place the button bar at the top of the title label (rather than
 	 * behind it)
 	 */
-	private boolean placeButtonBarAtTop;
+	private boolean placeButtonBarAtTop = true;
 
 	/**
 	 * Whether the form is shown as part of a popup - this is normally set by the
@@ -173,7 +173,7 @@ public class FormOptions implements Serializable {
 	 * 
 	 * Indicates whether table export is allowed (read from system property)
 	 */
-	private boolean tableExportAllowed = SystemPropertyUtils.allowTableExport();
+	private boolean exportAllowed = SystemPropertyUtils.allowTableExport();
 
 	public FormOptions createCopy() {
 		FormOptions fo = new FormOptions();
@@ -199,7 +199,7 @@ public class FormOptions implements Serializable {
 		fo.setShowRemoveButton(isShowRemoveButton());
 		fo.setShowSearchAnyButton(isShowSearchAnyButton());
 		fo.setShowToggleButton(isShowToggleButton());
-		fo.setTableExportAllowed(isTableExportAllowed());
+		fo.setExportAllowed(isExportAllowed());
 		fo.setFormNested(isFormNested());
 		fo.setConfirmSave(isConfirmSave());
 		return fo;
@@ -235,6 +235,10 @@ public class FormOptions implements Serializable {
 
 	public boolean isEditAllowed() {
 		return editAllowed;
+	}
+
+	public boolean isExportAllowed() {
+		return exportAllowed;
 	}
 
 	public boolean isFormNested() {
@@ -305,10 +309,6 @@ public class FormOptions implements Serializable {
 		return showToggleButton;
 	}
 
-	public boolean isTableExportAllowed() {
-		return tableExportAllowed;
-	}
-
 	public FormOptions setAttributeGroupMode(AttributeGroupMode attributeGroupMode) {
 		this.attributeGroupMode = attributeGroupMode;
 		return this;
@@ -341,6 +341,11 @@ public class FormOptions implements Serializable {
 
 	public FormOptions setEditAllowed(boolean editAllowed) {
 		this.editAllowed = editAllowed;
+		return this;
+	}
+
+	public FormOptions setExportAllowed(boolean exportAllowed) {
+		this.exportAllowed = exportAllowed;
 		return this;
 	}
 
@@ -455,11 +460,6 @@ public class FormOptions implements Serializable {
 
 	public FormOptions setShowToggleButton(boolean showToggleButton) {
 		this.showToggleButton = showToggleButton;
-		return this;
-	}
-
-	public FormOptions setTableExportAllowed(boolean tableExportAllowed) {
-		this.tableExportAllowed = tableExportAllowed;
 		return this;
 	}
 

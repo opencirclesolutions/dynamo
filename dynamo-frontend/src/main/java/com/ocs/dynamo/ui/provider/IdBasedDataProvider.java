@@ -23,8 +23,6 @@ public class IdBasedDataProvider<ID extends Serializable, T extends AbstractEnti
 
 	private static final long serialVersionUID = -5693366456446998962L;
 
-	private List<ID> ids;
-
 	private SortOrders oldSortOrder = null;
 
 	public IdBasedDataProvider(BaseService<ID, T> service, EntityModel<T> entityModel, FetchJoinInformation... joins) {
@@ -61,7 +59,7 @@ public class IdBasedDataProvider<ID extends Serializable, T extends AbstractEnti
 
 	@Override
 	public int getSize() {
-		return ids == null ? 0: ids.size();
+		return ids == null ? 0 : ids.size();
 	}
 
 	@Override
@@ -71,13 +69,15 @@ public class IdBasedDataProvider<ID extends Serializable, T extends AbstractEnti
 		FilterConverter<T> converter = getFilterConverter();
 		final Filter filter = converter.convert(query.getFilter().orElse(null));
 		Long count = getService().count(filter, false);
-		if (getMaxResults() != null
-				&& count >= getMaxResults()) {
-			Notification.show(getMessageService().getMessage("ocs.too.many.results", VaadinUtils.getLocale(),
-					getMaxResults()), Notification.Type.ERROR_MESSAGE);
+		if (getMaxResults() != null && count >= getMaxResults()) {
+			Notification.show(
+					getMessageService().getMessage("ocs.too.many.results", VaadinUtils.getLocale(), getMaxResults()),
+					Notification.Type.ERROR_MESSAGE);
 		}
 		ids = getService().findIds(filter, getMaxResults(), so.toArray());
 		return ids.size();
 	}
+
+	
 
 }

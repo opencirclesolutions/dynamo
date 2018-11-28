@@ -94,7 +94,7 @@ public class ViewRevisionDialog<ID, T extends AbstractEntity<ID>, U extends Vers
 	@Override
 	protected void doBuild(Layout parent) {
 		FormOptions fo = new FormOptions().setReadOnly(true).setScreenMode(ScreenMode.VERTICAL)
-				.setAttributeGroupMode(AttributeGroupMode.TABSHEET).setTableExportAllowed(true);
+				.setAttributeGroupMode(AttributeGroupMode.TABSHEET).setExportAllowed(true);
 		layout = new ServiceBasedSplitLayout<RevisionKey<ID>, U>(service, entityModel, QueryType.PAGING, fo, null) {
 
 			private static final long serialVersionUID = -5302678717934028964L;

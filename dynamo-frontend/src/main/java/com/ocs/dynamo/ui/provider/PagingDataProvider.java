@@ -13,6 +13,7 @@ import com.vaadin.ui.Notification;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -27,7 +28,7 @@ public class PagingDataProvider<ID extends Serializable, T extends AbstractEntit
 	private static final long serialVersionUID = 8238057223431007376L;
 
 	/**
-	 * The number of items in the provider
+	 * The number of items in the provider. This is set by doing a count query
 	 */
 	private int size;
 
@@ -51,6 +52,8 @@ public class PagingDataProvider<ID extends Serializable, T extends AbstractEntit
 		SortOrders so = createSortOrder(query);
 		List<T> result = getService().fetch(converter.convert(query.getFilter().orElse(null)), page, pageSize, so,
 				getJoins());
+
+		ids = result.stream().map(t -> t.getId()).collect(Collectors.toList());
 		return result.stream();
 	}
 

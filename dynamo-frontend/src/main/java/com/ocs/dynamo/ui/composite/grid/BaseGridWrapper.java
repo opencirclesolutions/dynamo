@@ -13,6 +13,11 @@
  */
 package com.ocs.dynamo.ui.composite.grid;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
@@ -24,16 +29,13 @@ import com.ocs.dynamo.ui.provider.BaseDataProvider;
 import com.ocs.dynamo.ui.provider.QueryType;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.GridSortOrderBuilder;
+import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.data.provider.SortOrder;
 import com.vaadin.server.SerializablePredicate;
 import com.vaadin.shared.data.sort.SortDirection;
+import com.vaadin.ui.Grid.SelectionMode;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.VerticalLayout;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * A base class for objects that wrap around a ModelBasedTable
@@ -88,10 +90,13 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 	private ModelBasedGrid<ID, T> grid;
 
 	/**
-	 * 
+	 * The layout that contains the table
 	 */
 	private VerticalLayout layout;
 
+	/**
+	 * Whether the grid is editable using a row editor
+	 */
 	private boolean editable;
 
 	/**
@@ -133,15 +138,23 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 		layout = new VerticalLayout();
 
 		this.dataProvider = constructDataProvider();
-		// init the grid
 		grid = getGrid();
-		grid.setHeight(100, Unit.PERCENTAGE);
-		initSortingAndFiltering();
 		layout.addComponent(grid);
-		// add a change listener that responds to the selection of an item
-		grid.addSelectionListener(event -> onSelect(grid.getSelectedItems()));
+		initSortingAndFiltering();
+
+		grid.setSelectionMode(SelectionMode.SINGLE);
+		addGridSelectionListener();
 
 		setCompositionRoot(layout);
+	}
+
+	/**
+	 * Adds a grid selection listener
+	 */
+	private void addGridSelectionListener() {
+		grid.addSelectionListener(event -> {
+			onSelect(grid.getSelectedItems());
+		});
 	}
 
 	/**
@@ -158,7 +171,8 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 	 * @return
 	 */
 	protected ModelBasedGrid<ID, T> constructGrid() {
-		return new ModelBasedGrid<ID, T>(this.dataProvider, entityModel, allowExport, editable, false);
+		return new ModelBasedGrid<ID, T>(dataProvider, entityModel, allowExport, editable, false);
+
 	}
 
 	/**
@@ -176,8 +190,14 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 
 	@SuppressWarnings("unchecked")
 	public int getDataProviderSize() {
-		BaseDataProvider<ID, T> provider = (BaseDataProvider<ID, T>) dataProvider;
-		return provider.getSize();
+		if (dataProvider instanceof BaseDataProvider) {
+			BaseDataProvider<ID, T> provider = (BaseDataProvider<ID, T>) dataProvider;
+			return provider.getSize();
+		} else if (dataProvider instanceof ListDataProvider) {
+			ListDataProvider<T> lp = (ListDataProvider<T>) dataProvider;
+			return lp.getItems().size();
+		}
+		return 0;
 	}
 
 	/**

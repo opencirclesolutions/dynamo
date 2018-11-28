@@ -163,7 +163,7 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 			addButton.setVisible(!getFormOptions().isHideAddButton() && isEditAllowed() && !isViewmode());
 
 			postProcessButtonBar(getButtonBar());
-			constructTableDividers();
+			constructGridDividers();
 			postProcessLayout(mainLayout);
 		}
 		setCompositionRoot(mainLayout);
@@ -208,9 +208,9 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 	}
 
 	@Override
-	protected BaseGridWrapper<ID, T> constructTableWrapper() {
+	protected BaseGridWrapper<ID, T> constructGridWrapper() {
 		ServiceBasedGridWrapper<ID, T> tableWrapper = new ServiceBasedGridWrapper<ID, T>(getService(), getEntityModel(),
-				QueryType.PAGING, filter, getSortOrders(), getFormOptions().isTableExportAllowed(), true, getJoins()) {
+				QueryType.PAGING, filter, getSortOrders(), getFormOptions().isExportAllowed(), true, getJoins()) {
 			@Override
 			protected void doConstructDataProvider(final DataProvider<T, SerializablePredicate<T>> provider) {
 				TabularEditLayout.this.doConstructDataProvider(provider);
