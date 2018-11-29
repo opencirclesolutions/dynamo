@@ -13,6 +13,18 @@
  */
 package com.ocs.dynamo.ui.composite.layout;
 
+import java.math.BigDecimal;
+import java.text.DecimalFormatSymbols;
+import java.time.LocalTime;
+import java.util.Locale;
+
+import javax.persistence.OptimisticLockException;
+
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mock;
+
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.TestEntity.TestEnum;
@@ -27,18 +39,8 @@ import com.ocs.dynamo.test.BaseMockitoTest;
 import com.ocs.dynamo.test.MockUtil;
 import com.ocs.dynamo.utils.DateUtils;
 import com.vaadin.ui.Label;
-import junitx.util.PrivateAccessor;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mock;
 
-import javax.persistence.OptimisticLockException;
-import java.math.BigDecimal;
-import java.text.DecimalFormatSymbols;
-import java.time.LocalTime;
-import java.util.Calendar;
-import java.util.Locale;
+import junitx.util.PrivateAccessor;
 
 public class BaseCustomComponentTest extends BaseMockitoTest {
 
