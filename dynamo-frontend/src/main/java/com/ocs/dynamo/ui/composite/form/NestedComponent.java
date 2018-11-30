@@ -19,7 +19,7 @@ package com.ocs.dynamo.ui.composite.form;
  * 
  * @author bas.rutten
  */
-public interface SignalsParent {
+public interface NestedComponent {
 
 	/**
 	 * 

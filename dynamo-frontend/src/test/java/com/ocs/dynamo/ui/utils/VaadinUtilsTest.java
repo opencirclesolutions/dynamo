@@ -13,6 +13,15 @@
  */
 package com.ocs.dynamo.ui.utils;
 
+import java.math.BigDecimal;
+import java.util.Locale;
+
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.MessageService;
@@ -25,14 +34,6 @@ import com.vaadin.ui.Panel;
 import com.vaadin.ui.UI;
 import com.vaadin.v7.ui.HorizontalLayout;
 import com.vaadin.v7.ui.VerticalLayout;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-
-import java.math.BigDecimal;
-import java.util.Locale;
 
 public class VaadinUtilsTest extends BaseMockitoTest {
 

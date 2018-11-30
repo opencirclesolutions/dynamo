@@ -50,7 +50,7 @@ import com.vaadin.ui.VerticalLayout;
  * @param <T> the type of the entity that is managed in the form
  */
 public abstract class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity<ID>>
-		extends CustomField<Collection<T>> implements SignalsParent, UseInViewMode {
+		extends CustomField<Collection<T>> implements NestedComponent, UseInViewMode {
 
 	/**
 	 * 
@@ -207,7 +207,7 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 	 */
 	private List<FormContainer> forms = new ArrayList<>();
 
-	private Map<SignalsParent, Boolean> detailComponentsValid = new HashMap<>();
+	private Map<NestedComponent, Boolean> detailComponentsValid = new HashMap<>();
 
 	/**
 	 * Container that holds all the sub forms

@@ -11,18 +11,16 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-package com.ocs.dynamo.ui.utils;
+package com.ocs.dynamo.utils;
 
 import java.math.BigDecimal;
-import java.util.List;
+import java.util.Locale;
 
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mock;
 
 import com.google.common.collect.Lists;
-import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.TestEntity2;
 import com.ocs.dynamo.domain.model.EntityModel;
@@ -33,7 +31,7 @@ import com.ocs.dynamo.service.impl.MessageServiceImpl;
 import com.ocs.dynamo.test.BaseMockitoTest;
 import com.ocs.dynamo.test.MockUtil;
 
-public class EntityModelUtilTest extends BaseMockitoTest {
+public class EntityModelUtilsTest extends BaseMockitoTest {
 
 	private EntityModelFactory factory = new EntityModelFactoryImpl();
 
@@ -42,7 +40,7 @@ public class EntityModelUtilTest extends BaseMockitoTest {
 
 	@Override
 	public void setUp() {
-		super.setUp();
+		super.setUp();	
 		MockUtil.mockMessageService(messageService);
 	}
 
@@ -53,7 +51,7 @@ public class EntityModelUtilTest extends BaseMockitoTest {
 		TestEntity entity = new TestEntity();
 		entity.setName("test name");
 
-		String value = EntityModelUtil.getMainAttributeValue(entity, model);
+		String value = EntityModelUtils.getMainAttributeValue(entity, model);
 		Assert.assertEquals("test name", value);
 	}
 
@@ -64,7 +62,7 @@ public class EntityModelUtilTest extends BaseMockitoTest {
 		TestEntity entity = new TestEntity();
 		entity.setName("test name");
 
-		String value = EntityModelUtil.getDisplayPropertyValue(entity, model);
+		String value = EntityModelUtils.getDisplayPropertyValue(entity, model);
 		Assert.assertEquals("test name", value);
 	}
 
@@ -78,8 +76,8 @@ public class EntityModelUtilTest extends BaseMockitoTest {
 		TestEntity entity2 = new TestEntity();
 		entity2.setName("test name 2");
 
-		String value = EntityModelUtil.getDisplayPropertyValue(Lists.newArrayList(entity, entity2), model, 2,
-				messageService);
+		String value = EntityModelUtils.getDisplayPropertyValue(Lists.newArrayList(entity, entity2), model, 2,
+				messageService, Locale.ENGLISH);
 		Assert.assertEquals("test name, test name 2", value);
 	}
 
@@ -99,8 +97,8 @@ public class EntityModelUtilTest extends BaseMockitoTest {
 		TestEntity entity3 = new TestEntity();
 		entity3.setName("test name 3");
 
-		String value = EntityModelUtil.getDisplayPropertyValue(Lists.newArrayList(entity, entity2, entity3), model, 2,
-				messageService);
+		String value = EntityModelUtils.getDisplayPropertyValue(Lists.newArrayList(entity, entity2, entity3), model, 2,
+				messageService, Locale.ENGLISH);
 		Assert.assertEquals("test name, test name 2, ocs.and.others", value);
 	}
 
@@ -113,7 +111,7 @@ public class EntityModelUtilTest extends BaseMockitoTest {
 
 		TestEntity2 target = new TestEntity2();
 
-		EntityModelUtil.copySimpleAttributes(source, target, factory.getModel(TestEntity2.class));
+		EntityModelUtils.copySimpleAttributes(source, target, factory.getModel(TestEntity2.class));
 
 		// simple attribute "name" must have been copied
 		Assert.assertEquals("Name", target.getName());
@@ -134,7 +132,7 @@ public class EntityModelUtilTest extends BaseMockitoTest {
 
 		TestEntity target = new TestEntity();
 
-		EntityModelUtil.copySimpleAttributes(source, target, factory.getModel(TestEntity.class));
+		EntityModelUtils.copySimpleAttributes(source, target, factory.getModel(TestEntity.class));
 
 		// simple attribute "name" must have been copied
 		Assert.assertEquals("Name", target.getName());
@@ -160,110 +158,10 @@ public class EntityModelUtilTest extends BaseMockitoTest {
 
 		TestEntity target = new TestEntity();
 
-		EntityModelUtil.copySimpleAttributes(source, target, factory.getModel(TestEntity.class), "name");
+		EntityModelUtils.copySimpleAttributes(source, target, factory.getModel(TestEntity.class), "name");
 
 		// name is listed in the ignore list and is not copied
 		Assert.assertNull(target.getName());
 	}
 
-	@Test
-	public void testCompare() {
-		TestEntity e1 = new TestEntity();
-		TestEntity e2 = new TestEntity();
-
-		// there are no changes
-		List<String> changes = EntityModelUtil.compare(e1, e2, factory.getModel(TestEntity.class), factory,
-				messageService);
-		Assert.assertEquals(0, changes.size());
-
-		e1.setAge(12L);
-		changes = EntityModelUtil.compare(e1, e2, factory.getModel(TestEntity.class), factory, messageService);
-		Assert.assertEquals(1, changes.size());
-		Assert.assertEquals("ocs.value.changed", changes.get(0));
-
-		e1.setAge(null);
-		e2.setName("Kevin");
-		changes = EntityModelUtil.compare(e1, e2, factory.getModel(TestEntity.class), factory, messageService);
-		Assert.assertEquals(1, changes.size());
-		Assert.assertEquals("ocs.value.changed", changes.get(0));
-	}
-
-	@Test
-	public void testCompare_Ignore() {
-		TestEntity e1 = new TestEntity();
-		TestEntity e2 = new TestEntity();
-
-		e1.setName("Bob");
-
-		// name has changed
-		List<String> changes = EntityModelUtil.compare(e1, e2, factory.getModel(TestEntity.class), factory,
-				messageService);
-		Assert.assertEquals(1, changes.size());
-
-		// ignore the name change
-		changes = EntityModelUtil.compare(e1, e2, factory.getModel(TestEntity.class), factory, messageService, "name");
-		Assert.assertEquals(0, changes.size());
-	}
-
-	@Test
-	public void testCompare_CollectionRemove() {
-		TestEntity e1 = new TestEntity();
-		TestEntity e2 = new TestEntity();
-
-		e1.addTestEntity2(new TestEntity2());
-
-		List<String> changes = EntityModelUtil.compare(e1, e2, factory.getModel(TestEntity.class), factory,
-				messageService);
-		Assert.assertEquals(1, changes.size());
-		Assert.assertEquals("ocs.value.removed", changes.get(0));
-	}
-
-	@Test
-	public void testCompare_CollectionAdd() {
-		TestEntity e1 = new TestEntity();
-		TestEntity e2 = new TestEntity();
-
-		e2.addTestEntity2(new TestEntity2());
-
-		List<String> changes = EntityModelUtil.compare(e1, e2, factory.getModel(TestEntity.class), factory,
-				messageService);
-		Assert.assertEquals(1, changes.size());
-		Assert.assertEquals("ocs.value.added", changes.get(0));
-	}
-
-	@Test
-	@Ignore
-	public void testDefaultCaptionFormat() {
-		// Given: some field name.
-		String fieldName = "minimumAge";
-
-		// Given: default alternative caption format.
-		System.clearProperty(DynamoConstants.SP_DEFAULT_CAPTION_FORMAT);
-
-		// Test: Get caption using configured caption format.
-		String caption = EntityModelUtil.getCaptionByPropertyId(fieldName);
-
-		// Assert: Vaadin formatting applied.
-		Assert.assertEquals("Minimum Age", caption);
-	}
-
-	@Test
-	@Ignore
-	public void testAlternativeCaptionFormat() {
-		// Given: some field name.
-		String fieldName = "minimumAge";
-
-		// Given: configured alternative caption format.
-		String oldValue = System.getProperty(DynamoConstants.SP_DEFAULT_CAPTION_FORMAT);
-		System.setProperty(DynamoConstants.SP_DEFAULT_CAPTION_FORMAT, "testAlternativeCaptionFormat");
-
-		// Test: Get caption using configured caption format.
-		String caption = EntityModelUtil.getCaptionByPropertyId(fieldName);
-
-		// Assert: The old default caption format was nog configured.
-		Assert.assertNull(oldValue);
-
-		// Assert: Alternative formatting applied.
-		Assert.assertEquals("Minimum age", caption);
-	}
 }

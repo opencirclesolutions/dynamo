@@ -29,7 +29,7 @@ import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.converter.ConverterFactory;
-import com.ocs.dynamo.ui.utils.ConvertUtil;
+import com.ocs.dynamo.ui.utils.ConvertUtils;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.ocs.dynamo.utils.ClassUtils;
@@ -62,7 +62,7 @@ import com.vaadin.ui.renderers.ComponentRenderer;
  * @param <T> the type of the elements in the collection
  */
 public class ElementCollectionGrid<ID extends Serializable, U extends AbstractEntity<ID>, T extends Serializable>
-		extends CustomField<Collection<T>> implements SignalsParent, CanAssignEntity<ID, U> {
+		extends CustomField<Collection<T>> implements NestedComponent, CanAssignEntity<ID, U> {
 
 	private static final long serialVersionUID = -1203245694503350276L;
 
@@ -263,7 +263,7 @@ public class ElementCollectionGrid<ID extends Serializable, U extends AbstractEn
 	@Override
 	public Collection<T> getValue() {
 		Collection<T> col = provider.getItems().stream().map(vh -> vh.getValue()).collect(Collectors.toList());
-		Collection<T> converted = ConvertUtil.convertCollection(col, attributeModel);
+		Collection<T> converted = ConvertUtils.convertCollection(col, attributeModel);
 		if (entity != null) {
 			ClassUtils.setFieldValue(entity, attributeModel.getPath(), converted);
 		}

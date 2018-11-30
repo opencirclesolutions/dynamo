@@ -52,10 +52,6 @@ public final class FormatUtils {
 	private static EntityModelFactory entityModelFactory = ServiceLocatorFactory.getServiceLocator()
 			.getEntityModelFactory();
 
-	private FormatUtils() {
-		// private constructor
-	}
-
 	/**
 	 * Extracts a field value from an object and formats it
 	 * 
@@ -230,5 +226,9 @@ public final class FormatUtils {
 			return input.substring(0, am.getMaxLengthInTable()) + "...";
 		}
 		return input;
+	}
+
+	private FormatUtils() {
+		// private constructor
 	}
 }

@@ -24,9 +24,9 @@ import com.vaadin.shared.data.sort.SortDirection;
  * @author Bas Rutten
  *
  */
-public final class SortUtil {
+public final class SortUtils {
 
-	private SortUtil() {
+	private SortUtils() {
 	}
 
 	/**

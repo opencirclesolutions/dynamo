@@ -45,16 +45,6 @@ public final class SystemPropertyUtils {
 	}
 
 	/**
-	 * Returns the default caption format
-	 * 
-	 * @return the default caption format
-	 */
-	public static String getDefaultCaptionFormat() {
-		return System.getProperty(DynamoConstants.SP_DEFAULT_CAPTION_FORMAT,
-				DynamoConstants.SP_DEFAULT_CAPTION_FORMAT_VAADIN);
-	}
-
-	/**
 	 *
 	 *
 	 * @return the default currency symbol to use for decimale fields that display a

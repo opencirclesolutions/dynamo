@@ -25,16 +25,16 @@ public class SortUtilTest {
 	@Test
 	public void testTranslate() {
 
-		Assert.assertNull(SortUtil.translate());
+		Assert.assertNull(SortUtils.translate());
 
-		com.ocs.dynamo.dao.SortOrder[] orders = SortUtil
+		com.ocs.dynamo.dao.SortOrder[] orders = SortUtils
 				.translate(new SortOrder<String>("test1", SortDirection.ASCENDING));
 		Assert.assertEquals(1, orders.length);
 
 		Assert.assertEquals("test1", orders[0].getProperty());
 		Assert.assertEquals(Direction.ASC, orders[0].getDirection());
 
-		orders = SortUtil.translate(new SortOrder<String>("test2", SortDirection.DESCENDING));
+		orders = SortUtils.translate(new SortOrder<String>("test2", SortDirection.DESCENDING));
 		Assert.assertEquals(1, orders.length);
 
 		Assert.assertEquals("test2", orders[0].getProperty());

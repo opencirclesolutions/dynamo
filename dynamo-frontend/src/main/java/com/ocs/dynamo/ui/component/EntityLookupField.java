@@ -30,9 +30,9 @@ import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.composite.dialog.ModelBasedSearchDialog;
-import com.ocs.dynamo.ui.utils.EntityModelUtil;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.util.SystemPropertyUtils;
+import com.ocs.dynamo.utils.EntityModelUtils;
 import com.ocs.dynamo.utils.StringUtils;
 import com.vaadin.data.provider.SortOrder;
 import com.vaadin.icons.VaadinIcons;
@@ -196,14 +196,14 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 		if (newValue instanceof Collection<?>) {
 			Collection<T> col = (Collection<T>) newValue;
 			if (!col.isEmpty()) {
-				caption = EntityModelUtil.getDisplayPropertyValue(col, getEntityModel(),
-						SystemPropertyUtils.getLookupFieldMaxItems(), getMessageService());
+				caption = EntityModelUtils.getDisplayPropertyValue(col, getEntityModel(),
+						SystemPropertyUtils.getLookupFieldMaxItems(), getMessageService(), VaadinUtils.getLocale());
 			}
 		} else {
 			// just a single value
 			T t = (T) newValue;
 			if (newValue != null) {
-				caption = EntityModelUtil.getDisplayPropertyValue(t, getEntityModel());
+				caption = EntityModelUtils.getDisplayPropertyValue(t, getEntityModel());
 			}
 		}
 		return caption;

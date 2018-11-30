@@ -45,38 +45,38 @@ import com.vaadin.data.converter.StringToLongConverter;
  * @author bas.rutten
  *
  */
-public final class ConvertUtil {
+public final class ConvertUtils {
 
-	private ConvertUtil() {
+	private ConvertUtils() {
 	}
 
 	/**
 	 * Converts a value to its presentation value
 	 * 
-	 * @param attributeModel the attribute model
+	 * @param am the attribute model
 	 * @param input          the input value
 	 * @return
 	 */
-	public static Object convertToPresentationValue(AttributeModel attributeModel, Object input) {
+	public static Object convertToPresentationValue(AttributeModel am, Object input) {
 		if (input == null) {
 			return null;
 		}
 
 		Locale locale = VaadinUtils.getLocale();
 		boolean grouping = SystemPropertyUtils.useThousandsGroupingInEditMode();
-		boolean percentage = attributeModel.isPercentage();
+		boolean percentage = am.isPercentage();
 
-		if (attributeModel.isWeek()) {
+		if (am.isWeek()) {
 			LocalDateWeekCodeConverter converter = new LocalDateWeekCodeConverter();
 			return converter.convertToPresentation((LocalDate) input, new ValueContext(locale));
-		} else if (Integer.class.equals(attributeModel.getType())) {
+		} else if (Integer.class.equals(am.getType())) {
 			return VaadinUtils.integerToString(grouping, percentage, (Integer) input);
-		} else if (Long.class.equals(attributeModel.getType())) {
+		} else if (Long.class.equals(am.getType())) {
 			return VaadinUtils.longToString(grouping, percentage, (Long) input);
-		} else if (BigDecimal.class.equals(attributeModel.getType())) {
-			return VaadinUtils.bigDecimalToString(attributeModel.isCurrency(), attributeModel.isPercentage(), grouping,
-					attributeModel.getPrecision(), (BigDecimal) input, locale);
-		} else if (ZonedDateTime.class.equals(attributeModel.getType())) {
+		} else if (BigDecimal.class.equals(am.getType())) {
+			return VaadinUtils.bigDecimalToString(am.isCurrency(), am.isPercentage(), grouping,
+					am.getPrecision(), (BigDecimal) input, locale);
+		} else if (ZonedDateTime.class.equals(am.getType())) {
 			ZonedDateTime zdt = (ZonedDateTime) input;
 			return zdt.toLocalDateTime();
 		}
@@ -86,7 +86,7 @@ public final class ConvertUtil {
 	/**
 	 * Converts the search value from the presentation to the model
 	 * 
-	 * @param attributeModel the attribute model that governs the conversion
+	 * @param am the attribute model that governs the conversion
 	 * @param input          the search value to convert
 	 * @return
 	 */

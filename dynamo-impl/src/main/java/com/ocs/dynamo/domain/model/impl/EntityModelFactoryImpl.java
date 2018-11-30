@@ -1054,8 +1054,9 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 			}
 
 			if (!StringUtils.isEmpty(attribute.defaultValue())) {
-				if (AttributeType.BASIC.equals(model.getAttributeType())) {
-					throw new OCSRuntimeException("Setting a default value is only allowed for BASIC attributes");
+				if (!AttributeType.BASIC.equals(model.getAttributeType())) {
+					throw new OCSRuntimeException(
+							model.getName() + ": setting a default value is only allowed for BASIC attributes");
 				}
 
 				final String defaultValue = attribute.defaultValue();

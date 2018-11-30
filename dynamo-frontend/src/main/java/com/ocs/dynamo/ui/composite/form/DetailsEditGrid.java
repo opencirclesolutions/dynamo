@@ -34,7 +34,7 @@ import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.composite.dialog.ModelBasedSearchDialog;
 import com.ocs.dynamo.ui.composite.grid.ModelBasedGrid;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
-import com.ocs.dynamo.ui.utils.ConvertUtil;
+import com.ocs.dynamo.ui.utils.ConvertUtils;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.vaadin.data.BeanValidationBinder;
@@ -74,7 +74,7 @@ import com.vaadin.ui.VerticalLayout;
  * @param <T> the type of the entity
  */
 public abstract class DetailsEditGrid<ID extends Serializable, T extends AbstractEntity<ID>>
-		extends CustomField<Collection<T>> implements SignalsParent, UseInViewMode {
+		extends CustomField<Collection<T>> implements NestedComponent, UseInViewMode {
 
 	private static final long serialVersionUID = -1203245694503350276L;
 
@@ -398,7 +398,7 @@ public abstract class DetailsEditGrid<ID extends Serializable, T extends Abstrac
 	@Override
 	public Collection<T> getValue() {
 		return provider == null ? new ArrayList<>()
-				: ConvertUtil.convertCollection(provider.getItems(), attributeModel);
+				: ConvertUtils.convertCollection(provider.getItems(), attributeModel);
 	}
 
 	/**

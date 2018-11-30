@@ -319,7 +319,6 @@ public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements B
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public List<ID> findIds(Filter filter, SortOrder... sortOrders) {
 		return findIds(filter, null, sortOrders);
 	}

@@ -23,8 +23,8 @@ import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.Refreshable;
-import com.ocs.dynamo.ui.utils.EntityModelUtil;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
+import com.ocs.dynamo.utils.EntityModelUtils;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.data.provider.SortOrder;
 import com.vaadin.server.ErrorMessage;
@@ -249,7 +249,7 @@ public class FancyListSelect<ID extends Serializable, T extends AbstractEntity<I
 
 		// the list select component shows the currently selected values
 		listSelect.setSizeFull();
-		listSelect.setItemCaptionGenerator(t -> EntityModelUtil.getDisplayPropertyValue(t, getEntityModel()));
+		listSelect.setItemCaptionGenerator(t -> EntityModelUtils.getDisplayPropertyValue(t, getEntityModel()));
 		layout.addComponent(listSelect);
 
 		return layout;

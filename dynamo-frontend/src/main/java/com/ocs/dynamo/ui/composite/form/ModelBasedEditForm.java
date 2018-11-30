@@ -59,10 +59,10 @@ import com.ocs.dynamo.ui.component.URLField;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.composite.type.AttributeGroupMode;
 import com.ocs.dynamo.ui.composite.type.ScreenMode;
-import com.ocs.dynamo.ui.utils.EntityModelUtil;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.ocs.dynamo.utils.ClassUtils;
+import com.ocs.dynamo.utils.EntityModelUtils;
 import com.vaadin.data.BeanValidationBinder;
 import com.vaadin.data.Binder;
 import com.vaadin.data.Binder.Binding;
@@ -102,7 +102,7 @@ import com.vaadin.ui.VerticalLayout;
  */
 @SuppressWarnings("serial")
 public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntity<ID>>
-		extends AbstractModelBasedForm<ID, T> implements SignalsParent {
+		extends AbstractModelBasedForm<ID, T> implements NestedComponent {
 
 	/**
 	 * A custom field that can be used to upload a file
@@ -280,7 +280,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	/**
 	 * Indicates whether all details tables for editing complex fields are valid
 	 */
-	private Map<SignalsParent, Boolean> detailComponentsValid = new HashMap<>();
+	private Map<NestedComponent, Boolean> detailComponentsValid = new HashMap<>();
 
 	/**
 	 * The selected entity
@@ -1175,7 +1175,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		Label label = null;
 
 		// add title label
-		String mainValue = EntityModelUtil.getMainAttributeValue(entity, getEntityModel());
+		String mainValue = EntityModelUtils.getMainAttributeValue(entity, getEntityModel());
 		if (isViewMode()) {
 			label = new Label(
 					message("ocs.modelbasededitform.title.view", getEntityModel().getDisplayName(), mainValue));
@@ -1685,6 +1685,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void refreshFieldFilters() {
+
+		// if there is a field filter, make sure it is used
 		for (String propertyName : getFieldFilters().keySet()) {
 			Optional<Binding<T, ?>> binding = groups.get(isViewMode()).getBinding(propertyName);
 			if (binding.isPresent()) {
@@ -1695,6 +1697,13 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 				}
 			}
 		}
+
+		// otherwise refresh
+		groups.get(isViewMode()).getFields().forEach(field -> {
+			if (field instanceof Refreshable && !(field instanceof CustomEntityField)) {
+				((Refreshable) field).refresh();
+			}
+		});
 	}
 
 	private void setEntity(T entity, boolean checkIterationButtons) {
@@ -1955,8 +1964,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 		// validate nested form and components
 		error |= groups.get(isViewMode()).getFields().anyMatch(f -> {
-			if (f instanceof SignalsParent) {
-				return ((SignalsParent) f).validateAllFields();
+			if (f instanceof NestedComponent) {
+				return ((NestedComponent) f).validateAllFields();
 			}
 			return false;
 		});

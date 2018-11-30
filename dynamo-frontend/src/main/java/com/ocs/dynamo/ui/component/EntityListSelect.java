@@ -23,8 +23,8 @@ import com.ocs.dynamo.filter.AndPredicate;
 import com.ocs.dynamo.filter.FilterConverter;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.Refreshable;
-import com.ocs.dynamo.ui.utils.EntityModelUtil;
-import com.ocs.dynamo.ui.utils.SortUtil;
+import com.ocs.dynamo.ui.utils.SortUtils;
+import com.ocs.dynamo.utils.EntityModelUtils;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.data.provider.SortOrder;
 import com.vaadin.server.SerializablePredicate;
@@ -110,18 +110,18 @@ public class EntityListSelect<ID extends Serializable, T extends AbstractEntity<
 		if (SelectMode.ALL.equals(mode)) {
 			// add all items (but sorted)
 			provider = new ListDataProvider<>(
-					service.findAll(SortUtil.translateAndFilterOnTransient(false, targetEntityModel, sortOrders)));
+					service.findAll(SortUtils.translateAndFilterOnTransient(false, targetEntityModel, sortOrders)));
 		} else if (SelectMode.FILTERED.equals(mode)) {
 			// add a filtered selection of items
 			items = service.find(new FilterConverter<T>(targetEntityModel).convert(filter),
-					SortUtil.translateAndFilterOnTransient(false, targetEntityModel, sortOrders));
+					SortUtils.translateAndFilterOnTransient(false, targetEntityModel, sortOrders));
 			provider = new ListDataProvider<>(items);
 		} else if (SelectMode.FIXED.equals(mode)) {
 			provider = new ListDataProvider<>(items);
 		}
 		setDataProvider(provider);
 
-		setItemCaptionGenerator(t -> EntityModelUtil.getDisplayPropertyValue(t, targetEntityModel));
+		setItemCaptionGenerator(t -> EntityModelUtils.getDisplayPropertyValue(t, targetEntityModel));
 		setSizeFull();
 	}
 
@@ -213,11 +213,11 @@ public class EntityListSelect<ID extends Serializable, T extends AbstractEntity<
 			// add all items (but sorted)
 			provider.getItems().clear();
 			provider.getItems().addAll(
-					service.findAll(SortUtil.translateAndFilterOnTransient(false, targetEntityModel, sortOrders)));
+					service.findAll(SortUtils.translateAndFilterOnTransient(false, targetEntityModel, sortOrders)));
 		} else if (SelectMode.FILTERED.equals(selectMode)) {
 			// add a filtered selection of items
 			provider.getItems().clear();
-			com.ocs.dynamo.dao.SortOrder[] orders = SortUtil.translateAndFilterOnTransient(false, targetEntityModel,
+			com.ocs.dynamo.dao.SortOrder[] orders = SortUtils.translateAndFilterOnTransient(false, targetEntityModel,
 					sortOrders);
 			if (orders != null) {
 				List<T> list = service.find(new FilterConverter<T>(targetEntityModel).convert(filter), orders);

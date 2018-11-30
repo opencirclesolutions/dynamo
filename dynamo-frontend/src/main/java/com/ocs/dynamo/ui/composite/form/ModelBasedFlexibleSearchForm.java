@@ -35,7 +35,7 @@ import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.component.FancyListSelect;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
-import com.ocs.dynamo.ui.utils.ConvertUtil;
+import com.ocs.dynamo.ui.utils.ConvertUtils;
 import com.ocs.dynamo.utils.DateUtils;
 import com.vaadin.data.HasValue;
 import com.vaadin.data.Result;
@@ -492,7 +492,7 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 			// store the current filter
 			SerializablePredicate<T> oldFilter = fieldFilter;
 			// convert the value to its actual representation
-			Result<?> result = ConvertUtil.convertToModelValue(am, value);
+			Result<?> result = ConvertUtils.convertToModelValue(am, value);
 			result.ifOk(r -> {
 				((AbstractComponent) field).setComponentError(null);
 				SerializablePredicate<T> filter = constructFilter(field, value);
@@ -514,9 +514,9 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 				FlexibleFilterDefinition definition = new FlexibleFilterDefinition();
 				definition.setFlexibleFilterType(filterType);
 				definition.setAttributeModel(am);
-				definition.setValue(ConvertUtil.convertToModelValue(am, mainValueComponent.getValue()));
+				definition.setValue(ConvertUtils.convertToModelValue(am, mainValueComponent.getValue()));
 				if (auxValueComponent != null) {
-					definition.setValueTo(ConvertUtil.convertToModelValue(am, auxValueComponent.getValue()));
+					definition.setValueTo(ConvertUtils.convertToModelValue(am, auxValueComponent.getValue()));
 				}
 				return definition;
 			}
@@ -775,7 +775,7 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 			region.filterAttributeChange(def.getAttributeModel(), true);
 			region.typeFilterCombo.setValue(def.getFlexibleFilterType());
 
-			Object value = ConvertUtil.convertToPresentationValue(def.getAttributeModel(), def.getValue());
+			Object value = ConvertUtils.convertToPresentationValue(def.getAttributeModel(), def.getValue());
 			if (value != null) {
 				region.mainValueComponent.setValue(value);
 			} else {
@@ -783,7 +783,7 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 			}
 
 			if (region.auxValueComponent != null) {
-				Object auxValue = ConvertUtil.convertToPresentationValue(def.getAttributeModel(), def.getValueTo());
+				Object auxValue = ConvertUtils.convertToPresentationValue(def.getAttributeModel(), def.getValueTo());
 				if (auxValue != null) {
 					region.auxValueComponent.setValue(value);
 				} else {
