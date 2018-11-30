@@ -54,7 +54,7 @@ public class QuickAddListSelectTest extends BaseMockitoTest {
 		Mockito.when(service.find(Matchers.eq(f))).thenReturn(Lists.newArrayList(t1));
 
 		Mockito.when(service.createNewEntity()).thenReturn(new TestEntity());
-		MockUtil.mockServiceSave(service, TestEntity.class);
+		MockUtil.mockServiceSave(service);
 	}
 
 	/**

@@ -48,8 +48,10 @@ import com.ocs.dynamo.filter.EqualsPredicate;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.CanAssignEntity;
+import com.ocs.dynamo.ui.Refreshable;
 import com.ocs.dynamo.ui.component.Cascadable;
 import com.ocs.dynamo.ui.component.CollapsiblePanel;
+import com.ocs.dynamo.ui.component.CustomEntityField;
 import com.ocs.dynamo.ui.component.DefaultEmbedded;
 import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
@@ -1004,8 +1006,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 		// set the default value for new objects
 		if (entity.getId() == null && attributeModel.getDefaultValue() != null) {
-			// TODO: restore default values!
-			// field.setValue(attributeModel.getDefaultValue());
+			setDefaultValue((HasValue<Object>) field, attributeModel.getDefaultValue());
 		}
 
 		// store a reference to the first field so we can give it focus
@@ -1358,6 +1359,10 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		return null;
 	}
 
+	public List<Button> getPreviousButtons() {
+		return filterButtons(PREV_BUTTON_DATA);
+	}
+
 	/**
 	 * Returns the previous entity from the encapsulating layout
 	 * 
@@ -1366,10 +1371,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	protected T getPreviousEntity() {
 		// overwrite in subclass
 		return null;
-	}
-
-	public List<Button> getPreviousButtons() {
-		return filterButtons(PREV_BUTTON_DATA);
 	}
 
 	public List<Button> getSaveButtons() {
@@ -1664,6 +1665,16 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		this.customSaveConsumer = customSaveConsumer;
 	}
 
+	/**
+	 * Sets the default value for a field
+	 * 
+	 * @param field the field
+	 * @param value the default value
+	 */
+	private <R> void setDefaultValue(HasValue<R> field, R value) {
+		field.setValue(value);
+	}
+
 	public void setDetailJoins(FetchJoinInformation[] detailJoins) {
 		this.detailJoins = detailJoins;
 	}
@@ -1672,20 +1683,26 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		setEntity(entity, entity.getId() != null);
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private void refreshFieldFilters() {
+		for (String propertyName : getFieldFilters().keySet()) {
+			Optional<Binding<T, ?>> binding = groups.get(isViewMode()).getBinding(propertyName);
+			if (binding.isPresent()) {
+				HasValue<?> field = binding.get().getField();
+				if (field instanceof CustomEntityField) {
+					SerializablePredicate<?> fieldFilter = getFieldFilters().get(propertyName);
+					((CustomEntityField) field).refresh(fieldFilter);
+				}
+			}
+		}
+	}
+
 	private void setEntity(T entity, boolean checkIterationButtons) {
 		this.entity = entity;
-		// refresh any fields that need it
-//		groups.get(isViewMode()).getFields().forEach(f -> {
-//			Object pid = f
-//			if (f instanceof CustomEntityField && getFieldFilters().containsKey(pid)) {
-//				SerializablePredicate<?> ff = getFieldFilters().get(pid);
-//				((CustomEntityField) f).refresh(ff);
-//			} else if (f instanceof Refreshable) {
-//				((Refreshable) f).refresh();
-//			}
-//		});
 
-		// Inform all children
+		refreshFieldFilters();
+
+		// inform all children
 		for (CanAssignEntity<ID, T> field : assignEntityToFields) {
 			field.assignEntity(entity);
 		}
@@ -1742,8 +1759,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	 * correctly handles the situation in which there are multiple fields behind
 	 * each other on the same row
 	 *
-	 * @param propertyName
-	 * @param required
+	 * @param propertyName the name of the property
+	 * @param required     whether the property is required
 	 */
 	public void setFieldRequired(String propertyName, boolean required) {
 		AbstractComponent field = getField(isViewMode(), propertyName);
@@ -1828,6 +1845,11 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		titleLabels.get(isViewMode()).setValue(value);
 	}
 
+	/**
+	 * Sets the view mode of the component
+	 * 
+	 * @param viewMode the desired view mode
+	 */
 	public void setViewMode(boolean viewMode) {
 		setViewMode(viewMode, true);
 	}

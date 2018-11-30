@@ -55,7 +55,7 @@ public class QuickAddEntityComboBoxTest extends BaseMockitoTest {
 		Mockito.when(service.find(Matchers.isA(com.ocs.dynamo.filter.Filter.class))).thenReturn(Lists.newArrayList(t1));
 
 		Mockito.when(service.createNewEntity()).thenReturn(new TestEntity());
-		MockUtil.mockServiceSave(service, TestEntity.class);
+		MockUtil.mockServiceSave(service);
 	}
 
 	/**

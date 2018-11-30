@@ -92,7 +92,7 @@ public class BaseServiceImplTest extends BaseMockitoTest {
     @Test
     public void testSave() {
         TestEntity obj = new TestEntity("name1", 14L);
-        MockUtil.mockSave(dao, TestEntity.class);
+        MockUtil.mockSave(dao);
 
         TestEntity result = service.save(obj);
         Assert.assertNotNull(result);

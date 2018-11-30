@@ -552,7 +552,7 @@ public final class VaadinUtils {
 	/**
 	 * Wraps the provided component inside a form layout
 	 *
-	 * @param c
+	 * @param c the component to wrap
 	 * @return
 	 */
 	public static FormLayout wrapInFormLayout(Component c) {

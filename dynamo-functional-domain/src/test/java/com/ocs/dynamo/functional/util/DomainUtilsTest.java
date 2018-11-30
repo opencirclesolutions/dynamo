@@ -100,7 +100,7 @@ public class DomainUtilsTest extends BaseMockitoTest {
 
     @Test
     public void testCreateIfNotExists_Create() {
-        MockUtil.mockServiceSave(service, Country.class);
+        MockUtil.mockServiceSave(service);
 
         Country country = DomainUtil.createIfNotExists(service, Country.class, "SomeName", true);
         Assert.assertNotNull(country);

@@ -70,44 +70,4 @@ public final class SortUtil {
 		}
 		return null;
 	}
-
-	/**
-	 * Adds sort order to container optionally with only the (non)transient
-	 * properties when isTransient is supplied
-	 * 
-	 * @param container
-	 * @param isTransient
-	 * @param model
-	 * @param originalOrders
-	 */
-//	public static <T> void applyContainerSortOrder(Container.Sortable container, Boolean isTransient,
-//			EntityModel<T> model, SortOrder<T>... originalOrders) {
-//		if (originalOrders != null && originalOrders.length > 0) {
-//			ArrayList<SortOrder<T>> fo = new ArrayList<>();
-//			AttributeModel am = null;
-//			for (int i = 0; i < originalOrders.length; i++) {
-//				if (model != null) {
-//					am = model.getAttributeModel(originalOrders[i].getPropertyId().toString());
-//				}
-//				if (am == null || isTransient == null || am.isTransient() == isTransient) {
-//					fo.add(originalOrders[i]);
-//				}
-//			}
-//			if (!fo.isEmpty()) {
-//				Object[] propertyIds = new Object[fo.size()];
-//				boolean[] asc = new boolean[fo.size()];
-//				int i = 0;
-//				for (SortOrder so : fo) {
-//					propertyIds[i] = so.getSorted();
-//					asc[i] = SortDirection.ASCENDING.equals(so.getDirection());
-//					if (container instanceof AbstractBeanContainer && i < propertyIds.length
-//							&& !container.getContainerPropertyIds().contains(propertyIds[i])) {
-//						((AbstractBeanContainer) container).addNestedContainerProperty(propertyIds[i].toString());
-//					}
-//					i++;
-//				}
-//				container.sort(propertyIds, asc);
-//			}
-//		}
-//	}
 }

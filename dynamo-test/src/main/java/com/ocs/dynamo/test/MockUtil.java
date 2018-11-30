@@ -50,14 +50,12 @@ public final class MockUtil {
 	/**
 	 * Capture a call of the "save" method on a DAO
 	 * 
-	 * @param dao
-	 *            the DAO
-	 * @param clazz
-	 *            the class of the entity being saved
+	 * @param dao   the DAO
+	 * @param clazz the class of the entity being saved
 	 * @return
 	 */
-	public static <ID, X extends AbstractEntity<ID>> X captureSave(BaseDao<ID, X> dao, Class<X> clazz) {
-		ArgumentCaptor<X> captor = ArgumentCaptor.forClass(clazz);
+	public static <ID, X extends AbstractEntity<ID>> X captureSave(BaseDao<ID, X> dao) {
+		ArgumentCaptor<X> captor = ArgumentCaptor.forClass(dao.getEntityClass());
 		Mockito.verify(dao).save(captor.capture());
 		return captor.getValue();
 	}
@@ -66,8 +64,7 @@ public final class MockUtil {
 	 * Captures the call to the "save" method (that saves a list of entities) on a
 	 * DAO
 	 * 
-	 * @param dao
-	 *            the DAO that is being called
+	 * @param dao the DAO that is being called
 	 * @return
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -80,16 +77,11 @@ public final class MockUtil {
 	/**
 	 * Capture multipe calls to the "save" method on a DAO
 	 * 
-	 * @param dao
-	 *            the DAO
-	 * @param clazz
-	 *            the class of the entity being saved
-	 * @param times
-	 *            the desired number of method calls
+	 * @param dao   the DAO
+	 * @param times the desired number of method calls
 	 */
-	public static <ID, X extends AbstractEntity<ID>> List<X> captureSaves(BaseDao<ID, X> dao, Class<X> clazz,
-			int times) {
-		ArgumentCaptor<X> captor = ArgumentCaptor.forClass(clazz);
+	public static <ID, X extends AbstractEntity<ID>> List<X> captureSaves(BaseDao<ID, X> dao, int times) {
+		ArgumentCaptor<X> captor = ArgumentCaptor.forClass(dao.getEntityClass());
 		Mockito.verify(dao, Mockito.times(times)).save(captor.capture());
 		return captor.getAllValues();
 	}
@@ -97,14 +89,11 @@ public final class MockUtil {
 	/**
 	 * Capture the call of the "save" method on a service
 	 * 
-	 * @param service
-	 *            the service
-	 * @param clazz
-	 *            the class of the entity being saved
+	 * @param service the service
 	 * @return
 	 */
-	public static <ID, X extends AbstractEntity<ID>> X captureServiceSave(BaseService<ID, X> service, Class<X> clazz) {
-		ArgumentCaptor<X> captor = ArgumentCaptor.forClass(clazz);
+	public static <ID, X extends AbstractEntity<ID>> X captureServiceSave(BaseService<ID, X> service) {
+		ArgumentCaptor<X> captor = ArgumentCaptor.forClass(service.getEntityClass());
 		Mockito.verify(service).save(captor.capture());
 		return captor.getValue();
 	}
@@ -112,8 +101,7 @@ public final class MockUtil {
 	/**
 	 * Capture the call to the "save" service method that accepts a list of entities
 	 * 
-	 * @param service
-	 *            the service
+	 * @param service the service
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static <ID, X extends AbstractEntity<ID>> List<X> captureServiceSaveList(BaseService<ID, X> service) {
@@ -125,17 +113,13 @@ public final class MockUtil {
 	/**
 	 * Capture multiple calls to the "save" method of a service
 	 * 
-	 * @param service
-	 *            the service
-	 * @param clazz
-	 *            the class of the object that is saved
-	 * @param times
-	 *            the number of times the method is supposed to be called
+	 * @param service the service
+	 * @param times   the number of times the method is supposed to be called
 	 * @return
 	 */
 	public static <ID, X extends AbstractEntity<ID>> List<X> captureServiceSaves(BaseService<ID, X> service,
-			Class<X> clazz, int times) {
-		ArgumentCaptor<X> captor = ArgumentCaptor.forClass(clazz);
+			int times) {
+		ArgumentCaptor<X> captor = ArgumentCaptor.forClass(service.getEntityClass());
 		Mockito.verify(service, Mockito.times(times)).save(captor.capture());
 		return captor.getAllValues();
 	}
@@ -144,10 +128,8 @@ public final class MockUtil {
 	 * Util method to initialize the messageservice and inject it into the target
 	 * object when @Inject can not be used.
 	 * 
-	 * @param target
-	 *            Object with the field messageService of type MessageService
-	 * @param basename
-	 *            the base name of the message bundle to use
+	 * @param target   Object with the field messageService of type MessageService
+	 * @param basename the base name of the message bundle to use
 	 */
 	public static void injectMessageService(Object target, String basename) {
 		ResourceBundleMessageSource rmb = new ResourceBundleMessageSource();
@@ -160,10 +142,8 @@ public final class MockUtil {
 	/**
 	 * Injects a mocked Vaadin UI into an object
 	 * 
-	 * @param field
-	 *            the object into which to inject the field
-	 * @param ui
-	 *            the user interface
+	 * @param field the object into which to inject the field
+	 * @param ui    the user interface
 	 */
 	public static void injectUI(Object object, Object ui) {
 		try {
@@ -210,24 +190,22 @@ public final class MockUtil {
 	 * Mocks a DAO save operation, making sure that the argument that is passed to
 	 * the method is returned from the method as well
 	 * 
-	 * @param dao
-	 *            the DAO that must be called
-	 * @param clazz
-	 *            the class of the entity
+	 * @param dao   the DAO that must be called
+	 * @param clazz the class of the entity
 	 */
 	@SuppressWarnings("unchecked")
-	public static <ID, X extends AbstractEntity<ID>> void mockSave(BaseDao<ID, X> dao, Class<X> clazz) {
+	public static <ID, X extends AbstractEntity<ID>> void mockSave(BaseDao<ID, X> dao) {
 		// mock the save behaviour - return the first argument being passed to the
 		// method
-		Mockito.when(dao.save(Matchers.any(clazz))).thenAnswer(invocation -> invocation.getArguments()[0]);
+		Mockito.when(dao.save(Matchers.any(dao.getEntityClass())))
+				.thenAnswer(invocation -> invocation.getArguments()[0]);
 		Mockito.when(dao.save(Matchers.any(List.class))).thenAnswer(invocation -> invocation.getArguments()[0]);
 	}
 
 	/**
 	 * Mock the saving of a list on a DAO
 	 * 
-	 * @param dao
-	 *            the DAO
+	 * @param dao the DAO
 	 */
 	@SuppressWarnings("unchecked")
 	public static <ID, X extends AbstractEntity<ID>> void mockSaveList(BaseDao<ID, X> dao) {
@@ -239,13 +217,11 @@ public final class MockUtil {
 	 * Mocks a service save operation, making sure that the argument that is passed
 	 * to the method is returned from the method as well
 	 * 
-	 * @param service
-	 *            the service
-	 * @param clazz
-	 *            the class of the entities being saved
+	 * @param service the service
 	 */
-	public static <ID, U extends AbstractEntity<ID>> void mockServiceSave(BaseService<ID, U> service, Class<U> clazz) {
-		Mockito.when(service.save(Matchers.any(clazz))).thenAnswer(invocation -> invocation.getArguments()[0]);
+	public static <ID, U extends AbstractEntity<ID>> void mockServiceSave(BaseService<ID, U> service) {
+		Mockito.when(service.save(Matchers.any(service.getEntityClass())))
+				.thenAnswer(invocation -> invocation.getArguments()[0]);
 	}
 
 	/**

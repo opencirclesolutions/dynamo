@@ -50,7 +50,7 @@ public class FancyListSelectTest extends BaseMockitoTest {
 				.thenReturn(Lists.newArrayList(t1, t2, t3));
 
 		Mockito.when(service.createNewEntity()).thenReturn(new TestEntity());
-		MockUtil.mockServiceSave(service, TestEntity.class);
+		MockUtil.mockServiceSave(service);
 	}
 
 	/**
