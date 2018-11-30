@@ -11,9 +11,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
+import org.springframework.stereotype.Service;
 import org.vaadin.teemu.switchui.Switch;
 
 import com.google.common.collect.Lists;
@@ -26,6 +25,7 @@ import com.ocs.dynamo.domain.model.CheckboxMode;
 import com.ocs.dynamo.domain.model.EditableType;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.FieldFactory;
+import com.ocs.dynamo.domain.model.FieldFactoryContext;
 import com.ocs.dynamo.domain.model.NumberSelectMode;
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.service.BaseService;
@@ -71,101 +71,20 @@ import com.vaadin.ui.Slider;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 
-public class FieldFactoryImpl<T> implements FieldFactory {
+/**
+ * 
+ * @author Bas Rutten
+ *
+ */
+@Service
+public class FieldFactoryImpl implements FieldFactory {
 
-	private static final long serialVersionUID = -5684112523268959448L;
-
-	private static final ConcurrentMap<String, FieldFactoryImpl<?>> nonValidatingInstances = new ConcurrentHashMap<>();
-
-	private static final ConcurrentMap<String, FieldFactoryImpl<?>> searchInstances = new ConcurrentHashMap<>();
-
-	private static final ConcurrentMap<String, FieldFactoryImpl<?>> validatingInstances = new ConcurrentHashMap<>();
-
-	/**
-	 * Returns an appropriate instance from the pool, or creates a new one
-	 *
-	 * @param model          the entity model
-	 * @param messageService the message service
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	public static <T> FieldFactoryImpl<T> getInstance(final EntityModel<T> model, final MessageService messageService) {
-		if (!nonValidatingInstances.containsKey(model.getReference())) {
-			nonValidatingInstances.put(model.getReference(),
-					new FieldFactoryImpl<>(model, messageService, false, false));
-		}
-		return (FieldFactoryImpl<T>) nonValidatingInstances.get(model.getReference());
-	}
-
-	/**
-	 * Returns an appropriate instance from the pool, or creates a new one
-	 *
-	 * @param model
-	 * @param messageService
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	public static <T> FieldFactoryImpl<T> getSearchInstance(final EntityModel<T> model,
-			final MessageService messageService) {
-		if (!searchInstances.containsKey(model.getReference())) {
-			searchInstances.put(model.getReference(), new FieldFactoryImpl<>(model, messageService, false, true));
-		}
-		return (FieldFactoryImpl<T>) searchInstances.get(model.getReference());
-	}
-
-	/**
-	 * Returns an appropriate instance from the pool, or creates a new one
-	 *
-	 * @param model
-	 * @param messageService
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	public static <T> FieldFactoryImpl<T> getValidatingInstance(final EntityModel<T> model,
-			final MessageService messageService) {
-		if (!validatingInstances.containsKey(model.getReference())) {
-			validatingInstances.put(model.getReference(), new FieldFactoryImpl<>(model, messageService, true, false));
-		}
-		return (FieldFactoryImpl<T>) validatingInstances.get(model.getReference());
-	}
-
-	private final MessageService messageService;
-
-	private final EntityModel<T> model;
+	private MessageService messageService;
 
 	private final ServiceLocator serviceLocator = ServiceLocatorFactory.getServiceLocator();
 
-	private final Collection<FieldFactory> fieldFactories;
-
-	// indicates whether the system is in search mode. In search mode,
-	// components for
-	// some attributes are constructed differently (e.g. we render two search
-	// fields to be able to
-	// search for a range of integers)
-	private final boolean search;
-
-	// indicates whether extra validators must be added. This is the case when
-	// using the field factory in an
-	// editable table
-	private final boolean validate;
-
-	/**
-	 * Constructor
-	 *
-	 * @param model          the entity model
-	 * @param messageService the message service
-	 * @param validate       whether to add extra validators (this is the case when
-	 *                       the field is displayed inside a table)
-	 * @param search         whether the fields are displayed inside a search form
-	 *                       (this has an effect on the construction of some fields)
-	 */
-	public FieldFactoryImpl(final EntityModel<T> model, final MessageService messageService, final boolean validate,
-			final boolean search) {
-		this.model = model;
-		this.messageService = messageService;
-		this.validate = validate;
-		this.search = search;
-		this.fieldFactories = serviceLocator.getServices(FieldFactory.class);
+	public FieldFactoryImpl() {
+		messageService = serviceLocator.getMessageService();
 	}
 
 	/**
@@ -255,14 +174,18 @@ public class FieldFactoryImpl<T> implements FieldFactory {
 	 * @param fieldFilters     the set of field filters
 	 * @return
 	 */
-	public AbstractComponent constructField(AttributeModel am, EntityModel<?> fieldEntityModel,
-			Map<String, SerializablePredicate<?>> fieldFilters, boolean viewMode) {
+	public AbstractComponent constructField(FieldFactoryContext context) {
 		AbstractComponent field = null;
+		AttributeModel am = context.getAttributeModel();
+		Map<String, SerializablePredicate<?>> fieldFilters = context.getFieldFilters();
+		boolean viewMode = context.getViewMode();
+		EntityModel<?> fieldEntityModel = context.getFieldEntityModel();
+		boolean search = context.isSearch();
 
 		// in certain cases, never render a field
 		if (EditableType.READ_ONLY.equals(am.getEditableType())
 				&& (!am.isUrl() && !am.isNavigable() && !AttributeType.DETAIL.equals(am.getAttributeType()))
-				&& !search) {
+				&& !context.isSearch()) {
 			return null;
 		}
 
@@ -274,7 +197,7 @@ public class FieldFactoryImpl<T> implements FieldFactory {
 			// (in view mode) beats any selection components
 			field = constructInternalLinkField(am, fieldEntityModel);
 		} else if (AttributeType.ELEMENT_COLLECTION.equals(am.getAttributeType())) {
-			if (!search) {
+			if (!context.isSearch()) {
 				// use a "collection table" for an element collection
 				final FormOptions fo = new FormOptions().setShowRemoveButton(true);
 				if (String.class.equals(am.getMemberType())) {
@@ -291,15 +214,13 @@ public class FieldFactoryImpl<T> implements FieldFactory {
 					throw new OCSRuntimeException("Element collections of this type are currently not supported");
 				}
 			} else {
-				// TODO: search field
+				// token search field
 				field = constructSimpleTokenField(fieldEntityModel != null ? fieldEntityModel : am.getEntityModel(), am,
 						am.getPath().substring(am.getPath().lastIndexOf('.') + 1), true, null);
 			}
-		} else if (AbstractEntity.class.isAssignableFrom(am.getType()))
-
-		{
+		} else if (AbstractEntity.class.isAssignableFrom(am.getType())) {
 			// lookup or combo field for an entity
-			field = constructSelect(am, fieldEntityModel, fieldFilter);
+			field = constructSelect(am, fieldEntityModel, fieldFilter, search);
 		} else if (Collection.class.isAssignableFrom(am.getType())) {
 			// render a multiple select component for a collection
 			field = constructCollectionSelect(am, fieldEntityModel, fieldFilter, search, true);
@@ -360,16 +281,10 @@ public class FieldFactoryImpl<T> implements FieldFactory {
 		}
 
 		if (field != null) {
-			postProcessField(field, am);
+			postProcessField(field, am, search);
 		}
 
 		return field;
-	}
-
-	@Override
-	public AbstractField<?> constructField(Context<?> context) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	/**
@@ -423,7 +338,7 @@ public class FieldFactoryImpl<T> implements FieldFactory {
 	}
 
 	private AbstractComponent constructSelect(final AttributeModel am, final EntityModel<?> fieldEntityModel,
-			final SerializablePredicate<?> fieldFilter) {
+			final SerializablePredicate<?> fieldFilter, boolean search) {
 		AbstractComponent field = null;
 		AttributeSelectMode selectMode = search ? am.getSearchSelectMode() : am.getSelectMode();
 
@@ -476,7 +391,7 @@ public class FieldFactoryImpl<T> implements FieldFactory {
 		return sos;
 	}
 
-	private void postProcessField(final AbstractComponent field, final AttributeModel am) {
+	private void postProcessField(final AbstractComponent field, final AttributeModel am, boolean search) {
 		field.setCaption(am.getDisplayName());
 		field.setDescription(am.getDescription());
 
@@ -495,7 +410,6 @@ public class FieldFactoryImpl<T> implements FieldFactory {
 			AbstractField<?> af = (AbstractField<?>) field;
 			af.setRequiredIndicatorVisible(search ? am.isRequiredForSearching() : am.isRequired());
 		}
-
 	}
 
 	/**

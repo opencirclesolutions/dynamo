@@ -42,6 +42,8 @@ import com.ocs.dynamo.domain.model.AttributeType;
 import com.ocs.dynamo.domain.model.CascadeMode;
 import com.ocs.dynamo.domain.model.EditableType;
 import com.ocs.dynamo.domain.model.EntityModel;
+import com.ocs.dynamo.domain.model.FieldFactory;
+import com.ocs.dynamo.domain.model.FieldFactoryContext;
 import com.ocs.dynamo.domain.model.impl.FieldFactoryImpl;
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.filter.EqualsPredicate;
@@ -290,7 +292,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	/**
 	 * The field factory
 	 */
-	private FieldFactoryImpl<T> fieldFactory;
+	private FieldFactory fieldFactory = FieldFactory.getInstance();
 
 	/**
 	 * Indicates whether the fields have been post processed
@@ -382,10 +384,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		this.entity = entity;
 		afterEntitySet(entity);
 		Class<T> clazz = service.getEntityClass();
-
-		// set the custom field factory
-		this.fieldFactory = FieldFactoryImpl.getValidatingInstance(getEntityModel(),
-				ServiceLocatorFactory.getServiceLocator().getMessageService());
 
 		// open in view mode when this is requested, and it is not a new object
 		this.viewMode = !isEditAllowed() || (formOptions.isOpenInViewMode() && entity.getId() != null);
@@ -930,7 +928,9 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		// allow the user to override the construction of a field
 		AbstractComponent field = constructCustomField(entityModel, attributeModel, viewMode);
 		if (field == null) {
-			field = fieldFactory.constructField(attributeModel, fieldEntityModel, getFieldFilters(), viewMode);
+			FieldFactoryContext ctx = FieldFactoryContext.create().setAttributeModel(attributeModel)
+					.setFieldEntityModel(fieldEntityModel).setFieldFilters(getFieldFilters()).setViewMode(viewMode);
+			field = fieldFactory.constructField(ctx);
 		}
 
 		if (field instanceof URLField) {

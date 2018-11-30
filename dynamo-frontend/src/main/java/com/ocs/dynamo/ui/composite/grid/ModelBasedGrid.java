@@ -21,6 +21,8 @@ import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.AttributeType;
 import com.ocs.dynamo.domain.model.EntityModel;
+import com.ocs.dynamo.domain.model.FieldFactory;
+import com.ocs.dynamo.domain.model.FieldFactoryContext;
 import com.ocs.dynamo.domain.model.impl.FieldFactoryImpl;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
@@ -93,7 +95,7 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 	/**
 	 * The field factory
 	 */
-	private FieldFactoryImpl<T> factory;
+	private FieldFactory fieldFactory;
 
 	/**
 	 * Constructor
@@ -109,7 +111,7 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 		this.fullGridEditor = fullGridEditor;
 		this.entityModel = model;
 		this.messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
-		this.factory = FieldFactoryImpl.getInstance(model, messageService);
+		this.fieldFactory = FieldFactory.getInstance();
 		this.exportAllowed = exportAllowed;
 
 		// we need to prepopulate the grid with the available properties
@@ -163,7 +165,9 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 					column = addColumn(t -> {
 						AbstractComponent comp = constructCustomField(entityModel, attributeModel);
 						if (comp == null) {
-							comp = factory.constructField(attributeModel, null, null, true);
+							FieldFactoryContext ctx = FieldFactoryContext.create().setAttributeModel(attributeModel)
+									.setViewMode(true);
+							comp = fieldFactory.constructField(ctx);
 						}
 
 						// delegate the binding to the enveloping component
@@ -179,7 +183,10 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 
 			if (editable && !fullGridEditor) {
 				Binder<T> binder = getEditor().getBinder();
-				final AbstractComponent abstractComponent = factory.constructField(attributeModel, null, null, false);
+
+				FieldFactoryContext context = FieldFactoryContext.create().setAttributeModel(attributeModel)
+						.setViewMode(false);
+				AbstractComponent abstractComponent = fieldFactory.constructField(context);
 
 				final Binder.BindingBuilder<T, ?> builder = binder.forField((HasValue<?>) abstractComponent);
 				FieldFactoryImpl.addConvertsAndValidators(builder, attributeModel);

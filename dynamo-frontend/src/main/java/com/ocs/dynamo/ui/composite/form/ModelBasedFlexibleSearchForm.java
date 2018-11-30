@@ -18,6 +18,8 @@ import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.AttributeType;
 import com.ocs.dynamo.domain.model.EntityModel;
+import com.ocs.dynamo.domain.model.FieldFactory;
+import com.ocs.dynamo.domain.model.FieldFactoryContext;
 import com.ocs.dynamo.filter.BetweenPredicate;
 import com.ocs.dynamo.filter.EqualsPredicate;
 import com.ocs.dynamo.filter.FlexibleFilterDefinition;
@@ -423,8 +425,11 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 
 			// construct the field
 			AbstractComponent custom = constructCustomField(getEntityModel(), am);
-			final AbstractComponent newComponent = custom != null ? custom
-					: getFieldFactory().constructField(am, getFieldEntityModel(am), getFieldFilters(), false);
+
+			FieldFactoryContext context = FieldFactoryContext.create().setAttributeModel(am)
+					.setFieldEntityModel(getFieldEntityModel(am)).setFieldFilters(getFieldFilters()).setViewMode(false)
+					.setSearch(true);
+			AbstractComponent newComponent = custom != null ? custom : factory.constructField(context);
 
 			if (newComponent instanceof FancyListSelect) {
 				FancyListSelect<?, ?> fls = (FancyListSelect<?, ?>) newComponent;
@@ -448,8 +453,7 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 			if (FlexibleFilterType.BETWEEN.equals(filterType)) {
 				newComponent.setCaption(am.getDisplayName() + " " + message("ocs.from"));
 
-				final AbstractComponent newAuxComponent = getFieldFactory().constructField(am, getFieldEntityModel(am),
-						getFieldFilters(), false);
+				AbstractComponent newAuxComponent = factory.constructField(context);
 				((HasValue<?>) newAuxComponent).addValueChangeListener(
 						event -> handleValueChange((HasValue<?>) newAuxComponent, event.getSource().getValue()));
 				newAuxComponent.setCaption(am.getDisplayName() + " " + message("ocs.to"));
@@ -541,6 +545,8 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 	 * capabilities
 	 */
 	private Set<String> basicStringFilterProperties = new HashSet<>();
+
+	private FieldFactory factory = FieldFactory.getInstance();
 
 	/**
 	 * Constructor

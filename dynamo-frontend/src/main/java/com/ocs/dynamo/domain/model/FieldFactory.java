@@ -13,10 +13,7 @@
  */
 package com.ocs.dynamo.domain.model;
 
-import java.util.Map;
-
-import com.vaadin.data.provider.DataProvider;
-import com.vaadin.server.SerializablePredicate;
+import com.ocs.dynamo.domain.model.impl.FieldFactoryImpl;
 import com.vaadin.ui.AbstractComponent;
 
 /**
@@ -27,37 +24,9 @@ import com.vaadin.ui.AbstractComponent;
  */
 public interface FieldFactory {
 
-	/**
-	 * 
-	 * @author Bas Rutten
-	 *
-	 * @param <T>
-	 */
-	public interface Context<T> {
+	AbstractComponent constructField(FieldFactoryContext context);
 
-		DataProvider<T, SerializablePredicate<T>> getDataProvider();
-
-		AttributeModel getAttributeModel();
-
-		Map<String, SerializablePredicate<T>> getFieldFilters();
-
-		<U> EntityModel<U> getFieldEntityModel();
-
-		<P> P getParentEntity();
-
-		Boolean getViewMode();
-
-		Boolean isSearch();
-
+	public static FieldFactory getInstance() {
+		return new FieldFactoryImpl();
 	}
-
-	/**
-	 * Constructs a Component based on an attribute model
-	 * 
-	 * @param context
-	 *            the generation context
-	 * @return
-	 */
-	AbstractComponent constructField(Context<?> context);
-
 }

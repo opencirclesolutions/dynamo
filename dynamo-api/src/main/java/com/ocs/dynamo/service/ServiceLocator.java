@@ -28,16 +28,14 @@ public interface ServiceLocator {
 	/**
 	 * Retrieves a service of a certain type
 	 * 
-	 * @param clazz
-	 *            the class of the service
+	 * @param clazz the class of the service
 	 * @return
 	 */
 	<T> T getService(Class<T> clazz);
 
 	/**
 	 * 
-	 * @param clazz
-	 *            the class of the service
+	 * @param clazz the class of the service
 	 * @return
 	 */
 	<T> Collection<T> getServices(Class<T> clazz);
@@ -59,8 +57,7 @@ public interface ServiceLocator {
 	/**
 	 * Returns a service that is used to manage a certain type of entity
 	 * 
-	 * @param entityClass
-	 *            the entity class
+	 * @param entityClass the entity class
 	 * @return
 	 */
 	BaseService<?, ?> getServiceForEntity(Class<?> entityClass);

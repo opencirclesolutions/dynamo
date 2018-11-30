@@ -9,13 +9,11 @@ import org.mockito.Mockito;
 
 import com.explicatis.ext_token_field.Tokenizable;
 import com.google.common.collect.Lists;
-import com.ocs.dynamo.dao.SortOrder;
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.domain.model.impl.EntityModelFactoryImpl;
-import com.ocs.dynamo.filter.Filter;
 import com.ocs.dynamo.service.TestEntityService;
 import com.ocs.dynamo.test.BaseMockitoTest;
 import com.vaadin.data.provider.ListDataProvider;

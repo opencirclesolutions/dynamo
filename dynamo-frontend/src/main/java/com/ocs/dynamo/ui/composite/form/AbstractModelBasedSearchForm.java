@@ -21,7 +21,7 @@ import java.util.Map;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
-import com.ocs.dynamo.domain.model.impl.FieldFactoryImpl;
+import com.ocs.dynamo.domain.model.FieldFactory;
 import com.ocs.dynamo.exception.OCSValidationException;
 import com.ocs.dynamo.filter.AndPredicate;
 import com.ocs.dynamo.filter.OrPredicate;
@@ -79,11 +79,6 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	private List<SerializablePredicate<T>> currentFilters = new ArrayList<>();
 
 	/**
-	 * Field factory used for constructing search fields
-	 */
-	private FieldFactoryImpl<T> fieldFactory;
-
-	/**
 	 * The layout that holds the various filters
 	 */
 	private Layout filterLayout;
@@ -119,6 +114,8 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	 * The main layout (constructed only once)
 	 */
 	private VerticalLayout main;
+	
+	private FieldFactory fieldFactory = FieldFactory.getInstance();
 
 	/**
 	 * Constructor
@@ -132,7 +129,6 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	public AbstractModelBasedSearchForm(Searchable<T> searchable, EntityModel<T> entityModel, FormOptions formOptions,
 			List<SerializablePredicate<T>> defaultFilters, Map<String, SerializablePredicate<?>> fieldFilters) {
 		super(formOptions, fieldFilters, entityModel);
-		this.fieldFactory = FieldFactoryImpl.getSearchInstance(entityModel, getMessageService());
 		this.defaultFilters = defaultFilters == null ? new ArrayList<>() : defaultFilters;
 		this.currentFilters.addAll(this.defaultFilters);
 		this.searchable = searchable;
@@ -362,10 +358,10 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 		return currentFilters;
 	}
 
-	public FieldFactoryImpl<T> getFieldFactory() {
+	public FieldFactory getFieldFactory() {
 		return fieldFactory;
 	}
-
+	
 	public Layout getFilterLayout() {
 		return filterLayout;
 	}

@@ -21,6 +21,12 @@ import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Layout;
 
+/**
+ * A view that is only built once per scope
+ * 
+ * @author Bas Rutten
+ *
+ */
 public abstract class LazyBaseView extends BaseView {
 
 	private static final long serialVersionUID = -2500168085668166838L;
@@ -55,8 +61,8 @@ public abstract class LazyBaseView extends BaseView {
 	protected void refresh() {
 		// override in subclasses
 	}
-	
+
 	protected void afterBuild() {
-		
+
 	}
 }
