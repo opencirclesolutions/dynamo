@@ -37,8 +37,7 @@ import com.ocs.dynamo.domain.query.DataSetIterator;
 import com.ocs.dynamo.filter.Filter;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
-
-import au.com.bytecode.opencsv.CSVWriter;
+import com.opencsv.CSVWriter;
 
 /**
  * Base class for template classes for exporting pivoted data

@@ -13,7 +13,6 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
@@ -77,7 +76,7 @@ public class ExportPivotTemplateTest extends BaseMockitoTest {
 		List<Integer> ids = Lists.newArrayList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
 
 		Mockito.when(seriesService.findIds(filter, orders)).thenReturn(ids);
-		Mockito.when(seriesService.fetchByIds(Matchers.any(List.class), Matchers.any(SortOrders.class)))
+		Mockito.when(seriesService.fetchByIds(Mockito.any(List.class), Mockito.any(SortOrders.class)))
 				.thenReturn(series);
 	}
 

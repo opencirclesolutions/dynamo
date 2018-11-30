@@ -6,7 +6,6 @@ import java.io.OutputStream;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 
 import com.ocs.dynamo.test.BaseMockitoTest;
 import com.ocs.dynamo.test.MockUtil;
@@ -19,52 +18,45 @@ import com.vaadin.ui.Upload.SucceededListener;
 
 public class UploadFormTest extends BaseMockitoTest {
 
-    private boolean started = false;
+	private boolean started = false;
 
-    @Mock
-    private UI ui;
+	@Mock
+	private UI ui;
 
-    @Mock
-    private VaadinSession session;
+	@Mock
+	private VaadinSession session;
 
-    @Override
-    public void setUp() {
-        super.setUp();
+	@Test
+	public void testSimpleForm() throws IOException {
+		UploadForm form = new UploadForm(ProgressMode.SIMPLE, ScreenMode.HORIZONTAL, false) {
 
-        Mockito.when(ui.getSession()).thenReturn(session);
-    }
+			private static final long serialVersionUID = -2866860896190814120L;
 
-    @Test
-    public void testSimpleForm() throws IOException {
-        UploadForm form = new UploadForm(ProgressMode.SIMPLE, ScreenMode.HORIZONTAL, false) {
+			@Override
+			protected void process(byte[] t, int estimatedSize) {
+				Assert.assertEquals(3, t.length);
+				started = true;
+			}
 
-            private static final long serialVersionUID = -2866860896190814120L;
+			@Override
+			protected String getTitle() {
+				return "Title";
+			}
 
-            @Override
-            protected void process(byte[] t, int estimatedSize) {
-                Assert.assertEquals(3, t.length);
-                started = true;
-            }
+			@Override
+			protected int estimateSize(byte[] t) {
+				return 0;
+			}
+		};
+		MockUtil.injectUI(form, ui);
+		form.build();
 
-            @Override
-            protected String getTitle() {
-                return "Title";
-            }
+		OutputStream stream = form.getUpload().getReceiver().receiveUpload("test.txt", "text/plain");
+		stream.write(new byte[] { 1, 2, 3 });
 
-            @Override
-            protected int estimateSize(byte[] t) {
-                return 0;
-            }
-        };
-        MockUtil.injectUI(form, ui);
-        form.build();
+		SucceededListener listener = (SucceededListener) form.getUpload().getReceiver();
+		listener.uploadSucceeded(new SucceededEvent(form.getUpload(), "test.txt", "text/plain", 3));
 
-        OutputStream stream = form.getUpload().getReceiver().receiveUpload("test.txt", "text/plain");
-        stream.write(new byte[] { 1, 2, 3 });
-
-        SucceededListener listener = (SucceededListener) form.getUpload().getReceiver();
-        listener.uploadSucceeded(new SucceededEvent(form.getUpload(), "test.txt", "text/plain", 3));
-
-        Assert.assertTrue(started);
-    }
+		Assert.assertTrue(started);
+	}
 }

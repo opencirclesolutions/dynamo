@@ -14,9 +14,7 @@
 package com.ocs.dynamo.ui.component;
 
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
@@ -61,12 +59,10 @@ public class EntityListSelectTest extends BaseMockitoTest {
 				service, new EqualsPredicate<TestEntity>("name", "Bob"));
 		Assert.assertEquals(EntityListSelect.SelectMode.FILTERED, select.getSelectMode());
 
-		Mockito.verify(service).find(Matchers.any(com.ocs.dynamo.filter.Filter.class),
-				Matchers.any(com.ocs.dynamo.dao.SortOrder[].class));
+		Mockito.verify(service).find(Mockito.any(com.ocs.dynamo.filter.Filter.class), Mockito.isNull());
 	}
 
 	@Test
-	@Ignore
 	public void testRefreshFiltered() {
 
 		EntityListSelect<Integer, TestEntity> select = new EntityListSelect<>(factory.getModel(TestEntity.class), null,
@@ -75,12 +71,10 @@ public class EntityListSelectTest extends BaseMockitoTest {
 
 		select.refresh();
 
-		Mockito.verify(service, Mockito.times(2)).find(Matchers.any(com.ocs.dynamo.filter.Filter.class),
-				Matchers.any(com.ocs.dynamo.dao.SortOrder[].class));
+		Mockito.verify(service).find(Mockito.any(com.ocs.dynamo.filter.Filter.class), Mockito.isNull());
 	}
 
 	@Test
-	@Ignore
 	public void testRefreshAll() {
 
 		EntityListSelect<Integer, TestEntity> select = new EntityListSelect<>(factory.getModel(TestEntity.class), null,
@@ -89,7 +83,6 @@ public class EntityListSelectTest extends BaseMockitoTest {
 
 		select.refresh();
 
-		Mockito.verify(service, Mockito.times(2)).find(Matchers.any(com.ocs.dynamo.filter.Filter.class),
-				Matchers.any(com.ocs.dynamo.dao.SortOrder[].class));
+		Mockito.verify(service).find(Mockito.any(com.ocs.dynamo.filter.Filter.class), Mockito.isNull());
 	}
 }

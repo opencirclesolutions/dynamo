@@ -30,74 +30,69 @@ import com.ocs.dynamo.service.MessageService;
  */
 public class MessageServiceImpl implements MessageService {
 
-    private static final String MESSAGE_NOT_FOUND = "[Warning: message '%s' not found]";
+	private static final String MESSAGE_NOT_FOUND = "[Warning: message '%s' not found]";
 
-    private static final Logger LOG = Logger.getLogger(MessageServiceImpl.class);
+	private static final Logger LOG = Logger.getLogger(MessageServiceImpl.class);
 
-    @Autowired
-    private MessageSource source;
+	@Autowired
+	private MessageSource source;
 
-    @Override
-    public String getAttributeMessage(String reference, AttributeModel attributeModel, String propertyName,
-            Locale locale) {
-        if (source != null) {
-            try {
-                String messageName = reference + "." + attributeModel.getName() + "." + propertyName;
-                return source.getMessage(messageName, null, locale);
-            } catch (NoSuchMessageException ex) {
-                // do nothing
-                return null;
-            }
-        }
-        return null;
-    }
+	@Override
+	public String getAttributeMessage(String reference, AttributeModel attributeModel, String propertyName,
+			Locale locale) {
+		if (source != null) {
+			try {
+				String messageName = reference + "." + attributeModel.getName() + "." + propertyName;
+				return source.getMessage(messageName, null, locale);
+			} catch (NoSuchMessageException ex) {
+				// do nothing
+				return null;
+			}
+		}
+		return null;
+	}
 
-    @Override
-    public String getEntityMessage(String reference, String propertyName, Locale locale) {
-        if (source != null) {
-            try {
-                String messageName = reference + "." + propertyName;
-                return source.getMessage(messageName, null, locale);
-            } catch (NoSuchMessageException ex) {
-                // do nothing
-                return null;
-            }
-        }
-        return null;
-    }
+	@Override
+	public String getEntityMessage(String reference, String propertyName, Locale locale) {
+		if (source != null) {
+			try {
+				String messageName = reference + "." + propertyName;
+				return source.getMessage(messageName, null, locale);
+			} catch (NoSuchMessageException ex) {
+				// do nothing
+				return null;
+			}
+		}
+		return null;
+	}
 
-    @Override
-    public <E extends Enum<?>> String getEnumMessage(Class<E> enumClass, E value, Locale locale) {
-        return value == null ? null : getMessage(enumClass.getSimpleName() + "." + value.name(), locale);
-    }
+	@Override
+	public <E extends Enum<?>> String getEnumMessage(Class<E> enumClass, E value, Locale locale) {
+		return value == null ? null : getMessage(enumClass.getSimpleName() + "." + value.name(), locale);
+	}
 
-    @Override
-    public String getMessage(String key, Locale locale) {
-        return getMessage(key, locale, new Object[0]);
-    }
+	@Override
+	public String getMessage(String key, Locale locale, Object... args) {
+		try {
+			return source.getMessage(key, args, locale);
+		} catch (NoSuchMessageException ex) {
+			LOG.error(ex.getMessage());
+			return String.format(MESSAGE_NOT_FOUND, key);
+		}
+	}
 
-    @Override
-    public String getMessage(String key, Locale locale, Object... args) {
-        try {
-            return source.getMessage(key, args, locale);
-        } catch (NoSuchMessageException ex) {
-            LOG.error(ex.getMessage());
-            return String.format(MESSAGE_NOT_FOUND, key);
-        }
-    }
+	@Override
+	public String getMessageNoDefault(String key, Locale locale) {
+		return getMessageNoDefault(key, locale, new Object[0]);
+	}
 
-    @Override
-    public String getMessageNoDefault(String key, Locale locale) {
-        return getMessageNoDefault(key, locale, new Object[0]);
-    }
-
-    @Override
-    public String getMessageNoDefault(String key, Locale locale, Object... args) {
-        try {
-            return source.getMessage(key, args, locale);
-        } catch (NoSuchMessageException ex) {
-            return null;
-        }
-    }
+	@Override
+	public String getMessageNoDefault(String key, Locale locale, Object... args) {
+		try {
+			return source.getMessage(key, args, locale);
+		} catch (NoSuchMessageException ex) {
+			return null;
+		}
+	}
 
 }

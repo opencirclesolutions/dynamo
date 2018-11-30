@@ -17,23 +17,17 @@ import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.mockito.Mock;
 
 import com.google.common.collect.Lists;
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.TestEntity2;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.domain.model.impl.EntityModelFactoryImpl;
-import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.test.BaseMockitoTest;
-import com.ocs.dynamo.test.MockUtil;
 
 public class FilterConverterTest extends BaseMockitoTest {
 
 	private EntityModelFactory emf = new EntityModelFactoryImpl();
-
-	@Mock
-	private MessageService messageService;
 
 	private FilterConverter<TestEntity> converter = new FilterConverter<TestEntity>(null);
 
@@ -46,7 +40,6 @@ public class FilterConverterTest extends BaseMockitoTest {
 	@Override
 	public void setUp() {
 		super.setUp();
-		MockUtil.mockMessageService(messageService);
 		modelConverter = new FilterConverter<TestEntity>(emf.getModel(TestEntity.class));
 	}
 

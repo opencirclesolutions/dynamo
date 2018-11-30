@@ -101,7 +101,7 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 		/**
 		 * The component that holds the auxiliary search value
 		 */
-		private HasValue auxValueComponent;
+		private HasValue<Object> auxValueComponent;
 
 		/**
 		 * The currently active filter for the entire region (calculated by composing
@@ -142,7 +142,7 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 		/**
 		 * The component that holds the main search value
 		 */
-		private HasValue mainValueComponent;
+		private HasValue<Object> mainValueComponent;
 
 		/**
 		 * The button used to remove the filter
@@ -443,7 +443,7 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 				layout.replaceComponent((AbstractComponent) mainValueComponent, newComponent);
 			}
 
-			mainValueComponent = (HasValue<?>) newComponent;
+			mainValueComponent = (HasValue<Object>) newComponent;
 
 			if (FlexibleFilterType.BETWEEN.equals(filterType)) {
 				newComponent.setCaption(am.getDisplayName() + " " + message("ocs.from"));
@@ -459,7 +459,7 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 				} else {
 					layout.replaceComponent((AbstractComponent) auxValueComponent, newAuxComponent);
 				}
-				auxValueComponent = (HasValue<?>) newAuxComponent;
+				auxValueComponent = (HasValue<Object>) newAuxComponent;
 			} else {
 				// no need for the auxiliary field
 				if (auxValueComponent != null) {

@@ -6,7 +6,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
@@ -18,7 +17,6 @@ import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.domain.model.impl.EntityModelFactoryImpl;
-import com.ocs.dynamo.filter.Filter;
 import com.ocs.dynamo.service.TestEntityService;
 import com.ocs.dynamo.test.BaseMockitoTest;
 import com.ocs.dynamo.test.MockUtil;
@@ -46,11 +44,11 @@ public class FancyListSelectTest extends BaseMockitoTest {
 		t2 = new TestEntity(2, "Bob", 13L);
 		t3 = new TestEntity(3, "Stewart", 14L);
 
-		Mockito.when(service.find(Matchers.any(Filter.class), (SortOrder[]) Matchers.anyVararg()))
+		Mockito.when(service.find(Mockito.isNull(), (SortOrder[]) Mockito.any()))
 				.thenReturn(Lists.newArrayList(t1, t2, t3));
 
 		Mockito.when(service.createNewEntity()).thenReturn(new TestEntity());
-		MockUtil.mockServiceSave(service);
+		MockUtil.mockServiceSave(service, TestEntity.class);
 	}
 
 	/**

@@ -20,7 +20,6 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.service.BaseService;
@@ -30,10 +29,10 @@ import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.vaadin.server.Page;
 import com.vaadin.server.WebBrowser;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.UI;
-import com.vaadin.v7.ui.HorizontalLayout;
-import com.vaadin.v7.ui.VerticalLayout;
+import com.vaadin.ui.VerticalLayout;
 
 public class VaadinUtilsTest extends BaseMockitoTest {
 
@@ -62,16 +61,16 @@ public class VaadinUtilsTest extends BaseMockitoTest {
 	@Override
 	public void setUp() {
 		super.setUp();
-		Mockito.when(service.getEntityClass()).thenReturn(TestEntity.class);
+		//Mockito.when(service.getEntityClass()).thenReturn(TestEntity.class);
 
-		Mockito.when(ui.getPage()).thenReturn(page);
-		Mockito.when(page.getWebBrowser()).thenReturn(browser);
+		//Mockito.when(ui.getPage()).thenReturn(page);
+		//Mockito.when(page.getWebBrowser()).thenReturn(browser);
 	}
 
 	@Test
 	public void testGetParentOfClass() {
 
-		VerticalLayout vert = new VerticalLayout();
+		VerticalLayout vert = new com.vaadin.ui.VerticalLayout();
 		HorizontalLayout hor = new HorizontalLayout();
 		Button button = new Button();
 
@@ -131,17 +130,6 @@ public class VaadinUtilsTest extends BaseMockitoTest {
 //		Assert.assertEquals(dst, tz.inDaylightTime(dt));
 //	}
 //
-//	@Test
-//	public void testGetTimeZone_Eastern() {
-//
-//		Mockito.when(browser.getRawTimezoneOffset()).thenReturn(7_200_000);
-//		Mockito.when(browser.isDSTInEffect()).thenReturn(false);
-//
-//		TimeZone tz = VaadinUtils.getTimeZone(ui);
-//
-//		Assert.assertEquals(7_200_000, tz.getRawOffset());
-//		Assert.assertEquals(false, tz.inDaylightTime(new Date()));
-//	}
 
 	@Test
 	public void testStringToInteger() {

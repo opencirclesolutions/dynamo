@@ -1,7 +1,5 @@
 package com.ocs.dynamo.ui.validator;
 
-import static org.junit.Assert.assertTrue;
-
 import org.junit.Assert;
 import org.junit.Test;
 

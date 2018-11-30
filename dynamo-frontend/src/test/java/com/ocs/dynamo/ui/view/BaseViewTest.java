@@ -4,7 +4,6 @@ import java.util.Locale;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
@@ -75,6 +74,6 @@ public class BaseViewTest extends BaseMockitoTest {
     @Test
     public void testMessage() {
         view.message("key");
-        Mockito.verify(messageService).getMessage(Matchers.eq("key"), Matchers.any(Locale.class));
+        Mockito.verify(messageService).getMessage(Mockito.eq("key"), Mockito.any(Locale.class));
     }
 }

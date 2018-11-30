@@ -15,7 +15,6 @@ package com.ocs.dynamo.ui.component;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
@@ -65,8 +64,8 @@ public class EntityComboBoxTest extends BaseMockitoTest {
 
 		// data must have been retrieved twice - once during creation and once during
 		// request
-		Mockito.verify(service, Mockito.times(1)).find(Matchers.any(com.ocs.dynamo.filter.Filter.class),
-				Matchers.any(com.ocs.dynamo.dao.SortOrder[].class));
+		Mockito.verify(service, Mockito.times(1)).find(Mockito.any(com.ocs.dynamo.filter.Filter.class),
+				Mockito.isNull());
 	}
 
 	@Test
@@ -92,8 +91,8 @@ public class EntityComboBoxTest extends BaseMockitoTest {
 
 		// data must have been retrieved twice - once during creation and once during
 		// request
-		Mockito.verify(service, Mockito.times(1)).find(Matchers.any(com.ocs.dynamo.filter.Filter.class),
-				Matchers.any(com.ocs.dynamo.dao.SortOrder[].class));
+		Mockito.verify(service, Mockito.times(1)).find(Mockito.any(com.ocs.dynamo.filter.Filter.class),
+				Mockito.isNull());
 	}
 
 }

@@ -2,7 +2,6 @@ package com.ocs.dynamo.ui.composite.form;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
@@ -130,7 +129,7 @@ public class ProgressFormTest extends BaseMockitoTest {
 
 		Thread.sleep(5000);
 
-		Mockito.verify(ui, Mockito.atLeast(1)).access(Matchers.any(Runnable.class));
+		Mockito.verify(ui, Mockito.atLeast(1)).access(Mockito.any(Runnable.class));
 
 		Assert.assertEquals(1, called);
 		Assert.assertEquals(100, pf.getCounter().get());

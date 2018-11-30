@@ -20,7 +20,6 @@ import java.util.Properties;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 
@@ -32,7 +31,7 @@ import com.ocs.dynamo.constants.DynamoConstants;
  * 
  * @author bas.rutten
  */
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(org.mockito.junit.MockitoJUnitRunner.class)
 public abstract class BaseMockitoTest {
 
 	/**

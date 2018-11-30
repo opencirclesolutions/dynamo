@@ -165,10 +165,8 @@
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
 		</dependency>
-		<!-- <dependency> <groupId>org.vaadin.addons.lazyquerycontainer</groupId> 
-			<artifactId>vaadin-lazyquerycontainer</artifactId> </dependency> -->
 		<dependency>
-			<groupId>net.sf.opencsv</groupId>
+			<groupId>com.opencsv</groupId>
 			<artifactId>opencsv</artifactId>
 		</dependency>
 		<dependency>
@@ -179,8 +177,6 @@
 			<groupId>javax.validation</groupId>
 			<artifactId>validation-api</artifactId>
 		</dependency>
-		<!-- <dependency> <groupId>org.vaadin.addon</groupId> <artifactId>tableexport-for-vaadin</artifactId> 
-			</dependency> -->
 		<dependency>
 			<groupId>org.vaadin.addon</groupId>
 			<artifactId>confirmdialog</artifactId>

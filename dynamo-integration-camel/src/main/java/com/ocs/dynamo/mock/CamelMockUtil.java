@@ -15,7 +15,6 @@ package com.ocs.dynamo.mock;
 
 import org.apache.camel.Message;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Matchers;
 import org.mockito.Mockito;
 
 /**
@@ -33,10 +32,8 @@ public final class CamelMockUtil {
 	/**
 	 * Capture the setting of the body on a camel message
 	 * 
-	 * @param clazz
-	 *            the class of the body
-	 * @param message
-	 *            the message
+	 * @param clazz   the class of the body
+	 * @param message the message
 	 * @return
 	 */
 	public static <X> X captureBodySet(Class<X> clazz, Message message) {
@@ -48,21 +45,24 @@ public final class CamelMockUtil {
 	/**
 	 * Capture the setting of a header on a Message
 	 * 
-	 * @param clazz
-	 *            the class of the header
-	 * @param name
-	 *            the name of the header
-	 * @param message
-	 *            the message on which to set the header
+	 * @param clazz   the class of the header
+	 * @param name    the name of the header
+	 * @param message the message on which to set the header
 	 * @return
 	 */
 	public static <X> X captureHeaderSet(Class<X> clazz, String name, Message message) {
 		ArgumentCaptor<X> captor = ArgumentCaptor.forClass(clazz);
-		Mockito.verify(message).setHeader(Matchers.eq(name), captor.capture());
+		Mockito.verify(message).setHeader(Mockito.eq(name), captor.capture());
 		return captor.getValue();
 	}
 
+	/**
+	 * Verify that a certain header has not been set on a message
+	 * 
+	 * @param name    the name of the header
+	 * @param message the message
+	 */
 	public static void verifyHeaderNotSet(String name, Message message) {
-		Mockito.verify(message, Mockito.times(0)).setHeader(Matchers.eq(name), Matchers.any());
+		Mockito.verify(message, Mockito.times(0)).setHeader(Mockito.eq(name), Mockito.any());
 	}
 }

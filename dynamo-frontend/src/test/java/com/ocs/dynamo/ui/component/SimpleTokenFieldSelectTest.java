@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
@@ -32,8 +31,8 @@ public class SimpleTokenFieldSelectTest extends BaseMockitoTest {
 	public void testCreate() {
 
 		List<String> items = Lists.newArrayList("Kevin", "Stuart", "Bob");
-		Mockito.when(service.findDistinct(Matchers.any(Filter.class), Matchers.eq("name"), Matchers.eq(String.class),
-				(SortOrder) Matchers.anyVararg())).thenReturn(items);
+		Mockito.when(service.findDistinct(Mockito.isNull(), Mockito.eq("name"), Mockito.eq(String.class)))
+				.thenReturn(items);
 
 		EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
 		AttributeModel am = em.getAttributeModel("name");
@@ -58,8 +57,8 @@ public class SimpleTokenFieldSelectTest extends BaseMockitoTest {
 	public void testCreateAndOrder() {
 
 		List<String> items = Lists.newArrayList("Kevin", "Stuart", "Bob");
-		Mockito.when(service.findDistinct(Matchers.any(Filter.class), Matchers.eq("name"), Matchers.eq(String.class),
-				(SortOrder) Matchers.anyVararg())).thenReturn(items);
+		Mockito.when(service.findDistinct(Mockito.isNull(), Mockito.eq("name"), Mockito.eq(String.class)))
+				.thenReturn(items);
 
 		EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
 		AttributeModel am = em.getAttributeModel("name");
@@ -79,8 +78,9 @@ public class SimpleTokenFieldSelectTest extends BaseMockitoTest {
 	public void testElementCollection() {
 
 		List<String> items = Lists.newArrayList("Kevin", "Stuart", "Bob");
-		Mockito.when(service.findDistinctInCollectionTable(Matchers.anyString(), Matchers.anyString(),
-				Matchers.eq(String.class))).thenReturn(items);
+		Mockito.when(
+				service.findDistinctInCollectionTable(Mockito.isNull(), Mockito.isNull(), Mockito.eq(String.class)))
+				.thenReturn(items);
 
 		EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
 		AttributeModel am = em.getAttributeModel("name");

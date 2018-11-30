@@ -13,6 +13,13 @@
  */
 package com.ocs.dynamo.ui.composite.grid;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+
+import org.junit.Assert;
+import org.junit.Test;
+import org.mockito.Mock;
+
 import com.google.common.collect.Lists;
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
@@ -21,20 +28,10 @@ import com.ocs.dynamo.domain.model.impl.EntityModelFactoryImpl;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.service.TestEntityService;
 import com.ocs.dynamo.test.BaseMockitoTest;
-import com.ocs.dynamo.test.MockUtil;
-import com.ocs.dynamo.ui.composite.grid.FixedGridWrapper;
-import com.ocs.dynamo.ui.composite.grid.ModelBasedGrid;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.ui.Grid;
-import junitx.util.PrivateAccessor;
-import org.junit.Assert;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.mockito.Mock;
-import org.mockito.Mockito;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
+import junitx.util.PrivateAccessor;
 
 public class ModelBasedGridTest extends BaseMockitoTest {
 
@@ -49,8 +46,6 @@ public class ModelBasedGridTest extends BaseMockitoTest {
 	@Override
 	public void setUp() {
 		super.setUp();
-		Mockito.when(service.getEntityClass()).thenReturn(TestEntity.class);
-		MockUtil.mockMessageService(messageService);
 		try {
 			PrivateAccessor.setField(entityModelFactory, "messageService", messageService);
 		} catch (NoSuchFieldException e) {
@@ -70,14 +65,9 @@ public class ModelBasedGridTest extends BaseMockitoTest {
 
 		Assert.assertEquals("Persons", grid.getCaption());
 		Assert.assertEquals("Person", grid.getDescription());
-
-		// String result = grid.formatPropertyValue(person, "age",
-		// grid.getItem(person).getItemProperty("age"));
-		// Assert.assertEquals("50", result);
 	}
 
 	@Test
-	@Ignore
 	public void testFixedTableWrapper() {
 		TestEntity entity = new TestEntity();
 
@@ -91,29 +81,23 @@ public class ModelBasedGridTest extends BaseMockitoTest {
 
 	}
 
-//	@Test
-//	public void testSetVisible() {
-//		ListDataProvider<Person> container = new ListDataProvider<>(new ArrayList<>());
-//		EntityModel<Person> model = entityModelFactory.getModel(Person.class);
-//
-//		Person person = new Person(1, "Bob", 50, BigDecimal.valueOf(76.4), BigDecimal.valueOf(44.4));
-//		container.getItems().add(person);
-//
-//		ModelBasedTable<Integer, Person> table = new ModelBasedTable<>(container, model, false);
-//
-//		Assert.assertTrue(Arrays.asList(table.getVisibleColumns()).contains("name"));
-//
-//		// setting an already visible column to true doesn't do anything
-//		table.setColumnVisible("name", true);
-//		Assert.assertTrue(Arrays.asList(table.getVisibleColumns()).contains("name"));
-//
-//		// hide column
-//		table.setColumnVisible("name", false);
-//		Assert.assertFalse(Arrays.asList(table.getVisibleColumns()).contains("name"));
-//
-//		/// show it again
-//		table.setColumnVisible("name", true);
-//		Assert.assertTrue(Arrays.asList(table.getVisibleColumns()).contains("name"));
-//	}
+	@Test
+	public void testSetVisible() {
+		ListDataProvider<Person> provider = new ListDataProvider<Person>(Lists.newArrayList());
+		EntityModel<Person> model = entityModelFactory.getModel(Person.class);
+
+		Person person = new Person(1, "Bob", 50, BigDecimal.valueOf(76.4), BigDecimal.valueOf(44.4));
+		provider.getItems().add(person);
+
+		ModelBasedGrid<Integer, Person> grid = new ModelBasedGrid<>(provider, model, false, false, false);
+
+		Assert.assertFalse(grid.getColumn("name").isHidden());
+
+		grid.setColumnVisible("name", true);
+		Assert.assertFalse(grid.getColumn("name").isHidden());
+
+		grid.setColumnVisible("name", false);
+		Assert.assertTrue(grid.getColumn("name").isHidden());
+	}
 
 }

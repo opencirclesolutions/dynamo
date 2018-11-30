@@ -4,7 +4,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
@@ -44,17 +43,15 @@ public class QuickAddListSelectTest extends BaseMockitoTest {
 		t2 = new TestEntity(2, "Bob", 13L);
 		t3 = new TestEntity(3, "Stewart", 14L);
 
-		Mockito.when(service.find(Matchers.isNull(Filter.class), (SortOrder[]) Matchers.anyVararg()))
+		Mockito.when(service.find(Mockito.isNull(), (SortOrder[]) Mockito.any()))
 				.thenReturn(Lists.newArrayList(t1, t2, t3));
-		Mockito.when(service.find(Matchers.isNull(Filter.class))).thenReturn(Lists.newArrayList(t1, t2, t3));
+		Mockito.when(service.find(Mockito.isNull())).thenReturn(Lists.newArrayList(t1, t2, t3));
 
 		Filter f = new com.ocs.dynamo.filter.Compare.Equal("name", "Kevin");
-		Mockito.when(service.find(Matchers.eq(f), (SortOrder[]) Matchers.anyVararg()))
-				.thenReturn(Lists.newArrayList(t1));
-		Mockito.when(service.find(Matchers.eq(f))).thenReturn(Lists.newArrayList(t1));
+		Mockito.when(service.find(Mockito.eq(f))).thenReturn(Lists.newArrayList(t1));
 
 		Mockito.when(service.createNewEntity()).thenReturn(new TestEntity());
-		MockUtil.mockServiceSave(service);
+		MockUtil.mockServiceSave(service, TestEntity.class);
 	}
 
 	/**

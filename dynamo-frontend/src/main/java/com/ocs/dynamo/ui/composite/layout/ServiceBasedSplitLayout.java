@@ -13,6 +13,11 @@
  */
 package com.ocs.dynamo.ui.composite.layout;
 
+import java.io.Serializable;
+import java.util.Collection;
+
+import org.springframework.util.StringUtils;
+
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
@@ -21,16 +26,11 @@ import com.ocs.dynamo.filter.LikePredicate;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.composite.grid.BaseGridWrapper;
 import com.ocs.dynamo.ui.composite.grid.ServiceBasedGridWrapper;
-import com.ocs.dynamo.ui.provider.BaseDataProvider;
 import com.ocs.dynamo.ui.provider.QueryType;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.SortOrder;
 import com.vaadin.server.SerializablePredicate;
 import com.vaadin.ui.TextField;
-import org.springframework.util.StringUtils;
-
-import java.io.Serializable;
-import java.util.Collection;
 
 /**
  * A split layout - contains both a table and a details view - that uses a

@@ -5,7 +5,7 @@ import org.junit.Test;
 
 import com.ocs.dynamo.test.BaseMockitoTest;
 import com.vaadin.ui.Component;
-import com.vaadin.v7.ui.VerticalLayout;
+import com.vaadin.ui.VerticalLayout;
 
 public class LazyBaseViewTest extends BaseMockitoTest {
 

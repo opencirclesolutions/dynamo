@@ -19,10 +19,9 @@ import java.util.List;
 
 import org.apache.commons.io.input.CharSequenceReader;
 
-import au.com.bytecode.opencsv.CSVReader;
-
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.exception.OCSImportException;
+import com.opencsv.CSVReader;
 
 /**
  * Base class for importing CSV files

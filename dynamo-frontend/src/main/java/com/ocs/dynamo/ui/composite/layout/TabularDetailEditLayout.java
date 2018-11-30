@@ -65,7 +65,7 @@ public class TabularDetailEditLayout<ID extends Serializable, T extends Abstract
 	 *            the relations to fetch
 	 */
 	public TabularDetailEditLayout(BaseService<ID, T> service, Q parentEntity, BaseService<ID2, Q> parentService,
-			EntityModel<T> entityModel, FormOptions formOptions, SortOrder sortOrder, FetchJoinInformation... joins) {
+			EntityModel<T> entityModel, FormOptions formOptions, SortOrder<?> sortOrder, FetchJoinInformation... joins) {
 		super(service, entityModel, formOptions, sortOrder, joins);
 		this.parentService = parentService;
 		this.parentEntity = parentEntity;
