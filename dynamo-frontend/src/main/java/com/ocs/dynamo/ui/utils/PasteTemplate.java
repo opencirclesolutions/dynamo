@@ -17,85 +17,84 @@ import java.util.Locale;
 
 import org.apache.log4j.Logger;
 
-import com.vaadin.v7.event.FieldEvents.TextChangeEvent;
-import com.vaadin.v7.ui.Table;
+import com.vaadin.data.HasValue.ValueChangeEvent;
+import com.vaadin.ui.Grid;
 
 /**
- * A template for handling a paste into a text field. The template will try to split up the input
- * into separate fields. The fields can be separated by any kind of whitespace The template takes a
- * locale as a constructor argument. Any decimal separators in the input will be converted to the
- * appropriate separator for the provided locale
+ * A template for handling a paste into a text field. The template will try to
+ * split up the input into separate fields. The fields can be separated by any
+ * kind of whitespace The template takes a locale as a constructor argument. Any
+ * decimal separators in the input will be converted to the appropriate
+ * separator for the provided locale
  * 
  * @author bas.rutten
  */
-public abstract class PasteTemplate {
+public abstract class PasteTemplate<T> {
 
-    private static final Logger LOG = Logger.getLogger(PasteTemplate.class);
+	private static final Logger LOG = Logger.getLogger(PasteTemplate.class);
 
-    private TextChangeEvent event;
+	private ValueChangeEvent<String> event;
 
-    private Locale locale;
+	private Locale locale;
 
-    private Table table;
+	private Grid<T> grid;
 
-    /**
-     * @param locale
-     * @param event
-     */
-    public PasteTemplate(Locale locale, Table table, TextChangeEvent event) {
-        this.locale = locale;
-        this.event = event;
-        this.table = table;
-    }
+	/**
+	 * @param locale
+	 * @param event
+	 */
+	public PasteTemplate(Locale locale, Grid<T> grid, ValueChangeEvent<String> event) {
+		this.locale = locale;
+		this.event = event;
+		this.grid = grid;
+	}
 
-    public void execute() {
-        String text = event.getText();
-        if (text != null) {
-            // replace tabs and other whitespace
-            String[] values = PasteUtils.split(text);
-            if (values.length > 1) {
-                // clear the source field
-                clearSourceField(event);
+	public void execute() {
+		String text = event.getValue();
+		if (text != null) {
+			// replace tabs and other whitespace
+			String[] values = PasteUtils.split(text);
+			if (values.length > 1) {
+				// clear the source field
+				clearSourceField(event);
 
-                for (int i = 0; i < values.length; i++) {
-                    try {
-                        String temp = values[i];
+				for (int i = 0; i < values.length; i++) {
+					try {
+						String temp = values[i];
+						temp = PasteUtils.translateSeparators(temp, locale);
+						// strip off any percent signs
+						String s = temp.replaceAll("%", "");
+						process(i, s);
 
-                        temp = PasteUtils.translateSeparators(temp, locale);
-                        // strip off any percent signs
-                        String s = temp.replaceAll("%", "");
-                        process(i, s);
+					} catch (Exception ex) {
+						LOG.error(ex.getMessage(), ex);
+					}
+				}
+				if (grid != null) {
+					grid.markAsDirty();
+				}
+			}
+		}
+	}
 
-                    } catch (Exception ex) {
-                        LOG.error(ex.getMessage(), ex);
-                    }
-                }
-                if (table != null) {
-                    table.refreshRowCache();
-                }
-            }
-        }
-    }
+	/**
+	 * Processes a single value
+	 * 
+	 * @param index the index of the value in the list
+	 * @param value
+	 */
+	protected abstract void process(int index, String value);
 
-    /**
-     * Processes a single value
-     * 
-     * @param index
-     *            the index of the value in the list
-     * @param value
-     */
-    protected abstract void process(int index, String value);
+	/**
+	 * Clears the source field. This can be used if the values are pasted in a cell
+	 * that should be emptied after the paste action
+	 * 
+	 * @param event
+	 */
+	protected abstract void clearSourceField(ValueChangeEvent<String> event);
 
-    /**
-     * Clears the source field. This can be used if the values are pasted in a cell that should be
-     * emptied after the paste action
-     * 
-     * @param event
-     */
-    protected abstract void clearSourceField(TextChangeEvent event);
-
-    public Table getTable() {
-        return table;
-    }
+	public Grid<T> getGrid() {
+		return grid;
+	}
 
 }

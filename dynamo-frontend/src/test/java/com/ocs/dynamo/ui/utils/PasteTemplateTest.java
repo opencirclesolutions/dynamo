@@ -22,30 +22,31 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
+import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.test.BaseMockitoTest;
-import com.vaadin.v7.event.FieldEvents.TextChangeEvent;
-import com.vaadin.v7.ui.Table;
+import com.vaadin.data.HasValue.ValueChangeEvent;
+import com.vaadin.ui.Grid;
 
 public class PasteTemplateTest extends BaseMockitoTest {
 
 	@Mock
-	private TextChangeEvent event;
+	private ValueChangeEvent<String> event;
 
-	private PasteTemplate template;
+	private PasteTemplate<TestEntity> template;
 
 	private Locale locale = new Locale("nl");
 
-	private Table table = new Table();
+	private Grid<TestEntity> grid = new Grid<TestEntity>();
 
 	/**
 	 * Test that nothing happens for a single value
 	 */
 	@Test
 	public void testIgnoreForSingleValue() {
-		Mockito.when(event.getText()).thenReturn("3");
+		Mockito.when(event.getValue()).thenReturn("3");
 		final List<String> values = new ArrayList<>();
 
-		template = new PasteTemplate(locale, table, event) {
+		template = new PasteTemplate<TestEntity>(locale, grid, event) {
 
 			@Override
 			protected void process(int index, String value) {
@@ -53,7 +54,7 @@ public class PasteTemplateTest extends BaseMockitoTest {
 			}
 
 			@Override
-			protected void clearSourceField(TextChangeEvent event) {
+			protected void clearSourceField(ValueChangeEvent<String> event) {
 				// do nothing
 			}
 		};
@@ -64,10 +65,10 @@ public class PasteTemplateTest extends BaseMockitoTest {
 
 	@Test
 	public void testMultipleValues() {
-		Mockito.when(event.getText()).thenReturn("3 4 5");
+		Mockito.when(event.getValue()).thenReturn("3 4 5");
 		final List<String> values = new ArrayList<>();
 
-		template = new PasteTemplate(locale, table, event) {
+		template = new PasteTemplate<TestEntity>(locale, grid, event) {
 
 			@Override
 			protected void process(int index, String value) {
@@ -75,7 +76,7 @@ public class PasteTemplateTest extends BaseMockitoTest {
 			}
 
 			@Override
-			protected void clearSourceField(TextChangeEvent event) {
+			protected void clearSourceField(ValueChangeEvent<String> event) {
 				// do nothing
 			}
 		};
@@ -89,10 +90,10 @@ public class PasteTemplateTest extends BaseMockitoTest {
 
 	@Test
 	public void testMultipleValuesWithTabs() {
-		Mockito.when(event.getText()).thenReturn("3\t4\t5");
+		Mockito.when(event.getValue()).thenReturn("3\t4\t5");
 		final List<String> values = new ArrayList<>();
 
-		template = new PasteTemplate(locale, table, event) {
+		template = new PasteTemplate<TestEntity>(locale, grid, event) {
 
 			@Override
 			protected void process(int index, String value) {
@@ -100,7 +101,7 @@ public class PasteTemplateTest extends BaseMockitoTest {
 			}
 
 			@Override
-			protected void clearSourceField(TextChangeEvent event) {
+			protected void clearSourceField(ValueChangeEvent<String> event) {
 				// do nothing
 			}
 		};
@@ -113,14 +114,15 @@ public class PasteTemplateTest extends BaseMockitoTest {
 	}
 
 	/**
-	 * Tests that the decimal separator is correctly translated to the correct locale first
+	 * Tests that the decimal separator is correctly translated to the correct
+	 * locale first
 	 */
 	@Test
 	public void testSeparatorReplace() {
-		Mockito.when(event.getText()).thenReturn("4.2 5.2");
+		Mockito.when(event.getValue()).thenReturn("4.2 5.2");
 		final List<String> values = new ArrayList<>();
 
-		template = new PasteTemplate(locale, table, event) {
+		template = new PasteTemplate<TestEntity>(locale, grid, event) {
 
 			@Override
 			protected void process(int index, String value) {
@@ -128,7 +130,7 @@ public class PasteTemplateTest extends BaseMockitoTest {
 			}
 
 			@Override
-			protected void clearSourceField(TextChangeEvent event) {
+			protected void clearSourceField(ValueChangeEvent<String> event) {
 				// do nothing
 			}
 		};
