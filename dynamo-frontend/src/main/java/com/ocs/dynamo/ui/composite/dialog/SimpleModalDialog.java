@@ -49,7 +49,7 @@ public abstract class SimpleModalDialog extends BaseModalDialog {
 	protected void doBuildButtonBar(HorizontalLayout buttonBar) {
 		cancelButton = new Button(message("ocs.cancel"));
 		cancelButton.setIcon(VaadinIcons.BAN);
-		cancelButton.addClickListener((Button.ClickListener) event -> {
+		cancelButton.addClickListener(event -> {
 			doCancel();
 			SimpleModalDialog.this.close();
 		});
@@ -58,7 +58,7 @@ public abstract class SimpleModalDialog extends BaseModalDialog {
 
 		okButton = new Button(message("ocs.ok"));
 		okButton.setIcon(VaadinIcons.CHECK);
-		okButton.addClickListener((Button.ClickListener) event -> {
+		okButton.addClickListener(event -> {
 			if (doClose()) {
 				SimpleModalDialog.this.close();
 			}
@@ -97,10 +97,8 @@ public abstract class SimpleModalDialog extends BaseModalDialog {
 	/**
 	 * Retrieves a message based on its key
 	 *
-	 * @param key
-	 *            the key of the message
-	 * @param args
-	 *            any arguments to pass to the message
+	 * @param key  the key of the message
+	 * @param args any arguments to pass to the message
 	 * @return
 	 */
 	protected String message(String key, Object... args) {

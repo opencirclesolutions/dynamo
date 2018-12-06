@@ -1,6 +1,8 @@
 package com.ocs.dynamo.ui.provider;
 
+import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.dao.FetchJoinInformation;
+import com.ocs.dynamo.dao.SortOrder;
 import com.ocs.dynamo.dao.SortOrder.Direction;
 import com.ocs.dynamo.dao.SortOrders;
 import com.ocs.dynamo.domain.AbstractEntity;
@@ -73,10 +75,15 @@ public abstract class BaseDataProvider<ID extends Serializable, T extends Abstra
 	protected SortOrders createSortOrder(Query<T, SerializablePredicate<T>> query) {
 		List<QuerySortOrder> orders = query.getSortOrders();
 		SortOrders so = new SortOrders();
-		for (QuerySortOrder order : orders) {
-			so.addSortOrder(new com.ocs.dynamo.dao.SortOrder(
-					SortDirection.ASCENDING.equals(order.getDirection()) ? Direction.ASC : Direction.DESC,
-					order.getSorted().toString()));
+		if (!orders.isEmpty()) {
+			for (QuerySortOrder order : orders) {
+				so.addSortOrder(new SortOrder(
+						SortDirection.ASCENDING.equals(order.getDirection()) ? Direction.ASC : Direction.DESC,
+						order.getSorted().toString()));
+			}
+		} else {
+			// if not sort order defined, order descending on ID
+			so.addSortOrder(new SortOrder(Direction.DESC, DynamoConstants.ID));
 		}
 		return so;
 	}
@@ -114,6 +121,11 @@ public abstract class BaseDataProvider<ID extends Serializable, T extends Abstra
 		return null;
 	}
 
+	public boolean hasNextItemId() {
+		int index = ids.indexOf(currentlySelectedId);
+		return index < ids.size() - 1;
+	}
+
 	public ID getPreviousItemId() {
 		int index = ids.indexOf(currentlySelectedId);
 		if (index > 0) {
@@ -121,6 +133,11 @@ public abstract class BaseDataProvider<ID extends Serializable, T extends Abstra
 			return currentlySelectedId;
 		}
 		return null;
+	}
+
+	public boolean hasPreviousItemId() {
+		int index = ids.indexOf(currentlySelectedId);
+		return index > 0;
 	}
 
 	public BaseService<ID, T> getService() {

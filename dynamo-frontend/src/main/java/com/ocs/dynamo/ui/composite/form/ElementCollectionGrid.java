@@ -20,6 +20,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.service.MessageService;
@@ -37,6 +39,9 @@ import com.ocs.dynamo.utils.NumberUtils;
 import com.vaadin.data.BeanValidationBinder;
 import com.vaadin.data.Binder;
 import com.vaadin.data.Binder.BindingBuilder;
+import com.vaadin.data.ValidationResult;
+import com.vaadin.data.Validator;
+import com.vaadin.data.ValueContext;
 import com.vaadin.data.ValueProvider;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.data.validator.StringLengthValidator;
@@ -200,6 +205,7 @@ public class ElementCollectionGrid<ID extends Serializable, U extends AbstractEn
 				Button remove = new Button(removeMsg);
 				remove.setIcon(VaadinIcons.TRASH);
 				remove.addClickListener(event -> {
+					binders.remove(t);
 					provider.getItems().remove(t);
 					provider.refreshAll();
 				});
@@ -276,11 +282,7 @@ public class ElementCollectionGrid<ID extends Serializable, U extends AbstractEn
 	@Override
 	protected Component initContent() {
 
-		grid = new Grid<ValueHolder<T>>("", provider) {
-
-			private static final long serialVersionUID = -4045946516131771973L;
-
-		};
+		grid = new Grid<ValueHolder<T>>("", provider);
 
 		Column<ValueHolder<T>, TextField> column = grid.addColumn(vh -> {
 			TextField tf = new TextField("");
@@ -308,7 +310,24 @@ public class ElementCollectionGrid<ID extends Serializable, U extends AbstractEn
 				builder.withConverter(ConverterFactory.createLongConverter(
 						SystemPropertyUtils.useThousandsGroupingInEditMode(), attributeModel.isPercentage()));
 			}
-			builder.asRequired().bind("value");
+
+			// custom validator since the normal one apparently doesn't work properly here
+			Validator<String> notEmpty = new Validator<String>() {
+
+				private static final long serialVersionUID = -8831597639858787402L;
+
+				@Override
+				public ValidationResult apply(String value, ValueContext context) {
+					if (StringUtils.isEmpty(value)) {
+						return ValidationResult
+								.error(messageService.getMessage("ocs.may.not.be.null", VaadinUtils.getLocale()));
+					}
+					return ValidationResult.ok();
+				}
+			};
+			builder.asRequired(notEmpty).bind("value");
+
+			tf.setSizeFull();
 			return tf;
 		}, new ComponentRenderer());
 

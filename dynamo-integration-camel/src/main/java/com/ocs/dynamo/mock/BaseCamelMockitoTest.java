@@ -32,6 +32,7 @@ import com.ocs.dynamo.test.MockUtil;
  * @author bas.rutten
  * 
  */
+
 public abstract class BaseCamelMockitoTest extends BaseMockitoTest {
 
 	@Mock
@@ -63,8 +64,8 @@ public abstract class BaseCamelMockitoTest extends BaseMockitoTest {
 	}
 
 	public <T> void givenBody(Class<T> clazz, T body) {
-		Mockito.when(message.getBody(clazz)).thenReturn(body);
-		Mockito.when(message.getBody()).thenReturn(body);
+		Mockito.lenient().when(message.getBody(clazz)).thenReturn(body);
+		Mockito.lenient().when(message.getBody()).thenReturn(body);
 	}
 
 	public void givenHeader(String name, Object value) {
@@ -96,8 +97,8 @@ public abstract class BaseCamelMockitoTest extends BaseMockitoTest {
 	@Override
 	public void setUp() {
 		super.setUp();
-		Mockito.when(exchange.getIn()).thenReturn(message);
-		Mockito.when(exchange.getOut()).thenReturn(outMessage);
+		Mockito.lenient().when(exchange.getIn()).thenReturn(message);
+		Mockito.lenient().when(exchange.getOut()).thenReturn(outMessage);
 		MockUtil.mockMessageService(messageService);
 	}
 

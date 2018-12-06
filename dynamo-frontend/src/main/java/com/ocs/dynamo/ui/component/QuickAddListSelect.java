@@ -204,6 +204,7 @@ public class QuickAddListSelect<ID extends Serializable, T extends AbstractEntit
 
 	@Override
 	public void setComponentError(ErrorMessage componentError) {
+		super.setComponentError(componentError);
 		if (listSelect != null) {
 			listSelect.setComponentError(componentError);
 		}

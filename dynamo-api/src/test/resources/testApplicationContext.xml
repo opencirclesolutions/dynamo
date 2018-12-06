@@ -17,9 +17,6 @@
 		<entry key="hibernate.dialect" value="org.hibernate.dialect.H2Dialect" />
 	</util:map>
 
-	<!-- wrapper around the export -->
-	<bean id="tableExportService" class="com.ocs.dynamo.ui.composite.table.export.TableExportService" />
-
 	<!-- Entity Manager, the use of packagesToScan, jpaPropertyMap and jpaVendorAdapter 
 		prevent the need for an persistence.xml -->
 	<bean id="jpaVendorAdapter"

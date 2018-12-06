@@ -399,12 +399,11 @@ public final class DateUtils {
 		}
 		return Date.from(d.atStartOfDay(ZoneId.systemDefault()).toInstant());
 	}
-	
+
 	/**
 	 * Converts a java.time.LocalDateTime to a java.util.Date
 	 * 
-	 * @param d
-	 *            the LocalDatetime to convert
+	 * @param d the LocalDatetime to convert
 	 * @return
 	 */
 	public static Date toLegacyDate(LocalDateTime ldt) {
@@ -413,7 +412,6 @@ public final class DateUtils {
 		}
 		return Date.from(ldt.atZone(ZoneId.systemDefault()).toInstant());
 	}
-
 
 	/**
 	 * Converts a date to its corresponding week code

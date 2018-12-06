@@ -65,6 +65,7 @@ import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.AbstractTextField;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.CustomField;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.DateTimeField;
 import com.vaadin.ui.Slider;
@@ -409,6 +410,9 @@ public class FieldFactoryImpl implements FieldFactory {
 		if (field instanceof AbstractField) {
 			AbstractField<?> af = (AbstractField<?>) field;
 			af.setRequiredIndicatorVisible(search ? am.isRequiredForSearching() : am.isRequired());
+		} else if (field instanceof CustomField) {
+			CustomField<?> cf = (CustomField<?>) field;
+			cf.setRequiredIndicatorVisible(search ? am.isRequiredForSearching() : am.isRequired());
 		}
 	}
 

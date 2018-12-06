@@ -38,15 +38,7 @@ public class CollapsiblePanel extends VerticalLayout {
 
 		contentWrapper.setVisible(true);
 		addComponents(toggle, contentWrapper);
-		toggle.addClickListener(new Button.ClickListener() {
-
-			private static final long serialVersionUID = 5662067017197269837L;
-
-			@Override
-			public void buttonClick(Button.ClickEvent event) {
-				setOpen(!isOpen());
-			}
-		});
+		toggle.addClickListener(event -> setOpen(!isOpen()));
 	}
 
 	public CollapsiblePanel(String caption, Component content) {

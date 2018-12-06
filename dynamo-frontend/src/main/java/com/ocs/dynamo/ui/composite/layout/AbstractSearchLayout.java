@@ -607,8 +607,8 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	@Override
 	public ServiceBasedGridWrapper<ID, T> constructGridWrapper() {
 		ServiceBasedGridWrapper<ID, T> result = new ServiceBasedGridWrapper<ID, T>(this.getService(), getEntityModel(),
-				getQueryType(), getSearchForm().extractFilter(), getSortOrders(),
-				getFormOptions().isExportAllowed(), false, getJoins()) {
+				getQueryType(), getSearchForm().extractFilter(), getSortOrders(), getFormOptions().isExportAllowed(),
+				false, getJoins()) {
 
 			private static final long serialVersionUID = 6343267378913526151L;
 
@@ -780,11 +780,11 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	public final void edit(T entity, int initialTab) {
 		setSelectedItem(entity);
 		doEdit();
-//		if (editForm != null) {
-//			editForm.selectTab(initialTab);
-//		} else {
-//			tabLayout.selectTab(initialTab);
-//		}
+		if (editForm != null) {
+			editForm.selectTab(initialTab);
+		} else {
+			tabLayout.selectTab(initialTab);
+		}
 	}
 
 	public Button getAddButton() {

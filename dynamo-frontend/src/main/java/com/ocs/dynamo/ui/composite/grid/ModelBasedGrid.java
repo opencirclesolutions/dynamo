@@ -169,6 +169,7 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 									.setViewMode(true);
 							comp = fieldFactory.constructField(ctx);
 						}
+						comp.setSizeFull();
 
 						// delegate the binding to the enveloping component
 						BindingBuilder<T, ?> builder = doBind(t, (AbstractComponent) comp);

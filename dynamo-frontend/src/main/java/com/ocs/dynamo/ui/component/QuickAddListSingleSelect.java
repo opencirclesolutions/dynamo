@@ -188,6 +188,7 @@ public class QuickAddListSingleSelect<ID extends Serializable, T extends Abstrac
 
 	@Override
 	public void setComponentError(ErrorMessage componentError) {
+		super.setComponentError(componentError);
 		if (listSelect != null) {
 			listSelect.setComponentError(componentError);
 		}

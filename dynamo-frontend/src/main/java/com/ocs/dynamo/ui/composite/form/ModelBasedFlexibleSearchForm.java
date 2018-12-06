@@ -184,14 +184,14 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 			attributeFilterComboBox = new ComboBox<>(message("ocs.filter"));
 			attributeFilterComboBox.setStyleName(DynamoConstants.CSS_NESTED);
 
-			// find out which attributes can be search on and sort them in
+			// find out which attributes can be searched on and sort them in
 			// alphabetical order
 			List<AttributeModel> filteredModels = iterate(getEntityModel().getAttributeModels());
 			filteredModels.sort((o1, o2) -> o1.getDisplayName().compareToIgnoreCase(o2.getDisplayName()));
 			// add any attribute models that are not required
 			attributeFilterComboBox.setItems(filteredModels.stream()
 					.filter(a -> !a.isRequiredForSearching() || !hasFilter(a)).collect(Collectors.toList()));
-			attributeFilterComboBox.setItemCaptionGenerator(item -> ((AttributeModel) item).getDisplayName());
+			attributeFilterComboBox.setItemCaptionGenerator(item -> item.getDisplayName());
 
 			// add a value change listener that fills the filter type combo box
 			// after a change
@@ -499,7 +499,7 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 			Result<?> result = ConvertUtils.convertToModelValue(am, value);
 			result.ifOk(r -> {
 				((AbstractComponent) field).setComponentError(null);
-				SerializablePredicate<T> filter = constructFilter(field, value);
+				SerializablePredicate<T> filter = constructFilter(field, r);
 				// store the current filter
 				this.fieldFilter = filter;
 				// propagate the change (this will trigger the actual search action)
@@ -518,9 +518,11 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 				FlexibleFilterDefinition definition = new FlexibleFilterDefinition();
 				definition.setFlexibleFilterType(filterType);
 				definition.setAttributeModel(am);
-				definition.setValue(ConvertUtils.convertToModelValue(am, mainValueComponent.getValue()));
+				Result<?> result = ConvertUtils.convertToModelValue(am, mainValueComponent.getValue());
+				result.ifOk(v -> definition.setValue(v));
 				if (auxValueComponent != null) {
-					definition.setValueTo(ConvertUtils.convertToModelValue(am, auxValueComponent.getValue()));
+					result = ConvertUtils.convertToModelValue(am, auxValueComponent.getValue());
+					result.ifOk(v -> definition.setValueTo(v));
 				}
 				return definition;
 			}
@@ -791,7 +793,7 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 			if (region.auxValueComponent != null) {
 				Object auxValue = ConvertUtils.convertToPresentationValue(def.getAttributeModel(), def.getValueTo());
 				if (auxValue != null) {
-					region.auxValueComponent.setValue(value);
+					region.auxValueComponent.setValue(auxValue);
 				} else {
 					region.auxValueComponent.clear();
 				}

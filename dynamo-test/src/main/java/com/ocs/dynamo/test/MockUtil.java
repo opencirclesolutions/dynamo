@@ -176,7 +176,7 @@ public final class MockUtil {
 		// Mockito.any(Locale.class)))
 		// .thenAnswer(invocation -> (String) invocation.getArguments()[0]);
 		// method with varargs
-		Mockito.when(messageService.getMessage(Mockito.anyString(), Mockito.any(Locale.class), Mockito.any()))
+		Mockito.lenient().when(messageService.getMessage(Mockito.anyString(), Mockito.any(Locale.class), Mockito.any()))
 				.thenAnswer(invocation -> (String) invocation.getArguments()[0]);
 
 		// Mockito.when(messageService.getMessage(Mockito.anyString(),

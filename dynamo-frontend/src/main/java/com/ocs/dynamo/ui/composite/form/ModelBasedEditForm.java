@@ -48,7 +48,6 @@ import com.ocs.dynamo.domain.model.impl.FieldFactoryImpl;
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.filter.EqualsPredicate;
 import com.ocs.dynamo.service.BaseService;
-import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.CanAssignEntity;
 import com.ocs.dynamo.ui.Refreshable;
 import com.ocs.dynamo.ui.component.Cascadable;
@@ -1297,6 +1296,20 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		return null;
 	}
 
+	/**
+	 * Returns the binding for a field
+	 * 
+	 * @param fieldName
+	 * @return
+	 */
+	public Binding<T, ?> getBinding(String fieldName) {
+		Optional<Binding<T, ?>> binding = groups.get(viewMode).getBinding(fieldName);
+		if (binding.isPresent()) {
+			return binding.get();
+		}
+		return null;
+	}
+
 	public AbstractComponent getField(String fieldName) {
 		return getField(isViewMode(), fieldName);
 	}
@@ -1553,6 +1566,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 	/**
 	 * Replaces a label (in response to a change)
+	 * 
+	 * TODO: does not seem to work properly
 	 *
 	 * @param propertyName
 	 */

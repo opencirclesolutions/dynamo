@@ -35,6 +35,8 @@ import com.vaadin.ui.HorizontalLayout;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * A multiple select component that displays tags/tokens to indicate which
@@ -258,7 +260,7 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
 		HorizontalLayout layout = new DefaultHorizontalLayout(false, true, false);
 
 		comboBox.setHeightUndefined();
-		setComboBoxWidth();
+		// setComboBoxWidth();
 
 		extTokenField.setInputField(comboBox);
 		extTokenField.setEnableDefaultDeleteTokenAction(true);
@@ -323,8 +325,11 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
 
 	@Override
 	public void setComponentError(ErrorMessage componentError) {
-		if (extTokenField != null) {
-			extTokenField.setComponentError(componentError);
+		// propagating the error to the ext token field produces weird layout issues so
+		// don't do this!
+		super.setComponentError(componentError);
+		if (comboBox != null) {
+			comboBox.setComponentError(componentError);
 		}
 	}
 
@@ -339,6 +344,9 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
 
 	@Override
 	public void setValue(Collection<T> values) {
+		if (values != null) {
+			values = values.stream().filter(Objects::nonNull).collect(Collectors.toList());
+		}
 		super.setValue(values);
 		provider.getItems().clear();
 		if (values != null) {
