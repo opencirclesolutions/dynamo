@@ -220,7 +220,7 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
 	private void copyValueFromContainer() {
 		Collection<T> values = provider.getItems();
 		setValue(Sets.newHashSet(values));
-		setComboBoxWidth();
+		//setComboBoxWidth();
 	}
 
 	@Override

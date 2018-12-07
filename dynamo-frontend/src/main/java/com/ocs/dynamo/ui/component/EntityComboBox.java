@@ -121,12 +121,12 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 					SortUtils.translateAndFilterOnTransient(false, targetEntityModel, sortOrders));
 			provider = new ListDataProvider<>(items);
 		} else if (SelectMode.FIXED.equals(mode)) {
-			provider = new ListDataProvider<>(items);
 		}
-		setDataProvider(provider);
+		setDataProvider(new IgnoreDiacriticsCaptionFilter(true, false), provider);
 
 		setItemCaptionGenerator(t -> EntityModelUtils.getDisplayPropertyValue(t, targetEntityModel));
 		setSizeFull();
+
 	}
 
 	/**
@@ -294,4 +294,5 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 	public void setSelectMode(SelectMode selectMode) {
 		this.selectMode = selectMode;
 	}
+
 }
