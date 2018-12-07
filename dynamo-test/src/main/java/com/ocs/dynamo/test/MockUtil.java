@@ -160,7 +160,7 @@ public final class MockUtil {
 	 * Mocks the "fetchById" method of a DAO by returning the provided entity
 	 */
 	public static <ID, X extends AbstractEntity<ID>> void mockFetchById(BaseDao<ID, X> dao, ID id, X entity) {
-		Mockito.when(dao.fetchById(Mockito.eq(id), (FetchJoinInformation[]) Mockito.anyVararg())).thenReturn(entity);
+		Mockito.when(dao.fetchById(Mockito.eq(id), (FetchJoinInformation[]) Mockito.any())).thenReturn(entity);
 	}
 
 	/**
@@ -171,29 +171,17 @@ public final class MockUtil {
 	 * @param messageService
 	 */
 	public static void mockMessageService(MessageService messageService) {
-		// method without any arguments
-		// Mockito.when(messageService.getMessage(Mockito.anyString(),
-		// Mockito.any(Locale.class)))
-		// .thenAnswer(invocation -> (String) invocation.getArguments()[0]);
 		// method with varargs
 		Mockito.lenient().when(messageService.getMessage(Mockito.anyString(), Mockito.any(Locale.class), Mockito.any()))
 				.thenAnswer(invocation -> (String) invocation.getArguments()[0]);
 
-		// Mockito.when(messageService.getMessage(Mockito.anyString(),
-		// Mockito.any(Locale.class)))
-		// .thenAnswer(invocation -> (String) invocation.getArguments()[0]);
-
-//		errors.add(messageService.getMessage("blip.exchange.rate.unknown", dto.getRowNum(), dto.getCurrency(),
-//				dto.getProgrammeCode()));
-
-		// method with locale
-//		Mockito.when(messageService.getMessage(Mockito.anyString(), Mockito.any(Locale.class)))
-//				.thenAnswer(invocation -> (String) invocation.getArguments()[0]);
+		Mockito.lenient().when(messageService.getMessage(Mockito.anyString(), Mockito.any(Locale.class)))
+				.thenAnswer(invocation -> (String) invocation.getArguments()[0]);
 
 		// method for retrieving enum message
-//		Mockito.when(
-//				messageService.getEnumMessage(Mockito.any(), Mockito.any(Enum.class), Mockito.any(Locale.class)))
-//				.thenAnswer(invocation -> invocation.getArguments()[1].toString());
+		Mockito.lenient()
+				.when(messageService.getEnumMessage(Mockito.any(), Mockito.any(Enum.class), Mockito.any(Locale.class)))
+				.thenAnswer(invocation -> invocation.getArguments()[1].toString());
 	}
 
 	/**

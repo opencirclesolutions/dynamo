@@ -414,6 +414,32 @@ public class FieldFactoryImpl implements FieldFactory {
 			CustomField<?> cf = (CustomField<?>) field;
 			cf.setRequiredIndicatorVisible(search ? am.isRequiredForSearching() : am.isRequired());
 		}
+
+		// add percentage sign
+		if (am.isPercentage() && field instanceof AbstractTextField) {
+			AbstractTextField atf = (AbstractTextField) field;
+			atf.addBlurListener(event -> {
+				String value = atf.getValue();
+				if (value != null && value.indexOf("%") < 0) {
+					value = value.trim() + "%";
+					atf.setValue(value);
+				}
+			});
+		}
+
+		// add currency sign
+		if (am.isCurrency() && field instanceof AbstractTextField) {
+			AbstractTextField atf = (AbstractTextField) field;
+			atf.addBlurListener(event -> {
+				String value = atf.getValue();
+
+				if (value != null && value.indexOf(VaadinUtils.getCurrencySymbol()) < 0) {
+					value = VaadinUtils.getCurrencySymbol() + " " + value.trim();
+					atf.setValue(value);
+				}
+			});
+		}
+
 	}
 
 	/**

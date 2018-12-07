@@ -137,6 +137,8 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 		buttonBar.addComponent(constructToggleButton());
 	}
 
+	
+	
 	/**
 	 * Adds any value change listeners for taking care of cascading search
 	 */

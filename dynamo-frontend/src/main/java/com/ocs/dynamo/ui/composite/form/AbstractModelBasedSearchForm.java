@@ -114,7 +114,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	 * The main layout (constructed only once)
 	 */
 	private VerticalLayout main;
-	
+
 	private FieldFactory fieldFactory = FieldFactory.getInstance();
 
 	/**
@@ -361,7 +361,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	public FieldFactory getFieldFactory() {
 		return fieldFactory;
 	}
-	
+
 	public Layout getFilterLayout() {
 		return filterLayout;
 	}

@@ -125,10 +125,6 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 		}
 		setDataProvider(provider);
 
-		// TODO: fix the sort order
-		// SortUtil.applyContainerSortOrder(container, true, targetEntityModel,
-		// sortOrders);
-
 		setItemCaptionGenerator(t -> EntityModelUtils.getDisplayPropertyValue(t, targetEntityModel));
 		setSizeFull();
 	}

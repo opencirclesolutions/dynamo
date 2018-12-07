@@ -98,8 +98,9 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<!-- Dependency versions. -->
-		<vaadin.version>8.5.2</vaadin.version>
+		<vaadin.version>8.6.2</vaadin.version>
 		<vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
+		<vaadin.icons.version>3.0.2</vaadin.icons.version>
 		<vaadin-spring.version>3.1.1</vaadin-spring.version>
 		<vaadin.charts.version>4.0.5</vaadin.charts.version>		
 		<vaadin.confirmdialog.version>3.2.0</vaadin.confirmdialog.version>
@@ -115,17 +116,12 @@
 		<commons.lang.version>2.6</commons.lang.version>
 		<h2.version>1.4.197</h2.version>
 		<poi.version>3.13</poi.version>
+		<xlsx-streamer.version>0.2.9</xlsx-streamer.version>
 		<opencsv.version>4.4</opencsv.version>
 		<javax.servlet.api.version>4.0.0</javax.servlet.api.version>
 		<javax.validation.api.version>2.0.1.Final</javax.validation.api.version>
-		<xlsx-streamer.version>0.2.9</xlsx-streamer.version>
 		<junit-addons.version>1.4</junit-addons.version>
-		<aspectj.version>1.6.12</aspectj.version>
-		<!--  
-		<jasperreports.version>6.3.0</jasperreports.version>
-		<batik.version>1.8</batik.version>
-		-->
-
+		<aspectj.version>1.9.2</aspectj.version>
 		<!-- Maven plugin versions. -->
 		<org.apache.maven.plugins.compiler.version>3.3</org.apache.maven.plugins.compiler.version>
 		<org.apache.maven.plugins.jar.version>3.0.2</org.apache.maven.plugins.jar.version>
@@ -154,6 +150,7 @@
 				<artifactId>vaadin-server</artifactId>
 				<version>${vaadin.version}</version>
 			</dependency>
+			<!--  TODO: remove this when no longer needed -->
 			<dependency>
 				<groupId>com.vaadin</groupId>
 				<artifactId>vaadin-compatibility-server</artifactId>
@@ -167,7 +164,7 @@
 			<dependency>
 				<groupId>com.vaadin</groupId>
 				<artifactId>vaadin-icons</artifactId>
-				<version>3.0.1</version>
+				<version>${vaadin.icons.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.vaadin</groupId>
@@ -192,8 +189,8 @@
 			<dependency>
 				<groupId>org.tltv.gantt</groupId>
 				<artifactId>gantt-addon</artifactId>
-				<version>0.9.4</version>
-			</dependency>
+				<version>1.0.4</version>
+			</dependency>			
 			<!--  
 			<dependency>
 				<groupId>com.vaadin.addon</groupId>
@@ -401,12 +398,12 @@
 			</dependency>
 
 			<!-- JasperReports Library -->
+			<!--  
 			<dependency>
 				<groupId>nl.opencirclesolutions</groupId>
 				<artifactId>jasperreports-fixes</artifactId>
 				<version>${project.version}</version>
 			</dependency>
-			<!-- add this in scope provided to have the original classes when developing -->
 			<dependency>
 				<groupId>net.sf.jasperreports</groupId>
 				<artifactId>jasperreports</artifactId>
@@ -428,7 +425,6 @@
 				<groupId>org.apache.xmlgraphics</groupId>
 				<artifactId>batik-dom</artifactId>
 				<version>${batik.version}</version>
-				<!-- exclude Xalan to prevent nasty XML parse errors -->
 				<exclusions>
 					<exclusion>
 						<groupId>xalan</groupId>
@@ -440,7 +436,6 @@
 				<groupId>org.apache.xmlgraphics</groupId>
 				<artifactId>batik-svggen</artifactId>
 				<version>${batik.version}</version>
-				<!-- exclude Xalan to prevent nasty XML parse errors -->
 				<exclusions>
 					<exclusion>
 						<groupId>xalan</groupId>
@@ -452,7 +447,6 @@
 				<groupId>org.apache.xmlgraphics</groupId>
 				<artifactId>batik-bridge</artifactId>
 				<version>${batik.version}</version>
-				<!-- exclude Xalan to prevent nasty XML parse errors -->
 				<exclusions>
 					<exclusion>
 						<groupId>xalan</groupId>
@@ -465,7 +459,7 @@
 				<artifactId>xmlgraphics-commons</artifactId>
 				<version>2.1</version>
 			</dependency>
-
+			-->
 			<dependency>
 				<groupId>commons-lang</groupId>
 				<artifactId>commons-lang</artifactId>
@@ -720,7 +714,7 @@
 					<artifactId>vaadin-maven-plugin</artifactId>
 					<version>${vaadin.plugin.version}</version>
 					<configuration>
-						<extraJvmArgs>-Xmx512M -Xss1024k</extraJvmArgs>
+						<extraJvmArgs>-Xmx1024M -Xss2048k</extraJvmArgs>
 						<!--<webappDirectory>${project.basedir}/target/classes/VAADIN/widgetsets</webappDirectory> -->
 						<webappDirectory>${project.basedir}/src/main/resources/VAADIN/widgetsets</webappDirectory>
 						<hostedWebapp>${project.basedir}/src/main/resources/VAADIN/widgetsets</hostedWebapp>

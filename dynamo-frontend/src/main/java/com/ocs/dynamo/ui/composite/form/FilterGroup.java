@@ -164,8 +164,10 @@ public class FilterGroup<T> {
 			// slider does not support null value
 			Slider slider = (Slider) field;
 			slider.setValue(slider.getMin());
+			slider.setComponentError(null);
 		} else if (field instanceof HasValue) {
 			((HasValue<?>) field).clear();
+			((AbstractComponent) field).setComponentError(null);
 		}
 
 		if (auxField != null) {
@@ -173,8 +175,10 @@ public class FilterGroup<T> {
 				// slider does not support null value
 				Slider slider = (Slider) auxField;
 				slider.setValue(slider.getMin());
+				slider.setComponentError(null);
 			} else if (auxField instanceof HasValue) {
 				((HasValue<?>) auxField).clear();
+				((AbstractComponent) field).setComponentError(null);
 			}
 		}
 	}

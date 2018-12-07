@@ -172,9 +172,9 @@ public class QuickAddEntityComboBox<ID extends Serializable, T extends AbstractE
 	@Override
 	public void setComponentError(ErrorMessage componentError) {
 		super.setComponentError(componentError);
-		if (comboBox != null) {
-			comboBox.setComponentError(componentError);
-		}
+//		if (comboBox != null) {
+//			comboBox.setComponentError(componentError);
+//		}
 	}
 
 	@Override

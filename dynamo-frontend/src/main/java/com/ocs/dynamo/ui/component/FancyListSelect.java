@@ -27,7 +27,6 @@ import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.utils.EntityModelUtils;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.data.provider.SortOrder;
-import com.vaadin.server.ErrorMessage;
 import com.vaadin.server.SerializablePredicate;
 import com.vaadin.shared.Registration;
 import com.vaadin.ui.Button;
@@ -294,26 +293,6 @@ public class FancyListSelect<ID extends Serializable, T extends AbstractEntity<I
 		}
 	}
 
-	// @Override
-	// public void validate() throws InvalidValueException {
-	// if (!search && getAttributeModel() != null &&
-	// getAttributeModel().isRequired()
-	// && container.getItemIds().isEmpty()) {
-	// throw new Validator.EmptyValueException(
-	// getMessageService().getMessage("ocs.value.required",
-	// VaadinUtils.getLocale()));
-	// }
-	// super.validate();
-	// }
-
-	@Override
-	public void setComponentError(ErrorMessage componentError) {
-		if (listSelect != null) {
-			comboBox.setComponentError(componentError);
-			listSelect.setComponentError(componentError);
-		}
-	}
-
 	public void setRows(int rows) {
 		if (listSelect != null) {
 			listSelect.setRows(rows);
@@ -325,6 +304,5 @@ public class FancyListSelect<ID extends Serializable, T extends AbstractEntity<I
 		super.setValue(newFieldValue);
 		repopulateContainer(newFieldValue);
 	}
-	
 
 }
