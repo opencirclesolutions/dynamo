@@ -1,384 +1,376 @@
-/*
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
-
-       http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
- */
-package com.monitorjbl.xlsx.impl;
-
-import java.util.Calendar;
-import java.util.Date;
-
-import org.apache.poi.hssf.usermodel.HSSFDateUtil;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.Comment;
-import org.apache.poi.ss.usermodel.Hyperlink;
-import org.apache.poi.ss.usermodel.RichTextString;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.util.CellRangeAddress;
-import org.springframework.util.StringUtils;
-
-import com.monitorjbl.xlsx.exceptions.NotSupportedException;
-
-/**
- * A Cell that is used along with the streaming Excel reader This is a classpath override that fixes
- * some glaring bugs and omissions in the original code
- * 
- * @author bas.rutten
- */
-public class StreamingCell implements Cell {
-
-    private int columnIndex;
-
-    private int rowIndex;
-
-    private Object contents;
-
-    private String type;
-
-    private Row row;
-
-    public StreamingCell(int columnIndex, int rowIndex) {
-        this.columnIndex = columnIndex;
-        this.rowIndex = rowIndex;
-    }
-
-    public Object getContents() {
-        return contents;
-    }
-
-    public void setContents(Object contents) {
-        this.contents = contents;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public void setRow(Row row) {
-        this.row = row;
-    }
-
-    /* Supported */
-
-    /**
-     * Returns column index of this cell
-     *
-     * @return zero-based column index of a column in a sheet.
-     */
-    @Override
-    public int getColumnIndex() {
-        return columnIndex;
-    }
-
-    /**
-     * Returns row index of a row in the sheet that contains this cell
-     *
-     * @return zero-based row index of a row in the sheet that contains this cell
-     */
-    @Override
-    public int getRowIndex() {
-        return rowIndex;
-    }
-
-    /**
-     * Returns the Row this cell belongs to. Note that keeping references to cell rows around after
-     * the iterator window has passed <b>will</b> preserve them.
-     *
-     * @return the Row that owns this cell
-     */
-    @Override
-    public Row getRow() {
-        return row;
-    }
-
-    /**
-     * Return the cell type. Note that only the numeric, string, and blank types are currently
-     * supported.
-     *
-     * @return the cell type
-     * @throws UnsupportedOperationException
-     *             Thrown if the type is not one supported by the streamer. It may be possible to
-     *             still read the value as a supported type via {@code getStringCellValue()},
-     *             {@code getNumericCellValue} , or {@code getDateCellValue()}
-     * @see Cell#CELL_TYPE_BLANK
-     * @see Cell#CELL_TYPE_NUMERIC
-     * @see Cell#CELL_TYPE_STRING
-     */
-    @Override
-    public int getCellType() {
-        if (contents == null || type == null) {
-            return Cell.CELL_TYPE_BLANK;
-        } else if ("n".equals(type)) {
-            return Cell.CELL_TYPE_NUMERIC;
-        } else if ("s".equals(type) || "e".equals(type) || "str".equals(type)) {
-            return Cell.CELL_TYPE_STRING;
-        } else if ("b".equals(type)) {
-            return Cell.CELL_TYPE_BOOLEAN;
-        } else {
-            throw new UnsupportedOperationException("Unsupported cell type '" + type + "'");
-        }
-    }
-
-    /**
-     * Get the value of the cell as a string. For numeric cells we throw an exception. For blank
-     * cells we return an empty string.
-     *
-     * @return the value of the cell as a string
-     */
-    @Override
-    public String getStringCellValue() {
-        return (String) contents;
-    }
-
-    /**
-     * Get the value of the cell as a number. For strings we throw an exception. For blank cells we
-     * return a 0.
-     *
-     * @return the value of the cell as a number
-     * @throws NumberFormatException
-     *             if the cell value isn't a parsable <code>double</code>.
-     */
-    @Override
-    public double getNumericCellValue() {
-        if (StringUtils.isEmpty(contents)) {
-            throw new NullPointerException();
-        }
-        return Double.parseDouble((String) contents);
-    }
-
-    /**
-     * Get the value of the cell as a date. For strings we throw an exception. For blank cells we
-     * return a null.
-     *
-     * @return the value of the cell as a date
-     * @throws IllegalStateException
-     *             if the cell type returned by {@link #getCellType()} is CELL_TYPE_STRING
-     * @throws NumberFormatException
-     *             if the cell value isn't a parsable <code>double</code>.
-     */
-    @Override
-    public Date getDateCellValue() {
-        return HSSFDateUtil.getJavaDate(getNumericCellValue());
-    }
-
-    /* Not supported */
-
-    /**
-     * Not supported
-     */
-    @Override
-    public void setCellType(int cellType) {
-        throw new NotSupportedException();
-    }
-
-    /**
-     * Not supported
-     */
-    @Override
-    public Sheet getSheet() {
-        throw new NotSupportedException();
-    }
-
-    /**
-     * Not supported
-     */
-    @Override
-    public int getCachedFormulaResultType() {
-        throw new NotSupportedException();
-    }
-
-    /**
-     * Not supported
-     */
-    @Override
-    public void setCellValue(double value) {
-        throw new NotSupportedException();
-    }
-
-    /**
-     * Not supported
-     */
-    @Override
-    public void setCellValue(Date value) {
-        throw new NotSupportedException();
-    }
-
-    /**
-     * Not supported
-     */
-    @Override
-    public void setCellValue(Calendar value) {
-        throw new NotSupportedException();
-    }
-
-    /**
-     * Not supported
-     */
-    @Override
-    public void setCellValue(RichTextString value) {
-        throw new NotSupportedException();
-    }
-
-    /**
-     * Not supported
-     */
-    @Override
-    public void setCellValue(String value) {
-        throw new NotSupportedException();
-    }
-
-    /**
-     * Not supported
-     */
-    @Override
-    public void setCellFormula(String formula) {
-        throw new NotSupportedException();
-    }
-
-    /**
-     * Not supported
-     */
-    @Override
-    public String getCellFormula() {
-        throw new NotSupportedException();
-    }
-
-    /**
-     * Not supported
-     */
-    @Override
-    public RichTextString getRichStringCellValue() {
-        throw new NotSupportedException();
-    }
-
-    /**
-     * Not supported
-     */
-    @Override
-    public void setCellValue(boolean value) {
-        throw new NotSupportedException();
-    }
-
-    /**
-     * Not supported
-     */
-    @Override
-    public void setCellErrorValue(byte value) {
-        throw new NotSupportedException();
-    }
-
-    /**
-     * Not supported
-     */
-    @Override
-    public boolean getBooleanCellValue() {
-        return false;
-    }
-
-    /**
-     * Not supported
-     */
-    @Override
-    public byte getErrorCellValue() {
-        throw new NotSupportedException();
-    }
-
-    /**
-     * Not supported
-     */
-    @Override
-    public void setCellStyle(CellStyle style) {
-        throw new NotSupportedException();
-    }
-
-    /**
-     * Not supported
-     */
-    @Override
-    public CellStyle getCellStyle() {
-        throw new NotSupportedException();
-    }
-
-    /**
-     * Not supported
-     */
-    @Override
-    public void setAsActiveCell() {
-        throw new NotSupportedException();
-    }
-
-    /**
-     * Not supported
-     */
-    @Override
-    public void setCellComment(Comment comment) {
-        throw new NotSupportedException();
-    }
-
-    /**
-     * Not supported
-     */
-    @Override
-    public Comment getCellComment() {
-        throw new NotSupportedException();
-    }
-
-    /**
-     * Not supported
-     */
-    @Override
-    public void removeCellComment() {
-        throw new NotSupportedException();
-    }
-
-    /**
-     * Not supported
-     */
-    @Override
-    public Hyperlink getHyperlink() {
-        throw new NotSupportedException();
-    }
-
-    /**
-     * Not supported
-     */
-    @Override
-    public void setHyperlink(Hyperlink link) {
-        throw new NotSupportedException();
-    }
-
-    /**
-     * Not supported
-     */
-    @Override
-    public CellRangeAddress getArrayFormulaRange() {
-        throw new NotSupportedException();
-    }
-
-    /**
-     * Not supported
-     */
-    @Override
-    public boolean isPartOfArrayFormulaGroup() {
-        throw new NotSupportedException();
-    }
-
-    @Override
-    public void removeHyperlink() {
-        // do nothing
-    }
-}
+///*
+//   Licensed under the Apache License, Version 2.0 (the "License");
+//   you may not use this file except in compliance with the License.
+//   You may obtain a copy of the License at
+//
+//       http://www.apache.org/licenses/LICENSE-2.0
+//
+//   Unless required by applicable law or agreed to in writing, software
+//   distributed under the License is distributed on an "AS IS" BASIS,
+//   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//   See the License for the specific language governing permissions and
+//   limitations under the License.
+// */
+//package com.monitorjbl.xlsx.impl;
+//
+//import java.util.Calendar;
+//import java.util.Date;
+//
+//import org.apache.poi.hssf.usermodel.HSSFDateUtil;
+//import org.apache.poi.ss.usermodel.Cell;
+//import org.apache.poi.ss.usermodel.CellStyle;
+//import org.apache.poi.ss.usermodel.CellType;
+//import org.apache.poi.ss.usermodel.Comment;
+//import org.apache.poi.ss.usermodel.Hyperlink;
+//import org.apache.poi.ss.usermodel.RichTextString;
+//import org.apache.poi.ss.usermodel.Row;
+//import org.apache.poi.ss.usermodel.Sheet;
+//import org.apache.poi.ss.util.CellRangeAddress;
+//import org.springframework.util.StringUtils;
+//
+//import com.monitorjbl.xlsx.exceptions.NotSupportedException;
+//
+///**
+// * A Cell that is used along with the streaming Excel reader This is a classpath
+// * override that fixes some glaring bugs and omissions in the original code
+// * 
+// * @author bas.rutten
+// */
+//public class StreamingCell implements Cell {
+//
+//	private int columnIndex;
+//
+//	private int rowIndex;
+//
+//	private Object contents;
+//
+//	private String type;
+//
+//	private Row row;
+//
+//	public StreamingCell(int columnIndex, int rowIndex) {
+//		this.columnIndex = columnIndex;
+//		this.rowIndex = rowIndex;
+//	}
+//
+//	public Object getContents() {
+//		return contents;
+//	}
+//
+//	public void setContents(Object contents) {
+//		this.contents = contents;
+//	}
+//
+//	public String getType() {
+//		return type;
+//	}
+//
+//	public void setType(String type) {
+//		this.type = type;
+//	}
+//
+//	public void setRow(Row row) {
+//		this.row = row;
+//	}
+//
+//	/* Supported */
+//
+//	/**
+//	 * Returns column index of this cell
+//	 *
+//	 * @return zero-based column index of a column in a sheet.
+//	 */
+//	@Override
+//	public int getColumnIndex() {
+//		return columnIndex;
+//	}
+//
+//	/**
+//	 * Returns row index of a row in the sheet that contains this cell
+//	 *
+//	 * @return zero-based row index of a row in the sheet that contains this cell
+//	 */
+//	@Override
+//	public int getRowIndex() {
+//		return rowIndex;
+//	}
+//
+//	/**
+//	 * Returns the Row this cell belongs to. Note that keeping references to cell
+//	 * rows around after the iterator window has passed <b>will</b> preserve them.
+//	 *
+//	 * @return the Row that owns this cell
+//	 */
+//	@Override
+//	public Row getRow() {
+//		return row;
+//	}
+//
+//	/**
+//	 * Return the cell type. Note that only the numeric, string, and blank types are
+//	 * currently supported.
+//	 *
+//	 * @return the cell type
+//	 * @throws UnsupportedOperationException Thrown if the type is not one supported
+//	 *                                       by the streamer. It may be possible to
+//	 *                                       still read the value as a supported
+//	 *                                       type via {@code getStringCellValue()},
+//	 *                                       {@code getNumericCellValue} , or
+//	 *                                       {@code getDateCellValue()}
+//	 * @see Cell#CELL_TYPE_BLANK
+//	 * @see Cell#CELL_TYPE_NUMERIC
+//	 * @see Cell#CELL_TYPE_STRING
+//	 */
+//	@Override
+//	public int getCellType() {
+//		if (contents == null || type == null) {
+//			return CellType.BLANK;
+//		} else if ("n".equals(type)) {
+//			return Cell.CELL_TYPE_NUMERIC;
+//		} else if ("s".equals(type) || "e".equals(type) || "str".equals(type)) {
+//			return Cell.CELL_TYPE_STRING;
+//		} else if ("b".equals(type)) {
+//			return Cell.CELL_TYPE_BOOLEAN;
+//		} else {
+//			throw new UnsupportedOperationException("Unsupported cell type '" + type + "'");
+//		}
+//	}
+//
+//	/**
+//	 * Get the value of the cell as a string. For numeric cells we throw an
+//	 * exception. For blank cells we return an empty string.
+//	 *
+//	 * @return the value of the cell as a string
+//	 */
+//	@Override
+//	public String getStringCellValue() {
+//		return (String) contents;
+//	}
+//
+//	/**
+//	 * Get the value of the cell as a number. For strings we throw an exception. For
+//	 * blank cells we return a 0.
+//	 *
+//	 * @return the value of the cell as a number
+//	 * @throws NumberFormatException if the cell value isn't a parsable
+//	 *                               <code>double</code>.
+//	 */
+//	@Override
+//	public double getNumericCellValue() {
+//		if (StringUtils.isEmpty(contents)) {
+//			throw new NullPointerException();
+//		}
+//		return Double.parseDouble((String) contents);
+//	}
+//
+//	/**
+//	 * Get the value of the cell as a date. For strings we throw an exception. For
+//	 * blank cells we return a null.
+//	 *
+//	 * @return the value of the cell as a date
+//	 * @throws IllegalStateException if the cell type returned by
+//	 *                               {@link #getCellType()} is CELL_TYPE_STRING
+//	 * @throws NumberFormatException if the cell value isn't a parsable
+//	 *                               <code>double</code>.
+//	 */
+//	@Override
+//	public Date getDateCellValue() {
+//		return HSSFDateUtil.getJavaDate(getNumericCellValue());
+//	}
+//
+//	/* Not supported */
+//
+//	@Override
+//	public void setCellType(CellType cellType) {
+//		throw new NotSupportedException();
+//	}
+//
+//	/**
+//	 * Not supported
+//	 */
+//	@Override
+//	public Sheet getSheet() {
+//		throw new NotSupportedException();
+//	}
+//
+//	/**
+//	 * Not supported
+//	 */
+//	@Override
+//	public void setCellValue(double value) {
+//		throw new NotSupportedException();
+//	}
+//
+//	/**
+//	 * Not supported
+//	 */
+//	@Override
+//	public void setCellValue(Date value) {
+//		throw new NotSupportedException();
+//	}
+//
+//	/**
+//	 * Not supported
+//	 */
+//	@Override
+//	public void setCellValue(Calendar value) {
+//		throw new NotSupportedException();
+//	}
+//
+//	/**
+//	 * Not supported
+//	 */
+//	@Override
+//	public void setCellValue(RichTextString value) {
+//		throw new NotSupportedException();
+//	}
+//
+//	/**
+//	 * Not supported
+//	 */
+//	@Override
+//	public void setCellValue(String value) {
+//		throw new NotSupportedException();
+//	}
+//
+//	/**
+//	 * Not supported
+//	 */
+//	@Override
+//	public void setCellFormula(String formula) {
+//		throw new NotSupportedException();
+//	}
+//
+//	/**
+//	 * Not supported
+//	 */
+//	@Override
+//	public String getCellFormula() {
+//		throw new NotSupportedException();
+//	}
+//
+//	/**
+//	 * Not supported
+//	 */
+//	@Override
+//	public RichTextString getRichStringCellValue() {
+//		throw new NotSupportedException();
+//	}
+//
+//	/**
+//	 * Not supported
+//	 */
+//	@Override
+//	public void setCellValue(boolean value) {
+//		throw new NotSupportedException();
+//	}
+//
+//	/**
+//	 * Not supported
+//	 */
+//	@Override
+//	public void setCellErrorValue(byte value) {
+//		throw new NotSupportedException();
+//	}
+//
+//	/**
+//	 * Not supported
+//	 */
+//	@Override
+//	public boolean getBooleanCellValue() {
+//		return false;
+//	}
+//
+//	/**
+//	 * Not supported
+//	 */
+//	@Override
+//	public byte getErrorCellValue() {
+//		throw new NotSupportedException();
+//	}
+//
+//	/**
+//	 * Not supported
+//	 */
+//	@Override
+//	public void setCellStyle(CellStyle style) {
+//		throw new NotSupportedException();
+//	}
+//
+//	/**
+//	 * Not supported
+//	 */
+//	@Override
+//	public CellStyle getCellStyle() {
+//		throw new NotSupportedException();
+//	}
+//
+//	/**
+//	 * Not supported
+//	 */
+//	@Override
+//	public void setAsActiveCell() {
+//		throw new NotSupportedException();
+//	}
+//
+//	/**
+//	 * Not supported
+//	 */
+//	@Override
+//	public void setCellComment(Comment comment) {
+//		throw new NotSupportedException();
+//	}
+//
+//	/**
+//	 * Not supported
+//	 */
+//	@Override
+//	public Comment getCellComment() {
+//		throw new NotSupportedException();
+//	}
+//
+//	/**
+//	 * Not supported
+//	 */
+//	@Override
+//	public void removeCellComment() {
+//		throw new NotSupportedException();
+//	}
+//
+//	/**
+//	 * Not supported
+//	 */
+//	@Override
+//	public Hyperlink getHyperlink() {
+//		throw new NotSupportedException();
+//	}
+//
+//	/**
+//	 * Not supported
+//	 */
+//	@Override
+//	public void setHyperlink(Hyperlink link) {
+//		throw new NotSupportedException();
+//	}
+//
+//	/**
+//	 * Not supported
+//	 */
+//	@Override
+//	public CellRangeAddress getArrayFormulaRange() {
+//		throw new NotSupportedException();
+//	}
+//
+//	/**
+//	 * Not supported
+//	 */
+//	@Override
+//	public boolean isPartOfArrayFormulaGroup() {
+//		throw new NotSupportedException();
+//	}
+//
+//	@Override
+//	public void removeHyperlink() {
+//		// do nothing
+//	}
+//}

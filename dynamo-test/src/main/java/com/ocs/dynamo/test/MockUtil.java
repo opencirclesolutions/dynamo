@@ -33,8 +33,6 @@ import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.MessageService;
 
-import junitx.util.PrivateAccessor;
-
 /**
  * Utility class for registering service and DAO related mock functionality
  * 
@@ -148,12 +146,7 @@ public final class MockUtil {
 	 * @param ui    the user interface
 	 */
 	public static void injectUI(Object object, Object ui) {
-		try {
-			PrivateAccessor.setField(object, UI_FIELD_NAME, ui);
-		} catch (NoSuchFieldException e) {
-			// do nothing
-			throw new OCSRuntimeException("No field named 'UI' could be found");
-		}
+		ReflectionTestUtils.setField(object, UI_FIELD_NAME, ui);
 	}
 
 	/**

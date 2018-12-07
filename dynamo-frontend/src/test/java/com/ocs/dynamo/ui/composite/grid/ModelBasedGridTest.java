@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import com.google.common.collect.Lists;
 import com.ocs.dynamo.domain.TestEntity;
@@ -30,8 +31,6 @@ import com.ocs.dynamo.service.TestEntityService;
 import com.ocs.dynamo.test.BaseMockitoTest;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.ui.Grid;
-
-import junitx.util.PrivateAccessor;
 
 public class ModelBasedGridTest extends BaseMockitoTest {
 
@@ -46,11 +45,8 @@ public class ModelBasedGridTest extends BaseMockitoTest {
 	@Override
 	public void setUp() {
 		super.setUp();
-		try {
-			PrivateAccessor.setField(entityModelFactory, "messageService", messageService);
-		} catch (NoSuchFieldException e) {
-			Assert.fail();
-		}
+		ReflectionTestUtils.setField(entityModelFactory, "messageService", messageService);
+
 	}
 
 	@Test

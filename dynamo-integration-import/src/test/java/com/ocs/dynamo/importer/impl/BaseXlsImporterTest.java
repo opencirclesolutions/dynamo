@@ -13,10 +13,10 @@
  */
 package com.ocs.dynamo.importer.impl;
 
-import com.monitorjbl.xlsx.StreamingReader;
-import com.ocs.dynamo.exception.OCSImportException;
-import com.ocs.dynamo.importer.impl.PersonDTO.Gender;
-import com.ocs.dynamo.utils.DateUtils;
+import java.io.File;
+import java.io.IOException;
+import java.util.Iterator;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -24,9 +24,9 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Iterator;
+import com.ocs.dynamo.exception.OCSImportException;
+import com.ocs.dynamo.importer.impl.PersonDTO.Gender;
+import com.ocs.dynamo.utils.DateUtils;
 
 public class BaseXlsImporterTest {
 
@@ -172,10 +172,10 @@ public class BaseXlsImporterTest {
 	@Test
 	public void testCreateReader() throws IOException {
 		byte[] bytes = readFile("importertest.xlsx");
-		StreamingReader reader = importer.createReader(bytes, 0, 100);
+		Workbook wb = importer.createReader(bytes, 100);
 
 		// "hasNext" has to be called to actually populate the iterator
-		Iterator<Row> it = reader.iterator();
+		Iterator<Row> it = wb.getSheetAt(0).iterator();
 		Assert.assertTrue(it.hasNext());
 
 		PersonDTO dto = importer.processRow(0, it.next(), PersonDTO.class);

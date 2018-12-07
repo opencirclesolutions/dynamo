@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.dynamoframework</groupId>
@@ -84,12 +85,10 @@
 		<module>dynamo-frontend</module>
 		<module>dynamo-envers</module>
 		<module>dynamo-envers-frontend</module>
-		<!-- <module>dynamo-frontend-charts</module>-->
+		<!-- <module>dynamo-frontend-charts</module> -->
 		<module>dynamo-functional-domain-frontend</module>
-		<!-- <module>dynamo-functional-translation</module>
-		<module>dynamo-jasperreports</module>
-		<module>dynamo-jasperreports-fixes</module>
-		-->
+		<!-- <module>dynamo-functional-translation</module> <module>dynamo-jasperreports</module> 
+			<module>dynamo-jasperreports-fixes</module> -->
 	</modules>
 	<properties>
 		<!-- Build settings. -->
@@ -102,7 +101,7 @@
 		<vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
 		<vaadin.icons.version>3.0.2</vaadin.icons.version>
 		<vaadin-spring.version>3.1.1</vaadin-spring.version>
-		<vaadin.charts.version>4.0.5</vaadin.charts.version>		
+		<vaadin.charts.version>4.0.5</vaadin.charts.version>
 		<vaadin.confirmdialog.version>3.2.0</vaadin.confirmdialog.version>
 		<hibernate.version>5.3.7.Final</hibernate.version>
 		<hibernate.validator.version>6.0.13.Final</hibernate.validator.version>
@@ -115,12 +114,11 @@
 		<commons.io.version>2.6</commons.io.version>
 		<commons.lang.version>2.6</commons.lang.version>
 		<h2.version>1.4.197</h2.version>
-		<poi.version>3.13</poi.version>
-		<xlsx-streamer.version>0.2.9</xlsx-streamer.version>
+		<poi.version>4.0.0</poi.version>
+		<xlsx-streamer.version>2.1.0</xlsx-streamer.version>
 		<opencsv.version>4.4</opencsv.version>
 		<javax.servlet.api.version>4.0.0</javax.servlet.api.version>
 		<javax.validation.api.version>2.0.1.Final</javax.validation.api.version>
-		<junit-addons.version>1.4</junit-addons.version>
 		<aspectj.version>1.9.2</aspectj.version>
 		<!-- Maven plugin versions. -->
 		<org.apache.maven.plugins.compiler.version>3.3</org.apache.maven.plugins.compiler.version>
@@ -148,12 +146,6 @@
 			<dependency>
 				<groupId>com.vaadin</groupId>
 				<artifactId>vaadin-server</artifactId>
-				<version>${vaadin.version}</version>
-			</dependency>
-			<!--  TODO: remove this when no longer needed -->
-			<dependency>
-				<groupId>com.vaadin</groupId>
-				<artifactId>vaadin-compatibility-server</artifactId>
 				<version>${vaadin.version}</version>
 			</dependency>
 			<dependency>
@@ -190,14 +182,9 @@
 				<groupId>org.tltv.gantt</groupId>
 				<artifactId>gantt-addon</artifactId>
 				<version>1.0.4</version>
-			</dependency>			
-			<!--  
-			<dependency>
-				<groupId>com.vaadin.addon</groupId>
-				<artifactId>vaadin-charts</artifactId>
-				<version>${vaadin.charts.version}</version>
 			</dependency>
-			-->
+			<!-- <dependency> <groupId>com.vaadin.addon</groupId> <artifactId>vaadin-charts</artifactId> 
+				<version>${vaadin.charts.version}</version> </dependency> -->
 			<dependency>
 				<groupId>org.vaadin.teemu</groupId>
 				<artifactId>switch</artifactId>
@@ -398,68 +385,23 @@
 			</dependency>
 
 			<!-- JasperReports Library -->
-			<!--  
-			<dependency>
-				<groupId>nl.opencirclesolutions</groupId>
-				<artifactId>jasperreports-fixes</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>net.sf.jasperreports</groupId>
-				<artifactId>jasperreports</artifactId>
-				<version>${jasperreports.version}</version>
-				<scope>provided</scope>
-			</dependency>
-			<dependency>
-				<groupId>net.sf.jasperreports</groupId>
-				<artifactId>jasperreports-functions</artifactId>
-				<version>${jasperreports.version}</version>
-				<exclusions>
-					<exclusion>
-						<groupId>net.sf.jasperreports</groupId>
-						<artifactId>jasperreports</artifactId>
-					</exclusion>
-				</exclusions>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.xmlgraphics</groupId>
-				<artifactId>batik-dom</artifactId>
-				<version>${batik.version}</version>
-				<exclusions>
-					<exclusion>
-						<groupId>xalan</groupId>
-						<artifactId>xalan</artifactId>
-					</exclusion>
-				</exclusions>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.xmlgraphics</groupId>
-				<artifactId>batik-svggen</artifactId>
-				<version>${batik.version}</version>
-				<exclusions>
-					<exclusion>
-						<groupId>xalan</groupId>
-						<artifactId>xalan</artifactId>
-					</exclusion>
-				</exclusions>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.xmlgraphics</groupId>
-				<artifactId>batik-bridge</artifactId>
-				<version>${batik.version}</version>
-				<exclusions>
-					<exclusion>
-						<groupId>xalan</groupId>
-						<artifactId>xalan</artifactId>
-					</exclusion>
-				</exclusions>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.xmlgraphics</groupId>
-				<artifactId>xmlgraphics-commons</artifactId>
-				<version>2.1</version>
-			</dependency>
-			-->
+			<!-- <dependency> <groupId>nl.opencirclesolutions</groupId> <artifactId>jasperreports-fixes</artifactId> 
+				<version>${project.version}</version> </dependency> <dependency> <groupId>net.sf.jasperreports</groupId> 
+				<artifactId>jasperreports</artifactId> <version>${jasperreports.version}</version> 
+				<scope>provided</scope> </dependency> <dependency> <groupId>net.sf.jasperreports</groupId> 
+				<artifactId>jasperreports-functions</artifactId> <version>${jasperreports.version}</version> 
+				<exclusions> <exclusion> <groupId>net.sf.jasperreports</groupId> <artifactId>jasperreports</artifactId> 
+				</exclusion> </exclusions> </dependency> <dependency> <groupId>org.apache.xmlgraphics</groupId> 
+				<artifactId>batik-dom</artifactId> <version>${batik.version}</version> <exclusions> 
+				<exclusion> <groupId>xalan</groupId> <artifactId>xalan</artifactId> </exclusion> 
+				</exclusions> </dependency> <dependency> <groupId>org.apache.xmlgraphics</groupId> 
+				<artifactId>batik-svggen</artifactId> <version>${batik.version}</version> 
+				<exclusions> <exclusion> <groupId>xalan</groupId> <artifactId>xalan</artifactId> 
+				</exclusion> </exclusions> </dependency> <dependency> <groupId>org.apache.xmlgraphics</groupId> 
+				<artifactId>batik-bridge</artifactId> <version>${batik.version}</version> 
+				<exclusions> <exclusion> <groupId>xalan</groupId> <artifactId>xalan</artifactId> 
+				</exclusion> </exclusions> </dependency> <dependency> <groupId>org.apache.xmlgraphics</groupId> 
+				<artifactId>xmlgraphics-commons</artifactId> <version>2.1</version> </dependency> -->
 			<dependency>
 				<groupId>commons-lang</groupId>
 				<artifactId>commons-lang</artifactId>
@@ -477,12 +419,6 @@
 				<scope>test</scope>
 			</dependency>
 			<dependency>
-				<groupId>junit-addons</groupId>
-				<artifactId>junit-addons</artifactId>
-				<version>${junit-addons.version}</version>
-				<scope>test</scope>
-			</dependency>
-			<dependency>
 				<groupId>org.mockito</groupId>
 				<artifactId>mockito-core</artifactId>
 				<version>${mockito.version}</version>
@@ -493,17 +429,6 @@
 				<artifactId>h2</artifactId>
 				<version>${h2.version}</version>
 				<scope>test</scope>
-			</dependency>
-			<dependency>
-				<groupId>com.vaadin.external.google</groupId>
-				<artifactId>guava</artifactId>
-				<version>16.0.1.vaadin1</version>
-			</dependency>
-			<dependency>
-				<groupId>xalan</groupId>
-				<artifactId>xalan</artifactId>
-				<version>2.7.2</version>
-				<scope>provided</scope>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -908,7 +833,7 @@
 		<repository>
 			<id>vaadin-addons</id>
 			<url>http://maven.vaadin.com/vaadin-addons</url>
-		</repository>		
+		</repository>
 	</repositories>
 
 </project>

@@ -19,6 +19,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
@@ -29,8 +30,6 @@ import com.ocs.dynamo.test.BaseMockitoTest;
 import com.vaadin.data.Converter;
 import com.vaadin.data.converter.StringToIntegerConverter;
 import com.vaadin.data.converter.StringToLongConverter;
-
-import junitx.util.PrivateAccessor;
 
 public class ConverterFactoryTest extends BaseMockitoTest {
 
@@ -44,7 +43,7 @@ public class ConverterFactoryTest extends BaseMockitoTest {
 	@Before
 	public void setupTableUtilsTest() throws NoSuchFieldException {
 		em = factory.getModel(TestEntity.class);
-		PrivateAccessor.setField(factory, "messageService", messageService);
+		ReflectionTestUtils.setField(factory, "messageService", messageService);
 	}
 
 	@Test

@@ -13,7 +13,11 @@
  */
 package com.ocs.dynamo.ui.component;
 
-import com.google.gwt.thirdparty.guava.common.collect.Sets;
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.Collections;
+
+import com.google.common.collect.Sets;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
@@ -27,10 +31,6 @@ import com.vaadin.shared.Registration;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
-
-import java.io.Serializable;
-import java.util.Collection;
-import java.util.Collections;
 
 /**
  * 
@@ -123,7 +123,7 @@ public class QuickAddListSelect<ID extends Serializable, T extends AbstractEntit
 			listSelect.focus();
 		}
 	}
-
+	
 	public EntityListSelect<ID, T> getListSelect() {
 		return listSelect;
 	}

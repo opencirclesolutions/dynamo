@@ -13,6 +13,23 @@
  */
 package com.ocs.dynamo.ui.composite.table.export;
 
+import java.io.IOException;
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Date;
+import java.util.List;
+
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.dao.SortOrder;
@@ -27,33 +44,16 @@ import com.ocs.dynamo.filter.Filter;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.utils.FormatUtils;
+import com.ocs.dynamo.utils.DateUtils;
 import com.ocs.dynamo.utils.MathUtils;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.streaming.SXSSFWorkbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-
-import java.io.IOException;
-import java.io.Serializable;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.List;
 
 /**
  * Base class for entity model based exports to Excel or CSV
  * 
  * @author bas.rutten
  *
- * @param <ID>
- *            the type of the primary key of the entity
- * @param <T>
- *            the type of the entity
+ * @param <ID> the type of the primary key of the entity
+ * @param <T> the type of the entity
  */
 public abstract class BaseExportTemplate<ID extends Serializable, T extends AbstractEntity<ID>> {
 
@@ -65,10 +65,8 @@ public abstract class BaseExportTemplate<ID extends Serializable, T extends Abst
 	protected static final int TITLE_ROW_HEIGHT = 40;
 
 	/**
-	 * The maximum number of rows that will be created normally. If the number
-	 * is
-	 * larger, then a streaming writer will be used. This is faster but it
-	 * will mean
+	 * The maximum number of rows that will be created normally. If the number is
+	 * larger, then a streaming writer will be used. This is faster but it will mean
 	 * we cannot auto size the columns
 	 */
 	protected static final int MAX_SIZE = 20000;
@@ -114,16 +112,11 @@ public abstract class BaseExportTemplate<ID extends Serializable, T extends Abst
 	/**
 	 * Constructor
 	 *
-	 * @param service
-	 *            the service used to retrieve the data
-	 * @param sortOrders
-	 *            the sort order
-	 * @param filter
-	 *            the filter used to limit the data
-	 * @param title
-	 *            the title of the sheet
-	 * @param customGenerator
-	 *            custom generator used to apply extra styling
+	 * @param service         the service used to retrieve the data
+	 * @param sortOrders      the sort order
+	 * @param filter          the filter used to limit the data
+	 * @param title           the title of the sheet
+	 * @param customGenerator custom generator used to apply extra styling
 	 * @param joins
 	 */
 	public BaseExportTemplate(BaseService<ID, T> service, SortOrder[] sortOrders, Filter filter, String title,
@@ -148,20 +141,14 @@ public abstract class BaseExportTemplate<ID extends Serializable, T extends Abst
 	}
 
 	/**
-	 * Creates an Excel cell and applies the correct style. The style to use
-	 * depends
+	 * Creates an Excel cell and applies the correct style. The style to use depends
 	 * on the attribute model and the value to display in the cell
 	 *
-	 * @param row
-	 *            the row to which to add the cell
-	 * @param colIndex
-	 *            the column index of the cell
-	 * @param entity
-	 *            the entity that is represented in the row
-	 * @param value
-	 *            the cell value
-	 * @param attributeModel
-	 *            the attribute model used to determine the style
+	 * @param row            the row to which to add the cell
+	 * @param colIndex       the column index of the cell
+	 * @param entity         the entity that is represented in the row
+	 * @param value          the cell value
+	 * @param attributeModel the attribute model used to determine the style
 	 * @return
 	 */
 	protected Cell createCell(Row row, int colIndex, T entity, Object value, AttributeModel attributeModel) {
@@ -179,8 +166,7 @@ public abstract class BaseExportTemplate<ID extends Serializable, T extends Abst
 	/**
 	 * Creates the style generator
 	 *
-	 * @param workbook
-	 *            the work book that is being created
+	 * @param workbook the work book that is being created
 	 * @return
 	 */
 	protected XlsStyleGenerator<ID, T> createGenerator(Workbook workbook) {
@@ -188,15 +174,11 @@ public abstract class BaseExportTemplate<ID extends Serializable, T extends Abst
 	}
 
 	/**
-	 * Creates an appropriate work book - if the size is below the threshold
-	 * then a
-	 * normal workbook is created. Otherwise a streaming workbook is
-	 * created. This
-	 * is much faster and more efficient, but you cannot auto
-	 * resize the columns
+	 * Creates an appropriate work book - if the size is below the threshold then a
+	 * normal workbook is created. Otherwise a streaming workbook is created. This
+	 * is much faster and more efficient, but you cannot auto resize the columns
 	 *
-	 * @param size
-	 *            the number of rows
+	 * @param size the number of rows
 	 * @return
 	 */
 	protected Workbook createWorkbook(int size) {
@@ -211,8 +193,7 @@ public abstract class BaseExportTemplate<ID extends Serializable, T extends Abst
 	/**
 	 * Generates the Excel (XLS) file
 	 *
-	 * @param iterator
-	 *            data set iterator that contains the rows to include
+	 * @param iterator data set iterator that contains the rows to include
 	 * @return
 	 * @throws IOException
 	 */
@@ -288,8 +269,7 @@ public abstract class BaseExportTemplate<ID extends Serializable, T extends Abst
 	/**
 	 * Resizes all columns on a sheet if possible
 	 *
-	 * @param sheet
-	 *            the sheet
+	 * @param sheet the sheet
 	 */
 	protected void resizeColumns(Sheet sheet) {
 		if (canResize()) {
@@ -314,11 +294,9 @@ public abstract class BaseExportTemplate<ID extends Serializable, T extends Abst
 		} else if (value instanceof Date && (am == null || !am.isWeek())) {
 			cell.setCellValue((Date) value);
 		} else if (value instanceof LocalDate) {
-			//TODO fix with new version of POI
-			//cell.setCellValue(DateUtils.toDate((LocalDate) value));
+			 cell.setCellValue(DateUtils.toLegacyDate((LocalDate) value));
 		} else if (value instanceof LocalDateTime) {
-			//TODO fix with new version of POI
-			//cell.setCellValue(DateUtils.toLegacyDate((LocalDateTime) value));
+			cell.setCellValue(DateUtils.toLegacyDate((LocalDateTime) value));
 		} else if (value instanceof BigDecimal) {
 			boolean isPercentage = am != null && am.isPercentage();
 			if (isPercentage) {

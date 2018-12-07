@@ -24,7 +24,7 @@ import java.util.Locale;
 import java.util.Set;
 
 import com.google.common.collect.Lists;
-import com.google.gwt.thirdparty.guava.common.collect.Sets;
+import com.google.common.collect.Sets;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.NumberSelectMode;
 import com.ocs.dynamo.ui.converter.BigDecimalConverter;
