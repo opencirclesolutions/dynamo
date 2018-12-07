@@ -75,4 +75,12 @@ public class CurrencyBigDecimalConverter extends BigDecimalConverter {
 		nf.setDecimalFormatSymbols(s);
 		return nf;
 	}
+
+	public String getCurrencySymbol() {
+		return currencySymbol;
+	}
+
+	public void setCurrencySymbol(String currencySymbol) {
+		this.currencySymbol = currencySymbol;
+	}
 }

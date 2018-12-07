@@ -121,6 +121,7 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 					SortUtils.translateAndFilterOnTransient(false, targetEntityModel, sortOrders));
 			provider = new ListDataProvider<>(items);
 		} else if (SelectMode.FIXED.equals(mode)) {
+			provider = new ListDataProvider<>(items);
 		}
 		setDataProvider(new IgnoreDiacriticsCaptionFilter(true, false), provider);
 

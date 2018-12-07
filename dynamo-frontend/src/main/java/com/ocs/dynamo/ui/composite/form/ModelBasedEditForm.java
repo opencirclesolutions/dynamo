@@ -69,6 +69,7 @@ import com.vaadin.data.Binder;
 import com.vaadin.data.Binder.Binding;
 import com.vaadin.data.Binder.BindingBuilder;
 import com.vaadin.data.BinderValidationStatus;
+import com.vaadin.data.Converter;
 import com.vaadin.data.HasValue;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.SerializablePredicate;
@@ -764,7 +765,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 				innerLayout.setStyleName(DynamoConstants.CSS_CLASS_HALFSCREEN);
 			}
 		} else {
-			innerLayout = new DefaultVerticalLayout(true, true);
+			innerLayout = new DefaultVerticalLayout(false, true);
 		}
 
 		if (tabs) {
@@ -951,7 +952,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 			// add converters and validators
 			BindingBuilder<T, ?> builder = groups.get(viewMode).forField((HasValue<?>) field);
-			FieldFactoryImpl.addConvertsAndValidators(builder, attributeModel);
+			FieldFactoryImpl.addConvertersAndValidators(builder, attributeModel,
+					constructCustomConverter(attributeModel));
 
 			builder.bind(attributeModel.getPath());
 
@@ -1017,6 +1019,16 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		if (field instanceof CanAssignEntity) {
 			assignEntityToFields.add((CanAssignEntity<ID, T>) field);
 		}
+	}
+
+	/**
+	 * Callback method for inserting custom converter
+	 * 
+	 * @param am
+	 * @return
+	 */
+	protected Converter<String, ?> constructCustomConverter(AttributeModel am) {
+		return null;
 	}
 
 	/**

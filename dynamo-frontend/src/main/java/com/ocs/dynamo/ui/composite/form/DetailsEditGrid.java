@@ -41,6 +41,7 @@ import com.vaadin.data.BeanValidationBinder;
 import com.vaadin.data.Binder;
 import com.vaadin.data.Binder.BindingBuilder;
 import com.vaadin.data.BinderValidationStatus;
+import com.vaadin.data.Converter;
 import com.vaadin.data.HasValue;
 import com.vaadin.data.ValueProvider;
 import com.vaadin.data.provider.ListDataProvider;
@@ -256,6 +257,16 @@ public abstract class DetailsEditGrid<ID extends Serializable, T extends Abstrac
 	}
 
 	/**
+	 * Callback method for inserting custom converter
+	 * 
+	 * @param am
+	 * @return
+	 */
+	protected Converter<String, ?> constructCustomConverter(AttributeModel am) {
+		return null;
+	}
+
+	/**
 	 * Method that is called to create a custom field. Override in subclasses if
 	 * needed
 	 *
@@ -367,6 +378,10 @@ public abstract class DetailsEditGrid<ID extends Serializable, T extends Abstrac
 		return grid;
 	}
 
+	public int getItemCount() {
+		return provider.getItems().size();
+	}
+
 	public Button getSearchDialogButton() {
 		return searchDialogButton;
 	}
@@ -391,10 +406,6 @@ public abstract class DetailsEditGrid<ID extends Serializable, T extends Abstrac
 		return service;
 	}
 
-	public int getItemCount() {
-		return provider.getItems().size();
-	}
-
 	@Override
 	public Collection<T> getValue() {
 		return provider == null ? new ArrayList<>()
@@ -411,6 +422,11 @@ public abstract class DetailsEditGrid<ID extends Serializable, T extends Abstrac
 			private static final long serialVersionUID = 6143503902550597524L;
 
 			@Override
+			protected Converter<String, ?> constructCustomConverter(AttributeModel am) {
+				return DetailsEditGrid.this.constructCustomConverter(am);
+			}
+
+			@Override
 			protected AbstractComponent constructCustomField(EntityModel<T> entityModel,
 					AttributeModel attributeModel) {
 				return DetailsEditGrid.this.constructCustomField(entityModel, attributeModel, false);
@@ -424,6 +440,11 @@ public abstract class DetailsEditGrid<ID extends Serializable, T extends Abstrac
 				}
 				Binder<T> binder = binders.get(t);
 				return binder.forField((HasValue<?>) field);
+			}
+
+			@Override
+			protected void postProcessComponent(AttributeModel am, AbstractComponent comp) {
+				DetailsEditGrid.this.postProcessComponent(am, comp);
 			}
 		};
 
@@ -515,6 +536,10 @@ public abstract class DetailsEditGrid<ID extends Serializable, T extends Abstrac
 	 */
 	protected void postProcessButtonBar(Layout buttonBar) {
 		// overwrite in subclass if needed
+	}
+
+	protected void postProcessComponent(AttributeModel am, AbstractComponent comp) {
+		// override in subclass
 	}
 
 	/**

@@ -307,6 +307,10 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 		return toggleButton;
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	protected Button constructSearchAnyButton() {
 		searchAnyButton = new Button(message("ocs.search.any"));
 		searchAnyButton.setIcon(VaadinIcons.SEARCH);

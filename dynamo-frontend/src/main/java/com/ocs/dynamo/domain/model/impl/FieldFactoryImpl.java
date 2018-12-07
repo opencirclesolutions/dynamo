@@ -56,6 +56,7 @@ import com.ocs.dynamo.ui.validator.URLValidator;
 import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.ocs.dynamo.utils.NumberUtils;
 import com.vaadin.data.Binder.BindingBuilder;
+import com.vaadin.data.Converter;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.data.provider.SortOrder;
 import com.vaadin.server.SerializablePredicate;
@@ -432,7 +433,6 @@ public class FieldFactoryImpl implements FieldFactory {
 			AbstractTextField atf = (AbstractTextField) field;
 			atf.addBlurListener(event -> {
 				String value = atf.getValue();
-
 				if (value != null && value.indexOf(VaadinUtils.getCurrencySymbol()) < 0) {
 					value = VaadinUtils.getCurrencySymbol() + " " + value.trim();
 					atf.setValue(value);
@@ -462,7 +462,8 @@ public class FieldFactoryImpl implements FieldFactory {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <U> void addConvertsAndValidators(BindingBuilder<U, ?> builder, AttributeModel am) {
+	public static <U> void addConvertersAndValidators(BindingBuilder<U, ?> builder, AttributeModel am,
+			Converter<String, ?> customConverter) {
 		MessageService messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
 
 		if (am.isEmail()) {
@@ -475,16 +476,21 @@ public class FieldFactoryImpl implements FieldFactory {
 		} else if (builder.getField() instanceof AbstractTextField) {
 			BindingBuilder<U, String> sBuilder = (BindingBuilder<U, String>) builder;
 			sBuilder.withNullRepresentation("");
-			if (am.getType().equals(BigDecimal.class)) {
-				sBuilder.withConverter(ConverterFactory.createBigDecimalConverter(am.isCurrency(), am.isPercentage(),
-						SystemPropertyUtils.useThousandsGroupingInEditMode(), am.getPrecision(),
-						VaadinUtils.getCurrencySymbol()));
-			} else if (NumberUtils.isInteger(am.getType())) {
-				sBuilder.withConverter(ConverterFactory.createIntegerConverter(
-						SystemPropertyUtils.useThousandsGroupingInEditMode(), am.isPercentage()));
-			} else if (NumberUtils.isLong(am.getType())) {
-				sBuilder.withConverter(ConverterFactory
-						.createLongConverter(SystemPropertyUtils.useThousandsGroupingInEditMode(), am.isPercentage()));
+			if (customConverter == null) {
+				if (am.getType().equals(BigDecimal.class)) {
+					sBuilder.withConverter(ConverterFactory.createBigDecimalConverter(am.isCurrency(),
+							am.isPercentage(), SystemPropertyUtils.useThousandsGroupingInEditMode(), am.getPrecision(),
+							VaadinUtils.getCurrencySymbol()));
+				} else if (NumberUtils.isInteger(am.getType())) {
+					sBuilder.withConverter(ConverterFactory.createIntegerConverter(
+							SystemPropertyUtils.useThousandsGroupingInEditMode(), am.isPercentage()));
+				} else if (NumberUtils.isLong(am.getType())) {
+					sBuilder.withConverter(ConverterFactory.createLongConverter(
+							SystemPropertyUtils.useThousandsGroupingInEditMode(), am.isPercentage()));
+				}
+			} else {
+				// add a custom converter defined in the component itself
+				sBuilder.withConverter(customConverter);
 			}
 		} else if (builder.getField() instanceof Slider) {
 			BindingBuilder<U, Double> sBuilder = (BindingBuilder<U, Double>) builder;
@@ -502,5 +508,6 @@ public class FieldFactoryImpl implements FieldFactory {
 			BindingBuilder<U, LocalDateTime> sBuilder = (BindingBuilder<U, LocalDateTime>) builder;
 			sBuilder.withConverter(new ZonedDateTimeToLocalDateTimeConverter(ZoneId.systemDefault()));
 		}
+
 	}
 }

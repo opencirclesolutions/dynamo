@@ -28,6 +28,7 @@ import com.ocs.dynamo.ui.Reloadable;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
 import com.ocs.dynamo.ui.composite.type.ScreenMode;
+import com.vaadin.data.Converter;
 import com.vaadin.server.SerializablePredicate;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.HorizontalLayout;
@@ -39,10 +40,8 @@ import com.vaadin.ui.VerticalLayout;
  * entity)
  *
  * @author bas.rutten
- * @param <ID>
- *            type of the primary key of the entity
- * @param <T>
- *            type of the entity
+ * @param <ID> type of the primary key of the entity
+ * @param <T> type of the entity
  */
 @SuppressWarnings("serial")
 public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<ID>>
@@ -70,16 +69,12 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 	/**
 	 * Constructor
 	 *
-	 * @param entity
-	 *            the entity to edit
-	 * @param service
-	 *            the service used to save/refresh the entity
-	 * @param entityModel
-	 *            the entity model used to generate the form
-	 * @param formOptions
-	 *            the form options
-	 * @param joins
-	 *            optional joins to use when fetching the entity from the database
+	 * @param entity      the entity to edit
+	 * @param service     the service used to save/refresh the entity
+	 * @param entityModel the entity model used to generate the form
+	 * @param formOptions the form options
+	 * @param joins       optional joins to use when fetching the entity from the
+	 *                    database
 	 */
 	public SimpleEditLayout(T entity, BaseService<ID, T> service, EntityModel<T> entityModel, FormOptions formOptions,
 			FetchJoinInformation... joins) {
@@ -92,12 +87,9 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 	 * Method that is called after the user has completed (or cancelled) an edit
 	 * action
 	 *
-	 * @param cancel
-	 *            whether the edit was cancelled
-	 * @param newEntity
-	 *            whether a new entity was being edited
-	 * @param entity
-	 *            the entity that has just been edited
+	 * @param cancel    whether the edit was cancelled
+	 * @param newEntity whether a new entity was being edited
+	 * @param entity    the entity that has just been edited
 	 */
 	protected void afterEditDone(boolean cancel, boolean newEntity, T entity) {
 		if (entity.getId() != null) {
@@ -131,8 +123,7 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 	 * that is used in a detail form when the attribute group mode has been set to
 	 * TABSHEET
 	 *
-	 * @param tabIndex
-	 *            the zero-based index of the selected tab
+	 * @param tabIndex the zero-based index of the selected tab
 	 */
 	protected void afterTabSelected(int tabIndex) {
 		// overwrite in subclasses
@@ -207,6 +198,11 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 				@Override
 				protected void back() {
 					SimpleEditLayout.this.back();
+				}
+
+				@Override
+				protected Converter<String, ?> constructCustomConverter(AttributeModel am) {
+					return SimpleEditLayout.this.constructCustomConverter(am);
 				}
 
 				@Override
@@ -295,8 +291,7 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 	 * Returns the parent group (which must be returned by the getParentGroupHeaders
 	 * method) to which a certain child group belongs
 	 *
-	 * @param childGroup
-	 *            the name of the child group
+	 * @param childGroup the name of the child group
 	 * @return
 	 */
 	protected String getParentGroup(String childGroup) {
@@ -336,10 +331,8 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 	 * Callback method that can be used to add additional buttons to the button bar
 	 * (at both the top and the bottom of the screen)
 	 *
-	 * @param buttonBar
-	 *            the button bar
-	 * @param viewMode
-	 *            the view mode
+	 * @param buttonBar the button bar
+	 * @param viewMode  the view mode
 	 */
 	protected void postProcessButtonBar(HorizontalLayout buttonBar, boolean viewMode) {
 		// overwrite in subclasses
@@ -357,8 +350,7 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 	 * to e.g. add additional components to the bottom of the layout or to modify
 	 * the table
 	 *
-	 * @param main
-	 *            the main layout
+	 * @param main the main layout
 	 */
 	protected void postProcessLayout(Layout main) {
 		// overwrite in subclass
@@ -367,8 +359,7 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 	/**
 	 * Refreshes the contents of a label
 	 *
-	 * @param propertyName
-	 *            the name of the property for which to refresh the label
+	 * @param propertyName the name of the property for which to refresh the label
 	 */
 	public void refreshLabel(String propertyName) {
 		if (editForm != null) {

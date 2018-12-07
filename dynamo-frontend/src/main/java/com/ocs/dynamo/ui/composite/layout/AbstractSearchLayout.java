@@ -36,6 +36,7 @@ import com.ocs.dynamo.ui.composite.type.ScreenMode;
 import com.ocs.dynamo.ui.provider.BaseDataProvider;
 import com.ocs.dynamo.ui.provider.QueryType;
 import com.ocs.dynamo.ui.utils.FormatUtils;
+import com.vaadin.data.Converter;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.Resource;
@@ -422,6 +423,11 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 			@Override
 			protected void back() {
 				searchMode();
+			}
+
+			@Override
+			protected Converter<String, ?> constructCustomConverter(AttributeModel am) {
+				return AbstractSearchLayout.this.constructCustomConverter(am);
 			}
 
 			@Override

@@ -20,6 +20,12 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
+/**
+ * A collapsible panel for grouping attributes
+ * 
+ * @author Bas Rutten
+ *
+ */
 public class CollapsiblePanel extends VerticalLayout {
 
 	private static final long serialVersionUID = -7979238391035057707L;

@@ -25,6 +25,7 @@ import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
 import com.ocs.dynamo.ui.composite.type.ScreenMode;
 import com.ocs.dynamo.ui.utils.FormatUtils;
+import com.vaadin.data.Converter;
 import com.vaadin.data.provider.SortOrder;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.AbstractComponent;
@@ -325,6 +326,11 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 					BaseSplitLayout.this.afterTabSelected(tabIndex);
 				}
 
+				@Override
+				protected Converter<String, ?> constructCustomConverter(AttributeModel am) {
+					return BaseSplitLayout.this.constructCustomConverter(am);
+				}
+				
 				@Override
 				protected AbstractComponent constructCustomField(EntityModel<T> entityModel,
 						AttributeModel attributeModel, boolean viewMode) {

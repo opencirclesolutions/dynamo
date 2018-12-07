@@ -47,6 +47,11 @@ public class IgnoreDiacriticsCaptionFilter implements CaptionFilter {
 	}
 
 	@Override
+	public int hashCode() {
+		return ObjectUtils.hashCode(ignoreCase) + ObjectUtils.hashCode(onlyMatchPrefix);
+	}
+
+	@Override
 	public boolean equals(Object obj) {
 		if (obj == this) {
 			return true;

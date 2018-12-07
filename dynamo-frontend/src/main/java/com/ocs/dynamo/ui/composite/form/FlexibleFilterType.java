@@ -14,7 +14,7 @@
 package com.ocs.dynamo.ui.composite.form;
 
 /**
- * 
+ * Various filter types for the ModelBasedFlexibleSearchForm
  * @author bas.rutten
  *
  */

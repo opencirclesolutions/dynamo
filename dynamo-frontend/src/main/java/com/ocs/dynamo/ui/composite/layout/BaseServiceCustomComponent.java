@@ -26,6 +26,7 @@ import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
+import com.vaadin.data.Converter;
 import com.vaadin.server.Resource;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Button;
@@ -177,6 +178,17 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 			boolean enabled = selectedItem != null && mustEnableButton(b, selectedItem);
 			b.setEnabled(enabled);
 		}
+	}
+
+	/**
+	 * Callback method for constructing a custom converter - currently only
+	 * supported for text fields
+	 * 
+	 * @param am the attribute model to base the field on
+	 * @return
+	 */
+	protected Converter<String, ?> constructCustomConverter(AttributeModel am) {
+		return null;
 	}
 
 	/**

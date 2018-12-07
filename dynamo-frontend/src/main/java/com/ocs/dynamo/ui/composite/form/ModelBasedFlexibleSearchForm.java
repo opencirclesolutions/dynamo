@@ -38,6 +38,7 @@ import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.component.FancyListSelect;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.utils.ConvertUtils;
+import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.utils.DateUtils;
 import com.vaadin.data.HasValue;
 import com.vaadin.data.Result;
@@ -306,6 +307,8 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 						event -> handleFilterTypeChange((FlexibleFilterType) event.getSource().getValue()));
 				newTypeFilterCombo.setStyleName(DynamoConstants.CSS_NESTED);
 				newTypeFilterCombo.setItems(getFilterTypes(am));
+				newTypeFilterCombo.setStyleGenerator(item -> getMessageService()
+						.getEnumMessage(FlexibleFilterType.class, item, VaadinUtils.getLocale()));
 
 				// cannot remove mandatory filters
 				removeButton.setEnabled(!am.isRequiredForSearching());

@@ -35,6 +35,7 @@ import com.ocs.dynamo.utils.ClassUtils;
 import com.vaadin.data.BeanPropertySet;
 import com.vaadin.data.Binder;
 import com.vaadin.data.Binder.BindingBuilder;
+import com.vaadin.data.Converter;
 import com.vaadin.data.HasValue;
 import com.vaadin.data.PropertyFilterDefinition;
 import com.vaadin.data.PropertySet;
@@ -148,24 +149,25 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 	 * 
 	 * @param attributeModel the attribute model on which to base the column
 	 */
-	private void addColumn(final AttributeModel attributeModel) {
-		if (attributeModel.isVisibleInTable()) {
+	private void addColumn(final AttributeModel am) {
+		if (am.isVisibleInTable()) {
 			Column<T, ?> column;
-			if (attributeModel.isUrl()) {
+			if (am.isUrl()) {
 				// URL field
-				column = addColumn(t -> new URLField(
-						new TextField("", ClassUtils.getFieldValueAsString(t, attributeModel.getPath(), "")),
-						attributeModel, editable && fullGridEditor), new ComponentRenderer());
-			} else if (attributeModel.isNavigable() && AttributeType.MASTER.equals(attributeModel.getAttributeType())) {
-				column = addColumn(t -> generateInternalLinkField(attributeModel,
-						ClassUtils.getFieldValue(t, attributeModel.getPath())), new ComponentRenderer());
+				column = addColumn(
+						t -> new URLField(new TextField("", ClassUtils.getFieldValueAsString(t, am.getPath(), "")), am,
+								editable && fullGridEditor),
+						new ComponentRenderer());
+			} else if (am.isNavigable() && AttributeType.MASTER.equals(am.getAttributeType())) {
+				column = addColumn(t -> generateInternalLinkField(am, ClassUtils.getFieldValue(t, am.getPath())),
+						new ComponentRenderer());
 			} else {
 				if (editable && fullGridEditor) {
 					// edit all tables at once
 					column = addColumn(t -> {
-						AbstractComponent comp = constructCustomField(entityModel, attributeModel);
+						AbstractComponent comp = constructCustomField(entityModel, am);
 						if (comp == null) {
-							FieldFactoryContext ctx = FieldFactoryContext.create().setAttributeModel(attributeModel)
+							FieldFactoryContext ctx = FieldFactoryContext.create().setAttributeModel(am)
 									.setViewMode(true);
 							comp = fieldFactory.constructField(ctx);
 						}
@@ -173,40 +175,51 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 
 						// delegate the binding to the enveloping component
 						BindingBuilder<T, ?> builder = doBind(t, (AbstractComponent) comp);
-						FieldFactoryImpl.addConvertsAndValidators(builder, attributeModel);
-						builder.bind(attributeModel.getPath());
+						FieldFactoryImpl.addConvertersAndValidators(builder, am, constructCustomConverter(am));
+						builder.bind(am.getPath());
+
+						postProcessComponent(am, comp);
+
 						return (AbstractComponent) comp;
 					}, new ComponentRenderer());
 				} else {
-					column = addColumn(t -> FormatUtils.extractAndFormat(this, attributeModel, t));
+					column = addColumn(t -> FormatUtils.extractAndFormat(this, am, t));
 				}
 			}
 
 			if (editable && !fullGridEditor) {
 				Binder<T> binder = getEditor().getBinder();
 
-				FieldFactoryContext context = FieldFactoryContext.create().setAttributeModel(attributeModel)
-						.setViewMode(false);
+				FieldFactoryContext context = FieldFactoryContext.create().setAttributeModel(am).setViewMode(false);
 				AbstractComponent abstractComponent = fieldFactory.constructField(context);
 
 				final Binder.BindingBuilder<T, ?> builder = binder.forField((HasValue<?>) abstractComponent);
-				FieldFactoryImpl.addConvertsAndValidators(builder, attributeModel);
-				column.setEditorBinding(builder.bind(attributeModel.getPath()));
+				FieldFactoryImpl.addConvertersAndValidators(builder, am, null);
+				column.setEditorBinding(builder.bind(am.getPath()));
 			}
-			column.setCaption(attributeModel.getDisplayName()).setSortable(attributeModel.isSortable())
-					.setSortProperty(attributeModel.getPath()).setId(attributeModel.getPath())
-					.setStyleGenerator(item -> attributeModel.isNumerical() ? "v-align-right" : "");
+			column.setCaption(am.getDisplayName()).setSortable(am.isSortable()).setSortProperty(am.getPath())
+					.setId(am.getPath()).setStyleGenerator(item -> am.isNumerical() ? "v-align-right" : "");
 		}
 	}
 
 	/**
-	 * Constructs a custom field
+	 * Callback method for constructing a custom field
 	 * 
 	 * @param entityModel    the entity model of the main entity
 	 * @param attributeModel the attribute model to base the field on
 	 * @return
 	 */
 	protected AbstractComponent constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel) {
+		return null;
+	}
+
+	/**
+	 * Callback method for inserting custom converter
+	 * 
+	 * @param am
+	 * @return
+	 */
+	protected Converter<String, ?> constructCustomConverter(AttributeModel am) {
 		return null;
 	}
 
@@ -324,4 +337,7 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 		}
 	}
 
+	protected void postProcessComponent(AttributeModel am, AbstractComponent comp) {
+		// override in subclass
+	}
 }
