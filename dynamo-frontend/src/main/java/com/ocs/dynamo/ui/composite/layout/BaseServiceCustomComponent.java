@@ -109,7 +109,7 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	/**
 	 * The list of buttons to update after an entity is selected
 	 */
-	private List<Button> toUpdate = new ArrayList<>();
+	private List<AbstractComponent> toUpdate = new ArrayList<>();
 
 	/**
 	 * Constructor
@@ -174,7 +174,7 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	 * @param selectedItem the selected item
 	 */
 	protected void checkButtonState(T selectedItem) {
-		for (Button b : toUpdate) {
+		for (AbstractComponent b : toUpdate) {
 			boolean enabled = selectedItem != null && mustEnableButton(b, selectedItem);
 			b.setEnabled(enabled);
 		}
@@ -234,22 +234,22 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	 * @param selectedItem the currently selected item
 	 * @return
 	 */
-	protected boolean mustEnableButton(Button button, T selectedItem) {
+	protected boolean mustEnableButton(AbstractComponent button, T selectedItem) {
 		// overwrite in subclasses if needed
 		return true;
 	}
 
 	/**
-	 * Registers a button that must be enabled/disabled after an item is selected.
+	 * Registers a component that must be enabled/disabled after an item is selected.
 	 * use the "mustEnableButton" callback method to impose additional constraints
 	 * on when the button must be enabled
 	 *
-	 * @param button the button to register
+	 * @param comp the button to register
 	 */
-	public final void registerButton(Button button) {
-		if (button != null) {
-			button.setEnabled(false);
-			toUpdate.add(button);
+	public final void registerComponent(AbstractComponent comp) {
+		if (comp != null) {
+			comp.setEnabled(false);
+			toUpdate.add(comp);
 		}
 	}
 

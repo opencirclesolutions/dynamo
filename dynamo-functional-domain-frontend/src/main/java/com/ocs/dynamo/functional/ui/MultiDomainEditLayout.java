@@ -36,7 +36,6 @@ import com.vaadin.data.provider.SortOrder;
 import com.vaadin.server.SerializablePredicate;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.AbstractComponent;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.FormLayout;
@@ -224,7 +223,7 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
 				}
 
 				@Override
-				protected boolean mustEnableButton(Button button, T selectedItem) {
+				protected boolean mustEnableButton(AbstractComponent button, T selectedItem) {
 					if (getRemoveButton() == button) {
 						return isDeleteAllowed(getSelectedDomain());
 					}
@@ -317,14 +316,14 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
 	}
 
 	/**
-	 * Registers a button. The button will be disabled or enabled depending on
+	 * Registers a component. The component will be disabled or enabled depending on
 	 * whether an item is selected
 	 *
 	 * @param button the button to register
 	 */
-	public void registerButton(Button button) {
+	public void registerComponent(AbstractComponent comp) {
 		if (splitLayout != null) {
-			splitLayout.registerButton(button);
+			splitLayout.registerComponent(comp);
 		}
 	}
 

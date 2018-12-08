@@ -15,6 +15,7 @@ package com.ocs.dynamo.ui.component;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.function.Supplier;
 
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.StreamResource;
@@ -22,13 +23,14 @@ import com.vaadin.server.StreamResource.StreamSource;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinResponse;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.CustomComponent;
 
 /**
  * A button that starts a file download process when clicked
  * 
  * @author bas.rutten
  */
-public abstract class DownloadButton extends Button {
+public class DownloadButton extends CustomComponent {
 
 	private static final long serialVersionUID = -7163648327567831406L;
 
@@ -36,67 +38,28 @@ public abstract class DownloadButton extends Button {
 
 	private FileDownloader downloader;
 
+	private Supplier<InputStream> createContent;
+
+	private Supplier<String> createFileName;
+
+	private Button button;
+
 	/**
 	 * Constructor
 	 * 
-	 * @param caption
-	 *            the caption of the button
+	 * @param caption the caption of the button
 	 */
-	public DownloadButton(String caption) {
-		super(caption);
-		resource = new StreamResource(new StreamSource() {
+	public DownloadButton(String caption, Supplier<InputStream> createContent, Supplier<String> createFileName) {
 
-			private static final long serialVersionUID = -4870779918745663459L;
+		this.createContent = createContent;
+		this.createFileName = createFileName;
 
-			@Override
-			public InputStream getStream() {
-				return doCreateContent();
-			}
+		button = new Button(caption);
+		button.addClickListener(event -> update());
+		setCompositionRoot(button);
 
-		}, doCreateFileName());
-
-		downloader = new FileDownloader(resource) {
-
-			private static final long serialVersionUID = -5072481083052841701L;
-
-			public boolean handleConnectorRequest(VaadinRequest request, VaadinResponse response, String path)
-					throws IOException {
-				((StreamResource) getFileDownloadResource()).setFilename(doCreateFileName());
-				return super.handleConnectorRequest(request, response, path);
-			}
-		};
-		downloader.extend(this);
+		update();
 	}
-
-	/**
-	 * 
-	 */
-	public void update() {
-		downloader.setFileDownloadResource(new StreamResource(new StreamSource() {
-
-			private static final long serialVersionUID = -4870779918745663459L;
-
-			@Override
-			public InputStream getStream() {
-				return doCreateContent();
-			}
-
-		}, doCreateFileName()));
-	}
-
-	/**
-	 * Creates the file content (as a byte array)
-	 * 
-	 * @return
-	 */
-	protected abstract InputStream doCreateContent();
-
-	/**
-	 * Creates the file name
-	 * 
-	 * @return
-	 */
-	protected abstract String doCreateFileName();
 
 	/**
 	 * Sets the file name
@@ -107,4 +70,37 @@ public abstract class DownloadButton extends Button {
 		resource.setFilename(fileName);
 	}
 
+	private void update() {
+		resource = new StreamResource(new StreamSource() {
+
+			private static final long serialVersionUID = -4870779918745663459L;
+
+			@Override
+			public InputStream getStream() {
+				return createContent.get();
+			}
+
+		}, createFileName.get());
+
+		if (downloader != null) {
+			button.removeExtension(downloader);
+		}
+
+		downloader = new FileDownloader(resource) {
+
+			private static final long serialVersionUID = -5072481083052841701L;
+
+			public boolean handleConnectorRequest(VaadinRequest request, VaadinResponse response, String path)
+					throws IOException {
+				((StreamResource) getFileDownloadResource()).setFilename(createFileName.get());
+				return super.handleConnectorRequest(request, response, path);
+			}
+		};
+		downloader.extend(button);
+	}
+
+	@Override
+	public void setEnabled(boolean enabled) {
+		button.setEnabled(enabled);
+	}
 }

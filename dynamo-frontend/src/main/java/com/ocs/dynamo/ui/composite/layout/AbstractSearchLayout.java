@@ -273,12 +273,12 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 
 			// edit/view button
 			editButton = constructEditButton();
-			registerButton(editButton);
+			registerComponent(editButton);
 			getButtonBar().addComponent(editButton);
 
 			// remove button
 			removeButton = constructRemoveButton();
-			registerButton(removeButton);
+			registerComponent(removeButton);
 			getButtonBar().addComponent(removeButton);
 
 			// callback for adding additional buttons

@@ -70,7 +70,7 @@ public class MultiDomainEditLayoutTest extends BaseIntegrationTest {
 			protected void postProcessButtonBar(Layout buttonBar) {
 				Button button = new Button("testButton");
 				buttonBar.addComponent(button);
-				registerButton(button);
+				registerComponent(button);
 			}
 		};
 		layout.build();
