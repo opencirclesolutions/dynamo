@@ -11,7 +11,10 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-package com.ocs.dynamo.ui.composite.form;
+package com.ocs.dynamo.ui.composite.form.process;
+
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
 
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.ui.composite.type.ScreenMode;
@@ -19,13 +22,11 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.Upload;
 import com.vaadin.ui.Upload.Receiver;
 import com.vaadin.ui.Upload.SucceededEvent;
 import com.vaadin.ui.Upload.SucceededListener;
-
-import java.io.ByteArrayOutputStream;
-import java.io.OutputStream;
 
 /**
  * A form that contains a file upload component and a progress bar
@@ -76,15 +77,12 @@ public abstract class UploadForm extends ProgressForm<byte[]> {
 	/**
 	 * Constructor
 	 * 
-	 * @param progressMode
-	 *            the desired progress mode
-	 * @param screenMode
-	 *            the desired screen mode
-	 * @param showCancelButton
-	 *            whether to include a cancel button
+	 * @param progressMode     the desired progress mode
+	 * @param screenMode       the desired screen mode
+	 * @param showCancelButton whether to include a cancel button
 	 */
-	public UploadForm(ProgressMode progressMode, ScreenMode screenMode, boolean showCancelButton) {
-		super(progressMode);
+	public UploadForm(UI ui, ProgressMode progressMode, ScreenMode screenMode, boolean showCancelButton) {
+		super(ui, progressMode);
 		this.screenMode = screenMode;
 		this.showCancelButton = showCancelButton;
 	}

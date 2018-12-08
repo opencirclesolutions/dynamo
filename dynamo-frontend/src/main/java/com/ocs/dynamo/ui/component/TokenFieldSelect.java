@@ -13,6 +13,12 @@
  */
 package com.ocs.dynamo.ui.component;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
 import com.explicatis.ext_token_field.ExtTokenField;
 import com.explicatis.ext_token_field.Tokenizable;
 import com.google.common.collect.Sets;
@@ -31,12 +37,6 @@ import com.vaadin.shared.Registration;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
  * A multiple select component that displays tags/tokens to indicate which
@@ -220,7 +220,6 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
 	private void copyValueFromContainer() {
 		Collection<T> values = provider.getItems();
 		setValue(Sets.newHashSet(values));
-		//setComboBoxWidth();
 	}
 
 	@Override
@@ -260,7 +259,6 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
 		HorizontalLayout layout = new DefaultHorizontalLayout(false, true, false);
 
 		comboBox.setHeightUndefined();
-		// setComboBoxWidth();
 
 		extTokenField.setInputField(comboBox);
 		extTokenField.setEnableDefaultDeleteTokenAction(true);
@@ -307,19 +305,6 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
 			comboBox.setValue(null);
 			comboBox.refresh(getFilter() == null ? additionalFilter : getFilter().and(additionalFilter));
 			extTokenField.setInputField(comboBox);
-		}
-	}
-
-	/**
-	 * Adapt the width of the combo box based on the number of items currently
-	 * selected
-	 */
-	private void setComboBoxWidth() {
-		// if selection is empty, set combo box to full width
-		if (provider.getItems().size() > 0) {
-			comboBox.setWidth(25, Unit.PERCENTAGE);
-		} else {
-			comboBox.setWidth(100, Unit.PERCENTAGE);
 		}
 	}
 

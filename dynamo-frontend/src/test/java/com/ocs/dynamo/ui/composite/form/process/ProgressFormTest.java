@@ -1,4 +1,4 @@
-package com.ocs.dynamo.ui.composite.form;
+package com.ocs.dynamo.ui.composite.form.process;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -9,7 +9,8 @@ import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.service.TestEntityService;
 import com.ocs.dynamo.test.BaseMockitoTest;
 import com.ocs.dynamo.test.MockUtil;
-import com.ocs.dynamo.ui.composite.form.ProgressForm.ProgressMode;
+import com.ocs.dynamo.ui.composite.form.process.ProgressForm;
+import com.ocs.dynamo.ui.composite.form.process.ProgressForm.ProgressMode;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.UI;
@@ -39,14 +40,14 @@ public class ProgressFormTest extends BaseMockitoTest {
 	public void testCreateSimple() throws InterruptedException {
 		called = 0;
 		afterWorkCalled = false;
-		ProgressForm<Object> pf = new ProgressForm<Object>(ProgressMode.SIMPLE) {
+		ProgressForm<Object> pf = new ProgressForm<Object>(UI.getCurrent(), ProgressMode.SIMPLE) {
 
 			private static final long serialVersionUID = -3009623960109461650L;
 
 			@Override
 			protected void process(Object t, int estimatedSize) {
 				for (int i = 0; i < 100; i++) {
-					getCounter().incrementAndGet();
+					getCounter().increment();
 				}
 				called++;
 			}
@@ -70,7 +71,7 @@ public class ProgressFormTest extends BaseMockitoTest {
 		MockUtil.injectUI(pf, ui);
 		pf.build();
 
-		Assert.assertEquals(0, pf.getCounter().get());
+		Assert.assertEquals(0, pf.getCounter().getCurrent());
 
 		Assert.assertEquals(0, called);
 		pf.startWork(null);
@@ -78,7 +79,7 @@ public class ProgressFormTest extends BaseMockitoTest {
 		Thread.sleep(1000);
 
 		Assert.assertEquals(1, called);
-		Assert.assertEquals(100, pf.getCounter().get());
+		Assert.assertEquals(100, pf.getCounter().getCurrent());
 		Assert.assertTrue(afterWorkCalled);
 	}
 
@@ -86,7 +87,7 @@ public class ProgressFormTest extends BaseMockitoTest {
 	public void testCreateProgressBar() throws InterruptedException {
 		called = 0;
 		afterWorkCalled = false;
-		ProgressForm<Object> pf = new ProgressForm<Object>(ProgressMode.PROGRESSBAR) {
+		ProgressForm<Object> pf = new ProgressForm<Object>(UI.getCurrent(), ProgressMode.PROGRESSBAR) {
 
 			private static final long serialVersionUID = -3009623960109461650L;
 
@@ -98,7 +99,7 @@ public class ProgressFormTest extends BaseMockitoTest {
 					} catch (InterruptedException e) {
 
 					}
-					getCounter().incrementAndGet();
+					getCounter().increment();
 				}
 				called++;
 			}
@@ -122,7 +123,7 @@ public class ProgressFormTest extends BaseMockitoTest {
 		MockUtil.injectUI(pf, ui);
 		pf.build();
 
-		Assert.assertEquals(0, pf.getCounter().get());
+		Assert.assertEquals(0, pf.getCounter().getCurrent());
 
 		Assert.assertEquals(0, called);
 		pf.startWork(null);
@@ -132,7 +133,7 @@ public class ProgressFormTest extends BaseMockitoTest {
 		Mockito.verify(ui, Mockito.atLeast(1)).access(Mockito.any(Runnable.class));
 
 		Assert.assertEquals(1, called);
-		Assert.assertEquals(100, pf.getCounter().get());
+		Assert.assertEquals(100, pf.getCounter().getCurrent());
 		Assert.assertTrue(afterWorkCalled);
 	}
 
@@ -140,7 +141,7 @@ public class ProgressFormTest extends BaseMockitoTest {
 	public void testException() throws InterruptedException {
 		called = 0;
 		afterWorkCalled = false;
-		ProgressForm<Object> pf = new ProgressForm<Object>(ProgressMode.SIMPLE) {
+		ProgressForm<Object> pf = new ProgressForm<Object>(UI.getCurrent(), ProgressMode.SIMPLE) {
 
 			private static final long serialVersionUID = -3009623960109461650L;
 
@@ -168,7 +169,7 @@ public class ProgressFormTest extends BaseMockitoTest {
 		MockUtil.injectUI(pf, ui);
 		pf.build();
 
-		Assert.assertEquals(0, pf.getCounter().get());
+		Assert.assertEquals(0, pf.getCounter().getCurrent());
 
 		Assert.assertEquals(0, called);
 		pf.startWork(null);
@@ -176,7 +177,7 @@ public class ProgressFormTest extends BaseMockitoTest {
 		Thread.sleep(1000);
 
 		Assert.assertEquals(0, called);
-		Assert.assertEquals(0, pf.getCounter().get());
+		Assert.assertEquals(0, pf.getCounter().getCurrent());
 		Assert.assertTrue(afterWorkCalled);
 	}
 }

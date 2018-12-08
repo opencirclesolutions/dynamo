@@ -11,7 +11,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-package com.ocs.dynamo.ui.composite.form;
+package com.ocs.dynamo.ui.composite.form.process;
 
 import com.vaadin.ui.Label;
 import com.vaadin.ui.ProgressBar;

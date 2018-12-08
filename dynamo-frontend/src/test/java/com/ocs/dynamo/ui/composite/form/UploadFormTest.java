@@ -9,7 +9,8 @@ import org.mockito.Mock;
 
 import com.ocs.dynamo.test.BaseMockitoTest;
 import com.ocs.dynamo.test.MockUtil;
-import com.ocs.dynamo.ui.composite.form.ProgressForm.ProgressMode;
+import com.ocs.dynamo.ui.composite.form.process.UploadForm;
+import com.ocs.dynamo.ui.composite.form.process.ProgressForm.ProgressMode;
 import com.ocs.dynamo.ui.composite.type.ScreenMode;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.UI;
@@ -28,7 +29,7 @@ public class UploadFormTest extends BaseMockitoTest {
 
 	@Test
 	public void testSimpleForm() throws IOException {
-		UploadForm form = new UploadForm(ProgressMode.SIMPLE, ScreenMode.HORIZONTAL, false) {
+		UploadForm form = new UploadForm(ui, ProgressMode.SIMPLE, ScreenMode.HORIZONTAL, false) {
 
 			private static final long serialVersionUID = -2866860896190814120L;
 
