@@ -4,6 +4,12 @@ import com.vaadin.data.ValidationResult;
 import com.vaadin.data.Validator;
 import com.vaadin.data.ValueContext;
 
+/**
+ * A validator for email fields
+ * 
+ * @author Bas Rutten
+ *
+ */
 public class EmailValidator implements Validator<String> {
 
 	/** General Email Regex (RFC 5322 Official Standard) */

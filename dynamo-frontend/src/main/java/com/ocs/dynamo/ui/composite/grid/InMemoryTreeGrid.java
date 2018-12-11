@@ -131,23 +131,27 @@ public abstract class InMemoryTreeGrid<T, ID, C extends AbstractEntity<ID>, ID2,
 		}
 
 		// update the sum columns on the parent level
+		int index = 0;
 		for (String column : sumColumns) {
 			for (T pRow : data.getRootItems()) {
 				List<T> cRows = data.getChildren(pRow);
-				BigDecimal sum = cRows.stream().map(c -> (Number) ClassUtils.getFieldValue(c, column))
-						.map(n -> toBigDecimal(n)).reduce(BigDecimal.ZERO, (a, b) -> a.add(b));
-				ClassUtils.setFieldValue(pRow, column, convertNumber(sum, column));
+				int j = index;
+				BigDecimal sum = cRows.stream().map(c -> extractSumCellValue(c, j, column)).map(n -> toBigDecimal(n))
+						.reduce(BigDecimal.ZERO, (a, b) -> a.add(b));
+
 				BigDecimal ts = totalSumMap.get(column);
 				totalSumMap.put(column, ts.add(sum));
+				setSumCellValue(pRow, index, column, sum);
 			}
+			index++;
 		}
 
 		provider.refreshAll();
 
 		// update the footer sums
+		FooterRow footerRow = appendFooterRow();
 		for (String column : sumColumns) {
 			BigDecimal bd = totalSumMap.get(column);
-			FooterRow footerRow = appendFooterRow();
 			footerRow.getCell(column).setText(convertToString(bd, column));
 		}
 
@@ -157,6 +161,23 @@ public abstract class InMemoryTreeGrid<T, ID, C extends AbstractEntity<ID>, ID2,
 	}
 
 	/**
+	 * 
+	 * @param t
+	 * @param columnName
+	 * @return
+	 */
+	protected abstract Number extractSumCellValue(T t, int index, String columnName);
+
+	/**
+	 * 
+	 * @param t
+	 * @param index
+	 * @param columnName
+	 * @param value
+	 */
+	protected abstract void setSumCellValue(T t, int index, String columnName, BigDecimal value);
+
+	/**
 	 * Converts a numeric value from its BigDecimal representation to its native
 	 * form
 	 * 
@@ -164,7 +185,7 @@ public abstract class InMemoryTreeGrid<T, ID, C extends AbstractEntity<ID>, ID2,
 	 * @param propertyId the ID of the property
 	 * @return
 	 */
-	private Number convertNumber(BigDecimal value, String propertyId) {
+	protected Number convertNumber(BigDecimal value, String propertyId) {
 		Class<?> clazz = getEditablePropertyClass(propertyId);
 		if (NumberUtils.isInteger(clazz)) {
 			return value.intValue();
