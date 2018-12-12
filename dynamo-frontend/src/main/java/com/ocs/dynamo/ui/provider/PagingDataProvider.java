@@ -13,21 +13,22 @@
  */
 package com.ocs.dynamo.ui.provider;
 
+import java.io.Serializable;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.dao.SortOrders;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
+import com.ocs.dynamo.filter.Filter;
 import com.ocs.dynamo.filter.FilterConverter;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.data.provider.Query;
 import com.vaadin.server.SerializablePredicate;
 import com.vaadin.ui.Notification;
-
-import java.io.Serializable;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * 
@@ -45,11 +46,22 @@ public class PagingDataProvider<ID extends Serializable, T extends AbstractEntit
 	 */
 	private int size;
 
+	private int page;
+
+	private int offset;
+
+	private Filter filter;
+
+	private int pageSize;
+
+	private SortOrders sortOrders;
+
 	/**
+	 * Constructor
 	 * 
-	 * @param service
-	 * @param entityModel
-	 * @param joins
+	 * @param service     the service
+	 * @param entityModel the entity model
+	 * @param joins       the joins to use when querying
 	 */
 	public PagingDataProvider(BaseService<ID, T> service, EntityModel<T> entityModel, FetchJoinInformation... joins) {
 		super(service, entityModel, joins);
@@ -58,13 +70,13 @@ public class PagingDataProvider<ID extends Serializable, T extends AbstractEntit
 	@Override
 	public Stream<T> fetch(Query<T, SerializablePredicate<T>> query) {
 		FilterConverter<T> converter = getFilterConverter();
-		int offset = query.getOffset();
-		int page = offset / query.getLimit();
-		int pageSize = getMaxResults() != null && offset + query.getLimit() > getMaxResults() ? getMaxResults() - offset
+		offset = query.getOffset();
+		page = offset / query.getLimit();
+		pageSize = getMaxResults() != null && offset + query.getLimit() > getMaxResults() ? getMaxResults() - offset
 				: query.getLimit();
-		SortOrders so = createSortOrder(query);
-		List<T> result = getService().fetch(converter.convert(query.getFilter().orElse(null)), page, pageSize, so,
-				getJoins());
+		sortOrders = createSortOrder(query);
+		filter = converter.convert(query.getFilter().orElse(null));
+		List<T> result = getService().fetch(filter, page, pageSize, sortOrders, getJoins());
 
 		ids = result.stream().map(t -> t.getId()).collect(Collectors.toList());
 		return result.stream();
@@ -85,7 +97,17 @@ public class PagingDataProvider<ID extends Serializable, T extends AbstractEntit
 					Notification.Type.ERROR_MESSAGE);
 			size = getMaxResults();
 		}
+		getAfterCountCompleted().accept(size);
 		return size;
+	}
+
+	public ID getNextItemId() {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public ID getPreviousItemId() {
+		throw new UnsupportedOperationException();
 	}
 
 }

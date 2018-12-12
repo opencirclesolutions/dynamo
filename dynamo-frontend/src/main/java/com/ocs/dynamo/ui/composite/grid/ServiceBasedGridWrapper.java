@@ -66,15 +66,16 @@ public class ServiceBasedGridWrapper<ID extends Serializable, T extends Abstract
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	protected DataProvider<T, SerializablePredicate<T>> constructDataProvider() {
-		DataProvider<T, SerializablePredicate<T>> provider;
+		BaseDataProvider<ID, T> provider;
 		if (QueryType.PAGING.equals(getQueryType())) {
 			provider = new PagingDataProvider<>(getService(), getEntityModel(), getJoins());
 		} else {
 			provider = new IdBasedDataProvider<>(getService(), getEntityModel(), getJoins());
 		}
-		((BaseDataProvider<ID, T>) provider).setMaxResults(maxResults);
+		provider.setMaxResults(maxResults);
+		provider.setAfterCountCompleted(x -> getGrid().updateCaption(x));
+
 		doConstructDataProvider(provider);
 		return provider;
 	}
@@ -92,6 +93,8 @@ public class ServiceBasedGridWrapper<ID extends Serializable, T extends Abstract
 		super.initSortingAndFiltering();
 		// sets the initial filter
 		getGrid().getDataCommunicator().setDataProvider(getDataProvider(), filter);
+		getGrid().addSelectionListener(event -> onSelect(getGrid().getSelectedItems()));
+
 	}
 
 	@Override
@@ -102,9 +105,8 @@ public class ServiceBasedGridWrapper<ID extends Serializable, T extends Abstract
 	@Override
 	public void search(SerializablePredicate<T> filter) {
 		SerializablePredicate<T> temp = beforeSearchPerformed(filter);
-		setDataProvider(constructDataProvider());
 		getGrid().getDataCommunicator().setDataProvider(getDataProvider(), temp != null ? temp : filter);
-		getGrid().addSelectionListener(event -> onSelect(getGrid().getSelectedItems()));
+
 	}
 
 	/**

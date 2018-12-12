@@ -197,7 +197,10 @@ public class StreamingCell implements Cell {
 	 */
 	@Override
 	public double getNumericCellValue() {
-		return rawContents == null ? null : Double.parseDouble((String) rawContents);
+		if (rawContents == null) {
+			throw new NullPointerException();
+		}
+		return Double.parseDouble((String) rawContents);
 	}
 
 	/**

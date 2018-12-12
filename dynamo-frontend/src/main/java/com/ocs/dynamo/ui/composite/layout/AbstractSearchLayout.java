@@ -102,8 +102,14 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	 */
 	private VerticalLayout mainSearchLayout;
 
+	/**
+	 * Button for selecting the next item
+	 */
 	private Button nextButton;
 
+	/**
+	 * Button for selecting the previous item
+	 */
 	private Button prevButton;
 
 	/**
@@ -322,6 +328,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 					nextButton.setEnabled(true);
 				}
 			});
+			prevButton.setEnabled(hasNextEntity());
 			buttonBar.addComponent(prevButton);
 		}
 
@@ -339,6 +346,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 					prevButton.setEnabled(true);
 				}
 			});
+			nextButton.setEnabled(hasNextEntity());
 			buttonBar.addComponent(nextButton);
 		}
 
@@ -462,12 +470,12 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 			}
 
 			@Override
-			protected boolean hasNextEntity(T current) {
+			protected boolean hasNextEntity() {
 				return AbstractSearchLayout.this.hasNextEntity();
 			}
 
 			@Override
-			protected boolean hasPrevEntity(T current) {
+			protected boolean hasPrevEntity() {
 				return AbstractSearchLayout.this.hasPrevEntity();
 			}
 

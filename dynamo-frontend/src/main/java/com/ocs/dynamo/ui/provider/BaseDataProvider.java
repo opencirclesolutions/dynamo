@@ -13,6 +13,10 @@
  */
 package com.ocs.dynamo.ui.provider;
 
+import java.io.Serializable;
+import java.util.List;
+import java.util.function.Consumer;
+
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.dao.SortOrder;
@@ -30,9 +34,6 @@ import com.vaadin.data.provider.Query;
 import com.vaadin.data.provider.QuerySortOrder;
 import com.vaadin.server.SerializablePredicate;
 import com.vaadin.shared.data.sort.SortDirection;
-
-import java.io.Serializable;
-import java.util.List;
 
 /**
  * Abstract class for data providers
@@ -78,6 +79,8 @@ public abstract class BaseDataProvider<ID extends Serializable, T extends Abstra
 	 */
 	protected List<ID> ids;
 
+	private Consumer<Integer> afterCountCompleted;
+
 	/**
 	 * Constructor
 	 * 
@@ -121,6 +124,10 @@ public abstract class BaseDataProvider<ID extends Serializable, T extends Abstra
 		}
 
 		return so;
+	}
+
+	protected ID getCurrentlySelectedId() {
+		return currentlySelectedId;
 	}
 
 	public EntityModel<T> getEntityModel() {
@@ -206,4 +213,13 @@ public abstract class BaseDataProvider<ID extends Serializable, T extends Abstra
 	public void setMaxResults(final Integer maxResults) {
 		this.maxResults = maxResults;
 	}
+
+	public Consumer<Integer> getAfterCountCompleted() {
+		return afterCountCompleted;
+	}
+
+	public void setAfterCountCompleted(Consumer<Integer> afterCountCompleted) {
+		this.afterCountCompleted = afterCountCompleted;
+	}
+
 }

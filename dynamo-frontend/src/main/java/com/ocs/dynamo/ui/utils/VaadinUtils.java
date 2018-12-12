@@ -145,6 +145,21 @@ public final class VaadinUtils {
 		return cs;
 	}
 
+	/**
+	 * Returns the locale to be used inside date picker components. This checks for
+	 * the presence of the DynamoConstants.DATE_LOCALE setting on the session. If
+	 * this is not set, it falls back to the normal locale mechanism
+	 * 
+	 * @return
+	 */
+	public static Locale getDateLocale() {
+		if (VaadinSession.getCurrent() != null
+				&& VaadinSession.getCurrent().getAttribute(DynamoConstants.DATE_LOCALE) != null) {
+			return new Locale((String) VaadinSession.getCurrent().getAttribute(DynamoConstants.DATE_LOCALE));
+		}
+		return getLocale();
+	}
+
 	@SuppressWarnings("unchecked")
 	public static <T extends Component> T getFirstChildOfClass(Layout layout, Class<T> clazz) {
 		Iterator<Component> it = layout.iterator();
@@ -187,57 +202,6 @@ public final class VaadinUtils {
 	}
 
 	/**
-	 * Returns the locale to be used inside date picker components. This checks for
-	 * the presence of the DynamoConstants.DATE_LOCALE setting on the session. If
-	 * this is not set, it falls back to the normal locale mechanism
-	 * 
-	 * @return
-	 */
-	public static Locale getDateLocale() {
-		if (VaadinSession.getCurrent() != null
-				&& VaadinSession.getCurrent().getAttribute(DynamoConstants.DATE_LOCALE) != null) {
-			return new Locale((String) VaadinSession.getCurrent().getAttribute(DynamoConstants.DATE_LOCALE));
-		}
-		return getLocale();
-	}
-
-	/**
-	 * Reads the desired locale for formatting date fields from the system
-	 * properties and stores it in the session
-	 */
-	public static void storeDateLocale() {
-		VaadinSession.getCurrent().setAttribute(DynamoConstants.DATE_LOCALE,
-				SystemPropertyUtils.getDefaultDateLocale());
-	}
-
-	/**
-	 * Stores the default locale configured in the system properties in the Vaadin
-	 * session
-	 */
-	public static void storeLocale() {
-		VaadinSession.getCurrent().setLocale(new Locale(SystemPropertyUtils.getDefaultLocale()));
-	}
-
-	/**
-	 * Returns the tab index (zero based) of the tab with the specified caption
-	 * 
-	 * @param tabs    the tab sheet
-	 * @param caption the caption
-	 * @return
-	 */
-	public static int getTabIndex(TabSheet tabs, String caption) {
-		int index = 0;
-		for (int i = 0; i < tabs.getComponentCount(); i++) {
-			Tab t = tabs.getTab(i);
-			if (t.getCaption().equals(caption)) {
-				index = i;
-				break;
-			}
-		}
-		return index;
-	}
-
-	/**
 	 * Returns the first parent component of the specified component that is a
 	 * subclass of the specified class
 	 *
@@ -268,6 +232,25 @@ public final class VaadinUtils {
 		Map<String, Object> map = (Map<String, Object>) VaadinSession.getCurrent().getSession()
 				.getAttribute(attributeName);
 		return getFirstValueFromCollection(map, key);
+	}
+
+	/**
+	 * Returns the tab index (zero based) of the tab with the specified caption
+	 * 
+	 * @param tabs    the tab sheet
+	 * @param caption the caption
+	 * @return
+	 */
+	public static int getTabIndex(TabSheet tabs, String caption) {
+		int index = 0;
+		for (int i = 0; i < tabs.getComponentCount(); i++) {
+			Tab t = tabs.getTab(i);
+			if (t.getCaption().equals(caption)) {
+				index = i;
+				break;
+			}
+		}
+		return index;
 	}
 
 	/**
@@ -413,15 +396,6 @@ public final class VaadinUtils {
 		return null;
 	}
 
-	// public static <T> void removeValidatorsOfType(AbstractField<?> field,
-	// Class<?> validatorClass) {
-	// for (Validator<T> v : field.getValidators()) {
-	// if (v.getClass().equals(validatorClass)) {
-	// field.removeValidator(v);
-	// }
-	// }
-	// }
-
 	/**
 	 * Displays a confirmation dialog
 	 *
@@ -466,6 +440,23 @@ public final class VaadinUtils {
 		} else {
 			whenConfirmed.run();
 		}
+	}
+
+	/**
+	 * Reads the desired locale for formatting date fields from the system
+	 * properties and stores it in the session
+	 */
+	public static void storeDateLocale() {
+		VaadinSession.getCurrent().setAttribute(DynamoConstants.DATE_LOCALE,
+				SystemPropertyUtils.getDefaultDateLocale());
+	}
+
+	/**
+	 * Stores the default locale configured in the system properties in the Vaadin
+	 * session
+	 */
+	public static void storeLocale() {
+		VaadinSession.getCurrent().setLocale(new Locale(SystemPropertyUtils.getDefaultLocale()));
 	}
 
 	/**
@@ -541,7 +532,7 @@ public final class VaadinUtils {
 	 *
 	 * @param grouping indicates if a thousands separator is used
 	 * @param value    the String to convert to convert
-	 * @param locale   the locale
+	 * @param locale   the locale to use
 	 * @return
 	 */
 	public static Long stringToLong(boolean grouping, String value, Locale locale) {

@@ -100,7 +100,7 @@ public class FieldFactoryImpl implements FieldFactory {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	private <ID extends Serializable, S extends AbstractEntity<ID>> AbstractField<?> constructCollectionSelect(
+	private <ID extends Serializable, S extends AbstractEntity<ID>> AbstractComponent constructCollectionSelect(
 			AttributeModel am, EntityModel<?> fieldEntityModel, SerializablePredicate<?> fieldFilter, boolean search,
 			boolean multipleSelect) {
 		final EntityModel<?> em = resolveEntityModel(fieldEntityModel, am, search);
@@ -200,7 +200,7 @@ public class FieldFactoryImpl implements FieldFactory {
 			field = constructInternalLinkField(am, fieldEntityModel);
 		} else if (AttributeType.ELEMENT_COLLECTION.equals(am.getAttributeType())) {
 			if (!context.isSearch()) {
-				// use a "collection table" for an element collection
+				// use a "collection grid" for an element collection
 				final FormOptions fo = new FormOptions().setShowRemoveButton(true);
 				if (String.class.equals(am.getMemberType())) {
 					ElementCollectionGrid<?, ?, String> grid = new ElementCollectionGrid<>(am, fo);
@@ -242,7 +242,6 @@ public class FieldFactoryImpl implements FieldFactory {
 				field = new CheckBox();
 			}
 		} else if (am.isWeek()) {
-			// special case - week field in a table
 			field = new TextField();
 		} else if (search && AttributeSelectMode.TOKEN.equals(am.getSearchSelectMode())
 				&& AttributeType.BASIC.equals(am.getAttributeType())) {
@@ -297,7 +296,7 @@ public class FieldFactoryImpl implements FieldFactory {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public <ID extends Serializable, S extends AbstractEntity<ID>> AbstractField<?> constructInternalLinkField(
+	public <ID extends Serializable, S extends AbstractEntity<ID>> AbstractComponent constructInternalLinkField(
 			AttributeModel am, EntityModel<?> entityModel) {
 		EntityModel<?> em = resolveEntityModel(entityModel, am, true);
 		return new InternalLinkField<>(am, (EntityModel<S>) em, null);
@@ -363,7 +362,7 @@ public class FieldFactoryImpl implements FieldFactory {
 
 	/**
 	 * Constructs a field for looking up simple values (Strings, ints) from a table
-	 * field or a collection table
+	 * field or a collection grid
 	 * 
 	 * @param entityModel       the entity model
 	 * @param am                the attribute model

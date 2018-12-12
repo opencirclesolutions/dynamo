@@ -834,13 +834,13 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			T prev = getPreviousEntity();
 			if (prev != null) {
 				setEntity(prev, true);
-			} else {
-				filterButtons(PREV_BUTTON_DATA).stream().forEach(b -> b.setEnabled(false));
 			}
+			getPreviousButtons().stream().forEach(b -> b.setEnabled(hasPrevEntity()));
 		});
 		prevButton.setData(PREV_BUTTON_DATA);
 		buttons.get(isViewMode()).add(prevButton);
 		buttonBar.addComponent(prevButton);
+		prevButton.setEnabled(hasPrevEntity());
 
 		// button for moving to the next record
 		Button nextButton = new Button(message("ocs.next"));
@@ -849,10 +849,11 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			T next = getNextEntity();
 			if (next != null) {
 				setEntity(next, true);
-			} else {
-				filterButtons(NEXT_BUTTON_DATA).stream().forEach(b -> b.setEnabled(false));
 			}
+			getNextButtons().stream().forEach(b -> b.setEnabled(hasNextEntity()));
+
 		});
+		nextButton.setEnabled(hasNextEntity());
 		nextButton.setData(NEXT_BUTTON_DATA);
 		buttons.get(isViewMode()).add(nextButton);
 
@@ -1415,11 +1416,11 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		return false;
 	}
 
-	protected boolean hasNextEntity(T current) {
+	protected boolean hasNextEntity() {
 		return false;
 	}
 
-	protected boolean hasPrevEntity(T current) {
+	protected boolean hasPrevEntity() {
 		return false;
 	}
 

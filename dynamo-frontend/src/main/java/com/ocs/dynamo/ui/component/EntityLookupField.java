@@ -91,7 +91,7 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 	private boolean multiSelect;
 
 	/**
-	 * The page length of the table in the search dialog
+	 * The page length of the grid in the search dialog
 	 */
 	private Integer pageLength;
 

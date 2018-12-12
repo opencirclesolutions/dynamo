@@ -35,7 +35,6 @@ import com.ocs.dynamo.ui.component.CustomEntityField;
 import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
-import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.vaadin.data.HasValue;
 import com.vaadin.data.HasValue.ValueChangeEvent;
 import com.vaadin.server.SerializablePredicate;
@@ -137,8 +136,6 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 		buttonBar.addComponent(constructToggleButton());
 	}
 
-	
-	
 	/**
 	 * Adds any value change listeners for taking care of cascading search
 	 */
@@ -373,13 +370,7 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 			if (attributeModel.isSearchable()) {
 
 				FilterGroup<T> group = constructFilterGroup(getEntityModel(), attributeModel);
-				// set field with
-				Integer fieldWidth = SystemPropertyUtils.getDefaultFieldWidth();
-				if (fieldWidth != null) {
-					group.getFilterComponent().setWidth(fieldWidth + "px");
-				} else {
-					group.getFilterComponent().setSizeFull();
-				}
+				group.getFilterComponent().setSizeFull();
 
 				if (nrOfColumns == 1) {
 					form.addComponent(group.getFilterComponent());

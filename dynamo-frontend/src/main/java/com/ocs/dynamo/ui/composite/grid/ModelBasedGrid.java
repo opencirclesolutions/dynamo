@@ -142,6 +142,8 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 			// false, TableExportMode.CSV, null));
 		}
 
+		// getDataProvider().addDataProviderListener(event -> updateCaption());
+
 	}
 
 	/**

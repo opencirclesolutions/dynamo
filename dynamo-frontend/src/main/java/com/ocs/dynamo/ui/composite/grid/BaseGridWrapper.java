@@ -300,7 +300,6 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 	 * Respond to a selection of an item in the table
 	 */
 	protected void onSelect(Object selected) {
-		// override in subclass if needed
 	}
 
 	/**

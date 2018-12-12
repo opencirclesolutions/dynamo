@@ -98,6 +98,7 @@ public class IdBasedDataProvider<ID extends Serializable, T extends AbstractEnti
 					Notification.Type.ERROR_MESSAGE);
 		}
 		ids = getService().findIds(filter, getMaxResults(), so.toArray());
+		getAfterCountCompleted().accept(ids.size());
 		return ids.size();
 	}
 

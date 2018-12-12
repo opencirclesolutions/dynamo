@@ -33,6 +33,7 @@ import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.SerializablePredicate;
+import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -261,7 +262,7 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 			}
 
 			@Override
-			protected AbstractField<?> constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel,
+			protected AbstractComponent constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel,
 					boolean viewMode) {
 				return DetailsEditLayout.this.constructCustomField(entityModel, attributeModel, viewMode);
 			}

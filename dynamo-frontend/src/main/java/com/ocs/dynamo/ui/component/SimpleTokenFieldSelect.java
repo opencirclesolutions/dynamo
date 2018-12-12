@@ -65,10 +65,13 @@ public class SimpleTokenFieldSelect<ID extends Serializable, S extends AbstractE
 	private String distinctField;
 
 	/**
-	 * Whether to take the values from an element collection table
+	 * Whether to take the values from an element collection grid
 	 */
 	private final boolean elementCollection;
 
+	/**
+	 * 
+	 */
 	private Class<T> elementType;
 
 	/**
