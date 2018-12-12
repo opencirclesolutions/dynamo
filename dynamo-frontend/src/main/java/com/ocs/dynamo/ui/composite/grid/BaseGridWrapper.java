@@ -253,14 +253,22 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 	/**
 	 * Initializes the sorting and filtering for the grid
 	 */
+	@SuppressWarnings("unchecked")
 	protected void initSortingAndFiltering() {
+
+		List<SortOrder<?>> fallBackOrders = new ArrayList<>();
 		if (getSortOrders() != null && !getSortOrders().isEmpty()) {
 			GridSortOrderBuilder<T> builder = new GridSortOrderBuilder<>();
 			for (SortOrder<?> o : getSortOrders()) {
-				if (SortDirection.ASCENDING.equals(o.getDirection())) {
-					builder.thenAsc(grid.getColumn(o.getSorted().toString()));
+				if (getGrid().getColumn((String) o.getSorted()) != null) {
+					// only include column in sort order if it is present in the table
+					if (SortDirection.ASCENDING.equals(o.getDirection())) {
+						builder.thenAsc(grid.getColumn(o.getSorted().toString()));
+					} else {
+						builder.thenDesc(grid.getColumn(o.getSorted().toString()));
+					}
 				} else {
-					builder.thenDesc(grid.getColumn(o.getSorted().toString()));
+					fallBackOrders.add(o);
 				}
 			}
 			grid.setSortOrder(builder);
@@ -269,13 +277,22 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 			GridSortOrderBuilder<T> builder = new GridSortOrderBuilder<>();
 			for (AttributeModel am : entityModel.getSortOrder().keySet()) {
 				boolean asc = entityModel.getSortOrder().get(am);
-				if (asc) {
-					builder.thenAsc(grid.getColumn(am.getPath()));
+				if (getGrid().getColumn(am.getPath()) != null) {
+					if (asc) {
+						builder.thenAsc(grid.getColumn(am.getPath()));
+					} else {
+						builder.thenDesc(grid.getColumn(am.getPath()));
+					}
 				} else {
-					builder.thenDesc(grid.getColumn(am.getPath()));
+					fallBackOrders.add(new SortOrder<String>(am.getPath(),
+							asc ? SortDirection.ASCENDING : SortDirection.DESCENDING));
 				}
 			}
 			grid.setSortOrder(builder);
+		}
+
+		if (dataProvider instanceof BaseDataProvider) {
+			((BaseDataProvider<ID, T>) dataProvider).setFallBackSortOrders(fallBackOrders);
 		}
 	}
 

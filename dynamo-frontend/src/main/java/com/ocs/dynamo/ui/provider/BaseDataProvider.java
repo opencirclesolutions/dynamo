@@ -1,3 +1,16 @@
+/*
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
 package com.ocs.dynamo.ui.provider;
 
 import com.ocs.dynamo.constants.DynamoConstants;
@@ -40,6 +53,9 @@ public abstract class BaseDataProvider<ID extends Serializable, T extends Abstra
 
 	private final FetchJoinInformation[] joins;
 
+	/**
+	 * The maximum number of search results to include in the results table
+	 */
 	private Integer maxResults;
 
 	private MessageService messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
@@ -51,6 +67,15 @@ public abstract class BaseDataProvider<ID extends Serializable, T extends Abstra
 	 */
 	private ID currentlySelectedId;
 
+	/**
+	 * Sort orders to fall back to when no sort orders are defined directly on the
+	 * grid
+	 */
+	private List<com.vaadin.data.provider.SortOrder<?>> fallBackSortOrders;
+
+	/**
+	 * The IDs
+	 */
 	protected List<ID> ids;
 
 	/**
@@ -67,7 +92,7 @@ public abstract class BaseDataProvider<ID extends Serializable, T extends Abstra
 	}
 
 	/**
-	 * Creates sort orders based on the Vaadin query
+	 * Creates the desired sort order
 	 * 
 	 * @param query the Vaadin query
 	 * @return
@@ -75,21 +100,35 @@ public abstract class BaseDataProvider<ID extends Serializable, T extends Abstra
 	protected SortOrders createSortOrder(Query<T, SerializablePredicate<T>> query) {
 		List<QuerySortOrder> orders = query.getSortOrders();
 		SortOrders so = new SortOrders();
+
 		if (!orders.isEmpty()) {
 			for (QuerySortOrder order : orders) {
 				so.addSortOrder(new SortOrder(
 						SortDirection.ASCENDING.equals(order.getDirection()) ? Direction.ASC : Direction.DESC,
 						order.getSorted().toString()));
 			}
-		} else {
-			// if not sort order defined, order descending on ID
+		} else if (fallBackSortOrders != null && !fallBackSortOrders.isEmpty()) {
+			for (com.vaadin.data.provider.SortOrder<?> order : fallBackSortOrders) {
+				so.addSortOrder(new SortOrder(
+						SortDirection.ASCENDING.equals(order.getDirection()) ? Direction.ASC : Direction.DESC,
+						order.getSorted().toString()));
+			}
+		}
+
+		// if not sort order defined, order descending on ID
+		if (so.getNrOfSortOrders() == 0) {
 			so.addSortOrder(new SortOrder(Direction.DESC, DynamoConstants.ID));
 		}
+
 		return so;
 	}
 
 	public EntityModel<T> getEntityModel() {
 		return entityModel;
+	}
+
+	public List<com.vaadin.data.provider.SortOrder<?>> getFallBackSortOrders() {
+		return fallBackSortOrders;
 	}
 
 	protected FilterConverter<T> getFilterConverter() {
@@ -121,11 +160,6 @@ public abstract class BaseDataProvider<ID extends Serializable, T extends Abstra
 		return null;
 	}
 
-	public boolean hasNextItemId() {
-		int index = ids.indexOf(currentlySelectedId);
-		return index < ids.size() - 1;
-	}
-
 	public ID getPreviousItemId() {
 		int index = ids.indexOf(currentlySelectedId);
 		if (index > 0) {
@@ -133,11 +167,6 @@ public abstract class BaseDataProvider<ID extends Serializable, T extends Abstra
 			return currentlySelectedId;
 		}
 		return null;
-	}
-
-	public boolean hasPreviousItemId() {
-		int index = ids.indexOf(currentlySelectedId);
-		return index > 0;
 	}
 
 	public BaseService<ID, T> getService() {
@@ -151,6 +180,16 @@ public abstract class BaseDataProvider<ID extends Serializable, T extends Abstra
 	 */
 	public abstract int getSize();
 
+	public boolean hasNextItemId() {
+		int index = ids.indexOf(currentlySelectedId);
+		return index < ids.size() - 1;
+	}
+
+	public boolean hasPreviousItemId() {
+		int index = ids.indexOf(currentlySelectedId);
+		return index > 0;
+	}
+
 	@Override
 	public boolean isInMemory() {
 		return false;
@@ -160,8 +199,11 @@ public abstract class BaseDataProvider<ID extends Serializable, T extends Abstra
 		this.currentlySelectedId = id;
 	}
 
+	public void setFallBackSortOrders(List<com.vaadin.data.provider.SortOrder<?>> fallBackSortOrders) {
+		this.fallBackSortOrders = fallBackSortOrders;
+	}
+
 	public void setMaxResults(final Integer maxResults) {
 		this.maxResults = maxResults;
 	}
-
 }

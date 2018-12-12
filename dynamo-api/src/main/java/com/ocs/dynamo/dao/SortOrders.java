@@ -92,14 +92,26 @@ public class SortOrders {
 		}
 		return true;
 	}
-	
+
 	@Override
 	public int hashCode() {
 		return super.hashCode();
 	}
-	
+
 	@Override
 	public String toString() {
 		return ReflectionToStringBuilder.toString(this);
+	}
+
+	public List<SortOrder> getOrders() {
+		return orders;
+	}
+
+	public void setOrders(List<SortOrder> orders) {
+		this.orders = orders;
+	}
+
+	public int getNrOfSortOrders() {
+		return orders.size();
 	}
 }

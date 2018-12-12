@@ -9,6 +9,7 @@ public class SortOrdersTest {
 	public void testCreateAndAdd() {
 		SortOrders so = new SortOrders();
 		Assert.assertEquals(0, so.toArray().length);
+		Assert.assertEquals(0, so.getNrOfSortOrders());
 
 		// empty sort order will not be added
 		so.addSortOrder(new SortOrder(null));
