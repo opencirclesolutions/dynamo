@@ -46,16 +46,6 @@ public class PagingDataProvider<ID extends Serializable, T extends AbstractEntit
 	 */
 	private int size;
 
-	private int page;
-
-	private int offset;
-
-	private Filter filter;
-
-	private int pageSize;
-
-	private SortOrders sortOrders;
-
 	/**
 	 * Constructor
 	 * 
@@ -70,12 +60,12 @@ public class PagingDataProvider<ID extends Serializable, T extends AbstractEntit
 	@Override
 	public Stream<T> fetch(Query<T, SerializablePredicate<T>> query) {
 		FilterConverter<T> converter = getFilterConverter();
-		offset = query.getOffset();
-		page = offset / query.getLimit();
-		pageSize = getMaxResults() != null && offset + query.getLimit() > getMaxResults() ? getMaxResults() - offset
+		int offset = query.getOffset();
+		int page = offset / query.getLimit();
+		int pageSize = getMaxResults() != null && offset + query.getLimit() > getMaxResults() ? getMaxResults() - offset
 				: query.getLimit();
-		sortOrders = createSortOrder(query);
-		filter = converter.convert(query.getFilter().orElse(null));
+		SortOrders sortOrders = createSortOrder(query);
+		Filter filter = converter.convert(query.getFilter().orElse(null));
 		List<T> result = getService().fetch(filter, page, pageSize, sortOrders, getJoins());
 
 		ids = result.stream().map(t -> t.getId()).collect(Collectors.toList());

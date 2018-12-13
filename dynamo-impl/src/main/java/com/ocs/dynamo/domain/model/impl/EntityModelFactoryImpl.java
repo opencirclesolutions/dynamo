@@ -1175,7 +1175,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 		// check for read only (convenience only, overwritten by "editable")
 		msg = getAttributeMessage(entityModel, model, EntityModel.READ_ONLY);
 		if (!StringUtils.isEmpty(msg)) {
-			final boolean edt = Boolean.valueOf(msg);
+			boolean edt = Boolean.parseBoolean(msg);
 			if (edt) {
 				model.setEditableType(EditableType.READ_ONLY);
 			} else {

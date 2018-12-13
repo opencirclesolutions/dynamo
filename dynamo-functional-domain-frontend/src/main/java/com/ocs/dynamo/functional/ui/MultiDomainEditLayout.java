@@ -135,8 +135,8 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
 			mainLayout.addComponent(form);
 
 			// combo box for selecting domain
-			ComboBox<Class<? extends Domain>> domainCombo = new ComboBox<Class<? extends Domain>>(
-					message("ocs.select.domain"), getDomainClasses());
+			ComboBox<Class<? extends Domain>> domainCombo = new ComboBox<>(message("ocs.select.domain"),
+					getDomainClasses());
 			domainCombo.setItemCaptionGenerator(item -> getEntityModel(item).getDisplayName());
 			domainCombo.setSizeFull();
 
@@ -213,8 +213,8 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
 
 				@Override
 				protected SerializablePredicate<T> constructQuickSearchFilter(String value) {
-					return new OrPredicate<T>(new SimpleStringPredicate<T>(Domain.ATTRIBUTE_NAME, value, true, false),
-							new SimpleStringPredicate<T>(Domain.ATTRIBUTE_CODE, value, true, false));
+					return new OrPredicate<T>(new SimpleStringPredicate<>(Domain.ATTRIBUTE_NAME, value, true, false),
+							new SimpleStringPredicate<>(Domain.ATTRIBUTE_CODE, value, true, false));
 				}
 
 				@Override

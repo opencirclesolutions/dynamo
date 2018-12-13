@@ -49,7 +49,7 @@ public abstract class PropertyPredicate<T> implements SerializablePredicate<T> {
 	@Override
 	@SuppressWarnings("unchecked")
 	public AndPredicate<T> and(Predicate<? super T> other) {
-		AndPredicate<T> and = new AndPredicate<T>(this, (SerializablePredicate<T>) other);
+		AndPredicate<T> and = new AndPredicate<>(this, (SerializablePredicate<T>) other);
 		return and;
 	}
 

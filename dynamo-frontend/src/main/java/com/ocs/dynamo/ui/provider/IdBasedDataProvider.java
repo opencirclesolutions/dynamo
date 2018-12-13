@@ -37,8 +37,8 @@ import java.util.stream.Stream;
  * 
  * @author Bas Rutten
  *
- * @param <ID>
- * @param <T>
+ * @param <ID> the type of the primary key
+ * @param <T> the type of the entity
  */
 public class IdBasedDataProvider<ID extends Serializable, T extends AbstractEntity<ID>>
 		extends BaseDataProvider<ID, T> {
@@ -98,7 +98,9 @@ public class IdBasedDataProvider<ID extends Serializable, T extends AbstractEnti
 					Notification.Type.ERROR_MESSAGE);
 		}
 		ids = getService().findIds(filter, getMaxResults(), so.toArray());
-		getAfterCountCompleted().accept(ids.size());
+		if (getAfterCountCompleted() != null) {
+			getAfterCountCompleted().accept(ids.size());
+		}
 		return ids.size();
 	}
 

@@ -266,9 +266,7 @@ public class SimpleTokenFieldSelect<ID extends Serializable, S extends AbstractE
 	 * Update token selections
 	 */
 	private void setupProviderSync() {
-		provider.addDataProviderListener(event -> {
-			addTokens();
-		});
+		provider.addDataProviderListener(event -> addTokens());
 	}
 
 }

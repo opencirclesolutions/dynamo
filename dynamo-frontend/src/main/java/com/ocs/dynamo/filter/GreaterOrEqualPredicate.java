@@ -31,6 +31,9 @@ public class GreaterOrEqualPredicate<T> extends ComparePredicate<T> {
 
 	@Override
 	public boolean test(T t) {
+		if (t == null) {
+			return false;
+		}
 		Object v = com.ocs.dynamo.utils.ClassUtils.getFieldValue(t, getProperty());
 		return compareValue(v) >= 0;
 	}

@@ -116,7 +116,7 @@ public class FieldFactoryImpl implements FieldFactory {
 			return constructLookupField(am, fieldEntityModel, fieldFilter, search, true);
 		} else if (AttributeSelectMode.FANCY_LIST.equals(mode)) {
 			// fancy list select
-			FancyListSelect<ID, S> listSelect = new FancyListSelect<ID, S>(service, (EntityModel<S>) em, am,
+			FancyListSelect<ID, S> listSelect = new FancyListSelect<>(service, (EntityModel<S>) em, am,
 					(SerializablePredicate<S>) fieldFilter, search, sos);
 			listSelect.setRows(SystemPropertyUtils.getDefaultListSelectRows());
 			return listSelect;
@@ -145,7 +145,7 @@ public class FieldFactoryImpl implements FieldFactory {
 		final BaseService<ID, S> service = (BaseService<ID, S>) serviceLocator
 				.getServiceForEntity(entityModel.getEntityClass());
 		final SortOrder<?>[] sos = constructSortOrder(entityModel);
-		return new QuickAddEntityComboBox<ID, S>((EntityModel<S>) entityModel, am, service, SelectMode.FILTERED,
+		return new QuickAddEntityComboBox<>((EntityModel<S>) entityModel, am, service, SelectMode.FILTERED,
 				(SerializablePredicate<S>) fieldFilter, search, null, sos);
 	}
 
@@ -317,7 +317,7 @@ public class FieldFactoryImpl implements FieldFactory {
 		final BaseService<ID, S> service = (BaseService<ID, S>) serviceLocator
 				.getServiceForEntity(am.getMemberType() != null ? am.getMemberType() : entityModel.getEntityClass());
 		final SortOrder<?>[] sos = constructSortOrder(entityModel);
-		return new EntityLookupField<ID, S>(service, (EntityModel<S>) entityModel, am,
+		return new EntityLookupField<>(service, (EntityModel<S>) entityModel, am,
 				(SerializablePredicate<S>) fieldFilter, search, multiSelect,
 				sos.length == 0 ? null : Lists.newArrayList(sos));
 	}
@@ -329,8 +329,7 @@ public class FieldFactoryImpl implements FieldFactory {
 	 * @return
 	 */
 	private ComboBox<Boolean> constructSearchBooleanComboBox(final AttributeModel am) {
-		final ComboBox<Boolean> cb = new ComboBox<Boolean>();
-
+		ComboBox<Boolean> cb = new ComboBox<>();
 		ListDataProvider<Boolean> provider = new ListDataProvider<>(Lists.newArrayList(Boolean.TRUE, Boolean.FALSE));
 		cb.setDataProvider(provider);
 		cb.setItemCaptionGenerator(

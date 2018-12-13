@@ -584,7 +584,7 @@ public final class JpaQueryBuilder {
 	 * @return
 	 */
 	@SuppressWarnings("rawtypes")
-	public static <ID, T> TypedQuery<Object[]> createSelectQuery(Filter filter, EntityManager entityManager,
+	public static <T> TypedQuery<Object[]> createSelectQuery(Filter filter, EntityManager entityManager,
 			Class<T> entityClass, String[] selectProperties, SortOrders sortOrders, FetchJoinInformation[] fetchJoins) {
 		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
 		CriteriaQuery<Object[]> cq = builder.createQuery(Object[].class);

@@ -38,9 +38,7 @@ public class SimpleStringPredicate<T> extends PropertyPredicate<T> {
 	@Override
 	public boolean test(T t) {
 		Object v = ClassUtils.getFieldValue(t, getProperty());
-		if (v == null) {
-			return false;
-		} else if (!v.getClass().isAssignableFrom(String.class)) {
+		if (v == null || !v.getClass().isAssignableFrom(String.class)) {
 			return false;
 		}
 		String value = caseSensitive ? v.toString() : v.toString().toLowerCase();

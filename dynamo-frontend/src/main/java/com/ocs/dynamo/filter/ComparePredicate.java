@@ -26,9 +26,10 @@ public abstract class ComparePredicate<T> extends PropertyPredicate<T> {
 	private static final long serialVersionUID = -1140861553052524418L;
 
 	/**
+	 * Cnostructor
 	 * 
-	 * @param property
-	 * @param value
+	 * @param property the property to compare
+	 * @param value    the property value to compare to
 	 */
 	public ComparePredicate(String property, Object value) {
 		super(property, value);

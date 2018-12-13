@@ -27,7 +27,6 @@ public class StreamingCell implements Cell {
 		}
 	};
 
-	private static final String FALSE_AS_STRING = "0";
 	private static final String TRUE_AS_STRING = "1";
 
 	private int columnIndex;
@@ -265,8 +264,9 @@ public class StreamingCell implements Cell {
 			return "numeric";
 		case FORMULA:
 			return "formula";
+		default:
+			return "#unknown cell type (" + cellType + ")#";
 		}
-		return "#unknown cell type (" + cellType + ")#";
 	}
 
 	/**

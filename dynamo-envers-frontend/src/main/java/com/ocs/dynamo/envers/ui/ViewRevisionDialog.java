@@ -52,8 +52,6 @@ public class ViewRevisionDialog<ID, T extends AbstractEntity<ID>, U extends Vers
 
 	private static final int PAGE_SIZE = 5;
 
-	private ServiceBasedSplitLayout<RevisionKey<ID>, U> layout;
-
 	private BaseService<RevisionKey<ID>, U> service;
 
 	private EntityModel<U> entityModel;
@@ -95,7 +93,8 @@ public class ViewRevisionDialog<ID, T extends AbstractEntity<ID>, U extends Vers
 	protected void doBuild(Layout parent) {
 		FormOptions fo = new FormOptions().setReadOnly(true).setScreenMode(ScreenMode.VERTICAL)
 				.setAttributeGroupMode(AttributeGroupMode.TABSHEET).setExportAllowed(true);
-		layout = new ServiceBasedSplitLayout<RevisionKey<ID>, U>(service, entityModel, QueryType.PAGING, fo, null) {
+		ServiceBasedSplitLayout<RevisionKey<ID>, U> layout = new ServiceBasedSplitLayout<RevisionKey<ID>, U>(service,
+				entityModel, QueryType.PAGING, fo, null) {
 
 			private static final long serialVersionUID = -5302678717934028964L;
 
@@ -108,7 +107,7 @@ public class ViewRevisionDialog<ID, T extends AbstractEntity<ID>, U extends Vers
 			@Override
 			protected SerializablePredicate<U> constructFilter() {
 				// always filter on ID
-				return new EqualsPredicate<U>(DynamoConstants.ID, id);
+				return new EqualsPredicate<>(DynamoConstants.ID, id);
 			}
 		};
 		layout.setPageLength(PAGE_SIZE);

@@ -34,8 +34,10 @@ public class EqualsPredicate<T> extends ComparePredicate<T> {
 
 	@Override
 	public boolean test(T t) {
+		if (t == null) {
+			return false;
+		}
 		Object v = ClassUtils.getFieldValue(t, getProperty());
-		boolean res = ObjectUtils.equals(getValue(), v);
-		return res;
+		return ObjectUtils.equals(getValue(), v);
 	}
 }
