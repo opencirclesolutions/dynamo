@@ -6,4 +6,5 @@
     <inherits name="com.explicatis.ext_token_field.WidgetSet" />
     <inherits name="org.vaadin.teemu.switchui.SwitchComponentWidgetset" />
     <inherits name="org.tltv.gantt.WidgetSet" />    
+   <!--  <inherits name="com.vaadin.contextmenu.WidgetSet" /> -->
 </module>

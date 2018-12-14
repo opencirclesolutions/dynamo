@@ -13,9 +13,13 @@
  */
 package com.ocs.dynamo.ui.composite.grid;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.commons.io.FileUtils;
 
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
@@ -28,6 +32,8 @@ import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.component.InternalLinkField;
 import com.ocs.dynamo.ui.component.URLField;
+import com.ocs.dynamo.ui.composite.export.ExportService;
+import com.ocs.dynamo.ui.composite.export.impl.TemporaryFileDownloadResource;
 import com.ocs.dynamo.ui.provider.BaseDataProvider;
 import com.ocs.dynamo.ui.utils.FormatUtils;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
@@ -41,10 +47,12 @@ import com.vaadin.data.PropertyFilterDefinition;
 import com.vaadin.data.PropertySet;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
+import com.vaadin.server.Page;
 import com.vaadin.server.SerializablePredicate;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.TextField;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.renderers.ComponentRenderer;
 
 /**
@@ -67,11 +75,6 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 	 * The entity model of the entities to display in the grid
 	 */
 	private EntityModel<T> entityModel;
-
-	/**
-	 * Indicates whether export is allowed
-	 */
-	private boolean exportAllowed;
 
 	/***
 	 * Indicate whether to update the caption with the number of items in the grid
@@ -100,22 +103,22 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 
 	/**
 	 * Constructor
-	 *
-	 * @param container     the data container
-	 * @param model         the entity model that determines what to display
-	 * @param exportAllowed whether export of the grid contents is allowed
+	 * 
+	 * @param dataProvider   data provider
+	 * @param model          the entity model
+	 * @param editable       whether a single row is editable
+	 * @param fullGridEditor whether the full grid at once is editable
 	 */
 	public ModelBasedGrid(DataProvider<T, SerializablePredicate<T>> dataProvider, EntityModel<T> model,
-			boolean exportAllowed, boolean editable, boolean fullGridEditor) {
+			boolean editable, boolean fullGridEditor) {
 		setDataProvider(dataProvider);
 		this.editable = editable;
 		this.fullGridEditor = fullGridEditor;
 		this.entityModel = model;
 		this.messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
 		this.fieldFactory = FieldFactory.getInstance();
-		this.exportAllowed = exportAllowed;
 
-		// we need to prepopulate the grid with the available properties
+		// we need to pre-populate the grid with the available properties
 		PropertySet<T> ps = BeanPropertySet.get(model.getEntityClass(), true,
 				new PropertyFilterDefinition(3, new ArrayList<>()));
 		setPropertySet(ps);
@@ -126,23 +129,6 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 		setSelectionMode(SelectionMode.SINGLE);
 
 		generateColumns(model);
-
-		// add export functionality
-		if (isExportAllowed()) {
-			List<EntityModel<?>> list = new ArrayList<>();
-			list.add(model);
-			// addActionHandler(new TableExportActionHandler(UI.getCurrent(), list,
-			// model.getDisplayNamePlural(), null,
-			// false, TableExportMode.EXCEL, null));
-			// addActionHandler(new TableExportActionHandler(UI.getCurrent(), list,
-			// model.getDisplayNamePlural(), null,
-			// false, TableExportMode.EXCEL_SIMPLIFIED, null));
-			// addActionHandler(new TableExportActionHandler(UI.getCurrent(), list,
-			// model.getDisplayNamePlural(), null,
-			// false, TableExportMode.CSV, null));
-		}
-
-		// getDataProvider().addDataProviderListener(event -> updateCaption());
 
 	}
 
@@ -285,10 +271,6 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 
 	public MessageService getMessageService() {
 		return messageService;
-	}
-
-	public boolean isExportAllowed() {
-		return exportAllowed;
 	}
 
 	public boolean isUpdateCaption() {

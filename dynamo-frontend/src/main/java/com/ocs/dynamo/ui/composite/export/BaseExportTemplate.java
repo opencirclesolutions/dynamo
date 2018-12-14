@@ -69,7 +69,7 @@ public abstract class BaseExportTemplate<ID extends Serializable, T extends Abst
 	 * larger, then a streaming writer will be used. This is faster but it will mean
 	 * we cannot auto size the columns
 	 */
-	protected static final int MAX_SIZE = 20000;
+	protected static final int MAX_SIZE = 1000;
 
 	private CustomXlsStyleGenerator<ID, T> customGenerator;
 
@@ -188,6 +188,12 @@ public abstract class BaseExportTemplate<ID extends Serializable, T extends Abst
 		return new XSSFWorkbook();
 	}
 
+	/**
+	 * Generates CSV data
+	 * @param iterator
+	 * @return
+	 * @throws IOException
+	 */
 	protected abstract byte[] generateCsv(DataSetIterator<ID, T> iterator) throws IOException;
 
 	/**

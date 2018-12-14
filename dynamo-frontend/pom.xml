@@ -111,18 +111,6 @@
 			<groupId>com.vaadin</groupId>
 			<artifactId>vaadin-client-compiled</artifactId>
 		</dependency>
-		<!--  
-		<dependency>
-			<groupId>com.vaadin</groupId>
-			<artifactId>vaadin-client-compiler</artifactId>
-			<version>${vaadin.version}</version>
-			<scope>provided</scope>
-		</dependency>
-		-->
-		<dependency>
-			<groupId>com.vaadin</groupId>
-			<artifactId>vaadin-client-compiled</artifactId>
-		</dependency>
 		<dependency>
 			<groupId>com.vaadin</groupId>
 			<artifactId>vaadin-themes</artifactId>
@@ -131,6 +119,7 @@
 			<groupId>com.vaadin</groupId>
 			<artifactId>vaadin-spring</artifactId>
 		</dependency>
+
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-core</artifactId>
@@ -179,6 +168,20 @@
 			<groupId>org.vaadin.addon</groupId>
 			<artifactId>confirmdialog</artifactId>
 		</dependency>
+		<!--  
+		<dependency>
+			<groupId>org.vaadin.addon</groupId>
+			<artifactId>tableexport-for-vaadin</artifactId>
+			<version>1.6.0</version>
+		</dependency>
+		-->
+		<!--  
+		<dependency>
+			<groupId>com.vaadin</groupId>
+			<artifactId>vaadin-context-menu</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		-->
 		<dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi</artifactId>

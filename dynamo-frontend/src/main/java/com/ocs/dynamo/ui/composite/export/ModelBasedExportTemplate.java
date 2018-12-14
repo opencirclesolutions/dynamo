@@ -46,10 +46,8 @@ import com.opencsv.CSVWriter;
  * 
  * @author bas.rutten
  *
- * @param <ID>
- *            the type of the primary key
- * @param <T>
- *            the type of the entity
+ * @param <ID> the type of the primary key
+ * @param <T> the type of the entity
  */
 public abstract class ModelBasedExportTemplate<ID extends Serializable, T extends AbstractEntity<ID>>
 		extends BaseExportTemplate<ID, T> {
@@ -62,18 +60,13 @@ public abstract class ModelBasedExportTemplate<ID extends Serializable, T extend
 	/**
 	 * Constructor
 	 *
-	 * @param service
-	 *            the service used to retrieve the data
-	 * @param entityModel
-	 *            the entity model
-	 * @param sortOrders
-	 *            any sort orders to apply to the data
-	 * @param filter
-	 *            the filter that is used to retrieve the appropriate data
-	 * @param title
-	 *            the title of the sheet
-	 * @param customGenerator
-	 *            custom style generator
+	 * @param service         the service used to retrieve the data
+	 * @param entityModel     the entity model
+	 * @param sortOrders      any sort orders to apply to the data
+	 * @param filter          the filter that is used to retrieve the appropriate
+	 *                        data
+	 * @param title           the title of the sheet
+	 * @param customGenerator custom style generator
 	 * @param joins
 	 */
 	public ModelBasedExportTemplate(BaseService<ID, T> service, EntityModel<T> entityModel, SortOrder[] sortOrders,
@@ -113,6 +106,9 @@ public abstract class ModelBasedExportTemplate<ID extends Serializable, T extend
 		int rowIndex = 1;
 		T entity = iterator.next();
 		while (entity != null) {
+			if (rowIndex % 100 == 0) {
+				System.out.println("Processing row: " + rowIndex);
+			}
 			Row row = sheet.createRow(rowIndex);
 
 			int colIndex = 0;
@@ -136,8 +132,7 @@ public abstract class ModelBasedExportTemplate<ID extends Serializable, T extend
 	/**
 	 * Check whether a certain attribute model must be included in the export
 	 *
-	 * @param am
-	 *            the attribute model
+	 * @param am the attribute model
 	 * @return <code>true</code> if the attribute must be included,
 	 *         <code>false</code> otherwise
 	 */
@@ -160,7 +155,8 @@ public abstract class ModelBasedExportTemplate<ID extends Serializable, T extend
 	protected byte[] generateCsv(DataSetIterator<ID, T> iterator) throws IOException {
 		try (ByteArrayOutputStream out = new ByteArrayOutputStream();
 				CSVWriter writer = new CSVWriter(new OutputStreamWriter(out, DynamoConstants.UTF_8),
-						SystemPropertyUtils.getExportCsvSeparator().charAt(0))) {
+						SystemPropertyUtils.getExportCsvSeparator().charAt(0),
+						SystemPropertyUtils.getExportCsvQuoteChar().charAt(0))) {
 
 			// add header row
 			List<String> headers = new ArrayList<>();

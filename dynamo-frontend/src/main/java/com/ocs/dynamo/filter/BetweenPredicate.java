@@ -37,11 +37,15 @@ public class BetweenPredicate<T> extends PropertyPredicate<T> {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public boolean test(T t) {
+		if (t == null) {
+			return false;
+		}
+
 		Object v = ClassUtils.getFieldValue(t, getProperty());
 		if (v == null) {
 			return false;
 		}
-		return ((Comparable) v).compareTo(getFromValue()) >= 0 && ((Comparable) v).compareTo(toValue) < 0;
+		return ((Comparable) v).compareTo(getFromValue()) >= 0 && ((Comparable) v).compareTo(toValue) <= 0;
 	}
 
 	public Comparable<?> getFromValue() {

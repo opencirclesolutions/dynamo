@@ -1,4 +1,4 @@
-package com.ocs.dynamo.ui.composite.export;
+//package com.ocs.dynamo.ui.composite.export;
 ///*
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -12,7 +12,6 @@ package com.ocs.dynamo.ui.composite.export;
 //   See the License for the specific language governing permissions and
 //   limitations under the License.
 // */
-//package com.ocs.dynamo.ui.composite.table.export;
 //
 //import java.io.ByteArrayOutputStream;
 //import java.io.File;
@@ -91,7 +90,7 @@ package com.ocs.dynamo.ui.composite.export;
 //
 //		private static final long serialVersionUID = -1932835869230658150L;
 //
-//		private CSVWriter writer;
+//		private com.opencsv.CSVWriter writer;
 //
 //		private ByteArrayOutputStream out;
 //

@@ -96,6 +96,7 @@ public class IdBasedDataProvider<ID extends Serializable, T extends AbstractEnti
 			Notification.show(
 					getMessageService().getMessage("ocs.too.many.results", VaadinUtils.getLocale(), getMaxResults()),
 					Notification.Type.ERROR_MESSAGE);
+			
 		}
 		ids = getService().findIds(filter, getMaxResults(), so.toArray());
 		if (getAfterCountCompleted() != null) {

@@ -37,6 +37,10 @@ public class SimpleStringPredicate<T> extends PropertyPredicate<T> {
 
 	@Override
 	public boolean test(T t) {
+		if (t == null) {
+			return false;
+		}
+
 		Object v = ClassUtils.getFieldValue(t, getProperty());
 		if (v == null || !v.getClass().isAssignableFrom(String.class)) {
 			return false;

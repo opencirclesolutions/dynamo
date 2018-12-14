@@ -417,7 +417,7 @@ public abstract class DetailsEditGrid<ID extends Serializable, T extends Abstrac
 	 */
 	@Override
 	protected Component initContent() {
-		grid = new ModelBasedGrid<ID, T>(provider, entityModel, false, isGridEditEnabled(), true) {
+		grid = new ModelBasedGrid<ID, T>(provider, entityModel, isGridEditEnabled(), true) {
 
 			private static final long serialVersionUID = 6143503902550597524L;
 

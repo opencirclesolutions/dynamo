@@ -13,21 +13,30 @@
  */
 package com.ocs.dynamo.ui.composite.grid;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.List;
+
+import org.apache.commons.io.FileUtils;
 
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
+import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.Searchable;
+import com.ocs.dynamo.ui.composite.export.ExportService;
+import com.ocs.dynamo.ui.composite.export.impl.TemporaryFileDownloadResource;
 import com.ocs.dynamo.ui.provider.BaseDataProvider;
 import com.ocs.dynamo.ui.provider.IdBasedDataProvider;
 import com.ocs.dynamo.ui.provider.PagingDataProvider;
 import com.ocs.dynamo.ui.provider.QueryType;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.SortOrder;
+import com.vaadin.server.Page;
 import com.vaadin.server.SerializablePredicate;
+import com.vaadin.ui.UI;
 
 /**
  * A wrapper for a grid that retrieves its data directly from the database
@@ -77,6 +86,7 @@ public class ServiceBasedGridWrapper<ID extends Serializable, T extends Abstract
 		provider.setAfterCountCompleted(x -> getGrid().updateCaption(x));
 
 		doConstructDataProvider(provider);
+
 		return provider;
 	}
 
@@ -88,12 +98,35 @@ public class ServiceBasedGridWrapper<ID extends Serializable, T extends Abstract
 		return maxResults;
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	protected void initSortingAndFiltering() {
 		super.initSortingAndFiltering();
 		// sets the initial filter
 		getGrid().getDataCommunicator().setDataProvider(getDataProvider(), filter);
 		getGrid().addSelectionListener(event -> onSelect(getGrid().getSelectedItems()));
+
+		// right click to download
+		if (isAllowExport()) {
+			getGrid().addContextClickListener(event -> {
+				ExportService service = ServiceLocatorFactory.getServiceLocator().getService(ExportService.class);
+				byte[] exported = service.export(getEntityModel().getEntityClass(), getEntityModel(), getFilter(),
+						getSortOrders(), getJoins());
+
+				File tempFile;
+				try {
+					tempFile = File.createTempFile("tmp", ".xlsx");
+					FileUtils.writeByteArrayToFile(tempFile, exported);
+					Page.getCurrent()
+							.open(new TemporaryFileDownloadResource(UI.getCurrent(),
+									getEntityModel().getDisplayNamePlural() + ".xlsx",
+									"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", tempFile),
+									getEntityModel().getDisplayNamePlural(), true);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			});
+		}
 
 	}
 
@@ -105,8 +138,8 @@ public class ServiceBasedGridWrapper<ID extends Serializable, T extends Abstract
 	@Override
 	public void search(SerializablePredicate<T> filter) {
 		SerializablePredicate<T> temp = beforeSearchPerformed(filter);
+		this.filter = temp != null ? temp : filter;
 		getGrid().getDataCommunicator().setDataProvider(getDataProvider(), temp != null ? temp : filter);
-
 	}
 
 	/**

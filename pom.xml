@@ -102,6 +102,8 @@
 		<vaadin.icons.version>3.0.2</vaadin.icons.version>
 		<vaadin-spring.version>3.1.1</vaadin-spring.version>
 		<vaadin.charts.version>4.0.5</vaadin.charts.version>
+		<!-- TODO: this should ideally be updated to version 3.0.0 but that currently does not work -->
+		<vaadin.contextmenu.version>3.0.0</vaadin.contextmenu.version>
 		<vaadin.confirmdialog.version>3.2.0</vaadin.confirmdialog.version>
 		<hibernate.version>5.3.7.Final</hibernate.version>
 		<hibernate.validator.version>6.0.13.Final</hibernate.validator.version>
@@ -167,6 +169,11 @@
 				<groupId>com.vaadin</groupId>
 				<artifactId>vaadin-spring</artifactId>
 				<version>${vaadin-spring.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.vaadin</groupId>
+				<artifactId>vaadin-context-menu</artifactId>
+				<version>${vaadin.contextmenu.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.vaadin.addon</groupId>

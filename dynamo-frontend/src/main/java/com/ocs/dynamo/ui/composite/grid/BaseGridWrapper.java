@@ -171,7 +171,7 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 	 * @return
 	 */
 	protected ModelBasedGrid<ID, T> constructGrid() {
-		return new ModelBasedGrid<ID, T>(dataProvider, entityModel, allowExport, editable, false);
+		return new ModelBasedGrid<ID, T>(dataProvider, entityModel, editable, false);
 
 	}
 
@@ -291,6 +291,7 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 			grid.setSortOrder(builder);
 		}
 
+		// set fall back sort orders 
 		if (dataProvider instanceof BaseDataProvider) {
 			((BaseDataProvider<ID, T>) dataProvider).setFallBackSortOrders(fallBackOrders);
 		}
@@ -325,6 +326,10 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 
 	public Layout getLayout() {
 		return layout;
+	}
+
+	public boolean isAllowExport() {
+		return allowExport;
 	}
 
 }
