@@ -13,6 +13,11 @@
  */
 package com.ocs.dynamo.domain.model.annotation;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 import com.ocs.dynamo.domain.model.AttributeDateType;
 import com.ocs.dynamo.domain.model.AttributeSelectMode;
 import com.ocs.dynamo.domain.model.AttributeTextFieldMode;
@@ -20,11 +25,6 @@ import com.ocs.dynamo.domain.model.CheckboxMode;
 import com.ocs.dynamo.domain.model.EditableType;
 import com.ocs.dynamo.domain.model.NumberSelectMode;
 import com.ocs.dynamo.domain.model.VisibilityType;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
 
 /**
  * An interface that can be used to specify the properties of an attribute - this will override any
@@ -105,12 +105,12 @@ public @interface Attribute {
 
 	/**
 	 * 
-	 * @return the maximum length of the text representation in a table
+	 * @return the maximum length of the text representation in a grid
 	 */
-	int maxLengthInTable() default -1;
+	int maxLengthInGrid() default -1;
 
     /**
-     * @return the maximum allowed value of an element in a collection table
+     * @return the maximum allowed value of an element in a element collection grid
      */
     long maxValue() default Long.MAX_VALUE;
 

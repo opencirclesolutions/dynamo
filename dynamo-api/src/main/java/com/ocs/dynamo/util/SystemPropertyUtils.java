@@ -36,18 +36,18 @@ public final class SystemPropertyUtils {
 	/**
 	 * 
 	 * 
-	 * @return whether export to Excel or CSV is allowed for all tables. If set to
+	 * @return whether export to Excel or CSV is allowed for all grids. If set to
 	 *         <code>false</code> it will disable exporting for all tables. You can
-	 *         selectively enable it for somet tables using the FormOptions object
+	 *         selectively enable it for specific grids
 	 */
-	public static boolean allowTableExport() {
-		return Boolean.getBoolean(DynamoConstants.SP_ALLOW_TABLE_EXPORT);
+	public static boolean allowListExport() {
+		return Boolean.getBoolean(DynamoConstants.SP_ALLOW_LIST_EXPORT);
 	}
 
 	/**
 	 *
 	 *
-	 * @return the default currency symbol to use for decimale fields that display a
+	 * @return the default currency symbol to use for decimal fields that display a
 	 *         currency
 	 */
 	public static String getDefaultCurrencySymbol() {

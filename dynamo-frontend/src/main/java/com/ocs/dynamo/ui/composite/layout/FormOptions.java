@@ -173,7 +173,7 @@ public class FormOptions implements Serializable {
 	 * 
 	 * Indicates whether table export is allowed (read from system property)
 	 */
-	private boolean exportAllowed = SystemPropertyUtils.allowTableExport();
+	private boolean exportAllowed = SystemPropertyUtils.allowListExport();
 
 	public FormOptions createCopy() {
 		FormOptions fo = new FormOptions();

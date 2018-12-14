@@ -25,7 +25,7 @@ import com.ocs.dynamo.filter.Compare;
 import com.ocs.dynamo.filter.Filter;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.test.BaseMockitoTest;
-import com.ocs.dynamo.ui.composite.table.export.ExportPivotTemplate;
+import com.ocs.dynamo.ui.composite.export.ExportPivotTemplate;
 
 public class ExportPivotTemplateTest extends BaseMockitoTest {
 

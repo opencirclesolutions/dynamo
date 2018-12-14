@@ -97,7 +97,7 @@ public class AttributeModelImpl implements AttributeModel {
 
 	private Integer maxLength;
 
-	private Integer maxLengthInTable;
+	private Integer maxLengthInGrid;
 
 	private Long maxValue;
 
@@ -294,8 +294,8 @@ public class AttributeModelImpl implements AttributeModel {
 	}
 
 	@Override
-	public Integer getMaxLengthInTable() {
-		return maxLengthInTable;
+	public Integer getMaxLengthInGrid() {
+		return maxLengthInGrid;
 	}
 
 	@Override
@@ -657,8 +657,8 @@ public class AttributeModelImpl implements AttributeModel {
 		this.maxLength = maxLength;
 	}
 
-	public void setMaxLengthInTable(Integer maxLengthInTable) {
-		this.maxLengthInTable = maxLengthInTable;
+	public void setMaxLengthInGrid(Integer maxLengthInGrid) {
+		this.maxLengthInGrid = maxLengthInGrid;
 	}
 
 	public void setMaxValue(Long maxValue) {

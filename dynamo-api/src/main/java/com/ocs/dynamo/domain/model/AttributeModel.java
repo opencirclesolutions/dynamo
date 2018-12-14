@@ -185,7 +185,7 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	 * 
 	 * @return
 	 */
-	Integer getMaxLengthInTable();
+	Integer getMaxLengthInGrid();
 
 	/**
 	 * 

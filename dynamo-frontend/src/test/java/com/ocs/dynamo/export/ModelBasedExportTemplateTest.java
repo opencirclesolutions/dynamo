@@ -6,7 +6,7 @@ import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.domain.model.impl.EntityModelFactoryImpl;
 import com.ocs.dynamo.service.TestEntityService;
 import com.ocs.dynamo.test.BaseIntegrationTest;
-import com.ocs.dynamo.ui.composite.table.export.ModelBasedExportTemplate;
+import com.ocs.dynamo.ui.composite.export.ModelBasedExportTemplate;
 import com.ocs.dynamo.utils.DateUtils;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;

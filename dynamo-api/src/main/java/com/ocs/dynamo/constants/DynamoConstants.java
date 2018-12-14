@@ -43,8 +43,8 @@ public final class DynamoConstants {
 	public static final String CSS_CLASS_HALFSCREEN = "halfScreen";
 
 	/**
-	 * The CSS class that is given to an image component used to display an
-	 * uploaded file
+	 * The CSS class that is given to an image component used to display an uploaded
+	 * file
 	 */
 	public static final String CSS_CLASS_UPLOAD = "fileUpload";
 
@@ -144,10 +144,10 @@ public final class DynamoConstants {
 	public static final String SELECTED_TAB = "selectedTab";
 
 	/**
-	 * Name of the system property that is used to determine if grid export is
-	 * allowed
+	 * Name of the system property that is used to determine if exporting of lists
+	 * (inside grids) is allowed
 	 */
-	public static final String SP_ALLOW_TABLE_EXPORT = "ocs.allow.grid.export";
+	public static final String SP_ALLOW_LIST_EXPORT = "ocs.allow.list.export";
 
 	/**
 	 * Indicates whether to capitalize individual words in property names
@@ -177,26 +177,25 @@ public final class DynamoConstants {
 	public static final String SP_DEFAULT_CAPTION_FORMAT = "ocs.default.caption.format";
 
 	/**
-	 * Name of the system property that is used to determine the default
-	 * currency symbol
+	 * Name of the system property that is used to determine the default currency
+	 * symbol
 	 */
 	public static final String SP_DEFAULT_CURRENCY_SYMBOL = "ocs.default.currency.symbol";
 
 	/**
-	 * Name of the system property that is used to determine the default date
-	 * format
+	 * Name of the system property that is used to determine the default date format
 	 */
 	public static final String SP_DEFAULT_DATE_FORMAT = "ocs.default.date.format";
 
 	/**
-	 * Name of the system property that is used to determine the default
-	 * date/time (timestamp) format
+	 * Name of the system property that is used to determine the default date/time
+	 * (timestamp) format
 	 */
 	public static final String SP_DEFAULT_DATETIME_FORMAT = "ocs.default.datetime.format";
 
 	/**
-	 * Name of the system property that is used to determine the default
-	 * date/time (timestamp) format with time zone
+	 * Name of the system property that is used to determine the default date/time
+	 * (timestamp) format with time zone
 	 */
 	public static final String SP_DEFAULT_DATETIME_ZONE_FORMAT = "ocs.default.datetime.zone.format";
 
@@ -207,8 +206,8 @@ public final class DynamoConstants {
 	public static final String SP_DEFAULT_DECIMAL_PRECISION = "ocs.default.decimal.precision";
 
 	/**
-	 * Name of the system property that is used to determine the representation
-	 * of the value false
+	 * Name of the system property that is used to determine the representation of
+	 * the value false
 	 */
 	public static final String SP_DEFAULT_FALSE_REPRESENTATION = "ocs.default.false.representation";
 
@@ -218,8 +217,8 @@ public final class DynamoConstants {
 	public static final String SP_DEFAULT_FORM_TITLE_WIDTH = "ocs.default.form.title.width";
 
 	/**
-	 * Name of the system property that is used to determine the amount of rows
-	 * in a list select
+	 * Name of the system property that is used to determine the amount of rows in a
+	 * list select
 	 */
 	public static final String SP_DEFAULT_LISTSELECT_ROWS = "ocs.default.listselect.rows";
 
@@ -241,26 +240,23 @@ public final class DynamoConstants {
 	public static final String SP_DEFAULT_SEARCH_PREFIX_ONLY = "ocs.default.search.prefix.only";
 
 	/**
-	 * Name of the system property that is used to determine the default time
-	 * format
+	 * Name of the system property that is used to determine the default time format
 	 */
 	public static final String SP_DEFAULT_TIME_FORMAT = "ocs.default.time.format";
 
 	/**
-	 * Name of the system property that is used to determine the representation
-	 * of the value true
+	 * Name of the system property that is used to determine the representation of
+	 * the value true
 	 */
 	public static final String SP_DEFAULT_TRUE_REPRESENTATION = "ocs.default.true.representation";
 
 	/**
-	 * Name of the system property that is used as the CSV quote char when
-	 * exporting
+	 * Name of the system property that is used as the CSV quote char when exporting
 	 */
 	public static final String SP_EXPORT_CSV_QUOTE = "ocs.export.csv.quote";
 
 	/**
-	 * Name of the system property that is used as the CSV separator when
-	 * exporting
+	 * Name of the system property that is used as the CSV separator when exporting
 	 */
 	public static final String SP_EXPORT_CSV_SEPARATOR = "ocs.export.csv.separator";
 
@@ -295,8 +291,8 @@ public final class DynamoConstants {
 	public static final String SP_THOUSAND_GROUPING = "ocs.edit.thousands.grouping";
 
 	/**
-	 * Class name for the service locator (override to create a different service locator, e.g.
-	 * to use a separate service locator for integration tests)
+	 * Class name for the service locator (override to create a different service
+	 * locator, e.g. to use a separate service locator for integration tests)
 	 */
 	public static final String SP_SERVICE_LOCATOR_CLASS_NAME = "ocs.service.locator.classname";
 
@@ -316,8 +312,7 @@ public final class DynamoConstants {
 	public static final String USER = "user";
 
 	/**
-	 * The name of the variable that is used to store the user name in the
-	 * session
+	 * The name of the variable that is used to store the user name in the session
 	 */
 	public static final String USER_NAME = "userName";
 

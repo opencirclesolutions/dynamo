@@ -11,7 +11,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-package com.ocs.dynamo.ui.composite.table.export;
+package com.ocs.dynamo.ui.composite.export;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -241,7 +241,7 @@ public abstract class BaseExportTemplate<ID extends Serializable, T extends Abst
 	/**
 	 * Processes the input and creates a file
 	 *
-	 * @param xls
+	 * @param xls whether to export to Excel (xls)
 	 * @return
 	 * @throws IOException
 	 */
@@ -294,7 +294,7 @@ public abstract class BaseExportTemplate<ID extends Serializable, T extends Abst
 		} else if (value instanceof Date && (am == null || !am.isWeek())) {
 			cell.setCellValue((Date) value);
 		} else if (value instanceof LocalDate) {
-			 cell.setCellValue(DateUtils.toLegacyDate((LocalDate) value));
+			cell.setCellValue(DateUtils.toLegacyDate((LocalDate) value));
 		} else if (value instanceof LocalDateTime) {
 			cell.setCellValue(DateUtils.toLegacyDate((LocalDateTime) value));
 		} else if (value instanceof BigDecimal) {

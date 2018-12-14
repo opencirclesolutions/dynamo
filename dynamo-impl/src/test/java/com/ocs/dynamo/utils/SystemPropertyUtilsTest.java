@@ -16,7 +16,7 @@ public class SystemPropertyUtilsTest {
         Assert.assertEquals(3, SystemPropertyUtils.getDefaultListSelectRows());
         Assert.assertEquals("HH:mm:ss", SystemPropertyUtils.getDefaultTimeFormat());
 
-        Assert.assertEquals(false, SystemPropertyUtils.allowTableExport());
+        Assert.assertEquals(false, SystemPropertyUtils.allowListExport());
         Assert.assertEquals("\"", SystemPropertyUtils.getExportCsvQuoteChar());
         Assert.assertEquals(";", SystemPropertyUtils.getExportCsvSeparator());
 

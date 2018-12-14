@@ -222,8 +222,8 @@ public final class FormatUtils {
 	 * @return
 	 */
 	private static String restrictToMaxLength(String input, AttributeModel am) {
-		if (am.getMaxLengthInTable() != null && input != null && input.length() > am.getMaxLengthInTable()) {
-			return input.substring(0, am.getMaxLengthInTable()) + "...";
+		if (am.getMaxLengthInGrid() != null && input != null && input.length() > am.getMaxLengthInGrid()) {
+			return input.substring(0, am.getMaxLengthInGrid()) + "...";
 		}
 		return input;
 	}

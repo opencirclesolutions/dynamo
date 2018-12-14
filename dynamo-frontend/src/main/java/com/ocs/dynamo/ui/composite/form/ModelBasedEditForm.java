@@ -430,11 +430,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 					Component c = constructImagePreview(attributeModel);
 					parent.addComponent(c);
 					previews.get(isViewMode()).put(attributeModel, c);
-				} else if (AttributeType.LOB.equals(type) && attributeModel.isImage()) {
-					// image preview
-					Component c = constructImagePreview(attributeModel);
-					parent.addComponent(c);
-					previews.get(isViewMode()).put(attributeModel, c);
 				} else if (AttributeType.DETAIL.equals(type) && attributeModel.isComplexEditable()) {
 					AbstractComponent f = constructCustomField(entityModel, attributeModel, viewMode);
 					if (f instanceof UseInViewMode) {

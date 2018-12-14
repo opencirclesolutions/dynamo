@@ -20,8 +20,7 @@ import java.util.Map;
  * An interface representing a model that contains an entity's metadata
  * 
  * @author bas.rutten
- * @param <T>
- *            the type of the entity
+ * @param <T> the type of the entity
  */
 public interface EntityModel<T> {
 
@@ -113,13 +112,13 @@ public interface EntityModel<T> {
 	String DISPLAY_NAME = "displayName";
 
 	/**
-	 * Display name plural form (used as title above tables/lists)
+	 * Display name plural form (used as title above grids/lists)
 	 */
 	String DISPLAY_NAME_PLURAL = "displayNamePlural";
 
 	/**
 	 * The display property (used to determine what to display when using the entity
-	 * inside a lookup component or inside a table)
+	 * inside a lookup component or a grid)
 	 */
 	String DISPLAY_PROPERTY = "displayProperty";
 
@@ -160,9 +159,9 @@ public interface EntityModel<T> {
 	String MAX_LENGTH = "maxLength";
 
 	/**
-	 * The maximum string length of the textual representation inside a table
+	 * The maximum string length of the textual representation inside a grid
 	 */
-	String MAX_LENGTH_IN_TABLE = "maxLengthInTable";
+	String MAX_LENGTH_IN_GRID = "maxLengthInGrid";
 
 	/**
 	 * The maximum value of the numeric items inside an element collection
@@ -190,7 +189,8 @@ public interface EntityModel<T> {
 	String MULTIPLE_SEARCH = "multipleSearch";
 
 	/**
-	 * Whether a link in a table is navigable
+	 * Whether this property is navigable (in view mode or inside a grid, a link
+	 * will be rendered)
 	 */
 	String NAVIGABLE = "navigable";
 
@@ -282,7 +282,7 @@ public interface EntityModel<T> {
 	String NUMBER_SELECT_MODE = "numberSelectMode";
 
 	/**
-	 * Whether to show an attribute inside a table
+	 * Whether to show an attribute inside a grid
 	 */
 	String SHOW_IN_TABLE = "showInTable";
 
@@ -313,7 +313,8 @@ public interface EntityModel<T> {
 	String TRUE_REPRESENTATION = "trueRepresentation";
 
 	/**
-	 * Indicates that a value must be represented in a table as a clickable URL
+	 * Indicates that a value must be represented as a clickable URL (to an outside
+	 * destination)
 	 */
 	String URL = "url";
 
@@ -335,8 +336,7 @@ public interface EntityModel<T> {
 	/**
 	 * Adds an attribute group
 	 *
-	 * @param attributeGroup
-	 *            the name of the attribute group
+	 * @param attributeGroup the name of the attribute group
 	 */
 	void addAttributeGroup(String attributeGroup);
 
@@ -346,12 +346,10 @@ public interface EntityModel<T> {
 	 * When the existing model is not found the attribute will added on the end of
 	 * the list.
 	 * 
-	 * @param attributeGroup
-	 *            The group to which the attribute model should be registered
-	 * @param model
-	 *            The model of the attribute
-	 * @param existingModel
-	 *            The existing attribute model
+	 * @param attributeGroup The group to which the attribute model should be
+	 *                       registered
+	 * @param model          The model of the attribute
+	 * @param existingModel  The existing attribute model
 	 */
 	void addAttributeModel(String attributeGroup, AttributeModel model, AttributeModel existingModel);
 
@@ -365,8 +363,7 @@ public interface EntityModel<T> {
 	/**
 	 * Looks up an attribute model by its name
 	 * 
-	 * @param attributeName
-	 *            the name of the attribute
+	 * @param attributeName the name of the attribute
 	 * @return
 	 */
 	AttributeModel getAttributeModel(String attributeName);
@@ -381,8 +378,7 @@ public interface EntityModel<T> {
 	/**
 	 * Returns the attribute models for a certain group
 	 * 
-	 * @param group
-	 *            the caption of the group
+	 * @param group the caption of the group
 	 * @return
 	 */
 	List<AttributeModel> getAttributeModelsForGroup(String group);
@@ -428,7 +424,7 @@ public interface EntityModel<T> {
 
 	/**
 	 * The name of the property that is used when displaying the entity inside a
-	 * select component (like a combo box) or a table
+	 * select component (like a combo box) or a grid
 	 * 
 	 * @return
 	 */
@@ -475,8 +471,7 @@ public interface EntityModel<T> {
 	/**
 	 * Indicates whether an attribute group should be visible
 	 * 
-	 * @param group
-	 *            the attribute group
+	 * @param group the attribute group
 	 * @return
 	 */
 	boolean isAttributeGroupVisible(String group, boolean readOnly);
