@@ -298,7 +298,7 @@ public interface BaseDao<ID, T extends AbstractEntity<ID>> {
     <S> List<S> findDistinct(Filter filter, String distinctField, Class<S> elementType, SortOrder... orders);
 
     /**
-     * Returns all distinct values in a collection table
+     * Returns all distinct values in an element collection table
      * 
      * @param tableName
      *            the table name

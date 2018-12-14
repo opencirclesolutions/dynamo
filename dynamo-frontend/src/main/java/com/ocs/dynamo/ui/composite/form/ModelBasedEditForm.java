@@ -1938,8 +1938,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		resetComponentErrors();
 		if (oldMode != this.viewMode) {
 			afterModeChanged(isViewMode());
-			groups.get(isViewMode()).getFields().filter(f -> f instanceof DetailsEditLayout<?, ?>)
-					.map(f -> (DetailsEditLayout<?, ?>) f).forEach(f -> f.signalModeChange(isViewMode()));
 		}
 	}
 

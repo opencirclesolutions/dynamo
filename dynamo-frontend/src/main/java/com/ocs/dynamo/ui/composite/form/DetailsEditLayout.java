@@ -34,7 +34,6 @@ import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.SerializablePredicate;
 import com.vaadin.ui.AbstractComponent;
-import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
@@ -54,6 +53,8 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 		extends CustomField<Collection<T>> implements NestedComponent, UseInViewMode {
 
 	/**
+	 * A container that holds the edit form for a single entity along with a button
+	 * bar
 	 * 
 	 * @author Bas Rutten
 	 *
@@ -62,17 +63,25 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 
 		private static final long serialVersionUID = 3507638736422806589L;
 
+		/**
+		 * The actual edit form
+		 */
 		private ModelBasedEditForm<ID, T> form;
 
+		/**
+		 * Button for deleting the form
+		 */
 		private Button deleteButton;
 
+		/**
+		 * Button bar
+		 */
 		private HorizontalLayout buttonBar;
 
 		/**
 		 * Constructor
 		 * 
-		 * @param form     the model based edit form
-		 * @param sameLine whether to display the form on the same line
+		 * @param form the model based edit form
 		 */
 		FormContainer(ModelBasedEditForm<ID, T> form) {
 			super(false, true);
@@ -91,7 +100,6 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 					items.remove(this.form.getEntity());
 					mainFormContainer.removeComponent(this);
 					forms.remove(this);
-					detailComponentsValid.remove(form);
 				});
 				buttonBar.addComponent(deleteButton);
 				postProcessButtonBar(buttonBar);
@@ -141,7 +149,6 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 		public boolean validateAllFields() {
 			return form.validateAllFields();
 		}
-
 	}
 
 	private static final long serialVersionUID = -1203245694503350276L;
@@ -208,8 +215,6 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 	 */
 	private List<FormContainer> forms = new ArrayList<>();
 
-	private Map<NestedComponent, Boolean> detailComponentsValid = new HashMap<>();
-
 	/**
 	 * Container that holds all the sub forms
 	 */
@@ -219,22 +224,20 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 	 * Constructor
 	 * 
 	 * @param service        the service
-	 * @param items          the items to display
 	 * @param entityModel    the entity model
 	 * @param attributeModel the attribute model
 	 * @param viewMode       whether the form is in view mode
 	 * @param formOptions    the form options
-	 * @param comparator     the comparator for sorting the members
+	 * @param comparator     the comparator for sorting the items
 	 */
-	public DetailsEditLayout(BaseService<ID, T> service, Collection<T> items, EntityModel<T> entityModel,
-			AttributeModel attributeModel, boolean viewMode, FormOptions formOptions, Comparator<T> comparator) {
+	public DetailsEditLayout(BaseService<ID, T> service, EntityModel<T> entityModel, AttributeModel attributeModel,
+			boolean viewMode, FormOptions formOptions, Comparator<T> comparator) {
 		this.service = service;
 		this.entityModel = entityModel;
 		this.attributeModel = attributeModel;
 		this.messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
 		this.comparator = comparator;
 		this.items = new ArrayList<>();
-		this.items.addAll(items);
 		this.viewMode = viewMode;
 		this.formOptions = formOptions;
 	}
@@ -290,8 +293,6 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 		};
 		forms.add(fc);
 		mainFormContainer.addComponent(fc);
-
-		detailComponentsValid.put(editForm, editForm.isValid());
 	}
 
 	/**
@@ -359,7 +360,7 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 	 * @param viewMode       whether the form is in view mode
 	 * @return
 	 */
-	protected AbstractField<?> constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel,
+	protected AbstractComponent constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel,
 			boolean viewMode) {
 		return null;
 	}
@@ -370,6 +371,11 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 	 * @return
 	 */
 	protected abstract T createEntity();
+
+	@Override
+	protected void doSetValue(Collection<T> value) {
+		setItems(value);
+	}
 
 	public Button getAddButton() {
 		return addButton;
@@ -398,12 +404,24 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 		return fieldFilters;
 	}
 
+	/**
+	 * Returns the current number of forms
+	 * 
+	 * @return
+	 */
+	public Integer getFormCount() {
+		return forms.size();
+	}
+
 	public FormOptions getFormOptions() {
 		return formOptions;
 	}
 
-	public Collection<T> getItems() {
-		return items;
+	@Override
+	public Collection<T> getValue() {
+		// TODO: this does not appear to actually have to return anything for the
+		// component to work
+		return null;
 	}
 
 	/**
@@ -457,7 +475,7 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 	}
 
 	protected void postProcessDetailButtonBar(int index, Layout buttonBar, boolean viewMode) {
-
+		// overwrite in subclass if needed
 	}
 
 	protected void postProcessEditFields(ModelBasedEditForm<ID, T> editForm) {
@@ -488,12 +506,24 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 		}
 	}
 
+	/**
+	 * Sets the visibility of the delete button for a form
+	 * 
+	 * @param index   the zero-based index of the form
+	 * @param visible the desired visibility
+	 */
 	public void setDeleteVisible(int index, boolean visible) {
 		if (index < this.forms.size()) {
 			this.forms.get(index).setDeleteVisible(visible);
 		}
 	}
 
+	/**
+	 * Sets the entity for a certain form to the provided entity
+	 * 
+	 * @param index  the zero-based index of the form
+	 * @param entity the entity to set
+	 */
 	public void setEntity(int index, T entity) {
 		if (index < this.forms.size()) {
 			this.forms.get(index).setEntity(entity);
@@ -501,11 +531,11 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 	}
 
 	/**
-	 * Enables or disables a field
+	 * Enables or disables a field inside a form
 	 * 
-	 * @param index
-	 * @param path
-	 * @param enabled
+	 * @param index   the zero-based index of the form
+	 * @param path    the path to the attribute
+	 * @param enabled whether to enable the field
 	 */
 	public void setFieldEnabled(int index, String path, boolean enabled) {
 		if (index < this.forms.size()) {
@@ -559,15 +589,6 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 		this.service = service;
 	}
 
-	@Override
-	protected void doSetValue(Collection<T> value) {
-		setItems(value);
-	}
-
-	public void signalModeChange(boolean viewMode) {
-		// override in subclasses
-	}
-
 	/**
 	 * Validates all underlying forms
 	 */
@@ -577,12 +598,5 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 			error |= f.validateAllFields();
 		}
 		return error;
-	}
-
-	@Override
-	public Collection<T> getValue() {
-		// TODO: this does not appear to actually have to return anything for the
-		// component to work
-		return null;
 	}
 }

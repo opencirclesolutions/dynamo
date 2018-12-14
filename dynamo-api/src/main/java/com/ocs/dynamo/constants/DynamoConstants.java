@@ -54,7 +54,7 @@ public final class DynamoConstants {
 	public static final String CSS_DANGER = "danger";
 
 	/**
-	 * The CSS class used to indicate a divider row in a table
+	 * The CSS class used to indicate a divider row in a grid
 	 */
 	public static final String CSS_DIVIDER = "divider";
 
@@ -74,7 +74,7 @@ public final class DynamoConstants {
 	public static final String CSS_NESTED = "nested";
 
 	/**
-	 * The CSS class that is assigned to numerical cells in a table
+	 * The CSS class that is assigned to numerical cells in a grid
 	 */
 	public static final String CSS_NUMERICAL = "numerical";
 
@@ -144,10 +144,10 @@ public final class DynamoConstants {
 	public static final String SELECTED_TAB = "selectedTab";
 
 	/**
-	 * Name of the system property that is used to determine if table export is
+	 * Name of the system property that is used to determine if grid export is
 	 * allowed
 	 */
-	public static final String SP_ALLOW_TABLE_EXPORT = "ocs.allow.table.export";
+	public static final String SP_ALLOW_TABLE_EXPORT = "ocs.allow.grid.export";
 
 	/**
 	 * Indicates whether to capitalize individual words in property names

@@ -17,18 +17,24 @@ import java.util.Collection;
 
 import com.ocs.dynamo.utils.ClassUtils;
 
+/**
+ * A predicate for checking that a value is part of a collection of values
+ * 
+ * @author Bas Rutten
+ *
+ * @param <T>
+ */
 public class InPredicate<T> extends PropertyPredicate<T> {
 
 	private static final long serialVersionUID = -9049178479062352245L;
 
-	public InPredicate(String property, Collection<T> values) {
+	public InPredicate(String property, Collection<?> values) {
 		super(property, values);
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
-	public Collection<T> getValue() {
-		return (Collection<T>) super.getValue();
+	public Collection<?> getValue() {
+		return (Collection<?>) super.getValue();
 	}
 
 	@Override
@@ -40,7 +46,7 @@ public class InPredicate<T> extends PropertyPredicate<T> {
 		if (v == null) {
 			return false;
 		}
-		Collection<T> values = (Collection<T>) getValue();
+		Collection<?> values = (Collection<?>) getValue();
 		return values.contains(v);
 	}
 }

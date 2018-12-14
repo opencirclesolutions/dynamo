@@ -176,12 +176,12 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	/**
 	 * 
 	 * @return The maximum allowed length of the attribute (inside a collection
-	 *         table)
+	 *         grid)
 	 */
 	Integer getMaxLength();
 
 	/**
-	 * The maximum length of the text representation inside a table
+	 * The maximum length of the text representation inside a grid
 	 * 
 	 * @return
 	 */
@@ -190,7 +190,7 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	/**
 	 * 
 	 * @return the maximum allowed value of the attribute (inside a collection
-	 *         table)
+	 *         grid)
 	 */
 	Long getMaxValue();
 

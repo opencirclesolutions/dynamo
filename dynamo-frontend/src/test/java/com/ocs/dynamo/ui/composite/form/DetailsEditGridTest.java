@@ -20,7 +20,7 @@ import com.ocs.dynamo.ui.composite.dialog.ModelBasedSearchDialog;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.vaadin.ui.UI;
 
-public class DetailsEditTableTest extends BaseMockitoTest {
+public class DetailsEditGridTest extends BaseMockitoTest {
 
 	private EntityModelFactory factory = new EntityModelFactoryImpl();
 
@@ -42,13 +42,13 @@ public class DetailsEditTableTest extends BaseMockitoTest {
 	}
 
 	/**
-	 * Test a table in editable mode
+	 * Test a grid in editable mode
 	 */
 	@Test
 	public void testEditable() {
 		EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
 
-		DetailsEditGrid<Integer, TestEntity> grid = createTable(em, em.getAttributeModel("testEntities"), false, false,
+		DetailsEditGrid<Integer, TestEntity> grid = createGrid(em, em.getAttributeModel("testEntities"), false, false,
 				new FormOptions().setShowRemoveButton(true));
 		Assert.assertTrue(grid.getAddButton().isVisible());
 		Assert.assertFalse(grid.getSearchDialogButton().isVisible());
@@ -74,7 +74,7 @@ public class DetailsEditTableTest extends BaseMockitoTest {
 	public void testReadOnlyWithSearch() {
 		EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
 
-		DetailsEditGrid<Integer, TestEntity> table = createTable(em, null, false, true,
+		DetailsEditGrid<Integer, TestEntity> table = createGrid(em, null, false, true,
 				new FormOptions().setDetailsGridSearchMode(true));
 		table.setService(service);
 
@@ -92,7 +92,7 @@ public class DetailsEditTableTest extends BaseMockitoTest {
 	public void testReadOnly() {
 		EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
 
-		DetailsEditGrid<Integer, TestEntity> grid = createTable(em, em.getAttributeModel("testEntities"), true, false,
+		DetailsEditGrid<Integer, TestEntity> grid = createGrid(em, em.getAttributeModel("testEntities"), true, false,
 				new FormOptions());
 		Assert.assertFalse(grid.getAddButton().isVisible());
 		Assert.assertFalse(grid.getSearchDialogButton().isVisible());
@@ -101,7 +101,7 @@ public class DetailsEditTableTest extends BaseMockitoTest {
 		Assert.assertEquals(2, grid.getItemCount());
 	}
 
-	private DetailsEditGrid<Integer, TestEntity> createTable(EntityModel<TestEntity> em, AttributeModel am,
+	private DetailsEditGrid<Integer, TestEntity> createGrid(EntityModel<TestEntity> em, AttributeModel am,
 			boolean viewMode, boolean tableReadOnly, FormOptions fo) {
 
 		if (tableReadOnly) {

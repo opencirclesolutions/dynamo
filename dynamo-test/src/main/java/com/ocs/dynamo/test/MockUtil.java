@@ -42,10 +42,6 @@ public final class MockUtil {
 
 	private static final String UI_FIELD_NAME = "ui";
 
-	private MockUtil() {
-		// hidden constructor
-	}
-
 	/**
 	 * Capture a call of the "save" method on a DAO
 	 * 
@@ -187,7 +183,7 @@ public final class MockUtil {
 	public static <ID, X extends AbstractEntity<ID>> void mockSave(BaseDao<ID, X> dao, Class<X> clazz) {
 		// mock the save behaviour - return the first argument being passed to the
 		// method
-		Mockito.when(dao.save(Mockito.any(clazz))).thenAnswer(invocation -> invocation.getArguments()[0]);
+		Mockito.when(dao.save(Mockito.any(clazz))).thenAnswer(invocation -> invocation.getArgument(0));
 	}
 
 	/**
@@ -197,8 +193,7 @@ public final class MockUtil {
 	 */
 	@SuppressWarnings("unchecked")
 	public static <ID, X extends AbstractEntity<ID>> void mockSaveList(BaseDao<ID, X> dao) {
-		Mockito.when(dao.save(Mockito.any(List.class)))
-				.thenAnswer(invocation -> (List<X>) invocation.getArguments()[0]);
+		Mockito.when(dao.save(Mockito.any(List.class))).thenAnswer(invocation -> (List<X>) invocation.getArgument(0));
 	}
 
 	/**
@@ -208,7 +203,17 @@ public final class MockUtil {
 	 * @param service the service
 	 */
 	public static <ID, U extends AbstractEntity<ID>> void mockServiceSave(BaseService<ID, U> service, Class<U> clazz) {
-		Mockito.when(service.save(Mockito.any(clazz))).thenAnswer(invocation -> invocation.getArguments()[0]);
+		Mockito.when(service.save(Mockito.any(clazz))).thenAnswer(invocation -> invocation.getArgument(0));
+	}
+
+	/**
+	 * Mock the saving of a list on a DAO
+	 * 
+	 * @param dao the DAO
+	 */
+	@SuppressWarnings("unchecked")
+	public static <ID, X extends AbstractEntity<ID>> void mockServiceSaveList(BaseService<ID, X> service) {
+		Mockito.when(service.save(Mockito.any(List.class))).thenAnswer(invocation -> invocation.getArgument(0));
 	}
 
 	/**
@@ -245,6 +250,10 @@ public final class MockUtil {
 		} catch (Exception e) {
 			throw new OCSRuntimeException(e.getMessage(), e);
 		}
+	}
+
+	private MockUtil() {
+		// hidden constructor
 	}
 
 }

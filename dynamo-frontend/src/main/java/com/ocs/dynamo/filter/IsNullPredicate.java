@@ -26,6 +26,9 @@ public class IsNullPredicate<T> extends ComparePredicate<T> {
 
 	@Override
 	public boolean test(T t) {
+		if (t == null) {
+			return false;
+		}
 		Object v = ClassUtils.getFieldValue(t, getProperty());
 		return ObjectUtils.equals(getValue(), v);
 	}

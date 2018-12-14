@@ -31,9 +31,11 @@ public class LessThanPredicate<T> extends ComparePredicate<T> {
 
 	@Override
 	public boolean test(T t) {
+		if (t == null) {
+			return false;
+		}
 		Object v = com.ocs.dynamo.utils.ClassUtils.getFieldValue(t, getProperty());
-		int comp = compareValue(v);
-		return comp < 0;
+		return compareValue(v) < 0;
 	}
 
 }

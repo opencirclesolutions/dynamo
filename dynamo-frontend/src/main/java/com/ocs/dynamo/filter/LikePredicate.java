@@ -2,6 +2,13 @@ package com.ocs.dynamo.filter;
 
 import com.ocs.dynamo.utils.ClassUtils;
 
+/**
+ * A predicate for checking whether a String value matches a predicate
+ * 
+ * @author Bas Rutten
+ *
+ * @param <T> the type of the entity
+ */
 public class LikePredicate<T> extends PropertyPredicate<T> {
 
 	private static final long serialVersionUID = -5077087872701525001L;
@@ -15,6 +22,10 @@ public class LikePredicate<T> extends PropertyPredicate<T> {
 
 	@Override
 	public boolean test(T t) {
+		if (t == null) {
+			return false;
+		}
+
 		Object v = ClassUtils.getFieldValue(t, getProperty());
 		if (v == null || !v.getClass().isAssignableFrom(String.class)) {
 			return false;
