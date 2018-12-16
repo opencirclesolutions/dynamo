@@ -13,13 +13,9 @@
  */
 package com.ocs.dynamo.ui.composite.grid;
 
-import java.io.File;
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.apache.commons.io.FileUtils;
 
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
@@ -32,8 +28,6 @@ import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.component.InternalLinkField;
 import com.ocs.dynamo.ui.component.URLField;
-import com.ocs.dynamo.ui.composite.export.ExportService;
-import com.ocs.dynamo.ui.composite.export.impl.TemporaryFileDownloadResource;
 import com.ocs.dynamo.ui.provider.BaseDataProvider;
 import com.ocs.dynamo.ui.utils.FormatUtils;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
@@ -47,12 +41,10 @@ import com.vaadin.data.PropertyFilterDefinition;
 import com.vaadin.data.PropertySet;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
-import com.vaadin.server.Page;
 import com.vaadin.server.SerializablePredicate;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.TextField;
-import com.vaadin.ui.UI;
 import com.vaadin.ui.renderers.ComponentRenderer;
 
 /**
@@ -185,8 +177,9 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 				FieldFactoryImpl.addConvertersAndValidators(builder, am, null);
 				column.setEditorBinding(builder.bind(am.getPath()));
 			}
-			column.setCaption(am.getDisplayName()).setSortable(am.isSortable()).setSortProperty(am.getPath())
-					.setId(am.getPath()).setStyleGenerator(item -> am.isNumerical() ? "v-align-right" : "");
+			column.setCaption(am.getDisplayName()).setSortable(am.isSortable()).setId(am.getPath())
+					.setSortProperty(am.getActualSortPath())
+					.setStyleGenerator(item -> am.isNumerical() ? "v-align-right" : "");
 		}
 	}
 

@@ -14,6 +14,7 @@ import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.composite.export.ExportService;
 import com.ocs.dynamo.ui.composite.export.ModelBasedExportTemplate;
+import com.ocs.dynamo.ui.utils.SortUtils;
 import com.vaadin.data.provider.SortOrder;
 import com.vaadin.server.SerializablePredicate;
 
@@ -22,16 +23,15 @@ public class ExportServiceImpl implements ExportService {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <ID extends Serializable, T extends AbstractEntity<ID>> byte[] export(Class<T> clazz,
-			EntityModel<T> entityModel, SerializablePredicate<T> predicate, List<SortOrder<?>> sortOrders,
-			FetchJoinInformation... joins) {
+	public <ID extends Serializable, T extends AbstractEntity<ID>> byte[] export(EntityModel<T> entityModel,
+			SerializablePredicate<T> predicate, List<SortOrder<?>> sortOrders, FetchJoinInformation... joins) {
 		BaseService<ID, T> service = (BaseService<ID, T>) ServiceLocatorFactory.getServiceLocator()
-				.getServiceForEntity(clazz);
+				.getServiceForEntity(entityModel.getEntityClass());
 		FilterConverter<T> converter = new FilterConverter<T>(entityModel);
 		Filter filter = converter.convert(predicate);
 
-		ModelBasedExportTemplate<ID, T> template = new ModelBasedExportTemplate<ID, T>(service, entityModel, null,
-				filter, "title", false, null, joins) {
+		ModelBasedExportTemplate<ID, T> template = new ModelBasedExportTemplate<ID, T>(service, entityModel,
+				SortUtils.translate(sortOrders), filter, "title", false, null, joins) {
 
 			@Override
 			public int getPageSize() {

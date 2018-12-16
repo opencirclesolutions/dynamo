@@ -44,6 +44,7 @@ import com.ocs.dynamo.filter.Filter;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.utils.FormatUtils;
+import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.ocs.dynamo.utils.DateUtils;
 import com.ocs.dynamo.utils.MathUtils;
 
@@ -69,7 +70,7 @@ public abstract class BaseExportTemplate<ID extends Serializable, T extends Abst
 	 * larger, then a streaming writer will be used. This is faster but it will mean
 	 * we cannot auto size the columns
 	 */
-	protected static final int MAX_SIZE = 1000;
+	protected static final int MAX_SIZE_BEFORE_STREAMING = 1000;
 
 	private CustomXlsStyleGenerator<ID, T> customGenerator;
 
@@ -182,7 +183,7 @@ public abstract class BaseExportTemplate<ID extends Serializable, T extends Abst
 	 * @return
 	 */
 	protected Workbook createWorkbook(int size) {
-		if (size > MAX_SIZE) {
+		if (size > MAX_SIZE_BEFORE_STREAMING) {
 			return new SXSSFWorkbook();
 		}
 		return new XSSFWorkbook();
@@ -190,7 +191,8 @@ public abstract class BaseExportTemplate<ID extends Serializable, T extends Abst
 
 	/**
 	 * Generates CSV data
-	 * @param iterator
+	 * 
+	 * @param iterator data iterator
 	 * @return
 	 * @throws IOException
 	 */
@@ -247,7 +249,7 @@ public abstract class BaseExportTemplate<ID extends Serializable, T extends Abst
 	/**
 	 * Processes the input and creates a file
 	 *
-	 * @param xls whether to export to Excel (xls)
+	 * @param xls whether to export to Excel (xlsx)
 	 * @return
 	 * @throws IOException
 	 */
@@ -305,17 +307,19 @@ public abstract class BaseExportTemplate<ID extends Serializable, T extends Abst
 			cell.setCellValue(DateUtils.toLegacyDate((LocalDateTime) value));
 		} else if (value instanceof BigDecimal) {
 			boolean isPercentage = am != null && am.isPercentage();
+			int defaultPrecision = SystemPropertyUtils.getDefaultDecimalPrecision();
 			if (isPercentage) {
 				// percentages in the application are just numbers,
 				// but in Excel they are fractions that
 				// are displayed as percentages -> so, divide by 100
 				double temp = ((BigDecimal) value)
 						.divide(MathUtils.HUNDRED, DynamoConstants.INTERMEDIATE_PRECISION, RoundingMode.HALF_UP)
-						.setScale(am.getPrecision() + 2, RoundingMode.HALF_UP).doubleValue();
+						.setScale(am.getPrecision() + defaultPrecision, RoundingMode.HALF_UP).doubleValue();
 				cell.setCellValue(temp);
 			} else {
 				cell.setCellValue(((BigDecimal) value)
-						.setScale(am == null ? 2 : am.getPrecision(), RoundingMode.HALF_UP).doubleValue());
+						.setScale(am == null ? defaultPrecision : am.getPrecision(), RoundingMode.HALF_UP)
+						.doubleValue());
 			}
 		} else if (am != null) {
 			// use the attribute model

@@ -106,11 +106,7 @@ public abstract class ModelBasedExportTemplate<ID extends Serializable, T extend
 		int rowIndex = 1;
 		T entity = iterator.next();
 		while (entity != null) {
-			if (rowIndex % 100 == 0) {
-				System.out.println("Processing row: " + rowIndex);
-			}
 			Row row = sheet.createRow(rowIndex);
-
 			int colIndex = 0;
 			for (AttributeModel am : entityModel.getAttributeModels()) {
 				if (am != null && show(am)) {

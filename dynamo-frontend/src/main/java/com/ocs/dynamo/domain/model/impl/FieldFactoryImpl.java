@@ -376,8 +376,8 @@ public class FieldFactoryImpl implements FieldFactory {
 			SerializablePredicate<S> fieldFilter) {
 		BaseService<ID, S> service = (BaseService<ID, S>) serviceLocator
 				.getServiceForEntity(entityModel.getEntityClass());
-		return new SimpleTokenFieldSelect<ID, S, O>(service, (EntityModel<S>) entityModel, am, fieldFilter,
-				distinctField, (Class<O>) am.getNormalizedType(), elementCollection);
+		return new SimpleTokenFieldSelect<>(service, (EntityModel<S>) entityModel, am, fieldFilter, distinctField,
+				(Class<O>) am.getNormalizedType(), elementCollection);
 	}
 
 	@SuppressWarnings("unchecked")

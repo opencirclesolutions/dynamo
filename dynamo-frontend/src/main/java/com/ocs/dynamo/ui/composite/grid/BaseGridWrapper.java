@@ -188,11 +188,9 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 		return dataProvider;
 	}
 
-	@SuppressWarnings("unchecked")
 	public int getDataProviderSize() {
 		if (dataProvider instanceof BaseDataProvider) {
-			BaseDataProvider<ID, T> provider = (BaseDataProvider<ID, T>) dataProvider;
-			return provider.getSize();
+			return grid.getDataCommunicator().getDataProviderSize();
 		} else if (dataProvider instanceof ListDataProvider) {
 			ListDataProvider<T> lp = (ListDataProvider<T>) dataProvider;
 			return lp.getItems().size();
@@ -268,6 +266,7 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 						builder.thenDesc(grid.getColumn(o.getSorted().toString()));
 					}
 				} else {
+					// not present in table, add to backup
 					fallBackOrders.add(o);
 				}
 			}
@@ -284,14 +283,14 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 						builder.thenDesc(grid.getColumn(am.getPath()));
 					}
 				} else {
-					fallBackOrders.add(new SortOrder<String>(am.getPath(),
+					fallBackOrders.add(new SortOrder<String>(am.getActualSortPath(),
 							asc ? SortDirection.ASCENDING : SortDirection.DESCENDING));
 				}
 			}
 			grid.setSortOrder(builder);
 		}
 
-		// set fall back sort orders 
+		// set fall back sort orders
 		if (dataProvider instanceof BaseDataProvider) {
 			((BaseDataProvider<ID, T>) dataProvider).setFallBackSortOrders(fallBackOrders);
 		}

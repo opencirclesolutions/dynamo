@@ -13,12 +13,9 @@
  */
 package com.ocs.dynamo.ui.composite.grid;
 
-import java.io.File;
-import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
-
-import org.apache.commons.io.FileUtils;
 
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
@@ -27,16 +24,15 @@ import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.Searchable;
 import com.ocs.dynamo.ui.composite.export.ExportService;
-import com.ocs.dynamo.ui.composite.export.impl.TemporaryFileDownloadResource;
 import com.ocs.dynamo.ui.provider.BaseDataProvider;
 import com.ocs.dynamo.ui.provider.IdBasedDataProvider;
 import com.ocs.dynamo.ui.provider.PagingDataProvider;
 import com.ocs.dynamo.ui.provider.QueryType;
+import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.data.provider.DataProvider;
+import com.vaadin.data.provider.GridSortOrder;
 import com.vaadin.data.provider.SortOrder;
-import com.vaadin.server.Page;
 import com.vaadin.server.SerializablePredicate;
-import com.vaadin.ui.UI;
 
 /**
  * A wrapper for a grid that retrieves its data directly from the database
@@ -98,7 +94,6 @@ public class ServiceBasedGridWrapper<ID extends Serializable, T extends Abstract
 		return maxResults;
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	protected void initSortingAndFiltering() {
 		super.initSortingAndFiltering();
@@ -110,24 +105,21 @@ public class ServiceBasedGridWrapper<ID extends Serializable, T extends Abstract
 		if (isAllowExport()) {
 			getGrid().addContextClickListener(event -> {
 				ExportService service = ServiceLocatorFactory.getServiceLocator().getService(ExportService.class);
-				byte[] exported = service.export(getEntityModel().getEntityClass(), getEntityModel(), getFilter(),
-						getSortOrders(), getJoins());
 
-				File tempFile;
-				try {
-					tempFile = File.createTempFile("tmp", ".xlsx");
-					FileUtils.writeByteArrayToFile(tempFile, exported);
-					Page.getCurrent()
-							.open(new TemporaryFileDownloadResource(UI.getCurrent(),
-									getEntityModel().getDisplayNamePlural() + ".xlsx",
-									"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", tempFile),
-									getEntityModel().getDisplayNamePlural(), true);
-				} catch (IOException e) {
-					e.printStackTrace();
+				// translate grid sort order to actual sort order and fall back to the default
+				// orders
+				// if nothing specified
+				List<SortOrder<?>> orders = new ArrayList<>();
+				List<GridSortOrder<T>> so = getGrid().getSortOrder();
+				for (GridSortOrder<T> gso : so) {
+					orders.add(new SortOrder<String>(gso.getSorted().getId(), gso.getDirection()));
 				}
+
+				byte[] exported = service.export(getEntityModel(), getFilter(),
+						!orders.isEmpty() ? orders : getSortOrders(), getJoins());
+				VaadinUtils.downloadFile(getEntityModel(), exported);
 			});
 		}
-
 	}
 
 	@Override

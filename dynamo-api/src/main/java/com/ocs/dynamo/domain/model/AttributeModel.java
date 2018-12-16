@@ -46,6 +46,12 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	void addGroupTogetherWith(String path);
 
 	/**
+	 * 
+	 * @return the actual path to sort on
+	 */
+	String getActualSortPath();
+
+	/**
 	 * @return The allowed extensions for a LOB attribute
 	 */
 	Set<String> getAllowedExtensions();
@@ -189,8 +195,7 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 
 	/**
 	 * 
-	 * @return the maximum allowed value of the attribute (inside a collection
-	 *         grid)
+	 * @return the maximum allowed value of the attribute (inside a collection grid)
 	 */
 	Long getMaxValue();
 

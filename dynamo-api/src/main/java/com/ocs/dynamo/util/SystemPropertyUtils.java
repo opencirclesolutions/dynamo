@@ -34,11 +34,9 @@ public final class SystemPropertyUtils {
 	private static final String DEFAULT_FALSE_REPRESENTATION = "false";
 
 	/**
-	 * 
-	 * 
-	 * @return whether export to Excel or CSV is allowed for all grids. If set to
-	 *         <code>false</code> it will disable exporting for all tables. You can
-	 *         selectively enable it for specific grids
+	 * Returns whether export of grid contents to Excel/CSV is allowed. This system property
+	 * can be used to either enable or disable this on the application level. YOu 
+	 * @return
 	 */
 	public static boolean allowListExport() {
 		return Boolean.getBoolean(DynamoConstants.SP_ALLOW_LIST_EXPORT);
@@ -72,7 +70,7 @@ public final class SystemPropertyUtils {
 	}
 
 	/**
-	 * The default date/time format
+	 * The default date/time format (dd-MM-yyyy HH:mm:ss)
 	 * 
 	 * @return
 	 */

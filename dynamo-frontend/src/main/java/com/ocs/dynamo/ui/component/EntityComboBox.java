@@ -114,11 +114,11 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 		if (SelectMode.ALL.equals(mode)) {
 			// add all items (but sorted)
 			provider = new ListDataProvider<>(
-					service.findAll(SortUtils.translateAndFilterOnTransient(false, targetEntityModel, sortOrders)));
+					service.findAll(SortUtils.translateSortOrders(false, targetEntityModel, sortOrders)));
 		} else if (SelectMode.FILTERED.equals(mode)) {
 			// add a filtered selection of items
 			items = service.find(new FilterConverter<T>(targetEntityModel).convert(filter),
-					SortUtils.translateAndFilterOnTransient(false, targetEntityModel, sortOrders));
+					SortUtils.translateSortOrders(false, targetEntityModel, sortOrders));
 			provider = new ListDataProvider<>(items);
 		} else if (SelectMode.FIXED.equals(mode)) {
 			provider = new ListDataProvider<>(items);
@@ -257,11 +257,11 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 			// add all items (but sorted)
 			provider.getItems().clear();
 			provider.getItems().addAll(
-					service.findAll(SortUtils.translateAndFilterOnTransient(false, targetEntityModel, sortOrders)));
+					service.findAll(SortUtils.translateSortOrders(false, targetEntityModel, sortOrders)));
 		} else if (SelectMode.FILTERED.equals(selectMode)) {
 			// add a filtered selection of items
 			provider.getItems().clear();
-			com.ocs.dynamo.dao.SortOrder[] orders = SortUtils.translateAndFilterOnTransient(false, targetEntityModel,
+			com.ocs.dynamo.dao.SortOrder[] orders = SortUtils.translateSortOrders(false, targetEntityModel,
 					sortOrders);
 			if (orders != null) {
 				List<T> list = service.find(new FilterConverter<T>(targetEntityModel).convert(filter), orders);

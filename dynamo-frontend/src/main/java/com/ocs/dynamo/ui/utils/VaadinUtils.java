@@ -13,6 +13,8 @@
  */
 package com.ocs.dynamo.ui.utils;
 
+import java.io.File;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.ZoneId;
@@ -24,12 +26,15 @@ import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.io.FileUtils;
 import org.vaadin.dialogs.ConfirmDialog;
 
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.domain.model.AttributeModel;
+import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.service.MessageService;
+import com.ocs.dynamo.ui.composite.export.impl.TemporaryFileDownloadResource;
 import com.ocs.dynamo.ui.converter.BigDecimalConverter;
 import com.ocs.dynamo.ui.converter.ConverterFactory;
 import com.ocs.dynamo.util.SystemPropertyUtils;
@@ -555,5 +560,20 @@ public final class VaadinUtils {
 
 	private VaadinUtils() {
 		// hidden constructor
+	}
+
+	@SuppressWarnings("deprecation")
+	public static <T> void downloadFile(EntityModel<T> entityModel, byte[] bytes) {
+		File tempFile;
+		try {
+			tempFile = File.createTempFile("tmp", ".xlsx");
+			FileUtils.writeByteArrayToFile(tempFile, bytes);
+			TemporaryFileDownloadResource resource = new TemporaryFileDownloadResource(UI.getCurrent(),
+					entityModel.getDisplayNamePlural() + ".xlsx",
+					"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", tempFile);
+			Page.getCurrent().open(resource, entityModel.getDisplayNamePlural(), true);
+		} catch (IOException e) {
+			throw new OCSRuntimeException(e.getMessage(), e);
+		}
 	}
 }

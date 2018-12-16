@@ -357,7 +357,6 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 	 *
 	 * @param viewMode
 	 */
-	@SuppressWarnings("unchecked")
 	protected void toggleViewMode(boolean viewMode) {
 		setViewmode(viewMode);
 		getGridWrapper().getGrid().getEditor().setEnabled(!isViewmode() && isEditAllowed());

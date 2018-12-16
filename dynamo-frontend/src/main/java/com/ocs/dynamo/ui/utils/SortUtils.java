@@ -13,6 +13,8 @@
  */
 package com.ocs.dynamo.ui.utils;
 
+import java.util.List;
+
 import com.ocs.dynamo.dao.SortOrder.Direction;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
@@ -36,8 +38,17 @@ public final class SortUtils {
 	 * @return non transient sort orders which can be applied to the service
 	 */
 	@SafeVarargs
-	public static <T> com.ocs.dynamo.dao.SortOrder[] translate(SortOrder<T>... originalOrders) {
-		return translateAndFilterOnTransient(false, null, originalOrders);
+	public static com.ocs.dynamo.dao.SortOrder[] translate(SortOrder<?>... originalOrders) {
+		return translateSortOrders(false, null, originalOrders);
+	}
+
+	/**
+	 * 
+	 * @param originalOrders
+	 * @return
+	 */
+	public static <T> com.ocs.dynamo.dao.SortOrder[] translate(List<SortOrder<?>> originalOrders) {
+		return translateSortOrders(false, null, originalOrders.toArray(new SortOrder<?>[0]));
 	}
 
 	/**
@@ -50,8 +61,8 @@ public final class SortUtils {
 	 *         value
 	 */
 	@SafeVarargs
-	public static <T> com.ocs.dynamo.dao.SortOrder[] translateAndFilterOnTransient(Boolean isTransient,
-			EntityModel<T> model, SortOrder<?>... originalOrders) {
+	public static <T> com.ocs.dynamo.dao.SortOrder[] translateSortOrders(Boolean isTransient, EntityModel<T> model,
+			SortOrder<?>... originalOrders) {
 		if (originalOrders != null && originalOrders.length > 0) {
 			final com.ocs.dynamo.dao.SortOrder[] orders = new com.ocs.dynamo.dao.SortOrder[originalOrders.length];
 			AttributeModel am = null;

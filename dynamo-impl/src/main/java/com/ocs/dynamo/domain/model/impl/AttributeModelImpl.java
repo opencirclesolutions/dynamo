@@ -816,4 +816,9 @@ public class AttributeModelImpl implements AttributeModel {
 	public String toString() {
 		return ReflectionToStringBuilder.toStringExclude(this, "entityModel");
 	}
+
+	@Override
+	public String getActualSortPath() {
+		return replacementSortPath != null ? replacementSortPath : getPath();
+	}
 }

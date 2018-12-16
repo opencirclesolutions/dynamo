@@ -471,9 +471,9 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 
 		if (group.getAuxField() != null) {
 			if (auxValue != null) {
-				((HasValue<R>) group.getField()).setValue(auxValue);
+				((HasValue<R>) group.getAuxField()).setValue(auxValue);
 			} else {
-				((HasValue<R>) group.getField()).clear();
+				((HasValue<R>) group.getAuxField()).clear();
 			}
 		}
 	}
