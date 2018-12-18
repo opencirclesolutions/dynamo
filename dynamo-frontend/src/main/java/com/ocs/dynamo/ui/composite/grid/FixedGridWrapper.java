@@ -20,6 +20,7 @@ import java.util.List;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
+import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.provider.QueryType;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
@@ -30,10 +31,8 @@ import com.vaadin.server.SerializablePredicate;
  * A wrapper for a table that displays a fixed number of items
  * 
  * @author bas.rutten
- * @param <ID>
- *            type of the primary key
- * @param <T>
- *            type of the entity
+ * @param <ID> type of the primary key
+ * @param <T> type of the entity
  */
 public class FixedGridWrapper<ID extends Serializable, T extends AbstractEntity<ID>> extends BaseGridWrapper<ID, T> {
 
@@ -47,18 +46,14 @@ public class FixedGridWrapper<ID extends Serializable, T extends AbstractEntity<
 	/**
 	 * Constructor
 	 * 
-	 * @param service
-	 *            the service
-	 * @param entityModel
-	 *            the entity model of the items to display in the table
-	 * @param items
-	 *            the items to display
-	 * @param sortOrder
-	 *            optional sort order
+	 * @param service     the service
+	 * @param entityModel the entity model of the items to display in the table
+	 * @param items       the items to display
+	 * @param sortOrder   optional sort order
 	 */
-	public FixedGridWrapper(BaseService<ID, T> service, EntityModel<T> entityModel, Collection<T> items,
-			List<SortOrder<?>> sortOrders, boolean allowExport) {
-		super(service, entityModel, QueryType.NONE, sortOrders, allowExport, false);
+	public FixedGridWrapper(BaseService<ID, T> service, EntityModel<T> entityModel, FormOptions formOptions,
+			Collection<T> items, List<SortOrder<?>> sortOrders) {
+		super(service, entityModel, QueryType.NONE, formOptions, sortOrders, false);
 		this.items = items;
 	}
 

@@ -497,7 +497,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 		};
 		editForm.setFormTitleWidth(getFormTitleWidth());
 		editForm.setSupportsIteration(true);
-		editForm.setDetailJoins(getDetailJoinsFallBack());
+		editForm.setDetailJoins(getDetailJoins());
 		editForm.setFieldEntityModels(getFieldEntityModels());
 		editForm.build();
 	}
@@ -621,8 +621,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	@Override
 	public ServiceBasedGridWrapper<ID, T> constructGridWrapper() {
 		ServiceBasedGridWrapper<ID, T> result = new ServiceBasedGridWrapper<ID, T>(this.getService(), getEntityModel(),
-				getQueryType(), getSearchForm().extractFilter(), getSortOrders(), getFormOptions().isExportAllowed(),
-				false, getJoins()) {
+				getQueryType(), getFormOptions(), getSearchForm().extractFilter(), getSortOrders(), false, getJoins()) {
 
 			private static final long serialVersionUID = 6343267378913526151L;
 
@@ -637,6 +636,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 			}
 
 		};
+		result.setExportEntityModel(getExportEntityModel());
 		result.setMaxResults(getMaxResults());
 		result.build();
 
@@ -871,7 +871,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 		ID nextId = provider.getNextItemId();
 		T next = null;
 		if (nextId != null) {
-			next = getService().fetchById(nextId, getDetailJoinsFallBack());
+			next = getService().fetchById(nextId, getDetailJoins());
 			getGridWrapper().getGrid().select(next);
 			afterEntitySelected(getEditForm(), next);
 			selectedRowIndex++;
@@ -890,7 +890,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 		ID prevId = provider.getPreviousItemId();
 		T prev = null;
 		if (prevId != null) {
-			prev = getService().fetchById(prevId, getDetailJoinsFallBack());
+			prev = getService().fetchById(prevId, getDetailJoins());
 			getGridWrapper().getGrid().select(prev);
 			afterEntitySelected(getEditForm(), prev);
 			selectedRowIndex--;
@@ -1027,7 +1027,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	 * Reloads the details view only
 	 */
 	public void reloadDetails() {
-		this.setSelectedItem(getService().fetchById(this.getSelectedItem().getId(), getDetailJoinsFallBack()));
+		this.setSelectedItem(getService().fetchById(this.getSelectedItem().getId(), getDetailJoins()));
 		detailsMode(getSelectedItem());
 	}
 
@@ -1077,7 +1077,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 				Collection<?> col = (Collection<?>) selectedItems;
 				if (col.size() == 1) {
 					T t = (T) col.iterator().next();
-					setSelectedItem(getService().fetchById(t.getId(), getDetailJoinsFallBack()));
+					setSelectedItem(getService().fetchById(t.getId(), getDetailJoins()));
 					this.selectedItems = Lists.newArrayList(getSelectedItem());
 				} else if (col.size() > 1) {
 					// deal with the selection of multiple items
@@ -1085,12 +1085,12 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 					for (Object c : col) {
 						ids.add(((T) c).getId());
 					}
-					this.selectedItems = getService().fetchByIds(ids, getDetailJoinsFallBack());
+					this.selectedItems = getService().fetchByIds(ids, getDetailJoins());
 				}
 			} else {
 				// single item has been selected
 				T t = (T) selectedItems;
-				setSelectedItem(getService().fetchById(t.getId(), getDetailJoinsFallBack()));
+				setSelectedItem(getService().fetchById(t.getId(), getDetailJoins()));
 			}
 		} else {
 			setSelectedItem(null);

@@ -67,8 +67,7 @@ public abstract class FixedSplitLayout<ID extends Serializable, T extends Abstra
 	protected void afterReload(T t) {
 		if (t != null) {
 			getGridWrapper().getGrid().select(t);
-		}
-		else {
+		} else {
 			getGridWrapper().getGrid().deselectAll();
 		}
 	}
@@ -89,8 +88,8 @@ public abstract class FixedSplitLayout<ID extends Serializable, T extends Abstra
 
 	@Override
 	protected final BaseGridWrapper<ID, T> constructGridWrapper() {
-		FixedGridWrapper<ID, T> tw = new FixedGridWrapper<ID, T>(getService(), getEntityModel(), getItems(),
-				getSortOrders(), getFormOptions().isExportAllowed()) {
+		FixedGridWrapper<ID, T> tw = new FixedGridWrapper<ID, T>(getService(), getEntityModel(), getFormOptions(),
+				getItems(), getSortOrders()) {
 
 			@Override
 			protected void doConstructDataProvider(DataProvider<T, SerializablePredicate<T>> provider) {

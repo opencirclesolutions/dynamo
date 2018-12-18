@@ -25,7 +25,6 @@ import com.ocs.dynamo.ui.Refreshable;
 import com.ocs.dynamo.ui.component.EntityComboBox.SelectMode;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.data.provider.SortOrder;
-import com.vaadin.server.ErrorMessage;
 import com.vaadin.server.SerializablePredicate;
 import com.vaadin.shared.Registration;
 import com.vaadin.ui.Button;
@@ -76,6 +75,14 @@ public class QuickAddEntityComboBox<ID extends Serializable, T extends AbstractE
 	}
 
 	@Override
+	public Registration addValueChangeListener(ValueChangeListener<T> listener) {
+		if (comboBox != null) {
+			return comboBox.addValueChangeListener(listener);
+		}
+		return null;
+	}
+
+	@Override
 	@SuppressWarnings("unchecked")
 	protected void afterNewEntityAdded(T entity) {
 		ListDataProvider<T> provider = (ListDataProvider<T>) comboBox.getDataProvider();
@@ -95,6 +102,13 @@ public class QuickAddEntityComboBox<ID extends Serializable, T extends AbstractE
 	protected void doSetValue(T value) {
 		if (comboBox != null) {
 			comboBox.setValue(value);
+		}
+	}
+
+	@Override
+	public void focus() {
+		if (comboBox != null) {
+			comboBox.focus();
 		}
 	}
 
@@ -170,32 +184,9 @@ public class QuickAddEntityComboBox<ID extends Serializable, T extends AbstractE
 	}
 
 	@Override
-	public void setComponentError(ErrorMessage componentError) {
-		super.setComponentError(componentError);
-//		if (comboBox != null) {
-//			comboBox.setComponentError(componentError);
-//		}
-	}
-
-	@Override
 	public void setValue(T newFieldValue) {
 		if (comboBox != null) {
 			comboBox.setValue(newFieldValue);
-		}
-	}
-
-	@Override
-	public Registration addValueChangeListener(ValueChangeListener<T> listener) {
-		if (comboBox != null) {
-			return comboBox.addValueChangeListener(listener);
-		}
-		return null;
-	}
-
-	@Override
-	public void focus() {
-		if (comboBox != null) {
-			comboBox.focus();
 		}
 	}
 

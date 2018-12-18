@@ -21,18 +21,18 @@ import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
-import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.Searchable;
-import com.ocs.dynamo.ui.composite.export.ExportService;
+import com.ocs.dynamo.ui.composite.export.ExportDialog;
+import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.provider.BaseDataProvider;
 import com.ocs.dynamo.ui.provider.IdBasedDataProvider;
 import com.ocs.dynamo.ui.provider.PagingDataProvider;
 import com.ocs.dynamo.ui.provider.QueryType;
-import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.GridSortOrder;
 import com.vaadin.data.provider.SortOrder;
 import com.vaadin.server.SerializablePredicate;
+import com.vaadin.ui.UI;
 
 /**
  * A wrapper for a grid that retrieves its data directly from the database
@@ -64,9 +64,9 @@ public class ServiceBasedGridWrapper<ID extends Serializable, T extends Abstract
 	 * @param joins       options list of fetch joins to include in the query
 	 */
 	public ServiceBasedGridWrapper(BaseService<ID, T> service, EntityModel<T> entityModel, QueryType queryType,
-			SerializablePredicate<T> filter, List<SortOrder<?>> sortOrders, boolean allowExport, boolean editable,
+			FormOptions formOptions, SerializablePredicate<T> filter, List<SortOrder<?>> sortOrders, boolean editable,
 			FetchJoinInformation... joins) {
-		super(service, entityModel, queryType, sortOrders, allowExport, editable, joins);
+		super(service, entityModel, queryType, formOptions, sortOrders, editable, joins);
 		this.filter = filter;
 	}
 
@@ -102,10 +102,8 @@ public class ServiceBasedGridWrapper<ID extends Serializable, T extends Abstract
 		getGrid().addSelectionListener(event -> onSelect(getGrid().getSelectedItems()));
 
 		// right click to download
-		if (isAllowExport()) {
+		if (getFormOptions().isExportAllowed()) {
 			getGrid().addContextClickListener(event -> {
-				ExportService service = ServiceLocatorFactory.getServiceLocator().getService(ExportService.class);
-
 				// translate grid sort order to actual sort order and fall back to the default
 				// orders
 				// if nothing specified
@@ -115,9 +113,12 @@ public class ServiceBasedGridWrapper<ID extends Serializable, T extends Abstract
 					orders.add(new SortOrder<String>(gso.getSorted().getId(), gso.getDirection()));
 				}
 
-				byte[] exported = service.export(getEntityModel(), getFilter(),
-						!orders.isEmpty() ? orders : getSortOrders(), getJoins());
-				VaadinUtils.downloadFile(getEntityModel(), exported);
+				ExportDialog<ID, T> dialog = new ExportDialog<>(
+						getExportEntityModel() != null ? getExportEntityModel() : getEntityModel(),
+						getFormOptions().getExportMode(), getFilter(), !orders.isEmpty() ? orders : getSortOrders(),
+						getJoins());
+				dialog.build();
+				UI.getCurrent().addWindow(dialog);
 			});
 		}
 	}

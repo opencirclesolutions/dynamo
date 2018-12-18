@@ -13,6 +13,7 @@ import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.filter.EqualsPredicate;
 import com.ocs.dynamo.service.TestEntityService;
 import com.ocs.dynamo.test.BaseIntegrationTest;
+import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.provider.IdBasedDataProvider;
 import com.ocs.dynamo.ui.provider.PagingDataProvider;
 import com.ocs.dynamo.ui.provider.QueryType;
@@ -60,7 +61,7 @@ public class ModelBasedTableIntegrationTest extends BaseIntegrationTest {
 		EntityModel<TestEntity> model = entityModelFactory.getModel(TestEntity.class);
 
 		ServiceBasedGridWrapper<Integer, TestEntity> wrapper = new ServiceBasedGridWrapper<>(testEntityService, model,
-				QueryType.ID_BASED, null, null, false, false);
+				QueryType.ID_BASED, new FormOptions(), null, null, false);
 		wrapper.build();
 
 		Assert.assertNotNull(wrapper.getGrid());
@@ -91,8 +92,8 @@ public class ModelBasedTableIntegrationTest extends BaseIntegrationTest {
 		EntityModel<TestEntity> model = entityModelFactory.getModel(TestEntity.class);
 
 		ServiceBasedGridWrapper<Integer, TestEntity> wrapper = new ServiceBasedGridWrapper<>(testEntityService, model,
-				QueryType.ID_BASED, null, Lists.newArrayList(new SortOrder<String>("name", SortDirection.ASCENDING)),
-				false, false);
+				QueryType.ID_BASED, new FormOptions(), null,
+				Lists.newArrayList(new SortOrder<String>("name", SortDirection.ASCENDING)), false);
 		wrapper.build();
 
 		Assert.assertNotNull(wrapper.getGrid());
@@ -109,8 +110,8 @@ public class ModelBasedTableIntegrationTest extends BaseIntegrationTest {
 	public void testPagingQuery() {
 		EntityModel<TestEntity> model = entityModelFactory.getModel(TestEntity.class);
 		ServiceBasedGridWrapper<Integer, TestEntity> wrapper = new ServiceBasedGridWrapper<>(testEntityService, model,
-				QueryType.PAGING, null, Lists.newArrayList(new SortOrder<String>("name", SortDirection.ASCENDING)),
-				false, false);
+				QueryType.PAGING, new FormOptions(), null,
+				Lists.newArrayList(new SortOrder<String>("name", SortDirection.ASCENDING)), false);
 		wrapper.build();
 
 		Assert.assertTrue(wrapper.getDataProvider() instanceof PagingDataProvider);

@@ -141,7 +141,7 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
 	@Override
 	protected BaseGridWrapper<ID, T> constructGridWrapper() {
 		ServiceBasedGridWrapper<ID, T> tw = new ServiceBasedGridWrapper<ID, T>(getService(), getEntityModel(),
-				getQueryType(), filter, getSortOrders(), getFormOptions().isExportAllowed(), false, getJoins()) {
+				getQueryType(), getFormOptions(), filter, getSortOrders(), false, getJoins()) {
 
 			@Override
 			protected void doConstructDataProvider(DataProvider<T, SerializablePredicate<T>> provider) {
@@ -157,6 +157,7 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
 				}
 			}
 		};
+		tw.setExportEntityModel(getExportEntityModel());
 		tw.setMaxResults(getMaxResults());
 		tw.build();
 		return tw;
@@ -199,14 +200,14 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
 				Collection<?> col = (Collection<?>) selectedItems;
 				if (col.iterator().hasNext()) {
 					T t = (T) col.iterator().next();
-					setSelectedItem(getService().fetchById(t.getId(), getDetailJoinsFallBack()));
+					setSelectedItem(getService().fetchById(t.getId(), getDetailJoins()));
 				} else {
 					setSelectedItem(null);
 					emptyDetailView();
 				}
 			} else {
 				T t = (T) selectedItems;
-				setSelectedItem(getService().fetchById(t.getId(), getDetailJoinsFallBack()));
+				setSelectedItem(getService().fetchById(t.getId(), getDetailJoins()));
 			}
 		} else {
 			// nothing selected

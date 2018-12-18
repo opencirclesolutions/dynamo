@@ -256,6 +256,12 @@ public final class DynamoConstants {
 	public static final String SP_EXPORT_CSV_QUOTE = "ocs.export.csv.quote";
 
 	/**
+	 * Name of the system property that is used as the CSV escape character when
+	 * exporting
+	 */
+	public static final String SP_EXPORT_CSV_ESCAPE = "ocs.export.csv.escape";
+
+	/**
 	 * Name of the system property that is used as the CSV separator when exporting
 	 */
 	public static final String SP_EXPORT_CSV_SEPARATOR = "ocs.export.csv.separator";

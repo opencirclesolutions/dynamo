@@ -213,7 +213,7 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
 
 				@Override
 				protected SerializablePredicate<T> constructQuickSearchFilter(String value) {
-					return new OrPredicate<T>(new SimpleStringPredicate<>(Domain.ATTRIBUTE_NAME, value, true, false),
+					return new OrPredicate<>(new SimpleStringPredicate<>(Domain.ATTRIBUTE_NAME, value, true, false),
 							new SimpleStringPredicate<>(Domain.ATTRIBUTE_CODE, value, true, false));
 				}
 

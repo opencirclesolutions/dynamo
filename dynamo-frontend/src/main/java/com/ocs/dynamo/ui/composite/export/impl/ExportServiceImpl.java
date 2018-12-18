@@ -1,3 +1,16 @@
+/*
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
 package com.ocs.dynamo.ui.composite.export.impl;
 
 import java.io.Serializable;
@@ -13,7 +26,7 @@ import com.ocs.dynamo.filter.FilterConverter;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.composite.export.ExportService;
-import com.ocs.dynamo.ui.composite.export.ModelBasedExportTemplate;
+import com.ocs.dynamo.ui.composite.layout.ExportMode;
 import com.ocs.dynamo.ui.utils.SortUtils;
 import com.vaadin.data.provider.SortOrder;
 import com.vaadin.server.SerializablePredicate;
@@ -21,25 +34,46 @@ import com.vaadin.server.SerializablePredicate;
 @Service
 public class ExportServiceImpl implements ExportService {
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public <ID extends Serializable, T extends AbstractEntity<ID>> byte[] export(EntityModel<T> entityModel,
-			SerializablePredicate<T> predicate, List<SortOrder<?>> sortOrders, FetchJoinInformation... joins) {
+	@SuppressWarnings("unchecked")
+	public <ID extends Serializable, T extends AbstractEntity<ID>> byte[] exportExcel(EntityModel<T> entityModel,
+			ExportMode mode, SerializablePredicate<T> predicate, List<SortOrder<?>> sortOrders,
+			FetchJoinInformation... joins) {
 		BaseService<ID, T> service = (BaseService<ID, T>) ServiceLocatorFactory.getServiceLocator()
 				.getServiceForEntity(entityModel.getEntityClass());
 		FilterConverter<T> converter = new FilterConverter<T>(entityModel);
 		Filter filter = converter.convert(predicate);
 
-		ModelBasedExportTemplate<ID, T> template = new ModelBasedExportTemplate<ID, T>(service, entityModel,
-				SortUtils.translate(sortOrders), filter, "title", false, null, joins) {
+		ModelBasedExcelExportTemplate<ID, T> template = new ModelBasedExcelExportTemplate<ID, T>(service, entityModel,
+				mode, SortUtils.translate(sortOrders), filter, entityModel.getDisplayNamePlural(), false, null, joins) {
 
 			@Override
 			public int getPageSize() {
 				return 500;
 			}
 		};
+		return template.process();
+	}
 
-		return template.process(true);
+	@Override
+	@SuppressWarnings("unchecked")
+	public <ID extends Serializable, T extends AbstractEntity<ID>> byte[] exportCsv(EntityModel<T> entityModel,
+			ExportMode mode, SerializablePredicate<T> predicate, List<SortOrder<?>> sortOrders,
+			FetchJoinInformation... joins) {
+		BaseService<ID, T> service = (BaseService<ID, T>) ServiceLocatorFactory.getServiceLocator()
+				.getServiceForEntity(entityModel.getEntityClass());
+		FilterConverter<T> converter = new FilterConverter<T>(entityModel);
+		Filter filter = converter.convert(predicate);
+
+		ModelBasedCsvExportTemplate<ID, T> template = new ModelBasedCsvExportTemplate<ID, T>(service, entityModel, mode,
+				SortUtils.translate(sortOrders), filter, entityModel.getDisplayNamePlural(), false, null, joins) {
+
+			@Override
+			public int getPageSize() {
+				return 500;
+			}
+		};
+		return template.process();
 	}
 
 }

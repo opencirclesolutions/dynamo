@@ -1,7 +1,9 @@
 package com.ocs.dynamo.domain.model.impl;
 
 import java.text.DecimalFormatSymbols;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -20,14 +22,17 @@ import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.domain.model.FieldFactory;
 import com.ocs.dynamo.domain.model.FieldFactoryContext;
 import com.ocs.dynamo.domain.model.annotation.Attribute;
+import com.ocs.dynamo.filter.EqualsPredicate;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.test.BaseIntegrationTest;
 import com.ocs.dynamo.ui.component.EntityLookupField;
+import com.ocs.dynamo.ui.component.QuickAddEntityComboBox;
 import com.ocs.dynamo.ui.component.TimeField;
 import com.ocs.dynamo.ui.component.URLField;
 import com.ocs.dynamo.ui.composite.form.ElementCollectionGrid;
 import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.vaadin.data.provider.ListDataProvider;
+import com.vaadin.server.SerializablePredicate;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.DateField;
@@ -58,13 +63,19 @@ public class ModelBasedFieldFactoryTest extends BaseIntegrationTest {
 		EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
 		FieldFactoryContext context = FieldFactoryContext.create().setAttributeModel(em.getAttributeModel(name))
 				.setSearch(search);
-
 		return fieldFactory.constructField(context);
 	}
 
 	private AbstractComponent constructField2(String name) {
 		EntityModel<TestEntity2> em = factory.getModel(TestEntity2.class);
 		FieldFactoryContext context = FieldFactoryContext.create().setAttributeModel(em.getAttributeModel(name));
+		return fieldFactory.constructField(context);
+	}
+
+	private AbstractComponent constructField2(String name, Map<String, SerializablePredicate<?>> fieldFilters) {
+		EntityModel<TestEntity2> em = factory.getModel(TestEntity2.class);
+		FieldFactoryContext context = FieldFactoryContext.create().setAttributeModel(em.getAttributeModel(name))
+				.setFieldFilters(fieldFilters);
 		return fieldFactory.constructField(context);
 	}
 
@@ -257,6 +268,41 @@ public class ModelBasedFieldFactoryTest extends BaseIntegrationTest {
 
 		EntityLookupField<Integer, TestEntity> lf = (EntityLookupField<Integer, TestEntity>) ac;
 		Assert.assertNull(lf.getFilter());
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	public void testConstructEntityLookupFieldWithFieldFilter() {
+		Map<String, SerializablePredicate<?>> fieldFilters = new HashMap<>();
+		fieldFilters.put("testEntity", new EqualsPredicate<>("name", "Bob"));
+		AbstractComponent ac = constructField2("testEntity", fieldFilters);
+		Assert.assertTrue(ac instanceof EntityLookupField);
+
+		EntityLookupField<Integer, TestEntity> lf = (EntityLookupField<Integer, TestEntity>) ac;
+		Assert.assertNotNull(lf.getFilter());
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	public void testConstructEntityComboBox() {
+		AbstractComponent ac = constructField2("testEntityAlt");
+		Assert.assertTrue(ac instanceof QuickAddEntityComboBox);
+
+		QuickAddEntityComboBox<Integer, TestEntity> cb = (QuickAddEntityComboBox<Integer, TestEntity>) ac;
+		Assert.assertNull(cb.getFilter());
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	public void testConstructEntityComboBoxWithFieldFilter() {
+
+		Map<String, SerializablePredicate<?>> fieldFilters = new HashMap<>();
+		fieldFilters.put("testEntityAlt", new EqualsPredicate<>("name", "Bob"));
+		AbstractComponent ac = constructField2("testEntityAlt", fieldFilters);
+		Assert.assertTrue(ac instanceof QuickAddEntityComboBox);
+
+		QuickAddEntityComboBox<Integer, TestEntity> cb = (QuickAddEntityComboBox<Integer, TestEntity>) ac;
+		Assert.assertNotNull(cb.getFilter());
 	}
 
 	// default case - lookup field (no field filter)

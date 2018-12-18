@@ -11,7 +11,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-package com.ocs.dynamo.ui.composite.export;
+package com.ocs.dynamo.ui.composite.export.impl;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -30,6 +30,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeDateType;
 import com.ocs.dynamo.domain.model.AttributeModel;
+import com.ocs.dynamo.ui.composite.export.XlsStyleGenerator;
 import com.ocs.dynamo.util.SystemPropertyUtils;
 
 /**
@@ -188,12 +189,6 @@ public class BaseXlsStyleGenerator<ID extends Serializable, T extends AbstractEn
 	 */
 	@Override
 	public CellStyle getHeaderStyle(int index) {
-		if (index == 0) {
-			return titleStyle;
-		}
-		if (headerStyle == null) {
-			return headerStyle;
-		}
 		return headerStyle;
 	}
 

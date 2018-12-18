@@ -29,6 +29,7 @@ import com.ocs.dynamo.domain.model.impl.EntityModelFactoryImpl;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.service.TestEntityService;
 import com.ocs.dynamo.test.BaseMockitoTest;
+import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.ui.Grid;
 
@@ -68,8 +69,8 @@ public class ModelBasedGridTest extends BaseMockitoTest {
 		TestEntity entity = new TestEntity();
 
 		EntityModel<TestEntity> model = entityModelFactory.getModel(TestEntity.class);
-		FixedGridWrapper<Integer, TestEntity> wrapper = new FixedGridWrapper<>(service, model,
-				Lists.newArrayList(entity), new ArrayList<>(), false);
+		FixedGridWrapper<Integer, TestEntity> wrapper = new FixedGridWrapper<>(service, model, new FormOptions(),
+				Lists.newArrayList(entity), new ArrayList<>());
 		wrapper.build();
 
 		Grid<TestEntity> grid = wrapper.getGrid();

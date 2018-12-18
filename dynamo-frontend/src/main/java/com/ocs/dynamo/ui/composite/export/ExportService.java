@@ -19,6 +19,7 @@ import java.util.List;
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
+import com.ocs.dynamo.ui.composite.layout.ExportMode;
 import com.vaadin.data.provider.SortOrder;
 import com.vaadin.server.SerializablePredicate;
 
@@ -31,14 +32,29 @@ import com.vaadin.server.SerializablePredicate;
 public interface ExportService {
 
 	/**
+	 * Exports to Excel
 	 * 
-	 * @param clazz
-	 * @param entityModel
-	 * @param predicate
-	 * @param sortOrders
-	 * @param joins
+	 * @param entityModel the entity model of the entity to export
+	 * @param predicate   the predicate
+	 * @param mode        the desired export mode
+	 * @param sortOrders  the list of sort orders
+	 * @param joins       the joins to use when fetching data
 	 * @return
 	 */
-	public <ID extends Serializable, T extends AbstractEntity<ID>> byte[] export(EntityModel<T> entityModel,
-			SerializablePredicate<T> predicate, List<SortOrder<?>> sortOrders, FetchJoinInformation... joins);
+	public <ID extends Serializable, T extends AbstractEntity<ID>> byte[] exportExcel(EntityModel<T> entityModel,
+			ExportMode mode, SerializablePredicate<T> predicate, List<SortOrder<?>> sortOrders,
+			FetchJoinInformation... joins);
+
+	/**
+	 * Exports to CSV
+	 * 
+	 * @param entityModel the entity model of the entity to export
+	 * @param predicate   the predicate
+	 * @param sortOrders  the list of sort orders
+	 * @param joins       the joins to use when fetching data
+	 * @return
+	 */
+	public <ID extends Serializable, T extends AbstractEntity<ID>> byte[] exportCsv(EntityModel<T> entityModel,
+			ExportMode mode, SerializablePredicate<T> predicate, List<SortOrder<?>> sortOrders,
+			FetchJoinInformation... joins);
 }

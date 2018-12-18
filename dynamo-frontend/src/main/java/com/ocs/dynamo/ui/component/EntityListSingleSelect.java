@@ -92,8 +92,9 @@ public class EntityListSingleSelect<ID extends Serializable, T extends AbstractE
 	 * @param sortOrder
 	 */
 	@SafeVarargs
-	public EntityListSingleSelect(EntityModel<T> targetEntityModel, AttributeModel attributeModel, BaseService<ID, T> service,
-			SelectMode mode, SerializablePredicate<T> filter, List<T> items, SortOrder<?>... sortOrders) {
+	public EntityListSingleSelect(EntityModel<T> targetEntityModel, AttributeModel attributeModel,
+			BaseService<ID, T> service, SelectMode mode, SerializablePredicate<T> filter, List<T> items,
+			SortOrder<?>... sortOrders) {
 		this.targetEntityModel = targetEntityModel;
 		this.service = service;
 		this.selectMode = mode;
@@ -136,8 +137,8 @@ public class EntityListSingleSelect<ID extends Serializable, T extends AbstractE
 	 * @param sortOrder         the sort order used to sort the entities
 	 */
 	@SafeVarargs
-	public EntityListSingleSelect(EntityModel<T> targetEntityModel, AttributeModel attributeModel, BaseService<ID, T> service,
-			SerializablePredicate<T> filter, SortOrder<?>... sortOrder) {
+	public EntityListSingleSelect(EntityModel<T> targetEntityModel, AttributeModel attributeModel,
+			BaseService<ID, T> service, SerializablePredicate<T> filter, SortOrder<?>... sortOrder) {
 		this(targetEntityModel, attributeModel, service, SelectMode.FILTERED, filter, null, sortOrder);
 	}
 
@@ -151,8 +152,8 @@ public class EntityListSingleSelect<ID extends Serializable, T extends AbstractE
 	 * @param service           the service used to retrieve entities
 	 */
 	@SafeVarargs
-	public EntityListSingleSelect(EntityModel<T> targetEntityModel, AttributeModel attributeModel, BaseService<ID, T> service,
-			SortOrder<?>... sortOrder) {
+	public EntityListSingleSelect(EntityModel<T> targetEntityModel, AttributeModel attributeModel,
+			BaseService<ID, T> service, SortOrder<?>... sortOrder) {
 		this(targetEntityModel, attributeModel, service, SelectMode.ALL, null, null, sortOrder);
 	}
 
@@ -210,13 +211,12 @@ public class EntityListSingleSelect<ID extends Serializable, T extends AbstractE
 		if (SelectMode.ALL.equals(selectMode)) {
 			// add all items (but sorted)
 			provider.getItems().clear();
-			provider.getItems().addAll(
-					service.findAll(SortUtils.translateSortOrders(false, targetEntityModel, sortOrders)));
+			provider.getItems()
+					.addAll(service.findAll(SortUtils.translateSortOrders(false, targetEntityModel, sortOrders)));
 		} else if (SelectMode.FILTERED.equals(selectMode)) {
 			// add a filtered selection of items
 			provider.getItems().clear();
-			com.ocs.dynamo.dao.SortOrder[] orders = SortUtils.translateSortOrders(false, targetEntityModel,
-					sortOrders);
+			com.ocs.dynamo.dao.SortOrder[] orders = SortUtils.translateSortOrders(false, targetEntityModel, sortOrders);
 			if (orders != null) {
 				List<T> list = service.find(new FilterConverter<T>(targetEntityModel).convert(filter), orders);
 				provider.getItems().addAll(list);
@@ -238,7 +238,7 @@ public class EntityListSingleSelect<ID extends Serializable, T extends AbstractE
 	public void setAdditionalFilter(SerializablePredicate<T> additionalFilter) {
 		setValue(null);
 		this.additionalFilter = additionalFilter;
-		this.filter = originalFilter == null ? additionalFilter : new AndPredicate<T>(originalFilter, additionalFilter);
+		this.filter = originalFilter == null ? additionalFilter : new AndPredicate<>(originalFilter, additionalFilter);
 		refresh();
 	}
 

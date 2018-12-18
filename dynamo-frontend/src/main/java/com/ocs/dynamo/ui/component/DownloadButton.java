@@ -44,20 +44,35 @@ public class DownloadButton extends CustomComponent {
 
 	private Button button;
 
+	private boolean tryDisconnect;
+
 	/**
-	 * Constructor
 	 * 
-	 * @param caption the caption of the button
+	 * @param caption
+	 * @param createContent
+	 * @param createFileName
 	 */
 	public DownloadButton(String caption, Supplier<InputStream> createContent, Supplier<String> createFileName) {
+		this(caption, createContent, createFileName, false);
+	}
+
+	/**
+	 * 
+	 * @param caption
+	 * @param createContent
+	 * @param createFileName
+	 * @param tryDisconnect
+	 */
+	public DownloadButton(String caption, Supplier<InputStream> createContent, Supplier<String> createFileName,
+			boolean tryDisconnect) {
 
 		this.createContent = createContent;
 		this.createFileName = createFileName;
+		this.tryDisconnect = tryDisconnect;
 
 		button = new Button(caption);
 		button.addClickListener(event -> update());
 		setCompositionRoot(button);
-
 		update();
 	}
 
@@ -82,7 +97,7 @@ public class DownloadButton extends CustomComponent {
 
 		}, createFileName.get());
 
-		if (downloader != null) {
+		if (tryDisconnect && downloader != null) {
 			button.removeExtension(downloader);
 		}
 

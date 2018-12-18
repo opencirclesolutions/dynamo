@@ -175,6 +175,14 @@ public final class SystemPropertyUtils {
 	public static String getExportCsvQuoteChar() {
 		return System.getProperty(DynamoConstants.SP_EXPORT_CSV_QUOTE, "\"");
 	}
+	
+	/**
+	 *
+	 * @return the CSV export character
+	 */
+	public static String getExportCsvEscapeChar() {
+		return System.getProperty(DynamoConstants.SP_EXPORT_CSV_ESCAPE, "\"");
+	}
 
 	/**
 	 * 

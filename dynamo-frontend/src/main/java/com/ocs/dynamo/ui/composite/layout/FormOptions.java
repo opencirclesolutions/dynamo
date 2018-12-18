@@ -170,6 +170,11 @@ public class FormOptions implements Serializable {
 	private boolean showToggleButton;
 
 	/**
+	 * The data export mode - by default, export all attributes that are visible
+	 */
+	private ExportMode exportMode = ExportMode.FULL;
+
+	/**
 	 * 
 	 * Indicates whether table export is allowed (read from system property)
 	 */
@@ -202,11 +207,16 @@ public class FormOptions implements Serializable {
 		fo.setExportAllowed(isExportAllowed());
 		fo.setFormNested(isFormNested());
 		fo.setConfirmSave(isConfirmSave());
+		fo.setExportMode(getExportMode());
 		return fo;
 	}
 
 	public AttributeGroupMode getAttributeGroupMode() {
 		return attributeGroupMode;
+	}
+
+	public ExportMode getExportMode() {
+		return exportMode;
 	}
 
 	public ScreenMode getScreenMode() {
@@ -346,6 +356,11 @@ public class FormOptions implements Serializable {
 
 	public FormOptions setExportAllowed(boolean exportAllowed) {
 		this.exportAllowed = exportAllowed;
+		return this;
+	}
+
+	public FormOptions setExportMode(ExportMode exportMode) {
+		this.exportMode = exportMode;
 		return this;
 	}
 

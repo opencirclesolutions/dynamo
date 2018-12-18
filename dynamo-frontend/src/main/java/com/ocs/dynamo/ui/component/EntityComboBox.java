@@ -133,11 +133,12 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 	/**
 	 * Constructor (for a filtering combo box)
 	 *
-	 * @param targetEntityModel
-	 * @param attributeModel
-	 * @param service
-	 * @param filter
-	 * @param sortOrder
+	 * @param targetEntityModel the entity model for the entities that are displayed
+	 *                          in the box
+	 * @param attributeModel    the attribute model
+	 * @param service           the service for querying the database
+	 * @param filter            the filter to apply when searching
+	 * @param sortOrder         the sort orders to apply when searching
 	 */
 	@SafeVarargs
 	public EntityComboBox(EntityModel<T> targetEntityModel, AttributeModel attributeModel, BaseService<ID, T> service,
@@ -182,31 +183,6 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 		bic.getItems().add(entity);
 		bic.refreshAll();
 	}
-
-	/**
-	 * Overwritten so that diacritics are ignored when comparing
-	 */
-	// @Override
-	// protected SerializablePredicate<T> buildFilter(String filterString,
-	// FilteringMode filteringMode) {
-	// SerializablePredicate<T> ft = null;
-	//
-	// if (!StringUtils.isEmpty(filterString)) {
-	// switch (filteringMode) {
-	// case STARTSWITH:
-	// ft = new IgnoreDiacriticsStringFilter(getItemCaptionPropertyId(),
-	// filterString, true, true);
-	// break;
-	// case CONTAINS:
-	// ft = new IgnoreDiacriticsStringFilter(getItemCaptionPropertyId(),
-	// filterString, true, false);
-	// break;
-	// default:
-	// break;
-	// }
-	// }
-	// return ft;
-	// }
 
 	@Override
 	public void clearAdditionalFilter() {
@@ -256,13 +232,12 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 		if (SelectMode.ALL.equals(selectMode)) {
 			// add all items (but sorted)
 			provider.getItems().clear();
-			provider.getItems().addAll(
-					service.findAll(SortUtils.translateSortOrders(false, targetEntityModel, sortOrders)));
+			provider.getItems()
+					.addAll(service.findAll(SortUtils.translateSortOrders(false, targetEntityModel, sortOrders)));
 		} else if (SelectMode.FILTERED.equals(selectMode)) {
 			// add a filtered selection of items
 			provider.getItems().clear();
-			com.ocs.dynamo.dao.SortOrder[] orders = SortUtils.translateSortOrders(false, targetEntityModel,
-					sortOrders);
+			com.ocs.dynamo.dao.SortOrder[] orders = SortUtils.translateSortOrders(false, targetEntityModel, sortOrders);
 			if (orders != null) {
 				List<T> list = service.find(new FilterConverter<T>(targetEntityModel).convert(filter), orders);
 				provider.getItems().addAll(list);

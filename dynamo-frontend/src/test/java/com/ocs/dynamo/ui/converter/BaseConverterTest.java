@@ -4,7 +4,7 @@ import java.util.Locale;
 
 import com.vaadin.data.ValueContext;
 
-public class BaseConverterTest {
+public abstract class BaseConverterTest {
 
 	protected ValueContext createContext() {
 		return new ValueContext(new Locale("nl"));

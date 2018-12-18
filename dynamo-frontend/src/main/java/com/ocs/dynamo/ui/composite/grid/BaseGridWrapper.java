@@ -25,6 +25,7 @@ import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.Searchable;
 import com.ocs.dynamo.ui.composite.layout.BaseCustomComponent;
+import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.provider.BaseDataProvider;
 import com.ocs.dynamo.ui.provider.QueryType;
 import com.vaadin.data.provider.DataProvider;
@@ -48,11 +49,6 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 		implements Searchable<T> {
 
 	private static final long serialVersionUID = -4691108261565306844L;
-
-	/**
-	 * Whether export of the table data is allowed
-	 */
-	private boolean allowExport;
 
 	/**
 	 * The data provider
@@ -100,6 +96,13 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 	private boolean editable;
 
 	/**
+	 * The entity model to use when exporting
+	 */
+	private EntityModel<T> exportEntityModel;
+
+	private FormOptions formOptions;
+
+	/**
 	 * Constructor
 	 * 
 	 * @param service     the service used to query the repository
@@ -110,14 +113,14 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 	 * @param joins       the fetch joins to use when executing the query
 	 */
 	public BaseGridWrapper(BaseService<ID, T> service, EntityModel<T> entityModel, QueryType queryType,
-			List<SortOrder<?>> sortOrders, boolean allowExport, boolean editable, FetchJoinInformation... joins) {
+			FormOptions formOptions, List<SortOrder<?>> sortOrders, boolean editable, FetchJoinInformation... joins) {
 		this.service = service;
 		this.entityModel = entityModel;
 		this.queryType = queryType;
+		this.formOptions = formOptions;
 		this.sortOrders = sortOrders != null ? sortOrders : new ArrayList<>();
 		this.joins = joins;
 		this.editable = editable;
-		this.allowExport = allowExport;
 	}
 
 	/**
@@ -327,8 +330,16 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 		return layout;
 	}
 
-	public boolean isAllowExport() {
-		return allowExport;
+	public EntityModel<T> getExportEntityModel() {
+		return exportEntityModel;
+	}
+
+	public void setExportEntityModel(EntityModel<T> exportEntityModel) {
+		this.exportEntityModel = exportEntityModel;
+	}
+
+	public FormOptions getFormOptions() {
+		return formOptions;
 	}
 
 }

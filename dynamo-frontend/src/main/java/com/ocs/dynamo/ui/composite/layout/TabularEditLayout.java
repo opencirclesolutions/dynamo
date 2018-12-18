@@ -190,7 +190,7 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 		grid.getGrid().getEditor().addSaveListener(event -> {
 			try {
 				T t = getService().save((T) event.getBean());
-				// reassign to avoid optimistic lock 
+				// reassign to avoid optimistic lock
 				grid.getGrid().getEditor().getBinder().setBean(t);
 				grid.getGrid().getDataProvider().refreshAll();
 			} catch (OCSValidationException ex) {
@@ -212,17 +212,19 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 
 	@Override
 	protected BaseGridWrapper<ID, T> constructGridWrapper() {
-		ServiceBasedGridWrapper<ID, T> tableWrapper = new ServiceBasedGridWrapper<ID, T>(getService(), getEntityModel(),
-				QueryType.PAGING, filter, getSortOrders(), getFormOptions().isExportAllowed(), true, getJoins()) {
+		ServiceBasedGridWrapper<ID, T> tw = new ServiceBasedGridWrapper<ID, T>(getService(), getEntityModel(),
+				QueryType.PAGING, getFormOptions(), filter, getSortOrders(), true, getJoins()) {
+
 			@Override
 			protected void doConstructDataProvider(final DataProvider<T, SerializablePredicate<T>> provider) {
 				TabularEditLayout.this.doConstructDataProvider(provider);
 			}
 
 		};
-		tableWrapper.setMaxResults(getMaxResults());
-		tableWrapper.build();
-		return tableWrapper;
+		tw.setExportEntityModel(getExportEntityModel());
+		tw.setMaxResults(getMaxResults());
+		tw.build();
+		return tw;
 	}
 
 	/**

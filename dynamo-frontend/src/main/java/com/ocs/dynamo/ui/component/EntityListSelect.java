@@ -240,7 +240,7 @@ public class EntityListSelect<ID extends Serializable, T extends AbstractEntity<
 	public void setAdditionalFilter(SerializablePredicate<T> additionalFilter) {
 		setValue(null);
 		this.additionalFilter = additionalFilter;
-		this.filter = originalFilter == null ? additionalFilter : new AndPredicate<T>(originalFilter, additionalFilter);
+		this.filter = originalFilter == null ? additionalFilter : new AndPredicate<>(originalFilter, additionalFilter);
 		refresh();
 	}
 

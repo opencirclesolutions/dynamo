@@ -330,7 +330,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 				protected Converter<String, ?> constructCustomConverter(AttributeModel am) {
 					return BaseSplitLayout.this.constructCustomConverter(am);
 				}
-				
+
 				@Override
 				protected AbstractComponent constructCustomField(EntityModel<T> entityModel,
 						AttributeModel attributeModel, boolean viewMode) {
@@ -371,7 +371,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 
 			editForm.setCustomSaveConsumer(customSaveConsumer);
 			editForm.setFormTitleWidth(getFormTitleWidth());
-			editForm.setDetailJoins(getDetailJoinsFallBack());
+			editForm.setDetailJoins(getDetailJoins());
 			editForm.setFieldEntityModels(getFieldEntityModels());
 			editForm.build();
 			detailFormLayout.addComponent(editForm);
@@ -502,7 +502,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	 * Reloads the details view only
 	 */
 	public void reloadDetails() {
-		this.setSelectedItem(getService().fetchById(this.getSelectedItem().getId(), getDetailJoinsFallBack()));
+		this.setSelectedItem(getService().fetchById(this.getSelectedItem().getId(), getDetailJoins()));
 		detailsMode(getSelectedItem());
 		getGridWrapper().reloadDataProvider();
 	}

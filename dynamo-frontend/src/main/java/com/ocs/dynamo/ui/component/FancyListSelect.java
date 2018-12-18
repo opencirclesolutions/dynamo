@@ -209,7 +209,6 @@ public class FancyListSelect<ID extends Serializable, T extends AbstractEntity<I
 		selectButton.addClickListener(event -> {
 			if (comboBox.getValue() != null && !dataProvider.getItems().contains(comboBox.getValue())) {
 				dataProvider.getItems().add(comboBox.getValue());
-				// copyValueFromContainer();
 				listSelect.select(comboBox.getValue());
 			}
 			comboBox.setValue(null);

@@ -132,8 +132,8 @@ public class SimpleTokenFieldSelect<ID extends Serializable, S extends AbstractE
 
 		extTokenField = new ExtTokenField();
 
-		provider = new ListDataProvider<T>(new ArrayList<>());
-		comboBox = new ComboBox<T>();
+		provider = new ListDataProvider<>(new ArrayList<>());
+		comboBox = new ComboBox<>();
 
 		fillComboBox(this.elementCollection);
 		valueChangeListeners = new ArrayList<>();

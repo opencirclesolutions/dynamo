@@ -104,6 +104,12 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	private BaseGridWrapper<ID, T> gridWrapper;
 
 	/**
+	 * The entity model to use when exporting to CSV or Excel. Defaults to the
+	 * regular model if not set
+	 */
+	private EntityModel<T> exportEntityModel;
+
+	/**
 	 * Constructor
 	 * 
 	 * @param service     the service
@@ -258,10 +264,6 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 		return detailJoins;
 	}
 
-	public FetchJoinInformation[] getDetailJoinsFallBack() {
-		return (detailJoins == null || detailJoins.length == 0) ? getJoins() : detailJoins;
-	}
-
 	public String getDividerProperty() {
 		return dividerProperty;
 	}
@@ -385,9 +387,9 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	}
 
 	/**
-	 * Callback method that is called after the entire layout has been constructed. Use this
-	 * to e.g. add additional components to the bottom of the layout or to modify
-	 * button captions
+	 * Callback method that is called after the entire layout has been constructed.
+	 * Use this to e.g. add additional components to the bottom of the layout or to
+	 * modify button captions
 	 * 
 	 * @param main the main layout
 	 */
@@ -471,4 +473,13 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	public void setSortEnabled(boolean sortEnabled) {
 		this.sortEnabled = sortEnabled;
 	}
+
+	public EntityModel<T> getExportEntityModel() {
+		return exportEntityModel;
+	}
+
+	public void setExportEntityModel(EntityModel<T> exportEntityModel) {
+		this.exportEntityModel = exportEntityModel;
+	}
+
 }
