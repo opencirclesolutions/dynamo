@@ -27,7 +27,7 @@ import com.ocs.dynamo.filter.EqualsPredicate;
 import com.ocs.dynamo.service.TestEntityService;
 import com.ocs.dynamo.test.BaseMockitoTest;
 
-public class EntityListSelectTest extends BaseMockitoTest {
+public class EntityListSingleSelectTest extends BaseMockitoTest {
 
 	private EntityModelFactory factory = new EntityModelFactoryImpl();
 
@@ -36,26 +36,26 @@ public class EntityListSelectTest extends BaseMockitoTest {
 
 	@Test
 	public void testAll() {
-		EntityListSelect<Integer, TestEntity> select = new EntityListSelect<>(factory.getModel(TestEntity.class), null,
-				service);
-		Assert.assertEquals(EntityListSelect.SelectMode.ALL, select.getSelectMode());
+		EntityListSingleSelect<Integer, TestEntity> select = new EntityListSingleSelect<>(
+				factory.getModel(TestEntity.class), null, service);
+		Assert.assertEquals(EntityListSingleSelect.SelectMode.ALL, select.getSelectMode());
 		Mockito.verify(service).findAll((SortOrder[]) null);
 	}
 
 	@Test
 	public void testFixed() {
-		EntityListSelect<Integer, TestEntity> select = new EntityListSelect<>(factory.getModel(TestEntity.class), null,
-				Lists.newArrayList(new TestEntity()));
-		Assert.assertEquals(EntityListSelect.SelectMode.FIXED, select.getSelectMode());
+		EntityListSingleSelect<Integer, TestEntity> select = new EntityListSingleSelect<>(
+				factory.getModel(TestEntity.class), null, Lists.newArrayList(new TestEntity()));
+		Assert.assertEquals(EntityListSingleSelect.SelectMode.FIXED, select.getSelectMode());
 		Mockito.verifyZeroInteractions(service);
 	}
 
 	@Test
 	public void testFilter() {
 
-		EntityListSelect<Integer, TestEntity> select = new EntityListSelect<>(factory.getModel(TestEntity.class), null,
-				service, new EqualsPredicate<TestEntity>("name", "Bob"));
-		Assert.assertEquals(EntityListSelect.SelectMode.FILTERED, select.getSelectMode());
+		EntityListSingleSelect<Integer, TestEntity> select = new EntityListSingleSelect<>(
+				factory.getModel(TestEntity.class), null, service, new EqualsPredicate<TestEntity>("name", "Bob"));
+		Assert.assertEquals(EntityListSingleSelect.SelectMode.FILTERED, select.getSelectMode());
 
 		Mockito.verify(service).find(Mockito.any(com.ocs.dynamo.filter.Filter.class), Mockito.isNull());
 	}
@@ -63,9 +63,9 @@ public class EntityListSelectTest extends BaseMockitoTest {
 	@Test
 	public void testRefreshFiltered() {
 
-		EntityListSelect<Integer, TestEntity> select = new EntityListSelect<>(factory.getModel(TestEntity.class), null,
-				service, new EqualsPredicate<TestEntity>("name", "Bob"));
-		Assert.assertEquals(EntityListSelect.SelectMode.FILTERED, select.getSelectMode());
+		EntityListSingleSelect<Integer, TestEntity> select = new EntityListSingleSelect<>(
+				factory.getModel(TestEntity.class), null, service, new EqualsPredicate<TestEntity>("name", "Bob"));
+		Assert.assertEquals(EntityListSingleSelect.SelectMode.FILTERED, select.getSelectMode());
 
 		select.refresh();
 
@@ -75,9 +75,9 @@ public class EntityListSelectTest extends BaseMockitoTest {
 	@Test
 	public void testRefreshAll() {
 
-		EntityListSelect<Integer, TestEntity> select = new EntityListSelect<>(factory.getModel(TestEntity.class), null,
-				service, new EqualsPredicate<TestEntity>("name", "Bob"));
-		Assert.assertEquals(EntityListSelect.SelectMode.FILTERED, select.getSelectMode());
+		EntityListSingleSelect<Integer, TestEntity> select = new EntityListSingleSelect<>(
+				factory.getModel(TestEntity.class), null, service, new EqualsPredicate<TestEntity>("name", "Bob"));
+		Assert.assertEquals(EntityListSingleSelect.SelectMode.FILTERED, select.getSelectMode());
 
 		select.refresh();
 

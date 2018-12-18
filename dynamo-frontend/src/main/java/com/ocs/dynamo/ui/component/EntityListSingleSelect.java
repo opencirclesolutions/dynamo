@@ -31,7 +31,7 @@ import com.vaadin.server.SerializablePredicate;
 import com.vaadin.ui.NativeSelect;
 
 /**
- * Custom ListSingleSelect component for displaying a collection of entities.
+ * Custom ListSelect component for selecting a single item from a list
  *
  * @param <ID> type of the primary key of the entity
  * @param <T> type of the entity

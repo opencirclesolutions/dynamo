@@ -31,7 +31,8 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.TextField;
 
 /**
- * Simple dialog for adding a new value
+ * A popup dialog for adding a new value to a domain form a QuickAddEntity
+ * components
  * 
  * @author bas.rutten
  *
@@ -52,6 +53,7 @@ public abstract class AddNewValueDialog<ID extends Serializable, T extends Abstr
 	private AttributeModel attributeModel;
 
 	/**
+	 * Constructor
 	 * 
 	 * @param entityModel
 	 * @param attributeModel
@@ -70,8 +72,7 @@ public abstract class AddNewValueDialog<ID extends Serializable, T extends Abstr
 	/**
 	 * Method that is called after a new entity has been added
 	 * 
-	 * @param entity
-	 *            the newly added entity
+	 * @param entity the newly added entity
 	 */
 	protected abstract void afterNewEntityAdded(T entity);
 

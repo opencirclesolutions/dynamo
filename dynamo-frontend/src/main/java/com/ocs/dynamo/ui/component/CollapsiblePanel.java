@@ -41,7 +41,6 @@ public class CollapsiblePanel extends VerticalLayout {
 	public CollapsiblePanel() {
 		toggle.setStyleName(ValoTheme.BUTTON_BORDERLESS + " " + "leftAlign");
 		toggle.setSizeFull();
-
 		contentWrapper.setVisible(true);
 		addComponents(toggle, contentWrapper);
 		toggle.addClickListener(event -> setOpen(!isOpen()));
