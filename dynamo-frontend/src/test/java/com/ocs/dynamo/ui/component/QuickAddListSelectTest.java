@@ -1,5 +1,7 @@
 package com.ocs.dynamo.ui.component;
 
+import java.util.Collection;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -115,5 +117,15 @@ public class QuickAddListSelectTest extends BaseMockitoTest {
 		// clear filter again
 		select.clearAdditionalFilter();
 		Assert.assertEquals(3, select.getListSelect().getDataProviderSize());
+
+		select.setValue(Lists.newArrayList(t2));
+
+		Collection<TestEntity> value = select.getValue();
+		Assert.assertTrue(value.contains(t2));
+
+		select.refresh();
+
+		select.refresh(new EqualsPredicate<TestEntity>("name", "Bob"));
+		Assert.assertNotNull(select.getFilter());
 	}
 }

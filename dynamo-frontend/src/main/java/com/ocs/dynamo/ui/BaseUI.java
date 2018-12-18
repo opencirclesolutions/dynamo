@@ -113,7 +113,7 @@ public abstract class BaseUI extends UI {
 
 	/**
 	 * Navigate to a screen based on the actual type of parameter o. During
-	 * initialisation of the UI of your project a mapping from type to consumer must
+	 * initialization of the UI of your project a mapping from type to consumer must
 	 * have been provided by adding it through the method addEntityOnViewMapping.
 	 * 
 	 * @param o

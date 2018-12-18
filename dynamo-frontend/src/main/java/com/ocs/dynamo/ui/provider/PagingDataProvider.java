@@ -14,8 +14,6 @@
 package com.ocs.dynamo.ui.provider;
 
 import java.io.Serializable;
-import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.ocs.dynamo.dao.FetchJoinInformation;
@@ -28,7 +26,6 @@ import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.data.provider.Query;
 import com.vaadin.server.SerializablePredicate;
-import com.vaadin.ui.Notification;
 
 /**
  * 
@@ -66,10 +63,7 @@ public class PagingDataProvider<ID extends Serializable, T extends AbstractEntit
 				: query.getLimit();
 		SortOrders sortOrders = createSortOrder(query);
 		Filter filter = converter.convert(query.getFilter().orElse(null));
-		List<T> result = getService().fetch(filter, page, pageSize, sortOrders, getJoins());
-
-		ids = result.stream().map(t -> t.getId()).collect(Collectors.toList());
-		return result.stream();
+		return getService().fetch(filter, page, pageSize, sortOrders, getJoins()).stream();
 	}
 
 	@Override
@@ -82,12 +76,13 @@ public class PagingDataProvider<ID extends Serializable, T extends AbstractEntit
 		FilterConverter<T> converter = new FilterConverter<>(getEntityModel());
 		size = (int) getService().count(converter.convert(query.getFilter().orElse(null)), false);
 		if (getMaxResults() != null && size >= getMaxResults()) {
-			Notification.show(
-					getMessageService().getMessage("ocs.too.many.results", VaadinUtils.getLocale(), getMaxResults()),
-					Notification.Type.ERROR_MESSAGE);
+			showNotification(
+					getMessageService().getMessage("ocs.too.many.results", VaadinUtils.getLocale(), getMaxResults()));
 			size = getMaxResults();
 		}
-		getAfterCountCompleted().accept(size);
+		if (getAfterCountCompleted() != null) {
+			getAfterCountCompleted().accept(size);
+		}
 		return size;
 	}
 

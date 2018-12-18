@@ -55,9 +55,6 @@ public class EntityLookupFieldTest extends BaseMockitoTest {
 		e1 = new TestEntity(1, "Bob", 14L);
 		e2 = new TestEntity(2, "Kevin", 15L);
 
-		//Mockito.when(service.fetchById(e1.getId())).thenReturn(e1);
-		//Mockito.when(service.fetchById(e2.getId())).thenReturn(e2);
-
 		Mockito.when(service.createNewEntity()).thenReturn(new TestEntity());
 		MockUtil.mockServiceSave(service, TestEntity.class);
 	}

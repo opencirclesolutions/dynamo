@@ -291,15 +291,15 @@ public class FieldFactoryImpl implements FieldFactory {
 	/**
 	 * Constructs an internal link field
 	 * 
-	 * @param am
-	 * @param entityModel
+	 * @param am          the attribute model
+	 * @param entityModel the entity model of the entity to display in the field
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
 	public <ID extends Serializable, S extends AbstractEntity<ID>> AbstractComponent constructInternalLinkField(
 			AttributeModel am, EntityModel<?> entityModel) {
 		EntityModel<?> em = resolveEntityModel(entityModel, am, true);
-		return new InternalLinkField<>(am, (EntityModel<S>) em, null);
+		return new InternalLinkField<>(am, (EntityModel<S>) em);
 	}
 
 	@SuppressWarnings("unchecked")

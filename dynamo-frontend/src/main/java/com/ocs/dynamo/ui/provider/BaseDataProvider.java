@@ -34,6 +34,8 @@ import com.vaadin.data.provider.Query;
 import com.vaadin.data.provider.QuerySortOrder;
 import com.vaadin.server.SerializablePredicate;
 import com.vaadin.shared.data.sort.SortDirection;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.UI;
 
 /**
  * Abstract class for data providers
@@ -222,4 +224,9 @@ public abstract class BaseDataProvider<ID extends Serializable, T extends Abstra
 		this.afterCountCompleted = afterCountCompleted;
 	}
 
+	protected void showNotification(String message) {
+		if (UI.getCurrent() != null) {
+			Notification.show(message, Notification.Type.ERROR_MESSAGE);
+		}
+	}
 }

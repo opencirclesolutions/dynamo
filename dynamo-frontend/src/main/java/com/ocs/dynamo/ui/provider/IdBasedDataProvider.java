@@ -13,6 +13,13 @@
  */
 package com.ocs.dynamo.ui.provider;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Stream;
+
+import org.apache.commons.lang.ObjectUtils;
+
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.dao.SortOrders;
 import com.ocs.dynamo.domain.AbstractEntity;
@@ -23,13 +30,6 @@ import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.data.provider.Query;
 import com.vaadin.server.SerializablePredicate;
-import com.vaadin.ui.Notification;
-import org.apache.commons.lang.ObjectUtils;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Stream;
 
 /**
  * A data provider that first looks up the IDs of the matching entities and then
@@ -93,10 +93,8 @@ public class IdBasedDataProvider<ID extends Serializable, T extends AbstractEnti
 		final Filter filter = converter.convert(query.getFilter().orElse(null));
 		Long count = getService().count(filter, false);
 		if (getMaxResults() != null && count >= getMaxResults()) {
-			Notification.show(
-					getMessageService().getMessage("ocs.too.many.results", VaadinUtils.getLocale(), getMaxResults()),
-					Notification.Type.ERROR_MESSAGE);
-			
+			showNotification(
+					getMessageService().getMessage("ocs.too.many.results", VaadinUtils.getLocale(), getMaxResults()));
 		}
 		ids = getService().findIds(filter, getMaxResults(), so.toArray());
 		if (getAfterCountCompleted() != null) {
