@@ -43,16 +43,17 @@ public class ExportServiceImpl implements ExportService {
 				.getServiceForEntity(entityModel.getEntityClass());
 		FilterConverter<T> converter = new FilterConverter<T>(entityModel);
 		Filter filter = converter.convert(predicate);
-
 		ModelBasedExcelExportTemplate<ID, T> template = new ModelBasedExcelExportTemplate<ID, T>(service, entityModel,
-				mode, SortUtils.translate(sortOrders), filter, entityModel.getDisplayNamePlural(), false, null, joins) {
-
-			@Override
-			public int getPageSize() {
-				return 500;
-			}
-		};
+				mode, SortUtils.translate(sortOrders), filter, entityModel.getDisplayNamePlural(), null, joins);
 		return template.process();
+	}
+
+	@Override
+	public <ID extends Serializable, T extends AbstractEntity<ID>> byte[] exportExcelFixed(EntityModel<T> entityModel,
+			ExportMode mode, List<T> items) {
+		ModelBasedExcelExportTemplate<ID, T> template = new ModelBasedExcelExportTemplate<ID, T>(null, entityModel,
+				mode, null, null, entityModel.getDisplayNamePlural(), null);
+		return template.processFixed(items);
 	}
 
 	@Override
@@ -66,14 +67,16 @@ public class ExportServiceImpl implements ExportService {
 		Filter filter = converter.convert(predicate);
 
 		ModelBasedCsvExportTemplate<ID, T> template = new ModelBasedCsvExportTemplate<ID, T>(service, entityModel, mode,
-				SortUtils.translate(sortOrders), filter, entityModel.getDisplayNamePlural(), false, null, joins) {
-
-			@Override
-			public int getPageSize() {
-				return 500;
-			}
-		};
+				SortUtils.translate(sortOrders), filter, entityModel.getDisplayNamePlural(), null, joins);
 		return template.process();
+	}
+
+	@Override
+	public <ID extends Serializable, T extends AbstractEntity<ID>> byte[] exportCsvFixed(EntityModel<T> entityModel,
+			ExportMode mode, List<T> items) {
+		ModelBasedCsvExportTemplate<ID, T> template = new ModelBasedCsvExportTemplate<ID, T>(null, entityModel, mode,
+				null, null, entityModel.getDisplayNamePlural(), null);
+		return template.processFixed(items);
 	}
 
 }

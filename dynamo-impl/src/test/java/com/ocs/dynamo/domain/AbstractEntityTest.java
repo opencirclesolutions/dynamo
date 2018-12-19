@@ -18,7 +18,8 @@ import org.junit.Test;
 
 public class AbstractEntityTest {
 
-    @Test
+    @SuppressWarnings("unlikely-arg-type")
+	@Test
     public void testEquals() {
         TestEntity e1 = new TestEntity();
         e1.setId(1);

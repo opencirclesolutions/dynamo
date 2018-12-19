@@ -39,9 +39,6 @@ public final class GridUtils {
 		if (grid instanceof ModelBasedGrid) {
 			cs = ((ModelBasedGrid<?, ?>) grid).getCurrencySymbol();
 		}
-		// } else if (table instanceof ModelBasedTreeTable) {
-		// cs = ((ModelBasedTreeTable<?, ?>) table).getCurrencySymbol();
-		// }
 		if (cs == null) {
 			cs = VaadinUtils.getCurrencySymbol();
 		}

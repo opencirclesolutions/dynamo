@@ -14,12 +14,32 @@
 package com.ocs.dynamo.domain.query;
 
 import java.io.Serializable;
+import java.util.List;
 
 import com.ocs.dynamo.domain.AbstractEntity;
 
-public interface DataSetIterator<ID extends Serializable, T extends AbstractEntity<ID>> {
+public class FixedDataSetIterator<ID extends Serializable, T extends AbstractEntity<ID>>
+		implements DataSetIterator<ID, T> {
 
-	public T next();
-	
-	public int size();
+	private List<T> items;
+
+	private int index = 0;
+
+	public FixedDataSetIterator(List<T> items) {
+		this.items = items;
+	}
+
+	@Override
+	public T next() {
+		if (index < items.size()) {
+			return items.get(index++);
+		}
+		return null;
+	}
+
+	@Override
+	public int size() {
+		return items.size();
+	}
+
 }

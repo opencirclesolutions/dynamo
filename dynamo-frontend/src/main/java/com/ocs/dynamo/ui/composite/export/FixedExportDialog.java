@@ -1,32 +1,31 @@
-/*
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
-
-       http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
- */
 package com.ocs.dynamo.ui.composite.export;
+
+/*
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
 
 import java.io.ByteArrayInputStream;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.function.Supplier;
 
-import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.component.DownloadButton;
 import com.ocs.dynamo.ui.composite.dialog.BaseModalDialog;
 import com.ocs.dynamo.ui.composite.layout.ExportMode;
-import com.vaadin.data.provider.SortOrder;
-import com.vaadin.server.SerializablePredicate;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Layout;
@@ -40,7 +39,7 @@ import com.vaadin.ui.Layout;
  * @param <ID> the class of the ID of the entity that is being exported
  * @param <T> the class of the entity that is being exported
  */
-public class ExportDialog<ID extends Serializable, T extends AbstractEntity<ID>> extends BaseModalDialog {
+public class FixedExportDialog<ID extends Serializable, T extends AbstractEntity<ID>> extends BaseModalDialog {
 
 	private static final long serialVersionUID = -7559490010581729532L;
 
@@ -48,13 +47,9 @@ public class ExportDialog<ID extends Serializable, T extends AbstractEntity<ID>>
 
 	private EntityModel<T> entityModel;
 
-	private SerializablePredicate<T> predicate;
-
-	private List<SortOrder<?>> sortOrders;
-
-	private FetchJoinInformation[] joins;
-
 	private ExportMode exportMode;
+
+	private Supplier<List<T>> itemsSupplier;
 
 	/**
 	 * Constructor
@@ -64,26 +59,23 @@ public class ExportDialog<ID extends Serializable, T extends AbstractEntity<ID>>
 	 * @param sortOrders
 	 * @param joins
 	 */
-	public ExportDialog(EntityModel<T> entityModel, ExportMode exportMode, SerializablePredicate<T> predicate,
-			List<SortOrder<?>> sortOrders, FetchJoinInformation... joins) {
+	public FixedExportDialog(EntityModel<T> entityModel, ExportMode exportMode, Supplier<List<T>> itemsSupplier) {
 		this.entityModel = entityModel;
 		this.exportMode = exportMode;
-		this.predicate = predicate;
-		this.sortOrders = sortOrders;
-		this.joins = joins;
+		this.itemsSupplier = itemsSupplier;
+
 	}
 
 	private DownloadButton createDownloadCSVButton() {
 		return new DownloadButton(message("ocs.export.csv"), () -> {
-			return new ByteArrayInputStream(
-					exportService.exportCsv(entityModel, exportMode, predicate, sortOrders, joins));
+			return new ByteArrayInputStream(exportService.exportCsvFixed(entityModel, exportMode, itemsSupplier.get()));
 		}, () -> entityModel.getDisplayNamePlural() + "_" + LocalDateTime.now() + ".csv");
 	}
 
 	private DownloadButton createDownloadExcelButton() {
 		return new DownloadButton(message("ocs.export.excel"), () -> {
 			return new ByteArrayInputStream(
-					exportService.exportExcel(entityModel, exportMode, predicate, sortOrders, joins));
+					exportService.exportExcelFixed(entityModel, exportMode, itemsSupplier.get()));
 		}, () -> entityModel.getDisplayNamePlural() + "_" + LocalDateTime.now() + ".xlsx");
 	}
 
@@ -91,7 +83,6 @@ public class ExportDialog<ID extends Serializable, T extends AbstractEntity<ID>>
 	protected void doBuild(Layout parent) {
 		DownloadButton exportExcelButton = createDownloadExcelButton();
 		parent.addComponent(exportExcelButton);
-
 		DownloadButton exportCsvButton = createDownloadCSVButton();
 		parent.addComponent(exportCsvButton);
 	}

@@ -289,7 +289,6 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	protected Button constructSearchButton() {
 		searchButton = new Button(message("ocs.search"));
 		searchButton.setIcon(VaadinIcons.SEARCH);
-		// searchButton.setImmediate(true);
 		searchButton.addClickListener(this);
 		return searchButton;
 	}

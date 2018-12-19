@@ -1168,7 +1168,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 		// enable/disable save button based on form validity
 		saveButton.setData(SAVE_BUTTON_DATA);
-		// saveButton.setEnabled(groups.get(isViewMode()).isValid());
 		if (bottom) {
 			groups.get(isViewMode()).getFields().forEach(f -> f.addValueChangeListener(event -> {
 				checkSaveButtonState();

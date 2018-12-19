@@ -28,6 +28,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.dao.FetchJoinInformation;
@@ -55,7 +56,7 @@ import com.ocs.dynamo.utils.MathUtils;
  * @param <ID> the type of the primary key
  * @param <T> the type of the entity
  */
-public abstract class ModelBasedExcelExportTemplate<ID extends Serializable, T extends AbstractEntity<ID>>
+public class ModelBasedExcelExportTemplate<ID extends Serializable, T extends AbstractEntity<ID>>
 		extends BaseExportTemplate<ID, T> {
 
 	private XlsStyleGenerator<ID, T> generator;
@@ -77,9 +78,9 @@ public abstract class ModelBasedExcelExportTemplate<ID extends Serializable, T e
 	 * @param joins
 	 */
 	public ModelBasedExcelExportTemplate(BaseService<ID, T> service, EntityModel<T> entityModel, ExportMode mode,
-			SortOrder[] sortOrders, Filter filter, String title, boolean intThousandsGrouping,
-			CustomXlsStyleGenerator<ID, T> customGenerator, FetchJoinInformation... joins) {
-		super(service, entityModel, mode, sortOrders, filter, title, intThousandsGrouping, joins);
+			SortOrder[] sortOrders, Filter filter, String title, CustomXlsStyleGenerator<ID, T> customGenerator,
+			FetchJoinInformation... joins) {
+		super(service, entityModel, mode, sortOrders, filter, title, joins);
 		this.customGenerator = customGenerator;
 	}
 
@@ -99,7 +100,7 @@ public abstract class ModelBasedExcelExportTemplate<ID extends Serializable, T e
 	 * @return
 	 */
 	protected XlsStyleGenerator<ID, T> createGenerator(Workbook workbook) {
-		return new BaseXlsStyleGenerator<>(workbook, isIntThousandsGrouping());
+		return new BaseXlsStyleGenerator<>(workbook);
 	}
 
 	protected Workbook getWorkbook() {
@@ -226,6 +227,21 @@ public abstract class ModelBasedExcelExportTemplate<ID extends Serializable, T e
 			}
 		}
 		return cell;
+	}
+
+	/**
+	 * Creates an appropriate work book - if the size is below the threshold then a
+	 * normal workbook is created. Otherwise a streaming workbook is created. This
+	 * is much faster and more efficient, but you cannot auto resize the columns
+	 *
+	 * @param size the number of rows
+	 * @return
+	 */
+	protected Workbook createWorkbook(int size) {
+		if (size > MAX_SIZE_BEFORE_STREAMING) {
+			return new SXSSFWorkbook();
+		}
+		return new XSSFWorkbook();
 	}
 
 	public XlsStyleGenerator<ID, T> getGenerator() {

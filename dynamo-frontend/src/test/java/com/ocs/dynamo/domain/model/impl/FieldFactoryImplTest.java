@@ -1,8 +1,6 @@
 package com.ocs.dynamo.domain.model.impl;
 
-import java.text.DecimalFormatSymbols;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -23,7 +21,6 @@ import com.ocs.dynamo.domain.model.FieldFactory;
 import com.ocs.dynamo.domain.model.FieldFactoryContext;
 import com.ocs.dynamo.domain.model.annotation.Attribute;
 import com.ocs.dynamo.filter.EqualsPredicate;
-import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.test.BaseIntegrationTest;
 import com.ocs.dynamo.ui.component.EntityLookupField;
 import com.ocs.dynamo.ui.component.InternalLinkField;
@@ -32,7 +29,6 @@ import com.ocs.dynamo.ui.component.SimpleTokenFieldSelect;
 import com.ocs.dynamo.ui.component.TimeField;
 import com.ocs.dynamo.ui.component.URLField;
 import com.ocs.dynamo.ui.composite.form.ElementCollectionGrid;
-import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.server.SerializablePredicate;
 import com.vaadin.ui.AbstractComponent;
@@ -46,15 +42,9 @@ import com.vaadin.ui.TextField;
 public class FieldFactoryImplTest extends BaseIntegrationTest {
 
 	@Inject
-	private MessageService messageService;
-
-	@Inject
 	private EntityModelFactory factory;
 
 	private FieldFactory fieldFactory;
-
-	private DecimalFormatSymbols symbols = DecimalFormatSymbols
-			.getInstance(new Locale(SystemPropertyUtils.getDefaultLocale()));
 
 	@Before
 	public void setUp() {

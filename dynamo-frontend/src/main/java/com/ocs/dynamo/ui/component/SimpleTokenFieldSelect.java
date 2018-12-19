@@ -62,6 +62,9 @@ public class SimpleTokenFieldSelect<ID extends Serializable, S extends AbstractE
 	 */
 	private final ComboBox<T> comboBox;
 
+	/**
+	 * 
+	 */
 	private String distinctField;
 
 	/**

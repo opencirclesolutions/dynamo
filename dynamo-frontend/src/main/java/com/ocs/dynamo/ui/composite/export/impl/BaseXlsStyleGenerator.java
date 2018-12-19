@@ -78,9 +78,8 @@ public class BaseXlsStyleGenerator<ID extends Serializable, T extends AbstractEn
 	 * 
 	 * @param workbook
 	 */
-	public BaseXlsStyleGenerator(Workbook workbook, boolean thousandsGrouping) {
+	public BaseXlsStyleGenerator(Workbook workbook) {
 		this.workbook = workbook;
-		this.thousandsGrouping = thousandsGrouping;
 		DataFormat format = workbook.createDataFormat();
 
 		// create the cell styles only once- this is a huge performance

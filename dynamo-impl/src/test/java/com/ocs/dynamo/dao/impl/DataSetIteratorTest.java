@@ -21,11 +21,11 @@ import org.junit.Test;
 
 import com.google.common.collect.Lists;
 import com.ocs.dynamo.domain.TestEntity;
-import com.ocs.dynamo.domain.query.DataSetIterator;
+import com.ocs.dynamo.domain.query.PagingDataSetIterator;
 
 public class DataSetIteratorTest {
 
-    private DataSetIterator<Integer, TestEntity> iterator;
+    private PagingDataSetIterator<Integer, TestEntity> iterator;
 
     private List<Integer> ids = Lists.newArrayList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
 
@@ -36,7 +36,7 @@ public class DataSetIteratorTest {
     @Test
     public void test() {
 
-        iterator = new DataSetIterator<Integer, TestEntity>(ids, 5) {
+        iterator = new PagingDataSetIterator<Integer, TestEntity>(ids, 5) {
 
             @Override
             protected List<TestEntity> readPage(List<Integer> ids) {
@@ -66,7 +66,7 @@ public class DataSetIteratorTest {
     @Test
     public void testPartial() {
 
-        iterator = new DataSetIterator<Integer, TestEntity>(ids2, 5) {
+        iterator = new PagingDataSetIterator<Integer, TestEntity>(ids2, 5) {
 
             @Override
             protected List<TestEntity> readPage(List<Integer> ids) {

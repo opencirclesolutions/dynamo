@@ -24,6 +24,7 @@ import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.service.BaseService;
+import com.ocs.dynamo.ui.component.DownloadButton;
 import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.data.Converter;
@@ -175,6 +176,9 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	 */
 	protected void checkButtonState(T selectedItem) {
 		for (AbstractComponent b : toUpdate) {
+			if (b instanceof DownloadButton) {
+				((DownloadButton) b).update();
+			}
 			boolean enabled = selectedItem != null && mustEnableButton(b, selectedItem);
 			b.setEnabled(enabled);
 		}
@@ -240,9 +244,9 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	}
 
 	/**
-	 * Registers a component that must be enabled/disabled after an item is selected.
-	 * use the "mustEnableButton" callback method to impose additional constraints
-	 * on when the button must be enabled
+	 * Registers a component that must be enabled/disabled after an item is
+	 * selected. use the "mustEnableButton" callback method to impose additional
+	 * constraints on when the button must be enabled
 	 *
 	 * @param comp the button to register
 	 */

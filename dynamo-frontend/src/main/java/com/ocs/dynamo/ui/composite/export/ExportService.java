@@ -32,6 +32,19 @@ import com.vaadin.server.SerializablePredicate;
 public interface ExportService {
 
 	/**
+	 * Exports to CSV
+	 * 
+	 * @param entityModel the entity model of the entity to export
+	 * @param predicate   the predicate
+	 * @param sortOrders  the list of sort orders
+	 * @param joins       the joins to use when fetching data
+	 * @return
+	 */
+	public <ID extends Serializable, T extends AbstractEntity<ID>> byte[] exportCsv(EntityModel<T> entityModel,
+			ExportMode mode, SerializablePredicate<T> predicate, List<SortOrder<?>> sortOrders,
+			FetchJoinInformation... joins);
+
+	/**
 	 * Exports to Excel
 	 * 
 	 * @param entityModel the entity model of the entity to export
@@ -46,15 +59,24 @@ public interface ExportService {
 			FetchJoinInformation... joins);
 
 	/**
-	 * Exports to CSV
+	 * Exports a fixed set to Excel
 	 * 
-	 * @param entityModel the entity model of the entity to export
-	 * @param predicate   the predicate
-	 * @param sortOrders  the list of sort orders
-	 * @param joins       the joins to use when fetching data
+	 * @param entityModel the entity model
+	 * @param mode        the export mode
+	 * @param items
 	 * @return
 	 */
-	public <ID extends Serializable, T extends AbstractEntity<ID>> byte[] exportCsv(EntityModel<T> entityModel,
-			ExportMode mode, SerializablePredicate<T> predicate, List<SortOrder<?>> sortOrders,
-			FetchJoinInformation... joins);
+	public <ID extends Serializable, T extends AbstractEntity<ID>> byte[] exportExcelFixed(EntityModel<T> entityModel,
+			ExportMode mode, List<T> items);
+	
+	/**
+	 * Exports a fixed set to CSV
+	 * 
+	 * @param entityModel the entity model
+	 * @param mode        the export mode
+	 * @param items
+	 * @return
+	 */
+	public <ID extends Serializable, T extends AbstractEntity<ID>> byte[] exportCsvFixed(EntityModel<T> entityModel,
+			ExportMode mode, List<T> items);
 }

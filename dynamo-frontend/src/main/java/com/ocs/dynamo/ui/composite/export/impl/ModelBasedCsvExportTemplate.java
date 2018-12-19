@@ -62,9 +62,9 @@ public class ModelBasedCsvExportTemplate<ID extends Serializable, T extends Abst
 	 * @param joins
 	 */
 	public ModelBasedCsvExportTemplate(BaseService<ID, T> service, EntityModel<T> entityModel, ExportMode exportMode,
-			SortOrder[] sortOrders, Filter filter, String title, boolean intThousandsGrouping,
-			CustomXlsStyleGenerator<ID, T> customGenerator, FetchJoinInformation... joins) {
-		super(service, entityModel, exportMode, sortOrders, filter, title, intThousandsGrouping, joins);
+			SortOrder[] sortOrders, Filter filter, String title, CustomXlsStyleGenerator<ID, T> customGenerator,
+			FetchJoinInformation... joins) {
+		super(service, entityModel, exportMode, sortOrders, filter, title, joins);
 	}
 
 	@Override
@@ -106,8 +106,4 @@ public class ModelBasedCsvExportTemplate<ID extends Serializable, T extends Abst
 		}
 	}
 
-	@Override
-	public int getPageSize() {
-		return 100;
-	}
 }

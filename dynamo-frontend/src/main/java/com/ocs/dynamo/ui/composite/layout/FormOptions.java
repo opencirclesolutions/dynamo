@@ -70,6 +70,16 @@ public class FormOptions implements Serializable {
 	private boolean editAllowed;
 
 	/**
+	 * Indicates whether table export is allowed (read from system property)
+	 */
+	private boolean exportAllowed = SystemPropertyUtils.allowListExport();
+
+	/**
+	 * The data export mode - by default, export all attributes that are visible
+	 */
+	private ExportMode exportMode = ExportMode.ONLY_VISIBLE_IN_TABLE;
+
+	/**
 	 * Whether this form is nested in another form. Used by the framework, usually
 	 * no need to set this yourself
 	 */
@@ -168,17 +178,6 @@ public class FormOptions implements Serializable {
 	 * Whether to display a button for toggling search fields
 	 */
 	private boolean showToggleButton;
-
-	/**
-	 * The data export mode - by default, export all attributes that are visible
-	 */
-	private ExportMode exportMode = ExportMode.FULL;
-
-	/**
-	 * 
-	 * Indicates whether table export is allowed (read from system property)
-	 */
-	private boolean exportAllowed = SystemPropertyUtils.allowListExport();
 
 	public FormOptions createCopy() {
 		FormOptions fo = new FormOptions();

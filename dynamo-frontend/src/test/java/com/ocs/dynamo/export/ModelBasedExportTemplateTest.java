@@ -28,8 +28,6 @@ import com.ocs.dynamo.utils.DateUtils;
 
 public class ModelBasedExportTemplateTest extends BaseIntegrationTest {
 
-	private static final int PAGE_SIZE = 1000;
-
 	private EntityModelFactory entityModelFactory = new EntityModelFactoryImpl();
 
 	@Autowired
@@ -70,13 +68,7 @@ public class ModelBasedExportTemplateTest extends BaseIntegrationTest {
 	public void testExcel() throws IOException {
 		ModelBasedExcelExportTemplate<Integer, TestEntity> template = new ModelBasedExcelExportTemplate<Integer, TestEntity>(
 				testEntityService, entityModelFactory.getModel(TestEntity.class), ExportMode.ONLY_VISIBLE_IN_TABLE,
-				null, null, "Sheet name", true, null) {
-
-			@Override
-			public int getPageSize() {
-				return 10000;
-			}
-		};
+				null, null, "Sheet name", null);
 		byte[] bytes = template.process();
 
 		try (Workbook wb = new XSSFWorkbook(new ByteArrayInputStream(bytes))) {
@@ -130,12 +122,7 @@ public class ModelBasedExportTemplateTest extends BaseIntegrationTest {
 	public void testCsv() {
 		ModelBasedCsvExportTemplate<Integer, TestEntity> template = new ModelBasedCsvExportTemplate<Integer, TestEntity>(
 				testEntityService, entityModelFactory.getModel(TestEntity.class), ExportMode.ONLY_VISIBLE_IN_TABLE,
-				null, null, "Sheet name", true, null) {
-			@Override
-			public int getPageSize() {
-				return PAGE_SIZE;
-			}
-		};
+				null, null, "Sheet name", null);
 		byte[] bytes = template.process();
 		String str = new String(bytes);
 		String[] lines = str.split("\n");

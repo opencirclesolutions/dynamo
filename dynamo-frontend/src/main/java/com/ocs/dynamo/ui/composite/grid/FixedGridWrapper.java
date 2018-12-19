@@ -17,15 +17,18 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 
+import com.google.common.collect.Lists;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
+import com.ocs.dynamo.ui.composite.export.FixedExportDialog;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.provider.QueryType;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.data.provider.SortOrder;
 import com.vaadin.server.SerializablePredicate;
+import com.vaadin.ui.UI;
 
 /**
  * A wrapper for a table that displays a fixed number of items
@@ -70,5 +73,20 @@ public class FixedGridWrapper<ID extends Serializable, T extends AbstractEntity<
 	@Override
 	public void search(SerializablePredicate<T> filter) {
 		// do nothing (collection of items is fixed)
+	}
+
+	@Override
+	protected void initSortingAndFiltering() {
+		// right click to download
+		if (getFormOptions().isExportAllowed()) {
+			getGrid().addContextClickListener(event -> {
+				ListDataProvider<T> provider = (ListDataProvider<T>) getDataProvider();
+				FixedExportDialog<ID, T> dialog = new FixedExportDialog<ID, T>(
+						getExportEntityModel() != null ? getExportEntityModel() : getEntityModel(),
+						getFormOptions().getExportMode(), () -> Lists.newArrayList(provider.getItems()));
+				dialog.build();
+				UI.getCurrent().addWindow(dialog);
+			});
+		}
 	}
 }

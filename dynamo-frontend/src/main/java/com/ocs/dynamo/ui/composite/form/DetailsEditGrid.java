@@ -343,11 +343,11 @@ public abstract class DetailsEditGrid<ID extends Serializable, T extends Abstrac
 			list.sort(comparator);
 		}
 
+		binders.clear();
 		if (provider != null) {
 			provider.getItems().clear();
 			provider.getItems().addAll(list);
 			provider.refreshAll();
-			binders.clear();
 		}
 
 		// clear the selection

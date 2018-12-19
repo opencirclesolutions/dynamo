@@ -17,10 +17,6 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.List;
 
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.streaming.SXSSFWorkbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.dao.SortOrder;
 import com.ocs.dynamo.dao.SortOrders;
@@ -30,6 +26,8 @@ import com.ocs.dynamo.domain.model.AttributeType;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.domain.query.DataSetIterator;
+import com.ocs.dynamo.domain.query.FixedDataSetIterator;
+import com.ocs.dynamo.domain.query.PagingDataSetIterator;
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.filter.Filter;
 import com.ocs.dynamo.service.BaseService;
@@ -64,9 +62,9 @@ public abstract class BaseExportTemplate<ID extends Serializable, T extends Abst
 	protected static final int MAX_SIZE_BEFORE_STREAMING = 1000;
 
 	/**
-	 * Whether to use the thousands separator for integers
+	 * The page size
 	 */
-	private final boolean intThousandsGrouping;
+	protected static final int PAGE_SIZE = 100;
 
 	/**
 	 * Entity model factory
@@ -120,8 +118,7 @@ public abstract class BaseExportTemplate<ID extends Serializable, T extends Abst
 	 * @param joins
 	 */
 	public BaseExportTemplate(BaseService<ID, T> service, EntityModel<T> entityModel, ExportMode exportMode,
-			SortOrder[] sortOrders, Filter filter, String title, boolean intThousandsGrouping,
-			FetchJoinInformation... joins) {
+			SortOrder[] sortOrders, Filter filter, String title, FetchJoinInformation... joins) {
 		this.service = service;
 		this.exportMode = exportMode;
 		this.entityModel = entityModel;
@@ -129,22 +126,6 @@ public abstract class BaseExportTemplate<ID extends Serializable, T extends Abst
 		this.filter = filter;
 		this.title = title;
 		this.joins = joins;
-		this.intThousandsGrouping = intThousandsGrouping;
-	}
-
-	/**
-	 * Creates an appropriate work book - if the size is below the threshold then a
-	 * normal workbook is created. Otherwise a streaming workbook is created. This
-	 * is much faster and more efficient, but you cannot auto resize the columns
-	 *
-	 * @param size the number of rows
-	 * @return
-	 */
-	protected Workbook createWorkbook(int size) {
-		if (size > MAX_SIZE_BEFORE_STREAMING) {
-			return new SXSSFWorkbook();
-		}
-		return new XSSFWorkbook();
 	}
 
 	/**
@@ -190,13 +171,6 @@ public abstract class BaseExportTemplate<ID extends Serializable, T extends Abst
 		return joins;
 	}
 
-	/**
-	 * Returns the size of a single page of data
-	 *
-	 * @return
-	 */
-	public abstract int getPageSize();
-
 	public BaseService<ID, T> getService() {
 		return service;
 	}
@@ -207,10 +181,6 @@ public abstract class BaseExportTemplate<ID extends Serializable, T extends Abst
 
 	public String getTitle() {
 		return title;
-	}
-
-	public boolean isIntThousandsGrouping() {
-		return intThousandsGrouping;
 	}
 
 	/**
@@ -224,7 +194,7 @@ public abstract class BaseExportTemplate<ID extends Serializable, T extends Abst
 		try {
 			// retrieve all store series based on the IDs
 			List<ID> ids = service.findIds(getFilter(), sortOrders);
-			DataSetIterator<ID, T> iterator = new DataSetIterator<ID, T>(ids, getPageSize()) {
+			PagingDataSetIterator<ID, T> iterator = new PagingDataSetIterator<ID, T>(ids, PAGE_SIZE) {
 
 				@Override
 				protected List<T> readPage(List<ID> ids) {
@@ -232,6 +202,16 @@ public abstract class BaseExportTemplate<ID extends Serializable, T extends Abst
 				}
 			};
 
+			return generate(iterator);
+		} catch (IOException ex) {
+			throw new OCSRuntimeException(ex.getMessage(), ex);
+		}
+	}
+
+	public final byte[] processFixed(List<T> items) {
+		try {
+			// retrieve all store series based on the IDs
+			FixedDataSetIterator<ID, T> iterator = new FixedDataSetIterator<>(items);
 			return generate(iterator);
 		} catch (IOException ex) {
 			throw new OCSRuntimeException(ex.getMessage(), ex);

@@ -23,14 +23,13 @@ import com.vaadin.server.StreamResource.StreamSource;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinResponse;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.CustomComponent;
 
 /**
  * A button that starts a file download process when clicked
  * 
  * @author bas.rutten
  */
-public class DownloadButton extends CustomComponent {
+public class DownloadButton extends Button {
 
 	private static final long serialVersionUID = -7163648327567831406L;
 
@@ -42,50 +41,16 @@ public class DownloadButton extends CustomComponent {
 
 	private Supplier<String> createFileName;
 
-	private Button button;
-
-	private boolean tryDisconnect;
-
 	/**
+	 * Constructor
 	 * 
-	 * @param caption
-	 * @param createContent
-	 * @param createFileName
+	 * @param caption the caption of the button
 	 */
 	public DownloadButton(String caption, Supplier<InputStream> createContent, Supplier<String> createFileName) {
-		this(caption, createContent, createFileName, false);
-	}
-
-	/**
-	 * 
-	 * @param caption
-	 * @param createContent
-	 * @param createFileName
-	 * @param tryDisconnect
-	 */
-	public DownloadButton(String caption, Supplier<InputStream> createContent, Supplier<String> createFileName,
-			boolean tryDisconnect) {
-
+		super(caption);
 		this.createContent = createContent;
 		this.createFileName = createFileName;
-		this.tryDisconnect = tryDisconnect;
 
-		button = new Button(caption);
-		button.addClickListener(event -> update());
-		setCompositionRoot(button);
-		update();
-	}
-
-	/**
-	 * Sets the file name
-	 * 
-	 * @param fileName
-	 */
-	public void setFileName(String fileName) {
-		resource.setFilename(fileName);
-	}
-
-	private void update() {
 		resource = new StreamResource(new StreamSource() {
 
 			private static final long serialVersionUID = -4870779918745663459L;
@@ -97,10 +62,6 @@ public class DownloadButton extends CustomComponent {
 
 		}, createFileName.get());
 
-		if (tryDisconnect && downloader != null) {
-			button.removeExtension(downloader);
-		}
-
 		downloader = new FileDownloader(resource) {
 
 			private static final long serialVersionUID = -5072481083052841701L;
@@ -111,11 +72,24 @@ public class DownloadButton extends CustomComponent {
 				return super.handleConnectorRequest(request, response, path);
 			}
 		};
-		downloader.extend(button);
+		downloader.extend(this);
 	}
 
-	@Override
-	public void setEnabled(boolean enabled) {
-		button.setEnabled(enabled);
+	/**
+	 * 
+	 */
+	public void update() {
+
+		downloader.setFileDownloadResource(new StreamResource(new StreamSource() {
+
+			private static final long serialVersionUID = -4870779918745663459L;
+
+			@Override
+			public InputStream getStream() {
+				return createContent.get();
+			}
+
+		}, createFileName.get()));
 	}
+
 }
