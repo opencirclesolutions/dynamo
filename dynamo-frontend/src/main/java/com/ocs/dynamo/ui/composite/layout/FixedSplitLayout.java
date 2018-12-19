@@ -61,7 +61,7 @@ public abstract class FixedSplitLayout<ID extends Serializable, T extends Abstra
 	}
 
 	/**
-	 * Callback method that is excecuted after re
+	 * Callback method that is executed after reload
 	 */
 	@Override
 	protected void afterReload(T t) {
@@ -138,13 +138,14 @@ public abstract class FixedSplitLayout<ID extends Serializable, T extends Abstra
 		if (selectedItems != null) {
 			if (selectedItems instanceof Collection<?>) {
 				Collection<?> col = (Collection<?>) selectedItems;
-				T t = (T) col.iterator().next();
-				// fetch the item again so that any details are loaded
-				setSelectedItem(getService().fetchById(t.getId()));
-			} else {
-				// single item selected
-				T t = (T) selectedItems;
-				setSelectedItem(t);
+				if (col.iterator().hasNext()) {
+					T t = (T) col.iterator().next();
+					// fetch the item again so that any details are loaded
+					setSelectedItem(getService().fetchById(t.getId()));
+				} else {
+					setSelectedItem(null);
+					emptyDetailView();
+				}
 			}
 		} else {
 			setSelectedItem(null);

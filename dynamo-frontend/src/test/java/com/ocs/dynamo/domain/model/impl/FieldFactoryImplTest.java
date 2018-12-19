@@ -26,7 +26,9 @@ import com.ocs.dynamo.filter.EqualsPredicate;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.test.BaseIntegrationTest;
 import com.ocs.dynamo.ui.component.EntityLookupField;
+import com.ocs.dynamo.ui.component.InternalLinkField;
 import com.ocs.dynamo.ui.component.QuickAddEntityComboBox;
+import com.ocs.dynamo.ui.component.SimpleTokenFieldSelect;
 import com.ocs.dynamo.ui.component.TimeField;
 import com.ocs.dynamo.ui.component.URLField;
 import com.ocs.dynamo.ui.composite.form.ElementCollectionGrid;
@@ -41,7 +43,7 @@ import com.vaadin.ui.Slider;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.TextField;
 
-public class ModelBasedFieldFactoryTest extends BaseIntegrationTest {
+public class FieldFactoryImplTest extends BaseIntegrationTest {
 
 	@Inject
 	private MessageService messageService;
@@ -66,9 +68,10 @@ public class ModelBasedFieldFactoryTest extends BaseIntegrationTest {
 		return fieldFactory.constructField(context);
 	}
 
-	private AbstractComponent constructField2(String name) {
+	private AbstractComponent constructField2(String name, boolean search, boolean viewMode) {
 		EntityModel<TestEntity2> em = factory.getModel(TestEntity2.class);
-		FieldFactoryContext context = FieldFactoryContext.create().setAttributeModel(em.getAttributeModel(name));
+		FieldFactoryContext context = FieldFactoryContext.create().setAttributeModel(em.getAttributeModel(name))
+				.setSearch(search).setViewMode(viewMode);
 		return fieldFactory.constructField(context);
 	}
 
@@ -263,7 +266,7 @@ public class ModelBasedFieldFactoryTest extends BaseIntegrationTest {
 	@Test
 	@SuppressWarnings("unchecked")
 	public void testConstructEntityLookupField() {
-		AbstractComponent ac = constructField2("testEntity");
+		AbstractComponent ac = constructField2("testEntity", false, false);
 		Assert.assertTrue(ac instanceof EntityLookupField);
 
 		EntityLookupField<Integer, TestEntity> lf = (EntityLookupField<Integer, TestEntity>) ac;
@@ -285,7 +288,7 @@ public class ModelBasedFieldFactoryTest extends BaseIntegrationTest {
 	@Test
 	@SuppressWarnings("unchecked")
 	public void testConstructEntityComboBox() {
-		AbstractComponent ac = constructField2("testEntityAlt");
+		AbstractComponent ac = constructField2("testEntityAlt", false, false);
 		Assert.assertTrue(ac instanceof QuickAddEntityComboBox);
 
 		QuickAddEntityComboBox<Integer, TestEntity> cb = (QuickAddEntityComboBox<Integer, TestEntity>) ac;
@@ -305,30 +308,32 @@ public class ModelBasedFieldFactoryTest extends BaseIntegrationTest {
 		Assert.assertNotNull(cb.getFilter());
 	}
 
-	// default case - lookup field (no field filter)
-//		f = ff.constructField(model.getAttributeModel("testEntity"), null, null);
-//		Assert.assertTrue(f instanceof EntityLookupField);
+	/**
+	 * Test that a link field is constructed for a navigable property in view mode
+	 */
+	@Test
+	public void testConstructLinkField() {
+		AbstractComponent ac = constructField2("testEntity", false, true);
+		Assert.assertTrue(ac instanceof InternalLinkField);
+	}
 
-//
-//		// field filter is propagated
-//		Map<String, Container.Filter> fieldFilters = new HashMap<>();
-//		fieldFilters.put("testEntity", new Compare.Equal("name", "John"));
-//
-//		f = ff.constructField(model.getAttributeModel("testEntity"), fieldFilters, null);
-//		Assert.assertTrue(f instanceof EntityLookupField);
-//		lf = (EntityLookupField<Integer, TestEntity>) f;
-//		Assert.assertNotNull(lf.getFilter());
-//
-//		fieldFilters = new HashMap<>();
-//		fieldFilters.put("testEntityAlt", new Compare.Equal("name", "John"));
-//
-//		f = ff.constructField(model.getAttributeModel("testEntityAlt"), fieldFilters, null);
-//		Assert.assertTrue(f instanceof QuickAddEntityComboBox);
-//		QuickAddEntityComboBox<Integer, TestEntity> df = (QuickAddEntityComboBox<Integer, TestEntity>) f;
-//		Assert.assertEquals(SelectMode.FILTERED, df.getComboBox().getSelectMode());
-//
-//		f = ff.constructField(model.getAttributeModel("testEntityAlt2"), fieldFilters, null);
-//		Assert.assertTrue(f instanceof QuickAddListSelect);
+	/**
+	 * Test that a simple token field select component is rendered in search mode
+	 */
+	@Test
+	public void testConstructSimpleTokenField() {
+		AbstractComponent ac = constructField2("basicToken", true, false);
+		Assert.assertTrue(ac instanceof SimpleTokenFieldSelect);
+	}
+
+	/**
+	 * Test that a simple
+	 */
+	@Test
+	public void testConstructSimpleTokenField2() {
+		AbstractComponent ac = constructField2("basicToken", false, false);
+		Assert.assertTrue(ac instanceof TextField);
+	}
 
 	@SuppressWarnings("unused")
 	private class TestX extends AbstractEntity<Integer> {

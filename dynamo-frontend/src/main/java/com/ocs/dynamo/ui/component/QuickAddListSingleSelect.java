@@ -195,14 +195,6 @@ public class QuickAddListSingleSelect<ID extends Serializable, T extends Abstrac
 	}
 
 	@Override
-	public void setValue(T value) {
-		super.setValue(value);
-		if (listSelect != null) {
-			listSelect.setValue(value);
-		}
-	}
-
-	@Override
 	public void focus() {
 		if (listSelect != null) {
 			listSelect.focus();

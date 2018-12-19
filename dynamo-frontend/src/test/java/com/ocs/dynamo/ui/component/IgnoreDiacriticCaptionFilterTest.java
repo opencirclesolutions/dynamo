@@ -45,4 +45,18 @@ public class IgnoreDiacriticCaptionFilterTest {
 		Assert.assertFalse(filter.test("Albert", "bert"));
 
 	}
+
+	@Test
+	public void testEquals() {
+
+		IgnoreDiacriticsCaptionFilter filter1 = new IgnoreDiacriticsCaptionFilter(false, false);
+		Assert.assertFalse(filter1.equals(null));
+		Assert.assertFalse(filter1.equals(new Object()));
+
+		IgnoreDiacriticsCaptionFilter filter2 = new IgnoreDiacriticsCaptionFilter(false, false);
+		Assert.assertTrue(filter1.equals(filter2));
+
+		IgnoreDiacriticsCaptionFilter filter3 = new IgnoreDiacriticsCaptionFilter(false, true);
+		Assert.assertFalse(filter1.equals(filter3));
+	}
 }

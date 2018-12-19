@@ -236,7 +236,7 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 				layout.addComponent(auxField);
 				comp = layout;
 			}
-			return new FilterGroup<T>(attributeModel, filterType, comp, field, auxField);
+			return new FilterGroup<>(attributeModel, filterType, comp, field, auxField);
 		}
 		return null;
 	}

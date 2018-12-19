@@ -18,15 +18,15 @@ import com.ocs.dynamo.filter.EqualsPredicate;
 import com.ocs.dynamo.service.TestEntityService;
 import com.ocs.dynamo.test.BaseMockitoTest;
 import com.ocs.dynamo.test.MockUtil;
+import com.ocs.dynamo.ui.BaseUI;
 import com.ocs.dynamo.ui.component.EntityComboBox.SelectMode;
-import com.vaadin.ui.UI;
 
 public class QuickAddEntityComboBoxTest extends BaseMockitoTest {
 
 	private EntityModelFactory factory = new EntityModelFactoryImpl();
 
 	@Mock
-	private UI ui;
+	private BaseUI ui;
 
 	@Mock
 	private TestEntityService service;
@@ -92,6 +92,10 @@ public class QuickAddEntityComboBoxTest extends BaseMockitoTest {
 
 		// list must now contain an extra item
 		Assert.assertEquals(4, select.getComboBox().getDataProviderSize());
+
+		Assert.assertNotNull(select.getDirectNavigationButton());
+		select.getDirectNavigationButton().click();
+		Mockito.verify(ui).navigateToEntityScreenDirectly(Mockito.any());
 
 	}
 

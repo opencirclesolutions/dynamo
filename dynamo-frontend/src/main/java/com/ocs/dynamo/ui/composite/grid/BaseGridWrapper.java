@@ -174,7 +174,7 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 	 * @return
 	 */
 	protected ModelBasedGrid<ID, T> constructGrid() {
-		return new ModelBasedGrid<ID, T>(dataProvider, entityModel, editable, false);
+		return new ModelBasedGrid<>(dataProvider, entityModel, editable, false);
 
 	}
 

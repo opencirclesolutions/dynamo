@@ -61,7 +61,7 @@ public class SimpleEditLayoutTest extends BaseIntegrationTest {
 		Assert.assertEquals("Bob", ((HasValue<?>) layout.getEditForm().getField("name")).getValue());
 
 		// check that the screen is not in view mode
-		Assert.assertFalse(layout.getEditForm().isViewMode());
+		Assert.assertFalse(layout.isViewMode());
 		Assert.assertTrue(layout.getEditForm().getSaveButtons().get(0).isVisible());
 
 		layout.setEntity(e2);
@@ -81,7 +81,7 @@ public class SimpleEditLayoutTest extends BaseIntegrationTest {
 		Assert.assertNotNull(layout.getEditForm());
 
 		// check that the screen is in view mode and no save buttons are visible
-		Assert.assertTrue(layout.getEditForm().isViewMode());
+		Assert.assertTrue(layout.isViewMode());
 		Assert.assertTrue(layout.getEditForm().getSaveButtons().isEmpty());
 
 		modeChanged = false;
@@ -93,21 +93,21 @@ public class SimpleEditLayoutTest extends BaseIntegrationTest {
 		layout.getEditForm().getEditButtons().get(0).click();
 
 		// check that we are now in edit mode
-		Assert.assertFalse(layout.getEditForm().isViewMode());
+		Assert.assertFalse(layout.isViewMode());
 		Assert.assertTrue(layout.getEditForm().getCancelButtons().get(0).isVisible());
 		Assert.assertFalse(layout.getEditForm().getEditButtons().get(0).isVisible());
 		Assert.assertTrue(modeChanged);
 
 		// back to view mode
 		layout.getEditForm().getCancelButtons().get(0).click();
-		Assert.assertTrue(layout.getEditForm().isViewMode());
+		Assert.assertTrue(layout.isViewMode());
 
 		layout.getEditForm().getEditButtons().get(0).click();
-		Assert.assertFalse(layout.getEditForm().isViewMode());
+		Assert.assertFalse(layout.isViewMode());
 
 		// after a reload we go back to the view mode
 		layout.reload();
-		Assert.assertTrue(layout.getEditForm().isViewMode());
+		Assert.assertTrue(layout.isViewMode());
 	}
 
 	/**

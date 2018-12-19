@@ -82,6 +82,9 @@ public class FixedSplitLayoutTest extends BaseIntegrationTest {
 		// no quick search field for this component
 		Assert.assertNull(layout.getQuickSearchField());
 
+		layout.getGridWrapper().getGrid().deselectAll();
+		Assert.assertNull(layout.getSelectedItem());
+
 		layout.reload();
 	}
 

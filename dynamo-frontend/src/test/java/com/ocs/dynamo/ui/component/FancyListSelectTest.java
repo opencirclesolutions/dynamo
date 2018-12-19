@@ -17,6 +17,8 @@ import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.domain.model.impl.EntityModelFactoryImpl;
+import com.ocs.dynamo.filter.EqualsPredicate;
+import com.ocs.dynamo.filter.Filter;
 import com.ocs.dynamo.service.TestEntityService;
 import com.ocs.dynamo.test.BaseMockitoTest;
 import com.ocs.dynamo.test.MockUtil;
@@ -46,6 +48,10 @@ public class FancyListSelectTest extends BaseMockitoTest {
 
 		Mockito.when(service.find(Mockito.isNull(), (SortOrder[]) Mockito.any()))
 				.thenReturn(Lists.newArrayList(t1, t2, t3));
+		Mockito.when(service.find(Mockito.isNull())).thenReturn(Lists.newArrayList(t1, t2, t3));
+
+		Filter f = new com.ocs.dynamo.filter.Compare.Equal("name", "Kevin");
+		Mockito.when(service.find(Mockito.eq(f))).thenReturn(Lists.newArrayList(t1));
 
 		Mockito.when(service.createNewEntity()).thenReturn(new TestEntity());
 		MockUtil.mockServiceSave(service, TestEntity.class);
@@ -76,7 +82,7 @@ public class FancyListSelectTest extends BaseMockitoTest {
 		Assert.assertTrue(col.contains(t1));
 
 		// test the removal of a value
-		select.getListSelect().setValue(Sets.newHashSet(t1));
+		select.setValue(Sets.newHashSet(t1));
 		select.getRemoveButton().click();
 
 		col = (Collection<TestEntity>) select.getValue();
@@ -139,6 +145,26 @@ public class FancyListSelectTest extends BaseMockitoTest {
 		addNewValue(select, "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
 
 		Assert.assertEquals(3, select.getComboBox().getDataProviderSize());
+	}
+
+	@Test
+	public void testSetAdditionalFilter() {
+		EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
+		AttributeModel am = em.getAttributeModel("testDomain");
+
+		FancyListSelect<Integer, TestEntity> select = new FancyListSelect<>(service, em, am, null, false);
+		select.initContent();
+		MockUtil.injectUI(select, ui);
+
+		Assert.assertEquals(3, select.getComboBox().getDataProviderSize());
+		select.setAdditionalFilter(new EqualsPredicate<TestEntity>("name", "Kevin"));
+		Assert.assertEquals(1, select.getComboBox().getDataProviderSize());
+
+		select.clearAdditionalFilter();
+		Assert.assertEquals(3, select.getComboBox().getDataProviderSize());
+		
+		select.refresh(new EqualsPredicate<TestEntity>("name", "Kevin"));
+		Assert.assertEquals(1, select.getComboBox().getDataProviderSize());
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })

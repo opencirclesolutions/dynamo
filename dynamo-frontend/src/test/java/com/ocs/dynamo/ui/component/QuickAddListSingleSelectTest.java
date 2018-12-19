@@ -1,8 +1,5 @@
 package com.ocs.dynamo.ui.component;
 
-import java.util.Collection;
-import java.util.Collections;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,14 +19,14 @@ import com.ocs.dynamo.filter.Filter;
 import com.ocs.dynamo.service.TestEntityService;
 import com.ocs.dynamo.test.BaseMockitoTest;
 import com.ocs.dynamo.test.MockUtil;
-import com.ocs.dynamo.ui.BaseUI;
+import com.vaadin.ui.UI;
 
-public class QuickAddListSelectTest extends BaseMockitoTest {
+public class QuickAddListSingleSelectTest extends BaseMockitoTest {
 
 	private EntityModelFactory factory = new EntityModelFactoryImpl();
 
 	@Mock
-	private BaseUI ui;
+	private UI ui;
 
 	@Mock
 	private TestEntityService service;
@@ -66,7 +63,8 @@ public class QuickAddListSelectTest extends BaseMockitoTest {
 		EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
 		AttributeModel am = em.getAttributeModel("testDomain");
 
-		QuickAddListSelect<Integer, TestEntity> select = new QuickAddListSelect<>(em, am, service, null, false, 3);
+		QuickAddListSingleSelect<Integer, TestEntity> select = new QuickAddListSingleSelect<>(em, am, service, null,
+				false, 3);
 		select.initContent();
 		MockUtil.injectUI(select, ui);
 
@@ -74,12 +72,12 @@ public class QuickAddListSelectTest extends BaseMockitoTest {
 		Assert.assertEquals(3, select.getListSelect().getDataProviderSize());
 
 		// test propagation of the value
-		select.getListSelect().select(t1);
-		Assert.assertTrue(select.getListSelect().getValue().contains(t1));
+		select.getListSelect().setValue(t1);
+		Assert.assertEquals(t1, select.getListSelect().getValue());
 
 		// .. and the other way around
-		select.getListSelect().select(t2);
-		Assert.assertTrue(select.getListSelect().getValue().contains(t2));
+		select.getListSelect().setValue(t2);
+		Assert.assertEquals(t2, select.getListSelect().getValue());
 
 		// bring up the add dialog
 		ArgumentCaptor<AddNewValueDialog> captor = ArgumentCaptor.forClass(AddNewValueDialog.class);
@@ -95,22 +93,6 @@ public class QuickAddListSelectTest extends BaseMockitoTest {
 
 		// list must now contain an extra item
 		Assert.assertEquals(4, select.getListSelect().getDataProviderSize());
-		
-		Assert.assertNotNull(select.getDirectNavigationButton());
-		select.getDirectNavigationButton().click();
-		Mockito.verify(ui).navigateToEntityScreenDirectly(Mockito.any());
-	}
-
-	@Test
-	public void testSetValue() {
-		EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
-		AttributeModel am = em.getAttributeModel("testDomain");
-
-		QuickAddListSelect<Integer, TestEntity> select = new QuickAddListSelect<>(em, am, service, null, false, 3);
-		select.initContent();
-
-		select.setValue(null);
-		Assert.assertEquals(Collections.emptySet(), select.getValue());
 	}
 
 	@Test
@@ -119,7 +101,8 @@ public class QuickAddListSelectTest extends BaseMockitoTest {
 		EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
 		AttributeModel am = em.getAttributeModel("testDomain");
 
-		QuickAddListSelect<Integer, TestEntity> select = new QuickAddListSelect<>(em, am, service, null, false, 3);
+		QuickAddListSingleSelect<Integer, TestEntity> select = new QuickAddListSingleSelect<>(em, am, service, null,
+				false, 3);
 		select.initContent();
 		MockUtil.injectUI(select, ui);
 
@@ -135,10 +118,8 @@ public class QuickAddListSelectTest extends BaseMockitoTest {
 		select.clearAdditionalFilter();
 		Assert.assertEquals(3, select.getListSelect().getDataProviderSize());
 
-		select.setValue(Lists.newArrayList(t2));
-
-		Collection<TestEntity> value = select.getValue();
-		Assert.assertTrue(value.contains(t2));
+		select.setValue(t2);
+		Assert.assertEquals(t2, select.getValue());
 
 		select.refresh();
 

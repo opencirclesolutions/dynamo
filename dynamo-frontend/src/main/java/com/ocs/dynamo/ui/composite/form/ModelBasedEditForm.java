@@ -895,6 +895,16 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	}
 
 	/**
+	 * Callback method for inserting custom converter
+	 * 
+	 * @param am
+	 * @return
+	 */
+	protected Converter<String, ?> constructCustomConverter(AttributeModel am) {
+		return null;
+	}
+
+	/**
 	 * Creates a custom field
 	 *
 	 * @param entityModel    the entity model to base the field on
@@ -1015,16 +1025,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		if (field instanceof CanAssignEntity) {
 			assignEntityToFields.add((CanAssignEntity<ID, T>) field);
 		}
-	}
-
-	/**
-	 * Callback method for inserting custom converter
-	 * 
-	 * @param am
-	 * @return
-	 */
-	protected Converter<String, ?> constructCustomConverter(AttributeModel am) {
-		return null;
 	}
 
 	/**
@@ -1269,6 +1269,20 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		return filterButtons(BACK_BUTTON_DATA);
 	}
 
+	/**
+	 * Returns the binding for a field
+	 * 
+	 * @param fieldName
+	 * @return
+	 */
+	public Binding<T, ?> getBinding(String fieldName) {
+		Optional<Binding<T, ?>> binding = groups.get(viewMode).getBinding(fieldName);
+		if (binding.isPresent()) {
+			return binding.get();
+		}
+		return null;
+	}
+
 	public List<Button> getCancelButtons() {
 		return filterButtons(CANCEL_BUTTON_DATA);
 	}
@@ -1300,20 +1314,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		Optional<Binding<T, ?>> binding = groups.get(viewMode).getBinding(fieldName);
 		if (binding.isPresent()) {
 			return (AbstractComponent) binding.get().getField();
-		}
-		return null;
-	}
-
-	/**
-	 * Returns the binding for a field
-	 * 
-	 * @param fieldName
-	 * @return
-	 */
-	public Binding<T, ?> getBinding(String fieldName) {
-		Optional<Binding<T, ?>> binding = groups.get(viewMode).getBinding(fieldName);
-		if (binding.isPresent()) {
-			return binding.get();
 		}
 		return null;
 	}
@@ -1573,6 +1573,38 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	}
 
 	/**
+	 * Refreshes the binding for the currently selected entity. This can be used to
+	 * force a fresh after you make changes to e.g. the converters after the entity
+	 * has already been set
+	 */
+	public void refreshBinding() {
+		groups.get(isViewMode()).setBean(entity);
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private void refreshFieldFilters() {
+
+		// if there is a field filter, make sure it is used
+		for (String propertyName : getFieldFilters().keySet()) {
+			Optional<Binding<T, ?>> binding = groups.get(isViewMode()).getBinding(propertyName);
+			if (binding.isPresent()) {
+				HasValue<?> field = binding.get().getField();
+				if (field instanceof CustomEntityField) {
+					SerializablePredicate<?> fieldFilter = getFieldFilters().get(propertyName);
+					((CustomEntityField) field).refresh(fieldFilter);
+				}
+			}
+		}
+
+		// otherwise refresh
+		groups.get(isViewMode()).getFields().forEach(field -> {
+			if (field instanceof Refreshable && !(field instanceof CustomEntityField)) {
+				((Refreshable) field).refresh();
+			}
+		});
+	}
+
+	/**
 	 * Replaces a label (in response to a change)
 	 * 
 	 * TODO: does not seem to work properly
@@ -1704,29 +1736,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 	public void setEntity(T entity) {
 		setEntity(entity, entity.getId() != null);
-	}
-
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private void refreshFieldFilters() {
-
-		// if there is a field filter, make sure it is used
-		for (String propertyName : getFieldFilters().keySet()) {
-			Optional<Binding<T, ?>> binding = groups.get(isViewMode()).getBinding(propertyName);
-			if (binding.isPresent()) {
-				HasValue<?> field = binding.get().getField();
-				if (field instanceof CustomEntityField) {
-					SerializablePredicate<?> fieldFilter = getFieldFilters().get(propertyName);
-					((CustomEntityField) field).refresh(fieldFilter);
-				}
-			}
-		}
-
-		// otherwise refresh
-		groups.get(isViewMode()).getFields().forEach(field -> {
-			if (field instanceof Refreshable && !(field instanceof CustomEntityField)) {
-				((Refreshable) field).refresh();
-			}
-		});
 	}
 
 	private void setEntity(T entity, boolean checkIterationButtons) {

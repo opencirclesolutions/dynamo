@@ -120,7 +120,7 @@ public class TestEntity extends AbstractTreeEntity<Integer, TestEntity> {
 	@Attribute(url = true)
 	private String url;
 
-	@Attribute(quickAddPropertyName = "name")
+	@Attribute(quickAddPropertyName = "name", directNavigation = true)
 	private TestDomain testDomain;
 
 	@ElementCollection

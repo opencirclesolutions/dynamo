@@ -164,7 +164,7 @@ public class ElementCollectionGrid<ID extends Serializable, U extends AbstractEn
 		addButton.setIcon(VaadinIcons.PLUS);
 		addButton.addClickListener(event -> {
 
-			ValueHolder<T> vh = new ValueHolder<T>(null);
+			ValueHolder<T> vh = new ValueHolder<>(null);
 			provider.getItems().add(vh);
 
 			@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -221,7 +221,7 @@ public class ElementCollectionGrid<ID extends Serializable, U extends AbstractEn
 		binders.clear();
 
 		for (T t : value) {
-			ValueHolder<T> vh = new ValueHolder<T>(t);
+			ValueHolder<T> vh = new ValueHolder<>(t);
 			provider.getItems().add(vh);
 			@SuppressWarnings({ "rawtypes", "unchecked" })
 			Binder<ValueHolder<T>> binder = new BeanValidationBinder(ValueHolder.class);
@@ -282,7 +282,7 @@ public class ElementCollectionGrid<ID extends Serializable, U extends AbstractEn
 	@Override
 	protected Component initContent() {
 
-		grid = new Grid<ValueHolder<T>>("", provider);
+		grid = new Grid<>("", provider);
 
 		Column<ValueHolder<T>, TextField> column = grid.addColumn(vh -> {
 			TextField tf = new TextField("");

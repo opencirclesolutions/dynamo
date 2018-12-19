@@ -59,7 +59,7 @@ public class FixedGridWrapper<ID extends Serializable, T extends AbstractEntity<
 
 	@Override
 	protected DataProvider<T, SerializablePredicate<T>> constructDataProvider() {
-		return new ListDataProvider<T>(items);
+		return new ListDataProvider<>(items);
 	}
 
 	@Override

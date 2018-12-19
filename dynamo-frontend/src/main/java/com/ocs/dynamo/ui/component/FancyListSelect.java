@@ -297,11 +297,4 @@ public class FancyListSelect<ID extends Serializable, T extends AbstractEntity<I
 			listSelect.setRows(rows);
 		}
 	}
-
-	@Override
-	public void setValue(Collection<T> newFieldValue) {
-		super.setValue(newFieldValue);
-		repopulateContainer(newFieldValue);
-	}
-
 }

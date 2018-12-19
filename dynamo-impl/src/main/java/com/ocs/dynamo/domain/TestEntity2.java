@@ -44,7 +44,7 @@ public class TestEntity2 extends AbstractEntity<Integer> {
 	private Integer valueSum;
 
 	@ManyToOne
-	@Attribute(selectMode = AttributeSelectMode.LOOKUP, multipleSearch = true)
+	@Attribute(selectMode = AttributeSelectMode.LOOKUP, multipleSearch = true, navigable = true)
 	private TestEntity testEntity;
 
 	@ManyToOne
@@ -54,6 +54,9 @@ public class TestEntity2 extends AbstractEntity<Integer> {
 	@ManyToOne
 	@Attribute(selectMode = AttributeSelectMode.LIST)
 	private TestEntity testEntityAlt2;
+
+	@Attribute(selectMode = AttributeSelectMode.TOKEN)
+	private String basicToken;
 
 	@Override
 	public Integer getId() {
@@ -119,6 +122,14 @@ public class TestEntity2 extends AbstractEntity<Integer> {
 
 	public void setValueSum(Integer valueSum) {
 		this.valueSum = valueSum;
+	}
+
+	public String getBasicToken() {
+		return basicToken;
+	}
+
+	public void setBasicToken(String basicToken) {
+		this.basicToken = basicToken;
 	}
 
 }

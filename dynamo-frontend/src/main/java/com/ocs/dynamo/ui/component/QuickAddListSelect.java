@@ -208,16 +208,4 @@ public class QuickAddListSelect<ID extends Serializable, T extends AbstractEntit
 			listSelect.setComponentError(componentError);
 		}
 	}
-
-	@Override
-	public void setValue(Collection<T> value) {
-		super.setValue(value);
-		if (listSelect != null) {
-			if (value == null) {
-				value = Collections.emptyList();
-			}
-			listSelect.setValue(Sets.newHashSet(value));
-		}
-	}
-
 }
