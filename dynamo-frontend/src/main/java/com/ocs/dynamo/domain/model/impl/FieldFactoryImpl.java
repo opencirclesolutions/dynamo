@@ -337,6 +337,15 @@ public class FieldFactoryImpl implements FieldFactory {
 		return cb;
 	}
 
+	/**
+	 * Constructs a component for selecting a single value from a collection
+	 * 
+	 * @param am               the attribute model
+	 * @param fieldEntityModel the field entity model
+	 * @param fieldFilter      the field filter to apply
+	 * @param search
+	 * @return
+	 */
 	private AbstractComponent constructSelect(final AttributeModel am, final EntityModel<?> fieldEntityModel,
 			final SerializablePredicate<?> fieldFilter, boolean search) {
 		AbstractComponent field = null;

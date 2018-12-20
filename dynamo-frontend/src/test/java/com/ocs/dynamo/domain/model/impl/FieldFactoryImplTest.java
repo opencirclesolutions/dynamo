@@ -9,6 +9,7 @@ import org.hibernate.annotations.Check;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.vaadin.teemu.switchui.Switch;
 
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.TestEntity;
@@ -23,13 +24,18 @@ import com.ocs.dynamo.domain.model.annotation.Attribute;
 import com.ocs.dynamo.filter.EqualsPredicate;
 import com.ocs.dynamo.test.BaseIntegrationTest;
 import com.ocs.dynamo.ui.component.EntityLookupField;
+import com.ocs.dynamo.ui.component.FancyListSelect;
 import com.ocs.dynamo.ui.component.InternalLinkField;
 import com.ocs.dynamo.ui.component.QuickAddEntityComboBox;
+import com.ocs.dynamo.ui.component.QuickAddListSelect;
+import com.ocs.dynamo.ui.component.QuickAddListSingleSelect;
 import com.ocs.dynamo.ui.component.SimpleTokenFieldSelect;
 import com.ocs.dynamo.ui.component.TimeField;
+import com.ocs.dynamo.ui.component.TokenFieldSelect;
 import com.ocs.dynamo.ui.component.URLField;
 import com.ocs.dynamo.ui.composite.form.ElementCollectionGrid;
 import com.vaadin.data.provider.ListDataProvider;
+import com.vaadin.event.FieldEvents.BlurEvent;
 import com.vaadin.server.SerializablePredicate;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.ComboBox;
@@ -55,6 +61,13 @@ public class FieldFactoryImplTest extends BaseIntegrationTest {
 		EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
 		FieldFactoryContext context = FieldFactoryContext.create().setAttributeModel(em.getAttributeModel(name))
 				.setSearch(search);
+		return fieldFactory.constructField(context);
+	}
+
+	private AbstractComponent constructField(String name, String entityModelRef) {
+		EntityModel<TestEntity> em = factory.getModel(entityModelRef, TestEntity.class);
+		FieldFactoryContext context = FieldFactoryContext.create().setAttributeModel(em.getAttributeModel(name))
+				.setSearch(false);
 		return fieldFactory.constructField(context);
 	}
 
@@ -150,6 +163,16 @@ public class FieldFactoryImplTest extends BaseIntegrationTest {
 	}
 
 	/**
+	 * element collection field in search mode
+	 */
+	@Test
+	@org.junit.Ignore
+	public void testCollectionFieldSearch() {
+		AbstractComponent ac = constructField("tags", true);
+		Assert.assertTrue(ac instanceof SimpleTokenFieldSelect);
+	}
+
+	/**
 	 * Test a text field that displays a BigDecimal
 	 */
 	@Test
@@ -158,10 +181,27 @@ public class FieldFactoryImplTest extends BaseIntegrationTest {
 		Assert.assertTrue(ac instanceof TextField);
 	}
 
+	/**
+	 * Test that a text field with percentage support is generated
+	 */
 	@Test
 	public void testBigDecimalPercentageField() {
 		AbstractComponent ac = constructField("rate", false);
 		Assert.assertTrue(ac instanceof TextField);
+
+		// check that a blur listener is added
+		TextField tf = (TextField) ac;
+		Assert.assertEquals(1, tf.getListeners(BlurEvent.class).size());
+	}
+
+	@Test
+	public void testBigDecimalCurrencyField() {
+		AbstractComponent ac = constructField2("currency", false, false);
+		Assert.assertTrue(ac instanceof TextField);
+
+		// check that a blur listener is added
+		TextField tf = (TextField) ac;
+		Assert.assertEquals(1, tf.getListeners(BlurEvent.class).size());
 	}
 
 	/**
@@ -285,6 +325,42 @@ public class FieldFactoryImplTest extends BaseIntegrationTest {
 		Assert.assertNull(cb.getFilter());
 	}
 
+	/**
+	 * Test that in search mode a token field is selected if multipe search is
+	 * specified
+	 */
+	@Test
+	public void testConstructEntityComboBoxMultipleSearch() {
+		EntityModel<TestEntity2> em = factory.getModel("TestEntity2Multi", TestEntity2.class);
+		FieldFactoryContext context = FieldFactoryContext.create()
+				.setAttributeModel(em.getAttributeModel("testEntityAlt")).setSearch(true);
+
+		AbstractComponent ac = fieldFactory.constructField(context);
+		Assert.assertTrue(ac instanceof TokenFieldSelect);
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	public void testConstructListSingleSelect() {
+		AbstractComponent ac = constructField2("testEntityAlt2", false, false);
+		Assert.assertTrue(ac instanceof QuickAddListSingleSelect);
+
+		QuickAddListSingleSelect<Integer, TestEntity> ls = (QuickAddListSingleSelect<Integer, TestEntity>) ac;
+		Assert.assertNull(ls.getFilter());
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	public void testConstructListSingleSelectWithFilter() {
+		Map<String, SerializablePredicate<?>> fieldFilters = new HashMap<>();
+		fieldFilters.put("testEntityAlt2", new EqualsPredicate<>("name", "Bob"));
+		AbstractComponent ac = constructField2("testEntityAlt2", fieldFilters);
+		Assert.assertTrue(ac instanceof QuickAddListSingleSelect);
+
+		QuickAddListSingleSelect<Integer, TestEntity> ls = (QuickAddListSingleSelect<Integer, TestEntity>) ac;
+		Assert.assertNotNull(ls.getFilter());
+	}
+
 	@Test
 	@SuppressWarnings("unchecked")
 	public void testConstructEntityComboBoxWithFieldFilter() {
@@ -317,12 +393,75 @@ public class FieldFactoryImplTest extends BaseIntegrationTest {
 	}
 
 	/**
-	 * Test that a simple
+	 * Test that in edit mode just a text field is constructed
 	 */
 	@Test
 	public void testConstructSimpleTokenField2() {
 		AbstractComponent ac = constructField2("basicToken", false, false);
 		Assert.assertTrue(ac instanceof TextField);
+	}
+
+	/**
+	 * Test that a switch field is constructed
+	 */
+	@Test
+	public void testConstructSwitch() {
+		AbstractComponent ac = constructField2("switchBool", false, false);
+		Assert.assertTrue(ac instanceof Switch);
+	}
+
+	/**
+	 * Token field select as default for detail relation
+	 */
+	@Test
+	public void testDetailTokenFieldSelect() {
+		AbstractComponent ac = constructField("testEntities", false);
+		Assert.assertTrue(ac instanceof TokenFieldSelect);
+
+		TokenFieldSelect<?, ?> tf = (TokenFieldSelect<?, ?>) ac;
+		Assert.assertNull(tf.getFilter());
+	}
+
+	/**
+	 * Fancy list select for detail collection
+	 */
+	@Test
+	public void testDetailFancyList() {
+		AbstractComponent ac = constructField("testEntities", "TestEntityFancyList");
+		Assert.assertTrue(ac instanceof FancyListSelect);
+
+		FancyListSelect<?, ?> fl = (FancyListSelect<?, ?>) ac;
+		Assert.assertNull(fl.getFilter());
+		Assert.assertEquals("Test Entities", fl.getCaption());
+		Assert.assertNull(fl.getAddButton());
+	}
+
+	/**
+	 * List select for detail collection
+	 */
+	@Test
+	public void testDetailList() {
+		AbstractComponent ac = constructField("testEntities", "TestEntityListSelect");
+		Assert.assertTrue(ac instanceof QuickAddListSelect);
+
+		QuickAddListSelect<?, ?> fl = (QuickAddListSelect<?, ?>) ac;
+		Assert.assertNull(fl.getFilter());
+		Assert.assertEquals("Test Entities", fl.getCaption());
+		Assert.assertNull(fl.getAddButton());
+	}
+
+	/**
+	 * Lookup field for detail collection
+	 */
+	@Test
+	public void testDetailLookup() {
+		AbstractComponent ac = constructField("testEntities", "TestEntityLookup");
+		Assert.assertTrue(ac instanceof EntityLookupField);
+
+		EntityLookupField<?, ?> fl = (EntityLookupField<?, ?>) ac;
+		Assert.assertNull(fl.getFilter());
+		Assert.assertEquals("Test Entities", fl.getCaption());
+		Assert.assertNull(fl.getAddButton());
 	}
 
 	@SuppressWarnings("unused")

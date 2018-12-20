@@ -13,6 +13,8 @@
  */
 package com.ocs.dynamo.domain;
 
+import java.math.BigDecimal;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -20,6 +22,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import com.ocs.dynamo.domain.model.AttributeSelectMode;
+import com.ocs.dynamo.domain.model.CheckboxMode;
 import com.ocs.dynamo.domain.model.annotation.Attribute;
 import com.ocs.dynamo.domain.model.annotation.Model;
 
@@ -43,6 +46,9 @@ public class TestEntity2 extends AbstractEntity<Integer> {
 
 	private Integer valueSum;
 
+	@Attribute(checkboxMode = CheckboxMode.SWITCH)
+	private Boolean switchBool;
+
 	@ManyToOne
 	@Attribute(selectMode = AttributeSelectMode.LOOKUP, multipleSearch = true, navigable = true)
 	private TestEntity testEntity;
@@ -57,6 +63,9 @@ public class TestEntity2 extends AbstractEntity<Integer> {
 
 	@Attribute(selectMode = AttributeSelectMode.TOKEN)
 	private String basicToken;
+
+	@Attribute(currency = true)
+	private BigDecimal currency;
 
 	@Override
 	public Integer getId() {
@@ -130,6 +139,22 @@ public class TestEntity2 extends AbstractEntity<Integer> {
 
 	public void setBasicToken(String basicToken) {
 		this.basicToken = basicToken;
+	}
+
+	public Boolean getSwitchBool() {
+		return switchBool;
+	}
+
+	public void setSwitchBool(Boolean switchBool) {
+		this.switchBool = switchBool;
+	}
+
+	public BigDecimal getCurrency() {
+		return currency;
+	}
+
+	public void setCurrency(BigDecimal currency) {
+		this.currency = currency;
 	}
 
 }
