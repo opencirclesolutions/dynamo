@@ -49,6 +49,9 @@ public abstract class BaseUI extends UI {
 	 */
 	private CustomNavigator navigator;
 
+	/**
+	 * Mapping for navigating to pages after clicking on a link
+	 */
 	private Map<Class<?>, Consumer<?>> entityOnViewMapping = new HashMap<>();
 
 	@Autowired
@@ -104,8 +107,8 @@ public abstract class BaseUI extends UI {
 	/**
 	 * Adds a mapping for carrying out navigation within the application
 	 * 
-	 * @param entityClass
-	 * @param navigateAction
+	 * @param entityClass the type of the entity
+	 * @param navigateAction the action to carry out
 	 */
 	public void addEntityOnViewMapping(Class<?> entityClass, Consumer<?> navigateAction) {
 		entityOnViewMapping.put(entityClass, navigateAction);
@@ -136,6 +139,10 @@ public abstract class BaseUI extends UI {
 		}
 	}
 
+	/**
+	 * Navigates to view
+	 * @param viewName the name of the view to navigate to
+	 */
 	public void navigate(String viewName) {
 		navigator.navigateTo(viewName);
 		if (menuBar != null) {

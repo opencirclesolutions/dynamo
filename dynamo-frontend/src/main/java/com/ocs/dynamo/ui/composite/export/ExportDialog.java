@@ -26,6 +26,7 @@ import com.ocs.dynamo.ui.component.DownloadButton;
 import com.ocs.dynamo.ui.composite.dialog.BaseModalDialog;
 import com.ocs.dynamo.ui.composite.layout.ExportMode;
 import com.vaadin.data.provider.SortOrder;
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.SerializablePredicate;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
@@ -100,6 +101,7 @@ public class ExportDialog<ID extends Serializable, T extends AbstractEntity<ID>>
 	protected void doBuildButtonBar(HorizontalLayout buttonBar) {
 		Button cancelButton = new Button(message("ocs.cancel"));
 		cancelButton.addClickListener(event -> close());
+		cancelButton.setIcon(VaadinIcons.BAN);
 		buttonBar.addComponent(cancelButton);
 	}
 

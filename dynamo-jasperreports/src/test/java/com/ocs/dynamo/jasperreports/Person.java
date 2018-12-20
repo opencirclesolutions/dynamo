@@ -1,53 +1,61 @@
 package com.ocs.dynamo.jasperreports;
 
-public class Person {
-    private Integer id;
-    private Integer socialId;
-    private String name;
-    private Customer customer;
+import com.ocs.dynamo.domain.AbstractEntity;
 
-    public Integer getId() {
-	return id;
-    }
+public class Person extends AbstractEntity<Integer> {
 
-    public void setId(Integer id) {
-	this.id = id;
-    }
+	private static final long serialVersionUID = 427919371150660076L;
 
-    public Integer getSocialId() {
-	return socialId;
-    }
+	private Integer id;
 
-    public void setSocialId(Integer socialId) {
-	this.socialId = socialId;
-    }
+	private Integer socialId;
 
-    public String getName() {
-	return name;
-    }
+	private String name;
 
-    public void setName(String name) {
-	this.name = name;
-    }
+	private Customer customer;
 
-    public Person(Integer socialId, String name) {
-	super();
-	this.socialId = socialId;
-	this.name = name;
-    }
+	public Integer getId() {
+		return id;
+	}
 
-    public Person(Integer socialId, String name, Customer customer) {
-	super();
-	this.socialId = socialId;
-	this.name = name;
-	this.customer = customer;
-    }
+	public void setId(Integer id) {
+		this.id = id;
+	}
 
-    public Customer getCustomer() {
-	return customer;
-    }
+	public Integer getSocialId() {
+		return socialId;
+	}
 
-    public void setCustomer(Customer customer) {
-	this.customer = customer;
-    }
+	public void setSocialId(Integer socialId) {
+		this.socialId = socialId;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public Person(Integer socialId, String name) {
+		super();
+		this.socialId = socialId;
+		this.name = name;
+	}
+
+	public Person(Integer socialId, String name, Customer customer) {
+		super();
+		this.socialId = socialId;
+		this.name = name;
+		this.customer = customer;
+	}
+
+	public Customer getCustomer() {
+		return customer;
+	}
+
+	public void setCustomer(Customer customer) {
+		this.customer = customer;
+	}
 }

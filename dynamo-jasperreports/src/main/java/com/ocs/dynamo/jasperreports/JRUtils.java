@@ -23,12 +23,10 @@ import org.apache.commons.beanutils.BeanUtilsBean;
 import org.apache.commons.lang.StringUtils;
 
 import com.ocs.dynamo.exception.OCSRuntimeException;
-import com.ocs.dynamo.filter.FilterUtil;
-import com.vaadin.v7.data.Container;
-import com.vaadin.v7.data.Container.Filter;
-import com.vaadin.v7.data.util.AbstractBeanContainer;
+import com.ocs.dynamo.filter.PredicateUtil;
+import com.vaadin.data.provider.DataProvider;
+import com.vaadin.server.SerializablePredicate;
 
-import net.sf.jasperreports.engine.JRField;
 import net.sf.jasperreports.engine.JRParameter;
 import net.sf.jasperreports.engine.JRPropertiesMap;
 import net.sf.jasperreports.engine.JasperReport;
@@ -57,37 +55,37 @@ public final class JRUtils {
 	 * @param container
 	 * @param jasperReport
 	 */
-	public static void addContainerPropertiesFromReport(Container container, JasperReport jasperReport) {
-		if (container == null || jasperReport == null) {
-			return;
-		}
-		Collection<?> ids = container.getContainerPropertyIds();
-		for (JRField f : jasperReport.getFields()) {
-			if (f.hasProperties() && f.getPropertiesMap().containsProperty(CONTAINER_PROPERTY_NAME)) {
-				String cpn = f.getPropertiesMap().getProperty(CONTAINER_PROPERTY_NAME);
-				if (!ids.contains(cpn)) {
-					if (container instanceof AbstractBeanContainer<?, ?>) {
-						((AbstractBeanContainer<?, ?>) container).addNestedContainerProperty(cpn);
-					} else {
-						container.addContainerProperty(cpn, f.getValueClass(), null);
-					}
-				}
-			}
-		}
+	public static <T> void addContainerPropertiesFromReport(DataProvider<T, SerializablePredicate<T>> provider,
+			JasperReport jasperReport) {
+//		if (provider == null || jasperReport == null) {
+//			return;
+//		}
+//		Collection<?> ids = container.getContainerPropertyIds();
+//		for (JRField f : jasperReport.getFields()) {
+//			if (f.hasProperties() && f.getPropertiesMap().containsProperty(CONTAINER_PROPERTY_NAME)) {
+//				String cpn = f.getPropertiesMap().getProperty(CONTAINER_PROPERTY_NAME);
+//				if (!ids.contains(cpn)) {
+//					if (container instanceof AbstractBeanContainer<?, ?>) {
+//						((AbstractBeanContainer<?, ?>) container).addNestedContainerProperty(cpn);
+//					} else {
+//						container.addContainerProperty(cpn, f.getValueClass(), null);
+//					}
+//				}
+//			}
+//		}
 	}
 
 	/**
-	 * Create report parameters based on a filter value to defined report parameter when the
-	 * parameter has the name of the filterproperty defined as a property.
+	 * Create report parameters based on a filter value to defined report parameter
+	 * when the parameter has the name of the filterproperty defined as a property.
 	 *
-	 * @param jasperReport
-	 *            The report
-	 * @param filter
-	 *            The (composite) filter
+	 * @param jasperReport The report
+	 * @param filter       The (composite) filter
 	 * @return a parameter map with the parameter values defined
 	 */
 	@SuppressWarnings("unchecked")
-	public static Map<String, Object> createParametersFromFilter(JasperReport jasperReport, Filter filter) {
+	public static <T> Map<String, Object> createParametersFromFilter(JasperReport jasperReport,
+			SerializablePredicate<T> filter) {
 		Map<String, Object> fillParameters = new HashMap<>();
 		if (jasperReport != null && filter != null) {
 			for (JRParameter p : jasperReport.getParameters()) {
@@ -95,21 +93,21 @@ public final class JRUtils {
 				final String parameterName = p.getName();
 				if (pm.containsProperty(FILTER_PROPERTY_NAME)) {
 					String name = pm.getProperty(FILTER_PROPERTY_NAME);
-					Class<? extends Filter> ptype = null;
+					Class<? extends SerializablePredicate<T>> ptype = null;
 					try {
-						ptype = (Class<? extends Filter>) Class.forName(pm.getProperty(FILTER_TYPE));
+						ptype = (Class<? extends SerializablePredicate<T>>) Class.forName(pm.getProperty(FILTER_TYPE));
 					} catch (ClassNotFoundException | NullPointerException e) {
 						// Do nothing
 					}
 					if (StringUtils.isNotBlank(name)) {
-						Object result = FilterUtil.extractFilterValue(filter, name, ptype);
+						Object result = PredicateUtil.extractPredicateValue(filter, name, ptype);
 
 						if (result != null) {
 							final String nestedPropertyName = pm.getProperty(PROPERTY_NESTED_NAME);
 							if (StringUtils.isNotBlank(nestedPropertyName)) {
 								if (result instanceof Collection) {
 									result = getPropertyNestedValue(fillParameters, parameterName, nestedPropertyName,
-									        (Collection<?>) result);
+											(Collection<?>) result);
 								} else {
 									result = getNestedProperty(nestedPropertyName, result);
 								}
@@ -126,16 +124,13 @@ public final class JRUtils {
 	/**
 	 * Find a parameter which has a parameter property with a specific value.
 	 *
-	 * @param jasperReport
-	 *            the report
-	 * @param propertyName
-	 *            the property name to search for
-	 * @param propertyValue
-	 *            the property value to search for
+	 * @param jasperReport  the report
+	 * @param propertyName  the property name to search for
+	 * @param propertyValue the property value to search for
 	 * @return the parameter or null
 	 */
 	public static JRParameter findParameterWithPropertyValue(JasperReport jasperReport, String propertyName,
-	        Object propertyValue) {
+			Object propertyValue) {
 		JRParameter result = null;
 		if (jasperReport != null && propertyName != null && !"".equals(propertyName) && propertyValue != null) {
 			for (JRParameter p : jasperReport.getParameters()) {
@@ -159,7 +154,7 @@ public final class JRUtils {
 
 	@SuppressWarnings("unchecked")
 	private static Collection<?> getPropertyNestedValue(Map<String, Object> fillParameters, String parameterName,
-	        String nestedPropertyName, Collection<?> result) {
+			String nestedPropertyName, Collection<?> result) {
 		Collection<Object> resultCollection = (Collection<Object>) fillParameters.remove(parameterName);
 
 		if (resultCollection == null) {

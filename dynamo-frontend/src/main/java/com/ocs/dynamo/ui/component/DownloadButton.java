@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.function.Supplier;
 
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.StreamResource;
 import com.vaadin.server.StreamResource.StreamSource;
@@ -50,6 +51,7 @@ public class DownloadButton extends Button {
 		super(caption);
 		this.createContent = createContent;
 		this.createFileName = createFileName;
+		this.setIcon(VaadinIcons.DOWNLOAD);
 
 		resource = new StreamResource(new StreamSource() {
 

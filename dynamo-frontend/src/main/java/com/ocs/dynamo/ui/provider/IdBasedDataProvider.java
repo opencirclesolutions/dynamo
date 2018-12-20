@@ -103,4 +103,20 @@ public class IdBasedDataProvider<ID extends Serializable, T extends AbstractEnti
 		return ids.size();
 	}
 
+	@Override
+	public ID firstItemId() {
+		return ids.get(0);
+	}
+
+	@Override
+	public int indexOf(ID id) {
+		return ids.indexOf(id);
+	}
+
+	@Override
+	public T getItem(ID id) {
+		// TODO
+		return null;
+	}
+
 }

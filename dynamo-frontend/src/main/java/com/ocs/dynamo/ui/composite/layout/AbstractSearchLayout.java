@@ -158,8 +158,6 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	 */
 	private LazyTabLayout<ID, T> tabLayout;
 
-	private int selectedRowIndex = -1;
-
 	/**
 	 * Constructor
 	 * 
@@ -600,12 +598,6 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 		// windows)
 		if (!getFormOptions().isPopup() && getFormOptions().isDoubleClickSelectAllowed()) {
 			getGridWrapper().getGrid().addItemClickListener(event -> {
-				selectedRowIndex = event.getRowIndex();
-				@SuppressWarnings("unchecked")
-				BaseDataProvider<ID, T> provider = (BaseDataProvider<ID, T>) getGridWrapper().getDataProvider();
-				provider.setCurrentlySelectedId(event.getItem().getId());
-
-				getGridWrapper().getDataProvider();
 				if (event.getMouseEventDetails().isDoubleClick()) {
 					select(event.getItem());
 					doEdit();
@@ -874,7 +866,6 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 			next = getService().fetchById(nextId, getDetailJoins());
 			getGridWrapper().getGrid().select(next);
 			afterEntitySelected(getEditForm(), next);
-			selectedRowIndex++;
 		}
 		return next;
 	}
@@ -893,7 +884,6 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 			prev = getService().fetchById(prevId, getDetailJoins());
 			getGridWrapper().getGrid().select(prev);
 			afterEntitySelected(getEditForm(), prev);
-			selectedRowIndex--;
 		}
 		return prev;
 	}
@@ -936,8 +926,10 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	 * @param current the currently selected entity
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	protected boolean hasNextEntity() {
-		return selectedRowIndex < getGridWrapper().getDataProviderSize() - 1;
+		BaseDataProvider<ID, T> provider = (BaseDataProvider<ID, T>) getGridWrapper().getDataProvider();
+		return provider.hasNextItemId();
 	}
 
 	/**
@@ -946,8 +938,10 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	 * @param current the currently selected entity
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	protected boolean hasPrevEntity() {
-		return selectedRowIndex > 0;
+		BaseDataProvider<ID, T> provider = (BaseDataProvider<ID, T>) getGridWrapper().getDataProvider();
+		return provider.hasPreviousItemId();
 	}
 
 	/**
@@ -1095,6 +1089,15 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 		} else {
 			setSelectedItem(null);
 		}
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public void setSelectedItem(T selectedItem) {
+		super.setSelectedItem(selectedItem);
+		// communicate selected item ID to provider
+		BaseDataProvider<ID, T> provider = (BaseDataProvider<ID, T>) getGridWrapper().getDataProvider();
+		provider.setCurrentlySelectedId(selectedItem == null ? null : selectedItem.getId());
 	}
 
 	/**

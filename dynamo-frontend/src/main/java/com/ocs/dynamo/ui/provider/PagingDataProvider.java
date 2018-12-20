@@ -95,4 +95,18 @@ public class PagingDataProvider<ID extends Serializable, T extends AbstractEntit
 		throw new UnsupportedOperationException();
 	}
 
+	@Override
+	public ID firstItemId() {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public int indexOf(ID id) {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public T getItem(ID id) {
+		throw new UnsupportedOperationException();
+	}
 }

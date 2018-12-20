@@ -13,9 +13,11 @@
  */
 package com.ocs.dynamo.jasperreports;
 
-import com.vaadin.v7.data.Container;
-import com.vaadin.v7.data.Item;
-import com.vaadin.v7.data.Property;
+import java.io.Serializable;
+
+import com.ocs.dynamo.domain.AbstractEntity;
+import com.ocs.dynamo.ui.provider.BaseDataProvider;
+import com.ocs.dynamo.utils.ClassUtils;
 
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRField;
@@ -23,82 +25,68 @@ import net.sf.jasperreports.engine.JRRewindableDataSource;
 import net.sf.jasperreports.engine.data.IndexedDataSource;
 
 /**
- * JasperReports datasource implementation which uses a Vaadin container as source. Optimized for an
- * indexed container.
+ * JasperReports datasource implementation which uses a Vaadin container as
+ * source. Optimized for an indexed container.
  * 
- * Assumes that nested properties are named with underscores in the report, e.g. an property in the
- * vaadin container "customer.name" is referenced by "customer_name" in jasperreports.
+ * Assumes that nested properties are named with underscores in the report, e.g.
+ * an property in the vaadin container "customer.name" is referenced by
+ * "customer_name" in jasperreports.
  * 
  * @author Patrick Deenen (patrick@opencircle.solutions)
  *
  */
-public class JRIndexedContainerDataSource implements JRRewindableDataSource, IndexedDataSource {
+public class JRIndexedContainerDataSource<ID extends Serializable, T extends AbstractEntity<ID>>
+		implements JRRewindableDataSource, IndexedDataSource {
 
-    private Container.Indexed container;
+	private BaseDataProvider<ID, T> provider;
 
-    private Object currentItemId;
+	private ID currentItemId;
 
-    private Item currentItem;
+	private T currentItem;
 
-    /**
-     * Construct the data source using a Vaadin Indexed container
-     * 
-     * @param container
-     */
-    public JRIndexedContainerDataSource(Container.Indexed container) {
-        this.container = container;
-    }
+	/**
+	 * Construct the data source using a Vaadin Indexed container
+	 * 
+	 * @param container
+	 */
+	public JRIndexedContainerDataSource(BaseDataProvider<ID, T> provider) {
+		this.provider = provider;
+	}
 
-    /**
-     * 
-     */
-    @Override
-    public Object getFieldValue(JRField field) throws JRException {
-        Object result = null;
-        if (currentItem != null) {
-            String fieldName = field.getName().replaceAll("_", ".");
-            Property<?> p = currentItem.getItemProperty(fieldName);
-            if (p == null) {
-                fieldName = field.getPropertiesMap().getProperty(JRUtils.CONTAINER_PROPERTY_NAME);
-                p = currentItem.getItemProperty(fieldName);
-            }
-            if (p != null) {
-                result = p.getValue();
-                if (result != null && !(result instanceof String) && field.getValueClass() == String.class) {
-                    result = result.toString();
-                }
-            }
-        }
-        return result;
-    }
+	@Override
+	public Object getFieldValue(JRField field) throws JRException {
+		Object result = null;
+		if (currentItem != null) {
+			String fieldName = field.getName().replaceAll("_", ".");
+			return ClassUtils.getFieldValue(currentItem, fieldName);
+		}
+		return result;
+	}
 
-    @Override
-    public int getRecordIndex() {
-        return container.indexOfId(currentItemId);
-    }
+	@Override
+	public int getRecordIndex() {
+		return provider.indexOf(currentItemId);
+	}
 
-    @Override
-    public void moveFirst() throws JRException {
-        if (container.size() > 0) {
-            currentItemId = container.firstItemId();
-            currentItem = container.getItem(currentItemId);
-        } else {
-            currentItemId = null;
-            currentItem = null;
-        }
-    }
+	@Override
+	public void moveFirst() throws JRException {
+		if (provider.getSize() > 0) {
+			currentItemId = provider.firstItemId();
+			currentItem = provider.getItem(currentItemId);
+		} else {
+			currentItemId = null;
+			currentItem = null;
+		}
+	}
 
-    /**
-     * 
-     */
-    @Override
-    public boolean next() throws JRException {
-        if (currentItem == null) {
-            moveFirst();
-            return currentItem != null;
-        }
-        currentItemId = container.nextItemId(currentItemId);
-        currentItem = container.getItem(currentItemId);
-        return currentItem != null;
-    }
+	@Override
+	public boolean next() throws JRException {
+		if (currentItem == null) {
+			moveFirst();
+			return currentItem != null;
+		}
+		currentItemId = provider.getNextItemId();
+		currentItem = provider.getItem(currentItemId);
+		return currentItem != null;
+	}
 }

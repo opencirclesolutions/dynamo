@@ -190,11 +190,17 @@ public abstract class BaseDataProvider<ID extends Serializable, T extends Abstra
 	public abstract int getSize();
 
 	public boolean hasNextItemId() {
+		if (ids == null) {
+			return false;
+		}
 		int index = ids.indexOf(currentlySelectedId);
 		return index < ids.size() - 1;
 	}
 
 	public boolean hasPreviousItemId() {
+		if (ids == null) {
+			return false;
+		}
 		int index = ids.indexOf(currentlySelectedId);
 		return index > 0;
 	}
@@ -229,4 +235,10 @@ public abstract class BaseDataProvider<ID extends Serializable, T extends Abstra
 			Notification.show(message, Notification.Type.ERROR_MESSAGE);
 		}
 	}
+
+	public abstract ID firstItemId();
+
+	public abstract int indexOf(ID id);
+
+	public abstract T getItem(ID id);
 }

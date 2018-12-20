@@ -641,6 +641,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 				for (String parentGroupHeader : getParentGroupHeaders()) {
 					Layout innerForm = constructAttributeGroupLayout(form, tabs, tabSheets.get(isViewMode()),
 							parentGroupHeader, false);
+					
 
 					// add a tab sheet on the inner level if needed
 					TabSheet innerTabSheet = null;
@@ -760,7 +761,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 				innerLayout.setStyleName(DynamoConstants.CSS_CLASS_HALFSCREEN);
 			}
 		} else {
-			innerLayout = new DefaultVerticalLayout(false, true);
+			innerLayout = new DefaultVerticalLayout(false, false);
 		}
 
 		if (tabs) {

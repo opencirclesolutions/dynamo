@@ -158,6 +158,7 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
 		for (ValueChangeListener<Collection<T>> valueChangeListener : valueChangeListeners) {
 			valueChangeListener.valueChange(new ValueChangeEvent<>(TokenFieldSelect.this, null, false));
 		}
+		setComboBoxWidth();
 	}
 
 	@Override
@@ -220,6 +221,7 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
 	private void copyValueFromContainer() {
 		Collection<T> values = provider.getItems();
 		setValue(Sets.newHashSet(values));
+		setComboBoxWidth();
 	}
 
 	@Override
@@ -305,6 +307,19 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
 			comboBox.setValue(null);
 			comboBox.refresh(getFilter() == null ? additionalFilter : getFilter().and(additionalFilter));
 			extTokenField.setInputField(comboBox);
+		}
+	}
+	
+	/**
+	 * Adapt the width of the combo box based on the number of items currently
+	 * selected
+	 */
+	private void setComboBoxWidth() {
+		// if selection is empty, set combo box to full width
+		if (provider.getItems().size() > 0) {
+			comboBox.setWidth(25, Unit.PERCENTAGE);
+		} else {
+			comboBox.setWidth(100, Unit.PERCENTAGE);
 		}
 	}
 

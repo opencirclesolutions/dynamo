@@ -7,7 +7,6 @@ import javax.inject.Inject;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.ocs.dynamo.domain.CascadeEntity;
@@ -21,11 +20,14 @@ import com.ocs.dynamo.service.CascadeEntityService;
 import com.ocs.dynamo.service.TestEntityService;
 import com.ocs.dynamo.test.BaseIntegrationTest;
 import com.ocs.dynamo.ui.component.QuickAddEntityComboBox;
+import com.ocs.dynamo.ui.composite.grid.ServiceBasedGridWrapper;
 import com.ocs.dynamo.ui.provider.QueryType;
+import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.data.provider.SortOrder;
 import com.vaadin.server.SerializablePredicate;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
 public class SimpleSearchLayoutTest extends BaseIntegrationTest {
@@ -43,6 +45,8 @@ public class SimpleSearchLayoutTest extends BaseIntegrationTest {
 
 	private TestEntity e2;
 
+	private TestEntity e3;
+
 	private boolean detailsTabCreated = false;
 
 	@Before
@@ -53,15 +57,13 @@ public class SimpleSearchLayoutTest extends BaseIntegrationTest {
 		e2 = new TestEntity("Kevin", 12L);
 		e2 = testEntityService.save(e2);
 
-		TestEntity e3 = new TestEntity("Stewart", 14L);
+		e3 = new TestEntity("Stewart", 14L);
 		e3 = testEntityService.save(e3);
 	}
 
 	@Test
-	@Ignore
 	public void testSimpleSearchLayout() {
-		SimpleSearchLayout<Integer, TestEntity> layout = createLayout(
-				new FormOptions().setShowIterationButtons(true));
+		SimpleSearchLayout<Integer, TestEntity> layout = createLayout(new FormOptions().setShowIterationButtons(true));
 		layout.setDividerProperty("name");
 		layout.build();
 
@@ -76,15 +78,21 @@ public class SimpleSearchLayoutTest extends BaseIntegrationTest {
 
 		Assert.assertEquals(3, layout.getGridWrapper().getDataProviderSize());
 
-		layout.select(e1);
+		layout.select(e3);
+		layout.detailsMode(e3);
 
 		// click the next button
-		layout.getEditForm().getNextButtons().iterator().next().click();
-		Assert.assertNotNull(layout.getSelectedItem());
+		Assert.assertEquals(2, layout.getEditForm().getNextButtons().size());
 
-		// click the previous button and verify that the same item is again selected
+		layout.getEditForm().getNextButtons().iterator().next().click();
+		Assert.assertEquals(e2, layout.getEditForm().getEntity());
+		Assert.assertTrue(layout.hasPrevEntity());
+		Assert.assertTrue(layout.hasNextEntity());
+
+		// click the previous button
+		Assert.assertEquals(2, layout.getEditForm().getPreviousButtons().size());
 		layout.getEditForm().getPreviousButtons().iterator().next().click();
-		Assert.assertEquals(e1, layout.getSelectedItem());
+		Assert.assertEquals(e3, layout.getEditForm().getEntity());
 	}
 
 	/**
@@ -95,7 +103,7 @@ public class SimpleSearchLayoutTest extends BaseIntegrationTest {
 		detailsTabCreated = false;
 		SimpleSearchLayout<Integer, TestEntity> layout = new SimpleSearchLayout<Integer, TestEntity>(testEntityService,
 				entityModelFactory.getModel(TestEntity.class), QueryType.ID_BASED,
-				new FormOptions().setComplexDetailsMode(true), new SortOrder<String>("name", SortDirection.ASCENDING)) {
+				new FormOptions().setComplexDetailsMode(true), new SortOrder<String>("id", SortDirection.ASCENDING)) {
 
 			private static final long serialVersionUID = -5529138385460474211L;
 
@@ -128,33 +136,6 @@ public class SimpleSearchLayoutTest extends BaseIntegrationTest {
 		layout.getEditButton().click();
 
 	}
-
-//	@Test
-//	public void testSimpleSearchLayout_DoNotSearchImmediately() {
-//		SimpleSearchLayout<Integer, TestEntity> layout = createLayout(new FormOptions().setSearchImmediately(false));
-//		layout.build();
-//
-//		// no search results table yet
-//		Component label = VaadinUtils.getFirstChildOfClass(layout.getSearchResultsLayout(), Label.class);
-//		Assert.assertNotNull(label);
-//
-//		// perform a search, verify the label is removed and replaced by a search
-//		// results table
-//		layout.getSearchForm().getSearchButton().click();
-//		label = VaadinUtils.getFirstChildOfClass(layout.getSearchResultsLayout(), Label.class);
-//		Assert.assertNull(label);
-//
-//		ServiceResultsTableWrapper<?, ?> wrapper = VaadinUtils.getFirstChildOfClass(layout.getSearchResultsLayout(),
-//				ServiceResultsTableWrapper.class);
-//		Assert.assertNotNull(wrapper);
-//
-//		// press the clear button and verify the layout is reset
-//		layout.getSearchForm().getClearButton().click();
-//		label = VaadinUtils.getFirstChildOfClass(layout.getSearchResultsLayout(), Label.class);
-//		Assert.assertNotNull(label);
-//		wrapper = VaadinUtils.getFirstChildOfClass(layout.getSearchResultsLayout(), ServiceResultsTableWrapper.class);
-//		Assert.assertNull(wrapper);
-//	}
 
 	@Test
 	public void testSimpleSearchLayoutMultipleColumns() {
@@ -325,7 +306,6 @@ public class SimpleSearchLayoutTest extends BaseIntegrationTest {
 	 */
 	@Test
 	@SuppressWarnings("unchecked")
-	@Ignore
 	public void testSimpleSearchLayout_Cascade() {
 
 		Assert.assertEquals(3, testEntityService.findAll().size());
@@ -341,7 +321,6 @@ public class SimpleSearchLayoutTest extends BaseIntegrationTest {
 		QuickAddEntityComboBox<Integer, TestEntity> box1 = (QuickAddEntityComboBox<Integer, TestEntity>) (Object) layout
 				.getSearchForm().getGroups().get("testEntity").getField();
 		box1.refresh();
-		Assert.assertEquals(3, box1.getComboBox().getDataProviderSize());
 
 		layout.setSearchValue("testEntity", e1);
 
@@ -354,6 +333,33 @@ public class SimpleSearchLayoutTest extends BaseIntegrationTest {
 		// clear filter and verify cascaded filter is removed as well
 		layout.setSearchValue("testEntity", null);
 		Assert.assertNull(box2.getAdditionalFilter());
+	}
+
+	@Test
+	public void testSimpleSearchLayout_DoNotSearchImmediately() {
+		SimpleSearchLayout<Integer, TestEntity> layout = createLayout(new FormOptions().setSearchImmediately(false));
+		layout.build();
+
+		// no search results table yet
+		Component label = VaadinUtils.getFirstChildOfClass(layout.getSearchResultsLayout(), Label.class);
+		Assert.assertNotNull(label);
+
+		// perform a search, verify the label is removed and replaced by a search
+		// results table
+		layout.getSearchForm().getSearchButton().click();
+		label = VaadinUtils.getFirstChildOfClass(layout.getSearchResultsLayout(), Label.class);
+		Assert.assertNull(label);
+
+		ServiceBasedGridWrapper<?, ?> wrapper = VaadinUtils.getFirstChildOfClass(layout.getSearchResultsLayout(),
+				ServiceBasedGridWrapper.class);
+		Assert.assertNotNull(wrapper);
+
+		// press the clear button and verify the layout is reset
+		layout.getSearchForm().getClearButton().click();
+		label = VaadinUtils.getFirstChildOfClass(layout.getSearchResultsLayout(), Label.class);
+		Assert.assertNotNull(label);
+		wrapper = VaadinUtils.getFirstChildOfClass(layout.getSearchResultsLayout(), ServiceBasedGridWrapper.class);
+		Assert.assertNull(wrapper);
 	}
 
 	private SimpleSearchLayout<Integer, TestEntity> createLayout(FormOptions fo) {
