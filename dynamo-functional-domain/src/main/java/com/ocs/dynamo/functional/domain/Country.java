@@ -61,7 +61,7 @@ public class Country extends DomainChild<Country, Region> {
 	 * Overridden so we can modify the attribute model
 	 */
 	@Override
-	@Attribute(complexEditable = true, displayName = "Region", showInTable = VisibilityType.SHOW, replacementSearchPath = "parent")
+	@Attribute(complexEditable = true, displayName = "Region", visibleInGrid = VisibilityType.SHOW, replacementSearchPath = "parent")
 	public Region getParent() {
 		return super.getParent();
 	}

@@ -16,7 +16,7 @@ import com.ocs.dynamo.domain.model.impl.EntityModelFactoryImpl;
 import com.ocs.dynamo.service.TestEntityService;
 import com.ocs.dynamo.test.BaseMockitoTest;
 import com.ocs.dynamo.ui.component.DownloadButton;
-import com.ocs.dynamo.ui.composite.layout.ExportMode;
+import com.ocs.dynamo.ui.composite.type.ExportMode;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.UI;

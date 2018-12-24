@@ -41,11 +41,11 @@ public abstract class AbstractAuditableEntity<ID> extends AbstractEntity<ID> {
 	@Column(name = "created_on")
 	private ZonedDateTime createdOn;
 
-	@Attribute(editable = EditableType.READ_ONLY, showInTable = VisibilityType.HIDE)
+	@Attribute(editable = EditableType.READ_ONLY, visibleInGrid = VisibilityType.HIDE)
 	@Column(name = "changed_by")
 	private String changedBy;
 
-	@Attribute(editable = EditableType.READ_ONLY, showInTable = VisibilityType.HIDE)
+	@Attribute(editable = EditableType.READ_ONLY, visibleInGrid = VisibilityType.HIDE)
 	@Column(name = "changed_on")
 	private ZonedDateTime changedOn;
 

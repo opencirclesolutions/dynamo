@@ -1,4 +1,4 @@
-package com.ocs.dynamo.ui.composite.form;
+package com.ocs.dynamo.ui.component;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -16,6 +16,7 @@ import com.ocs.dynamo.domain.model.impl.EntityModelFactoryImpl;
 import com.ocs.dynamo.service.TestEntityService;
 import com.ocs.dynamo.test.BaseMockitoTest;
 import com.ocs.dynamo.test.MockUtil;
+import com.ocs.dynamo.ui.component.DetailsEditGrid;
 import com.ocs.dynamo.ui.composite.dialog.ModelBasedSearchDialog;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.vaadin.ui.UI;

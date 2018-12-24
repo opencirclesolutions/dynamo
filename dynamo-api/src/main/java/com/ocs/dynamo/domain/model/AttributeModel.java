@@ -498,7 +498,7 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	 * 
 	 * @return
 	 */
-	boolean isVisibleInTable();
+	boolean isVisibleInGrid();
 
 	/**
 	 * Indicates whether this attribute represents a weekly recurring date

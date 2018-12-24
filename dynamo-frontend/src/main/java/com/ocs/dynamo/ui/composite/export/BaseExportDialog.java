@@ -18,7 +18,7 @@ import java.io.Serializable;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.ui.composite.dialog.BaseModalDialog;
-import com.ocs.dynamo.ui.composite.layout.ExportMode;
+import com.ocs.dynamo.ui.composite.type.ExportMode;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Layout;

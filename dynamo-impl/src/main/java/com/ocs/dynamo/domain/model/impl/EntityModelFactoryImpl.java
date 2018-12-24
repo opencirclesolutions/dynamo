@@ -226,7 +226,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 			setNestedEntityModel(model);
 
 			// only basic attributes are shown in the table by default
-			model.setVisibleInTable(
+			model.setVisibleInGrid(
 					!nested && model.isVisible() && (AttributeType.BASIC.equals(model.getAttributeType())));
 
 			if (getMessageService() != null) {
@@ -873,7 +873,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 			// by default)
 			if (attribute.visible() != null && !VisibilityType.INHERIT.equals(attribute.visible()) && !nested) {
 				model.setVisible(VisibilityType.SHOW.equals(attribute.visible()));
-				model.setVisibleInTable(model.isVisible());
+				model.setVisibleInGrid(model.isVisible());
 			}
 
 			if (attribute.searchable() && !nested) {
@@ -892,8 +892,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 				model.setMainAttribute(true);
 			}
 
-			if (attribute.showInTable() != null && !VisibilityType.INHERIT.equals(attribute.showInTable()) && !nested) {
-				model.setVisibleInTable(VisibilityType.SHOW.equals(attribute.showInTable()));
+			if (attribute.visibleInGrid() != null && !VisibilityType.INHERIT.equals(attribute.visibleInGrid()) && !nested) {
+				model.setVisibleInGrid(VisibilityType.SHOW.equals(attribute.visibleInGrid()));
 			}
 
 			if (attribute.complexEditable()) {
@@ -1210,9 +1210,9 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 			model.setVisible(isVisible(msg));
 		}
 
-		msg = getAttributeMessage(entityModel, model, EntityModel.SHOW_IN_TABLE);
+		msg = getAttributeMessage(entityModel, model, EntityModel.VISIBLE_IN_GRID);
 		if (!StringUtils.isEmpty(msg)) {
-			model.setVisibleInTable(isVisible(msg));
+			model.setVisibleInGrid(isVisible(msg));
 		}
 
 		msg = getAttributeMessage(entityModel, model, EntityModel.COMPLEX_EDITABLE);

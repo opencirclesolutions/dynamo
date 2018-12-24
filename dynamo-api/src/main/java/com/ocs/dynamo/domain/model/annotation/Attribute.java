@@ -200,7 +200,7 @@ public @interface Attribute {
     AttributeSelectMode selectMode() default AttributeSelectMode.INHERIT;
 
     /** @return whether the field shows up in a grid */
-    VisibilityType showInTable() default VisibilityType.INHERIT;
+    VisibilityType visibleInGrid() default VisibilityType.INHERIT;
 
     /** @return whether a table can be sorted on this field */
     boolean sortable() default true;

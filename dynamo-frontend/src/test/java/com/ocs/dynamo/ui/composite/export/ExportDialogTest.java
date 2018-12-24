@@ -14,7 +14,7 @@ import com.ocs.dynamo.filter.EqualsPredicate;
 import com.ocs.dynamo.service.TestEntityService;
 import com.ocs.dynamo.test.BaseMockitoTest;
 import com.ocs.dynamo.ui.component.DownloadButton;
-import com.ocs.dynamo.ui.composite.layout.ExportMode;
+import com.ocs.dynamo.ui.composite.type.ExportMode;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.UI;
@@ -26,10 +26,6 @@ public class ExportDialogTest extends BaseMockitoTest {
 
 	@Mock
 	private UI ui;
-
-	private TestEntity e1;
-
-	private TestEntity e2;
 
 	@Mock
 	private TestEntityService service;
@@ -44,11 +40,9 @@ public class ExportDialogTest extends BaseMockitoTest {
 	@Override
 	public void setUp() {
 		super.setUp();
-		e1 = new TestEntity(1, "Kevin", 12L);
-		e2 = new TestEntity(2, "Bob", 14L);
 
 		model = factory.getModel(TestEntity.class);
-		dialog = new ExportDialog<>(exportService, model, ExportMode.FULL, 
+		dialog = new ExportDialog<>(exportService, model, ExportMode.FULL,
 				new EqualsPredicate<TestEntity>("name", "Bob"), null);
 	}
 

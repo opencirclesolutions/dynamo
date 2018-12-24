@@ -32,7 +32,7 @@ import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.filter.Filter;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
-import com.ocs.dynamo.ui.composite.layout.ExportMode;
+import com.ocs.dynamo.ui.composite.type.ExportMode;
 
 /**
  * Base class for entity model based exports to Excel or CSV
@@ -154,7 +154,7 @@ public abstract class BaseExportTemplate<ID extends Serializable, T extends Abst
 	 */
 	protected boolean show(AttributeModel am) {
 
-		boolean visible = ExportMode.FULL.equals(exportMode) ? am.isVisible() : am.isVisibleInTable();
+		boolean visible = ExportMode.FULL.equals(exportMode) ? am.isVisible() : am.isVisibleInGrid();
 
 		// never show invisible or LOB attributes
 		if (!visible || AttributeType.LOB.equals(am.getAttributeType())) {

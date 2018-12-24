@@ -1,4 +1,4 @@
-package com.ocs.dynamo.ui.composite.form;
+package com.ocs.dynamo.ui.composite.layout;
 
 import java.util.Comparator;
 
@@ -15,6 +15,7 @@ import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.domain.model.impl.EntityModelFactoryImpl;
 import com.ocs.dynamo.service.TestEntityService;
 import com.ocs.dynamo.test.BaseMockitoTest;
+import com.ocs.dynamo.ui.composite.layout.DetailsEditLayout;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.UI;

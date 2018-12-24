@@ -11,19 +11,14 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-package com.ocs.dynamo.ui.composite.form;
+package com.ocs.dynamo.ui;
 
 /**
- * Marker interface for a component that sends a signal to a parent component
- * after a change to an editable component
+ * Marker interface to indicate that a component must be used in view mode
  * 
- * @author bas.rutten
+ * @author Bas Rutten
+ *
  */
-public interface NestedComponent {
+public interface UseInViewMode {
 
-	/**
-	 * 
-	 * @return true when a validation error has occurred
-	 */
-	boolean validateAllFields();
 }

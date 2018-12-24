@@ -1,4 +1,4 @@
-package com.ocs.dynamo.ui.composite.layout;
+package com.ocs.dynamo.ui.composite.type;
 
 public enum ExportMode {
 

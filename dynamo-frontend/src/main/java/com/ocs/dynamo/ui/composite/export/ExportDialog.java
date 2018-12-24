@@ -22,7 +22,7 @@ import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.ui.component.DownloadButton;
-import com.ocs.dynamo.ui.composite.layout.ExportMode;
+import com.ocs.dynamo.ui.composite.type.ExportMode;
 import com.vaadin.data.provider.SortOrder;
 import com.vaadin.server.SerializablePredicate;
 

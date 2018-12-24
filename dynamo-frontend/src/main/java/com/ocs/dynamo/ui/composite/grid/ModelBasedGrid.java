@@ -130,7 +130,7 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 	 * @param attributeModel the attribute model on which to base the column
 	 */
 	private void addColumn(final AttributeModel am) {
-		if (am.isVisibleInTable()) {
+		if (am.isVisibleInGrid()) {
 			Column<T, ?> column;
 			if (am.isUrl()) {
 				// URL field

@@ -16,6 +16,7 @@ package com.ocs.dynamo.ui.composite.layout;
 import java.io.Serializable;
 
 import com.ocs.dynamo.ui.composite.type.AttributeGroupMode;
+import com.ocs.dynamo.ui.composite.type.ExportMode;
 import com.ocs.dynamo.ui.composite.type.ScreenMode;
 import com.ocs.dynamo.util.SystemPropertyUtils;
 

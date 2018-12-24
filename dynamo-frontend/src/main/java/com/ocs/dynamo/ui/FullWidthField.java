@@ -11,14 +11,15 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-package com.ocs.dynamo.ui.composite.form;
+package com.ocs.dynamo.ui;
 
 /**
- * Marker interface to indicate that a component must be used in view mode
+ * Marker interface to indicate that a field must always use the full field
+ * width
  * 
  * @author Bas Rutten
  *
  */
-public interface UseInViewMode {
+public interface FullWidthField {
 
 }

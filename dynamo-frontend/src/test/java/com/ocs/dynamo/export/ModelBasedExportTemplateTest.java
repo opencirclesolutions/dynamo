@@ -23,7 +23,7 @@ import com.ocs.dynamo.service.TestEntityService;
 import com.ocs.dynamo.test.BaseIntegrationTest;
 import com.ocs.dynamo.ui.composite.export.impl.ModelBasedCsvExportTemplate;
 import com.ocs.dynamo.ui.composite.export.impl.ModelBasedExcelExportTemplate;
-import com.ocs.dynamo.ui.composite.layout.ExportMode;
+import com.ocs.dynamo.ui.composite.type.ExportMode;
 import com.ocs.dynamo.utils.DateUtils;
 
 public class ModelBasedExportTemplateTest extends BaseIntegrationTest {

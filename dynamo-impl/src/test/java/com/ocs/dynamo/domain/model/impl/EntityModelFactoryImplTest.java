@@ -403,14 +403,14 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		final AttributeModel pm = parentModel.getAttributeModel("name");
 		Assert.assertNotNull(pm);
 		Assert.assertEquals("name", pm.getName());
-		Assert.assertTrue(pm.isVisibleInTable());
+		Assert.assertTrue(pm.isVisibleInGrid());
 
 		final EntityModel<EntityChild> model = factory.getModel(EntityChild.class);
 		final AttributeModel am = model.getAttributeModel("parent.name");
 		Assert.assertNotNull(am);
 		Assert.assertEquals("name", am.getName());
 		Assert.assertEquals(EntityParent.class, am.getEntityModel().getEntityClass());
-		Assert.assertFalse(am.isVisibleInTable());
+		Assert.assertFalse(am.isVisibleInGrid());
 
 	}
 

@@ -284,7 +284,7 @@ public interface EntityModel<T> {
 	/**
 	 * Whether to show an attribute inside a grid
 	 */
-	String SHOW_IN_TABLE = "showInTable";
+	String VISIBLE_IN_GRID = "visibleInGrid";
 
 	/**
 	 * Default sort order for an entity

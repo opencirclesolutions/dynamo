@@ -20,6 +20,7 @@ import com.ocs.dynamo.service.TestEntityService;
 import com.ocs.dynamo.test.BaseIntegrationTest;
 import com.ocs.dynamo.ui.composite.grid.ServiceBasedGridWrapper;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
+import com.ocs.dynamo.ui.composite.type.FlexibleFilterType;
 import com.ocs.dynamo.ui.provider.QueryType;
 
 public class ModelBasedFlexibleSearchFormTest extends BaseIntegrationTest {

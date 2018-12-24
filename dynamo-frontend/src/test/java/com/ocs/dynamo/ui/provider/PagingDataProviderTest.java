@@ -1,4 +1,4 @@
-package com.ocs.dynamo.ui.component.provider;
+package com.ocs.dynamo.ui.provider;
 
 import java.util.Optional;
 

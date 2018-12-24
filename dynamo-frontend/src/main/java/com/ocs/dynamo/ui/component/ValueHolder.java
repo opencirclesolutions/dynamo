@@ -1,4 +1,4 @@
-package com.ocs.dynamo.ui.composite.form;
+package com.ocs.dynamo.ui.component;
 
 /**
  * A holder for a simple value

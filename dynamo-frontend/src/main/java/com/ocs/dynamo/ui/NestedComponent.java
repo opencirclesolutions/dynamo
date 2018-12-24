@@ -11,15 +11,19 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-package com.ocs.dynamo.ui.composite.form;
+package com.ocs.dynamo.ui;
 
 /**
- * Marker interface to indicate that a field must always use the full field
- * width
+ * Marker interface for a component that sends a signal to a parent component
+ * after a change to an editable component
  * 
- * @author Bas Rutten
- *
+ * @author bas.rutten
  */
-public interface FullWidthField {
+public interface NestedComponent {
 
+	/**
+	 * 
+	 * @return true when a validation error has occurred
+	 */
+	boolean validateAllFields();
 }

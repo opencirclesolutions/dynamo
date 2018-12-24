@@ -169,7 +169,7 @@ public class AttributeModelImpl implements AttributeModel {
 
 	private boolean visible;
 
-	private boolean visibleInTable;
+	private boolean visibleInGrid;
 
 	private boolean week;
 
@@ -542,8 +542,8 @@ public class AttributeModelImpl implements AttributeModel {
 	}
 
 	@Override
-	public boolean isVisibleInTable() {
-		return visibleInTable;
+	public boolean isVisibleInGrid() {
+		return visibleInGrid;
 	}
 
 	@Override
@@ -804,8 +804,8 @@ public class AttributeModelImpl implements AttributeModel {
 		this.visible = visible;
 	}
 
-	public void setVisibleInTable(boolean visibleInTable) {
-		this.visibleInTable = visibleInTable;
+	public void setVisibleInGrid(boolean visibleInGrid) {
+		this.visibleInGrid = visibleInGrid;
 	}
 
 	public void setWeek(boolean week) {
