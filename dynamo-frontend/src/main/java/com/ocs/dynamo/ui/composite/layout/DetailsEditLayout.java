@@ -61,7 +61,7 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 	 * @author Bas Rutten
 	 *
 	 */
-	private class FormContainer extends DefaultVerticalLayout {
+	class FormContainer extends DefaultVerticalLayout {
 
 		private static final long serialVersionUID = 3507638736422806589L;
 
@@ -115,11 +115,6 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 			return form.getEntity();
 		}
 
-		@SuppressWarnings("unused")
-		public ModelBasedEditForm<ID, T> getForm() {
-			return form;
-		}
-
 		public void postProcessButtonBar(Layout buttonBar) {
 			// overwrite in subclasses
 		}
@@ -151,6 +146,11 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 		public boolean validateAllFields() {
 			return form.validateAllFields();
 		}
+
+		public Button getDeleteButton() {
+			return deleteButton;
+		}
+
 	}
 
 	private static final long serialVersionUID = -1203245694503350276L;
@@ -394,6 +394,19 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 		return null;
 	}
 
+	/**
+	 * Returns the FormContainer specified by the index
+	 * 
+	 * @param index the zero-based index of the form contianer
+	 * @return
+	 */
+	public FormContainer getFormContainer(int index) {
+		if (index < this.forms.size()) {
+			return forms.get(index);
+		}
+		return null;
+	}
+
 	public EntityModel<T> getEntityModel() {
 		return entityModel;
 	}
@@ -439,31 +452,14 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 		mainFormContainer = new DefaultVerticalLayout(false, false);
 		layout.addComponent(mainFormContainer);
 
-		if (comparator != null) {
-			items.sort(comparator);
-		}
-
-		for (T t : items) {
-			addDetailEditForm(t);
-		}
-
 		// add the buttons
 		constructButtonBar(layout);
-
-		postConstruct();
 
 		return layout;
 	}
 
 	public boolean isViewMode() {
 		return viewMode;
-	}
-
-	/**
-	 * Perform any necessary post construction
-	 */
-	protected void postConstruct() {
-		// overwrite in subclasses
 	}
 
 	/**
@@ -476,6 +472,13 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 		// overwrite in subclass if needed
 	}
 
+	/**
+	 * Callback method that is used to modify the
+	 * 
+	 * @param index
+	 * @param buttonBar
+	 * @param viewMode
+	 */
 	protected void postProcessDetailButtonBar(int index, Layout buttonBar, boolean viewMode) {
 		// overwrite in subclass if needed
 	}

@@ -44,21 +44,21 @@ public class FilterConverterTest extends BaseMockitoTest {
 	}
 
 	@Test
+	public void testAnd() {
+		Filter result = converter.convert(new AndPredicate<TestEntity>(f1, f2));
+		Assert.assertTrue(result instanceof And);
+	}
+
+	@Test
+	public void testBetween() {
+		Filter result = converter.convert(new BetweenPredicate<TestEntity>("test", 1, 10));
+		Assert.assertTrue(result instanceof Between);
+	}
+
+	@Test
 	public void testCompareEqual() {
 		Filter result = converter.convert(new EqualsPredicate<TestEntity>("test", "test"));
 		Assert.assertTrue(result instanceof Compare.Equal);
-	}
-
-	@Test
-	public void testCompareLess() {
-		Filter result = converter.convert(new LessThanPredicate<TestEntity>("test", "test"));
-		Assert.assertTrue(result instanceof Compare.Less);
-	}
-
-	@Test
-	public void testCompareLessOrEqual() {
-		Filter result = converter.convert(new LessOrEqualPredicate<TestEntity>("test", "test"));
-		Assert.assertTrue(result instanceof Compare.LessOrEqual);
 	}
 
 	@Test
@@ -74,27 +74,54 @@ public class FilterConverterTest extends BaseMockitoTest {
 	}
 
 	@Test
-	public void testNot() {
-		Filter result = converter.convert(new NotPredicate<TestEntity>(f1));
-		Assert.assertTrue(result instanceof Not);
+	public void testCompareLess() {
+		Filter result = converter.convert(new LessThanPredicate<TestEntity>("test", "test"));
+		Assert.assertTrue(result instanceof Compare.Less);
 	}
 
 	@Test
-	public void testAnd() {
-		Filter result = converter.convert(new AndPredicate<TestEntity>(f1, f2));
-		Assert.assertTrue(result instanceof And);
+	public void testIn() {
+		Filter result = converter.convert(new InPredicate<TestEntity>("test", Lists.newArrayList("v1", "v2")));
+		Assert.assertTrue(result instanceof In);
 	}
 
 	@Test
-	public void testOr() {
-		Filter result = converter.convert(new OrPredicate<TestEntity>(f1, f2));
-		Assert.assertTrue(result instanceof Or);
+	public void testContains() {
+		Filter result = converter.convert(new ContainsPredicate<TestEntity>("test", "test"));
+		Assert.assertTrue(result instanceof Contains);
 	}
 
 	@Test
-	public void testBetween() {
-		Filter result = converter.convert(new BetweenPredicate<TestEntity>("test", 1, 10));
-		Assert.assertTrue(result instanceof Between);
+	public void testModulo1() {
+		Filter result = converter.convert(new ModuloPredicate<TestEntity>("test", 4, 2));
+		Assert.assertTrue(result instanceof Modulo);
+
+		Modulo mod = (Modulo) result;
+
+		Assert.assertEquals(4, mod.getModValue());
+		Assert.assertEquals(2, mod.getResult());
+	}
+
+	@Test
+	public void testModulo2() {
+		Filter result = converter.convert(new ModuloPredicate<TestEntity>("test", "test2", 2));
+		Assert.assertTrue(result instanceof Modulo);
+
+		Modulo mod = (Modulo) result;
+		Assert.assertEquals("test2", mod.getModExpression());
+		Assert.assertEquals(2, mod.getResult());
+	}
+
+	@Test
+	public void testCompareLessOrEqual() {
+		Filter result = converter.convert(new LessOrEqualPredicate<TestEntity>("test", "test"));
+		Assert.assertTrue(result instanceof Compare.LessOrEqual);
+	}
+
+	@Test
+	public void testIsNull() {
+		Filter result = converter.convert(new IsNullPredicate<TestEntity>("test"));
+		Assert.assertTrue(result instanceof IsNull);
 	}
 
 	@Test
@@ -105,28 +132,16 @@ public class FilterConverterTest extends BaseMockitoTest {
 		Assert.assertFalse(like.isCaseSensitive());
 	}
 
-	/**
-	 * Simple string filter - case sensitive prefix only
-	 */
 	@Test
-	public void testSimpleStringFilter1() {
-		Filter result = converter.convert(new SimpleStringPredicate<TestEntity>("test", "test", false, true));
-		Assert.assertTrue(result instanceof Like);
-		Like like = (Like) result;
-		Assert.assertTrue(like.isCaseSensitive());
-		Assert.assertEquals("%test%", like.getValue());
+	public void testNot() {
+		Filter result = converter.convert(new NotPredicate<TestEntity>(f1));
+		Assert.assertTrue(result instanceof Not);
 	}
 
-	/**
-	 * Simple string filter - case insensitive infix
-	 */
 	@Test
-	public void testSimpleStringFilter2() {
-		Filter result = converter.convert(new SimpleStringPredicate<TestEntity>("test", "test", true, false));
-		Assert.assertTrue(result instanceof Like);
-		Like like = (Like) result;
-		Assert.assertFalse(like.isCaseSensitive());
-		Assert.assertEquals("test%", like.getValue());
+	public void testOr() {
+		Filter result = converter.convert(new OrPredicate<TestEntity>(f1, f2));
+		Assert.assertTrue(result instanceof Or);
 	}
 
 	/**
@@ -159,5 +174,29 @@ public class FilterConverterTest extends BaseMockitoTest {
 		for (Filter f : ((Or) first).getFilters()) {
 			Assert.assertTrue(f instanceof Contains);
 		}
+	}
+
+	/**
+	 * Simple string filter - case sensitive prefix only
+	 */
+	@Test
+	public void testSimpleStringFilter1() {
+		Filter result = converter.convert(new SimpleStringPredicate<TestEntity>("test", "test", false, true));
+		Assert.assertTrue(result instanceof Like);
+		Like like = (Like) result;
+		Assert.assertTrue(like.isCaseSensitive());
+		Assert.assertEquals("%test%", like.getValue());
+	}
+
+	/**
+	 * Simple string filter - case insensitive infix
+	 */
+	@Test
+	public void testSimpleStringFilter2() {
+		Filter result = converter.convert(new SimpleStringPredicate<TestEntity>("test", "test", true, false));
+		Assert.assertTrue(result instanceof Like);
+		Like like = (Like) result;
+		Assert.assertFalse(like.isCaseSensitive());
+		Assert.assertEquals("test%", like.getValue());
 	}
 }

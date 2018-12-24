@@ -15,8 +15,7 @@ import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.domain.model.impl.EntityModelFactoryImpl;
 import com.ocs.dynamo.service.TestEntityService;
 import com.ocs.dynamo.test.BaseMockitoTest;
-import com.ocs.dynamo.ui.composite.layout.DetailsEditLayout;
-import com.ocs.dynamo.ui.composite.layout.FormOptions;
+import com.ocs.dynamo.ui.composite.layout.DetailsEditLayout.FormContainer;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.UI;
 
@@ -33,8 +32,10 @@ public class DetailsEditLayoutTest extends BaseMockitoTest {
 
 	@Mock
 	private TestEntityService service;
-	
+
 	private boolean buttonBarPostconstruct = false;
+
+	private boolean detailButtonBarPostconstruct = false;
 
 	@Override
 	public void setUp() {
@@ -58,10 +59,32 @@ public class DetailsEditLayoutTest extends BaseMockitoTest {
 		Assert.assertTrue(buttonBarPostconstruct);
 
 		layout.setValue(Lists.newArrayList(e1, e2));
+		Assert.assertTrue(detailButtonBarPostconstruct);
+
 		Assert.assertEquals(2, layout.getFormCount().intValue());
 
 		layout.getAddButton().click();
 		Assert.assertEquals(3, layout.getFormCount().intValue());
+
+		//
+		layout.setDeleteEnabled(0, false);
+		FormContainer container = layout.getFormContainer(0);
+		Assert.assertFalse(container.getDeleteButton().isEnabled());
+
+		// out of bounds
+		layout.setDeleteEnabled(4, false);
+
+		layout.setDeleteVisible(0, false);
+		Assert.assertFalse(container.getDeleteButton().isVisible());
+
+		// disable field
+		layout.setFieldEnabled(0, "age", false);
+
+		// get entity
+		TestEntity t1 = layout.getEntity(0);
+		Assert.assertEquals(e1, t1);
+
+		Assert.assertTrue(layout.validateAllFields());
 	}
 
 	/**
@@ -99,6 +122,11 @@ public class DetailsEditLayoutTest extends BaseMockitoTest {
 			@Override
 			protected void postProcessButtonBar(Layout buttonBar) {
 				buttonBarPostconstruct = true;
+			}
+
+			@Override
+			protected void postProcessDetailButtonBar(int index, Layout buttonBar, boolean viewMode) {
+				detailButtonBarPostconstruct = true;
 			}
 		};
 		layout.initContent();
