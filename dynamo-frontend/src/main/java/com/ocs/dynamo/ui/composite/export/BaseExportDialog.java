@@ -19,6 +19,7 @@ import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.ui.composite.dialog.BaseModalDialog;
 import com.ocs.dynamo.ui.composite.type.ExportMode;
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Layout;
@@ -33,9 +34,9 @@ import com.vaadin.ui.Layout;
 public abstract class BaseExportDialog<ID extends Serializable, T extends AbstractEntity<ID>> extends BaseModalDialog {
 
 	private static final long serialVersionUID = 2066899457738401866L;
-	
+
 	protected static final String EXTENSION_CSV = ".csv";
-	
+
 	protected static final String EXTENSION_XLS = ".xlsx";
 
 	private final ExportService exportService;
@@ -66,6 +67,7 @@ public abstract class BaseExportDialog<ID extends Serializable, T extends Abstra
 	protected void doBuildButtonBar(HorizontalLayout buttonBar) {
 		Button cancelButton = new Button(message("ocs.cancel"));
 		cancelButton.addClickListener(event -> close());
+		cancelButton.setIcon(VaadinIcons.BAN);
 		buttonBar.addComponent(cancelButton);
 	}
 

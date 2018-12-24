@@ -60,7 +60,7 @@ import com.vaadin.ui.VerticalLayout;
 /**
  * A complex grid component for the in-place editing of a one-to-many relation.
  * It can also be used to manage a many-to-many relation but in this case the
- * "setDetailsTableSearchMode" on the FormOptions must be set to true. You can
+ * "setDetailsGridSearchMode" on the FormOptions must be set to true. You can
  * then use the setSearchXXX methods to configure the behaviour of the search
  * dialog that can be used to modify the values If you need a component like
  * this, you should override the constructCustomField method and use it to
@@ -490,7 +490,7 @@ public abstract class DetailsEditGrid<ID extends Serializable, T extends Abstrac
 	}
 
 	/**
-	 * Indicates whether it is possible to add/modify items directly via the table
+	 * Indicates whether it is possible to add/modify items directly via the grid
 	 *
 	 * @return
 	 */
@@ -504,7 +504,7 @@ public abstract class DetailsEditGrid<ID extends Serializable, T extends Abstrac
 
 	/**
 	 * Method that is called in order to enable/disable a button after selecting an
-	 * item in the table
+	 * item in the grid
 	 *
 	 * @param button
 	 * @return
@@ -515,7 +515,7 @@ public abstract class DetailsEditGrid<ID extends Serializable, T extends Abstrac
 	}
 
 	/**
-	 * Respond to a selection of an item in the table
+	 * Respond to a selection of an item in the grid
 	 */
 	protected void onSelect(Object selected) {
 		// overwrite when needed

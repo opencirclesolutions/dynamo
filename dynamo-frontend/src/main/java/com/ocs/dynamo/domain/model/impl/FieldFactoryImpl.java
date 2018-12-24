@@ -369,14 +369,15 @@ public class FieldFactoryImpl implements FieldFactory {
 	}
 
 	/**
-	 * Constructs a field for looking up simple values (Strings, ints) from a table
-	 * field or a collection grid
+	 * Constructs a token field for looking up simple values (Strings, ints) from a
+	 * property or element collection
 	 * 
 	 * @param entityModel       the entity model
 	 * @param am                the attribute model
-	 * @param distinctField
-	 * @param elementCollection
-	 * @param fieldFilter
+	 * @param distinctField     the database field from which to collect the
+	 *                          distinct values
+	 * @param elementCollection whether the lookup is from an element collection
+	 * @param fieldFilter       field filter used to limit the matching entities
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")

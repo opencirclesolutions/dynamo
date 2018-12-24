@@ -172,7 +172,7 @@ public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractE
 	}
 
 	/**
-	 * Select one or more items in the table
+	 * Select one or more items in the grid
 	 * 
 	 * @param selectedItems
 	 */

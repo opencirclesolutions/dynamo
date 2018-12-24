@@ -159,13 +159,6 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	}
 
 	/**
-	 * Removes all sort orders
-	 */
-	public void clearSortOrders() {
-		this.sortOrders.clear();
-	}
-
-	/**
 	 * Constructs the "Add"-button that is used to open the form in "new entity"
 	 * mode
 	 * 

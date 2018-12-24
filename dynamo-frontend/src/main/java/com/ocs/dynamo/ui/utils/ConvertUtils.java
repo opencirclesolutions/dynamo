@@ -100,8 +100,7 @@ public final class ConvertUtils {
 
 		if (am.isWeek()) {
 			LocalDateWeekCodeConverter converter = new LocalDateWeekCodeConverter();
-			Result<LocalDate> locDate = converter.convertToModel((String) value, new ValueContext(locale));
-			return locDate;
+			return converter.convertToModel((String) value, new ValueContext(locale));
 		} else if (NumberUtils.isInteger(am.getType())) {
 			if (value instanceof String) {
 				StringToIntegerConverter converter = ConverterFactory.createIntegerConverter(grouping, false);

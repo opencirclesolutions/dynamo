@@ -67,8 +67,6 @@ public class AttributeModelImpl implements AttributeModel {
 
 	private String description;
 
-	private boolean directNavigation;
-
 	private String displayFormat;
 
 	private String displayName;
@@ -432,11 +430,6 @@ public class AttributeModelImpl implements AttributeModel {
 	}
 
 	@Override
-	public boolean isDirectNavigation() {
-		return directNavigation;
-	}
-
-	@Override
 	public boolean isEmail() {
 		return email;
 	}
@@ -598,10 +591,6 @@ public class AttributeModelImpl implements AttributeModel {
 
 	public void setDescription(String description) {
 		this.description = description;
-	}
-
-	public void setDirectNavigation(boolean directNavigation) {
-		this.directNavigation = directNavigation;
 	}
 
 	public void setDisplayFormat(String displayFormat) {

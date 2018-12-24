@@ -71,7 +71,7 @@ public class QuickAddEntityComboBox<ID extends Serializable, T extends AbstractE
 		super(service, entityModel, attributeModel, filter);
 		comboBox = new EntityComboBox<>(entityModel, attributeModel, service, mode, filter, items, sortOrder);
 		quickAddAllowed = attributeModel != null && attributeModel.isQuickAddAllowed() && !search;
-		directNavigationAllowed = attributeModel != null && attributeModel.isDirectNavigation() && !search;
+		directNavigationAllowed = attributeModel != null && attributeModel.isNavigable() && !search;
 	}
 
 	@Override

@@ -146,7 +146,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 				mainLayout.addComponent(quickSearchField);
 			}
 
-			// table init
+			// initialize the grid
 			getGridWrapper().getGrid().setHeightByRows(getPageLength());
 			disableGridSorting();
 			constructGridDividers();

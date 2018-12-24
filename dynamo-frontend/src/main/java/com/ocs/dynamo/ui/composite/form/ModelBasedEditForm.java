@@ -433,14 +433,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 					Component c = constructImagePreview(attributeModel);
 					parent.addComponent(c);
 					previews.get(isViewMode()).put(attributeModel, c);
-				} else if (AttributeType.DETAIL.equals(type) && attributeModel.isComplexEditable()) {
-					AbstractComponent f = constructCustomField(entityModel, attributeModel, viewMode);
-					if (f instanceof UseInViewMode) {
-						// a details edit table or details edit layout must always be displayed
-						constructField(parent, entityModel, attributeModel, true, tabIndex, sameRow);
-					} else {
-						constructLabel(parent, entityModel, attributeModel, tabIndex, sameRow);
-					}
 				} else {
 					AbstractComponent f = constructCustomField(entityModel, attributeModel, viewMode);
 					if (f instanceof UseInViewMode) {
@@ -644,7 +636,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 				for (String parentGroupHeader : getParentGroupHeaders()) {
 					Layout innerForm = constructAttributeGroupLayout(form, tabs, tabSheets.get(isViewMode()),
 							parentGroupHeader, false);
-					
 
 					// add a tab sheet on the inner level if needed
 					TabSheet innerTabSheet = null;
@@ -699,7 +690,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			buttonBar.setSizeUndefined();
 			layout.addComponent(buttonBar);
 		}
-		checkSaveButtonState();
 		disableCreateOnlyFields();
 		afterLayoutBuilt(form, isViewMode());
 
@@ -727,18 +717,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 				b.setEnabled(true);
 			} else {
 				b.setEnabled(false);
-			}
-		}
-	}
-
-	/**
-	 * Sets the state (enabled/disabled) of the save button. The button is* enabled*
-	 * if the from is valid and all of its detail tables are as well
-	 */
-	private void checkSaveButtonState() {
-		for (Button saveButton : buttons.get(isViewMode())) {
-			if (SAVE_BUTTON_DATA.equals(saveButton.getData())) {
-				saveButton.setEnabled(true);
 			}
 		}
 	}
@@ -1174,7 +1152,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		saveButton.setData(SAVE_BUTTON_DATA);
 		if (bottom) {
 			groups.get(isViewMode()).getFields().forEach(f -> f.addValueChangeListener(event -> {
-				checkSaveButtonState();
 				((AbstractComponent) f).setComponentError(null);
 			}));
 		}

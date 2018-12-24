@@ -329,11 +329,6 @@ public interface EntityModel<T> {
 	String WEEK = "week";
 
 	/**
-	 * Indicates whether direct navigation to this linked entity is allowed
-	 */
-	String DIRECT_NAVIGATION = "directNavigation";
-
-	/**
 	 * Adds an attribute group
 	 *
 	 * @param attributeGroup the name of the attribute group

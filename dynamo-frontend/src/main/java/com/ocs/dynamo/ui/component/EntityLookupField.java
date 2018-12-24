@@ -131,7 +131,7 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 		this.multiSelect = multiSelect;
 		this.clearAllowed = true;
 		this.addAllowed = !search && (attributeModel != null && attributeModel.isQuickAddAllowed());
-		this.directNavigationAllowed = !search && (attributeModel != null && attributeModel.isDirectNavigation());
+		this.directNavigationAllowed = !search && (attributeModel != null && attributeModel.isNavigable());
 	}
 
 	/**

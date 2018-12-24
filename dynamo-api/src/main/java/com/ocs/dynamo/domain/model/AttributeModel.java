@@ -359,12 +359,6 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	boolean isCurrency();
 
 	/**
-	 * Indicates whether this attribute allows direct navigation to entity edit
-	 * screen
-	 */
-	boolean isDirectNavigation();
-
-	/**
 	 * 
 	 * 
 	 * @return Whether the attribute is an email address

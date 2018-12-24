@@ -283,12 +283,18 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 					|| AttributeSelectMode.FANCY_LIST.equals(model.getSelectMode()))
 					&& !AttributeType.DETAIL.equals(model.getAttributeType())
 					&& !AttributeType.BASIC.equals(model.getAttributeType())) {
-				throw new OCSRuntimeException("Token or Fancy List field not allowed for field " + model.getName());
+				throw new OCSRuntimeException("Token or Fancy List field not allowed for attribute " + model.getName());
+			}
+			
+			// navigating only allowed in case of a many to one relation
+			if (!AttributeType.MASTER.equals(model.getAttributeType())
+					&& model.isNavigable()) {
+				throw new OCSRuntimeException("Navigation is not possible for attribute " + model.getName());
 			}
 
 			// searching on a LOB is pointless
 			if (AttributeType.LOB.equals(model.getAttributeType()) && model.isSearchable()) {
-				throw new OCSRuntimeException("Searching on a LOB is not allowed for field " + model.getName());
+				throw new OCSRuntimeException("Searching on a LOB is not allowed for attribute " + model.getName());
 			}
 		}
 		return result;
@@ -892,7 +898,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 				model.setMainAttribute(true);
 			}
 
-			if (attribute.visibleInGrid() != null && !VisibilityType.INHERIT.equals(attribute.visibleInGrid()) && !nested) {
+			if (attribute.visibleInGrid() != null && !VisibilityType.INHERIT.equals(attribute.visibleInGrid())
+					&& !nested) {
 				model.setVisibleInGrid(VisibilityType.SHOW.equals(attribute.visibleInGrid()));
 			}
 
@@ -1033,10 +1040,6 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 
 			if (attribute.required()) {
 				model.setRequired(true);
-			}
-
-			if (attribute.directNavigation()) {
-				model.setDirectNavigation(true);
 			}
 
 			if (!attribute.useThousandsGrouping()) {
@@ -1234,11 +1237,6 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 		if (!StringUtils.isEmpty(msg)) {
 			checkWeekSettingAllowed(model);
 			model.setWeek(Boolean.valueOf(msg));
-		}
-
-		msg = getAttributeMessage(entityModel, model, EntityModel.DIRECT_NAVIGATION);
-		if (!StringUtils.isEmpty(msg)) {
-			model.setDirectNavigation(Boolean.valueOf(msg));
 		}
 
 		msg = getAttributeMessage(entityModel, model, EntityModel.ALLOWED_EXTENSIONS);

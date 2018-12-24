@@ -25,50 +25,24 @@ import com.vaadin.server.SerializablePredicate;
  * @author bas.rutten
  *
  */
-public final class PredicateUtil {
+public final class PredicateUtils {
 
-	private PredicateUtil() {
+	private PredicateUtils() {
 		// hidden constructor
-	}
-
-	/**
-	 * Extract a predicate from a larger predicate
-	 * 
-	 * @param predicate  the larger predicate
-	 * @param propertyId the property of the predicate to search for
-	 * @return
-	 */
-	public static <T> SerializablePredicate<T> extractPredicate(SerializablePredicate<T> predicate, String propertyId) {
-		if (predicate instanceof CompositePredicate) {
-			CompositePredicate<T> comp = (CompositePredicate<T>) predicate;
-			for (SerializablePredicate<T> child : comp.getOperands()) {
-				SerializablePredicate<T> found = extractPredicate(child, propertyId);
-				if (found != null) {
-					return found;
-				}
-			}
-		} else if (predicate instanceof PropertyPredicate) {
-			PropertyPredicate<T> eq = (PropertyPredicate<T>) predicate;
-			if (eq.getProperty().equals(propertyId)) {
-				return eq;
-			}
-		} else if (predicate instanceof NotPredicate) {
-			NotPredicate<T> not = (NotPredicate<T>) predicate;
-			return extractPredicate(not.getOperand(), propertyId);
-		}
-		return null;
 	}
 
 	/**
 	 * Extracts a specific predicate from a larger predicate
 	 *
-	 * @param predicate  the predicate from which to extract a certain part
-	 * @param propertyId the propertyId of the predicate to extract
+	 * @param predicate   the predicate from which to extract a certain part
+	 * @param propertyId  the propertyId of the predicate to extract
+	 * @param typesToFind
 	 * @return
 	 */
+	@SafeVarargs
 	public static <T> SerializablePredicate<T> extractPredicate(SerializablePredicate<T> predicate, String propertyId,
-			Class<? extends SerializablePredicate<T>>[] typesToFind) {
-		List<Class<? extends SerializablePredicate<T>>> types = typesToFind == null || typesToFind.length == 0
+			Class<?>... typesToFind) {
+		List<Class<?>> types = typesToFind == null || typesToFind.length == 0
 				|| (typesToFind.length == 1 && typesToFind[0] == null) ? null : Arrays.asList(typesToFind);
 		if (predicate instanceof CompositePredicate) {
 			CompositePredicate<T> comp = (CompositePredicate<T>) predicate;
@@ -83,6 +57,9 @@ public final class PredicateUtil {
 			if (prop.getProperty().equals(propertyId)) {
 				return prop;
 			}
+		} else if (predicate instanceof NotPredicate) {
+			NotPredicate<T> not = (NotPredicate<T>) predicate;
+			return extractPredicate(not.getOperand(), propertyId);
 		}
 		return null;
 	}
@@ -93,26 +70,15 @@ public final class PredicateUtil {
 	 *
 	 * @param predicate  the predicate from which to extract a certain part
 	 * @param propertyId the propertyId of the predicate to extract
-	 * @return
+	 * @return typesToFind can be used to limit the types of predicates to check
 	 */
 	@SafeVarargs
 	public static <T> Object extractPredicateValue(SerializablePredicate<T> predicate, String propertyId,
-			Class<? extends SerializablePredicate<T>>... typesToFind) {
-		List<Class<? extends SerializablePredicate<T>>> types = typesToFind == null || typesToFind.length == 0
-				|| (typesToFind.length == 1 && typesToFind[0] == null) ? null : Arrays.asList(typesToFind);
-		if (predicate instanceof CompositePredicate) {
-			CompositePredicate<T> comp = (CompositePredicate<T>) predicate;
-			for (SerializablePredicate<T> child : comp.getOperands()) {
-				SerializablePredicate<T> found = extractPredicate(child, propertyId, typesToFind);
-				if (found != null) {
-					return extractPredicateValue(found, propertyId, typesToFind);
-				}
-			}
-		} else if (predicate instanceof PropertyPredicate && (types == null || types.contains(predicate.getClass()))) {
-			PropertyPredicate<T> compare = (PropertyPredicate<T>) predicate;
-			if (compare.getProperty().equals(propertyId)) {
-				return compare.getValue();
-			}
+			Class<?>... typesToFind) {
+		SerializablePredicate<T> extracted = extractPredicate(predicate, propertyId, typesToFind);
+		if (extracted instanceof PropertyPredicate) {
+			PropertyPredicate<T> prop = (PropertyPredicate<T>) extracted;
+			return prop.getValue();
 		}
 		return null;
 	}

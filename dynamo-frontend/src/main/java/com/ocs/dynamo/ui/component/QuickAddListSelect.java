@@ -80,7 +80,7 @@ public class QuickAddListSelect<ID extends Serializable, T extends AbstractEntit
 		listSelect = new EntityListSelect<>(entityModel, attributeModel, service, filter, sortOrder);
 		listSelect.setRows(rows);
 		this.quickAddAllowed = !search && attributeModel != null && attributeModel.isQuickAddAllowed();
-		this.directNavigationAllowed = !search && attributeModel != null && attributeModel.isDirectNavigation();
+		this.directNavigationAllowed = !search && attributeModel != null && attributeModel.isNavigable();
 	}
 
 	@Override

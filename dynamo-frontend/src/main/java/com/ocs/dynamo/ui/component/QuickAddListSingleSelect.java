@@ -76,7 +76,7 @@ public class QuickAddListSingleSelect<ID extends Serializable, T extends Abstrac
 		listSelect = new EntityListSingleSelect<>(entityModel, attributeModel, service, filter, sortOrder);
 		listSelect.setVisibleItemCount(rows);
 		this.quickAddAllowed = !search && attributeModel != null && attributeModel.isQuickAddAllowed();
-		this.directNavigationAllowed = !search && attributeModel != null && attributeModel.isDirectNavigation();
+		this.directNavigationAllowed = !search && attributeModel != null && attributeModel.isNavigable();
 	}
 
 	@Override

@@ -745,9 +745,6 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 		}
 
 		checkButtonState(getSelectedItem());
-//		if (editForm != null) {
-//			afterEntitySelected(editForm, entity);
-//		}
 		setCompositionRoot(mainEditLayout);
 
 	}

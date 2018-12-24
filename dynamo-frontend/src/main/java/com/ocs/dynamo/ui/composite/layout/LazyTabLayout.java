@@ -224,8 +224,7 @@ public abstract class LazyTabLayout<ID extends Serializable, T extends AbstractE
 	}
 
 	protected Tab getTab(Component selectedTab) {
-		Tab tab = tabs.getTab(selectedTab);
-		return tab;
+		return tabs.getTab(selectedTab);
 	}
 
 	/**

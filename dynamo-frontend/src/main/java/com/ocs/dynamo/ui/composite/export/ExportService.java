@@ -24,7 +24,7 @@ import com.vaadin.data.provider.SortOrder;
 import com.vaadin.server.SerializablePredicate;
 
 /**
- * Service for exporting table contents to XLSX or CSV
+ * Service for exporting grid contents to XLSX or CSV
  * 
  * @author Bas Rutten
  *

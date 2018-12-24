@@ -91,7 +91,7 @@ public class ElementCollectionGrid<ID extends Serializable, U extends AbstractEn
 	private Grid<ValueHolder<T>> grid;
 
 	/**
-	 * Button for adding new items to the table
+	 * Button for adding new items to the grid
 	 */
 	private Button addButton;
 
@@ -109,13 +109,13 @@ public class ElementCollectionGrid<ID extends Serializable, U extends AbstractEn
 
 	/**
 	 * 
-	 * the currently selected item in the table
+	 * The currently selected item in the grid
 	 */
 	private Object selectedItem;
 
 	/**
 	 * 
-	 * Whether the table is in view mode. If this is the case, editing is not*
+	 * Whether the grid is in view mode. If this is the case, editing is not*
 	 * allowed
 	 */
 	private boolean viewMode;
@@ -136,7 +136,7 @@ public class ElementCollectionGrid<ID extends Serializable, U extends AbstractEn
 	 * Constructor
 	 * 
 	 * @param attributeModel the attribute model
-	 * @param formOptions    the form options that govern how the table behaves
+	 * @param formOptions    the form options that govern how the grid behaves
 	 */
 	public ElementCollectionGrid(AttributeModel attributeModel, FormOptions formOptions) {
 		this.messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
@@ -197,7 +197,6 @@ public class ElementCollectionGrid<ID extends Serializable, U extends AbstractEn
 	 * Constructs the column that holds the "remove" button
 	 */
 	private void constructRemoveColumn() {
-		// add a remove button directly in the table
 		if (!viewMode && formOptions.isShowRemoveButton()) {
 			final String removeMsg = message("ocs.detail.remove");
 			grid.addComponentColumn((ValueProvider<ValueHolder<T>, Component>) t -> {
@@ -337,7 +336,7 @@ public class ElementCollectionGrid<ID extends Serializable, U extends AbstractEn
 			onSelect(vh.getValue());
 		});
 
-		// add a remove button directly in the table
+		// add a remove button directly in the grid
 		constructRemoveColumn();
 
 		VerticalLayout layout = new DefaultVerticalLayout(false, true);
@@ -358,7 +357,7 @@ public class ElementCollectionGrid<ID extends Serializable, U extends AbstractEn
 	}
 
 	/**
-	 * Respond to a selection of an item in the table
+	 * Respond to a selection of an item in the grid
 	 */
 	protected void onSelect(final Object selected) {
 		// overwrite in subclass if needed
