@@ -21,16 +21,10 @@ import java.util.List;
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
-import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.component.DownloadButton;
-import com.ocs.dynamo.ui.composite.dialog.BaseModalDialog;
 import com.ocs.dynamo.ui.composite.layout.ExportMode;
 import com.vaadin.data.provider.SortOrder;
-import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.SerializablePredicate;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Layout;
 
 /**
  * A simple dialog window that offers several buttons for exporting data to
@@ -41,21 +35,15 @@ import com.vaadin.ui.Layout;
  * @param <ID> the class of the ID of the entity that is being exported
  * @param <T> the class of the entity that is being exported
  */
-public class ExportDialog<ID extends Serializable, T extends AbstractEntity<ID>> extends BaseModalDialog {
+public class ExportDialog<ID extends Serializable, T extends AbstractEntity<ID>> extends BaseExportDialog<ID, T> {
 
 	private static final long serialVersionUID = -7559490010581729532L;
 
-	private ExportService exportService = ServiceLocatorFactory.getServiceLocator().getService(ExportService.class);
+	private final SerializablePredicate<T> predicate;
 
-	private EntityModel<T> entityModel;
+	private final List<SortOrder<?>> sortOrders;
 
-	private SerializablePredicate<T> predicate;
-
-	private List<SortOrder<?>> sortOrders;
-
-	private FetchJoinInformation[] joins;
-
-	private ExportMode exportMode;
+	private final FetchJoinInformation[] joins;
 
 	/**
 	 * Constructor
@@ -65,49 +53,28 @@ public class ExportDialog<ID extends Serializable, T extends AbstractEntity<ID>>
 	 * @param sortOrders
 	 * @param joins
 	 */
-	public ExportDialog(EntityModel<T> entityModel, ExportMode exportMode, SerializablePredicate<T> predicate,
-			List<SortOrder<?>> sortOrders, FetchJoinInformation... joins) {
-		this.entityModel = entityModel;
-		this.exportMode = exportMode;
+	public ExportDialog(ExportService exportService, EntityModel<T> entityModel, ExportMode exportMode,
+			SerializablePredicate<T> predicate, List<SortOrder<?>> sortOrders, FetchJoinInformation... joins) {
+		super(exportService, entityModel, exportMode);
 		this.predicate = predicate;
 		this.sortOrders = sortOrders;
 		this.joins = joins;
 	}
 
-	private DownloadButton createDownloadCSVButton() {
+	@Override
+	protected DownloadButton createDownloadCSVButton() {
 		return new DownloadButton(message("ocs.export.csv"), () -> {
 			return new ByteArrayInputStream(
-					exportService.exportCsv(entityModel, exportMode, predicate, sortOrders, joins));
-		}, () -> entityModel.getDisplayNamePlural() + "_" + LocalDateTime.now() + ".csv");
+					getExportService().exportCsv(getEntityModel(), getExportMode(), predicate, sortOrders, joins));
+		}, () -> getEntityModel().getDisplayNamePlural() + "_" + LocalDateTime.now() + EXTENSION_CSV);
 	}
 
-	private DownloadButton createDownloadExcelButton() {
+	@Override
+	protected DownloadButton createDownloadExcelButton() {
 		return new DownloadButton(message("ocs.export.excel"), () -> {
 			return new ByteArrayInputStream(
-					exportService.exportExcel(entityModel, exportMode, predicate, sortOrders, joins));
-		}, () -> entityModel.getDisplayNamePlural() + "_" + LocalDateTime.now() + ".xlsx");
-	}
-
-	@Override
-	protected void doBuild(Layout parent) {
-		DownloadButton exportExcelButton = createDownloadExcelButton();
-		parent.addComponent(exportExcelButton);
-
-		DownloadButton exportCsvButton = createDownloadCSVButton();
-		parent.addComponent(exportCsvButton);
-	}
-
-	@Override
-	protected void doBuildButtonBar(HorizontalLayout buttonBar) {
-		Button cancelButton = new Button(message("ocs.cancel"));
-		cancelButton.addClickListener(event -> close());
-		cancelButton.setIcon(VaadinIcons.BAN);
-		buttonBar.addComponent(cancelButton);
-	}
-
-	@Override
-	protected String getTitle() {
-		return message("ocs.export");
+					getExportService().exportExcel(getEntityModel(), getExportMode(), predicate, sortOrders, joins));
+		}, () -> getEntityModel().getDisplayNamePlural() + "_" + LocalDateTime.now() + EXTENSION_XLS);
 	}
 
 }

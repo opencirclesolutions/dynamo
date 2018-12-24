@@ -312,19 +312,14 @@ public class ElementCollectionGrid<ID extends Serializable, U extends AbstractEn
 			}
 
 			// custom validator since the normal one apparently doesn't work properly here
-			Validator<String> notEmpty = new Validator<String>() {
-
-				private static final long serialVersionUID = -8831597639858787402L;
-
-				@Override
-				public ValidationResult apply(String value, ValueContext context) {
-					if (StringUtils.isEmpty(value)) {
-						return ValidationResult
-								.error(messageService.getMessage("ocs.may.not.be.null", VaadinUtils.getLocale()));
-					}
-					return ValidationResult.ok();
+			Validator<String> notEmpty = (String value, ValueContext v) -> {
+				if (StringUtils.isEmpty(value)) {
+					return ValidationResult
+							.error(messageService.getMessage("ocs.may.not.be.null", VaadinUtils.getLocale()));
 				}
+				return ValidationResult.ok();
 			};
+
 			builder.asRequired(notEmpty).bind("value");
 
 			tf.setSizeFull();
@@ -338,7 +333,7 @@ public class ElementCollectionGrid<ID extends Serializable, U extends AbstractEn
 
 		// add a change listener (to make sure the buttons are correctly
 		// enabled/disabled)
-		grid.addSelectionListener(event -> {
+		grid.addSelectionListener(event ->{
 			ValueHolder<T> vh = grid.getSelectedItems().iterator().next();
 			onSelect(vh.getValue());
 		});
@@ -346,7 +341,7 @@ public class ElementCollectionGrid<ID extends Serializable, U extends AbstractEn
 		// add a remove button directly in the table
 		constructRemoveColumn();
 
-		final VerticalLayout layout = new DefaultVerticalLayout(false, true);
+		VerticalLayout layout = new DefaultVerticalLayout(false, true);
 		layout.addComponent(grid);
 
 		// add the buttons

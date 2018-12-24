@@ -16,13 +16,16 @@ package com.ocs.dynamo.ui.composite.form;
 import java.util.Set;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
+import com.ocs.dynamo.service.TestEntityService;
 import com.ocs.dynamo.test.BaseIntegrationTest;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.vaadin.data.provider.ListDataProvider;
@@ -30,9 +33,19 @@ import com.vaadin.data.provider.ListDataProvider;
 public class ElementCollectionGridTest extends BaseIntegrationTest {
 
 	@Autowired
+	private TestEntityService testEntityService;
+
+	@Autowired
 	private EntityModelFactory emf;
 
+	@Before
+	public void setUp() {
+		TestEntity e1 = new TestEntity("Bob", 12L);
+		testEntityService.save(e1);
+	}
+
 	@Test
+	@SuppressWarnings("unchecked")
 	public void testTableOfStrings() {
 		EntityModel<TestEntity> em = emf.getModel(TestEntity.class);
 
@@ -40,7 +53,14 @@ public class ElementCollectionGridTest extends BaseIntegrationTest {
 		ElementCollectionGrid<Integer, TestEntity, String> grid = new ElementCollectionGrid<>(
 				em.getAttributeModel("tags"), fo);
 		grid.initContent();
+
+		grid.setValue(Lists.newArrayList("tag1", "tag2"));
+
 		grid.getAddButton().click();
+
+		ListDataProvider<ValueHolder<String>> provider = (ListDataProvider<ValueHolder<String>>) grid.getGrid()
+				.getDataProvider();
+		Assert.assertEquals(3, provider.getItems().size());
 	}
 
 	/**
@@ -48,15 +68,19 @@ public class ElementCollectionGridTest extends BaseIntegrationTest {
 	 */
 	@Test
 	public void testTableOfIntegers() {
+		ElementCollectionGrid<Integer, TestEntity, Integer> grid = null;
+
 		EntityModel<TestEntity> em = emf.getModel(TestEntity.class);
 
 		FormOptions fo = new FormOptions();
 
-		ElementCollectionGrid<Integer, TestEntity, Integer> grid = new ElementCollectionGrid<>(
-				em.getAttributeModel("intTags"), fo);
-
+		grid = new ElementCollectionGrid<>(em.getAttributeModel("intTags"), fo);
 		grid.initContent();
 		grid.setValue(Sets.newHashSet(4, 5));
+
+		grid.getGrid().select(new ValueHolder<Integer>(4));
+
+		Assert.assertEquals(1, grid.getGrid().getColumns().size());
 	}
 
 	@Test

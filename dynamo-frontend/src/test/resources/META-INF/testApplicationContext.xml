@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc"
 	xmlns:jpa="http://www.springframework.org/schema/data/jpa"
 	xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:util="http://www.springframework.org/schema/util"
@@ -11,16 +12,17 @@
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
 	<!-- Embedded database to support unit tests -->
-	<jdbc:embedded-database id="datasource" type="H2"></jdbc:embedded-database>
+	<jdbc:embedded-database id="datasource"
+		type="H2"></jdbc:embedded-database>
 	<util:map id="jpaPropertyMap">
 		<entry key="hibernate.hbm2ddl.auto" value="create-drop" />
-		<entry key="hibernate.dialect" value="org.hibernate.dialect.H2Dialect" />
+		<entry key="hibernate.dialect"
+			value="org.hibernate.dialect.H2Dialect" />
 	</util:map>
 
-	<!-- wrapper around the export -->
-	<!--  
-	<bean id="tableExportService" class="com.ocs.dynamo.ui.composite.table.export.TableExportService" />
-	-->
+	<!--  Service for exporting to CSV and Excel -->
+	<bean id="exportService"
+		class="com.ocs.dynamo.ui.composite.export.impl.ExportServiceImpl" />
 
 	<!-- Entity Manager, the use of packagesToScan, jpaPropertyMap and jpaVendorAdapter 
 		prevent the need for an persistence.xml -->
@@ -37,22 +39,27 @@
 	</bean>
 
 	<!-- Transaction Manager -->
-	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
-		<property name="entityManagerFactory" ref="entityManagerFactory" />
+	<bean id="transactionManager"
+		class="org.springframework.orm.jpa.JpaTransactionManager">
+		<property name="entityManagerFactory"
+			ref="entityManagerFactory" />
 	</bean>
 
 	<!-- Scan all classes for JSR330 and Spring annotations -->
-	<context:component-scan base-package="com.ocs.dynamo.dao,com.ocs.dynamo.service" />
+	<context:component-scan
+		base-package="com.ocs.dynamo.dao,com.ocs.dynamo.service" />
 
 	<!-- Initialize JSR303 validation factory -->
 	<bean id="validatorFactory"
 		class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean" />
 
 	<!-- The entity model factory -->
-	<bean id="entityModelFactory" class="com.ocs.dynamo.domain.model.impl.EntityModelFactoryImpl" />
+	<bean id="entityModelFactory"
+		class="com.ocs.dynamo.domain.model.impl.EntityModelFactoryImpl" />
 
-	<!-- The entity model factory -->
-	<bean id="messageService" class="com.ocs.dynamo.service.impl.MessageServiceImpl" />
+	<!-- The message service -->
+	<bean id="messageService"
+		class="com.ocs.dynamo.service.impl.MessageServiceImpl" />
 
 	<bean id="messageSource"
 		class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
@@ -69,10 +76,14 @@
 
 	<bean id="menuService" class="com.ocs.dynamo.ui.menu.MenuService" />
 
-	<bean id="permissionChecker" class="com.ocs.dynamo.ui.auth.impl.DefaultPermissionCheckerImpl">
+	<!--  permission checker for determining who can access which views -->
+	<bean id="permissionChecker"
+		class="com.ocs.dynamo.ui.auth.impl.DefaultPermissionCheckerImpl">
 		<constructor-arg value="com.ocs.dynamo" />
 	</bean>
 
-	<bean id="userDetailsService" class="com.ocs.dynamo.service.impl.UserDetailsServiceMockImpl"></bean>
+	<!--  Mock implementation of user details service (since we have no real user during unit tests) -->
+	<bean id="userDetailsService"
+		class="com.ocs.dynamo.service.impl.UserDetailsServiceMockImpl"></bean>
 
 </beans>

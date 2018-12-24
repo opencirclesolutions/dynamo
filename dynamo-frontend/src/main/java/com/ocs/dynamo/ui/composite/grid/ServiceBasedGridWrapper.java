@@ -113,7 +113,7 @@ public class ServiceBasedGridWrapper<ID extends Serializable, T extends Abstract
 					orders.add(new SortOrder<String>(gso.getSorted().getId(), gso.getDirection()));
 				}
 
-				ExportDialog<ID, T> dialog = new ExportDialog<>(
+				ExportDialog<ID, T> dialog = new ExportDialog<>(getExportService(),
 						getExportEntityModel() != null ? getExportEntityModel() : getEntityModel(),
 						getFormOptions().getExportMode(), getFilter(), !orders.isEmpty() ? orders : getSortOrders(),
 						getJoins());

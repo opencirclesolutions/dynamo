@@ -23,7 +23,9 @@ import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
+import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.Searchable;
+import com.ocs.dynamo.ui.composite.export.ExportService;
 import com.ocs.dynamo.ui.composite.layout.BaseCustomComponent;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.provider.BaseDataProvider;
@@ -100,7 +102,15 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 	 */
 	private EntityModel<T> exportEntityModel;
 
+	/**
+	 * The form options
+	 */
 	private FormOptions formOptions;
+
+	/**
+	 * The export service used for generating XLS and CSV exports
+	 */
+	private ExportService exportService = ServiceLocatorFactory.getServiceLocator().getService(ExportService.class);
 
 	/**
 	 * Constructor
@@ -340,6 +350,10 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 
 	public FormOptions getFormOptions() {
 		return formOptions;
+	}
+
+	public ExportService getExportService() {
+		return exportService;
 	}
 
 }

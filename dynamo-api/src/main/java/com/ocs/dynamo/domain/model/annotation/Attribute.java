@@ -199,7 +199,7 @@ public @interface Attribute {
     /** @return the selection component to use in edit mode */
     AttributeSelectMode selectMode() default AttributeSelectMode.INHERIT;
 
-    /** @return whether the field shows up in a table */
+    /** @return whether the field shows up in a grid */
     VisibilityType showInTable() default VisibilityType.INHERIT;
 
     /** @return whether a table can be sorted on this field */
