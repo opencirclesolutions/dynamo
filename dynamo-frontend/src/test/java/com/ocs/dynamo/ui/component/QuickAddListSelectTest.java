@@ -98,7 +98,7 @@ public class QuickAddListSelectTest extends BaseMockitoTest {
 		
 		Assert.assertNotNull(select.getDirectNavigationButton());
 		select.getDirectNavigationButton().click();
-		Mockito.verify(ui).navigateToEntityScreenDirectly(Mockito.any());
+		Mockito.verify(ui).navigateToEntityScreen(Mockito.any());
 	}
 
 	@Test

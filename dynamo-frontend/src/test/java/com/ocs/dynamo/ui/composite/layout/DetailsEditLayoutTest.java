@@ -68,6 +68,7 @@ public class DetailsEditLayoutTest extends BaseMockitoTest {
 
 		//
 		layout.setDeleteEnabled(0, false);
+		@SuppressWarnings("rawtypes")
 		FormContainer container = layout.getFormContainer(0);
 		Assert.assertFalse(container.getDeleteButton().isEnabled());
 

@@ -23,8 +23,10 @@ import javax.persistence.Table;
 
 import com.ocs.dynamo.domain.model.AttributeSelectMode;
 import com.ocs.dynamo.domain.model.CheckboxMode;
+import com.ocs.dynamo.domain.model.EditableType;
 import com.ocs.dynamo.domain.model.annotation.Attribute;
 import com.ocs.dynamo.domain.model.annotation.Model;
+import com.ocs.dynamo.domain.model.validator.Email;
 
 @Entity
 @Table(name = "test_entity2")
@@ -66,6 +68,13 @@ public class TestEntity2 extends AbstractEntity<Integer> {
 
 	@Attribute(currency = true)
 	private BigDecimal currency;
+
+	@Attribute
+	@Email
+	private String email;
+
+	@Attribute(editable = EditableType.READ_ONLY)
+	private String readOnly;
 
 	@Override
 	public Integer getId() {
@@ -155,6 +164,22 @@ public class TestEntity2 extends AbstractEntity<Integer> {
 
 	public void setCurrency(BigDecimal currency) {
 		this.currency = currency;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public String getReadOnly() {
+		return readOnly;
+	}
+
+	public void setReadOnly(String readOnly) {
+		this.readOnly = readOnly;
 	}
 
 }

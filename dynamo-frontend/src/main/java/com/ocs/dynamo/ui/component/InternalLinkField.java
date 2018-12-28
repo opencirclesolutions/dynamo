@@ -73,7 +73,7 @@ public class InternalLinkField<ID extends Serializable, T extends AbstractEntity
 		linkButton.setStyleName(ValoTheme.BUTTON_LINK);
 		linkButton.addClickListener(event -> {
 			BaseUI ui = (BaseUI) UI.getCurrent();
-			ui.navigateToEntityScreenDirectly(getValue());
+			ui.navigateToEntityScreen(getValue());
 		});
 
 		return linkButton;

@@ -59,20 +59,31 @@ public abstract class BaseUI extends UI {
 
 	private MenuBar menuBar;
 
-	public Integer getSelectedTab() {
-		return selectedTab;
+	/**
+	 * Adds a mapping for carrying out navigation within the application
+	 * 
+	 * @param entityClass the type of the entity
+	 * @param navigateAction the action to carry out
+	 */
+	public void addEntityOnViewMapping(Class<?> entityClass, Consumer<?> navigateAction) {
+		entityOnViewMapping.put(entityClass, navigateAction);
 	}
 
-	public void setSelectedTab(Integer selectedTab) {
-		this.selectedTab = selectedTab;
+	public MenuBar getMenuBar() {
+		return menuBar;
+	}
+
+	@Override
+	public CustomNavigator getNavigator() {
+		return navigator;
 	}
 
 	public String getScreenMode() {
 		return screenMode;
 	}
 
-	public void setScreenMode(String screenMode) {
-		this.screenMode = screenMode;
+	public Integer getSelectedTab() {
+		return selectedTab;
 	}
 
 	/**
@@ -90,28 +101,20 @@ public abstract class BaseUI extends UI {
 		navigator = new CustomNavigator(this, new Navigator.SingleComponentContainerViewDisplay(container));
 		navigator.setAlwaysReload(alwaysReload);
 
-		UI.getCurrent().setNavigator(navigator);
+		this.setNavigator(navigator);
 		navigator.addProvider(viewProvider);
 		navigator.navigateTo(startView);
 	}
 
-	@Override
-	public CustomNavigator getNavigator() {
-		return navigator;
-	}
-
-	public void setNavigator(CustomNavigator navigator) {
-		this.navigator = navigator;
-	}
-
 	/**
-	 * Adds a mapping for carrying out navigation within the application
-	 * 
-	 * @param entityClass the type of the entity
-	 * @param navigateAction the action to carry out
+	 * Navigates to view
+	 * @param viewName the name of the view to navigate to
 	 */
-	public void addEntityOnViewMapping(Class<?> entityClass, Consumer<?> navigateAction) {
-		entityOnViewMapping.put(entityClass, navigateAction);
+	public void navigate(String viewName) {
+		navigator.navigateTo(viewName);
+		if (menuBar != null) {
+			menuService.setLastVisited(menuBar, viewName);
+		}
 	}
 
 	/**
@@ -123,7 +126,7 @@ public abstract class BaseUI extends UI {
 	 *            The selected object to be displayed on the target screen.
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public void navigateToEntityScreenDirectly(Object o) {
+	public void navigateToEntityScreen(Object o) {
 		if (o != null) {
 			Consumer navigateToView = entityOnViewMapping.getOrDefault(o.getClass(), err -> Notification
 					.show("No view mapping registered for class: " + o.getClass(), Notification.Type.ERROR_MESSAGE));
@@ -139,23 +142,20 @@ public abstract class BaseUI extends UI {
 		}
 	}
 
-	/**
-	 * Navigates to view
-	 * @param viewName the name of the view to navigate to
-	 */
-	public void navigate(String viewName) {
-		navigator.navigateTo(viewName);
-		if (menuBar != null) {
-			menuService.setLastVisited(menuBar, viewName);
-		}
-	}
-
-	public MenuBar getMenuBar() {
-		return menuBar;
-	}
-
 	public void setMenuBar(MenuBar menuBar) {
 		this.menuBar = menuBar;
+	}
+
+	public void setNavigator(CustomNavigator navigator) {
+		this.navigator = navigator;
+	}
+
+	public void setScreenMode(String screenMode) {
+		this.screenMode = screenMode;
+	}
+
+	public void setSelectedTab(Integer selectedTab) {
+		this.selectedTab = selectedTab;
 	}
 
 }

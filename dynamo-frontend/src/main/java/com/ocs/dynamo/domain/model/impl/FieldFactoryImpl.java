@@ -168,13 +168,19 @@ public class FieldFactoryImpl implements FieldFactory {
 	}
 
 	/**
-	 * Constructs a field - this is the main method that must be called to construct
-	 * a field
+	 * Constructs a field
 	 * 
-	 * @param am               the attribute model
-	 * @param fieldEntityModel the entity model used for the field
-	 * @param fieldFilters     the set of field filters
+	 * @param am the attribute model to base the field on
 	 * @return
+	 */
+	public AbstractComponent constructField(AttributeModel am) {
+		return constructField(FieldFactoryContext.createDefault(am));
+	}
+
+	/**
+	 * Constructs a field - this is the main method
+	 * 
+	 * @param context the context that governs how the field must be created
 	 */
 	public AbstractComponent constructField(FieldFactoryContext context) {
 		AbstractComponent field = null;
@@ -184,7 +190,7 @@ public class FieldFactoryImpl implements FieldFactory {
 		EntityModel<?> fieldEntityModel = context.getFieldEntityModel();
 		boolean search = context.isSearch();
 
-		// in certain cases, never render a field
+		// for read-only attributes, do not render a field unless it's a link field
 		if (EditableType.READ_ONLY.equals(am.getEditableType())
 				&& (!am.isUrl() && !am.isNavigable() && !AttributeType.DETAIL.equals(am.getAttributeType()))
 				&& !context.isSearch()) {

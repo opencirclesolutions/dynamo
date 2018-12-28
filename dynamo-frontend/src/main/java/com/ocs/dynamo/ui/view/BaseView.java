@@ -46,6 +46,20 @@ public abstract class BaseView extends CustomComponent implements View {
 	@Autowired
 	private MessageService messageService;
 
+	/**
+	 * Clears the current screen mode
+	 */
+	protected void clearScreenMode() {
+		if (ui instanceof BaseUI) {
+			BaseUI b = (BaseUI) ui;
+			b.setScreenMode(null);
+		}
+	}
+
+	public MessageService getMessageService() {
+		return messageService;
+	}
+
 	public EntityModelFactory getModelFactory() {
 		return modelFactory;
 	}
@@ -62,23 +76,14 @@ public abstract class BaseView extends CustomComponent implements View {
 	}
 
 	/**
-	 * Clears the current screen mode
-	 */
-	protected void clearScreenMode() {
-		if (ui instanceof BaseUI) {
-			BaseUI b = (BaseUI) ui;
-			b.setScreenMode(null);
-		}
-	}
-
-	/**
-	 * Navigates to the selected view
+	 * Sets up the outermost layout
 	 * 
-	 * @param viewId
-	 *            the ID of the desired view
+	 * @return
 	 */
-	protected void navigate(String viewId) {
-		ui.getNavigator().navigateTo(viewId);
+	protected Layout initLayout() {
+		VerticalLayout container = new DefaultVerticalLayout(true, true);
+		setCompositionRoot(container);
+		return container;
 	}
 
 	/**
@@ -106,18 +111,13 @@ public abstract class BaseView extends CustomComponent implements View {
 	}
 
 	/**
-	 * Sets up the outermost layout
+	 * Navigates to the selected view
 	 * 
-	 * @return
+	 * @param viewId
+	 *            the ID of the desired view
 	 */
-	protected Layout initLayout() {
-		VerticalLayout container = new DefaultVerticalLayout(true, true);
-		setCompositionRoot(container);
-		return container;
-	}
-
-	public MessageService getMessageService() {
-		return messageService;
+	protected void navigate(String viewId) {
+		ui.getNavigator().navigateTo(viewId);
 	}
 
 }

@@ -21,7 +21,10 @@ import org.apache.commons.io.input.CharSequenceReader;
 
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.exception.OCSImportException;
+import com.ocs.dynamo.util.SystemPropertyUtils;
+import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
+import com.opencsv.CSVReaderBuilder;
 
 /**
  * Base class for importing CSV files
@@ -35,24 +38,23 @@ public class BaseCsvImporter extends BaseTextImporter {
 	 */
 	@Override
 	public int countRows(byte[] bytes, int sheetIndex) {
-		List<String[]> lines = readCsvFile(bytes, ";", "'");
+		List<String[]> lines = readCsvFile(bytes, SystemPropertyUtils.getCsvSeparator(),
+				SystemPropertyUtils.getCsvQuoteChar());
 		return lines.size();
 	}
 
 	/**
 	 * Reads a CSV file into a List of String arrays
 	 * 
-	 * @param bytes
-	 *            the raw content of the CSV file
-	 * @param separator
-	 *            the record separator
-	 * @param quote
-	 *            the quote char
+	 * @param bytes     the raw content of the CSV file
+	 * @param separator the record separator
+	 * @param quote     the quote char
 	 * @return
 	 */
 	protected List<String[]> readCsvFile(byte[] bytes, String separator, String quote) {
 		try (CharSequenceReader seq = new CharSequenceReader(new String(bytes, Charset.forName(DynamoConstants.UTF_8)));
-		        CSVReader reader = new CSVReader(seq, separator.charAt(0), quote.charAt(0))) {
+				CSVReader reader = new CSVReaderBuilder(seq).withCSVParser(new CSVParserBuilder()
+						.withSeparator(separator.charAt(0)).withQuoteChar(quote.charAt(0)).build()).build()) {
 			return reader.readAll();
 		} catch (IOException ex) {
 			throw new OCSImportException(ex.getMessage(), ex);

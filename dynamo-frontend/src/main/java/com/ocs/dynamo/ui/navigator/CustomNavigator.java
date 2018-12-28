@@ -30,8 +30,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Override of the Vaadin navigator class, for making sure that a view is reloaded when the user
- * navigates to it and it already is the currently active view
+ * Override of the Vaadin navigator class, for making sure that a view is
+ * reloaded when the user navigates to it and it already is the currently active
+ * view
  * 
  * 
  * @author bas.rutten
@@ -51,7 +52,8 @@ public class CustomNavigator extends Navigator {
 	private ViewProvider errorProvider;
 
 	/**
-	 * Whether to always reload the current view (even when navigating from a view to the same view)
+	 * Whether to always reload the current view (even when navigating from a view
+	 * to the same view)
 	 */
 	private boolean alwaysReload = true;
 
@@ -102,14 +104,13 @@ public class CustomNavigator extends Navigator {
 	/**
 	 * Navigate to a certain view
 	 * 
-	 * @param navigationState
-	 *            the name of the view
+	 * @param navigationState the name of the view
 	 */
 	@Override
 	public void navigateTo(String navigationState) {
 		ViewProvider longestViewNameProvider = getViewProvider(navigationState);
-		String longestViewName = longestViewNameProvider == null ? null : longestViewNameProvider
-		        .getViewName(navigationState);
+		String longestViewName = longestViewNameProvider == null ? null
+				: longestViewNameProvider.getViewName(navigationState);
 		View viewWithLongestName = null;
 
 		if (longestViewName != null) {
@@ -123,7 +124,7 @@ public class CustomNavigator extends Navigator {
 
 		if (viewWithLongestName == null) {
 			throw new IllegalArgumentException("Trying to navigate to an unknown state '" + navigationState
-			        + "' and an error view provider not present");
+					+ "' and an error view provider not present");
 		}
 
 		String parameters = "";
@@ -134,11 +135,11 @@ public class CustomNavigator extends Navigator {
 		}
 
 		if (isAlwaysReload() || getCurrentView() == null || !SharedUtil.equals(getCurrentView(), viewWithLongestName)
-		        || !SharedUtil.equals(currentNavigationState, navigationState)) {
+				|| !SharedUtil.equals(currentNavigationState, navigationState)) {
 			navigateTo(viewWithLongestName, longestViewName, parameters);
 		} else {
-			updateNavigationState(new ViewChangeEvent(this, getCurrentView(), viewWithLongestName, longestViewName,
-			        parameters));
+			updateNavigationState(
+					new ViewChangeEvent(this, getCurrentView(), viewWithLongestName, longestViewName, parameters));
 		}
 	}
 
@@ -150,11 +151,10 @@ public class CustomNavigator extends Navigator {
 	/**
 	 * Removes a view from navigator.
 	 * <p>
-	 * This method only applies to views registered using {@link #addView(String, View)} or
-	 * {@link #addView(String, Class)}.
+	 * This method only applies to views registered using
+	 * {@link #addView(String, View)} or {@link #addView(String, Class)}.
 	 *
-	 * @param viewName
-	 *            name of the view to remove
+	 * @param viewName name of the view to remove
 	 */
 	@Override
 	public void removeView(String viewName) {

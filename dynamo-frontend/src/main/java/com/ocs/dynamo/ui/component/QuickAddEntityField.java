@@ -125,7 +125,7 @@ public abstract class QuickAddEntityField<ID extends Serializable, T extends Abs
 	protected Button constructDirectNavigationButton() {
 		directNavigationButton = new Button(
 				getMessageService().getMessage("ocs.direct.navigate", VaadinUtils.getLocale()));
-		directNavigationButton.addClickListener(event -> ((BaseUI) ui).navigateToEntityScreenDirectly(getValue()));
+		directNavigationButton.addClickListener(event -> ((BaseUI) ui).navigateToEntityScreen(getValue()));
 		return directNavigationButton;
 	}
 

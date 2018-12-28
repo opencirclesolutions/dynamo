@@ -163,7 +163,7 @@ public class FieldFactoryImplTest extends BaseIntegrationTest {
 	}
 
 	/**
-	 * element collection field in search mode
+	 * element collection field in search mode (fails due to h2 problem?)
 	 */
 	@Test
 	@org.junit.Ignore
@@ -270,6 +270,24 @@ public class FieldFactoryImplTest extends BaseIntegrationTest {
 		Assert.assertTrue(ldp.getItems().contains(TestEnum.A));
 		Assert.assertTrue(ldp.getItems().contains(TestEnum.B));
 		Assert.assertTrue(ldp.getItems().contains(TestEnum.C));
+	}
+
+	/**
+	 * E-mail field
+	 */
+	@Test
+	public void testEmail() {
+		AbstractComponent ac = constructField2("email", false, false);
+		Assert.assertTrue(ac instanceof TextField);
+	}
+
+	/**
+	 * Test that no field is generated in read-only mode
+	 */
+	@Test
+	public void testReadOnlyNoField() {
+		AbstractComponent ac = constructField2("readOnly", false, false);
+		Assert.assertNull(ac);
 	}
 
 	/**

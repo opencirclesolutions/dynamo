@@ -34,12 +34,38 @@ public final class SystemPropertyUtils {
 	private static final String DEFAULT_FALSE_REPRESENTATION = "false";
 
 	/**
-	 * Returns whether export of grid contents to Excel/CSV is allowed. This system property
-	 * can be used to either enable or disable this on the application level. YOu 
+	 * Returns whether export of grid contents to Excel/CSV is allowed. This system
+	 * property can be used to either enable or disable this on the application
+	 * level. YOu
+	 * 
 	 * @return
 	 */
 	public static boolean allowListExport() {
 		return Boolean.getBoolean(DynamoConstants.SP_ALLOW_LIST_EXPORT);
+	}
+
+	/**
+	 *
+	 * @return the CSV escape character
+	 */
+	public static String getCsvEscapeChar() {
+		return System.getProperty(DynamoConstants.SP_EXPORT_CSV_ESCAPE, "\"");
+	}
+
+	/**
+	 *
+	 * @return the CSV quote character
+	 */
+	public static String getCsvQuoteChar() {
+		return System.getProperty(DynamoConstants.SP_EXPORT_CSV_QUOTE, "\"");
+	}
+
+	/**
+	 * 
+	 * @return the CSV separator character
+	 */
+	public static String getCsvSeparator() {
+		return System.getProperty(DynamoConstants.SP_EXPORT_CSV_SEPARATOR, ";");
 	}
 
 	/**
@@ -169,61 +195,11 @@ public final class SystemPropertyUtils {
 	}
 
 	/**
-	 *
-	 * @return the CSV quote character
-	 */
-	public static String getExportCsvQuoteChar() {
-		return System.getProperty(DynamoConstants.SP_EXPORT_CSV_QUOTE, "\"");
-	}
-	
-	/**
-	 *
-	 * @return the CSV export character
-	 */
-	public static String getExportCsvEscapeChar() {
-		return System.getProperty(DynamoConstants.SP_EXPORT_CSV_ESCAPE, "\"");
-	}
-
-	/**
-	 * 
-	 * @return the CSV separator character
-	 */
-	public static String getExportCsvSeparator() {
-		return System.getProperty(DynamoConstants.SP_EXPORT_CSV_SEPARATOR, ";");
-	}
-
-	/**
 	 * @return the maximum number of selected items to display in a lookup field
 	 *         description
 	 */
 	public static int getLookupFieldMaxItems() {
 		return Integer.getInteger(DynamoConstants.SP_LOOKUP_FIELD_MAX_ITEMS, DEFAULT_LOOKUP_FIELD_MAX_ITEMS);
-	}
-
-	/**
-	 * 
-	 * @return number of rows in a non-streaming export
-	 */
-	public static int getMaximumExportRowsNonStreaming() {
-		return Integer.getInteger(DynamoConstants.SP_MAX_ROWS_NON_STREAMING, 15000);
-	}
-
-	/**
-	 * 
-	 * 
-	 * @return maximum number of rows in a streaming export
-	 */
-	public static int getMaximumExportRowsStreaming() {
-		return Integer.getInteger(DynamoConstants.SP_MAX_ROWS_STREAMING, 100_000);
-	}
-
-	/**
-	 * 
-	 * 
-	 * @return maximum number of rows to include in a streaming pivoted export
-	 */
-	public static int getMaximumExportRowsStreamingPivot() {
-		return Integer.getInteger(DynamoConstants.SP_MAX_ROWS_STREAMING_PIVOTED, 30000);
 	}
 
 	/**

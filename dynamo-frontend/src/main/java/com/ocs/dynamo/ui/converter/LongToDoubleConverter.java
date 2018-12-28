@@ -17,6 +17,13 @@ import com.vaadin.data.Converter;
 import com.vaadin.data.Result;
 import com.vaadin.data.ValueContext;
 
+/**
+ * Converter for converting between Long and Double. primarily used for Slider
+ * component
+ * 
+ * @author Bas Rutten
+ *
+ */
 public class LongToDoubleConverter implements Converter<Double, Long> {
 
 	private static final long serialVersionUID = 8666806617896024450L;

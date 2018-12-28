@@ -25,8 +25,23 @@ import com.vaadin.server.SerializablePredicate;
  */
 public class FieldFactoryContext {
 
+	/**
+	 * Creates a blank context
+	 * 
+	 * @return
+	 */
 	public static FieldFactoryContext create() {
 		return new FieldFactoryContext();
+	}
+
+	/**
+	 * Creates a default context based on only the attribute model
+	 * 
+	 * @param am the attribute model
+	 * @return
+	 */
+	public static FieldFactoryContext createDefault(AttributeModel am) {
+		return new FieldFactoryContext().setAttributeModel(am);
 	}
 
 	private AttributeModel attributeModel;
