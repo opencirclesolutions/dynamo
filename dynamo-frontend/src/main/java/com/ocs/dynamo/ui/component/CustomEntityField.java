@@ -30,13 +30,10 @@ import com.vaadin.ui.CustomField;
  * 
  * @author bas.rutten
  *
- * @param <ID>
- *            the type of the primary key of the entity
- * @param <T>
- *            the type of the entity
- * @param <U>
- *            the type of the value of the component (can typically be an entity
- *            or a collection of entities)
+ * @param <ID> the type of the primary key of the entity
+ * @param <T> the type of the entity
+ * @param <U> the type of the value of the component (can typically be an entity
+ *        or a collection of entities)
  */
 public abstract class CustomEntityField<ID extends Serializable, T extends AbstractEntity<ID>, U> extends CustomField<U>
 		implements Cascadable<T> {
@@ -74,7 +71,7 @@ public abstract class CustomEntityField<ID extends Serializable, T extends Abstr
 	 * @param service
 	 * @param entityModel
 	 * @param attributeModel
-	 * @param filter 
+	 * @param filter
 	 */
 	public CustomEntityField(BaseService<ID, T> service, EntityModel<T> entityModel, AttributeModel attributeModel,
 			SerializablePredicate<T> filter) {
@@ -108,8 +105,7 @@ public abstract class CustomEntityField<ID extends Serializable, T extends Abstr
 	/**
 	 * Sets the search filter to the provided filter then updates the lookup list
 	 * 
-	 * @param filter
-	 *            the new filter
+	 * @param filter the new filter
 	 */
 	public abstract void refresh(SerializablePredicate<T> filter);
 
@@ -119,6 +115,15 @@ public abstract class CustomEntityField<ID extends Serializable, T extends Abstr
 	 */
 	public void setFilter(SerializablePredicate<T> filter) {
 		this.filter = filter;
+	}
+
+	/**
+	 * Sets the placeholder/prompt text
+	 * 
+	 * @param placeholder
+	 */
+	public void setPlaceholder(String placeholder) {
+		// do nothing
 	}
 
 }

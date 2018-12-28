@@ -32,8 +32,9 @@ import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.service.ServiceLocator;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
-import com.ocs.dynamo.ui.component.EntityComboBox.SelectMode;
+import com.ocs.dynamo.ui.component.CustomEntityField;
 import com.ocs.dynamo.ui.component.ElementCollectionGrid;
+import com.ocs.dynamo.ui.component.EntityComboBox.SelectMode;
 import com.ocs.dynamo.ui.component.EntityLookupField;
 import com.ocs.dynamo.ui.component.FancyListSelect;
 import com.ocs.dynamo.ui.component.InternalLinkField;
@@ -413,21 +414,27 @@ public class FieldFactoryImpl implements FieldFactory {
 
 		if (field instanceof AbstractTextField) {
 			final AbstractTextField textField = (AbstractTextField) field;
-			textField.setDescription(am.getDescription());
+			textField.setPlaceholder(am.getPrompt());
 		} else if (field instanceof DateField) {
 			// set a separate format for a date field
 			DateField dateField = (DateField) field;
 			if (am.getDisplayFormat() != null) {
 				dateField.setDateFormat(am.getDisplayFormat());
 			}
+			dateField.setPlaceholder(am.getPrompt());
 		}
 
 		if (field instanceof AbstractField) {
 			AbstractField<?> af = (AbstractField<?>) field;
 			af.setRequiredIndicatorVisible(search ? am.isRequiredForSearching() : am.isRequired());
+			af.setDescription(am.getDescription());
 		} else if (field instanceof CustomField) {
 			CustomField<?> cf = (CustomField<?>) field;
 			cf.setRequiredIndicatorVisible(search ? am.isRequiredForSearching() : am.isRequired());
+			cf.setDescription(am.getDescription());
+			if (field instanceof CustomEntityField) {
+				((CustomEntityField<?,?,?>) field).setPlaceholder(am.getPrompt());
+			}
 		}
 
 		// add percentage sign

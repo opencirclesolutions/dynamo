@@ -402,4 +402,9 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 		}
 	}
 
+	@Override
+	public void setPlaceholder(String placeholder) {
+		// do nothing
+	}
+
 }

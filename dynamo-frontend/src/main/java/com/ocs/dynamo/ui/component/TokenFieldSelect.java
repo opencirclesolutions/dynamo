@@ -309,7 +309,7 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
 			extTokenField.setInputField(comboBox);
 		}
 	}
-	
+
 	/**
 	 * Adapt the width of the combo box based on the number of items currently
 	 * selected
@@ -353,5 +353,12 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
 			provider.getItems().addAll(values);
 		}
 		addTokens();
+	}
+
+	@Override
+	public void setPlaceholder(String placeholder) {
+		if (comboBox != null) {
+			comboBox.setPlaceholder(placeholder);
+		}
 	}
 }

@@ -38,29 +38,39 @@ public @interface Attribute {
 
 	/**
 	 * 
-	 * @return The allowed extensions for a file upload component
+	 * @return the allowed extensions for a file upload component
 	 */
 	String[] allowedExtensions() default {};
 
 	/**
 	 * 
-	 * @return The attributes to cascade to when the value of this attribute changes
+	 * @return the attributes to cascade to when the value of this attribute changes
 	 */
 	Cascade[] cascade() default {};
 
 	/**
 	 *
-	 * @return the desired check box mode
+	 * @return the desired check box mode. Defaults to a checkbox but can be changed
+	 *         to a switch
 	 */
 	CheckboxMode checkboxMode() default CheckboxMode.CHECKBOX;
 
-	/** @return whether a complex attribute is directly editable */
+	/**
+	 * 
+	 * @return whether the attribute will show up inside an edit form
+	 */
 	boolean complexEditable() default false;
 
-	/** @return is this a currency field? */
+	/**
+	 * 
+	 * @return whether a currency symbol will be prepended to the value
+	 */
 	boolean currency() default false;
 
-	/** @return the date type (date, time, or timestamp) */
+	/**
+	 * 
+	 * @return the date/time type of the attribute
+	 */
 	AttributeDateType dateType() default AttributeDateType.INHERIT;
 
 	/**
@@ -69,7 +79,10 @@ public @interface Attribute {
 	 */
 	String defaultValue() default "";
 
-	/** @return the description (appears as a tooltip) */
+	/**
+	 * 
+	 * @return the description of the attribute. This will show up as a tool tip
+	 */
 	String description() default "";
 
 	/** @return the display format (useful in case of dates) */

@@ -190,4 +190,11 @@ public class QuickAddEntityComboBox<ID extends Serializable, T extends AbstractE
 		}
 	}
 
+	@Override
+	public void setPlaceholder(String placeholder) {
+		if (comboBox != null) {
+			comboBox.setPlaceholder(placeholder);
+		}
+	}
+
 }

@@ -297,4 +297,5 @@ public class FancyListSelect<ID extends Serializable, T extends AbstractEntity<I
 			listSelect.setRows(rows);
 		}
 	}
+
 }
