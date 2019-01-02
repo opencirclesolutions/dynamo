@@ -110,22 +110,10 @@ public final class EntityModelUtils {
 			return null;
 		}
 		String property = model.getDisplayProperty();
-		return ClassUtils.getFieldValueAsString(entity, property);
-	}
-
-	/**
-	 * Returns the value of the main attribute of an entity
-	 * 
-	 * @param entity the entity
-	 * @param model  the entity model
-	 * @return
-	 */
-	public static <T> String getMainAttributeValue(T entity, EntityModel<T> model) {
-		AttributeModel main = model.getMainAttributeModel();
-		if (main != null) {
-			return ClassUtils.getFieldValueAsString(entity, main.getName());
+		if (property == null) {
+			return entity.toString();
 		}
-		return null;
+		return ClassUtils.getFieldValueAsString(entity, property);
 	}
 
 	private EntityModelUtils() {

@@ -396,10 +396,6 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 		getService().delete(getSelectedItem());
 	}
 
-	public void doSave() {
-		// this.editForm.doSave();
-	}
-
 	/**
 	 * Clears the detail view
 	 */

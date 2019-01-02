@@ -34,6 +34,7 @@ import com.ocs.dynamo.ui.UseInViewMode;
 import com.ocs.dynamo.ui.composite.dialog.ModelBasedSearchDialog;
 import com.ocs.dynamo.ui.composite.grid.ModelBasedGrid;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
+import com.ocs.dynamo.ui.composite.type.GridEditMode;
 import com.ocs.dynamo.ui.utils.ConvertUtils;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.util.SystemPropertyUtils;
@@ -417,7 +418,7 @@ public abstract class DetailsEditGrid<ID extends Serializable, T extends Abstrac
 	 */
 	@Override
 	protected Component initContent() {
-		grid = new ModelBasedGrid<ID, T>(provider, entityModel, isGridEditEnabled(), true) {
+		grid = new ModelBasedGrid<ID, T>(provider, entityModel, isGridEditEnabled(), GridEditMode.SIMULTANEOUS) {
 
 			private static final long serialVersionUID = 6143503902550597524L;
 

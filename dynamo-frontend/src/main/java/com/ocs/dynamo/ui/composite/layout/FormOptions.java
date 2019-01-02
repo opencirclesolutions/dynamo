@@ -17,6 +17,7 @@ import java.io.Serializable;
 
 import com.ocs.dynamo.ui.composite.type.AttributeGroupMode;
 import com.ocs.dynamo.ui.composite.type.ExportMode;
+import com.ocs.dynamo.ui.composite.type.GridEditMode;
 import com.ocs.dynamo.ui.composite.type.ScreenMode;
 import com.ocs.dynamo.util.SystemPropertyUtils;
 
@@ -85,6 +86,11 @@ public class FormOptions implements Serializable {
 	 * no need to set this yourself
 	 */
 	private boolean formNested;
+
+	/**
+	 * 
+	 */
+	private GridEditMode gridEditMode = GridEditMode.ROW_BY_ROW;
 
 	/**
 	 * Whether to hide the add button
@@ -217,6 +223,10 @@ public class FormOptions implements Serializable {
 
 	public ExportMode getExportMode() {
 		return exportMode;
+	}
+
+	public GridEditMode getGridEditMode() {
+		return gridEditMode;
 	}
 
 	public ScreenMode getScreenMode() {
@@ -366,6 +376,11 @@ public class FormOptions implements Serializable {
 
 	public FormOptions setFormNested(boolean formNested) {
 		this.formNested = formNested;
+		return this;
+	}
+
+	public FormOptions setGridEditMode(GridEditMode gridEditMode) {
+		this.gridEditMode = gridEditMode;
 		return this;
 	}
 

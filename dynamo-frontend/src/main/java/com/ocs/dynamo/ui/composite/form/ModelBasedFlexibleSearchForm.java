@@ -43,6 +43,7 @@ import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.utils.DateUtils;
 import com.vaadin.data.HasValue;
 import com.vaadin.data.Result;
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.SerializablePredicate;
 import com.vaadin.server.UserError;
 import com.vaadin.ui.AbstractComponent;
@@ -168,6 +169,7 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 			layout = new DefaultHorizontalLayout();
 
 			removeButton = new Button(message("ocs.remove"));
+			removeButton.setIcon(VaadinIcons.TRASH);
 			removeButton.addClickListener(e -> {
 				Layout parent = (Layout) layout.getParent();
 				parent.removeComponent(layout);
@@ -667,6 +669,7 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 
 		// construct button for adding a new filter
 		addFilterButton = new Button(message("ocs.add.filter"));
+		addFilterButton.setIcon(VaadinIcons.PLUS);
 		addFilterButton.addClickListener(evenbt -> addFilter());
 
 		buttonBar.addComponent(addFilterButton);
@@ -679,7 +682,7 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 
 	@Override
 	protected Layout constructFilterLayout() {
-		// just an enmpty layout - filterw sill be added to it on the fly
+		// just an empty layout - filters will be added on the fly
 		return new DefaultVerticalLayout();
 	}
 

@@ -15,53 +15,73 @@ package com.ocs.dynamo.ui.composite.layout;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
+import com.google.common.collect.Lists;
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.exception.OCSValidationException;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
+import com.ocs.dynamo.ui.composite.dialog.EntityPopupDialog;
 import com.ocs.dynamo.ui.composite.grid.BaseGridWrapper;
 import com.ocs.dynamo.ui.composite.grid.ServiceBasedGridWrapper;
+import com.ocs.dynamo.ui.composite.type.GridEditMode;
 import com.ocs.dynamo.ui.provider.QueryType;
 import com.ocs.dynamo.ui.utils.FormatUtils;
+import com.vaadin.data.BeanValidationBinder;
+import com.vaadin.data.Binder;
+import com.vaadin.data.Binder.BindingBuilder;
+import com.vaadin.data.HasValue;
 import com.vaadin.data.ValueProvider;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.SortOrder;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.Resource;
 import com.vaadin.server.SerializablePredicate;
+import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.Grid.Column;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 
 /**
- * A page for editing items directly in a table - this is built around the lazy
- * query container
+ * A layout for editing entities directly inside a grid. This layout supports
+ * both a "row by row" and an "all rows at once" setting which can be specified
+ * on the FormOptions
+ * 
+ * @author Bas Rutten
  *
- * @author bas.rutten
- * @param <ID> type of the primary key
- * @param <T> type of the entity
+ * @param <ID> the type of the primary key of the entity
+ * @param <T> the type of the entity
  */
 @SuppressWarnings("serial")
-public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity<ID>>
+public class EditableGridLayout<ID extends Serializable, T extends AbstractEntity<ID>>
 		extends BaseCollectionLayout<ID, T> {
+
+	private static final long serialVersionUID = 4606800218149558500L;
 
 	/**
 	 * The default page length
 	 */
 	private static final int PAGE_LENGTH = 15;
 
-	private static final long serialVersionUID = 4606800218149558500L;
-
 	/**
 	 * The add button
 	 */
 	private Button addButton;
+
+	/**
+	 * Button for saving changes (in "edit all at once" mode)
+	 */
+	private Button saveButton;
 
 	/**
 	 * The filter that is applied to limit the search results
@@ -94,15 +114,20 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 	private boolean viewmode;
 
 	/**
+	 * Map with a binder for every row
+	 */
+	private Map<T, Binder<T>> binders = new HashMap<>();
+
+	/**
 	 * Constructor
 	 *
 	 * @param service     the service used to query the database
-	 * @param entityModel the entity model the entity model used to build the table
+	 * @param entityModel the entity model the entity model used to build the grid
 	 * @param formOptions the form options
 	 * @param sortOrder   the first sort order
 	 * @param joins       the desired joins
 	 */
-	public TabularEditLayout(BaseService<ID, T> service, EntityModel<T> entityModel, FormOptions formOptions,
+	public EditableGridLayout(BaseService<ID, T> service, EntityModel<T> entityModel, FormOptions formOptions,
 			SortOrder<?> sortOrder, FetchJoinInformation... joins) {
 		super(service, entityModel, formOptions, sortOrder, joins);
 	}
@@ -120,21 +145,20 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 	public void build() {
 		this.filter = constructFilter();
 		if (mainLayout == null) {
-			setViewmode(false);
-			// setViewmode(!isEditAllowed() || getFormOptions().isOpenInViewMode());
+			setViewmode(!isEditAllowed() || getFormOptions().isOpenInViewMode());
 			mainLayout = new DefaultVerticalLayout(true, true);
 
-			constructTable();
+			constructGrid();
 
 			// remove button at the end of the row
-			if (getFormOptions().isShowRemoveButton()) {
-
-				final String defaultMsg = message("ocs.remove");
+			if (getFormOptions().isShowRemoveButton() && isEditAllowed()) {
+				String defaultMsg = message("ocs.remove");
 				Column<T, Component> removeColumn = getGridWrapper().getGrid()
 						.addComponentColumn((ValueProvider<T, Component>) t -> isViewmode() ? null
 								: new RemoveButton(removeMessage, removeIcon) {
 									@Override
 									protected void doDelete() {
+										binders.remove(t);
 										doRemove(t);
 									}
 
@@ -152,15 +176,44 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 			addButton = new Button(message("ocs.add"));
 			addButton.setIcon(VaadinIcons.PLUS);
 			addButton.addClickListener(event -> {
-				// delegate the construction of a new item to the lazy
-				// query container
-//				ID id = (ID) getDataProvider().
-//						.addItem();
-//				createEntity(getEntityFromTable(id));
-//				getTableWrapper().getTable().setCurrentPageFirstItemId(id);
+				// create new entry by means of popup dialog
+				EntityPopupDialog<ID, T> dialog = new EntityPopupDialog<ID, T>(getService(), null, getEntityModel(),
+						new FormOptions()) {
+
+					@Override
+					public void afterEditDone(boolean cancel, boolean newEntity, T entity) {
+						// reload so that the newly created entity shows up
+						reload();
+					}
+
+					@Override
+					protected T createEntity() {
+						return EditableGridLayout.this.createEntity();
+					};
+
+				};
+				dialog.build();
+				UI.getCurrent().addWindow(dialog);
 			});
 			getButtonBar().addComponent(addButton);
 			addButton.setVisible(!getFormOptions().isHideAddButton() && isEditAllowed() && !isViewmode());
+
+			saveButton = new Button(message("ocs.save"));
+			saveButton.addClickListener(event -> {
+				List<T> toSave = Lists.newArrayList(binders.keySet());
+				List<ID> ids = toSave.stream().map(t -> t.getId()).collect(Collectors.toList());
+
+				// save and reassign to avoid optimistic locks
+				getService().save(toSave);
+				List<T> refreshed = getService().fetchByIds(ids, getJoins());
+				for (T t : refreshed) {
+					binders.get(t).setBean(t);
+				}
+
+			});
+			saveButton.setVisible(isEditAllowed() && !isViewmode()
+					&& GridEditMode.SIMULTANEOUS.equals(getFormOptions().getGridEditMode()));
+			getButtonBar().addComponent(saveButton);
 
 			postProcessButtonBar(getButtonBar());
 			constructGridDividers();
@@ -170,7 +223,7 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 	}
 
 	/**
-	 * Creates the filter used for searching
+	 * Creates the predicate used for filtering the available data
 	 *
 	 * @return
 	 */
@@ -179,45 +232,57 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 	}
 
 	/**
-	 * Initializes the table
+	 * Initializes the grid
 	 */
-	protected void constructTable() {
+	protected void constructGrid() {
 
-		final BaseGridWrapper<ID, T> grid = getGridWrapper();
+		final BaseGridWrapper<ID, T> wrapper = getGridWrapper();
 
-		// make sure the table can be edited
-		grid.getGrid().getEditor().setEnabled(!isViewmode());
-		grid.getGrid().getEditor().addSaveListener(event -> {
+		// make sure the grid can be edited
+		wrapper.getGrid().getEditor().setEnabled(!isViewmode());
+		wrapper.getGrid().getEditor().addSaveListener(event -> {
 			try {
 				T t = getService().save((T) event.getBean());
 				// reassign to avoid optimistic lock
-				grid.getGrid().getEditor().getBinder().setBean(t);
-				grid.getGrid().getDataProvider().refreshAll();
+				wrapper.getGrid().getEditor().getBinder().setBean(t);
+				wrapper.getGrid().getDataProvider().refreshAll();
 			} catch (OCSValidationException ex) {
 				Notification.show(ex.getMessage(), Notification.Type.ERROR_MESSAGE);
 			}
 		});
 		// make sure changes are not persisted right away
-		grid.getGrid().getEditor().setBuffered(true);
-		grid.getGrid().setSelectionMode(Grid.SelectionMode.SINGLE);
-
-		// default sorting
-		// default sorting
-//		if (getSortOrders() != null && !getSortOrders().isEmpty()) {
-//			DataProvider<T, SerializablePredicate<T>> sc = getDataProvider();
-//			sc.sort(getSortOrders().toArray(new SortOrder[0]));
-//		}
-		mainLayout.addComponent(getGridWrapper());
+		wrapper.getGrid().getEditor().setBuffered(true);
+		wrapper.getGrid().setSelectionMode(Grid.SelectionMode.SINGLE);
+		mainLayout.addComponent(wrapper);
 	}
 
 	@Override
 	protected BaseGridWrapper<ID, T> constructGridWrapper() {
 		ServiceBasedGridWrapper<ID, T> tw = new ServiceBasedGridWrapper<ID, T>(getService(), getEntityModel(),
-				QueryType.PAGING, getFormOptions(), filter, getSortOrders(), true, getJoins()) {
+				QueryType.ID_BASED, getFormOptions(), filter, getSortOrders(), true, getJoins()) {
 
 			@Override
 			protected void doConstructDataProvider(final DataProvider<T, SerializablePredicate<T>> provider) {
-				TabularEditLayout.this.doConstructDataProvider(provider);
+				EditableGridLayout.this.doConstructDataProvider(provider);
+			}
+
+			@Override
+			protected void onSelect(Object selected) {
+				setSelectedItems(selected);
+				checkButtonState(getSelectedItem());
+			}
+
+			/**
+			 * Create binder for each row when in "edit all at once" mode
+			 */
+			@Override
+			protected BindingBuilder<T, ?> doBind(T t, AbstractComponent field) {
+				if (!binders.containsKey(t)) {
+					binders.put(t, new BeanValidationBinder<>(getEntityModel().getEntityClass()));
+					binders.get(t).setBean(t);
+				}
+				Binder<T> binder = binders.get(t);
+				return binder.forField((HasValue<?>) field);
 			}
 
 		};
@@ -233,19 +298,8 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 	 */
 	@Override
 	protected T createEntity() {
-		throw new UnsupportedOperationException(
-				"This method is not supported for this component - use the parameterized method instead");
-	}
-
-	/**
-	 * Method that is called after a new row with a fresh entity is added to the
-	 * table. Use this method to perform initialization
-	 *
-	 * @param entity the newly created entity that has to be initialized
-	 * @return the modified entity
-	 */
-	protected T createEntity(T entity) {
-		return entity;
+		// overwrite in subclasses
+		return super.createEntity();
 	}
 
 	@Override
@@ -269,16 +323,6 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 		return getGridWrapper().getDataProvider();
 	}
 
-	/**
-	 * Retrieves an entity with a certain ID from the lazy query container
-	 *
-	 * @param id the ID of the entity
-	 * @return
-	 */
-	protected T getEntityFromTable(ID id) {
-		return null;// VaadinUtils.get(getContainer(), id);
-	}
-
 	@Override
 	public int getPageLength() {
 		return pageLength;
@@ -295,18 +339,6 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 	public boolean isViewmode() {
 		return viewmode;
 	}
-
-//	/**
-//	 * Post processes a field
-//	 *
-//	 * @param propertyId
-//	 *            the property ID
-//	 * @param field
-//	 *            the generated field
-//	 */
-//	protected void postProcessField(Object propertyId, Field<?> field) {
-//		// overwrite in subclass
-//	}
 
 	@Override
 	public void refresh() {
@@ -332,17 +364,17 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 	}
 
 	@SuppressWarnings("unchecked")
-	public void setSelectedItems(Object selectedItems) {
-		if (selectedItems != null) {
-			if (selectedItems instanceof Collection<?>) {
+	public void setSelectedItems(Object selection) {
+		if (selection != null) {
+			if (selection instanceof Collection<?>) {
 				// the lazy query container returns an array of IDs of the
 				// selected items
-				Collection<?> col = (Collection<?>) selectedItems;
-				ID id = (ID) col.iterator().next();
-				setSelectedItem(getEntityFromTable(id));
+				Collection<?> col = (Collection<?>) selection;
+				T t = (T) col.iterator().next();
+				setSelectedItem(t);
 			} else {
-				ID id = (ID) selectedItems;
-				setSelectedItem(getEntityFromTable(id));
+				T t = (T) selection;
+				setSelectedItem(t);
 			}
 		} else {
 			setSelectedItem(null);
@@ -354,7 +386,7 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 	}
 
 	/**
-	 * Sets the view mode of the screen, and adapts the table and all buttons
+	 * Sets the view mode of the screen, and adapts the grid and all buttons
 	 * accordingly
 	 *
 	 * @param viewMode
@@ -362,7 +394,7 @@ public class TabularEditLayout<ID extends Serializable, T extends AbstractEntity
 	protected void toggleViewMode(boolean viewMode) {
 		setViewmode(viewMode);
 		getGridWrapper().getGrid().getEditor().setEnabled(!isViewmode() && isEditAllowed());
-		// saveButton.setVisible(!isViewmode());
+		saveButton.setVisible(!isViewmode() && isEditAllowed());
 		addButton.setVisible(!isViewmode() && !getFormOptions().isHideAddButton() && isEditAllowed());
 	}
 

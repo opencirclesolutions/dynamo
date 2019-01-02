@@ -20,6 +20,7 @@ import java.util.List;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.AttributeType;
+import com.ocs.dynamo.domain.model.EditableType;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.FieldFactory;
 import com.ocs.dynamo.domain.model.FieldFactoryContext;
@@ -28,6 +29,7 @@ import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.component.InternalLinkField;
 import com.ocs.dynamo.ui.component.URLField;
+import com.ocs.dynamo.ui.composite.type.GridEditMode;
 import com.ocs.dynamo.ui.provider.BaseDataProvider;
 import com.ocs.dynamo.ui.utils.FormatUtils;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
@@ -79,9 +81,9 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 	private boolean editable;
 
 	/**
-	 * Indicates whether the full grid can be edited at once
+	 * The edit mode (row by row or all rows at once)
 	 */
-	private boolean fullGridEditor;
+	private GridEditMode gridEditMode;
 
 	/**
 	 * The message service
@@ -102,10 +104,10 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 	 * @param fullGridEditor whether the full grid at once is editable
 	 */
 	public ModelBasedGrid(DataProvider<T, SerializablePredicate<T>> dataProvider, EntityModel<T> model,
-			boolean editable, boolean fullGridEditor) {
+			boolean editable, GridEditMode gridEditMode) {
 		setDataProvider(dataProvider);
 		this.editable = editable;
-		this.fullGridEditor = fullGridEditor;
+		this.gridEditMode = gridEditMode;
 		this.entityModel = model;
 		this.messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
 		this.fieldFactory = FieldFactory.getInstance();
@@ -114,7 +116,7 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 		PropertySet<T> ps = BeanPropertySet.get(model.getEntityClass(), true,
 				new PropertyFilterDefinition(3, new ArrayList<>()));
 		setPropertySet(ps);
-		getEditor().setEnabled(editable);
+		getEditor().setEnabled(editable && GridEditMode.ROW_BY_ROW.equals(gridEditMode));
 
 		setSizeFull();
 		setColumnReorderingAllowed(true);
@@ -136,14 +138,16 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 				// URL field
 				column = addColumn(
 						t -> new URLField(new TextField("", ClassUtils.getFieldValueAsString(t, am.getPath(), "")), am,
-								editable && fullGridEditor),
+								editable && GridEditMode.SIMULTANEOUS.equals(gridEditMode)),
 						new ComponentRenderer());
 			} else if (am.isNavigable() && AttributeType.MASTER.equals(am.getAttributeType())) {
+				// generate internal link field
 				column = addColumn(t -> generateInternalLinkField(am, ClassUtils.getFieldValue(t, am.getPath())),
 						new ComponentRenderer());
 			} else {
-				if (editable && fullGridEditor) {
-					// edit all tables at once
+				if (editable && GridEditMode.SIMULTANEOUS.equals(gridEditMode)
+						&& EditableType.EDITABLE.equals(am.getEditableType())) {
+					// edit all columns at once
 					column = addColumn(t -> {
 						AbstractComponent comp = constructCustomField(entityModel, am);
 						if (comp == null) {
@@ -155,6 +159,7 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 
 						// delegate the binding to the enveloping component
 						BindingBuilder<T, ?> builder = doBind(t, (AbstractComponent) comp);
+
 						FieldFactoryImpl.addConvertersAndValidators(builder, am, constructCustomConverter(am));
 						builder.bind(am.getPath());
 
@@ -167,15 +172,19 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 				}
 			}
 
-			if (editable && !fullGridEditor) {
-				Binder<T> binder = getEditor().getBinder();
-
-				FieldFactoryContext context = FieldFactoryContext.create().setAttributeModel(am).setViewMode(false);
-				AbstractComponent abstractComponent = fieldFactory.constructField(context);
-
-				final Binder.BindingBuilder<T, ?> builder = binder.forField((HasValue<?>) abstractComponent);
-				FieldFactoryImpl.addConvertersAndValidators(builder, am, null);
-				column.setEditorBinding(builder.bind(am.getPath()));
+			// edit row-by-row, create inline edit component
+			if (editable && GridEditMode.ROW_BY_ROW.equals(gridEditMode)) {
+				if (EditableType.EDITABLE.equals(am.getEditableType())) {
+					Binder<T> binder = getEditor().getBinder();
+					FieldFactoryContext context = FieldFactoryContext.create().setAttributeModel(am).setViewMode(false);
+					AbstractComponent comp = fieldFactory.constructField(context);
+					if (comp != null) {
+						comp.setSizeFull();
+						Binder.BindingBuilder<T, ?> builder = binder.forField((HasValue<?>) comp);
+						FieldFactoryImpl.addConvertersAndValidators(builder, am, null);
+						column.setEditorBinding(builder.bind(am.getPath()));
+					}
+				}
 			}
 			column.setCaption(am.getDisplayName()).setSortable(am.isSortable()).setId(am.getPath())
 					.setSortProperty(am.getActualSortPath())
@@ -317,4 +326,9 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 	protected void postProcessComponent(AttributeModel am, AbstractComponent comp) {
 		// override in subclass
 	}
+
+	public GridEditMode getGridEditMode() {
+		return gridEditMode;
+	}
+
 }

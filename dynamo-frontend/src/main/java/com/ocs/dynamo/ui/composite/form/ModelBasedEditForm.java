@@ -1162,7 +1162,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		Label label = null;
 
 		// add title label
-		String mainValue = EntityModelUtils.getMainAttributeValue(entity, getEntityModel());
+		String mainValue = EntityModelUtils.getDisplayPropertyValue(entity, getEntityModel());
 		if (isViewMode()) {
 			label = new Label(
 					message("ocs.modelbasededitform.title.view", getEntityModel().getDisplayName(), mainValue));
@@ -1626,7 +1626,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			replacement.setVisible(true);
 
 			// replace all existing labels with new labels
-			HasComponents hc = labels.get(isViewMode()).get(am).getParent();
+			Component label = labels.get(isViewMode()).get(am);
+			HasComponents hc = label == null ? null : label.getParent();
 			if (hc instanceof Layout) {
 				((Layout) hc).replaceComponent(oldLabel, replacement);
 				labels.get(isViewMode()).put(am, replacement);

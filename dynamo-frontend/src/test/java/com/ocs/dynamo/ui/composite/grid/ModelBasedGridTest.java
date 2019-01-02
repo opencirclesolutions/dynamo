@@ -30,6 +30,7 @@ import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.service.TestEntityService;
 import com.ocs.dynamo.test.BaseMockitoTest;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
+import com.ocs.dynamo.ui.composite.type.GridEditMode;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.ui.Grid;
 
@@ -58,7 +59,7 @@ public class ModelBasedGridTest extends BaseMockitoTest {
 		Person person = new Person(1, "Bob", 50, BigDecimal.valueOf(76.4), BigDecimal.valueOf(44.4));
 		provider.getItems().add(person);
 
-		ModelBasedGrid<Integer, Person> grid = new ModelBasedGrid<>(provider, model, false, false);
+		ModelBasedGrid<Integer, Person> grid = new ModelBasedGrid<>(provider, model, false, GridEditMode.ROW_BY_ROW);
 
 		Assert.assertEquals("Persons", grid.getCaption());
 		Assert.assertEquals("Person", grid.getDescription());
@@ -86,7 +87,7 @@ public class ModelBasedGridTest extends BaseMockitoTest {
 		Person person = new Person(1, "Bob", 50, BigDecimal.valueOf(76.4), BigDecimal.valueOf(44.4));
 		provider.getItems().add(person);
 
-		ModelBasedGrid<Integer, Person> grid = new ModelBasedGrid<>(provider, model, false, false);
+		ModelBasedGrid<Integer, Person> grid = new ModelBasedGrid<>(provider, model, false, GridEditMode.ROW_BY_ROW);
 
 		Assert.assertFalse(grid.getColumn("name").isHidden());
 

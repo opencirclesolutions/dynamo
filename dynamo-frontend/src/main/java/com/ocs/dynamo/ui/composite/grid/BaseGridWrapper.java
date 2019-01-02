@@ -30,6 +30,7 @@ import com.ocs.dynamo.ui.composite.layout.BaseCustomComponent;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.provider.BaseDataProvider;
 import com.ocs.dynamo.ui.provider.QueryType;
+import com.vaadin.data.Binder.BindingBuilder;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.GridSortOrderBuilder;
 import com.vaadin.data.provider.ListDataProvider;
@@ -37,6 +38,7 @@ import com.vaadin.data.provider.SortOrder;
 import com.vaadin.server.SerializablePredicate;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.Grid.SelectionMode;
+import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.VerticalLayout;
 
@@ -184,8 +186,21 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 	 * @return
 	 */
 	protected ModelBasedGrid<ID, T> constructGrid() {
-		return new ModelBasedGrid<>(dataProvider, entityModel, editable, false);
+		return new ModelBasedGrid<ID, T>(dataProvider, entityModel, editable, 
+				getFormOptions().getGridEditMode()) {
 
+			private static final long serialVersionUID = -4559181057050230055L;
+
+			@Override
+			protected BindingBuilder<T, ?> doBind(T t, AbstractComponent field) {
+				return BaseGridWrapper.this.doBind(t, field);
+			}
+		};
+
+	}
+
+	protected BindingBuilder<T, ?> doBind(T t, AbstractComponent field) {
+		return null;
 	}
 
 	/**
@@ -313,6 +328,7 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 	 * Respond to a selection of an item in the table
 	 */
 	protected void onSelect(Object selected) {
+		// overwrite in subclasses
 	}
 
 	/**

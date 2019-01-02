@@ -40,19 +40,8 @@ public class EntityModelUtilsTest extends BaseMockitoTest {
 
 	@Override
 	public void setUp() {
-		super.setUp();	
+		super.setUp();
 		MockUtil.mockMessageService(messageService);
-	}
-
-	@Test
-	public void testGetMainAttributeValue() {
-		EntityModel<TestEntity> model = factory.getModel(TestEntity.class);
-
-		TestEntity entity = new TestEntity();
-		entity.setName("test name");
-
-		String value = EntityModelUtils.getMainAttributeValue(entity, model);
-		Assert.assertEquals("test name", value);
 	}
 
 	@Test

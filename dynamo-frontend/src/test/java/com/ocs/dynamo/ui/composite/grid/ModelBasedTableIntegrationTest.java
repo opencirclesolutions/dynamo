@@ -14,6 +14,7 @@ import com.ocs.dynamo.filter.EqualsPredicate;
 import com.ocs.dynamo.service.TestEntityService;
 import com.ocs.dynamo.test.BaseIntegrationTest;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
+import com.ocs.dynamo.ui.composite.type.GridEditMode;
 import com.ocs.dynamo.ui.provider.IdBasedDataProvider;
 import com.ocs.dynamo.ui.provider.PagingDataProvider;
 import com.ocs.dynamo.ui.provider.QueryType;
@@ -49,7 +50,8 @@ public class ModelBasedTableIntegrationTest extends BaseIntegrationTest {
 				entityModelFactory.getModel(TestEntity.class));
 
 		EntityModel<TestEntity> model = entityModelFactory.getModel(TestEntity.class);
-		ModelBasedGrid<Integer, TestEntity> grid = new ModelBasedGrid<>(provider, model, false, false);
+		ModelBasedGrid<Integer, TestEntity> grid = new ModelBasedGrid<>(provider, model, false,
+				GridEditMode.ROW_BY_ROW);
 
 		Assert.assertEquals(16, grid.getColumns().size());
 		Assert.assertNotNull(grid.getDataProvider().getId(entity));

@@ -13,8 +13,7 @@
  */
 package com.ocs.dynamo.ui.composite.type;
 
-public enum ExportMode {
+public enum GridEditMode {
 
-	FULL, ONLY_VISIBLE_IN_TABLE;
-
+	ROW_BY_ROW, SIMULTANEOUS;
 }

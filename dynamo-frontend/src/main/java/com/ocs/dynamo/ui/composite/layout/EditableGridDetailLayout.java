@@ -32,8 +32,8 @@ import java.io.Serializable;
  * @param <ID2>
  * @param <Q>
  */
-public class TabularDetailEditLayout<ID extends Serializable, T extends AbstractEntity<ID>, ID2 extends Serializable, Q extends AbstractEntity<ID2>>
-		extends TabularEditLayout<ID, T> implements CanAssignEntity<ID2, Q> {
+public class EditableGridDetailLayout<ID extends Serializable, T extends AbstractEntity<ID>, ID2 extends Serializable, Q extends AbstractEntity<ID2>>
+		extends EditableGridLayout<ID, T> implements CanAssignEntity<ID2, Q> {
 
 	private static final long serialVersionUID = -3432301286152665223L;
 
@@ -64,7 +64,7 @@ public class TabularDetailEditLayout<ID extends Serializable, T extends Abstract
 	 * @param joins
 	 *            the relations to fetch
 	 */
-	public TabularDetailEditLayout(BaseService<ID, T> service, Q parentEntity, BaseService<ID2, Q> parentService,
+	public EditableGridDetailLayout(BaseService<ID, T> service, Q parentEntity, BaseService<ID2, Q> parentService,
 			EntityModel<T> entityModel, FormOptions formOptions, SortOrder<?> sortOrder, FetchJoinInformation... joins) {
 		super(service, entityModel, formOptions, sortOrder, joins);
 		this.parentService = parentService;
