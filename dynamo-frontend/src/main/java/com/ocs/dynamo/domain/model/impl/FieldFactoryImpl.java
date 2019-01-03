@@ -12,7 +12,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.teemu.switchui.Switch;
 
 import com.google.common.collect.Lists;
@@ -79,15 +79,20 @@ import com.vaadin.ui.TextField;
  * @author Bas Rutten
  *
  */
-@Service
 public class FieldFactoryImpl implements FieldFactory {
 
+	@Autowired
 	private MessageService messageService;
 
 	private final ServiceLocator serviceLocator = ServiceLocatorFactory.getServiceLocator();
 
+	private FieldFactory delegate;
+
+	public FieldFactoryImpl(FieldFactory delegate) {
+		this.delegate = delegate;
+	}
+
 	public FieldFactoryImpl() {
-		messageService = serviceLocator.getMessageService();
 	}
 
 	/**
@@ -185,6 +190,15 @@ public class FieldFactoryImpl implements FieldFactory {
 	 */
 	public AbstractComponent constructField(FieldFactoryContext context) {
 		AbstractComponent field = null;
+
+		// delegate to managed field factory
+		if (delegate != null) {
+			field = delegate.constructField(context);
+			if (field != null) {
+				return field;
+			}
+		}
+
 		AttributeModel am = context.getAttributeModel();
 		Map<String, SerializablePredicate<?>> fieldFilters = context.getFieldFilters();
 		boolean viewMode = context.getViewMode();
@@ -433,7 +447,7 @@ public class FieldFactoryImpl implements FieldFactory {
 			cf.setRequiredIndicatorVisible(search ? am.isRequiredForSearching() : am.isRequired());
 			cf.setDescription(am.getDescription());
 			if (field instanceof CustomEntityField) {
-				((CustomEntityField<?,?,?>) field).setPlaceholder(am.getPrompt());
+				((CustomEntityField<?, ?, ?>) field).setPlaceholder(am.getPrompt());
 			}
 		}
 

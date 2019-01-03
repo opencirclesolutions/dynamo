@@ -13,7 +13,7 @@
  */
 package com.ocs.dynamo.domain.model;
 
-import com.ocs.dynamo.domain.model.impl.FieldFactoryImpl;
+import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.vaadin.ui.AbstractComponent;
 
 /**
@@ -24,9 +24,14 @@ import com.vaadin.ui.AbstractComponent;
  */
 public interface FieldFactory {
 
+	/**
+	 * 
+	 * @param context
+	 * @return
+	 */
 	AbstractComponent constructField(FieldFactoryContext context);
 
 	public static FieldFactory getInstance() {
-		return new FieldFactoryImpl();
+		return ServiceLocatorFactory.getServiceLocator().getService(FieldFactory.class);
 	}
 }

@@ -115,6 +115,9 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	 */
 	private VerticalLayout main;
 
+	/**
+	 * Field factory singleton for constructing fields
+	 */
 	private FieldFactory fieldFactory = FieldFactory.getInstance();
 
 	/**
