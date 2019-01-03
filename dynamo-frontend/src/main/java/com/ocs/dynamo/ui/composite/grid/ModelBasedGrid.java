@@ -116,7 +116,7 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 		PropertySet<T> ps = BeanPropertySet.get(model.getEntityClass(), true,
 				new PropertyFilterDefinition(3, new ArrayList<>()));
 		setPropertySet(ps);
-		getEditor().setEnabled(editable && GridEditMode.ROW_BY_ROW.equals(gridEditMode));
+		getEditor().setEnabled(editable && GridEditMode.SINGLE_ROW.equals(gridEditMode));
 
 		setSizeFull();
 		setColumnReorderingAllowed(true);
@@ -173,7 +173,7 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 			}
 
 			// edit row-by-row, create inline edit component
-			if (editable && GridEditMode.ROW_BY_ROW.equals(gridEditMode)) {
+			if (editable && GridEditMode.SINGLE_ROW.equals(gridEditMode)) {
 				if (EditableType.EDITABLE.equals(am.getEditableType())) {
 					Binder<T> binder = getEditor().getBinder();
 					FieldFactoryContext context = FieldFactoryContext.create().setAttributeModel(am).setViewMode(false);

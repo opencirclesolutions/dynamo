@@ -30,7 +30,6 @@ import com.ocs.dynamo.ui.composite.type.AttributeGroupMode;
 import com.ocs.dynamo.ui.composite.type.ScreenMode;
 import com.ocs.dynamo.ui.provider.QueryType;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
-import com.vaadin.server.SerializablePredicate;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
@@ -103,13 +102,8 @@ public class ViewRevisionDialog<ID, T extends AbstractEntity<ID>, U extends Vers
 					boolean viewMode, boolean searchMode) {
 				return ViewRevisionDialog.this.constructCustomField(entityModel, attributeModel);
 			}
-
-			@Override
-			protected SerializablePredicate<U> constructFilter() {
-				// always filter on ID
-				return new EqualsPredicate<>(DynamoConstants.ID, id);
-			}
 		};
+		layout.setFilterSupplier(() -> new EqualsPredicate<>(DynamoConstants.ID, id));
 		layout.setPageLength(PAGE_SIZE);
 		parent.addComponent(layout);
 	}

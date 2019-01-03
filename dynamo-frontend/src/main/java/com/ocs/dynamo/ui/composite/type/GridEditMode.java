@@ -15,5 +15,5 @@ package com.ocs.dynamo.ui.composite.type;
 
 public enum GridEditMode {
 
-	ROW_BY_ROW, SIMULTANEOUS;
+	SINGLE_ROW, SIMULTANEOUS;
 }

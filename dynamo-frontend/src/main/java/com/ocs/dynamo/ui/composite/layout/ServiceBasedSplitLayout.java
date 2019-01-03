@@ -15,6 +15,7 @@ package com.ocs.dynamo.ui.composite.layout;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.function.Supplier;
 
 import org.springframework.util.StringUtils;
 
@@ -47,15 +48,19 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
 	private static final long serialVersionUID = 1068860513192819804L;
 
 	/**
-	 * The filter used to restrict the search results. Override the
-	 * <code>constructFilter</code> method to set this filter.
+	 * The search filter to apply
 	 */
-	private SerializablePredicate<T> filter;
+	protected SerializablePredicate<T> filter;
 
 	/**
 	 * The query type (ID based or paging) used to query the database
 	 */
 	private QueryType queryType;
+
+	/**
+	 * Supplier for creating the filter when needed
+	 */
+	private Supplier<SerializablePredicate<T>> filterSupplier;
 
 	/**
 	 * Constructor
@@ -74,19 +79,8 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
 	}
 
 	@Override
-	protected final void buildFilter() {
-		filter = constructFilter();
-	}
-
-	/**
-	 * Creates the main search filter - overwrite in subclass if you need to
-	 * actually filter the data
-	 *
-	 * @return
-	 */
-	protected SerializablePredicate<T> constructFilter() {
-		// overwrite in subclass
-		return null;
+	protected void buildFilter() {
+		filter = filterSupplier == null ? null : filterSupplier.get();
 	}
 
 	/**
@@ -198,7 +192,7 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
 		if (selectedItems != null) {
 			if (selectedItems instanceof Collection<?>) {
 				Collection<?> col = (Collection<?>) selectedItems;
-				if (col.iterator().hasNext()) {
+				if (!col.isEmpty()) {
 					T t = (T) col.iterator().next();
 					setSelectedItem(getService().fetchById(t.getId(), getDetailJoins()));
 				} else {
@@ -214,5 +208,13 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
 			setSelectedItem(null);
 			emptyDetailView();
 		}
+	}
+
+	public Supplier<SerializablePredicate<T>> getFilterSupplier() {
+		return filterSupplier;
+	}
+
+	public void setFilterSupplier(Supplier<SerializablePredicate<T>> filterSupplier) {
+		this.filterSupplier = filterSupplier;
 	}
 }

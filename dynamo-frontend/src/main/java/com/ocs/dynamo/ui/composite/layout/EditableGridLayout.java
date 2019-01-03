@@ -18,6 +18,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import com.google.common.collect.Lists;
@@ -79,6 +80,16 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 	private Button addButton;
 
 	/**
+	 * Button for cancelling edit mode
+	 */
+	private Button cancelButton;
+
+	/**
+	 * The button for changing to edit mode
+	 */
+	private Button editButton;
+
+	/**
 	 * Button for saving changes (in "edit all at once" mode)
 	 */
 	private Button saveButton;
@@ -86,7 +97,7 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 	/**
 	 * The filter that is applied to limit the search results
 	 */
-	private SerializablePredicate<T> filter;
+	protected SerializablePredicate<T> filter;
 
 	/**
 	 * The main layout
@@ -119,6 +130,11 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 	private Map<T, Binder<T>> binders = new HashMap<>();
 
 	/**
+	 * Supplier for creating the filter
+	 */
+	private Supplier<SerializablePredicate<T>> filterSupplier;
+
+	/**
 	 * Constructor
 	 *
 	 * @param service     the service used to query the database
@@ -138,12 +154,9 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 		build();
 	}
 
-	/**
-	 * Lazily builds the actual layout
-	 */
 	@Override
 	public void build() {
-		this.filter = constructFilter();
+		buildFilter();
 		if (mainLayout == null) {
 			setViewmode(!isEditAllowed() || getFormOptions().isOpenInViewMode());
 			mainLayout = new DefaultVerticalLayout(true, true);
@@ -167,7 +180,7 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 										return FormatUtils.formatEntity(getEntityModel(), t);
 									}
 								});
-				removeColumn.setCaption(defaultMsg);
+				removeColumn.setCaption(defaultMsg).setId("remove");
 
 			}
 			mainLayout.addComponent(getButtonBar());
@@ -198,6 +211,27 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 			getButtonBar().addComponent(addButton);
 			addButton.setVisible(!getFormOptions().isHideAddButton() && isEditAllowed() && !isViewmode());
 
+			// button for switching to edit mode
+			editButton = new Button(message("ocs.edit"));
+			editButton.setIcon(VaadinIcons.EDIT);
+			editButton.addClickListener(event -> toggleViewMode(false));
+			editButton.setVisible(getFormOptions().isEditAllowed() && isEditAllowed() && isViewmode());
+			getButtonBar().addComponent(editButton);
+
+			// button for canceling to edit mode
+			cancelButton = new Button(message("ocs.cancel"));
+			cancelButton.setIcon(VaadinIcons.BAN);
+			cancelButton.addClickListener(event -> {
+				// cancel the editor if it is open
+				if (getGridWrapper().getGrid().getEditor().isOpen()) {
+					getGridWrapper().getGrid().getEditor().cancel();
+				}
+				toggleViewMode(true);
+			});
+			cancelButton.setVisible(isEditAllowed() && !isViewmode());
+			getButtonBar().addComponent(cancelButton);
+
+			// button for saving changes
 			saveButton = new Button(message("ocs.save"));
 			saveButton.addClickListener(event -> {
 				List<T> toSave = Lists.newArrayList(binders.keySet());
@@ -222,30 +256,24 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 		setCompositionRoot(mainLayout);
 	}
 
-	/**
-	 * Creates the predicate used for filtering the available data
-	 *
-	 * @return
-	 */
-	protected SerializablePredicate<T> constructFilter() {
-		return null;
+	protected void buildFilter() {
+		this.filter = filterSupplier == null ? null : filterSupplier.get();
 	}
 
 	/**
 	 * Initializes the grid
 	 */
 	protected void constructGrid() {
-
-		final BaseGridWrapper<ID, T> wrapper = getGridWrapper();
-
+		BaseGridWrapper<ID, T> wrapper = getGridWrapper();
 		// make sure the grid can be edited
 		wrapper.getGrid().getEditor().setEnabled(!isViewmode());
+		wrapper.getGrid().setEnabled(!isViewmode());
 		wrapper.getGrid().getEditor().addSaveListener(event -> {
 			try {
 				T t = getService().save((T) event.getBean());
 				// reassign to avoid optimistic lock
 				wrapper.getGrid().getEditor().getBinder().setBean(t);
-				wrapper.getGrid().getDataProvider().refreshAll();
+				wrapper.getGrid().getDataProvider().refreshItem(t);
 			} catch (OCSValidationException ex) {
 				Notification.show(ex.getMessage(), Notification.Type.ERROR_MESSAGE);
 			}
@@ -253,6 +281,10 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 		// make sure changes are not persisted right away
 		wrapper.getGrid().getEditor().setBuffered(true);
 		wrapper.getGrid().setSelectionMode(Grid.SelectionMode.SINGLE);
+
+		// explicit selection listener??
+		wrapper.getGrid().addSelectionListener(event -> setSelectedItems(event.getAllSelectedItems()));
+
 		mainLayout.addComponent(wrapper);
 	}
 
@@ -260,17 +292,6 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 	protected BaseGridWrapper<ID, T> constructGridWrapper() {
 		ServiceBasedGridWrapper<ID, T> tw = new ServiceBasedGridWrapper<ID, T>(getService(), getEntityModel(),
 				QueryType.ID_BASED, getFormOptions(), filter, getSortOrders(), true, getJoins()) {
-
-			@Override
-			protected void doConstructDataProvider(final DataProvider<T, SerializablePredicate<T>> provider) {
-				EditableGridLayout.this.doConstructDataProvider(provider);
-			}
-
-			@Override
-			protected void onSelect(Object selected) {
-				setSelectedItems(selected);
-				checkButtonState(getSelectedItem());
-			}
 
 			/**
 			 * Create binder for each row when in "edit all at once" mode
@@ -283,6 +304,17 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 				}
 				Binder<T> binder = binders.get(t);
 				return binder.forField((HasValue<?>) field);
+			}
+
+			@Override
+			protected void doConstructDataProvider(final DataProvider<T, SerializablePredicate<T>> provider) {
+				EditableGridLayout.this.doConstructDataProvider(provider);
+			}
+
+			@Override
+			protected void onSelect(Object selected) {
+				setSelectedItems(selected);
+				checkButtonState(getSelectedItem());
 			}
 
 		};
@@ -319,8 +351,25 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 		return addButton;
 	}
 
+	public Button getCancelButton() {
+		return cancelButton;
+	}
+
 	protected DataProvider<T, SerializablePredicate<T>> getDataProvider() {
 		return getGridWrapper().getDataProvider();
+	}
+
+	public Button getEditButton() {
+		return editButton;
+	}
+
+	public Supplier<SerializablePredicate<T>> getFilterSupplier() {
+		return filterSupplier;
+	}
+
+	@Override
+	public ServiceBasedGridWrapper<ID, T> getGridWrapper() {
+		return (ServiceBasedGridWrapper<ID, T>) super.getGridWrapper();
 	}
 
 	@Override
@@ -336,6 +385,10 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 		return removeMessage;
 	}
 
+	public Button getSaveButton() {
+		return saveButton;
+	}
+
 	public boolean isViewmode() {
 		return viewmode;
 	}
@@ -347,7 +400,12 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 
 	@Override
 	public void reload() {
-		getDataProvider().refreshAll();
+		buildFilter();
+		getGridWrapper().setFilter(filter);
+	}
+
+	public void setFilterSupplier(Supplier<SerializablePredicate<T>> filterSupplier) {
+		this.filterSupplier = filterSupplier;
 	}
 
 	@Override
@@ -370,8 +428,12 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 				// the lazy query container returns an array of IDs of the
 				// selected items
 				Collection<?> col = (Collection<?>) selection;
-				T t = (T) col.iterator().next();
-				setSelectedItem(t);
+				if (!col.isEmpty()) {
+					T t = (T) col.iterator().next();
+					setSelectedItem(t);
+				} else {
+					setSelectedItem(null);
+				}
 			} else {
 				T t = (T) selection;
 				setSelectedItem(t);
@@ -394,7 +456,11 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 	protected void toggleViewMode(boolean viewMode) {
 		setViewmode(viewMode);
 		getGridWrapper().getGrid().getEditor().setEnabled(!isViewmode() && isEditAllowed());
-		saveButton.setVisible(!isViewmode() && isEditAllowed());
+		getGridWrapper().getGrid().setEnabled(!isViewmode());
+		saveButton.setVisible(GridEditMode.SIMULTANEOUS.equals(getFormOptions().getGridEditMode()) && !isViewmode()
+				&& isEditAllowed());
+		editButton.setVisible(isViewmode() && getFormOptions().isEditAllowed() && isEditAllowed());
+		cancelButton.setVisible(!isViewmode() && isEditAllowed());
 		addButton.setVisible(!isViewmode() && !getFormOptions().isHideAddButton() && isEditAllowed());
 	}
 

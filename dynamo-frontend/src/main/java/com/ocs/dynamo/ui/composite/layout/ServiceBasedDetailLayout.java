@@ -14,6 +14,8 @@
 package com.ocs.dynamo.ui.composite.layout;
 
 import java.io.Serializable;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
@@ -22,19 +24,16 @@ import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.CanAssignEntity;
 import com.ocs.dynamo.ui.provider.QueryType;
 import com.vaadin.data.provider.SortOrder;
+import com.vaadin.server.SerializablePredicate;
 
 /**
  * A split layout that contains a reference to the parent object
  * 
  * @author bas.rutten
- * @param <ID>
- *            type of the primary key
- * @param <T>
- *            type of the entity
- * @param <ID2>
- *            type of the primary key of the parent
- * @param <Q>
- *            type of the parent entity
+ * @param <ID> type of the primary key
+ * @param <T> type of the entity
+ * @param <ID2> type of the primary key of the parent
+ * @param <Q> type of the parent entity
  */
 public class ServiceBasedDetailLayout<ID extends Serializable, T extends AbstractEntity<ID>, ID2 extends Serializable, Q extends AbstractEntity<ID2>>
 		extends ServiceBasedSplitLayout<ID, T> implements CanAssignEntity<ID2, Q> {
@@ -49,6 +48,8 @@ public class ServiceBasedDetailLayout<ID extends Serializable, T extends Abstrac
 	 * The joins to use when refreshing the parent entity
 	 */
 	private FetchJoinInformation[] parentJoins;
+
+	private Function<Q, SerializablePredicate<T>> parentFilterSupplier;
 
 	/**
 	 * Constructor
@@ -73,8 +74,21 @@ public class ServiceBasedDetailLayout<ID extends Serializable, T extends Abstrac
 		setParentEntity(parentEntity);
 	}
 
+	@Override
+	protected void buildFilter() {
+		filter = parentFilterSupplier == null ? null : parentFilterSupplier.apply(getParentEntity());
+	}
+
 	public Q getParentEntity() {
 		return parentEntity;
+	}
+
+	public Function<Q, SerializablePredicate<T>> getParentFilterSupplier() {
+		return parentFilterSupplier;
+	}
+
+	public FetchJoinInformation[] getParentJoins() {
+		return parentJoins;
 	}
 
 	public BaseService<ID2, Q> getParentService() {
@@ -87,16 +101,20 @@ public class ServiceBasedDetailLayout<ID extends Serializable, T extends Abstrac
 		super.reload();
 	}
 
+	@Override
+	public void setFilterSupplier(Supplier<SerializablePredicate<T>> filterSupplier) {
+		throw new UnsupportedOperationException("Use the setParentFilterSupplier method instead");
+	}
+
 	public void setParentEntity(Q parentEntity) {
 		this.parentEntity = parentEntity;
 	}
-
-	public FetchJoinInformation[] getParentJoins() {
-		return parentJoins;
+	
+	public void setParentFilterSupplier(Function<Q, SerializablePredicate<T>> parentFilterSupplier) {
+		this.parentFilterSupplier = parentFilterSupplier;
 	}
 
 	public void setParentJoins(FetchJoinInformation[] parentJoins) {
 		this.parentJoins = parentJoins;
 	}
-
 }

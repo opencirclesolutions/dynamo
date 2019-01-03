@@ -91,7 +91,7 @@ public class ServiceBasedSplitLayoutTest extends BaseIntegrationTest {
 		Assert.assertNull(layout.getFilter());
 
 		// no filter, so all items are visible
-		//Assert.assertEquals(2, layout.getDataProviderSize());
+		// Assert.assertEquals(2, layout.getDataProviderSize());
 
 		// select an item and check that the edit form is generated
 		layout.getGridWrapper().getGrid().select(e1);
@@ -141,17 +141,11 @@ public class ServiceBasedSplitLayoutTest extends BaseIntegrationTest {
 		FormOptions fo = new FormOptions();
 		ServiceBasedSplitLayout<Integer, TestEntity> layout = new ServiceBasedSplitLayout<Integer, TestEntity>(
 				testEntityService, entityModelFactory.getModel(TestEntity.class), QueryType.PAGING, fo,
-				new SortOrder<String>("name", SortDirection.ASCENDING)) {
-
-			private static final long serialVersionUID = 6308563510081372500L;
-
-			@Override
-			protected SerializablePredicate<TestEntity> constructFilter() {
-				return new EqualsPredicate<TestEntity>("name", "Bob");
-			}
-		};
-		layout.buildFilter();
+				new SortOrder<String>("name", SortDirection.ASCENDING));
+		layout.setFilterSupplier(() -> new EqualsPredicate<TestEntity>("name", "Bob"));
 		layout.build();
+
+		Assert.assertNotNull(layout.getFilter());
 
 		// no quick search field this time
 		Assert.assertNull(layout.getQuickSearchField());
@@ -201,18 +195,12 @@ public class ServiceBasedSplitLayoutTest extends BaseIntegrationTest {
 		FormOptions fo = new FormOptions();
 		ServiceBasedDetailLayout<Integer, TestEntity2, Integer, TestEntity> layout = new ServiceBasedDetailLayout<Integer, TestEntity2, Integer, TestEntity>(
 				testEntity2Service, e1, testEntityService, entityModelFactory.getModel(TestEntity2.class),
-				QueryType.ID_BASED, fo, null) {
+				QueryType.ID_BASED, fo, null);
 
-			private static final long serialVersionUID = 7009824287226683886L;
-
-			protected SerializablePredicate<TestEntity2> constructFilter() {
-				return new EqualsPredicate<TestEntity2>("testEntity", getParentEntity());
-			}
-		};
-
+		layout.setParentFilterSupplier(parent -> new EqualsPredicate<TestEntity2>("testEntity", parent));
 		layout.build();
 
-		//Assert.assertEquals(1, layout.getGridWrapper().getDataProviderSize());
+		Assert.assertEquals(1, layout.getGridWrapper().getDataProviderSize());
 		Assert.assertEquals(e1, layout.getParentEntity());
 		Assert.assertNotNull(layout.getFilter());
 

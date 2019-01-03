@@ -90,7 +90,7 @@ public class FormOptions implements Serializable {
 	/**
 	 * 
 	 */
-	private GridEditMode gridEditMode = GridEditMode.ROW_BY_ROW;
+	private GridEditMode gridEditMode = GridEditMode.SINGLE_ROW;
 
 	/**
 	 * Whether to hide the add button

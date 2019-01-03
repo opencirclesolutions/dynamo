@@ -51,7 +51,7 @@ public class ModelBasedTableIntegrationTest extends BaseIntegrationTest {
 
 		EntityModel<TestEntity> model = entityModelFactory.getModel(TestEntity.class);
 		ModelBasedGrid<Integer, TestEntity> grid = new ModelBasedGrid<>(provider, model, false,
-				GridEditMode.ROW_BY_ROW);
+				GridEditMode.SINGLE_ROW);
 
 		Assert.assertEquals(16, grid.getColumns().size());
 		Assert.assertNotNull(grid.getDataProvider().getId(entity));

@@ -35,8 +35,6 @@ public class TimeField extends CustomField<LocalTime> {
 
 	private AttributeModel attributeModel;
 
-	private HorizontalLayout main;
-
 	private final ComboBox<Integer> hourSelect;
 
 	private final ComboBox<Integer> minuteSelect;
@@ -57,7 +55,7 @@ public class TimeField extends CustomField<LocalTime> {
 
 	@Override
 	protected Component initContent() {
-		main = new HorizontalLayout();
+		HorizontalLayout main = new HorizontalLayout();
 		setCaption(attributeModel.getDisplayName());
 		hourSelect.setItems(IntStream.range(0, 24).boxed());
 		minuteSelect.setItems(IntStream.range(0, 60).boxed());
