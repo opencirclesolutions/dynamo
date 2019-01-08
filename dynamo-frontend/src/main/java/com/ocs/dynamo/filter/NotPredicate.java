@@ -20,7 +20,7 @@ import com.vaadin.server.SerializablePredicate;
  * 
  * @author Bas Rutten
  *
- * @param <T>
+ * @param <T> the type of the entity to filter on
  */
 public class NotPredicate<T> implements SerializablePredicate<T> {
 
@@ -30,7 +30,7 @@ public class NotPredicate<T> implements SerializablePredicate<T> {
 
 	@Override
 	public boolean test(T t) {
-		return  !operand.test(t);
+		return !operand.test(t);
 	}
 
 	public NotPredicate(SerializablePredicate<T> predicate) {

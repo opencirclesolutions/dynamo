@@ -317,7 +317,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 			prevButton.addClickListener(e -> {
 				T prev = getPreviousEntity();
 				if (prev != null) {
-					tabLayout.setEntity(prev);
+					tabLayout.setEntity(prev, getFormOptions().isPreserveSelectedTab());
 					tabLayout.reload();
 				} else {
 					prevButton.setEnabled(false);
@@ -326,7 +326,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 					nextButton.setEnabled(true);
 				}
 			});
-			prevButton.setEnabled(hasNextEntity());
+			prevButton.setEnabled(hasPrevEntity());
 			buttonBar.addComponent(prevButton);
 		}
 
@@ -335,7 +335,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 			nextButton.addClickListener(e -> {
 				T next = getNextEntity();
 				if (next != null) {
-					tabLayout.setEntity(next);
+					tabLayout.setEntity(next, getFormOptions().isPreserveSelectedTab());
 					tabLayout.reload();
 				} else {
 					nextButton.setEnabled(false);
@@ -708,7 +708,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 			if (tabContainerLayout == null) {
 				buildDetailsTabLayout(entity, options);
 			} else {
-				tabLayout.setEntity(entity);
+				tabLayout.setEntity(entity, getFormOptions().isPreserveSelectedTab());
 				tabLayout.reload();
 			}
 			if (selectedDetailLayout == null) {
@@ -732,7 +732,6 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 				mainEditLayout.replaceComponent(selectedDetailLayout, editForm);
 			}
 			selectedDetailLayout = editForm;
-
 		} else {
 			// complex mode, but re-use
 			Component comp = initTab(entity, 0, getFormOptions(), true);

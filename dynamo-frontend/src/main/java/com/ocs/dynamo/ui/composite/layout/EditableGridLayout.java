@@ -72,7 +72,7 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 	/**
 	 * The default page length
 	 */
-	private static final int PAGE_LENGTH = 15;
+	private static final int PAGE_LENGTH = 12;
 
 	/**
 	 * The add button
@@ -80,7 +80,7 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 	private Button addButton;
 
 	/**
-	 * Button for cancelling edit mode
+	 * Button for canceling edit mode
 	 */
 	private Button cancelButton;
 
@@ -243,7 +243,6 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 				for (T t : refreshed) {
 					binders.get(t).setBean(t);
 				}
-
 			});
 			saveButton.setVisible(isEditAllowed() && !isViewmode()
 					&& GridEditMode.SIMULTANEOUS.equals(getFormOptions().getGridEditMode()));

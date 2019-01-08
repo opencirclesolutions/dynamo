@@ -791,7 +791,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			Button saveButton = constructSaveButton(bottom);
 			buttonBar.addComponent(saveButton);
 			buttons.get(isViewMode()).add(saveButton);
-
 		}
 
 		// create the edit button

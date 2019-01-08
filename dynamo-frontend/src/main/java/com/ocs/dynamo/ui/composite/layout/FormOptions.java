@@ -69,7 +69,7 @@ public class FormOptions implements Serializable {
 	/**
 	 * Whether to show an edit button when the screen is opened in view mode
 	 */
-	private boolean editAllowed;
+	private boolean editAllowed = true;
 
 	/**
 	 * Indicates whether export is allowed (read from system property)

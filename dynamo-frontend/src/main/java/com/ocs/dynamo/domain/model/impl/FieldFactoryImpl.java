@@ -460,7 +460,7 @@ public class FieldFactoryImpl implements FieldFactory {
 			AbstractTextField atf = (AbstractTextField) field;
 			atf.addBlurListener(event -> {
 				String value = atf.getValue();
-				if (value != null && value.indexOf("%") < 0) {
+				if (value != null && value.indexOf('%') < 0) {
 					value = value.trim() + "%";
 					atf.setValue(value);
 				}

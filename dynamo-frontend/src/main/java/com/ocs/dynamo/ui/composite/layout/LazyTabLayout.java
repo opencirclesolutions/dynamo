@@ -32,15 +32,14 @@ import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.VerticalLayout;
 
 /**
- * A layout that contains a tab sheet with tabs that are lazily loaded. Use the getTabCaptions method
- * to specify the captions of the tabs, and (implicitly) the number of tabs. Whenever the user selects
- * a tab for the first time, the initTab method is called in order to lazily construct the tab.
+ * A layout that contains a tab sheet with tabs that are lazily loaded. Use the
+ * getTabCaptions method to specify the captions of the tabs, and (implicitly)
+ * the number of tabs. Whenever the user selects a tab for the first time, the
+ * initTab method is called in order to lazily construct the tab.
  * 
  * @author bas.rutten
- * @param <ID>
- *            type of the primary key
- * @param <T>
- *            type of the entity
+ * @param <ID> type of the primary key
+ * @param <T> type of the entity
  */
 public abstract class LazyTabLayout<ID extends Serializable, T extends AbstractEntity<ID>> extends BaseCustomComponent
 		implements Reloadable {
@@ -86,8 +85,7 @@ public abstract class LazyTabLayout<ID extends Serializable, T extends AbstractE
 	 * Callback method that is called before a tab is reloaded - use this to make
 	 * sure the correct data is available in the tab
 	 * 
-	 * @param index
-	 *            the index of the selected tab
+	 * @param index     the index of the selected tab
 	 * @param component
 	 */
 	protected void beforeReload(int index, Component component) {
@@ -113,9 +111,7 @@ public abstract class LazyTabLayout<ID extends Serializable, T extends AbstractE
 			} else {
 				setCompositionRoot(tabs);
 			}
-
 			setupLazySheet(tabs);
-
 		}
 	}
 
@@ -134,8 +130,7 @@ public abstract class LazyTabLayout<ID extends Serializable, T extends AbstractE
 	/**
 	 * Returns the icon to use inside a certain tab
 	 * 
-	 * @param index
-	 *            the zero-based index of the tab
+	 * @param index the zero-based index of the tab
 	 * @return
 	 */
 	protected abstract Resource getIconForTab(int index);
@@ -143,8 +138,7 @@ public abstract class LazyTabLayout<ID extends Serializable, T extends AbstractE
 	/**
 	 * Returns the tab identified by a certain index
 	 * 
-	 * @param index
-	 *            the index
+	 * @param index the index
 	 * @return
 	 */
 	public Tab getTab(int index) {
@@ -161,8 +155,7 @@ public abstract class LazyTabLayout<ID extends Serializable, T extends AbstractE
 	/**
 	 * Returns the description (tool tip) for a certain tab
 	 * 
-	 * @param index
-	 *            the index of the tab
+	 * @param index the index of the tab
 	 * @return
 	 */
 	protected String getTabDescription(int index) {
@@ -172,8 +165,7 @@ public abstract class LazyTabLayout<ID extends Serializable, T extends AbstractE
 	/**
 	 * Returns the index of a tab given its caption
 	 * 
-	 * @param caption
-	 *            the caption
+	 * @param caption the caption
 	 * @return
 	 */
 	private int getTabIndex(String caption) {
@@ -191,8 +183,7 @@ public abstract class LazyTabLayout<ID extends Serializable, T extends AbstractE
 	/**
 	 * Constructs or reloads a tab
 	 * 
-	 * @param selectedTab
-	 *            the currently selected tab
+	 * @param selectedTab the currently selected tab
 	 */
 	@SuppressWarnings("unchecked")
 	protected void initOrReload(Component selectedTab) {
@@ -230,8 +221,7 @@ public abstract class LazyTabLayout<ID extends Serializable, T extends AbstractE
 	/**
 	 * Lazily creates a certain tab
 	 * 
-	 * @param index
-	 *            the zero-based index of the tab to create
+	 * @param index the zero-based index of the tab to create
 	 * @return
 	 */
 	protected abstract Component initTab(int index);
@@ -245,9 +235,11 @@ public abstract class LazyTabLayout<ID extends Serializable, T extends AbstractE
 		tabs.setSelectedTab(index);
 	}
 
-	public void setEntity(T entity) {
+	public void setEntity(T entity, boolean preserveTab) {
 		this.entity = entity;
-		this.selectTab(0);
+		if (!preserveTab) {
+			selectTab(0);
+		}
 		if (panel != null) {
 			panel.setCaption(createTitle());
 		}
@@ -256,8 +248,7 @@ public abstract class LazyTabLayout<ID extends Serializable, T extends AbstractE
 	/**
 	 * Constructs the lazy tab sheet by setting up empty dummy tabs
 	 * 
-	 * @param tabs
-	 *            the tab sheet
+	 * @param tabs the tab sheet
 	 */
 	private void setupLazySheet(final TabSheet tabs) {
 

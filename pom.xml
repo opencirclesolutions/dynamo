@@ -102,7 +102,6 @@
 		<vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
 		<vaadin.icons.version>3.0.2</vaadin.icons.version>
 		<vaadin-spring.version>3.1.1</vaadin-spring.version>
-		<vaadin.charts.version>4.0.5</vaadin.charts.version>
 		<!-- TODO: this should ideally be updated to version 3.0.0 but that currently 
 			does not work -->
 		<vaadin.contextmenu.version>3.0.0</vaadin.contextmenu.version>
@@ -192,8 +191,6 @@
 				<artifactId>gantt-addon</artifactId>
 				<version>1.0.4</version>
 			</dependency>
-			<!-- <dependency> <groupId>com.vaadin.addon</groupId> <artifactId>vaadin-charts</artifactId> 
-				<version>${vaadin.charts.version}</version> </dependency> -->
 			<dependency>
 				<groupId>org.vaadin.teemu</groupId>
 				<artifactId>switch</artifactId>
