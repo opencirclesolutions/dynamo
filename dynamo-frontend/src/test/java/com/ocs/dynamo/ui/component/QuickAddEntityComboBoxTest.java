@@ -63,7 +63,7 @@ public class QuickAddEntityComboBoxTest extends BaseMockitoTest {
 		AttributeModel am = em.getAttributeModel("testDomain");
 
 		QuickAddEntityComboBox<Integer, TestEntity> select = new QuickAddEntityComboBox<>(em, am, service,
-				SelectMode.FILTERED, null, false, null);
+				SelectMode.FILTERED, null, false, null, null);
 		select.initContent();
 		MockUtil.injectUI(select, ui);
 
@@ -106,7 +106,7 @@ public class QuickAddEntityComboBoxTest extends BaseMockitoTest {
 		AttributeModel am = em.getAttributeModel("testDomain");
 
 		QuickAddEntityComboBox<Integer, TestEntity> select = new QuickAddEntityComboBox<>(em, am, service,
-				SelectMode.FILTERED, null, false, null);
+				SelectMode.FILTERED, null, false, null, null);
 		select.initContent();
 		MockUtil.injectUI(select, ui);
 
@@ -136,7 +136,7 @@ public class QuickAddEntityComboBoxTest extends BaseMockitoTest {
 		AttributeModel am = em.getAttributeModel("testDomain");
 
 		QuickAddEntityComboBox<Integer, TestEntity> select = new QuickAddEntityComboBox<>(em, am, service,
-				SelectMode.FILTERED, null, false, null);
+				SelectMode.FILTERED, null, false, null, null);
 		select.initContent();
 		MockUtil.injectUI(select, ui);
 
@@ -162,7 +162,7 @@ public class QuickAddEntityComboBoxTest extends BaseMockitoTest {
 		AttributeModel am = em.getAttributeModel("testDomain");
 
 		QuickAddEntityComboBox<Integer, TestEntity> select = new QuickAddEntityComboBox<>(em, am, service,
-				SelectMode.FILTERED, null, false, null);
+				SelectMode.FILTERED, null, false, null, null);
 		select.initContent();
 		MockUtil.injectUI(select, ui);
 
@@ -183,7 +183,7 @@ public class QuickAddEntityComboBoxTest extends BaseMockitoTest {
 		AttributeModel am = em.getAttributeModel("testDomain");
 
 		QuickAddEntityComboBox<Integer, TestEntity> select = new QuickAddEntityComboBox<>(em, am, service,
-				SelectMode.FILTERED, null, false, null);
+				SelectMode.FILTERED, null, false, null, null);
 		select.initContent();
 		MockUtil.injectUI(select, ui);
 

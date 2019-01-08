@@ -228,7 +228,7 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 				}
 				toggleViewMode(true);
 			});
-			cancelButton.setVisible(isEditAllowed() && !isViewmode());
+			cancelButton.setVisible(isEditAllowed() && !isViewmode() && getFormOptions().isOpenInViewMode());
 			getButtonBar().addComponent(cancelButton);
 
 			// button for saving changes
@@ -291,7 +291,7 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 	@Override
 	protected BaseGridWrapper<ID, T> constructGridWrapper() {
 		ServiceBasedGridWrapper<ID, T> tw = new ServiceBasedGridWrapper<ID, T>(getService(), getEntityModel(),
-				QueryType.ID_BASED, getFormOptions(), filter, getSortOrders(), true, getJoins()) {
+				QueryType.ID_BASED, getFormOptions(), filter, getFieldFilters(), getSortOrders(), true, getJoins()) {
 
 			/**
 			 * Create binder for each row when in "edit all at once" mode
@@ -451,7 +451,7 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 	 * Sets the view mode of the screen, and adapts the grid and all buttons
 	 * accordingly
 	 *
-	 * @param viewMode
+	 * @param viewMode the new desired value for the view mode
 	 */
 	protected void toggleViewMode(boolean viewMode) {
 		setViewmode(viewMode);
@@ -460,7 +460,7 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 		saveButton.setVisible(GridEditMode.SIMULTANEOUS.equals(getFormOptions().getGridEditMode()) && !isViewmode()
 				&& isEditAllowed());
 		editButton.setVisible(isViewmode() && getFormOptions().isEditAllowed() && isEditAllowed());
-		cancelButton.setVisible(!isViewmode() && isEditAllowed());
+		cancelButton.setVisible(!isViewmode() && isEditAllowed() && getFormOptions().isOpenInViewMode());
 		addButton.setVisible(!isViewmode() && !getFormOptions().isHideAddButton() && isEditAllowed());
 	}
 

@@ -232,7 +232,7 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 
 	/**
 	 * Method that is called in order to enable/disable a button after selecting an
-	 * item table
+	 * item in the grid
 	 *
 	 * @param button       the button
 	 * @param selectedItem the currently selected item

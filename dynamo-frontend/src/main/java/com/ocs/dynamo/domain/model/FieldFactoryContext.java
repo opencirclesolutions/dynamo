@@ -15,6 +15,7 @@ package com.ocs.dynamo.domain.model;
 
 import java.util.Map;
 
+import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.server.SerializablePredicate;
 
 /**
@@ -53,6 +54,8 @@ public class FieldFactoryContext {
 	private boolean viewMode;
 
 	private boolean search;
+
+	private Map<String, ListDataProvider<?>> sharedProviders;
 
 	private FieldFactoryContext() {
 		// hidden
@@ -121,6 +124,23 @@ public class FieldFactoryContext {
 	public FieldFactoryContext setViewMode(boolean viewMode) {
 		this.viewMode = viewMode;
 		return this;
+	}
+
+	public Map<String, ListDataProvider<?>> getSharedProviders() {
+		return sharedProviders;
+	}
+
+	public FieldFactoryContext setSharedProviders(Map<String, ListDataProvider<?>> sharedProviders) {
+		this.sharedProviders = sharedProviders;
+		return this;
+	}
+
+	public void addSharedProvider(String attribute, ListDataProvider<?> sharedProvider) {
+		sharedProviders.put(attribute, sharedProvider);
+	}
+
+	public ListDataProvider<?> getSharedProvider(String attribute) {
+		return sharedProviders == null ? null : sharedProviders.get(attribute);
 	}
 
 }

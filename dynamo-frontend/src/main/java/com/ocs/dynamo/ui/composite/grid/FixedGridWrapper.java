@@ -16,6 +16,7 @@ package com.ocs.dynamo.ui.composite.grid;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import com.google.common.collect.Lists;
 import com.ocs.dynamo.domain.AbstractEntity;
@@ -31,7 +32,7 @@ import com.vaadin.server.SerializablePredicate;
 import com.vaadin.ui.UI;
 
 /**
- * A wrapper for a table that displays a fixed number of items
+ * A wrapper for a grid that displays a fixed number of items
  * 
  * @author bas.rutten
  * @param <ID> type of the primary key
@@ -42,7 +43,7 @@ public class FixedGridWrapper<ID extends Serializable, T extends AbstractEntity<
 	private static final long serialVersionUID = -6711832174203817230L;
 
 	/**
-	 * The items to display in the table
+	 * The items to display in the grid
 	 */
 	private Collection<T> items;
 
@@ -50,13 +51,13 @@ public class FixedGridWrapper<ID extends Serializable, T extends AbstractEntity<
 	 * Constructor
 	 * 
 	 * @param service     the service
-	 * @param entityModel the entity model of the items to display in the table
+	 * @param entityModel the entity model of the items to display in the grid
 	 * @param items       the items to display
 	 * @param sortOrder   optional sort order
 	 */
 	public FixedGridWrapper(BaseService<ID, T> service, EntityModel<T> entityModel, FormOptions formOptions,
-			Collection<T> items, List<SortOrder<?>> sortOrders) {
-		super(service, entityModel, QueryType.NONE, formOptions, sortOrders, false);
+			Map<String, SerializablePredicate<?>> fieldFilters, Collection<T> items, List<SortOrder<?>> sortOrders) {
+		super(service, entityModel, QueryType.NONE, formOptions, fieldFilters, sortOrders, false);
 		this.items = items;
 	}
 

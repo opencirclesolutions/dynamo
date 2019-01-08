@@ -65,7 +65,8 @@ public class TokenFieldSelectTest extends BaseMockitoTest {
 		AttributeModel am = em.getAttributeModel("testDomain");
 		com.vaadin.data.provider.SortOrder<String> order = new com.vaadin.data.provider.SortOrder<String>("id",
 				SortDirection.ASCENDING);
-		TokenFieldSelect<Integer, TestEntity> select = new TokenFieldSelect<>(em, am, service, null, false, order);
+		TokenFieldSelect<Integer, TestEntity> select = new TokenFieldSelect<>(em, am, service, null, null, false,
+				order);
 		select.initContent();
 		MockUtil.injectUI(select, ui);
 
@@ -103,7 +104,7 @@ public class TokenFieldSelectTest extends BaseMockitoTest {
 		AttributeModel am = em.getAttributeModel("testDomain");
 		com.vaadin.data.provider.SortOrder<String> order = new com.vaadin.data.provider.SortOrder<String>("id",
 				SortDirection.ASCENDING);
-		TokenFieldSelect<Integer, TestEntity> select = new TokenFieldSelect<>(em, am, service, null, true, order);
+		TokenFieldSelect<Integer, TestEntity> select = new TokenFieldSelect<>(em, am, service, null, null, true, order);
 		select.initContent();
 		MockUtil.injectUI(select, ui);
 
@@ -117,7 +118,8 @@ public class TokenFieldSelectTest extends BaseMockitoTest {
 		AttributeModel am = em.getAttributeModel("testDomain");
 		com.vaadin.data.provider.SortOrder<String> order = new com.vaadin.data.provider.SortOrder<String>("id",
 				SortDirection.ASCENDING);
-		TokenFieldSelect<Integer, TestEntity> select = new TokenFieldSelect<>(em, am, service, null, false, order);
+		TokenFieldSelect<Integer, TestEntity> select = new TokenFieldSelect<>(em, am, service, null, null, false,
+				order);
 		select.initContent();
 		MockUtil.injectUI(select, ui);
 

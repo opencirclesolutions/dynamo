@@ -16,7 +16,6 @@ import com.ocs.dynamo.domain.TestEntity2;
 import com.ocs.dynamo.service.TestEntity2Service;
 import com.ocs.dynamo.service.TestEntityService;
 import com.ocs.dynamo.test.BaseIntegrationTest;
-import com.ocs.dynamo.ui.composite.grid.InMemoryTreeGrid;
 import com.ocs.dynamo.utils.ClassUtils;
 import com.vaadin.data.provider.TreeDataProvider;
 
@@ -79,6 +78,8 @@ public class InMemoryTreeGridTest extends BaseIntegrationTest {
 
 			private static final String NAME = "name";
 
+			private static final String LONG_VALUE = "longValue";
+
 			@Override
 			protected List<TestEntity2> getChildren(TestEntity parent) {
 				List<TestEntity2> result = new ArrayList<>();
@@ -91,13 +92,16 @@ public class InMemoryTreeGridTest extends BaseIntegrationTest {
 			}
 
 			@Override
-			protected Class<?> getEditablePropertyClass(String propertyId) {
+			protected Class<?> getEditablePropertyClass(String columnName) {
+				if (LONG_VALUE.equals(columnName)) {
+					return Long.class;
+				}
 				return Integer.class;
 			}
 
 			@Override
 			protected String[] getSumColumns() {
-				return new String[] { VALUE, VALUE_2, VALUE_SUM };
+				return new String[] { VALUE, VALUE_2, VALUE_SUM, LONG_VALUE };
 			}
 
 			@Override
@@ -106,6 +110,7 @@ public class InMemoryTreeGridTest extends BaseIntegrationTest {
 				addReadOnlyColumn(VALUE, "Value", false);
 				addReadOnlyColumn(VALUE_2, "Value2", false);
 				addReadOnlyColumn(VALUE_SUM, "Value Sum", false);
+				addReadOnlyColumn(LONG_VALUE, "Long Value", false);
 			}
 
 			@Override
@@ -116,7 +121,7 @@ public class InMemoryTreeGridTest extends BaseIntegrationTest {
 				row.setValue(childEntity.getValue());
 				row.setValue2(childEntity.getValue2());
 				row.setValueSum(childEntity.getValueSum());
-
+				row.setLongValue(4L);
 				return row;
 			}
 
@@ -139,12 +144,16 @@ public class InMemoryTreeGridTest extends BaseIntegrationTest {
 
 			@Override
 			protected void setSumCellValue(TreeGridRow t, int index, String columnName, BigDecimal value) {
-				ClassUtils.setFieldValue(t, columnName, value.intValue());
+				if (getEditablePropertyClass(columnName).equals(Integer.class)) {
+					ClassUtils.setFieldValue(t, columnName, value.intValue());
+				} else {
+					ClassUtils.setFieldValue(t, columnName, value.longValue());
+				}
 			}
 		};
 		grid.build();
 
-		Assert.assertEquals(4, grid.getColumns().size());
+		Assert.assertEquals(5, grid.getColumns().size());
 
 		TreeDataProvider<TreeGridRow> provider = (TreeDataProvider<TreeGridRow>) grid.getDataProvider();
 
@@ -154,9 +163,11 @@ public class InMemoryTreeGridTest extends BaseIntegrationTest {
 		TreeGridRow parent1 = parentRows.get(0);
 		Assert.assertEquals(9, parent1.getValueSum().intValue());
 		Assert.assertEquals(9, parent1.getValueSum().intValue());
+		Assert.assertEquals(4L, parent1.getLongValue().longValue());
 
 		TreeGridRow parent2 = parentRows.get(1);
 		Assert.assertEquals(11, parent2.getValueSum().intValue());
+		Assert.assertEquals(4L, parent2.getLongValue().longValue());
 
 		List<TreeGridRow> childRows = provider.getTreeData().getChildren(parent1);
 		Assert.assertEquals(1, childRows.size());

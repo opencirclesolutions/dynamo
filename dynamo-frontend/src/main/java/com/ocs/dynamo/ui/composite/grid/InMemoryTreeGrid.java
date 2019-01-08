@@ -18,7 +18,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.google.common.collect.Lists;
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.service.MessageService;
@@ -29,12 +28,11 @@ import com.ocs.dynamo.utils.ClassUtils;
 import com.ocs.dynamo.utils.NumberUtils;
 import com.vaadin.data.TreeData;
 import com.vaadin.data.provider.TreeDataProvider;
-import com.vaadin.event.Action;
 import com.vaadin.ui.TreeGrid;
 import com.vaadin.ui.components.grid.FooterRow;
 
 /**
- * A custom tree grid for displaying a hierarchical data collection. This table
+ * A custom tree grid for displaying a hierarchical data collection. This grid
  * allows data modification although in a rather cumbersome way. It is only
  * suitable for displaying fairly limited data collections since it loads
  * everything in memory
@@ -161,7 +159,7 @@ public abstract class InMemoryTreeGrid<T, ID, C extends AbstractEntity<ID>, ID2,
 	}
 
 	/**
-	 * 
+	 * Extracts the sum cell value
 	 * @param t
 	 * @param columnName
 	 * @return
@@ -169,7 +167,7 @@ public abstract class InMemoryTreeGrid<T, ID, C extends AbstractEntity<ID>, ID2,
 	protected abstract Number extractSumCellValue(T t, int index, String columnName);
 
 	/**
-	 * 
+	 * Sets the sum cell value
 	 * @param t
 	 * @param index
 	 * @param columnName
@@ -238,13 +236,6 @@ public abstract class InMemoryTreeGrid<T, ID, C extends AbstractEntity<ID>, ID2,
 	protected abstract T createParentRow(P entity);
 
 	/**
-	 * @return any additional actions to add to the context menu
-	 */
-	protected List<Action> getAdditionalActions() {
-		return Lists.newArrayList();
-	}
-
-	/**
 	 * Returns the children of the provided parent entity
 	 * 
 	 * @return
@@ -252,9 +243,9 @@ public abstract class InMemoryTreeGrid<T, ID, C extends AbstractEntity<ID>, ID2,
 	protected abstract List<C> getChildren(P parent);
 
 	/**
-	 * Returns the custom style to use for a certain row/item
+	 * Returns the custom style to use for a certain row
 	 * 
-	 * @param t the item
+	 * @param t the item that is displayed in the row
 	 * @return
 	 */
 	protected String getCustomStyle(T t) {

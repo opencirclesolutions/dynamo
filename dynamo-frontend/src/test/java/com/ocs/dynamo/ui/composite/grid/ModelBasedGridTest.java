@@ -15,6 +15,7 @@ package com.ocs.dynamo.ui.composite.grid;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -32,6 +33,7 @@ import com.ocs.dynamo.test.BaseMockitoTest;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.composite.type.GridEditMode;
 import com.vaadin.data.provider.ListDataProvider;
+import com.vaadin.server.SerializablePredicate;
 import com.vaadin.ui.Grid;
 
 public class ModelBasedGridTest extends BaseMockitoTest {
@@ -48,7 +50,6 @@ public class ModelBasedGridTest extends BaseMockitoTest {
 	public void setUp() {
 		super.setUp();
 		ReflectionTestUtils.setField(entityModelFactory, "messageService", messageService);
-
 	}
 
 	@Test
@@ -59,7 +60,23 @@ public class ModelBasedGridTest extends BaseMockitoTest {
 		Person person = new Person(1, "Bob", 50, BigDecimal.valueOf(76.4), BigDecimal.valueOf(44.4));
 		provider.getItems().add(person);
 
-		ModelBasedGrid<Integer, Person> grid = new ModelBasedGrid<>(provider, model, false, GridEditMode.SINGLE_ROW);
+		ModelBasedGrid<Integer, Person> grid = new ModelBasedGrid<>(provider, model,
+				new HashMap<String, SerializablePredicate<?>>(), false, GridEditMode.SINGLE_ROW);
+
+		Assert.assertEquals("Persons", grid.getCaption());
+		Assert.assertEquals("Person", grid.getDescription());
+	}
+
+	@Test
+	public void testMultipleRowsEditable() {
+		ListDataProvider<Person> provider = new ListDataProvider<Person>(Lists.newArrayList());
+		EntityModel<Person> model = entityModelFactory.getModel(Person.class);
+
+		Person person = new Person(1, "Bob", 50, BigDecimal.valueOf(76.4), BigDecimal.valueOf(44.4));
+		provider.getItems().add(person);
+
+		ModelBasedGrid<Integer, Person> grid = new ModelBasedGrid<>(provider, model,
+				new HashMap<String, SerializablePredicate<?>>(), true, GridEditMode.SIMULTANEOUS);
 
 		Assert.assertEquals("Persons", grid.getCaption());
 		Assert.assertEquals("Person", grid.getDescription());
@@ -71,7 +88,7 @@ public class ModelBasedGridTest extends BaseMockitoTest {
 
 		EntityModel<TestEntity> model = entityModelFactory.getModel(TestEntity.class);
 		FixedGridWrapper<Integer, TestEntity> wrapper = new FixedGridWrapper<>(service, model, new FormOptions(),
-				Lists.newArrayList(entity), new ArrayList<>());
+				new HashMap<String, SerializablePredicate<?>>(), Lists.newArrayList(entity), new ArrayList<>());
 		wrapper.build();
 
 		Grid<TestEntity> grid = wrapper.getGrid();
@@ -87,7 +104,8 @@ public class ModelBasedGridTest extends BaseMockitoTest {
 		Person person = new Person(1, "Bob", 50, BigDecimal.valueOf(76.4), BigDecimal.valueOf(44.4));
 		provider.getItems().add(person);
 
-		ModelBasedGrid<Integer, Person> grid = new ModelBasedGrid<>(provider, model, false, GridEditMode.SINGLE_ROW);
+		ModelBasedGrid<Integer, Person> grid = new ModelBasedGrid<>(provider, model,
+				new HashMap<String, SerializablePredicate<?>>(), false, GridEditMode.SINGLE_ROW);
 
 		Assert.assertFalse(grid.getColumn("name").isHidden());
 

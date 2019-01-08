@@ -16,6 +16,7 @@ package com.ocs.dynamo.ui.composite.grid;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
@@ -47,7 +48,7 @@ public class ServiceBasedGridWrapper<ID extends Serializable, T extends Abstract
 	private static final long serialVersionUID = -4691108261565306844L;
 
 	/**
-	 * The search filter that is applied to the table
+	 * The search filter that is applied to the grid
 	 */
 	private SerializablePredicate<T> filter;
 
@@ -64,9 +65,10 @@ public class ServiceBasedGridWrapper<ID extends Serializable, T extends Abstract
 	 * @param joins       options list of fetch joins to include in the query
 	 */
 	public ServiceBasedGridWrapper(BaseService<ID, T> service, EntityModel<T> entityModel, QueryType queryType,
-			FormOptions formOptions, SerializablePredicate<T> filter, List<SortOrder<?>> sortOrders, boolean editable,
+			FormOptions formOptions, SerializablePredicate<T> filter,
+			Map<String, SerializablePredicate<?>> fieldFilters, List<SortOrder<?>> sortOrders, boolean editable,
 			FetchJoinInformation... joins) {
-		super(service, entityModel, queryType, formOptions, sortOrders, editable, joins);
+		super(service, entityModel, queryType, formOptions, fieldFilters, sortOrders, editable, joins);
 		this.filter = filter;
 	}
 

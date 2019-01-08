@@ -57,7 +57,7 @@ public class EntityComboBoxTest extends BaseMockitoTest {
 	@Test
 	public void testFilter() {
 		EntityComboBox<Integer, TestEntity> select = new EntityComboBox<>(factory.getModel(TestEntity.class), null,
-				service, new EqualsPredicate<TestEntity>("name", "Bob"));
+				service, new EqualsPredicate<TestEntity>("name", "Bob"), null);
 		Assert.assertEquals(EntityComboBox.SelectMode.FILTERED, select.getSelectMode());
 
 		select.refresh();
@@ -71,7 +71,7 @@ public class EntityComboBoxTest extends BaseMockitoTest {
 	@Test
 	public void testAddEntity() {
 		EntityComboBox<Integer, TestEntity> select = new EntityComboBox<>(factory.getModel(TestEntity.class), null,
-				service, new EqualsPredicate<TestEntity>("name", "Bob"));
+				service, new EqualsPredicate<TestEntity>("name", "Bob"), null);
 		Assert.assertEquals(0, select.getDataProviderSize());
 
 		TestEntity te = new TestEntity("stewart", 77L);
@@ -84,7 +84,7 @@ public class EntityComboBoxTest extends BaseMockitoTest {
 	@Test
 	public void testAdditionalFilter() {
 		EntityComboBox<Integer, TestEntity> select = new EntityComboBox<>(factory.getModel(TestEntity.class), null,
-				service, new EqualsPredicate<TestEntity>("name", "Bob"));
+				service, new EqualsPredicate<TestEntity>("name", "Bob"), null);
 		Assert.assertEquals(EntityComboBox.SelectMode.FILTERED, select.getSelectMode());
 
 		select.setAdditionalFilter(new EqualsPredicate<TestEntity>("name", "Henk"));

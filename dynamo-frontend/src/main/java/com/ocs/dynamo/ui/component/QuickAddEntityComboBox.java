@@ -22,6 +22,7 @@ import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.filter.AndPredicate;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.Refreshable;
+import com.ocs.dynamo.ui.SharedProvider;
 import com.ocs.dynamo.ui.component.EntityComboBox.SelectMode;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.data.provider.SortOrder;
@@ -41,7 +42,7 @@ import com.vaadin.ui.HorizontalLayout;
  * @param <T> the type of the entity
  */
 public class QuickAddEntityComboBox<ID extends Serializable, T extends AbstractEntity<ID>>
-		extends QuickAddEntityField<ID, T, T> implements Refreshable {
+		extends QuickAddEntityField<ID, T, T> implements Refreshable, SharedProvider<T> {
 
 	private static final long serialVersionUID = 4246187881499965296L;
 
@@ -66,12 +67,13 @@ public class QuickAddEntityComboBox<ID extends Serializable, T extends AbstractE
 	 */
 	@SafeVarargs
 	public QuickAddEntityComboBox(EntityModel<T> entityModel, AttributeModel attributeModel, BaseService<ID, T> service,
-			SelectMode mode, SerializablePredicate<T> filter, boolean search, List<T> items,
-			SortOrder<?>... sortOrder) {
+			SelectMode mode, SerializablePredicate<T> filter, boolean search, ListDataProvider<T> sharedProvider,
+			List<T> items, SortOrder<?>... sortOrder) {
 		super(service, entityModel, attributeModel, filter);
-		comboBox = new EntityComboBox<>(entityModel, attributeModel, service, mode, filter, items, sortOrder);
-		quickAddAllowed = attributeModel != null && attributeModel.isQuickAddAllowed() && !search;
-		directNavigationAllowed = attributeModel != null && attributeModel.isNavigable() && !search;
+		this.comboBox = new EntityComboBox<>(entityModel, attributeModel, service, mode, filter, sharedProvider, items,
+				sortOrder);
+		this.quickAddAllowed = attributeModel != null && attributeModel.isQuickAddAllowed() && !search;
+		this.directNavigationAllowed = attributeModel != null && attributeModel.isNavigable() && !search;
 	}
 
 	@Override
@@ -114,6 +116,12 @@ public class QuickAddEntityComboBox<ID extends Serializable, T extends AbstractE
 
 	public EntityComboBox<ID, T> getComboBox() {
 		return comboBox;
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public ListDataProvider<T> getSharedProvider() {
+		return (ListDataProvider<T>) comboBox.getDataProvider();
 	}
 
 	@Override
@@ -184,16 +192,16 @@ public class QuickAddEntityComboBox<ID extends Serializable, T extends AbstractE
 	}
 
 	@Override
-	public void setValue(T newFieldValue) {
+	public void setPlaceholder(String placeholder) {
 		if (comboBox != null) {
-			comboBox.setValue(newFieldValue);
+			comboBox.setPlaceholder(placeholder);
 		}
 	}
 
 	@Override
-	public void setPlaceholder(String placeholder) {
+	public void setValue(T newFieldValue) {
 		if (comboBox != null) {
-			comboBox.setPlaceholder(placeholder);
+			comboBox.setValue(newFieldValue);
 		}
 	}
 

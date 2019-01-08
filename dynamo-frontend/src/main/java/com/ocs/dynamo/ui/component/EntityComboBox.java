@@ -97,7 +97,8 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 	 * @param sortOrder         the sort order(s) to apply
 	 */
 	public EntityComboBox(EntityModel<T> targetEntityModel, AttributeModel attributeModel, BaseService<ID, T> service,
-			SelectMode mode, SerializablePredicate<T> filter, List<T> items, SortOrder<?>... sortOrders) {
+			SelectMode mode, SerializablePredicate<T> filter, ListDataProvider<T> sharedProvider, List<T> items,
+			SortOrder<?>... sortOrders) {
 		this.service = service;
 		this.selectMode = mode;
 		this.sortOrders = sortOrders;
@@ -109,19 +110,20 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 		}
 
 		setFilter(filter);
-		ListDataProvider<T> provider = null;
-
-		if (SelectMode.ALL.equals(mode)) {
-			// add all items (but sorted)
-			provider = new ListDataProvider<>(
-					service.findAll(SortUtils.translateSortOrders(false, targetEntityModel, sortOrders)));
-		} else if (SelectMode.FILTERED.equals(mode)) {
-			// add a filtered selection of items
-			items = service.find(new FilterConverter<T>(targetEntityModel).convert(filter),
-					SortUtils.translateSortOrders(false, targetEntityModel, sortOrders));
-			provider = new ListDataProvider<>(items);
-		} else if (SelectMode.FIXED.equals(mode)) {
-			provider = new ListDataProvider<>(items);
+		ListDataProvider<T> provider = sharedProvider;
+		if (provider == null) {
+			if (SelectMode.ALL.equals(mode)) {
+				// add all items (but sorted)
+				provider = new ListDataProvider<>(
+						service.findAll(SortUtils.translateSortOrders(false, targetEntityModel, sortOrders)));
+			} else if (SelectMode.FILTERED.equals(mode)) {
+				// add a filtered selection of items
+				items = service.find(new FilterConverter<T>(targetEntityModel).convert(filter),
+						SortUtils.translateSortOrders(false, targetEntityModel, sortOrders));
+				provider = new ListDataProvider<>(items);
+			} else if (SelectMode.FIXED.equals(mode)) {
+				provider = new ListDataProvider<>(items);
+			}
 		}
 		setDataProvider(new IgnoreDiacriticsCaptionFilter(true, false), provider);
 
@@ -142,8 +144,8 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 	 */
 	@SafeVarargs
 	public EntityComboBox(EntityModel<T> targetEntityModel, AttributeModel attributeModel, BaseService<ID, T> service,
-			SerializablePredicate<T> filter, SortOrder<?>... sortOrders) {
-		this(targetEntityModel, attributeModel, service, SelectMode.FILTERED, filter, null, sortOrders);
+			SerializablePredicate<T> filter, ListDataProvider<T> sharedProvider, SortOrder<?>... sortOrders) {
+		this(targetEntityModel, attributeModel, service, SelectMode.FILTERED, filter, sharedProvider, null, sortOrders);
 	}
 
 	/**
@@ -157,7 +159,7 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 	@SafeVarargs
 	public EntityComboBox(EntityModel<T> targetEntityModel, AttributeModel attributeModel, BaseService<ID, T> service,
 			SortOrder<T>... sortOrder) {
-		this(targetEntityModel, attributeModel, service, SelectMode.ALL, null, null, sortOrder);
+		this(targetEntityModel, attributeModel, service, SelectMode.ALL, null, null, null, sortOrder);
 	}
 
 	/**
@@ -169,7 +171,7 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 	 * @param items             the list of entities to display
 	 */
 	public EntityComboBox(EntityModel<T> targetEntityModel, AttributeModel attributeModel, List<T> items) {
-		this(targetEntityModel, attributeModel, null, SelectMode.FIXED, null, items);
+		this(targetEntityModel, attributeModel, null, SelectMode.FIXED, null, null, items);
 	}
 
 	/**

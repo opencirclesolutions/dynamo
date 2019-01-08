@@ -44,7 +44,6 @@ import com.ocs.dynamo.domain.model.EditableType;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.FieldFactory;
 import com.ocs.dynamo.domain.model.FieldFactoryContext;
-import com.ocs.dynamo.domain.model.impl.FieldFactoryImpl;
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.filter.EqualsPredicate;
 import com.ocs.dynamo.service.BaseService;
@@ -940,9 +939,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 			// add converters and validators
 			BindingBuilder<T, ?> builder = groups.get(viewMode).forField((HasValue<?>) field);
-			FieldFactoryImpl.addConvertersAndValidators(builder, attributeModel,
-					constructCustomConverter(attributeModel));
-
+			fieldFactory.addConvertersAndValidators(builder, attributeModel, constructCustomConverter(attributeModel));
 			builder.bind(attributeModel.getPath());
 
 			if (!attributeModel.getGroupTogetherWith().isEmpty()) {

@@ -56,7 +56,7 @@ public class FixedSplitLayoutTest extends BaseIntegrationTest {
 
 	@Test
 	public void testCreateInEditMode() {
-		FormOptions fo = new FormOptions();
+		FormOptions fo = new FormOptions().setExportAllowed(true);
 		FixedSplitLayout<Integer, TestEntity> layout = new FixedSplitLayout<Integer, TestEntity>(testEntityService,
 				entityModelFactory.getModel(TestEntity.class), fo,
 				new SortOrder<String>("name", SortDirection.ASCENDING)) {

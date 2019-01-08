@@ -40,7 +40,7 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 
 /**
- * Base class for a layout that contains both a results table and a details
+ * Base class for a layout that contains both a results grid and a details
  * view. Based on the screen mode these can be displayed either next to each
  * other or below each other
  * 
@@ -71,13 +71,13 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	// the edit form
 	private ModelBasedEditForm<ID, T> editForm;
 
-	// layout that is placed above the table view
+	// layout that is placed above the grid view
 	private Component headerLayout;
 
 	// the main layout
 	private VerticalLayout mainLayout;
 
-	// quick search filed for filtering the table
+	// quick search filed for filtering the grid
 	private TextField quickSearchField;
 
 	// the remove button

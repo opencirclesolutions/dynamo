@@ -13,7 +13,6 @@
  */
 package com.ocs.dynamo.ui.navigator;
 
-import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.vaadin.navigator.NavigationStateManager;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.View;
@@ -24,10 +23,6 @@ import com.vaadin.shared.util.SharedUtil;
 import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.SingleComponentContainer;
 import com.vaadin.ui.UI;
-
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Override of the Vaadin navigator class, for making sure that a view is
@@ -41,8 +36,6 @@ import java.util.List;
 public class CustomNavigator extends Navigator {
 
 	private static final long serialVersionUID = 4919429256404050039L;
-
-	private List<ViewProvider> providers = new LinkedList<>();
 
 	private String currentNavigationState = null;
 
@@ -74,27 +67,6 @@ public class CustomNavigator extends Navigator {
 
 	public CustomNavigator(UI ui, ViewDisplay display) {
 		this(ui, new UriFragmentManager(ui.getPage()), display);
-	}
-
-	@Override
-	public void addProvider(ViewProvider provider) {
-		if (provider == null) {
-			throw new IllegalArgumentException("Cannot add a null view provider");
-		}
-		providers.add(provider);
-	}
-
-	protected ViewProvider getViewProvider(String state) {
-		String longestViewName = null;
-		ViewProvider longestViewNameProvider = null;
-		for (ViewProvider provider : providers) {
-			String viewName = provider.getViewName(state);
-			if (null != viewName && (longestViewName == null || viewName.length() > longestViewName.length())) {
-				longestViewName = viewName;
-				longestViewNameProvider = provider;
-			}
-		}
-		return longestViewNameProvider;
 	}
 
 	public boolean isAlwaysReload() {
@@ -143,39 +115,6 @@ public class CustomNavigator extends Navigator {
 		}
 	}
 
-	@Override
-	public void removeProvider(ViewProvider provider) {
-		providers.remove(provider);
-	}
-
-	/**
-	 * Removes a view from navigator.
-	 * <p>
-	 * This method only applies to views registered using
-	 * {@link #addView(String, View)} or {@link #addView(String, Class)}.
-	 *
-	 * @param viewName name of the view to remove
-	 */
-	@Override
-	public void removeView(String viewName) {
-		Iterator<ViewProvider> it = providers.iterator();
-		while (it.hasNext()) {
-			ViewProvider provider = it.next();
-			if (provider instanceof StaticViewProvider) {
-				StaticViewProvider staticProvider = (StaticViewProvider) provider;
-				if (staticProvider.getViewName().equals(viewName)) {
-					it.remove();
-				}
-			} else if (provider instanceof ClassBasedViewProvider) {
-				ClassBasedViewProvider classBasedProvider = (ClassBasedViewProvider) provider;
-				if (classBasedProvider.getViewName().equals(viewName)) {
-					it.remove();
-				}
-			}
-		}
-	}
-
-	@Override
 	protected void revertNavigation() {
 		if (currentNavigationState != null) {
 			getStateManager().setState(currentNavigationState);
@@ -191,47 +130,6 @@ public class CustomNavigator extends Navigator {
 		errorProvider = provider;
 	}
 
-	@Override
-	public void setErrorView(final Class<? extends View> viewClass) {
-		setErrorProvider(new ViewProvider() {
-
-			private static final long serialVersionUID = 2848938026523077039L;
-
-			@Override
-			public View getView(String viewName) {
-				try {
-					return viewClass.newInstance();
-				} catch (Exception e) {
-					throw new OCSRuntimeException(e.getMessage(), e);
-				}
-			}
-
-			@Override
-			public String getViewName(String navigationState) {
-				return navigationState;
-			}
-		});
-	}
-
-	@Override
-	public void setErrorView(final View view) {
-		setErrorProvider(new ViewProvider() {
-
-			private static final long serialVersionUID = -3641455197804342745L;
-
-			@Override
-			public View getView(String viewName) {
-				return view;
-			}
-
-			@Override
-			public String getViewName(String navigationState) {
-				return navigationState;
-			}
-		});
-	}
-
-	@Override
 	protected void updateNavigationState(ViewChangeEvent event) {
 		String viewName = event.getViewName();
 		String parameters = event.getParameters();

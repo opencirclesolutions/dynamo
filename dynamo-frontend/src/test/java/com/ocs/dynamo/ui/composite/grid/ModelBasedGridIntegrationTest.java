@@ -1,5 +1,7 @@
 package com.ocs.dynamo.ui.composite.grid;
 
+import java.util.HashMap;
+
 import javax.inject.Inject;
 
 import org.junit.Assert;
@@ -23,7 +25,7 @@ import com.vaadin.data.provider.SortOrder;
 import com.vaadin.server.SerializablePredicate;
 import com.vaadin.shared.data.sort.SortDirection;
 
-public class ModelBasedTableIntegrationTest extends BaseIntegrationTest {
+public class ModelBasedGridIntegrationTest extends BaseIntegrationTest {
 
 	@Inject
 	private TestEntityService testEntityService;
@@ -50,8 +52,8 @@ public class ModelBasedTableIntegrationTest extends BaseIntegrationTest {
 				entityModelFactory.getModel(TestEntity.class));
 
 		EntityModel<TestEntity> model = entityModelFactory.getModel(TestEntity.class);
-		ModelBasedGrid<Integer, TestEntity> grid = new ModelBasedGrid<>(provider, model, false,
-				GridEditMode.SINGLE_ROW);
+		ModelBasedGrid<Integer, TestEntity> grid = new ModelBasedGrid<>(provider, model,
+				new HashMap<String, SerializablePredicate<?>>(), false, GridEditMode.SINGLE_ROW);
 
 		Assert.assertEquals(16, grid.getColumns().size());
 		Assert.assertNotNull(grid.getDataProvider().getId(entity));
@@ -63,7 +65,8 @@ public class ModelBasedTableIntegrationTest extends BaseIntegrationTest {
 		EntityModel<TestEntity> model = entityModelFactory.getModel(TestEntity.class);
 
 		ServiceBasedGridWrapper<Integer, TestEntity> wrapper = new ServiceBasedGridWrapper<>(testEntityService, model,
-				QueryType.ID_BASED, new FormOptions(), null, null, false);
+				QueryType.ID_BASED, new FormOptions(), null, new HashMap<String, SerializablePredicate<?>>(), null,
+				false);
 		wrapper.build();
 
 		Assert.assertNotNull(wrapper.getGrid());
@@ -94,7 +97,7 @@ public class ModelBasedTableIntegrationTest extends BaseIntegrationTest {
 		EntityModel<TestEntity> model = entityModelFactory.getModel(TestEntity.class);
 
 		ServiceBasedGridWrapper<Integer, TestEntity> wrapper = new ServiceBasedGridWrapper<>(testEntityService, model,
-				QueryType.ID_BASED, new FormOptions(), null,
+				QueryType.ID_BASED, new FormOptions(), null, new HashMap<String, SerializablePredicate<?>>(),
 				Lists.newArrayList(new SortOrder<String>("name", SortDirection.ASCENDING)), false);
 		wrapper.build();
 
@@ -112,7 +115,7 @@ public class ModelBasedTableIntegrationTest extends BaseIntegrationTest {
 	public void testPagingQuery() {
 		EntityModel<TestEntity> model = entityModelFactory.getModel(TestEntity.class);
 		ServiceBasedGridWrapper<Integer, TestEntity> wrapper = new ServiceBasedGridWrapper<>(testEntityService, model,
-				QueryType.PAGING, new FormOptions(), null,
+				QueryType.PAGING, new FormOptions(), null, new HashMap<String, SerializablePredicate<?>>(),
 				Lists.newArrayList(new SortOrder<String>("name", SortDirection.ASCENDING)), false);
 		wrapper.build();
 

@@ -76,6 +76,8 @@ public class TestEntity2 extends AbstractEntity<Integer> {
 	@Attribute(editable = EditableType.READ_ONLY)
 	private String readOnly;
 
+	private Long longValue;
+
 	@Override
 	public Integer getId() {
 		return id;
@@ -180,6 +182,14 @@ public class TestEntity2 extends AbstractEntity<Integer> {
 
 	public void setReadOnly(String readOnly) {
 		this.readOnly = readOnly;
+	}
+
+	public Long getLongValue() {
+		return longValue;
+	}
+
+	public void setLongValue(Long longValue) {
+		this.longValue = longValue;
 	}
 
 }

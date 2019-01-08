@@ -63,7 +63,7 @@ public class EditableGridLayoutTest extends BaseIntegrationTest {
 		// open in edit mode by default
 		Assert.assertFalse(layout.isViewmode());
 		Assert.assertFalse(layout.getEditButton().isVisible());
-		Assert.assertTrue(layout.getCancelButton().isVisible());
+		Assert.assertFalse(layout.getCancelButton().isVisible());
 		Assert.assertTrue(layout.getAddButton().isVisible());
 		Assert.assertTrue(layout.getSaveButton().isVisible());
 
@@ -90,7 +90,7 @@ public class EditableGridLayoutTest extends BaseIntegrationTest {
 		// open in edit mode by default
 		Assert.assertFalse(layout.isViewmode());
 		Assert.assertFalse(layout.getEditButton().isVisible());
-		Assert.assertTrue(layout.getCancelButton().isVisible());
+		Assert.assertFalse(layout.getCancelButton().isVisible());
 		Assert.assertTrue(layout.getAddButton().isVisible());
 
 		// no save button in "row by row" mode

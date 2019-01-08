@@ -14,6 +14,8 @@
 package com.ocs.dynamo.domain.model;
 
 import com.ocs.dynamo.service.ServiceLocatorFactory;
+import com.vaadin.data.Binder.BindingBuilder;
+import com.vaadin.data.Converter;
 import com.vaadin.ui.AbstractComponent;
 
 /**
@@ -24,14 +26,35 @@ import com.vaadin.ui.AbstractComponent;
  */
 public interface FieldFactory {
 
+	public static FieldFactory getInstance() {
+		return ServiceLocatorFactory.getServiceLocator().getService(FieldFactory.class);
+	}
+
 	/**
+	 * Adds converters and validators for a field
+	 * 
+	 * @param builder         the binding builder to which to add the converters and
+	 *                        validators
+	 * @param am              the attribute model for the field
+	 * @param customConverter
+	 */
+	<U> void addConvertersAndValidators(BindingBuilder<U, ?> builder, AttributeModel am,
+			Converter<String, ?> customConverter);
+
+	/**
+	 * Constructs a field based on the provided attribute model (given the default
+	 * context)
+	 * 
+	 * @param am the attribute model
+	 * @return
+	 */
+	public AbstractComponent constructField(AttributeModel am);
+
+	/**
+	 * Constructs a field based on the provided context
 	 * 
 	 * @param context
 	 * @return
 	 */
 	AbstractComponent constructField(FieldFactoryContext context);
-
-	public static FieldFactory getInstance() {
-		return ServiceLocatorFactory.getServiceLocator().getService(FieldFactory.class);
-	}
 }

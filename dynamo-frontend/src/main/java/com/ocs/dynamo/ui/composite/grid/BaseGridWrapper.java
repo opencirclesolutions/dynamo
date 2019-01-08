@@ -17,6 +17,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
@@ -37,8 +38,8 @@ import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.data.provider.SortOrder;
 import com.vaadin.server.SerializablePredicate;
 import com.vaadin.shared.data.sort.SortDirection;
-import com.vaadin.ui.Grid.SelectionMode;
 import com.vaadin.ui.AbstractComponent;
+import com.vaadin.ui.Grid.SelectionMode;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.VerticalLayout;
 
@@ -90,7 +91,7 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 	private ModelBasedGrid<ID, T> grid;
 
 	/**
-	 * The layout that contains the table
+	 * The layout that contains the grid
 	 */
 	private VerticalLayout layout;
 
@@ -98,6 +99,11 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 	 * Whether the grid is editable using a row editor
 	 */
 	private boolean editable;
+
+	/**
+	 * Field filter map
+	 */
+	private Map<String, SerializablePredicate<?>> fieldFilters;
 
 	/**
 	 * The entity model to use when exporting
@@ -119,14 +125,16 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 	 * 
 	 * @param service     the service used to query the repository
 	 * @param entityModel the entity model for the items that are displayed in the
-	 *                    table
+	 *                    grid
 	 * @param queryType   the type of query
 	 * @param sortOrders  the sort order
 	 * @param joins       the fetch joins to use when executing the query
 	 */
 	public BaseGridWrapper(BaseService<ID, T> service, EntityModel<T> entityModel, QueryType queryType,
-			FormOptions formOptions, List<SortOrder<?>> sortOrders, boolean editable, FetchJoinInformation... joins) {
+			FormOptions formOptions, Map<String, SerializablePredicate<?>> fieldFilters, List<SortOrder<?>> sortOrders,
+			boolean editable, FetchJoinInformation... joins) {
 		this.service = service;
+		this.fieldFilters = fieldFilters;
 		this.entityModel = entityModel;
 		this.queryType = queryType;
 		this.formOptions = formOptions;
@@ -180,13 +188,13 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 	protected abstract DataProvider<T, SerializablePredicate<T>> constructDataProvider();
 
 	/**
-	 * Constructs the table - override in subclasses if you need a different table
+	 * Constructs the grid - override in subclasses if you need a different grid
 	 * implementation
 	 * 
 	 * @return
 	 */
 	protected ModelBasedGrid<ID, T> constructGrid() {
-		return new ModelBasedGrid<ID, T>(dataProvider, entityModel, editable, 
+		return new ModelBasedGrid<ID, T>(dataProvider, entityModel, fieldFilters, editable,
 				getFormOptions().getGridEditMode()) {
 
 			private static final long serialVersionUID = -4559181057050230055L;
@@ -287,14 +295,14 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 			GridSortOrderBuilder<T> builder = new GridSortOrderBuilder<>();
 			for (SortOrder<?> o : getSortOrders()) {
 				if (getGrid().getColumn((String) o.getSorted()) != null) {
-					// only include column in sort order if it is present in the table
+					// only include column in sort order if it is present in the grid
 					if (SortDirection.ASCENDING.equals(o.getDirection())) {
 						builder.thenAsc(grid.getColumn(o.getSorted().toString()));
 					} else {
 						builder.thenDesc(grid.getColumn(o.getSorted().toString()));
 					}
 				} else {
-					// not present in table, add to backup
+					// not present in grid, add to backup
 					fallBackOrders.add(o);
 				}
 			}
@@ -325,7 +333,7 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 	}
 
 	/**
-	 * Respond to a selection of an item in the table
+	 * Respond to a selection of an item in the grid
 	 */
 	protected void onSelect(Object selected) {
 		// overwrite in subclasses

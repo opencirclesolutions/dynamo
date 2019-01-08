@@ -34,7 +34,7 @@ import com.vaadin.server.SerializablePredicate;
 import com.vaadin.ui.TextField;
 
 /**
- * A split layout - contains both a table and a details view - that uses a
+ * A split layout - contains both a grid and a details view - that uses a
  * service to fetch data
  * 
  * @author bas.rutten
@@ -135,7 +135,7 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
 	@Override
 	protected BaseGridWrapper<ID, T> constructGridWrapper() {
 		ServiceBasedGridWrapper<ID, T> tw = new ServiceBasedGridWrapper<ID, T>(getService(), getEntityModel(),
-				getQueryType(), getFormOptions(), filter, getSortOrders(), false, getJoins()) {
+				getQueryType(), getFormOptions(), filter, getFieldFilters(), getSortOrders(), false, getJoins()) {
 
 			@Override
 			protected void doConstructDataProvider(DataProvider<T, SerializablePredicate<T>> provider) {

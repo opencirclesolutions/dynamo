@@ -109,7 +109,8 @@ public class FancyListSelect<ID extends Serializable, T extends AbstractEntity<I
 		dataProvider = new ListDataProvider<>(Lists.newArrayList());
 		listSelect = new ListSelect<>();
 		listSelect.setDataProvider(dataProvider);
-		comboBox = new EntityComboBox<>(getEntityModel(), getAttributeModel(), getService(), getFilter(), sortOrders);
+		comboBox = new EntityComboBox<>(getEntityModel(), getAttributeModel(), getService(), getFilter(), null,
+				sortOrders);
 	}
 
 	@Override

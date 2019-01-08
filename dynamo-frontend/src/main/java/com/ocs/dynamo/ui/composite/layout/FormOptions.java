@@ -72,7 +72,7 @@ public class FormOptions implements Serializable {
 	private boolean editAllowed;
 
 	/**
-	 * Indicates whether table export is allowed (read from system property)
+	 * Indicates whether export is allowed (read from system property)
 	 */
 	private boolean exportAllowed = SystemPropertyUtils.allowListExport();
 
@@ -139,7 +139,7 @@ public class FormOptions implements Serializable {
 
 	/**
 	 * The orientation of the screen (horizontal or vertical). This is relevant for
-	 * the split layout. In the HORIZONTAL view the table and form are displayed
+	 * the split layout. In the HORIZONTAL view the grid and form are displayed
 	 * next to each other, in the VERTICAL view they are below each other
 	 */
 	private ScreenMode screenMode = ScreenMode.HORIZONTAL;

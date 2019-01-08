@@ -89,7 +89,7 @@ public abstract class FixedSplitLayout<ID extends Serializable, T extends Abstra
 	@Override
 	protected final BaseGridWrapper<ID, T> constructGridWrapper() {
 		FixedGridWrapper<ID, T> tw = new FixedGridWrapper<ID, T>(getService(), getEntityModel(), getFormOptions(),
-				getItems(), getSortOrders()) {
+				getFieldFilters(), getItems(), getSortOrders()) {
 
 			@Override
 			protected void doConstructDataProvider(DataProvider<T, SerializablePredicate<T>> provider) {

@@ -25,67 +25,78 @@ import com.ocs.dynamo.domain.model.annotation.Attribute;
 @Entity
 public class Person extends AbstractEntity<Integer> {
 
-    private static final long serialVersionUID = 5251680526340104915L;
+	private static final long serialVersionUID = 5251680526340104915L;
 
-    @Id
-    @GeneratedValue
-    private Integer id;
+	@Id
+	@GeneratedValue
+	private Integer id;
 
-    private String name;
+	private String name;
 
-    private Integer age;
+	private Integer age;
 
-    private BigDecimal weight;
+	private BigDecimal weight;
 
-    @Attribute(percentage = true)
-    private BigDecimal percentage;
+	@Attribute(url = true)
+	private String url;
 
-    public Person(Integer id, String name, Integer age, BigDecimal weight, BigDecimal percentage) {
-        this.id = id;
-        this.name = name;
-        this.age = age;
-        this.weight = weight;
-        this.percentage = percentage;
-    }
+	@Attribute(percentage = true)
+	private BigDecimal percentage;
 
-    public String getName() {
-        return name;
-    }
+	public Person(Integer id, String name, Integer age, BigDecimal weight, BigDecimal percentage) {
+		this.id = id;
+		this.name = name;
+		this.age = age;
+		this.weight = weight;
+		this.percentage = percentage;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public Integer getAge() {
-        return age;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public void setAge(Integer age) {
-        this.age = age;
-    }
+	public Integer getAge() {
+		return age;
+	}
 
-    public BigDecimal getWeight() {
-        return weight;
-    }
+	public void setAge(Integer age) {
+		this.age = age;
+	}
 
-    public void setWeight(BigDecimal weight) {
-        this.weight = weight;
-    }
+	public BigDecimal getWeight() {
+		return weight;
+	}
 
-    public Integer getId() {
-        return id;
-    }
+	public void setWeight(BigDecimal weight) {
+		this.weight = weight;
+	}
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
+	public Integer getId() {
+		return id;
+	}
 
-    public BigDecimal getPercentage() {
-        return percentage;
-    }
+	public void setId(Integer id) {
+		this.id = id;
+	}
 
-    public void setPercentage(BigDecimal percentage) {
-        this.percentage = percentage;
-    }
+	public BigDecimal getPercentage() {
+		return percentage;
+	}
+
+	public void setPercentage(BigDecimal percentage) {
+		this.percentage = percentage;
+	}
+
+	public String getUrl() {
+		return url;
+	}
+
+	public void setUrl(String url) {
+		this.url = url;
+	}
 
 }

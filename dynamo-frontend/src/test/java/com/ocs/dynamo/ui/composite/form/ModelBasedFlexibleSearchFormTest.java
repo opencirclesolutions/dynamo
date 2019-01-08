@@ -2,6 +2,7 @@ package com.ocs.dynamo.ui.composite.form;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -22,6 +23,7 @@ import com.ocs.dynamo.ui.composite.grid.ServiceBasedGridWrapper;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.composite.type.FlexibleFilterType;
 import com.ocs.dynamo.ui.provider.QueryType;
+import com.vaadin.server.SerializablePredicate;
 
 public class ModelBasedFlexibleSearchFormTest extends BaseIntegrationTest {
 
@@ -235,7 +237,7 @@ public class ModelBasedFlexibleSearchFormTest extends BaseIntegrationTest {
 
 	private void build(EntityModel<TestEntity> em) {
 		wrapper = new ServiceBasedGridWrapper<>(testEntityService, em, QueryType.ID_BASED, new FormOptions(), null,
-				null, true);
+				new HashMap<String, SerializablePredicate<?>>(), null, true);
 		wrapper.build();
 
 		form = new ModelBasedFlexibleSearchForm<>(wrapper, em, new FormOptions());

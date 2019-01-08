@@ -1,12 +1,12 @@
 package com.ocs.dynamo.ui;
 
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import com.ocs.dynamo.domain.TestEntity;
+import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.test.BaseMockitoTest;
 import com.ocs.dynamo.ui.menu.MenuService;
 import com.vaadin.navigator.View;
@@ -22,7 +22,6 @@ public class BaseUITest extends BaseMockitoTest {
 
 		@Override
 		protected void init(VaadinRequest request) {
-			// TODO Auto-generated method stub
 
 		}
 	};
@@ -57,7 +56,6 @@ public class BaseUITest extends BaseMockitoTest {
 	 */
 	@Test
 	public void testNavigateToEntityScreen() {
-
 		ui.addEntityOnViewMapping(TestEntity.class, a -> {
 			navigated = true;
 		});
@@ -67,10 +65,21 @@ public class BaseUITest extends BaseMockitoTest {
 		Assert.assertTrue(navigated);
 	}
 
-	@Test
-	@Ignore
+	@Test(expected = NullPointerException.class)
+	public void testNavigateToEntityScreenException() {
+		ui.addEntityOnViewMapping(TestEntity.class, a -> {
+			throw new OCSRuntimeException();
+		});
+
+		ui.navigateToEntityScreen(null);
+		ui.navigateToEntityScreen(new TestEntity());
+		Assert.assertTrue(navigated);
+	}
+
+	@Test(expected = NullPointerException.class)
 	public void testInitNavigation() {
 		Mockito.when(viewProvider.getView(Mockito.anyString())).thenReturn(view);
+		Mockito.when(viewProvider.getViewName(Mockito.anyString())).thenReturn("StartView");
 		ui.initNavigation(viewProvider, new Panel(), "StartView", true);
 	}
 }

@@ -30,7 +30,7 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.Layout;
 
 /**
- * A composite component that contains a search form and a results table, along
+ * A composite component that contains a search form and a results grid, along
  * with the option to navigate to a detail screen for adding/editing
  * 
  * @author bas.rutten

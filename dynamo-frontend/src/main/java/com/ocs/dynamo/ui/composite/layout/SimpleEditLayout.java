@@ -347,8 +347,7 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 
 	/**
 	 * Method that is called after the entire layout has been constructed. Use this
-	 * to e.g. add additional components to the bottom of the layout or to modify
-	 * the table
+	 * to e.g. add additional components to the bottom of the layout
 	 *
 	 * @param main the main layout
 	 */

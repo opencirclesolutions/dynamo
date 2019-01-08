@@ -28,6 +28,7 @@ import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.Refreshable;
+import com.ocs.dynamo.ui.SharedProvider;
 import com.ocs.dynamo.utils.ClassUtils;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.data.provider.SortOrder;
@@ -49,7 +50,7 @@ import com.vaadin.ui.HorizontalLayout;
  * 
  */
 public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<ID>>
-		extends QuickAddEntityField<ID, T, Collection<T>> implements Refreshable {
+		extends QuickAddEntityField<ID, T, Collection<T>> implements Refreshable, SharedProvider<T> {
 
 	/**
 	 * Wrapper around an item in order to display it as a token in the token field
@@ -124,7 +125,8 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
 	 */
 	@SafeVarargs
 	public TokenFieldSelect(EntityModel<T> em, AttributeModel attributeModel, BaseService<ID, T> service,
-			SerializablePredicate<T> filter, boolean search, SortOrder<?>... sortOrders) {
+			SerializablePredicate<T> filter, ListDataProvider<T> sharedProvider, boolean search,
+			SortOrder<?>... sortOrders) {
 		super(service, em, attributeModel, filter);
 		extTokenField = new ExtTokenField() {
 
@@ -137,7 +139,7 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
 				super.removeTokenizable(tokenizable);
 			}
 		};
-		comboBox = new EntityComboBox<>(em, attributeModel, service, filter, sortOrders);
+		comboBox = new EntityComboBox<>(em, attributeModel, service, filter, sharedProvider, sortOrders);
 		provider = new ListDataProvider<>(new ArrayList<>());
 		valueChangeListeners = new ArrayList<>();
 		this.addAllowed = !search && (attributeModel != null && attributeModel.isQuickAddAllowed());
@@ -360,5 +362,11 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
 		if (comboBox != null) {
 			comboBox.setPlaceholder(placeholder);
 		}
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public ListDataProvider<T> getSharedProvider() {
+		return (ListDataProvider<T>) comboBox.getDataProvider();
 	}
 }

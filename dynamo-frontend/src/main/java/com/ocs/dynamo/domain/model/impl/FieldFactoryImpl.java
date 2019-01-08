@@ -107,8 +107,8 @@ public class FieldFactoryImpl implements FieldFactory {
 	 */
 	@SuppressWarnings("unchecked")
 	private <ID extends Serializable, S extends AbstractEntity<ID>> AbstractComponent constructCollectionSelect(
-			AttributeModel am, EntityModel<?> fieldEntityModel, SerializablePredicate<?> fieldFilter, boolean search,
-			boolean multipleSelect) {
+			AttributeModel am, EntityModel<?> fieldEntityModel, SerializablePredicate<?> fieldFilter,
+			ListDataProvider<?> sharedProvider, boolean search, boolean multipleSelect) {
 		final EntityModel<?> em = resolveEntityModel(fieldEntityModel, am, search);
 
 		final BaseService<ID, S> service = (BaseService<ID, S>) serviceLocator.getServiceForEntity(em.getEntityClass());
@@ -140,19 +140,20 @@ public class FieldFactoryImpl implements FieldFactory {
 		} else {
 			// by default, use a token field
 			return new TokenFieldSelect<ID, S>((EntityModel<S>) em, am, service, (SerializablePredicate<S>) fieldFilter,
-					search, sos);
+					(ListDataProvider<S>) sharedProvider, search, sos);
 		}
 	}
 
 	@SuppressWarnings("unchecked")
 	private <ID extends Serializable, S extends AbstractEntity<ID>> QuickAddEntityComboBox<ID, S> constructComboBox(
-			AttributeModel am, EntityModel<?> entityModel, SerializablePredicate<?> fieldFilter, boolean search) {
+			AttributeModel am, EntityModel<?> entityModel, SerializablePredicate<?> fieldFilter,
+			ListDataProvider<?> sharedProvider, boolean search) {
 		entityModel = resolveEntityModel(entityModel, am, search);
 		final BaseService<ID, S> service = (BaseService<ID, S>) serviceLocator
 				.getServiceForEntity(entityModel.getEntityClass());
 		final SortOrder<?>[] sos = constructSortOrder(entityModel);
 		return new QuickAddEntityComboBox<>((EntityModel<S>) entityModel, am, service, SelectMode.FILTERED,
-				(SerializablePredicate<S>) fieldFilter, search, null, sos);
+				(SerializablePredicate<S>) fieldFilter, search, (ListDataProvider<S>) sharedProvider, null, sos);
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -179,6 +180,7 @@ public class FieldFactoryImpl implements FieldFactory {
 	 * @param am the attribute model to base the field on
 	 * @return
 	 */
+	@Override
 	public AbstractComponent constructField(AttributeModel am) {
 		return constructField(FieldFactoryContext.createDefault(am));
 	}
@@ -204,6 +206,8 @@ public class FieldFactoryImpl implements FieldFactory {
 		boolean viewMode = context.getViewMode();
 		EntityModel<?> fieldEntityModel = context.getFieldEntityModel();
 		boolean search = context.isSearch();
+
+		ListDataProvider<?> sharedProvider = context.getSharedProvider(am.getPath());
 
 		// for read-only attributes, do not render a field unless it's a link field
 		if (EditableType.READ_ONLY.equals(am.getEditableType())
@@ -243,10 +247,10 @@ public class FieldFactoryImpl implements FieldFactory {
 			}
 		} else if (AbstractEntity.class.isAssignableFrom(am.getType())) {
 			// lookup or combo field for an entity
-			field = constructSelect(am, fieldEntityModel, fieldFilter, search);
+			field = constructSelect(am, fieldEntityModel, fieldFilter, sharedProvider, search);
 		} else if (Collection.class.isAssignableFrom(am.getType())) {
 			// render a multiple select component for a collection
-			field = constructCollectionSelect(am, fieldEntityModel, fieldFilter, search, true);
+			field = constructCollectionSelect(am, fieldEntityModel, fieldFilter, sharedProvider, search, true);
 		} else if (AttributeTextFieldMode.TEXTAREA.equals(am.getTextFieldMode()) && !search) {
 			field = new TextArea();
 		} else if (Enum.class.isAssignableFrom(am.getType())) {
@@ -368,23 +372,23 @@ public class FieldFactoryImpl implements FieldFactory {
 	 * @return
 	 */
 	private AbstractComponent constructSelect(final AttributeModel am, final EntityModel<?> fieldEntityModel,
-			final SerializablePredicate<?> fieldFilter, boolean search) {
+			final SerializablePredicate<?> fieldFilter, ListDataProvider<?> sharedProvider, boolean search) {
 		AbstractComponent field = null;
 		AttributeSelectMode selectMode = search ? am.getSearchSelectMode() : am.getSelectMode();
 
 		if (search && am.isMultipleSearch()) {
 			// in case of multiple search, defer to the
 			// "constructCollectionSelect" method
-			field = this.constructCollectionSelect(am, fieldEntityModel, fieldFilter, search, true);
+			field = this.constructCollectionSelect(am, fieldEntityModel, fieldFilter, sharedProvider, search, true);
 		} else if (AttributeSelectMode.COMBO.equals(selectMode)) {
 			// combo box
-			field = constructComboBox(am, fieldEntityModel, fieldFilter, search);
+			field = constructComboBox(am, fieldEntityModel, fieldFilter, sharedProvider, search);
 		} else if (AttributeSelectMode.LOOKUP.equals(selectMode)) {
 			// single select lookup field
 			field = constructLookupField(am, fieldEntityModel, fieldFilter, search, false);
 		} else {
 			// list select (single select)
-			field = this.constructCollectionSelect(am, fieldEntityModel, fieldFilter, search, false);
+			field = this.constructCollectionSelect(am, fieldEntityModel, fieldFilter, sharedProvider, search, false);
 		}
 		return field;
 	}
@@ -497,10 +501,8 @@ public class FieldFactoryImpl implements FieldFactory {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <U> void addConvertersAndValidators(BindingBuilder<U, ?> builder, AttributeModel am,
+	public <U> void addConvertersAndValidators(BindingBuilder<U, ?> builder, AttributeModel am,
 			Converter<String, ?> customConverter) {
-		MessageService messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
-
 		if (am.isEmail()) {
 			BindingBuilder<U, String> sBuilder = (BindingBuilder<U, String>) builder;
 			sBuilder.withNullRepresentation("").withValidator(
