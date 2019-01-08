@@ -207,6 +207,12 @@ public @interface Attribute {
 	 */
 	boolean requiredForSearching() default false;
 
+	/**
+	 * 
+	 * @return The number of rows for a list select or text are component
+	 */
+	int rows() default -1;
+
 	/** @return whether the field is searchable */
 	boolean searchable() default false;
 

@@ -25,13 +25,15 @@ public final class SystemPropertyUtils {
 
 	private static final int DEFAULT_DECIMAL_PRECISION = 2;
 
+	private static final String DEFAULT_FALSE_REPRESENTATION = "false";
+
 	private static final int DEFAULT_LISTSELECT_ROWS = 3;
 
 	private static final int DEFAULT_LOOKUP_FIELD_MAX_ITEMS = 3;
 
-	private static final String DEFAULT_TRUE_REPRESENTATION = "true";
+	private static final int DEFAULT_TEXTAREA_ROWS = 3;
 
-	private static final String DEFAULT_FALSE_REPRESENTATION = "false";
+	private static final String DEFAULT_TRUE_REPRESENTATION = "true";
 
 	/**
 	 * Returns whether export of grid contents to Excel/CSV is allowed. This system
@@ -138,7 +140,6 @@ public final class SystemPropertyUtils {
 	}
 
 	/**
-	 *
 	 * @return the default width (in pixels) of the title label above an edit from
 	 */
 	public static int getDefaultFormTitleWidth() {
@@ -146,8 +147,6 @@ public final class SystemPropertyUtils {
 	}
 
 	/**
-	 *
-	 *
 	 * @return the default number of rows in a list select component. Also used as
 	 *         the default for collection tables
 	 */
@@ -175,6 +174,14 @@ public final class SystemPropertyUtils {
 	 */
 	public static boolean getDefaultSearchPrefixOnly() {
 		return Boolean.getBoolean(DynamoConstants.SP_DEFAULT_SEARCH_PREFIX_ONLY);
+	}
+
+	/**
+	 * 
+	 * @return the default number of rows for a textarea component
+	 */
+	public static int getDefaultTextAreaRows() {
+		return Integer.getInteger(DynamoConstants.SP_DEFAULT_LISTSELECT_ROWS, DEFAULT_TEXTAREA_ROWS);
 	}
 
 	/**

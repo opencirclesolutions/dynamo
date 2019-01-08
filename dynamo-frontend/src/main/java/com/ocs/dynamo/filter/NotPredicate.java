@@ -16,7 +16,7 @@ package com.ocs.dynamo.filter;
 import com.vaadin.server.SerializablePredicate;
 
 /**
- * A predicate for joining multiple predicates based on the logical AND
+ * A predicate that can be used for negating another predicate
  * 
  * @author Bas Rutten
  *

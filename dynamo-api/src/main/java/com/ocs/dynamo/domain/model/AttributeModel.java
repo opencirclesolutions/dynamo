@@ -301,6 +301,12 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 
 	/**
 	 * 
+	 * @return The number of rows for a list select or text area component
+	 */
+	Integer getRows();
+
+	/**
+	 * 
 	 * 
 	 * @return The search select mode (determines which component to render in
 	 *         search screens)

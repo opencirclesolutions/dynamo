@@ -223,6 +223,12 @@ public final class DynamoConstants {
 	public static final String SP_DEFAULT_LISTSELECT_ROWS = "ocs.default.listselect.rows";
 
 	/**
+	 * Name of the system property that is used to determine the amount of rows in a
+	 * text area
+	 */
+	public static final String SP_DEFAULT_TEXTAREA_ROWS = "ocs.default.textarea.rows";
+
+	/**
 	 * Name of the system property that is used to set the default locale
 	 */
 	public static final String SP_DEFAULT_LOCALE = "ocs.default.locale";

@@ -124,18 +124,18 @@ public class FieldFactoryImpl implements FieldFactory {
 			// fancy list select
 			FancyListSelect<ID, S> listSelect = new FancyListSelect<>(service, (EntityModel<S>) em, am,
 					(SerializablePredicate<S>) fieldFilter, search, sos);
-			listSelect.setRows(SystemPropertyUtils.getDefaultListSelectRows());
+			listSelect.setRows(am.getRows() != null ? am.getRows() : SystemPropertyUtils.getDefaultListSelectRows());
 			return listSelect;
 		} else if (AttributeSelectMode.LIST.equals(mode)) {
 			// simple list select if everything else fails or is not applicable
 			if (multipleSelect || Collection.class.isAssignableFrom(am.getType())) {
 				return new QuickAddListSelect<ID, S>((EntityModel<S>) em, am, service,
-						(SerializablePredicate<S>) fieldFilter, search, SystemPropertyUtils.getDefaultListSelectRows(),
-						sos);
+						(SerializablePredicate<S>) fieldFilter, search,
+						am.getRows() != null ? am.getRows() : SystemPropertyUtils.getDefaultListSelectRows(), sos);
 			} else {
 				return new QuickAddListSingleSelect<>((EntityModel<S>) em, am, service,
-						(SerializablePredicate<S>) fieldFilter, search, SystemPropertyUtils.getDefaultListSelectRows(),
-						sos);
+						(SerializablePredicate<S>) fieldFilter, search,
+						am.getRows() != null ? am.getRows() : SystemPropertyUtils.getDefaultListSelectRows(), sos);
 			}
 		} else {
 			// by default, use a token field
@@ -253,6 +253,8 @@ public class FieldFactoryImpl implements FieldFactory {
 			field = constructCollectionSelect(am, fieldEntityModel, fieldFilter, sharedProvider, search, true);
 		} else if (AttributeTextFieldMode.TEXTAREA.equals(am.getTextFieldMode()) && !search) {
 			field = new TextArea();
+			((TextArea) field)
+					.setRows(am.getRows() == null ? SystemPropertyUtils.getDefaultTextAreaRows() : am.getRows());
 		} else if (Enum.class.isAssignableFrom(am.getType())) {
 			field = constructEnumComboBox(am.getType().asSubclass(Enum.class));
 		} else if (search && (am.getType().equals(Boolean.class) || am.getType().equals(boolean.class))) {

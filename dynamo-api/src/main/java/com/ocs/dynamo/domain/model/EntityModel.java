@@ -50,11 +50,6 @@ public interface EntityModel<T> {
 	String CASCADE = "cascade";
 
 	/**
-	 * To completely turn off cascading for an attribute
-	 */
-	String CASCADE_OFF = "cascadeOff";
-
-	/**
 	 * Cascade filter path (what to filter to receving end of the cascade on)
 	 */
 	String CASCADE_FILTER_PATH = "cascadeFilterPath";
@@ -63,6 +58,11 @@ public interface EntityModel<T> {
 	 * Cascade mode (when to apply cascading - search, edit, or both)
 	 */
 	String CASCADE_MODE = "cascadeMode";
+
+	/**
+	 * To completely turn off cascading for an attribute
+	 */
+	String CASCADE_OFF = "cascadeOff";
 
 	/**
 	 * The "checkbox mode" for a boolean (either a checkbox or a toggle)
@@ -121,6 +121,11 @@ public interface EntityModel<T> {
 	 * inside a lookup component or a grid)
 	 */
 	String DISPLAY_PROPERTY = "displayProperty";
+
+	/**
+	 * The editable modus (EDITABLE, READ_ONLY, or CREATE_ONLY)
+	 */
+	String EDITABLE = "editable";
 
 	/**
 	 * Whether the property is embedded
@@ -195,6 +200,11 @@ public interface EntityModel<T> {
 	String NAVIGABLE = "navigable";
 
 	/**
+	 * Type of number input field to use instead of a text field
+	 */
+	String NUMBER_SELECT_MODE = "numberSelectMode";
+
+	/**
 	 * Whether to include a percentage sign to a numerical field (cosmetic only)
 	 */
 	String PERCENTAGE = "percentage";
@@ -221,11 +231,6 @@ public interface EntityModel<T> {
 	String READ_ONLY = "readOnly";
 
 	/**
-	 * The editable modus (EDITABLE, READ_ONLY, or CREATE_ONLY)
-	 */
-	String EDITABLE = "editable";
-
-	/**
 	 * The path to actually search for (replaces the standard search path)
 	 */
 	String REPLACEMENT_SEARCH_PATH = "replacementSearchPath";
@@ -241,7 +246,12 @@ public interface EntityModel<T> {
 	String REQUIRED_FOR_SEARCHING = "requiredForSearching";
 
 	/**
-	 * Whether searching is case sensivite
+	 * The number of rows in a text area or list select
+	 */
+	String ROWS = "rows";
+
+	/**
+	 * Whether searching is case sensitive
 	 */
 	String SEARCH_CASE_SENSITIVE = "searchCaseSensitive";
 
@@ -266,25 +276,10 @@ public interface EntityModel<T> {
 	String SEARCHABLE = "searchable";
 
 	/**
-	 * One or more styles for the field
-	 */
-	String STYLES = "styles";
-
-	/**
 	 * Indicates that a lookup field (rather than a combo box) must be used when
 	 * selecting the component
 	 */
 	String SELECT_MODE = "selectMode";
-
-	/**
-	 * Type of number input field to use instead of a text field
-	 */
-	String NUMBER_SELECT_MODE = "numberSelectMode";
-
-	/**
-	 * Whether to show an attribute inside a grid
-	 */
-	String VISIBLE_IN_GRID = "visibleInGrid";
 
 	/**
 	 * Default sort order for an entity
@@ -295,6 +290,11 @@ public interface EntityModel<T> {
 	 * Whether it is possible to sort on an attribute
 	 */
 	String SORTABLE = "sortable";
+
+	/**
+	 * One or more styles for the field
+	 */
+	String STYLES = "styles";
 
 	/**
 	 * The text field mode - indicates whether to use a text field or text area for
@@ -322,6 +322,11 @@ public interface EntityModel<T> {
 	 * Indicated whether the field is visible
 	 */
 	String VISIBLE = "visible";
+
+	/**
+	 * Whether to show an attribute inside a grid
+	 */
+	String VISIBLE_IN_GRID = "visibleInGrid";
 
 	/**
 	 * Indicates whether to format a date field as a week code

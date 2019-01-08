@@ -13,6 +13,16 @@
  */
 package com.ocs.dynamo.domain.model.impl;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.apache.commons.lang.builder.ReflectionToStringBuilder;
+
 import com.ocs.dynamo.domain.model.AttributeDateType;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.AttributeSelectMode;
@@ -23,15 +33,6 @@ import com.ocs.dynamo.domain.model.CheckboxMode;
 import com.ocs.dynamo.domain.model.EditableType;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.NumberSelectMode;
-import org.apache.commons.lang.builder.ReflectionToStringBuilder;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * Implementation of the AttributeModel interface - simple container for
@@ -137,6 +138,8 @@ public class AttributeModelImpl implements AttributeModel {
 
 	private boolean requiredForSearching;
 
+	private Integer rows;
+
 	private boolean searchable;
 
 	private boolean searchCaseSensitive;
@@ -185,6 +188,11 @@ public class AttributeModelImpl implements AttributeModel {
 	@Override
 	public int compareTo(final AttributeModel o) {
 		return this.getOrder() - o.getOrder();
+	}
+
+	@Override
+	public String getActualSortPath() {
+		return replacementSortPath != null ? replacementSortPath : getPath();
 	}
 
 	@Override
@@ -379,6 +387,10 @@ public class AttributeModelImpl implements AttributeModel {
 
 	public String getReplacementSortPath() {
 		return replacementSortPath;
+	}
+
+	public Integer getRows() {
+		return rows;
 	}
 
 	@Override
@@ -730,6 +742,10 @@ public class AttributeModelImpl implements AttributeModel {
 		this.requiredForSearching = requiredForSearching;
 	}
 
+	public void setRows(Integer rows) {
+		this.rows = rows;
+	}
+
 	public void setSearchable(boolean searchable) {
 		this.searchable = searchable;
 	}
@@ -804,10 +820,5 @@ public class AttributeModelImpl implements AttributeModel {
 	@Override
 	public String toString() {
 		return ReflectionToStringBuilder.toStringExclude(this, "entityModel");
-	}
-
-	@Override
-	public String getActualSortPath() {
-		return replacementSortPath != null ? replacementSortPath : getPath();
 	}
 }

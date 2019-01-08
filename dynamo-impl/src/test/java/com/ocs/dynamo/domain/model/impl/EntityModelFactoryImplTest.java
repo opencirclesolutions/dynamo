@@ -47,6 +47,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import com.ocs.dynamo.domain.model.AttributeDateType;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.AttributeSelectMode;
+import com.ocs.dynamo.domain.model.AttributeTextFieldMode;
 import com.ocs.dynamo.domain.model.AttributeType;
 import com.ocs.dynamo.domain.model.CascadeMode;
 import com.ocs.dynamo.domain.model.CheckboxMode;
@@ -108,6 +109,8 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		Assert.assertFalse(nameModel.isRequired());
 		Assert.assertTrue(nameModel.isVisible());
 		Assert.assertEquals(55, nameModel.getMaxLength().intValue());
+		Assert.assertEquals(AttributeTextFieldMode.TEXTAREA, nameModel.getTextFieldMode());
+		Assert.assertEquals(4, nameModel.getRows().intValue());
 
 		Assert.assertTrue(nameModel.isSortable());
 		Assert.assertTrue(nameModel.isMainAttribute());
@@ -608,7 +611,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 	public class Entity1 {
 
 		@Size(max = 55)
-		@Attribute(main = true)
+		@Attribute(main = true, textFieldMode = AttributeTextFieldMode.TEXTAREA, rows = 4)
 		private String name;
 
 		@NotNull
@@ -724,15 +727,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 			@AttributeGroup(messageKey = "group2.key", attributeNames = { "age" }) })
 	public class Entity3 {
 
-		@Attribute(defaultValue = "Bas",
-				description = "Test",
-				displayName = "Naampje",
-				editable = EditableType.READ_ONLY,
-				prompt = "Prompt",
-				searchable = true,
-				main = true,
-				sortable = false,
-				styles = "myStyle")
+		@Attribute(defaultValue = "Bas", description = "Test", displayName = "Naampje", editable = EditableType.READ_ONLY, prompt = "Prompt", searchable = true, main = true, sortable = false, styles = "myStyle")
 		private String name;
 
 		@Attribute(searchCaseSensitive = true, searchPrefixOnly = true, useThousandsGrouping = false)

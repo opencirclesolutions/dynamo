@@ -100,7 +100,7 @@ public class TestEntity extends AbstractTreeEntity<Integer, TestEntity> {
 	@Attribute(numberSelectMode = NumberSelectMode.SLIDER, visible = VisibilityType.HIDE)
 	private Long someLongSlider;
 
-	@Attribute(textFieldMode = AttributeTextFieldMode.TEXTAREA)
+	@Attribute(textFieldMode = AttributeTextFieldMode.TEXTAREA, rows = 4)
 	private String someTextArea;
 
 	@Attribute(trueRepresentation = "On", falseRepresentation = "Off")

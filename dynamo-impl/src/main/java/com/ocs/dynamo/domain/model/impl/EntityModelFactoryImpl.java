@@ -285,10 +285,9 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 					&& !AttributeType.BASIC.equals(model.getAttributeType())) {
 				throw new OCSRuntimeException("Token or Fancy List field not allowed for attribute " + model.getName());
 			}
-			
+
 			// navigating only allowed in case of a many to one relation
-			if (!AttributeType.MASTER.equals(model.getAttributeType())
-					&& model.isNavigable()) {
+			if (!AttributeType.MASTER.equals(model.getAttributeType()) && model.isNavigable()) {
 				throw new OCSRuntimeException("Navigation is not possible for attribute " + model.getName());
 			}
 
@@ -1082,6 +1081,10 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 			if (!StringUtils.isEmpty(attribute.styles())) {
 				model.setStyles(attribute.styles());
 			}
+
+			if (attribute.rows() > -1) {
+				model.setRows(attribute.rows());
+			}
 		}
 	}
 
@@ -1403,8 +1406,13 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 		}
 
 		msg = getAttributeMessage(entityModel, model, EntityModel.STYLES);
-		if (msg != null && !StringUtils.isEmpty(msg)) {
+		if (!StringUtils.isEmpty(msg)) {
 			model.setStyles(msg);
+		}
+
+		msg = getAttributeMessage(entityModel, model, EntityModel.ROWS);
+		if (!StringUtils.isEmpty(msg)) {
+			model.setRows(Integer.parseInt(msg));
 		}
 
 		setMessageBundleCascadeOverrides(entityModel, model);
