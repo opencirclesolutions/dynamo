@@ -475,4 +475,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 		this.exportEntityModel = exportEntityModel;
 	}
 
+	public void clearGridWrapper() {
+		this.gridWrapper = null;
+	}
 }

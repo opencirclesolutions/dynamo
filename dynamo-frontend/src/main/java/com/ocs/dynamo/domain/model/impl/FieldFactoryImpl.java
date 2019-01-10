@@ -462,10 +462,17 @@ public class FieldFactoryImpl implements FieldFactory {
 			AbstractTextField atf = (AbstractTextField) field;
 			atf.addBlurListener(event -> {
 				String value = atf.getValue();
-				if (value != null && value.indexOf('%') < 0) {
-					value = value.trim() + "%";
-					atf.setValue(value);
-				}
+//				if (value != null && value.indexOf('%') < 0) {
+//					value = value.trim() + "%";
+//					atf.setValue(value);
+//				}
+
+				// automatic formatting to add
+
+				BigDecimal bd = VaadinUtils.stringToBigDecimal(true,
+						SystemPropertyUtils.useThousandsGroupingInEditMode(), false, value);
+				atf.setValue(
+						VaadinUtils.bigDecimalToString(true, SystemPropertyUtils.useThousandsGroupingInEditMode(), bd));
 			});
 		}
 
@@ -484,13 +491,14 @@ public class FieldFactoryImpl implements FieldFactory {
 	}
 
 	/**
+	 * Looks up the entity model to use for a certain field
 	 * 
-	 * @param entityModel
-	 * @param am
-	 * @param search
+	 * @param entityModel the base entity model
+	 * @param am          the attribute model to use for the file
+	 * @param search      whether the screen is in search mode
 	 * @return
 	 */
-	private EntityModel<?> resolveEntityModel(EntityModel<?> entityModel, final AttributeModel am, Boolean search) {
+	private EntityModel<?> resolveEntityModel(EntityModel<?> entityModel, final AttributeModel am, boolean search) {
 		if (entityModel == null) {
 			if (!Boolean.TRUE.equals(search) && am.getNestedEntityModel() != null) {
 				entityModel = am.getNestedEntityModel();

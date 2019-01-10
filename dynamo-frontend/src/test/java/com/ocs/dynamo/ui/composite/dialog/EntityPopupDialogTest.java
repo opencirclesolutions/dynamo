@@ -1,5 +1,7 @@
 package com.ocs.dynamo.ui.composite.dialog;
 
+import java.util.HashMap;
+
 import javax.inject.Inject;
 
 import org.junit.Assert;
@@ -40,7 +42,7 @@ public class EntityPopupDialogTest extends BaseIntegrationTest {
 	public void testCreateNewEntity() {
 		FormOptions fo = new FormOptions();
 		EntityPopupDialog<Integer, TestEntity> dialog = new EntityPopupDialog<Integer, TestEntity>(testEntityService,
-		        null, entityModelFactory.getModel(TestEntity.class), fo) {
+				null, entityModelFactory.getModel(TestEntity.class), new HashMap<>(), fo) {
 
 			private static final long serialVersionUID = 485491706786708563L;
 
@@ -69,7 +71,7 @@ public class EntityPopupDialogTest extends BaseIntegrationTest {
 	public void testUpdateExistingEntity() {
 		FormOptions fo = new FormOptions();
 		EntityPopupDialog<Integer, TestEntity> dialog = new EntityPopupDialog<Integer, TestEntity>(testEntityService,
-		        e1, entityModelFactory.getModel(TestEntity.class), fo) {
+				e1, entityModelFactory.getModel(TestEntity.class), new HashMap<>(), fo) {
 
 			private static final long serialVersionUID = 485491706786708563L;
 
@@ -88,10 +90,10 @@ public class EntityPopupDialogTest extends BaseIntegrationTest {
 	}
 
 	@Test
-	public void testReadOnlyModues() {
+	public void testReadOnlyMode() {
 		FormOptions fo = new FormOptions().setReadOnly(true);
 		EntityPopupDialog<Integer, TestEntity> dialog = new EntityPopupDialog<Integer, TestEntity>(testEntityService,
-		        e1, entityModelFactory.getModel(TestEntity.class), fo) {
+				e1, entityModelFactory.getModel(TestEntity.class), new HashMap<>(), fo) {
 
 			private static final long serialVersionUID = 485491706786708563L;
 

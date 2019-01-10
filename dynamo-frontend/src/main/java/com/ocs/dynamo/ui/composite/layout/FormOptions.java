@@ -56,13 +56,18 @@ public class FormOptions implements Serializable {
 	private boolean confirmSave;
 
 	/**
-	 * Whether to display a button for opening a search dialog
+	 * Whether to display a details grid in search mode
 	 */
 	private boolean detailsGridSearchMode;
 
 	/**
+	 * Whether details mode is enabled in a search layout
+	 */
+	private boolean detailsModeEnabled = true;
+
+	/**
 	 * Whether you can navigate to a detail screen by double clicking on a row in a
-	 * results table
+	 * results grid
 	 */
 	private boolean doubleClickSelectAllowed = true;
 
@@ -77,9 +82,9 @@ public class FormOptions implements Serializable {
 	private boolean exportAllowed = SystemPropertyUtils.allowListExport();
 
 	/**
-	 * The data export mode - by default, export all attributes that are visible
+	 * The data export mode - by default, export only the attributes that are visible in the grid
 	 */
-	private ExportMode exportMode = ExportMode.ONLY_VISIBLE_IN_TABLE;
+	private ExportMode exportMode = ExportMode.ONLY_VISIBLE_IN_GRID;
 
 	/**
 	 * Whether this form is nested in another form. Used by the framework, usually
@@ -88,7 +93,8 @@ public class FormOptions implements Serializable {
 	private boolean formNested;
 
 	/**
-	 * 
+	 * The grid edit mode (either all rows at once or one row at a time) inside an
+	 * EditableGridLayout
 	 */
 	private GridEditMode gridEditMode = GridEditMode.SINGLE_ROW;
 
@@ -139,8 +145,8 @@ public class FormOptions implements Serializable {
 
 	/**
 	 * The orientation of the screen (horizontal or vertical). This is relevant for
-	 * the split layout. In the HORIZONTAL view the grid and form are displayed
-	 * next to each other, in the VERTICAL view they are below each other
+	 * the split layout. In the HORIZONTAL view the grid and form are displayed next
+	 * to each other, in the VERTICAL view they are below each other
 	 */
 	private ScreenMode screenMode = ScreenMode.HORIZONTAL;
 
@@ -214,6 +220,8 @@ public class FormOptions implements Serializable {
 		fo.setFormNested(isFormNested());
 		fo.setConfirmSave(isConfirmSave());
 		fo.setExportMode(getExportMode());
+		fo.setGridEditMode(getGridEditMode());
+		fo.setDetailsModeEnabled(isDetailsModeEnabled());
 		return fo;
 	}
 
@@ -247,6 +255,10 @@ public class FormOptions implements Serializable {
 
 	public boolean isDetailsGridSearchMode() {
 		return detailsGridSearchMode;
+	}
+
+	public boolean isDetailsModeEnabled() {
+		return detailsModeEnabled;
 	}
 
 	public boolean isDoubleClickSelectAllowed() {
@@ -351,6 +363,11 @@ public class FormOptions implements Serializable {
 
 	public FormOptions setDetailsGridSearchMode(boolean detailsGridSearchMode) {
 		this.detailsGridSearchMode = detailsGridSearchMode;
+		return this;
+	}
+
+	public FormOptions setDetailsModeEnabled(boolean detailsModeEnabled) {
+		this.detailsModeEnabled = detailsModeEnabled;
 		return this;
 	}
 

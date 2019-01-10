@@ -116,7 +116,7 @@ public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractE
 
 	@Override
 	protected void doBuild(Layout parent) {
-		FormOptions formOptions = new FormOptions().setReadOnly(true).setPopup(true)
+		FormOptions formOptions = new FormOptions().setReadOnly(true).setPopup(true).setDetailsModeEnabled(false)
 				.setSearchImmediately(searchImmediately);
 
 		VerticalLayout wrapper = new DefaultVerticalLayout(false, false);

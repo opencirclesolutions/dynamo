@@ -14,7 +14,9 @@
 package com.ocs.dynamo.ui.composite.dialog;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
@@ -25,6 +27,7 @@ import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.composite.layout.SimpleEditLayout;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
+import com.vaadin.server.SerializablePredicate;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Layout;
@@ -74,6 +77,8 @@ public class EntityPopupDialog<ID extends Serializable, T extends AbstractEntity
 	 */
 	private Button okButton;
 
+	private Map<String, SerializablePredicate<?>> fieldFilters = new HashMap<>();
+
 	/**
 	 * Constructor
 	 * 
@@ -83,11 +88,12 @@ public class EntityPopupDialog<ID extends Serializable, T extends AbstractEntity
 	 * @param formOptions
 	 */
 	public EntityPopupDialog(BaseService<ID, T> service, T entity, EntityModel<T> entityModel,
-			FormOptions formOptions) {
+			Map<String, SerializablePredicate<?>> fieldFilters, FormOptions formOptions) {
 		this.service = service;
 		this.entityModel = entityModel;
 		this.formOptions = formOptions;
 		this.entity = entity;
+		this.fieldFilters = fieldFilters;
 	}
 
 	/**
@@ -143,6 +149,7 @@ public class EntityPopupDialog<ID extends Serializable, T extends AbstractEntity
 			}
 
 		};
+		layout.setFieldFilters(fieldFilters);
 		parent.addComponent(layout);
 	}
 

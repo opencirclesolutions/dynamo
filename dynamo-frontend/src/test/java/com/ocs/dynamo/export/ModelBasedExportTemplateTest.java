@@ -67,7 +67,7 @@ public class ModelBasedExportTemplateTest extends BaseIntegrationTest {
 	@Test
 	public void testExcel() throws IOException {
 		ModelBasedExcelExportTemplate<Integer, TestEntity> template = new ModelBasedExcelExportTemplate<Integer, TestEntity>(
-				testEntityService, entityModelFactory.getModel(TestEntity.class), ExportMode.ONLY_VISIBLE_IN_TABLE,
+				testEntityService, entityModelFactory.getModel(TestEntity.class), ExportMode.ONLY_VISIBLE_IN_GRID,
 				null, null, "Sheet name", null);
 		byte[] bytes = template.process();
 
@@ -121,7 +121,7 @@ public class ModelBasedExportTemplateTest extends BaseIntegrationTest {
 	@Test
 	public void testCsv() {
 		ModelBasedCsvExportTemplate<Integer, TestEntity> template = new ModelBasedCsvExportTemplate<Integer, TestEntity>(
-				testEntityService, entityModelFactory.getModel(TestEntity.class), ExportMode.ONLY_VISIBLE_IN_TABLE,
+				testEntityService, entityModelFactory.getModel(TestEntity.class), ExportMode.ONLY_VISIBLE_IN_GRID,
 				null, null, "Sheet name", null);
 		byte[] bytes = template.process();
 		String str = new String(bytes);

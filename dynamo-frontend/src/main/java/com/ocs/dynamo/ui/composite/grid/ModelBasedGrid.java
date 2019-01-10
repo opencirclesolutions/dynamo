@@ -160,7 +160,7 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 				if (editable && GridEditMode.SIMULTANEOUS.equals(gridEditMode)
 						&& EditableType.EDITABLE.equals(am.getEditableType())) {
 					// edit all columns at once
-					column = addColumn(t -> {
+					column = addComponentColumn(t -> {
 						AbstractComponent comp = constructCustomField(entityModel, am);
 						if (comp == null) {
 							FieldFactoryContext ctx = FieldFactoryContext.create().setAttributeModel(am)
@@ -181,7 +181,7 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 						postProcessComponent(am, comp);
 
 						return (AbstractComponent) comp;
-					}, new ComponentRenderer());
+					});
 				} else {
 					column = addColumn(t -> FormatUtils.extractAndFormat(this, am, t));
 				}

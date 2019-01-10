@@ -245,6 +245,11 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 						searchLayoutConstructed = false;
 					});
 				}
+				// clear current selection and update buttons
+				getSearchForm().getClearButton().addClickListener(e -> {
+					setSelectedItem(null);
+					checkButtonState(getSelectedItem());
+				});
 				getSearchForm().getClearButton().addClickListener(e -> afterClear());
 			}
 
@@ -269,6 +274,13 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 					getSearchForm().getSearchAnyButton()
 							.addClickListener(e -> constructLayoutIfNeeded(noSearchYetLabel));
 				}
+			}
+			// clear currently selected item and update buttons
+			if (getSearchForm().getSearchButton() != null) {
+				getSearchForm().getSearchButton().addClickListener(e -> {
+					setSelectedItem(null);
+					checkButtonState(getSelectedItem());
+				});
 			}
 
 			// add button
@@ -516,8 +528,9 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 				doEdit();
 			}
 		});
-		// hide button inside popup window
-		eb.setVisible(!getFormOptions().isPopup());
+		// hide button inside popup window or when details mode has been explicitly
+		// disabled
+		eb.setVisible(getFormOptions().isDetailsModeEnabled());
 		return eb;
 	}
 
@@ -596,7 +609,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 
 		// select item by double clicking on row (disable this inside pop-up
 		// windows)
-		if (!getFormOptions().isPopup() && getFormOptions().isDoubleClickSelectAllowed()) {
+		if (getFormOptions().isDetailsModeEnabled() && getFormOptions().isDoubleClickSelectAllowed()) {
 			getGridWrapper().getGrid().addItemClickListener(event -> {
 				if (event.getMouseEventDetails().isDoubleClick()) {
 					select(event.getItem());

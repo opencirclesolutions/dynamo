@@ -13,6 +13,12 @@
  */
 package com.ocs.dynamo.ui.composite.type;
 
+/**
+ * The supported grid editing modes
+ * 
+ * @author Bas Rutten
+ *
+ */
 public enum GridEditMode {
 
 	SINGLE_ROW, SIMULTANEOUS;
