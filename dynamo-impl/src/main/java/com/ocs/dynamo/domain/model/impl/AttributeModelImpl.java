@@ -88,11 +88,7 @@ public class AttributeModelImpl implements AttributeModel {
 
 	private boolean image;
 
-	private boolean localesRestricted;
-
 	private boolean mainAttribute;
-
-	private Integer maxCollectionSize;
 
 	private Integer maxLength;
 
@@ -101,8 +97,6 @@ public class AttributeModelImpl implements AttributeModel {
 	private Long maxValue;
 
 	private Class<?> memberType;
-
-	private Integer minCollectionSize;
 
 	private Integer minLength;
 
@@ -160,6 +154,8 @@ public class AttributeModelImpl implements AttributeModel {
 
 	private AttributeTextFieldMode textFieldMode;
 
+	private boolean thousandsGrouping;
+
 	private boolean trans;
 
 	private String trueRepresentation;
@@ -167,8 +163,6 @@ public class AttributeModelImpl implements AttributeModel {
 	private Class<?> type;
 
 	private boolean url;
-
-	private boolean useThousandsGrouping;
 
 	private boolean visible;
 
@@ -292,10 +286,6 @@ public class AttributeModelImpl implements AttributeModel {
 		return Collections.unmodifiableList(groupTogetherWith);
 	}
 
-	public Integer getMaxCollectionSize() {
-		return maxCollectionSize;
-	}
-
 	@Override
 	public Integer getMaxLength() {
 		return maxLength;
@@ -314,10 +304,6 @@ public class AttributeModelImpl implements AttributeModel {
 	@Override
 	public Class<?> getMemberType() {
 		return memberType;
-	}
-
-	public Integer getMinCollectionSize() {
-		return minCollectionSize;
 	}
 
 	@Override
@@ -459,11 +445,6 @@ public class AttributeModelImpl implements AttributeModel {
 	}
 
 	@Override
-	public boolean isLocalesRestricted() {
-		return localesRestricted;
-	}
-
-	@Override
 	public boolean isMainAttribute() {
 		return mainAttribute;
 	}
@@ -534,6 +515,11 @@ public class AttributeModelImpl implements AttributeModel {
 	}
 
 	@Override
+	public boolean isThousandsGrouping() {
+		return thousandsGrouping;
+	}
+
+	@Override
 	public boolean isTransient() {
 		return trans;
 	}
@@ -541,11 +527,6 @@ public class AttributeModelImpl implements AttributeModel {
 	@Override
 	public boolean isUrl() {
 		return url;
-	}
-
-	@Override
-	public boolean isUseThousandsGrouping() {
-		return useThousandsGrouping;
 	}
 
 	@Override
@@ -648,17 +629,9 @@ public class AttributeModelImpl implements AttributeModel {
 		this.image = image;
 	}
 
-	public void setLocalesRestricted(boolean localesRestricted) {
-		this.localesRestricted = localesRestricted;
-	}
-
 	@Override
 	public void setMainAttribute(boolean mainAttribute) {
 		this.mainAttribute = mainAttribute;
-	}
-
-	public void setMaxCollectionSize(Integer maxCollectionSize) {
-		this.maxCollectionSize = maxCollectionSize;
 	}
 
 	public void setMaxLength(Integer maxLength) {
@@ -675,10 +648,6 @@ public class AttributeModelImpl implements AttributeModel {
 
 	public void setMemberType(Class<?> memberType) {
 		this.memberType = memberType;
-	}
-
-	public void setMinCollectionSize(Integer minCollectionSize) {
-		this.minCollectionSize = minCollectionSize;
 	}
 
 	public void setMinLength(Integer minLength) {
@@ -796,6 +765,10 @@ public class AttributeModelImpl implements AttributeModel {
 		this.textFieldMode = textFieldMode;
 	}
 
+	public void setThousandsGrouping(boolean thousandsGrouping) {
+		this.thousandsGrouping = thousandsGrouping;
+	}
+
 	public void setTransient(boolean trans) {
 		this.trans = trans;
 	}
@@ -810,10 +783,6 @@ public class AttributeModelImpl implements AttributeModel {
 
 	public void setUrl(boolean url) {
 		this.url = url;
-	}
-
-	public void setUseThousandsGrouping(boolean useThousandsGrouping) {
-		this.useThousandsGrouping = useThousandsGrouping;
 	}
 
 	public void setVisible(boolean visible) {

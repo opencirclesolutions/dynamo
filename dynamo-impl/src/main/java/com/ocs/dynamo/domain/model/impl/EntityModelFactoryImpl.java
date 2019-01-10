@@ -168,7 +168,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 			model.setDisplayName(displayName);
 			model.setDescription(displayName);
 
-			if (SystemPropertyUtils.isUseDefaultPromptValue()) {
+			if (SystemPropertyUtils.useDefaultPromptValue()) {
 				model.setPrompt(displayName);
 			}
 			model.setMainAttribute(descriptor.isPreferred());
@@ -184,7 +184,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 			model.setSearchCaseSensitive(SystemPropertyUtils.getDefaultSearchCaseSensitive());
 			model.setSearchPrefixOnly(SystemPropertyUtils.getDefaultSearchPrefixOnly());
 			model.setUrl(false);
-			model.setUseThousandsGrouping(true);
+			model.setThousandsGrouping(true);
 
 			Id idAttr = ClassUtils.getAnnotation(entityModel.getEntityClass(), fieldName, Id.class);
 			if (idAttr != null) {
@@ -245,13 +245,6 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 				model.setEmail(true);
 			}
 
-			// collection size
-			final Size sz = ClassUtils.getAnnotation(pClass, fieldName, Size.class);
-			if (sz != null) {
-				model.setMinCollectionSize(sz.min());
-				model.setMaxCollectionSize(sz.max());
-			}
-
 			// override the defaults with annotation values
 			setAnnotationOverrides(parentClass, model, descriptor, nested);
 
@@ -294,6 +287,12 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 			// searching on a LOB is pointless
 			if (AttributeType.LOB.equals(model.getAttributeType()) && model.isSearchable()) {
 				throw new OCSRuntimeException("Searching on a LOB is not allowed for attribute " + model.getName());
+			}
+
+			// "search date only" is only supported for date/time fields
+			if (model.isSearchDateOnly() && !LocalDateTime.class.equals(model.getType())
+					&& !ZonedDateTime.class.equals(model.getType())) {
+				throw new OCSRuntimeException("SearchDateOnly is not allowed for attribute " + model.getName());
 			}
 		}
 		return result;
@@ -727,6 +726,12 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 		return format;
 	}
 
+	/**
+	 * 
+	 * @param reference
+	 * @param entityClass
+	 * @return
+	 */
 	protected <T> EntityModelFactory findModelFactory(String reference, Class<T> entityClass) {
 		EntityModelFactory emf = this;
 		if (delegatedModelFactories != null) {
@@ -856,7 +861,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 				// well -
 				// they are overwritten in the following code if they are
 				// explicitly set
-				if (SystemPropertyUtils.isUseDefaultPromptValue()) {
+				if (SystemPropertyUtils.useDefaultPromptValue()) {
 					model.setPrompt(attribute.displayName());
 				}
 				model.setDescription(attribute.displayName());
@@ -908,10 +913,6 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 
 			if (attribute.image()) {
 				model.setImage(true);
-			}
-
-			if (attribute.localesRestricted()) {
-				model.setLocalesRestricted(true);
 			}
 
 			if (attribute.week()) {
@@ -1041,8 +1042,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 				model.setRequired(true);
 			}
 
-			if (!attribute.useThousandsGrouping()) {
-				model.setUseThousandsGrouping(false);
+			if (!attribute.thousandsGrouping()) {
+				model.setThousandsGrouping(false);
 			}
 
 			if (attribute.searchForExactValue()) {
@@ -1085,9 +1086,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 			if (attribute.rows() > -1) {
 				model.setRows(attribute.rows());
 			}
-
 			model.setSearchDateOnly(attribute.searchDateOnly());
-
 		}
 	}
 
@@ -1380,7 +1379,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 
 		msg = getAttributeMessage(entityModel, model, EntityModel.THOUSANDS_GROUPING);
 		if (!StringUtils.isEmpty(msg)) {
-			model.setUseThousandsGrouping(Boolean.valueOf(msg));
+			model.setThousandsGrouping(Boolean.valueOf(msg));
 		}
 
 		msg = getAttributeMessage(entityModel, model, EntityModel.SEARCH_EXACT_VALUE);

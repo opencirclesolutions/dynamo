@@ -124,7 +124,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		Assert.assertNull(nameModel.getDisplayFormat());
 		Assert.assertEquals(AttributeType.BASIC, ageModel.getAttributeType());
 		Assert.assertTrue(ageModel.isRequired());
-		Assert.assertTrue(ageModel.isUseThousandsGrouping());
+		Assert.assertTrue(ageModel.isThousandsGrouping());
 
 		final AttributeModel birthDateModel = model.getAttributeModel("birthDate");
 		Assert.assertNull(birthDateModel.getDefaultValue());
@@ -231,7 +231,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		Assert.assertNotNull(ageModel);
 		Assert.assertTrue(ageModel.isSearchCaseSensitive());
 		Assert.assertTrue(ageModel.isSearchPrefixOnly());
-		Assert.assertFalse(ageModel.isUseThousandsGrouping());
+		Assert.assertFalse(ageModel.isThousandsGrouping());
 
 		final AttributeModel entityModel = model.getAttributeModel("entity2");
 		Assert.assertEquals(AttributeType.MASTER, entityModel.getAttributeType());
@@ -730,7 +730,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		@Attribute(defaultValue = "Bas", description = "Test", displayName = "Naampje", editable = EditableType.READ_ONLY, prompt = "Prompt", searchable = true, main = true, sortable = false, styles = "myStyle")
 		private String name;
 
-		@Attribute(searchCaseSensitive = true, searchPrefixOnly = true, useThousandsGrouping = false)
+		@Attribute(searchCaseSensitive = true, searchPrefixOnly = true, thousandsGrouping = false)
 		private Integer age;
 
 		@Attribute(displayFormat = "dd/MM/yyyy")

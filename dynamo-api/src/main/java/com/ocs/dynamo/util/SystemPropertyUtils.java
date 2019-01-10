@@ -181,7 +181,7 @@ public final class SystemPropertyUtils {
 	 * @return the default number of rows for a textarea component
 	 */
 	public static int getDefaultTextAreaRows() {
-		return Integer.getInteger(DynamoConstants.SP_DEFAULT_LISTSELECT_ROWS, DEFAULT_TEXTAREA_ROWS);
+		return Integer.getInteger(DynamoConstants.SP_DEFAULT_TEXTAREA_ROWS, DEFAULT_TEXTAREA_ROWS);
 	}
 
 	/**
@@ -233,9 +233,9 @@ public final class SystemPropertyUtils {
 	 *
 	 *
 	 * @return whether to use the display name of an attribute as the "prompt" value
-	 *         (hint) inside the component
+	 *         (hint/placeholder) inside the component
 	 */
-	public static boolean isUseDefaultPromptValue() {
+	public static boolean useDefaultPromptValue() {
 		String temp = System.getProperty(DynamoConstants.SP_USE_DEFAULT_PROMPT_VALUE, "false");
 		return Boolean.valueOf(temp);
 	}

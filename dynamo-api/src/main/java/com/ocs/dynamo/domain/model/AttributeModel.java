@@ -132,12 +132,14 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 
 	/**
 	 * 
-	 * @return The display name of the attribute
+	 * @return The display name of the attribute (used as the caption for the input
+	 *         component)
 	 */
 	String getDisplayName();
 
 	/**
-	 * @return When the attribute can be edited
+	 * @return When the attribute can be edited (never, always, or only when
+	 *         creating new entities)
 	 */
 	EditableType getEditableType();
 
@@ -174,13 +176,6 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	List<String> getGroupTogetherWith();
 
 	/**
-	 * The maximum size of a collection
-	 * 
-	 * @return
-	 */
-	Integer getMaxCollectionSize();
-
-	/**
 	 * 
 	 * @return The maximum allowed length of the attribute (inside a collection
 	 *         grid)
@@ -206,13 +201,6 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	 *         collection of values
 	 */
 	Class<?> getMemberType();
-
-	/**
-	 * The minimum size of the collection
-	 * 
-	 * @return
-	 */
-	Integer getMinCollectionSize();
 
 	/**
 	 * 
@@ -384,12 +372,6 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	boolean isImage();
 
 	/**
-	 * @return Whether translated fields can and must be used for only the required
-	 *         locales
-	 */
-	boolean isLocalesRestricted();
-
-	/**
 	 * @return Whether this is the "main" attribute
 	 */
 	boolean isMainAttribute();
@@ -474,6 +456,13 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	boolean isSortable();
 
 	/**
+	 * Indicates whether to use a thousands grouping character
+	 * 
+	 * @return
+	 */
+	boolean isThousandsGrouping();
+
+	/**
 	 *
 	 * @return whether the attribute is transient
 	 */
@@ -485,13 +474,6 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	 * @return
 	 */
 	boolean isUrl();
-
-	/**
-	 * Indicates whether to use a thousands grouping character
-	 * 
-	 * @return
-	 */
-	boolean isUseThousandsGrouping();
 
 	/**
 	 * Indicates whether the attribute is visible

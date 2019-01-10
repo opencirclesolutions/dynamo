@@ -119,9 +119,6 @@ public @interface Attribute {
 	/** @return whether the component is meant for uploading/displaying images */
 	boolean image() default false;
 
-	/** @return whether the component is restricted to only the required locales */
-	boolean localesRestricted() default false;
-
 	/** @return whether this field is the main attribute */
 	boolean main() default false;
 
@@ -255,16 +252,16 @@ public @interface Attribute {
 	 */
 	AttributeTextFieldMode textFieldMode() default AttributeTextFieldMode.INHERIT;
 
+	/**
+	 * Indicates whether to use thousands grouping for an integer or decimal field
+	 */
+	boolean thousandsGrouping() default true;
+
 	/** the representation to use instead of "true" */
 	String trueRepresentation() default "";
 
 	/** indicates whether this is a clickable URL */
 	boolean url() default false;
-
-	/**
-	 * Indicates whether to use thousands grouping for an integer or decimal field
-	 */
-	boolean useThousandsGrouping() default true;
 
 	/** whether the field is visible */
 	VisibilityType visible() default VisibilityType.INHERIT;

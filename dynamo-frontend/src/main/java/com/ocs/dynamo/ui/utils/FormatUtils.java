@@ -169,10 +169,10 @@ public final class FormatUtils {
 			} else if (BigDecimal.class.equals(model.getType())) {
 				String cs = GridUtils.getCurrencySymbol(grid);
 				return VaadinUtils.bigDecimalToString(model.isCurrency(), model.isPercentage(),
-						model.isUseThousandsGrouping(), model.getPrecision(), (BigDecimal) value, locale, cs);
+						model.isThousandsGrouping(), model.getPrecision(), (BigDecimal) value, locale, cs);
 			} else if (NumberUtils.isNumeric(model.getType())) {
 				// generic functionality for all other numbers
-				return VaadinUtils.numberToString(model, model.getType(), value, model.isUseThousandsGrouping(),
+				return VaadinUtils.numberToString(model, model.getType(), value, model.isThousandsGrouping(),
 						locale);
 			} else if (model.getType().isEnum()) {
 				// in case of an enumeration, look it up in the message
