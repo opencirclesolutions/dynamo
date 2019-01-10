@@ -13,6 +13,9 @@
  */
 package com.ocs.dynamo.ui.composite.form;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -21,6 +24,7 @@ import org.apache.commons.lang.StringUtils;
 
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.filter.AndPredicate;
+import com.ocs.dynamo.filter.BetweenPredicate;
 import com.ocs.dynamo.filter.EqualsPredicate;
 import com.ocs.dynamo.filter.GreaterOrEqualPredicate;
 import com.ocs.dynamo.filter.LessOrEqualPredicate;
@@ -112,7 +116,6 @@ public class FilterGroup<T> {
 				result.ifOk(r -> FilterGroup.this.valueChange(FilterGroup.this.auxField, r));
 
 			});
-
 		}
 	}
 
@@ -178,7 +181,7 @@ public class FilterGroup<T> {
 				slider.setComponentError(null);
 			} else if (auxField instanceof HasValue) {
 				((HasValue<?>) auxField).clear();
-				((AbstractComponent) field).setComponentError(null);
+				((AbstractComponent) auxField).setComponentError(null);
 			}
 		}
 	}
@@ -251,8 +254,17 @@ public class FilterGroup<T> {
 			}
 			break;
 		default:
-			// by default, simply use and "equal" filter
-			if (value != null && (!(value instanceof Collection) || !((Collection<?>) value).isEmpty())) {
+			if (attributeModel.isSearchDateOnly() && value != null) {
+				LocalDate ldt = (LocalDate) value;
+				if (LocalDateTime.class.equals(attributeModel.getType())) {
+					filter = new BetweenPredicate<>(propertyId, ldt.atStartOfDay(),
+							ldt.atStartOfDay().plusDays(1).minusSeconds(1));
+				} else {
+					// zoned date time
+					filter = new BetweenPredicate<>(propertyId, ldt.atStartOfDay(ZoneId.systemDefault()),
+							ldt.atStartOfDay(ZoneId.systemDefault()).plusDays(1).minusSeconds(1));
+				}
+			} else if (value != null && (!(value instanceof Collection) || !((Collection<?>) value).isEmpty())) {
 				filter = new EqualsPredicate<>(propertyId, value);
 			}
 			break;
@@ -262,7 +274,9 @@ public class FilterGroup<T> {
 		this.fieldFilter = filter;
 
 		// propagate the change (this will trigger the actual search action)
-		if (!listeners.isEmpty()) {
+		if (!listeners.isEmpty())
+
+		{
 			broadcast(new FilterChangeEvent<T>(propertyId, oldFilter, filter));
 		}
 	}

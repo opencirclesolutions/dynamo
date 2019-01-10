@@ -286,13 +286,13 @@ public class FieldFactoryImpl implements FieldFactory {
 				slider.setMax(am.getMaxValue());
 			}
 			field = slider;
-		} else if (LocalDateTime.class.equals(am.getType()) || ZonedDateTime.class.equals(am.getType())) {
-			DateTimeField df = new DateTimeField();
-			df.setDateFormat(am.getDisplayFormat());
-			field = df;
-		} else if (LocalDate.class.equals(am.getType())) {
+		} else if (LocalDate.class.equals(am.getType()) || (search && am.isSearchDateOnly())) {
 			// date field
 			DateField df = new DateField();
+			df.setDateFormat(SystemPropertyUtils.getDefaultDateFormat());
+			field = df;
+		} else if (LocalDateTime.class.equals(am.getType()) || ZonedDateTime.class.equals(am.getType())) {
+			DateTimeField df = new DateTimeField();
 			df.setDateFormat(am.getDisplayFormat());
 			field = df;
 		} else if (LocalTime.class.equals(am.getType())) {
@@ -438,7 +438,7 @@ public class FieldFactoryImpl implements FieldFactory {
 		} else if (field instanceof DateField) {
 			// set a separate format for a date field
 			DateField dateField = (DateField) field;
-			if (am.getDisplayFormat() != null) {
+			if (am.getDisplayFormat() != null && !am.isSearchDateOnly()) {
 				dateField.setDateFormat(am.getDisplayFormat());
 			}
 			dateField.setPlaceholder(am.getPrompt());

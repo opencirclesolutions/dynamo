@@ -220,6 +220,13 @@ public @interface Attribute {
 	boolean searchCaseSensitive() default false;
 
 	/**
+	 * Whether to only search on the date for a LocalDateTime or ZonedDateTime field
+	 * 
+	 * @return
+	 */
+	boolean searchDateOnly() default false;
+
+	/**
 	 * @return whether to search for an exact match rather than an interval (for
 	 *         integer or date fields)
 	 */

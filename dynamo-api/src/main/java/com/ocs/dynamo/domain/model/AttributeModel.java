@@ -47,7 +47,8 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 
 	/**
 	 * 
-	 * @return the actual path to sort on
+	 * @return the actual path to sort on. This uses the replacementSearchPath when
+	 *         set or the default sort path otherwise
 	 */
 	String getActualSortPath();
 
@@ -446,6 +447,12 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	 *         if this is a String attribute)
 	 */
 	boolean isSearchCaseSensitive();
+
+	/**
+	 * 
+	 * @return
+	 */
+	boolean isSearchDateOnly();
 
 	/**
 	 * @return whether searching for this value is by exact match (rather than using

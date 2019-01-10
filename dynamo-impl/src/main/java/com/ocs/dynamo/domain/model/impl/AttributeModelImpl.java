@@ -144,6 +144,8 @@ public class AttributeModelImpl implements AttributeModel {
 
 	private boolean searchCaseSensitive;
 
+	private boolean searchDateOnly;
+
 	private boolean searchForExactValue;
 
 	private boolean searchPrefixOnly;
@@ -512,6 +514,11 @@ public class AttributeModelImpl implements AttributeModel {
 	}
 
 	@Override
+	public boolean isSearchDateOnly() {
+		return searchDateOnly;
+	}
+
+	@Override
 	public boolean isSearchForExactValue() {
 		return searchForExactValue;
 	}
@@ -752,6 +759,10 @@ public class AttributeModelImpl implements AttributeModel {
 
 	public void setSearchCaseSensitive(boolean searchCaseSensitive) {
 		this.searchCaseSensitive = searchCaseSensitive;
+	}
+
+	public void setSearchDateOnly(boolean searchDateOnly) {
+		this.searchDateOnly = searchDateOnly;
 	}
 
 	public void setSearchForExactValue(boolean searchForExactValue) {

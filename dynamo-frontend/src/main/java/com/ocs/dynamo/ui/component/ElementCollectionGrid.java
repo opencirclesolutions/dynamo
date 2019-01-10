@@ -200,7 +200,7 @@ public class ElementCollectionGrid<ID extends Serializable, U extends AbstractEn
 		if (!viewMode && formOptions.isShowRemoveButton()) {
 			final String removeMsg = message("ocs.detail.remove");
 			grid.addComponentColumn((ValueProvider<ValueHolder<T>, Component>) t -> {
-				Button remove = new Button(removeMsg);
+				Button remove = new Button();
 				remove.setIcon(VaadinIcons.TRASH);
 				remove.addClickListener(event -> {
 					binders.remove(t);
@@ -208,7 +208,7 @@ public class ElementCollectionGrid<ID extends Serializable, U extends AbstractEn
 					provider.refreshAll();
 				});
 				return remove;
-			});
+			}).setCaption(removeMsg);
 		}
 	}
 
@@ -331,7 +331,7 @@ public class ElementCollectionGrid<ID extends Serializable, U extends AbstractEn
 
 		// add a change listener (to make sure the buttons are correctly
 		// enabled/disabled)
-		grid.addSelectionListener(event ->{
+		grid.addSelectionListener(event -> {
 			ValueHolder<T> vh = grid.getSelectedItems().iterator().next();
 			onSelect(vh.getValue());
 		});

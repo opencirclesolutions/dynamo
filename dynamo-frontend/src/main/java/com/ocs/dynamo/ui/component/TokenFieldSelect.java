@@ -260,7 +260,7 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
 
 	@Override
 	protected Component initContent() {
-		HorizontalLayout layout = new DefaultHorizontalLayout(false, true, false);
+		HorizontalLayout layout = new DefaultHorizontalLayout(false, true, true);
 
 		comboBox.setHeightUndefined();
 

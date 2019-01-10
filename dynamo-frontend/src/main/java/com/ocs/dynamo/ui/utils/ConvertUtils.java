@@ -121,7 +121,7 @@ public final class ConvertUtils {
 						am.isPercentage(), grouping, am.getPrecision(), SystemPropertyUtils.getDefaultCurrencySymbol());
 				return converter.convertToModel((String) value, new ValueContext(locale));
 			}
-		} else if (ZonedDateTime.class.equals(am.getType())) {
+		} else if (ZonedDateTime.class.equals(am.getType()) && !am.isSearchDateOnly()) {
 			LocalDateTime ldt = (LocalDateTime) value;
 			return Result.ok(ldt.atZone(ZoneId.systemDefault()));
 		}

@@ -1085,6 +1085,9 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 			if (attribute.rows() > -1) {
 				model.setRows(attribute.rows());
 			}
+
+			model.setSearchDateOnly(attribute.searchDateOnly());
+
 		}
 	}
 
@@ -1145,8 +1148,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 	/**
 	 * Overwrite the values of the model with values read from the messageBundle
 	 *
-	 * @param entityModel
-	 * @param model
+	 * @param entityModel the entity model
+	 * @param model       the attribute model implementation
 	 */
 	protected <T> void setMessageBundleOverrides(final EntityModel<T> entityModel, final AttributeModelImpl model) {
 
@@ -1229,11 +1232,6 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 		msg = getAttributeMessage(entityModel, model, EntityModel.IMAGE);
 		if (!StringUtils.isEmpty(msg)) {
 			model.setImage(Boolean.valueOf(msg));
-		}
-
-		msg = getAttributeMessage(entityModel, model, EntityModel.LOCALES_RESTRICTED);
-		if (!StringUtils.isEmpty(msg)) {
-			model.setLocalesRestricted(Boolean.valueOf(msg));
 		}
 
 		msg = getAttributeMessage(entityModel, model, EntityModel.WEEK);
@@ -1415,6 +1413,11 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 			model.setRows(Integer.parseInt(msg));
 		}
 
+		msg = getAttributeMessage(entityModel, model, EntityModel.SEARCH_DATE_ONLY);
+		if (!StringUtils.isEmpty(msg)) {
+			model.setSearchDateOnly(Boolean.valueOf(msg));
+		}
+
 		setMessageBundleCascadeOverrides(entityModel, model);
 	}
 
@@ -1481,25 +1484,6 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 	 */
 	protected boolean skipAttribute(final String name) {
 		return CLASS.equals(name) || VERSION.equals(name);
-	}
-
-	/**
-	 * Translates a TemporalType enum value to an AttributeDateType
-	 *
-	 * @param type
-	 * @return
-	 */
-	protected AttributeDateType translateDateType(final TemporalType type) {
-		switch (type) {
-		case DATE:
-			return AttributeDateType.DATE;
-		case TIME:
-			return AttributeDateType.TIME;
-		case TIMESTAMP:
-			return AttributeDateType.TIMESTAMP;
-		default:
-			return null;
-		}
 	}
 
 	@Override

@@ -149,11 +149,6 @@ public interface EntityModel<T> {
 	String IMAGE = "image";
 
 	/**
-	 * Whether locales are restricted
-	 */
-	String LOCALES_RESTRICTED = "localesRestricted";
-
-	/**
 	 * Whether the attribute is the main attribute
 	 */
 	String MAIN = "main";
@@ -254,6 +249,11 @@ public interface EntityModel<T> {
 	 * Whether searching is case sensitive
 	 */
 	String SEARCH_CASE_SENSITIVE = "searchCaseSensitive";
+
+	/**
+	 * Whether to search on just the date
+	 */
+	String SEARCH_DATE_ONLY = "searchDateOnly";
 
 	/**
 	 * Whether to search for exact values (in case of numbers and dates)
