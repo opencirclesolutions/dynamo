@@ -17,63 +17,72 @@ import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 
 public class BaseViewTest extends BaseMockitoTest {
 
-    private static final String MODE = "mode";
+	private static final String MODE = "mode";
 
-    private static final String VIEW_ID = "view_id";
+	private static final String VIEW_ID = "view_id";
 
-    private BaseView view;
+	private BaseView view;
 
-    @Mock
-    private EntityModelFactory modelFactory;
+	@Mock
+	private EntityModelFactory modelFactory;
 
-    @Mock
-    private MessageService messageService;
+	@Mock
+	private MessageService messageService;
 
-    @Mock
-    private BaseUI ui;
+	@Mock
+	private BaseUI ui;
 
-    @Mock
-    private CustomNavigator navigator;
+	@Mock
+	private CustomNavigator navigator;
 
-    @Override
-    public void setUp() {
-        super.setUp();
+	@Override
+	public void setUp() {
+		super.setUp();
 
-        Mockito.when(ui.getNavigator()).thenReturn(navigator);
+		Mockito.when(ui.getNavigator()).thenReturn(navigator);
 
-        view = new BaseView() {
+		view = new BaseView() {
 
-            private static final long serialVersionUID = 8026762254250096616L;
+			private static final long serialVersionUID = 8026762254250096616L;
 
-            @Override
-            public void enter(ViewChangeEvent event) {
+			@Override
+			public void enter(ViewChangeEvent event) {
 
-            }
-        };
-        MockUtil.injectUI(view, ui);
-        wireTestSubject(view);
-    }
+			}
+		};
+		MockUtil.injectUI(view, ui);
+		wireTestSubject(view);
+	}
 
-    @Test
-    public void testGetScreenModeNull() {
-        Assert.assertNull(view.getScreenMode());
-    }
+	@Test
+	public void testGetScreenModeNull() {
+		Assert.assertNull(view.getScreenMode());
+	}
 
-    @Test
-    public void testGetViewMode() {
-        Mockito.when(ui.getScreenMode()).thenReturn(MODE);
-        Assert.assertEquals(MODE, view.getScreenMode());
-    }
+	@Test
+	public void testGetViewMode() {
+		Mockito.when(ui.getScreenMode()).thenReturn(MODE);
+		Assert.assertEquals(MODE, view.getScreenMode());
 
-    @Test
-    public void testNavigate() {
-        view.navigate(VIEW_ID);
-        Mockito.verify(navigator).navigateTo(VIEW_ID);
-    }
+		view.clearScreenMode();
+		Mockito.verify(ui).setScreenMode(null);
+	}
 
-    @Test
-    public void testMessage() {
-        view.message("key");
-        Mockito.verify(messageService).getMessage(Mockito.eq("key"), Mockito.any(Locale.class));
-    }
+	@Test
+	public void testNavigate() {
+		view.navigate(VIEW_ID);
+		Mockito.verify(navigator).navigateTo(VIEW_ID);
+	}
+
+	@Test
+	public void testMessage() {
+		view.message("key");
+		Mockito.verify(messageService).getMessage(Mockito.eq("key"), Mockito.any(Locale.class));
+	}
+
+	@Test
+	public void testMessageWithPars() {
+		view.message("key", "bob");
+		Mockito.verify(messageService).getMessage(Mockito.eq("key"), Mockito.any(Locale.class), Mockito.eq("bob"));
+	}
 }

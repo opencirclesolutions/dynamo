@@ -92,6 +92,26 @@ public class MenuServiceTest extends BaseIntegrationTest {
 		MenuItem firstSub = first.getChildren().get(0);
 		Assert.assertFalse(firstSub.isVisible());
 		Assert.assertFalse(first.isVisible());
-
 	}
+
+	@Test
+	public void testSetVisible() {
+		MenuBar bar = menuService.constructMenu("ocs.menu", navigator);
+		menuService.setVisible(bar, "Destination 1.1", false);
+
+		MenuItem first = bar.getItems().get(0);
+		MenuItem firstSub = first.getChildren().get(0);
+		Assert.assertTrue(first.isVisible());
+		Assert.assertFalse(firstSub.isVisible());
+
+		menuService.setVisible(bar, "Destination 1.1", true);
+		Assert.assertTrue(firstSub.isVisible());
+
+		// hide all children and verify the parent is hidden as well
+		menuService.setVisible(bar, "Destination 1.1", false);
+		menuService.setVisible(bar, "Destination 1.2", false);
+		menuService.setVisible(bar, "Destination 1.3", false);
+		Assert.assertFalse(firstSub.isVisible());
+	}
+
 }

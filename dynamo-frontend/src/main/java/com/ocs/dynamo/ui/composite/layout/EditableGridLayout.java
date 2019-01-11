@@ -167,25 +167,6 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 
 			constructGrid();
 
-			// remove button at the end of the row
-			if (getFormOptions().isShowRemoveButton() && isEditAllowed()) {
-				String defaultMsg = message("ocs.remove");
-				Column<T, Component> removeColumn = getGridWrapper().getGrid()
-						.addComponentColumn((ValueProvider<T, Component>) t -> isViewmode() ? null
-								: new RemoveButton(removeMessage, removeIcon) {
-									@Override
-									protected void doDelete() {
-										binders.remove(t);
-										doRemove(t);
-									}
-
-									@Override
-									protected String getItemToDelete() {
-										return FormatUtils.formatEntity(getEntityModel(), t);
-									}
-								});
-				removeColumn.setCaption(defaultMsg).setId("remove");
-			}
 			mainLayout.addComponent(getButtonBar());
 
 			// add button
@@ -268,7 +249,6 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 		BaseGridWrapper<ID, T> wrapper = getGridWrapper();
 		// make sure the grid can be edited
 		wrapper.getGrid().getEditor().setEnabled(!isViewmode());
-		// wrapper.getGrid().setEnabled(!isViewmode());
 		wrapper.getGrid().getEditor().addSaveListener(event -> {
 			try {
 				T t = getService().save((T) event.getBean());
@@ -282,6 +262,7 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 		// make sure changes are not persisted right away
 		wrapper.getGrid().getEditor().setBuffered(true);
 		wrapper.getGrid().setSelectionMode(Grid.SelectionMode.SINGLE);
+		wrapper.getGrid().setHeightByRows(getPageLength());
 
 		// explicit selection listener??
 		wrapper.getGrid().addSelectionListener(event -> setSelectedItems(event.getAllSelectedItems()));
@@ -291,6 +272,27 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 		} else {
 			mainLayout.replaceComponent(currentWrapper, wrapper);
 		}
+
+		// remove button at the end of the row
+		if (getFormOptions().isShowRemoveButton() && isEditAllowed() && !isViewmode()) {
+			String defaultMsg = message("ocs.remove");
+			Column<T, Component> removeColumn = getGridWrapper().getGrid()
+					.addComponentColumn((ValueProvider<T, Component>) t -> isViewmode() ? null
+							: new RemoveButton(removeMessage, removeIcon) {
+								@Override
+								protected void doDelete() {
+									binders.remove(t);
+									doRemove(t);
+								}
+
+								@Override
+								protected String getItemToDelete() {
+									return FormatUtils.formatEntity(getEntityModel(), t);
+								}
+							});
+			removeColumn.setCaption(defaultMsg).setId("remove");
+		}
+
 		currentWrapper = wrapper;
 	}
 

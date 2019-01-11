@@ -16,9 +16,9 @@ import com.ocs.dynamo.domain.model.impl.EntityModelFactoryImpl;
 import com.ocs.dynamo.service.TestEntityService;
 import com.ocs.dynamo.test.BaseMockitoTest;
 import com.ocs.dynamo.test.MockUtil;
-import com.ocs.dynamo.ui.component.DetailsEditGrid;
 import com.ocs.dynamo.ui.composite.dialog.ModelBasedSearchDialog;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
+import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.ui.UI;
 
 public class DetailsEditGridTest extends BaseMockitoTest {
@@ -39,7 +39,9 @@ public class DetailsEditGridTest extends BaseMockitoTest {
 	public void setUp() {
 		super.setUp();
 		e1 = new TestEntity(1, "Kevin", 12L);
+		e1.setId(1);
 		e2 = new TestEntity(2, "Bob", 14L);
+		e2.setId(2);
 	}
 
 	/**
@@ -71,13 +73,16 @@ public class DetailsEditGridTest extends BaseMockitoTest {
 	 * Test read only with search functionality
 	 */
 	@Test
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void testReadOnlyWithSearch() {
 		EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
 
 		DetailsEditGrid<Integer, TestEntity> table = createGrid(em, null, false, true,
 				new FormOptions().setDetailsGridSearchMode(true));
 		table.setService(service);
+
+		ListDataProvider<TestEntity> lep = (ListDataProvider<TestEntity>) table.getGrid().getDataProvider();
+		Assert.assertEquals(0, lep.getItems().size());
 
 		// adding is not possible
 		Assert.assertFalse(table.getAddButton().isVisible());
@@ -87,6 +92,13 @@ public class DetailsEditGridTest extends BaseMockitoTest {
 		table.getSearchDialogButton().click();
 		ArgumentCaptor<ModelBasedSearchDialog> captor = ArgumentCaptor.forClass(ModelBasedSearchDialog.class);
 		Mockito.verify(ui).addWindow(captor.capture());
+
+		ModelBasedSearchDialog dialog = captor.getValue();
+
+		// select item and close dialog
+		dialog.select(e1);
+		dialog.getOkButton().click();
+
 	}
 
 	@Test

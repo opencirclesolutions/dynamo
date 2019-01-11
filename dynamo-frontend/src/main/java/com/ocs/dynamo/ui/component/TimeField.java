@@ -33,6 +33,10 @@ public class TimeField extends CustomField<LocalTime> {
 
 	private static final long serialVersionUID = -676425827861766118L;
 
+	private static final int HOURS = 24;
+
+	private static final int MINUTES = 60;
+
 	private AttributeModel attributeModel;
 
 	private final ComboBox<Integer> hourSelect;
@@ -50,15 +54,14 @@ public class TimeField extends CustomField<LocalTime> {
 		this.attributeModel = attributeModel;
 		hourSelect = new ComboBox<>();
 		minuteSelect = new ComboBox<>();
-
 	}
 
 	@Override
 	protected Component initContent() {
 		HorizontalLayout main = new HorizontalLayout();
 		setCaption(attributeModel.getDisplayName());
-		hourSelect.setItems(IntStream.range(0, 24).boxed());
-		minuteSelect.setItems(IntStream.range(0, 60).boxed());
+		hourSelect.setItems(IntStream.range(0, HOURS).boxed());
+		minuteSelect.setItems(IntStream.range(0, MINUTES).boxed());
 		main.addComponent(hourSelect);
 		main.addComponent(new Label(":"));
 		main.addComponent(minuteSelect);
@@ -98,4 +101,13 @@ public class TimeField extends CustomField<LocalTime> {
 		return minuteSelect.addValueChangeListener(
 				valueChangeEvent -> listener.valueChange(new ValueChangeEvent<>(this, this, null, false)));
 	}
+
+	public ComboBox<Integer> getHourSelect() {
+		return hourSelect;
+	}
+
+	public ComboBox<Integer> getMinuteSelect() {
+		return minuteSelect;
+	}
+
 }

@@ -1,13 +1,3 @@
-package com.ocs.dynamo.ui.utils;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import org.apache.commons.lang.ObjectUtils;
-
 /*
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -21,6 +11,16 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+package com.ocs.dynamo.ui.utils;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import org.apache.commons.lang.ObjectUtils;
+
 import com.google.common.collect.Sets;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
@@ -109,7 +109,7 @@ public final class CompareUtils {
 
 	/**
 	 * Gets the description for a certain entity. This uses the display property if
-	 * one is set and the toString value otherwises
+	 * one is set and the toString value otherwise
 	 * 
 	 * @param entity the entity
 	 * @param model  the entity model

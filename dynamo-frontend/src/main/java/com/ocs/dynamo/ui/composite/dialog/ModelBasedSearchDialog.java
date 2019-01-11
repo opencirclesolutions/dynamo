@@ -60,7 +60,7 @@ public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractE
 	private FetchJoinInformation[] joins;
 
 	/**
-	 * Indicates whether the dialog is in multi-select mode
+	 * Indicates whether the dialog is in multiple select mode
 	 */
 	private boolean multiSelect;
 

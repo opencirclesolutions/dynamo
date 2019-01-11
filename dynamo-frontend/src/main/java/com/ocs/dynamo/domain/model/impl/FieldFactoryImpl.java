@@ -462,17 +462,10 @@ public class FieldFactoryImpl implements FieldFactory {
 			AbstractTextField atf = (AbstractTextField) field;
 			atf.addBlurListener(event -> {
 				String value = atf.getValue();
-//				if (value != null && value.indexOf('%') < 0) {
-//					value = value.trim() + "%";
-//					atf.setValue(value);
-//				}
-
-				// automatic formatting to add
-
-				BigDecimal bd = VaadinUtils.stringToBigDecimal(true,
-						SystemPropertyUtils.useThousandsGroupingInEditMode(), false, value);
-				atf.setValue(
-						VaadinUtils.bigDecimalToString(true, SystemPropertyUtils.useThousandsGroupingInEditMode(), bd));
+				if (value != null && value.indexOf('%') < 0) {
+					value = value.trim() + "%";
+					atf.setValue(value);
+				}
 			});
 		}
 
