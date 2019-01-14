@@ -104,6 +104,23 @@ public class VaadinUtilsTest extends BaseMockitoTest {
 	}
 
 	@Test
+	public void testDoubleToString() {
+		// Dutch locale
+		Assert.assertEquals("123456,00", VaadinUtils.doubleToString(false, false, false, 2, 123456.00, LOCALE));
+		// grouping
+		Assert.assertEquals("123.456,00", VaadinUtils.doubleToString(false, false, true, 2, 123456.00, LOCALE));
+		// percentage
+		Assert.assertEquals("123.456,00%", VaadinUtils.doubleToString(false, true, true, 2, 123456.00, LOCALE));
+
+		// US locale
+		Assert.assertEquals("123456.00", VaadinUtils.doubleToString(false, false, false, 2, 123456.00, Locale.US));
+		// grouping
+		Assert.assertEquals("123,456.00", VaadinUtils.doubleToString(false, false, true, 2, 123456.00, Locale.US));
+		// percentage
+		Assert.assertEquals("123,456.00%", VaadinUtils.doubleToString(false, true, true, 2, 123456.00, Locale.US));
+	}
+
+	@Test
 	public void testStringToInteger() {
 		// default locale (Central Europe)
 		Assert.assertEquals(1234, VaadinUtils.stringToInteger(true, "1.234").intValue());
@@ -121,7 +138,6 @@ public class VaadinUtilsTest extends BaseMockitoTest {
 				VaadinUtils.stringToBigDecimal(false, false, false, 2, "1234,34", LOCALE).doubleValue(), 0.001);
 		Assert.assertEquals(1234.3415,
 				VaadinUtils.stringToBigDecimal(false, false, false, 4, "1234,3415", LOCALE).doubleValue(), 0.001);
-
 		Assert.assertEquals(1234, VaadinUtils.stringToBigDecimal(false, true, false, 2, "1.234", LOCALE).doubleValue(),
 				0.001);
 		Assert.assertEquals(1234, VaadinUtils.stringToBigDecimal(true, true, false, 2, "1.234%", LOCALE).doubleValue(),
@@ -136,5 +152,14 @@ public class VaadinUtilsTest extends BaseMockitoTest {
 		Assert.assertEquals(1234L, VaadinUtils.stringToLong(true, "1.234").longValue());
 		Assert.assertEquals(1234L, VaadinUtils.stringToLong(false, "1234", LOCALE).longValue());
 		Assert.assertEquals(1234L, VaadinUtils.stringToLong(true, "1.234", LOCALE).longValue());
+	}
+
+	@Test
+	public void testStringToDouble() {
+		Assert.assertEquals(1234.34, VaadinUtils.stringToDouble(false, false, false, 2, "1234,34", LOCALE), 0.001);
+		Assert.assertEquals(1234.3415, VaadinUtils.stringToDouble(false, false, false, 4, "1234,3415", LOCALE), 0.001);
+		Assert.assertEquals(1234, VaadinUtils.stringToDouble(false, true, false, 2, "1.234", LOCALE), 0.001);
+		Assert.assertEquals(1234, VaadinUtils.stringToDouble(true, true, false, 2, "1.234%", LOCALE), 0.001);
+		Assert.assertEquals(1234, VaadinUtils.stringToDouble(false, true, true, 2, "€ 1.234", LOCALE), 0.001);
 	}
 }

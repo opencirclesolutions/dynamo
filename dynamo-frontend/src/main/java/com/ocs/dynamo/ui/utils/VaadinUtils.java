@@ -38,6 +38,7 @@ import com.ocs.dynamo.ui.converter.ConverterFactory;
 import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.ocs.dynamo.utils.NumberUtils;
 import com.vaadin.data.ValueContext;
+import com.vaadin.data.converter.StringToDoubleConverter;
 import com.vaadin.data.converter.StringToIntegerConverter;
 import com.vaadin.data.converter.StringToLongConverter;
 import com.vaadin.server.Page;
@@ -111,13 +112,13 @@ public final class VaadinUtils {
 	/**
 	 * Converts a BigDecimal to a String
 	 * 
-	 * @param currency
-	 * @param percentage
-	 * @param useGrouping
-	 * @param precision
-	 * @param value
-	 * @param locale
-	 * @param currencySymbol
+	 * @param currency       whether to include a currency symbol
+	 * @param percentage     whether to include a percentage sign
+	 * @param useGrouping    whether to use a thousands grouping separator
+	 * @param precision      the desired precision
+	 * @param value          the value to convert
+	 * @param locale         the locale to use
+	 * @param currencySymbol the currency symbol to use
 	 * @return
 	 */
 	public static String bigDecimalToString(boolean currency, boolean percentage, boolean useGrouping, int precision,
@@ -125,11 +126,34 @@ public final class VaadinUtils {
 		return fractionalToString(currency, percentage, useGrouping, precision, value, locale, currencySymbol);
 	}
 
+	/**
+	 * Converts a double to a String
+	 * 
+	 * @param currency    whether to include a currency symbol
+	 * @param percentage  whether to include a percentage sign
+	 * @param useGrouping whether to use a thousands grouping separator
+	 * @param precision   the desired precision
+	 * @param value       the value to convert
+	 * @param locale      the locale to use
+	 * @return
+	 */
 	public static String doubleToString(boolean currency, boolean percentage, boolean useGrouping, int precision,
 			Double value, Locale locale) {
 		return doubleToString(currency, percentage, useGrouping, precision, value, locale, getCurrencySymbol());
 	}
 
+	/**
+	 * Converts a double to a String
+	 * 
+	 * @param currency       whether to include a currency symbol
+	 * @param percentage     whether to include a percentage sign
+	 * @param useGrouping    whether to use a thousands grouping separator
+	 * @param precision      the desired precision
+	 * @param value          the value to convert
+	 * @param locale         the locale to use
+	 * @param currencySymbol the currency symbol to use
+	 * @return
+	 */
 	public static String doubleToString(boolean currency, boolean percentage, boolean useGrouping, int precision,
 			Double value, Locale locale, String currencySymbol) {
 		return fractionalToString(currency, percentage, useGrouping, precision, value, locale, currencySymbol);
@@ -149,17 +173,18 @@ public final class VaadinUtils {
 	}
 
 	/**
+	 * Converts a fractinal value to a String
 	 * 
-	 * @param currency
-	 * @param percentage
-	 * @param useGrouping
-	 * @param precision
-	 * @param value
-	 * @param locale
-	 * @param currencySymbol
+	 * @param currency       whether to include a currency symbol
+	 * @param percentage     whether to include a percentage sign
+	 * @param useGrouping    whether to use a thousands grouping separator
+	 * @param precision      the desired precision
+	 * @param value          the value to convert
+	 * @param locale         the locale to use
+	 * @param currencySymbol the currency symbol to use
 	 * @return
 	 */
-	public static String fractionalToString(boolean currency, boolean percentage, boolean useGrouping, int precision,
+	private static String fractionalToString(boolean currency, boolean percentage, boolean useGrouping, int precision,
 			Number value, Locale locale, String currencySymbol) {
 		if (value == null) {
 			return null;
@@ -537,13 +562,14 @@ public final class VaadinUtils {
 	}
 
 	/**
-	 * Converts a string to a big decimal
-	 *
-	 * @param percentage  is it a percentage value
-	 * @param useGrouping use thousands grouping
-	 * @param currency    is it a currency value
-	 * @param value       the value
-	 * @param locale      the locale
+	 * Converts a String to a BigDecimal
+	 * 
+	 * @param percentage  whether a percentage sign might be included
+	 * @param useGrouping whether a thousands grouping separator might be included
+	 * @param currency    whether a currency symbol might be included
+	 * @param precision   the precision
+	 * @param value       the String value to convert
+	 * @param locale      the locale to use
 	 * @return
 	 */
 	public static BigDecimal stringToBigDecimal(boolean percentage, boolean useGrouping, boolean currency,
@@ -554,10 +580,30 @@ public final class VaadinUtils {
 	}
 
 	/**
-	 * Converts a string to a BigDecimal using the built in Vaadin converter
-	 *
-	 * @param percentage the percentage
-	 * @param value      the value to be converted
+	 * Converts a String to a Double
+	 * 
+	 * @param percentage  whether a percentage sign might be included
+	 * @param useGrouping whether a thousands grouping separator might be included
+	 * @param currency    whether a currency symbol might be included
+	 * @param precision   the precision
+	 * @param value       the String value to convert
+	 * @param locale      the locale to use
+	 * @return
+	 */
+	public static Double stringToDouble(boolean percentage, boolean useGrouping, boolean currency, int precision,
+			String value, Locale locale) {
+		StringToDoubleConverter converter = ConverterFactory.createDoubleConverter(currency, percentage, useGrouping,
+				precision, VaadinUtils.getCurrencySymbol());
+		return converter.convertToModel(value, new ValueContext(locale)).getOrThrow(r -> new OCSRuntimeException());
+	}
+
+	/**
+	 * Converts a String to a BigDecimal
+	 * 
+	 * @param percentage  whether a percentage sign might be included
+	 * @param useGrouping whether a thousands grouping separator might be included
+	 * @param currency    whether a currency symbol might be included
+	 * @param value       the value to include
 	 * @return
 	 */
 	public static BigDecimal stringToBigDecimal(boolean percentage, boolean useGrouping, boolean currency,

@@ -19,8 +19,6 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Locale;
 
-import org.apache.commons.lang.StringUtils;
-
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.data.Result;
 import com.vaadin.data.ValueContext;
@@ -35,8 +33,6 @@ public class BigDecimalConverter extends StringToBigDecimalConverter {
 
 	private static final long serialVersionUID = -6491010958762673241L;
 
-	private String pattern;
-
 	/**
 	 * Whether to use a thousands grouping separator
 	 */
@@ -46,16 +42,6 @@ public class BigDecimalConverter extends StringToBigDecimalConverter {
 	 * The desired decimal precision
 	 */
 	private int precision;
-
-	/**
-	 * Constructor - for use with a pattern
-	 * 
-	 * @param pattern will be applied to the decimalFormat of this converter.
-	 */
-	public BigDecimalConverter(String message, String pattern) {
-		super(message);
-		this.pattern = pattern;
-	}
 
 	/**
 	 * Constructor - for use with a precision and grouping setting
@@ -94,20 +80,16 @@ public class BigDecimalConverter extends StringToBigDecimalConverter {
 		locale = locale != null ? locale : VaadinUtils.getLocale();
 		DecimalFormat decimalFormat = constructFormat(locale);
 
-		if (!StringUtils.isEmpty(pattern)) {
-			decimalFormat.applyPattern(pattern);
-		} else {
-			decimalFormat.setGroupingUsed(useGrouping);
-			decimalFormat.setMaximumFractionDigits(precision);
-			decimalFormat.setMinimumFractionDigits(precision);
-		}
+		decimalFormat.setGroupingUsed(useGrouping);
+		decimalFormat.setMaximumFractionDigits(precision);
+		decimalFormat.setMinimumFractionDigits(precision);
 		return decimalFormat;
 	}
 
 	/**
 	 * Constructs the number format - overwrite in subclasses if needed
 	 * 
-	 * @param locale
+	 * @param locale the locale
 	 * @return
 	 */
 	protected DecimalFormat constructFormat(Locale locale) {

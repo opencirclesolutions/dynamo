@@ -33,12 +33,16 @@ public class CurrencyBigDecimalConverter extends BigDecimalConverter {
 
 	private static final long serialVersionUID = -8785156070280947096L;
 
+	/**
+	 * The currency symbol
+	 */
 	private String currencySymbol;
 
 	/**
 	 * 
 	 * Constructor for CurrencyBigDecimalConverter.
 	 * 
+	 * @param message 
 	 * @param precision
 	 * @param useGrouping
 	 * @param currencySymbol

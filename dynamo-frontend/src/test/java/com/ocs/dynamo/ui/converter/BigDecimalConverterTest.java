@@ -75,16 +75,4 @@ public class BigDecimalConverterTest extends BaseConverterTest {
 		Assert.assertEquals("3.140", result);
 	}
 
-	/**
-	 * Test that a specifically set pattern overrules the other settings
-	 */
-	@Test
-	public void testDecimalFormat() {
-		BigDecimalConverter converter = new BigDecimalConverter("message", "#,##0.00");
-
-		Assert.assertEquals("1.234,56", converter.convertToPresentation(BigDecimal.valueOf(1234.56), createContext()));
-		Assert.assertEquals("123.456,00", converter.convertToPresentation(BigDecimal.valueOf(123456), createContext()));
-		Assert.assertEquals("123,456.00",
-				converter.convertToPresentation(BigDecimal.valueOf(123456), createUsContext()));
-	}
 }

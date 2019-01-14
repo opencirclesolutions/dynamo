@@ -1,7 +1,5 @@
 package com.ocs.dynamo.ui.converter;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.Locale;
 
 import org.junit.Assert;

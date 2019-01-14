@@ -17,8 +17,6 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Locale;
 
-import org.apache.commons.lang.StringUtils;
-
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.data.Result;
 import com.vaadin.data.ValueContext;
@@ -33,8 +31,6 @@ public class GroupingStringToDoubleConverter extends StringToDoubleConverter {
 
 	private static final long serialVersionUID = -6491010958762673241L;
 
-	private String pattern;
-
 	/**
 	 * Whether to use a thousands grouping separator
 	 */
@@ -46,17 +42,11 @@ public class GroupingStringToDoubleConverter extends StringToDoubleConverter {
 	private int precision;
 
 	/**
-	 * Constructor - for use with a pattern
-	 * 
-	 * @param pattern will be applied to the decimalFormat of this converter.
-	 */
-	public GroupingStringToDoubleConverter(String message, String pattern) {
-		super(message);
-		this.pattern = pattern;
-	}
-
-	/**
 	 * Constructor - for use with a precision and grouping setting
+	 * 
+	 * @param message     the message
+	 * @param precision   the precision
+	 * @param useGrouping
 	 */
 	public GroupingStringToDoubleConverter(String message, int precision, boolean useGrouping) {
 		super(message);
@@ -90,14 +80,9 @@ public class GroupingStringToDoubleConverter extends StringToDoubleConverter {
 	public DecimalFormat getDecimalFormat(Locale locale) {
 		locale = locale != null ? locale : VaadinUtils.getLocale();
 		DecimalFormat decimalFormat = constructFormat(locale);
-
-		if (!StringUtils.isEmpty(pattern)) {
-			decimalFormat.applyPattern(pattern);
-		} else {
-			decimalFormat.setGroupingUsed(useGrouping);
-			decimalFormat.setMaximumFractionDigits(precision);
-			decimalFormat.setMinimumFractionDigits(precision);
-		}
+		decimalFormat.setGroupingUsed(useGrouping);
+		decimalFormat.setMaximumFractionDigits(precision);
+		decimalFormat.setMinimumFractionDigits(precision);
 		return decimalFormat;
 	}
 
