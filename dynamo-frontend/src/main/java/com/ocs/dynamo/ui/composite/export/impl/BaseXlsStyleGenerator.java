@@ -32,6 +32,7 @@ import com.ocs.dynamo.domain.model.AttributeDateType;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.ui.composite.export.XlsStyleGenerator;
 import com.ocs.dynamo.util.SystemPropertyUtils;
+import com.ocs.dynamo.utils.NumberUtils;
 
 /**
  * Base style generator for Excel exports
@@ -49,9 +50,12 @@ public class BaseXlsStyleGenerator<ID extends Serializable, T extends AbstractEn
 	 */
 	private boolean thousandsGrouping;
 
-	private CellStyle bigDecimalPercentageStyle;
+	private CellStyle percentageStyle;
 
-	private CellStyle bigDecimalStyle;
+	/**
+	 * Style for fractional numbers
+	 */
+	private CellStyle fractionalStyle;
 
 	private CellStyle headerStyle;
 
@@ -95,15 +99,15 @@ public class BaseXlsStyleGenerator<ID extends Serializable, T extends AbstractEn
 		setBorder(numberSimpleStyle, BorderStyle.THIN);
 		numberSimpleStyle.setDataFormat(format.getFormat("#"));
 
-		bigDecimalStyle = workbook.createCellStyle();
-		bigDecimalStyle.setAlignment(HorizontalAlignment.RIGHT);
-		setBorder(bigDecimalStyle, BorderStyle.THIN);
-		bigDecimalStyle.setDataFormat(format.getFormat("#,##0.00"));
+		fractionalStyle = workbook.createCellStyle();
+		fractionalStyle.setAlignment(HorizontalAlignment.RIGHT);
+		setBorder(fractionalStyle, BorderStyle.THIN);
+		fractionalStyle.setDataFormat(format.getFormat("#,##0.00"));
 
-		bigDecimalPercentageStyle = workbook.createCellStyle();
-		bigDecimalPercentageStyle.setAlignment(HorizontalAlignment.RIGHT);
-		setBorder(bigDecimalPercentageStyle, BorderStyle.THIN);
-		bigDecimalPercentageStyle.setDataFormat(format.getFormat("#,##0.00%"));
+		percentageStyle = workbook.createCellStyle();
+		percentageStyle.setAlignment(HorizontalAlignment.RIGHT);
+		setBorder(percentageStyle, BorderStyle.THIN);
+		percentageStyle.setDataFormat(format.getFormat("#,##0.00%"));
 
 		normal = workbook.createCellStyle();
 		normal.setAlignment(HorizontalAlignment.LEFT);
@@ -169,13 +173,13 @@ public class BaseXlsStyleGenerator<ID extends Serializable, T extends AbstractEn
 					return timeStyle;
 				}
 			}
-		} else if (value instanceof BigDecimal) {
+		} else if (value instanceof BigDecimal || NumberUtils.isDouble(value)) {
 			if (attributeModel != null && attributeModel.isPercentage()) {
-				return bigDecimalPercentageStyle;
+				return percentageStyle;
 			} else if (attributeModel != null && attributeModel.isCurrency()) {
 				return currencyStyle;
 			}
-			return bigDecimalStyle;
+			return fractionalStyle;
 		}
 		return normal;
 	}

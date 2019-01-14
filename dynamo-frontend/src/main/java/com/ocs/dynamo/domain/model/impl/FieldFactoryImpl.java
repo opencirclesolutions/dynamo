@@ -276,9 +276,9 @@ public class FieldFactoryImpl implements FieldFactory {
 			field = constructSimpleTokenField(fieldEntityModel != null ? fieldEntityModel : am.getEntityModel(), am,
 					am.getPath().substring(am.getPath().lastIndexOf('.') + 1), false, null);
 		} else if ((NumberUtils.isLong(am.getType()) || NumberUtils.isInteger(am.getType())
-				|| BigDecimal.class.equals(am.getType())) && NumberSelectMode.SLIDER.equals(am.getNumberSelectMode())) {
-			final Slider slider = new Slider(am.getDisplayName());
-
+				|| NumberUtils.isDouble(am.getType()) || BigDecimal.class.equals(am.getType()))
+				&& NumberSelectMode.SLIDER.equals(am.getNumberSelectMode())) {
+			Slider slider = new Slider(am.getDisplayName());
 			if (am.getMinValue() != null) {
 				slider.setMin(am.getMinValue());
 			}
