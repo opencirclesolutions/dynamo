@@ -58,15 +58,6 @@ public class VaadinUtilsTest extends BaseMockitoTest {
 		System.setProperty("ocs.default.locale", "de");
 	}
 
-	@Override
-	public void setUp() {
-		super.setUp();
-		//Mockito.when(service.getEntityClass()).thenReturn(TestEntity.class);
-
-		//Mockito.when(ui.getPage()).thenReturn(page);
-		//Mockito.when(page.getWebBrowser()).thenReturn(browser);
-	}
-
 	@Test
 	public void testGetParentOfClass() {
 
@@ -112,30 +103,10 @@ public class VaadinUtilsTest extends BaseMockitoTest {
 		Assert.assertEquals("123,456", VaadinUtils.longToString(true, false, 123456L, Locale.US));
 	}
 
-//	@Test
-//	public void testGetTimeZone_CET() {
-//
-//		LocalDate dt = DateUtils.createLocalDate("01012016");
-//
-//		ZoneId def = ZoneId.of("CET");
-//
-//		boolean dst = def.inDaylightTime(dt);
-//
-//		Mockito.when(browser.getRawTimezoneOffset()).thenReturn(3_600_000);
-//		Mockito.when(browser.isDSTInEffect()).thenReturn(false);
-//
-//		ZoneId tz = VaadinUtils.getTimeZone(ui);
-//		ZoneOffset.of
-//		Assert.assertEquals(3_600_000, tz.getRawOffset());
-//		Assert.assertEquals(dst, tz.inDaylightTime(dt));
-//	}
-//
-
 	@Test
 	public void testStringToInteger() {
 		// default locale (Central Europe)
 		Assert.assertEquals(1234, VaadinUtils.stringToInteger(true, "1.234").intValue());
-
 		Assert.assertEquals(1234, VaadinUtils.stringToInteger(false, "1234", LOCALE).intValue());
 		Assert.assertEquals(1234, VaadinUtils.stringToInteger(true, "1.234", LOCALE).intValue());
 	}
@@ -163,7 +134,6 @@ public class VaadinUtilsTest extends BaseMockitoTest {
 	public void testStringToLong() {
 		// use default locale
 		Assert.assertEquals(1234L, VaadinUtils.stringToLong(true, "1.234").longValue());
-
 		Assert.assertEquals(1234L, VaadinUtils.stringToLong(false, "1234", LOCALE).longValue());
 		Assert.assertEquals(1234L, VaadinUtils.stringToLong(true, "1.234", LOCALE).longValue());
 	}

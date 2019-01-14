@@ -23,15 +23,10 @@ import java.math.BigDecimal;
  */
 public final class NumberUtils {
 
-	private NumberUtils() {
-		// default constructor
-	}
-
 	/**
 	 * Formats a value
 	 * 
-	 * @param value
-	 *            the value to format
+	 * @param value the value to format
 	 * @return
 	 */
 	public static String format(Object value) {
@@ -51,10 +46,32 @@ public final class NumberUtils {
 	}
 
 	/**
-	 * Checks if a class is a float (either wrapper or primitive)
+	 * Checks whether a class is a double (either wrapper or primitive)
 	 * 
 	 * @param clazz
-	 *            the class to check
+	 * @return
+	 */
+	public static boolean isDouble(Class<?> clazz) {
+		return Double.class.equals(clazz) || double.class.equals(clazz);
+	}
+
+	/**
+	 * Checks if an object is a double (either wrapper or primitive)
+	 * 
+	 * @param value
+	 * @return
+	 */
+	public static boolean isDouble(Object value) {
+		if (value == null) {
+			return false;
+		}
+		return value.getClass().equals(Double.class) || value.getClass().equals(double.class);
+	}
+
+	/**
+	 * Checks if a class is a float (either wrapper or primitive)
+	 * 
+	 * @param clazz the class to check
 	 * @return
 	 */
 	public static boolean isFloat(Class<?> clazz) {
@@ -64,8 +81,7 @@ public final class NumberUtils {
 	/**
 	 * Checks if a class is an integer (either wrapper or primitive)
 	 * 
-	 * @param clazz
-	 *            the class to check
+	 * @param clazz the class to check
 	 * @return
 	 */
 	public static boolean isInteger(Class<?> clazz) {
@@ -73,9 +89,9 @@ public final class NumberUtils {
 	}
 
 	/**
-	 * Checks if an object is an integer (either primitive or wrapper value)
+	 * Checks if an object is an integer (either wrapper or primitive)
 	 * 
-	 * @param value
+	 * @param value the value to check
 	 * @return
 	 */
 	public static boolean isInteger(Object value) {
@@ -88,8 +104,7 @@ public final class NumberUtils {
 	/**
 	 * Checks if a class is a long (either wrapper or primitive)
 	 * 
-	 * @param clazz
-	 *            the class to check
+	 * @param clazz the class to check
 	 * @return
 	 */
 	public static boolean isLong(Class<?> clazz) {
@@ -99,8 +114,7 @@ public final class NumberUtils {
 	/**
 	 * Checks if an object is a Long (either primitive or wrapper)
 	 * 
-	 * @param value
-	 *            the value to check
+	 * @param value the value to check
 	 * @return
 	 */
 	public static boolean isLong(Object value) {
@@ -111,9 +125,8 @@ public final class NumberUtils {
 	}
 
 	/**
-	 * Indicates whether a certain class is a numeric class (either a primitive
-	 * or a wrapper that extends the Number class) that is supported by the
-	 * framework
+	 * Indicates whether a certain class is a numeric class (either a primitive or a
+	 * wrapper that extends the Number class) that is supported by the framework
 	 * 
 	 * @param clazz
 	 * @return
@@ -122,6 +135,10 @@ public final class NumberUtils {
 		return Number.class.isAssignableFrom(clazz) || float.class.equals(clazz) || double.class.equals(clazz)
 				|| int.class.isAssignableFrom(clazz) || long.class.isAssignableFrom(clazz)
 				|| byte.class.isAssignableFrom(clazz) || short.class.isAssignableFrom(clazz);
+	}
+
+	private NumberUtils() {
+		// default constructor
 	}
 
 }

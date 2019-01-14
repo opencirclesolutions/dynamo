@@ -93,7 +93,10 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
 		}
 
 		private String getTokenDisplayName(T entity, String captionPropertyId) {
-			return ClassUtils.getFieldValueAsString(entity, captionPropertyId);
+			if (captionPropertyId != null) {
+				return ClassUtils.getFieldValueAsString(entity, captionPropertyId);
+			}
+			return entity.toString();
 		}
 
 		private long getTokenIdentifier(T entity) {

@@ -67,6 +67,9 @@ public class ConvertUtilsTest {
 		s = ConvertUtils.convertToPresentationValue(model.getAttributeModel("birthWeek"),
 				DateUtils.createLocalDate("01022015"));
 		Assert.assertEquals("2015-05", s);
+
+		s = ConvertUtils.convertToPresentationValue(model.getAttributeModel("someDouble"), 1234.56);
+		Assert.assertEquals("1234,56", s);
 	}
 
 	@Test

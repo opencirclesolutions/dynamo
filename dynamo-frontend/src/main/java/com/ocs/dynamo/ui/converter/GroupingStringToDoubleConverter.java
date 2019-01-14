@@ -13,8 +13,6 @@
  */
 package com.ocs.dynamo.ui.converter;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Locale;
@@ -24,14 +22,14 @@ import org.apache.commons.lang.StringUtils;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.data.Result;
 import com.vaadin.data.ValueContext;
-import com.vaadin.data.converter.StringToBigDecimalConverter;
+import com.vaadin.data.converter.StringToDoubleConverter;
 
 /**
- * A converter for converting between Strings and BigDecimals
+ * A converter for converting between Strings and Doubles
  * 
  * @author bas.rutten
  */
-public class BigDecimalConverter extends StringToBigDecimalConverter {
+public class GroupingStringToDoubleConverter extends StringToDoubleConverter {
 
 	private static final long serialVersionUID = -6491010958762673241L;
 
@@ -52,7 +50,7 @@ public class BigDecimalConverter extends StringToBigDecimalConverter {
 	 * 
 	 * @param pattern will be applied to the decimalFormat of this converter.
 	 */
-	public BigDecimalConverter(String message, String pattern) {
+	public GroupingStringToDoubleConverter(String message, String pattern) {
 		super(message);
 		this.pattern = pattern;
 	}
@@ -60,22 +58,21 @@ public class BigDecimalConverter extends StringToBigDecimalConverter {
 	/**
 	 * Constructor - for use with a precision and grouping setting
 	 */
-	public BigDecimalConverter(String message, int precision, boolean useGrouping) {
+	public GroupingStringToDoubleConverter(String message, int precision, boolean useGrouping) {
 		super(message);
 		this.precision = precision;
 		this.useGrouping = useGrouping;
 	}
 
 	@Override
-	public Result<BigDecimal> convertToModel(String value, ValueContext context) {
+	public Result<Double> convertToModel(String value, ValueContext context) {
 		if (value == null) {
 			return Result.ok(null);
 		}
 		Result<Number> number = convertToNumber(value, context);
 		return number.flatMap(r -> {
-			BigDecimal bd = r == null ? null
-					: BigDecimal.valueOf(r.doubleValue()).setScale(precision, RoundingMode.HALF_UP);
-			return Result.ok(bd);
+			Double d = r == null ? null : r.doubleValue();
+			return Result.ok(d);
 		});
 	}
 

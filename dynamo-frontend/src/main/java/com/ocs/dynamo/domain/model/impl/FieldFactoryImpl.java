@@ -527,6 +527,10 @@ public class FieldFactoryImpl implements FieldFactory {
 				} else if (NumberUtils.isLong(am.getType())) {
 					sBuilder.withConverter(ConverterFactory.createLongConverter(
 							SystemPropertyUtils.useThousandsGroupingInEditMode(), am.isPercentage()));
+				} else if (NumberUtils.isDouble(am.getType())) {
+					sBuilder.withConverter(ConverterFactory.createDoubleConverter(am.isCurrency(),
+							SystemPropertyUtils.useThousandsGroupingInEditMode(), am.isPercentage(), am.getPrecision(),
+							VaadinUtils.getCurrencySymbol()));
 				}
 			} else {
 				// add a custom converter defined in the component itself
@@ -535,9 +539,9 @@ public class FieldFactoryImpl implements FieldFactory {
 		} else if (builder.getField() instanceof Slider) {
 			BindingBuilder<U, Double> sBuilder = (BindingBuilder<U, Double>) builder;
 			sBuilder.withNullRepresentation(0.0);
-			if (am.getType().equals(Integer.class)) {
+			if (NumberUtils.isInteger(am.getType())) {
 				sBuilder.withConverter(new IntToDoubleConverter());
-			} else if (am.getType().equals(Long.class)) {
+			} else if (NumberUtils.isLong(am.getType())) {
 				sBuilder.withConverter(new LongToDoubleConverter());
 			}
 		} else if (builder.getField() instanceof URLField) {

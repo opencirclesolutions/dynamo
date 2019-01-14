@@ -14,6 +14,9 @@
 package com.ocs.dynamo.ui.utils;
 
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.Collection;
@@ -33,7 +36,7 @@ import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.ui.converter.BigDecimalConverter;
 import com.ocs.dynamo.ui.converter.ConverterFactory;
 import com.ocs.dynamo.util.SystemPropertyUtils;
-import com.vaadin.data.Converter;
+import com.ocs.dynamo.utils.NumberUtils;
 import com.vaadin.data.ValueContext;
 import com.vaadin.data.converter.StringToIntegerConverter;
 import com.vaadin.data.converter.StringToLongConverter;
@@ -52,6 +55,13 @@ import com.vaadin.ui.UI;
  * @author bas.rutten
  */
 public final class VaadinUtils {
+
+	private static String appendPercentage(String s, boolean percentage) {
+		if (s == null) {
+			return null;
+		}
+		return percentage ? s + "%" : s;
+	}
 
 	/**
 	 * Converts a BigDecimal value to a String
@@ -99,7 +109,8 @@ public final class VaadinUtils {
 	}
 
 	/**
-	 *
+	 * Converts a BigDecimal to a String
+	 * 
 	 * @param currency
 	 * @param percentage
 	 * @param useGrouping
@@ -111,9 +122,17 @@ public final class VaadinUtils {
 	 */
 	public static String bigDecimalToString(boolean currency, boolean percentage, boolean useGrouping, int precision,
 			BigDecimal value, Locale locale, String currencySymbol) {
-		BigDecimalConverter converter = ConverterFactory.createBigDecimalConverter(currency, percentage, useGrouping,
-				precision, currencySymbol);
-		return converter.convertToPresentation(value, new ValueContext(locale));
+		return fractionalToString(currency, percentage, useGrouping, precision, value, locale, currencySymbol);
+	}
+
+	public static String doubleToString(boolean currency, boolean percentage, boolean useGrouping, int precision,
+			Double value, Locale locale) {
+		return doubleToString(currency, percentage, useGrouping, precision, value, locale, getCurrencySymbol());
+	}
+
+	public static String doubleToString(boolean currency, boolean percentage, boolean useGrouping, int precision,
+			Double value, Locale locale, String currencySymbol) {
+		return fractionalToString(currency, percentage, useGrouping, precision, value, locale, currencySymbol);
 	}
 
 	/**
@@ -127,6 +146,40 @@ public final class VaadinUtils {
 				+ "        clipboardData.setData('text', pasted); $(e.target).val(pasted);} " + "      , 100);  "
 				+ "    }" + "  }) " + "});";
 		Page.getCurrent().getJavaScript().execute(js);
+	}
+
+	/**
+	 * 
+	 * @param currency
+	 * @param percentage
+	 * @param useGrouping
+	 * @param precision
+	 * @param value
+	 * @param locale
+	 * @param currencySymbol
+	 * @return
+	 */
+	public static String fractionalToString(boolean currency, boolean percentage, boolean useGrouping, int precision,
+			Number value, Locale locale, String currencySymbol) {
+		if (value == null) {
+			return null;
+		}
+
+		DecimalFormat df = null;
+		if (currency) {
+			df = (DecimalFormat) DecimalFormat.getCurrencyInstance(locale);
+			DecimalFormatSymbols s = df.getDecimalFormatSymbols();
+			s.setCurrencySymbol(currencySymbol);
+			df.setDecimalFormatSymbols(s);
+		} else {
+			df = (DecimalFormat) DecimalFormat.getInstance(locale);
+		}
+		df.setGroupingUsed(useGrouping);
+		df.setMaximumFractionDigits(precision);
+		df.setMinimumFractionDigits(precision);
+
+		String s = df.format(value);
+		return appendPercentage(s, percentage);
 	}
 
 	/**
@@ -306,12 +359,17 @@ public final class VaadinUtils {
 	 * @return
 	 */
 	public static String integerToString(boolean grouping, boolean percentage, Integer value, Locale locale) {
-		StringToIntegerConverter converter = ConverterFactory.createIntegerConverter(grouping, percentage);
-		return converter.convertToPresentation(value, new ValueContext(locale));
+		if (value == null) {
+			return null;
+		}
+		NumberFormat format = NumberFormat.getInstance(locale);
+		format.setGroupingUsed(grouping);
+		String s = format.format(value);
+		return appendPercentage(s, percentage);
 	}
 
 	/**
-	 * Executes javascript loaded into a page by code
+	 * Executes JavaScript loaded into a page by code
 	 *
 	 * @param id                    the ID of the element that will hold the
 	 *                              contents
@@ -381,17 +439,36 @@ public final class VaadinUtils {
 	 * @return
 	 */
 	public static String longToString(boolean grouping, boolean percentage, Long value, Locale locale) {
-		StringToLongConverter converter = ConverterFactory.createLongConverter(grouping, percentage);
-		return converter.convertToPresentation(value, new ValueContext(locale));
+		if (value == null) {
+			return null;
+		}
+
+		NumberFormat format = NumberFormat.getInstance(locale);
+		format.setGroupingUsed(grouping);
+		String s = format.format(value);
+		return appendPercentage(s, percentage);
 	}
 
-	@SuppressWarnings("unchecked")
-	public static <T> String numberToString(AttributeModel attributeModel, Class<?> type, T value, boolean grouping,
-			Locale locale) {
-		Converter<String, T> cv = (Converter<String, T>) ConverterFactory.createConverterFor(type, attributeModel,
-				grouping);
-		if (cv != null) {
-			return cv.convertToPresentation(value, new ValueContext(locale));
+	/**
+	 * Converts a number to a String
+	 * 
+	 * @param am
+	 * @param type
+	 * @param value
+	 * @param grouping
+	 * @param locale
+	 * @param currencySymbol
+	 * @return
+	 */
+	public static <T> String numberToString(AttributeModel am, T value, boolean grouping, Locale locale,
+			String currencySymbol) {
+		if (NumberUtils.isInteger(am.getNormalizedType())) {
+			return integerToString(grouping, am.isPercentage(), (Integer) value);
+		} else if (NumberUtils.isLong(am.getNormalizedType())) {
+			return longToString(grouping, am.isPercentage(), (Long) value);
+		} else if (NumberUtils.isDouble(am.getNormalizedType()) || BigDecimal.class.equals(am.getNormalizedType())) {
+			return fractionalToString(am.isCurrency(), am.isPercentage(), grouping, am.getPrecision(), (Number) value,
+					locale, currencySymbol);
 		}
 		return null;
 	}
@@ -511,7 +588,8 @@ public final class VaadinUtils {
 	 */
 	public static Integer stringToInteger(boolean grouping, String value, Locale locale) {
 		StringToIntegerConverter converter = ConverterFactory.createIntegerConverter(grouping, false);
-		return converter.convertToModel(value, new ValueContext(locale)).getOrThrow(r -> new OCSRuntimeException());
+		return converter.convertToModel(value, new ValueContext(getLocale()))
+				.getOrThrow(r -> new OCSRuntimeException());
 	}
 
 	/**

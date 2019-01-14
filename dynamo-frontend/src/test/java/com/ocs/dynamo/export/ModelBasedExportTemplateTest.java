@@ -56,6 +56,7 @@ public class ModelBasedExportTemplateTest extends BaseIntegrationTest {
 		e1 = testEntityService.save(e1);
 		e1.setRegistrationTime(DateUtils.createLocalDateTime("14082015 111213"));
 		e1.setZoned(ZonedDateTime.of(DateUtils.createLocalDateTime("14082015 111213"), ZoneId.of("CET")));
+		e1.setSomeDouble(44.44);
 
 		e2 = new TestEntity("Harry", 12L);
 		e2.setRate(BigDecimal.valueOf(3));
@@ -67,8 +68,8 @@ public class ModelBasedExportTemplateTest extends BaseIntegrationTest {
 	@Test
 	public void testExcel() throws IOException {
 		ModelBasedExcelExportTemplate<Integer, TestEntity> template = new ModelBasedExcelExportTemplate<Integer, TestEntity>(
-				testEntityService, entityModelFactory.getModel(TestEntity.class), ExportMode.ONLY_VISIBLE_IN_GRID,
-				null, null, "Sheet name", null);
+				testEntityService, entityModelFactory.getModel(TestEntity.class), ExportMode.ONLY_VISIBLE_IN_GRID, null,
+				null, "Sheet name", null);
 		byte[] bytes = template.process();
 
 		try (Workbook wb = new XSSFWorkbook(new ByteArrayInputStream(bytes))) {
@@ -86,6 +87,7 @@ public class ModelBasedExportTemplateTest extends BaseIntegrationTest {
 			Assert.assertEquals("Registration Time", sheet.getRow(0).getCell(i++).getStringCellValue());
 			Assert.assertEquals("Some Boolean", sheet.getRow(0).getCell(i++).getStringCellValue());
 			Assert.assertEquals("Some Boolean2", sheet.getRow(0).getCell(i++).getStringCellValue());
+			Assert.assertEquals("Some Double", sheet.getRow(0).getCell(i++).getStringCellValue());
 			Assert.assertEquals("Some Enum", sheet.getRow(0).getCell(i++).getStringCellValue());
 			Assert.assertEquals("Some Int", sheet.getRow(0).getCell(i++).getStringCellValue());
 			Assert.assertEquals("Some String", sheet.getRow(0).getCell(i++).getStringCellValue());
@@ -98,22 +100,20 @@ public class ModelBasedExportTemplateTest extends BaseIntegrationTest {
 			Row row = sheet.getRow(1);
 			i = 0;
 			Assert.assertEquals(11, row.getCell(0).getNumericCellValue(), 0.001);
-			// Assert.assertEquals(DateUtils.createLocalDate("01042014"),
-			// LocalDate.from(row.getCell(1).getDateCellValue().toInstant()));
 
 			// Assert.assertEquals("2014-14", row.getCell(2).getStringCellValue());
 			Assert.assertEquals(34, row.getCell(3).getNumericCellValue(), 0.001);
 			Assert.assertEquals("Bob", row.getCell(4).getStringCellValue());
 			Assert.assertEquals(0.04, row.getCell(5).getNumericCellValue(), 0.001);
-			// Assert.assertEquals(DateUtils.createDateTime("14082015 111213"),
-			// row.getCell(7).getDateCellValue());
+
 			Assert.assertEquals("false", row.getCell(7).getStringCellValue());
 			Assert.assertEquals("On", row.getCell(8).getStringCellValue());
-			Assert.assertEquals("Value A", row.getCell(9).getStringCellValue());
-			Assert.assertEquals(1234, row.getCell(10).getNumericCellValue(), 0.001);
-			Assert.assertEquals("abab", row.getCell(12).getStringCellValue());
-			Assert.assertEquals("http://www.google.nl", row.getCell(14).getStringCellValue());
-			Assert.assertEquals("14-08-2015 11:12:13+0200", row.getCell(15).getStringCellValue());
+			Assert.assertEquals(44.44, row.getCell(9).getNumericCellValue(), 0.001);
+			Assert.assertEquals("Value A", row.getCell(10).getStringCellValue());
+			Assert.assertEquals(1234, row.getCell(11).getNumericCellValue(), 0.001);
+			Assert.assertEquals("abab", row.getCell(13).getStringCellValue());
+			Assert.assertEquals("http://www.google.nl", row.getCell(15).getStringCellValue());
+			Assert.assertEquals("14-08-2015 11:12:13+0200", row.getCell(16).getStringCellValue());
 		}
 
 	}
@@ -121,17 +121,17 @@ public class ModelBasedExportTemplateTest extends BaseIntegrationTest {
 	@Test
 	public void testCsv() {
 		ModelBasedCsvExportTemplate<Integer, TestEntity> template = new ModelBasedCsvExportTemplate<Integer, TestEntity>(
-				testEntityService, entityModelFactory.getModel(TestEntity.class), ExportMode.ONLY_VISIBLE_IN_GRID,
-				null, null, "Sheet name", null);
+				testEntityService, entityModelFactory.getModel(TestEntity.class), ExportMode.ONLY_VISIBLE_IN_GRID, null,
+				null, "Sheet name", null);
 		byte[] bytes = template.process();
 		String str = new String(bytes);
 		String[] lines = str.split("\n");
 
 		Assert.assertEquals(
-				"\"Age\";\"Birth Date\";\"Birth Week\";\"Discount\";\"Name\";\"Rate\";\"Registration Time\";\"Some Boolean\";\"Some Boolean2\";\"Some Enum\";\"Some Int\";\"Some String\";\"Some Text Area\";\"Some Time\";\"Url\";\"Zoned\"",
+				"\"Age\";\"Birth Date\";\"Birth Week\";\"Discount\";\"Name\";\"Rate\";\"Registration Time\";\"Some Boolean\";\"Some Boolean2\";\"Some Double\";\"Some Enum\";\"Some Int\";\"Some String\";\"Some Text Area\";\"Some Time\";\"Url\";\"Zoned\"",
 				lines[0].trim());
 		Assert.assertEquals(
-				"\"11\";\"01/04/2014\";\"2014-14\";\"34,00\";\"Bob\";\"4,00%\";\"14-08-2015 11:12:13\";\"false\";\"On\";\"Value A\";\"1.234\";\"some\";\"abab\";\"12:13:14\";\"http://www.google.nl\";\"14-08-2015 11:12:13+0200\"",
+				"\"11\";\"01/04/2014\";\"2014-14\";\"34,00\";\"Bob\";\"4,00%\";\"14-08-2015 11:12:13\";\"false\";\"On\";\"44,44\";\"Value A\";\"1.234\";\"some\";\"abab\";\"12:13:14\";\"http://www.google.nl\";\"14-08-2015 11:12:13+0200\"",
 				lines[1].trim());
 	}
 }

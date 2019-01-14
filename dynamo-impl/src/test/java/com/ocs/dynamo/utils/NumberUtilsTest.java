@@ -63,4 +63,18 @@ public class NumberUtilsTest extends BaseMockitoTest {
 		Assert.assertFalse(NumberUtils.isInteger(5L));
 		Assert.assertFalse(NumberUtils.isInteger(null));
 	}
+
+	@Test
+	public void testIsDouble() {
+		Assert.assertTrue(NumberUtils.isDouble(double.class));
+		Assert.assertTrue(NumberUtils.isDouble(Double.class));
+	}
+	
+	@Test
+	public void testIsDouble2() {
+		Assert.assertTrue(NumberUtils.isDouble(4.2));
+		Assert.assertTrue(NumberUtils.isDouble(new Double(12.23)));
+		Assert.assertFalse(NumberUtils.isDouble(5L));
+		Assert.assertFalse(NumberUtils.isDouble(null));
+	}
 }

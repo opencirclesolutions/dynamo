@@ -13,7 +13,6 @@
  */
 package com.ocs.dynamo.ui.utils;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -106,8 +105,8 @@ public final class FormatUtils {
 					result.add(next.toString());
 				}
 			} else if (next instanceof Number) {
-				result.add(VaadinUtils.numberToString(attributeModel, attributeModel.getNormalizedType(), next, true,
-						VaadinUtils.getLocale()));
+				result.add(VaadinUtils.numberToString(attributeModel, next, true, VaadinUtils.getLocale(),
+						VaadinUtils.getCurrencySymbol()));
 			} else {
 				result.add(next.toString());
 			}
@@ -166,14 +165,11 @@ public final class FormatUtils {
 				return dateTimeFormatter.format((LocalDate) value);
 			} else if (DateUtils.isJava8DateType(model.getType())) {
 				return DateUtils.formatJava8Date(model.getType(), value, model.getDisplayFormat());
-			} else if (BigDecimal.class.equals(model.getType())) {
+			}
+			if (NumberUtils.isNumeric(model.getType())) {
 				String cs = GridUtils.getCurrencySymbol(grid);
-				return VaadinUtils.bigDecimalToString(model.isCurrency(), model.isPercentage(),
-						model.isThousandsGrouping(), model.getPrecision(), (BigDecimal) value, locale, cs);
-			} else if (NumberUtils.isNumeric(model.getType())) {
 				// generic functionality for all other numbers
-				return VaadinUtils.numberToString(model, model.getType(), value, model.isThousandsGrouping(),
-						locale);
+				return VaadinUtils.numberToString(model, value, model.isThousandsGrouping(), locale, cs);
 			} else if (model.getType().isEnum()) {
 				// in case of an enumeration, look it up in the message
 				// bundle

@@ -132,6 +132,8 @@ public class TestEntity extends AbstractTreeEntity<Integer, TestEntity> {
 
 	private ZonedDateTime zoned;
 
+	private Double someDouble;
+
 	public TestEntity() {
 		// default constructor
 	}
@@ -362,6 +364,14 @@ public class TestEntity extends AbstractTreeEntity<Integer, TestEntity> {
 
 	public void setZoned(ZonedDateTime zoned) {
 		this.zoned = zoned;
+	}
+
+	public Double getSomeDouble() {
+		return someDouble;
+	}
+
+	public void setSomeDouble(Double someDouble) {
+		this.someDouble = someDouble;
 	}
 
 }

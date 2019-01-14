@@ -36,6 +36,7 @@ import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.ocs.dynamo.utils.NumberUtils;
 import com.vaadin.data.Result;
 import com.vaadin.data.ValueContext;
+import com.vaadin.data.converter.StringToDoubleConverter;
 import com.vaadin.data.converter.StringToIntegerConverter;
 import com.vaadin.data.converter.StringToLongConverter;
 
@@ -53,8 +54,8 @@ public final class ConvertUtils {
 	/**
 	 * Converts a value to its presentation value
 	 * 
-	 * @param am the attribute model
-	 * @param input          the input value
+	 * @param am    the attribute model
+	 * @param input the input value
 	 * @return
 	 */
 	public static Object convertToPresentationValue(AttributeModel am, Object input) {
@@ -69,13 +70,16 @@ public final class ConvertUtils {
 		if (am.isWeek()) {
 			LocalDateWeekCodeConverter converter = new LocalDateWeekCodeConverter();
 			return converter.convertToPresentation((LocalDate) input, new ValueContext(locale));
-		} else if (Integer.class.equals(am.getType())) {
+		} else if (NumberUtils.isInteger(am.getType())) {
 			return VaadinUtils.integerToString(grouping, percentage, (Integer) input);
-		} else if (Long.class.equals(am.getType())) {
+		} else if (NumberUtils.isLong(am.getType())) {
 			return VaadinUtils.longToString(grouping, percentage, (Long) input);
+		} else if (NumberUtils.isDouble(am.getType())) {
+			return VaadinUtils.doubleToString(am.isCurrency(), am.isPercentage(), grouping, am.getPrecision(),
+					(Double) input, locale);
 		} else if (BigDecimal.class.equals(am.getType())) {
-			return VaadinUtils.bigDecimalToString(am.isCurrency(), am.isPercentage(), grouping,
-					am.getPrecision(), (BigDecimal) input, locale);
+			return VaadinUtils.bigDecimalToString(am.isCurrency(), am.isPercentage(), grouping, am.getPrecision(),
+					(BigDecimal) input, locale);
 		} else if (ZonedDateTime.class.equals(am.getType())) {
 			ZonedDateTime zdt = (ZonedDateTime) input;
 			return zdt.toLocalDateTime();
@@ -86,8 +90,8 @@ public final class ConvertUtils {
 	/**
 	 * Converts the search value from the presentation to the model
 	 * 
-	 * @param am the attribute model that governs the conversion
-	 * @param input          the search value to convert
+	 * @param am    the attribute model that governs the conversion
+	 * @param input the search value to convert
 	 * @return
 	 */
 	public static Result<? extends Object> convertToModelValue(AttributeModel am, Object value) {
@@ -114,6 +118,13 @@ public final class ConvertUtils {
 				return converter.convertToModel((String) value, new ValueContext(locale));
 			} else if (value instanceof Double) {
 				return new LongToDoubleConverter().convertToModel((Double) value, new ValueContext(locale));
+			}
+		} else if (NumberUtils.isDouble(am.getType())) {
+			if (NumberSelectMode.TEXTFIELD.equals(am.getNumberSelectMode())) {
+				System.out.println("Percentage: " + am.isPercentage());
+				StringToDoubleConverter converter = ConverterFactory.createDoubleConverter(am.isCurrency(),
+						am.isPercentage(), grouping, am.getPrecision(), SystemPropertyUtils.getDefaultCurrencySymbol());
+				return converter.convertToModel((String) value, new ValueContext(locale));
 			}
 		} else if (BigDecimal.class.equals(am.getType())) {
 			if (NumberSelectMode.TEXTFIELD.equals(am.getNumberSelectMode())) {

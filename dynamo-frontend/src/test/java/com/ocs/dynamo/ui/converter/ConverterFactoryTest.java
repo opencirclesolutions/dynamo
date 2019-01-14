@@ -28,6 +28,7 @@ import com.ocs.dynamo.domain.model.impl.EntityModelFactoryImpl;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.test.BaseMockitoTest;
 import com.vaadin.data.Converter;
+import com.vaadin.data.converter.StringToDoubleConverter;
 import com.vaadin.data.converter.StringToIntegerConverter;
 import com.vaadin.data.converter.StringToLongConverter;
 
@@ -98,5 +99,24 @@ public class ConverterFactoryTest extends BaseMockitoTest {
 	public void testCreateLongConverter() {
 		StringToLongConverter cv = ConverterFactory.createLongConverter(true, true);
 		Assert.assertTrue(cv instanceof PercentageLongConverter);
+	}
+
+	@Test
+	public void testCreateDoubleConverter1() {
+		GroupingStringToDoubleConverter cv = (GroupingStringToDoubleConverter) ConverterFactory
+				.createDoubleConverter(false, false, false, 2, null);
+		Assert.assertFalse(cv instanceof PercentageDoubleConverter);
+	}
+
+	@Test
+	public void testCreateDoubleConverter2() {
+		StringToDoubleConverter cv = ConverterFactory.createDoubleConverter(false, true, false, 2, null);
+		Assert.assertTrue(cv instanceof PercentageDoubleConverter);
+	}
+
+	@Test
+	public void testCreateDoubleConverter3() {
+		StringToDoubleConverter cv = ConverterFactory.createDoubleConverter(true, false, false, 2, null);
+		Assert.assertTrue(cv instanceof CurrencyDoubleConverter);
 	}
 }

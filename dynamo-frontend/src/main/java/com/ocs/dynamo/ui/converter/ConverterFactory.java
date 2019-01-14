@@ -21,7 +21,9 @@ import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.util.SystemPropertyUtils;
+import com.ocs.dynamo.utils.NumberUtils;
 import com.vaadin.data.Converter;
+import com.vaadin.data.converter.StringToDoubleConverter;
 import com.vaadin.data.converter.StringToIntegerConverter;
 import com.vaadin.data.converter.StringToLongConverter;
 
@@ -65,10 +67,14 @@ public final class ConverterFactory {
 	@SuppressWarnings("unchecked")
 	public static <T> Converter<String, T> createConverterFor(Class<T> clazz, AttributeModel attributeModel,
 			boolean grouping) {
-		if (clazz.equals(Integer.class) || clazz.equals(int.class)) {
+		if (NumberUtils.isInteger(attributeModel.getType())) {
 			return (Converter<String, T>) createIntegerConverter(grouping, attributeModel.isPercentage());
-		} else if (clazz.equals(Long.class) || clazz.equals(long.class)) {
+		} else if (NumberUtils.isLong(attributeModel.getType())) {
 			return (Converter<String, T>) createLongConverter(grouping, attributeModel.isPercentage());
+		} else if (NumberUtils.isDouble(attributeModel.getType())) {
+			return (Converter<String, T>) createDoubleConverter(attributeModel.isCurrency(), grouping,
+					attributeModel.isPercentage(), attributeModel.getPrecision(),
+					SystemPropertyUtils.getDefaultCurrencySymbol());
 		} else if (clazz.equals(BigDecimal.class)) {
 			return (Converter<String, T>) createBigDecimalConverter(attributeModel.isCurrency(),
 					attributeModel.isPercentage(), grouping, attributeModel.getPrecision(),
@@ -92,7 +98,7 @@ public final class ConverterFactory {
 	/**
 	 * Creates a converter for converting between long and String
 	 * 
-	 * @param useGrouping whether to use a grouping
+	 * @param useGrouping whether to include a thousands grouping separator
 	 * @param percentage  whether to include a percentage sign
 	 * @return
 	 */
@@ -100,6 +106,27 @@ public final class ConverterFactory {
 		String msg = messageService.getMessage("ocs.cannot.convert", VaadinUtils.getLocale());
 		return percentage ? new PercentageLongConverter(msg, useGrouping)
 				: new GroupingStringToLongConverter(msg, useGrouping);
+	}
+
+	/**
+	 * Creates a converter for converting between a double and a String
+	 * 
+	 * @param currency    whether to include a currency sign
+	 * @param useGrouping whether to include a thousands grouping separator
+	 * @param percentage  whether to include a percentage sign
+	 * @param precision   the precision to use
+	 * @return
+	 */
+	public static StringToDoubleConverter createDoubleConverter(boolean currency, boolean percentage,
+			boolean useGrouping, int precision, String currencySymbol) {
+		String msg = messageService.getMessage("ocs.cannot.convert", VaadinUtils.getLocale());
+		if (currency) {
+			return new CurrencyDoubleConverter(msg, precision, useGrouping, currencySymbol);
+		} else if (percentage) {
+			return new PercentageDoubleConverter(msg, precision, useGrouping);
+		} else {
+			return new GroupingStringToDoubleConverter(msg, precision, useGrouping);
+		}
 	}
 
 	/**

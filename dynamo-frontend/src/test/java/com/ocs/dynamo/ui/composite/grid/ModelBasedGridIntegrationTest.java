@@ -55,7 +55,7 @@ public class ModelBasedGridIntegrationTest extends BaseIntegrationTest {
 		ModelBasedGrid<Integer, TestEntity> grid = new ModelBasedGrid<>(provider, model,
 				new HashMap<String, SerializablePredicate<?>>(), false, GridEditMode.SINGLE_ROW);
 
-		Assert.assertEquals(16, grid.getColumns().size());
+		Assert.assertEquals(17, grid.getColumns().size());
 		Assert.assertNotNull(grid.getDataProvider().getId(entity));
 	}
 
@@ -120,70 +120,8 @@ public class ModelBasedGridIntegrationTest extends BaseIntegrationTest {
 		wrapper.build();
 
 		Assert.assertTrue(wrapper.getDataProvider() instanceof PagingDataProvider);
-		Assert.assertEquals(16, wrapper.getGrid().getColumns().size());
+		Assert.assertEquals(17, wrapper.getGrid().getColumns().size());
 
 	}
-//
-//	@Test
-//	public void testSaveNewEntity() {
-//		ServiceContainer<Integer, TestEntity> container = new ServiceContainer<>(testEntityService,
-//				entityModelFactory.getModel(TestEntity.class), 20, QueryType.PAGING);
-//
-//		Integer id = (Integer) container.addItem();
-//		TestEntity te = VaadinUtils.getEntityFromContainer(container, id);
-//
-//		// committing the container will save the item
-//		te.setName("John");
-//		container.commit();
-//
-//		TestEntity comp = testEntityService.findByUniqueProperty("name", "John", false);
-//		Assert.assertNotNull(comp);
-//	}
-//
-//	@Test
-//	public void testRemoveEntity() {
-//		ServiceContainer<Integer, TestEntity> container = new ServiceContainer<>(testEntityService,
-//				entityModelFactory.getModel(TestEntity.class), 20, QueryType.PAGING);
-//
-//		Assert.assertEquals(1, testEntityService.findAll().size());
-//
-//		container.removeItem(container.getIdByIndex(0));
-//		container.commit();
-//
-//		// verify that the item was removed
-//		Assert.assertEquals(0, testEntityService.findAll().size());
-//
-//	}
-//
-//	/**
-//	 * Test that inappropriate results are filtered out
-//	 */
-//	@Test
-//	public void testFilter() {
-//		ServiceContainer<Integer, TestEntity> container = new ServiceContainer<>(testEntityService,
-//				entityModelFactory.getModel(TestEntity.class), 20, QueryType.PAGING);
-//		container.getQueryView().getQueryDefinition().addFilter(new Compare.Equal("name", "Hank"));
-//
-//		Assert.assertEquals(1, testEntityService.findAll().size());
-//		Assert.assertEquals(0, container.size());
-//	}
-//
-//	@Test
-//	public void testSort() {
-//		ServiceContainer<Integer, TestEntity> container = new ServiceContainer<>(testEntityService,
-//				entityModelFactory.getModel(TestEntity.class), 20, QueryType.PAGING);
-//
-//		TestEntity entity2 = new TestEntity("Kevin", 74L);
-//		testEntityService.save(entity2);
-//
-//		Assert.assertEquals(2, container.size());
-//
-//		container.sort(new SortOrder("name", SortDirection.DESCENDING));
-//		Assert.assertEquals("Kevin", container.getItem(container.getIdByIndex(0)).getItemProperty("name").getValue());
-//		Assert.assertEquals("Bob", container.getItem(container.getIdByIndex(1)).getItemProperty("name").getValue());
-//
-//		container.sort(new SortOrder("name", SortDirection.ASCENDING));
-//		Assert.assertEquals("Bob", container.getItem(container.getIdByIndex(0)).getItemProperty("name").getValue());
-//		Assert.assertEquals("Kevin", container.getItem(container.getIdByIndex(1)).getItemProperty("name").getValue());
-//	}
+
 }

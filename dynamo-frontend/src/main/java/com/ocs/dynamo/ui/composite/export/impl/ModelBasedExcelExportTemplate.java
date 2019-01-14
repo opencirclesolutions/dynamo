@@ -47,6 +47,7 @@ import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.ocs.dynamo.utils.ClassUtils;
 import com.ocs.dynamo.utils.DateUtils;
 import com.ocs.dynamo.utils.MathUtils;
+import com.ocs.dynamo.utils.NumberUtils;
 
 /**
  * Template for exporting a data set to Excel based on the Entity model
@@ -174,7 +175,7 @@ public class ModelBasedExcelExportTemplate<ID extends Serializable, T extends Ab
 	}
 
 	protected void writeCellValue(Cell cell, Object value, EntityModel<T> em, AttributeModel am) {
-		if (value instanceof Integer || value instanceof Long) {
+		if (NumberUtils.isInteger(value) || NumberUtils.isLong(value)) {
 			// integer or long numbers
 			cell.setCellValue(((Number) value).doubleValue());
 		} else if (value instanceof Date && (am == null || !am.isWeek())) {
@@ -183,7 +184,10 @@ public class ModelBasedExcelExportTemplate<ID extends Serializable, T extends Ab
 			cell.setCellValue(DateUtils.toLegacyDate((LocalDate) value));
 		} else if (value instanceof LocalDateTime) {
 			cell.setCellValue(DateUtils.toLegacyDate((LocalDateTime) value));
-		} else if (value instanceof BigDecimal) {
+		} else if (value instanceof BigDecimal || NumberUtils.isDouble(value)) {
+			if (value instanceof Double) {
+				value = BigDecimal.valueOf((Double) value);
+			}
 			boolean isPercentage = am != null && am.isPercentage();
 			int defaultPrecision = SystemPropertyUtils.getDefaultDecimalPrecision();
 			if (isPercentage) {
