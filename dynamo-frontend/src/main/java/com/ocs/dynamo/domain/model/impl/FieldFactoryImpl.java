@@ -67,7 +67,6 @@ import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.AbstractTextField;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.CustomField;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.DateTimeField;
 import com.vaadin.ui.Slider;
@@ -81,18 +80,71 @@ import com.vaadin.ui.TextField;
  */
 public class FieldFactoryImpl implements FieldFactory {
 
+	private FieldFactory delegate;
+
 	@Autowired
 	private MessageService messageService;
 
 	private final ServiceLocator serviceLocator = ServiceLocatorFactory.getServiceLocator();
 
-	private FieldFactory delegate;
+	public FieldFactoryImpl() {
+	}
 
 	public FieldFactoryImpl(FieldFactory delegate) {
 		this.delegate = delegate;
 	}
 
-	public FieldFactoryImpl() {
+	@SuppressWarnings("unchecked")
+	public <U> void addConvertersAndValidators(BindingBuilder<U, ?> builder, AttributeModel am,
+			Converter<String, ?> customConverter) {
+		if (am.isEmail()) {
+			BindingBuilder<U, String> sBuilder = (BindingBuilder<U, String>) builder;
+			sBuilder.withNullRepresentation("").withValidator(
+					new EmailValidator(messageService.getMessage("ocs.no.valid.email", VaadinUtils.getLocale())));
+		} else if (am.isWeek()) {
+			BindingBuilder<U, String> sBuilder = (BindingBuilder<U, String>) builder;
+			sBuilder.withConverter(new LocalDateWeekCodeConverter());
+		} else if (builder.getField() instanceof AbstractTextField) {
+			BindingBuilder<U, String> sBuilder = (BindingBuilder<U, String>) builder;
+			sBuilder.withNullRepresentation("");
+			if (customConverter == null) {
+				if (am.getType().equals(BigDecimal.class)) {
+					sBuilder.withConverter(ConverterFactory.createBigDecimalConverter(am.isCurrency(),
+							am.isPercentage(), SystemPropertyUtils.useThousandsGroupingInEditMode(), am.getPrecision(),
+							VaadinUtils.getCurrencySymbol()));
+				} else if (NumberUtils.isInteger(am.getType())) {
+					sBuilder.withConverter(ConverterFactory.createIntegerConverter(
+							SystemPropertyUtils.useThousandsGroupingInEditMode(), am.isPercentage()));
+				} else if (NumberUtils.isLong(am.getType())) {
+					sBuilder.withConverter(ConverterFactory.createLongConverter(
+							SystemPropertyUtils.useThousandsGroupingInEditMode(), am.isPercentage()));
+				} else if (NumberUtils.isDouble(am.getType())) {
+					sBuilder.withConverter(ConverterFactory.createDoubleConverter(am.isCurrency(),
+							SystemPropertyUtils.useThousandsGroupingInEditMode(), am.isPercentage(), am.getPrecision(),
+							VaadinUtils.getCurrencySymbol()));
+				}
+			} else {
+				// add a custom converter defined in the component itself
+				sBuilder.withConverter(customConverter);
+			}
+		} else if (builder.getField() instanceof Slider) {
+			// custom converters since the Slider component uses doubles internally
+			BindingBuilder<U, Double> sBuilder = (BindingBuilder<U, Double>) builder;
+			sBuilder.withNullRepresentation(0.0);
+			if (NumberUtils.isInteger(am.getType())) {
+				sBuilder.withConverter(new IntToDoubleConverter());
+			} else if (NumberUtils.isLong(am.getType())) {
+				sBuilder.withConverter(new LongToDoubleConverter());
+			}
+		} else if (builder.getField() instanceof URLField) {
+			BindingBuilder<U, String> sBuilder = (BindingBuilder<U, String>) builder;
+			sBuilder.withNullRepresentation("").withValidator(
+					new URLValidator(messageService.getMessage("ocs.no.valid.url", VaadinUtils.getLocale())));
+		} else if (builder.getField() instanceof DateTimeField && ZonedDateTime.class.equals(am.getType())) {
+			BindingBuilder<U, LocalDateTime> sBuilder = (BindingBuilder<U, LocalDateTime>) builder;
+			sBuilder.withConverter(new ZonedDateTimeToLocalDateTimeConverter(ZoneId.systemDefault()));
+		}
+
 	}
 
 	/**
@@ -224,27 +276,7 @@ public class FieldFactoryImpl implements FieldFactory {
 			// (in view mode) beats any selection components
 			field = constructInternalLinkField(am, fieldEntityModel);
 		} else if (AttributeType.ELEMENT_COLLECTION.equals(am.getAttributeType())) {
-			if (!context.isSearch()) {
-				// use a "collection grid" for an element collection
-				final FormOptions fo = new FormOptions().setShowRemoveButton(true);
-				if (String.class.equals(am.getMemberType())) {
-					ElementCollectionGrid<?, ?, String> grid = new ElementCollectionGrid<>(am, fo);
-					field = grid;
-				} else if (NumberUtils.isInteger(am.getMemberType())) {
-					ElementCollectionGrid<?, ?, Integer> grid = new ElementCollectionGrid<>(am, fo);
-					field = grid;
-				} else if (NumberUtils.isLong(am.getMemberType())) {
-					ElementCollectionGrid<?, ?, Long> grid = new ElementCollectionGrid<>(am, fo);
-					field = grid;
-				} else {
-					// other types not supported for now
-					throw new OCSRuntimeException("Element collections of this type are currently not supported");
-				}
-			} else {
-				// token search field
-				field = constructSimpleTokenField(fieldEntityModel != null ? fieldEntityModel : am.getEntityModel(), am,
-						am.getPath().substring(am.getPath().lastIndexOf('.') + 1), true, null);
-			}
+			field = constructForElementCollection(context, am, fieldEntityModel);
 		} else if (AbstractEntity.class.isAssignableFrom(am.getType())) {
 			// lookup or combo field for an entity
 			field = constructSelect(am, fieldEntityModel, fieldFilter, sharedProvider, search);
@@ -307,11 +339,36 @@ public class FieldFactoryImpl implements FieldFactory {
 				field = new TextField();
 			}
 		}
-
 		if (field != null) {
 			postProcessField(field, am, search);
 		}
+		return field;
+	}
 
+	private AbstractComponent constructForElementCollection(FieldFactoryContext context, AttributeModel am,
+			EntityModel<?> fieldEntityModel) {
+		AbstractComponent field = null;
+		if (!context.isSearch()) {
+			// use a "collection grid" for an element collection
+			final FormOptions fo = new FormOptions().setShowRemoveButton(true);
+			if (String.class.equals(am.getMemberType())) {
+				ElementCollectionGrid<?, ?, String> grid = new ElementCollectionGrid<>(am, fo);
+				field = grid;
+			} else if (NumberUtils.isInteger(am.getMemberType())) {
+				ElementCollectionGrid<?, ?, Integer> grid = new ElementCollectionGrid<>(am, fo);
+				field = grid;
+			} else if (NumberUtils.isLong(am.getMemberType())) {
+				ElementCollectionGrid<?, ?, Long> grid = new ElementCollectionGrid<>(am, fo);
+				field = grid;
+			} else {
+				// other types not supported for now
+				throw new OCSRuntimeException("Element collections of this type are currently not supported");
+			}
+		} else {
+			// token search field
+			field = constructSimpleTokenField(fieldEntityModel != null ? fieldEntityModel : am.getEntityModel(), am,
+					am.getPath().substring(am.getPath().lastIndexOf('.') + 1), true, null);
+		}
 		return field;
 	}
 
@@ -448,13 +505,10 @@ public class FieldFactoryImpl implements FieldFactory {
 			AbstractField<?> af = (AbstractField<?>) field;
 			af.setRequiredIndicatorVisible(search ? am.isRequiredForSearching() : am.isRequired());
 			af.setDescription(am.getDescription());
-		} else if (field instanceof CustomField) {
-			CustomField<?> cf = (CustomField<?>) field;
-			cf.setRequiredIndicatorVisible(search ? am.isRequiredForSearching() : am.isRequired());
-			cf.setDescription(am.getDescription());
-			if (field instanceof CustomEntityField) {
-				((CustomEntityField<?, ?, ?>) field).setPlaceholder(am.getPrompt());
-			}
+		}
+
+		if (field instanceof CustomEntityField) {
+			((CustomEntityField<?, ?, ?>) field).setPlaceholder(am.getPrompt());
 		}
 
 		// add percentage sign
@@ -501,57 +555,5 @@ public class FieldFactoryImpl implements FieldFactory {
 			}
 		}
 		return entityModel;
-	}
-
-	@SuppressWarnings("unchecked")
-	public <U> void addConvertersAndValidators(BindingBuilder<U, ?> builder, AttributeModel am,
-			Converter<String, ?> customConverter) {
-		if (am.isEmail()) {
-			BindingBuilder<U, String> sBuilder = (BindingBuilder<U, String>) builder;
-			sBuilder.withNullRepresentation("").withValidator(
-					new EmailValidator(messageService.getMessage("ocs.no.valid.email", VaadinUtils.getLocale())));
-		} else if (am.isWeek()) {
-			BindingBuilder<U, String> sBuilder = (BindingBuilder<U, String>) builder;
-			sBuilder.withConverter(new LocalDateWeekCodeConverter());
-		} else if (builder.getField() instanceof AbstractTextField) {
-			BindingBuilder<U, String> sBuilder = (BindingBuilder<U, String>) builder;
-			sBuilder.withNullRepresentation("");
-			if (customConverter == null) {
-				if (am.getType().equals(BigDecimal.class)) {
-					sBuilder.withConverter(ConverterFactory.createBigDecimalConverter(am.isCurrency(),
-							am.isPercentage(), SystemPropertyUtils.useThousandsGroupingInEditMode(), am.getPrecision(),
-							VaadinUtils.getCurrencySymbol()));
-				} else if (NumberUtils.isInteger(am.getType())) {
-					sBuilder.withConverter(ConverterFactory.createIntegerConverter(
-							SystemPropertyUtils.useThousandsGroupingInEditMode(), am.isPercentage()));
-				} else if (NumberUtils.isLong(am.getType())) {
-					sBuilder.withConverter(ConverterFactory.createLongConverter(
-							SystemPropertyUtils.useThousandsGroupingInEditMode(), am.isPercentage()));
-				} else if (NumberUtils.isDouble(am.getType())) {
-					sBuilder.withConverter(ConverterFactory.createDoubleConverter(am.isCurrency(),
-							SystemPropertyUtils.useThousandsGroupingInEditMode(), am.isPercentage(), am.getPrecision(),
-							VaadinUtils.getCurrencySymbol()));
-				}
-			} else {
-				// add a custom converter defined in the component itself
-				sBuilder.withConverter(customConverter);
-			}
-		} else if (builder.getField() instanceof Slider) {
-			BindingBuilder<U, Double> sBuilder = (BindingBuilder<U, Double>) builder;
-			sBuilder.withNullRepresentation(0.0);
-			if (NumberUtils.isInteger(am.getType())) {
-				sBuilder.withConverter(new IntToDoubleConverter());
-			} else if (NumberUtils.isLong(am.getType())) {
-				sBuilder.withConverter(new LongToDoubleConverter());
-			}
-		} else if (builder.getField() instanceof URLField) {
-			BindingBuilder<U, String> sBuilder = (BindingBuilder<U, String>) builder;
-			sBuilder.withNullRepresentation("").withValidator(
-					new URLValidator(messageService.getMessage("ocs.no.valid.url", VaadinUtils.getLocale())));
-		} else if (builder.getField() instanceof DateTimeField && ZonedDateTime.class.equals(am.getType())) {
-			BindingBuilder<U, LocalDateTime> sBuilder = (BindingBuilder<U, LocalDateTime>) builder;
-			sBuilder.withConverter(new ZonedDateTimeToLocalDateTimeConverter(ZoneId.systemDefault()));
-		}
-
 	}
 }

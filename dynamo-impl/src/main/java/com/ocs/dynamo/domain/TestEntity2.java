@@ -14,6 +14,7 @@
 package com.ocs.dynamo.domain;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -60,7 +61,7 @@ public class TestEntity2 extends AbstractEntity<Integer> {
 	private TestEntity testEntityAlt;
 
 	@ManyToOne
-	@Attribute(selectMode = AttributeSelectMode.LIST)
+	@Attribute(selectMode = AttributeSelectMode.LIST, rows = 6)
 	private TestEntity testEntityAlt2;
 
 	@Attribute(selectMode = AttributeSelectMode.TOKEN)
@@ -76,7 +77,13 @@ public class TestEntity2 extends AbstractEntity<Integer> {
 	@Attribute(editable = EditableType.READ_ONLY)
 	private String readOnly;
 
+	@Attribute(editable = EditableType.READ_ONLY, url = true)
+	private String url;
+
 	private Long longValue;
+
+	@Attribute(searchDateOnly = true)
+	private LocalDateTime searchDateOnly;
 
 	@Override
 	public Integer getId() {
@@ -190,6 +197,22 @@ public class TestEntity2 extends AbstractEntity<Integer> {
 
 	public void setLongValue(Long longValue) {
 		this.longValue = longValue;
+	}
+
+	public String getUrl() {
+		return url;
+	}
+
+	public void setUrl(String url) {
+		this.url = url;
+	}
+
+	public LocalDateTime getSearchDateOnly() {
+		return searchDateOnly;
+	}
+
+	public void setSearchDateOnly(LocalDateTime searchDateOnly) {
+		this.searchDateOnly = searchDateOnly;
 	}
 
 }

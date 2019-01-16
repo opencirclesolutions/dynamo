@@ -31,7 +31,7 @@ public class LongToDoubleConverter implements Converter<Double, Long> {
 	@Override
 	public Result<Long> convertToModel(Double value, ValueContext context) {
 		if (value == null) {
-			return null;
+			return Result.ok(null);
 		}
 		return Result.ok(value.longValue());
 	}

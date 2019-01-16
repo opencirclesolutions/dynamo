@@ -8,6 +8,7 @@ import javax.inject.Inject;
 import org.hibernate.annotations.Check;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.vaadin.teemu.switchui.Switch;
 
@@ -34,6 +35,8 @@ import com.ocs.dynamo.ui.component.SimpleTokenFieldSelect;
 import com.ocs.dynamo.ui.component.TimeField;
 import com.ocs.dynamo.ui.component.TokenFieldSelect;
 import com.ocs.dynamo.ui.component.URLField;
+import com.vaadin.data.BeanValidationBinder;
+import com.vaadin.data.Binder;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.event.FieldEvents.BlurEvent;
 import com.vaadin.server.SerializablePredicate;
@@ -114,6 +117,8 @@ public class FieldFactoryImplTest extends BaseIntegrationTest {
 	public void testTextArea() {
 		AbstractComponent ac = constructField("someTextArea", false);
 		Assert.assertTrue(ac instanceof TextArea);
+		TextArea ta = (TextArea) ac;
+		Assert.assertEquals(4, ta.getRows());
 	}
 
 	/**
@@ -142,6 +147,14 @@ public class FieldFactoryImplTest extends BaseIntegrationTest {
 		Slider slider = (Slider) ac;
 		Assert.assertEquals(99, slider.getMin(), 0.001);
 		Assert.assertEquals(175, slider.getMax(), 0.001);
+
+		Binder<TestEntity> binder = new BeanValidationBinder<>(TestEntity.class);
+		TestEntity t1 = new TestEntity();
+		binder.setBean(t1);
+
+		EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
+		fieldFactory.addConvertersAndValidators(binder.forField(slider), em.getAttributeModel("someIntSlider"), null);
+
 	}
 
 	@Test
@@ -166,7 +179,7 @@ public class FieldFactoryImplTest extends BaseIntegrationTest {
 	 * element collection field in search mode (fails due to h2 problem?)
 	 */
 	@Test
-	@org.junit.Ignore
+	@Ignore
 	public void testCollectionFieldSearch() {
 		AbstractComponent ac = constructField("tags", true);
 		Assert.assertTrue(ac instanceof SimpleTokenFieldSelect);
@@ -238,6 +251,18 @@ public class FieldFactoryImplTest extends BaseIntegrationTest {
 	}
 
 	/**
+	 * Test the creation of date field for searching on date only
+	 */
+	@Test
+	public void testSearchDateOnly() {
+		AbstractComponent ac = constructField2("searchDateOnly", true, false);
+		Assert.assertTrue(ac instanceof DateField);
+
+		DateField tf = (DateField) ac;
+		Assert.assertEquals("dd-MM-yyyy", tf.getDateFormat());
+	}
+
+	/**
 	 * Test the creation of a local date time field
 	 */
 	@Test
@@ -288,6 +313,24 @@ public class FieldFactoryImplTest extends BaseIntegrationTest {
 	public void testReadOnlyNoField() {
 		AbstractComponent ac = constructField2("readOnly", false, false);
 		Assert.assertNull(ac);
+	}
+
+	/**
+	 * Test that in search mode a field is generated even for a read-only property
+	 */
+	@Test
+	public void testReadOnlySearch() {
+		AbstractComponent ac = constructField2("readOnly", true, false);
+		Assert.assertTrue(ac instanceof TextField);
+	}
+
+	/**
+	 * Test that even in read only mode, an URL field is created
+	 */
+	@Test
+	public void testReadOnlyUrl() {
+		AbstractComponent ac = constructField2("url", false, false);
+		Assert.assertTrue(ac instanceof URLField);
 	}
 
 	/**
@@ -357,6 +400,9 @@ public class FieldFactoryImplTest extends BaseIntegrationTest {
 		Assert.assertTrue(ac instanceof TokenFieldSelect);
 	}
 
+	/**
+	 * Test list select (and number of rows)
+	 */
 	@Test
 	@SuppressWarnings("unchecked")
 	public void testConstructListSingleSelect() {
@@ -365,6 +411,7 @@ public class FieldFactoryImplTest extends BaseIntegrationTest {
 
 		QuickAddListSingleSelect<Integer, TestEntity> ls = (QuickAddListSingleSelect<Integer, TestEntity>) ac;
 		Assert.assertNull(ls.getFilter());
+		Assert.assertEquals(6, ls.getListSelect().getVisibleItemCount());
 	}
 
 	@Test
