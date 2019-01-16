@@ -127,7 +127,7 @@ public abstract class BaseImporter<R, U> {
 				} else if (NumberUtils.isFloat(pType)) {
 					obj = valueOf(value.floatValue());
 				} else if (NumberUtils.isDouble(pType)) {
-					obj = Double.valueOf(value.doubleValue());
+					obj = value;
 				} else if (BigDecimal.class.equals(pType)) {
 					obj = BigDecimal.valueOf(value);
 				}

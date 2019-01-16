@@ -20,6 +20,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import com.google.common.collect.Lists;
 import com.ocs.dynamo.domain.AbstractEntity;
@@ -477,9 +478,11 @@ public abstract class DetailsEditGrid<ID extends Serializable, T extends Abstrac
 		// add a change listener (to make sure the buttons are correctly
 		// enabled/disabled)
 		grid.addSelectionListener(event -> {
-			selectedItem = (T) grid.getSelectedItems().iterator().next();
-			onSelect(selectedItem);
-			checkButtonState(selectedItem);
+			if (grid.getSelectedItems().iterator().hasNext()) {
+				selectedItem = (T) grid.getSelectedItems().iterator().next();
+				onSelect(selectedItem);
+				checkButtonState(selectedItem);
+			}
 		});
 		grid.getDataProvider().addDataProviderListener(event -> grid.updateCaption());
 		grid.updateCaption();
@@ -609,8 +612,9 @@ public abstract class DetailsEditGrid<ID extends Serializable, T extends Abstrac
 	@Override
 	public boolean validateAllFields() {
 		boolean error = false;
-		for (Binder<T> binder : binders.values()) {
-			BinderValidationStatus<T> status = binder.validate();
+		for (Entry<T, Binder<T>> entry : binders.entrySet()) {
+			entry.getValue().setBean(entry.getKey());
+			BinderValidationStatus<T> status = entry.getValue().validate();
 			error |= !status.isOk();
 		}
 		return error;

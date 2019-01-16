@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -37,6 +38,7 @@ import com.ocs.dynamo.utils.ClassUtils;
 import com.ocs.dynamo.utils.NumberUtils;
 import com.vaadin.data.BeanValidationBinder;
 import com.vaadin.data.Binder;
+import com.vaadin.data.Binder.Binding;
 import com.vaadin.data.Binder.BindingBuilder;
 import com.vaadin.data.ValidationResult;
 import com.vaadin.data.Validator;
@@ -395,8 +397,10 @@ public class ElementCollectionGrid<ID extends Serializable, U extends AbstractEn
 	@Override
 	public boolean validateAllFields() {
 		boolean error = false;
-		for (Binder<ValueHolder<T>> binder : binders.values()) {
-			error |= !binder.validate().isOk();
+		// refresh the bindings and validate
+		for (Entry<ValueHolder<T>, Binder<ValueHolder<T>>> entry : binders.entrySet()) {
+			entry.getValue().setBean(entry.getKey());
+			error |= !entry.getValue().validate().isOk();
 		}
 		return error;
 	}

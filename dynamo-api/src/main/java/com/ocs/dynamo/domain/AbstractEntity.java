@@ -24,56 +24,55 @@ import org.apache.commons.lang.ObjectUtils;
  * Base class for entities
  * 
  * @author bas.rutten
- * @param <ID>
- *            the type of the primary key
+ * @param <ID> the type of the primary key
  */
 @MappedSuperclass
 public abstract class AbstractEntity<ID> implements Serializable {
 
-    private static final long serialVersionUID = -8442763252267825950L;
+	private static final long serialVersionUID = -8442763252267825950L;
 
-    // version field for optimistic locking
-    @Version
-    private Integer version;
+	// version field for optimistic locking
+	@Version
+	private Integer version;
 
-    public abstract ID getId();
+	public abstract ID getId();
 
-    public abstract void setId(ID id);
+	public abstract void setId(ID id);
 
-    public Integer getVersion() {
-        return version;
-    }
+	public Integer getVersion() {
+		return version;
+	}
 
-    public void setVersion(Integer version) {
-        this.version = version;
-    }
+	public void setVersion(Integer version) {
+		this.version = version;
+	}
 
-    /**
-     * Basic hash code function - uses the ID. Override this (and the equals() method) if your
-     * entity has a more meaningful key
-     */
-    @Override
-    public int hashCode() {
-        return ObjectUtils.hashCode(getId());
-    }
+	/**
+	 * Basic hash code function - uses the ID. Override this (and the equals()
+	 * method) if your entity has a more meaningful key
+	 */
+	@Override
+	public int hashCode() {
+		return ObjectUtils.hashCode(getId());
+	}
 
-    /**
-     * Basic equals function. Override this (and of the hashCode() method) if your entity has a more
-     * meaningful key
-     * 
-     * @param obj
-     * @return
-     */
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null || !this.getClass().isAssignableFrom(obj.getClass())) {
-            return false;
-        }
+	/**
+	 * Basic equals function. Override this (and of the hashCode() method) if your
+	 * entity has a more meaningful key
+	 * 
+	 * @param obj
+	 * @return
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null || !this.getClass().isAssignableFrom(obj.getClass())) {
+			return false;
+		}
 
-        return ObjectUtils.equals(this.getId(), ((AbstractEntity<?>) obj).getId());
-    }
+		return ObjectUtils.equals(this.getId(), ((AbstractEntity<?>) obj).getId());
+	}
 
 }
