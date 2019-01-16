@@ -30,6 +30,7 @@ import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.Refreshable;
 import com.ocs.dynamo.ui.Reloadable;
 import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
+import com.ocs.dynamo.ui.composite.export.CustomXlsStyleGenerator;
 import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
 import com.ocs.dynamo.ui.composite.grid.BaseGridWrapper;
 import com.ocs.dynamo.utils.ClassUtils;
@@ -53,26 +54,48 @@ import com.vaadin.ui.Layout;
 public abstract class BaseCollectionLayout<ID extends Serializable, T extends AbstractEntity<ID>>
 		extends BaseServiceCustomComponent<ID, T> implements Reloadable, Refreshable {
 
-	private static final long serialVersionUID = -2864711994829582000L;
-
 	/**
 	 * The default page length
 	 */
-	private static final int PAGE_LENGTH = 15;
+	private static final int PAGE_LENGTH = 12;
+
+	private static final long serialVersionUID = -2864711994829582000L;
 
 	/**
 	 * The main button bar that appears below the search results grid
 	 */
 	private HorizontalLayout buttonBar = new DefaultHorizontalLayout();
 
-	// the relations to fetch when displaying a single entity
+	/**
+	 * Custom generator
+	 */
+	private CustomXlsStyleGenerator<ID, T> customStyleGenerator;
+
+	/**
+	 * The relations to fetch when retrieving a single entity
+	 */
 	private FetchJoinInformation[] detailJoins;
 
-	// the property used to determine when to draw a divider row
+	/**
+	 * The property used to decide whether to include a divider row border
+	 */
 	private String dividerProperty;
 
-	// filters to apply to individual search fields
+	/**
+	 * The entity model to use when exporting to CSV or Excel. Defaults to the
+	 * regular model if not set
+	 */
+	private EntityModel<T> exportEntityModel;
+
+	/**
+	 * The search filters to apply to the individual fields
+	 */
 	private Map<String, SerializablePredicate<?>> fieldFilters = new HashMap<>();
+
+	/**
+	 * The grid wrapper
+	 */
+	private BaseGridWrapper<ID, T> gridWrapper;
 
 	// the joins to use when fetching data
 	private FetchJoinInformation[] joins;
@@ -97,17 +120,6 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 
 	// the sort orders
 	private List<SortOrder<?>> sortOrders = new ArrayList<>();
-
-	/**
-	 * The grid wrapper
-	 */
-	private BaseGridWrapper<ID, T> gridWrapper;
-
-	/**
-	 * The entity model to use when exporting to CSV or Excel. Defaults to the
-	 * regular model if not set
-	 */
-	private EntityModel<T> exportEntityModel;
 
 	/**
 	 * Constructor
@@ -156,6 +168,10 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	 */
 	protected void afterTabSelected(int tabIndex) {
 		// overwrite in subclasses
+	}
+
+	public void clearGridWrapper() {
+		this.gridWrapper = null;
 	}
 
 	/**
@@ -253,12 +269,20 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 		return buttonBar;
 	}
 
+	public CustomXlsStyleGenerator<ID, T> getCustomStyleGenerator() {
+		return customStyleGenerator;
+	}
+
 	public FetchJoinInformation[] getDetailJoins() {
 		return detailJoins;
 	}
 
 	public String getDividerProperty() {
 		return dividerProperty;
+	}
+
+	public EntityModel<T> getExportEntityModel() {
+		return exportEntityModel;
 	}
 
 	public Map<String, SerializablePredicate<?>> getFieldFilters() {
@@ -348,6 +372,16 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	}
 
 	/**
+	 * Shared additional configuration after the wrapper has been created
+	 * 
+	 * @param wrapper
+	 */
+	protected final void postConfigureGridWrapper(BaseGridWrapper<ID, T> wrapper) {
+		wrapper.setCustomStyleGenerator(getCustomStyleGenerator());
+		wrapper.setExportEntityModel(getExportEntityModel());
+	}
+
+	/**
 	 * Adds additional buttons to the main button bar (that appears below the
 	 * results grid in a search layout, split layout, or tabular edit layout)
 	 * 
@@ -358,8 +392,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	}
 
 	/**
-	 * Adds additional buttons to the button bar above/below the detail screen.
-	 *
+	 * Adds additional buttons to the button bar above/below the detail edit screen.
 	 * 
 	 * @param buttonBar the button bar
 	 * @param viewMode  indicates whether the form is in view mode
@@ -380,6 +413,15 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	}
 
 	/**
+	 * Method that is called after the grid wrapper has been constructed
+	 * 
+	 * @param wrapper
+	 */
+	protected void postProcessGridWrapper(BaseGridWrapper<ID, T> wrapper) {
+		// overwrite in subclasses when needed
+	}
+
+	/**
 	 * Callback method that is called after the entire layout has been constructed.
 	 * Use this to e.g. add additional components to the bottom of the layout or to
 	 * modify button captions
@@ -390,13 +432,8 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 		// override in subclasses
 	}
 
-	/**
-	 * Method that is called after the grid wrapper has been constructed
-	 * 
-	 * @param wrapper
-	 */
-	protected void postProcessGridWrapper(BaseGridWrapper<ID, T> wrapper) {
-		// overwrite in subclasses when needed
+	public void setCustomStyleGenerator(CustomXlsStyleGenerator<ID, T> customStyleGenerator) {
+		this.customStyleGenerator = customStyleGenerator;
 	}
 
 	/**
@@ -420,6 +457,10 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	 */
 	public void setDividerProperty(String dividerProperty) {
 		this.dividerProperty = dividerProperty;
+	}
+
+	public void setExportEntityModel(EntityModel<T> exportEntityModel) {
+		this.exportEntityModel = exportEntityModel;
 	}
 
 	/**
@@ -473,17 +514,5 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	 */
 	public void setSortEnabled(boolean sortEnabled) {
 		this.sortEnabled = sortEnabled;
-	}
-
-	public EntityModel<T> getExportEntityModel() {
-		return exportEntityModel;
-	}
-
-	public void setExportEntityModel(EntityModel<T> exportEntityModel) {
-		this.exportEntityModel = exportEntityModel;
-	}
-
-	public void clearGridWrapper() {
-		this.gridWrapper = null;
 	}
 }

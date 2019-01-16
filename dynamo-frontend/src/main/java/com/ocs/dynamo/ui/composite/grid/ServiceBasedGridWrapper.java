@@ -58,7 +58,7 @@ public class ServiceBasedGridWrapper<ID extends Serializable, T extends Abstract
 	private Integer maxResults;
 
 	/**
-	 * @param service     the service object
+	 * @param service     the service that is used for retrieving data
 	 * @param entityModel the entity model
 	 * @param queryType   the query type to use
 	 * @param order       the default sort order
@@ -118,7 +118,7 @@ public class ServiceBasedGridWrapper<ID extends Serializable, T extends Abstract
 				ExportDialog<ID, T> dialog = new ExportDialog<>(getExportService(),
 						getExportEntityModel() != null ? getExportEntityModel() : getEntityModel(),
 						getFormOptions().getExportMode(), getFilter(), !orders.isEmpty() ? orders : getSortOrders(),
-						getJoins());
+						getCustomStyleGenerator(), getJoins());
 				dialog.build();
 				UI.getCurrent().addWindow(dialog);
 			});

@@ -64,6 +64,9 @@ public class ModelBasedExcelExportTemplate<ID extends Serializable, T extends Ab
 
 	private CustomXlsStyleGenerator<ID, T> customGenerator;
 
+	/**
+	 * The Excl workbook
+	 */
 	private Workbook workbook;
 
 	/**
@@ -225,6 +228,7 @@ public class ModelBasedExcelExportTemplate<ID extends Serializable, T extends Ab
 		Cell cell = row.createCell(colIndex);
 		cell.setCellStyle(getGenerator().getCellStyle(colIndex, entity, value, attributeModel));
 		if (customGenerator != null) {
+			// override default style with custom style
 			CellStyle custom = customGenerator.getCustomCellStyle(workbook, entity, value, attributeModel);
 			if (custom != null) {
 				cell.setCellStyle(custom);

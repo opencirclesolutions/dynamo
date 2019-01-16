@@ -91,7 +91,7 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
 
 	@Override
 	protected BaseGridWrapper<ID, T> constructGridWrapper() {
-		ServiceBasedGridWrapper<ID, T> tw = new ServiceBasedGridWrapper<ID, T>(getService(), getEntityModel(),
+		ServiceBasedGridWrapper<ID, T> wrapper = new ServiceBasedGridWrapper<ID, T>(getService(), getEntityModel(),
 				getQueryType(), getFormOptions(), filter, getFieldFilters(), getSortOrders(), false, getJoins()) {
 
 			@Override
@@ -108,10 +108,10 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
 				}
 			}
 		};
-		tw.setExportEntityModel(getExportEntityModel());
-		tw.setMaxResults(getMaxResults());
-		tw.build();
-		return tw;
+		postConfigureGridWrapper(wrapper);
+		wrapper.setMaxResults(getMaxResults());
+		wrapper.build();
+		return wrapper;
 	}
 
 	/**

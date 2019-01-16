@@ -51,7 +51,7 @@ public class FixedExportDialogTest extends BaseMockitoTest {
 
 		Supplier<List<TestEntity>> supplier = () -> Lists.newArrayList(e1, e2);
 		model = factory.getModel(TestEntity.class);
-		dialog = new FixedExportDialog<>(exportService, model, ExportMode.FULL, supplier);
+		dialog = new FixedExportDialog<>(exportService, model, ExportMode.FULL, null, supplier);
 	}
 
 	@Test

@@ -324,13 +324,10 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 
 	@Override
 	protected BaseGridWrapper<ID, T> constructGridWrapper() {
-		ServiceBasedGridWrapper<ID, T> tw = new ServiceBasedGridWrapper<ID, T>(getService(), getEntityModel(),
+		ServiceBasedGridWrapper<ID, T> wrapper = new ServiceBasedGridWrapper<ID, T>(getService(), getEntityModel(),
 				QueryType.ID_BASED, getFormOptions(), filter, getFieldFilters(), getSortOrders(), !viewmode,
 				getJoins()) {
 
-			/**
-			 * Create binder for each row when in "edit all at once" mode
-			 */
 			@Override
 			protected BindingBuilder<T, ?> doBind(T t, AbstractComponent field) {
 				if (!binders.containsKey(t)) {
@@ -353,10 +350,10 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 			}
 
 		};
-		tw.setExportEntityModel(getExportEntityModel());
-		tw.setMaxResults(getMaxResults());
-		tw.build();
-		return tw;
+		postConfigureGridWrapper(wrapper);
+		wrapper.setMaxResults(getMaxResults());
+		wrapper.build();
+		return wrapper;
 	}
 
 	/**

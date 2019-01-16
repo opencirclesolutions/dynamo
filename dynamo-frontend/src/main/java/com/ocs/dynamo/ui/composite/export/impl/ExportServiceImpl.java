@@ -25,6 +25,7 @@ import com.ocs.dynamo.filter.Filter;
 import com.ocs.dynamo.filter.FilterConverter;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
+import com.ocs.dynamo.ui.composite.export.CustomXlsStyleGenerator;
 import com.ocs.dynamo.ui.composite.export.ExportService;
 import com.ocs.dynamo.ui.composite.type.ExportMode;
 import com.ocs.dynamo.ui.utils.SortUtils;
@@ -33,28 +34,6 @@ import com.vaadin.server.SerializablePredicate;
 
 @Service
 public class ExportServiceImpl implements ExportService {
-
-	@Override
-	@SuppressWarnings("unchecked")
-	public <ID extends Serializable, T extends AbstractEntity<ID>> byte[] exportExcel(EntityModel<T> entityModel,
-			ExportMode mode, SerializablePredicate<T> predicate, List<SortOrder<?>> sortOrders,
-			FetchJoinInformation... joins) {
-		BaseService<ID, T> service = (BaseService<ID, T>) ServiceLocatorFactory.getServiceLocator()
-				.getServiceForEntity(entityModel.getEntityClass());
-		FilterConverter<T> converter = new FilterConverter<T>(entityModel);
-		Filter filter = converter.convert(predicate);
-		ModelBasedExcelExportTemplate<ID, T> template = new ModelBasedExcelExportTemplate<ID, T>(service, entityModel,
-				mode, SortUtils.translate(sortOrders), filter, entityModel.getDisplayNamePlural(), null, joins);
-		return template.process();
-	}
-
-	@Override
-	public <ID extends Serializable, T extends AbstractEntity<ID>> byte[] exportExcelFixed(EntityModel<T> entityModel,
-			ExportMode mode, List<T> items) {
-		ModelBasedExcelExportTemplate<ID, T> template = new ModelBasedExcelExportTemplate<ID, T>(null, entityModel,
-				mode, null, null, entityModel.getDisplayNamePlural(), null);
-		return template.processFixed(items);
-	}
 
 	@Override
 	@SuppressWarnings("unchecked")
@@ -76,6 +55,29 @@ public class ExportServiceImpl implements ExportService {
 			ExportMode mode, List<T> items) {
 		ModelBasedCsvExportTemplate<ID, T> template = new ModelBasedCsvExportTemplate<ID, T>(null, entityModel, mode,
 				null, null, entityModel.getDisplayNamePlural(), null);
+		return template.processFixed(items);
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public <ID extends Serializable, T extends AbstractEntity<ID>> byte[] exportExcel(EntityModel<T> entityModel,
+			ExportMode mode, SerializablePredicate<T> predicate, List<SortOrder<?>> sortOrders,
+			CustomXlsStyleGenerator<ID, T> customGenerator, FetchJoinInformation... joins) {
+		BaseService<ID, T> service = (BaseService<ID, T>) ServiceLocatorFactory.getServiceLocator()
+				.getServiceForEntity(entityModel.getEntityClass());
+		FilterConverter<T> converter = new FilterConverter<T>(entityModel);
+		Filter filter = converter.convert(predicate);
+		ModelBasedExcelExportTemplate<ID, T> template = new ModelBasedExcelExportTemplate<ID, T>(service, entityModel,
+				mode, SortUtils.translate(sortOrders), filter, entityModel.getDisplayNamePlural(), customGenerator,
+				joins);
+		return template.process();
+	}
+
+	@Override
+	public <ID extends Serializable, T extends AbstractEntity<ID>> byte[] exportExcelFixed(EntityModel<T> entityModel,
+			ExportMode mode, CustomXlsStyleGenerator<ID, T> customGenerator, List<T> items) {
+		ModelBasedExcelExportTemplate<ID, T> template = new ModelBasedExcelExportTemplate<ID, T>(null, entityModel,
+				mode, null, null, entityModel.getDisplayNamePlural(), customGenerator);
 		return template.processFixed(items);
 	}
 

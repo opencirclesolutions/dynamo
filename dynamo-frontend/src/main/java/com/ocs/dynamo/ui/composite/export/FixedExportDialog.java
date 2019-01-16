@@ -44,17 +44,24 @@ public class FixedExportDialog<ID extends Serializable, T extends AbstractEntity
 	private Supplier<List<T>> itemsSupplier;
 
 	/**
+	 * The custom style generator
+	 */
+	private CustomXlsStyleGenerator<ID, T> customGenerator;
+
+	/**
 	 * Constructor
 	 * 
+	 * @param exportService
 	 * @param entityModel
-	 * @param predicate
-	 * @param sortOrders
-	 * @param joins
+	 * @param exportMode
+	 * @param customGenerator
+	 * @param itemsSupplier
 	 */
 	public FixedExportDialog(ExportService exportService, EntityModel<T> entityModel, ExportMode exportMode,
-			Supplier<List<T>> itemsSupplier) {
+			CustomXlsStyleGenerator<ID, T> customGenerator, Supplier<List<T>> itemsSupplier) {
 		super(exportService, entityModel, exportMode);
 		this.itemsSupplier = itemsSupplier;
+		this.customGenerator = customGenerator;
 	}
 
 	@Override
@@ -68,8 +75,8 @@ public class FixedExportDialog<ID extends Serializable, T extends AbstractEntity
 	@Override
 	protected Button createDownloadExcelButton() {
 		return new DownloadButton(message("ocs.export.excel"),
-				() -> new ByteArrayInputStream(
-						getExportService().exportExcelFixed(getEntityModel(), getExportMode(), itemsSupplier.get())),
+				() -> new ByteArrayInputStream(getExportService().exportExcelFixed(getEntityModel(), getExportMode(),
+						customGenerator, itemsSupplier.get())),
 				() -> getEntityModel().getDisplayNamePlural() + "_" + LocalDateTime.now() + EXTENSION_XLS);
 	}
 

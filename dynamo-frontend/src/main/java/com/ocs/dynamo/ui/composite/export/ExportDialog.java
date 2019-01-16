@@ -45,6 +45,8 @@ public class ExportDialog<ID extends Serializable, T extends AbstractEntity<ID>>
 
 	private final FetchJoinInformation[] joins;
 
+	private CustomXlsStyleGenerator<ID, T> customGenerator;
+
 	/**
 	 * Constructor
 	 * 
@@ -54,10 +56,12 @@ public class ExportDialog<ID extends Serializable, T extends AbstractEntity<ID>>
 	 * @param joins
 	 */
 	public ExportDialog(ExportService exportService, EntityModel<T> entityModel, ExportMode exportMode,
-			SerializablePredicate<T> predicate, List<SortOrder<?>> sortOrders, FetchJoinInformation... joins) {
+			SerializablePredicate<T> predicate, List<SortOrder<?>> sortOrders,
+			CustomXlsStyleGenerator<ID, T> customGenerator, FetchJoinInformation... joins) {
 		super(exportService, entityModel, exportMode);
 		this.predicate = predicate;
 		this.sortOrders = sortOrders;
+		this.customGenerator = customGenerator;
 		this.joins = joins;
 	}
 
@@ -73,7 +77,7 @@ public class ExportDialog<ID extends Serializable, T extends AbstractEntity<ID>>
 	protected DownloadButton createDownloadExcelButton() {
 		return new DownloadButton(message("ocs.export.excel"),
 				() -> new ByteArrayInputStream(getExportService().exportExcel(getEntityModel(), getExportMode(),
-						predicate, sortOrders, joins)),
+						predicate, sortOrders, customGenerator, joins)),
 				() -> getEntityModel().getDisplayNamePlural() + "_" + LocalDateTime.now() + EXTENSION_XLS);
 	}
 

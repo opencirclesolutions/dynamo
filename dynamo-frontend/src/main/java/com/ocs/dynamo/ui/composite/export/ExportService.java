@@ -47,34 +47,35 @@ public interface ExportService {
 	/**
 	 * Exports to Excel
 	 * 
-	 * @param entityModel the entity model of the entity to export
-	 * @param predicate   the predicate
-	 * @param mode        the desired export mode
-	 * @param sortOrders  the list of sort orders
-	 * @param joins       the joins to use when fetching data
+	 * @param entityModel     the entity model of the entity to export
+	 * @param predicate       the predicate
+	 * @param mode            the desired export mode
+	 * @param sortOrders      the list of sort orders
+	 * @param customGenerator the custom style generator *
+	 * @param joins           the joins to use when fetching data
 	 * @return
 	 */
 	public <ID extends Serializable, T extends AbstractEntity<ID>> byte[] exportExcel(EntityModel<T> entityModel,
 			ExportMode mode, SerializablePredicate<T> predicate, List<SortOrder<?>> sortOrders,
-			FetchJoinInformation... joins);
+			CustomXlsStyleGenerator<ID, T> customGenerator, FetchJoinInformation... joins);
 
 	/**
 	 * Exports a fixed set to Excel
 	 * 
 	 * @param entityModel the entity model
 	 * @param mode        the export mode
-	 * @param items
+	 * @param items       the set of items to export
 	 * @return
 	 */
 	public <ID extends Serializable, T extends AbstractEntity<ID>> byte[] exportExcelFixed(EntityModel<T> entityModel,
-			ExportMode mode, List<T> items);
-	
+			ExportMode mode, CustomXlsStyleGenerator<ID, T> customGenerator, List<T> items);
+
 	/**
 	 * Exports a fixed set to CSV
 	 * 
 	 * @param entityModel the entity model
 	 * @param mode        the export mode
-	 * @param items
+	 * @param itemsthe    set of items to export
 	 * @return
 	 */
 	public <ID extends Serializable, T extends AbstractEntity<ID>> byte[] exportCsvFixed(EntityModel<T> entityModel,

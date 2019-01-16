@@ -29,6 +29,7 @@ import com.ocs.dynamo.exception.OCSValidationException;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
+import com.ocs.dynamo.ui.composite.export.CustomXlsStyleGenerator;
 import com.ocs.dynamo.ui.composite.form.AbstractModelBasedSearchForm;
 import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
 import com.ocs.dynamo.ui.composite.grid.ServiceBasedGridWrapper;
@@ -625,7 +626,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	 */
 	@Override
 	public ServiceBasedGridWrapper<ID, T> constructGridWrapper() {
-		ServiceBasedGridWrapper<ID, T> result = new ServiceBasedGridWrapper<ID, T>(this.getService(), getEntityModel(),
+		ServiceBasedGridWrapper<ID, T> wrapper = new ServiceBasedGridWrapper<ID, T>(this.getService(), getEntityModel(),
 				getQueryType(), getFormOptions(), getSearchForm().extractFilter(), getFieldFilters(), getSortOrders(),
 				false, getJoins()) {
 
@@ -642,15 +643,15 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 			}
 
 		};
-		result.setExportEntityModel(getExportEntityModel());
-		result.setMaxResults(getMaxResults());
-		result.build();
+		postConfigureGridWrapper(wrapper);
+		wrapper.setMaxResults(getMaxResults());
+		wrapper.build();
 
 		if (getFormOptions().isSearchImmediately()) {
-			getSearchForm().setSearchable(result);
+			getSearchForm().setSearchable(wrapper);
 		}
 
-		return result;
+		return wrapper;
 	}
 
 	/**
@@ -1169,4 +1170,5 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	public void validateBeforeSearch() {
 		// overwrite in subclasses
 	}
+
 }

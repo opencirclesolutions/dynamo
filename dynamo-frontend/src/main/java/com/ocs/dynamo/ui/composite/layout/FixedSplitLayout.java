@@ -88,7 +88,7 @@ public abstract class FixedSplitLayout<ID extends Serializable, T extends Abstra
 
 	@Override
 	protected final BaseGridWrapper<ID, T> constructGridWrapper() {
-		FixedGridWrapper<ID, T> tw = new FixedGridWrapper<ID, T>(getService(), getEntityModel(), getFormOptions(),
+		FixedGridWrapper<ID, T> wrapper = new FixedGridWrapper<ID, T>(getService(), getEntityModel(), getFormOptions(),
 				getFieldFilters(), getItems(), getSortOrders()) {
 
 			@Override
@@ -105,8 +105,9 @@ public abstract class FixedSplitLayout<ID extends Serializable, T extends Abstra
 				}
 			}
 		};
-		tw.build();
-		return tw;
+		postConfigureGridWrapper(wrapper);
+		wrapper.build();
+		return wrapper;
 	}
 
 	public Collection<T> getItems() {

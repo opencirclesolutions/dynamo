@@ -26,6 +26,7 @@ import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.Searchable;
+import com.ocs.dynamo.ui.composite.export.CustomXlsStyleGenerator;
 import com.ocs.dynamo.ui.composite.export.ExportService;
 import com.ocs.dynamo.ui.composite.layout.BaseCustomComponent;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
@@ -56,9 +57,19 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 	private static final long serialVersionUID = -4691108261565306844L;
 
 	/**
+	 * Custom XLS generator for export
+	 */
+	private CustomXlsStyleGenerator<ID, T> customStyleGenerator;
+
+	/**
 	 * The data provider
 	 */
 	private DataProvider<T, SerializablePredicate<T>> dataProvider;
+
+	/**
+	 * Whether the grid is editable using a row editor
+	 */
+	private boolean editable;
 
 	/**
 	 * The entity model used to create the container
@@ -66,9 +77,39 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 	private EntityModel<T> entityModel;
 
 	/**
+	 * The entity model to use when exporting
+	 */
+	private EntityModel<T> exportEntityModel;
+
+	/**
+	 * The export service used for generating XLS and CSV exports
+	 */
+	private ExportService exportService = ServiceLocatorFactory.getServiceLocator().getService(ExportService.class);
+
+	/**
+	 * Field filter map
+	 */
+	private Map<String, SerializablePredicate<?>> fieldFilters;
+
+	/**
+	 * The form options
+	 */
+	private FormOptions formOptions;
+
+	/**
+	 * The wrapped grid component
+	 */
+	private ModelBasedGrid<ID, T> grid;
+
+	/**
 	 * The fetch joins to use when querying
 	 */
 	private FetchJoinInformation[] joins;
+
+	/**
+	 * The layout that contains the grid
+	 */
+	private VerticalLayout layout;
 
 	/**
 	 * The type of the query
@@ -84,41 +125,6 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 	 * The sort orders
 	 */
 	private List<SortOrder<?>> sortOrders = new ArrayList<>();
-
-	/**
-	 * The wrapped grid component
-	 */
-	private ModelBasedGrid<ID, T> grid;
-
-	/**
-	 * The layout that contains the grid
-	 */
-	private VerticalLayout layout;
-
-	/**
-	 * Whether the grid is editable using a row editor
-	 */
-	private boolean editable;
-
-	/**
-	 * Field filter map
-	 */
-	private Map<String, SerializablePredicate<?>> fieldFilters;
-
-	/**
-	 * The entity model to use when exporting
-	 */
-	private EntityModel<T> exportEntityModel;
-
-	/**
-	 * The form options
-	 */
-	private FormOptions formOptions;
-
-	/**
-	 * The export service used for generating XLS and CSV exports
-	 */
-	private ExportService exportService = ServiceLocatorFactory.getServiceLocator().getService(ExportService.class);
 
 	/**
 	 * Constructor
@@ -141,6 +147,15 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 		this.sortOrders = sortOrders != null ? sortOrders : new ArrayList<>();
 		this.joins = joins;
 		this.editable = editable;
+	}
+
+	/**
+	 * Adds a grid selection listener
+	 */
+	private void addGridSelectionListener() {
+		grid.addSelectionListener(event -> {
+			onSelect(grid.getSelectedItems());
+		});
 	}
 
 	/**
@@ -169,15 +184,6 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 		addGridSelectionListener();
 
 		setCompositionRoot(layout);
-	}
-
-	/**
-	 * Adds a grid selection listener
-	 */
-	private void addGridSelectionListener() {
-		grid.addSelectionListener(event -> {
-			onSelect(grid.getSelectedItems());
-		});
 	}
 
 	/**
@@ -220,6 +226,10 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 		// overwrite in subclasses
 	}
 
+	public CustomXlsStyleGenerator<ID, T> getCustomStyleGenerator() {
+		return customStyleGenerator;
+	}
+
 	public DataProvider<T, SerializablePredicate<T>> getDataProvider() {
 		return dataProvider;
 	}
@@ -241,6 +251,18 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 		return entityModel;
 	}
 
+	public EntityModel<T> getExportEntityModel() {
+		return exportEntityModel;
+	}
+
+	public ExportService getExportService() {
+		return exportService;
+	}
+
+	public FormOptions getFormOptions() {
+		return formOptions;
+	}
+
 	/**
 	 * Lazily construct and return the grid
 	 * 
@@ -255,6 +277,10 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 
 	public FetchJoinInformation[] getJoins() {
 		return joins;
+	}
+
+	public Layout getLayout() {
+		return layout;
 	}
 
 	public QueryType getQueryType() {
@@ -344,8 +370,16 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 	 */
 	public abstract void reloadDataProvider();
 
+	public void setCustomStyleGenerator(CustomXlsStyleGenerator<ID, T> customStyleGenerator) {
+		this.customStyleGenerator = customStyleGenerator;
+	}
+
 	public void setDataProvider(DataProvider<T, SerializablePredicate<T>> dataProvider) {
 		this.dataProvider = dataProvider;
+	}
+
+	public void setExportEntityModel(EntityModel<T> exportEntityModel) {
+		this.exportEntityModel = exportEntityModel;
 	}
 
 	protected void setGrid(ModelBasedGrid<ID, T> grid) {
@@ -358,26 +392,6 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 
 	public void setSortOrders(List<SortOrder<?>> sortOrders) {
 		this.sortOrders = sortOrders;
-	}
-
-	public Layout getLayout() {
-		return layout;
-	}
-
-	public EntityModel<T> getExportEntityModel() {
-		return exportEntityModel;
-	}
-
-	public void setExportEntityModel(EntityModel<T> exportEntityModel) {
-		this.exportEntityModel = exportEntityModel;
-	}
-
-	public FormOptions getFormOptions() {
-		return formOptions;
-	}
-
-	public ExportService getExportService() {
-		return exportService;
 	}
 
 }

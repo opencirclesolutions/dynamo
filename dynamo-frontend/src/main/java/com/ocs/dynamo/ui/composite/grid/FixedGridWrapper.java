@@ -84,7 +84,8 @@ public class FixedGridWrapper<ID extends Serializable, T extends AbstractEntity<
 				ListDataProvider<T> provider = (ListDataProvider<T>) getDataProvider();
 				FixedExportDialog<ID, T> dialog = new FixedExportDialog<ID, T>(getExportService(),
 						getExportEntityModel() != null ? getExportEntityModel() : getEntityModel(),
-						getFormOptions().getExportMode(), () -> Lists.newArrayList(provider.getItems()));
+						getFormOptions().getExportMode(), getCustomStyleGenerator(),
+						() -> Lists.newArrayList(provider.getItems()));
 				dialog.build();
 				UI.getCurrent().addWindow(dialog);
 			});

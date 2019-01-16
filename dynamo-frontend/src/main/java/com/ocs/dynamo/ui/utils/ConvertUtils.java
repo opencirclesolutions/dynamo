@@ -27,7 +27,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.NumberSelectMode;
-import com.ocs.dynamo.filter.BetweenPredicate;
 import com.ocs.dynamo.ui.converter.BigDecimalConverter;
 import com.ocs.dynamo.ui.converter.ConverterFactory;
 import com.ocs.dynamo.ui.converter.IntToDoubleConverter;
@@ -50,6 +49,7 @@ import com.vaadin.data.converter.StringToLongConverter;
 public final class ConvertUtils {
 
 	private ConvertUtils() {
+		// hidden constructor
 	}
 
 	/**

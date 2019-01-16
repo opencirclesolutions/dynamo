@@ -26,8 +26,8 @@ import com.ocs.dynamo.domain.model.AttributeModel;
  * 
  * @author bas.rutten
  *
- * @param <ID>
- * @param <T>
+ * @param <ID> the type of the primary key
+ * @param <T> the type of the entity
  */
 public interface XlsStyleGenerator<ID extends Serializable, T extends AbstractEntity<ID>> {
 

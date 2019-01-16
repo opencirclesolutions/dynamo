@@ -43,7 +43,7 @@ public class ExportDialogTest extends BaseMockitoTest {
 
 		model = factory.getModel(TestEntity.class);
 		dialog = new ExportDialog<>(exportService, model, ExportMode.FULL,
-				new EqualsPredicate<TestEntity>("name", "Bob"), null);
+				new EqualsPredicate<TestEntity>("name", "Bob"), null, null);
 	}
 
 	@Test
