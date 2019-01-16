@@ -16,7 +16,6 @@ package com.ocs.dynamo.ui.composite.layout;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
@@ -57,7 +56,7 @@ import com.vaadin.ui.VerticalLayout;
 /**
  * A layout for editing entities directly inside a grid. This layout supports
  * both a "row by row" and an "all rows at once" setting which can be specified
- * on the FormOptions
+ * on the FormOptions by setting the gridEditMode.
  * 
  * @author Bas Rutten
  *

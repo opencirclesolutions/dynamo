@@ -16,115 +16,114 @@ import java.util.List;
 
 public class XlsRowImportTemplateTest extends BaseMockitoTest {
 
-    @Mock
-    private MessageService messageService;
+	@Mock
+	private MessageService messageService;
 
-    private BaseXlsImporter importer = new BaseXlsImporter();
+	private BaseXlsImporter importer = new BaseXlsImporter();
 
-    @Override
-    public void setUp() {
-        super.setUp();
-        MockUtil.mockMessageService(messageService);
-    }
+	@Override
+	public void setUp() {
+		super.setUp();
+		MockUtil.mockMessageService(messageService);
+	}
 
-    @Test
-    public void test() throws IOException {
-        byte[] bytes = readFile("importer_rows.xlsx");
-        List<String> errors = new ArrayList<>();
+	@Test
+	public void test() throws IOException {
+		byte[] bytes = readFile("importer_rows.xlsx");
+		List<String> errors = new ArrayList<>();
 
-        XlsRowImportTemplate<String, PersonDTO> template = new XlsRowImportTemplate<String, PersonDTO>(importer,
-                messageService, bytes, errors, PersonDTO.class, 0, 0, 1, 8, false) {
+		XlsRowImportTemplate<String, PersonDTO> template = new XlsRowImportTemplate<String, PersonDTO>(importer,
+				messageService, bytes, errors, PersonDTO.class, 0, 0, 1, 9, false) {
 
-            @Override
-            protected String extractKey(PersonDTO record) {
-                return record.getName();
-            }
-        };
-        List<PersonDTO> result = template.execute();
-        Assert.assertEquals(2, result.size());
+			@Override
+			protected String extractKey(PersonDTO record) {
+				return record.getName();
+			}
+		};
+		List<PersonDTO> result = template.execute();
+		Assert.assertEquals(2, result.size());
 
-        Assert.assertTrue(errors.isEmpty());
+		Assert.assertTrue(errors.isEmpty());
 
-        PersonDTO person = result.get(0);
-        Assert.assertEquals("Bas", person.getName());
-        Assert.assertEquals(com.ocs.dynamo.importer.impl.PersonDTO.Gender.M, person.getGender());
-        Assert.assertEquals(DateUtils.createLocalDate("04042014"), person.getDate());
-        Assert.assertEquals(2.4, person.getFactor().doubleValue(), 0.001);
-        Assert.assertEquals(Boolean.TRUE, person.getAbool());
-    }
+		PersonDTO person = result.get(0);
+		Assert.assertEquals("Bas", person.getName());
+		Assert.assertEquals(com.ocs.dynamo.importer.impl.PersonDTO.Gender.M, person.getGender());
+		Assert.assertEquals(DateUtils.createLocalDate("04042014"), person.getDate());
+		Assert.assertEquals(2.4, person.getFactor().doubleValue(), 0.001);
+		Assert.assertEquals(Boolean.TRUE, person.getAbool());
+	}
 
-    /**
-     * Test with an incomplete record
-     * 
-     * @throws IOException
-     */
-    @Test
-    public void test2() throws IOException {
-        byte[] bytes = readFile("importer_rows2.xlsx");
-        List<String> errors = new ArrayList<>();
+	/**
+	 * Test with an incomplete record
+	 * 
+	 * @throws IOException
+	 */
+	@Test
+	public void test2() throws IOException {
+		byte[] bytes = readFile("importer_rows2.xlsx");
+		List<String> errors = new ArrayList<>();
 
-        XlsRowImportTemplate<String, PersonDTO> template = new XlsRowImportTemplate<String, PersonDTO>(importer,
-                messageService, bytes, errors, PersonDTO.class, 0, 0, 1, 8, false) {
+		XlsRowImportTemplate<String, PersonDTO> template = new XlsRowImportTemplate<String, PersonDTO>(importer,
+				messageService, bytes, errors, PersonDTO.class, 0, 0, 1, 8, false) {
 
-            @Override
-            protected String extractKey(PersonDTO record) {
-                return record.getName();
-            }
-        };
-        List<PersonDTO> result = template.execute();
-        Assert.assertEquals(2, result.size());
+			@Override
+			protected String extractKey(PersonDTO record) {
+				return record.getName();
+			}
+		};
+		List<PersonDTO> result = template.execute();
+		Assert.assertEquals(2, result.size());
 
-    }
+	}
 
-    /**
-     * 
-     * @throws IOException
-     */
-    @Test
-    public void test3_Duplicates() throws IOException {
-        byte[] bytes = readFile("importer_rows3.xlsx");
-        List<String> errors = new ArrayList<>();
+	/**
+	 * 
+	 * @throws IOException
+	 */
+	@Test
+	public void test3_Duplicates() throws IOException {
+		byte[] bytes = readFile("importer_rows3.xlsx");
+		List<String> errors = new ArrayList<>();
 
-        XlsRowImportTemplate<String, PersonDTO> template = new XlsRowImportTemplate<String, PersonDTO>(importer,
-                messageService, bytes, errors, PersonDTO.class, 0, 0, 1, 8, true) {
+		XlsRowImportTemplate<String, PersonDTO> template = new XlsRowImportTemplate<String, PersonDTO>(importer,
+				messageService, bytes, errors, PersonDTO.class, 0, 0, 1, 9, true) {
 
-            @Override
-            protected String extractKey(PersonDTO record) {
-                return record.getName();
-            }
-        };
-        List<PersonDTO> result = template.execute();
-        Assert.assertEquals(1, result.size());
+			@Override
+			protected String extractKey(PersonDTO record) {
+				return record.getName();
+			}
+		};
+		List<PersonDTO> result = template.execute();
+		Assert.assertEquals(1, result.size());
 
-        // duplicate record
-        Assert.assertEquals(1, errors.size());
-        Assert.assertEquals("ocs.duplicate.row", errors.get(0));
+		// duplicate record
+		Assert.assertEquals(1, errors.size());
+		Assert.assertEquals("ocs.duplicate.row", errors.get(0));
+	}
 
-    }
+	@Test
+	public void test4_Missing() throws IOException {
+		byte[] bytes = readFile("importer_rows4.xlsx");
+		List<String> errors = new ArrayList<>();
 
-    @Test
-    public void test4_Missing() throws IOException {
-        byte[] bytes = readFile("importer_rows4.xlsx");
-        List<String> errors = new ArrayList<>();
+		XlsRowImportTemplate<String, PersonDTO> template = new XlsRowImportTemplate<String, PersonDTO>(importer,
+				messageService, bytes, errors, PersonDTO.class, 0, 0, 1, 8, true) {
 
-        XlsRowImportTemplate<String, PersonDTO> template = new XlsRowImportTemplate<String, PersonDTO>(importer,
-                messageService, bytes, errors, PersonDTO.class, 0, 0, 1, 8, true) {
+			@Override
+			protected String extractKey(PersonDTO record) {
+				return record.getName();
+			}
+		};
+		List<PersonDTO> result = template.execute();
+		Assert.assertEquals(1, result.size());
 
-            @Override
-            protected String extractKey(PersonDTO record) {
-                return record.getName();
-            }
-        };
-        List<PersonDTO> result = template.execute();
-        Assert.assertEquals(1, result.size());
+		// duplicate record
+		Assert.assertEquals(1, errors.size());
+		Assert.assertTrue(errors.get(0).contains("Required value for field 'number' is missing"));
 
-        // duplicate record
-        Assert.assertEquals(1, errors.size());
-        Assert.assertTrue(errors.get(0).contains("Required value for field 'number' is missing"));
+	}
 
-    }
-
-    private byte[] readFile(String fileName) throws IOException {
-        return FileUtils.readFileToByteArray(new File("src/test/resources/" + fileName));
-    }
+	private byte[] readFile(String fileName) throws IOException {
+		return FileUtils.readFileToByteArray(new File("src/test/resources/" + fileName));
+	}
 }

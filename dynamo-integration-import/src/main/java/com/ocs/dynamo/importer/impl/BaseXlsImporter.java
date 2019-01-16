@@ -169,7 +169,6 @@ public class BaseXlsImporter extends BaseImporter<Row, Cell> {
 	protected LocalDate getDateValue(Cell cell) {
 		if (cell != null && (CellType.NUMERIC == cell.getCellType() || CellType.BLANK == cell.getCellType())) {
 			try {
-
 				return LocalDate.from(cell.getDateCellValue().toInstant().atZone(ZoneId.systemDefault()));
 			} catch (NullPointerException nex) {
 				// horrible code throws NPE in case of empty cell
@@ -236,50 +235,6 @@ public class BaseXlsImporter extends BaseImporter<Row, Cell> {
 			value = Double.valueOf(field.defaultValue());
 		}
 		return value;
-	}
-
-	/**
-	 * Returns a date value from a cell. Throws an exception if the cell is empty
-	 * 
-	 * @param cell the cell to extract the value from
-	 * @return
-	 */
-	protected LocalDate getRequiredDateValue(Cell cell) {
-		LocalDate result = getDateValue(cell);
-		if (result == null) {
-			throw new OCSValidationException("Required value not set: " + cell.getColumnIndex());
-		}
-		return result;
-	}
-
-	/**
-	 * Extracts a numeric value from a cell and throw an exception if this value is
-	 * empty
-	 * 
-	 * @param cell the cell to extract the value from
-	 * @return
-	 */
-	protected Double getRequiredNumericValue(Cell cell) {
-		Double result = getNumericValue(cell);
-		if (result == null) {
-			throw new OCSValidationException("Required value not set: " + cell.getColumnIndex());
-		}
-		return result;
-	}
-
-	/**
-	 * Extracts a String value from a cell and throw an exception if this value is
-	 * empty
-	 * 
-	 * @param cell the cell to extract the value from
-	 * @return
-	 */
-	protected String getRequiredStringValue(Cell cell) {
-		String result = getStringValue(cell);
-		if (result == null) {
-			throw new OCSValidationException("Required value not set: " + cell.getColumnIndex());
-		}
-		return result;
 	}
 
 	/**

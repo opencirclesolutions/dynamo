@@ -48,11 +48,14 @@ public class PersonDTO extends AbstractDTO {
 	@ImportField(index = 5, percentage = true)
 	private BigDecimal percentage;
 
-	@ImportField(index = 6)
+	@ImportField(index = 6, defaultValue = "true")
 	private Boolean abool;
 
-	@ImportField(index = 7, defaultValue = "01-01-2015")
+	@ImportField(index = 7, defaultValue = "01-01-2015", required = true)
 	private LocalDate date;
+
+	@ImportField(index = 8)
+	private Double rating;
 
 	public String getName() {
 		return name;
@@ -116,6 +119,14 @@ public class PersonDTO extends AbstractDTO {
 
 	public void setDate(LocalDate date) {
 		this.date = date;
+	}
+
+	public Double getRating() {
+		return rating;
+	}
+
+	public void setRating(Double rating) {
+		this.rating = rating;
 	}
 
 }

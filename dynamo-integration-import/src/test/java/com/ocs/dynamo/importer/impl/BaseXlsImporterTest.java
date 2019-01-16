@@ -50,6 +50,35 @@ public class BaseXlsImporterTest {
 	 * @throws IOException
 	 */
 	@Test
+	public void testCreateWorkbookBoolean() throws IOException {
+		byte[] bytes = readFile("importertest_boolean.xlsx");
+		Workbook wb = importer.createWorkbook(bytes);
+
+		Sheet sheet = wb.getSheetAt(0);
+
+		// check true
+		PersonDTO dto = importer.processRow(0, sheet.getRow(0), PersonDTO.class);
+		Assert.assertNotNull(dto);
+		Assert.assertTrue(dto.getAbool());
+
+		// check false
+		dto = importer.processRow(1, sheet.getRow(1), PersonDTO.class);
+		Assert.assertNotNull(dto);
+		Assert.assertFalse(dto.getAbool());
+
+		// check default
+		dto = importer.processRow(6, sheet.getRow(6), PersonDTO.class);
+		Assert.assertNotNull(dto);
+		Assert.assertFalse(dto.getAbool());
+
+	}
+
+	/**
+	 * Test that creating a simple (non-streaming) workbook works
+	 * 
+	 * @throws IOException
+	 */
+	@Test
 	public void testCreateWorkbook() throws IOException {
 		byte[] bytes = readFile("importertest.xlsx");
 		Workbook wb = importer.createWorkbook(bytes);
@@ -67,6 +96,7 @@ public class BaseXlsImporterTest {
 		Assert.assertEquals(1.50, dto.getPercentage().doubleValue(), 0.001);
 		Assert.assertTrue(dto.getAbool());
 		Assert.assertEquals(DateUtils.createLocalDate("04042014"), dto.getDate());
+		Assert.assertEquals(6.66, dto.getRating().doubleValue(), 0.001);
 
 		// check that default values are set
 		dto = importer.processRow(1, sheet.getRow(1), PersonDTO.class);
@@ -85,7 +115,6 @@ public class BaseXlsImporterTest {
 		Assert.assertEquals("Endy", dto.getName());
 		Assert.assertEquals(-3, dto.getNumber().intValue());
 		Assert.assertEquals(DateUtils.createLocalDate("01012015"), dto.getDate());
-
 	}
 
 	/**

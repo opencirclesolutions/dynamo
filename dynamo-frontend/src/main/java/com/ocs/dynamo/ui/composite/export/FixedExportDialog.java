@@ -38,6 +38,9 @@ public class FixedExportDialog<ID extends Serializable, T extends AbstractEntity
 
 	private static final long serialVersionUID = -7559490010581729532L;
 
+	/**
+	 * The supplier method for retrieving the list of items
+	 */
 	private Supplier<List<T>> itemsSupplier;
 
 	/**
@@ -56,18 +59,18 @@ public class FixedExportDialog<ID extends Serializable, T extends AbstractEntity
 
 	@Override
 	protected Button createDownloadCSVButton() {
-		return new DownloadButton(message("ocs.export.csv"), () -> {
-			return new ByteArrayInputStream(
-					getExportService().exportCsvFixed(getEntityModel(), getExportMode(), itemsSupplier.get()));
-		}, () -> getEntityModel().getDisplayNamePlural() + "_" + LocalDateTime.now() + EXTENSION_CSV);
+		return new DownloadButton(message("ocs.export.csv"),
+				() -> new ByteArrayInputStream(
+						getExportService().exportCsvFixed(getEntityModel(), getExportMode(), itemsSupplier.get())),
+				() -> getEntityModel().getDisplayNamePlural() + "_" + LocalDateTime.now() + EXTENSION_CSV);
 	}
 
 	@Override
 	protected Button createDownloadExcelButton() {
-		return new DownloadButton(message("ocs.export.excel"), () -> {
-			return new ByteArrayInputStream(
-					getExportService().exportExcelFixed(getEntityModel(), getExportMode(), itemsSupplier.get()));
-		}, () -> getEntityModel().getDisplayNamePlural() + "_" + LocalDateTime.now() + EXTENSION_XLS);
+		return new DownloadButton(message("ocs.export.excel"),
+				() -> new ByteArrayInputStream(
+						getExportService().exportExcelFixed(getEntityModel(), getExportMode(), itemsSupplier.get())),
+				() -> getEntityModel().getDisplayNamePlural() + "_" + LocalDateTime.now() + EXTENSION_XLS);
 	}
 
 }

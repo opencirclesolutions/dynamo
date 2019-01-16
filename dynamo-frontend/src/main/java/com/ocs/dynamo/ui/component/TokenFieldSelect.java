@@ -342,9 +342,7 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
 	 * Update token selections
 	 */
 	private void setupContainerFieldSync() {
-		provider.addDataProviderListener(event -> {
-			addTokens();
-		});
+		provider.addDataProviderListener(event -> addTokens());
 	}
 
 	@Override

@@ -15,6 +15,7 @@ package com.ocs.dynamo.ui;
 
 /**
  * Marker interface to indicate that a component must be used in view mode
+ * (instead of a label)
  * 
  * @author Bas Rutten
  *

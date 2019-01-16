@@ -53,6 +53,7 @@ public class BaseCsvImporterTest {
 		Assert.assertEquals("abc", dto.getRandom());
 		Assert.assertEquals(Gender.M, dto.getGender());
 		Assert.assertEquals(1.50, dto.getPercentage().doubleValue(), 0.001);
+		Assert.assertEquals(6.66, dto.getRating().doubleValue(), 0.001);
 
 		// check that default values are set
 		dto = importer.processRow(1, lines.get(1), PersonDTO.class);

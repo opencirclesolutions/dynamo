@@ -63,18 +63,18 @@ public class ExportDialog<ID extends Serializable, T extends AbstractEntity<ID>>
 
 	@Override
 	protected DownloadButton createDownloadCSVButton() {
-		return new DownloadButton(message("ocs.export.csv"), () -> {
-			return new ByteArrayInputStream(
-					getExportService().exportCsv(getEntityModel(), getExportMode(), predicate, sortOrders, joins));
-		}, () -> getEntityModel().getDisplayNamePlural() + "_" + LocalDateTime.now() + EXTENSION_CSV);
+		return new DownloadButton(message("ocs.export.csv"),
+				() -> new ByteArrayInputStream(
+						getExportService().exportCsv(getEntityModel(), getExportMode(), predicate, sortOrders, joins)),
+				() -> getEntityModel().getDisplayNamePlural() + "_" + LocalDateTime.now() + EXTENSION_CSV);
 	}
 
 	@Override
 	protected DownloadButton createDownloadExcelButton() {
-		return new DownloadButton(message("ocs.export.excel"), () -> {
-			return new ByteArrayInputStream(
-					getExportService().exportExcel(getEntityModel(), getExportMode(), predicate, sortOrders, joins));
-		}, () -> getEntityModel().getDisplayNamePlural() + "_" + LocalDateTime.now() + EXTENSION_XLS);
+		return new DownloadButton(message("ocs.export.excel"),
+				() -> new ByteArrayInputStream(getExportService().exportExcel(getEntityModel(), getExportMode(),
+						predicate, sortOrders, joins)),
+				() -> getEntityModel().getDisplayNamePlural() + "_" + LocalDateTime.now() + EXTENSION_XLS);
 	}
 
 }

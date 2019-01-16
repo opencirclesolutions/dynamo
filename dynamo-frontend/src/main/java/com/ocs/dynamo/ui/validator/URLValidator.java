@@ -52,7 +52,7 @@ public class URLValidator implements Validator<String> {
 			return ValidationResult.ok();
 		}
 
-		String str = (String) value;
+		String str = value;
 		if (!str.contains(URL_PREFIX) && !str.contains(URL_PREFIX_SECURE)) {
 			str = URL_PREFIX + str;
 		}

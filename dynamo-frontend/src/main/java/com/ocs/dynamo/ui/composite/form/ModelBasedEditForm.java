@@ -780,8 +780,9 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			}
 			afterEditDone(true, entity.getId() == null, entity);
 		});
-		
-		// display button when in edit mode and explicitly specified, or when creating a new entity
+
+		// display button when in edit mode and explicitly specified, or when creating a
+		// new entity
 		// in nested mode
 		cancelButton.setVisible((!isViewMode() && !getFormOptions().isHideCancelButton())
 				|| (getFormOptions().isFormNested() && entity.getId() == null));
@@ -1150,9 +1151,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		// enable/disable save button based on form validity
 		saveButton.setData(SAVE_BUTTON_DATA);
 		if (bottom) {
-			groups.get(isViewMode()).getFields().forEach(f -> f.addValueChangeListener(event -> {
-				((AbstractComponent) f).setComponentError(null);
-			}));
+			groups.get(isViewMode()).getFields()
+					.forEach(f -> f.addValueChangeListener(event -> ((AbstractComponent) f).setComponentError(null)));
 		}
 		return saveButton;
 	}
@@ -1638,9 +1638,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	 * Removes any error messages from the individual form components
 	 */
 	private void resetComponentErrors() {
-		groups.get(isViewMode()).getFields().forEach(f -> {
-			((AbstractComponent) f).setComponentError(null);
-		});
+		groups.get(isViewMode()).getFields().forEach(f -> ((AbstractComponent) f).setComponentError(null));
 	}
 
 	/**
