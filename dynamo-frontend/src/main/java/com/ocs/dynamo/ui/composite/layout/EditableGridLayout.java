@@ -16,6 +16,7 @@ package com.ocs.dynamo.ui.composite.layout;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
@@ -33,6 +34,7 @@ import com.ocs.dynamo.ui.composite.grid.ServiceBasedGridWrapper;
 import com.ocs.dynamo.ui.composite.type.GridEditMode;
 import com.ocs.dynamo.ui.provider.QueryType;
 import com.ocs.dynamo.ui.utils.FormatUtils;
+import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.data.BeanValidationBinder;
 import com.vaadin.data.Binder;
 import com.vaadin.data.Binder.BindingBuilder;
@@ -220,12 +222,37 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 			saveButton.addClickListener(event -> {
 
 				List<T> toSave = Lists.newArrayList(binders.keySet());
-
-				// save and reassign to avoid optimistic locks
-				getService().save(toSave);
-				binders.clear();
-				clearGridWrapper();
-				constructGrid();
+				boolean valid = binders.values().stream().map(b -> b.validate()).allMatch(s -> s.isOk());
+				if (valid) {
+					if (getFormOptions().isConfirmSave()) {
+						// ask for confirmation before saving
+						VaadinUtils
+								.showConfirmDialog(
+										getMessageService(), getMessageService().getMessage("ocs.confirm.save.all",
+												VaadinUtils.getLocale(), getEntityModel().getDisplayNamePlural()),
+										() -> {
+											try {
+												getService().save(toSave);
+												// save and reassign to avoid optimistic locks
+												binders.clear();
+												clearGridWrapper();
+												constructGrid();
+											} catch (RuntimeException ex) {
+												handleSaveException(ex);
+											}
+										});
+					} else {
+						try {
+							getService().save(toSave);
+							// save and reassign to avoid optimistic locks
+							binders.clear();
+							clearGridWrapper();
+							constructGrid();
+						} catch (RuntimeException ex) {
+							handleSaveException(ex);
+						}
+					}
+				}
 			});
 			saveButton.setVisible(isEditAllowed() && !isViewmode()
 					&& GridEditMode.SIMULTANEOUS.equals(getFormOptions().getGridEditMode()));

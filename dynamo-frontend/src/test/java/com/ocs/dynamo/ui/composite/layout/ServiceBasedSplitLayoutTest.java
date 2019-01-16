@@ -18,7 +18,6 @@ import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
 import com.ocs.dynamo.ui.composite.type.ScreenMode;
 import com.ocs.dynamo.ui.provider.QueryType;
 import com.vaadin.data.provider.SortOrder;
-import com.vaadin.server.SerializablePredicate;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.TextField;
 
@@ -77,21 +76,11 @@ public class ServiceBasedSplitLayoutTest extends BaseIntegrationTest {
 		FormOptions fo = new FormOptions().setShowQuickSearchField(true);
 		ServiceBasedSplitLayout<Integer, TestEntity> layout = new ServiceBasedSplitLayout<Integer, TestEntity>(
 				testEntityService, entityModelFactory.getModel(TestEntity.class), QueryType.PAGING, fo,
-				new SortOrder<String>("name", SortDirection.ASCENDING)) {
-
-			private static final long serialVersionUID = 6308563510081372500L;
-
-			@Override
-			protected SerializablePredicate<TestEntity> constructQuickSearchFilter(String value) {
-				return new EqualsPredicate<TestEntity>("name", "%" + value + "%");
-			}
-		};
+				new SortOrder<String>("name", SortDirection.ASCENDING));
+		layout.setQuickSearchFilterSupplier(value -> new EqualsPredicate<TestEntity>("name", "%" + value + "%"));
 		layout.build();
 
 		Assert.assertNull(layout.getFilter());
-
-		// no filter, so all items are visible
-		// Assert.assertEquals(2, layout.getDataProviderSize());
 
 		// select an item and check that the edit form is generated
 		layout.getGridWrapper().getGrid().select(e1);

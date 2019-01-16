@@ -274,9 +274,7 @@ public class FilterGroup<T> {
 		this.fieldFilter = filter;
 
 		// propagate the change (this will trigger the actual search action)
-		if (!listeners.isEmpty())
-
-		{
+		if (!listeners.isEmpty()) {
 			broadcast(new FilterChangeEvent<T>(propertyId, oldFilter, filter));
 		}
 	}

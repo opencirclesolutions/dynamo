@@ -169,6 +169,8 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 							comp = fieldFactory.constructField(ctx);
 						}
 						comp.setSizeFull();
+
+						// store shared date provider so it can be used by multiple components
 						if (comp instanceof SharedProvider) {
 							sharedProviders.put(am.getPath(), ((SharedProvider<?>) comp).getSharedProvider());
 						}

@@ -27,6 +27,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.NumberSelectMode;
+import com.ocs.dynamo.filter.BetweenPredicate;
 import com.ocs.dynamo.ui.converter.BigDecimalConverter;
 import com.ocs.dynamo.ui.converter.ConverterFactory;
 import com.ocs.dynamo.ui.converter.IntToDoubleConverter;
@@ -121,7 +122,6 @@ public final class ConvertUtils {
 			}
 		} else if (NumberUtils.isDouble(am.getType())) {
 			if (NumberSelectMode.TEXTFIELD.equals(am.getNumberSelectMode())) {
-				System.out.println("Percentage: " + am.isPercentage());
 				StringToDoubleConverter converter = ConverterFactory.createDoubleConverter(am.isCurrency(),
 						am.isPercentage(), grouping, am.getPrecision(), SystemPropertyUtils.getDefaultCurrencySymbol());
 				return converter.convertToModel((String) value, new ValueContext(locale));

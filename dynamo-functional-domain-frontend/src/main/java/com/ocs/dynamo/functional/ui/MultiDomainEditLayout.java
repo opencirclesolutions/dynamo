@@ -33,7 +33,6 @@ import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.composite.layout.ServiceBasedSplitLayout;
 import com.ocs.dynamo.ui.provider.QueryType;
 import com.vaadin.data.provider.SortOrder;
-import com.vaadin.server.SerializablePredicate;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.ComboBox;
@@ -194,8 +193,8 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
 		BaseService<Integer, T> baseService = (BaseService<Integer, T>) ServiceLocatorFactory.getServiceLocator()
 				.getServiceForEntity(domainClass);
 		if (baseService != null) {
-			return new ServiceBasedSplitLayout<Integer, T>(baseService, getEntityModelFactory().getModel(domainClass),
-					QueryType.ID_BASED, formOptions,
+			ServiceBasedSplitLayout<Integer, T> layout = new ServiceBasedSplitLayout<Integer, T>(baseService,
+					getEntityModelFactory().getModel(domainClass), QueryType.ID_BASED, formOptions,
 					new SortOrder<String>(Domain.ATTRIBUTE_NAME, SortDirection.ASCENDING)) {
 
 				private static final long serialVersionUID = -6504072714662771230L;
@@ -209,12 +208,6 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
 				@Override
 				protected Component constructHeaderLayout() {
 					return MultiDomainEditLayout.this.constructHeaderLayout();
-				}
-
-				@Override
-				protected SerializablePredicate<T> constructQuickSearchFilter(String value) {
-					return new OrPredicate<>(new SimpleStringPredicate<>(Domain.ATTRIBUTE_NAME, value, true, false),
-							new SimpleStringPredicate<>(Domain.ATTRIBUTE_CODE, value, true, false));
 				}
 
 				@Override
@@ -240,6 +233,10 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
 					MultiDomainEditLayout.this.postProcessSplitLayout(main);
 				}
 			};
+			layout.setQuickSearchFilterSupplier(
+					value -> new OrPredicate<>(new SimpleStringPredicate<>(Domain.ATTRIBUTE_NAME, value, true, false),
+							new SimpleStringPredicate<>(Domain.ATTRIBUTE_CODE, value, true, false)));
+			return layout;
 		} else {
 			throw new OCSRuntimeException(message("ocs.no.service.class.found", domainClass));
 		}

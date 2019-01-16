@@ -780,6 +780,9 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			}
 			afterEditDone(true, entity.getId() == null, entity);
 		});
+		
+		// display button when in edit mode and explicitly specified, or when creating a new entity
+		// in nested mode
 		cancelButton.setVisible((!isViewMode() && !getFormOptions().isHideCancelButton())
 				|| (getFormOptions().isFormNested() && entity.getId() == null));
 		cancelButton.setIcon(VaadinIcons.BAN);

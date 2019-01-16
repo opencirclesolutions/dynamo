@@ -31,15 +31,14 @@ import com.ocs.dynamo.exception.OCSRuntimeException;
 public final class DynamoFilterUtil {
 
 	private DynamoFilterUtil() {
+		// hidden constructor
 	}
 
 	/**
 	 * Extracts a specific filter from a (possibly) composite filter
 	 * 
-	 * @param filter
-	 *            the filter from which to extract a certain part
-	 * @param propertyId
-	 *            the propertyId of the filter to extract
+	 * @param filter     the filter from which to extract a certain part
+	 * @param propertyId the propertyId of the filter to extract
 	 * @return
 	 */
 	public static Filter extractFilter(Filter filter, String propertyId) {
@@ -87,8 +86,7 @@ public final class DynamoFilterUtil {
 	/**
 	 * Take a (nested) And filter and flatten it to a single level
 	 * 
-	 * @param and
-	 *            the filter to flatten
+	 * @param and the filter to flatten
 	 * @return
 	 */
 	public static List<Filter> flattenAnd(And and) {
@@ -107,43 +105,74 @@ public final class DynamoFilterUtil {
 	}
 
 	/**
+	 * Remove filter from a list of filters managed by an AbstractJunctionFilter
+	 * 
+	 * @param junction    the junction filter
+	 * @param propertyIds the propertyIds of the filters to remove
+	 */
+	private static void removeFilterFormJunction(AbstractJunctionFilter junction, String... propertyIds) {
+		Iterator<Filter> it = junction.getFilters().iterator();
+		// remove simple filters
+		while (it.hasNext()) {
+			Filter child = it.next();
+			if (child instanceof PropertyFilter) {
+				PropertyFilter pf = (PropertyFilter) child;
+				for (String s : propertyIds) {
+					if (pf.getPropertyId().equals(s)) {
+						it.remove();
+					}
+				}
+			}
+		}
+
+		// pass through to nested junction filters
+		it = junction.getFilters().iterator();
+		while (it.hasNext()) {
+			Filter child = it.next();
+			if (!(child instanceof PropertyFilter)) {
+				removeFilters(child, propertyIds);
+			}
+		}
+	}
+
+	/**
+	 * Remove any empty junction filters that don't contain any filters of their own
+	 * any more
+	 * 
+	 * @param junction the junction filter to remove the empty filters from
+	 */
+	private static void cleanupEmptyFilters(AbstractJunctionFilter junction) {
+		Iterator<Filter> it = junction.getFilters().iterator();
+		while (it.hasNext()) {
+			Filter child = it.next();
+			if (child instanceof AbstractJunctionFilter) {
+				AbstractJunctionFilter ajf = (AbstractJunctionFilter) child;
+				if (ajf.getFilters().isEmpty()) {
+					it.remove();
+				}
+			} else if (child instanceof Not) {
+				Not not = (Not) child;
+				if (not.getFilter() == null) {
+					it.remove();
+				}
+			}
+		}
+	}
+
+	/**
 	 * Removes filters with certain property IDs from a certain filter
 	 * 
-	 * @param filter
-	 *            the filter to remove the filters from
-	 * @param propertyIds
-	 *            the property IDs of the filters to remove
+	 * @param filter      the filter to remove the filters from
+	 * @param propertyIds the property IDs of the filters to remove
 	 */
 	public static void removeFilters(Filter filter, String... propertyIds) {
 		if (filter instanceof AbstractJunctionFilter) {
 			// junction filter, iterate over its children
 			AbstractJunctionFilter junction = (AbstractJunctionFilter) filter;
-			Iterator<Filter> it = junction.getFilters().iterator();
-
-			// remove simple filters
-			while (it.hasNext()) {
-				Filter child = it.next();
-				if (child instanceof PropertyFilter) {
-					PropertyFilter pf = (PropertyFilter) child;
-					for (String s : propertyIds) {
-						if (pf.getPropertyId().equals(s)) {
-							it.remove();
-						}
-					}
-				}
-			}
-
-			// pass through to nested junction filters
-			it = junction.getFilters().iterator();
-			while (it.hasNext()) {
-				Filter child = it.next();
-				if (!(child instanceof PropertyFilter)) {
-					removeFilters(child, propertyIds);
-				}
-			}
+			removeFilterFormJunction(junction, propertyIds);
 
 			// clean up empty filters
-			it = junction.getFilters().iterator();
+			Iterator<Filter> it = junction.getFilters().iterator();
 			while (it.hasNext()) {
 				Filter child = it.next();
 				if (child instanceof AbstractJunctionFilter) {
@@ -186,14 +215,12 @@ public final class DynamoFilterUtil {
 	/**
 	 * Replaces all filters that query a detail relation by the appropriate filters
 	 * 
-	 * @param filter
-	 *            the original filter
-	 * @param entityModel
-	 *            the entity model used to determine which filters must be replaced
-	 * @param overrideProperty
-	 *            optional property - if supplied, then we the application will
-	 *            check this property instead of the property supplied in the
-	 *            original filters
+	 * @param filter           the original filter
+	 * @param entityModel      the entity model used to determine which filters must
+	 *                         be replaced
+	 * @param overrideProperty optional property - if supplied, then we the
+	 *                         application will check this property instead of the
+	 *                         property supplied in the original filters
 	 */
 	public static void replaceMasterAndDetailFilters(Filter filter, EntityModel<?> entityModel) {
 
@@ -212,10 +239,8 @@ public final class DynamoFilterUtil {
 	 * Replaces a "Compare.Equal" filter that searches on a master or detail field
 	 * by a "Contains" or "In" filter
 	 * 
-	 * @param filter
-	 *            the filter
-	 * @param am
-	 *            the attribute model
+	 * @param filter the filter
+	 * @param am     the attribute model
 	 */
 	private static void replaceMasterDetailFilter(Filter filter, AttributeModel am) {
 		if (AttributeType.DETAIL.equals(am.getAttributeType())
@@ -258,14 +283,10 @@ public final class DynamoFilterUtil {
 	/**
 	 * Replaces a filter by another filter
 	 * 
-	 * @param original
-	 *            the main filter that contains the filter to be replaced
-	 * @param newFilter
-	 *            the replacement filter
-	 * @param propertyId
-	 *            the property ID of the filter to replace
-	 * @param firstOnly
-	 *            indicates whether to replace only the first instance
+	 * @param original   the main filter that contains the filter to be replaced
+	 * @param newFilter  the replacement filter
+	 * @param propertyId the property ID of the filter to replace
+	 * @param firstOnly  indicates whether to replace only the first instance
 	 */
 	public static void replaceFilter(Filter original, Filter newFilter, String propertyId, boolean firstOnly) {
 		try {
@@ -279,14 +300,10 @@ public final class DynamoFilterUtil {
 	 * Replaces a filter by another filter. This method only works for junction
 	 * filters
 	 * 
-	 * @param parent
-	 *            the parent
-	 * @param original
-	 *            the original filter
-	 * @param newFilter
-	 *            the new filter
-	 * @param propertyId
-	 *            the property id of the filter that must be replaced
+	 * @param parent     the parent
+	 * @param original   the original filter
+	 * @param newFilter  the new filter
+	 * @param propertyId the property id of the filter that must be replaced
 	 */
 	private static void replaceFilter(Filter parent, Filter original, Filter newFilter, String propertyId,
 			boolean firstOnly) {

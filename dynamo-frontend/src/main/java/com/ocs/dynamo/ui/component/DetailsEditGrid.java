@@ -607,11 +607,6 @@ public abstract class DetailsEditGrid<ID extends Serializable, T extends Abstrac
 	}
 
 	@Override
-	public void setValue(Collection<T> newFieldValue) {
-		super.setValue(newFieldValue);
-	}
-
-	@Override
 	public boolean validateAllFields() {
 		boolean error = false;
 		for (Binder<T> binder : binders.values()) {

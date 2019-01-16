@@ -23,7 +23,7 @@ public interface SharedProvider<T> {
 
 	/**
 	 * 
-	 * @return
+	 * @return the shared data provider
 	 */
 	public ListDataProvider<T> getSharedProvider();
 }

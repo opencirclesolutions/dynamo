@@ -401,15 +401,23 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 
 	/**
 	 * Sets the joins to use when retrieving a single object for use in a detail
-	 * form. If not set then the application will use the same joins as for the
-	 * complete result grid
+	 * form. If not set then the application will use the default joins defined in
+	 * the DAO. the joins passed to the constructor are NOT used when retrieving a
+	 * single object
 	 * 
-	 * @param detailJoins
+	 * @param detailJoins the desired detail joins
 	 */
 	public void setDetailJoins(FetchJoinInformation[] detailJoins) {
 		this.detailJoins = detailJoins;
 	}
 
+	/**
+	 * Sets the divider property. When displaying values inside a grid, a divider
+	 * border will be rendered between two rows if the value of the property
+	 * specified here changes between those rows
+	 * 
+	 * @param dividerProperty the divider property
+	 */
 	public void setDividerProperty(String dividerProperty) {
 		this.dividerProperty = dividerProperty;
 	}

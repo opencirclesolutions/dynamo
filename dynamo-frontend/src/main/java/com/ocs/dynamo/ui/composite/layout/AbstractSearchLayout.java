@@ -690,36 +690,37 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 			mainEditLayout.setStyleName(DynamoConstants.CSS_CLASS_HALFSCREEN);
 		}
 
-		FormOptions options = new FormOptions();
-		options.setOpenInViewMode(getFormOptions().isOpenInViewMode());
-		options.setScreenMode(ScreenMode.VERTICAL);
-		options.setAttributeGroupMode(getFormOptions().getAttributeGroupMode());
-		options.setPreserveSelectedTab(getFormOptions().isPreserveSelectedTab());
-		options.setShowNextButton(getFormOptions().isShowNextButton());
-		options.setShowPrevButton(getFormOptions().isShowPrevButton());
-		options.setPlaceButtonBarAtTop(getFormOptions().isPlaceButtonBarAtTop());
-		options.setFormNested(true);
+		FormOptions copy = new FormOptions();
+		copy.setOpenInViewMode(getFormOptions().isOpenInViewMode());
+		copy.setScreenMode(ScreenMode.VERTICAL);
+		copy.setAttributeGroupMode(getFormOptions().getAttributeGroupMode());
+		copy.setPreserveSelectedTab(getFormOptions().isPreserveSelectedTab());
+		copy.setShowNextButton(getFormOptions().isShowNextButton());
+		copy.setShowPrevButton(getFormOptions().isShowPrevButton());
+		copy.setPlaceButtonBarAtTop(getFormOptions().isPlaceButtonBarAtTop());
+		copy.setFormNested(true);
+		copy.setConfirmSave(getFormOptions().isConfirmSave());
 
 		// set the form options for the detail form
 		if (getFormOptions().isEditAllowed()) {
 			// editing in form must be possible
-			options.setEditAllowed(true);
+			copy.setEditAllowed(true);
 		} else {
 			// read-only mode
-			options.setOpenInViewMode(true).setEditAllowed(false);
+			copy.setOpenInViewMode(true).setEditAllowed(false);
 		}
 
-		if (options.isOpenInViewMode() || !isEditAllowed()) {
-			options.setShowBackButton(true);
+		if (copy.isOpenInViewMode() || !isEditAllowed()) {
+			copy.setShowBackButton(true);
 		}
 
 		if (getFormOptions().isComplexDetailsMode() && entity != null && entity.getId() != null) {
 			// complex tabbed layout, back button is placed separately
-			options.setShowBackButton(false);
-			options.setHideCancelButton(true);
+			copy.setShowBackButton(false);
+			copy.setHideCancelButton(true);
 
 			if (tabContainerLayout == null) {
-				buildDetailsTabLayout(entity, options);
+				buildDetailsTabLayout(entity, copy);
 			} else {
 				tabLayout.setEntity(entity, getFormOptions().isPreserveSelectedTab());
 				tabLayout.reload();
@@ -733,9 +734,9 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 		} else if (!getFormOptions().isComplexDetailsMode()) {
 			// simple edit form
 			if (editForm == null) {
-				buildEditForm(entity, options);
+				buildEditForm(entity, copy);
 			} else {
-				editForm.setViewMode(options.isOpenInViewMode());
+				editForm.setViewMode(copy.isOpenInViewMode());
 				editForm.setEntity(entity);
 				editForm.resetTab();
 			}
@@ -746,7 +747,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 			}
 			selectedDetailLayout = editForm;
 		} else {
-			// complex mode, but re-use
+			// complex details mode for creating a new entity, re-use the first tab
 			Component comp = initTab(entity, 0, getFormOptions(), true);
 
 			if (selectedDetailLayout == null) {

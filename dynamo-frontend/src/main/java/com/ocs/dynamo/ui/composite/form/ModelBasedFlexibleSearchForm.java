@@ -55,6 +55,9 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
 import java.io.Serializable;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -239,7 +242,6 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 				} else {
 					filter = mainFilter;
 				}
-
 				break;
 			case LESS_OR_EQUAL:
 				filter = new LessOrEqualPredicate<>(am.getPath(), value);
@@ -271,8 +273,18 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 				filter = new NotPredicate<>(createStringFilter(value, true));
 				break;
 			default:
-				// by default, simply use an "equals" predicate
-				if (value != null && !(value instanceof Collection && ((Collection<?>) value).isEmpty())) {
+				// date only
+				if (am.isSearchDateOnly()) {
+					LocalDate ldt = (LocalDate) value;
+					if (LocalDateTime.class.equals(am.getType())) {
+						filter = new BetweenPredicate<>(am.getPath(), ldt.atStartOfDay(),
+								ldt.atStartOfDay().plusDays(1).minusSeconds(1));
+					} else {
+						// zoned date time
+						filter = new BetweenPredicate<>(am.getPath(), ldt.atStartOfDay(ZoneId.systemDefault()),
+								ldt.atStartOfDay(ZoneId.systemDefault()).plusDays(1).minusSeconds(1));
+					}
+				} else if (value != null && !(value instanceof Collection && ((Collection<?>) value).isEmpty())) {
 					filter = new EqualsPredicate<>(am.getPath(), value);
 				}
 				break;
@@ -361,9 +373,9 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 		}
 
 		/**
-		 * Returns the available filter types for a certain attribute model
+		 * Returns the available filter types for a certain property
 		 *
-		 * @param am the attribute model
+		 * @param am the attribute model of the property
 		 * @return
 		 */
 		private List<FlexibleFilterType> getFilterTypes(AttributeModel am) {
@@ -384,7 +396,8 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 					}
 				} else if (Enum.class.isAssignableFrom(am.getType())) {
 					result.add(FlexibleFilterType.NOT_EQUAL);
-				} else if (Number.class.isAssignableFrom(am.getType()) || DateUtils.isSupportedDateType(am.getType())) {
+				} else if (Number.class.isAssignableFrom(am.getType())
+						|| (DateUtils.isSupportedDateType(am.getType()) && !am.isSearchDateOnly())) {
 					result.add(FlexibleFilterType.BETWEEN);
 					result.add(FlexibleFilterType.LESS_THAN);
 					result.add(FlexibleFilterType.LESS_OR_EQUAL);
@@ -443,6 +456,7 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 				fls.getComboBox().setStyleName(DynamoConstants.CSS_NESTED);
 			}
 
+			// add value change listener for adapting fields in response to input
 			if (newComponent instanceof HasValue) {
 				((HasValue<?>) newComponent)
 						.addValueChangeListener(event -> handleValueChange(event.getSource(), event.getValue()));
@@ -703,9 +717,9 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 	}
 
 	/**
-	 * Returns the default filter type for a certain attribute model
+	 * Returns the default filter type for a certain property
 	 *
-	 * @param am the attribute model
+	 * @param am the attribute model the attribute model of the property
 	 */
 	public FlexibleFilterType getDefaultFilterType(AttributeModel am) {
 		if (AttributeType.BASIC.equals(am.getAttributeType())) {
@@ -713,7 +727,8 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 				return FlexibleFilterType.CONTAINS;
 			} else if (Enum.class.isAssignableFrom(am.getType())) {
 				return FlexibleFilterType.EQUALS;
-			} else if (Number.class.isAssignableFrom(am.getType()) || DateUtils.isJava8DateType(am.getType())) {
+			} else if (Number.class.isAssignableFrom(am.getType())
+					|| (DateUtils.isJava8DateType(am.getType()) && !am.isSearchDateOnly())) {
 				return FlexibleFilterType.BETWEEN;
 			}
 		}
@@ -811,6 +826,12 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 		}
 	}
 
+	/**
+	 * Sets the properties (of type String) for which to only allow simple search
+	 * options ("contains" and "starts with") (
+	 * 
+	 * @param basicStringFilterProperties
+	 */
 	public void setBasicStringFilterProperties(Set<String> basicStringFilterProperties) {
 		this.basicStringFilterProperties = basicStringFilterProperties;
 	}

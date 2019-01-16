@@ -432,7 +432,7 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 
 	/**
 	 * 
-	 * @return
+	 * @return whether searching on a time stamp field should only use the date part
 	 */
 	boolean isSearchDateOnly();
 

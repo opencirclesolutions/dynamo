@@ -15,6 +15,7 @@ package com.ocs.dynamo.ui.composite.layout;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import org.springframework.util.StringUtils;
@@ -53,14 +54,19 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
 	protected SerializablePredicate<T> filter;
 
 	/**
+	 * Supplier for creating the filter when needed
+	 */
+	private Supplier<SerializablePredicate<T>> filterSupplier;
+
+	/**
 	 * The query type (ID based or paging) used to query the database
 	 */
 	private QueryType queryType;
 
 	/**
-	 * Supplier for creating the filter when needed
+	 * Supplier for creating the quick search filter
 	 */
-	private Supplier<SerializablePredicate<T>> filterSupplier;
+	private Function<String, SerializablePredicate<T>> quickSearchFilterSupplier;
 
 	/**
 	 * Constructor
@@ -81,55 +87,6 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
 	@Override
 	protected void buildFilter() {
 		filter = filterSupplier == null ? null : filterSupplier.get();
-	}
-
-	/**
-	 * Constructs the quick search filter - override if you need a custom filter
-	 * when searching for the main attribute is not sufficient. Note that the quick
-	 * search filter is applied in addition to the always active default filter
-	 * returned by the "constructFilter" method
-	 *
-	 * @param value the value to search for
-	 * @return
-	 */
-	protected SerializablePredicate<T> constructQuickSearchFilter(String value) {
-		// override in subclasses
-		return null;
-	}
-
-	/**
-	 * Constructs a quick search field - this method will only be called if the
-	 * "showQuickSearchField" form option is enabled. It will then look for a custom
-	 * filter returned by the constructQuickSearchFilter method, and if that method
-	 * returns null it will construct a filter based on the main attribute
-	 */
-	@Override
-	protected final TextField constructSearchField() {
-		if (getFormOptions().isShowQuickSearchField()) {
-			TextField searchField = new TextField(message("ocs.search"));
-
-			// respond to the user entering a search term
-			searchField.addValueChangeListener(event -> {
-				String text = event.getValue();
-				if (!StringUtils.isEmpty(text)) {
-					SerializablePredicate<T> quickFilter = constructQuickSearchFilter(text);
-					if (quickFilter == null && getEntityModel().getMainAttributeModel() != null) {
-						quickFilter = new LikePredicate<T>(getEntityModel().getMainAttributeModel().getPath(),
-								"%" + text + "%", false);
-					}
-
-					SerializablePredicate<T> temp = quickFilter;
-					if (getFilter() != null) {
-						temp = new AndPredicate<T>(quickFilter, getFilter());
-					}
-					getGridWrapper().search(temp);
-				} else {
-					getGridWrapper().search(filter);
-				}
-			});
-			return searchField;
-		}
-		return null;
 	}
 
 	@Override
@@ -157,6 +114,42 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
 		return tw;
 	}
 
+	/**
+	 * Constructs a quick search field - this method will only be called if the
+	 * "showQuickSearchField" form option is enabled. It will then look for a custom
+	 * filter returned by the constructQuickSearchFilter method, and if that method
+	 * returns null it will construct a filter based on the main attribute
+	 */
+	@Override
+	protected final TextField constructSearchField() {
+		if (getFormOptions().isShowQuickSearchField()) {
+			TextField searchField = new TextField(message("ocs.search"));
+
+			// respond to the user entering a search term
+			searchField.addValueChangeListener(event -> {
+				String text = event.getValue();
+				if (!StringUtils.isEmpty(text)) {
+					SerializablePredicate<T> quickFilter = quickSearchFilterSupplier == null ? null
+							: quickSearchFilterSupplier.apply(text);
+					if (quickFilter == null && getEntityModel().getMainAttributeModel() != null) {
+						quickFilter = new LikePredicate<T>(getEntityModel().getMainAttributeModel().getPath(),
+								"%" + text + "%", false);
+					}
+
+					SerializablePredicate<T> temp = quickFilter;
+					if (getFilter() != null) {
+						temp = new AndPredicate<T>(quickFilter, getFilter());
+					}
+					getGridWrapper().search(temp);
+				} else {
+					getGridWrapper().search(filter);
+				}
+			});
+			return searchField;
+		}
+		return null;
+	}
+
 	protected DataProvider<T, SerializablePredicate<T>> getDataProvider() {
 		return getGridWrapper().getDataProvider();
 	}
@@ -165,13 +158,21 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
 		return filter;
 	}
 
-	public QueryType getQueryType() {
-		return queryType;
+	public Supplier<SerializablePredicate<T>> getFilterSupplier() {
+		return filterSupplier;
 	}
 
 	@Override
 	public ServiceBasedGridWrapper<ID, T> getGridWrapper() {
 		return (ServiceBasedGridWrapper<ID, T>) super.getGridWrapper();
+	}
+
+	public QueryType getQueryType() {
+		return queryType;
+	}
+
+	public Function<String, SerializablePredicate<T>> getQuickSearchFilterSupplier() {
+		return quickSearchFilterSupplier;
 	}
 
 	/**
@@ -184,6 +185,25 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
 		super.reload();
 		refresh();
 		getGridWrapper().setFilter(filter);
+	}
+
+	/**
+	 * Sets the function (supplier) used for constructing the default filter
+	 * 
+	 * @param filterSupplier
+	 */
+	public void setFilterSupplier(Supplier<SerializablePredicate<T>> filterSupplier) {
+		this.filterSupplier = filterSupplier;
+	}
+
+	/**
+	 * Sets the function used for constructing the quick search filter. This will
+	 * override the default quick search filter that searches on the main attribute
+	 * 
+	 * @param quickSearchFilterSupplier
+	 */
+	public void setQuickSearchFilterSupplier(Function<String, SerializablePredicate<T>> quickSearchFilterSupplier) {
+		this.quickSearchFilterSupplier = quickSearchFilterSupplier;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -210,11 +230,4 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
 		}
 	}
 
-	public Supplier<SerializablePredicate<T>> getFilterSupplier() {
-		return filterSupplier;
-	}
-
-	public void setFilterSupplier(Supplier<SerializablePredicate<T>> filterSupplier) {
-		this.filterSupplier = filterSupplier;
-	}
 }
