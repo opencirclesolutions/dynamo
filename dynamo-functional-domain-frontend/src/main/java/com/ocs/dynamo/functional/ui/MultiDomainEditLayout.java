@@ -216,8 +216,8 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
 				}
 
 				@Override
-				protected boolean mustEnableButton(AbstractComponent button, T selectedItem) {
-					if (getRemoveButton() == button) {
+				protected boolean mustEnableComponent(AbstractComponent component, T selectedItem) {
+					if (getRemoveButton() == component) {
 						return isDeleteAllowed(getSelectedDomain());
 					}
 					return true;

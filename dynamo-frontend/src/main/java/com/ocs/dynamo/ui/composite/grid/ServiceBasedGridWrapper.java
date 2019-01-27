@@ -118,7 +118,7 @@ public class ServiceBasedGridWrapper<ID extends Serializable, T extends Abstract
 				ExportDialog<ID, T> dialog = new ExportDialog<>(getExportService(),
 						getExportEntityModel() != null ? getExportEntityModel() : getEntityModel(),
 						getFormOptions().getExportMode(), getFilter(), !orders.isEmpty() ? orders : getSortOrders(),
-						getCustomStyleGenerator(), getJoins());
+						getCustomStyleGenerator(), getExportJoins() != null ? getExportJoins() : getJoins());
 				dialog.build();
 				UI.getCurrent().addWindow(dialog);
 			});

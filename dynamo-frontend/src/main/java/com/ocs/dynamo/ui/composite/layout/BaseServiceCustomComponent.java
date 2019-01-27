@@ -179,7 +179,7 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 			if (b instanceof DownloadButton) {
 				((DownloadButton) b).update();
 			}
-			boolean enabled = selectedItem != null && mustEnableButton(b, selectedItem);
+			boolean enabled = selectedItem != null && mustEnableComponent(b, selectedItem);
 			b.setEnabled(enabled);
 		}
 	}
@@ -231,14 +231,14 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	}
 
 	/**
-	 * Method that is called in order to enable/disable a button after selecting an
-	 * item in the grid
+	 * Method that is called in order to enable/disable a component (i.e. a button)
+	 * in a button bar after selecting an item in the grid
 	 *
-	 * @param button       the button
-	 * @param selectedItem the currently selected item
+	 * @param component    the component
+	 * @param selectedItem the currently selected item in the grid
 	 * @return
 	 */
-	protected boolean mustEnableButton(AbstractComponent button, T selectedItem) {
+	protected boolean mustEnableComponent(AbstractComponent component, T selectedItem) {
 		// overwrite in subclasses if needed
 		return true;
 	}

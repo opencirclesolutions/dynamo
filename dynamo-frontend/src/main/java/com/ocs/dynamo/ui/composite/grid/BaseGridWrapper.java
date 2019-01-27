@@ -105,6 +105,11 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 	 * The fetch joins to use when querying
 	 */
 	private FetchJoinInformation[] joins;
+	
+	/**
+	 * The joins to use when exporting (needed when using exportmode FULL)
+	 */
+	private FetchJoinInformation[] exportJoins;
 
 	/**
 	 * The layout that contains the grid
@@ -148,6 +153,20 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 		this.joins = joins;
 		this.editable = editable;
 	}
+
+	
+	
+	public FetchJoinInformation[] getExportJoins() {
+		return exportJoins;
+	}
+
+
+
+	public void setExportJoins(FetchJoinInformation[] exportJoins) {
+		this.exportJoins = exportJoins;
+	}
+
+
 
 	/**
 	 * Adds a grid selection listener

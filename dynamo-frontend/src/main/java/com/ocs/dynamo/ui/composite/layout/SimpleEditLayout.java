@@ -49,21 +49,35 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 
 	private static final long serialVersionUID = -7935358582100755140L;
 
-	// the edit form
+	/**
+	 * The edit form
+	 */
 	private ModelBasedEditForm<ID, T> editForm;
 
-	// the selected entity
+	/**
+	 * The entity to display or edit
+	 */
 	private T entity;
 
-	// map of additional field filters
+	/**
+	 * Map of additional field filters
+	 */
 	private Map<String, SerializablePredicate<?>> fieldFilters = new HashMap<>();
 
-	// specifies which relations to fetch when querying
+	/**
+	 * Specifies which relations to fetch. When specified this overrides the default
+	 * relations defined in the DAO
+	 */
 	private FetchJoinInformation[] joins;
 
-	// the main layout
+	/**
+	 * The main layout
+	 */
 	private VerticalLayout main;
 
+	/**
+	 * Custom save consumer. Use this to override the default save behaviour
+	 */
 	private Consumer<T> customSaveConsumer;
 
 	/**
@@ -111,8 +125,8 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 	 * Callback method that is called after one of the layouts of the underlying
 	 * edit form is built for the first time
 	 *
-	 * @param layout
-	 * @param viewMode
+	 * @param layout   the layout
+	 * @param viewMode whether the layout is in view mode
 	 */
 	protected void afterLayoutBuilt(Layout layout, boolean viewMode) {
 		// override in subclass
@@ -339,7 +353,9 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 	}
 
 	/**
-	 * @param editForm
+	 * Callback method that is called after the edit form has been constructed
+	 * 
+	 * @param editForm the edit form
 	 */
 	protected void postProcessEditFields(ModelBasedEditForm<ID, T> editForm) {
 		// do nothing by default - override in subclasses

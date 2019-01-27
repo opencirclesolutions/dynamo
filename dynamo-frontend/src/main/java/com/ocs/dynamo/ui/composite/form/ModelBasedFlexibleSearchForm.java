@@ -322,7 +322,7 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 						event -> handleFilterTypeChange((FlexibleFilterType) event.getSource().getValue()));
 				newTypeFilterCombo.setStyleName(DynamoConstants.CSS_NESTED);
 				newTypeFilterCombo.setItems(getFilterTypes(am));
-				newTypeFilterCombo.setStyleGenerator(item -> getMessageService()
+				newTypeFilterCombo.setItemCaptionGenerator(item -> getMessageService()
 						.getEnumMessage(FlexibleFilterType.class, item, VaadinUtils.getLocale()));
 
 				// cannot remove mandatory filters
@@ -431,7 +431,8 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 		}
 
 		/**
-		 * Handle a change of the filter
+		 * Handle a change of the filter by updating/creating the UI components that are
+		 * used for actually entering the value to search on
 		 *
 		 * @param type the selected filter type
 		 */
@@ -461,6 +462,7 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 				((HasValue<?>) newComponent)
 						.addValueChangeListener(event -> handleValueChange(event.getSource(), event.getValue()));
 			}
+			newComponent.setSizeFull();
 
 			if (mainValueComponent == null) {
 				layout.addComponent(newComponent);
@@ -477,6 +479,7 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 				((HasValue<?>) newAuxComponent).addValueChangeListener(
 						event -> handleValueChange((HasValue<?>) newAuxComponent, event.getSource().getValue()));
 				newAuxComponent.setCaption(am.getDisplayName() + " " + message("ocs.to"));
+				newAuxComponent.setSizeFull();
 
 				if (auxValueComponent == null) {
 					layout.addComponent(newAuxComponent);

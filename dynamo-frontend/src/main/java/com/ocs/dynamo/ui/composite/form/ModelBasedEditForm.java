@@ -1117,7 +1117,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 				if (!error) {
 					if (getFormOptions().isConfirmSave()) {
 						// ask for confirmation before saving
-
 						service.validate(entity);
 						VaadinUtils.showConfirmDialog(getMessageService(), getMessageService().getMessage(
 								"ocs.confirm.save", VaadinUtils.getLocale(), getEntityModel().getDisplayName()), () -> {
@@ -1297,14 +1296,42 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		return null;
 	}
 
+	/**
+	 * Returns an the field with the given name, if it exists, cast to a HasValue
+	 * 
+	 * @param fieldName the name of the field
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public <U> HasValue<U> getFieldAsHasValue(String fieldName) {
+		return (HasValue<U>) getField(isViewMode(), fieldName);
+	}
+
+	/**
+	 * Returns the field with the given name, if it exists
+	 * 
+	 * @param fieldName the name of the field
+	 * @return
+	 */
 	public AbstractComponent getField(String fieldName) {
 		return getField(isViewMode(), fieldName);
 	}
 
+	/**
+	 * Returns an Optional that contains the field with the given name, if it exists
+	 * 
+	 * @param fieldName
+	 * @return
+	 */
 	public Optional<AbstractComponent> getFieldOptional(String fieldName) {
-		return Optional.ofNullable(getField(isViewMode(), fieldName));
+		return Optional.ofNullable(getField(fieldName));
 	}
 
+	/**
+	 * 
+	 * @param viewMode
+	 * @return
+	 */
 	public Collection<HasValue<?>> getFields(boolean viewMode) {
 		return groups.get(viewMode).getFields().collect(Collectors.toList());
 	}

@@ -56,7 +56,7 @@ public class BaseUITest extends BaseMockitoTest {
 	 */
 	@Test
 	public void testNavigateToEntityScreen() {
-		ui.addEntityOnViewMapping(TestEntity.class, a -> {
+		ui.addEntityNavigationMapping(TestEntity.class, a -> {
 			navigated = true;
 		});
 
@@ -67,7 +67,7 @@ public class BaseUITest extends BaseMockitoTest {
 
 	@Test(expected = NullPointerException.class)
 	public void testNavigateToEntityScreenException() {
-		ui.addEntityOnViewMapping(TestEntity.class, a -> {
+		ui.addEntityNavigationMapping(TestEntity.class, a -> {
 			throw new OCSRuntimeException();
 		});
 

@@ -38,6 +38,8 @@ import com.vaadin.ui.UI;
  */
 public abstract class ProgressForm<T> extends BaseCustomComponent implements Progressable {
 
+	private static final long serialVersionUID = -4717815709838453902L;
+
 	/**
 	 * The screen mode
 	 * 
@@ -50,8 +52,6 @@ public abstract class ProgressForm<T> extends BaseCustomComponent implements Pro
 
 	// the polling interval in milliseconds
 	public static final int POLL_INTERVAL = 500;
-
-	private static final long serialVersionUID = -4717815709838453902L;
 
 	private static final Logger LOGGER = Logger.getLogger(ProgressForm.class);
 

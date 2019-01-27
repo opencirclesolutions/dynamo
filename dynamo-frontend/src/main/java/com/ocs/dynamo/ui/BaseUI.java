@@ -35,14 +35,17 @@ public abstract class BaseUI extends UI {
 	private static final long serialVersionUID = 5903140845804805314L;
 
 	/**
-	 * Index of the tab to select directly after opening a screen
+	 * Mapping for navigating to pages after clicking on a link
 	 */
-	private Integer selectedTab;
+	private Map<Class<?>, Consumer<?>> entityOnViewMapping = new HashMap<>();
 
 	/**
-	 * A string describing the desired screen mode to set after opening a screen
+	 * The menu bar
 	 */
-	private String screenMode;
+	private MenuBar menuBar;
+
+	@Autowired
+	private MenuService menuService;
 
 	/**
 	 * The navigator
@@ -50,22 +53,24 @@ public abstract class BaseUI extends UI {
 	private CustomNavigator navigator;
 
 	/**
-	 * Mapping for navigating to pages after clicking on a link
+	 * A string describing the desired screen mode to set after opening a screen
 	 */
-	private Map<Class<?>, Consumer<?>> entityOnViewMapping = new HashMap<>();
+	private String screenMode;
 
-	@Autowired
-	private MenuService menuService;
+	private Object selectedEntity;
 
-	private MenuBar menuBar;
+	/**
+	 * Index of the tab to select directly after opening a screen
+	 */
+	private Integer selectedTab;
 
 	/**
 	 * Adds a mapping for carrying out navigation within the application
 	 * 
-	 * @param entityClass the type of the entity
+	 * @param entityClass    the type of the entity
 	 * @param navigateAction the action to carry out
 	 */
-	public void addEntityOnViewMapping(Class<?> entityClass, Consumer<?> navigateAction) {
+	public void addEntityNavigationMapping(Class<?> entityClass, Consumer<?> navigateAction) {
 		entityOnViewMapping.put(entityClass, navigateAction);
 	}
 
@@ -82,6 +87,10 @@ public abstract class BaseUI extends UI {
 		return screenMode;
 	}
 
+	public Object getSelectedEntity() {
+		return selectedEntity;
+	}
+
 	public Integer getSelectedTab() {
 		return selectedTab;
 	}
@@ -90,9 +99,8 @@ public abstract class BaseUI extends UI {
 	 * Initializes the startup view
 	 * 
 	 * @param startView
-	 * @param alwaysReload
-	 *            indicates whether the view must always be reloaded (even when
-	 *            navigating from the view to the same view)
+	 * @param alwaysReload indicates whether the view must always be reloaded (even
+	 *                     when navigating from the view to the same view)
 	 */
 	protected void initNavigation(ViewProvider viewProvider, SingleComponentContainer container, String startView,
 			boolean alwaysReload) {
@@ -108,6 +116,7 @@ public abstract class BaseUI extends UI {
 
 	/**
 	 * Navigates to view
+	 * 
 	 * @param viewName the name of the view to navigate to
 	 */
 	public void navigate(String viewName) {
@@ -122,8 +131,7 @@ public abstract class BaseUI extends UI {
 	 * initialization of the UI of your project a mapping from type to consumer must
 	 * have been provided by adding it through the method addEntityOnViewMapping.
 	 * 
-	 * @param o
-	 *            The selected object to be displayed on the target screen.
+	 * @param o The selected object to be displayed on the target screen.
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void navigateToEntityScreen(Object o) {
@@ -152,6 +160,10 @@ public abstract class BaseUI extends UI {
 
 	public void setScreenMode(String screenMode) {
 		this.screenMode = screenMode;
+	}
+
+	public void setSelectedEntity(Object selectedEntity) {
+		this.selectedEntity = selectedEntity;
 	}
 
 	public void setSelectedTab(Integer selectedTab) {

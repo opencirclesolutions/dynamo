@@ -54,12 +54,12 @@ import com.vaadin.ui.Layout;
 public abstract class BaseCollectionLayout<ID extends Serializable, T extends AbstractEntity<ID>>
 		extends BaseServiceCustomComponent<ID, T> implements Reloadable, Refreshable {
 
+	private static final long serialVersionUID = -2864711994829582000L;
+
 	/**
 	 * The default page length
 	 */
 	private static final int PAGE_LENGTH = 12;
-
-	private static final long serialVersionUID = -2864711994829582000L;
 
 	/**
 	 * The main button bar that appears below the search results grid
@@ -75,6 +75,11 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	 * The relations to fetch when retrieving a single entity
 	 */
 	private FetchJoinInformation[] detailJoins;
+
+	/**
+	 * The relations to fetch when doing an export with export mode FULL
+	 */
+	private FetchJoinInformation[] exportJoins;
 
 	/**
 	 * The property used to decide whether to include a divider row border
@@ -97,19 +102,30 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	 */
 	private BaseGridWrapper<ID, T> gridWrapper;
 
-	// the joins to use when fetching data
+	/**
+	 * The joins to use when retrieving data for the grid
+	 */
 	private FetchJoinInformation[] joins;
 
-	// maximum number of results returned by search
+	/**
+	 * The maximum number of search results
+	 */
 	private Integer maxResults;
 
-	// whether the selection of multiple values is allowed
+	/**
+	 * Whether selecting more than one component is allowed
+	 */
 	private boolean multiSelect = false;
 
-	// the page length (number of rows that is displayed in the grid)
+	/**
+	 * The number of rows to display in the grid
+	 */
 	private int pageLength = PAGE_LENGTH;
 
-	// the value from the previous row used when drawing divider rows
+	/**
+	 * The property used for determining whether to draw divider rows between rows
+	 * in the grid
+	 */
 	private Object previousDividerValue;
 
 	// the currently selected item
@@ -170,7 +186,11 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 		// overwrite in subclasses
 	}
 
-	public void clearGridWrapper() {
+	/**
+	 * Throws away the grid wrapper, making sure it is reconstructed the next time
+	 * the layout is displayed
+	 */
+	public final void clearGridWrapper() {
 		this.gridWrapper = null;
 	}
 
@@ -211,8 +231,8 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	}
 
 	/**
-	 * Lazily constructs the grid wrapper - implement in subclasses in order to
-	 * create the right type of wrapper
+	 * Lazily constructs the grid wrapper - subclassed by the framework in order to
+	 * construct the correct grid wrapper
 	 * 
 	 * @return
 	 */
@@ -238,7 +258,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	/**
 	 * Disables sorting for the grid if needed
 	 */
-	protected void disableGridSorting() {
+	protected final void disableGridSorting() {
 		if (!isSortEnabled()) {
 			for (Column<?, ?> c : getGridWrapper().getGrid().getColumns()) {
 				c.setSortable(false);
@@ -372,13 +392,14 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	}
 
 	/**
-	 * Shared additional configuration after the wrapper has been created
+	 * Shared additional configuration after the wrapper has been created.
 	 * 
-	 * @param wrapper
+	 * @param wrapper the wrapper
 	 */
 	protected final void postConfigureGridWrapper(BaseGridWrapper<ID, T> wrapper) {
 		wrapper.setCustomStyleGenerator(getCustomStyleGenerator());
 		wrapper.setExportEntityModel(getExportEntityModel());
+		wrapper.setExportJoins(getExportJoins());
 	}
 
 	/**
@@ -394,7 +415,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	/**
 	 * Adds additional buttons to the button bar above/below the detail edit screen.
 	 * 
-	 * @param buttonBar the button bar
+	 * @param buttonBar the detail button bar
 	 * @param viewMode  indicates whether the form is in view mode
 	 */
 	protected void postProcessDetailButtonBar(Layout buttonBar, boolean viewMode) {
@@ -459,6 +480,12 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 		this.dividerProperty = dividerProperty;
 	}
 
+	/**
+	 * Specifies the entity model to use when performing an export to Excel or CSV.
+	 * Use this method if you need to deviate from the regular export functionality
+	 * 
+	 * @param exportEntityModel
+	 */
 	public void setExportEntityModel(EntityModel<T> exportEntityModel) {
 		this.exportEntityModel = exportEntityModel;
 	}
@@ -515,4 +542,13 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	public void setSortEnabled(boolean sortEnabled) {
 		this.sortEnabled = sortEnabled;
 	}
+
+	public FetchJoinInformation[] getExportJoins() {
+		return exportJoins;
+	}
+
+	public void setExportJoins(FetchJoinInformation[] exportJoins) {
+		this.exportJoins = exportJoins;
+	}
+
 }

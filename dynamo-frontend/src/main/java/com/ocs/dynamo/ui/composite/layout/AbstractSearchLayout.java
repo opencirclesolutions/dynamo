@@ -29,7 +29,6 @@ import com.ocs.dynamo.exception.OCSValidationException;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
-import com.ocs.dynamo.ui.composite.export.CustomXlsStyleGenerator;
 import com.ocs.dynamo.ui.composite.form.AbstractModelBasedSearchForm;
 import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
 import com.ocs.dynamo.ui.composite.grid.ServiceBasedGridWrapper;
@@ -59,8 +58,8 @@ import com.vaadin.ui.VerticalLayout;
  * 
  * @author bas.rutten
  *
- * @param <ID> the type of the primary key of the entity to search for
- * @param <T> the type of the entity to search for
+ * @param <ID> the type of the primary key of the entity
+ * @param <T> the type of the entity
  */
 public abstract class AbstractSearchLayout<ID extends Serializable, T extends AbstractEntity<ID>>
 		extends BaseCollectionLayout<ID, T> {
@@ -990,7 +989,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	}
 
 	/**
-	 * Post-processes the button bar for the search form
+	 * Post-processes the button bar that appears below the search form
 	 * 
 	 * @param buttonBar the button bar
 	 */

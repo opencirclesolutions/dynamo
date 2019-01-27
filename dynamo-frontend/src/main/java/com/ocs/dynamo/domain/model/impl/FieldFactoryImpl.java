@@ -345,6 +345,14 @@ public class FieldFactoryImpl implements FieldFactory {
 		return field;
 	}
 
+	/**
+	 * Constructs a component for managing a (simple) element collection
+	 * 
+	 * @param context          the context for creating the component
+	 * @param am               the attribute model
+	 * @param fieldEntityModel the field entity model
+	 * @return
+	 */
 	private AbstractComponent constructForElementCollection(FieldFactoryContext context, AttributeModel am,
 			EntityModel<?> fieldEntityModel) {
 		AbstractComponent field = null;
@@ -360,11 +368,16 @@ public class FieldFactoryImpl implements FieldFactory {
 			} else if (NumberUtils.isLong(am.getMemberType())) {
 				ElementCollectionGrid<?, ?, Long> grid = new ElementCollectionGrid<>(am, fo);
 				field = grid;
+			} else if (BigDecimal.class.equals(am.getMemberType())) {
+				ElementCollectionGrid<?, ?, BigDecimal> grid = new ElementCollectionGrid<>(am, fo);
+				field = grid;
 			} else {
 				// other types not supported for now
 				throw new OCSRuntimeException("Element collections of this type are currently not supported");
 			}
-		} else {
+		} else
+
+		{
 			// token search field
 			field = constructSimpleTokenField(fieldEntityModel != null ? fieldEntityModel : am.getEntityModel(), am,
 					am.getPath().substring(am.getPath().lastIndexOf('.') + 1), true, null);

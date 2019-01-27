@@ -14,14 +14,13 @@
 package com.ocs.dynamo.ui.component;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.StringUtils;
 
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
@@ -38,13 +37,15 @@ import com.ocs.dynamo.utils.ClassUtils;
 import com.ocs.dynamo.utils.NumberUtils;
 import com.vaadin.data.BeanValidationBinder;
 import com.vaadin.data.Binder;
-import com.vaadin.data.Binder.Binding;
 import com.vaadin.data.Binder.BindingBuilder;
 import com.vaadin.data.ValidationResult;
 import com.vaadin.data.Validator;
 import com.vaadin.data.ValueContext;
 import com.vaadin.data.ValueProvider;
 import com.vaadin.data.provider.ListDataProvider;
+import com.vaadin.data.validator.BigDecimalRangeValidator;
+import com.vaadin.data.validator.IntegerRangeValidator;
+import com.vaadin.data.validator.LongRangeValidator;
 import com.vaadin.data.validator.StringLengthValidator;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Button;
@@ -56,7 +57,6 @@ import com.vaadin.ui.Grid.SelectionMode;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.renderers.ComponentRenderer;
 
 /**
  * A grid for editing a collection of simple values stored in a collection table
@@ -284,12 +284,23 @@ public class ElementCollectionGrid<ID extends Serializable, U extends AbstractEn
 
 		grid = new Grid<>("", provider);
 
-		Column<ValueHolder<T>, TextField> column = grid.addColumn(vh -> {
+		Column<ValueHolder<T>, TextField> column = grid.addComponentColumn(vh -> {
 			TextField tf = new TextField("");
 			Binder<ValueHolder<T>> binder = binders.get(vh);
 
 			BindingBuilder<ValueHolder<T>, String> builder = binder.forField(tf);
 			builder.withNullRepresentation("");
+
+			// custom validator since the normal one apparently doesn't work properly here
+			// (note: add this before the converter!)
+			Validator<String> notEmpty = (String value, ValueContext v) -> {
+				if (value == null || "".equals(value)) {
+					return ValidationResult
+							.error(messageService.getMessage("ocs.may.not.be.null", VaadinUtils.getLocale()));
+				}
+				return ValidationResult.ok();
+			};
+			builder.asRequired(notEmpty);
 
 			if (String.class.equals(attributeModel.getMemberType())) {
 				// string length validation
@@ -304,27 +315,53 @@ public class ElementCollectionGrid<ID extends Serializable, U extends AbstractEn
 									attributeModel.getMinLength(), null));
 				}
 			} else if (NumberUtils.isInteger(attributeModel.getMemberType())) {
-				builder.withConverter(ConverterFactory.createIntegerConverter(
-						SystemPropertyUtils.useThousandsGroupingInEditMode(), attributeModel.isPercentage()));
+				BindingBuilder<ValueHolder<T>, Integer> iBuilder = builder.withConverter(
+						ConverterFactory.createIntegerConverter(SystemPropertyUtils.useThousandsGroupingInEditMode(),
+								attributeModel.isPercentage()));
+				if (attributeModel.getMaxValue() != null) {
+					iBuilder.withValidator(
+							new IntegerRangeValidator(message("ocs.value.too.high", attributeModel.getMaxValue()), null,
+									attributeModel.getMaxValue().intValue()));
+				}
+				if (attributeModel.getMinValue() != null) {
+					iBuilder.withValidator(
+							new IntegerRangeValidator(message("ocs.value.too.low", attributeModel.getMinValue()),
+									attributeModel.getMinValue().intValue(), null));
+				}
 			} else if (NumberUtils.isLong(attributeModel.getMemberType())) {
-				builder.withConverter(ConverterFactory.createLongConverter(
-						SystemPropertyUtils.useThousandsGroupingInEditMode(), attributeModel.isPercentage()));
+				BindingBuilder<ValueHolder<T>, Long> iBuilder = builder.withConverter(
+						ConverterFactory.createLongConverter(SystemPropertyUtils.useThousandsGroupingInEditMode(),
+								attributeModel.isPercentage()));
+				if (attributeModel.getMaxValue() != null) {
+					iBuilder.withValidator(
+							new LongRangeValidator(message("ocs.value.too.high", attributeModel.getMaxValue()), null,
+									attributeModel.getMaxValue()));
+				}
+				if (attributeModel.getMinValue() != null) {
+					iBuilder.withValidator(
+							new LongRangeValidator(message("ocs.value.too.low", attributeModel.getMinValue()),
+									attributeModel.getMinValue(), null));
+				}
+			} else if (BigDecimal.class.equals(attributeModel.getMemberType())) {
+				BindingBuilder<ValueHolder<T>, BigDecimal> iBuilder = builder
+						.withConverter(ConverterFactory.createBigDecimalConverter(attributeModel.isCurrency(),
+								attributeModel.isPercentage(), SystemPropertyUtils.useThousandsGroupingInEditMode(),
+								attributeModel.getPrecision(), SystemPropertyUtils.getDefaultCurrencySymbol()));
+				if (attributeModel.getMaxValue() != null) {
+					iBuilder.withValidator(new BigDecimalRangeValidator(message("ocs.value.too.high"), null,
+							BigDecimal.valueOf(attributeModel.getMaxValue())));
+				}
+				if (attributeModel.getMinValue() != null) {
+					iBuilder.withValidator(new BigDecimalRangeValidator(message("ocs.value.too.high"),
+							BigDecimal.valueOf(attributeModel.getMinValue()), null));
+				}
 			}
 
-			// custom validator since the normal one apparently doesn't work properly here
-			Validator<String> notEmpty = (String value, ValueContext v) -> {
-				if (StringUtils.isEmpty(value)) {
-					return ValidationResult
-							.error(messageService.getMessage("ocs.may.not.be.null", VaadinUtils.getLocale()));
-				}
-				return ValidationResult.ok();
-			};
-
-			builder.asRequired(notEmpty).bind("value");
+			builder.bind("value");
 
 			tf.setSizeFull();
 			return tf;
-		}, new ComponentRenderer());
+		});
 
 		column.setCaption(messageService.getMessage("ocs.value", VaadinUtils.getLocale()));
 
@@ -399,7 +436,6 @@ public class ElementCollectionGrid<ID extends Serializable, U extends AbstractEn
 		boolean error = false;
 		// refresh the bindings and validate
 		for (Entry<ValueHolder<T>, Binder<ValueHolder<T>>> entry : binders.entrySet()) {
-			entry.getValue().setBean(entry.getKey());
 			error |= !entry.getValue().validate().isOk();
 		}
 		return error;

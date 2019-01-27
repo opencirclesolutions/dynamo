@@ -28,7 +28,7 @@ public final class DynamoConstants {
 	public static final int CACHE_SIZE = 10000;
 
 	/**
-	 * CSS style for additional colums
+	 * CSS style for additional columns
 	 */
 	public static final String CSS_ADDITIONAL = "additional";
 
@@ -155,11 +155,6 @@ public final class DynamoConstants {
 	public static final String SP_CAPITALIZE_WORDS = "ocs.capitalize.words";
 
 	/**
-	 * Indicates whether to use the display name as the input prompt by default
-	 */
-	public static final String SP_USE_DEFAULT_PROMPT_VALUE = "ocs.use.default.prompt.value";
-
-	/**
 	 * Name of the system property that is used to set the locale used for month
 	 * names in date components
 	 */
@@ -170,11 +165,6 @@ public final class DynamoConstants {
 	 * precision
 	 */
 	public static final String SP_DECIMAL_PRECISION = "ocs.default.decimal.precision";
-
-	/**
-	 * Default caption format
-	 */
-	public static final String SP_DEFAULT_CAPTION_FORMAT = "ocs.default.caption.format";
 
 	/**
 	 * Name of the system property that is used to determine the default currency
@@ -189,7 +179,7 @@ public final class DynamoConstants {
 
 	/**
 	 * Name of the system property that is used to determine the default date/time
-	 * (timestamp) format
+	 * (time stamp) format
 	 */
 	public static final String SP_DEFAULT_DATETIME_FORMAT = "ocs.default.datetime.format";
 
@@ -212,6 +202,11 @@ public final class DynamoConstants {
 	public static final String SP_DEFAULT_FALSE_REPRESENTATION = "ocs.default.false.representation";
 
 	/**
+	 * Default width of input components
+	 */
+	public static final String SP_DEFAULT_FIELD_WIDTH = "ocs.default.field.width";
+
+	/**
 	 * Default form title width
 	 */
 	public static final String SP_DEFAULT_FORM_TITLE_WIDTH = "ocs.default.form.title.width";
@@ -221,12 +216,6 @@ public final class DynamoConstants {
 	 * list select
 	 */
 	public static final String SP_DEFAULT_LISTSELECT_ROWS = "ocs.default.listselect.rows";
-
-	/**
-	 * Name of the system property that is used to determine the amount of rows in a
-	 * text area
-	 */
-	public static final String SP_DEFAULT_TEXTAREA_ROWS = "ocs.default.textarea.rows";
 
 	/**
 	 * Name of the system property that is used to set the default locale
@@ -246,6 +235,12 @@ public final class DynamoConstants {
 	public static final String SP_DEFAULT_SEARCH_PREFIX_ONLY = "ocs.default.search.prefix.only";
 
 	/**
+	 * Name of the system property that is used to determine the amount of rows in a
+	 * text area
+	 */
+	public static final String SP_DEFAULT_TEXTAREA_ROWS = "ocs.default.textarea.rows";
+
+	/**
 	 * Name of the system property that is used to determine the default time format
 	 */
 	public static final String SP_DEFAULT_TIME_FORMAT = "ocs.default.time.format";
@@ -257,15 +252,15 @@ public final class DynamoConstants {
 	public static final String SP_DEFAULT_TRUE_REPRESENTATION = "ocs.default.true.representation";
 
 	/**
-	 * Name of the system property that is used as the CSV quote char when exporting
-	 */
-	public static final String SP_EXPORT_CSV_QUOTE = "ocs.export.csv.quote";
-
-	/**
 	 * Name of the system property that is used as the CSV escape character when
 	 * exporting
 	 */
 	public static final String SP_EXPORT_CSV_ESCAPE = "ocs.export.csv.escape";
+
+	/**
+	 * Name of the system property that is used as the CSV quote char when exporting
+	 */
+	public static final String SP_EXPORT_CSV_QUOTE = "ocs.export.csv.quote";
 
 	/**
 	 * Name of the system property that is used as the CSV separator when exporting
@@ -279,22 +274,10 @@ public final class DynamoConstants {
 	public static final String SP_LOOKUP_FIELD_MAX_ITEMS = "ocs.default.lookupfield.max.items";
 
 	/**
-	 * System property that indicates that maximum allowed number of rows in a
-	 * non-streaming export
+	 * Class name for the service locator (override to create a different service
+	 * locator, e.g. to use a separate service locator for integration tests)
 	 */
-	public static final String SP_MAX_ROWS_NON_STREAMING = "ocs.max.rows.non.streaming";
-
-	/**
-	 * System property that indicates that maximum allowed number of rows in a
-	 * streaming export
-	 */
-	public static final String SP_MAX_ROWS_STREAMING = "ocs.max.rows.streaming";
-
-	/**
-	 * System property that indicates that maximum allowed number of rows in a
-	 * streaming export of a pivoted data set
-	 */
-	public static final String SP_MAX_ROWS_STREAMING_PIVOTED = "ocs.max.rows.streaming.pivot";
+	public static final String SP_SERVICE_LOCATOR_CLASS_NAME = "ocs.service.locator.classname";
 
 	/**
 	 * System property that indicates whether to use the thousands grouping
@@ -303,20 +286,9 @@ public final class DynamoConstants {
 	public static final String SP_THOUSAND_GROUPING = "ocs.edit.thousands.grouping";
 
 	/**
-	 * Class name for the service locator (override to create a different service
-	 * locator, e.g. to use a separate service locator for integration tests)
+	 * Indicates whether to use the display name as the input prompt by default
 	 */
-	public static final String SP_SERVICE_LOCATOR_CLASS_NAME = "ocs.service.locator.classname";
-
-	/**
-	 * Default width of input components
-	 */
-	public static final String SP_DEFAULT_FIELD_WIDTH = "ocs.default.field.width";
-
-	/**
-	 * Default validation mode
-	 */
-	public static final String SP_DEFAULT_VALIDATION_MODE = "ocs.default.validation.mode";
+	public static final String SP_USE_DEFAULT_PROMPT_VALUE = "ocs.use.default.prompt.value";
 
 	/**
 	 * The name of the variable that is used to store the user
