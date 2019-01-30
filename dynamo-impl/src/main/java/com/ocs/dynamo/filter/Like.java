@@ -13,7 +13,7 @@
  */
 package com.ocs.dynamo.filter;
 
-import org.apache.commons.lang.ObjectUtils;
+import java.util.Objects;
 
 /**
  * A filter for checking if a string value contains a certain pattern. Use percent signs ("%")
@@ -104,9 +104,9 @@ public class Like extends AbstractFilter implements PropertyFilter {
             return false;
         }
         Like o = (Like) obj;
-        return ObjectUtils.equals(propertyId, o.getPropertyId())
-                && ObjectUtils.equals(value, o.getValue())
-                && ObjectUtils.equals(caseSensitive, o.isCaseSensitive());
+        return Objects.equals(propertyId, o.getPropertyId())
+                && Objects.equals(value, o.getValue())
+                && Objects.equals(caseSensitive, o.isCaseSensitive());
     }
 
     @Override

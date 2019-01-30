@@ -13,22 +13,12 @@
  */
 package com.ocs.dynamo.dao.impl;
 
-import com.google.common.collect.Lists;
-import com.ocs.dynamo.constants.DynamoConstants;
-import com.ocs.dynamo.dao.FetchJoinInformation;
-import com.ocs.dynamo.dao.SortOrder;
-import com.ocs.dynamo.dao.SortOrders;
-import com.ocs.dynamo.filter.And;
-import com.ocs.dynamo.filter.Between;
-import com.ocs.dynamo.filter.Compare;
-import com.ocs.dynamo.filter.Contains;
-import com.ocs.dynamo.filter.Filter;
-import com.ocs.dynamo.filter.In;
-import com.ocs.dynamo.filter.IsNull;
-import com.ocs.dynamo.filter.Like;
-import com.ocs.dynamo.filter.Modulo;
-import com.ocs.dynamo.filter.Not;
-import com.ocs.dynamo.filter.Or;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Tuple;
@@ -46,12 +36,25 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 import javax.persistence.metamodel.Attribute;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
+
+import org.apache.commons.lang3.StringUtils;
+
+import com.google.common.collect.Lists;
+import com.ocs.dynamo.constants.DynamoConstants;
+import com.ocs.dynamo.dao.FetchJoinInformation;
+import com.ocs.dynamo.dao.SortOrder;
+import com.ocs.dynamo.dao.SortOrders;
+import com.ocs.dynamo.filter.And;
+import com.ocs.dynamo.filter.Between;
+import com.ocs.dynamo.filter.Compare;
+import com.ocs.dynamo.filter.Contains;
+import com.ocs.dynamo.filter.Filter;
+import com.ocs.dynamo.filter.In;
+import com.ocs.dynamo.filter.IsNull;
+import com.ocs.dynamo.filter.Like;
+import com.ocs.dynamo.filter.Modulo;
+import com.ocs.dynamo.filter.Not;
+import com.ocs.dynamo.filter.Or;
 
 /**
  * @author patrick.deenen
@@ -206,7 +209,7 @@ public final class JpaQueryBuilder {
 
 			String str = (String) value;
 			if (str != null
-					&& org.apache.commons.lang.StringUtils.isNumeric(str.replaceAll("\\.", "").replaceAll(",", ""))) {
+					&& StringUtils.isNumeric(str.replaceAll("\\.", "").replaceAll(",", ""))) {
 				// first remove all periods (which may be used as
 				// thousand
 				// separators), then replace comma by period

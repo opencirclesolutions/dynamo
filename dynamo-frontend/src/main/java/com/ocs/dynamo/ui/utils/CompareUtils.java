@@ -17,9 +17,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
-
-import org.apache.commons.lang.ObjectUtils;
 
 import com.google.common.collect.Sets;
 import com.ocs.dynamo.domain.AbstractEntity;
@@ -67,7 +66,7 @@ public final class CompareUtils {
 				Object oldValue = ClassUtils.getFieldValue(oldEntity, am.getName());
 				Object newValue = ClassUtils.getFieldValue(newEntity, am.getName());
 
-				if (!ObjectUtils.equals(oldValue, newValue)) {
+				if (!Objects.equals(oldValue, newValue)) {
 					String oldValueStr = FormatUtils.formatPropertyValue(entityModelFactory, am, oldValue, ", ");
 					String newValueStr = FormatUtils.formatPropertyValue(entityModelFactory, am, newValue, ", ");
 					results.add(messageService.getMessage("ocs.value.changed", VaadinUtils.getLocale(),

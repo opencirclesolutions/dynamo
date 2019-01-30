@@ -87,7 +87,7 @@
 		<module>dynamo-envers-frontend</module>
 		<!-- <module>dynamo-frontend-charts</module> -->
 		<module>dynamo-functional-domain-frontend</module>
-		<!--  <module>dynamo-functional-translation</module>-->
+		<!-- <module>dynamo-functional-translation</module> -->
 		<!-- <module>dynamo-jasperreports</module> -->
 		<!-- <module>dynamo-jasperreports-fixes</module> -->
 	</modules>
@@ -115,7 +115,7 @@
 		<junit.version>4.12</junit.version>
 		<mockito.version>2.23.4</mockito.version>
 		<commons.io.version>2.6</commons.io.version>
-		<commons.lang.version>2.6</commons.lang.version>
+		<commons.lang.version>3.8.1</commons.lang.version>
 		<h2.version>1.4.197</h2.version>
 		<poi.version>4.0.0</poi.version>
 		<xlsx-streamer.version>2.1.0</xlsx-streamer.version>
@@ -390,33 +390,14 @@
 				</exclusions>
 			</dependency>
 			<dependency>
-				<groupId>net.sf.jasperreports</groupId>
-				<artifactId>jasperreports</artifactId>
-				<version>6.7.0</version>
-			</dependency>
-
-			<!-- JasperReports Library -->
-			<!-- <dependency> <groupId>nl.opencirclesolutions</groupId> <artifactId>jasperreports-fixes</artifactId> 
-				<version>${project.version}</version> </dependency> <dependency> <groupId>net.sf.jasperreports</groupId> 
-				<artifactId>jasperreports</artifactId> <version>${jasperreports.version}</version> 
-				<scope>provided</scope> </dependency> <dependency> <groupId>net.sf.jasperreports</groupId> 
-				<artifactId>jasperreports-functions</artifactId> <version>${jasperreports.version}</version> 
-				<exclusions> <exclusion> <groupId>net.sf.jasperreports</groupId> <artifactId>jasperreports</artifactId> 
-				</exclusion> </exclusions> </dependency> <dependency> <groupId>org.apache.xmlgraphics</groupId> 
-				<artifactId>batik-dom</artifactId> <version>${batik.version}</version> <exclusions> 
-				<exclusion> <groupId>xalan</groupId> <artifactId>xalan</artifactId> </exclusion> 
-				</exclusions> </dependency> <dependency> <groupId>org.apache.xmlgraphics</groupId> 
-				<artifactId>batik-svggen</artifactId> <version>${batik.version}</version> 
-				<exclusions> <exclusion> <groupId>xalan</groupId> <artifactId>xalan</artifactId> 
-				</exclusion> </exclusions> </dependency> <dependency> <groupId>org.apache.xmlgraphics</groupId> 
-				<artifactId>batik-bridge</artifactId> <version>${batik.version}</version> 
-				<exclusions> <exclusion> <groupId>xalan</groupId> <artifactId>xalan</artifactId> 
-				</exclusion> </exclusions> </dependency> <dependency> <groupId>org.apache.xmlgraphics</groupId> 
-				<artifactId>xmlgraphics-commons</artifactId> <version>2.1</version> </dependency> -->
-			<dependency>
-				<groupId>commons-lang</groupId>
-				<artifactId>commons-lang</artifactId>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-lang3</artifactId>
 				<version>${commons.lang.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-text</artifactId>
+				<version>1.6</version>
 			</dependency>
 			<dependency>
 				<groupId>commons-io</groupId>

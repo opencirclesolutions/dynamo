@@ -16,7 +16,7 @@ package com.ocs.dynamo.ui.utils;
 import java.text.DecimalFormat;
 import java.util.Locale;
 
-import org.springframework.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Utility class for dealing with common functionality when pasting into fields
@@ -43,12 +43,12 @@ public final class PasteUtils {
 		StringBuilder b = new StringBuilder();
 		for (int i = 0; i < temp.length(); i++) {
 			String s = new String(new char[] { temp.charAt(i) });
-			if (org.apache.commons.lang.StringUtils.isWhitespace(s)) {
+			if (StringUtils.isWhitespace(s)) {
 				if (i == 0) {
 					b.append("#");
 				} else {
 					String t = new String(new char[] { temp.charAt(i - 1) });
-					if (org.apache.commons.lang.StringUtils.isWhitespace(t)) {
+					if (StringUtils.isWhitespace(t)) {
 						b.append("#");
 					}
 				}

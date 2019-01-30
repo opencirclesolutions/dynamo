@@ -13,7 +13,7 @@
  */
 package com.ocs.dynamo.filter;
 
-import org.apache.commons.lang.ObjectUtils;
+import java.util.Objects;
 
 /**
  * A filter that compares a property value against a provided value
@@ -205,11 +205,11 @@ public abstract class Compare extends AbstractFilter implements PropertyFilter {
         }
         final Compare o = (Compare) obj;
 
-        if (!ObjectUtils.equals(propertyId, o.propertyId)) {
+        if (!Objects.equals(propertyId, o.propertyId)) {
             return false;
         }
 
-        return ObjectUtils.equals(this.value, o.value);
+        return Objects.equals(this.value, o.value);
     }
 
     @Override

@@ -14,11 +14,10 @@
 package com.ocs.dynamo.domain;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Version;
-
-import org.apache.commons.lang.ObjectUtils;
 
 /**
  * Base class for entities
@@ -53,7 +52,7 @@ public abstract class AbstractEntity<ID> implements Serializable {
 	 */
 	@Override
 	public int hashCode() {
-		return ObjectUtils.hashCode(getId());
+		return Objects.hashCode(getId());
 	}
 
 	/**
@@ -71,8 +70,7 @@ public abstract class AbstractEntity<ID> implements Serializable {
 		if (obj == null || !this.getClass().isAssignableFrom(obj.getClass())) {
 			return false;
 		}
-
-		return ObjectUtils.equals(this.getId(), ((AbstractEntity<?>) obj).getId());
+		return Objects.equals(this.getId(), ((AbstractEntity<?>) obj).getId());
 	}
 
 }

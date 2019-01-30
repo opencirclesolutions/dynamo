@@ -13,7 +13,7 @@
  */
 package com.ocs.dynamo.filter;
 
-import org.apache.commons.lang.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.ui.composite.type.FlexibleFilterType;

@@ -26,14 +26,14 @@ import java.util.List;
 
 import javax.validation.constraints.Size;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.reflect.FieldUtils;
-import org.apache.commons.lang.reflect.MethodUtils;
+import org.apache.commons.lang3.reflect.FieldUtils;
+import org.apache.commons.lang3.reflect.MethodUtils;
 import org.apache.log4j.Logger;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.util.Assert;
+import org.apache.commons.lang3.StringUtils;
 
 import com.ocs.dynamo.exception.OCSRuntimeException;
 
@@ -66,7 +66,7 @@ public final class ClassUtils {
 			int p = fieldName.indexOf('.');
 			if (p >= 0) {
 				String firstProperty = fieldName.substring(0, p);
-				Object first = MethodUtils.invokeMethod(obj, GET + StringUtils.capitalize(firstProperty),
+				Object first = MethodUtils.invokeMethod(obj, GET + org.apache.commons.lang3.StringUtils.capitalize(firstProperty),
 						new Object[] {});
 				if (first != null) {
 					return canSetProperty(first, fieldName.substring(p + 1));

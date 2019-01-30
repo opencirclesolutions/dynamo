@@ -13,7 +13,7 @@
  */
 package com.ocs.dynamo.dao;
 
-import org.apache.commons.lang.ObjectUtils;
+import java.util.Objects;
 
 /**
  * A DTO representing the properties of a fetch join
@@ -58,7 +58,7 @@ public class FetchJoinInformation {
 
     @Override
     public int hashCode() {
-        return ObjectUtils.hashCode(property) + ObjectUtils.hashCode(joinType);
+        return Objects.hashCode(property) + Objects.hashCode(joinType);
     }
 
     @Override
@@ -67,7 +67,7 @@ public class FetchJoinInformation {
             return false;
         }
         FetchJoinInformation other = (FetchJoinInformation) obj;
-        return ObjectUtils.equals(this.getProperty(), other.getProperty())
-                && ObjectUtils.equals(this.getJoinType(), other.getJoinType());
+        return Objects.equals(this.getProperty(), other.getProperty())
+                && Objects.equals(this.getJoinType(), other.getJoinType());
     }
 }

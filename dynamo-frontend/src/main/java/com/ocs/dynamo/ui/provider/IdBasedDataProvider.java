@@ -16,9 +16,8 @@ package com.ocs.dynamo.ui.provider;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Stream;
-
-import org.apache.commons.lang.ObjectUtils;
 
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.dao.SortOrders;
@@ -56,7 +55,7 @@ public class IdBasedDataProvider<ID extends Serializable, T extends AbstractEnti
 
 		// when sort order changes, ID have to be fetched again
 		SortOrders so = createSortOrder(query);
-		if (!ObjectUtils.equals(so, oldSortOrder)) {
+		if (!Objects.equals(so, oldSortOrder)) {
 			size(query);
 		}
 		oldSortOrder = so;

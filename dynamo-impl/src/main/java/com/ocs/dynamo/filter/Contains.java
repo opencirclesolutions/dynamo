@@ -14,8 +14,7 @@
 package com.ocs.dynamo.filter;
 
 import java.util.Collection;
-
-import org.apache.commons.lang.ObjectUtils;
+import java.util.Objects;
 
 /**
  * A filter that checks if a value is contained in a collection
@@ -63,7 +62,7 @@ public class Contains extends AbstractFilter implements PropertyFilter {
 
     @Override
     public int hashCode() {
-        return ObjectUtils.hashCode(value) + ObjectUtils.hashCode(propertyId);
+        return Objects.hashCode(value) + Objects.hashCode(propertyId);
     }
 
     @Override
@@ -74,8 +73,8 @@ public class Contains extends AbstractFilter implements PropertyFilter {
         }
         Contains c = (Contains) obj;
 
-        return ObjectUtils.equals(propertyId, c.getPropertyId())
-                && ObjectUtils.equals(value, c.getValue());
+        return Objects.equals(propertyId, c.getPropertyId())
+                && Objects.equals(value, c.getValue());
     }
 
     @Override

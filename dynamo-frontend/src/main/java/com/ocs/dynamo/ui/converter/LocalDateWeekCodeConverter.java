@@ -13,14 +13,15 @@
  */
 package com.ocs.dynamo.ui.converter;
 
+import java.time.LocalDate;
+
+import org.apache.commons.lang3.StringUtils;
+
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.utils.DateUtils;
 import com.vaadin.data.Converter;
 import com.vaadin.data.Result;
 import com.vaadin.data.ValueContext;
-import org.apache.commons.lang.StringUtils;
-
-import java.time.LocalDate;
 
 /**
  * Converter for converting between a String (representing a week code) and a

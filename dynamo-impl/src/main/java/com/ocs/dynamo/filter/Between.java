@@ -13,7 +13,7 @@
  */
 package com.ocs.dynamo.filter;
 
-import org.apache.commons.lang.ObjectUtils;
+import java.util.Objects;
 
 /**
  * A filter that matches if the property to check for falls within the defined
@@ -79,8 +79,8 @@ public class Between extends AbstractFilter implements PropertyFilter {
 		}
 		final Between o = (Between) obj;
 
-		return ObjectUtils.equals(propertyId, o.getPropertyId()) && ObjectUtils.equals(startValue, o.getStartValue())
-				&& ObjectUtils.equals(endValue, o.getEndValue());
+		return Objects.equals(propertyId, o.getPropertyId()) && Objects.equals(startValue, o.getStartValue())
+				&& Objects.equals(endValue, o.getEndValue());
 	}
 
 	@Override

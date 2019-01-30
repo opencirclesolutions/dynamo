@@ -15,7 +15,7 @@ package com.ocs.dynamo.ui.validator;
 
 import java.net.MalformedURLException;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.data.ValidationResult;
 import com.vaadin.data.Validator;

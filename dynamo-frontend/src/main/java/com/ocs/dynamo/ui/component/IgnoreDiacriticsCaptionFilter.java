@@ -14,8 +14,7 @@
 package com.ocs.dynamo.ui.component;
 
 import java.text.Normalizer;
-
-import org.apache.commons.lang.ObjectUtils;
+import java.util.Objects;
 
 import com.vaadin.ui.ComboBox.CaptionFilter;
 
@@ -48,7 +47,7 @@ public class IgnoreDiacriticsCaptionFilter implements CaptionFilter {
 
 	@Override
 	public int hashCode() {
-		return ObjectUtils.hashCode(ignoreCase) + ObjectUtils.hashCode(onlyMatchPrefix);
+		return Objects.hashCode(ignoreCase) + Objects.hashCode(onlyMatchPrefix);
 	}
 
 	@Override
@@ -61,7 +60,7 @@ public class IgnoreDiacriticsCaptionFilter implements CaptionFilter {
 			return false;
 		}
 		final IgnoreDiacriticsCaptionFilter o = (IgnoreDiacriticsCaptionFilter) obj;
-		return ObjectUtils.equals(ignoreCase, o.ignoreCase) && ObjectUtils.equals(onlyMatchPrefix, o.onlyMatchPrefix);
+		return Objects.equals(ignoreCase, o.ignoreCase) && Objects.equals(onlyMatchPrefix, o.onlyMatchPrefix);
 	}
 
 	public boolean isIgnoreCase() {

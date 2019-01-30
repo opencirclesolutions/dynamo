@@ -13,6 +13,20 @@
  */
 package com.ocs.dynamo.ui.composite.form;
 
+import java.io.Serializable;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
@@ -51,22 +65,6 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Layout;
-import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.StringUtils;
-
-import java.io.Serializable;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  *
@@ -302,7 +300,7 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 		 */
 		private SimpleStringPredicate<T> createStringFilter(Object value, boolean prefixOnly) {
 			String valueStr = value == null ? "" : value.toString();
-			if (StringUtils.isNotEmpty(valueStr)) {
+			if (org.apache.commons.lang3.StringUtils.isNotEmpty(valueStr)) {
 				return new SimpleStringPredicate<>(am.getPath(), valueStr, prefixOnly, am.isSearchCaseSensitive());
 			}
 			return null;
@@ -746,7 +744,7 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 	 * @return
 	 */
 	public FilterRegion getFilterRegion(AttributeModel attributeModel) {
-		return regions.stream().filter(r -> ObjectUtils.equals(attributeModel, r.am)).findFirst().orElse(null);
+		return regions.stream().filter(r -> Objects.equals(attributeModel, r.am)).findFirst().orElse(null);
 	}
 
 	/**
@@ -757,7 +755,7 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 	 * @return
 	 */
 	public boolean hasFilter(AttributeModel attributeModel) {
-		return regions.stream().anyMatch(r -> ObjectUtils.equals(attributeModel, r.am));
+		return regions.stream().anyMatch(r -> Objects.equals(attributeModel, r.am));
 	}
 
 	/**

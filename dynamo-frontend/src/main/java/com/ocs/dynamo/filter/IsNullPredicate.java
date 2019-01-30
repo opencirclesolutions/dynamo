@@ -13,8 +13,9 @@
  */
 package com.ocs.dynamo.filter;
 
+import java.util.Objects;
+
 import com.ocs.dynamo.utils.ClassUtils;
-import org.apache.commons.lang.ObjectUtils;
 
 public class IsNullPredicate<T> extends ComparePredicate<T> {
 
@@ -30,6 +31,6 @@ public class IsNullPredicate<T> extends ComparePredicate<T> {
 			return false;
 		}
 		Object v = ClassUtils.getFieldValue(t, getProperty());
-		return ObjectUtils.equals(getValue(), v);
+		return Objects.equals(getValue(), v);
 	}
 }

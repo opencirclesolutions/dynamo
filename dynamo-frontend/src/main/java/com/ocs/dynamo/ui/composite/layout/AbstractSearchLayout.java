@@ -16,8 +16,7 @@ package com.ocs.dynamo.ui.composite.layout;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
-
-import org.apache.commons.lang.ObjectUtils;
+import java.util.Objects;
 
 import com.google.common.collect.Lists;
 import com.ocs.dynamo.constants.DynamoConstants;
@@ -985,7 +984,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	 * @return
 	 */
 	public boolean isInSearchMode() {
-		return ObjectUtils.equals(getCompositionRoot(), mainSearchLayout);
+		return Objects.equals(getCompositionRoot(), mainSearchLayout);
 	}
 
 	/**

@@ -13,7 +13,7 @@
  */
 package com.ocs.dynamo.filter;
 
-import org.apache.commons.lang.ObjectUtils;
+import java.util.Objects;
 
 import com.ocs.dynamo.utils.ClassUtils;
 
@@ -38,6 +38,6 @@ public class EqualsPredicate<T> extends ComparePredicate<T> {
 			return false;
 		}
 		Object v = ClassUtils.getFieldValue(t, getProperty());
-		return ObjectUtils.equals(getValue(), v);
+		return Objects.equals(getValue(), v);
 	}
 }

@@ -15,8 +15,8 @@ package com.ocs.dynamo.envers.domain;
 
 import java.time.ZonedDateTime;
 
-import org.apache.commons.lang.builder.ReflectionToStringBuilder;
-import org.apache.commons.lang.builder.ToStringStyle;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.annotation.Attribute;
@@ -28,7 +28,8 @@ import com.ocs.dynamo.domain.model.annotation.Attribute;
  * 
  * @author bas.rutten
  *
- * @param <AbstractEntity>
+ * @param <ID> the type of the ID of the entity
+ * @param <T> the type of the entity
  */
 public abstract class VersionedEntity<ID, T extends AbstractEntity<ID>> extends AbstractEntity<RevisionKey<ID>> {
 

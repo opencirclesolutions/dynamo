@@ -13,7 +13,7 @@
  */
 package com.ocs.dynamo.ui.auth;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.ui.UI;

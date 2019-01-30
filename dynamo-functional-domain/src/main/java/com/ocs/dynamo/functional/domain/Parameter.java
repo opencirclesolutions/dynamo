@@ -13,19 +13,21 @@
  */
 package com.ocs.dynamo.functional.domain;
 
-import com.ocs.dynamo.domain.AbstractAuditableEntity;
-import com.ocs.dynamo.domain.model.EditableType;
-import com.ocs.dynamo.domain.model.annotation.Attribute;
-import com.ocs.dynamo.domain.model.annotation.AttributeOrder;
-import com.ocs.dynamo.domain.model.annotation.Model;
-import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.builder.ReflectionToStringBuilder;
+import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.NotNull;
+
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+
+import com.ocs.dynamo.domain.AbstractAuditableEntity;
+import com.ocs.dynamo.domain.model.EditableType;
+import com.ocs.dynamo.domain.model.annotation.Attribute;
+import com.ocs.dynamo.domain.model.annotation.AttributeOrder;
+import com.ocs.dynamo.domain.model.annotation.Model;
 
 /**
  * Base class for reference information.
@@ -94,7 +96,7 @@ public class Parameter extends AbstractAuditableEntity<Integer> {
 
 	@Override
 	public int hashCode() {
-		return ObjectUtils.hashCode(id);
+		return Objects.hashCode(id);
 	}
 
 	@Override
@@ -113,10 +115,10 @@ public class Parameter extends AbstractAuditableEntity<Integer> {
 		Parameter other = (Parameter) obj;
 		if (this.id != null && other.id != null) {
 			// first, check if the IDs match
-			return ObjectUtils.equals(this.id, other.id);
+			return Objects.equals(this.id, other.id);
 		} else {
 			// if this is not the case, check for code and type
-			return ObjectUtils.equals(this.name, other.name);
+			return Objects.equals(this.name, other.name);
 		}
 
 	}

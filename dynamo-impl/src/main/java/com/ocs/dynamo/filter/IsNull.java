@@ -13,7 +13,7 @@
  */
 package com.ocs.dynamo.filter;
 
-import org.apache.commons.lang.ObjectUtils;
+import java.util.Objects;
 
 /**
  * A filter for checking if a property is null
@@ -50,12 +50,12 @@ public final class IsNull extends AbstractFilter implements PropertyFilter {
 		final IsNull o = (IsNull) obj;
 
 		// Checks the properties one by one
-		return ObjectUtils.equals(this.propertyId, o.propertyId);
+		return Objects.equals(this.propertyId, o.propertyId);
 	}
 
 	@Override
 	public int hashCode() {
-		return ObjectUtils.hashCode(propertyId);
+		return Objects.hashCode(propertyId);
 	}
 
 	@Override

@@ -32,7 +32,6 @@ public class URLFieldTest extends BaseMockitoTest {
 		field.initContent();
 
 		Assert.assertEquals(tf, field.getTextField());
-		//Assert.assertNull(field.getValue());
 
 		field.doSetValue(URL);
 		Assert.assertNotNull(field.getLink());

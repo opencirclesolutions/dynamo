@@ -14,8 +14,7 @@
 package com.ocs.dynamo.filter;
 
 import java.util.Collection;
-
-import org.apache.commons.lang.ObjectUtils;
+import java.util.Objects;
 
 /**
  * A filter for testing that the value of a certain property is included in a
@@ -64,7 +63,7 @@ public class In extends AbstractFilter implements PropertyFilter {
 
 	@Override
 	public int hashCode() {
-		return ObjectUtils.hashCode(values) + ObjectUtils.hashCode(propertyId);
+		return Objects.hashCode(values) + Objects.hashCode(propertyId);
 	}
 
 	@Override
@@ -75,7 +74,7 @@ public class In extends AbstractFilter implements PropertyFilter {
 		}
 		In c = (In) obj;
 
-		return ObjectUtils.equals(propertyId, c.getPropertyId()) && ObjectUtils.equals(values, c.getValues());
+		return Objects.equals(propertyId, c.getPropertyId()) && Objects.equals(values, c.getValues());
 	}
 
 	@Override

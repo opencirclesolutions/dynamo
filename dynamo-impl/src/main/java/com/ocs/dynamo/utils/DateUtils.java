@@ -26,7 +26,7 @@ import java.time.temporal.TemporalAdjusters;
 import java.time.temporal.WeekFields;
 import java.util.Date;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.util.SystemPropertyUtils;

@@ -14,8 +14,7 @@
 package com.ocs.dynamo.envers.domain;
 
 import java.io.Serializable;
-
-import org.apache.commons.lang.ObjectUtils;
+import java.util.Objects;
 
 /**
  * Primary key object for versioned entities - key consists of the key of the
@@ -64,7 +63,7 @@ public class RevisionKey<ID> implements Serializable {
 
 	@Override
 	public int hashCode() {
-		return id.hashCode() + ObjectUtils.hashCode(revision);
+		return id.hashCode() + Objects.hashCode(revision);
 	}
 
 	@Override
@@ -74,6 +73,6 @@ public class RevisionKey<ID> implements Serializable {
 			return false;
 		}
 		RevisionKey<ID> other = (RevisionKey<ID>) obj;
-		return ObjectUtils.equals(this.id, other.id) && ObjectUtils.equals(this.revision, other.revision);
+		return Objects.equals(this.id, other.id) && Objects.equals(this.revision, other.revision);
 	}
 }

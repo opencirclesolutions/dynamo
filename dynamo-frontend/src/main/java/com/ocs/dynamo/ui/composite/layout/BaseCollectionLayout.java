@@ -19,8 +19,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.commons.lang.ObjectUtils;
+import java.util.Objects;
 
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.dao.FetchJoinInformation;
@@ -219,7 +218,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 				if (item != null) {
 					Object value = ClassUtils.getFieldValue(item, dividerProperty);
 					if (value != null) {
-						if (!ObjectUtils.equals(value, previousDividerValue)) {
+						if (!Objects.equals(value, previousDividerValue)) {
 							result = DynamoConstants.CSS_DIVIDER;
 						}
 						previousDividerValue = value;

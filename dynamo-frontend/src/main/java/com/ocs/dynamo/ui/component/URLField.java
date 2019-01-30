@@ -13,8 +13,9 @@
  */
 package com.ocs.dynamo.ui.component;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.ocs.dynamo.domain.model.AttributeModel;
-import com.ocs.dynamo.utils.StringUtils;
 import com.vaadin.server.ErrorMessage;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.shared.Registration;
@@ -130,8 +131,8 @@ public class URLField extends CustomField<String> {
 	private void updateLink(String value) {
 		if (bar != null) {
 			bar.removeAllComponents();
-			if (!org.apache.commons.lang.StringUtils.isEmpty(value)) {
-				String temp = StringUtils.prependProtocol(value);
+			if (!StringUtils.isEmpty(value)) {
+				String temp = com.ocs.dynamo.utils.StringUtils.prependProtocol(value);
 				link = new Link(temp, new ExternalResource(temp), "_blank", 0, 0, BorderStyle.DEFAULT);
 				bar.addComponent(link);
 			} else {

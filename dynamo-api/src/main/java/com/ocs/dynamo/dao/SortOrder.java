@@ -14,9 +14,9 @@
 package com.ocs.dynamo.dao;
 
 import java.io.Serializable;
+import java.util.Objects;
 
-import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 import com.ocs.dynamo.exception.OCSRuntimeException;
 
@@ -97,8 +97,8 @@ public class SortOrder implements Serializable {
     @Override
     public int hashCode() {
         int result = 13;
-        result = 43 * result + ObjectUtils.hashCode(direction);
-        result = 53 * result + ObjectUtils.hashCode(property);
+        result = 43 * result + Objects.hashCode(direction);
+        result = 53 * result + Objects.hashCode(property);
         return result;
     }
 
@@ -112,7 +112,7 @@ public class SortOrder implements Serializable {
         }
 
         SortOrder that = (SortOrder) obj;
-        return ObjectUtils.equals(this.direction, that.direction) && ObjectUtils.equals(this.property, that.property);
+        return Objects.equals(this.direction, that.direction) && Objects.equals(this.property, that.property);
     }
 
     @Override

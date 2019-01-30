@@ -13,6 +13,18 @@
  */
 package com.ocs.dynamo.dao.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+import javax.persistence.NonUniqueResultException;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import javax.persistence.Tuple;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaQuery;
+
 import com.ocs.dynamo.dao.BaseDao;
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.dao.Pageable;
@@ -25,27 +37,13 @@ import com.querydsl.core.types.dsl.EntityPathBase;
 import com.querydsl.jpa.impl.JPADeleteClause;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAUpdateClause;
-import org.apache.commons.lang.StringEscapeUtils;
-
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.NonUniqueResultException;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
-import javax.persistence.Tuple;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaQuery;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Base class for all DAO implementations
  * 
  * @author bas.rutten
- * @param <ID>
- *            type parameter, the type of the primary key of the domain object
- * @param <T>
- *            type parameter, the domain object class
+ * @param <ID> type parameter, the type of the primary key of the domain object
+ * @param <T> type parameter, the domain object class
  */
 public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements BaseDao<ID, T> {
 
@@ -55,12 +53,9 @@ public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements B
 	/**
 	 * Adds a parameter to a query but only if the provided value is not null
 	 *
-	 * @param query
-	 *            the query to add the parameter to
-	 * @param name
-	 *            the name of the parameter
-	 * @param value
-	 *            the value of the parameter
+	 * @param query the query to add the parameter to
+	 * @param name  the name of the parameter
+	 * @param value the value of the parameter
 	 */
 	protected void addParameter(Query query, String name, Object value) {
 		if (value != null) {
@@ -89,8 +84,7 @@ public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements B
 	}
 
 	/**
-	 * Creates a default query that simply retrieves instances of the domain
-	 * class
+	 * Creates a default query that simply retrieves instances of the domain class
 	 * 
 	 * @return
 	 */
@@ -135,15 +129,11 @@ public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements B
 	/**
 	 * Constructs a fetch query - watch out, paging combined with
 	 * 
-	 * @param filter
-	 *            the filter to apply
-	 * @param pageable
-	 *            object containing the paging data
-	 * @param sortOrders
-	 *            list of sort orders to apply
-	 * @param joins
-	 *            the joins to apply - if null then the default joins will be
-	 *            used
+	 * @param filter     the filter to apply
+	 * @param pageable   object containing the paging data
+	 * @param sortOrders list of sort orders to apply
+	 * @param joins      the joins to apply - if null then the default joins will be
+	 *                   used
 	 * @return
 	 */
 	private List<T> fetch(Filter filter, Pageable pageable, SortOrders sortOrders, FetchJoinInformation... joins) {
@@ -166,8 +156,9 @@ public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements B
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.ocs.dynamo.dao.BaseDao#fetchSelect(com.ocs.dynamo.filter.Filter, java.lang.String[],
-	 * com.ocs.dynamo.dao.SortOrders, com.ocs.dynamo.dao.FetchJoinInformation[])
+	 * @see com.ocs.dynamo.dao.BaseDao#fetchSelect(com.ocs.dynamo.filter.Filter,
+	 * java.lang.String[], com.ocs.dynamo.dao.SortOrders,
+	 * com.ocs.dynamo.dao.FetchJoinInformation[])
 	 */
 	@Override
 	public List<Object[]> fetchSelect(Filter filter, String[] selectProperties, SortOrders orders,
@@ -180,8 +171,9 @@ public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements B
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.ocs.dynamo.dao.BaseDao#fetchSelect(com.ocs.dynamo.filter.Filter, java.lang.String[],
-	 * com.ocs.dynamo.dao.Pageable, com.ocs.dynamo.dao.FetchJoinInformation[])
+	 * @see com.ocs.dynamo.dao.BaseDao#fetchSelect(com.ocs.dynamo.filter.Filter,
+	 * java.lang.String[], com.ocs.dynamo.dao.Pageable,
+	 * com.ocs.dynamo.dao.FetchJoinInformation[])
 	 */
 	@Override
 	public List<Object[]> fetchSelect(Filter filter, String[] selectProperties, Pageable pageable,
@@ -236,12 +228,9 @@ public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements B
 	/**
 	 * Performs a query
 	 * 
-	 * @param filter
-	 *            the filter to apply
-	 * @param pageable
-	 *            paging data
-	 * @param sortOrders
-	 *            the sort orders to apply
+	 * @param filter     the filter to apply
+	 * @param pageable   paging data
+	 * @param sortOrders the sort orders to apply
 	 * @return
 	 */
 	private List<T> find(Filter filter, Pageable pageable, SortOrders sortOrders) {
@@ -313,8 +302,7 @@ public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements B
 	@Override
 	@SuppressWarnings("unchecked")
 	public <S> List<S> findDistinctInCollectionTable(String tableName, String distinctField, Class<S> elementType) {
-		String query = "select distinct " + StringEscapeUtils.escapeSql(distinctField) + " from "
-				+ StringEscapeUtils.escapeSql(tableName);
+		String query = "select distinct " + distinctField + " from " + tableName;
 		return getEntityManager().createNativeQuery(query).getResultList();
 	}
 
@@ -327,7 +315,7 @@ public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements B
 	@SuppressWarnings("unchecked")
 	public List<ID> findIds(Filter filter, Integer maxResults, SortOrder... sortOrders) {
 		TypedQuery<Tuple> query = JpaQueryBuilder.createIdQuery(entityManager, getEntityClass(), filter, sortOrders);
-		if (maxResults != null){
+		if (maxResults != null) {
 			query = query.setMaxResults(maxResults);
 		}
 		List<Tuple> temp = query.getResultList();
@@ -359,8 +347,8 @@ public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements B
 	}
 
 	/**
-	 * Returns the fetch joins that must be included in a query to fetch the
-	 * IDs. This method return an empty array by default - override when needed
+	 * Returns the fetch joins that must be included in a query to fetch the IDs.
+	 * This method return an empty array by default - override when needed
 	 * 
 	 * @return
 	 */
@@ -371,10 +359,9 @@ public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements B
 	/**
 	 * Returns the first value of a list
 	 *
-	 * @param list
-	 *            the list
-	 * @return the first value of the list, or <code>null</code> if this does
-	 *         not exist
+	 * @param list the list
+	 * @return the first value of the list, or <code>null</code> if this does not
+	 *         exist
 	 */
 	protected T getFirstValue(List<T> list) {
 		return list != null && !list.isEmpty() ? list.get(0) : null;
