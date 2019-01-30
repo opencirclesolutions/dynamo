@@ -46,7 +46,7 @@ public class ExportServiceImpl implements ExportService {
 		Filter filter = converter.convert(predicate);
 
 		ModelBasedCsvExportTemplate<ID, T> template = new ModelBasedCsvExportTemplate<ID, T>(service, entityModel, mode,
-				SortUtils.translate(sortOrders), filter, entityModel.getDisplayNamePlural(), null, joins);
+				SortUtils.translateSortOrders(sortOrders), filter, entityModel.getDisplayNamePlural(), null, joins);
 		return template.process();
 	}
 
@@ -68,7 +68,7 @@ public class ExportServiceImpl implements ExportService {
 		FilterConverter<T> converter = new FilterConverter<T>(entityModel);
 		Filter filter = converter.convert(predicate);
 		ModelBasedExcelExportTemplate<ID, T> template = new ModelBasedExcelExportTemplate<ID, T>(service, entityModel,
-				mode, SortUtils.translate(sortOrders), filter, entityModel.getDisplayNamePlural(), customGenerator,
+				mode, SortUtils.translateSortOrders(sortOrders), filter, entityModel.getDisplayNamePlural(), customGenerator,
 				joins);
 		return template.process();
 	}

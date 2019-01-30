@@ -16,8 +16,6 @@ package com.ocs.dynamo.ui.utils;
 import java.util.List;
 
 import com.ocs.dynamo.dao.SortOrder.Direction;
-import com.ocs.dynamo.domain.model.AttributeModel;
-import com.ocs.dynamo.domain.model.EntityModel;
 import com.vaadin.data.provider.SortOrder;
 import com.vaadin.shared.data.sort.SortDirection;
 
@@ -32,53 +30,29 @@ public final class SortUtils {
 	}
 
 	/**
-	 * Translates one or more non transient Vaadin sort orders to OCS sort orders
-	 * 
-	 * @param originalOrders
-	 * @return non transient sort orders which can be applied to the service
-	 */
-	@SafeVarargs
-	public static com.ocs.dynamo.dao.SortOrder[] translate(SortOrder<?>... originalOrders) {
-		return translateSortOrders(false, null, originalOrders);
-	}
-
-	/**
-	 * 
-	 * @param originalOrders
-	 * @return
-	 */
-	public static com.ocs.dynamo.dao.SortOrder[] translate(List<SortOrder<?>> originalOrders) {
-		return translateSortOrders(false, null, originalOrders.toArray(new SortOrder<?>[0]));
-	}
-
-	/**
 	 * Translates one or more (non) transient Vaadin sort orders to OCS sort orders
 	 * 
-	 * @param isTransient
 	 * @param model
 	 * @param originalOrders
 	 * @return the sort orders for which transient is equal to the given isTransient
 	 *         value
 	 */
 	@SafeVarargs
-	public static <T> com.ocs.dynamo.dao.SortOrder[] translateSortOrders(Boolean isTransient, EntityModel<T> model,
-			SortOrder<?>... originalOrders) {
+	public static <T> com.ocs.dynamo.dao.SortOrder[] translateSortOrders(SortOrder<?>... originalOrders) {
 		if (originalOrders != null && originalOrders.length > 0) {
 			final com.ocs.dynamo.dao.SortOrder[] orders = new com.ocs.dynamo.dao.SortOrder[originalOrders.length];
-			AttributeModel am = null;
 			for (int i = 0; i < originalOrders.length; i++) {
-				if (model != null) {
-					am = model.getAttributeModel(originalOrders[i].getSorted().toString());
-				}
-				if (am == null || isTransient == null || am.isTransient() == isTransient) {
-					orders[i] = new com.ocs.dynamo.dao.SortOrder(
-							SortDirection.ASCENDING.equals(originalOrders[i].getDirection()) ? Direction.ASC
-									: Direction.DESC,
-							originalOrders[i].getSorted().toString());
-				}
+				orders[i] = new com.ocs.dynamo.dao.SortOrder(
+						SortDirection.ASCENDING.equals(originalOrders[i].getDirection()) ? Direction.ASC
+								: Direction.DESC,
+						originalOrders[i].getSorted().toString());
 			}
 			return orders;
 		}
 		return null;
+	}
+
+	public static <T> com.ocs.dynamo.dao.SortOrder[] translateSortOrders(List<SortOrder<?>> sortOrders) {
+		return translateSortOrders(sortOrders.toArray(new SortOrder[0]));
 	}
 }
