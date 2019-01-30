@@ -257,7 +257,7 @@ public class FancyListSelect<ID extends Serializable, T extends AbstractEntity<I
 	@Override
 	public void refresh() {
 		if (comboBox != null) {
-			comboBox.refresh();
+			comboBox.refresh(getFilter());
 		}
 	}
 

@@ -181,7 +181,7 @@ public class QuickAddListSelect<ID extends Serializable, T extends AbstractEntit
 	@Override
 	public void refresh() {
 		if (listSelect != null) {
-			listSelect.refresh();
+			listSelect.refresh(getFilter());
 		}
 	}
 

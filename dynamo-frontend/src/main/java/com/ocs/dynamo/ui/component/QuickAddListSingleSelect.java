@@ -166,7 +166,7 @@ public class QuickAddListSingleSelect<ID extends Serializable, T extends Abstrac
 	@Override
 	public void refresh() {
 		if (listSelect != null) {
-			listSelect.refresh();
+			listSelect.refresh(getFilter());
 		}
 	}
 

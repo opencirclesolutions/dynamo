@@ -90,10 +90,13 @@ public class IdBasedDataProvider<ID extends Serializable, T extends AbstractEnti
 
 		FilterConverter<T> converter = getFilterConverter();
 		final Filter filter = converter.convert(query.getFilter().orElse(null));
-		Long count = getService().count(filter, false);
-		if (getMaxResults() != null && count >= getMaxResults()) {
-			showNotification(
-					getMessageService().getMessage("ocs.too.many.results", VaadinUtils.getLocale(), getMaxResults()));
+
+		if (getMaxResults() != null) {
+			Long count = getService().count(filter, false);
+			if (count >= getMaxResults()) {
+				showNotification(getMessageService().getMessage("ocs.too.many.results", VaadinUtils.getLocale(),
+						getMaxResults()));
+			}
 		}
 		ids = getService().findIds(filter, getMaxResults(), so.toArray());
 		if (getAfterCountCompleted() != null) {

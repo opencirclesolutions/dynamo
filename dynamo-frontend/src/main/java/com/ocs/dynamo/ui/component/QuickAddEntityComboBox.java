@@ -170,7 +170,7 @@ public class QuickAddEntityComboBox<ID extends Serializable, T extends AbstractE
 	@Override
 	public void refresh() {
 		if (comboBox != null) {
-			comboBox.refresh();
+			comboBox.refresh(getFilter());
 		}
 	}
 

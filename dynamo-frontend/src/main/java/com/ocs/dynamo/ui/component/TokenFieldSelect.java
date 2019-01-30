@@ -293,12 +293,13 @@ public class TokenFieldSelect<ID extends Serializable, T extends AbstractEntity<
 	@Override
 	public void refresh() {
 		if (comboBox != null) {
-			comboBox.refresh();
+			comboBox.refresh(getFilter());
 		}
 	}
 
 	@Override
 	public void refresh(SerializablePredicate<T> filter) {
+		setFilter(filter);
 		if (comboBox != null) {
 			comboBox.refresh(filter);
 		}

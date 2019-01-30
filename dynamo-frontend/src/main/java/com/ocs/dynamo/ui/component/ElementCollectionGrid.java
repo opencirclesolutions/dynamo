@@ -371,8 +371,10 @@ public class ElementCollectionGrid<ID extends Serializable, U extends AbstractEn
 		// add a change listener (to make sure the buttons are correctly
 		// enabled/disabled)
 		grid.addSelectionListener(event -> {
-			ValueHolder<T> vh = grid.getSelectedItems().iterator().next();
-			onSelect(vh.getValue());
+			if (grid.getSelectedItems().iterator().hasNext()) {
+				ValueHolder<T> vh = grid.getSelectedItems().iterator().next();
+				onSelect(vh.getValue());
+			}
 		});
 
 		// add a remove button directly in the grid
