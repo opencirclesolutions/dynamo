@@ -109,11 +109,6 @@ public final class DynamoConstants {
 	public static final Locale DEFAULT_LOCALE = Locale.UK;
 
 	/**
-	 * Larger page size (for lazy query container)
-	 */
-	public static final int EXTENDED_PAGE_SIZE = 500;
-
-	/**
 	 * The default ID field
 	 */
 	public static final String ID = "id";

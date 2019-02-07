@@ -19,6 +19,7 @@ import java.util.function.Consumer;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.ui.menu.MenuService;
 import com.ocs.dynamo.ui.navigator.CustomNavigator;
 import com.vaadin.annotations.Widgetset;
@@ -80,6 +81,10 @@ public abstract class BaseUI extends UI {
 
 	@Override
 	public CustomNavigator getNavigator() {
+		if (navigator == null) {
+			throw new OCSRuntimeException(
+					"The navigator has not been initialized - please use the initNavigation methodF");
+		}
 		return navigator;
 	}
 
@@ -96,9 +101,11 @@ public abstract class BaseUI extends UI {
 	}
 
 	/**
-	 * Initializes the startup view
+	 * Creates the navigator and navigates to the start view
 	 * 
-	 * @param startView
+	 * @param viewProvider the view provider
+	 * @param container    the container that holds the view
+	 * @param startView    the identification of the starting view
 	 * @param alwaysReload indicates whether the view must always be reloaded (even
 	 *                     when navigating from the view to the same view)
 	 */
@@ -115,7 +122,7 @@ public abstract class BaseUI extends UI {
 	}
 
 	/**
-	 * Navigates to view
+	 * Navigates to a view
 	 * 
 	 * @param viewName the name of the view to navigate to
 	 */

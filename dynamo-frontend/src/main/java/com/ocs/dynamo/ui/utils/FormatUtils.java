@@ -61,7 +61,7 @@ public final class FormatUtils {
 	 */
 	public static <T> String extractAndFormat(Grid<T> grid, AttributeModel am, Object obj) {
 		Object value = ClassUtils.getFieldValue(obj, am.getPath());
-		return formatPropertyValue(grid, entityModelFactory, am, value, VaadinUtils.getLocale(), ",");
+		return formatPropertyValue(grid, entityModelFactory, am, value, VaadinUtils.getLocale(), ", ");
 	}
 
 	/**

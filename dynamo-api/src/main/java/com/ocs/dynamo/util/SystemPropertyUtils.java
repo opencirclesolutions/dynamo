@@ -51,7 +51,7 @@ public final class SystemPropertyUtils {
 	 * @return the CSV escape character
 	 */
 	public static String getCsvEscapeChar() {
-		return System.getProperty(DynamoConstants.SP_EXPORT_CSV_ESCAPE, "\"");
+		return System.getProperty(DynamoConstants.SP_EXPORT_CSV_ESCAPE, "\"\"");
 	}
 
 	/**

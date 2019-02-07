@@ -17,6 +17,11 @@ import java.util.Arrays;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
+/**
+ * String utility functions
+ * @author Bas Rutten
+ *
+ */
 public final class StringUtils {
 
 	private static final String EMAIL_PATTERN = "([\\w-\\.]+)@(?:[\\w]+\\.)(\\w){2,4}";

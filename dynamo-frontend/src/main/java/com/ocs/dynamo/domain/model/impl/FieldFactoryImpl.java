@@ -10,6 +10,7 @@ import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -269,6 +270,7 @@ public class FieldFactoryImpl implements FieldFactory {
 		}
 
 		SerializablePredicate<?> fieldFilter = fieldFilters == null ? null : fieldFilters.get(am.getPath());
+		Locale dateLoc = VaadinUtils.getDateLocale();
 
 		if (am.isNavigable() && viewMode) {
 			// navigable link (note: place this BEFORE checking for an entity or entity
@@ -322,10 +324,12 @@ public class FieldFactoryImpl implements FieldFactory {
 			// date field
 			DateField df = new DateField();
 			df.setDateFormat(SystemPropertyUtils.getDefaultDateFormat());
+			df.setLocale(dateLoc);
 			field = df;
 		} else if (LocalDateTime.class.equals(am.getType()) || ZonedDateTime.class.equals(am.getType())) {
 			DateTimeField df = new DateTimeField();
 			df.setDateFormat(am.getDisplayFormat());
+			df.setLocale(dateLoc);
 			field = df;
 		} else if (LocalTime.class.equals(am.getType())) {
 			TimeField tf = new TimeField(am);

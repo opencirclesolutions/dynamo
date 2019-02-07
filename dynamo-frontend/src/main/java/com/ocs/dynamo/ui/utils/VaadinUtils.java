@@ -233,9 +233,9 @@ public final class VaadinUtils {
 	public static Locale getDateLocale() {
 		if (VaadinSession.getCurrent() != null
 				&& VaadinSession.getCurrent().getAttribute(DynamoConstants.DATE_LOCALE) != null) {
-			return new Locale((String) VaadinSession.getCurrent().getAttribute(DynamoConstants.DATE_LOCALE));
+			return (Locale) VaadinSession.getCurrent().getAttribute(DynamoConstants.DATE_LOCALE);
 		}
-		return getLocale();
+		return new Locale(SystemPropertyUtils.getDefaultDateLocale());
 	}
 
 	@SuppressWarnings("unchecked")
@@ -273,7 +273,7 @@ public final class VaadinUtils {
 	 * @return
 	 */
 	public static Locale getLocale() {
-		if (VaadinSession.getCurrent() != null) {
+		if (VaadinSession.getCurrent() != null && VaadinSession.getCurrent().getLocale() != null) {
 			return VaadinSession.getCurrent().getLocale();
 		}
 		return new Locale(SystemPropertyUtils.getDefaultLocale());
@@ -545,20 +545,20 @@ public final class VaadinUtils {
 	}
 
 	/**
-	 * Reads the desired locale for formatting date fields from the system
-	 * properties and stores it in the session
+	 * Stores the desired date locale in the session
+	 * 
+	 * @param locale the locale
 	 */
-	public static void storeDateLocale() {
-		VaadinSession.getCurrent().setAttribute(DynamoConstants.DATE_LOCALE,
-				SystemPropertyUtils.getDefaultDateLocale());
+	public static void storeDateLocale(Locale locale) {
+		VaadinSession.getCurrent().setAttribute(DynamoConstants.DATE_LOCALE, locale);
 	}
 
 	/**
 	 * Stores the default locale configured in the system properties in the Vaadin
 	 * session
 	 */
-	public static void storeLocale() {
-		VaadinSession.getCurrent().setLocale(new Locale(SystemPropertyUtils.getDefaultLocale()));
+	public static void storeLocale(Locale locale) {
+		VaadinSession.getCurrent().setLocale(locale);
 	}
 
 	/**
