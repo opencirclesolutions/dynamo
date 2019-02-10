@@ -26,8 +26,7 @@ import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.Searchable;
-import com.ocs.dynamo.ui.composite.export.CustomXlsStyleGenerator;
-import com.ocs.dynamo.ui.composite.export.ExportService;
+import com.ocs.dynamo.ui.composite.export.ExportDelegate;
 import com.ocs.dynamo.ui.composite.layout.BaseCustomComponent;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.provider.BaseDataProvider;
@@ -57,11 +56,6 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 	private static final long serialVersionUID = -4691108261565306844L;
 
 	/**
-	 * Custom XLS generator for export
-	 */
-	private CustomXlsStyleGenerator<ID, T> customStyleGenerator;
-
-	/**
 	 * The data provider
 	 */
 	private DataProvider<T, SerializablePredicate<T>> dataProvider;
@@ -84,7 +78,7 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 	/**
 	 * The export service used for generating XLS and CSV exports
 	 */
-	private ExportService exportService = ServiceLocatorFactory.getServiceLocator().getService(ExportService.class);
+	private ExportDelegate exportDelegate = ServiceLocatorFactory.getServiceLocator().getService(ExportDelegate.class);
 
 	/**
 	 * Field filter map
@@ -105,7 +99,7 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 	 * The fetch joins to use when querying
 	 */
 	private FetchJoinInformation[] joins;
-	
+
 	/**
 	 * The joins to use when exporting (needed when using exportmode FULL)
 	 */
@@ -154,19 +148,13 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 		this.editable = editable;
 	}
 
-	
-	
 	public FetchJoinInformation[] getExportJoins() {
 		return exportJoins;
 	}
 
-
-
 	public void setExportJoins(FetchJoinInformation[] exportJoins) {
 		this.exportJoins = exportJoins;
 	}
-
-
 
 	/**
 	 * Adds a grid selection listener
@@ -245,10 +233,6 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 		// overwrite in subclasses
 	}
 
-	public CustomXlsStyleGenerator<ID, T> getCustomStyleGenerator() {
-		return customStyleGenerator;
-	}
-
 	public DataProvider<T, SerializablePredicate<T>> getDataProvider() {
 		return dataProvider;
 	}
@@ -274,8 +258,8 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 		return exportEntityModel;
 	}
 
-	public ExportService getExportService() {
-		return exportService;
+	public ExportDelegate getExportDelegate() {
+		return exportDelegate;
 	}
 
 	public FormOptions getFormOptions() {
@@ -388,10 +372,6 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 	 * Reloads the data in the container
 	 */
 	public abstract void reloadDataProvider();
-
-	public void setCustomStyleGenerator(CustomXlsStyleGenerator<ID, T> customStyleGenerator) {
-		this.customStyleGenerator = customStyleGenerator;
-	}
 
 	public void setDataProvider(DataProvider<T, SerializablePredicate<T>> dataProvider) {
 		this.dataProvider = dataProvider;

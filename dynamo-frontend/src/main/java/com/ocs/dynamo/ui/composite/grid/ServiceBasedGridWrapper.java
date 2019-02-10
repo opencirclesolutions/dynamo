@@ -23,7 +23,6 @@ import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.Searchable;
-import com.ocs.dynamo.ui.composite.export.ExportDialog;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.provider.BaseDataProvider;
 import com.ocs.dynamo.ui.provider.IdBasedDataProvider;
@@ -104,7 +103,7 @@ public class ServiceBasedGridWrapper<ID extends Serializable, T extends Abstract
 		getGrid().addSelectionListener(event -> onSelect(getGrid().getSelectedItems()));
 
 		// right click to download
-		if (getFormOptions().isExportAllowed()) {
+		if (getFormOptions().isExportAllowed() && getExportDelegate() != null) {
 			getGrid().addContextClickListener(event -> {
 				// translate grid sort order to actual sort order and fall back to the default
 				// orders
@@ -114,13 +113,10 @@ public class ServiceBasedGridWrapper<ID extends Serializable, T extends Abstract
 				for (GridSortOrder<T> gso : so) {
 					orders.add(new SortOrder<String>(gso.getSorted().getId(), gso.getDirection()));
 				}
-
-				ExportDialog<ID, T> dialog = new ExportDialog<>(getExportService(),
+				getExportDelegate().export(UI.getCurrent(),
 						getExportEntityModel() != null ? getExportEntityModel() : getEntityModel(),
 						getFormOptions().getExportMode(), getFilter(), !orders.isEmpty() ? orders : getSortOrders(),
-						getCustomStyleGenerator(), getExportJoins() != null ? getExportJoins() : getJoins());
-				dialog.build();
-				UI.getCurrent().addWindow(dialog);
+						getExportJoins() != null ? getExportJoins() : getJoins());
 			});
 		}
 	}

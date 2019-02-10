@@ -3,9 +3,9 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<artifactId>dynamo-frontend</artifactId>
+	<artifactId>dynamo-frontend-export</artifactId>
 	<packaging>jar</packaging>
-	<name>Dynamo Framework - Frontend</name>
+	<name>Dynamo Framework - Frontend Export</name>
 	<url>https://github.com/opencirclesolutions/dynamo</url>
 	<parent>
 		<groupId>org.dynamoframework</groupId>
@@ -50,14 +50,6 @@
 			<artifactId>h2</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.vaadin.teemu</groupId>
-			<artifactId>switch</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.tltv.gantt</groupId>
-			<artifactId>gantt-addon</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>org.eclipse.persistence</groupId>
 			<artifactId>javax.persistence</artifactId>
 		</dependency>
@@ -76,14 +68,7 @@
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>dynamo-impl</artifactId>
-			<version>${project.version}</version>
-			<type>test-jar</type>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>dynamo-impl</artifactId>
+			<artifactId>dynamo-frontend</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
@@ -92,41 +77,28 @@
 			<version>${project.version}</version>
 			<scope>test</scope>
 		</dependency>
-		<!-- -->
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>dynamo-integration-import</artifactId>
+			<artifactId>dynamo-impl</artifactId>
 			<version>${project.version}</version>
+			<type>test-jar</type>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>com.vaadin</groupId>
-			<artifactId>vaadin-icons</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.vaadin</groupId>
-			<artifactId>vaadin-server</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.vaadin</groupId>
-			<artifactId>vaadin-client-compiled</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.vaadin</groupId>
-			<artifactId>vaadin-themes</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.vaadin</groupId>
-			<artifactId>vaadin-spring</artifactId>
-		</dependency>
-
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-core</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-jdbc</artifactId>
+			<groupId>com.opencsv</groupId>
+			<artifactId>opencsv</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi-ooxml</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.hibernate</groupId>
@@ -141,28 +113,8 @@
 			<artifactId>hibernate-validator</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-orm</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>commons-io</groupId>
-			<artifactId>commons-io</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.vaadin.addons</groupId>
-			<artifactId>extended-token-field</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>javax.validation</groupId>
-			<artifactId>validation-api</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.vaadin.addon</groupId>
-			<artifactId>confirmdialog</artifactId>
+			<groupId>com.vaadin</groupId>
+			<artifactId>vaadin-client-compiled</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>javax.el</groupId>
@@ -209,9 +161,6 @@
 							<Vaadin-Widgetsets>com.ocs.dynamo.DynamoWidgetSet</Vaadin-Widgetsets>
 						</manifestEntries>
 					</archive>
-					<!-- Exclude useless rubbish from JAR (saves 20MB) -->
-					<!--<excludes> <exclude>VAADIN/gwt-unitCache/**</exclude> &lt;!&ndash;<exclude>VAADIN/widgetsets/WEB-INF/**</exclude>&ndash;&gt; 
-						</excludes> -->
 				</configuration>
 			</plugin>
 			<plugin>

@@ -48,16 +48,17 @@ public abstract class BaseSpringServiceLocator implements ServiceLocator {
 	/**
 	 * Retrieves a service of a certain type
 	 * 
-	 * @param clazz
-	 *            the class of the service
+	 * @param clazz the class of the service
 	 * @return
 	 */
 	@Override
 	public <T> T getService(Class<T> clazz) {
-		return getContext().getBean(clazz);
+		Map<String, T> beansOfType = getContext().getBeansOfType(clazz);
+		if (!beansOfType.isEmpty()) {
+			return beansOfType.values().iterator().next();
+		}
+		return null;
 	}
-
-
 
 	/**
 	 * Retrieves the message service from the context
@@ -82,8 +83,7 @@ public abstract class BaseSpringServiceLocator implements ServiceLocator {
 	/**
 	 * Returns a service that is used to manage a certain type of entity
 	 * 
-	 * @param entityClass
-	 *            the entity class
+	 * @param entityClass the entity class
 	 * @return
 	 */
 	@Override

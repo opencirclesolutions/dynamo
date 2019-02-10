@@ -25,10 +25,6 @@
 	<bean id="applicationContextProvider"
 		class="com.ocs.dynamo.service.impl.ApplicationContextProvider" />
 
-	<!--  Service for exporting to CSV and Excel -->
-	<bean id="exportService"
-		class="com.ocs.dynamo.ui.composite.export.impl.ExportServiceImpl" />
-
 	<!-- Entity Manager, the use of packagesToScan, jpaPropertyMap and jpaVendorAdapter 
 		prevent the need for an persistence.xml -->
 	<bean id="jpaVendorAdapter"

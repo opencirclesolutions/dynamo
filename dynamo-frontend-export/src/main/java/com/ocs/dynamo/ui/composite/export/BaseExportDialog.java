@@ -25,6 +25,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Layout;
 
 /**
+ * Base class for export dialogs
  * 
  * @author Bas Rutten
  *

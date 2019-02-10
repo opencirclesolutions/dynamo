@@ -29,7 +29,6 @@ import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.Refreshable;
 import com.ocs.dynamo.ui.Reloadable;
 import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
-import com.ocs.dynamo.ui.composite.export.CustomXlsStyleGenerator;
 import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
 import com.ocs.dynamo.ui.composite.grid.BaseGridWrapper;
 import com.ocs.dynamo.utils.ClassUtils;
@@ -64,11 +63,6 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	 * The main button bar that appears below the search results grid
 	 */
 	private HorizontalLayout buttonBar = new DefaultHorizontalLayout();
-
-	/**
-	 * Custom generator
-	 */
-	private CustomXlsStyleGenerator<ID, T> customStyleGenerator;
 
 	/**
 	 * The relations to fetch when retrieving a single entity
@@ -288,10 +282,6 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 		return buttonBar;
 	}
 
-	public CustomXlsStyleGenerator<ID, T> getCustomStyleGenerator() {
-		return customStyleGenerator;
-	}
-
 	public FetchJoinInformation[] getDetailJoins() {
 		return detailJoins;
 	}
@@ -396,7 +386,6 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	 * @param wrapper the wrapper
 	 */
 	protected final void postConfigureGridWrapper(BaseGridWrapper<ID, T> wrapper) {
-		wrapper.setCustomStyleGenerator(getCustomStyleGenerator());
 		wrapper.setExportEntityModel(getExportEntityModel());
 		wrapper.setExportJoins(getExportJoins());
 	}
@@ -450,10 +439,6 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	 */
 	protected void postProcessLayout(Layout main) {
 		// override in subclasses
-	}
-
-	public void setCustomStyleGenerator(CustomXlsStyleGenerator<ID, T> customStyleGenerator) {
-		this.customStyleGenerator = customStyleGenerator;
 	}
 
 	/**
