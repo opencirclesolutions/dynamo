@@ -86,11 +86,7 @@
 		<module>dynamo-frontend-export</module>
 		<module>dynamo-envers</module>
 		<module>dynamo-envers-frontend</module>
-		<!-- <module>dynamo-frontend-charts</module> -->
 		<module>dynamo-functional-domain-frontend</module>
-		<!-- <module>dynamo-functional-translation</module> -->
-		<!-- <module>dynamo-jasperreports</module> -->
-		<!-- <module>dynamo-jasperreports-fixes</module> -->
 	</modules>
 	<properties>
 		<!-- Build settings. -->
@@ -103,9 +99,6 @@
 		<vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
 		<vaadin.icons.version>3.0.2</vaadin.icons.version>
 		<vaadin-spring.version>3.1.1</vaadin-spring.version>
-		<!-- TODO: this should ideally be updated to version 3.0.0 but that currently 
-			does not work -->
-		<vaadin.contextmenu.version>3.0.0</vaadin.contextmenu.version>
 		<vaadin.confirmdialog.version>3.2.0</vaadin.confirmdialog.version>
 		<hibernate.version>5.3.7.Final</hibernate.version>
 		<hibernate.validator.version>6.0.13.Final</hibernate.validator.version>

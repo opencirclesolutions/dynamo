@@ -99,28 +99,6 @@ public interface BaseService<ID, T extends AbstractEntity<ID>> {
 	List<T> fetch(Filter filter, int pageNumber, int pageSize, SortOrders sortOrders, FetchJoinInformation... joins);
 
 	/**
-	 * Fetches and sorts properties (NOT ENTITIES) that match the provided filter
-	 * 
-	 * @param filter           the filter
-	 * @param selectProperties the properties to use in the selection
-	 * @param sortOrders       the sort order
-	 * @return
-	 */
-	List<?> findSelect(Filter filter, String[] selectProperties, SortOrders sortOrders);
-
-	/**
-	 * Fetches and sorts properties (NOT ENTITIES) that match the provided filter
-	 * 
-	 * @param filter           the filter
-	 * @param selectProperties the properties to use in the selection
-	 * @param pageNumber       the page number of the page to fetch
-	 * @param pageSize         the page size
-	 * @param sortOrders       the sort order
-	 * @return
-	 */
-	List<?> findSelect(Filter filter, String[] selectProperties, int pageNumber, int pageSize, SortOrders sortOrders);
-
-	/**
 	 * Fetches a list of entities that match the provided filter
 	 * 
 	 * @param filter the filter
@@ -246,6 +224,16 @@ public interface BaseService<ID, T extends AbstractEntity<ID>> {
 
 	/**
 	 * Returns the IDs of the entities that match the provided filter
+	 *
+	 * @param filter     the filter
+	 * @param maxResults limit the amount of results
+	 * @param orders     the desired sorting
+	 * @return
+	 */
+	List<ID> findIds(Filter filter, Integer maxResults, SortOrder... orders);
+
+	/**
+	 * Returns the IDs of the entities that match the provided filter
 	 * 
 	 * @param filter the filter
 	 * @param orders the desired sorting
@@ -254,14 +242,26 @@ public interface BaseService<ID, T extends AbstractEntity<ID>> {
 	List<ID> findIds(Filter filter, SortOrder... orders);
 
 	/**
-	 * Returns the IDs of the entities that match the provided filter
-	 *
-	 * @param filter     the filter
-	 * @param maxResults limit the amount of results
-	 * @param orders     the desired sorting
+	 * Finds and sorts properties (NOT ENTITIES) that match the provided filter
+	 * 
+	 * @param filter           the filter
+	 * @param selectProperties the properties to use in the selection
+	 * @param pageNumber       the page number of the page to fetch
+	 * @param pageSize         the page size
+	 * @param sortOrders       the sort order
 	 * @return
 	 */
-	List<ID> findIds(Filter filter, Integer maxResults, SortOrder... orders);
+	List<?> findSelect(Filter filter, String[] selectProperties, int pageNumber, int pageSize, SortOrders sortOrders);
+
+	/**
+	 * Finds and sorts properties (NOT ENTITIES) that match the provided filter
+	 * 
+	 * @param filter           the filter
+	 * @param selectProperties the properties to use in the selection
+	 * @param sortOrders       the sort order
+	 * @return
+	 */
+	List<?> findSelect(Filter filter, String[] selectProperties, SortOrders sortOrders);
 
 	/**
 	 * Returns the class of the entity managed by this DAO
@@ -285,15 +285,6 @@ public interface BaseService<ID, T extends AbstractEntity<ID>> {
 	 * @return
 	 */
 	T save(T entity);
-
-	/**
-	 * Updates, adds, and deletes
-	 * 
-	 * @param toUpdate to update
-	 * @param toAdd    to add
-	 * @param toDelete to delete
-	 */
-	void update(List<T> toUpdate, List<T> toAdd, List<T> toDelete);
 
 	/**
 	 * 

@@ -66,10 +66,6 @@ import com.ocs.dynamo.filter.Or;
  */
 public final class JpaQueryBuilder {
 
-	private JpaQueryBuilder() {
-		// hidden private constructor
-	}
-
 	/**
 	 * Adds fetch join information to a query root
 	 * 
@@ -101,20 +97,6 @@ public final class JpaQueryBuilder {
 
 	/**
 	 * Adds the "order by" clause to a JPA 2 criteria query
-	 * 
-	 * @param builder    the criteria builder
-	 * @param cq         the criteria query
-	 * @param root       the query root
-	 * @param sortOrders the sort orders
-	 * @return
-	 */
-	private static <T, R> CriteriaQuery<R> addSortInformation(CriteriaBuilder builder, CriteriaQuery<R> cq,
-			Root<T> root, SortOrder... sortOrders) {
-		return addSortInformation(builder, cq, root, (List<Selection<?>>) null, sortOrders);
-	}
-
-	/**
-	 * Adds the "order by" clause to a JPA 2 criteria query
 	 *
 	 * @param builder     the criteria builder
 	 * @param cq          the criteria query
@@ -142,6 +124,20 @@ public final class JpaQueryBuilder {
 			cq.multiselect(ms);
 		}
 		return cq;
+	}
+
+	/**
+	 * Adds the "order by" clause to a JPA 2 criteria query
+	 * 
+	 * @param builder    the criteria builder
+	 * @param cq         the criteria query
+	 * @param root       the query root
+	 * @param sortOrders the sort orders
+	 * @return
+	 */
+	private static <T, R> CriteriaQuery<R> addSortInformation(CriteriaBuilder builder, CriteriaQuery<R> cq,
+			Root<T> root, SortOrder... sortOrders) {
+		return addSortInformation(builder, cq, root, (List<Selection<?>>) null, sortOrders);
 	}
 
 	/**
@@ -221,27 +217,6 @@ public final class JpaQueryBuilder {
 			return builder.lessThanOrEqualTo(property, (Comparable) value);
 		default:
 			return null;
-		}
-	}
-
-	/**
-	 * Creates an empty parameter map
-	 * 
-	 * @return
-	 */
-	public static Map<String, Object> createParameterMap() {
-		return new HashMap<>();
-	}
-
-	/**
-	 * Sets any parameter values on the query
-	 * 
-	 * @param query the query
-	 * @param pars  the parameter values
-	 */
-	public static void setParameters(TypedQuery<?> query, Map<String, Object> pars) {
-		for (Entry<String, Object> entry : pars.entrySet()) {
-			query.setParameter(entry.getKey(), entry.getValue());
 		}
 	}
 
@@ -453,6 +428,15 @@ public final class JpaQueryBuilder {
 		}
 	}
 
+	/**
+	 * Creates a predicate for a logical or
+	 * 
+	 * @param builder    the criteria builder
+	 * @param root       the query root
+	 * @param filter     the filter to apply
+	 * @param parameters the query parameter mapping
+	 * @return
+	 */
 	private static Predicate createOrPredicate(CriteriaBuilder builder, Root<?> root, Filter filter,
 			Map<String, Object> parameters) {
 		Or or = (Or) filter;
@@ -470,6 +454,15 @@ public final class JpaQueryBuilder {
 		}
 
 		return predicate;
+	}
+
+	/**
+	 * Creates an empty parameter map
+	 * 
+	 * @return
+	 */
+	public static Map<String, Object> createParameterMap() {
+		return new HashMap<>();
 	}
 
 	/**
@@ -534,6 +527,36 @@ public final class JpaQueryBuilder {
 		}
 
 		throw new UnsupportedOperationException("Filter: " + filter.getClass().getName() + " not recognized");
+	}
+
+	/**
+	 * Creates a query that simply selects some objects based on some filter
+	 * 
+	 * @param filter        the filter
+	 * @param entityManager the entity manager
+	 * @param entityClass   the entity class
+	 * @param sortOrder     the sorting information
+	 * @return
+	 */
+	public static <T> TypedQuery<T> createSelectQuery(Filter filter, EntityManager entityManager, Class<T> entityClass,
+			FetchJoinInformation[] fetchJoins, SortOrder... sortOrders) {
+		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+		CriteriaQuery<T> cq = builder.createQuery(entityClass);
+		Root<T> root = cq.from(entityClass);
+
+		boolean distinct = addFetchJoinInformation(root, fetchJoins);
+		cq.select(root);
+		cq.distinct(distinct);
+
+		Map<String, Object> pars = createParameterMap();
+		Predicate p = createPredicate(filter, builder, root, pars);
+		if (p != null) {
+			cq.where(p);
+		}
+		cq = addSortInformation(builder, cq, root, sortOrders);
+		TypedQuery<T> query = entityManager.createQuery(cq);
+		setParameters(query, pars);
+		return query;
 	}
 
 	/**
@@ -614,36 +637,6 @@ public final class JpaQueryBuilder {
 		}
 		cq = addSortInformation(builder, cq, root, sortOrders == null ? null : sortOrders.toArray());
 		TypedQuery<Object[]> query = entityManager.createQuery(cq);
-		setParameters(query, pars);
-		return query;
-	}
-
-	/**
-	 * Creates a query that simply selects some objects based on some filter
-	 * 
-	 * @param filter        the filter
-	 * @param entityManager the entity manager
-	 * @param entityClass   the entity class
-	 * @param sortOrder     the sorting information
-	 * @return
-	 */
-	public static <T> TypedQuery<T> createSelectQuery(Filter filter, EntityManager entityManager, Class<T> entityClass,
-			FetchJoinInformation[] fetchJoins, SortOrder... sortOrders) {
-		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-		CriteriaQuery<T> cq = builder.createQuery(entityClass);
-		Root<T> root = cq.from(entityClass);
-
-		boolean distinct = addFetchJoinInformation(root, fetchJoins);
-		cq.select(root);
-		cq.distinct(distinct);
-
-		Map<String, Object> pars = createParameterMap();
-		Predicate p = createPredicate(filter, builder, root, pars);
-		if (p != null) {
-			cq.where(p);
-		}
-		cq = addSortInformation(builder, cq, root, sortOrders);
-		TypedQuery<T> query = entityManager.createQuery(cq);
 		setParameters(query, pars);
 		return query;
 	}
@@ -735,47 +728,37 @@ public final class JpaQueryBuilder {
 		Join<?, ?> curJoin = null;
 		for (int i = 0; i < propertyIdParts.length; i++) {
 			String part = propertyIdParts[i];
-			try {
-				if (path == null) {
-					path = root.get(part);
-				} else {
-					path = path.get(part);
-				}
-				// Check collection join
-				if (join && Collection.class.isAssignableFrom(path.type().getJavaType())) {
-					// Reuse existing join
-					Join<?, ?> detailJoin = null;
-					Collection<Join<?, ?>> joins = (Collection<Join<?, ?>>) (curJoin == null ? root.getJoins()
-							: curJoin.getJoins());
-					if (joins != null) {
-						for (Join<?, ?> j : (Set<Join<?, ?>>) joins) {
-							if (propertyIdParts[i].equals(j.getAttribute().getName())) {
-								path = j;
-								detailJoin = j;
-								break;
-							}
+			if (path == null) {
+				path = root.get(part);
+			} else {
+				path = path.get(part);
+			}
+			// Check collection join
+			if (join && Collection.class.isAssignableFrom(path.type().getJavaType())) {
+				// Reuse existing join
+				Join<?, ?> detailJoin = null;
+				Collection<Join<?, ?>> joins = (Collection<Join<?, ?>>) (curJoin == null ? root.getJoins()
+						: curJoin.getJoins());
+				if (joins != null) {
+					for (Join<?, ?> j : (Set<Join<?, ?>>) joins) {
+						if (propertyIdParts[i].equals(j.getAttribute().getName())) {
+							path = j;
+							detailJoin = j;
+							break;
 						}
 					}
-					// when no existing join then add new
-					if (detailJoin == null) {
-						if (curJoin == null) {
-							curJoin = root.join(propertyIdParts[i]);
-						} else {
-							curJoin = curJoin.join(propertyIdParts[i]);
-						}
-						path = curJoin;
-					}
 				}
-			} catch (Exception e) {
-				// FIXME When hibernate mapping exception occurs due to bug HHH-6562 then try
-				// join. Is solved from
-				// hibernate v5.2.3
-				if ("MappingException".equals(e.getClass().getSimpleName())) {
-					path = root.join(part);
-				} else {
-					throw e;
+				// when no existing join then add new
+				if (detailJoin == null) {
+					if (curJoin == null) {
+						curJoin = root.join(propertyIdParts[i]);
+					} else {
+						curJoin = curJoin.join(propertyIdParts[i]);
+					}
+					path = curJoin;
 				}
 			}
+
 		}
 		return (Path<Object>) path;
 	}
@@ -800,6 +783,18 @@ public final class JpaQueryBuilder {
 	}
 
 	/**
+	 * Sets any parameter values on the query
+	 * 
+	 * @param query the query
+	 * @param pars  the parameter values
+	 */
+	public static void setParameters(TypedQuery<?> query, Map<String, Object> pars) {
+		for (Entry<String, Object> entry : pars.entrySet()) {
+			query.setParameter(entry.getKey(), entry.getValue());
+		}
+	}
+
+	/**
 	 * Translates a JoinType
 	 * 
 	 * @param type the type to translate
@@ -814,5 +809,9 @@ public final class JpaQueryBuilder {
 		default:
 			return JoinType.RIGHT;
 		}
+	}
+
+	private JpaQueryBuilder() {
+		// hidden private constructor
 	}
 }

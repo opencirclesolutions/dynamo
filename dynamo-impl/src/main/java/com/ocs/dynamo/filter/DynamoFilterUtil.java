@@ -172,21 +172,7 @@ public final class DynamoFilterUtil {
 			removeFilterFormJunction(junction, propertyIds);
 
 			// clean up empty filters
-			Iterator<Filter> it = junction.getFilters().iterator();
-			while (it.hasNext()) {
-				Filter child = it.next();
-				if (child instanceof AbstractJunctionFilter) {
-					AbstractJunctionFilter ajf = (AbstractJunctionFilter) child;
-					if (ajf.getFilters().isEmpty()) {
-						it.remove();
-					}
-				} else if (child instanceof Not) {
-					Not not = (Not) child;
-					if (not.getFilter() == null) {
-						it.remove();
-					}
-				}
-			}
+			cleanupEmptyFilters(junction);
 		} else if (filter instanceof Not) {
 			// in case of a not-filter, propagate to the child
 			Not not = (Not) filter;

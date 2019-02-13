@@ -28,7 +28,7 @@ import com.ocs.dynamo.domain.AbstractEntity;
  * @param <T> the type of the entity
  */
 public abstract class PagingDataSetIterator<ID extends Serializable, T extends AbstractEntity<ID>>
-		implements DataSetIterator<ID,T> {
+		implements DataSetIterator<ID, T> {
 
 	private static final int PAGE_SIZE = 2000;
 
@@ -49,10 +49,20 @@ public abstract class PagingDataSetIterator<ID extends Serializable, T extends A
 
 	private int pageSize;
 
+	/**
+	 * Constructor
+	 * @param idList the IDs of the relevant records
+	 */
 	public PagingDataSetIterator(List<ID> idList) {
 		this(idList, PAGE_SIZE);
 	}
 
+	/**
+	 * Constructor
+	 * 
+	 * @param idList   the IDs of the relevant records
+	 * @param pageSize the page size
+	 */
 	public PagingDataSetIterator(List<ID> idList, int pageSize) {
 		this.idList = idList;
 		index = 0;

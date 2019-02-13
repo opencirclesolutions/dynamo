@@ -157,10 +157,15 @@ public class FilterTest {
         Assert.assertFalse(equal.evaluate(new TestEntity()));
         Assert.assertTrue(equal.evaluate(testEntity1));
         Assert.assertFalse(equal.evaluate(testEntity2));
-
+        Assert.assertFalse(equal.evaluate(null));
+        
+        Compare.Equal equalNull = new Compare.Equal("age", null);
+        Assert.assertFalse(equalNull.evaluate(testEntity1));
+        
         Compare.Less less = new Compare.Less("age", 14L);
         Assert.assertFalse(less.evaluate(testEntity1));
         Assert.assertTrue(less.evaluate(testEntity2));
+        Assert.assertFalse(less.evaluate(null));
 
         Compare.Greater greater = new Compare.Greater("age", 13L);
         Assert.assertTrue(greater.evaluate(testEntity1));

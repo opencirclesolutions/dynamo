@@ -32,6 +32,7 @@ import com.google.common.collect.Lists;
 import com.ocs.dynamo.dao.BaseDao;
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.dao.Pageable;
+import com.ocs.dynamo.dao.PageableImpl;
 import com.ocs.dynamo.dao.SortOrder;
 import com.ocs.dynamo.dao.SortOrder.Direction;
 import com.ocs.dynamo.dao.SortOrders;
@@ -52,12 +53,34 @@ import com.ocs.dynamo.test.MockUtil;
  */
 public class BaseServiceImplTest extends BaseMockitoTest {
 
+	private class Dependency {
+
+		public void noop() {
+			// do nothing
+		}
+	}
+
+	private class TestService extends BaseServiceImpl<Integer, TestEntity> {
+
+		@Autowired
+		private Dependency dependency;
+
+		@Override
+		protected TestEntity findIdenticalEntity(TestEntity entity) {
+			return dao.findByUniqueProperty("name", entity.getName(), true);
+		}
+
+		@Override
+		protected BaseDao<Integer, TestEntity> getDao() {
+			return dao;
+		}
+
+		public void noop() {
+			dependency.noop();
+		}
+	}
+
 	private static final int ID = 1;
-
-	private ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
-
-	@Mock
-	private Validator validator;
 
 	@Mock
 	private BaseDao<Integer, TestEntity> dao;
@@ -70,6 +93,11 @@ public class BaseServiceImplTest extends BaseMockitoTest {
 
 	private TestService service = new TestService();
 
+	@Mock
+	private Validator validator;
+
+	private ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
+
 	@Before
 	public void setupBaseServiceImplTest() throws NoSuchFieldException {
 
@@ -80,65 +108,52 @@ public class BaseServiceImplTest extends BaseMockitoTest {
 	}
 
 	@Test
-	public void testFindById() {
-
-		TestEntity obj = new TestEntity();
-		Mockito.when(dao.findById(ID)).thenReturn(obj);
-
-		TestEntity result = service.findById(ID);
-		Assert.assertNotNull(result);
+	public void testCount() {
+		service.count();
+		Mockito.verify(dao).count();
 	}
 
 	@Test
-	public void testSave() {
-		TestEntity obj = new TestEntity("name1", 14L);
-		MockUtil.mockSave(dao, TestEntity.class);
+	public void testCountFilter() {
+		Filter filter = new Compare.Equal("property1", 1);
+		service.count(filter, false);
+		Mockito.verify(dao).count(filter, false);
 
-		TestEntity result = service.save(obj);
-		Assert.assertNotNull(result);
-		Mockito.verify(dao).save(obj);
+		service.count(filter, true);
+		Mockito.verify(dao).count(filter, true);
 	}
 
 	@Test
-	public void testSaveList() {
-		TestEntity obj1 = new TestEntity("name1", 14L);
-		TestEntity obj2 = new TestEntity("name2", 15L);
-
-		service.save(Lists.newArrayList(obj1, obj2));
-		Mockito.verify(dao).save(Lists.newArrayList(obj1, obj2));
-	}
-
-	@Test
-	public void testValidate() {
-		TestEntity entity = new TestEntity("name1", 15L);
-		service.validate(entity);
-	}
-
-	@Test(expected = OCSValidationException.class)
-	public void testValidate_Error() {
-		TestEntity entity = new TestEntity(null, 15L);
-		service.validate(entity);
-	}
-
-	@Test(expected = OCSValidationException.class)
-	public void testValidate_AssertTrue() {
-		TestEntity entity = new TestEntity("bogus", 15L);
-		service.validate(entity);
+	public void testCreateNewEntity() {
+		TestEntity entity = service.createNewEntity();
+		Assert.assertNotNull(entity);
 	}
 
 	/**
-	 * That that a OCSNonUniqueException is thrown in case the validation process
-	 * results in a duplicate
+	 * Test that a pageable object is properly created
 	 */
-	@Test(expected = OCSNonUniqueException.class)
-	public void testValidate_Identical() {
-		TestEntity entity = new TestEntity("kevin", 15L);
+	@Test
+	public void testCreatePageable() {
+		Filter filter = new Compare.Equal("name", "Piet");
 
-		TestEntity other = new TestEntity();
-		other.setId(4);
-		Mockito.when(dao.findByUniqueProperty("name", "kevin", true)).thenReturn(other);
+		SortOrder order = new SortOrder(Direction.ASC, "name");
+		SortOrder order2 = new SortOrder(Direction.DESC, "age");
+		service.fetch(filter, 2, 10, new SortOrders(order, order2));
 
-		service.validate(entity);
+		ArgumentCaptor<Pageable> captor = ArgumentCaptor.forClass(Pageable.class);
+		Mockito.verify(dao).fetch(Mockito.any(Filter.class), captor.capture());
+
+		Pageable p = captor.getValue();
+
+		Direction dir = p.getSortOrders().getOrderFor("name").getDirection();
+		Assert.assertEquals(Direction.ASC, dir);
+
+		Direction dir2 = p.getSortOrders().getOrderFor("age").getDirection();
+		Assert.assertEquals(Direction.DESC, dir2);
+
+		Assert.assertEquals(2, p.getPageNumber());
+		Assert.assertEquals(20, p.getOffset());
+		Assert.assertEquals(10, p.getPageSize());
 	}
 
 	/**
@@ -170,44 +185,11 @@ public class BaseServiceImplTest extends BaseMockitoTest {
 		Assert.assertNull(s.getOrderFor("notExists"));
 	}
 
-	/**
-	 * Test that a pageable object is properly created
-	 */
-	@Test
-	public void testCreatePageable() {
-		Filter filter = new Compare.Equal("name", "Piet");
-
-		SortOrder order = new SortOrder(Direction.ASC, "name");
-		SortOrder order2 = new SortOrder(Direction.DESC, "age");
-		service.fetch(filter, 2, 10, new SortOrders(order, order2));
-
-		ArgumentCaptor<Pageable> captor = ArgumentCaptor.forClass(Pageable.class);
-		Mockito.verify(dao).fetch(Mockito.any(Filter.class), captor.capture());
-
-		Pageable p = captor.getValue();
-
-		Direction dir = p.getSortOrders().getOrderFor("name").getDirection();
-		Assert.assertEquals(Direction.ASC, dir);
-
-		Direction dir2 = p.getSortOrders().getOrderFor("age").getDirection();
-		Assert.assertEquals(Direction.DESC, dir2);
-
-		Assert.assertEquals(2, p.getPageNumber());
-		Assert.assertEquals(20, p.getOffset());
-		Assert.assertEquals(10, p.getPageSize());
-	}
-
 	@Test
 	public void testDelete() {
 		TestEntity obj = new TestEntity();
 		service.delete(obj);
 		Mockito.verify(dao).delete(obj);
-	}
-
-	@Test
-	public void testCreateNewEntity() {
-		TestEntity entity = service.createNewEntity();
-		Assert.assertNotNull(entity);
 	}
 
 	@Test
@@ -217,65 +199,6 @@ public class BaseServiceImplTest extends BaseMockitoTest {
 
 		service.delete(Lists.newArrayList(obj, obj2));
 		Mockito.verify(dao).delete(Lists.newArrayList(obj, obj2));
-	}
-
-	@Test
-	public void testCount() {
-		service.count();
-		Mockito.verify(dao).count();
-	}
-
-	@Test
-	public void testCountFilter() {
-		Filter filter = new Compare.Equal("property1", 1);
-		service.count(filter, false);
-		Mockito.verify(dao).count(filter, false);
-
-		service.count(filter, true);
-		Mockito.verify(dao).count(filter, true);
-	}
-
-	@Test
-	public void testFetchFilter() {
-		Filter filter = new Compare.Equal("property1", 1);
-		service.fetch(filter, new FetchJoinInformation("testEntities"));
-
-		Mockito.verify(dao).fetch(filter, new FetchJoinInformation("testEntities"));
-
-		service.fetch(filter);
-		Mockito.verify(dao).fetch(filter);
-	}
-
-	@Test
-	public void testFilter() {
-		Filter filter = new Compare.Equal("property1", 1);
-		service.find(filter);
-		Mockito.verify(dao).find(filter);
-	}
-
-	@Test
-	public void testFetchFilterPageable() {
-		Filter filter = new Compare.Equal("property1", 1);
-		service.fetch(filter, 2, 10, new FetchJoinInformation("testEntities"));
-
-		ArgumentCaptor<Pageable> captor = ArgumentCaptor.forClass(Pageable.class);
-		Mockito.verify(dao).fetch(Mockito.eq(filter), captor.capture(),
-				Mockito.eq(new FetchJoinInformation("testEntities")));
-
-		Pageable pb = captor.getValue();
-		Assert.assertEquals(20, pb.getOffset());
-		Assert.assertEquals(10, pb.getPageSize());
-		Assert.assertEquals(2, pb.getPageNumber());
-	}
-
-	@Test
-	public void testFetchSortOrderJoins() {
-		Filter filter = new Compare.Equal("property1", 1);
-		SortOrders orders = new SortOrders(new SortOrder("property2"));
-		FetchJoinInformation[] joins = new FetchJoinInformation[] { new FetchJoinInformation("testEntities") };
-
-		service.fetch(filter, orders, joins);
-		Mockito.verify(dao).fetch(filter, orders, joins);
 	}
 
 	@Test
@@ -309,6 +232,49 @@ public class BaseServiceImplTest extends BaseMockitoTest {
 	}
 
 	@Test
+	public void testFetchFilter() {
+		Filter filter = new Compare.Equal("property1", 1);
+		service.fetch(filter, new FetchJoinInformation("testEntities"));
+
+		Mockito.verify(dao).fetch(filter, new FetchJoinInformation("testEntities"));
+
+		service.fetch(filter);
+		Mockito.verify(dao).fetch(filter);
+	}
+
+	@Test
+	public void testFetchFilterPageable() {
+		Filter filter = new Compare.Equal("property1", 1);
+		service.fetch(filter, 2, 10, new FetchJoinInformation("testEntities"));
+
+		ArgumentCaptor<Pageable> captor = ArgumentCaptor.forClass(Pageable.class);
+		Mockito.verify(dao).fetch(Mockito.eq(filter), captor.capture(),
+				Mockito.eq(new FetchJoinInformation("testEntities")));
+
+		Pageable pb = captor.getValue();
+		Assert.assertEquals(20, pb.getOffset());
+		Assert.assertEquals(10, pb.getPageSize());
+		Assert.assertEquals(2, pb.getPageNumber());
+	}
+
+	@Test
+	public void testFetchSortOrderJoins() {
+		Filter filter = new Compare.Equal("property1", 1);
+		SortOrders orders = new SortOrders(new SortOrder("property2"));
+		FetchJoinInformation[] joins = new FetchJoinInformation[] { new FetchJoinInformation("testEntities") };
+
+		service.fetch(filter, orders, joins);
+		Mockito.verify(dao).fetch(filter, orders, joins);
+	}
+
+	@Test
+	public void testFilter() {
+		Filter filter = new Compare.Equal("property1", 1);
+		service.find(filter);
+		Mockito.verify(dao).find(filter);
+	}
+
+	@Test
 	public void testFindAll() {
 		service.findAll();
 		Mockito.verify(dao).findAll();
@@ -321,9 +287,45 @@ public class BaseServiceImplTest extends BaseMockitoTest {
 	}
 
 	@Test
+	public void testFindById() {
+
+		TestEntity obj = new TestEntity();
+		Mockito.when(dao.findById(ID)).thenReturn(obj);
+
+		TestEntity result = service.findById(ID);
+		Assert.assertNotNull(result);
+	}
+
+	@Test
+	public void testFindDistinct() {
+		Filter filter = new Compare.Equal("property1", 1);
+		SortOrder so = new SortOrder("property2");
+
+		service.findDistinct(filter, "property1", String.class, so);
+		Mockito.verify(dao).findDistinct(filter, "property1", String.class, so);
+	}
+
+	@Test
 	public void testFindIds() {
 		service.findIds(new Compare.Equal("property1", 12), new SortOrder("property1"));
 		Mockito.verify(dao).findIds(new Compare.Equal("property1", 12), new SortOrder(Direction.ASC, "property1"));
+	}
+
+	@Test
+	public void testFindSelect() {
+		Filter filter = new Compare.Equal("property1", 1);
+		SortOrders so = new SortOrders(new SortOrder("property1"));
+		service.findSelect(filter, new String[] { "property1", "property2" }, so);
+		Mockito.verify(dao).findSelect(filter, new String[] { "property1", "property2" }, so);
+	}
+
+	@Test
+	public void testFindSelect2() {
+		Filter filter = new Compare.Equal("property1", 1);
+		SortOrders so = new SortOrders(new SortOrder("property1"));
+		service.findSelect(filter, new String[] { "property1", "property2" }, 1, 10, so);
+		Mockito.verify(dao).findSelect(Mockito.eq(filter), Mockito.eq(new String[] { "property1", "property2" }),
+				Mockito.any(PageableImpl.class));
 	}
 
 	/**
@@ -335,30 +337,55 @@ public class BaseServiceImplTest extends BaseMockitoTest {
 		Mockito.verify(dependency).noop();
 	}
 
-	private class Dependency {
+	@Test
+	public void testSave() {
+		TestEntity obj = new TestEntity("name1", 14L);
+		MockUtil.mockSave(dao, TestEntity.class);
 
-		public void noop() {
-			// do nothing
-		}
+		TestEntity result = service.save(obj);
+		Assert.assertNotNull(result);
+		Mockito.verify(dao).save(obj);
 	}
 
-	private class TestService extends BaseServiceImpl<Integer, TestEntity> {
+	@Test
+	public void testSaveList() {
+		TestEntity obj1 = new TestEntity("name1", 14L);
+		TestEntity obj2 = new TestEntity("name2", 15L);
 
-		@Autowired
-		private Dependency dependency;
+		service.save(Lists.newArrayList(obj1, obj2));
+		Mockito.verify(dao).save(Lists.newArrayList(obj1, obj2));
+	}
 
-		@Override
-		protected BaseDao<Integer, TestEntity> getDao() {
-			return dao;
-		}
+	@Test
+	public void testValidate() {
+		TestEntity entity = new TestEntity("name1", 15L);
+		service.validate(entity);
+	}
 
-		public void noop() {
-			dependency.noop();
-		}
+	@Test(expected = OCSValidationException.class)
+	public void testValidate_AssertTrue() {
+		TestEntity entity = new TestEntity("bogus", 15L);
+		service.validate(entity);
+	}
 
-		@Override
-		protected TestEntity findIdenticalEntity(TestEntity entity) {
-			return dao.findByUniqueProperty("name", entity.getName(), true);
-		}
+	@Test(expected = OCSValidationException.class)
+	public void testValidate_Error() {
+		TestEntity entity = new TestEntity(null, 15L);
+		service.validate(entity);
+	}
+
+	/**
+	 * That that a OCSNonUniqueException is thrown in case the validation process
+	 * results in a duplicate
+	 */
+	@Test(expected = OCSNonUniqueException.class)
+	public void testValidate_Identical() {
+		TestEntity entity = new TestEntity("kevin", 15L);
+
+		TestEntity other = new TestEntity();
+		other.setId(4);
+		Mockito.when(dao.findByUniqueProperty("name", "kevin", true)).thenReturn(other);
+
+		service.validate(entity);
 	};
 }

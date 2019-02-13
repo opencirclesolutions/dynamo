@@ -17,9 +17,27 @@ import java.io.Serializable;
 
 import com.ocs.dynamo.domain.AbstractEntity;
 
+/**
+ * Interface for an iterator that iterators over a set of entities using paging
+ * 
+ * @author Bas Rutten
+ *
+ * @param <ID> the type of the primary key of the entity
+ * @param <T> the type of the entity
+ */
 public interface DataSetIterator<ID extends Serializable, T extends AbstractEntity<ID>> {
 
+	/**
+	 * Returns the next entity
+	 * 
+	 * @return
+	 */
 	public T next();
-	
+
+	/**
+	 * Returns the total number of entities
+	 * 
+	 * @return
+	 */
 	public int size();
 }

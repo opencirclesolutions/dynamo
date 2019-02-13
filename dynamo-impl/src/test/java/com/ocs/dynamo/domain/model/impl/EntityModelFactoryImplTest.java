@@ -186,6 +186,9 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 
 		final List<AttributeModel> models2 = model.getAttributeModelsForGroup(group2);
 		Assert.assertEquals("age", models2.get(0).getName());
+		Assert.assertTrue(models2.get(0).isRequiredForSearching());
+
+		Assert.assertEquals(1, model.getRequiredForSearchingAttributeModels().size());
 
 		final List<AttributeModel> models3 = model.getAttributeModelsForGroup(EntityModel.DEFAULT_GROUP);
 		Assert.assertEquals("birthDate", models3.get(0).getName());
@@ -566,6 +569,9 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		Assert.assertTrue(am.getCascadeAttributes().contains("attribute2"));
 		Assert.assertEquals("somePath", am.getCascadeFilterPath("attribute2"));
 		Assert.assertEquals(CascadeMode.BOTH, am.getCascadeMode("attribute2"));
+
+		Assert.assertEquals(1, model.getCascadeAttributeModels().size());
+		Assert.assertEquals("attribute1", model.getCascadeAttributeModels().iterator().next().getPath());
 	}
 
 	/**
@@ -722,7 +728,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		}
 	}
 
-	@Model(description = "desc", displayName = "dis", displayNamePlural = "diss", displayProperty = "prop")
+	@Model(description = "desc", displayName = "dis", displayNamePlural = "diss", displayProperty = "prop", sortOrder = "name asc")
 	@AttributeGroups(attributeGroups = { @AttributeGroup(messageKey = "group1.key", attributeNames = { "name" }),
 			@AttributeGroup(messageKey = "group2.key", attributeNames = { "age" }) })
 	public class Entity3 {
@@ -730,7 +736,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		@Attribute(defaultValue = "Bas", description = "Test", displayName = "Naampje", editable = EditableType.READ_ONLY, prompt = "Prompt", searchable = true, main = true, sortable = false, styles = "myStyle")
 		private String name;
 
-		@Attribute(searchCaseSensitive = true, searchPrefixOnly = true, thousandsGrouping = false)
+		@Attribute(searchCaseSensitive = true, searchPrefixOnly = true, thousandsGrouping = false, requiredForSearching = true, searchable = true)
 		private Integer age;
 
 		@Attribute(displayFormat = "dd/MM/yyyy")

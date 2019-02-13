@@ -25,6 +25,7 @@ import org.junit.Test;
 
 import com.google.common.collect.Lists;
 import com.ocs.dynamo.dao.FetchJoinInformation;
+import com.ocs.dynamo.dao.PageableImpl;
 import com.ocs.dynamo.dao.SortOrder;
 import com.ocs.dynamo.dao.SortOrder.Direction;
 import com.ocs.dynamo.dao.SortOrders;
@@ -46,36 +47,12 @@ public class TestEntityDaoTest extends BaseIntegrationTest {
 	@Inject
 	TestEntityDao dao;
 
-	@Test
-	public void testSaveAndFind() {
-
-		TestEntity entity = save("Piet", 12L);
-
-		TestEntity detail = new TestEntity();
-		detail.setAge(2L);
-		detail.setName("Jantje");
-		entity.addChild(detail);
-
-		// Test save
+	private TestEntity save(String name, long age) {
+		TestEntity entity = new TestEntity();
+		entity.setName(name);
+		entity.setAge(age);
 		entity = dao.save(entity);
-		assertNotNull(entity.getId());
-		Integer id = entity.getId();
-
-		// Test find one
-		TestEntity other = dao.findById(id);
-		assertEquals(other, entity);
-	}
-
-	@Test
-	public void testSaveBulk() {
-		TestEntity entity1 = new TestEntity("Bob", 1L);
-		TestEntity entity2 = new TestEntity("Bob", 2L);
-		TestEntity entity3 = new TestEntity("Bob", 3L);
-
-		dao.save(Lists.newArrayList(entity1, entity2, entity3));
-
-		List<TestEntity> list = dao.findAll();
-		Assert.assertEquals(3, list.size());
+		return entity;
 	}
 
 	@Test
@@ -102,33 +79,102 @@ public class TestEntityDaoTest extends BaseIntegrationTest {
 		Assert.assertNull(t);
 	}
 
-	/**
-	 * Test the basic working of a tree based entity
-	 */
 	@Test
-	public void testTree() {
+	public void testDelete() {
 
 		TestEntity entity = save("Piet", 12L);
+		Integer id = entity.getId();
 
-		TestEntity detail = new TestEntity();
-		detail.setAge(24L);
-		detail.setName("Jantje");
-		entity.addChild(detail);
+		dao.delete(entity);
 
-		entity.addChild(detail);
-		entity = dao.save(entity);
+		Assert.assertNull(dao.findById(id));
+	}
 
-		// verify that the detail was cascaded
-		detail = entity.getChildren().get(0);
-		assertNotNull(detail.getId());
+	@Test
+	public void testFetch() {
+		save("Kevin", 11L);
+		save("Stuart", 12L);
+		save("Bob", 13L);
 
-		List<TestEntity> roots = dao.findByParentIsNull();
-		assertEquals(1, roots.size());
-		assertEquals(entity, roots.get(0));
+		List<TestEntity> results = dao.fetch(null);
+		Assert.assertEquals(3, results.size());
 
-		List<TestEntity> children = dao.findByParent(entity);
-		assertEquals(1, children.size());
-		assertEquals(detail, children.get(0));
+		results = dao.fetch(new Compare.Equal("name", "Bob"));
+		Assert.assertEquals(1, results.size());
+
+		// with a sort order
+		results = dao.fetch(null, new SortOrders(new SortOrder("name")));
+		Assert.assertEquals(3, results.size());
+		Assert.assertEquals("Bob", results.get(0).getName());
+
+		// with a sort order and a fetch
+		results = dao.fetch(null, new SortOrders(new SortOrder("name")), new FetchJoinInformation("testEntities"));
+		Assert.assertEquals(3, results.size());
+		Assert.assertEquals("Bob", results.get(0).getName());
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	public void testFetchSelect() {
+		save("Pete", 1L);
+		save("Bob", 2L);
+		save("Isaac", 3L);
+		TestEntity e1 = entityManager.createQuery("from TestEntity t where t.name = 'Bob'", TestEntity.class)
+				.getSingleResult();
+		TestEntity e2 = entityManager.createQuery("from TestEntity t where t.name = 'Pete'", TestEntity.class)
+				.getSingleResult();
+
+		SortOrder sortName = new SortOrder("name");
+		Filter filter = new In("name", Lists.newArrayList(e1.getName(), e2.getName()));
+		List<Object[]> result = (List<Object[]>) dao.findSelect(filter, new String[] { "name", "age" },
+				new SortOrders(sortName));
+
+		Assert.assertEquals(2, result.size());
+		Assert.assertEquals(e1.getName(), result.get(0)[0]);
+		Assert.assertEquals(e1.getAge(), result.get(0)[1]);
+		Assert.assertEquals(e2.getName(), result.get(1)[0]);
+		Assert.assertEquals(e2.getAge(), result.get(1)[1]);
+	}
+
+	public void testFindByBirthDateLocal() {
+		List<TestEntity> result = dao.findByBirthDate();
+		Assert.assertEquals(0, result.size());
+
+		TestEntity bob = save("Bob", 55L);
+		bob.setBirthDate(DateUtils.createLocalDate("10081980"));
+		bob = dao.save(bob);
+
+		result = dao.findByBirthDate();
+		Assert.assertEquals(1, result.size());
+	}
+
+	@Test
+	public void testFindDistinct() {
+		save("Kevin", 11L);
+		save("Bob", 11L);
+		save("Bob", 11L);
+
+		List<?> names = dao.findDistinct(null, "name", String.class, new SortOrder("name"));
+		Assert.assertEquals(2, names.size());
+		Assert.assertEquals("Bob", names.get(0));
+		Assert.assertEquals("Kevin", names.get(1));
+
+		List<?> ages = dao.findDistinct(null, "age", String.class, new SortOrder("age"));
+		Assert.assertEquals(1, ages.size());
+		Assert.assertEquals(11L, ages.get(0));
+	}
+
+	@Test
+	public void testFindDistinctForCollectionTable() {
+		save("Kevin", 11L);
+		save("Bob", 11L);
+		save("Bob", 11L);
+
+		List<String> names = dao.findDistinctInCollectionTable("test_entity", "name", String.class);
+		Assert.assertEquals(2, names.size());
+
+		List<Long> ages = dao.findDistinctInCollectionTable("test_entity", "age", Long.class);
+		Assert.assertEquals(1, ages.size());
 	}
 
 	@Test
@@ -189,26 +235,34 @@ public class TestEntityDaoTest extends BaseIntegrationTest {
 	}
 
 	@Test
-	public void testFetch() {
-		save("Kevin", 11L);
-		save("Stuart", 12L);
-		save("Bob", 13L);
+	public void testFindSelect() {
+		save("Pete", 1L);
+		save("Bob", 2L);
+		save("Isaac", 3L);
 
-		List<TestEntity> results = dao.fetch(null);
-		Assert.assertEquals(3, results.size());
+		List<?> found = dao.findSelect(null, new String[] { "name", "age" }, new SortOrders(new SortOrder("name")));
+		Assert.assertEquals(3, found.size());
 
-		results = dao.fetch(new Compare.Equal("name", "Bob"));
-		Assert.assertEquals(1, results.size());
+		Object[] obj = (Object[]) found.get(0);
+		Assert.assertEquals("Bob", obj[0]);
+		Assert.assertEquals(2L, obj[1]);
+	}
 
-		// with a sort order
-		results = dao.fetch(null, new SortOrders(new SortOrder("name")));
-		Assert.assertEquals(3, results.size());
-		Assert.assertEquals("Bob", results.get(0).getName());
+	@Test
+	public void testFindSelect2() {
+		save("Pete", 1L);
+		save("Bob", 2L);
+		save("Isaac", 3L);
 
-		// with a sort order and a fetch
-		results = dao.fetch(null, new SortOrders(new SortOrder("name")), new FetchJoinInformation("testEntities"));
-		Assert.assertEquals(3, results.size());
-		Assert.assertEquals("Bob", results.get(0).getName());
+		SortOrders so = new SortOrders(new SortOrder("name"));
+		PageableImpl pag = new PageableImpl(0, 10, so);
+
+		List<?> found = dao.findSelect(null, new String[] { "name", "age" }, pag);
+		Assert.assertEquals(3, found.size());
+
+		Object[] obj = (Object[]) found.get(0);
+		Assert.assertEquals("Bob", obj[0]);
+		Assert.assertEquals(2L, obj[1]);
 	}
 
 	@Test
@@ -223,76 +277,64 @@ public class TestEntityDaoTest extends BaseIntegrationTest {
 	}
 
 	@Test
-	public void testFindDistinct() {
-		save("Kevin", 11L);
-		save("Bob", 11L);
-		save("Bob", 11L);
+	public void testSaveAndFind() {
 
-		List<?> names = dao.findDistinct(null, "name", String.class, new SortOrder("name"));
-		Assert.assertEquals(2, names.size());
-		Assert.assertEquals("Bob", names.get(0));
-		Assert.assertEquals("Kevin", names.get(1));
+		TestEntity entity = save("Piet", 12L);
 
-		List<?> ages = dao.findDistinct(null, "age", String.class, new SortOrder("age"));
-		Assert.assertEquals(1, ages.size());
-		Assert.assertEquals(11L, ages.get(0));
-	}
+		TestEntity detail = new TestEntity();
+		detail.setAge(2L);
+		detail.setName("Jantje");
+		entity.addChild(detail);
 
-	@Test
-	public void testFindDistinctForCollectionTable() {
-		save("Kevin", 11L);
-		save("Bob", 11L);
-		save("Bob", 11L);
-
-		List<String> names = dao.findDistinctInCollectionTable("test_entity", "name", String.class);
-		Assert.assertEquals(2, names.size());
-
-		List<Long> ages = dao.findDistinctInCollectionTable("test_entity", "age", Long.class);
-		Assert.assertEquals(1, ages.size());
-	}
-
-	@Test
-	@SuppressWarnings("unchecked")
-	public void testFetchSelect() {
-		save("Pete", 1L);
-		save("Bob", 2L);
-		save("Isaac", 3L);
-		TestEntity e1 = entityManager.createQuery("from TestEntity t where t.name = 'Bob'", TestEntity.class)
-				.getSingleResult();
-		TestEntity e2 = entityManager.createQuery("from TestEntity t where t.name = 'Pete'", TestEntity.class)
-				.getSingleResult();
-
-		SortOrder sortName = new SortOrder("name");
-		Filter filter = new In("name", Lists.newArrayList(e1.getName(), e2.getName()));
-		List<Object[]> result = (List<Object[]>) dao.findSelect(filter, new String[] { "name", "age" },
-				new SortOrders(sortName));
-
-		Assert.assertEquals(2, result.size());
-		Assert.assertEquals(e1.getName(), result.get(0)[0]);
-		Assert.assertEquals(e1.getAge(), result.get(0)[1]);
-		Assert.assertEquals(e2.getName(), result.get(1)[0]);
-		Assert.assertEquals(e2.getAge(), result.get(1)[1]);
-
-	}
-
-	public void testFindByBirthDateLocal() {
-		List<TestEntity> result = dao.findByBirthDate();
-		Assert.assertEquals(0, result.size());
-
-		TestEntity bob = save("Bob", 55L);
-		bob.setBirthDate(DateUtils.createLocalDate("10081980"));
-		bob = dao.save(bob);
-
-		result = dao.findByBirthDate();
-		Assert.assertEquals(1, result.size());
-	}
-
-	private TestEntity save(String name, long age) {
-		TestEntity entity = new TestEntity();
-		entity.setName(name);
-		entity.setAge(age);
+		// Test save
 		entity = dao.save(entity);
-		return entity;
+		assertNotNull(entity.getId());
+		Integer id = entity.getId();
+
+		// Test find one
+		TestEntity other = dao.findById(id);
+		assertEquals(other, entity);
+	}
+
+	@Test
+	public void testSaveBulk() {
+		TestEntity entity1 = new TestEntity("Bob", 1L);
+		TestEntity entity2 = new TestEntity("Bob", 2L);
+		TestEntity entity3 = new TestEntity("Bob", 3L);
+
+		dao.save(Lists.newArrayList(entity1, entity2, entity3));
+
+		List<TestEntity> list = dao.findAll();
+		Assert.assertEquals(3, list.size());
+	}
+
+	/**
+	 * Test the basic working of a tree based entity
+	 */
+	@Test
+	public void testTree() {
+
+		TestEntity entity = save("Piet", 12L);
+
+		TestEntity detail = new TestEntity();
+		detail.setAge(24L);
+		detail.setName("Jantje");
+		entity.addChild(detail);
+
+		entity.addChild(detail);
+		entity = dao.save(entity);
+
+		// verify that the detail was cascaded
+		detail = entity.getChildren().get(0);
+		assertNotNull(detail.getId());
+
+		List<TestEntity> roots = dao.findByParentIsNull();
+		assertEquals(1, roots.size());
+		assertEquals(entity, roots.get(0));
+
+		List<TestEntity> children = dao.findByParent(entity);
+		assertEquals(1, children.size());
+		assertEquals(detail, children.get(0));
 	}
 
 }

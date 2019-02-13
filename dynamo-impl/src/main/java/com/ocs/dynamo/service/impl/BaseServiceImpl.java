@@ -72,11 +72,6 @@ public abstract class BaseServiceImpl<ID, T extends AbstractEntity<ID>> implemen
 	}
 
 	@Override
-	public List<T> findAll() {
-		return getDao().findAll();
-	}
-
-	@Override
 	public long count() {
 		return getDao().count();
 	}
@@ -104,27 +99,6 @@ public abstract class BaseServiceImpl<ID, T extends AbstractEntity<ID>> implemen
 	}
 
 	@Override
-	public T fetchById(ID id, FetchJoinInformation... joins) {
-		return getDao().fetchById(id, joins);
-	}
-
-	@Override
-	public List<T> fetchByIds(List<ID> ids, FetchJoinInformation... joins) {
-		return getDao().fetchByIds(ids, null, joins);
-	}
-
-	@Override
-	public List<T> fetchByIds(List<ID> ids, SortOrders sortOrders, FetchJoinInformation... joins) {
-		return getDao().fetchByIds(ids, sortOrders, joins);
-	}
-
-	@Override
-	public T fetchByUniqueProperty(String propertyName, Object value, boolean caseSensitive,
-			FetchJoinInformation... joins) {
-		return getDao().fetchByUniqueProperty(propertyName, value, caseSensitive, joins);
-	}
-
-	@Override
 	public List<T> fetch(Filter filter, FetchJoinInformation... joins) {
 		return getDao().fetch(filter, joins);
 	}
@@ -147,20 +121,24 @@ public abstract class BaseServiceImpl<ID, T extends AbstractEntity<ID>> implemen
 	}
 
 	@Override
-	public List<?> findSelect(Filter filter, String[] selectProperties, SortOrders sortOrders) {
-		return getDao().findSelect(filter, selectProperties, sortOrders);
+	public T fetchById(ID id, FetchJoinInformation... joins) {
+		return getDao().fetchById(id, joins);
 	}
 
 	@Override
-	public List<?> findSelect(Filter filter, String[] selectProperties, int pageNumber, int pageSize,
-			SortOrders sortOrders) {
-		return getDao().findSelect(filter, selectProperties,
-				constructPageRequest(pageNumber, pageSize, sortOrders == null ? null : sortOrders.toArray()));
+	public List<T> fetchByIds(List<ID> ids, FetchJoinInformation... joins) {
+		return getDao().fetchByIds(ids, null, joins);
 	}
 
 	@Override
-	public List<T> findAll(SortOrder... orders) {
-		return getDao().findAll(orders);
+	public List<T> fetchByIds(List<ID> ids, SortOrders sortOrders, FetchJoinInformation... joins) {
+		return getDao().fetchByIds(ids, sortOrders, joins);
+	}
+
+	@Override
+	public T fetchByUniqueProperty(String propertyName, Object value, boolean caseSensitive,
+			FetchJoinInformation... joins) {
+		return getDao().fetchByUniqueProperty(propertyName, value, caseSensitive, joins);
 	}
 
 	@Override
@@ -174,8 +152,13 @@ public abstract class BaseServiceImpl<ID, T extends AbstractEntity<ID>> implemen
 	}
 
 	@Override
-	public <S> List<S> findDistinct(Filter filter, String distinctField, Class<S> elementType, SortOrder... orders) {
-		return getDao().findDistinct(filter, distinctField, elementType, orders);
+	public List<T> findAll() {
+		return getDao().findAll();
+	}
+
+	@Override
+	public List<T> findAll(SortOrder... orders) {
+		return getDao().findAll(orders);
 	}
 
 	@Override
@@ -186,6 +169,16 @@ public abstract class BaseServiceImpl<ID, T extends AbstractEntity<ID>> implemen
 	@Override
 	public T findByUniqueProperty(String propertyName, Object value, boolean caseSensitive) {
 		return getDao().findByUniqueProperty(propertyName, value, caseSensitive);
+	}
+
+	@Override
+	public <S> List<S> findDistinct(Filter filter, String distinctField, Class<S> elementType, SortOrder... orders) {
+		return getDao().findDistinct(filter, distinctField, elementType, orders);
+	}
+
+	@Override
+	public <S> List<S> findDistinctInCollectionTable(String tableName, String distinctField, Class<S> elementType) {
+		return getDao().findDistinctInCollectionTable(tableName, distinctField, elementType);
 	}
 
 	/**
@@ -199,13 +192,25 @@ public abstract class BaseServiceImpl<ID, T extends AbstractEntity<ID>> implemen
 	}
 
 	@Override
+	public List<ID> findIds(Filter filter, Integer maxResults, SortOrder... orders) {
+		return getDao().findIds(filter, maxResults, orders);
+	}
+
+	@Override
 	public List<ID> findIds(Filter filter, SortOrder... orders) {
 		return getDao().findIds(filter, orders);
 	}
 
 	@Override
-	public List<ID> findIds(Filter filter, Integer maxResults, SortOrder... orders) {
-		return getDao().findIds(filter, maxResults, orders);
+	public List<?> findSelect(Filter filter, String[] selectProperties, int pageNumber, int pageSize,
+			SortOrders sortOrders) {
+		return getDao().findSelect(filter, selectProperties,
+				constructPageRequest(pageNumber, pageSize, sortOrders == null ? null : sortOrders.toArray()));
+	}
+
+	@Override
+	public List<?> findSelect(Filter filter, String[] selectProperties, SortOrders sortOrders) {
+		return getDao().findSelect(filter, selectProperties, sortOrders);
 	}
 
 	protected abstract BaseDao<ID, T> getDao();
@@ -295,18 +300,5 @@ public abstract class BaseServiceImpl<ID, T extends AbstractEntity<ID>> implemen
 			throw new OCSNonUniqueException(messageService.getMessage(getEntityClass().getSimpleName() + ".not.unique",
 					new Locale(SystemPropertyUtils.getDefaultLocale())));
 		}
-	}
-
-	@Override
-	@Transactional
-	public void update(List<T> toUpdate, List<T> toAdd, List<T> toDelete) {
-		save(toUpdate);
-		save(toAdd);
-		delete(toDelete);
-	}
-
-	@Override
-	public <S> List<S> findDistinctInCollectionTable(String tableName, String distinctField, Class<S> elementType) {
-		return getDao().findDistinctInCollectionTable(tableName, distinctField, elementType);
 	}
 }

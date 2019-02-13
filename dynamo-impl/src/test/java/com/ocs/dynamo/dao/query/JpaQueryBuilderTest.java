@@ -13,6 +13,7 @@
  */
 package com.ocs.dynamo.dao.query;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -40,10 +41,11 @@ import com.ocs.dynamo.filter.In;
 import com.ocs.dynamo.filter.IsNull;
 import com.ocs.dynamo.filter.Like;
 import com.ocs.dynamo.filter.Modulo;
+import com.ocs.dynamo.filter.Not;
 import com.ocs.dynamo.filter.Or;
 import com.ocs.dynamo.test.BaseIntegrationTest;
 
-public class JPAQueryBuilderTest extends BaseIntegrationTest {
+public class JpaQueryBuilderTest extends BaseIntegrationTest {
 
 	@PersistenceContext
 	private EntityManager entityManager;
@@ -177,6 +179,14 @@ public class JPAQueryBuilderTest extends BaseIntegrationTest {
 	}
 
 	@Test
+	public void testCreateCountQuery_InEmpty() {
+		TypedQuery<Long> tQuery = JpaQueryBuilder.createCountQuery(entityManager, TestEntity.class,
+				new In("id", new ArrayList<>()), false);
+		long count = tQuery.getSingleResult();
+		Assert.assertEquals(0, count);
+	}
+
+	@Test
 	public void testCreateCountQuery_ModuloLiteral() {
 		TypedQuery<Long> tQuery = JpaQueryBuilder.createCountQuery(entityManager, TestEntity.class,
 				new Modulo("age", 4, 0), false);
@@ -198,6 +208,14 @@ public class JPAQueryBuilderTest extends BaseIntegrationTest {
 				new And(new Compare.Equal("name", "Bob"), new Compare.Equal("age", 25L)), false);
 		long count = tQuery.getSingleResult();
 		Assert.assertEquals(1, count);
+	}
+
+	@Test
+	public void testCreateCountQuery_Not() {
+		TypedQuery<Long> tQuery = JpaQueryBuilder.createCountQuery(entityManager, TestEntity.class,
+				new Not(new Compare.Equal("name", "Bob")), false);
+		long count = tQuery.getSingleResult();
+		Assert.assertEquals(2, count);
 	}
 
 	@Test
@@ -318,7 +336,7 @@ public class JPAQueryBuilderTest extends BaseIntegrationTest {
 	@SuppressWarnings("unchecked")
 	public void testCreateSelectAggregateJoinAndGroupQuery() {
 		insertNestedTestEntities();
-		
+
 		List<Object[]> base = entityManager.createQuery(
 				"select t1.name, sum(t2.value) from TestEntity t1 join t1.testEntities t2 group by t1.name order by t1.name")
 				.getResultList();
@@ -332,7 +350,7 @@ public class JPAQueryBuilderTest extends BaseIntegrationTest {
 		Object[] br = base.get(0);
 		Assert.assertTrue(br[0].equals(result.get(0)[0]));
 		Assert.assertTrue(br[1].equals(result.get(0)[1]));
-		
+
 		Object[] br1 = base.get(1);
 		Assert.assertTrue(br1[0].equals(result.get(1)[0]));
 		Assert.assertTrue(br1[1].equals(result.get(1)[1]));
