@@ -45,10 +45,8 @@ import java.util.Set;
  * Base service implementation
  * 
  * @author bas.rutten
- * @param <ID>
- *            type of the primary key
- * @param <T>
- *            type of the entity
+ * @param <ID> type of the primary key
+ * @param <T> type of the entity
  */
 
 public abstract class BaseServiceImpl<ID, T extends AbstractEntity<ID>> implements BaseService<ID, T> {
@@ -64,12 +62,9 @@ public abstract class BaseServiceImpl<ID, T extends AbstractEntity<ID>> implemen
 	/**
 	 * Creates a paging request
 	 * 
-	 * @param pageNumber
-	 *            the zero-based number of the first apge
-	 * @param pageSize
-	 *            the page size
-	 * @param orders
-	 *            the sort orders
+	 * @param pageNumber the zero-based number of the first apge
+	 * @param pageSize   the page size
+	 * @param orders     the sort orders
 	 * @return
 	 */
 	private Pageable constructPageRequest(int pageNumber, int pageSize, SortOrder... orders) {
@@ -151,29 +146,16 @@ public abstract class BaseServiceImpl<ID, T extends AbstractEntity<ID>> implemen
 		return getDao().fetch(filter, orders, joins);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.ocs.dynamo.service.BaseService#fetchSelect(com.ocs.dynamo.filter.Filter, java.lang.String[],
-	 * com.ocs.dynamo.dao.SortOrders, com.ocs.dynamo.dao.FetchJoinInformation[])
-	 */
 	@Override
-	public List<Object[]> fetchSelect(Filter filter, String[] selectProperties, SortOrders sortOrders,
-			FetchJoinInformation... joins) {
-		return getDao().fetchSelect(filter, selectProperties, sortOrders, joins);
+	public List<?> findSelect(Filter filter, String[] selectProperties, SortOrders sortOrders) {
+		return getDao().findSelect(filter, selectProperties, sortOrders);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.ocs.dynamo.service.BaseService#fetchSelect(com.ocs.dynamo.filter.Filter, java.lang.String[], int, int,
-	 * com.ocs.dynamo.dao.SortOrders, com.ocs.dynamo.dao.FetchJoinInformation[])
-	 */
 	@Override
-	public List<Object[]> fetchSelect(Filter filter, String[] selectProperties, int pageNumber, int pageSize,
-			SortOrders sortOrders, FetchJoinInformation... joins) {
-		return getDao().fetchSelect(filter, selectProperties,
-				constructPageRequest(pageNumber, pageSize, sortOrders == null ? null : sortOrders.toArray()), joins);
+	public List<?> findSelect(Filter filter, String[] selectProperties, int pageNumber, int pageSize,
+			SortOrders sortOrders) {
+		return getDao().findSelect(filter, selectProperties,
+				constructPageRequest(pageNumber, pageSize, sortOrders == null ? null : sortOrders.toArray()));
 	}
 
 	@Override
@@ -209,8 +191,7 @@ public abstract class BaseServiceImpl<ID, T extends AbstractEntity<ID>> implemen
 	/**
 	 * Looks for an identical entity (which has a different primary key but
 	 * 
-	 * @param entity
-	 *            the entity
+	 * @param entity the entity
 	 * @return
 	 */
 	protected T findIdenticalEntity(T entity) {
@@ -242,8 +223,7 @@ public abstract class BaseServiceImpl<ID, T extends AbstractEntity<ID>> implemen
 	 * Checks if there is an entity that is identical to this one Subclasses must
 	 * override the findIdenticalEntity method to perform the actual calculation
 	 * 
-	 * @param t
-	 *            the entity to check
+	 * @param t the entity to check
 	 * @return
 	 */
 	protected final boolean identicalEntityExists(T t) {

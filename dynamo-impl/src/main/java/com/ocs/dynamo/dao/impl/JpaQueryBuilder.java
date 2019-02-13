@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Tuple;
@@ -28,7 +29,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Fetch;
 import javax.persistence.criteria.FetchParent;
-import javax.persistence.criteria.From;
+import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Path;
@@ -42,8 +43,10 @@ import org.apache.commons.lang3.StringUtils;
 import com.google.common.collect.Lists;
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.dao.FetchJoinInformation;
+import com.ocs.dynamo.dao.QueryFunction;
 import com.ocs.dynamo.dao.SortOrder;
 import com.ocs.dynamo.dao.SortOrders;
+import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.filter.And;
 import com.ocs.dynamo.filter.Between;
 import com.ocs.dynamo.filter.Compare;
@@ -70,10 +73,8 @@ public final class JpaQueryBuilder {
 	/**
 	 * Adds fetch join information to a query root
 	 * 
-	 * @param root
-	 *            the query root
-	 * @param fetchJoins
-	 *            the fetch joins
+	 * @param root       the query root
+	 * @param fetchJoins the fetch joins
 	 * @return <code>true</code> if the fetches include a collection,
 	 *         <code>false</code> otherwise
 	 */
@@ -101,14 +102,10 @@ public final class JpaQueryBuilder {
 	/**
 	 * Adds the "order by" clause to a JPA 2 criteria query
 	 * 
-	 * @param builder
-	 *            the criteria builder
-	 * @param cq
-	 *            the criteria query
-	 * @param root
-	 *            the query root
-	 * @param sortOrders
-	 *            the sort orders
+	 * @param builder    the criteria builder
+	 * @param cq         the criteria query
+	 * @param root       the query root
+	 * @param sortOrders the sort orders
 	 * @return
 	 */
 	private static <T, R> CriteriaQuery<R> addSortInformation(CriteriaBuilder builder, CriteriaQuery<R> cq,
@@ -119,16 +116,11 @@ public final class JpaQueryBuilder {
 	/**
 	 * Adds the "order by" clause to a JPA 2 criteria query
 	 *
-	 * @param builder
-	 *            the criteria builder
-	 * @param cq
-	 *            the criteria query
-	 * @param root
-	 *            the query root
-	 * @param multiSelect
-	 *            optional properties, when supplied applied as multi select
-	 * @param sortOrders
-	 *            the sort orders
+	 * @param builder     the criteria builder
+	 * @param cq          the criteria query
+	 * @param root        the query root
+	 * @param multiSelect optional properties, when supplied applied as multi select
+	 * @param sortOrders  the sort orders
 	 * @return
 	 */
 	private static <T, R> CriteriaQuery<R> addSortInformation(CriteriaBuilder builder, CriteriaQuery<R> cq,
@@ -140,7 +132,7 @@ public final class JpaQueryBuilder {
 		if (sortOrders != null && sortOrders.length > 0) {
 			List<javax.persistence.criteria.Order> orders = new ArrayList<>();
 			for (SortOrder sortOrder : sortOrders) {
-				Expression<?> property = getPropertyPath(root, sortOrder.getProperty());
+				Expression<?> property = getPropertyPath(root, sortOrder.getProperty(), true);
 				ms.add(property);
 				orders.add(sortOrder.isAscending() ? builder.asc(property) : builder.desc(property));
 			}
@@ -155,12 +147,9 @@ public final class JpaQueryBuilder {
 	/**
 	 * Creates a predicate based on an "And" filter
 	 * 
-	 * @param builder
-	 *            the criteria builder
-	 * @param root
-	 *            the root object
-	 * @param filter
-	 *            the "And" filter
+	 * @param builder the criteria builder
+	 * @param root    the root object
+	 * @param filter  the "And" filter
 	 * @return
 	 */
 	private static Predicate createAndPredicate(CriteriaBuilder builder, Root<?> root, Filter filter,
@@ -184,12 +173,9 @@ public final class JpaQueryBuilder {
 	/**
 	 * Creates a predicate based on a "Compare" filter
 	 * 
-	 * @param builder
-	 *            the criteria builder
-	 * @param root
-	 *            the query root
-	 * @param filter
-	 *            the Compare filter
+	 * @param builder the criteria builder
+	 * @param root    the query root
+	 * @param filter  the Compare filter
 	 * @return
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -208,8 +194,7 @@ public final class JpaQueryBuilder {
 			value = ((String) value).replace('%', ' ').trim();
 
 			String str = (String) value;
-			if (str != null
-					&& StringUtils.isNumeric(str.replaceAll("\\.", "").replaceAll(",", ""))) {
+			if (str != null && StringUtils.isNumeric(str.replaceAll("\\.", "").replaceAll(",", ""))) {
 				// first remove all periods (which may be used as
 				// thousand
 				// separators), then replace comma by period
@@ -251,10 +236,8 @@ public final class JpaQueryBuilder {
 	/**
 	 * Sets any parameter values on the query
 	 * 
-	 * @param query
-	 *            the query
-	 * @param pars
-	 *            the parameter values
+	 * @param query the query
+	 * @param pars  the parameter values
 	 */
 	public static void setParameters(TypedQuery<?> query, Map<String, Object> pars) {
 		for (Entry<String, Object> entry : pars.entrySet()) {
@@ -265,14 +248,10 @@ public final class JpaQueryBuilder {
 	/**
 	 * Creates a query that performs a count
 	 * 
-	 * @param entityManager
-	 *            the entity manager
-	 * @param entityClass
-	 *            the entity class
-	 * @param filter
-	 *            the filter to apply
-	 * @param distinct
-	 *            whether to return only distinct results
+	 * @param entityManager the entity manager
+	 * @param entityClass   the entity class
+	 * @param filter        the filter to apply
+	 * @param distinct      whether to return only distinct results
 	 * @return
 	 */
 	public static <T> TypedQuery<Long> createCountQuery(EntityManager entityManager, Class<T> entityClass,
@@ -310,7 +289,7 @@ public final class JpaQueryBuilder {
 		Root<T> root = cq.from(entityClass);
 
 		// select only the distinctField
-		cq.multiselect(root.get(distinctField));
+		cq.multiselect(getPropertyPath(root, distinctField, true));
 
 		// Set where clause
 		Map<String, Object> pars = createParameterMap();
@@ -330,16 +309,11 @@ public final class JpaQueryBuilder {
 	/**
 	 * Creates a query that fetches objects based on their IDs
 	 * 
-	 * @param entityManager
-	 *            the entity manager
-	 * @param entityClass
-	 *            the entity class
-	 * @param ids
-	 *            the IDs of the desired entities
-	 * @param sortOrders
-	 *            the sorting information
-	 * @param fetchJoins
-	 *            the desired fetch joins
+	 * @param entityManager the entity manager
+	 * @param entityClass   the entity class
+	 * @param ids           the IDs of the desired entities
+	 * @param sortOrders    the sorting information
+	 * @param fetchJoins    the desired fetch joins
 	 * @return
 	 */
 	@SuppressWarnings("rawtypes")
@@ -365,18 +339,13 @@ public final class JpaQueryBuilder {
 		return query;
 	}
 
-
 	/**
 	 * Create a query for fetching a single object
 	 * 
-	 * @param entityManager
-	 *            the entity manager
-	 * @param entityClass
-	 *            the entity class
-	 * @param id
-	 *            ID of the object to return
-	 * @param fetchJoins
-	 *            fetch joins to include
+	 * @param entityManager the entity manager
+	 * @param entityClass   the entity class
+	 * @param id            ID of the object to return
+	 * @param fetchJoins    fetch joins to include
 	 * @return
 	 */
 	public static <ID, T> TypedQuery<T> createFetchSingleObjectQuery(EntityManager entityManager, Class<T> entityClass,
@@ -416,14 +385,10 @@ public final class JpaQueryBuilder {
 	 * Creates a query for retrieving the IDs of the entities that match the
 	 * provided filter
 	 * 
-	 * @param entityManager
-	 *            the entity manager
-	 * @param entityClass
-	 *            the entity class
-	 * @param filter
-	 *            the filter to apply
-	 * @param sortOrder
-	 *            the sorting to apply
+	 * @param entityManager the entity manager
+	 * @param entityClass   the entity class
+	 * @param filter        the filter to apply
+	 * @param sortOrder     the sorting to apply
 	 * @return
 	 */
 	public static <T> TypedQuery<Tuple> createIdQuery(EntityManager entityManager, Class<T> entityClass, Filter filter,
@@ -510,12 +475,9 @@ public final class JpaQueryBuilder {
 	/**
 	 * Creates a JPA2 predicate based on a Filter
 	 * 
-	 * @param filter
-	 *            the filter
-	 * @param builder
-	 *            the criteria builder
-	 * @param root
-	 *            the entity root
+	 * @param filter  the filter
+	 * @param builder the criteria builder
+	 * @param root    the entity root
 	 * @return
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -555,6 +517,11 @@ public final class JpaQueryBuilder {
 			if (in.getValues() != null && !in.getValues().isEmpty()) {
 				Expression<?> exp = getPropertyPath(root, in.getPropertyId());
 				String parName = in.getPropertyId().replace('.', '_');
+				// Support multiple parameters
+				if (parameters.containsKey(parName)) {
+					parName = parName + System.currentTimeMillis();
+				}
+
 				ParameterExpression<Collection> p = builder.parameter(Collection.class, parName);
 				parameters.put(parName, in.getValues());
 				return exp.in(p);
@@ -570,28 +537,25 @@ public final class JpaQueryBuilder {
 	}
 
 	/**
-	 * Creates a query that fetches properties instead of entities
-	 *
-	 * @param filter
-	 *            the filter
-	 * @param entityManager
-	 *            the entity manager
-	 * @param entityClass
-	 *            the entity class
-	 * @param selectProperties
-	 *            the properties to use in the selection
-	 * @param sortOrders
-	 *            the sorting information
-	 * @param fetchJoins
-	 *            the desired fetch joins
+	 * Creates a query that fetches properties instead of entities. Supports
+	 * aggregated functions; when used will automatically add group by expressions
+	 * for all properties in the select list without an aggregated function.
+	 * 
+	 * @param filter           the filter
+	 * @param entityManager    the entity manager
+	 * @param entityClass      the entity class
+	 * @param selectProperties the properties to use in the selection
+	 * @param sortOrders       the sorting information
 	 * @return
 	 */
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static <T> TypedQuery<Object[]> createSelectQuery(Filter filter, EntityManager entityManager,
-			Class<T> entityClass, String[] selectProperties, SortOrders sortOrders, FetchJoinInformation[] fetchJoins) {
+			Class<T> entityClass, String[] selectProperties, SortOrders sortOrders) {
 		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
 		CriteriaQuery<Object[]> cq = builder.createQuery(Object[].class);
 		Root<T> root = cq.from(entityClass);
+		ArrayList<Expression<?>> grouping = new ArrayList<>();
+		boolean aggregated = false;
 
 		// Set select
 		if (selectProperties != null && selectProperties.length > 0) {
@@ -601,23 +565,52 @@ public final class JpaQueryBuilder {
 
 				// Support nested properties
 				String[] ppath = sp.split("\\.");
-				Path path = root;
-				for (String prop : ppath) {
-					path = path.get(prop);
+				// Test for function
+				QueryFunction f = null;
+				Path path = null;
+				try {
+					if (ppath.length > 1) {
+						f = QueryFunction.valueOf(ppath[ppath.length - 1]);
+						path = getPropertyPath(root, sp.substring(0, sp.lastIndexOf(".")), true);
+					}
+				} catch (Exception e) {
+					// Do nothing; not a supported function; assume property name
 				}
-				selections[i] = path;
+				if (f != null) {
+					switch (f) {
+					case AF_AVG:
+						selections[i] = builder.avg(path);
+						break;
+					case AF_COUNT:
+						selections[i] = builder.count(path);
+						break;
+					case AF_COUNT_DISTINCT:
+						selections[i] = builder.countDistinct(path);
+						break;
+					case AF_SUM:
+						selections[i] = builder.sum(path);
+						break;
+					default:
+						throw new OCSRuntimeException("Unsupported function");
+					}
+					aggregated = true;
+				} else {
+					path = getPropertyPath(root, sp, true);
+					selections[i] = path;
+					grouping.add(path);
+				}
 				i++;
 			}
 			cq.select(builder.array(selections));
 		}
 
-		boolean distinct = addFetchJoinInformation(root, fetchJoins);
-		cq.distinct(distinct);
-
 		Map<String, Object> pars = createParameterMap();
 		Predicate p = createPredicate(filter, builder, root, pars);
 		if (p != null) {
 			cq.where(p);
+		}
+		if (aggregated) {
+			cq.groupBy(grouping);
 		}
 		cq = addSortInformation(builder, cq, root, sortOrders == null ? null : sortOrders.toArray());
 		TypedQuery<Object[]> query = entityManager.createQuery(cq);
@@ -628,14 +621,10 @@ public final class JpaQueryBuilder {
 	/**
 	 * Creates a query that simply selects some objects based on some filter
 	 * 
-	 * @param filter
-	 *            the filter
-	 * @param entityManager
-	 *            the entity manager
-	 * @param entityClass
-	 *            the entity class
-	 * @param sortOrder
-	 *            the sorting information
+	 * @param filter        the filter
+	 * @param entityManager the entity manager
+	 * @param entityClass   the entity class
+	 * @param sortOrder     the sorting information
 	 * @return
 	 */
 	public static <T> TypedQuery<T> createSelectQuery(Filter filter, EntityManager entityManager, Class<T> entityClass,
@@ -662,16 +651,11 @@ public final class JpaQueryBuilder {
 	/**
 	 * Creates a query to fetch an object based on a value of a unique property
 	 * 
-	 * @param entityManager
-	 *            the entity manager
-	 * @param entityClass
-	 *            the entity class
-	 * @param fetchJoins
-	 *            the fetch joins to include
-	 * @param propertyName
-	 *            name of the property to search on
-	 * @param value
-	 *            value of the property to search on
+	 * @param entityManager the entity manager
+	 * @param entityClass   the entity class
+	 * @param fetchJoins    the fetch joins to include
+	 * @param propertyName  name of the property to search on
+	 * @param value         value of the property to search on
 	 * @return
 	 */
 	public static <T> CriteriaQuery<T> createUniquePropertyFetchQuery(EntityManager entityManager, Class<T> entityClass,
@@ -726,56 +710,81 @@ public final class JpaQueryBuilder {
 	/**
 	 * Gets property path.
 	 * 
-	 * @param root
-	 *            the root where path starts form
-	 * @param propertyId
-	 *            the property ID
+	 * @param root       the root where path starts form
+	 * @param propertyId the property ID
 	 * @return the path to property
 	 */
 	private static Path<Object> getPropertyPath(Root<?> root, Object propertyId) {
-		return getPropertyPath(root, propertyId, false);
+		return getPropertyPath(root, propertyId, true);
 	}
 
 	/**
 	 * Gets property path.
-	 *
-	 * @param root
-	 *            the root where path starts form
-	 * @param propertyId
-	 *            the property ID
-	 * @param join
-	 *            set to true if you want implicit joins to be created for ALL collections
+	 * 
+	 * @param root       the root where path starts form
+	 * @param propertyId the property ID
+	 * @param join       set to true if you want implicit joins to be created for
+	 *                   ALL collections
 	 * @return the path to property
 	 */
+	@SuppressWarnings("unchecked")
 	private static Path<Object> getPropertyPath(Root<?> root, Object propertyId, boolean join) {
 		String[] propertyIdParts = ((String) propertyId).split("\\.");
 
-		Path<Object> path = null;
+		Path<?> path = null;
+		Join<?, ?> curJoin = null;
 		for (int i = 0; i < propertyIdParts.length; i++) {
 			String part = propertyIdParts[i];
-			if (path == null) {
-				path = root.get(part);
-			} else {
-				path = path.get(part);
-			}
-			// Just one collection in the path supported!
-			if (join && java.util.Collection.class.isAssignableFrom(path.type().getJavaType())) {
-				path = root.join(propertyIdParts[0]);
-				for (int k = 1; k <= i; k++) {
-					part = propertyIdParts[k];
-					path = ((From<?, ?>) path).join(part);
+			try {
+				if (path == null) {
+					path = root.get(part);
+				} else {
+					path = path.get(part);
+				}
+				// Check collection join
+				if (join && Collection.class.isAssignableFrom(path.type().getJavaType())) {
+					// Reuse existing join
+					Join<?, ?> detailJoin = null;
+					Collection<Join<?, ?>> joins = (Collection<Join<?, ?>>) (curJoin == null ? root.getJoins()
+							: curJoin.getJoins());
+					if (joins != null) {
+						for (Join<?, ?> j : (Set<Join<?, ?>>) joins) {
+							if (propertyIdParts[i].equals(j.getAttribute().getName())) {
+								path = j;
+								detailJoin = j;
+								break;
+							}
+						}
+					}
+					// when no existing join then add new
+					if (detailJoin == null) {
+						if (curJoin == null) {
+							curJoin = root.join(propertyIdParts[i]);
+						} else {
+							curJoin = curJoin.join(propertyIdParts[i]);
+						}
+						path = curJoin;
+					}
+				}
+			} catch (Exception e) {
+				// FIXME When hibernate mapping exception occurs due to bug HHH-6562 then try
+				// join. Is solved from
+				// hibernate v5.2.3
+				if ("MappingException".equals(e.getClass().getSimpleName())) {
+					path = root.join(part);
+				} else {
+					throw e;
 				}
 			}
 		}
-		return path;
+		return (Path<Object>) path;
 	}
 
 	/**
 	 * Indicates whether at least one of the specified fetches is a fetch that
 	 * fetches a collection
 	 * 
-	 * @param parent
-	 *            the fetch parent
+	 * @param parent the fetch parent
 	 * @return
 	 */
 	private static boolean isCollectionFetch(FetchParent<?, ?> parent) {
@@ -793,8 +802,7 @@ public final class JpaQueryBuilder {
 	/**
 	 * Translates a JoinType
 	 * 
-	 * @param type
-	 *            the type to translate
+	 * @param type the type to translate
 	 * @return
 	 */
 	private static JoinType translateJoinType(com.ocs.dynamo.dao.JoinType type) {

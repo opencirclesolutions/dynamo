@@ -24,10 +24,8 @@ import com.ocs.dynamo.filter.Filter;
 /**
  * The interface for a service that manages an entity
  * 
- * @param <ID>
- *            the type of the primary key of the entity
- * @param <T>
- *            the type of the entity
+ * @param <ID> the type of the primary key of the entity
+ * @param <T> the type of the entity
  */
 public interface BaseService<ID, T extends AbstractEntity<ID>> {
 
@@ -41,10 +39,8 @@ public interface BaseService<ID, T extends AbstractEntity<ID>> {
 	/**
 	 * Returns the number of entities that match the provided filter
 	 * 
-	 * @param filter
-	 *            the filter
-	 * @param distinct
-	 *            whether to return only distinct results
+	 * @param filter   the filter
+	 * @param distinct whether to return only distinct results
 	 * @return
 	 */
 	long count(Filter filter, boolean distinct);
@@ -59,26 +55,22 @@ public interface BaseService<ID, T extends AbstractEntity<ID>> {
 	/**
 	 * Deletes all entities in the provided list
 	 * 
-	 * @param list
-	 *            the list of entities to delete
+	 * @param list the list of entities to delete
 	 */
 	void delete(List<T> list);
 
 	/**
 	 * Deletes the provided entity
 	 * 
-	 * @param entity
-	 *            the entity to delete
+	 * @param entity the entity to delete
 	 */
 	void delete(T entity);
 
 	/**
 	 * Fetches entities that match the provided filter
 	 * 
-	 * @param filter
-	 *            the filter ot match
-	 * @param joins
-	 *            the desired relations to fetch
+	 * @param filter the filter ot match
+	 * @param joins  the desired relations to fetch
 	 * @return
 	 */
 	List<T> fetch(Filter filter, FetchJoinInformation... joins);
@@ -86,14 +78,10 @@ public interface BaseService<ID, T extends AbstractEntity<ID>> {
 	/**
 	 * Fetches a page of entities that match the provided filter
 	 * 
-	 * @param filter
-	 *            the filter
-	 * @param pageNumber
-	 *            the page number of the page to fetch
-	 * @param pageSize
-	 *            the page size
-	 * @param joins
-	 *            the desired relations to fetch
+	 * @param filter     the filter
+	 * @param pageNumber the page number of the page to fetch
+	 * @param pageSize   the page size
+	 * @param joins      the desired relations to fetch
 	 * @return
 	 */
 	List<T> fetch(Filter filter, int pageNumber, int pageSize, FetchJoinInformation... joins);
@@ -101,16 +89,11 @@ public interface BaseService<ID, T extends AbstractEntity<ID>> {
 	/**
 	 * Fetches a page of entities that match the provided filter
 	 * 
-	 * @param filter
-	 *            the filter
-	 * @param pageNumber
-	 *            the page number of the page to fetch
-	 * @param pageSize
-	 *            the page size
-	 * @param sortOrders
-	 *            any sort orders to apply to the search results
-	 * @param joins
-	 *            the desired relations to fetch
+	 * @param filter     the filter
+	 * @param pageNumber the page number of the page to fetch
+	 * @param pageSize   the page size
+	 * @param sortOrders any sort orders to apply to the search results
+	 * @param joins      the desired relations to fetch
 	 * @return
 	 */
 	List<T> fetch(Filter filter, int pageNumber, int pageSize, SortOrders sortOrders, FetchJoinInformation... joins);
@@ -118,48 +101,31 @@ public interface BaseService<ID, T extends AbstractEntity<ID>> {
 	/**
 	 * Fetches and sorts properties (NOT ENTITIES) that match the provided filter
 	 * 
-	 * @param filter
-	 *            the filter
-	 * @param selectProperties
-	 *            the properties to use in the selection
-	 * @param sortOrders
-	 *            the sort order
-	 * @param joins
-	 *            the desired relations to fetch
+	 * @param filter           the filter
+	 * @param selectProperties the properties to use in the selection
+	 * @param sortOrders       the sort order
 	 * @return
 	 */
-	List<Object[]> fetchSelect(Filter filter, String[] selectProperties, SortOrders sortOrders,
-			FetchJoinInformation... joins);
+	List<?> findSelect(Filter filter, String[] selectProperties, SortOrders sortOrders);
 
 	/**
 	 * Fetches and sorts properties (NOT ENTITIES) that match the provided filter
 	 * 
-	 * @param filter
-	 *            the filter
-	 * @param selectProperties
-	 *            the properties to use in the selection
-	 * @param pageNumber
-	 *            the page number of the page to fetch
-	 * @param pageSize
-	 *            the page size
-	 * @param sortOrders
-	 *            the sort order
-	 * @param joins
-	 *            the desired relations to fetch
+	 * @param filter           the filter
+	 * @param selectProperties the properties to use in the selection
+	 * @param pageNumber       the page number of the page to fetch
+	 * @param pageSize         the page size
+	 * @param sortOrders       the sort order
 	 * @return
 	 */
-	List<Object[]> fetchSelect(Filter filter, String[] selectProperties, int pageNumber, int pageSize,
-			SortOrders sortOrders, FetchJoinInformation... joins);
+	List<?> findSelect(Filter filter, String[] selectProperties, int pageNumber, int pageSize, SortOrders sortOrders);
 
 	/**
 	 * Fetches a list of entities that match the provided filter
 	 * 
-	 * @param filter
-	 *            the filter
-	 * @param order
-	 *            the sort orders to apply
-	 * @param joins
-	 *            the desired relations to fetch
+	 * @param filter the filter
+	 * @param order  the sort orders to apply
+	 * @param joins  the desired relations to fetch
 	 * @return
 	 */
 	List<T> fetch(Filter filter, SortOrders orders, FetchJoinInformation... joins);
@@ -167,10 +133,8 @@ public interface BaseService<ID, T extends AbstractEntity<ID>> {
 	/**
 	 * Fetches an entity (and its relations) based on its ID
 	 * 
-	 * @param id
-	 *            the ID of the entity
-	 * @param joins
-	 *            the desired relations to fetch
+	 * @param id    the ID of the entity
+	 * @param joins the desired relations to fetch
 	 * @return
 	 */
 	T fetchById(ID id, FetchJoinInformation... joins);
@@ -178,10 +142,8 @@ public interface BaseService<ID, T extends AbstractEntity<ID>> {
 	/**
 	 * Fetches the entities identified by the provided IDs
 	 * 
-	 * @param ids
-	 *            the IDs
-	 * @param joins
-	 *            desired relations to fetch
+	 * @param ids   the IDs
+	 * @param joins desired relations to fetch
 	 * @return
 	 */
 	List<T> fetchByIds(List<ID> ids, FetchJoinInformation... joins);
@@ -189,12 +151,9 @@ public interface BaseService<ID, T extends AbstractEntity<ID>> {
 	/**
 	 * Fetches the entities identified by the provided IDs
 	 * 
-	 * @param ids
-	 *            the IDs of the entities to fetch
-	 * @param sortOrders
-	 *            the sort orders to apply
-	 * @param joins
-	 *            the desired relations to fetch
+	 * @param ids        the IDs of the entities to fetch
+	 * @param sortOrders the sort orders to apply
+	 * @param joins      the desired relations to fetch
 	 * @return
 	 */
 	List<T> fetchByIds(List<ID> ids, SortOrders sortOrders, FetchJoinInformation... joins);
@@ -202,14 +161,10 @@ public interface BaseService<ID, T extends AbstractEntity<ID>> {
 	/**
 	 * Fetches an entity based on a unique property
 	 * 
-	 * @param propertyName
-	 *            the name of the property
-	 * @param value
-	 *            the value of the property
-	 * @param caseSensitive
-	 *            indicates whether the value is case sensitive
-	 * @param joins
-	 *            the desired relations to fetch
+	 * @param propertyName  the name of the property
+	 * @param value         the value of the property
+	 * @param caseSensitive indicates whether the value is case sensitive
+	 * @param joins         the desired relations to fetch
 	 * 
 	 * @return
 	 */
@@ -218,8 +173,7 @@ public interface BaseService<ID, T extends AbstractEntity<ID>> {
 	/**
 	 * Returns all entities that match the provided filter
 	 * 
-	 * @param filter
-	 *            the filter
+	 * @param filter the filter
 	 * @return
 	 */
 	List<T> find(Filter filter);
@@ -228,10 +182,8 @@ public interface BaseService<ID, T extends AbstractEntity<ID>> {
 	 * Returns all entities that match the provided filter, sorted according to the
 	 * provided sort orders
 	 * 
-	 * @param filter
-	 *            the filter
-	 * @param orders
-	 *            the sort order
+	 * @param filter the filter
+	 * @param orders the sort order
 	 * @return
 	 */
 	List<T> find(Filter filter, SortOrder... orders);
@@ -246,8 +198,7 @@ public interface BaseService<ID, T extends AbstractEntity<ID>> {
 	/**
 	 * Returns a list of all entities, sorted according to the provided sort orders
 	 * 
-	 * @param sort
-	 *            the desired sort orders
+	 * @param sort the desired sort orders
 	 * @return
 	 */
 	List<T> findAll(SortOrder... sortOrders);
@@ -255,8 +206,7 @@ public interface BaseService<ID, T extends AbstractEntity<ID>> {
 	/**
 	 * Finds an object based on its ID
 	 * 
-	 * @param id
-	 *            the ID
+	 * @param id the ID
 	 * @return the object identified by the ID, or <code>null</code> if it cannot be
 	 *         found
 	 */
@@ -265,12 +215,9 @@ public interface BaseService<ID, T extends AbstractEntity<ID>> {
 	/**
 	 * Finds an object based on a unique property value
 	 * 
-	 * @param propertyName
-	 *            the name of the property
-	 * @param value
-	 *            the desired value of the property
-	 * @param caseSensitive
-	 *            whether the match is case sensitive
+	 * @param propertyName  the name of the property
+	 * @param value         the desired value of the property
+	 * @param caseSensitive whether the match is case sensitive
 	 * @return
 	 */
 	T findByUniqueProperty(String propertyName, Object value, boolean caseSensitive);
@@ -279,14 +226,10 @@ public interface BaseService<ID, T extends AbstractEntity<ID>> {
 	 * Returns all distinct values that appear in a certain field for all entities
 	 * that match the provided filter
 	 * 
-	 * @param filter
-	 *            the filter
-	 * @param distinctField
-	 *            the field for which to return the distinct values
-	 * @param resultType
-	 *            the type of the distinct values
-	 * @param orders
-	 *            the sort orders to apply
+	 * @param filter        the filter
+	 * @param distinctField the field for which to return the distinct values
+	 * @param resultType    the type of the distinct values
+	 * @param orders        the sort orders to apply
 	 * @return
 	 */
 	<S> List<S> findDistinct(Filter filter, String distinctField, Class<S> resultType, SortOrder... orders);
@@ -294,12 +237,9 @@ public interface BaseService<ID, T extends AbstractEntity<ID>> {
 	/**
 	 * Finds distinct elements in a collection table
 	 * 
-	 * @param tableName
-	 *            the name of the table
-	 * @param distinctField
-	 *            the name of the field
-	 * @param elementType
-	 *            the type of the values to return
+	 * @param tableName     the name of the table
+	 * @param distinctField the name of the field
+	 * @param elementType   the type of the values to return
 	 * @return
 	 */
 	<S> List<S> findDistinctInCollectionTable(String tableName, String distinctField, Class<S> elementType);
@@ -307,10 +247,8 @@ public interface BaseService<ID, T extends AbstractEntity<ID>> {
 	/**
 	 * Returns the IDs of the entities that match the provided filter
 	 * 
-	 * @param filter
-	 *            the filter
-	 * @param orders
-	 *            the desired sorting
+	 * @param filter the filter
+	 * @param orders the desired sorting
 	 * @return
 	 */
 	List<ID> findIds(Filter filter, SortOrder... orders);
@@ -318,12 +256,9 @@ public interface BaseService<ID, T extends AbstractEntity<ID>> {
 	/**
 	 * Returns the IDs of the entities that match the provided filter
 	 *
-	 * @param filter
-	 *            the filter
-	 * @param maxResults
-	 * 			  limit the amount of results
-	 * @param orders
-	 *            the desired sorting
+	 * @param filter     the filter
+	 * @param maxResults limit the amount of results
+	 * @param orders     the desired sorting
 	 * @return
 	 */
 	List<ID> findIds(Filter filter, Integer maxResults, SortOrder... orders);
@@ -338,8 +273,7 @@ public interface BaseService<ID, T extends AbstractEntity<ID>> {
 	/**
 	 * Saves the provide list of entities
 	 * 
-	 * @param list
-	 *            the list of entities
+	 * @param list the list of entities
 	 * @return
 	 */
 	List<T> save(List<T> list);
@@ -347,8 +281,7 @@ public interface BaseService<ID, T extends AbstractEntity<ID>> {
 	/**
 	 * Saves the provided entity
 	 * 
-	 * @param entity
-	 *            the entity to save
+	 * @param entity the entity to save
 	 * @return
 	 */
 	T save(T entity);
@@ -356,12 +289,9 @@ public interface BaseService<ID, T extends AbstractEntity<ID>> {
 	/**
 	 * Updates, adds, and deletes
 	 * 
-	 * @param toUpdate
-	 *            to update
-	 * @param toAdd
-	 *            to add
-	 * @param toDelete
-	 *            to delete
+	 * @param toUpdate to update
+	 * @param toAdd    to add
+	 * @param toDelete to delete
 	 */
 	void update(List<T> toUpdate, List<T> toAdd, List<T> toDelete);
 

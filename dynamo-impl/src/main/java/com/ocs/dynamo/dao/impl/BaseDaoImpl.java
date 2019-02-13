@@ -14,6 +14,7 @@
 package com.ocs.dynamo.dao.impl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -153,41 +154,6 @@ public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements B
 		return fetch(filter, null, sortOrders, joins);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.ocs.dynamo.dao.BaseDao#fetchSelect(com.ocs.dynamo.filter.Filter,
-	 * java.lang.String[], com.ocs.dynamo.dao.SortOrders,
-	 * com.ocs.dynamo.dao.FetchJoinInformation[])
-	 */
-	@Override
-	public List<Object[]> fetchSelect(Filter filter, String[] selectProperties, SortOrders orders,
-			FetchJoinInformation... joins) {
-		TypedQuery<Object[]> query = JpaQueryBuilder.createSelectQuery(filter, getEntityManager(), getEntityClass(),
-				selectProperties, orders, (joins != null && joins.length > 0) ? joins : getFetchJoins());
-		return query.getResultList();
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.ocs.dynamo.dao.BaseDao#fetchSelect(com.ocs.dynamo.filter.Filter,
-	 * java.lang.String[], com.ocs.dynamo.dao.Pageable,
-	 * com.ocs.dynamo.dao.FetchJoinInformation[])
-	 */
-	@Override
-	public List<Object[]> fetchSelect(Filter filter, String[] selectProperties, Pageable pageable,
-			FetchJoinInformation... joins) {
-		SortOrders sortOrders = pageable == null ? null : pageable.getSortOrders();
-		TypedQuery<Object[]> query = JpaQueryBuilder.createSelectQuery(filter, getEntityManager(), getEntityClass(),
-				selectProperties, sortOrders, (joins != null && joins.length > 0) ? joins : getFetchJoins());
-		if (pageable != null) {
-			query.setFirstResult(pageable.getOffset());
-			query.setMaxResults(pageable.getPageSize());
-		}
-		return query.getResultList();
-	}
-
 	@Override
 	public T fetchById(ID id, FetchJoinInformation... joins) {
 		TypedQuery<T> query = JpaQueryBuilder.createFetchSingleObjectQuery(entityManager, getEntityClass(), id,
@@ -221,6 +187,25 @@ public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements B
 	}
 
 	@Override
+	public List<?> findSelect(Filter filter, String[] selectProperties, SortOrders orders) {
+		TypedQuery<Object[]> query = JpaQueryBuilder.createSelectQuery(filter, getEntityManager(), getEntityClass(),
+				selectProperties, orders);
+		return query.getResultList();
+	}
+
+	@Override
+	public List<?> findSelect(Filter filter, String[] selectProperties, Pageable pageable) {
+		SortOrders sortOrders = pageable == null ? null : pageable.getSortOrders();
+		TypedQuery<Object[]> query = JpaQueryBuilder.createSelectQuery(filter, getEntityManager(), getEntityClass(),
+				selectProperties, sortOrders);
+		if (pageable != null) {
+			query.setFirstResult(pageable.getOffset());
+			query.setMaxResults(pageable.getPageSize());
+		}
+		return query.getResultList();
+	}
+
+	@Override
 	public List<T> find(Filter filter) {
 		return fetch(filter, null, null, (FetchJoinInformation[]) null);
 	}
@@ -242,7 +227,6 @@ public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements B
 			query.setFirstResult(pageable.getOffset());
 			query.setMaxResults(pageable.getPageSize());
 		}
-
 		return query.getResultList();
 	}
 
@@ -307,11 +291,6 @@ public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements B
 	}
 
 	@Override
-	public List<ID> findIds(Filter filter, SortOrder... sortOrders) {
-		return findIds(filter, null, sortOrders);
-	}
-
-	@Override
 	@SuppressWarnings("unchecked")
 	public List<ID> findIds(Filter filter, Integer maxResults, SortOrder... sortOrders) {
 		TypedQuery<Tuple> query = JpaQueryBuilder.createIdQuery(entityManager, getEntityClass(), filter, sortOrders);
@@ -327,6 +306,11 @@ public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements B
 		}
 
 		return result;
+	}
+
+	@Override
+	public List<ID> findIds(Filter filter, SortOrder... sortOrders) {
+		return findIds(filter, null, sortOrders);
 	}
 
 	@Override
@@ -386,4 +370,5 @@ public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements B
 		}
 		return t;
 	}
+
 }
