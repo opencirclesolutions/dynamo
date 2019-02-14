@@ -352,7 +352,7 @@ public class ElementCollectionGrid<ID extends Serializable, U extends AbstractEn
 							BigDecimal.valueOf(attributeModel.getMaxValue())));
 				}
 				if (attributeModel.getMinValue() != null) {
-					iBuilder.withValidator(new BigDecimalRangeValidator(message("ocs.value.too.high"),
+					iBuilder.withValidator(new BigDecimalRangeValidator(message("ocs.value.too.low"),
 							BigDecimal.valueOf(attributeModel.getMinValue()), null));
 				}
 			}

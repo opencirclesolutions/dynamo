@@ -167,7 +167,7 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 		 */
 		FilterRegion(FilterListener<T> listener) {
 			this.listener = listener;
-			layout = new DefaultHorizontalLayout();
+			layout = new DefaultHorizontalLayout(true, true, true);
 
 			removeButton = new Button(message("ocs.remove"));
 			removeButton.setIcon(VaadinIcons.TRASH);

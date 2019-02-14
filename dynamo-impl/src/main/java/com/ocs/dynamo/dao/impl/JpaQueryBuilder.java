@@ -400,9 +400,9 @@ public final class JpaQueryBuilder {
 	private static Predicate createLikePredicate(CriteriaBuilder builder, Root<?> root, Filter filter) {
 		Like like = (Like) filter;
 		if (like.isCaseSensitive()) {
-			return builder.like((Expression) getPropertyPath(root, like.getPropertyId()), like.getValue());
+			return builder.like((Expression) getPropertyPath(root, like.getPropertyId(), true), like.getValue());
 		} else {
-			return builder.like(builder.lower((Expression) getPropertyPath(root, like.getPropertyId())),
+			return builder.like(builder.lower((Expression) getPropertyPath(root, like.getPropertyId(), true)),
 					like.getValue().toLowerCase());
 		}
 	}
@@ -419,11 +419,11 @@ public final class JpaQueryBuilder {
 		Modulo modulo = (Modulo) filter;
 		if (modulo.getModExpression() != null) {
 			// compare to a literal expression
-			return builder.equal(builder.mod((Expression) getPropertyPath(root, modulo.getPropertyId()),
-					(Expression) getPropertyPath(root, modulo.getModExpression())), modulo.getResult());
+			return builder.equal(builder.mod((Expression) getPropertyPath(root, modulo.getPropertyId(), true),
+					(Expression) getPropertyPath(root, modulo.getModExpression(), true)), modulo.getResult());
 		} else {
 			// compare to a property
-			return builder.equal(builder.mod((Expression) getPropertyPath(root, modulo.getPropertyId()),
+			return builder.equal(builder.mod((Expression) getPropertyPath(root, modulo.getPropertyId(), true),
 					modulo.getModValue().intValue()), modulo.getResult());
 		}
 	}
@@ -489,13 +489,13 @@ public final class JpaQueryBuilder {
 			return builder.not(createPredicate(not.getFilter(), builder, root, parameters));
 		} else if (filter instanceof Between) {
 			Between between = (Between) filter;
-			Expression property = getPropertyPath(root, between.getPropertyId());
+			Expression property = getPropertyPath(root, between.getPropertyId(), true);
 			return builder.between(property, (Comparable) between.getStartValue(), (Comparable) between.getEndValue());
 		} else if (filter instanceof Compare) {
 			return createComparePredicate(builder, root, filter);
 		} else if (filter instanceof IsNull) {
 			IsNull isNull = (IsNull) filter;
-			Path p = getPropertyPath(root, isNull.getPropertyId());
+			Path p = getPropertyPath(root, isNull.getPropertyId(), true);
 			if (p.type() != null && java.util.Collection.class.isAssignableFrom(p.type().getJavaType())) {
 				return builder.isEmpty(p);
 			}
@@ -504,11 +504,12 @@ public final class JpaQueryBuilder {
 			return createLikePredicate(builder, root, filter);
 		} else if (filter instanceof Contains) {
 			Contains contains = (Contains) filter;
-			return builder.isMember(contains.getValue(), (Expression) getPropertyPath(root, contains.getPropertyId()));
+			return builder.isMember(contains.getValue(),
+					(Expression) getPropertyPath(root, contains.getPropertyId(), false));
 		} else if (filter instanceof In) {
 			In in = (In) filter;
 			if (in.getValues() != null && !in.getValues().isEmpty()) {
-				Expression<?> exp = getPropertyPath(root, in.getPropertyId());
+				Expression<?> exp = getPropertyPath(root, in.getPropertyId(), true);
 				String parName = in.getPropertyId().replace('.', '_');
 				// Support multiple parameters
 				if (parameters.containsKey(parName)) {
@@ -519,7 +520,7 @@ public final class JpaQueryBuilder {
 				parameters.put(parName, in.getValues());
 				return exp.in(p);
 			} else {
-				Expression exp = getPropertyPath(root, in.getPropertyId());
+				Expression exp = getPropertyPath(root, in.getPropertyId(), true);
 				return exp.in(Lists.newArrayList(-1));
 			}
 		} else if (filter instanceof Modulo) {
@@ -594,7 +595,7 @@ public final class JpaQueryBuilder {
 				try {
 					if (ppath.length > 1) {
 						f = QueryFunction.valueOf(ppath[ppath.length - 1]);
-						path = getPropertyPath(root, sp.substring(0, sp.lastIndexOf(".")), true);
+						path = getPropertyPath(root, sp.substring(0, sp.lastIndexOf('.')), true);
 					}
 				} catch (Exception e) {
 					// Do nothing; not a supported function; assume property name
@@ -707,9 +708,9 @@ public final class JpaQueryBuilder {
 	 * @param propertyId the property ID
 	 * @return the path to property
 	 */
-	private static Path<Object> getPropertyPath(Root<?> root, Object propertyId) {
-		return getPropertyPath(root, propertyId, true);
-	}
+//	private static Path<Object> getPropertyPath(Root<?> root, Object propertyId) {
+//		return getPropertyPath(root, propertyId, false);
+//	}
 
 	/**
 	 * Gets property path.

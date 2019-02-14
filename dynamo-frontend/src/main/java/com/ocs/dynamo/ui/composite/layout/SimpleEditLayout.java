@@ -348,7 +348,7 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 	 * @param buttonBar the button bar
 	 * @param viewMode  the view mode
 	 */
-	protected void postProcessButtonBar(HorizontalLayout buttonBar, boolean viewMode) {
+	protected void postProcessButtonBar(Layout buttonBar, boolean viewMode) {
 		// overwrite in subclasses
 	}
 

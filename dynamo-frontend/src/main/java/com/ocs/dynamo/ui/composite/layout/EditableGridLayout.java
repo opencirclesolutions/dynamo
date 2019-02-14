@@ -187,7 +187,7 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 					@Override
 					protected T createEntity() {
 						return EditableGridLayout.this.createEntity();
-					};
+					}
 
 				};
 				dialog.build();
@@ -354,16 +354,6 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 		wrapper.setMaxResults(getMaxResults());
 		wrapper.build();
 		return wrapper;
-	}
-
-	/**
-	 * This method does not work for this component since the creation of a new
-	 * instance is delegated to the container - use constructEntity instead
-	 */
-	@Override
-	protected T createEntity() {
-		// overwrite in subclasses
-		return super.createEntity();
 	}
 
 	@Override

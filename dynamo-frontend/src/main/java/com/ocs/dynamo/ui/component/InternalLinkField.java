@@ -15,7 +15,6 @@ package com.ocs.dynamo.ui.component;
 
 import java.io.Serializable;
 
-//TODO
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
@@ -32,7 +31,8 @@ import com.vaadin.ui.themes.ValoTheme;
  * 
  * @author Bas Rutten
  *
- * @param <T>
+ * @param <ID> the type of the ID of the entity to link to
+ * @param <T> the type of the entity to link to
  */
 public class InternalLinkField<ID extends Serializable, T extends AbstractEntity<ID>> extends CustomField<T> {
 

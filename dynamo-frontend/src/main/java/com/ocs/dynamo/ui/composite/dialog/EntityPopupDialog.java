@@ -139,7 +139,7 @@ public class EntityPopupDialog<ID extends Serializable, T extends AbstractEntity
 			}
 
 			@Override
-			protected void postProcessButtonBar(HorizontalLayout buttonBar, boolean viewMode) {
+			protected void postProcessButtonBar(Layout buttonBar, boolean viewMode) {
 				EntityPopupDialog.this.postProcessButtonBar(buttonBar, viewMode);
 			}
 
@@ -185,7 +185,7 @@ public class EntityPopupDialog<ID extends Serializable, T extends AbstractEntity
 		return entityModel.getDisplayName();
 	}
 
-	protected void postProcessButtonBar(HorizontalLayout buttonBar, boolean viewMode) {
+	protected void postProcessButtonBar(Layout buttonBar, boolean viewMode) {
 		// overwrite in subclasses when needed
 	}
 
