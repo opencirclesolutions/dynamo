@@ -229,7 +229,7 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 	 * 
 	 * @param container
 	 */
-	protected void doConstructDataProvider(DataProvider<T, SerializablePredicate<T>> provider) {
+	protected void postProcessDataProvider(DataProvider<T, SerializablePredicate<T>> provider) {
 		// overwrite in subclasses
 	}
 

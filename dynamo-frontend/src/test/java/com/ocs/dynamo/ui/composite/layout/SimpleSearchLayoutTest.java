@@ -113,7 +113,8 @@ public class SimpleSearchLayoutTest extends BaseIntegrationTest {
 			}
 
 			@Override
-			protected Component initTab(TestEntity entity, int index, FormOptions fo, boolean newEntity) {
+			protected Component constructComplexDetailModeTab(TestEntity entity, int index, FormOptions fo,
+					boolean newEntity) {
 				detailsTabCreated = true;
 				return new VerticalLayout();
 			}

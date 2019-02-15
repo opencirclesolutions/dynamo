@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.dao.FetchJoinInformation;
@@ -121,14 +122,25 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	 */
 	private Object previousDividerValue;
 
-	// the currently selected item
+	/**
+	 * The currently selected item (in the grid)
+	 */
 	private T selectedItem;
 
-	// whether the grid can manually be sorted
+	/**
+	 * Whether the results grid can be sorted by clicking on the column headers
+	 */
 	private boolean sortEnabled = true;
 
-	// the sort orders
+	/**
+	 * The list of sort orders to apply by default
+	 */
 	private List<SortOrder<?>> sortOrders = new ArrayList<>();
+
+	/**
+	 * Custom code to invoke instead of the regular save logic
+	 */
+	private Consumer<T> customSaveConsumer;
 
 	/**
 	 * Constructor
@@ -188,8 +200,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	}
 
 	/**
-	 * Constructs the "Add"-button that is used to open the form in "new entity"
-	 * mode
+	 * Constructs the Add button that is used to open the form in "new entity" mode
 	 * 
 	 * @return
 	 */
@@ -225,7 +236,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 
 	/**
 	 * Lazily constructs the grid wrapper - subclassed by the framework in order to
-	 * construct the correct grid wrapper
+	 * construct the appropriate grid wrapper
 	 * 
 	 * @return
 	 */
@@ -260,8 +271,8 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	}
 
 	/**
-	 * Method that is called when the Add button is clicked. Can be overridden in
-	 * order to perform your own custom logic
+	 * Callback method that is called when the Add button is clicked. Can be
+	 * overridden in order to perform your own custom logic
 	 */
 	public void doAdd() {
 		setSelectedItem(createEntity());
@@ -269,17 +280,21 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	}
 
 	/**
-	 * Method that is called after the search results container has been
+	 * Callback method that is called after the search results container has been
 	 * constructed. Use this to modify the container if needed
 	 * 
 	 * @param container
 	 */
-	protected void doConstructDataProvider(DataProvider<T, SerializablePredicate<T>> provider) {
+	protected void postProcessDataProvider(DataProvider<T, SerializablePredicate<T>> provider) {
 		// overwrite in subclasses
 	}
 
 	public HorizontalLayout getButtonBar() {
 		return buttonBar;
+	}
+
+	public Consumer<T> getCustomSaveConsumer() {
+		return customSaveConsumer;
 	}
 
 	public FetchJoinInformation[] getDetailJoins() {
@@ -294,12 +309,16 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 		return exportEntityModel;
 	}
 
+	public FetchJoinInformation[] getExportJoins() {
+		return exportJoins;
+	}
+
 	public Map<String, SerializablePredicate<?>> getFieldFilters() {
 		return fieldFilters;
 	}
 
 	/**
-	 * Lazily fetches the grip wrapper
+	 * Lazily fetches the grid wrapper
 	 * 
 	 * @return
 	 */
@@ -341,7 +360,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	 * which means that no extra layer will be used. If you return a non-empty
 	 * String array, then the values in this array will be used as additional
 	 * attribute group header. Use the "getParentGroup" method to determine which
-	 * "regular" attribute group to place inside which parent group.
+	 * "regular" attribute group must be placed in which parent group.
 	 * 
 	 * @return
 	 */
@@ -381,7 +400,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	}
 
 	/**
-	 * Shared additional configuration after the wrapper has been created.
+	 * Shared additional configuration after the grid wrapper has been created.
 	 * 
 	 * @param wrapper the wrapper
 	 */
@@ -422,7 +441,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	}
 
 	/**
-	 * Method that is called after the grid wrapper has been constructed
+	 * Callback method that is called after the grip wrapper has been constructed
 	 * 
 	 * @param wrapper
 	 */
@@ -441,11 +460,15 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 		// override in subclasses
 	}
 
+	public void setCustomSaveConsumer(Consumer<T> customSaveConsumer) {
+		this.customSaveConsumer = customSaveConsumer;
+	}
+
 	/**
 	 * Sets the joins to use when retrieving a single object for use in a detail
 	 * form. If not set then the application will use the default joins defined in
-	 * the DAO. the joins passed to the constructor are NOT used when retrieving a
-	 * single object
+	 * the DAO. the joins passed to the constructor are the joins for fetching the
+	 * collection inside the grid and are NOT used when fetching a single object
 	 * 
 	 * @param detailJoins the desired detail joins
 	 */
@@ -472,6 +495,10 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	 */
 	public void setExportEntityModel(EntityModel<T> exportEntityModel) {
 		this.exportEntityModel = exportEntityModel;
+	}
+
+	public void setExportJoins(FetchJoinInformation[] exportJoins) {
+		this.exportJoins = exportJoins;
 	}
 
 	/**
@@ -525,14 +552,6 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	 */
 	public void setSortEnabled(boolean sortEnabled) {
 		this.sortEnabled = sortEnabled;
-	}
-
-	public FetchJoinInformation[] getExportJoins() {
-		return exportJoins;
-	}
-
-	public void setExportJoins(FetchJoinInformation[] exportJoins) {
-		this.exportJoins = exportJoins;
 	}
 
 }

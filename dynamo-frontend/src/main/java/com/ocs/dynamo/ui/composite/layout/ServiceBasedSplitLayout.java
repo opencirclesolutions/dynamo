@@ -95,8 +95,8 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
 				getQueryType(), getFormOptions(), filter, getFieldFilters(), getSortOrders(), false, getJoins()) {
 
 			@Override
-			protected void doConstructDataProvider(DataProvider<T, SerializablePredicate<T>> provider) {
-				ServiceBasedSplitLayout.this.doConstructDataProvider(provider);
+			protected void postProcessDataProvider(DataProvider<T, SerializablePredicate<T>> provider) {
+				ServiceBasedSplitLayout.this.postProcessDataProvider(provider);
 			}
 
 			@Override

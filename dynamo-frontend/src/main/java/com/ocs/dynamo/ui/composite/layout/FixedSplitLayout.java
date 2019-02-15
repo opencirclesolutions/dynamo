@@ -92,8 +92,8 @@ public abstract class FixedSplitLayout<ID extends Serializable, T extends Abstra
 				getFieldFilters(), getItems(), getSortOrders()) {
 
 			@Override
-			protected void doConstructDataProvider(DataProvider<T, SerializablePredicate<T>> provider) {
-				FixedSplitLayout.this.doConstructDataProvider(provider);
+			protected void postProcessDataProvider(DataProvider<T, SerializablePredicate<T>> provider) {
+				FixedSplitLayout.this.postProcessDataProvider(provider);
 			}
 
 			@Override

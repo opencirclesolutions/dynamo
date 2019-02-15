@@ -14,7 +14,6 @@
 package com.ocs.dynamo.ui.composite.layout;
 
 import java.io.Serializable;
-import java.util.function.Consumer;
 
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
@@ -40,9 +39,9 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 
 /**
- * Base class for a layout that contains both a results grid and a details
- * view. Based on the screen mode these can be displayed either next to each
- * other or below each other
+ * Base class for a layout that contains both a results grid and a details view.
+ * Based on the screen mode these can be displayed either next to each other or
+ * below each other
  * 
  * @author bas.rutten
  * @param <ID> type of the primary key
@@ -55,9 +54,6 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 
 	// the add button
 	private Button addButton;
-
-	// custom code to execute instead of the normal save method
-	private Consumer<T> customSaveConsumer;
 
 	// default split position (width of first component in percent)
 	private Integer defaultSplitPosition;
@@ -264,7 +260,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	 * Constructs the quick search field - overridden in subclasses.
 	 *
 	 * Do not override this method as an end user - implement the
-	 * "constructQuickSearchFilter" instead
+	 * "setQuickSearchFilterSupplier" instead
 	 *
 	 * @return
 	 */
@@ -369,7 +365,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 
 			};
 
-			editForm.setCustomSaveConsumer(customSaveConsumer);
+			editForm.setCustomSaveConsumer(getCustomSaveConsumer());
 			editForm.setFormTitleWidth(getFormTitleWidth());
 			editForm.setDetailJoins(getDetailJoins());
 			editForm.setFieldEntityModels(getFieldEntityModels());
@@ -410,10 +406,6 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 		return addButton;
 	}
 
-	public Consumer<T> getCustomSaveConsumer() {
-		return customSaveConsumer;
-	}
-
 	public Integer getDefaultSplitPosition() {
 		return defaultSplitPosition;
 	}
@@ -432,10 +424,6 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 
 	public Button getRemoveButton() {
 		return removeButton;
-	}
-
-	protected boolean handleCustomException(RuntimeException ex) {
-		return false;
 	}
 
 	/**
@@ -526,10 +514,6 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 		} else {
 			getGridWrapper().getGrid().select(t);
 		}
-	}
-
-	public void setCustomSaveConsumer(Consumer<T> customSaveConsumer) {
-		this.customSaveConsumer = customSaveConsumer;
 	}
 
 	public void setDefaultSplitPosition(Integer defaultSplitPosition) {

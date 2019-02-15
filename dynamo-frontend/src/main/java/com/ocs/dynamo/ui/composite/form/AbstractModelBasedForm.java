@@ -25,13 +25,12 @@ import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.vaadin.server.SerializablePredicate;
 
 /**
- * Abstract base class for model based forms
+ * Abstract base class for model-based forms - this includes both search forms
+ * and edit forms
  * 
  * @author bas.rutten
- * @param <ID>
- *            the type of the primary key
- * @param <T>
- *            the type of the entity
+ * @param <ID> the type of the primary key
+ * @param <T> the type of the entity
  */
 public abstract class AbstractModelBasedForm<ID extends Serializable, T extends AbstractEntity<ID>>
 		extends BaseCustomComponent {
@@ -54,12 +53,16 @@ public abstract class AbstractModelBasedForm<ID extends Serializable, T extends 
 	private Map<String, SerializablePredicate<?>> fieldFilters = new HashMap<>();
 
 	/**
-	 * The form options
+	 * The form options parameter object
 	 */
 	private FormOptions formOptions;
 
 	/**
 	 * Constructor
+	 * 
+	 * @param formOptions  the form options parameter object
+	 * @param fieldFilters the field filter map
+	 * @param entityModel  the entity model
 	 */
 	public AbstractModelBasedForm(FormOptions formOptions, Map<String, SerializablePredicate<?>> fieldFilters,
 			EntityModel<T> entityModel) {
@@ -76,11 +79,10 @@ public abstract class AbstractModelBasedForm<ID extends Serializable, T extends 
 	 * Returns the overruled entity model to be used for the rendering of a certain
 	 * field
 	 * 
-	 * @param attributeModel
-	 *            the attribute model
+	 * @param attributeModel the attribute model
 	 * @return
 	 */
-	protected EntityModel<?> getFieldEntityModel(AttributeModel attributeModel) {
+	protected final EntityModel<?> getFieldEntityModel(AttributeModel attributeModel) {
 		String reference = getFieldEntityModels().get(attributeModel.getPath());
 		return reference == null ? null
 				: getEntityModelFactory().getModel(reference, attributeModel.getNormalizedType());

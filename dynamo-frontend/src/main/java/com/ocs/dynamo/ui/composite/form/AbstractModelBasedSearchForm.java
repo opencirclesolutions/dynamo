@@ -138,19 +138,19 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	}
 
 	/**
-	 * Callback method that is called after a successful search has been performed
-	 */
-	protected void afterSearchPerformed() {
-		// override in subclasses
-	}
-
-	/**
 	 * Callback method that is called when the user toggles the visibility of the
 	 * search form
 	 *
 	 * @param visible indicates if the search fields are visible now
 	 */
 	protected void afterSearchFieldToggle(boolean visible) {
+		// override in subclasses
+	}
+
+	/**
+	 * Callback method that is called after a successful search has been performed
+	 */
+	protected void afterSearchPerformed() {
 		// override in subclasses
 	}
 
@@ -212,6 +212,11 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 		}
 	}
 
+	/**
+	 * Responds to a click on any of the standard buttons in the search bar
+	 * 
+	 * @param event the event to respond to
+	 */
 	@Override
 	public void buttonClick(ClickEvent event) {
 		if (event.getButton() == searchButton) {
@@ -285,11 +290,25 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	protected abstract Layout constructFilterLayout();
 
 	/**
+	 * Construct the "search any" button which allows the user to search on entities
+	 * that match any (rather than all) of the search criteria
+	 * 
+	 * @return
+	 */
+	protected final Button constructSearchAnyButton() {
+		searchAnyButton = new Button(message("ocs.search.any"));
+		searchAnyButton.setIcon(VaadinIcons.SEARCH);
+		searchAnyButton.setVisible(getFormOptions().isShowSearchAnyButton());
+		searchAnyButton.addClickListener(this);
+		return searchAnyButton;
+	}
+
+	/**
 	 * Constructs the "search" button
 	 * 
 	 * @return
 	 */
-	protected Button constructSearchButton() {
+	protected final Button constructSearchButton() {
 		searchButton = new Button(message("ocs.search"));
 		searchButton.setIcon(VaadinIcons.SEARCH);
 		searchButton.addClickListener(this);
@@ -297,28 +316,16 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	}
 
 	/**
-	 * Constructs the "toggle" button
+	 * Constructs the "toggle" button which shows/hides the search form
 	 * 
 	 * @return
 	 */
-	protected Button constructToggleButton() {
+	protected final Button constructToggleButton() {
 		toggleButton = new Button(message("ocs.hide"));
 		toggleButton.setIcon(VaadinIcons.ARROWS);
 		toggleButton.addClickListener(this);
 		toggleButton.setVisible(getFormOptions().isShowToggleButton());
 		return toggleButton;
-	}
-
-	/**
-	 * 
-	 * @return
-	 */
-	protected Button constructSearchAnyButton() {
-		searchAnyButton = new Button(message("ocs.search.any"));
-		searchAnyButton.setIcon(VaadinIcons.SEARCH);
-		searchAnyButton.setVisible(getFormOptions().isShowSearchAnyButton());
-		searchAnyButton.addClickListener(this);
-		return searchAnyButton;
 	}
 
 	public SerializablePredicate<T> extractFilter() {
@@ -348,10 +355,6 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 		return null;
 	}
 
-	public List<SerializablePredicate<T>> getDefaultFilters() {
-		return defaultFilters;
-	}
-
 	public HorizontalLayout getButtonBar() {
 		return buttonBar;
 	}
@@ -364,8 +367,20 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 		return currentFilters;
 	}
 
+	public List<SerializablePredicate<T>> getDefaultFilters() {
+		return defaultFilters;
+	}
+
 	public FieldFactory getFieldFactory() {
 		return fieldFactory;
+	}
+
+	/**
+	 *
+	 * @return the number of filters
+	 */
+	public int getFilterCount() {
+		return currentFilters.size();
 	}
 
 	public Layout getFilterLayout() {
@@ -376,12 +391,12 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 		return searchable;
 	}
 
-	public Button getSearchButton() {
-		return searchButton;
-	}
-
 	public Button getSearchAnyButton() {
 		return searchAnyButton;
+	}
+
+	public Button getSearchButton() {
+		return searchButton;
 	}
 
 	/**
@@ -397,14 +412,6 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 			}
 		}
 		return false;
-	}
-
-	/**
-	 *
-	 * @return the number of filters
-	 */
-	public int getFilterCount() {
-		return currentFilters.size();
 	}
 
 	/**
@@ -431,10 +438,6 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 						.map(f -> (PropertyPredicate<T>) f).anyMatch(f -> f.appliesToProperty(am.getPath())))
 				.count();
 		return matches == requiredAttributes.size();
-	}
-
-	protected void validateBeforeSearch() {
-		// overwrite in subclass
 	}
 
 	/**
@@ -479,12 +482,13 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 		// override in subclass
 	}
 
+	/**
+	 * Performs a search that matches all of the search criteria
+	 * 
+	 * @return
+	 */
 	public boolean search() {
 		return search(false, false);
-	}
-
-	public boolean searchAny() {
-		return search(false, true);
 	}
 
 	/**
@@ -535,6 +539,19 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	}
 
 	/**
+	 * Performs a search that matches any of the search criteria
+	 * 
+	 * @return
+	 */
+	public boolean searchAny() {
+		return search(false, true);
+	}
+
+	public void setDefaultFilters(List<SerializablePredicate<T>> defaultFilters) {
+		this.defaultFilters = defaultFilters;
+	}
+
+	/**
 	 * Sets the searchable
 	 *
 	 * @param searchable the searchable
@@ -558,8 +575,11 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 		afterSearchFieldToggle(wrapperPanel.isVisible());
 	}
 
-	public void setDefaultFilters(List<SerializablePredicate<T>> defaultFilters) {
-		this.defaultFilters = defaultFilters;
+	/**
+	 * Performs a validation before the search.
+	 */
+	protected void validateBeforeSearch() {
+		// overwrite in subclass
 	}
 
 }

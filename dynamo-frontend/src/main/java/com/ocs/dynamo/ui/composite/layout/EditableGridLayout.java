@@ -125,7 +125,7 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 	private boolean viewmode;
 
 	/**
-	 * Map with a binder for every row
+	 * Mapping from entity to associated binder
 	 */
 	private Map<T, Binder<T>> binders = new HashMap<>();
 
@@ -241,6 +241,7 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 											}
 										});
 					} else {
+						// do not ask for confirmation before saving
 						try {
 							getService().save(toSave);
 							// save and reassign to avoid optimistic locks
@@ -339,8 +340,8 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 			}
 
 			@Override
-			protected void doConstructDataProvider(final DataProvider<T, SerializablePredicate<T>> provider) {
-				EditableGridLayout.this.doConstructDataProvider(provider);
+			protected void postProcessDataProvider(final DataProvider<T, SerializablePredicate<T>> provider) {
+				EditableGridLayout.this.postProcessDataProvider(provider);
 			}
 
 			@Override
@@ -483,6 +484,7 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 		binders.clear();
 		constructGrid();
 
+		// check the button statuses
 		getGridWrapper().getGrid().getEditor().setEnabled(!isViewmode() && isEditAllowed());
 		saveButton.setVisible(GridEditMode.SIMULTANEOUS.equals(getFormOptions().getGridEditMode()) && !isViewmode()
 				&& isEditAllowed());

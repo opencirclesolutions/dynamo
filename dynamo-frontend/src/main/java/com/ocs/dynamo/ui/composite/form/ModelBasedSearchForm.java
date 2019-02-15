@@ -126,7 +126,7 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 	}
 
 	/**
-	 * Concstrucs the button bar for the search form
+	 * Constructs the button bar for the search form
 	 */
 	@Override
 	protected void constructButtonBar(Layout buttonBar) {
@@ -152,16 +152,6 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 				}
 			}
 		}
-	}
-
-	/**
-	 * Callback method that can be used to create any additional search fields (that
-	 * are not governed by the entity model)
-	 * 
-	 * @return
-	 */
-	protected List<Component> constructExtraSearchFields() {
-		return new ArrayList<>();
 	}
 
 	/**
@@ -268,18 +258,6 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 			}
 		}
 
-		// add any extra fields
-		List<Component> extra = constructExtraSearchFields();
-		for (Component c : extra) {
-			if (nrOfColumns == 1) {
-				form.addComponent(c);
-			} else {
-				int index = fieldsAdded % nrOfColumns;
-				subForms.get(index).addComponent(c);
-			}
-			fieldsAdded++;
-		}
-
 		// iterate over the searchable attributes and add a field for each
 		iterate(getEntityModel().getAttributeModels());
 		constructCascadeListeners();
@@ -289,7 +267,7 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 
 		// hide the search form if there are no search criteria (and no extra search
 		// fields)
-		if (groups.isEmpty() && extra.isEmpty()) {
+		if (groups.isEmpty()) {
 			margin.setVisible(false);
 		}
 		return margin;

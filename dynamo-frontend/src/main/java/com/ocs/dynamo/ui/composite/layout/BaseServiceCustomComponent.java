@@ -37,7 +37,7 @@ import com.vaadin.ui.Notification;
  * Base class for UI components that need/have access to a Service that can read
  * from the database
  *
- * @param <ID> type of the primary key
+ * @param <ID> type of the primary key of the entity
  * @param <T> type of the entity
  * @author bas.rutten
  */
@@ -74,7 +74,8 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 		protected abstract void doDelete();
 
 		/**
-		 * @return
+		 * @return the description of the item to delete (for use in the confirmation
+		 *         dialog)
 		 */
 		protected abstract String getItemToDelete();
 	}
@@ -108,9 +109,9 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	private BaseService<ID, T> service;
 
 	/**
-	 * The list of buttons to update after an entity is selected
+	 * The list of components to update after an entity is selected
 	 */
-	private List<AbstractComponent> toUpdate = new ArrayList<>();
+	private List<AbstractComponent> componentsToUpdate = new ArrayList<>();
 
 	/**
 	 * Constructor
@@ -126,14 +127,14 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	}
 
 	/**
-	 * Adds a field entity model - this can be used to overwrite the default entity
-	 * model that is used for rendering complex selection components (lookup
+	 * Adds an attribute entity model - this can be used to overwrite the default
+	 * entity model that is used for rendering complex selection components (lookup
 	 * dialogs)
 	 *
 	 * @param path      the path to the field
 	 * @param reference the unique ID of the entity model
 	 */
-	public final void addFieldEntityModel(String path, String reference) {
+	public final void addAttributeEntityModel(String path, String reference) {
 		fieldEntityModels.put(path, reference);
 	}
 
@@ -160,22 +161,13 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	}
 
 	/**
-	 * Method that is called before saving an entity but after the validation
-	 *
-	 * @return
-	 */
-	protected boolean beforeSave() {
-		return true;
-	}
-
-	/**
 	 * Checks which buttons in the button bar must be enabled after an item has been
 	 * selected
 	 *
 	 * @param selectedItem the selected item
 	 */
 	protected void checkButtonState(T selectedItem) {
-		for (AbstractComponent b : toUpdate) {
+		for (AbstractComponent b : componentsToUpdate) {
 			if (b instanceof DownloadButton) {
 				((DownloadButton) b).update();
 			}
@@ -231,6 +223,19 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	}
 
 	/**
+	 * Callback method that is called during the save process. Allows the developer
+	 * to respond to a specific type of exception thrown in the service layer in a
+	 * custom way
+	 * 
+	 * @param ex
+	 * @return <code>true</code> if the exception was handled by this method, false
+	 *         otherwise
+	 */
+	protected boolean handleCustomException(RuntimeException ex) {
+		return false;
+	}
+
+	/**
 	 * Method that is called in order to enable/disable a component (i.e. a button)
 	 * in a button bar after selecting an item in the grid
 	 *
@@ -248,12 +253,12 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	 * selected. use the "mustEnableButton" callback method to impose additional
 	 * constraints on when the button must be enabled
 	 *
-	 * @param comp the button to register
+	 * @param comp the component to register
 	 */
 	public final void registerComponent(AbstractComponent comp) {
 		if (comp != null) {
 			comp.setEnabled(false);
-			toUpdate.add(comp);
+			componentsToUpdate.add(comp);
 		}
 	}
 

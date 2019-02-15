@@ -189,6 +189,10 @@ public abstract class BaseDataProvider<ID extends Serializable, T extends Abstra
 	 */
 	public abstract int getSize();
 
+	/**
+	 * 
+	 * @return whether the data set contains a next item
+	 */
 	public boolean hasNextItemId() {
 		if (ids == null) {
 			return false;
@@ -197,6 +201,10 @@ public abstract class BaseDataProvider<ID extends Serializable, T extends Abstra
 		return index < ids.size() - 1;
 	}
 
+	/**
+	 * 
+	 * @return whether the data set contains a previous item
+	 */
 	public boolean hasPreviousItemId() {
 		if (ids == null) {
 			return false;
@@ -230,6 +238,11 @@ public abstract class BaseDataProvider<ID extends Serializable, T extends Abstra
 		this.afterCountCompleted = afterCountCompleted;
 	}
 
+	/**
+	 * Shows a notification message
+	 * 
+	 * @param message the message to show
+	 */
 	protected void showNotification(String message) {
 		if (UI.getCurrent() != null) {
 			Notification.show(message, Notification.Type.ERROR_MESSAGE);

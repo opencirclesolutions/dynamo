@@ -82,7 +82,7 @@ public class ServiceBasedGridWrapper<ID extends Serializable, T extends Abstract
 		provider.setMaxResults(maxResults);
 		provider.setAfterCountCompleted(x -> getGrid().updateCaption(x));
 
-		doConstructDataProvider(provider);
+		postProcessDataProvider(provider);
 
 		return provider;
 	}

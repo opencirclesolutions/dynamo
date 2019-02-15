@@ -20,10 +20,12 @@ import com.ocs.dynamo.utils.ClassUtils;
 import com.querydsl.core.types.dsl.EntityPathBase;
 
 /**
- * Default service implementation that uses the DefaultDaoImpl when no other
- * implementation is given.
+ * Default implementation of BaseService for dealing with simple entities
  * 
- * @author Patrick Deenen
+ * @author Bas Rutten
+ *
+ * @param <ID> the type of the primary key of the entity
+ * @param <T> the type of the entity
  */
 public class DefaultServiceImpl<ID, T extends AbstractEntity<ID>> extends BaseServiceImpl<ID, T> {
 
@@ -45,10 +47,8 @@ public class DefaultServiceImpl<ID, T extends AbstractEntity<ID>> extends BaseSe
 	/**
 	 * Constructor - no unique property
 	 * 
-	 * @param dslRoot
-	 *            the DSL root
-	 * @param entityClass
-	 *            the entity class
+	 * @param dslRoot     the DSL root
+	 * @param entityClass the entity class
 	 */
 	public DefaultServiceImpl(EntityPathBase<T> dslRoot, Class<T> entityClass) {
 		this(dslRoot, entityClass, null);
@@ -57,12 +57,9 @@ public class DefaultServiceImpl<ID, T extends AbstractEntity<ID>> extends BaseSe
 	/**
 	 * Constructor - with unique property, not case sensitive
 	 * 
-	 * @param dslRoot
-	 *            the DSL root
-	 * @param entityClass
-	 *            the entity class
-	 * @param uniquePropertyIds
-	 *            the unique property name
+	 * @param dslRoot           the DSL root
+	 * @param entityClass       the entity class
+	 * @param uniquePropertyIds the unique property name
 	 */
 	public DefaultServiceImpl(EntityPathBase<T> dslRoot, Class<T> entityClass, String[] uniquePropertyIds) {
 		this(dslRoot, entityClass, uniquePropertyIds, false);
@@ -71,10 +68,8 @@ public class DefaultServiceImpl<ID, T extends AbstractEntity<ID>> extends BaseSe
 	/**
 	 * Constructor
 	 * 
-	 * @param dslRoot
-	 *            the QueryDSL root
-	 * @param entityClass
-	 *            the entity class
+	 * @param dslRoot             the QueryDSL root
+	 * @param entityClass         the entity class
 	 * @param uniquePropertyIds
 	 * @param uniqueCaseSensitive
 	 */
@@ -96,10 +91,8 @@ public class DefaultServiceImpl<ID, T extends AbstractEntity<ID>> extends BaseSe
 	/**
 	 * Constructor
 	 * 
-	 * @param dao
-	 *            the DAO
-	 * @param uniquePropertyIds
-	 *            the name of the property that must be unique
+	 * @param dao               the DAO
+	 * @param uniquePropertyIds the name of the property that must be unique
 	 */
 	public DefaultServiceImpl(BaseDao<ID, T> dao, String... uniquePropertyIds) {
 		this(dao, uniquePropertyIds, false);
@@ -108,12 +101,9 @@ public class DefaultServiceImpl<ID, T extends AbstractEntity<ID>> extends BaseSe
 	/**
 	 * Constructor
 	 * 
-	 * @param dao
-	 *            the DAO used to retrieve the data
-	 * @param uniquePropertyIds
-	 *            the unique property
-	 * @param uniqueCaseSensitive
-	 *            whether the unique property is case sensitive
+	 * @param dao                 the DAO used to retrieve the data
+	 * @param uniquePropertyIds   the unique property
+	 * @param uniqueCaseSensitive whether the unique property is case sensitive
 	 */
 	public DefaultServiceImpl(BaseDao<ID, T> dao, String[] uniquePropertyIds, boolean uniqueCaseSensitive) {
 		this.dao = dao;
@@ -127,8 +117,8 @@ public class DefaultServiceImpl<ID, T extends AbstractEntity<ID>> extends BaseSe
 	}
 
 	/**
-	 * Check for an identical entry - by default we to this by simply checking
-	 * for a unique property
+	 * Check for an identical entry - by default we to this by simply checking for a
+	 * unique property
 	 */
 	@Override
 	protected T findIdenticalEntity(T entity) {

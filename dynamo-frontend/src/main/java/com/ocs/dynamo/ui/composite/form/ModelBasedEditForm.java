@@ -1721,6 +1721,11 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		}
 	}
 
+	/**
+	 * Sets the custom code to be carried out after the Save button is clicked
+	 * 
+	 * @param customSaveConsumer
+	 */
 	public void setCustomSaveConsumer(Consumer<T> customSaveConsumer) {
 		this.customSaveConsumer = customSaveConsumer;
 	}

@@ -30,7 +30,7 @@ import com.vaadin.server.SerializablePredicate;
 import com.vaadin.ui.UI;
 
 /**
- * A wrapper for a grid that displays a fixed number of items
+ * A wrapper for a grid that displays a fixed number of in-memory entities
  * 
  * @author bas.rutten
  * @param <ID> type of the primary key
@@ -48,10 +48,12 @@ public class FixedGridWrapper<ID extends Serializable, T extends AbstractEntity<
 	/**
 	 * Constructor
 	 * 
-	 * @param service     the service
-	 * @param entityModel the entity model of the items to display in the grid
-	 * @param items       the items to display
-	 * @param sortOrder   optional sort order
+	 * @param service      the service used for retrieving data from the database
+	 * @param entityModel  the entity model
+	 * @param formOptions  the form options
+	 * @param fieldFilters the field
+	 * @param items        the entities to display
+	 * @param sortOrders   the sort orders
 	 */
 	public FixedGridWrapper(BaseService<ID, T> service, EntityModel<T> entityModel, FormOptions formOptions,
 			Map<String, SerializablePredicate<?>> fieldFilters, Collection<T> items, List<SortOrder<?>> sortOrders) {

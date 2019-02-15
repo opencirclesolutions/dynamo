@@ -263,11 +263,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 				Label noSearchYetLabel = new Label(message("ocs.no.search.yet"));
 				searchResultsLayout.addComponent(noSearchYetLabel);
 
-				// set up a click listener that will construct the grid when
-				// needed in case of a
-				// deferred search
-				// set up a click listener that will set the searchable when
-				// needed
+				// click listener that will construct search results grid on demand
 				getSearchForm().getSearchButton().addClickListener(e -> constructLayoutIfNeeded(noSearchYetLabel));
 				if (getSearchForm().getSearchAnyButton() != null) {
 					getSearchForm().getSearchAnyButton()
@@ -383,7 +379,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 				// back button and iteration buttons not needed (they are
 				// displayed above
 				// the tabs)
-				return AbstractSearchLayout.this.initTab(getEntity(), index, formOptions, false);
+				return AbstractSearchLayout.this.constructComplexDetailModeTab(getEntity(), index, formOptions, false);
 			}
 		};
 		tabLayout.build();
@@ -505,6 +501,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 
 		};
 		editForm.setFormTitleWidth(getFormTitleWidth());
+		editForm.setCustomSaveConsumer(getCustomSaveConsumer());
 		editForm.setSupportsIteration(true);
 		editForm.setDetailJoins(getDetailJoins());
 		editForm.setFieldEntityModels(getFieldEntityModels());
@@ -537,7 +534,8 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	 * Constructs a search layout in response to a click on any of the search
 	 * buttons
 	 * 
-	 * @param noSearchYetLabel
+	 * @param noSearchYetLabel the label used to indicate that there are no search
+	 *                         results yet
 	 */
 	private void constructLayoutIfNeeded(Label noSearchYetLabel) {
 		if (!searchLayoutConstructed) {
@@ -636,8 +634,8 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 			}
 
 			@Override
-			protected void doConstructDataProvider(DataProvider<T, SerializablePredicate<T>> provider) {
-				AbstractSearchLayout.this.doConstructDataProvider(provider);
+			protected void postProcessDataProvider(DataProvider<T, SerializablePredicate<T>> provider) {
+				AbstractSearchLayout.this.postProcessDataProvider(provider);
 			}
 
 		};
@@ -747,7 +745,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 			selectedDetailLayout = editForm;
 		} else {
 			// complex details mode for creating a new entity, re-use the first tab
-			Component comp = initTab(entity, 0, getFormOptions(), true);
+			Component comp = constructComplexDetailModeTab(entity, 0, getFormOptions(), true);
 
 			if (selectedDetailLayout == null) {
 				mainEditLayout.addComponent(comp);
@@ -926,10 +924,6 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 		return selectedItems;
 	}
 
-	protected boolean handleCustomException(RuntimeException ex) {
-		return false;
-	}
-
 	/**
 	 * Check whether the container contains a next entity
 	 * 
@@ -963,7 +957,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	 * @param newEntity whether we are in the process of creating a new entity
 	 * @return
 	 */
-	protected Component initTab(T entity, int index, FormOptions fo, boolean newEntity) {
+	protected Component constructComplexDetailModeTab(T entity, int index, FormOptions fo, boolean newEntity) {
 		// overwrite is subclasses
 		return null;
 	}
@@ -972,7 +966,8 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	 * Checks if a filter is set for a certain attribute
 	 * 
 	 * @param path the path to the attribute
-	 * @return
+	 * @return <code>true</code> if a fiterl for the specified attribute has been
+	 *         set and <code>false</code> otherwise
 	 */
 	public boolean isFilterSet(String path) {
 		return getSearchForm().isFilterSet(path);

@@ -106,11 +106,6 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 			}
 
 			@Override
-			protected List<Component> constructExtraSearchFields() {
-				return SimpleSearchLayout.this.constructExtraSearchFields();
-			}
-
-			@Override
 			protected void postProcessButtonBar(Layout buttonBar) {
 				SimpleSearchLayout.this.postProcessSearchButtonBar(buttonBar);
 			}
