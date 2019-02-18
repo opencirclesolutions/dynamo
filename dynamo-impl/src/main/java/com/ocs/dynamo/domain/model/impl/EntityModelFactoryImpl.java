@@ -579,8 +579,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 			explicitAttributeNames = Arrays.asList(msg.replaceAll("\\s+", "").split(","));
 		}
 
-		for (final AttributeModel attributeModel : attributeModels) {
-			final String name = attributeModel.getName();
+		for (final AttributeModel am : attributeModels) {
+			final String name = am.getName();
 			if (!skipAttribute(name) && !explicitAttributeNames.contains(name)) {
 				additionalNames.add(name);
 			}

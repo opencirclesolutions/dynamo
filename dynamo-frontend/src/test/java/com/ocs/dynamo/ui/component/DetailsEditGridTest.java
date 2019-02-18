@@ -121,20 +121,9 @@ public class DetailsEditGridTest extends BaseMockitoTest {
 			fo.setReadOnly(true);
 		}
 
-		DetailsEditGrid<Integer, TestEntity> table = new DetailsEditGrid<Integer, TestEntity>(em, am, viewMode, fo) {
+		DetailsEditGrid<Integer, TestEntity> table = new DetailsEditGrid<Integer, TestEntity>(em, am, viewMode, fo);
 
-			private static final long serialVersionUID = -4333833542380882076L;
-
-			@Override
-			protected void removeEntity(TestEntity toRemove) {
-				// not needed
-			}
-
-			@Override
-			protected TestEntity createEntity() {
-				return new TestEntity();
-			}
-		};
+		table.setCreateEntitySupplier(() -> new TestEntity());
 		MockUtil.injectUI(table, ui);
 		table.initContent();
 		table.setComparator(new AttributeComparator<>("name"));
