@@ -240,7 +240,9 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 		addButton = new Button(messageService.getMessage("ocs.add", VaadinUtils.getLocale()));
 		addButton.setIcon(VaadinIcons.PLUS);
 		addButton.addClickListener(event -> doAdd());
-		addButton.setVisible(isGridEditEnabled() && !formOptions.isHideAddButton());
+		addButton.setVisible((isGridEditEnabled()
+				|| (!isViewMode() && serviceBasedEditMode && !formOptions.isDetailsGridSearchMode()))
+				&& !formOptions.isHideAddButton());
 		buttonBar.addComponent(addButton);
 	}
 
@@ -444,7 +446,7 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 		};
 
 		// allow editing by showing a pop-up dialog (only for service-based version)
-		if (serviceBasedEditMode && !formOptions.isDetailsGridSearchMode()) {
+		if (serviceBasedEditMode && !formOptions.isDetailsGridSearchMode() && !isViewMode()) {
 			getGrid().addComponentColumn((ValueProvider<T, Component>) t -> {
 				Button edit = new Button();
 				edit.setIcon(VaadinIcons.PENCIL);

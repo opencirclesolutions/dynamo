@@ -22,6 +22,7 @@ import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
+import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.composite.dialog.EntityPopupDialog;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
@@ -40,7 +41,7 @@ import com.vaadin.ui.UI;
  * @param <T> the type of the entities
  * @param <ID2> the type of the bound attribute
  */
-public abstract class ServiceBasedDetailsEditGrid<ID extends Serializable, T extends AbstractEntity<ID>, ID2 extends Serializable>
+public class ServiceBasedDetailsEditGrid<ID extends Serializable, T extends AbstractEntity<ID>, ID2 extends Serializable>
 		extends BaseDetailsEditGrid<ID2, ID, T> {
 
 	private static final long serialVersionUID = -1203245694503350276L;
@@ -129,6 +130,10 @@ public abstract class ServiceBasedDetailsEditGrid<ID extends Serializable, T ext
 
 	@Override
 	protected void handleDialogSelection(Collection<T> selected) {
+		if (linkEntityConsumer == null) {
+			throw new OCSRuntimeException("No linkEntityConsumer specified!");
+		}
+
 		for (T t : selected) {
 			linkEntityConsumer.accept(t);
 		}
