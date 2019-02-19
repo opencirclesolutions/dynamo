@@ -467,6 +467,13 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	 * @return whether the attribute is transient
 	 */
 	boolean isTransient();
+	
+	/**
+	 * 
+	 * @return whether to ignore the attribute when creating a search filter (i.e. the
+	 * attribute is there only for cascading)
+	 */
+	boolean isIgnoreInSearchFilter();
 
 	/**
 	 * Indicates whether this represents a (clickable) URL

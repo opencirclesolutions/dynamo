@@ -112,7 +112,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	/**
 	 * A custom field that can be used to upload a file
 	 *
-	 * @author bas.ruttent
+	 * @author bas.rutten
 	 */
 	private final class UploadComponent extends CustomField<byte[]> {
 

@@ -84,6 +84,8 @@ public class AttributeModelImpl implements AttributeModel {
 
 	private String fileNameProperty;
 
+	private boolean ignoreInSearchFilter;
+
 	private final List<String> groupTogetherWith = new ArrayList<>();
 
 	private boolean image;
@@ -439,6 +441,10 @@ public class AttributeModelImpl implements AttributeModel {
 		return AttributeType.EMBEDDED.equals(attributeType);
 	}
 
+	public boolean isIgnoreInSearchFilter() {
+		return ignoreInSearchFilter;
+	}
+
 	@Override
 	public boolean isImage() {
 		return image;
@@ -625,6 +631,10 @@ public class AttributeModelImpl implements AttributeModel {
 		this.fileNameProperty = fileNameProperty;
 	}
 
+	public void setIgnoreInSearchFilter(boolean ignoreInSearchFilter) {
+		this.ignoreInSearchFilter = ignoreInSearchFilter;
+	}
+
 	public void setImage(boolean image) {
 		this.image = image;
 	}
@@ -801,4 +811,5 @@ public class AttributeModelImpl implements AttributeModel {
 	public String toString() {
 		return ReflectionToStringBuilder.toStringExclude(this, "entityModel");
 	}
+
 }

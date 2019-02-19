@@ -1087,6 +1087,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 			if (attribute.rows() > -1) {
 				model.setRows(attribute.rows());
 			}
+
+			model.setIgnoreInSearchFilter(attribute.ignoreInSearchFilter());
 			model.setSearchDateOnly(attribute.searchDateOnly());
 		}
 	}
@@ -1416,6 +1418,11 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 		msg = getAttributeMessage(entityModel, model, EntityModel.SEARCH_DATE_ONLY);
 		if (!StringUtils.isEmpty(msg)) {
 			model.setSearchDateOnly(Boolean.valueOf(msg));
+		}
+		
+		msg = getAttributeMessage(entityModel, model, EntityModel.IGNORE_IN_SEARCH_FILTER);
+		if (!StringUtils.isEmpty(msg)) {
+			model.setIgnoreInSearchFilter(Boolean.valueOf(msg));
 		}
 
 		setMessageBundleCascadeOverrides(entityModel, model);

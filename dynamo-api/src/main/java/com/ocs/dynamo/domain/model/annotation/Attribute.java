@@ -99,6 +99,10 @@ public @interface Attribute {
 	 */
 	boolean embedded() default false;
 
+	/**
+	 * @return the expansion factor to use when placing multiple components in the
+	 *         same row
+	 */
 	float expansionFactor() default 1.0f;
 
 	/** @return the representation to use instead of "false" */
@@ -115,6 +119,11 @@ public @interface Attribute {
 	 *         attribute inside an edit form
 	 */
 	String[] groupTogetherWith() default {};
+
+	/**
+	 * Whether to ignore this attribute when constructing a search filter
+	 */
+	boolean ignoreInSearchFilter() default false;
 
 	/** @return whether the component is meant for uploading/displaying images */
 	boolean image() default false;
@@ -206,14 +215,20 @@ public @interface Attribute {
 
 	/**
 	 * 
-	 * @return The number of rows for a list select or text are component
+	 * @return the number of rows for a list select or text area component
 	 */
 	int rows() default -1;
 
-	/** @return whether the field is searchable */
+	/**
+	 * 
+	 * @return whether the attribute is searchable
+	 */
 	boolean searchable() default false;
 
-	/** @return whether searching is case-sensitive */
+	/**
+	 * 
+	 * @return whether string based search is case sensitive
+	 */
 	boolean searchCaseSensitive() default false;
 
 	/**

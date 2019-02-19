@@ -448,7 +448,10 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 		if (event.getOldFilter() != null) {
 			currentFilters.remove(event.getOldFilter());
 		}
-		if (event.getNewFilter() != null) {
+
+		// exclude filter for attributes that are only there for cascading
+		AttributeModel am = getEntityModel().getAttributeModel(event.getPropertyId());
+		if (event.getNewFilter() != null && !am.isIgnoreInSearchFilter()) {
 			currentFilters.add(event.getNewFilter());
 		}
 		searchButton.setEnabled(isSearchAllowed());

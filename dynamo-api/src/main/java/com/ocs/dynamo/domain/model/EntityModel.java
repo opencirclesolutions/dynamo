@@ -144,6 +144,12 @@ public interface EntityModel<T> {
 	String GROUP_TOGETHER_WITH = "groupTogetherWith";
 
 	/**
+	 * Whether to ignore the attribute when it should normally be added to a search
+	 * filters
+	 */
+	String IGNORE_IN_SEARCH_FILTER = "ignoreInSearchFilter";
+
+	/**
 	 * Whether a field represents an image
 	 */
 	String IMAGE = "image";

@@ -31,9 +31,11 @@ import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.AttributeType;
+import com.ocs.dynamo.domain.model.CascadeMode;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.FieldFactory;
 import com.ocs.dynamo.domain.model.FieldFactoryContext;
+import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.filter.BetweenPredicate;
 import com.ocs.dynamo.filter.EqualsPredicate;
 import com.ocs.dynamo.filter.FlexibleFilterDefinition;
@@ -47,6 +49,7 @@ import com.ocs.dynamo.filter.listener.FilterChangeEvent;
 import com.ocs.dynamo.filter.listener.FilterListener;
 import com.ocs.dynamo.ui.Refreshable;
 import com.ocs.dynamo.ui.Searchable;
+import com.ocs.dynamo.ui.component.Cascadable;
 import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.component.FancyListSelect;
@@ -56,6 +59,7 @@ import com.ocs.dynamo.ui.utils.ConvertUtils;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.utils.DateUtils;
 import com.vaadin.data.HasValue;
+import com.vaadin.data.HasValue.ValueChangeEvent;
 import com.vaadin.data.Result;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.SerializablePredicate;
@@ -307,8 +311,9 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 		}
 
 		/**
-		 * Change the filter attribute
-		 *
+		 * Respond to a change in the selected attribute by updating the filter
+		 * components
+		 * 
 		 * @param attributeModel the selected attribute model
 		 * @param restoring      whether we are restoring an existing filter
 		 */
@@ -419,6 +424,36 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 		}
 
 		/**
+		 * Handles a cascading search
+		 * 
+		 * @param event       the search event
+		 * @param am          the attribute model
+		 * @param cascadePath the cascade path
+		 */
+		@SuppressWarnings("unchecked")
+		private <S> void handleCascade(ValueChangeEvent<?> event, AttributeModel am, String cascadePath) {
+			CascadeMode cm = am.getCascadeMode(cascadePath);
+			if (CascadeMode.BOTH.equals(cm) || CascadeMode.SEARCH.equals(cm)) {
+				FilterRegion region = getFilterRegion(cascadePath);
+				if (region != null && region.mainValueComponent != null) {
+					if (region.mainValueComponent instanceof Cascadable) {
+						Cascadable<S> ca = (Cascadable<S>) region.mainValueComponent;
+						if (event.getValue() == null) {
+							ca.clearAdditionalFilter();
+						} else {
+							ca.setAdditionalFilter(
+									new EqualsPredicate<S>(am.getCascadeFilterPath(cascadePath), event.getValue()));
+						}
+					} else {
+						// field not found or does not support cascading
+						throw new OCSRuntimeException(
+								"Cannot setup cascading from " + am.getPath() + " to " + cascadePath);
+					}
+				}
+			}
+		}
+
+		/**
 		 * Handle a change of the attribute to filter on
 		 *
 		 * @param event the event
@@ -461,6 +496,13 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 						.addValueChangeListener(event -> handleValueChange(event.getSource(), event.getValue()));
 			}
 			newComponent.setSizeFull();
+
+			// cascading search
+			if (am.getCascadeAttributes() != null && !am.getCascadeAttributes().isEmpty()) {
+				for (String cascadePath : am.getCascadeAttributes()) {
+					((HasValue<?>) newComponent).addValueChangeListener(event -> handleCascade(event, am, cascadePath));
+				}
+			}
 
 			if (mainValueComponent == null) {
 				layout.addComponent(newComponent);
@@ -745,6 +787,16 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 	 */
 	public FilterRegion getFilterRegion(AttributeModel attributeModel) {
 		return regions.stream().filter(r -> Objects.equals(attributeModel, r.am)).findFirst().orElse(null);
+	}
+
+	/**
+	 * Finds a filter region for the specified property path
+	 * 
+	 * @param path
+	 * @return
+	 */
+	public FilterRegion getFilterRegion(String path) {
+		return regions.stream().filter(r -> Objects.equals(path, r.am.getPath())).findFirst().orElse(null);
 	}
 
 	/**

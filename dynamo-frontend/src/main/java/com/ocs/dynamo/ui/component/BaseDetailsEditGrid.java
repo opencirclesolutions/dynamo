@@ -48,6 +48,7 @@ import com.vaadin.data.Converter;
 import com.vaadin.data.HasValue;
 import com.vaadin.data.ValueProvider;
 import com.vaadin.data.provider.DataProvider;
+import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.data.provider.SortOrder;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.SerializablePredicate;
@@ -463,6 +464,9 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 					// parent
 					if (removeEntityConsumer != null) {
 						removeEntityConsumer.accept(t);
+					}
+					if (getDataProvider() instanceof ListDataProvider) {
+						((ListDataProvider<T>) getDataProvider()).getItems().remove(t);
 					}
 					getDataProvider().refreshAll();
 				});

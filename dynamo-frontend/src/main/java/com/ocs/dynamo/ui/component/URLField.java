@@ -21,9 +21,9 @@ import com.vaadin.server.ExternalResource;
 import com.vaadin.shared.Registration;
 import com.vaadin.shared.ui.BorderStyle;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.CustomField;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Layout;
 import com.vaadin.ui.Link;
 import com.vaadin.ui.TextField;
 
@@ -45,7 +45,7 @@ public class URLField extends CustomField<String> {
 
 	private Link link;
 
-	private CssLayout main;
+	private Layout main;
 
 	private TextField textField;
 
@@ -73,7 +73,8 @@ public class URLField extends CustomField<String> {
 
 	@Override
 	protected Component initContent() {
-		main = new CssLayout();
+		main = new DefaultHorizontalLayout(false, false, true);
+		main.setSizeFull();
 		setCaption(attributeModel.getDisplayName());
 
 		bar = new DefaultHorizontalLayout(false, true, true);

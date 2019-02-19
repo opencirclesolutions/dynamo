@@ -170,7 +170,6 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 
 			mainLayout.addComponent(getButtonBar());
 
-			// add button
 			addButton = new Button(message("ocs.add"));
 			addButton.setIcon(VaadinIcons.PLUS);
 			addButton.addClickListener(event -> {
@@ -203,7 +202,7 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 			editButton.setVisible(getFormOptions().isEditAllowed() && isEditAllowed() && isViewmode());
 			getButtonBar().addComponent(editButton);
 
-			// button for canceling to edit mode
+			// button for canceling edit mode
 			cancelButton = new Button(message("ocs.cancel"));
 			cancelButton.setIcon(VaadinIcons.BAN);
 			cancelButton.addClickListener(event -> {
@@ -232,7 +231,7 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 										() -> {
 											try {
 												getService().save(toSave);
-												// save and reassign to avoid optimistic locks
+												// save and recrate grid to avoid optimistic locks
 												binders.clear();
 												clearGridWrapper();
 												constructGrid();
@@ -265,6 +264,9 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 		setCompositionRoot(mainLayout);
 	}
 
+	/**
+	 * Constructs the filter that limits which records show up
+	 */
 	protected void buildFilter() {
 		this.filter = filterSupplier == null ? null : filterSupplier.get();
 	}
@@ -291,7 +293,6 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 		wrapper.getGrid().setSelectionMode(Grid.SelectionMode.SINGLE);
 		wrapper.getGrid().setHeightByRows(getPageLength());
 
-		// explicit selection listener??
 		wrapper.getGrid().addSelectionListener(event -> setSelectedItems(event.getAllSelectedItems()));
 
 		if (currentWrapper == null) {
@@ -319,7 +320,6 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 							});
 			removeColumn.setCaption(defaultMsg).setId("remove");
 		}
-
 		currentWrapper = wrapper;
 	}
 
@@ -340,14 +340,14 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 			}
 
 			@Override
-			protected void postProcessDataProvider(final DataProvider<T, SerializablePredicate<T>> provider) {
-				EditableGridLayout.this.postProcessDataProvider(provider);
-			}
-
-			@Override
 			protected void onSelect(Object selected) {
 				setSelectedItems(selected);
 				checkButtonState(getSelectedItem());
+			}
+
+			@Override
+			protected void postProcessDataProvider(final DataProvider<T, SerializablePredicate<T>> provider) {
+				EditableGridLayout.this.postProcessDataProvider(provider);
 			}
 
 		};
@@ -492,5 +492,4 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 		cancelButton.setVisible(!isViewmode() && isEditAllowed() && getFormOptions().isOpenInViewMode());
 		addButton.setVisible(!isViewmode() && !getFormOptions().isHideAddButton() && isEditAllowed());
 	}
-
 }
