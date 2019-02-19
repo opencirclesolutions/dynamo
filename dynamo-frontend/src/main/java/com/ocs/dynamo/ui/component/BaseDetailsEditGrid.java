@@ -438,11 +438,6 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 				Binder<T> binder = binders.get(t);
 				return binder.forField((HasValue<?>) field);
 			}
-
-			@Override
-			protected void postProcessComponent(AttributeModel am, AbstractComponent comp) {
-				BaseDetailsEditGrid.this.postProcessComponent(am, comp);
-			}
 		};
 
 		// allow editing by showing a pop-up dialog (only for service-based version)
@@ -555,10 +550,6 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	 */
 	protected void postProcessButtonBar(Layout buttonBar) {
 		// overwrite in subclass if needed
-	}
-
-	protected void postProcessComponent(AttributeModel am, AbstractComponent comp) {
-		// override in subclass
 	}
 
 	/**

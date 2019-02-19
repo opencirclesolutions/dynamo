@@ -15,7 +15,7 @@ package com.ocs.dynamo.ui.component;
 
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 import com.ocs.dynamo.dao.FetchJoinInformation;
@@ -24,6 +24,7 @@ import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.service.BaseService;
+import com.ocs.dynamo.ui.CanAssignEntity;
 import com.ocs.dynamo.ui.composite.dialog.EntityPopupDialog;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.provider.IdBasedDataProvider;
@@ -39,10 +40,11 @@ import com.vaadin.ui.UI;
  *
  * @param <ID> the type of the primary key of the entities
  * @param <T> the type of the entities
- * @param <ID2> the type of the bound attribute
+ * @param <ID2> the type of the ID of the parent attribute
+ * @param <U> the type of the parent attribute
  */
-public class ServiceBasedDetailsEditGrid<ID extends Serializable, T extends AbstractEntity<ID>, ID2 extends Serializable>
-		extends BaseDetailsEditGrid<ID2, ID, T> {
+public class ServiceBasedDetailsEditGrid<ID extends Serializable, T extends AbstractEntity<ID>, ID2 extends Serializable, U extends AbstractEntity<ID2>>
+		extends BaseDetailsEditGrid<U, ID, T> implements CanAssignEntity<ID2, U> {
 
 	private static final long serialVersionUID = -1203245694503350276L;
 
@@ -52,28 +54,31 @@ public class ServiceBasedDetailsEditGrid<ID extends Serializable, T extends Abst
 	private IdBasedDataProvider<ID, T> provider;
 
 	/**
-	 * The parent ID
+	 * The currently selected entity in the edit form that this component is part of
 	 */
-	private ID2 selectedId;
+	private U parent;
 
 	/**
 	 * The supplier for constructing the search filter used to restrict the
 	 * displayed items
 	 */
-	private Function<ID2, SerializablePredicate<T>> filterSupplier;
+	private Function<U, SerializablePredicate<T>> filterSupplier;
 
 	/**
-	 * Code to execute after
+	 * Code to execute after selecting one or more items in the pop-up (link the
+	 * selected item to the parent)
 	 */
-	private Consumer<T> linkEntityConsumer;
+	private BiConsumer<T, U> linkEntityConsumer;
 
 	/**
 	 * Constructor
-	 *
-	 * @param entityModel    the entity model of the entities to display
-	 * @param attributeModel the attribute model of the attribute to display
-	 * @param viewMode       the view mode
-	 * @param formOptions    the form options that determine how the grid behaves
+	 * 
+	 * @param service        the service for retrieving data from the database
+	 * @param entityModel    the entity model
+	 * @param attributeModel the attribute model
+	 * @param viewMode       whether the component is in view mode
+	 * @param formOptions    the form options that govern how the component behaves
+	 * @param joins          the joins to apply when fetching data
 	 */
 	public ServiceBasedDetailsEditGrid(BaseService<ID, T> service, EntityModel<T> entityModel,
 			AttributeModel attributeModel, boolean viewMode, FormOptions formOptions, FetchJoinInformation... joins) {
@@ -84,8 +89,17 @@ public class ServiceBasedDetailsEditGrid<ID extends Serializable, T extends Abst
 
 	@Override
 	protected void applyFilter() {
-		SerializablePredicate<T> filter = filterSupplier == null ? null : filterSupplier.apply(selectedId);
+		SerializablePredicate<T> filter = (filterSupplier == null || parent == null) ? null
+				: filterSupplier.apply(parent);
 		getGrid().getDataCommunicator().setDataProvider(provider, filter);
+	}
+
+	@Override
+	public void assignEntity(U u) {
+		this.parent = u;
+		if (getGrid() != null) {
+			applyFilter();
+		}
 	}
 
 	@Override
@@ -99,8 +113,8 @@ public class ServiceBasedDetailsEditGrid<ID extends Serializable, T extends Abst
 	}
 
 	@Override
-	protected void doSetValue(ID2 value) {
-		this.selectedId = value;
+	protected void doSetValue(U value) {
+		this.parent = value;
 		if (getGrid() != null) {
 			applyFilter();
 		}
@@ -111,7 +125,7 @@ public class ServiceBasedDetailsEditGrid<ID extends Serializable, T extends Abst
 		return provider;
 	}
 
-	public Function<ID2, SerializablePredicate<T>> getFilterSupplier() {
+	public Function<U, SerializablePredicate<T>> getFilterSupplier() {
 		return filterSupplier;
 	}
 
@@ -119,13 +133,13 @@ public class ServiceBasedDetailsEditGrid<ID extends Serializable, T extends Abst
 		return provider.getSize();
 	}
 
-	public Consumer<T> getLinkEntityConsumer() {
+	public BiConsumer<T, U> getLinkEntityConsumer() {
 		return linkEntityConsumer;
 	}
 
 	@Override
-	public ID2 getValue() {
-		return selectedId;
+	public U getValue() {
+		return parent;
 	}
 
 	@Override
@@ -135,15 +149,15 @@ public class ServiceBasedDetailsEditGrid<ID extends Serializable, T extends Abst
 		}
 
 		for (T t : selected) {
-			linkEntityConsumer.accept(t);
+			linkEntityConsumer.accept(t, parent);
 		}
 	}
 
-	public void setFilterSupplier(Function<ID2, SerializablePredicate<T>> filterSupplier) {
+	public void setFilterSupplier(Function<U, SerializablePredicate<T>> filterSupplier) {
 		this.filterSupplier = filterSupplier;
 	}
 
-	public void setLinkEntityConsumer(Consumer<T> linkEntityConsumer) {
+	public void setLinkEntityConsumer(BiConsumer<T, U> linkEntityConsumer) {
 		this.linkEntityConsumer = linkEntityConsumer;
 	}
 

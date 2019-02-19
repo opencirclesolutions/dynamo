@@ -8,20 +8,22 @@ import org.mockito.Mockito;
 
 import com.google.common.collect.Lists;
 import com.ocs.dynamo.domain.TestEntity;
-import com.ocs.dynamo.domain.comparator.AttributeComparator;
+import com.ocs.dynamo.domain.TestEntity2;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.domain.model.impl.EntityModelFactoryImpl;
+import com.ocs.dynamo.filter.Filter;
 import com.ocs.dynamo.service.TestEntityService;
 import com.ocs.dynamo.test.BaseMockitoTest;
 import com.ocs.dynamo.test.MockUtil;
 import com.ocs.dynamo.ui.composite.dialog.ModelBasedSearchDialog;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
+import com.ocs.dynamo.ui.provider.IdBasedDataProvider;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.ui.UI;
 
-public class DetailsEditGridTest extends BaseMockitoTest {
+public class ServiceBasedDetailsEditGridTest extends BaseMockitoTest {
 
 	private EntityModelFactory factory = new EntityModelFactoryImpl();
 
@@ -31,6 +33,8 @@ public class DetailsEditGridTest extends BaseMockitoTest {
 	private TestEntity e1;
 
 	private TestEntity e2;
+
+	private TestEntity2 parent;
 
 	@Mock
 	private TestEntityService service;
@@ -42,6 +46,7 @@ public class DetailsEditGridTest extends BaseMockitoTest {
 		e1.setId(1);
 		e2 = new TestEntity(2, "Bob", 14L);
 		e2.setId(2);
+		parent = new TestEntity2();
 	}
 
 	/**
@@ -51,22 +56,13 @@ public class DetailsEditGridTest extends BaseMockitoTest {
 	public void testEditable() {
 		EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
 
-		DetailsEditGrid<Integer, TestEntity> grid = createGrid(em, em.getAttributeModel("testEntities"), false, false,
-				new FormOptions().setShowRemoveButton(true));
+		ServiceBasedDetailsEditGrid<Integer, TestEntity, Integer, TestEntity2> grid = createGrid(em,
+				em.getAttributeModel("testEntities"), false, false, new FormOptions().setShowRemoveButton(true));
 		Assert.assertTrue(grid.getAddButton().isVisible());
 		Assert.assertFalse(grid.getSearchDialogButton().isVisible());
 
-		grid.setValue(Lists.newArrayList(e1, e2));
+		grid.setValue(parent);
 
-		Assert.assertEquals(2, grid.getItemCount());
-
-		// test that the add button will add a row
-		grid.getAddButton().click();
-		Assert.assertEquals(3, grid.getItemCount());
-
-		// explicitly set field value
-		grid.setValue(Lists.newArrayList(e1));
-		Assert.assertEquals(1, grid.getItemCount());
 	}
 
 	/**
@@ -77,12 +73,13 @@ public class DetailsEditGridTest extends BaseMockitoTest {
 	public void testReadOnlyWithSearch() {
 		EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
 
-		DetailsEditGrid<Integer, TestEntity> grid = createGrid(em, null, false, true,
+		ServiceBasedDetailsEditGrid<Integer, TestEntity, Integer, TestEntity2> grid = createGrid(em, null, false, true,
 				new FormOptions().setDetailsGridSearchMode(true));
 		grid.setService(service);
 
-		ListDataProvider<TestEntity> lep = (ListDataProvider<TestEntity>) grid.getGrid().getDataProvider();
-		Assert.assertEquals(0, lep.getItems().size());
+		IdBasedDataProvider<Integer, TestEntity> provider = (IdBasedDataProvider<Integer, TestEntity>) grid.getGrid()
+				.getDataProvider();
+		Assert.assertEquals(0, provider.getSize());
 
 		// adding is not possible
 		Assert.assertFalse(grid.getAddButton().isVisible());
@@ -105,28 +102,26 @@ public class DetailsEditGridTest extends BaseMockitoTest {
 	public void testReadOnly() {
 		EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
 
-		DetailsEditGrid<Integer, TestEntity> grid = createGrid(em, em.getAttributeModel("testEntities"), true, false,
-				new FormOptions());
+		ServiceBasedDetailsEditGrid<Integer, TestEntity, Integer, TestEntity2> grid = createGrid(em,
+				em.getAttributeModel("testEntities"), true, false, new FormOptions());
 		Assert.assertFalse(grid.getAddButton().isVisible());
 		Assert.assertFalse(grid.getSearchDialogButton().isVisible());
-
-		grid.setValue(Lists.newArrayList(e1, e2));
-		Assert.assertEquals(2, grid.getItemCount());
 	}
 
-	private DetailsEditGrid<Integer, TestEntity> createGrid(EntityModel<TestEntity> em, AttributeModel am,
-			boolean viewMode, boolean tableReadOnly, FormOptions fo) {
+	private ServiceBasedDetailsEditGrid<Integer, TestEntity, Integer, TestEntity2> createGrid(
+			EntityModel<TestEntity> em, AttributeModel am, boolean viewMode, boolean readOnly, FormOptions fo) {
 
-		if (tableReadOnly) {
+		if (readOnly) {
 			fo.setReadOnly(true);
 		}
 
-		DetailsEditGrid<Integer, TestEntity> table = new DetailsEditGrid<Integer, TestEntity>(em, am, viewMode, fo);
+		ServiceBasedDetailsEditGrid<Integer, TestEntity, Integer, TestEntity2> table = new ServiceBasedDetailsEditGrid<Integer, TestEntity, Integer, TestEntity2>(
+				service, em, am, viewMode, fo);
 
 		table.setCreateEntitySupplier(() -> new TestEntity());
 		MockUtil.injectUI(table, ui);
 		table.initContent();
-		table.setComparator(new AttributeComparator<>("name"));
+
 		return table;
 	}
 }

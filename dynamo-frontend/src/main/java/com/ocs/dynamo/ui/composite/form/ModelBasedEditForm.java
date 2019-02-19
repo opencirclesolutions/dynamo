@@ -58,6 +58,7 @@ import com.ocs.dynamo.ui.component.CustomEntityField;
 import com.ocs.dynamo.ui.component.DefaultEmbedded;
 import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
+import com.ocs.dynamo.ui.component.ServiceBasedDetailsEditGrid;
 import com.ocs.dynamo.ui.component.URLField;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.composite.type.AttributeGroupMode;
@@ -941,9 +942,12 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			}
 
 			// add converters and validators
-			BindingBuilder<T, ?> builder = groups.get(viewMode).forField((HasValue<?>) field);
-			fieldFactory.addConvertersAndValidators(builder, attributeModel, constructCustomConverter(attributeModel));
-			builder.bind(attributeModel.getPath());
+			if (!(field instanceof ServiceBasedDetailsEditGrid)) {
+				BindingBuilder<T, ?> builder = groups.get(viewMode).forField((HasValue<?>) field);
+				fieldFactory.addConvertersAndValidators(builder, attributeModel,
+						constructCustomConverter(attributeModel));
+				builder.bind(attributeModel.getPath());
+			}
 
 			if (!attributeModel.getGroupTogetherWith().isEmpty()) {
 				// multiple fields behind each other
@@ -1005,6 +1009,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		}
 
 		if (field instanceof CanAssignEntity) {
+			((CanAssignEntity<ID, T>) field).assignEntity(entity);
 			assignEntityToFields.add((CanAssignEntity<ID, T>) field);
 		}
 	}

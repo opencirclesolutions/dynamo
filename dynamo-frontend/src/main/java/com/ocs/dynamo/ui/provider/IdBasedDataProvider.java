@@ -46,6 +46,13 @@ public class IdBasedDataProvider<ID extends Serializable, T extends AbstractEnti
 
 	private SortOrders oldSortOrder = null;
 
+	/**
+	 * Constructor
+	 * 
+	 * @param service     the service
+	 * @param entityModel the entity model
+	 * @param joins       the joins to apply
+	 */
 	public IdBasedDataProvider(BaseService<ID, T> service, EntityModel<T> entityModel, FetchJoinInformation... joins) {
 		super(service, entityModel, joins);
 	}
@@ -117,7 +124,6 @@ public class IdBasedDataProvider<ID extends Serializable, T extends AbstractEnti
 
 	@Override
 	public T getItem(ID id) {
-		// TODO
 		return null;
 	}
 
