@@ -91,7 +91,7 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 			super(false, true);
 			this.form = form;
 
-			if (!viewMode) {
+			if (!viewMode && getFormOptions().isShowRemoveButton()) {
 				buttonBar = new DefaultHorizontalLayout(false, true, true);
 
 				addComponent(form);
@@ -418,7 +418,7 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 	/**
 	 * Returns the FormContainer specified by the index
 	 * 
-	 * @param index the zero-based index of the form contianer
+	 * @param index the zero-based index of the form container
 	 * @return
 	 */
 	public FormContainer getFormContainer(int index) {
@@ -447,8 +447,7 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 
 	@Override
 	public Collection<T> getValue() {
-		// TODO: this does not appear to actually have to return anything for the
-		// component to work
+		// does not actually have to return anything
 		return null;
 	}
 
@@ -517,7 +516,7 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 	/**
 	 * Sets the supplier used for creating a new entity
 	 * 
-	 * @param createEntitySupplier
+	 * @param createEntitySupplier the supplier
 	 */
 	public void setCreateEntitySupplier(Supplier<T> createEntitySupplier) {
 		this.createEntitySupplier = createEntitySupplier;
