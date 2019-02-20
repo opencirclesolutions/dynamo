@@ -449,6 +449,11 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 				Binder<T> binder = binders.get(t);
 				return binder.forField((HasValue<?>) field);
 			}
+
+			@Override
+			protected void postProcessComponent(AttributeModel am, AbstractComponent comp) {
+				BaseDetailsEditGrid.this.postProcessComponent(am, comp);
+			}
 		};
 
 		// allow editing by showing a pop-up dialog (only for service-based version)
@@ -560,9 +565,19 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	 * Callback method that is used to modify the button bar. Override in subclasses
 	 * if needed
 	 *
-	 * @param buttonBar
+	 * @param buttonBar the button bar
 	 */
 	protected void postProcessButtonBar(Layout buttonBar) {
+		// overwrite in subclass if needed
+	}
+
+	/**
+	 * Callback method that is used to post-process an input component
+	 * 
+	 * @param am   the attribute model for the component
+	 * @param comp the component
+	 */
+	protected void postProcessComponent(AttributeModel am, AbstractComponent comp) {
 		// overwrite in subclass if needed
 	}
 
