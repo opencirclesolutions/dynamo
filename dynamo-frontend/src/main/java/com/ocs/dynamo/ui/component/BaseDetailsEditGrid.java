@@ -195,6 +195,12 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	private boolean serviceBasedEditMode;
 
 	/**
+	 * Code to execute after selecting one or more items in the pop-up (link the
+	 * selected item to the parent)
+	 */
+	private Consumer<T> linkEntityConsumer;
+
+	/**
 	 * Constructor
 	 * 
 	 * @param service
@@ -376,6 +382,10 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 
 	public ModelBasedGrid<ID, T> getGrid() {
 		return grid;
+	}
+
+	public Consumer<T> getLinkEntityConsumer() {
+		return linkEntityConsumer;
 	}
 
 	public Button getSearchDialogButton() {
@@ -580,6 +590,10 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 
 	public void setFormOptions(FormOptions formOptions) {
 		this.formOptions = formOptions;
+	}
+
+	public void setLinkEntityConsumer(Consumer<T> linkEntityConsumer) {
+		this.linkEntityConsumer = linkEntityConsumer;
 	}
 
 	public void setPageLength(int pageLength) {

@@ -20,6 +20,8 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
@@ -51,8 +53,8 @@ import com.vaadin.ui.VerticalLayout;
  * @param <ID> the type of the ID
  * @param <T> the type of the entity that is managed in the form
  */
-public abstract class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity<ID>>
-		extends CustomField<Collection<T>> implements NestedComponent, UseInViewMode {
+public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity<ID>> extends CustomField<Collection<T>>
+		implements NestedComponent, UseInViewMode {
 
 	/**
 	 * A container that holds the edit form for a single entity along with a button
@@ -73,7 +75,7 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 		/**
 		 * Button for deleting the form
 		 */
-		private Button deleteButton;
+		private Button removeButton;
 
 		/**
 		 * Button bar
@@ -95,20 +97,24 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 				addComponent(form);
 				addComponent(buttonBar);
 
-				deleteButton = new Button(messageService.getMessage("ocs.remove", VaadinUtils.getLocale()));
-				deleteButton.setIcon(VaadinIcons.TRASH);
-				deleteButton.addClickListener(event -> {
-					removeEntity(this.form.getEntity());
+				removeButton = new Button(messageService.getMessage("ocs.remove", VaadinUtils.getLocale()));
+				removeButton.setIcon(VaadinIcons.TRASH);
+				removeButton.addClickListener(event -> {
+					removeEntityConsumer.accept(this.form.getEntity());
 					items.remove(this.form.getEntity());
 					mainFormContainer.removeComponent(this);
 					forms.remove(this);
 				});
-				buttonBar.addComponent(deleteButton);
+				buttonBar.addComponent(removeButton);
 				postProcessButtonBar(buttonBar);
 			} else {
 				// read only mode
 				addComponent(form);
 			}
+		}
+
+		public Button getDeleteButton() {
+			return removeButton;
 		}
 
 		public T getEntity() {
@@ -120,14 +126,14 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 		}
 
 		public void setDeleteAllowed(boolean enabled) {
-			if (deleteButton != null) {
-				deleteButton.setEnabled(enabled);
+			if (removeButton != null) {
+				removeButton.setEnabled(enabled);
 			}
 		}
 
 		public void setDeleteVisible(boolean visible) {
-			if (deleteButton != null) {
-				deleteButton.setVisible(visible);
+			if (removeButton != null) {
+				removeButton.setVisible(visible);
 			}
 		}
 
@@ -145,10 +151,6 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 
 		public boolean validateAllFields() {
 			return form.validateAllFields();
-		}
-
-		public Button getDeleteButton() {
-			return deleteButton;
 		}
 
 	}
@@ -169,7 +171,7 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 	 * The entity models used for rendering the individual fields (mostly useful for
 	 * lookup components)
 	 */
-	private Map<String, String> fieldEntityModels = new HashMap<>();
+	private Map<String, String> attributeEntityModels = new HashMap<>();
 
 	/**
 	 * The attribute model of the attribute to display
@@ -221,6 +223,16 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 	 * Container that holds all the sub forms
 	 */
 	private Layout mainFormContainer;
+
+	/**
+	 * Supplier for creating a new entity
+	 */
+	private Supplier<T> createEntitySupplier;
+
+	/**
+	 * Consumer for removing an entity
+	 */
+	private Consumer<T> removeEntityConsumer;
 
 	/**
 	 * Constructor
@@ -298,15 +310,15 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 	}
 
 	/**
-	 * Adds a field entity model - this can be used to overwrite the default entity
-	 * model that is used for rendering complex selection components (lookup
+	 * Adds an attribute entity model - this can be used to overwrite the default
+	 * entity model that is used for rendering complex selection components (lookup
 	 * dialogs)
 	 * 
 	 * @param path      the path to the field
 	 * @param reference the unique ID of the entity model
 	 */
-	public final void addFieldEntityModel(String path, String reference) {
-		fieldEntityModels.put(path, reference);
+	public final void addAttributeEntityModel(String path, String reference) {
+		attributeEntityModels.put(path, reference);
 	}
 
 	protected void afterLayoutBuilt(ModelBasedEditForm<ID, T> editForm, boolean viewMode) {
@@ -326,7 +338,7 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 		addButton = new Button(messageService.getMessage("ocs.add", VaadinUtils.getLocale()));
 		addButton.setIcon(VaadinIcons.PLUS);
 		addButton.addClickListener(event -> {
-			T t = createEntity();
+			T t = createEntitySupplier.get();
 			items.add(t);
 			addDetailEditForm(t);
 		});
@@ -367,13 +379,6 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 		return null;
 	}
 
-	/**
-	 * Creates a new entity - override in subclass
-	 * 
-	 * @return
-	 */
-	protected abstract T createEntity();
-
 	@Override
 	protected void doSetValue(Collection<T> value) {
 		setItems(value);
@@ -387,11 +392,27 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 		return comparator;
 	}
 
+	public Supplier<T> getCreateEntitySupplier() {
+		return createEntitySupplier;
+	}
+
 	public T getEntity(int index) {
 		if (index < this.forms.size()) {
 			return this.forms.get(index).getEntity();
 		}
 		return null;
+	}
+
+	public EntityModel<T> getEntityModel() {
+		return entityModel;
+	}
+
+	public Map<String, String> getFieldEntityModels() {
+		return attributeEntityModels;
+	}
+
+	public Map<String, SerializablePredicate<?>> getFieldFilters() {
+		return fieldFilters;
 	}
 
 	/**
@@ -407,18 +428,6 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 		return null;
 	}
 
-	public EntityModel<T> getEntityModel() {
-		return entityModel;
-	}
-
-	public Map<String, String> getFieldEntityModels() {
-		return fieldEntityModels;
-	}
-
-	public Map<String, SerializablePredicate<?>> getFieldFilters() {
-		return fieldFilters;
-	}
-
 	/**
 	 * Returns the current number of forms
 	 * 
@@ -430,6 +439,10 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 
 	public FormOptions getFormOptions() {
 		return formOptions;
+	}
+
+	public Consumer<T> getRemoveEntityConsumer() {
+		return removeEntityConsumer;
 	}
 
 	@Override
@@ -455,6 +468,9 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 		// add the buttons
 		constructButtonBar(layout);
 
+		// initial filling
+		setItems(items);
+
 		return layout;
 	}
 
@@ -463,47 +479,55 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 	}
 
 	/**
-	 * Callback method that is used to modify the button bar. Override in subclasses
-	 * if needed
+	 * Callback method that is used to modify the main button bar that appears below
+	 * the sub-forms. Override in subclasses if needed
 	 * 
-	 * @param buttonBar
+	 * @param buttonBar the button bar
 	 */
 	protected void postProcessButtonBar(Layout buttonBar) {
 		// overwrite in subclass if needed
 	}
 
 	/**
-	 * Callback method that is used to modify the
+	 * Callback method that is used to modify the detail button bar that is rendered
+	 * for every sub-form
 	 * 
-	 * @param index
-	 * @param buttonBar
-	 * @param viewMode
+	 * @param index     the zero-based index of the sub-form
+	 * @param buttonBar the button bar
+	 * @param viewMode  whether the component is in view mode
 	 */
 	protected void postProcessDetailButtonBar(int index, Layout buttonBar, boolean viewMode) {
 		// overwrite in subclass if needed
 	}
 
+	/**
+	 * Callback method that is used to modify the fields after creation. This method
+	 * is called just once during component construction
+	 * 
+	 * @param editForm the edit form that contains the fields
+	 */
 	protected void postProcessEditFields(ModelBasedEditForm<ID, T> editForm) {
 		// override in subclasses
 	}
-
-	/**
-	 * Callback method that is called when the remove button is clicked - allows
-	 * decoupling the entity from its master
-	 * 
-	 * @param toRemove
-	 */
-	protected abstract void removeEntity(T toRemove);
 
 	public void setComparator(Comparator<T> comparator) {
 		this.comparator = comparator;
 	}
 
 	/**
-	 * Enables or disables the delete button
+	 * Sets the supplier used for creating a new entity
 	 * 
-	 * @param index
-	 * @param allowed
+	 * @param createEntitySupplier
+	 */
+	public void setCreateEntitySupplier(Supplier<T> createEntitySupplier) {
+		this.createEntitySupplier = createEntitySupplier;
+	}
+
+	/**
+	 * Enables or disables the delete button for a sub-form
+	 * 
+	 * @param index   the zero-based index of the sub-form
+	 * @param allowed whether deleting is allowed
 	 */
 	public void setDeleteEnabled(int index, boolean allowed) {
 		if (index < this.forms.size()) {
@@ -549,13 +573,20 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 	}
 
 	public void setFieldEntityModels(Map<String, String> fieldEntityModels) {
-		this.fieldEntityModels = fieldEntityModels;
+		this.attributeEntityModels = fieldEntityModels;
 	}
 
 	public void setFieldFilters(Map<String, SerializablePredicate<?>> fieldFilters) {
 		this.fieldFilters = fieldFilters;
 	}
 
+	/**
+	 * Sets the visibility of the specified field in a specified sub-form
+	 * 
+	 * @param index   the zero-based index of the sub-form
+	 * @param path    the path to the field
+	 * @param visible the desired visibility
+	 */
 	public void setFieldVisible(int index, String path, boolean visible) {
 		if (index < this.forms.size()) {
 			this.forms.get(index).setFieldVisible(path, visible);
@@ -567,7 +598,7 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 	}
 
 	/**
-	 * Refreshes the items that are displayed in the layout
+	 * Sets the items that are specified in the layout
 	 * 
 	 * @param items the new set of items to be displayed
 	 */
@@ -588,6 +619,15 @@ public abstract class DetailsEditLayout<ID extends Serializable, T extends Abstr
 				addDetailEditForm(t);
 			}
 		}
+	}
+
+	/**
+	 * Sets the Consumer to be carried out for decoupling/removing an entity
+	 * 
+	 * @param removeEntityConsumer
+	 */
+	public void setRemoveEntityConsumer(Consumer<T> removeEntityConsumer) {
+		this.removeEntityConsumer = removeEntityConsumer;
 	}
 
 	public void setService(BaseService<ID, T> service) {

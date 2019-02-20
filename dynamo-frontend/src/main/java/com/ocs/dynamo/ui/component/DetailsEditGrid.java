@@ -22,6 +22,7 @@ import java.util.List;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
+import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.utils.ConvertUtils;
 import com.vaadin.data.provider.DataProvider;
@@ -126,8 +127,20 @@ public class DetailsEditGrid<ID extends Serializable, T extends AbstractEntity<I
 
 	@Override
 	protected void handleDialogSelection(Collection<T> selected) {
+		if (getLinkEntityConsumer() == null) {
+			throw new OCSRuntimeException("No linkEntityConsumer specified!");
+		}
+
+		// add to data provider
 		for (T t : selected) {
-			provider.getItems().add(t);
+			if (!provider.getItems().contains(t)) {
+				provider.getItems().add(t);
+			}
+		}
+
+		// link to parent entity 
+		for (T t : selected) {
+			getLinkEntityConsumer().accept(t);
 		}
 	}
 

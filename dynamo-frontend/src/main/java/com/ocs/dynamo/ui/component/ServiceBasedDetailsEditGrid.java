@@ -15,7 +15,6 @@ package com.ocs.dynamo.ui.component;
 
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 import com.ocs.dynamo.dao.FetchJoinInformation;
@@ -63,12 +62,6 @@ public class ServiceBasedDetailsEditGrid<ID extends Serializable, T extends Abst
 	 * displayed items
 	 */
 	private Function<U, SerializablePredicate<T>> filterSupplier;
-
-	/**
-	 * Code to execute after selecting one or more items in the pop-up (link the
-	 * selected item to the parent)
-	 */
-	private BiConsumer<T, U> linkEntityConsumer;
 
 	/**
 	 * Constructor
@@ -133,10 +126,6 @@ public class ServiceBasedDetailsEditGrid<ID extends Serializable, T extends Abst
 		return provider.getSize();
 	}
 
-	public BiConsumer<T, U> getLinkEntityConsumer() {
-		return linkEntityConsumer;
-	}
-
 	@Override
 	public U getValue() {
 		return parent;
@@ -144,21 +133,17 @@ public class ServiceBasedDetailsEditGrid<ID extends Serializable, T extends Abst
 
 	@Override
 	protected void handleDialogSelection(Collection<T> selected) {
-		if (linkEntityConsumer == null) {
+		if (getLinkEntityConsumer() == null) {
 			throw new OCSRuntimeException("No linkEntityConsumer specified!");
 		}
 
 		for (T t : selected) {
-			linkEntityConsumer.accept(t, parent);
+			getLinkEntityConsumer().accept(t);
 		}
 	}
 
 	public void setFilterSupplier(Function<U, SerializablePredicate<T>> filterSupplier) {
 		this.filterSupplier = filterSupplier;
-	}
-
-	public void setLinkEntityConsumer(BiConsumer<T, U> linkEntityConsumer) {
-		this.linkEntityConsumer = linkEntityConsumer;
 	}
 
 	/**

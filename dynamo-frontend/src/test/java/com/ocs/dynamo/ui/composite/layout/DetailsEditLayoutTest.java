@@ -111,16 +111,6 @@ public class DetailsEditLayoutTest extends BaseMockitoTest {
 			private static final long serialVersionUID = -4333833542380882076L;
 
 			@Override
-			protected void removeEntity(TestEntity toRemove) {
-				// not needed
-			}
-
-			@Override
-			protected TestEntity createEntity() {
-				return new TestEntity();
-			}
-
-			@Override
 			protected void postProcessButtonBar(Layout buttonBar) {
 				buttonBarPostconstruct = true;
 			}
@@ -130,6 +120,10 @@ public class DetailsEditLayoutTest extends BaseMockitoTest {
 				detailButtonBarPostconstruct = true;
 			}
 		};
+		layout.setCreateEntitySupplier(() -> new TestEntity());
+		layout.setRemoveEntityConsumer(t -> {
+		});
+
 		layout.initContent();
 		return layout;
 	}
