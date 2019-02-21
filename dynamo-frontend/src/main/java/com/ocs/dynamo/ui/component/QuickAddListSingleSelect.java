@@ -18,6 +18,7 @@ import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.Refreshable;
+import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.data.provider.SortOrder;
 import com.vaadin.server.ErrorMessage;
@@ -127,7 +128,7 @@ public class QuickAddListSingleSelect<ID extends Serializable, T extends Abstrac
 		bar.setSizeFull();
 
 		if (this.getAttributeModel() != null) {
-			this.setCaption(getAttributeModel().getDisplayName());
+			this.setCaption(getAttributeModel().getDisplayName(VaadinUtils.getLocale()));
 		}
 
 		listSelect.setCaption(null);

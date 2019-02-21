@@ -173,7 +173,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 				}
 			});
 			buttonBar.addComponent(clearButton);
-			setCaption(attributeModel.getDisplayName());
+			setCaption(attributeModel.getDisplayName(VaadinUtils.getLocale()));
 
 			return main;
 		}
@@ -1022,7 +1022,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	 */
 	private Component constructImagePreview(AttributeModel attributeModel) {
 		byte[] bytes = ClassUtils.getBytes(getEntity(), attributeModel.getName());
-		Embedded image = new DefaultEmbedded(attributeModel.getDisplayName(), bytes);
+		Embedded image = new DefaultEmbedded(attributeModel.getDisplayName(VaadinUtils.getLocale()), bytes);
 		image.setStyleName(DynamoConstants.CSS_CLASS_UPLOAD);
 		return image;
 	}
@@ -1094,7 +1094,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	private HorizontalLayout constructRowLayout(AttributeModel attributeModel, boolean required, boolean setCaption) {
 		HorizontalLayout horizontal = new DefaultHorizontalLayout(false, true, true);
 		if (setCaption) {
-			horizontal.setCaption(attributeModel.getDisplayName());
+			horizontal.setCaption(attributeModel.getDisplayName(VaadinUtils.getLocale()));
 		}
 		horizontal.setStyleName(DynamoConstants.CSS_NESTED, true);
 		if (required) {
@@ -1123,8 +1123,10 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 					if (getFormOptions().isConfirmSave()) {
 						// ask for confirmation before saving
 						service.validate(entity);
-						VaadinUtils.showConfirmDialog(getMessageService(), getMessageService().getMessage(
-								"ocs.confirm.save", VaadinUtils.getLocale(), getEntityModel().getDisplayName()), () -> {
+						VaadinUtils.showConfirmDialog(getMessageService(),
+								getMessageService().getMessage("ocs.confirm.save", VaadinUtils.getLocale(),
+										getEntityModel().getDisplayName(VaadinUtils.getLocale())),
+								() -> {
 									try {
 										if (customSaveConsumer != null) {
 											customSaveConsumer.accept(entity);
@@ -1167,16 +1169,17 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		// add title label
 		String mainValue = EntityModelUtils.getDisplayPropertyValue(entity, getEntityModel());
 		if (isViewMode()) {
-			label = new Label(
-					message("ocs.modelbasededitform.title.view", getEntityModel().getDisplayName(), mainValue));
+			label = new Label(message("ocs.modelbasededitform.title.view",
+					getEntityModel().getDisplayName(VaadinUtils.getLocale()), mainValue));
 		} else {
 			if (entity.getId() == null) {
 				// create a new entity
-				label = new Label(message("ocs.modelbasededitform.title.create", getEntityModel().getDisplayName()));
+				label = new Label(message("ocs.modelbasededitform.title.create",
+						getEntityModel().getDisplayName(VaadinUtils.getLocale())));
 			} else {
 				// update an existing entity
-				label = new Label(
-						message("ocs.modelbasededitform.title.update", getEntityModel().getDisplayName(), mainValue));
+				label = new Label(message("ocs.modelbasededitform.title.update",
+						getEntityModel().getDisplayName(VaadinUtils.getLocale()), mainValue));
 			}
 		}
 		label.setContentMode(ContentMode.HTML);
@@ -1650,7 +1653,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		AttributeModel am = getEntityModel().getAttributeModel(propertyName);
 		if (am != null) {
 			Component replacement = new Label(value);
-			replacement.setCaption(am.getDisplayName());
+			replacement.setCaption(am.getDisplayName(VaadinUtils.getLocale()));
 			Component oldLabel = labels.get(isViewMode()).get(am);
 
 			// label is displayed in view mode or when its an existing entity
@@ -1874,7 +1877,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			if (label != null) {
 				if (ClassUtils.getFieldValue(entity, propertyName) != null) {
 					label.setVisible(visible);
-					label.setCaption(am.getDisplayName());
+					label.setCaption(am.getDisplayName(VaadinUtils.getLocale()));
 				} else {
 					label.setVisible(false);
 					label.setCaption(null);

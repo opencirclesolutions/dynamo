@@ -13,13 +13,14 @@
  */
 package com.ocs.dynamo.domain.model.impl;
 
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.AttributeType;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
-
-import java.util.List;
-import java.util.Map;
 
 /**
  * A wrapper that adds lazy loading to an entity model definition
@@ -50,12 +51,9 @@ public class LazyEntityModelWrapper<T> implements EntityModel<T> {
 	/**
 	 * Constructor
 	 *
-	 * @param factory
-	 *            the entity model factory
-	 * @param reference
-	 *            the reference (unique name of the model)
-	 * @param entityClass
-	 *            the entity class
+	 * @param factory     the entity model factory
+	 * @param reference   the reference (unique name of the model)
+	 * @param entityClass the entity class
 	 */
 	public LazyEntityModelWrapper(EntityModelFactory factory, String reference, Class<T> entityClass) {
 		this.reference = reference;
@@ -106,18 +104,8 @@ public class LazyEntityModelWrapper<T> implements EntityModel<T> {
 	}
 
 	@Override
-	public String getDescription() {
-		return getDelegate().getDescription();
-	}
-
-	@Override
-	public String getDisplayName() {
-		return getDelegate().getDisplayName();
-	}
-
-	@Override
-	public String getDisplayNamePlural() {
-		return getDelegate().getDisplayNamePlural();
+	public String getDescription(Locale locale) {
+		return getDelegate().getDescription(locale);
 	}
 
 	@Override
@@ -174,6 +162,16 @@ public class LazyEntityModelWrapper<T> implements EntityModel<T> {
 	@Override
 	public void addAttributeGroup(String attributeGroup) {
 		getDelegate().addAttributeGroup(attributeGroup);
+	}
+
+	@Override
+	public String getDisplayName(Locale locale) {
+		return getDelegate().getDisplayName(locale);
+	}
+
+	@Override
+	public String getDisplayNamePlural(Locale locale) {
+		return getDelegate().getDisplayNamePlural(locale);
 	}
 
 }

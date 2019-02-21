@@ -14,6 +14,7 @@
 package com.ocs.dynamo.domain.model;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 /**
@@ -122,7 +123,7 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	 * @return The description of the attribute. This is used as the tool tip in
 	 *         tables
 	 */
-	String getDescription();
+	String getDescription(Locale locale);
 
 	/**
 	 * 
@@ -135,7 +136,7 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	 * @return The display name of the attribute (used as the caption for the input
 	 *         component)
 	 */
-	String getDisplayName();
+	String getDisplayName(Locale locale);
 
 	/**
 	 * @return When the attribute can be edited (never, always, or only when
@@ -159,7 +160,7 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	 * 
 	 * @return The textual representation of a "false" value
 	 */
-	String getFalseRepresentation();
+	String getFalseRepresentation(Locale locale);
 
 	/**
 	 * 
@@ -264,7 +265,7 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	/**
 	 * @return The value to display as the input prompt value inside an edit field
 	 */
-	String getPrompt();
+	String getPrompt(Locale locale);
 
 	/**
 	 * 
@@ -318,14 +319,14 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	/**
 	 * 
 	 * 
-	 * @return The text field mode (text fiel or text area)
+	 * @return The text field mode (text field or text area)
 	 */
 	AttributeTextFieldMode getTextFieldMode();
 
 	/**
 	 * @return The textual representation of a "true" value
 	 */
-	String getTrueRepresentation();
+	String getTrueRepresentation(Locale locale);
 
 	/**
 	 * 

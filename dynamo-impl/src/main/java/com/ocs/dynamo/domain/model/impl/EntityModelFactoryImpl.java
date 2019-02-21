@@ -166,12 +166,10 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 					SystemPropertyUtils.isCapitalizeWords());
 
 			// first, set the defaults
-			model.setDisplayName(displayName);
-			model.setDescription(displayName);
+			model.setDefaultDisplayName(displayName);
+			model.setDefaultDescription(displayName);
+			model.setDefaultPrompt(displayName);
 
-			if (SystemPropertyUtils.useDefaultPromptValue()) {
-				model.setPrompt(displayName);
-			}
 			model.setMainAttribute(descriptor.isPreferred());
 			model.setSearchable(descriptor.isPreferred());
 			model.setName((prefix == null ? "" : (prefix + ".")) + fieldName);
@@ -231,8 +229,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 					!nested && model.isVisible() && (AttributeType.BASIC.equals(model.getAttributeType())));
 
 			if (getMessageService() != null) {
-				model.setTrueRepresentation(SystemPropertyUtils.getDefaultTrueRepresentation());
-				model.setFalseRepresentation(SystemPropertyUtils.getDefaultFalseRepresentation());
+				model.setDefaultTrueRepresentation(SystemPropertyUtils.getDefaultTrueRepresentation());
+				model.setDefaultFalseRepresentation(SystemPropertyUtils.getDefaultFalseRepresentation());
 			}
 
 			// by default, use a combo box to look up
@@ -359,9 +357,10 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 
 		entityModel.setEntityClass(entityClass);
 		entityModel.setReference(reference);
-		entityModel.setDisplayName(displayName);
-		entityModel.setDisplayNamePlural(displayNamePlural);
-		entityModel.setDescription(description);
+
+		entityModel.setDefaultDisplayName(displayName);
+		entityModel.setDefaultDisplayNamePlural(displayNamePlural);
+		entityModel.setDefaultDescription(description);
 		entityModel.setDisplayProperty(selectDisplayProperty);
 
 		final Map<String, String> attributeGroupMap = determineAttributeGroupMapping(entityModel, entityClass);
@@ -856,26 +855,20 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 		// overwrite with annotation values
 		if (attribute != null) {
 			if (!StringUtils.isEmpty(attribute.displayName())) {
-				model.setDisplayName(attribute.displayName());
-				// by default, set prompt and description to the display
-				// name as
-				// well -
-				// they are overwritten in the following code if they are
-				// explicitly set
-				if (SystemPropertyUtils.useDefaultPromptValue()) {
-					model.setPrompt(attribute.displayName());
-				}
-				model.setDescription(attribute.displayName());
+				model.setDefaultDisplayName(attribute.displayName());
+				model.setDefaultDescription(attribute.displayName());
+				model.setDefaultPrompt(attribute.prompt());
 			}
 
 			if (!StringUtils.isEmpty(attribute.description())) {
-				model.setDescription(attribute.description());
-			}
-			if (!StringUtils.isEmpty(attribute.displayFormat())) {
-				model.setDisplayFormat(attribute.displayFormat());
+				model.setDefaultDescription(attribute.description());
 			}
 			if (!StringUtils.isEmpty(attribute.prompt())) {
-				model.setPrompt(attribute.prompt());
+				model.setDefaultPrompt(attribute.prompt());
+			}
+
+			if (!StringUtils.isEmpty(attribute.displayFormat())) {
+				model.setDisplayFormat(attribute.displayFormat());
 			}
 
 			model.setEditableType(attribute.editable());
@@ -940,11 +933,11 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 			}
 
 			if (!StringUtils.isEmpty(attribute.trueRepresentation())) {
-				model.setTrueRepresentation(attribute.trueRepresentation());
+				model.setDefaultTrueRepresentation(attribute.trueRepresentation());
 			}
 
 			if (!StringUtils.isEmpty(attribute.falseRepresentation())) {
-				model.setFalseRepresentation(attribute.falseRepresentation());
+				model.setDefaultFalseRepresentation(attribute.falseRepresentation());
 			}
 
 			if (attribute.percentage()) {
@@ -1157,12 +1150,12 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 
 		String msg = getAttributeMessage(entityModel, model, EntityModel.DISPLAY_NAME);
 		if (!StringUtils.isEmpty(msg)) {
-			model.setDisplayName(msg);
+			model.setDefaultDisplayName(msg);
 		}
 
 		msg = getAttributeMessage(entityModel, model, EntityModel.DESCRIPTION);
 		if (!StringUtils.isEmpty(msg)) {
-			model.setDescription(msg);
+			model.setDefaultDescription(msg);
 		}
 
 		msg = getAttributeMessage(entityModel, model, EntityModel.DEFAULT_VALUE);
@@ -1178,11 +1171,6 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 		msg = getAttributeMessage(entityModel, model, EntityModel.MAIN);
 		if (!StringUtils.isEmpty(msg)) {
 			model.setMainAttribute(Boolean.valueOf(msg));
-		}
-
-		msg = getAttributeMessage(entityModel, model, EntityModel.PROMPT);
-		if (!StringUtils.isEmpty(msg)) {
-			model.setPrompt(msg);
 		}
 
 		// check for read only (convenience only, overwritten by "editable")
@@ -1259,12 +1247,12 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 
 		msg = getAttributeMessage(entityModel, model, EntityModel.TRUE_REPRESENTATION);
 		if (msg != null && !StringUtils.isEmpty(msg)) {
-			model.setTrueRepresentation(msg);
+			model.setDefaultTrueRepresentation(msg);
 		}
 
 		msg = getAttributeMessage(entityModel, model, EntityModel.FALSE_REPRESENTATION);
 		if (msg != null && !StringUtils.isEmpty(msg)) {
-			model.setFalseRepresentation(msg);
+			model.setDefaultFalseRepresentation(msg);
 		}
 
 		msg = getAttributeMessage(entityModel, model, EntityModel.PERCENTAGE);
@@ -1419,7 +1407,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 		if (!StringUtils.isEmpty(msg)) {
 			model.setSearchDateOnly(Boolean.valueOf(msg));
 		}
-		
+
 		msg = getAttributeMessage(entityModel, model, EntityModel.IGNORE_IN_SEARCH_FILTER);
 		if (!StringUtils.isEmpty(msg)) {
 			model.setIgnoreInSearchFilter(Boolean.valueOf(msg));

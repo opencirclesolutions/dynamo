@@ -459,7 +459,7 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 
 		VerticalLayout layout = new DefaultVerticalLayout(false, true);
 
-		setCaption(attributeModel.getDisplayName());
+		setCaption(attributeModel.getDisplayName(VaadinUtils.getLocale()));
 
 		mainFormContainer = new DefaultVerticalLayout(false, false);
 		layout.addComponent(mainFormContainer);

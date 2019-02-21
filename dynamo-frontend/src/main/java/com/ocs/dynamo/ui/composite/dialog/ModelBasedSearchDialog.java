@@ -168,7 +168,7 @@ public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractE
 	@Override
 	protected String getTitle() {
 		return ServiceLocatorFactory.getServiceLocator().getMessageService().getMessage("ocs.search.title",
-				VaadinUtils.getLocale(), entityModel.getDisplayNamePlural());
+				VaadinUtils.getLocale(), entityModel.getDisplayNamePlural(VaadinUtils.getLocale()));
 	}
 
 	/**

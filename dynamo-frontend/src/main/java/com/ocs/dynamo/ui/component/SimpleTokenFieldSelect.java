@@ -29,6 +29,7 @@ import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.filter.FilterConverter;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.Refreshable;
+import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.server.SerializablePredicate;
 import com.vaadin.shared.Registration;
@@ -131,7 +132,7 @@ public class SimpleTokenFieldSelect<ID extends Serializable, S extends AbstractE
 		this.elementCollection = elementCollection;
 		this.attributeModel = attributeModel;
 
-		setCaption(attributeModel.getDisplayName());
+		setCaption(attributeModel.getDisplayName(VaadinUtils.getLocale()));
 
 		extTokenField = new ExtTokenField();
 

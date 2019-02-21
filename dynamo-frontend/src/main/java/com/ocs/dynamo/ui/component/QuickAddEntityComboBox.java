@@ -24,6 +24,7 @@ import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.Refreshable;
 import com.ocs.dynamo.ui.SharedProvider;
 import com.ocs.dynamo.ui.component.EntityComboBox.SelectMode;
+import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.data.provider.SortOrder;
 import com.vaadin.server.SerializablePredicate;
@@ -135,7 +136,7 @@ public class QuickAddEntityComboBox<ID extends Serializable, T extends AbstractE
 		bar.setSizeFull();
 
 		if (this.getAttributeModel() != null) {
-			this.setCaption(getAttributeModel().getDisplayName());
+			this.setCaption(getAttributeModel().getDisplayName(VaadinUtils.getLocale()));
 		}
 
 		// no caption needed (the wrapping component has the caption)

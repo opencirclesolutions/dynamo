@@ -35,6 +35,7 @@ import com.ocs.dynamo.ui.component.CustomEntityField;
 import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
+import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.data.HasValue;
 import com.vaadin.data.HasValue.ValueChangeEvent;
 import com.vaadin.server.SerializablePredicate;
@@ -215,10 +216,10 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 				// lower
 				// and upper bounds
 				String from = message("ocs.from");
-				field.setCaption(attributeModel.getDisplayName() + " " + from);
+				field.setCaption(attributeModel.getDisplayName(VaadinUtils.getLocale()) + " " + from);
 				auxField = constructField(entityModel, attributeModel);
 				String to = message("ocs.to");
-				auxField.setCaption(attributeModel.getDisplayName() + " " + to);
+				auxField.setCaption(attributeModel.getDisplayName(VaadinUtils.getLocale()) + " " + to);
 				auxField.setVisible(true);
 				HorizontalLayout layout = new DefaultHorizontalLayout();
 				layout.setSizeFull();

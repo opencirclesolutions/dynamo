@@ -24,6 +24,7 @@ import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
 import com.ocs.dynamo.ui.composite.type.ScreenMode;
 import com.ocs.dynamo.ui.utils.FormatUtils;
+import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.data.Converter;
 import com.vaadin.data.provider.SortOrder;
 import com.vaadin.icons.VaadinIcons;
@@ -397,7 +398,8 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	 */
 	public void emptyDetailView() {
 		VerticalLayout vLayout = new VerticalLayout();
-		vLayout.addComponent(new Label(message("ocs.select.item", getEntityModel().getDisplayName())));
+		vLayout.addComponent(
+				new Label(message("ocs.select.item", getEntityModel().getDisplayName(VaadinUtils.getLocale()))));
 		detailLayout.replaceComponent(selectedDetailLayout, vLayout);
 		selectedDetailLayout = vLayout;
 	}

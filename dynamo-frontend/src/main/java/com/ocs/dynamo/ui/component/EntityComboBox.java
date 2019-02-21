@@ -24,6 +24,7 @@ import com.ocs.dynamo.filter.FilterConverter;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.Refreshable;
 import com.ocs.dynamo.ui.utils.SortUtils;
+import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.utils.EntityModelUtils;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.data.provider.SortOrder;
@@ -106,7 +107,7 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 		this.filter = filter;
 		this.targetEntityModel = targetEntityModel;
 		if (attributeModel != null) {
-			this.setCaption(attributeModel.getDisplayName());
+			this.setCaption(attributeModel.getDisplayName(VaadinUtils.getLocale()));
 		}
 
 		setFilter(filter);

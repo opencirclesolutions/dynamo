@@ -23,6 +23,7 @@ import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.ui.component.DownloadButton;
 import com.ocs.dynamo.ui.composite.type.ExportMode;
+import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.data.provider.SortOrder;
 import com.vaadin.server.SerializablePredicate;
 
@@ -70,7 +71,8 @@ public class ExportDialog<ID extends Serializable, T extends AbstractEntity<ID>>
 		return new DownloadButton(message("ocs.export.csv"),
 				() -> new ByteArrayInputStream(
 						getExportService().exportCsv(getEntityModel(), getExportMode(), predicate, sortOrders, joins)),
-				() -> getEntityModel().getDisplayNamePlural() + "_" + LocalDateTime.now() + EXTENSION_CSV);
+				() -> getEntityModel().getDisplayNamePlural(VaadinUtils.getLocale()) + "_" + LocalDateTime.now()
+						+ EXTENSION_CSV);
 	}
 
 	@Override
@@ -78,7 +80,8 @@ public class ExportDialog<ID extends Serializable, T extends AbstractEntity<ID>>
 		return new DownloadButton(message("ocs.export.excel"),
 				() -> new ByteArrayInputStream(getExportService().exportExcel(getEntityModel(), getExportMode(),
 						predicate, sortOrders, customGenerator, joins)),
-				() -> getEntityModel().getDisplayNamePlural() + "_" + LocalDateTime.now() + EXTENSION_XLS);
+				() -> getEntityModel().getDisplayNamePlural(VaadinUtils.getLocale()) + "_" + LocalDateTime.now()
+						+ EXTENSION_XLS);
 	}
 
 }

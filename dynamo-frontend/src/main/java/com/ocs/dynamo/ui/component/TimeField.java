@@ -17,6 +17,7 @@ import java.time.LocalTime;
 import java.util.stream.IntStream;
 
 import com.ocs.dynamo.domain.model.AttributeModel;
+import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.shared.Registration;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
@@ -59,7 +60,7 @@ public class TimeField extends CustomField<LocalTime> {
 	@Override
 	protected Component initContent() {
 		HorizontalLayout main = new HorizontalLayout();
-		setCaption(attributeModel.getDisplayName());
+		setCaption(attributeModel.getDisplayName(VaadinUtils.getLocale()));
 		hourSelect.setItems(IntStream.range(0, HOURS).boxed());
 		minuteSelect.setItems(IntStream.range(0, MINUTES).boxed());
 		main.addComponent(hourSelect);

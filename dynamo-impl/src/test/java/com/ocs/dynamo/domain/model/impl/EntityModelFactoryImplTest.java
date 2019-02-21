@@ -20,6 +20,7 @@ import java.time.LocalTime;
 import java.time.ZonedDateTime;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import javax.persistence.Basic;
@@ -75,10 +76,15 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 
 	private final MessageService messageService = new MessageServiceImpl();
 
+	private final Locale locale = new Locale("en");
+
 	@Before
 	public void setupEntityModelFactoryTest() throws NoSuchFieldException {
+		
+		System.setProperty("ocs.use.default.prompt.value", "true");
+		
 		wireTestSubject(factory);
-		source.setBasename("entitymodel");
+		source.setBasename("META-INF/entitymodel");
 		ReflectionTestUtils.setField(messageService, "source", source);
 		ReflectionTestUtils.setField(factory, "messageService", messageService);
 	}
@@ -91,17 +97,17 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		final EntityModel<Entity1> model = factory.getModel(Entity1.class);
 		Assert.assertNotNull(model);
 
-		Assert.assertEquals("Entity1", model.getDisplayName());
-		Assert.assertEquals("Entity1s", model.getDisplayNamePlural());
-		Assert.assertEquals("Entity1", model.getDescription());
+		Assert.assertEquals("Entity1", model.getDisplayName(locale));
+		Assert.assertEquals("Entity1s", model.getDisplayNamePlural(locale));
+		Assert.assertEquals("Entity1", model.getDescription(locale));
 		Assert.assertNull(model.getDisplayProperty());
 
 		final AttributeModel nameModel = model.getAttributeModel("name");
 		Assert.assertNotNull(nameModel);
 
 		Assert.assertNull(nameModel.getDefaultValue());
-		Assert.assertNull(nameModel.getPrompt());
-		Assert.assertEquals("Name", nameModel.getDisplayName());
+		Assert.assertEquals("Name", nameModel.getPrompt(locale));
+		Assert.assertEquals("Name", nameModel.getDisplayName(locale));
 		Assert.assertEquals(4, nameModel.getOrder().intValue());
 		Assert.assertEquals(String.class, nameModel.getType());
 		Assert.assertNull(nameModel.getDisplayFormat());
@@ -118,7 +124,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 
 		final AttributeModel ageModel = model.getAttributeModel("age");
 		Assert.assertNull(ageModel.getDefaultValue());
-		Assert.assertEquals("Age", ageModel.getDisplayName());
+		Assert.assertEquals("Age", ageModel.getDisplayName(locale));
 		Assert.assertEquals(0, ageModel.getOrder().intValue());
 		Assert.assertEquals(Integer.class, ageModel.getType());
 		Assert.assertNull(nameModel.getDisplayFormat());
@@ -128,7 +134,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 
 		final AttributeModel birthDateModel = model.getAttributeModel("birthDate");
 		Assert.assertNull(birthDateModel.getDefaultValue());
-		Assert.assertEquals("Birth Date", birthDateModel.getDisplayName());
+		Assert.assertEquals("Birth Date", birthDateModel.getDisplayName(locale));
 		Assert.assertEquals(1, birthDateModel.getOrder().intValue());
 		Assert.assertEquals(LocalDate.class, birthDateModel.getType());
 		Assert.assertNotNull(birthDateModel.getDisplayFormat());
@@ -140,8 +146,8 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		Assert.assertEquals(2, weightModel.getPrecision());
 
 		final AttributeModel boolModel = model.getAttributeModel("bool");
-		Assert.assertEquals("Yes", boolModel.getTrueRepresentation());
-		Assert.assertEquals("No", boolModel.getFalseRepresentation());
+		Assert.assertEquals("Yes", boolModel.getTrueRepresentation(locale));
+		Assert.assertEquals("No", boolModel.getFalseRepresentation(locale));
 		Assert.assertEquals(CheckboxMode.SWITCH, boolModel.getCheckboxMode());
 
 		final AttributeModel mailModel = model.getAttributeModel("email");
@@ -206,18 +212,18 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		Assert.assertNotNull(model);
 
 		// the following are overwritten using the annotation
-		Assert.assertEquals("dis", model.getDisplayName());
-		Assert.assertEquals("diss", model.getDisplayNamePlural());
-		Assert.assertEquals("desc", model.getDescription());
+		Assert.assertEquals("dis", model.getDisplayName(locale));
+		Assert.assertEquals("diss", model.getDisplayNamePlural(locale));
+		Assert.assertEquals("desc", model.getDescription(locale));
 		Assert.assertEquals("prop", model.getDisplayProperty());
 
 		final AttributeModel nameModel = model.getAttributeModel("name");
 		Assert.assertNotNull(nameModel);
 
 		Assert.assertEquals("Bas", nameModel.getDefaultValue());
-		Assert.assertEquals("Naampje", nameModel.getDisplayName());
-		Assert.assertEquals("Test", nameModel.getDescription());
-		Assert.assertEquals("Prompt", nameModel.getPrompt());
+		Assert.assertEquals("Naampje", nameModel.getDisplayName(locale));
+		Assert.assertEquals("Test", nameModel.getDescription(locale));
+		Assert.assertEquals("Prompt", nameModel.getPrompt(locale));
 		Assert.assertEquals("myStyle", nameModel.getStyles());
 		Assert.assertEquals(String.class, nameModel.getType());
 		Assert.assertNull(nameModel.getDisplayFormat());
@@ -250,7 +256,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		// test that attribute annotations on getters are also picked up
 		final AttributeModel derivedModel = model.getAttributeModel("derived");
 		Assert.assertNotNull(derivedModel);
-		Assert.assertEquals("deri", derivedModel.getDisplayName());
+		Assert.assertEquals("deri", derivedModel.getDisplayName(locale));
 
 		final AttributeModel weightModel = model.getAttributeModel("weight");
 		Assert.assertNotNull(weightModel);
@@ -261,8 +267,8 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 	@Test
 	public void testReference() {
 		final EntityModel<Entity6> model = factory.getModel("Special", Entity6.class);
-		Assert.assertEquals("Special", model.getDisplayName());
-		Assert.assertEquals("SpecialPlural", model.getDisplayNamePlural());
+		Assert.assertEquals("Special", model.getDisplayName(locale));
+		Assert.assertEquals("SpecialPlural", model.getDisplayNamePlural(locale));
 	}
 
 	@Test
@@ -271,9 +277,9 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		Assert.assertNotNull(model);
 
 		// the following are overwritten using the message bundle
-		Assert.assertEquals("Override", model.getDisplayName());
-		Assert.assertEquals("Overrides", model.getDisplayNamePlural());
-		Assert.assertEquals("Description override", model.getDescription());
+		Assert.assertEquals("Override", model.getDisplayName(locale));
+		Assert.assertEquals("Overrides", model.getDisplayNamePlural(locale));
+		Assert.assertEquals("Description override", model.getDescription(locale));
 		Assert.assertEquals("Prop", model.getDisplayProperty());
 
 		final AttributeModel nameModel = model.getAttributeModel("name");
@@ -282,8 +288,8 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		Assert.assertTrue(nameModel.isSearchCaseSensitive());
 		Assert.assertTrue(nameModel.isSearchPrefixOnly());
 
-		Assert.assertEquals("Override", nameModel.getDisplayName());
-		Assert.assertEquals("Prompt override", nameModel.getPrompt());
+		Assert.assertEquals("Override", nameModel.getDisplayName(locale));
+		Assert.assertEquals("Prompt override", nameModel.getPrompt(locale));
 		Assert.assertEquals("Style override", nameModel.getStyles());
 		Assert.assertEquals(EditableType.CREATE_ONLY, nameModel.getEditableType());
 		Assert.assertEquals("Style override", nameModel.getStyles());

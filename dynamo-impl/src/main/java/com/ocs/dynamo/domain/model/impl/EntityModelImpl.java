@@ -18,7 +18,12 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.MissingResourceException;
+import java.util.Optional;
+import java.util.ResourceBundle;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -43,11 +48,17 @@ public class EntityModelImpl<T> implements EntityModel<T> {
 	// use a linked hash map to guarantee the ordering
 	private final Map<String, List<AttributeModel>> attributeModels = new LinkedHashMap<>();
 
-	private String description;
+	private String defaultDescription;
 
-	private String displayName;
+	private String defaultDisplayName;
 
-	private String displayNamePlural;
+	private String defaultDisplayNamePlural;
+
+	private Map<String, Optional<String>> displayNames = new ConcurrentHashMap<>();
+
+	private Map<String, Optional<String>> displayNamesPlural = new ConcurrentHashMap<>();
+
+	private Map<String, Optional<String>> descriptions = new ConcurrentHashMap<>();
 
 	private String displayProperty;
 
@@ -59,11 +70,7 @@ public class EntityModelImpl<T> implements EntityModel<T> {
 
 	private Map<AttributeModel, Boolean> sortOrder = new LinkedHashMap<>();
 
-	/**
-	 * Default constructor
-	 */
 	public EntityModelImpl() {
-		super();
 	}
 
 	@Override
@@ -87,6 +94,11 @@ public class EntityModelImpl<T> implements EntityModel<T> {
 		}
 	}
 
+	/**
+	 * Constructs a stream of all attribute models
+	 * 
+	 * @return
+	 */
 	private Stream<AttributeModel> constructAttributeModelStream() {
 		return attributeModels.values().stream().flatMap(List::stream)
 				.sorted(Comparator.comparing(AttributeModel::getOrder));
@@ -168,19 +180,27 @@ public class EntityModelImpl<T> implements EntityModel<T> {
 		return Collections.unmodifiableList(result);
 	}
 
-	@Override
-	public String getDescription() {
-		return description;
+	public String getDefaultDisplayName() {
+		return defaultDisplayName;
+	}
+
+	public String getDefaultDisplayNamePlural() {
+		return defaultDisplayNamePlural;
 	}
 
 	@Override
-	public String getDisplayName() {
-		return displayName;
+	public String getDescription(Locale locale) {
+		return lookup(descriptions, locale, EntityModel.DESCRIPTION, defaultDescription);
 	}
 
 	@Override
-	public String getDisplayNamePlural() {
-		return displayNamePlural;
+	public String getDisplayName(Locale locale) {
+		return lookup(displayNames, locale, EntityModel.DISPLAY_NAME, defaultDisplayName);
+	}
+
+	@Override
+	public String getDisplayNamePlural(Locale locale) {
+		return lookup(displayNamesPlural, locale, EntityModel.DISPLAY_NAME_PLURAL, defaultDisplayNamePlural);
 	}
 
 	@Override
@@ -238,16 +258,40 @@ public class EntityModelImpl<T> implements EntityModel<T> {
 				.anyMatch(m -> m.isVisible() && (readOnly || !m.getEditableType().equals(EditableType.READ_ONLY)));
 	}
 
-	public void setDescription(String description) {
-		this.description = description;
+	/**
+	 * Looks up a text message from a resource bundle
+	 * 
+	 * @param source   the message cache
+	 * @param locale   the desired locale
+	 * @param key      the message key
+	 * @param fallBack value to fall back to when nothing found
+	 * @return
+	 */
+	private String lookup(Map<String, Optional<String>> source, Locale locale, String key, String fallBack) {
+		if (!source.containsKey(locale.toString())) {
+			try {
+				ResourceBundle rb = ResourceBundle.getBundle("META-INF/entitymodel", locale);
+				String str = rb.getString(reference + "." + key);
+				source.put(locale.toString(), Optional.ofNullable(str));
+			} catch (MissingResourceException ex) {
+				source.put(locale.toString(), Optional.empty());
+			}
+		}
+
+		Optional<String> optional = source.get(locale.toString());
+		return optional.orElse(fallBack);
 	}
 
-	public void setDisplayName(String displayName) {
-		this.displayName = displayName;
+	public void setDefaultDescription(String defaultDescription) {
+		this.defaultDescription = defaultDescription;
 	}
 
-	public void setDisplayNamePlural(String displayNamePlural) {
-		this.displayNamePlural = displayNamePlural;
+	public void setDefaultDisplayName(String defaultDisplayName) {
+		this.defaultDisplayName = defaultDisplayName;
+	}
+
+	public void setDefaultDisplayNamePlural(String defaultDisplayNamePlural) {
+		this.defaultDisplayNamePlural = defaultDisplayNamePlural;
 	}
 
 	public void setDisplayProperty(String displayProperty) {

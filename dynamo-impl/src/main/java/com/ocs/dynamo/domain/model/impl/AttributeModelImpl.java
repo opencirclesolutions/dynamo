@@ -18,8 +18,13 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.MissingResourceException;
+import java.util.Optional;
+import java.util.ResourceBundle;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
@@ -33,6 +38,7 @@ import com.ocs.dynamo.domain.model.CheckboxMode;
 import com.ocs.dynamo.domain.model.EditableType;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.NumberSelectMode;
+import com.ocs.dynamo.util.SystemPropertyUtils;
 
 /**
  * Implementation of the AttributeModel interface - simple container for
@@ -66,11 +72,17 @@ public class AttributeModelImpl implements AttributeModel {
 
 	private Object defaultValue;
 
-	private String description;
+	private String defaultDescription;
+
+	private String defaultFalseRepresentation;
+
+	private String defaultTrueRepresentation;
+
+	private String defaultPrompt;
 
 	private String displayFormat;
 
-	private String displayName;
+	private String defaultDisplayName;
 
 	private EditableType editableType;
 
@@ -79,8 +91,6 @@ public class AttributeModelImpl implements AttributeModel {
 	private EntityModel<?> entityModel;
 
 	private float expansionFactor;
-
-	private String falseRepresentation;
 
 	private String fileNameProperty;
 
@@ -120,8 +130,6 @@ public class AttributeModelImpl implements AttributeModel {
 
 	private int precision;
 
-	private String prompt;
-
 	private boolean quickAddAllowed;
 
 	private String quickAddPropertyName;
@@ -160,8 +168,6 @@ public class AttributeModelImpl implements AttributeModel {
 
 	private boolean trans;
 
-	private String trueRepresentation;
-
 	private Class<?> type;
 
 	private boolean url;
@@ -171,6 +177,16 @@ public class AttributeModelImpl implements AttributeModel {
 	private boolean visibleInGrid;
 
 	private boolean week;
+
+	private Map<String, Optional<String>> displayNames = new ConcurrentHashMap<>();
+
+	private Map<String, Optional<String>> prompts = new ConcurrentHashMap<>();
+
+	private Map<String, Optional<String>> descriptions = new ConcurrentHashMap<>();
+
+	private Map<String, Optional<String>> trueRepresentations = new ConcurrentHashMap<>();
+
+	private Map<String, Optional<String>> falseRepresentations = new ConcurrentHashMap<>();
 
 	@Override
 	public void addCascade(final String cascadeTo, final String filterPath, final CascadeMode mode) {
@@ -238,14 +254,25 @@ public class AttributeModelImpl implements AttributeModel {
 		return dateType;
 	}
 
+	public String getDefaultDescription() {
+		return defaultDescription;
+	}
+
+	public String getDefaultDisplayName() {
+		return defaultDisplayName;
+	}
+
 	@Override
 	public Object getDefaultValue() {
 		return defaultValue;
 	}
 
 	@Override
-	public String getDescription() {
-		return description;
+	public String getDescription(Locale locale) {
+		// lookup description, falling back to overridden display name or otherwise to
+		// the default description
+		String displayNameNoDefault = lookupNoDefault(displayNames, locale, EntityModel.DISPLAY_NAME);
+		return lookup(descriptions, locale, EntityModel.DESCRIPTION, displayNameNoDefault, defaultDescription);
 	}
 
 	@Override
@@ -254,8 +281,8 @@ public class AttributeModelImpl implements AttributeModel {
 	}
 
 	@Override
-	public String getDisplayName() {
-		return displayName;
+	public String getDisplayName(Locale locale) {
+		return lookup(displayNames, locale, EntityModel.DISPLAY_NAME, defaultDisplayName, null);
 	}
 
 	@Override
@@ -274,8 +301,9 @@ public class AttributeModelImpl implements AttributeModel {
 	}
 
 	@Override
-	public String getFalseRepresentation() {
-		return falseRepresentation;
+	public String getFalseRepresentation(Locale locale) {
+		return lookup(falseRepresentations, locale, EntityModel.FALSE_REPRESENTATION,
+				SystemPropertyUtils.getDefaultFalseRepresentation(locale), defaultFalseRepresentation);
 	}
 
 	@Override
@@ -361,8 +389,14 @@ public class AttributeModelImpl implements AttributeModel {
 	}
 
 	@Override
-	public String getPrompt() {
-		return prompt;
+	public String getPrompt(Locale locale) {
+		if (!SystemPropertyUtils.useDefaultPromptValue()) {
+			return null;
+		}
+
+		// look up prompt. If not defined, look up display name
+		String displayNameNoDefafult = lookupNoDefault(displayNames, locale, EntityModel.DISPLAY_NAME);
+		return lookup(prompts, locale, EntityModel.PROMPT, displayNameNoDefafult, defaultPrompt);
 	}
 
 	@Override
@@ -407,8 +441,9 @@ public class AttributeModelImpl implements AttributeModel {
 	}
 
 	@Override
-	public String getTrueRepresentation() {
-		return trueRepresentation;
+	public String getTrueRepresentation(Locale locale) {
+		return lookup(trueRepresentations, locale, EntityModel.TRUE_REPRESENTATION,
+				SystemPropertyUtils.getDefaultTrueRepresentation(locale), defaultTrueRepresentation);
 	}
 
 	@Override
@@ -550,6 +585,55 @@ public class AttributeModelImpl implements AttributeModel {
 		return week;
 	}
 
+	/**
+	 * 
+	 * @param source
+	 * @param locale
+	 * @param key
+	 * @param fallBack
+	 * @param secondFallBack
+	 * @return
+	 */
+	private String lookup(Map<String, Optional<String>> source, Locale locale, String key, String fallback,
+			String secondFallBack) {
+		if (!source.containsKey(locale.toString())) {
+			try {
+				ResourceBundle rb = ResourceBundle.getBundle("META-INF/entitymodel", locale);
+				String str = rb.getString(getEntityModel().getReference() + "." + getPath() + "." + key);
+				source.put(locale.toString(), Optional.ofNullable(str));
+			} catch (MissingResourceException ex) {
+				source.put(locale.toString(), Optional.empty());
+			}
+		}
+
+		Optional<String> optional = source.get(locale.toString());
+		return optional.orElse(fallback != null ? fallback : secondFallBack);
+	}
+
+	/**
+	 * Looks up a key from the message bundle, returning an empty optional if
+	 * nothing can be found
+	 * 
+	 * @param source
+	 * @param locale
+	 * @param key
+	 * @return
+	 */
+	private String lookupNoDefault(Map<String, Optional<String>> source, Locale locale, String key) {
+		if (!source.containsKey(locale.toString())) {
+			try {
+				ResourceBundle rb = ResourceBundle.getBundle("META-INF/entitymodel", locale);
+				String str = rb.getString(getEntityModel().getReference() + "." + getPath() + "." + key);
+				source.put(locale.toString(), Optional.ofNullable(str));
+			} catch (MissingResourceException ex) {
+				source.put(locale.toString(), Optional.empty());
+			}
+		}
+
+		Optional<String> optional = source.get(locale.toString());
+		return optional.orElse(null);
+	}
+
 	@Override
 	public void removeCascades() {
 		this.cascadeAttributes.clear();
@@ -591,20 +675,28 @@ public class AttributeModelImpl implements AttributeModel {
 		this.dateType = dateType;
 	}
 
+	public void setDefaultDescription(String defaultDescription) {
+		this.defaultDescription = defaultDescription;
+	}
+
+	public void setDefaultDisplayName(String defaultDisplayName) {
+		this.defaultDisplayName = defaultDisplayName;
+	}
+
+	public void setDefaultFalseRepresentation(String defaultFalseRepresentation) {
+		this.defaultFalseRepresentation = defaultFalseRepresentation;
+	}
+
+	public void setDefaultPrompt(String defaultPrompt) {
+		this.defaultPrompt = defaultPrompt;
+	}
+
 	public void setDefaultValue(Object defaultValue) {
 		this.defaultValue = defaultValue;
 	}
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
 	public void setDisplayFormat(String displayFormat) {
 		this.displayFormat = displayFormat;
-	}
-
-	public void setDisplayName(String displayName) {
-		this.displayName = displayName;
 	}
 
 	public void setEditableType(EditableType editableType) {
@@ -621,10 +713,6 @@ public class AttributeModelImpl implements AttributeModel {
 
 	public void setExpansionFactor(float expansionFactor) {
 		this.expansionFactor = expansionFactor;
-	}
-
-	public void setFalseRepresentation(String falseRepresentation) {
-		this.falseRepresentation = falseRepresentation;
 	}
 
 	public void setFileNameProperty(String fileNameProperty) {
@@ -698,10 +786,6 @@ public class AttributeModelImpl implements AttributeModel {
 
 	public void setPrecision(int precision) {
 		this.precision = precision;
-	}
-
-	public void setPrompt(String prompt) {
-		this.prompt = prompt;
 	}
 
 	public void setQuickAddAllowed(boolean quickAddAllowed) {
@@ -783,10 +867,6 @@ public class AttributeModelImpl implements AttributeModel {
 		this.trans = trans;
 	}
 
-	public void setTrueRepresentation(String trueRepresentation) {
-		this.trueRepresentation = trueRepresentation;
-	}
-
 	public void setType(Class<?> type) {
 		this.type = type;
 	}
@@ -810,6 +890,14 @@ public class AttributeModelImpl implements AttributeModel {
 	@Override
 	public String toString() {
 		return ReflectionToStringBuilder.toStringExclude(this, "entityModel");
+	}
+
+	public String getDefaultTrueRepresentation() {
+		return defaultTrueRepresentation;
+	}
+
+	public void setDefaultTrueRepresentation(String defaultTrueRepresentation) {
+		this.defaultTrueRepresentation = defaultTrueRepresentation;
 	}
 
 }

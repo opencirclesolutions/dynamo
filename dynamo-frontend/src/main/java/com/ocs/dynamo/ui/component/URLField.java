@@ -16,6 +16,7 @@ package com.ocs.dynamo.ui.component;
 import org.apache.commons.lang3.StringUtils;
 
 import com.ocs.dynamo.domain.model.AttributeModel;
+import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.server.ErrorMessage;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.shared.Registration;
@@ -75,7 +76,7 @@ public class URLField extends CustomField<String> {
 	protected Component initContent() {
 		main = new DefaultHorizontalLayout(false, false, true);
 		main.setSizeFull();
-		setCaption(attributeModel.getDisplayName());
+		setCaption(attributeModel.getDisplayName(VaadinUtils.getLocale()));
 
 		bar = new DefaultHorizontalLayout(false, true, true);
 		updateLink(getValue());

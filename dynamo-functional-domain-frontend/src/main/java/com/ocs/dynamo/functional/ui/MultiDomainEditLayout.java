@@ -32,6 +32,7 @@ import com.ocs.dynamo.ui.composite.layout.BaseCustomComponent;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.composite.layout.ServiceBasedSplitLayout;
 import com.ocs.dynamo.ui.provider.QueryType;
+import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.data.provider.SortOrder;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.AbstractComponent;
@@ -136,7 +137,7 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
 			// combo box for selecting domain
 			ComboBox<Class<? extends Domain>> domainCombo = new ComboBox<>(message("ocs.select.domain"),
 					getDomainClasses());
-			domainCombo.setItemCaptionGenerator(item -> getEntityModel(item).getDisplayName());
+			domainCombo.setItemCaptionGenerator(item -> getEntityModel(item).getDisplayName(VaadinUtils.getLocale()));
 			domainCombo.setSizeFull();
 
 			// respond to a change by displaying the correct domain

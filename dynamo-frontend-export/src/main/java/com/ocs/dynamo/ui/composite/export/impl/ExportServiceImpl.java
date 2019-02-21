@@ -29,6 +29,7 @@ import com.ocs.dynamo.ui.composite.export.CustomXlsStyleGenerator;
 import com.ocs.dynamo.ui.composite.export.ExportService;
 import com.ocs.dynamo.ui.composite.type.ExportMode;
 import com.ocs.dynamo.ui.utils.SortUtils;
+import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.data.provider.SortOrder;
 import com.vaadin.server.SerializablePredicate;
 
@@ -46,7 +47,8 @@ public class ExportServiceImpl implements ExportService {
 		Filter filter = converter.convert(predicate);
 
 		ModelBasedCsvExportTemplate<ID, T> template = new ModelBasedCsvExportTemplate<ID, T>(service, entityModel, mode,
-				SortUtils.translateSortOrders(sortOrders), filter, entityModel.getDisplayNamePlural(), null, joins);
+				SortUtils.translateSortOrders(sortOrders), filter,
+				entityModel.getDisplayNamePlural(VaadinUtils.getLocale()), null, joins);
 		return template.process();
 	}
 
@@ -54,7 +56,7 @@ public class ExportServiceImpl implements ExportService {
 	public <ID extends Serializable, T extends AbstractEntity<ID>> byte[] exportCsvFixed(EntityModel<T> entityModel,
 			ExportMode mode, List<T> items) {
 		ModelBasedCsvExportTemplate<ID, T> template = new ModelBasedCsvExportTemplate<ID, T>(null, entityModel, mode,
-				null, null, entityModel.getDisplayNamePlural(), null);
+				null, null, entityModel.getDisplayNamePlural(VaadinUtils.getLocale()), null);
 		return template.processFixed(items);
 	}
 
@@ -68,8 +70,8 @@ public class ExportServiceImpl implements ExportService {
 		FilterConverter<T> converter = new FilterConverter<T>(entityModel);
 		Filter filter = converter.convert(predicate);
 		ModelBasedExcelExportTemplate<ID, T> template = new ModelBasedExcelExportTemplate<ID, T>(service, entityModel,
-				mode, SortUtils.translateSortOrders(sortOrders), filter, entityModel.getDisplayNamePlural(), customGenerator,
-				joins);
+				mode, SortUtils.translateSortOrders(sortOrders), filter,
+				entityModel.getDisplayNamePlural(VaadinUtils.getLocale()), customGenerator, joins);
 		return template.process();
 	}
 
@@ -77,7 +79,7 @@ public class ExportServiceImpl implements ExportService {
 	public <ID extends Serializable, T extends AbstractEntity<ID>> byte[] exportExcelFixed(EntityModel<T> entityModel,
 			ExportMode mode, CustomXlsStyleGenerator<ID, T> customGenerator, List<T> items) {
 		ModelBasedExcelExportTemplate<ID, T> template = new ModelBasedExcelExportTemplate<ID, T>(null, entityModel,
-				mode, null, null, entityModel.getDisplayNamePlural(), customGenerator);
+				mode, null, null, entityModel.getDisplayNamePlural(VaadinUtils.getLocale()), customGenerator);
 		return template.processFixed(items);
 	}
 

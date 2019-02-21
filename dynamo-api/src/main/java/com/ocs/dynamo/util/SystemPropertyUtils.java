@@ -13,6 +13,11 @@
  */
 package com.ocs.dynamo.util;
 
+import java.util.Locale;
+import java.util.MissingResourceException;
+import java.util.Optional;
+import java.util.ResourceBundle;
+
 import com.ocs.dynamo.constants.DynamoConstants;
 
 /**
@@ -132,6 +137,18 @@ public final class SystemPropertyUtils {
 	}
 
 	/**
+	 * Looks up the default false representation for the provided locale. This will look for 
+	 * a system property names ocs.default.false.representation.<lan> where <lan> is the language code
+	 * of the locale, e.g. "en", "nl" 
+	 * 
+	 * @param locale
+	 * @return
+	 */
+	public static String getDefaultFalseRepresentation(Locale locale) {
+		return System.getProperty(DynamoConstants.SP_DEFAULT_FALSE_REPRESENTATION + "." + locale.getLanguage());
+	}
+
+	/**
 	 * 
 	 * @return the default field width of edit fields within a form
 	 */
@@ -199,6 +216,18 @@ public final class SystemPropertyUtils {
 	 */
 	public static String getDefaultTrueRepresentation() {
 		return System.getProperty(DynamoConstants.SP_DEFAULT_TRUE_REPRESENTATION, DEFAULT_TRUE_REPRESENTATION);
+	}
+
+	/**
+	 * Looks up the default true representation for the provided locale. This will look for 
+	 * a system property names ocs.default.true.representation.<lan> where <lan> is the language code
+	 * of the locale, e.g. "en", "nl" 
+	 * 
+	 * @param locale
+	 * @return
+	 */
+	public static String getDefaultTrueRepresentation(Locale locale) {
+		return System.getProperty(DynamoConstants.SP_DEFAULT_TRUE_REPRESENTATION + "." + locale.getLanguage());
 	}
 
 	/**

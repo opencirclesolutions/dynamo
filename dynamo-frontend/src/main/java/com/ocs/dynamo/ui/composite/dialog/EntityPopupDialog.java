@@ -182,7 +182,7 @@ public class EntityPopupDialog<ID extends Serializable, T extends AbstractEntity
 
 	@Override
 	protected String getTitle() {
-		return entityModel.getDisplayName();
+		return entityModel.getDisplayName(VaadinUtils.getLocale());
 	}
 
 	protected void postProcessButtonBar(Layout buttonBar, boolean viewMode) {

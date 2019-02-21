@@ -230,7 +230,7 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 	protected Component initContent() {
 		HorizontalLayout bar = new DefaultHorizontalLayout(false, true, true);
 		if (this.getAttributeModel() != null) {
-			this.setCaption(getAttributeModel().getDisplayName());
+			this.setCaption(getAttributeModel().getDisplayName(VaadinUtils.getLocale()));
 		}
 
 		// label for displaying selected values

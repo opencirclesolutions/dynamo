@@ -196,11 +196,12 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 			// find out which attributes can be searched on and sort them in
 			// alphabetical order
 			List<AttributeModel> filteredModels = iterate(getEntityModel().getAttributeModels());
-			filteredModels.sort((o1, o2) -> o1.getDisplayName().compareToIgnoreCase(o2.getDisplayName()));
+			filteredModels.sort((o1, o2) -> o1.getDisplayName(VaadinUtils.getLocale())
+					.compareToIgnoreCase(o2.getDisplayName(VaadinUtils.getLocale())));
 			// add any attribute models that are not required
 			attributeFilterComboBox.setItems(filteredModels.stream()
 					.filter(a -> !a.isRequiredForSearching() || !hasFilter(a)).collect(Collectors.toList()));
-			attributeFilterComboBox.setItemCaptionGenerator(item -> item.getDisplayName());
+			attributeFilterComboBox.setItemCaptionGenerator(item -> item.getDisplayName(VaadinUtils.getLocale()));
 
 			// add a value change listener that fills the filter type combo box
 			// after a change
@@ -513,12 +514,12 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 			mainValueComponent = (HasValue<Object>) newComponent;
 
 			if (FlexibleFilterType.BETWEEN.equals(filterType)) {
-				newComponent.setCaption(am.getDisplayName() + " " + message("ocs.from"));
+				newComponent.setCaption(am.getDisplayName(VaadinUtils.getLocale()) + " " + message("ocs.from"));
 
 				AbstractComponent newAuxComponent = factory.constructField(context);
 				((HasValue<?>) newAuxComponent).addValueChangeListener(
 						event -> handleValueChange((HasValue<?>) newAuxComponent, event.getSource().getValue()));
-				newAuxComponent.setCaption(am.getDisplayName() + " " + message("ocs.to"));
+				newAuxComponent.setCaption(am.getDisplayName(VaadinUtils.getLocale()) + " " + message("ocs.to"));
 				newAuxComponent.setSizeFull();
 
 				if (auxValueComponent == null) {

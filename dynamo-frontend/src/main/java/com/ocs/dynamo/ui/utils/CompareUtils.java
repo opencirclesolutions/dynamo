@@ -70,7 +70,7 @@ public final class CompareUtils {
 					String oldValueStr = FormatUtils.formatPropertyValue(entityModelFactory, am, oldValue, ", ");
 					String newValueStr = FormatUtils.formatPropertyValue(entityModelFactory, am, newValue, ", ");
 					results.add(messageService.getMessage("ocs.value.changed", VaadinUtils.getLocale(),
-							am.getDisplayName(), oldValue == null ? noValue : oldValueStr,
+							am.getDisplayName(VaadinUtils.getLocale()), oldValue == null ? noValue : oldValueStr,
 							newValue == null ? noValue : newValueStr));
 				}
 			} else if (AttributeType.DETAIL.equals(am.getAttributeType())) {
@@ -80,14 +80,16 @@ public final class CompareUtils {
 				for (Object o : ncol) {
 					if (!ocol.contains(o)) {
 						results.add(messageService.getMessage("ocs.value.added", VaadinUtils.getLocale(),
-								getDescription(o, am.getNestedEntityModel()), am.getDisplayName()));
+								getDescription(o, am.getNestedEntityModel()),
+								am.getDisplayName(VaadinUtils.getLocale())));
 					}
 				}
 
 				for (Object o : ocol) {
 					if (!ncol.contains(o)) {
 						results.add(messageService.getMessage("ocs.value.removed", VaadinUtils.getLocale(),
-								getDescription(o, am.getNestedEntityModel()), am.getDisplayName()));
+								getDescription(o, am.getNestedEntityModel()),
+								am.getDisplayName(VaadinUtils.getLocale())));
 					}
 				}
 

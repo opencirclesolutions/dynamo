@@ -43,6 +43,7 @@ import com.ocs.dynamo.ui.composite.export.CustomXlsStyleGenerator;
 import com.ocs.dynamo.ui.composite.export.XlsStyleGenerator;
 import com.ocs.dynamo.ui.composite.type.ExportMode;
 import com.ocs.dynamo.ui.utils.FormatUtils;
+import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.ocs.dynamo.utils.ClassUtils;
 import com.ocs.dynamo.utils.DateUtils;
@@ -136,7 +137,7 @@ public class ModelBasedExcelExportTemplate<ID extends Serializable, T extends Ab
 				}
 				Cell cell = titleRow.createCell(i);
 				cell.setCellStyle(getGenerator().getHeaderStyle(i));
-				cell.setCellValue(am.getDisplayName());
+				cell.setCellValue(am.getDisplayName(VaadinUtils.getLocale()));
 				i++;
 			}
 		}

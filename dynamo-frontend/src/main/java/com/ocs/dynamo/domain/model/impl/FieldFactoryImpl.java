@@ -312,7 +312,7 @@ public class FieldFactoryImpl implements FieldFactory {
 		} else if ((NumberUtils.isLong(am.getType()) || NumberUtils.isInteger(am.getType())
 				|| NumberUtils.isDouble(am.getType()) || BigDecimal.class.equals(am.getType()))
 				&& NumberSelectMode.SLIDER.equals(am.getNumberSelectMode())) {
-			Slider slider = new Slider(am.getDisplayName());
+			Slider slider = new Slider(am.getDisplayName(VaadinUtils.getLocale()));
 			if (am.getMinValue() != null) {
 				slider.setMin(am.getMinValue());
 			}
@@ -433,8 +433,8 @@ public class FieldFactoryImpl implements FieldFactory {
 		ComboBox<Boolean> cb = new ComboBox<>();
 		ListDataProvider<Boolean> provider = new ListDataProvider<>(Lists.newArrayList(Boolean.TRUE, Boolean.FALSE));
 		cb.setDataProvider(provider);
-		cb.setItemCaptionGenerator(
-				b -> Boolean.TRUE.equals(b) ? am.getTrueRepresentation() : am.getFalseRepresentation());
+		cb.setItemCaptionGenerator(b -> Boolean.TRUE.equals(b) ? am.getTrueRepresentation(VaadinUtils.getLocale())
+				: am.getFalseRepresentation(VaadinUtils.getLocale()));
 		return cb;
 	}
 
@@ -503,29 +503,29 @@ public class FieldFactoryImpl implements FieldFactory {
 	}
 
 	private void postProcessField(final AbstractComponent field, final AttributeModel am, boolean search) {
-		field.setCaption(am.getDisplayName());
-		field.setDescription(am.getDescription());
+		field.setCaption(am.getDisplayName(VaadinUtils.getLocale()));
+		field.setDescription(am.getDescription(VaadinUtils.getLocale()));
 
 		if (field instanceof AbstractTextField) {
 			final AbstractTextField textField = (AbstractTextField) field;
-			textField.setPlaceholder(am.getPrompt());
+			textField.setPlaceholder(am.getPrompt(VaadinUtils.getLocale()));
 		} else if (field instanceof DateField) {
 			// set a separate format for a date field
 			DateField dateField = (DateField) field;
 			if (am.getDisplayFormat() != null && !am.isSearchDateOnly()) {
 				dateField.setDateFormat(am.getDisplayFormat());
 			}
-			dateField.setPlaceholder(am.getPrompt());
+			dateField.setPlaceholder(am.getPrompt(VaadinUtils.getLocale()));
 		}
 
 		if (field instanceof AbstractField) {
 			AbstractField<?> af = (AbstractField<?>) field;
 			af.setRequiredIndicatorVisible(search ? am.isRequiredForSearching() : am.isRequired());
-			af.setDescription(am.getDescription());
+			af.setDescription(am.getDescription(VaadinUtils.getLocale()));
 		}
 
 		if (field instanceof CustomEntityField) {
-			((CustomEntityField<?, ?, ?>) field).setPlaceholder(am.getPrompt());
+			((CustomEntityField<?, ?, ?>) field).setPlaceholder(am.getPrompt(VaadinUtils.getLocale()));
 		}
 
 		// add percentage sign

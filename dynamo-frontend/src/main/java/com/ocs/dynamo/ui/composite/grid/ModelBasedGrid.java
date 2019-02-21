@@ -203,8 +203,8 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 					column.setEditorBinding(builder.bind(am.getPath()));
 				}
 			}
-			column.setCaption(am.getDisplayName()).setSortable(am.isSortable()).setId(am.getPath())
-					.setSortProperty(am.getActualSortPath())
+			column.setCaption(am.getDisplayName(VaadinUtils.getLocale())).setSortable(am.isSortable())
+					.setId(am.getPath()).setSortProperty(am.getActualSortPath())
 					.setStyleGenerator(item -> am.isNumerical() ? "v-align-right" : "");
 		}
 
@@ -251,8 +251,8 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 	 */
 	protected void generateColumns(EntityModel<T> model) {
 		generateColumnsRecursive(model.getAttributeModels());
-		this.setCaption(model.getDisplayNamePlural());
-		this.setDescription(model.getDescription());
+		this.setCaption(model.getDisplayNamePlural(VaadinUtils.getLocale()));
+		this.setDescription(model.getDescription(VaadinUtils.getLocale()));
 	}
 
 	/**
@@ -327,14 +327,19 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 			} else {
 				size = ((BaseDataProvider<ID, T>) dp).getSize();
 			}
-			setCaption(entityModel.getDisplayNamePlural() + " "
+			setCaption(entityModel.getDisplayNamePlural(VaadinUtils.getLocale()) + " "
 					+ messageService.getMessage("ocs.showing.results", VaadinUtils.getLocale(), size));
 		}
 	}
 
+	/**
+	 * Updates the caption above the grid that shows the number of items
+	 * 
+	 * @param size
+	 */
 	public void updateCaption(int size) {
 		if (updateCaption) {
-			setCaption(entityModel.getDisplayNamePlural() + " "
+			setCaption(entityModel.getDisplayNamePlural(VaadinUtils.getLocale()) + " "
 					+ messageService.getMessage("ocs.showing.results", VaadinUtils.getLocale(), size));
 		}
 	}

@@ -62,7 +62,7 @@ public abstract class BaseCustomComponent extends CustomComponent implements Bui
 	 */
 	protected Component constructLabel(Object entity, AttributeModel attributeModel) {
 		Label fieldLabel = new Label("", ContentMode.HTML);
-		fieldLabel.setCaption(attributeModel.getDisplayName());
+		fieldLabel.setCaption(attributeModel.getDisplayName(VaadinUtils.getLocale()));
 		Object value = ClassUtils.getFieldValue(entity, attributeModel.getName());
 		String formatted = FormatUtils.formatPropertyValue(getEntityModelFactory(), attributeModel, value,
 				"<br/>");

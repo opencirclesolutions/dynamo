@@ -53,7 +53,7 @@
 		class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
 		<property name="basenames">
 			<list>
-				<value>classpath:/entitymodel</value>
+				<value>classpath:/META-INF/entitymodel</value>
 				<value>classpath:/ocscommon</value>
 				<value>classpath:/menu</value>
 				<value>classpath:/ValidationMessages</value>

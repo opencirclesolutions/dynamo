@@ -23,6 +23,7 @@ import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.ui.component.DownloadButton;
 import com.ocs.dynamo.ui.composite.type.ExportMode;
+import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.ui.Button;
 
 /**
@@ -69,7 +70,8 @@ public class FixedExportDialog<ID extends Serializable, T extends AbstractEntity
 		return new DownloadButton(message("ocs.export.csv"),
 				() -> new ByteArrayInputStream(
 						getExportService().exportCsvFixed(getEntityModel(), getExportMode(), itemsSupplier.get())),
-				() -> getEntityModel().getDisplayNamePlural() + "_" + LocalDateTime.now() + EXTENSION_CSV);
+				() -> getEntityModel().getDisplayNamePlural(VaadinUtils.getLocale()) + "_" + LocalDateTime.now()
+						+ EXTENSION_CSV);
 	}
 
 	@Override
@@ -77,7 +79,8 @@ public class FixedExportDialog<ID extends Serializable, T extends AbstractEntity
 		return new DownloadButton(message("ocs.export.excel"),
 				() -> new ByteArrayInputStream(getExportService().exportExcelFixed(getEntityModel(), getExportMode(),
 						customGenerator, itemsSupplier.get())),
-				() -> getEntityModel().getDisplayNamePlural() + "_" + LocalDateTime.now() + EXTENSION_XLS);
+				() -> getEntityModel().getDisplayNamePlural(VaadinUtils.getLocale()) + "_" + LocalDateTime.now()
+						+ EXTENSION_XLS);
 	}
 
 }

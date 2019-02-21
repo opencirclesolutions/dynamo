@@ -14,6 +14,7 @@
 package com.ocs.dynamo.domain.model;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -50,7 +51,7 @@ public interface EntityModel<T> {
 	String CASCADE = "cascade";
 
 	/**
-	 * Cascade filter path (what to filter to receving end of the cascade on)
+	 * Cascade filter path (what to filter to receiving end of the cascade on)
 	 */
 	String CASCADE_FILTER_PATH = "cascadeFilterPath";
 
@@ -65,7 +66,7 @@ public interface EntityModel<T> {
 	String CASCADE_OFF = "cascadeOff";
 
 	/**
-	 * The "checkbox mode" for a boolean (either a checkbox or a toggle)
+	 * The "check box mode" for a boolean (either a check box or a toggle)
 	 */
 	String CHECKBOX_MODE = "checkboxMode";
 
@@ -395,8 +396,8 @@ public interface EntityModel<T> {
 	 * boolean AND. Will also look at the generic type of a attribute, e.g.
 	 * List<some generic type>.
 	 * 
-	 * @param attributeType
-	 * @param type
+	 * @param attributeType the attribute type
+	 * @param type          the type
 	 * @return
 	 */
 	List<AttributeModel> getAttributeModelsForType(AttributeType attributeType, Class<?> type);
@@ -408,25 +409,28 @@ public interface EntityModel<T> {
 	List<AttributeModel> getCascadeAttributeModels();
 
 	/**
-	 * Textual description of the entity
+	 * Return the textual description of an entity for the specified locale
 	 * 
+	 * @param locale the locale
 	 * @return
 	 */
-	String getDescription();
+	String getDescription(Locale locale);
 
 	/**
-	 * The display name of the entity
+	 * Returns the display name for a certain locale
 	 * 
+	 * @param locale the locale
 	 * @return
 	 */
-	String getDisplayName();
+	String getDisplayName(Locale locale);
 
 	/**
-	 * The display name (plural) of the entity
+	 * Return the display name plural form of an entity for the specified locale
 	 * 
+	 * @param locale the locale
 	 * @return
 	 */
-	String getDisplayNamePlural();
+	String getDisplayNamePlural(Locale locale);
 
 	/**
 	 * The name of the property that is used when displaying the entity inside a
@@ -456,7 +460,7 @@ public interface EntityModel<T> {
 	AttributeModel getMainAttributeModel();
 
 	/**
-	 * @retun the full reference of this attribute model
+	 * @return the full reference of this attribute model
 	 */
 	String getReference();
 
@@ -477,7 +481,8 @@ public interface EntityModel<T> {
 	/**
 	 * Indicates whether an attribute group should be visible
 	 * 
-	 * @param group the attribute group
+	 * @param group    the attribute group
+	 * @param readOnly whether the group is in read-only mode
 	 * @return
 	 */
 	boolean isAttributeGroupVisible(String group, boolean readOnly);

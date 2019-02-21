@@ -224,21 +224,20 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 				if (valid) {
 					if (getFormOptions().isConfirmSave()) {
 						// ask for confirmation before saving
-						VaadinUtils
-								.showConfirmDialog(
-										getMessageService(), getMessageService().getMessage("ocs.confirm.save.all",
-												VaadinUtils.getLocale(), getEntityModel().getDisplayNamePlural()),
-										() -> {
-											try {
-												getService().save(toSave);
-												// save and recrate grid to avoid optimistic locks
-												binders.clear();
-												clearGridWrapper();
-												constructGrid();
-											} catch (RuntimeException ex) {
-												handleSaveException(ex);
-											}
-										});
+						VaadinUtils.showConfirmDialog(getMessageService(),
+								getMessageService().getMessage("ocs.confirm.save.all", VaadinUtils.getLocale(),
+										getEntityModel().getDisplayNamePlural(VaadinUtils.getLocale())),
+								() -> {
+									try {
+										getService().save(toSave);
+										// save and recreate grid to avoid optimistic locks
+										binders.clear();
+										clearGridWrapper();
+										constructGrid();
+									} catch (RuntimeException ex) {
+										handleSaveException(ex);
+									}
+								});
 					} else {
 						// do not ask for confirmation before saving
 						try {

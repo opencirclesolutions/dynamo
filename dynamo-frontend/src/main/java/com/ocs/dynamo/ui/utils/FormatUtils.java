@@ -148,10 +148,12 @@ public final class FormatUtils {
 				}
 			} else if (Boolean.class.equals(model.getType()) || boolean.class.equals(model.getType())) {
 				// translate boolean to String representation
-				if (!StringUtils.isEmpty(model.getTrueRepresentation()) && Boolean.TRUE.equals(value)) {
-					return model.getTrueRepresentation();
-				} else if (!StringUtils.isEmpty(model.getFalseRepresentation()) && Boolean.FALSE.equals(value)) {
-					return model.getFalseRepresentation();
+				if (!StringUtils.isEmpty(model.getTrueRepresentation(VaadinUtils.getLocale()))
+						&& Boolean.TRUE.equals(value)) {
+					return model.getTrueRepresentation(VaadinUtils.getLocale());
+				} else if (!StringUtils.isEmpty(model.getFalseRepresentation(VaadinUtils.getLocale()))
+						&& Boolean.FALSE.equals(value)) {
+					return model.getFalseRepresentation(VaadinUtils.getLocale());
 				}
 				return Boolean.toString(Boolean.TRUE.equals(value));
 			} else if (LocalDate.class.equals(model.getType())) {

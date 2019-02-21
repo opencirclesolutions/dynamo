@@ -34,6 +34,7 @@ import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.composite.export.CustomXlsStyleGenerator;
 import com.ocs.dynamo.ui.composite.type.ExportMode;
 import com.ocs.dynamo.ui.utils.FormatUtils;
+import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.ocs.dynamo.utils.ClassUtils;
 import com.opencsv.CSVWriter;
@@ -79,7 +80,7 @@ public class ModelBasedCsvExportTemplate<ID extends Serializable, T extends Abst
 			List<String> headers = new ArrayList<>();
 			for (AttributeModel am : getEntityModel().getAttributeModels()) {
 				if (show(am)) {
-					headers.add(am.getDisplayName());
+					headers.add(am.getDisplayName(VaadinUtils.getLocale()));
 				}
 			}
 			writer.writeNext(headers.toArray(new String[0]));
