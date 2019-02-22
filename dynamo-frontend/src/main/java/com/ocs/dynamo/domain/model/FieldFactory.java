@@ -26,6 +26,10 @@ import com.vaadin.ui.AbstractComponent;
  */
 public interface FieldFactory {
 
+	/**
+	 * 
+	 * @return the singleton instance of the field factory
+	 */
 	public static FieldFactory getInstance() {
 		return ServiceLocatorFactory.getServiceLocator().getService(FieldFactory.class);
 	}
@@ -36,7 +40,7 @@ public interface FieldFactory {
 	 * @param builder         the binding builder to which to add the converters and
 	 *                        validators
 	 * @param am              the attribute model for the field
-	 * @param customConverter
+	 * @param customConverter custom converter to be used for data conversion
 	 */
 	<U> void addConvertersAndValidators(BindingBuilder<U, ?> builder, AttributeModel am,
 			Converter<String, ?> customConverter);
@@ -53,7 +57,7 @@ public interface FieldFactory {
 	/**
 	 * Constructs a field based on the provided context
 	 * 
-	 * @param context
+	 * @param context the context
 	 * @return
 	 */
 	AbstractComponent constructField(FieldFactoryContext context);

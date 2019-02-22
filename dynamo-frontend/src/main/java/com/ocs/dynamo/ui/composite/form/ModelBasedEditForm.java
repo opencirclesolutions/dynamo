@@ -1328,7 +1328,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	/**
 	 * Returns an Optional that contains the field with the given name, if it exists
 	 * 
-	 * @param fieldName
+	 * @param fieldName the name of the field
 	 * @return
 	 */
 	public Optional<AbstractComponent> getFieldOptional(String fieldName) {
@@ -1336,8 +1336,9 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	}
 
 	/**
+	 * Returns the collection of all input fields for the specified mode
 	 * 
-	 * @param viewMode
+	 * @param viewMode the view mode
 	 * @return
 	 */
 	public Collection<HasValue<?>> getFields(boolean viewMode) {

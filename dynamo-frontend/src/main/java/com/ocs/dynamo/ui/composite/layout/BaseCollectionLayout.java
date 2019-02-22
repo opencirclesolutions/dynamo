@@ -279,16 +279,6 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 		detailsMode(getSelectedItem());
 	}
 
-	/**
-	 * Callback method that is called after the search results container has been
-	 * constructed. Use this to modify the container if needed
-	 * 
-	 * @param container
-	 */
-	protected void postProcessDataProvider(DataProvider<T, SerializablePredicate<T>> provider) {
-		// overwrite in subclasses
-	}
-
 	public HorizontalLayout getButtonBar() {
 		return buttonBar;
 	}
@@ -417,6 +407,16 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	 */
 	protected void postProcessButtonBar(Layout buttonBar) {
 		// overwrite in subclass if needed
+	}
+
+	/**
+	 * Callback method that is called after the search results container has been
+	 * constructed. Use this to modify the container if needed
+	 * 
+	 * @param container
+	 */
+	protected void postProcessDataProvider(DataProvider<T, SerializablePredicate<T>> provider) {
+		// overwrite in subclasses
 	}
 
 	/**

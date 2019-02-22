@@ -175,7 +175,8 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	}
 
 	/**
-	 * Method that is called after the user clicks the "Clear" button
+	 * Method that is called after the user clicks the Clear button to empty the
+	 * search form
 	 */
 	protected void afterClear() {
 		// overwrite in subclasses
@@ -308,7 +309,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	 * 
 	 * @param entity the currently selected entity
 	 */
-	protected void buildDetailsTabLayout(T entity, FormOptions formOptions) {
+	protected final void buildDetailsTabLayout(T entity, FormOptions formOptions) {
 		tabContainerLayout = new DefaultVerticalLayout(true, true);
 
 		HorizontalLayout buttonBar = new DefaultHorizontalLayout(false, true, true);
@@ -393,7 +394,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	 * @param entity  the currently selected entity
 	 * @param options the form options
 	 */
-	protected void buildEditForm(T entity, FormOptions options) {
+	protected final void buildEditForm(T entity, FormOptions options) {
 		editForm = new ModelBasedEditForm<ID, T>(entity, getService(), getEntityModel(), options, getFieldFilters()) {
 
 			private static final long serialVersionUID = 6485097089659928131L;
@@ -537,7 +538,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	 * @param noSearchYetLabel the label used to indicate that there are no search
 	 *                         results yet
 	 */
-	private void constructLayoutIfNeeded(Label noSearchYetLabel) {
+	private final void constructLayoutIfNeeded(Label noSearchYetLabel) {
 		if (!searchLayoutConstructed) {
 			// construct search screen if it is not there yet
 			try {
@@ -662,8 +663,8 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	/**
 	 * Opens the screen in details mode and selects a certain tab
 	 *
-	 * @param entity
-	 * @param selectedTab
+	 * @param entity      the entity to display
+	 * @param selectedTab the currently selected tab
 	 */
 	protected void detailsMode(T entity, int selectedTab) {
 		detailsMode(entity);
@@ -712,7 +713,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 		}
 
 		if (getFormOptions().isComplexDetailsMode() && entity != null && entity.getId() != null) {
-			// complex tabbed layout, back button is placed separately
+			// complex tab layout, back button is placed separately
 			copy.setShowBackButton(false);
 			copy.setHideCancelButton(true);
 
@@ -831,7 +832,6 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	 * @return
 	 */
 	protected String getDetailModeTabTitle() {
-		//
 		return null;
 	}
 
@@ -866,7 +866,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	protected T getNextEntity() {
+	protected final T getNextEntity() {
 		BaseDataProvider<ID, T> provider = (BaseDataProvider<ID, T>) getGridWrapper().getDataProvider();
 		ID nextId = provider.getNextItemId();
 		T next = null;
@@ -884,7 +884,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	protected T getPreviousEntity() {
+	protected final T getPreviousEntity() {
 		BaseDataProvider<ID, T> provider = (BaseDataProvider<ID, T>) getGridWrapper().getDataProvider();
 		ID prevId = provider.getPreviousItemId();
 		T prev = null;
@@ -925,9 +925,8 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	}
 
 	/**
-	 * Check whether the container contains a next entity
+	 * Check whether the data provider contains a next item
 	 * 
-	 * @param current the currently selected entity
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
@@ -937,9 +936,8 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	}
 
 	/**
-	 * Check whether the data provider contains a previous entity
+	 * Check whether the data provider contains a previous item
 	 * 
-	 * @param current the currently selected entity
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
@@ -949,11 +947,12 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	}
 
 	/**
-	 * Constructs a tab sheet for the tab component
+	 * Constructs a tab sheet for the tab component that is used in complex details
+	 * mode
 	 *
 	 * @param entity    the selected entity
 	 * @param index     the index of the selected tab sheet
-	 * @param fo        form options that specify how to constructe the component
+	 * @param fo        form options that specify how to construct the component
 	 * @param newEntity whether we are in the process of creating a new entity
 	 * @return
 	 */
@@ -966,7 +965,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	 * Checks if a filter is set for a certain attribute
 	 * 
 	 * @param path the path to the attribute
-	 * @return <code>true</code> if a fiterl for the specified attribute has been
+	 * @return <code>true</code> if a filter for the specified attribute has been
 	 *         set and <code>false</code> otherwise
 	 */
 	public boolean isFilterSet(String path) {
@@ -1119,15 +1118,6 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	}
 
 	/**
-	 * Sets the query type. Only use before the component is built.
-	 *
-	 * @param queryType
-	 */
-	public void setQueryType(QueryType queryType) {
-		this.queryType = queryType;
-	}
-
-	/**
 	 * Sets a predefined search value
 	 * 
 	 * @param propertyId the name of the property for which to set a value
@@ -1145,7 +1135,8 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	public abstract void setSearchValue(String propertyId, Object value, Object auxValue);
 
 	/**
-	 * Sets the tab specified by the provided index to the provided visibility
+	 * Sets the tab specified by the provided index to the provided visibility (for
+	 * use in complex details mode)
 	 *
 	 * @param index   the index
 	 * @param visible whether the tabs must be visible

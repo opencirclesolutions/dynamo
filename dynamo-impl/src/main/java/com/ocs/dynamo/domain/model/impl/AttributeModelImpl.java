@@ -166,8 +166,6 @@ public class AttributeModelImpl implements AttributeModel {
 
 	private boolean thousandsGrouping;
 
-	private boolean trans;
-
 	private Class<?> type;
 
 	private boolean url;
@@ -561,11 +559,6 @@ public class AttributeModelImpl implements AttributeModel {
 	}
 
 	@Override
-	public boolean isTransient() {
-		return trans;
-	}
-
-	@Override
 	public boolean isUrl() {
 		return url;
 	}
@@ -861,10 +854,6 @@ public class AttributeModelImpl implements AttributeModel {
 
 	public void setThousandsGrouping(boolean thousandsGrouping) {
 		this.thousandsGrouping = thousandsGrouping;
-	}
-
-	public void setTransient(boolean trans) {
-		this.trans = trans;
 	}
 
 	public void setType(Class<?> type) {

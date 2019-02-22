@@ -19,9 +19,10 @@ import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.server.SerializablePredicate;
 
 /**
- * Default implementation for the field construction context.
+ * Field factory context that can be used to specify how the FieldFactory must
+ * construct a field
  * 
- * @author patrickdeenen
+ * @author Bas Rutten
  *
  */
 public class FieldFactoryContext {
@@ -85,7 +86,10 @@ public class FieldFactoryContext {
 	}
 
 	/**
-	 * @param attributeModel the attributeModel to set
+	 * Sets the attribute model to base the field construction on
+	 * 
+	 * @param attributeModel the attribute model
+	 * @return
 	 */
 	public FieldFactoryContext setAttributeModel(AttributeModel attributeModel) {
 		this.attributeModel = attributeModel;
@@ -93,7 +97,10 @@ public class FieldFactoryContext {
 	}
 
 	/**
-	 * @param fieldEntityModel the fieldEntityModel to set
+	 * Sets the field entity model to be used during field construction
+	 * 
+	 * @param fieldEntityModel the field entity model
+	 * @return
 	 */
 	public FieldFactoryContext setFieldEntityModel(EntityModel<?> fieldEntityModel) {
 		this.fieldEntityModel = fieldEntityModel;
@@ -101,7 +108,10 @@ public class FieldFactoryContext {
 	}
 
 	/**
-	 * @param fieldFilters the fieldFilters to set
+	 * Sets the field filters to use during field construction
+	 * 
+	 * @param fieldFilters the field filters
+	 * @return
 	 */
 	public FieldFactoryContext setFieldFilters(Map<String, SerializablePredicate<?>> fieldFilters) {
 		this.fieldFilters = fieldFilters;
@@ -109,7 +119,10 @@ public class FieldFactoryContext {
 	}
 
 	/**
-	 * @param search the search to set
+	 * Sets whether to construct the field for search mode
+	 * 
+	 * @param search whether to construct the field for search mode
+	 * @return
 	 */
 	public FieldFactoryContext setSearch(boolean search) {
 		this.search = search;
@@ -117,9 +130,10 @@ public class FieldFactoryContext {
 	}
 
 	/**
-	 *
-	 * @param viewMode
-	 * @return the view mode to set
+	 * Sets whether to construct the field for view mode
+	 * 
+	 * @param viewMode whether to construct the field for view mode
+	 * @return
 	 */
 	public FieldFactoryContext setViewMode(boolean viewMode) {
 		this.viewMode = viewMode;

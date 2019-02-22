@@ -216,12 +216,6 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 				model.setMinLength(size.min());
 			}
 
-			// check for transient attributes
-			final Transient trans = ClassUtils.getAnnotation(entityModel.getEntityClass(), fieldName, Transient.class);
-			if (trans != null) {
-				model.setTransient(true);
-			}
-
 			setNestedEntityModel(model);
 
 			// only basic attributes are shown in the table by default

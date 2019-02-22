@@ -80,9 +80,9 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 
 	@Before
 	public void setupEntityModelFactoryTest() throws NoSuchFieldException {
-		
+
 		System.setProperty("ocs.use.default.prompt.value", "true");
-		
+
 		wireTestSubject(factory);
 		source.setBasename("META-INF/entitymodel");
 		ReflectionTestUtils.setField(messageService, "source", source);
@@ -545,9 +545,6 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		final AttributeModel am = model.getAttributeModel("attribute1");
 		Assert.assertEquals(1, am.getGroupTogetherWith().size());
 		Assert.assertEquals("attribute2", am.getGroupTogetherWith().get(0));
-
-		final AttributeModel am2 = model.getAttributeModel("attribute2");
-		Assert.assertTrue(am2.isTransient());
 	}
 
 	/**

@@ -464,15 +464,9 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	boolean isThousandsGrouping();
 
 	/**
-	 *
-	 * @return whether the attribute is transient
-	 */
-	boolean isTransient();
-	
-	/**
 	 * 
-	 * @return whether to ignore the attribute when creating a search filter (i.e. the
-	 * attribute is there only for cascading)
+	 * @return whether to ignore the attribute when creating a search filter (i.e.
+	 *         the attribute is there only for cascading)
 	 */
 	boolean isIgnoreInSearchFilter();
 
