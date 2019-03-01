@@ -412,25 +412,26 @@ public class CollectionTable<T extends Serializable> extends CustomField<Collect
 	@SuppressWarnings("unchecked")
 	protected void setInternalValue(final Collection<T> newValue) {
 		if (propagateChanges && table != null) {
+			table.addContainerProperty(VALUE, attributeModel.getNormalizedType(), null);
 
 			// simply cleaning the container does not work since Vaadin keeps a
 			// reference to a selected item
 			// that cannot be removed - so instead unfortunately we have to
 			// recreate the container
-			table.setContainerDataSource(new IndexedContainer());
-			table.addContainerProperty(VALUE, attributeModel.getNormalizedType(), null);
+			final IndexedContainer containerDataSource = new IndexedContainer();
+			containerDataSource.addContainerProperty(VALUE, attributeModel.getNormalizedType(), null);
+
+			if (newValue != null) {
+				for (final T t : newValue) {
+					final Object item = containerDataSource.addItem();
+					containerDataSource.getItem(item).getItemProperty(VALUE).setValue(t);
+				}
+			}
+			table.setContainerDataSource(containerDataSource);
 
 			if (table.removeGeneratedColumn(messageService.getMessage("ocs.remove", VaadinUtils.getLocale()))) {
 				constructRemoveColumn();
 			}
-
-			if (newValue != null) {
-				for (final T t : newValue) {
-					final Object o = table.addItem();
-					table.getItem(o).getItemProperty(VALUE).setValue(t);
-				}
-			}
-
 		}
 		super.setInternalValue(newValue);
 	}
