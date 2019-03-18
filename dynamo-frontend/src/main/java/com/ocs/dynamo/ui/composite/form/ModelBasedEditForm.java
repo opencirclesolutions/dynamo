@@ -920,7 +920,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		AbstractComponent field = constructCustomField(entityModel, attributeModel, viewMode);
 		if (field == null) {
 			FieldFactoryContext ctx = FieldFactoryContext.create().setAttributeModel(attributeModel)
-					.setFieldEntityModel(fieldEntityModel).setFieldFilters(getFieldFilters()).setViewMode(viewMode);
+					.setFieldEntityModel(fieldEntityModel).setFieldFilters(getFieldFilters()).setViewMode(viewMode)
+					.setParentEntity(entity);
 			field = fieldFactory.constructField(ctx);
 		}
 
@@ -999,7 +1000,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 		// set the default value for new objects
 		if (entity.getId() == null && attributeModel.getDefaultValue() != null) {
-			setDefaultValue((HasValue<Object>) field, attributeModel.getDefaultValue());
+			setDefaultValue((HasValue<Object>) field, attributeModel.getDefaultValue().toString());
 		}
 
 		// store a reference to the first field so we can give it focus

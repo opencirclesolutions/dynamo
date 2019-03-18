@@ -130,6 +130,7 @@ public abstract class FixedSplitLayout<ID extends Serializable, T extends Abstra
 		ListDataProvider<T> provider = (ListDataProvider<T>) getGridWrapper().getDataProvider();
 		provider.getItems().clear();
 		provider.getItems().addAll(items);
+		provider.refreshAll();
 		setSelectedItem(null);
 	}
 

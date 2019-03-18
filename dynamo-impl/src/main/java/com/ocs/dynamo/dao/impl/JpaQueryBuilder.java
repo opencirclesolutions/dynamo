@@ -706,17 +706,6 @@ public final class JpaQueryBuilder {
 	 * 
 	 * @param root       the root where path starts form
 	 * @param propertyId the property ID
-	 * @return the path to property
-	 */
-//	private static Path<Object> getPropertyPath(Root<?> root, Object propertyId) {
-//		return getPropertyPath(root, propertyId, false);
-//	}
-
-	/**
-	 * Gets property path.
-	 * 
-	 * @param root       the root where path starts form
-	 * @param propertyId the property ID
 	 * @param join       set to true if you want implicit joins to be created for
 	 *                   ALL collections
 	 * @return the path to property

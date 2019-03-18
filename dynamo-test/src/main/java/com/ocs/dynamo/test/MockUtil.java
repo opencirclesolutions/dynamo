@@ -161,15 +161,17 @@ public final class MockUtil {
 	 */
 	public static void mockMessageService(MessageService messageService) {
 		// method with varargs
-		Mockito.lenient().when(messageService.getMessage(Mockito.anyString(), Mockito.any(Locale.class), Mockito.any()))
+		Mockito.lenient()
+				.when(messageService.getMessage(Mockito.anyString(), Mockito.nullable(Locale.class), Mockito.any()))
 				.thenAnswer(invocation -> (String) invocation.getArguments()[0]);
 
-		Mockito.lenient().when(messageService.getMessage(Mockito.anyString(), Mockito.any(Locale.class)))
+		Mockito.lenient().when(messageService.getMessage(Mockito.anyString(), Mockito.nullable(Locale.class)))
 				.thenAnswer(invocation -> (String) invocation.getArguments()[0]);
 
 		// method for retrieving enum message
 		Mockito.lenient()
-				.when(messageService.getEnumMessage(Mockito.any(), Mockito.any(Enum.class), Mockito.any(Locale.class)))
+				.when(messageService.getEnumMessage(Mockito.any(), Mockito.any(Enum.class),
+						Mockito.nullable(Locale.class)))
 				.thenAnswer(invocation -> invocation.getArguments()[1].toString());
 	}
 

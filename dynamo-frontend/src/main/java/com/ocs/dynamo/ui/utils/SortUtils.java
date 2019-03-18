@@ -38,7 +38,7 @@ public final class SortUtils {
 	 *         value
 	 */
 	@SafeVarargs
-	public static <T> com.ocs.dynamo.dao.SortOrder[] translateSortOrders(SortOrder<?>... originalOrders) {
+	public static com.ocs.dynamo.dao.SortOrder[] translateSortOrders(SortOrder<?>... originalOrders) {
 		if (originalOrders != null && originalOrders.length > 0) {
 			final com.ocs.dynamo.dao.SortOrder[] orders = new com.ocs.dynamo.dao.SortOrder[originalOrders.length];
 			for (int i = 0; i < originalOrders.length; i++) {
@@ -52,7 +52,15 @@ public final class SortUtils {
 		return null;
 	}
 
-	public static <T> com.ocs.dynamo.dao.SortOrder[] translateSortOrders(List<SortOrder<?>> sortOrders) {
+	/**
+	 * 
+	 * @param sortOrders
+	 * @return
+	 */
+	public static com.ocs.dynamo.dao.SortOrder[] translateSortOrders(List<SortOrder<?>> sortOrders) {
+		if (sortOrders == null) {
+			return null;
+		}
 		return translateSortOrders(sortOrders.toArray(new SortOrder[0]));
 	}
 }

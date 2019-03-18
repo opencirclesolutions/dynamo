@@ -33,6 +33,12 @@ import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.data.provider.SortOrder;
 import com.vaadin.server.SerializablePredicate;
 
+/**
+ * Implementation of the export service
+ * 
+ * @author Bas Rutten
+ *
+ */
 @Service
 public class ExportServiceImpl implements ExportService {
 

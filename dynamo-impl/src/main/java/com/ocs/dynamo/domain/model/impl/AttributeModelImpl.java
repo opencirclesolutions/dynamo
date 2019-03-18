@@ -260,6 +260,10 @@ public class AttributeModelImpl implements AttributeModel {
 		return defaultDisplayName;
 	}
 
+	public String getDefaultTrueRepresentation() {
+		return defaultTrueRepresentation;
+	}
+
 	@Override
 	public Object getDefaultValue() {
 		return defaultValue;
@@ -684,6 +688,10 @@ public class AttributeModelImpl implements AttributeModel {
 		this.defaultPrompt = defaultPrompt;
 	}
 
+	public void setDefaultTrueRepresentation(String defaultTrueRepresentation) {
+		this.defaultTrueRepresentation = defaultTrueRepresentation;
+	}
+
 	public void setDefaultValue(Object defaultValue) {
 		this.defaultValue = defaultValue;
 	}
@@ -879,14 +887,6 @@ public class AttributeModelImpl implements AttributeModel {
 	@Override
 	public String toString() {
 		return ReflectionToStringBuilder.toStringExclude(this, "entityModel");
-	}
-
-	public String getDefaultTrueRepresentation() {
-		return defaultTrueRepresentation;
-	}
-
-	public void setDefaultTrueRepresentation(String defaultTrueRepresentation) {
-		this.defaultTrueRepresentation = defaultTrueRepresentation;
 	}
 
 }

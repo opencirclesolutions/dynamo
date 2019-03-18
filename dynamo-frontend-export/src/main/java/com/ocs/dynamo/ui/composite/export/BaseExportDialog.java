@@ -46,6 +46,13 @@ public abstract class BaseExportDialog<ID extends Serializable, T extends Abstra
 
 	private final EntityModel<T> entityModel;
 
+	/**
+	 * Constructor
+	 * 
+	 * @param exportService the export button
+	 * @param entityModel   the entity model of the entity to export
+	 * @param exportMode    the export mode
+	 */
 	public BaseExportDialog(ExportService exportService, EntityModel<T> entityModel, ExportMode exportMode) {
 		this.entityModel = entityModel;
 		this.exportService = exportService;

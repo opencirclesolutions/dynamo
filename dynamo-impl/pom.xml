@@ -133,11 +133,6 @@
 			<artifactId>querydsl-apt</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.google.code.findbugs</groupId>
-			<artifactId>annotations</artifactId>
-			<version>2.0.1</version>
-		</dependency>
-		<dependency>
 			<groupId>javax.el</groupId>
 			<artifactId>javax.el-api</artifactId>
 			<scope>test</scope>
@@ -162,8 +157,8 @@
 			</plugin>
 			<!-- Check for bugs. -->
 			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>findbugs-maven-plugin</artifactId>
+				<groupId>com.github.spotbugs</groupId>
+				<artifactId>spotbugs-maven-plugin</artifactId>
 			</plugin>
 			<!-- Generate jar for Unit/Integration testing. -->
 			<plugin>

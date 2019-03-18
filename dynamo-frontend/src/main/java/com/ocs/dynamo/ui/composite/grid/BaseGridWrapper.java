@@ -160,9 +160,7 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 	 * Adds a grid selection listener
 	 */
 	private void addGridSelectionListener() {
-		grid.addSelectionListener(event -> {
-			onSelect(grid.getSelectedItems());
-		});
+		grid.addSelectionListener(event -> onSelect(grid.getSelectedItems()));
 	}
 
 	/**

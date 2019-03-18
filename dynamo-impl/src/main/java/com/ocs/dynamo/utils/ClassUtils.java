@@ -453,7 +453,7 @@ public final class ClassUtils {
 	 * @param indexes
 	 * @return
 	 */
-	public static <T> Class<?> getResolvedType(Object object, int... indexes) {
+	public static Class<?> getResolvedType(Object object, int... indexes) {
 		if (object != null) {
 			ResolvableType rt = null;
 			if (object instanceof Method) {

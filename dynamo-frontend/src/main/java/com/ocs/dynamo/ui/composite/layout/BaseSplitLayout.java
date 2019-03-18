@@ -284,7 +284,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	 * @param entity the entity
 	 */
 	@Override
-	protected void detailsMode(T entity) {
+	public void detailsMode(T entity) {
 		if (detailFormLayout == null) {
 			detailFormLayout = new DefaultVerticalLayout(false, false);
 
@@ -509,7 +509,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	 *
 	 * @param t entity to reselect
 	 */
-	protected void reselect(T t) {
+	public void reselect(T t) {
 		detailsMode(t);
 		if (t == null) {
 			getGridWrapper().getGrid().deselectAll();
@@ -522,6 +522,10 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 		this.defaultSplitPosition = defaultSplitPosition;
 	}
 
+	/**
+	 * 
+	 * @param selectedItems
+	 */
 	public abstract void setSelectedItems(Object selectedItems);
 
 	/**

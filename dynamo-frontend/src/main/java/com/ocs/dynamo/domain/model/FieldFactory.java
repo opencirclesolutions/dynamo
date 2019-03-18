@@ -31,7 +31,7 @@ public interface FieldFactory {
 	 * @return the singleton instance of the field factory
 	 */
 	public static FieldFactory getInstance() {
-		return ServiceLocatorFactory.getServiceLocator().getService(FieldFactory.class);
+		return ServiceLocatorFactory.getServiceLocator().getServiceByName("fieldFactory", FieldFactory.class);
 	}
 
 	/**

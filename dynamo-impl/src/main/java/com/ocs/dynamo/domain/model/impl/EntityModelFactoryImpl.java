@@ -110,7 +110,6 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 	 * Default constructor without the use of delegated model factories
 	 */
 	public EntityModelFactoryImpl() {
-		super();
 	}
 
 	/**

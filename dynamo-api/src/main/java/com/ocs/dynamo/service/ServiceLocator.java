@@ -34,6 +34,14 @@ public interface ServiceLocator {
 	<T> T getService(Class<T> clazz);
 
 	/**
+	 * Returns a service bean based on name and class
+	 * @param name the name
+	 * @param clazz the class
+	 * @return
+	 */
+	<T> T getServiceByName(String name, Class<T> clazz);
+	
+	/**
 	 * 
 	 * @param clazz the class of the service
 	 * @return

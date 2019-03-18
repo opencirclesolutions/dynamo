@@ -60,6 +60,19 @@ public abstract class BaseSpringServiceLocator implements ServiceLocator {
 		return null;
 	}
 
+	@Override
+	public <T> T getServiceByName(String name, Class<T> clazz) {
+		Map<String, T> beansOfType = getContext().getBeansOfType(clazz);
+		if (!beansOfType.isEmpty()) {
+			for (Entry<String, T> entry : beansOfType.entrySet()) {
+				if (entry.getKey().equals(name)) {
+					return entry.getValue();
+				}
+			}
+		}
+		return null;
+	}
+
 	/**
 	 * Retrieves the message service from the context
 	 * 
