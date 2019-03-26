@@ -234,24 +234,38 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 
 			// listen to a click on the clear button
 			mainSearchLayout.addComponent(getSearchForm());
-			if (getSearchForm().getClearButton() != null) {
-				if (!getFormOptions().isSearchImmediately()) {
-					getSearchForm().getClearButton().addClickListener(e -> {
-						// hide the search results grid and add the label again
-						Label noSearchYetLabel = new Label(message("ocs.no.search.yet"));
-						searchResultsLayout.removeAllComponents();
-						searchResultsLayout.addComponent(noSearchYetLabel);
-						getSearchForm().setSearchable(null);
-						searchLayoutConstructed = false;
-					});
-				}
-				// clear current selection and update buttons
-				getSearchForm().getClearButton().addClickListener(e -> {
-					setSelectedItem(null);
-					checkButtonState(getSelectedItem());
-				});
-				getSearchForm().getClearButton().addClickListener(e -> afterClear());
-			}
+            if (getSearchForm().getClearButton() != null) {
+                if (!getFormOptions().isSearchImmediately()) {
+
+                    // use a consumer since the action might have to be deferred until after the
+                    // user confirms the clear
+                    if (getFormOptions().isConfirmClear()) {
+                        getSearchForm().setAfterClearConsumer(e -> {
+                            clearIfNotSearchingImmediately();
+                        });
+                    } else {
+                        // clear right away
+                        getSearchForm().getClearButton().addClickListener(e -> {
+                            clearIfNotSearchingImmediately();
+                        });
+                    }
+                } else {
+                    // clear current selection and update buttons
+                    if (getFormOptions().isConfirmClear()) {
+                        getSearchForm().setAfterClearConsumer(e -> {
+                            setSelectedItem(null);
+                            checkButtonState(getSelectedItem());
+                            afterClear();
+                        });
+                    } else {
+                        getSearchForm().getClearButton().addClickListener(e -> {
+                            setSelectedItem(null);
+                            checkButtonState(getSelectedItem());
+                            afterClear();
+                        });
+                    }
+                }
+            }
 
 			searchResultsLayout = new DefaultVerticalLayout(false, false);
 			mainSearchLayout.addComponent(searchResultsLayout);
@@ -510,7 +524,22 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	}
 
 	/**
-	 * Constructs the button that will switch the screen to the detail view.
+     * Respond to a click on the Clear button when not in "search immediately" mode
+     */
+    private void clearIfNotSearchingImmediately() {
+        System.out.println("Clear If");
+        Label noSearchYetLabel = new Label(message("ocs.no.search.yet"));
+        searchResultsLayout.removeAllComponents();
+        searchResultsLayout.addComponent(noSearchYetLabel);
+        getSearchForm().setSearchable(null);
+        searchLayoutConstructed = false;
+        setSelectedItem(null);
+        checkButtonState(getSelectedItem());
+        afterClear();
+    }
+
+    /*
+     * Constructs the button that will switch the screen to the detail view.
 	 * Depending on the "open in view mode" setting the caption will read either
 	 * "view" or "edit"
 	 * 

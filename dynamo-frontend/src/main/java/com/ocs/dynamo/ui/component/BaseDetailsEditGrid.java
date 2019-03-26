@@ -263,7 +263,7 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
         parent.addComponent(buttonBar);
         constructAddButton(buttonBar);
         constructSearchButton(buttonBar);
-        postProcessButtonBar(buttonBar);
+        postProcessButtonBar(buttonBar, viewMode);
     }
 
     /**
@@ -564,7 +564,7 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
      *
      * @param buttonBar the button bar
      */
-    protected void postProcessButtonBar(Layout buttonBar) {
+    protected void postProcessButtonBar(Layout buttonBar, boolean viewMode) {
         // overwrite in subclass if needed
     }
 
