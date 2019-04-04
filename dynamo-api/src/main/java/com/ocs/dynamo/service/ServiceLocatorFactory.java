@@ -13,7 +13,8 @@
  */
 package com.ocs.dynamo.service;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.util.SystemPropertyUtils;
@@ -28,7 +29,7 @@ public final class ServiceLocatorFactory {
 
 	private static volatile ServiceLocator serviceLocator;
 
-	private static final Logger LOGGER = Logger.getLogger(ServiceLocatorFactory.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ServiceLocatorFactory.class);
 
 	private ServiceLocatorFactory() {
 	}

@@ -261,6 +261,11 @@ public final class DynamoConstants {
 	 * Name of the system property that is used as the CSV separator when exporting
 	 */
 	public static final String SP_EXPORT_CSV_SEPARATOR = "ocs.export.csv.separator";
+	
+	/**
+	 * Name of the property that is used to enable view authentication
+	 */
+	public static final String SP_ENABLE_VIEW_AUTHENTICATION = "ocs.enable.view.authentication";
 
 	/**
 	 * Name of the system property that indicates the maximum number of items to

@@ -19,6 +19,7 @@ import javax.inject.Inject;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.ocs.dynamo.functional.domain.Country;
@@ -87,6 +88,7 @@ public class DomainDaoTest extends BaseIntegrationTest {
     }
 
     @Test
+    @Ignore
     public void testFindChildren() {
         Domain deu = regionDao.findByUniqueProperty("code", "EU", false);
         Assert.assertTrue(deu instanceof Region);

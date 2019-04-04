@@ -15,10 +15,13 @@ package com.ocs.dynamo.service.impl;
 
 import java.util.Locale;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.MessageSource;
 import org.springframework.context.NoSuchMessageException;
+import org.springframework.stereotype.Service;
 
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.service.MessageService;
@@ -28,11 +31,13 @@ import com.ocs.dynamo.service.MessageService;
  * 
  * @author bas.rutten
  */
+@Service
+@ConditionalOnMissingBean(name = "com.ocs.dynamo.service.impl.MessageService")
 public class MessageServiceImpl implements MessageService {
 
 	private static final String MESSAGE_NOT_FOUND = "[Warning: message '%s' not found]";
 
-	private static final Logger LOG = Logger.getLogger(MessageServiceImpl.class);
+	private static final Logger LOG = LoggerFactory.getLogger(MessageServiceImpl.class);
 
 	@Autowired
 	private MessageSource source;

@@ -13,7 +13,8 @@
  */
 package com.ocs.dynamo.ui.composite.form.process;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
@@ -53,7 +54,7 @@ public abstract class ProgressForm<T> extends BaseCustomComponent implements Pro
 	// the polling interval in milliseconds
 	public static final int POLL_INTERVAL = 500;
 
-	private static final Logger LOGGER = Logger.getLogger(ProgressForm.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ProgressForm.class);
 
 	// counter for keeping track of the number of processed items
 	private ProgressCounter counter = new DefaultProgressCounter();

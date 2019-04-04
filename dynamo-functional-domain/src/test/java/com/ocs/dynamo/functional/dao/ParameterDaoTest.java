@@ -23,6 +23,7 @@ public class ParameterDaoTest extends BaseIntegrationTest {
 	private ParameterDao parameterDao;
 
 	private Parameter maxPrograms;
+
 	private Parameter showMargins;
 
 	@Inject

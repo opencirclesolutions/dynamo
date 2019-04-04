@@ -13,23 +13,34 @@
  */
 package com.ocs.dynamo.ui.auth;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.stereotype.Service;
 
+import com.ocs.dynamo.constants.DynamoConstants;
 import com.vaadin.ui.UI;
 
 /**
- * View access control - used by Spring Vaadin to determine who is allowed to open which views
+ * View access control - used by Spring Vaadin to determine who is allowed to
+ * open which views
+ * 
  * @author bas.rutten
  *
  */
+@Service
+@ConditionalOnMissingBean(name = "com.vaadin.spring.access.ViewAccessControl")
+@ConditionalOnProperty(name = DynamoConstants.SP_ENABLE_VIEW_AUTHENTICATION, havingValue = "true")
 public class ViewAccessControl implements com.vaadin.spring.access.ViewAccessControl {
 
-	@Autowired
-	private PermissionChecker checker;
+    @Autowired
+    private PermissionChecker checker;
 
-	@Override
-	public boolean isAccessGranted(UI ui, String beanName) {
-		return checker.isAccessAllowed(StringUtils.capitalize(beanName));
-	}
+    @Override
+    public boolean isAccessGranted(UI ui, String beanName) {
+        return checker.isAccessAllowed(StringUtils.capitalize(beanName));
+    }
 }

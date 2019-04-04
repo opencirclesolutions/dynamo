@@ -41,16 +41,18 @@ import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
-import javax.persistence.Transient;
 import javax.validation.constraints.AssertFalse;
 import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Sets;
 import com.ocs.dynamo.domain.AbstractEntity;
@@ -85,6 +87,8 @@ import com.ocs.dynamo.utils.DateUtils;
  *
  * @author bas.rutten
  */
+@ConditionalOnMissingBean(name = "com.ocs.dynamo.domain.model.EntityModelFactory")
+@Service
 public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelConstruct {
 
 	static final String PLURAL_POSTFIX = "s";
@@ -95,7 +99,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 
 	static final int RECURSIVE_MODEL_DEPTH = 3;
 
-	private static final Logger LOG = Logger.getLogger(EntityModelFactoryImpl.class);
+	private static final Logger LOG = LoggerFactory.getLogger(EntityModelFactoryImpl.class);
 
 	@Autowired(required = false)
 	private MessageService messageService;

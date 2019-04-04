@@ -15,7 +15,8 @@ package com.ocs.dynamo.ui.utils;
 
 import java.util.Locale;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.vaadin.data.HasValue.ValueChangeEvent;
 import com.vaadin.ui.Grid;
@@ -31,7 +32,7 @@ import com.vaadin.ui.Grid;
  */
 public abstract class PasteTemplate<T> {
 
-	private static final Logger LOG = Logger.getLogger(PasteTemplate.class);
+	private static final Logger LOG = LoggerFactory.getLogger(PasteTemplate.class);
 
 	private ValueChangeEvent<String> event;
 

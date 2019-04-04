@@ -26,14 +26,15 @@ import java.util.List;
 
 import javax.validation.constraints.Size;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.util.Assert;
-import org.apache.commons.lang3.StringUtils;
 
 import com.ocs.dynamo.exception.OCSRuntimeException;
 
@@ -46,7 +47,7 @@ public final class ClassUtils {
 
 	private static final String IS = "is";
 
-	private static final Logger LOG = Logger.getLogger(ClassUtils.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ClassUtils.class);
 
 	private static final String SET = "set";
 

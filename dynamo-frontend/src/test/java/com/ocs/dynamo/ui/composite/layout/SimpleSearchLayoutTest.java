@@ -18,7 +18,7 @@ import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.filter.EqualsPredicate;
 import com.ocs.dynamo.service.CascadeEntityService;
 import com.ocs.dynamo.service.TestEntityService;
-import com.ocs.dynamo.test.BaseIntegrationTest;
+import com.ocs.dynamo.ui.FrontendIntegrationTest;
 import com.ocs.dynamo.ui.component.QuickAddEntityComboBox;
 import com.ocs.dynamo.ui.composite.grid.ServiceBasedGridWrapper;
 import com.ocs.dynamo.ui.provider.QueryType;
@@ -30,7 +30,7 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
-public class SimpleSearchLayoutTest extends BaseIntegrationTest {
+public class SimpleSearchLayoutTest extends FrontendIntegrationTest {
 
 	@Inject
 	private EntityModelFactory entityModelFactory;

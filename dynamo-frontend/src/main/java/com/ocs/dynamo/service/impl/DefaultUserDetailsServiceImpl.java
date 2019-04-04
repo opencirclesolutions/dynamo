@@ -15,6 +15,8 @@ package com.ocs.dynamo.service.impl;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -26,6 +28,8 @@ import com.ocs.dynamo.service.UserDetailsService;
  * @author bas.rutten
  *
  */
+@Service
+@ConditionalOnMissingBean(name = "com.ocs.dynamo.service.UserDetailsService")
 public class DefaultUserDetailsServiceImpl implements UserDetailsService {
 
 	private static final String SYSTEM = "system";

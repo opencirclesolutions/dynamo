@@ -25,114 +25,112 @@ import java.util.List;
 
 public class PersonRevisionDaoImplTest extends BaseIntegrationTest {
 
-	@Autowired
-	private PersonDao personDao;
+    @Autowired
+    private PersonDao personDao;
 
-	@Autowired
-	private PersonRevisionDao personRevisionDao;
+    @Autowired
+    private PersonRevisionDao personRevisionDao;
 
-	private Person person;
+    private Person person;
 
-	@Test
-	public void testCreateUpdateDelete() {
-		TransactionStatus status = startTransaction();
+    @Test
+    public void testCreateUpdateDelete() {
+        TransactionStatus status = startTransaction();
 
-		person = new Person();
-		person.setName("Bas");
-		person = personDao.save(person);
+        person = new Person();
+        person.setName("Bas");
+        person = personDao.save(person);
 
-		commitTransaction(status);
+        commitTransaction(status);
 
-		long count = personRevisionDao.count(new Compare.Equal("id", person.getId()), true);
-		Assert.assertEquals(1L, count);
+        long count = personRevisionDao.count(new Compare.Equal("id", person.getId()), true);
+        Assert.assertEquals(1L, count);
 
-		List<PersonRevision> list = personRevisionDao.fetch(new Compare.Equal("id", person.getId()), (Pageable) null);
-		Assert.assertEquals(1, list.size());
+        List<PersonRevision> list = personRevisionDao.fetch(new Compare.Equal("id", person.getId()), (Pageable) null);
+        Assert.assertEquals(1, list.size());
 
-		Assert.assertEquals(2, list.get(0).getRevision());
-		Assert.assertEquals(person.getId(), list.get(0).getId().getId());
-		Assert.assertEquals("Bas", list.get(0).getEntity().getName());
-		Assert.assertEquals(RevisionType.ADD, list.get(0).getRevisionType());
+        Assert.assertEquals(2, list.get(0).getRevision());
+        Assert.assertEquals(person.getId(), list.get(0).getId().getId());
+        Assert.assertEquals("Bas", list.get(0).getEntity().getName());
+        Assert.assertEquals(RevisionType.ADD, list.get(0).getRevisionType());
 
-		status = startTransaction();
+        status = startTransaction();
 
-		person.setName("Jeroen");
-		person = personDao.save(person);
+        person.setName("Jeroen");
+        person = personDao.save(person);
 
-		commitTransaction(status);
+        commitTransaction(status);
 
-		count = personRevisionDao.count(new Compare.Equal("id", person.getId()), true);
-		Assert.assertEquals(2L, count);
-		list = personRevisionDao.fetch(new Compare.Equal("id", person.getId()), (Pageable) null);
-		Assert.assertEquals(2, list.size());
+        count = personRevisionDao.count(new Compare.Equal("id", person.getId()), true);
+        Assert.assertEquals(2L, count);
+        list = personRevisionDao.fetch(new Compare.Equal("id", person.getId()), (Pageable) null);
+        Assert.assertEquals(2, list.size());
 
-		Assert.assertEquals(3, list.get(1).getRevision());
-		Assert.assertEquals(person.getId(), list.get(1).getId().getId());
-		Assert.assertEquals("Jeroen", list.get(1).getEntity().getName());
-		Assert.assertEquals(RevisionType.MOD, list.get(1).getRevisionType());
+        Assert.assertEquals(3, list.get(1).getRevision());
+        Assert.assertEquals(person.getId(), list.get(1).getId().getId());
+        Assert.assertEquals("Jeroen", list.get(1).getEntity().getName());
+        Assert.assertEquals(RevisionType.MOD, list.get(1).getRevisionType());
 
-		status = startTransaction();
+        status = startTransaction();
 
-		personDao.delete(person);
+        personDao.delete(person);
 
-		commitTransaction(status);
+        commitTransaction(status);
 
-		list = personRevisionDao.fetch(new Compare.Equal("id", person.getId()), (Pageable) null);
-		Assert.assertEquals(3, list.size());
-		Assert.assertEquals(RevisionType.DEL, list.get(2).getRevisionType());
+        list = personRevisionDao.fetch(new Compare.Equal("id", person.getId()), (Pageable) null);
+        Assert.assertEquals(3, list.size());
+        Assert.assertEquals(RevisionType.DEL, list.get(2).getRevisionType());
 
-		// try with sorting
-		Pageable p = new PageableImpl(0, 10, new SortOrders(new SortOrder(Direction.ASC, "name")));
-		list = personRevisionDao.fetch(new Compare.Equal("id", person.getId()), p);
-		Assert.assertEquals(3, list.size());
+        // try with sorting
+        Pageable p = new PageableImpl(0, 10, new SortOrders(new SortOrder(Direction.ASC, "name")));
+        list = personRevisionDao.fetch(new Compare.Equal("id", person.getId()), p);
+        Assert.assertEquals(3, list.size());
 
-		// sort on revision type
-		p = new PageableImpl(0, 10, new SortOrders(new SortOrder(Direction.ASC, "revisionType")));
-		list = personRevisionDao.fetch(new Compare.Equal("id", person.getId()), p);
-		Assert.assertEquals(3, list.size());
+        // sort on revision type
+        p = new PageableImpl(0, 10, new SortOrders(new SortOrder(Direction.ASC, "revisionType")));
+        list = personRevisionDao.fetch(new Compare.Equal("id", person.getId()), p);
+        Assert.assertEquals(3, list.size());
 
-		// sort on revision property
-		p = new PageableImpl(0, 10, new SortOrders(new SortOrder(Direction.ASC, "revision")));
-		list = personRevisionDao.fetch(new Compare.Equal("id", person.getId()), p);
-		Assert.assertEquals(3, list.size());
+        // sort on revision property
+        p = new PageableImpl(0, 10, new SortOrders(new SortOrder(Direction.ASC, "revision")));
+        list = personRevisionDao.fetch(new Compare.Equal("id", person.getId()), p);
+        Assert.assertEquals(3, list.size());
 
-		// find by revision key
-		RevisionKey<Integer> key = new RevisionKey<Integer>(person.getId(), 3);
-		PersonRevision pr = personRevisionDao.fetchById(key);
-		Assert.assertNotNull(pr);
+        // find by revision key
+        RevisionKey<Integer> key = new RevisionKey<Integer>(person.getId(), 3);
+        PersonRevision pr = personRevisionDao.fetchById(key);
+        Assert.assertNotNull(pr);
 
-		list = personRevisionDao.findRevisions(person.getId());
-		Assert.assertEquals(3, list.size());
+        list = personRevisionDao.findRevisions(person.getId());
+        Assert.assertEquals(3, list.size());
 
-		// fetch non existing
-		key = new RevisionKey<>(person.getId(), 5);
-		pr = personRevisionDao.fetchById(key);
-		Assert.assertNull(pr);
+        // fetch non existing
+        key = new RevisionKey<>(person.getId(), 5);
+        pr = personRevisionDao.fetchById(key);
+        Assert.assertNull(pr);
 
-		// fetch non existing part 2
-		key = new RevisionKey<>(-1, 1);
-		pr = personRevisionDao.fetchById(key);
-		Assert.assertNull(pr);
+        // fetch non existing part 2
+        key = new RevisionKey<>(-1, 1);
+        pr = personRevisionDao.fetchById(key);
+        Assert.assertNull(pr);
 
-		// check last revision number
-		Number revNumber = personRevisionDao.findRevisionNumber(LocalDateTime.now());
-		Assert.assertEquals(4, revNumber);
-	}
+        // check last revision number
+        Number revNumber = personRevisionDao.findRevisionNumber(LocalDateTime.now());
+        Assert.assertEquals(4, revNumber);
+    }
 
-	@Test
-	public void testFiltering() {
-		// no filter
-		personRevisionDao.fetch(null, (Pageable) null);
-		personRevisionDao.fetch(new Compare.Equal("name", "Kevin"), (Pageable) null);
-		personRevisionDao.fetch(new Compare.GreaterOrEqual("name", "Kevin"), (Pageable) null);
-		personRevisionDao.fetch(new Compare.Greater("name", "Kevin"), (Pageable) null);
-		personRevisionDao.fetch(new Compare.LessOrEqual("name", "Kevin"), (Pageable) null);
-		personRevisionDao.fetch(new Compare.Less("name", "Kevin"), (Pageable) null);
-		personRevisionDao.fetch(new Not(new Compare.Equal("name", "Kevin")), (Pageable) null);
-		personRevisionDao.fetch(new And(new Compare.Equal("name", "Kevin"), new Compare.Equal("name", "Bob")),
-				(Pageable) null);
-		personRevisionDao.fetch(new Or(new Compare.Equal("name", "Kevin"), new Compare.Equal("name", "Bob")),
-				(Pageable) null);
-	}
+    @Test
+    public void testFiltering() {
+        // no filter
+        personRevisionDao.fetch(null, (Pageable) null);
+        personRevisionDao.fetch(new Compare.Equal("name", "Kevin"), (Pageable) null);
+        personRevisionDao.fetch(new Compare.GreaterOrEqual("name", "Kevin"), (Pageable) null);
+        personRevisionDao.fetch(new Compare.Greater("name", "Kevin"), (Pageable) null);
+        personRevisionDao.fetch(new Compare.LessOrEqual("name", "Kevin"), (Pageable) null);
+        personRevisionDao.fetch(new Compare.Less("name", "Kevin"), (Pageable) null);
+        personRevisionDao.fetch(new Not(new Compare.Equal("name", "Kevin")), (Pageable) null);
+        personRevisionDao.fetch(new And(new Compare.Equal("name", "Kevin"), new Compare.Equal("name", "Bob")), (Pageable) null);
+        personRevisionDao.fetch(new Or(new Compare.Equal("name", "Kevin"), new Compare.Equal("name", "Bob")), (Pageable) null);
+    }
 
 }

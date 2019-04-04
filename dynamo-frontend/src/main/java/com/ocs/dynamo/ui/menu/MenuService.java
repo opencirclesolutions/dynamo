@@ -17,6 +17,8 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.stereotype.Service;
 
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.service.MessageService;
@@ -33,6 +35,8 @@ import com.vaadin.ui.MenuBar.MenuItem;
  * 
  * @author bas.rutten
  */
+@Service
+@ConditionalOnMissingBean(name = "com.ocs.dynamo.ui.menu.MenuService")
 public class MenuService {
 
     /**

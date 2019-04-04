@@ -13,7 +13,8 @@
  */
 package com.ocs.dynamo.ui.composite.dialog;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.service.MessageService;
@@ -39,7 +40,7 @@ import com.vaadin.ui.Window;
  */
 public abstract class BaseModalDialog extends Window implements Buildable {
 
-	private static final Logger LOG = Logger.getLogger(BaseModalDialog.class);
+	private static final Logger LOG = LoggerFactory.getLogger(BaseModalDialog.class);
 
 	private static final long serialVersionUID = -2265149201475495504L;
 

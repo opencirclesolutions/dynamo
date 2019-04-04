@@ -697,7 +697,7 @@ public final class JpaQueryBuilder {
 			equals = builder.equal(root.get(propertyName), value);
 		}
 		cq.where(equals);
-
+		
 		return cq;
 	}
 
