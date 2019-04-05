@@ -102,8 +102,6 @@ public class ServiceBasedGridWrapper<ID extends Serializable, T extends Abstract
         getGrid().getDataCommunicator().setDataProvider(getDataProvider(), filter);
         getGrid().addSelectionListener(event -> onSelect(getGrid().getSelectedItems()));
 
-        System.out.println("Allow: " + SystemPropertyUtils.allowListExport());
-
         // right click to download
         if (getFormOptions().isExportAllowed() && getExportDelegate() != null) {
             getGrid().addContextClickListener(event -> {

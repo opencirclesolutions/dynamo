@@ -26,15 +26,6 @@ public interface UserDetailsService {
     String getCurrentUserName();
 
     /**
-     * Indicates whether the currently logged in user has a certain role
-     * 
-     * @param role
-     *            the role
-     * @return
-     */
-    boolean isUserInRole(String role);
-
-    /**
      * Returns true when the user is in (at least one of) the provided roles
      * 
      * @param roles

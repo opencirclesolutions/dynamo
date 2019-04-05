@@ -103,7 +103,7 @@
 		<vaadin.charts.version>4.0.5</vaadin.charts.version>
 		<hibernate.version>5.3.7.Final</hibernate.version>
 		<hibernate.validator.version>6.0.13.Final</hibernate.validator.version>
-		<spring.version>5.1.1.RELEASE</spring.version>
+		<spring.version>5.1.5.RELEASE</spring.version>
 		<querydsl.version>4.2.1</querydsl.version>
 		<slf4j.version>1.7.25</slf4j.version>
 		<junit.version>4.12</junit.version>
@@ -288,6 +288,11 @@
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-test</artifactId>
+				<version>${spring.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.security</groupId>
+				<artifactId>spring-security-core</artifactId>
 				<version>${spring.version}</version>
 			</dependency>
 			<!-- Aspect -->

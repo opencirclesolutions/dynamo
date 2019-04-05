@@ -14,6 +14,7 @@
 package com.ocs.dynamo.ui.menu;
 
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;

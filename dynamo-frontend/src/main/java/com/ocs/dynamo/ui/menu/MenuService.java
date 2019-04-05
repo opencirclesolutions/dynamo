@@ -17,12 +17,10 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.stereotype.Service;
 
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.service.MessageService;
-import com.ocs.dynamo.ui.auth.impl.DefaultPermissionCheckerImpl;
+import com.ocs.dynamo.ui.auth.PermissionChecker;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.ui.MenuBar;
@@ -30,13 +28,11 @@ import com.vaadin.ui.MenuBar.Command;
 import com.vaadin.ui.MenuBar.MenuItem;
 
 /**
- * Service for creating a menu based on property files. Use the "menu.properties" file to configure
- * this menu.
+ * Service for creating a menu based on property files. Use the
+ * "menu.properties" file to configure this menu.
  * 
  * @author bas.rutten
  */
-@Service
-@ConditionalOnMissingBean(name = "com.ocs.dynamo.ui.menu.MenuService")
 public class MenuService {
 
     /**
@@ -55,13 +51,13 @@ public class MenuService {
     public static final String MODE = "mode";
 
     /**
-     * The tab index of the tab to dipslay. Optional, is stored on the BaseUI and can be retrieved
-     * from there
+     * The tab index of the tab to display. Optional, is stored on the BaseUI and
+     * can be retrieved from there
      */
     public static final String TAB_INDEX = "tabIndex";
 
     /**
-     * Optional tooltip that appears for the menu item
+     * Optional tool tip that appears for the menu item
      */
     public static final String DESCRIPTION = "description";
 
@@ -69,7 +65,7 @@ public class MenuService {
      * Permission checker used for determining if users are allowed to access a page
      */
     @Autowired(required = false)
-    private DefaultPermissionCheckerImpl checker;
+    private PermissionChecker checker;
 
     @Autowired
     private MessageService messageService;
@@ -77,12 +73,10 @@ public class MenuService {
     /**
      * Constructs a menu item and its children
      * 
-     * @param parent
-     *            the parent component (either a menu bar or menu item) to add the menu to
-     * @param key
-     *            the message key
-     * @param navigator
-     *            the navigator component
+     * @param parent    the parent component (either a menu bar or menu item) to add
+     *                  the menu to
+     * @param key       the message key
+     * @param navigator the navigator component
      * @return the constructed menu item
      */
     private MenuItem constructMenu(MenuBar bar, Object parent, String key, Navigator navigator) {
@@ -116,14 +110,12 @@ public class MenuService {
 
             // add the child items
             int index = 1;
-            String childKey = messageService.getMessageNoDefault(key + "." + index + "." + DISPLAY_NAME,
-                    VaadinUtils.getLocale());
+            String childKey = messageService.getMessageNoDefault(key + "." + index + "." + DISPLAY_NAME, VaadinUtils.getLocale());
 
             while (childKey != null) {
                 constructMenu(bar, menuItem, key + "." + index, navigator);
                 index++;
-                childKey = messageService.getMessageNoDefault(key + "." + index + "." + DISPLAY_NAME,
-                        VaadinUtils.getLocale());
+                childKey = messageService.getMessageNoDefault(key + "." + index + "." + DISPLAY_NAME, VaadinUtils.getLocale());
             }
 
             if (checker != null && !checker.isAccessAllowed(destination)) {
@@ -137,10 +129,9 @@ public class MenuService {
     /**
      * Constructs a menu
      * 
-     * @param rootName
-     *            the root name (prefix) of the messages that are used to populate the menu
-     * @param navigator
-     *            Vaadin navigator
+     * @param rootName  the root name (prefix) of the messages that are used to
+     *                  populate the menu
+     * @param navigator Vaadin navigator
      * @return
      */
     public MenuBar constructMenu(String rootName, Navigator navigator) {
@@ -164,8 +155,7 @@ public class MenuService {
     /**
      * Hides a menu item if all its children are hidden
      * 
-     * @param item
-     *            the menu item
+     * @param item the menu item
      * @return
      */
     private boolean hideIfAllChildrenHidden(MenuItem item) {
@@ -188,12 +178,11 @@ public class MenuService {
     }
 
     /**
-     * Checks if the provided menu item has a child item with the provided destination
+     * Checks if the provided menu item has a child item with the provided
+     * destination
      * 
-     * @param item
-     *            the item
-     * @param destination
-     *            the destination
+     * @param item        the item
+     * @param destination the destination
      * @return
      */
     private boolean hasChildWithDestination(MenuItem item, String destination) {
@@ -215,10 +204,10 @@ public class MenuService {
     }
 
     /**
-     * Recursively process all menu items and hides the items that have no visible children
+     * Recursively process all menu items and hides the items that have no visible
+     * children
      * 
-     * @param bar
-     *            the menu bar
+     * @param bar the menu bar
      */
     private void hideRecursively(MenuBar bar) {
         for (MenuItem item : bar.getItems()) {
@@ -227,15 +216,12 @@ public class MenuService {
     }
 
     /**
-     * Sets the visibility of a certain item item based on its destination (and regardless of screen
-     * mode)
+     * Sets the visibility of a certain item item based on its destination (and
+     * regardless of screen mode)
      * 
-     * @param menu
-     *            the menu
-     * @param destination
-     *            the logical name of the destination
-     * @param visible
-     *            whether to set the item to visible
+     * @param menu        the menu
+     * @param destination the logical name of the destination
+     * @param visible     whether to set the item to visible
      */
     public void setVisible(MenuBar menu, String destination, boolean visible) {
         setVisible(menu, destination, null, visible);
@@ -244,15 +230,11 @@ public class MenuService {
     /**
      * Sets the visibility of a certain item identified by its destination and mode
      * 
-     * @param menu
-     *            the menu bar
-     * @param destination
-     *            the destination
-     * @param mode
-     *            the screen mode
+     * @param menu        the menu bar
+     * @param destination the destination
+     * @param mode        the screen mode
      * 
-     * @param visible
-     *            the desired visibility
+     * @param visible     the desired visibility
      */
     public void setVisible(MenuBar menu, String destination, String mode, boolean visible) {
 
@@ -264,13 +246,11 @@ public class MenuService {
     }
 
     /**
-     * Highlights a certain menu item (adds the "highlight" style) to mark it as the last visited
-     * main menu item
+     * Highlights a certain menu item (adds the "highlight" style) to mark it as the
+     * last visited main menu item
      * 
-     * @param menuBar
-     *            the menu bar
-     * @param destination
-     *            the last visited destination
+     * @param menuBar     the menu bar
+     * @param destination the last visited destination
      */
     public void setLastVisited(MenuBar menuBar, String destination) {
         for (MenuItem item : menuBar.getItems()) {
@@ -282,15 +262,12 @@ public class MenuService {
     }
 
     /**
-     * Sets the visibility of a certain menu item if its destination matches the specified
-     * destination
+     * Sets the visibility of a certain menu item if its destination matches the
+     * specified destination
      * 
-     * @param menu
-     *            the main menu bar
-     * @param destination
-     *            the destination
-     * @param visible
-     *            the desired visibility of the item
+     * @param menu        the main menu bar
+     * @param destination the destination
+     * @param visible     the desired visibility of the item
      */
     private void setVisible(MenuItem item, String destination, String mode, boolean visible) {
 

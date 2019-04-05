@@ -13,15 +13,9 @@
  */
 package com.ocs.dynamo.ui.auth;
 
-import javax.annotation.PostConstruct;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.stereotype.Service;
 
-import com.ocs.dynamo.constants.DynamoConstants;
 import com.vaadin.ui.UI;
 
 /**
@@ -31,9 +25,6 @@ import com.vaadin.ui.UI;
  * @author bas.rutten
  *
  */
-@Service
-@ConditionalOnMissingBean(name = "com.vaadin.spring.access.ViewAccessControl")
-@ConditionalOnProperty(name = DynamoConstants.SP_ENABLE_VIEW_AUTHENTICATION, havingValue = "true")
 public class ViewAccessControl implements com.vaadin.spring.access.ViewAccessControl {
 
     @Autowired

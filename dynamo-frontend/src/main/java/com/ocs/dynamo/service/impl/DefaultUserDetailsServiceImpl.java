@@ -13,12 +13,10 @@
  */
 package com.ocs.dynamo.service.impl;
 
-import javax.servlet.http.HttpServletRequest;
+import java.util.stream.Stream;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.stereotype.Service;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.ocs.dynamo.service.UserDetailsService;
 
@@ -28,49 +26,29 @@ import com.ocs.dynamo.service.UserDetailsService;
  * @author bas.rutten
  *
  */
-@Service
-@ConditionalOnMissingBean(name = "com.ocs.dynamo.service.UserDetailsService")
 public class DefaultUserDetailsServiceImpl implements UserDetailsService {
 
-	private static final String SYSTEM = "system";
+    private static final String SYSTEM = "system";
 
-	@Override
-	public String getCurrentUserName() {
-		try {
-			HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes())
-					.getRequest();
-			return request.getUserPrincipal().getName();
-		} catch (Exception ex) {
-			// ignore - no request available during integration test
-			return SYSTEM;
-		}
-	}
+    @Override
+    public String getCurrentUserName() {
+        try {
+            SecurityContext ctx = SecurityContextHolder.getContext();
+            return ctx.getAuthentication().getName();
+        } catch (Exception ex) {
+            // ignore - no request available during integration test
+            return SYSTEM;
+        }
+    }
 
-	@Override
-	public boolean isUserInRole(String role) {
-		try {
-			HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes())
-					.getRequest();
-
-			return request.isUserInRole(role);
-		} catch (Exception ex) {
-			return false;
-		}
-	}
-
-	@Override
-	public boolean isUserInRole(String... roles) {
-		try {
-			HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes())
-					.getRequest();
-			for (String r : roles) {
-				if (request.isUserInRole(r)) {
-					return true;
-				}
-			}
-			return false;
-		} catch (Exception ex) {
-			return false;
-		}
-	}
+    @Override
+    public boolean isUserInRole(String... roles) {
+        try {
+            SecurityContext ctx = SecurityContextHolder.getContext();
+            return ctx.getAuthentication().getAuthorities().stream()
+                    .anyMatch(c -> Stream.of(roles).anyMatch(r -> c.getAuthority().equals(r)));
+        } catch (Exception ex) {
+            return false;
+        }
+    }
 }

@@ -12,4 +12,5 @@ public class FrontendIntegrationTestConfig extends IntegrationTestConfig {
     public FieldFactory fieldFactory() {
         return new FieldFactoryImpl();
     }
+
 }

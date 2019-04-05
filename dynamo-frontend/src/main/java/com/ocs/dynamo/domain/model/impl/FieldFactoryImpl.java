@@ -14,8 +14,6 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.stereotype.Service;
 import org.vaadin.teemu.switchui.Switch;
 
 import com.google.common.collect.Lists;
@@ -81,8 +79,6 @@ import com.vaadin.ui.TextField;
  * @author Bas Rutten
  *
  */
-@ConditionalOnMissingBean(name = " com.ocs.dynamo.domain.model.FieldFactory")
-@Service("fieldFactory")
 public class FieldFactoryImpl implements FieldFactory {
 
     private FieldFactory delegate;

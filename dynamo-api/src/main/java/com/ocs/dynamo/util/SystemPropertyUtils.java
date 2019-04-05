@@ -47,6 +47,9 @@ public final class SystemPropertyUtils {
 
     private static Properties properties = new Properties();
 
+    /**
+     * Load properties from file
+     */
     static {
         try {
             InputStream resourceAsStream = SystemPropertyUtils.class.getClassLoader().getResourceAsStream("application.properties");
@@ -64,7 +67,6 @@ public final class SystemPropertyUtils {
      * level.
      * 
      * @return
-     * @throws IOException
      */
     public static boolean allowListExport() {
         return getBooleanProperty(DynamoConstants.SP_ALLOW_LIST_EXPORT, null);
@@ -74,7 +76,8 @@ public final class SystemPropertyUtils {
      * Looks up the value of a boolean property by scanning the system properties
      * first and falling back to application.properties
      * 
-     * @param propertyName
+     * @param propertyName the name of the property
+     * @param defaultValue the default value
      * @return
      */
     private static Boolean getBooleanProperty(String propertyName, Boolean defaultValue) {
@@ -120,9 +123,8 @@ public final class SystemPropertyUtils {
     }
 
     /**
-     * Return the default format for formatting dates
      * 
-     * @return
+     * @return return the default format for formatting dates
      */
     public static String getDefaultDateFormat() {
         return getStringProperty(DynamoConstants.SP_DEFAULT_DATE_FORMAT, "dd-MM-yyyy");
@@ -137,27 +139,24 @@ public final class SystemPropertyUtils {
     }
 
     /**
-     * The default date/time format (dd-MM-yyyy HH:mm:ss)
      * 
-     * @return
+     * @return the default date/time format (dd-MM-yyyy HH:mm:ss)
      */
     public static String getDefaultDateTimeFormat() {
         return getStringProperty(DynamoConstants.SP_DEFAULT_DATETIME_FORMAT, "dd-MM-yyyy HH:mm:ss");
     }
 
     /**
-     * The default date/time format with time zone
      * 
-     * @return
+     * @return the default date/time format with time zone
      */
     public static String getDefaultDateTimeWithTimezoneFormat() {
         return getStringProperty(DynamoConstants.SP_DEFAULT_DATETIME_ZONE_FORMAT, "dd-MM-yyyy HH:mm:ssZ");
     }
 
     /**
-     * The default decimal precision
      * 
-     * @return
+     * @return the default decimal precision
      */
     public static int getDefaultDecimalPrecision() {
         return getIntProperty(DynamoConstants.SP_DECIMAL_PRECISION, DEFAULT_DECIMAL_PRECISION);
@@ -175,7 +174,7 @@ public final class SystemPropertyUtils {
      * look for a system property names ocs.default.false.representation.<lan> where
      * <lan> is the language code of the locale, e.g. "en", "nl"
      * 
-     * @param locale
+     * @param locale the locale
      * @return
      */
     public static String getDefaultFalseRepresentation(Locale locale) {

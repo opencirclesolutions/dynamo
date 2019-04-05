@@ -3,13 +3,12 @@ package com.ocs.dynamo.domain.model.impl;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.inject.Inject;
-
 import org.hibernate.annotations.Check;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.teemu.switchui.Switch;
 
 import com.ocs.dynamo.domain.AbstractEntity;
@@ -50,7 +49,7 @@ import com.vaadin.ui.TextField;
 
 public class FieldFactoryImplTest extends FrontendIntegrationTest {
 
-    @Inject
+    @Autowired
     private EntityModelFactory factory;
 
     private FieldFactory fieldFactory;

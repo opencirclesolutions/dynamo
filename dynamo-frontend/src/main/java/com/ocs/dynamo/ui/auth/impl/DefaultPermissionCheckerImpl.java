@@ -27,15 +27,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
-import org.springframework.stereotype.Service;
 
-import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.service.UserDetailsService;
 import com.ocs.dynamo.ui.auth.Authorized;
@@ -48,9 +43,6 @@ import com.vaadin.spring.annotation.SpringView;
  * 
  * @author bas.rutten
  */
-@Service
-@ConditionalOnMissingBean(name = "com.ocs.dynamo.ui.auth.PermissionChecker")
-@ConditionalOnProperty(name = DynamoConstants.SP_ENABLE_VIEW_AUTHENTICATION, havingValue = "true")
 public class DefaultPermissionCheckerImpl implements PermissionChecker {
 
     private static final Logger LOG = LoggerFactory.getLogger(DefaultPermissionCheckerImpl.class);
@@ -77,7 +69,7 @@ public class DefaultPermissionCheckerImpl implements PermissionChecker {
      * 
      * @param basePackage the base package to scan for views
      */
-    public DefaultPermissionCheckerImpl(@Value("${ocs.view.package:}") String basePackage) {
+    public DefaultPermissionCheckerImpl(String basePackage) {
         if (StringUtils.isEmpty(basePackage)) {
             throw new OCSRuntimeException("No base package configure. Please configure it using the ocs.view.package application property");
         }
@@ -103,17 +95,7 @@ public class DefaultPermissionCheckerImpl implements PermissionChecker {
     @Override
     public boolean isAccessAllowed(String viewName) {
         List<String> roles = permissions.get(viewName);
-        if (roles == null) {
-            // if no roles are defined on the view, everybody has access
-            return true;
-        } else {
-            for (String s : roles) {
-                if (userDetailsService.isUserInRole(s)) {
-                    return true;
-                }
-            }
-            return false;
-        }
+        return roles == null ? true : userDetailsService.isUserInRole(roles.toArray(new String[0]));
     }
 
     /**
