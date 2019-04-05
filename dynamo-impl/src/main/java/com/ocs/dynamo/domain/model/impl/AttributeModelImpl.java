@@ -48,845 +48,845 @@ import com.ocs.dynamo.util.SystemPropertyUtils;
  */
 public class AttributeModelImpl implements AttributeModel {
 
-	private Set<String> allowedExtensions = new HashSet<>();
+    private Set<String> allowedExtensions = new HashSet<>();
 
-	private boolean alreadyGrouped;
+    private boolean alreadyGrouped;
 
-	private AttributeType attributeType;
+    private AttributeType attributeType;
 
-	private final Map<String, String> cascadeAttributes = new HashMap<>();
+    private final Map<String, String> cascadeAttributes = new HashMap<>();
 
-	private Map<String, CascadeMode> cascadeModes = new HashMap<>();
+    private Map<String, CascadeMode> cascadeModes = new HashMap<>();
 
-	private CheckboxMode checkboxMode;
+    private CheckboxMode checkboxMode;
 
-	private String collectionTableFieldName;
+    private String collectionTableFieldName;
 
-	private String collectionTableName;
+    private String collectionTableName;
 
-	private boolean complexEditable;
+    private boolean complexEditable;
 
-	private boolean currency;
+    private boolean currency;
 
-	private AttributeDateType dateType;
+    private AttributeDateType dateType;
 
-	private Object defaultValue;
+    private Object defaultValue;
 
-	private String defaultDescription;
+    private String defaultDescription;
 
-	private String defaultFalseRepresentation;
+    private String defaultFalseRepresentation;
 
-	private String defaultTrueRepresentation;
+    private String defaultTrueRepresentation;
 
-	private String defaultPrompt;
+    private String defaultPrompt;
 
-	private String displayFormat;
+    private String displayFormat;
 
-	private String defaultDisplayName;
+    private String defaultDisplayName;
 
-	private EditableType editableType;
+    private EditableType editableType;
 
-	private boolean email;
+    private boolean email;
 
-	private EntityModel<?> entityModel;
+    private EntityModel<?> entityModel;
 
-	private float expansionFactor;
+    private float expansionFactor;
 
-	private String fileNameProperty;
+    private String fileNameProperty;
 
-	private boolean ignoreInSearchFilter;
+    private boolean ignoreInSearchFilter;
 
-	private final List<String> groupTogetherWith = new ArrayList<>();
+    private final List<String> groupTogetherWith = new ArrayList<>();
 
-	private boolean image;
+    private boolean image;
 
-	private boolean mainAttribute;
+    private boolean mainAttribute;
 
-	private Integer maxLength;
+    private Integer maxLength;
 
-	private Integer maxLengthInGrid;
+    private Integer maxLengthInGrid;
 
-	private Long maxValue;
+    private Long maxValue;
 
-	private Class<?> memberType;
+    private Class<?> memberType;
 
-	private Integer minLength;
+    private Integer minLength;
 
-	private Long minValue;
+    private Long minValue;
 
-	private boolean multipleSearch;
+    private boolean multipleSearch;
 
-	private String name;
+    private String name;
 
-	private boolean navigable;
+    private boolean navigable;
 
-	private EntityModel<?> nestedEntityModel;
+    private EntityModel<?> nestedEntityModel;
 
-	private NumberSelectMode numberSelectMode = NumberSelectMode.TEXTFIELD;
+    private NumberSelectMode numberSelectMode = NumberSelectMode.TEXTFIELD;
 
-	private Integer order;
+    private Integer order;
 
-	private boolean percentage;
+    private boolean percentage;
 
-	private int precision;
+    private int precision;
 
-	private boolean quickAddAllowed;
+    private boolean quickAddAllowed;
 
-	private String quickAddPropertyName;
+    private String quickAddPropertyName;
 
-	private String replacementSearchPath;
+    private String replacementSearchPath;
 
-	private String replacementSortPath;
+    private String replacementSortPath;
 
-	private boolean required;
+    private boolean required;
 
-	private boolean requiredForSearching;
+    private boolean requiredForSearching;
 
-	private Integer rows;
+    private Integer rows;
 
-	private boolean searchable;
+    private boolean searchable;
 
-	private boolean searchCaseSensitive;
+    private boolean searchCaseSensitive;
 
-	private boolean searchDateOnly;
+    private boolean searchDateOnly;
 
-	private boolean searchForExactValue;
+    private boolean searchForExactValue;
 
-	private boolean searchPrefixOnly;
+    private boolean searchPrefixOnly;
 
-	private AttributeSelectMode searchSelectMode;
+    private AttributeSelectMode searchSelectMode;
 
-	private AttributeSelectMode selectMode;
+    private AttributeSelectMode selectMode;
 
-	private boolean sortable;
+    private boolean sortable;
 
-	private String styles;
+    private String styles;
 
-	private AttributeTextFieldMode textFieldMode;
+    private AttributeTextFieldMode textFieldMode;
 
-	private boolean thousandsGrouping;
+    private boolean thousandsGrouping;
 
-	private Class<?> type;
+    private Class<?> type;
 
-	private boolean url;
+    private boolean url;
 
-	private boolean visible;
+    private boolean visible;
 
-	private boolean visibleInGrid;
+    private boolean visibleInGrid;
 
-	private boolean week;
+    private boolean week;
 
-	private Map<String, Optional<String>> displayNames = new ConcurrentHashMap<>();
+    private Map<String, Optional<String>> displayNames = new ConcurrentHashMap<>();
 
-	private Map<String, Optional<String>> prompts = new ConcurrentHashMap<>();
+    private Map<String, Optional<String>> prompts = new ConcurrentHashMap<>();
 
-	private Map<String, Optional<String>> descriptions = new ConcurrentHashMap<>();
+    private Map<String, Optional<String>> descriptions = new ConcurrentHashMap<>();
 
-	private Map<String, Optional<String>> trueRepresentations = new ConcurrentHashMap<>();
+    private Map<String, Optional<String>> trueRepresentations = new ConcurrentHashMap<>();
 
-	private Map<String, Optional<String>> falseRepresentations = new ConcurrentHashMap<>();
+    private Map<String, Optional<String>> falseRepresentations = new ConcurrentHashMap<>();
 
-	@Override
-	public void addCascade(final String cascadeTo, final String filterPath, final CascadeMode mode) {
-		this.cascadeAttributes.put(cascadeTo, filterPath);
-		this.cascadeModes.put(cascadeTo, mode);
-	}
+    @Override
+    public void addCascade(final String cascadeTo, final String filterPath, final CascadeMode mode) {
+        this.cascadeAttributes.put(cascadeTo, filterPath);
+        this.cascadeModes.put(cascadeTo, mode);
+    }
 
-	@Override
-	public void addGroupTogetherWith(final String path) {
-		groupTogetherWith.add(path);
-	}
+    @Override
+    public void addGroupTogetherWith(final String path) {
+        groupTogetherWith.add(path);
+    }
 
-	@Override
-	public int compareTo(final AttributeModel o) {
-		return this.getOrder() - o.getOrder();
-	}
+    @Override
+    public int compareTo(final AttributeModel o) {
+        return this.getOrder() - o.getOrder();
+    }
 
-	@Override
-	public String getActualSortPath() {
-		return replacementSortPath != null ? replacementSortPath : getPath();
-	}
+    @Override
+    public String getActualSortPath() {
+        return replacementSortPath != null ? replacementSortPath : getPath();
+    }
 
-	@Override
-	public Set<String> getAllowedExtensions() {
-		return allowedExtensions;
-	}
+    @Override
+    public Set<String> getAllowedExtensions() {
+        return allowedExtensions;
+    }
 
-	@Override
-	public AttributeType getAttributeType() {
-		return attributeType;
-	}
+    @Override
+    public AttributeType getAttributeType() {
+        return attributeType;
+    }
 
-	@Override
-	public Set<String> getCascadeAttributes() {
-		return cascadeAttributes.keySet();
-	}
+    @Override
+    public Set<String> getCascadeAttributes() {
+        return cascadeAttributes.keySet();
+    }
 
-	@Override
-	public String getCascadeFilterPath(final String cascadeTo) {
-		return this.cascadeAttributes.get(cascadeTo);
-	}
+    @Override
+    public String getCascadeFilterPath(final String cascadeTo) {
+        return this.cascadeAttributes.get(cascadeTo);
+    }
 
-	@Override
-	public CascadeMode getCascadeMode(final String cascadeTo) {
-		return this.cascadeModes.get(cascadeTo);
-	}
+    @Override
+    public CascadeMode getCascadeMode(final String cascadeTo) {
+        return this.cascadeModes.get(cascadeTo);
+    }
 
-	@Override
-	public CheckboxMode getCheckboxMode() {
-		return checkboxMode;
-	}
+    @Override
+    public CheckboxMode getCheckboxMode() {
+        return checkboxMode;
+    }
 
-	@Override
-	public String getCollectionTableFieldName() {
-		return collectionTableFieldName;
-	}
+    @Override
+    public String getCollectionTableFieldName() {
+        return collectionTableFieldName;
+    }
 
-	@Override
-	public String getCollectionTableName() {
-		return collectionTableName;
-	}
+    @Override
+    public String getCollectionTableName() {
+        return collectionTableName;
+    }
 
-	@Override
-	public AttributeDateType getDateType() {
-		return dateType;
-	}
+    @Override
+    public AttributeDateType getDateType() {
+        return dateType;
+    }
 
-	public String getDefaultDescription() {
-		return defaultDescription;
-	}
+    public String getDefaultDescription() {
+        return defaultDescription;
+    }
 
-	public String getDefaultDisplayName() {
-		return defaultDisplayName;
-	}
+    public String getDefaultDisplayName() {
+        return defaultDisplayName;
+    }
 
-	public String getDefaultTrueRepresentation() {
-		return defaultTrueRepresentation;
-	}
+    public String getDefaultTrueRepresentation() {
+        return defaultTrueRepresentation;
+    }
 
-	@Override
-	public Object getDefaultValue() {
-		return defaultValue;
-	}
+    @Override
+    public Object getDefaultValue() {
+        return defaultValue;
+    }
 
-	@Override
-	public String getDescription(Locale locale) {
-		// lookup description, falling back to overridden display name or otherwise to
-		// the default description
-		String displayNameNoDefault = lookupNoDefault(displayNames, locale, EntityModel.DISPLAY_NAME);
-		return lookup(descriptions, locale, EntityModel.DESCRIPTION, displayNameNoDefault, defaultDescription);
-	}
-
-	@Override
-	public String getDisplayFormat() {
-		return displayFormat;
-	}
-
-	@Override
-	public String getDisplayName(Locale locale) {
-		return lookup(displayNames, locale, EntityModel.DISPLAY_NAME, defaultDisplayName, null);
-	}
-
-	@Override
-	public EditableType getEditableType() {
-		return editableType;
-	}
-
-	@Override
-	public EntityModel<?> getEntityModel() {
-		return entityModel;
-	}
-
-	@Override
-	public float getExpansionFactor() {
-		return expansionFactor;
-	}
-
-	@Override
-	public String getFalseRepresentation(Locale locale) {
-		return lookup(falseRepresentations, locale, EntityModel.FALSE_REPRESENTATION,
-				SystemPropertyUtils.getDefaultFalseRepresentation(locale), defaultFalseRepresentation);
-	}
-
-	@Override
-	public String getFileNameProperty() {
-		return fileNameProperty;
-	}
-
-	@Override
-	public List<String> getGroupTogetherWith() {
-		return Collections.unmodifiableList(groupTogetherWith);
-	}
-
-	@Override
-	public Integer getMaxLength() {
-		return maxLength;
-	}
-
-	@Override
-	public Integer getMaxLengthInGrid() {
-		return maxLengthInGrid;
-	}
-
-	@Override
-	public Long getMaxValue() {
-		return maxValue;
-	}
-
-	@Override
-	public Class<?> getMemberType() {
-		return memberType;
-	}
-
-	@Override
-	public Integer getMinLength() {
-		return minLength;
-	}
-
-	@Override
-	public Long getMinValue() {
-		return minValue;
-	}
-
-	@Override
-	public String getName() {
-		return name;
-	}
-
-	@Override
-	public EntityModel<?> getNestedEntityModel() {
-		return nestedEntityModel;
-	}
-
-	@Override
-	public Class<?> getNormalizedType() {
-		return getMemberType() != null ? getMemberType() : getType();
-	}
-
-	@Override
-	public NumberSelectMode getNumberSelectMode() {
-		return numberSelectMode;
-	}
-
-	@Override
-	public Integer getOrder() {
-		return order;
-	}
-
-	@Override
-	public String getPath() {
-		final String reference = entityModel.getReference();
-		final int p = reference.indexOf('.');
-
-		if (p <= 0) {
-			return name;
-		} else {
-			return reference.substring(p + 1) + "." + name;
-		}
-	}
-
-	@Override
-	public int getPrecision() {
-		return precision;
-	}
-
-	@Override
-	public String getPrompt(Locale locale) {
-		if (!SystemPropertyUtils.useDefaultPromptValue()) {
-			return null;
-		}
-
-		// look up prompt. If not defined, look up display name
-		String displayNameNoDefafult = lookupNoDefault(displayNames, locale, EntityModel.DISPLAY_NAME);
-		return lookup(prompts, locale, EntityModel.PROMPT, displayNameNoDefafult, defaultPrompt);
-	}
-
-	@Override
-	public String getQuickAddPropertyName() {
-		return quickAddPropertyName;
-	}
-
-	@Override
-	public String getReplacementSearchPath() {
-		return replacementSearchPath;
-	}
-
-	public String getReplacementSortPath() {
-		return replacementSortPath;
-	}
-
-	public Integer getRows() {
-		return rows;
-	}
-
-	@Override
-	public AttributeSelectMode getSearchSelectMode() {
-		return searchSelectMode;
-	}
-
-	@Override
-	public AttributeSelectMode getSelectMode() {
-		return selectMode;
-	}
-
-	/**
-	 * @return the styles
-	 */
-	@Override
-	public String getStyles() {
-		return styles;
-	}
-
-	@Override
-	public AttributeTextFieldMode getTextFieldMode() {
-		return textFieldMode;
-	}
-
-	@Override
-	public String getTrueRepresentation(Locale locale) {
-		return lookup(trueRepresentations, locale, EntityModel.TRUE_REPRESENTATION,
-				SystemPropertyUtils.getDefaultTrueRepresentation(locale), defaultTrueRepresentation);
-	}
-
-	@Override
-	public Class<?> getType() {
-		return type;
-	}
-
-	@Override
-	public boolean isAlreadyGrouped() {
-		return alreadyGrouped;
-	}
-
-	@Override
-	public boolean isComplexEditable() {
-		return complexEditable;
-	}
-
-	@Override
-	public boolean isCurrency() {
-		return currency;
-	}
-
-	@Override
-	public boolean isEmail() {
-		return email;
-	}
-
-	@Override
-	public boolean isEmbedded() {
-		return AttributeType.EMBEDDED.equals(attributeType);
-	}
-
-	public boolean isIgnoreInSearchFilter() {
-		return ignoreInSearchFilter;
-	}
-
-	@Override
-	public boolean isImage() {
-		return image;
-	}
-
-	@Override
-	public boolean isMainAttribute() {
-		return mainAttribute;
-	}
-
-	@Override
-	public boolean isMultipleSearch() {
-		return multipleSearch;
-	}
-
-	@Override
-	public boolean isNavigable() {
-		return navigable;
-	}
-
-	@Override
-	public boolean isNumerical() {
-		return Number.class.isAssignableFrom(type);
-	}
-
-	@Override
-	public boolean isPercentage() {
-		return percentage;
-	}
-
-	@Override
-	public boolean isQuickAddAllowed() {
-		return quickAddAllowed;
-	}
-
-	@Override
-	public boolean isRequired() {
-		return required;
-	}
-
-	@Override
-	public boolean isRequiredForSearching() {
-		return requiredForSearching;
-	}
-
-	@Override
-	public boolean isSearchable() {
-		return searchable;
-	}
-
-	@Override
-	public boolean isSearchCaseSensitive() {
-		return searchCaseSensitive;
-	}
-
-	@Override
-	public boolean isSearchDateOnly() {
-		return searchDateOnly;
-	}
-
-	@Override
-	public boolean isSearchForExactValue() {
-		return searchForExactValue;
-	}
-
-	@Override
-	public boolean isSearchPrefixOnly() {
-		return searchPrefixOnly;
-	}
-
-	@Override
-	public boolean isSortable() {
-		return sortable;
-	}
-
-	@Override
-	public boolean isThousandsGrouping() {
-		return thousandsGrouping;
-	}
-
-	@Override
-	public boolean isUrl() {
-		return url;
-	}
-
-	@Override
-	public boolean isVisible() {
-		return visible;
-	}
-
-	@Override
-	public boolean isVisibleInGrid() {
-		return visibleInGrid;
-	}
-
-	@Override
-	public boolean isWeek() {
-		return week;
-	}
-
-	/**
-	 * 
-	 * @param source
-	 * @param locale
-	 * @param key
-	 * @param fallBack
-	 * @param secondFallBack
-	 * @return
-	 */
-	private String lookup(Map<String, Optional<String>> source, Locale locale, String key, String fallback,
-			String secondFallBack) {
-		if (!source.containsKey(locale.toString())) {
-			try {
-				ResourceBundle rb = ResourceBundle.getBundle("META-INF/entitymodel", locale);
-				String str = rb.getString(getEntityModel().getReference() + "." + getPath() + "." + key);
-				source.put(locale.toString(), Optional.ofNullable(str));
-			} catch (MissingResourceException ex) {
-				source.put(locale.toString(), Optional.empty());
-			}
-		}
-
-		Optional<String> optional = source.get(locale.toString());
-		return optional.orElse(fallback != null ? fallback : secondFallBack);
-	}
-
-	/**
-	 * Looks up a key from the message bundle, returning an empty optional if
-	 * nothing can be found
-	 * 
-	 * @param source
-	 * @param locale
-	 * @param key
-	 * @return
-	 */
-	private String lookupNoDefault(Map<String, Optional<String>> source, Locale locale, String key) {
-		if (!source.containsKey(locale.toString())) {
-			try {
-				ResourceBundle rb = ResourceBundle.getBundle("META-INF/entitymodel", locale);
-				String str = rb.getString(getEntityModel().getReference() + "." + getPath() + "." + key);
-				source.put(locale.toString(), Optional.ofNullable(str));
-			} catch (MissingResourceException ex) {
-				source.put(locale.toString(), Optional.empty());
-			}
-		}
-
-		Optional<String> optional = source.get(locale.toString());
-		return optional.orElse(null);
-	}
-
-	@Override
-	public void removeCascades() {
-		this.cascadeAttributes.clear();
-	}
-
-	public void setAllowedExtensions(Set<String> allowedExtensions) {
-		this.allowedExtensions = allowedExtensions;
-	}
-
-	public void setAlreadyGrouped(boolean alreadyGrouped) {
-		this.alreadyGrouped = alreadyGrouped;
-	}
-
-	public void setAttributeType(AttributeType attributeType) {
-		this.attributeType = attributeType;
-	}
-
-	public void setCheckboxMode(CheckboxMode checkboxMode) {
-		this.checkboxMode = checkboxMode;
-	}
-
-	public void setCollectionTableFieldName(String collectionTableFieldName) {
-		this.collectionTableFieldName = collectionTableFieldName;
-	}
-
-	public void setCollectionTableName(String collectionTableName) {
-		this.collectionTableName = collectionTableName;
-	}
-
-	public void setComplexEditable(boolean complexEditable) {
-		this.complexEditable = complexEditable;
-	}
-
-	public void setCurrency(boolean currency) {
-		this.currency = currency;
-	}
-
-	public void setDateType(AttributeDateType dateType) {
-		this.dateType = dateType;
-	}
-
-	public void setDefaultDescription(String defaultDescription) {
-		this.defaultDescription = defaultDescription;
-	}
-
-	public void setDefaultDisplayName(String defaultDisplayName) {
-		this.defaultDisplayName = defaultDisplayName;
-	}
-
-	public void setDefaultFalseRepresentation(String defaultFalseRepresentation) {
-		this.defaultFalseRepresentation = defaultFalseRepresentation;
-	}
-
-	public void setDefaultPrompt(String defaultPrompt) {
-		this.defaultPrompt = defaultPrompt;
-	}
-
-	public void setDefaultTrueRepresentation(String defaultTrueRepresentation) {
-		this.defaultTrueRepresentation = defaultTrueRepresentation;
-	}
-
-	public void setDefaultValue(Object defaultValue) {
-		this.defaultValue = defaultValue;
-	}
-
-	public void setDisplayFormat(String displayFormat) {
-		this.displayFormat = displayFormat;
-	}
-
-	public void setEditableType(EditableType editableType) {
-		this.editableType = editableType;
-	}
-
-	public void setEmail(boolean email) {
-		this.email = email;
-	}
-
-	public void setEntityModel(EntityModel<?> entityModel) {
-		this.entityModel = entityModel;
-	}
-
-	public void setExpansionFactor(float expansionFactor) {
-		this.expansionFactor = expansionFactor;
-	}
-
-	public void setFileNameProperty(String fileNameProperty) {
-		this.fileNameProperty = fileNameProperty;
-	}
-
-	public void setIgnoreInSearchFilter(boolean ignoreInSearchFilter) {
-		this.ignoreInSearchFilter = ignoreInSearchFilter;
-	}
-
-	public void setImage(boolean image) {
-		this.image = image;
-	}
-
-	@Override
-	public void setMainAttribute(boolean mainAttribute) {
-		this.mainAttribute = mainAttribute;
-	}
-
-	public void setMaxLength(Integer maxLength) {
-		this.maxLength = maxLength;
-	}
-
-	public void setMaxLengthInGrid(Integer maxLengthInGrid) {
-		this.maxLengthInGrid = maxLengthInGrid;
-	}
-
-	public void setMaxValue(Long maxValue) {
-		this.maxValue = maxValue;
-	}
-
-	public void setMemberType(Class<?> memberType) {
-		this.memberType = memberType;
-	}
-
-	public void setMinLength(Integer minLength) {
-		this.minLength = minLength;
-	}
-
-	public void setMinValue(Long minValue) {
-		this.minValue = minValue;
-	}
-
-	public void setMultipleSearch(boolean multipleSearch) {
-		this.multipleSearch = multipleSearch;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public void setNavigable(boolean navigable) {
-		this.navigable = navigable;
-	}
-
-	public void setNestedEntityModel(EntityModel<?> nestedEntityModel) {
-		this.nestedEntityModel = nestedEntityModel;
-	}
-
-	public void setNumberSelectMode(NumberSelectMode numberSelectMode) {
-		this.numberSelectMode = numberSelectMode;
-	}
-
-	public void setOrder(Integer order) {
-		this.order = order;
-	}
-
-	public void setPercentage(boolean percentage) {
-		this.percentage = percentage;
-	}
-
-	public void setPrecision(int precision) {
-		this.precision = precision;
-	}
-
-	public void setQuickAddAllowed(boolean quickAddAllowed) {
-		this.quickAddAllowed = quickAddAllowed;
-	}
-
-	public void setQuickAddPropertyName(String quickAddPropertyName) {
-		this.quickAddPropertyName = quickAddPropertyName;
-	}
-
-	public void setReplacementSearchPath(String replacementSearchPath) {
-		this.replacementSearchPath = replacementSearchPath;
-	}
-
-	public void setReplacementSortPath(String replacementSortPath) {
-		this.replacementSortPath = replacementSortPath;
-	}
-
-	public void setRequired(boolean required) {
-		this.required = required;
-	}
-
-	public void setRequiredForSearching(boolean requiredForSearching) {
-		this.requiredForSearching = requiredForSearching;
-	}
-
-	public void setRows(Integer rows) {
-		this.rows = rows;
-	}
-
-	public void setSearchable(boolean searchable) {
-		this.searchable = searchable;
-	}
-
-	public void setSearchCaseSensitive(boolean searchCaseSensitive) {
-		this.searchCaseSensitive = searchCaseSensitive;
-	}
-
-	public void setSearchDateOnly(boolean searchDateOnly) {
-		this.searchDateOnly = searchDateOnly;
-	}
-
-	public void setSearchForExactValue(boolean searchForExactValue) {
-		this.searchForExactValue = searchForExactValue;
-	}
-
-	public void setSearchPrefixOnly(boolean searchPrefixOnly) {
-		this.searchPrefixOnly = searchPrefixOnly;
-	}
-
-	public void setSearchSelectMode(AttributeSelectMode searchSelectMode) {
-		this.searchSelectMode = searchSelectMode;
-	}
-
-	public void setSelectMode(AttributeSelectMode selectMode) {
-		this.selectMode = selectMode;
-	}
-
-	public void setSortable(boolean sortable) {
-		this.sortable = sortable;
-	}
-
-	/**
-	 * @param styles the styles to set
-	 */
-	public void setStyles(String styles) {
-		this.styles = styles;
-	}
-
-	public void setTextFieldMode(AttributeTextFieldMode textFieldMode) {
-		this.textFieldMode = textFieldMode;
-	}
-
-	public void setThousandsGrouping(boolean thousandsGrouping) {
-		this.thousandsGrouping = thousandsGrouping;
-	}
-
-	public void setType(Class<?> type) {
-		this.type = type;
-	}
-
-	public void setUrl(boolean url) {
-		this.url = url;
-	}
-
-	public void setVisible(boolean visible) {
-		this.visible = visible;
-	}
-
-	public void setVisibleInGrid(boolean visibleInGrid) {
-		this.visibleInGrid = visibleInGrid;
-	}
-
-	public void setWeek(boolean week) {
-		this.week = week;
-	}
-
-	@Override
-	public String toString() {
-		return ReflectionToStringBuilder.toStringExclude(this, "entityModel");
-	}
+    @Override
+    public String getDescription(Locale locale) {
+        // lookup description, falling back to overridden display name or otherwise to
+        // the default description
+        String displayNameNoDefault = lookupNoDefault(displayNames, locale, EntityModel.DISPLAY_NAME);
+        return lookup(descriptions, locale, EntityModel.DESCRIPTION, displayNameNoDefault, defaultDescription);
+    }
+
+    @Override
+    public String getDisplayFormat() {
+        return displayFormat;
+    }
+
+    @Override
+    public String getDisplayName(Locale locale) {
+        return lookup(displayNames, locale, EntityModel.DISPLAY_NAME, defaultDisplayName, null);
+    }
+
+    @Override
+    public EditableType getEditableType() {
+        return editableType;
+    }
+
+    @Override
+    public EntityModel<?> getEntityModel() {
+        return entityModel;
+    }
+
+    @Override
+    public float getExpansionFactor() {
+        return expansionFactor;
+    }
+
+    @Override
+    public String getFalseRepresentation(Locale locale) {
+        return lookup(falseRepresentations, locale, EntityModel.FALSE_REPRESENTATION,
+                SystemPropertyUtils.getDefaultFalseRepresentation(locale), defaultFalseRepresentation);
+    }
+
+    @Override
+    public String getFileNameProperty() {
+        return fileNameProperty;
+    }
+
+    @Override
+    public List<String> getGroupTogetherWith() {
+        return Collections.unmodifiableList(groupTogetherWith);
+    }
+
+    @Override
+    public Integer getMaxLength() {
+        return maxLength;
+    }
+
+    @Override
+    public Integer getMaxLengthInGrid() {
+        return maxLengthInGrid;
+    }
+
+    @Override
+    public Long getMaxValue() {
+        return maxValue;
+    }
+
+    @Override
+    public Class<?> getMemberType() {
+        return memberType;
+    }
+
+    @Override
+    public Integer getMinLength() {
+        return minLength;
+    }
+
+    @Override
+    public Long getMinValue() {
+        return minValue;
+    }
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public EntityModel<?> getNestedEntityModel() {
+        return nestedEntityModel;
+    }
+
+    @Override
+    public Class<?> getNormalizedType() {
+        return getMemberType() != null ? getMemberType() : getType();
+    }
+
+    @Override
+    public NumberSelectMode getNumberSelectMode() {
+        return numberSelectMode;
+    }
+
+    @Override
+    public Integer getOrder() {
+        return order;
+    }
+
+    @Override
+    public String getPath() {
+        final String reference = entityModel.getReference();
+        final int p = reference.indexOf('.');
+
+        if (p <= 0) {
+            return name;
+        } else {
+            return reference.substring(p + 1) + "." + name;
+        }
+    }
+
+    @Override
+    public int getPrecision() {
+        return precision;
+    }
+
+    @Override
+    public String getPrompt(Locale locale) {
+        if (!SystemPropertyUtils.useDefaultPromptValue()) {
+            return null;
+        }
+
+        // look up prompt. If not defined, look up display name
+        String displayNameNoDefafult = lookupNoDefault(displayNames, locale, EntityModel.DISPLAY_NAME);
+        return lookup(prompts, locale, EntityModel.PROMPT, displayNameNoDefafult, defaultPrompt);
+    }
+
+    @Override
+    public String getQuickAddPropertyName() {
+        return quickAddPropertyName;
+    }
+
+    @Override
+    public String getReplacementSearchPath() {
+        return replacementSearchPath;
+    }
+
+    public String getReplacementSortPath() {
+        return replacementSortPath;
+    }
+
+    public Integer getRows() {
+        return rows;
+    }
+
+    @Override
+    public AttributeSelectMode getSearchSelectMode() {
+        return searchSelectMode;
+    }
+
+    @Override
+    public AttributeSelectMode getSelectMode() {
+        return selectMode;
+    }
+
+    /**
+     * @return the styles
+     */
+    @Override
+    public String getStyles() {
+        return styles;
+    }
+
+    @Override
+    public AttributeTextFieldMode getTextFieldMode() {
+        return textFieldMode;
+    }
+
+    @Override
+    public String getTrueRepresentation(Locale locale) {
+        return lookup(trueRepresentations, locale, EntityModel.TRUE_REPRESENTATION,
+                SystemPropertyUtils.getDefaultTrueRepresentation(locale), defaultTrueRepresentation);
+    }
+
+    @Override
+    public Class<?> getType() {
+        return type;
+    }
+
+    @Override
+    public boolean isAlreadyGrouped() {
+        return alreadyGrouped;
+    }
+
+    @Override
+    public boolean isComplexEditable() {
+        return complexEditable;
+    }
+
+    @Override
+    public boolean isCurrency() {
+        return currency;
+    }
+
+    @Override
+    public boolean isEmail() {
+        return email;
+    }
+
+    @Override
+    public boolean isEmbedded() {
+        return AttributeType.EMBEDDED.equals(attributeType);
+    }
+
+    public boolean isIgnoreInSearchFilter() {
+        return ignoreInSearchFilter;
+    }
+
+    @Override
+    public boolean isImage() {
+        return image;
+    }
+
+    @Override
+    public boolean isMainAttribute() {
+        return mainAttribute;
+    }
+
+    @Override
+    public boolean isMultipleSearch() {
+        return multipleSearch;
+    }
+
+    @Override
+    public boolean isNavigable() {
+        return navigable;
+    }
+
+    @Override
+    public boolean isNumerical() {
+        return Number.class.isAssignableFrom(type);
+    }
+
+    @Override
+    public boolean isPercentage() {
+        return percentage;
+    }
+
+    @Override
+    public boolean isQuickAddAllowed() {
+        return quickAddAllowed;
+    }
+
+    @Override
+    public boolean isRequired() {
+        return required;
+    }
+
+    @Override
+    public boolean isRequiredForSearching() {
+        return requiredForSearching;
+    }
+
+    @Override
+    public boolean isSearchable() {
+        return searchable;
+    }
+
+    @Override
+    public boolean isSearchCaseSensitive() {
+        return searchCaseSensitive;
+    }
+
+    @Override
+    public boolean isSearchDateOnly() {
+        return searchDateOnly;
+    }
+
+    @Override
+    public boolean isSearchForExactValue() {
+        return searchForExactValue;
+    }
+
+    @Override
+    public boolean isSearchPrefixOnly() {
+        return searchPrefixOnly;
+    }
+
+    @Override
+    public boolean isSortable() {
+        return sortable;
+    }
+
+    @Override
+    public boolean isThousandsGrouping() {
+        return thousandsGrouping;
+    }
+
+    @Override
+    public boolean isUrl() {
+        return url;
+    }
+
+    @Override
+    public boolean isVisible() {
+        return visible;
+    }
+
+    @Override
+    public boolean isVisibleInGrid() {
+        return visibleInGrid;
+    }
+
+    @Override
+    public boolean isWeek() {
+        return week;
+    }
+
+    /**
+     * Looks up the translations for a specified locale
+     * 
+     * @param source
+     * @param locale
+     * @param key
+     * @param fallBack
+     * @param secondFallBack
+     * @return
+     */
+    private String lookup(Map<String, Optional<String>> source, Locale locale, String key, String fallback, String secondFallBack) {
+        if (!source.containsKey(locale.toString())) {
+            try {
+                ResourceBundle rb = ResourceBundle.getBundle("META-INF/entitymodel", locale);
+                String str = rb.getString(getEntityModel().getReference() + "." + getPath() + "." + key);
+                source.put(locale.toString(), Optional.ofNullable(str));
+            } catch (MissingResourceException ex) {
+                source.put(locale.toString(), Optional.empty());
+            }
+        }
+
+        Optional<String> optional = source.get(locale.toString());
+        return optional.orElse(fallback != null ? fallback : secondFallBack);
+    }
+
+    /**
+     * Looks up a key from the message bundle, returning an empty optional if
+     * nothing can be found
+     * 
+     * @param source the cache
+     * @param locale the locale
+     * @param key    the message key
+     * @return
+     */
+    private String lookupNoDefault(Map<String, Optional<String>> source, Locale locale, String key) {
+        if (!source.containsKey(locale.toString())) {
+            try {
+                ResourceBundle rb = ResourceBundle.getBundle("META-INF/entitymodel", locale);
+                String str = rb.getString(getEntityModel().getReference() + "." + getPath() + "." + key);
+                source.put(locale.toString(), Optional.ofNullable(str));
+            } catch (MissingResourceException ex) {
+                source.put(locale.toString(), Optional.empty());
+            }
+        }
+
+        Optional<String> optional = source.get(locale.toString());
+        return optional.orElse(null);
+    }
+
+    @Override
+    public void removeCascades() {
+        this.cascadeAttributes.clear();
+    }
+
+    public void setAllowedExtensions(Set<String> allowedExtensions) {
+        this.allowedExtensions = allowedExtensions;
+    }
+
+    public void setAlreadyGrouped(boolean alreadyGrouped) {
+        this.alreadyGrouped = alreadyGrouped;
+    }
+
+    public void setAttributeType(AttributeType attributeType) {
+        this.attributeType = attributeType;
+    }
+
+    public void setCheckboxMode(CheckboxMode checkboxMode) {
+        this.checkboxMode = checkboxMode;
+    }
+
+    public void setCollectionTableFieldName(String collectionTableFieldName) {
+        this.collectionTableFieldName = collectionTableFieldName;
+    }
+
+    public void setCollectionTableName(String collectionTableName) {
+        this.collectionTableName = collectionTableName;
+    }
+
+    public void setComplexEditable(boolean complexEditable) {
+        this.complexEditable = complexEditable;
+    }
+
+    public void setCurrency(boolean currency) {
+        this.currency = currency;
+    }
+
+    public void setDateType(AttributeDateType dateType) {
+        this.dateType = dateType;
+    }
+
+    public void setDefaultDescription(String defaultDescription) {
+        this.defaultDescription = defaultDescription;
+    }
+
+    public void setDefaultDisplayName(String defaultDisplayName) {
+        this.defaultDisplayName = defaultDisplayName;
+    }
+
+    public void setDefaultFalseRepresentation(String defaultFalseRepresentation) {
+        this.defaultFalseRepresentation = defaultFalseRepresentation;
+    }
+
+    public void setDefaultPrompt(String defaultPrompt) {
+        this.defaultPrompt = defaultPrompt;
+    }
+
+    public void setDefaultTrueRepresentation(String defaultTrueRepresentation) {
+        this.defaultTrueRepresentation = defaultTrueRepresentation;
+    }
+
+    public void setDefaultValue(Object defaultValue) {
+        this.defaultValue = defaultValue;
+    }
+
+    public void setDisplayFormat(String displayFormat) {
+        this.displayFormat = displayFormat;
+    }
+
+    public void setEditableType(EditableType editableType) {
+        this.editableType = editableType;
+    }
+
+    public void setEmail(boolean email) {
+        this.email = email;
+    }
+
+    public void setEntityModel(EntityModel<?> entityModel) {
+        this.entityModel = entityModel;
+    }
+
+    public void setExpansionFactor(float expansionFactor) {
+        this.expansionFactor = expansionFactor;
+    }
+
+    public void setFileNameProperty(String fileNameProperty) {
+        this.fileNameProperty = fileNameProperty;
+    }
+
+    public void setIgnoreInSearchFilter(boolean ignoreInSearchFilter) {
+        this.ignoreInSearchFilter = ignoreInSearchFilter;
+    }
+
+    public void setImage(boolean image) {
+        this.image = image;
+    }
+
+    @Override
+    public void setMainAttribute(boolean mainAttribute) {
+        this.mainAttribute = mainAttribute;
+    }
+
+    public void setMaxLength(Integer maxLength) {
+        this.maxLength = maxLength;
+    }
+
+    public void setMaxLengthInGrid(Integer maxLengthInGrid) {
+        this.maxLengthInGrid = maxLengthInGrid;
+    }
+
+    public void setMaxValue(Long maxValue) {
+        this.maxValue = maxValue;
+    }
+
+    public void setMemberType(Class<?> memberType) {
+        this.memberType = memberType;
+    }
+
+    public void setMinLength(Integer minLength) {
+        this.minLength = minLength;
+    }
+
+    public void setMinValue(Long minValue) {
+        this.minValue = minValue;
+    }
+
+    public void setMultipleSearch(boolean multipleSearch) {
+        this.multipleSearch = multipleSearch;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setNavigable(boolean navigable) {
+        this.navigable = navigable;
+    }
+
+    public void setNestedEntityModel(EntityModel<?> nestedEntityModel) {
+        this.nestedEntityModel = nestedEntityModel;
+    }
+
+    public void setNumberSelectMode(NumberSelectMode numberSelectMode) {
+        this.numberSelectMode = numberSelectMode;
+    }
+
+    public void setOrder(Integer order) {
+        this.order = order;
+    }
+
+    public void setPercentage(boolean percentage) {
+        this.percentage = percentage;
+    }
+
+    public void setPrecision(int precision) {
+        this.precision = precision;
+    }
+
+    public void setQuickAddAllowed(boolean quickAddAllowed) {
+        this.quickAddAllowed = quickAddAllowed;
+    }
+
+    public void setQuickAddPropertyName(String quickAddPropertyName) {
+        this.quickAddPropertyName = quickAddPropertyName;
+    }
+
+    public void setReplacementSearchPath(String replacementSearchPath) {
+        this.replacementSearchPath = replacementSearchPath;
+    }
+
+    public void setReplacementSortPath(String replacementSortPath) {
+        this.replacementSortPath = replacementSortPath;
+    }
+
+    public void setRequired(boolean required) {
+        this.required = required;
+    }
+
+    public void setRequiredForSearching(boolean requiredForSearching) {
+        this.requiredForSearching = requiredForSearching;
+    }
+
+    public void setRows(Integer rows) {
+        this.rows = rows;
+    }
+
+    public void setSearchable(boolean searchable) {
+        this.searchable = searchable;
+    }
+
+    public void setSearchCaseSensitive(boolean searchCaseSensitive) {
+        this.searchCaseSensitive = searchCaseSensitive;
+    }
+
+    public void setSearchDateOnly(boolean searchDateOnly) {
+        this.searchDateOnly = searchDateOnly;
+    }
+
+    public void setSearchForExactValue(boolean searchForExactValue) {
+        this.searchForExactValue = searchForExactValue;
+    }
+
+    public void setSearchPrefixOnly(boolean searchPrefixOnly) {
+        this.searchPrefixOnly = searchPrefixOnly;
+    }
+
+    public void setSearchSelectMode(AttributeSelectMode searchSelectMode) {
+        this.searchSelectMode = searchSelectMode;
+    }
+
+    public void setSelectMode(AttributeSelectMode selectMode) {
+        this.selectMode = selectMode;
+    }
+
+    public void setSortable(boolean sortable) {
+        this.sortable = sortable;
+    }
+
+    /**
+     * @param styles the styles to set
+     */
+    public void setStyles(String styles) {
+        this.styles = styles;
+    }
+
+    public void setTextFieldMode(AttributeTextFieldMode textFieldMode) {
+        this.textFieldMode = textFieldMode;
+    }
+
+    public void setThousandsGrouping(boolean thousandsGrouping) {
+        this.thousandsGrouping = thousandsGrouping;
+    }
+
+    public void setType(Class<?> type) {
+        this.type = type;
+    }
+
+    public void setUrl(boolean url) {
+        this.url = url;
+    }
+
+    public void setVisible(boolean visible) {
+        this.visible = visible;
+    }
+
+    public void setVisibleInGrid(boolean visibleInGrid) {
+        this.visibleInGrid = visibleInGrid;
+    }
+
+    public void setWeek(boolean week) {
+        this.week = week;
+    }
+
+    @Override
+    public String toString() {
+        return ReflectionToStringBuilder.toStringExclude(this, "entityModel");
+    }
 
 }

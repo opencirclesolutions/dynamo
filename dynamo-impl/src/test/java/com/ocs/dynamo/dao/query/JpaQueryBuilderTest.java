@@ -43,9 +43,9 @@ import com.ocs.dynamo.filter.Like;
 import com.ocs.dynamo.filter.Modulo;
 import com.ocs.dynamo.filter.Not;
 import com.ocs.dynamo.filter.Or;
-import com.ocs.dynamo.test.BaseIntegrationTest;
+import com.ocs.dynamo.test.BackendIntegrationTest;
 
-public class JpaQueryBuilderTest extends BaseIntegrationTest {
+public class JpaQueryBuilderTest extends BackendIntegrationTest {
 
 	@PersistenceContext
 	private EntityManager entityManager;

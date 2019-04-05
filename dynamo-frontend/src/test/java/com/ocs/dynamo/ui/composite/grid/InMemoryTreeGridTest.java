@@ -15,11 +15,11 @@ import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.TestEntity2;
 import com.ocs.dynamo.service.TestEntity2Service;
 import com.ocs.dynamo.service.TestEntityService;
-import com.ocs.dynamo.test.BaseIntegrationTest;
+import com.ocs.dynamo.ui.FrontendIntegrationTest;
 import com.ocs.dynamo.utils.ClassUtils;
 import com.vaadin.data.provider.TreeDataProvider;
 
-public class InMemoryTreeGridTest extends BaseIntegrationTest {
+public class InMemoryTreeGridTest extends FrontendIntegrationTest {
 
 	@Inject
 	private TestEntityService testEntityService;

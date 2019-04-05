@@ -14,11 +14,11 @@ import com.ocs.dynamo.domain.TestEntity2;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.service.TestEntity2Service;
 import com.ocs.dynamo.service.TestEntityService;
-import com.ocs.dynamo.test.BaseIntegrationTest;
+import com.ocs.dynamo.ui.FrontendIntegrationTest;
 import com.vaadin.data.provider.SortOrder;
 import com.vaadin.shared.data.sort.SortDirection;
 
-public class FixedSplitLayoutTest extends BaseIntegrationTest {
+public class FixedSplitLayoutTest extends FrontendIntegrationTest {
 
 	@Inject
 	private EntityModelFactory entityModelFactory;

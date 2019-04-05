@@ -22,13 +22,9 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.SpringBootDependencyInjectionTestExecutionListener;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.context.web.ServletTestExecutionListener;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
@@ -36,10 +32,13 @@ import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import com.ocs.dynamo.constants.DynamoConstants;
 
+/**
+ * Base class for integration tests using Spring Boot
+ * @author Bas Rutten
+ *
+ */
 @RunWith(SpringRunner.class)
 @TestPropertySource(value = "classpath:application-test.properties")
-@TestExecutionListeners(listeners = { SpringBootDependencyInjectionTestExecutionListener.class, ServletTestExecutionListener.class })
-@DataJpaTest
 public abstract class BaseIntegrationTest extends AbstractTransactionalJUnit4SpringContextTests {
 
     private static final Logger LOG = LoggerFactory.getLogger(BaseIntegrationTest.class);

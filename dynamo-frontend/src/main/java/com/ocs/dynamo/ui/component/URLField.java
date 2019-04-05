@@ -36,128 +36,143 @@ import com.vaadin.ui.TextField;
  */
 public class URLField extends CustomField<String> {
 
-	private static final long serialVersionUID = -1899451186343723434L;
+    private static final long serialVersionUID = -1899451186343723434L;
 
-	private AttributeModel attributeModel;
+    /**
+     * The attribute model
+     */
+    private AttributeModel attributeModel;
 
-	private HorizontalLayout bar;
+    /**
+     * Horizontal wrapper layout
+     */
+    private HorizontalLayout bar;
 
-	private boolean editable;
+    /**
+     * Whether the field is in editable mode
+     */
+    private boolean editable;
 
-	private Link link;
+    /**
+     * The clickable link
+     */
+    private Link link;
 
-	private Layout main;
+    private Layout main;
 
-	private TextField textField;
+    /**
+     * The text field for editing
+     */
+    private TextField textField;
 
-	/**
-	 * Constructor
-	 * 
-	 * @param textField      the text field that this component wraps around
-	 * @param attributeModel the attribute model used to construct the compoent
-	 * @param editable       whether to display the field in editable mode
-	 */
-	public URLField(TextField textField, AttributeModel attributeModel, boolean editable) {
-		this.attributeModel = attributeModel;
-		this.textField = textField;
-		this.editable = editable;
-		textField.addValueChangeListener(event -> setValue(event.getValue()));
-	}
+    /**
+     * Constructor
+     * 
+     * @param textField      the text field that this component wraps around
+     * @param attributeModel the attribute model used to construct the compoent
+     * @param editable       whether to display the field in editable mode
+     */
+    public URLField(TextField textField, AttributeModel attributeModel, boolean editable) {
+        this.attributeModel = attributeModel;
+        this.textField = textField;
+        this.editable = editable;
+        textField.addValueChangeListener(event -> setValue(event.getValue()));
+    }
 
-	protected Link getLink() {
-		return link;
-	}
+    protected Link getLink() {
+        return link;
+    }
 
-	public TextField getTextField() {
-		return textField;
-	}
+    public TextField getTextField() {
+        return textField;
+    }
 
-	@Override
-	protected Component initContent() {
-		main = new DefaultHorizontalLayout(false, false, true);
-		main.setSizeFull();
-		setCaption(attributeModel.getDisplayName(VaadinUtils.getLocale()));
+    @Override
+    protected Component initContent() {
+        main = new DefaultHorizontalLayout(false, false, true);
+        main.setSizeFull();
+        setCaption(attributeModel.getDisplayName(VaadinUtils.getLocale()));
 
-		bar = new DefaultHorizontalLayout(false, true, true);
-		updateLink(getValue());
-		setMode();
-		return main;
-	}
+        bar = new DefaultHorizontalLayout(false, true, true);
+        updateLink(getValue());
+        setMode();
+        return main;
+    }
 
-	public boolean isEditable() {
-		return editable;
-	}
+    public boolean isEditable() {
+        return editable;
+    }
 
-	public void setEditable(boolean editable) {
-		this.editable = editable;
-		setMode();
-	}
+    public void setEditable(boolean editable) {
+        this.editable = editable;
+        setMode();
+    }
 
-	@Override
-	protected void doSetValue(String value) {
-		updateLink(value);
-		if (value == null) {
-			textField.clear();
-		} else {
-			textField.setValue(value);
-		}
-	}
+    @Override
+    protected void doSetValue(String value) {
+        updateLink(value);
+        if (value == null) {
+            textField.clear();
+        } else {
+            textField.setValue(value);
+        }
+    }
 
-	/**
-	 * Sets the correct mode (read only or editable)
-	 */
-	private void setMode() {
-		if (main != null) {
-			// display different component depending on mode
-			if (editable) {
-				main.replaceComponent(bar, textField);
-			} else {
-				main.replaceComponent(textField, bar);
-			}
-		}
-	}
+    /**
+     * Sets the correct mode (read only or editable)
+     */
+    private void setMode() {
+        if (main != null) {
+            // display different component depending on mode
+            if (editable) {
+                main.replaceComponent(bar, textField);
+            } else {
+                main.replaceComponent(textField, bar);
+            }
+        }
+    }
 
-	@Override
-	public void setValue(String newValue) {
-		super.setValue(newValue);
-		updateLink(newValue);
-		textField.setValue(newValue);
-	}
+    @Override
+    public void setValue(String newValue) {
+        super.setValue(newValue);
+        updateLink(newValue);
+        textField.setValue(newValue);
+    }
 
-	/**
-	 * Updates the field value - renders a clickable URL if the field value is not
-	 * empty
-	 * 
-	 * @param value
-	 */
-	private void updateLink(String value) {
-		if (bar != null) {
-			bar.removeAllComponents();
-			if (!StringUtils.isEmpty(value)) {
-				String temp = com.ocs.dynamo.utils.StringUtils.prependProtocol(value);
-				link = new Link(temp, new ExternalResource(temp), "_blank", 0, 0, BorderStyle.DEFAULT);
-				bar.addComponent(link);
-			} else {
-				link = null;
-			}
-		}
-	}
+    /**
+     * Updates the field value - renders a clickable URL if the field value is not
+     * empty
+     * 
+     * @param value
+     */
+    private void updateLink(String value) {
+        if (bar != null) {
+            bar.removeAllComponents();
+            if (!StringUtils.isEmpty(value)) {
+                String temp = com.ocs.dynamo.utils.StringUtils.prependProtocol(value);
+                link = new Link(temp, new ExternalResource(temp), "_blank", 0, 0, BorderStyle.DEFAULT);
+                bar.addComponent(link);
+            } else {
+                link = null;
+            }
+        }
+    }
 
-	@Override
-	public String getValue() {
-		return textField.getValue();
-	}
+    @Override
+    public String getValue() {
+        return textField.getValue();
+    }
 
-	@Override
-	public Registration addValueChangeListener(final ValueChangeListener<String> listener) {
-		return textField.addValueChangeListener(listener);
-	}
+    @Override
+    public Registration addValueChangeListener(final ValueChangeListener<String> listener) {
+        return textField.addValueChangeListener(listener);
+    }
 
-	@Override
-	public void setComponentError(ErrorMessage componentError) {
-		if (textField != null) {
-			textField.setComponentError(componentError);
-		}
-	}
+    @Override
+    public void setComponentError(ErrorMessage componentError) {
+        if (textField != null) {
+            textField.setComponentError(componentError);
+        }
+    }
 
 }

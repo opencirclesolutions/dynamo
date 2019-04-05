@@ -14,6 +14,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.TestEntity.TestEnum;
@@ -21,11 +22,13 @@ import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.domain.model.impl.EntityModelFactoryImpl;
 import com.ocs.dynamo.service.TestEntityService;
 import com.ocs.dynamo.ui.FrontendIntegrationTest;
+import com.ocs.dynamo.ui.FrontendIntegrationTestConfig;
 import com.ocs.dynamo.ui.composite.export.impl.ModelBasedCsvExportTemplate;
 import com.ocs.dynamo.ui.composite.export.impl.ModelBasedExcelExportTemplate;
 import com.ocs.dynamo.ui.composite.type.ExportMode;
 import com.ocs.dynamo.utils.DateUtils;
 
+@SpringBootTest(classes = FrontendIntegrationTestConfig.class)
 public class ModelBasedExportTemplateTest extends FrontendIntegrationTest {
 
     private EntityModelFactory entityModelFactory = new EntityModelFactoryImpl();

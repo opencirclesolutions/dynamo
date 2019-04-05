@@ -14,6 +14,7 @@ import com.ocs.dynamo.filter.EqualsPredicate;
 import com.ocs.dynamo.service.TestEntity2Service;
 import com.ocs.dynamo.service.TestEntityService;
 import com.ocs.dynamo.test.BaseIntegrationTest;
+import com.ocs.dynamo.ui.FrontendIntegrationTest;
 import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
 import com.ocs.dynamo.ui.composite.type.ScreenMode;
 import com.ocs.dynamo.ui.provider.QueryType;
@@ -21,7 +22,7 @@ import com.vaadin.data.provider.SortOrder;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.TextField;
 
-public class ServiceBasedSplitLayoutTest extends BaseIntegrationTest {
+public class ServiceBasedSplitLayoutTest extends FrontendIntegrationTest {
 
 	@Inject
 	private EntityModelFactory entityModelFactory;

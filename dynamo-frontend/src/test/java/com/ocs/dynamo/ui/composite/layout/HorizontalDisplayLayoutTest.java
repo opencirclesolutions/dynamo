@@ -9,11 +9,11 @@ import org.junit.Test;
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.service.TestEntityService;
-import com.ocs.dynamo.test.BaseIntegrationTest;
+import com.ocs.dynamo.ui.FrontendIntegrationTest;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 
-public class HorizontalDisplayLayoutTest extends BaseIntegrationTest {
+public class HorizontalDisplayLayoutTest extends FrontendIntegrationTest {
 
     @Inject
     private EntityModelFactory entityModelFactory;

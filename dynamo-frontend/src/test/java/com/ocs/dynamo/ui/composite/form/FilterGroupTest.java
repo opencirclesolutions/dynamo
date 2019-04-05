@@ -16,12 +16,13 @@ import com.ocs.dynamo.filter.EqualsPredicate;
 import com.ocs.dynamo.filter.GreaterOrEqualPredicate;
 import com.ocs.dynamo.filter.SimpleStringPredicate;
 import com.ocs.dynamo.test.BaseIntegrationTest;
+import com.ocs.dynamo.ui.FrontendIntegrationTest;
 import com.ocs.dynamo.ui.composite.form.ModelBasedSearchForm.FilterType;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Slider;
 import com.vaadin.ui.TextField;
 
-public class FilterGroupTest extends BaseIntegrationTest {
+public class FilterGroupTest extends FrontendIntegrationTest {
 
 	@Autowired
 	private EntityModelFactory emf;

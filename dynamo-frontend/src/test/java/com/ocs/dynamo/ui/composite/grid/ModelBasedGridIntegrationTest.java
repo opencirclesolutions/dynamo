@@ -15,6 +15,7 @@ import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.filter.EqualsPredicate;
 import com.ocs.dynamo.service.TestEntityService;
 import com.ocs.dynamo.test.BaseIntegrationTest;
+import com.ocs.dynamo.ui.FrontendIntegrationTest;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.composite.type.GridEditMode;
 import com.ocs.dynamo.ui.provider.IdBasedDataProvider;
@@ -25,7 +26,7 @@ import com.vaadin.data.provider.SortOrder;
 import com.vaadin.server.SerializablePredicate;
 import com.vaadin.shared.data.sort.SortDirection;
 
-public class ModelBasedGridIntegrationTest extends BaseIntegrationTest {
+public class ModelBasedGridIntegrationTest extends FrontendIntegrationTest {
 
 	@Inject
 	private TestEntityService testEntityService;

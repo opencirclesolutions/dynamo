@@ -86,7 +86,6 @@
 		<module>dynamo-frontend-export</module>
 		<module>dynamo-envers</module>
 		<module>dynamo-envers-frontend</module>
-
 		<module>dynamo-functional-domain-frontend</module>
 	</modules>
 	<properties>
@@ -118,7 +117,7 @@
 		<javax.servlet.api.version>4.0.0</javax.servlet.api.version>
 		<javax.validation.api.version>2.0.1.Final</javax.validation.api.version>
 		<aspectj.version>1.9.2</aspectj.version>
-		<spring.boot.version>1.4.7.RELEASE</spring.boot.version>
+		<spring.boot.version>2.1.3.RELEASE</spring.boot.version>
 		<!-- Maven plugin versions. -->
 		<org.apache.maven.plugins.compiler.version>3.3</org.apache.maven.plugins.compiler.version>
 		<org.apache.maven.plugins.jar.version>3.0.2</org.apache.maven.plugins.jar.version>

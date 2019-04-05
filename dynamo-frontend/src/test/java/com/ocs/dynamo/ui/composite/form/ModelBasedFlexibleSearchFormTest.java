@@ -18,14 +18,14 @@ import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.filter.FlexibleFilterDefinition;
 import com.ocs.dynamo.service.TestEntityService;
-import com.ocs.dynamo.test.BaseIntegrationTest;
+import com.ocs.dynamo.ui.FrontendIntegrationTest;
 import com.ocs.dynamo.ui.composite.grid.ServiceBasedGridWrapper;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.composite.type.FlexibleFilterType;
 import com.ocs.dynamo.ui.provider.QueryType;
 import com.vaadin.server.SerializablePredicate;
 
-public class ModelBasedFlexibleSearchFormTest extends BaseIntegrationTest {
+public class ModelBasedFlexibleSearchFormTest extends FrontendIntegrationTest {
 
 	@Inject
 	private TestEntityService testEntityService;

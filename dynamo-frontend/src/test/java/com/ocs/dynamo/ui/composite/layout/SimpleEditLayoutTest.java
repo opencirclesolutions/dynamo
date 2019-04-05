@@ -1,11 +1,20 @@
 package com.ocs.dynamo.ui.composite.layout;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.inject.Inject;
+
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.filter.EqualsPredicate;
 import com.ocs.dynamo.service.TestEntityService;
-import com.ocs.dynamo.test.BaseIntegrationTest;
+import com.ocs.dynamo.ui.FrontendIntegrationTest;
 import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
 import com.ocs.dynamo.ui.composite.type.AttributeGroupMode;
 import com.vaadin.data.HasValue;
@@ -14,15 +23,8 @@ import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.HasComponents;
 import com.vaadin.ui.HorizontalLayout;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
 
-import javax.inject.Inject;
-import java.util.HashMap;
-import java.util.Map;
-
-public class SimpleEditLayoutTest extends BaseIntegrationTest {
+public class SimpleEditLayoutTest extends FrontendIntegrationTest {
 
 	@Inject
 	private EntityModelFactory entityModelFactory;

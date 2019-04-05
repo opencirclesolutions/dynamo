@@ -1,23 +1,25 @@
 package com.ocs.dynamo.functional.dao;
 
-import com.ocs.dynamo.functional.domain.Parameter;
-import com.ocs.dynamo.functional.domain.ParameterType;
-import com.ocs.dynamo.test.BaseIntegrationTest;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import java.util.List;
+import java.util.Set;
 
 import javax.inject.Inject;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
-import java.util.List;
-import java.util.Set;
+
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
+import com.ocs.dynamo.functional.domain.Parameter;
+import com.ocs.dynamo.functional.domain.ParameterType;
+import com.ocs.dynamo.test.BackendIntegrationTest;
 
 /**
  * Created by R.E.M. Claassen on 6-4-2017.
  */
-public class ParameterDaoTest extends BaseIntegrationTest {
+public class ParameterDaoTest extends BackendIntegrationTest {
 
 	@Inject
 	private ParameterDao parameterDao;

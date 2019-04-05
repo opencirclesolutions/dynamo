@@ -29,20 +29,29 @@ import com.ocs.dynamo.functional.domain.DomainParent;
  */
 public interface DomainDao extends BaseDao<Integer, Domain> {
 
-	/**
-	 * Returns the children for a certain parent
-	 * 
-	 * @param parent
-	 * @return the children for the given parent
-	 */
-	<C extends DomainChild<C, P>, P extends DomainParent<C, P>> List<C> findChildren(P parent);
+    /**
+     * Returns the children for a certain parent
+     * 
+     * @param parent
+     * @return the children for the given parent
+     */
+    <C extends DomainChild<C, P>, P extends DomainParent<C, P>> List<C> findChildren(P parent);
 
-	/**
-	 * Returns all entities for of the specified type
-	 * 
-	 * @param type
-	 *            The desired type
-	 * @return All entities of given type
-	 */
-	<D extends Domain> List<D> findAllByType(Class<D> type);
+    /**
+     * 
+     * @param type
+     * @return
+     */
+    <D extends Domain> List<D> findAllByType(Class<D> type);
+
+    /**
+     * Finds an object based on a unique property value
+     * 
+     * @param propertyName  the name of the property
+     * @param value         the desired value of the property
+     * @param caseSensitive whether the match is case sensitive
+     * @return
+     */
+    <D extends Domain> D findByTypeAndUniqueProperty(Class<D> type, String propertyName, Object value, boolean caseSensitive);
+
 }

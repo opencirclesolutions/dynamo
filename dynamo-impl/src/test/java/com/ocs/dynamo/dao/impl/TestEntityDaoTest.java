@@ -22,10 +22,7 @@ import javax.inject.Inject;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.boot.test.autoconfigure.SpringBootDependencyInjectionTestExecutionListener;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.web.ServletTestExecutionListener;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.collect.Lists;
@@ -39,7 +36,7 @@ import com.ocs.dynamo.filter.And;
 import com.ocs.dynamo.filter.Compare;
 import com.ocs.dynamo.filter.Filter;
 import com.ocs.dynamo.filter.In;
-import com.ocs.dynamo.test.BaseIntegrationTest;
+import com.ocs.dynamo.test.BackendIntegrationTest;
 import com.ocs.dynamo.utils.DateUtils;
 
 /**
@@ -48,8 +45,7 @@ import com.ocs.dynamo.utils.DateUtils;
  * @author bas.rutten
  */
 @DataJpaTest
-@TestExecutionListeners(listeners = { SpringBootDependencyInjectionTestExecutionListener.class, ServletTestExecutionListener.class })
-public class TestEntityDaoTest extends BaseIntegrationTest {
+public class TestEntityDaoTest extends BackendIntegrationTest {
 
     @Inject
     TestEntityDao dao;

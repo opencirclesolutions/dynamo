@@ -8,14 +8,14 @@ import org.junit.Test;
 
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.service.TestEntityService;
-import com.ocs.dynamo.test.BaseIntegrationTest;
+import com.ocs.dynamo.ui.FrontendIntegrationTest;
 import com.ocs.dynamo.ui.Reloadable;
 import com.vaadin.server.Resource;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
 
-public class LazyTabLayoutTest extends BaseIntegrationTest {
+public class LazyTabLayoutTest extends FrontendIntegrationTest {
 
 	@Inject
 	private TestEntityService testEntityService;

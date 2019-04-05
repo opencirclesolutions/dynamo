@@ -19,12 +19,12 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.ocs.dynamo.constants.DynamoConstants;
-import com.ocs.dynamo.test.BaseIntegrationTest;
+import com.ocs.dynamo.ui.FrontendIntegrationTest;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.MenuItem;
 
-public class MenuServiceTest extends BaseIntegrationTest {
+public class MenuServiceTest extends FrontendIntegrationTest {
 
     @Autowired
     private MenuService menuService;

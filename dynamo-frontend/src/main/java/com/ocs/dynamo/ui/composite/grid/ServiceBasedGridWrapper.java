@@ -28,6 +28,7 @@ import com.ocs.dynamo.ui.provider.BaseDataProvider;
 import com.ocs.dynamo.ui.provider.IdBasedDataProvider;
 import com.ocs.dynamo.ui.provider.PagingDataProvider;
 import com.ocs.dynamo.ui.provider.QueryType;
+import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.GridSortOrder;
 import com.vaadin.data.provider.SortOrder;
@@ -41,111 +42,111 @@ import com.vaadin.ui.UI;
  * @param <ID> type of the primary key of the entity
  * @param <T> type of the entity
  */
-public class ServiceBasedGridWrapper<ID extends Serializable, T extends AbstractEntity<ID>>
-		extends BaseGridWrapper<ID, T> implements Searchable<T> {
+public class ServiceBasedGridWrapper<ID extends Serializable, T extends AbstractEntity<ID>> extends BaseGridWrapper<ID, T>
+        implements Searchable<T> {
 
-	private static final long serialVersionUID = -4691108261565306844L;
+    private static final long serialVersionUID = -4691108261565306844L;
 
-	/**
-	 * The search filter that is applied to the grid
-	 */
-	private SerializablePredicate<T> filter;
+    /**
+     * The search filter that is applied to the grid
+     */
+    private SerializablePredicate<T> filter;
 
-	/**
-	 * The maximum number of results
-	 */
-	private Integer maxResults;
+    /**
+     * The maximum number of results
+     */
+    private Integer maxResults;
 
-	/**
-	 * @param service     the service that is used for retrieving data
-	 * @param entityModel the entity model
-	 * @param queryType   the query type to use
-	 * @param order       the default sort order
-	 * @param joins       options list of fetch joins to include in the query
-	 */
-	public ServiceBasedGridWrapper(BaseService<ID, T> service, EntityModel<T> entityModel, QueryType queryType,
-			FormOptions formOptions, SerializablePredicate<T> filter,
-			Map<String, SerializablePredicate<?>> fieldFilters, List<SortOrder<?>> sortOrders, boolean editable,
-			FetchJoinInformation... joins) {
-		super(service, entityModel, queryType, formOptions, fieldFilters, sortOrders, editable, joins);
-		this.filter = filter;
-	}
+    /**
+     * @param service     the service that is used for retrieving data
+     * @param entityModel the entity model
+     * @param queryType   the query type to use
+     * @param order       the default sort order
+     * @param joins       options list of fetch joins to include in the query
+     */
+    public ServiceBasedGridWrapper(BaseService<ID, T> service, EntityModel<T> entityModel, QueryType queryType, FormOptions formOptions,
+            SerializablePredicate<T> filter, Map<String, SerializablePredicate<?>> fieldFilters, List<SortOrder<?>> sortOrders,
+            boolean editable, FetchJoinInformation... joins) {
+        super(service, entityModel, queryType, formOptions, fieldFilters, sortOrders, editable, joins);
+        this.filter = filter;
+    }
 
-	@Override
-	protected DataProvider<T, SerializablePredicate<T>> constructDataProvider() {
-		BaseDataProvider<ID, T> provider;
-		if (QueryType.PAGING.equals(getQueryType())) {
-			provider = new PagingDataProvider<>(getService(), getEntityModel(), getJoins());
-		} else {
-			provider = new IdBasedDataProvider<>(getService(), getEntityModel(), getJoins());
-		}
-		provider.setMaxResults(maxResults);
-		provider.setAfterCountCompleted(x -> getGrid().updateCaption(x));
+    @Override
+    protected DataProvider<T, SerializablePredicate<T>> constructDataProvider() {
+        BaseDataProvider<ID, T> provider;
+        if (QueryType.PAGING.equals(getQueryType())) {
+            provider = new PagingDataProvider<>(getService(), getEntityModel(), getJoins());
+        } else {
+            provider = new IdBasedDataProvider<>(getService(), getEntityModel(), getJoins());
+        }
+        provider.setMaxResults(maxResults);
+        provider.setAfterCountCompleted(x -> getGrid().updateCaption(x));
 
-		postProcessDataProvider(provider);
+        postProcessDataProvider(provider);
 
-		return provider;
-	}
+        return provider;
+    }
 
-	protected SerializablePredicate<T> getFilter() {
-		return filter;
-	}
+    protected SerializablePredicate<T> getFilter() {
+        return filter;
+    }
 
-	public Integer getMaxResults() {
-		return maxResults;
-	}
+    public Integer getMaxResults() {
+        return maxResults;
+    }
 
-	@Override
-	protected void initSortingAndFiltering() {
-		super.initSortingAndFiltering();
-		// sets the initial filter
-		getGrid().getDataCommunicator().setDataProvider(getDataProvider(), filter);
-		getGrid().addSelectionListener(event -> onSelect(getGrid().getSelectedItems()));
+    @Override
+    protected void initSortingAndFiltering() {
+        super.initSortingAndFiltering();
+        // sets the initial filter
+        getGrid().getDataCommunicator().setDataProvider(getDataProvider(), filter);
+        getGrid().addSelectionListener(event -> onSelect(getGrid().getSelectedItems()));
 
-		// right click to download
-		if (getFormOptions().isExportAllowed() && getExportDelegate() != null) {
-			getGrid().addContextClickListener(event -> {
-				// translate grid sort order to actual sort order and fall back to the default
-				// orders
-				// if nothing specified
-				List<SortOrder<?>> orders = new ArrayList<>();
-				List<GridSortOrder<T>> so = getGrid().getSortOrder();
-				for (GridSortOrder<T> gso : so) {
-					orders.add(new SortOrder<String>(gso.getSorted().getId(), gso.getDirection()));
-				}
-				getExportDelegate().export(UI.getCurrent(),
-						getExportEntityModel() != null ? getExportEntityModel() : getEntityModel(),
-						getFormOptions().getExportMode(), getFilter(), !orders.isEmpty() ? orders : getSortOrders(),
-						getExportJoins() != null ? getExportJoins() : getJoins());
-			});
-		}
-	}
+        System.out.println("Allow: " + SystemPropertyUtils.allowListExport());
 
-	@Override
-	public void reloadDataProvider() {
-		search(getFilter());
-	}
+        // right click to download
+        if (getFormOptions().isExportAllowed() && getExportDelegate() != null) {
+            getGrid().addContextClickListener(event -> {
+                // translate grid sort order to actual sort order and fall back to the default
+                // orders
+                // if nothing specified
+                List<SortOrder<?>> orders = new ArrayList<>();
+                List<GridSortOrder<T>> so = getGrid().getSortOrder();
+                for (GridSortOrder<T> gso : so) {
+                    orders.add(new SortOrder<String>(gso.getSorted().getId(), gso.getDirection()));
+                }
+                getExportDelegate().export(UI.getCurrent(), getExportEntityModel() != null ? getExportEntityModel() : getEntityModel(),
+                        getFormOptions().getExportMode(), getFilter(), !orders.isEmpty() ? orders : getSortOrders(),
+                        getExportJoins() != null ? getExportJoins() : getJoins());
+            });
+        }
+    }
 
-	@Override
-	public void search(SerializablePredicate<T> filter) {
-		SerializablePredicate<T> temp = beforeSearchPerformed(filter);
-		this.filter = temp != null ? temp : filter;
-		getGrid().getDataCommunicator().setDataProvider(getDataProvider(), temp != null ? temp : filter);
-	}
+    @Override
+    public void reloadDataProvider() {
+        search(getFilter());
+    }
 
-	/**
-	 * Sets the provided filter as the component filter and then refreshes the
-	 * container
-	 * 
-	 * @param filter
-	 */
-	public void setFilter(SerializablePredicate<T> filter) {
-		this.filter = filter;
-		search(filter);
-	}
+    @Override
+    public void search(SerializablePredicate<T> filter) {
+        SerializablePredicate<T> temp = beforeSearchPerformed(filter);
+        this.filter = temp != null ? temp : filter;
+        getGrid().getDataCommunicator().setDataProvider(getDataProvider(), temp != null ? temp : filter);
+    }
 
-	public void setMaxResults(Integer maxResults) {
-		this.maxResults = maxResults;
-	}
+    /**
+     * Sets the provided filter as the component filter and then refreshes the
+     * container
+     * 
+     * @param filter
+     */
+    public void setFilter(SerializablePredicate<T> filter) {
+        this.filter = filter;
+        search(filter);
+    }
+
+    public void setMaxResults(Integer maxResults) {
+        this.maxResults = maxResults;
+    }
 
 }

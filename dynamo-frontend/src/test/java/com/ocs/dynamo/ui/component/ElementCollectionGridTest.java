@@ -26,12 +26,11 @@ import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.service.TestEntityService;
-import com.ocs.dynamo.test.BaseIntegrationTest;
-import com.ocs.dynamo.ui.component.ElementCollectionGrid;
+import com.ocs.dynamo.ui.FrontendIntegrationTest;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.vaadin.data.provider.ListDataProvider;
 
-public class ElementCollectionGridTest extends BaseIntegrationTest {
+public class ElementCollectionGridTest extends FrontendIntegrationTest {
 
 	@Autowired
 	private TestEntityService testEntityService;

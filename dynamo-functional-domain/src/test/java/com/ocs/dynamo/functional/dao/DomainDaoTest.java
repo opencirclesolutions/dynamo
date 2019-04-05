@@ -19,26 +19,22 @@ import javax.inject.Inject;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.ocs.dynamo.functional.domain.Country;
 import com.ocs.dynamo.functional.domain.Currency;
 import com.ocs.dynamo.functional.domain.Domain;
 import com.ocs.dynamo.functional.domain.Region;
-import com.ocs.dynamo.test.BaseIntegrationTest;
+import com.ocs.dynamo.test.BackendIntegrationTest;
 
 /**
  * @author Patrick Deenen (patrick@opencircle.solutions)
  *
  */
-public class DomainDaoTest extends BaseIntegrationTest {
+public class DomainDaoTest extends BackendIntegrationTest {
 
     @Inject
     private DomainDao domainDao;
-
-    @Inject
-    private DomainDao regionDao;
 
     private Region europa;
 
@@ -88,15 +84,17 @@ public class DomainDaoTest extends BaseIntegrationTest {
     }
 
     @Test
-    @Ignore
     public void testFindChildren() {
-        Domain deu = regionDao.findByUniqueProperty("code", "EU", false);
+        List<Domain> list = domainDao.findAll();
+        list.forEach(s -> System.out.println(s));
+
+        Domain deu = domainDao.findByTypeAndUniqueProperty(Region.class, "code", "EU", false);
         Assert.assertTrue(deu instanceof Region);
         Region eu = (Region) deu;
         Assert.assertEquals(4, eu.getChildren().size());
         List<Country> countries = domainDao.findChildren(eu);
         Assert.assertEquals(4, countries.size());
-        countries = regionDao.findChildren(eu);
+        countries = domainDao.findChildren(eu);
         Assert.assertEquals(4, countries.size());
     }
 }

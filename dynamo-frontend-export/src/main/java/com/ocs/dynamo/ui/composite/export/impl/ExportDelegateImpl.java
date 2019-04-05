@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
@@ -30,6 +31,7 @@ import com.vaadin.ui.UI;
  *
  */
 @Service
+@ConditionalOnMissingBean(name = "com.ocs.dynamo.ui.composite.export.ExportDelegate")
 public class ExportDelegateImpl implements ExportDelegate {
 
 	@Autowired

@@ -20,6 +20,7 @@ import com.ocs.dynamo.dao.impl.TestEntityDao;
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.service.ServiceLocator;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
+import com.ocs.dynamo.test.BackendIntegrationTest;
 import com.ocs.dynamo.test.BaseIntegrationTest;
 
 /**
@@ -27,7 +28,7 @@ import com.ocs.dynamo.test.BaseIntegrationTest;
  * 
  * @author bas.rutten
  */
-public class SpringServiceLocatorTest extends BaseIntegrationTest {
+public class SpringServiceLocatorTest extends BackendIntegrationTest {
 
 	private ServiceLocator serviceLocator = ServiceLocatorFactory.getServiceLocator();
 

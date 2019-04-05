@@ -159,4 +159,5 @@ public abstract class BaseCustomComponent extends CustomComponent implements Bui
             LOG.info(message);
         }
     }
+
 }
