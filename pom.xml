@@ -195,11 +195,6 @@
 				<version>${vaadin.extended-token-field.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.tltv.gantt</groupId>
-				<artifactId>gantt-addon</artifactId>
-				<version>1.0.4</version>
-			</dependency>
-			<dependency>
 				<groupId>org.vaadin.teemu</groupId>
 				<artifactId>switch</artifactId>
 				<version>3.0.0</version>

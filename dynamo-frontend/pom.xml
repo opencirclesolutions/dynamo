@@ -45,10 +45,6 @@
 			<artifactId>switch</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.tltv.gantt</groupId>
-			<artifactId>gantt-addon</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>org.eclipse.persistence</groupId>
 			<artifactId>javax.persistence</artifactId>
 		</dependency>
