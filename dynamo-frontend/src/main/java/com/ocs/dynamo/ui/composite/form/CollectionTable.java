@@ -167,8 +167,9 @@ public class CollectionTable<T extends Serializable> extends CustomField<Collect
 	private void constructRemoveColumn() {
 		// add a remove button directly in the table
 		if (!isViewMode() && formOptions.isShowRemoveButton()) {
+			final String removeHeader = messageService.getMessage("ocs.remove", VaadinUtils.getLocale());
 			final String removeMsg = messageService.getMessage("ocs.detail.remove", VaadinUtils.getLocale());
-			table.addGeneratedColumn(removeMsg, (source, itemId, columnId) -> {
+			table.addGeneratedColumn(removeHeader, (source, itemId, columnId) -> {
 				final Button remove = new Button(removeMsg);
 				remove.setIcon(FontAwesome.TRASH);
 				remove.addClickListener(event -> {
