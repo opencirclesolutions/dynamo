@@ -95,12 +95,12 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<!-- Dependency versions. -->
-		<vaadin.version>8.6.2</vaadin.version>
+		<vaadin.version>8.7.2</vaadin.version>
 		<vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
 		<vaadin.icons.version>3.0.2</vaadin.icons.version>
 		<vaadin-spring.version>3.1.1</vaadin-spring.version>
 		<vaadin.confirmdialog.version>3.2.0</vaadin.confirmdialog.version>
-		<vaadin.charts.version>4.0.5</vaadin.charts.version>
+		<vaadin.switch.version>3.0.0</vaadin.switch.version>
 		<hibernate.version>5.3.7.Final</hibernate.version>
 		<hibernate.validator.version>6.0.13.Final</hibernate.validator.version>
 		<spring.version>5.1.5.RELEASE</spring.version>
@@ -129,11 +129,11 @@
 		<org.apache.maven.plugins.gpg.version>1.6</org.apache.maven.plugins.gpg.version>
 		<org.jacoco.maven.plugins.version>0.8.3</org.jacoco.maven.plugins.version>
 		<github-release-plugin.version>1.1.1</github-release-plugin.version>
-		<!-- Make sure you are using the latest version here. -->
 		<org.sonatype.plugins.version>1.6.7</org.sonatype.plugins.version>
 		<vaadin.extended-token-field.version>0.3.0</vaadin.extended-token-field.version>
 		<javax.el-api.version>3.0.0</javax.el-api.version>
 		<glassfish.javax.el.version>3.0.1-b08</glassfish.javax.el.version>
+		<logback.version>1.2.3</logback.version>
 	</properties>
 
 	<dependencyManagement>
@@ -180,11 +180,6 @@
 				<version>${vaadin-spring.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.vaadin</groupId>
-				<artifactId>vaadin-context-menu</artifactId>
-				<version>${vaadin.contextmenu.version}</version>
-			</dependency>
-			<dependency>
 				<groupId>org.vaadin.addon</groupId>
 				<artifactId>confirmdialog</artifactId>
 				<version>${vaadin.confirmdialog.version}</version>
@@ -197,12 +192,7 @@
 			<dependency>
 				<groupId>org.vaadin.teemu</groupId>
 				<artifactId>switch</artifactId>
-				<version>3.0.0</version>
-			</dependency>
-			<dependency>
-				<groupId>com.vaadin</groupId>
-				<artifactId>vaadin-charts</artifactId>
-				<version>${vaadin.charts.version}</version>
+				<version>${vaadin.switch.version}</version>
 			</dependency>
 			<!-- Bean Validation API -->
 			<dependency>
@@ -303,7 +293,7 @@
 			<dependency>
 				<groupId>ch.qos.logback</groupId>
 				<artifactId>logback-classic</artifactId>
-				<version>1.2.3</version>
+				<version>${logback.version}</version>
 			</dependency>
 			<!-- logging -->
 			<dependency>
@@ -427,7 +417,6 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
-
 	<build>
 		<pluginManagement>
 			<plugins>
@@ -608,7 +597,6 @@
 					<version>${vaadin.plugin.version}</version>
 					<configuration>
 						<extraJvmArgs>-Xmx1024M -Xss2048k</extraJvmArgs>
-						<!--<webappDirectory>${project.basedir}/target/classes/VAADIN/widgetsets</webappDirectory> -->
 						<webappDirectory>${project.basedir}/src/main/resources/VAADIN/widgetsets</webappDirectory>
 						<hostedWebapp>${project.basedir}/src/main/resources/VAADIN/widgetsets</hostedWebapp>
 						<compileReport>false</compileReport>
@@ -620,7 +608,6 @@
 						<execution>
 							<goals>
 								<goal>resources</goal>
-								<!--<goal>update-theme</goal> -->
 								<goal>compile</goal>
 							</goals>
 						</execution>
@@ -665,7 +652,6 @@
 			</plugin>
 		</plugins>
 	</build>
-
 	<profiles>
 		<profile>
 			<id>release</id>
