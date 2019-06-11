@@ -9,9 +9,7 @@ import org.mockito.Mock;
 
 import com.ocs.dynamo.test.BaseMockitoTest;
 import com.ocs.dynamo.test.MockUtil;
-import com.ocs.dynamo.ui.composite.form.process.UploadForm;
 import com.ocs.dynamo.ui.composite.form.process.ProgressForm.ProgressMode;
-import com.ocs.dynamo.ui.composite.type.ScreenMode;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Upload.SucceededEvent;

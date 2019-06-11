@@ -16,6 +16,7 @@ package com.ocs.dynamo.filter;
 import java.util.List;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 import com.google.common.collect.Lists;
@@ -37,9 +38,8 @@ public class FilterConverterTest extends BaseMockitoTest {
 
 	private EqualsPredicate<TestEntity> f2 = new EqualsPredicate<TestEntity>("test", "test");
 
-	@Override
+	@Before
 	public void setUp() {
-		super.setUp();
 		modelConverter = new FilterConverter<TestEntity>(emf.getModel(TestEntity.class));
 	}
 

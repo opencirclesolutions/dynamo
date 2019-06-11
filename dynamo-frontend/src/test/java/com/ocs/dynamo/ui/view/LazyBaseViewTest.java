@@ -1,6 +1,7 @@
 package com.ocs.dynamo.ui.view;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 import com.ocs.dynamo.test.BaseMockitoTest;
@@ -17,9 +18,8 @@ public class LazyBaseViewTest extends BaseMockitoTest {
 
 	private int refreshCount;
 
-	@Override
+	@Before
 	public void setUp() {
-		super.setUp();
 
 		view = new LazyBaseView() {
 

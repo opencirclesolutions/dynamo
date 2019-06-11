@@ -37,7 +37,6 @@ public class QuickAddEntityComboBoxTest extends BaseMockitoTest {
 
 	private TestEntity t3;
 
-	@Override
 	@Before
 	public void setUp() {
 		t1 = new TestEntity(1, "Kevin", 12L);

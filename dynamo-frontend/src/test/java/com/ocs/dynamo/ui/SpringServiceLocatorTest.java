@@ -21,7 +21,6 @@ import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.service.ServiceLocator;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.test.BackendIntegrationTest;
-import com.ocs.dynamo.test.BaseIntegrationTest;
 
 /**
  * Basic test class for the ServiceLocator

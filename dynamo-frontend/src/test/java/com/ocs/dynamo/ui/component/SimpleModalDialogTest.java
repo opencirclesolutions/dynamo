@@ -16,7 +16,6 @@ package com.ocs.dynamo.ui.component;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.ocs.dynamo.test.BaseIntegrationTest;
 import com.ocs.dynamo.ui.FrontendIntegrationTest;
 import com.ocs.dynamo.ui.composite.dialog.SimpleModalDialog;
 import com.vaadin.ui.Layout;

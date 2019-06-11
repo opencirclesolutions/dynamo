@@ -11,13 +11,15 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-package com.ocs.dynamo.ui.composite.type;
+package com.ocs.dynamo.filter;
 
 /**
  * Various filter types for the ModelBasedFlexibleSearchForm
+ * 
  * @author bas.rutten
  *
  */
 public enum FlexibleFilterType {
-    BETWEEN, CONTAINS, EQUALS, GREATER_OR_EQUAL, GREATER_THAN, LESS_OR_EQUAL, LESS_THAN, NOT_CONTAINS, NOT_EQUAL, NOT_STARTS_WITH, STARTS_WITH
+    BETWEEN, CONTAINS, EQUALS, GREATER_OR_EQUAL, GREATER_THAN, LESS_OR_EQUAL, LESS_THAN, NOT_CONTAINS, NOT_EQUAL, NOT_STARTS_WITH,
+    STARTS_WITH
 }

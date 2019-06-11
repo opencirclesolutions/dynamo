@@ -35,7 +35,6 @@ public class IntegrationTestConfig extends BaseIntegrationTestConfig {
     @Bean
     public LocalContainerEntityManagerFactoryBean entityManager(DataSource dataSource, JpaVendorAdapter adapter) {
         LocalContainerEntityManagerFactoryBean emf = new LocalContainerEntityManagerFactoryBean();
-        emf.setPersistenceUnitName("gts");
         emf.setPackagesToScan("com.ocs.dynamo");
         emf.setJpaVendorAdapter(adapter);
         emf.setDataSource(dataSource);

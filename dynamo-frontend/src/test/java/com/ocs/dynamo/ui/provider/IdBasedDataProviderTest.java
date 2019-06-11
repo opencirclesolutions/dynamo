@@ -3,6 +3,7 @@ package com.ocs.dynamo.ui.provider;
 import java.util.Optional;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
@@ -18,7 +19,6 @@ import com.ocs.dynamo.filter.EqualsPredicate;
 import com.ocs.dynamo.filter.Filter;
 import com.ocs.dynamo.service.TestEntityService;
 import com.ocs.dynamo.test.BaseMockitoTest;
-import com.ocs.dynamo.ui.provider.IdBasedDataProvider;
 import com.vaadin.data.provider.Query;
 import com.vaadin.data.provider.QuerySortOrder;
 import com.vaadin.server.SerializablePredicate;
@@ -36,9 +36,8 @@ public class IdBasedDataProviderTest extends BaseMockitoTest {
 
 	private EntityModelFactory emf = new EntityModelFactoryImpl();
 
-	@Override
+	@Before
 	public void setUp() {
-		super.setUp();
 		Mockito.when(query.getLimit()).thenReturn(5);
 	}
 

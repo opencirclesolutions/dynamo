@@ -3,6 +3,7 @@ package com.ocs.dynamo.ui.composite.export;
 import java.util.Iterator;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 
@@ -37,10 +38,8 @@ public class ExportDialogTest extends BaseMockitoTest {
 
 	private EntityModel<TestEntity> model;
 
-	@Override
+	@Before
 	public void setUp() {
-		super.setUp();
-
 		model = factory.getModel(TestEntity.class);
 		dialog = new ExportDialog<>(exportService, model, ExportMode.FULL,
 				new EqualsPredicate<TestEntity>("name", "Bob"), null, null);

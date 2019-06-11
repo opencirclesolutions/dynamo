@@ -16,31 +16,25 @@ import com.vaadin.ui.UI;
 
 public class ExportDelegateImplTest extends BaseMockitoTest {
 
-	@Mock
-	private ExportService exportService;
+    @Mock
+    private ExportService exportService;
 
-	@Mock
-	private UI ui;
+    @Mock
+    private UI ui;
 
-	private ExportDelegateImpl delegate = new ExportDelegateImpl();
+    private ExportDelegateImpl delegate = new ExportDelegateImpl();
 
-	private EntityModelFactory factory = new EntityModelFactoryImpl();
+    private EntityModelFactory factory = new EntityModelFactoryImpl();
 
-	@Override
-	public void setUp() {
-		super.setUp();
-		wireTestSubject(delegate);
-	}
+    @Test
+    public void testExport() {
+        EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
+        delegate.export(ui, em, ExportMode.FULL, null, null);
+    }
 
-	@Test
-	public void testExport() {
-		EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
-		delegate.export(ui, em, ExportMode.FULL, null, null);
-	}
-
-	@Test
-	public void testExportFixed() {
-		EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
-		delegate.exportFixed(ui, em, ExportMode.FULL, new ArrayList<>());
-	}
+    @Test
+    public void testExportFixed() {
+        EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
+        delegate.exportFixed(ui, em, ExportMode.FULL, new ArrayList<>());
+    }
 }

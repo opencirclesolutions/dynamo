@@ -16,70 +16,64 @@ import com.vaadin.ui.Panel;
 
 public class BaseUITest extends BaseMockitoTest {
 
-	private BaseUI ui = new BaseUI() {
+    private BaseUI ui = new BaseUI() {
 
-		private static final long serialVersionUID = -741712405722333410L;
+        private static final long serialVersionUID = -741712405722333410L;
 
-		@Override
-		protected void init(VaadinRequest request) {
+        @Override
+        protected void init(VaadinRequest request) {
 
-		}
-	};
+        }
+    };
 
-	@Mock
-	private MenuService menuService;
+    @Mock
+    private MenuService menuService;
 
-	@Mock
-	private ViewProvider viewProvider;
+    @Mock
+    private ViewProvider viewProvider;
 
-	@Mock
-	private View view;
+    @Mock
+    private View view;
 
-	private boolean navigated = false;
+    private boolean navigated = false;
 
-	@Override
-	public void setUp() {
-		super.setUp();
-		wireTestSubject(ui);
-	}
+    /**
+     * Try navigating while there is no view defined
+     */
+    @Test(expected = NullPointerException.class)
+    public void testNavigateToEntityScreenNoViewDefined() {
+        ui.navigateToEntityScreen(new TestEntity());
+    }
 
-	/**
-	 * Try navigating while there is no view defined
-	 */
-	@Test(expected = NullPointerException.class)
-	public void testNavigateToEntityScreenNoViewDefined() {
-		ui.navigateToEntityScreen(new TestEntity());
-	}
+    /**
+     * Try correct navigation
+     */
+    @Test
+    public void testNavigateToEntityScreen() {
+        ui.addEntityNavigationMapping(TestEntity.class, a -> {
+            navigated = true;
+        });
 
-	/**
-	 * Try correct navigation
-	 */
-	@Test
-	public void testNavigateToEntityScreen() {
-		ui.addEntityNavigationMapping(TestEntity.class, a -> {
-			navigated = true;
-		});
+        ui.navigateToEntityScreen(null);
+        ui.navigateToEntityScreen(new TestEntity());
+        Assert.assertTrue(navigated);
+    }
 
-		ui.navigateToEntityScreen(null);
-		ui.navigateToEntityScreen(new TestEntity());
-		Assert.assertTrue(navigated);
-	}
+    @Test(expected = NullPointerException.class)
+    public void testNavigateToEntityScreenException() {
+        ui.addEntityNavigationMapping(TestEntity.class, a -> {
+            throw new OCSRuntimeException();
+        });
 
-	@Test(expected = NullPointerException.class)
-	public void testNavigateToEntityScreenException() {
-		ui.addEntityNavigationMapping(TestEntity.class, a -> {
-			throw new OCSRuntimeException();
-		});
+        ui.navigateToEntityScreen(null);
+        ui.navigateToEntityScreen(new TestEntity());
+        Assert.assertTrue(navigated);
+    }
 
-		ui.navigateToEntityScreen(null);
-		ui.navigateToEntityScreen(new TestEntity());
-		Assert.assertTrue(navigated);
-	}
-
-	@Test(expected = NullPointerException.class)
-	public void testInitNavigation() {
-		Mockito.when(viewProvider.getView(Mockito.anyString())).thenReturn(view);
-		Mockito.when(viewProvider.getViewName(Mockito.anyString())).thenReturn("StartView");
-		ui.initNavigation(viewProvider, new Panel(), "StartView", true);
-	}
+    @Test(expected = NullPointerException.class)
+    public void testInitNavigation() {
+        Mockito.when(viewProvider.getView(Mockito.anyString())).thenReturn(view);
+        Mockito.when(viewProvider.getViewName(Mockito.anyString())).thenReturn("StartView");
+        ui.initNavigation(viewProvider, new Panel(), "StartView", true);
+    }
 }

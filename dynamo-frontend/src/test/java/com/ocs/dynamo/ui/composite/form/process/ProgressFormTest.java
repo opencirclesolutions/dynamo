@@ -1,6 +1,7 @@
 package com.ocs.dynamo.ui.composite.form.process;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -9,7 +10,6 @@ import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.service.TestEntityService;
 import com.ocs.dynamo.test.BaseMockitoTest;
 import com.ocs.dynamo.test.MockUtil;
-import com.ocs.dynamo.ui.composite.form.process.ProgressForm;
 import com.ocs.dynamo.ui.composite.form.process.ProgressForm.ProgressMode;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Layout;
@@ -30,9 +30,8 @@ public class ProgressFormTest extends BaseMockitoTest {
 
 	private boolean afterWorkCalled = false;
 
-	@Override
+	@Before
 	public void setUp() {
-		super.setUp();
 		Mockito.when(ui.getSession()).thenReturn(session);
 	}
 

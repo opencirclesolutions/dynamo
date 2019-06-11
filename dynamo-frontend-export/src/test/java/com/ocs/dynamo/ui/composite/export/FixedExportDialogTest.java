@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.function.Supplier;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 
@@ -43,9 +44,8 @@ public class FixedExportDialogTest extends BaseMockitoTest {
 
 	private EntityModel<TestEntity> model;
 
-	@Override
+	@Before
 	public void setUp() {
-		super.setUp();
 		e1 = new TestEntity(1, "Kevin", 12L);
 		e2 = new TestEntity(2, "Bob", 14L);
 

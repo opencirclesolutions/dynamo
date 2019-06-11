@@ -18,6 +18,7 @@ import java.util.List;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
+import org.junit.Before;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
@@ -35,71 +36,70 @@ import com.ocs.dynamo.test.MockUtil;
 
 public abstract class BaseCamelMockitoTest extends BaseMockitoTest {
 
-	@Mock
-	private Exchange exchange;
+    @Mock
+    private Exchange exchange;
 
-	@Mock
-	private Message message;
+    @Mock
+    private Message message;
 
-	@Mock
-	private Message outMessage;
+    @Mock
+    private Message outMessage;
 
-	@Mock
-	private MessageService messageService;
+    @Mock
+    private MessageService messageService;
 
-	public Exchange getExchange() {
-		return exchange;
-	}
+    public Exchange getExchange() {
+        return exchange;
+    }
 
-	public Message getMessage() {
-		return message;
-	}
+    public Message getMessage() {
+        return message;
+    }
 
-	public MessageService getMessageService() {
-		return messageService;
-	}
+    public MessageService getMessageService() {
+        return messageService;
+    }
 
-	public Message getOutMessage() {
-		return outMessage;
-	}
+    public Message getOutMessage() {
+        return outMessage;
+    }
 
-	public <T> void givenBody(Class<T> clazz, T body) {
-		Mockito.lenient().when(message.getBody(clazz)).thenReturn(body);
-		Mockito.lenient().when(message.getBody()).thenReturn(body);
-	}
+    public <T> void givenBody(Class<T> clazz, T body) {
+        Mockito.lenient().when(message.getBody(clazz)).thenReturn(body);
+        Mockito.lenient().when(message.getBody()).thenReturn(body);
+    }
 
-	public void givenHeader(String name, Object value) {
-		Mockito.when(getMessage().getHeader(name)).thenReturn(value);
-	}
+    public void givenHeader(String name, Object value) {
+        Mockito.when(getMessage().getHeader(name)).thenReturn(value);
+    }
 
-	public List<String> mockErrorList() {
-		List<String> errorList = new ArrayList<>();
-		givenHeader(CamelConstants.HEADER_ERROR_LIST, errorList);
-		return errorList;
-	}
+    public List<String> mockErrorList() {
+        List<String> errorList = new ArrayList<>();
+        givenHeader(CamelConstants.HEADER_ERROR_LIST, errorList);
+        return errorList;
+    }
 
-	public void setExchange(Exchange exchange) {
-		this.exchange = exchange;
-	}
+    public void setExchange(Exchange exchange) {
+        this.exchange = exchange;
+    }
 
-	public void setMessage(Message message) {
-		this.message = message;
-	}
+    public void setMessage(Message message) {
+        this.message = message;
+    }
 
-	public void setMessageService(MessageService messageService) {
-		this.messageService = messageService;
-	}
+    public void setMessageService(MessageService messageService) {
+        this.messageService = messageService;
+    }
 
-	public void setOutMessage(Message outMessage) {
-		this.outMessage = outMessage;
-	}
+    public void setOutMessage(Message outMessage) {
+        this.outMessage = outMessage;
+    }
 
-	@Override
-	public void setUp() {
-		super.setUp();
-		Mockito.lenient().when(exchange.getIn()).thenReturn(message);
-		Mockito.lenient().when(exchange.getOut()).thenReturn(outMessage);
-		MockUtil.mockMessageService(messageService);
-	}
+    @Before
+    public void setUp() {
+        Mockito.lenient().when(exchange.getIn()).thenReturn(message);
+        Mockito.lenient().when(exchange.getOut()).thenReturn(outMessage);
+        MockUtil.mockMessageService(messageService);
+    }
 
 }

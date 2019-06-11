@@ -1,6 +1,7 @@
 package com.ocs.dynamo.ui.composite.form;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -24,9 +25,8 @@ public class CompositionLayoutTest extends BaseMockitoTest {
 
 	private SimpleEditLayout<Integer, TestEntity> nested1;
 
-	@Override
+	@Before
 	public void setUp() {
-		super.setUp();
 		Mockito.when(testEntityService.getEntityClass()).thenReturn(TestEntity.class);
 
 	}

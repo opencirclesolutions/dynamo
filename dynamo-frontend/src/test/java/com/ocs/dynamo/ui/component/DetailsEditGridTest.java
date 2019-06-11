@@ -1,6 +1,7 @@
 package com.ocs.dynamo.ui.component;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
@@ -35,9 +36,8 @@ public class DetailsEditGridTest extends BaseMockitoTest {
 	@Mock
 	private TestEntityService service;
 
-	@Override
+	@Before
 	public void setUp() {
-		super.setUp();
 		e1 = new TestEntity(1, "Kevin", 12L);
 		e1.setId(1);
 		e2 = new TestEntity(2, "Bob", 14L);

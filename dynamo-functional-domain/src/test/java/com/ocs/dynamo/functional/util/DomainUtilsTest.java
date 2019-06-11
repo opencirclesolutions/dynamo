@@ -5,6 +5,7 @@ import java.util.Locale;
 import java.util.Set;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -29,9 +30,8 @@ public class DomainUtilsTest extends BaseMockitoTest {
 
 	private Set<Domain> domains;
 
-	@Override
+	@Before
 	public void setUp() {
-		super.setUp();
 
 		Currency c1 = new Currency("EUR", "Euro");
 		Currency c2 = new Currency("USD", "Dollar");

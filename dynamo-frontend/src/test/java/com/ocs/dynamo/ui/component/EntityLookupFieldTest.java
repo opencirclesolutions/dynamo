@@ -17,11 +17,13 @@ import java.util.Collection;
 import java.util.List;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.Spy;
 
 import com.google.common.collect.Lists;
 import com.ocs.dynamo.domain.TestEntity;
@@ -44,13 +46,14 @@ public class EntityLookupFieldTest extends BaseMockitoTest {
 	@Mock
 	private TestEntityService service;
 
+	@Spy
 	private EntityModelFactory factory = new EntityModelFactoryImpl();
 
 	private TestEntity e1;
 
 	private TestEntity e2;
 
-	@Override
+	@Before
 	public void setUp() {
 		e1 = new TestEntity(1, "Bob", 14L);
 		e2 = new TestEntity(2, "Kevin", 15L);

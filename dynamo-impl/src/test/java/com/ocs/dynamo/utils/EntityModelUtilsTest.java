@@ -17,6 +17,7 @@ import java.math.BigDecimal;
 import java.util.Locale;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 
@@ -38,9 +39,8 @@ public class EntityModelUtilsTest extends BaseMockitoTest {
 	@Mock
 	private MessageService messageService = new MessageServiceImpl();
 
-	@Override
+	@Before
 	public void setUp() {
-		super.setUp();
 		MockUtil.mockMessageService(messageService);
 	}
 

@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -46,9 +47,8 @@ public class ModelBasedGridTest extends BaseMockitoTest {
 	@Mock
 	private TestEntityService service;
 
-	@Override
+	@Before
 	public void setUp() {
-		super.setUp();
 		ReflectionTestUtils.setField(entityModelFactory, "messageService", messageService);
 	}
 

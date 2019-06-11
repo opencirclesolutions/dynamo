@@ -1,26 +1,24 @@
 package com.ocs.dynamo.ui.component;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
-import com.google.common.collect.Lists;
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.TestEntity2;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.domain.model.impl.EntityModelFactoryImpl;
-import com.ocs.dynamo.filter.Filter;
 import com.ocs.dynamo.service.TestEntityService;
 import com.ocs.dynamo.test.BaseMockitoTest;
 import com.ocs.dynamo.test.MockUtil;
 import com.ocs.dynamo.ui.composite.dialog.ModelBasedSearchDialog;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.provider.IdBasedDataProvider;
-import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.ui.UI;
 
 public class ServiceBasedDetailsEditGridTest extends BaseMockitoTest {
@@ -39,9 +37,8 @@ public class ServiceBasedDetailsEditGridTest extends BaseMockitoTest {
 	@Mock
 	private TestEntityService service;
 
-	@Override
+	@Before
 	public void setUp() {
-		super.setUp();
 		e1 = new TestEntity(1, "Kevin", 12L);
 		e1.setId(1);
 		e2 = new TestEntity(2, "Bob", 14L);

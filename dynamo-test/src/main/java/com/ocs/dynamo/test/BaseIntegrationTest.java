@@ -38,7 +38,7 @@ import com.ocs.dynamo.constants.DynamoConstants;
  *
  */
 @RunWith(SpringRunner.class)
-@TestPropertySource(value = "classpath:application-test.properties")
+@TestPropertySource(value = "classpath:application-it.properties")
 public abstract class BaseIntegrationTest extends AbstractTransactionalJUnit4SpringContextTests {
 
     private static final Logger LOG = LoggerFactory.getLogger(BaseIntegrationTest.class);

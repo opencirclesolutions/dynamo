@@ -28,7 +28,6 @@ import com.ocs.dynamo.ui.provider.BaseDataProvider;
 import com.ocs.dynamo.ui.provider.IdBasedDataProvider;
 import com.ocs.dynamo.ui.provider.PagingDataProvider;
 import com.ocs.dynamo.ui.provider.QueryType;
-import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.GridSortOrder;
 import com.vaadin.data.provider.SortOrder;

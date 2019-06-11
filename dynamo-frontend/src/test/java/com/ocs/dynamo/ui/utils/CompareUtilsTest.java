@@ -3,6 +3,7 @@ package com.ocs.dynamo.ui.utils;
 import java.util.List;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 
@@ -22,9 +23,8 @@ public class CompareUtilsTest extends BaseMockitoTest {
 	@Mock
 	private MessageService messageService = new MessageServiceImpl();
 
-	@Override
+	@Before
 	public void setUp() {
-		super.setUp();
 		MockUtil.mockMessageService(messageService);
 	}
 

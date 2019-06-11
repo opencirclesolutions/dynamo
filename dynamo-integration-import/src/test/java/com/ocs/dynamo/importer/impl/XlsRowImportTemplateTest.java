@@ -1,18 +1,20 @@
 package com.ocs.dynamo.importer.impl;
 
-import com.ocs.dynamo.service.MessageService;
-import com.ocs.dynamo.test.BaseMockitoTest;
-import com.ocs.dynamo.test.MockUtil;
-import com.ocs.dynamo.utils.DateUtils;
-import org.apache.commons.io.FileUtils;
-import org.junit.Assert;
-import org.junit.Test;
-import org.mockito.Mock;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.commons.io.FileUtils;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mock;
+
+import com.ocs.dynamo.service.MessageService;
+import com.ocs.dynamo.test.BaseMockitoTest;
+import com.ocs.dynamo.test.MockUtil;
+import com.ocs.dynamo.utils.DateUtils;
 
 public class XlsRowImportTemplateTest extends BaseMockitoTest {
 
@@ -21,9 +23,8 @@ public class XlsRowImportTemplateTest extends BaseMockitoTest {
 
 	private BaseXlsImporter importer = new BaseXlsImporter();
 
-	@Override
+	@Before
 	public void setUp() {
-		super.setUp();
 		MockUtil.mockMessageService(messageService);
 	}
 

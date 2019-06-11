@@ -3,6 +3,7 @@ package com.ocs.dynamo.ui.composite.layout;
 import java.util.Comparator;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -37,9 +38,8 @@ public class DetailsEditLayoutTest extends BaseMockitoTest {
 
 	private boolean detailButtonBarPostconstruct = false;
 
-	@Override
+	@Before
 	public void setUp() {
-		super.setUp();
 		e1 = new TestEntity(1, "Kevin", 12L);
 		e2 = new TestEntity(2, "Bob", 14L);
 
