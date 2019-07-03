@@ -65,6 +65,7 @@
 		<url>https://github.com/opencirclesolutions/dynamo</url>
 		<tag>HEAD</tag>
 	</scm>
+	<!--  
 	<distributionManagement>
 		<snapshotRepository>
 			<id>ossrh</id>
@@ -75,6 +76,17 @@
 			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
 		</repository>
 	</distributionManagement>
+	-->
+	<distributionManagement>
+		<snapshotRepository>
+			<id>ocs-maven-snapshot</id>
+			<url>https://maven.square.opencirclesolutions.nl/snapshots/</url>
+		</snapshotRepository>
+		<repository>
+			<id>ocs-maven-release</id>
+			<url>https://maven.square.opencirclesolutions.nl/releases/</url>
+		</repository>
+	</distributionManagement>	
 	<modules>
 		<module>dynamo-api</module>
 		<module>dynamo-impl</module>
