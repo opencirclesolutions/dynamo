@@ -33,7 +33,7 @@ import com.vaadin.ui.UI;
 
 /**
  * A grid component that is meant for use inside an edit form. It manages a
- * lazily loaded 1-to-N or N-to-N collectionF
+ * lazily loaded 1-to-N or N-to-N collection
  * 
  * @author Bas Rutten
  *

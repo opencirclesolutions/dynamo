@@ -213,7 +213,6 @@ public final class DynamoFilterUtil {
 		// iterate over models and try to find filters that query DETAIL relations
 		for (AttributeModel am : entityModel.getAttributeModels()) {
 			replaceMasterDetailFilter(filter, am);
-
 			if (am.getNestedEntityModel() != null) {
 				replaceMasterAndDetailFilters(filter, am.getNestedEntityModel());
 			}

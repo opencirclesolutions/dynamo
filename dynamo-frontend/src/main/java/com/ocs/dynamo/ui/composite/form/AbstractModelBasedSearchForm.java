@@ -85,12 +85,13 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
     private Layout filterLayout;
 
     /**
-     * The object that will be searched when the user presses the "Search" button
+     * The component on which the search will be carried out after the user presses
+     * the "search" button
      */
     private Searchable<T> searchable;
 
     /**
-     * The "search" button
+     * The search button
      */
     private Button searchButton;
 
@@ -368,6 +369,10 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
         return null;
     }
 
+    public Consumer<ClickEvent> getAfterClearConsumer() {
+        return afterClearConsumer;
+    }
+
     public HorizontalLayout getButtonBar() {
         return buttonBar;
     }
@@ -460,7 +465,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
             currentFilters.remove(event.getOldFilter());
         }
 
-        // exclude filter for attributes that are only there for cascading
+        // exclude filter for attributes that are only used for cascading search
         AttributeModel am = getEntityModel().getAttributeModel(event.getPropertyId());
         if (event.getNewFilter() != null && !am.isIgnoreInSearchFilter()) {
             currentFilters.add(event.getNewFilter());
@@ -561,14 +566,28 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
         return search(false, true);
     }
 
+    /**
+     * Sets the consumer that will be carried out after the Clear button is clicked
+     * 
+     * @param afterClearConsumer
+     */
+    public void setAfterClearConsumer(Consumer<ClickEvent> afterClearConsumer) {
+        this.afterClearConsumer = afterClearConsumer;
+    }
+
+    /**
+     * Sets the default filters that will be added to every quer
+     * 
+     * @param defaultFilters the default filters
+     */
     public void setDefaultFilters(List<SerializablePredicate<T>> defaultFilters) {
         this.defaultFilters = defaultFilters;
     }
 
     /**
-     * Sets the searchable component
+     * Sets the UI component on which the search will be carried out
      *
-     * @param searchable the searchable
+     * @param searchable the UI component on which the search will be carried out
      */
     public void setSearchable(Searchable<T> searchable) {
         this.searchable = searchable;
@@ -590,18 +609,13 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
     }
 
     /**
-     * Performs a validation before the search.
+     * Callback method that is called before a search is carried out. The developer
+     * can use this to carry out additional validation before searching. When this
+     * method returns an OCSValidationException the search process will be aborted
+     * and a message will be shown
      */
     protected void validateBeforeSearch() {
         // overwrite in subclass
-    }
-
-    public Consumer<ClickEvent> getAfterClearConsumer() {
-        return afterClearConsumer;
-    }
-
-    public void setAfterClearConsumer(Consumer<ClickEvent> afterClearConsumer) {
-        this.afterClearConsumer = afterClearConsumer;
     }
 
 }

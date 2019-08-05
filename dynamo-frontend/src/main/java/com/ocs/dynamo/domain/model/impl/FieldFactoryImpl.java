@@ -286,7 +286,7 @@ public class FieldFactoryImpl implements FieldFactory {
         } else if (search && (am.getType().equals(Boolean.class) || am.getType().equals(boolean.class))) {
             // in a search screen, we need to offer the true, false, and
             // undefined options
-            field = constructSearchBooleanComboBox(am);
+            field = constructSearchBooleanComboBox(am, search);
         } else if (Boolean.class.equals(am.getType()) || boolean.class.equals(am.getType())) {
             // regular boolean (not search mode)
             if (CheckboxMode.SWITCH.equals(am.getCheckboxMode())) {
@@ -401,7 +401,7 @@ public class FieldFactoryImpl implements FieldFactory {
         // for a lookup field, don't use the nested model but the base model -
         // this is
         // because the search in the pop-up screen is conducted on a "clean",
-        // unnested entity list so
+        // non-nested entity list so
         // using a path from the parent entity makes no sense here
         final EntityModel<?> entityModel = overruled != null ? overruled
                 : serviceLocator.getEntityModelFactory().getModel(am.getNormalizedType());
@@ -413,17 +413,19 @@ public class FieldFactoryImpl implements FieldFactory {
     }
 
     /**
-     * Constructs a combo box for filtering on a boolean
+     * Constructs a combo box for filtering on a boolean property - this includes
+     * options for "true" and "false" but also allows searches on "no value"
      * 
      * @param am the attribute model
      * @return
      */
-    private ComboBox<Boolean> constructSearchBooleanComboBox(final AttributeModel am) {
+    private ComboBox<Boolean> constructSearchBooleanComboBox(AttributeModel am, boolean searching) {
         ComboBox<Boolean> cb = new ComboBox<>();
         ListDataProvider<Boolean> provider = new ListDataProvider<>(Lists.newArrayList(Boolean.TRUE, Boolean.FALSE));
         cb.setDataProvider(provider);
         cb.setItemCaptionGenerator(b -> Boolean.TRUE.equals(b) ? am.getTrueRepresentation(VaadinUtils.getLocale())
                 : am.getFalseRepresentation(VaadinUtils.getLocale()));
+        cb.setRequiredIndicatorVisible(searching ? am.isRequiredForSearching() : am.isRequired());
         return cb;
     }
 
@@ -433,6 +435,8 @@ public class FieldFactoryImpl implements FieldFactory {
      * @param am               the attribute model
      * @param fieldEntityModel the field entity model
      * @param fieldFilter      the field filter to apply
+     * @param sharedProvider   shared data provider to be used when component is
+     *                         inside a grid
      * @param search
      * @return
      */

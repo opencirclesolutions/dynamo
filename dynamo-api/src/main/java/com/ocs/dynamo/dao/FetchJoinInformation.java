@@ -29,10 +29,8 @@ public class FetchJoinInformation {
     /**
      * Constructor
      * 
-     * @param property
-     *            the property to use for the fetch
-     * @param joinType
-     *            the desired join type (left, inner etc)
+     * @param property the property to use for the fetch
+     * @param joinType the desired join type (left, inner etc)
      */
     public FetchJoinInformation(String property, JoinType joinType) {
         this.property = property;
@@ -67,7 +65,16 @@ public class FetchJoinInformation {
             return false;
         }
         FetchJoinInformation other = (FetchJoinInformation) obj;
-        return Objects.equals(this.getProperty(), other.getProperty())
-                && Objects.equals(this.getJoinType(), other.getJoinType());
+        return Objects.equals(this.getProperty(), other.getProperty()) && Objects.equals(this.getJoinType(), other.getJoinType());
+    }
+
+    /**
+     * Creates an array based on the specified vararg
+     * 
+     * @param joins
+     * @return
+     */
+    public static FetchJoinInformation[] of(FetchJoinInformation... joins) {
+        return joins;
     }
 }

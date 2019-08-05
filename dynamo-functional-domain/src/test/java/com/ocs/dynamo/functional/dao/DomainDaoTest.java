@@ -86,8 +86,6 @@ public class DomainDaoTest extends BackendIntegrationTest {
     @Test
     public void testFindChildren() {
         List<Domain> list = domainDao.findAll();
-        list.forEach(s -> System.out.println(s));
-
         Domain deu = domainDao.findByTypeAndUniqueProperty(Region.class, "code", "EU", false);
         Assert.assertTrue(deu instanceof Region);
         Region eu = (Region) deu;

@@ -202,9 +202,6 @@ public class DateUtilsTest {
 
 	@Test
 	public void testGetStartDateOfWeek() {
-		
-		System.out.println("2014-01".matches("\\d{4}-\\d{2}"));
-		
 		Assert.assertEquals(DateUtils.createLocalDate("30122013"), DateUtils.getStartDateOfWeek("2014-01"));
 		Assert.assertEquals(DateUtils.createLocalDate("06012014"), DateUtils.getStartDateOfWeek("2014-02"));
 		Assert.assertEquals(DateUtils.createLocalDate("29122014"), DateUtils.getStartDateOfWeek("2015-01"));

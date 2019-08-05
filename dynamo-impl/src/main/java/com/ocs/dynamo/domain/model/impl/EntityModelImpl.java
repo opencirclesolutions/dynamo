@@ -260,10 +260,11 @@ public class EntityModelImpl<T> implements EntityModel<T> {
      * @param source   the message cache
      * @param locale   the desired locale
      * @param key      the message key
-     * @param fallBack value to fall back to when nothing found
+     * @param fallBack value to fall back to if no match is found
      * @return
      */
     private String lookup(Map<String, Optional<String>> source, Locale locale, String key, String fallBack) {
+        // look up in message bundle and add to cache
         if (!source.containsKey(locale.toString())) {
             try {
                 ResourceBundle rb = ResourceBundle.getBundle("META-INF/entitymodel", locale);
@@ -274,6 +275,7 @@ public class EntityModelImpl<T> implements EntityModel<T> {
             }
         }
 
+        // look up or return fallback value
         Optional<String> optional = source.get(locale.toString());
         return optional.orElse(fallBack);
     }
