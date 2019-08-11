@@ -161,7 +161,7 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
                         AbstractComponent comp = constructCustomField(entityModel, am);
                         if (comp == null) {
                             FieldFactoryContext ctx = FieldFactoryContext.create().setAttributeModel(am).setFieldFilters(fieldFilters)
-                                    .setViewMode(false).setSharedProviders(sharedProviders);
+                                    .setViewMode(false).setSharedProviders(sharedProviders).setEditableGrid(true);
                             comp = fieldFactory.constructField(ctx);
                         }
                         comp.setSizeFull();
@@ -172,7 +172,7 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
                         }
 
                         // delegate the binding to the enveloping component
-                        BindingBuilder<T, ?> builder = doBind(t, (AbstractComponent) comp);
+                        BindingBuilder<T, ?> builder = doBind(t, (AbstractComponent) comp, am.getPath());
                         fieldFactory.addConvertersAndValidators(builder, am, constructCustomConverter(am));
                         builder.bind(am.getPath());
 
@@ -189,11 +189,14 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
             if (editable && GridEditMode.SINGLE_ROW.equals(gridEditMode) && EditableType.EDITABLE.equals(am.getEditableType())) {
                 Binder<T> binder = getEditor().getBinder();
                 FieldFactoryContext context = FieldFactoryContext.create().setAttributeModel(am).setViewMode(false)
-                        .setFieldFilters(fieldFilters);
+                        .setFieldFilters(fieldFilters).setEditableGrid(true);
                 AbstractComponent comp = fieldFactory.constructField(context);
                 if (comp != null) {
                     comp.setSizeFull();
                     Binder.BindingBuilder<T, ?> builder = binder.forField((HasValue<?>) comp);
+                    if (am.isRequired()) {
+                        builder.asRequired();
+                    }
                     fieldFactory.addConvertersAndValidators(builder, am, null);
                     column.setEditorBinding(builder.bind(am.getPath()));
                 }
@@ -233,7 +236,7 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
      * @param field the field to bind
      * @return
      */
-    protected BindingBuilder<T, ?> doBind(T t, AbstractComponent field) {
+    protected BindingBuilder<T, ?> doBind(T t, AbstractComponent field, String attributeName) {
         return null;
     }
 

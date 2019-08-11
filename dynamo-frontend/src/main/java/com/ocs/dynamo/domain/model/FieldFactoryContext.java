@@ -28,145 +28,156 @@ import com.vaadin.server.SerializablePredicate;
  */
 public class FieldFactoryContext {
 
-	/**
-	 * Creates a blank context
-	 * 
-	 * @return
-	 */
-	public static FieldFactoryContext create() {
-		return new FieldFactoryContext();
-	}
+    /**
+     * Creates a blank context
+     * 
+     * @return
+     */
+    public static FieldFactoryContext create() {
+        return new FieldFactoryContext();
+    }
 
-	/**
-	 * Creates a default context based on only the attribute model
-	 * 
-	 * @param am the attribute model
-	 * @return
-	 */
-	public static FieldFactoryContext createDefault(AttributeModel am) {
-		return new FieldFactoryContext().setAttributeModel(am);
-	}
+    /**
+     * Creates a default context based on only the attribute model
+     * 
+     * @param am the attribute model
+     * @return
+     */
+    public static FieldFactoryContext createDefault(AttributeModel am) {
+        return new FieldFactoryContext().setAttributeModel(am);
+    }
 
-	private AttributeModel attributeModel;
+    private AttributeModel attributeModel;
 
-	private Map<String, SerializablePredicate<?>> fieldFilters;
+    private Map<String, SerializablePredicate<?>> fieldFilters;
 
-	private EntityModel<?> fieldEntityModel;
+    private EntityModel<?> fieldEntityModel;
 
-	private boolean viewMode;
+    private boolean viewMode;
 
-	private boolean search;
+    private boolean search;
 
-	private Map<String, ListDataProvider<?>> sharedProviders;
+    private Map<String, ListDataProvider<?>> sharedProviders;
 
-	private AbstractEntity<?> parentEntity;
+    private AbstractEntity<?> parentEntity;
 
-	private FieldFactoryContext() {
-		// hidden
-	}
+    private boolean editableGrid;
 
-	public AttributeModel getAttributeModel() {
-		return attributeModel;
-	}
+    private FieldFactoryContext() {
+        // hidden
+    }
 
-	public EntityModel<?> getFieldEntityModel() {
-		return fieldEntityModel;
-	}
+    public AttributeModel getAttributeModel() {
+        return attributeModel;
+    }
 
-	public Map<String, SerializablePredicate<?>> getFieldFilters() {
-		return fieldFilters;
-	}
+    public EntityModel<?> getFieldEntityModel() {
+        return fieldEntityModel;
+    }
 
-	public boolean getViewMode() {
-		return viewMode;
-	}
+    public Map<String, SerializablePredicate<?>> getFieldFilters() {
+        return fieldFilters;
+    }
 
-	/**
-	 * @return the search
-	 */
-	public boolean isSearch() {
-		return search;
-	}
+    public boolean getViewMode() {
+        return viewMode;
+    }
 
-	/**
-	 * Sets the attribute model to base the field construction on
-	 * 
-	 * @param attributeModel the attribute model
-	 * @return
-	 */
-	public FieldFactoryContext setAttributeModel(AttributeModel attributeModel) {
-		this.attributeModel = attributeModel;
-		return this;
-	}
+    /**
+     * @return the search
+     */
+    public boolean isSearch() {
+        return search;
+    }
 
-	/**
-	 * Sets the field entity model to be used during field construction
-	 * 
-	 * @param fieldEntityModel the field entity model
-	 * @return
-	 */
-	public FieldFactoryContext setFieldEntityModel(EntityModel<?> fieldEntityModel) {
-		this.fieldEntityModel = fieldEntityModel;
-		return this;
-	}
+    /**
+     * Sets the attribute model to base the field construction on
+     * 
+     * @param attributeModel the attribute model
+     * @return
+     */
+    public FieldFactoryContext setAttributeModel(AttributeModel attributeModel) {
+        this.attributeModel = attributeModel;
+        return this;
+    }
 
-	/**
-	 * Sets the field filters to use during field construction
-	 * 
-	 * @param fieldFilters the field filters
-	 * @return
-	 */
-	public FieldFactoryContext setFieldFilters(Map<String, SerializablePredicate<?>> fieldFilters) {
-		this.fieldFilters = fieldFilters;
-		return this;
-	}
+    /**
+     * Sets the field entity model to be used during field construction
+     * 
+     * @param fieldEntityModel the field entity model
+     * @return
+     */
+    public FieldFactoryContext setFieldEntityModel(EntityModel<?> fieldEntityModel) {
+        this.fieldEntityModel = fieldEntityModel;
+        return this;
+    }
 
-	/**
-	 * Sets whether to construct the field for search mode
-	 * 
-	 * @param search whether to construct the field for search mode
-	 * @return
-	 */
-	public FieldFactoryContext setSearch(boolean search) {
-		this.search = search;
-		return this;
-	}
+    /**
+     * Sets the field filters to use during field construction
+     * 
+     * @param fieldFilters the field filters
+     * @return
+     */
+    public FieldFactoryContext setFieldFilters(Map<String, SerializablePredicate<?>> fieldFilters) {
+        this.fieldFilters = fieldFilters;
+        return this;
+    }
 
-	/**
-	 * Sets whether to construct the field for view mode
-	 * 
-	 * @param viewMode whether to construct the field for view mode
-	 * @return
-	 */
-	public FieldFactoryContext setViewMode(boolean viewMode) {
-		this.viewMode = viewMode;
-		return this;
-	}
+    /**
+     * Sets whether to construct the field for search mode
+     * 
+     * @param search whether to construct the field for search mode
+     * @return
+     */
+    public FieldFactoryContext setSearch(boolean search) {
+        this.search = search;
+        return this;
+    }
 
-	public Map<String, ListDataProvider<?>> getSharedProviders() {
-		return sharedProviders;
-	}
+    /**
+     * Sets whether to construct the field for view mode
+     * 
+     * @param viewMode whether to construct the field for view mode
+     * @return
+     */
+    public FieldFactoryContext setViewMode(boolean viewMode) {
+        this.viewMode = viewMode;
+        return this;
+    }
 
-	public FieldFactoryContext setSharedProviders(Map<String, ListDataProvider<?>> sharedProviders) {
-		this.sharedProviders = sharedProviders;
-		return this;
-	}
+    public Map<String, ListDataProvider<?>> getSharedProviders() {
+        return sharedProviders;
+    }
 
-	public void addSharedProvider(String attribute, ListDataProvider<?> sharedProvider) {
-		sharedProviders.put(attribute, sharedProvider);
-	}
+    public FieldFactoryContext setSharedProviders(Map<String, ListDataProvider<?>> sharedProviders) {
+        this.sharedProviders = sharedProviders;
+        return this;
+    }
 
-	public ListDataProvider<?> getSharedProvider(String attribute) {
-		return sharedProviders == null ? null : sharedProviders.get(attribute);
-	}
+    public void addSharedProvider(String attribute, ListDataProvider<?> sharedProvider) {
+        sharedProviders.put(attribute, sharedProvider);
+    }
 
-	public AbstractEntity<?> getParentEntity() {
-		return parentEntity;
-	}
+    public ListDataProvider<?> getSharedProvider(String attribute) {
+        return sharedProviders == null ? null : sharedProviders.get(attribute);
+    }
 
-	public FieldFactoryContext setParentEntity(AbstractEntity<?> parentEntity) {
-		this.parentEntity = parentEntity;
-		return this;
-	}
+    public AbstractEntity<?> getParentEntity() {
+        return parentEntity;
+    }
+
+    public FieldFactoryContext setParentEntity(AbstractEntity<?> parentEntity) {
+        this.parentEntity = parentEntity;
+        return this;
+    }
+
+    public boolean isEditableGrid() {
+        return editableGrid;
+    }
+
+    public FieldFactoryContext setEditableGrid(boolean editableGrid) {
+        this.editableGrid = editableGrid;
+        return this;
+    }
 
 }

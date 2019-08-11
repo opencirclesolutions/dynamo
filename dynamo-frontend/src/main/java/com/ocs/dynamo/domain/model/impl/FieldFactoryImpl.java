@@ -159,14 +159,14 @@ public class FieldFactoryImpl implements FieldFactory {
     @SuppressWarnings("unchecked")
     private <ID extends Serializable, S extends AbstractEntity<ID>> AbstractComponent constructCollectionSelect(AttributeModel am,
             EntityModel<?> fieldEntityModel, SerializablePredicate<?> fieldFilter, ListDataProvider<?> sharedProvider, boolean search,
-            boolean multipleSelect) {
-        final EntityModel<?> em = resolveEntityModel(fieldEntityModel, am, search);
+            boolean grid, boolean multipleSelect) {
+        EntityModel<?> em = resolveEntityModel(fieldEntityModel, am, search);
 
-        final BaseService<ID, S> service = (BaseService<ID, S>) serviceLocator.getServiceForEntity(em.getEntityClass());
-        final SortOrder<?>[] sos = constructSortOrder(em);
+        BaseService<ID, S> service = (BaseService<ID, S>) serviceLocator.getServiceForEntity(em.getEntityClass());
+        SortOrder<?>[] sos = constructSortOrder(em);
 
-        // mode depends on whether we are searching
-        final AttributeSelectMode mode = search ? am.getSearchSelectMode() : am.getSelectMode();
+        // mode depends on whether we are searching or inside a grid
+        AttributeSelectMode mode = search ? am.getSearchSelectMode() : (grid ? am.getGridSelectMode() : am.getSelectMode());
 
         if (AttributeSelectMode.LOOKUP.equals(mode)) {
             // lookup field
@@ -253,6 +253,7 @@ public class FieldFactoryImpl implements FieldFactory {
         boolean viewMode = context.getViewMode();
         EntityModel<?> fieldEntityModel = context.getFieldEntityModel();
         boolean search = context.isSearch();
+        boolean grid = context.isEditableGrid();
 
         ListDataProvider<?> sharedProvider = context.getSharedProvider(am.getPath());
 
@@ -274,11 +275,11 @@ public class FieldFactoryImpl implements FieldFactory {
             field = constructForElementCollection(context, am, fieldEntityModel);
         } else if (AbstractEntity.class.isAssignableFrom(am.getType())) {
             // lookup or combo field for an entity
-            field = constructSelect(am, fieldEntityModel, fieldFilter, sharedProvider, search);
+            field = constructSelect(am, fieldEntityModel, fieldFilter, sharedProvider, search, grid);
         } else if (Collection.class.isAssignableFrom(am.getType())) {
             // render a multiple select component for a collection
-            field = constructCollectionSelect(am, fieldEntityModel, fieldFilter, sharedProvider, search, true);
-        } else if (AttributeTextFieldMode.TEXTAREA.equals(am.getTextFieldMode()) && !search) {
+            field = constructCollectionSelect(am, fieldEntityModel, fieldFilter, sharedProvider, search, grid, true);
+        } else if (AttributeTextFieldMode.TEXTAREA.equals(am.getTextFieldMode()) && !search && !grid) {
             field = new TextArea();
             ((TextArea) field).setRows(am.getRows() == null ? SystemPropertyUtils.getDefaultTextAreaRows() : am.getRows());
         } else if (Enum.class.isAssignableFrom(am.getType())) {
@@ -440,15 +441,18 @@ public class FieldFactoryImpl implements FieldFactory {
      * @param search
      * @return
      */
-    private AbstractComponent constructSelect(final AttributeModel am, final EntityModel<?> fieldEntityModel,
-            final SerializablePredicate<?> fieldFilter, ListDataProvider<?> sharedProvider, boolean search) {
+    private AbstractComponent constructSelect(AttributeModel am, EntityModel<?> fieldEntityModel, SerializablePredicate<?> fieldFilter,
+            ListDataProvider<?> sharedProvider, boolean search, boolean grid) {
         AbstractComponent field = null;
         AttributeSelectMode selectMode = search ? am.getSearchSelectMode() : am.getSelectMode();
+        if (grid) {
+            selectMode = am.getGridSelectMode();
+        }
 
         if (search && am.isMultipleSearch()) {
             // in case of multiple search, defer to the
             // "constructCollectionSelect" method
-            field = this.constructCollectionSelect(am, fieldEntityModel, fieldFilter, sharedProvider, search, true);
+            field = this.constructCollectionSelect(am, fieldEntityModel, fieldFilter, sharedProvider, search, grid, true);
         } else if (AttributeSelectMode.COMBO.equals(selectMode)) {
             // combo box
             field = constructComboBox(am, fieldEntityModel, fieldFilter, sharedProvider, search);
@@ -457,7 +461,7 @@ public class FieldFactoryImpl implements FieldFactory {
             field = constructLookupField(am, fieldEntityModel, fieldFilter, search, false);
         } else {
             // list select (single select)
-            field = this.constructCollectionSelect(am, fieldEntityModel, fieldFilter, sharedProvider, search, false);
+            field = this.constructCollectionSelect(am, fieldEntityModel, fieldFilter, sharedProvider, search, grid, false);
         }
         return field;
     }

@@ -94,6 +94,8 @@ public class AttributeModelImpl implements AttributeModel {
 
     private String fileNameProperty;
 
+    private AttributeSelectMode gridSelectMode;
+
     private boolean ignoreInSearchFilter;
 
     private final List<String> groupTogetherWith = new ArrayList<>();
@@ -311,6 +313,10 @@ public class AttributeModelImpl implements AttributeModel {
     @Override
     public String getFileNameProperty() {
         return fileNameProperty;
+    }
+
+    public AttributeSelectMode getGridSelectMode() {
+        return gridSelectMode;
     }
 
     @Override
@@ -720,6 +726,10 @@ public class AttributeModelImpl implements AttributeModel {
         this.fileNameProperty = fileNameProperty;
     }
 
+    public void setGridSelectMode(AttributeSelectMode gridSelectMode) {
+        this.gridSelectMode = gridSelectMode;
+    }
+
     public void setIgnoreInSearchFilter(boolean ignoreInSearchFilter) {
         this.ignoreInSearchFilter = ignoreInSearchFilter;
     }
@@ -849,9 +859,6 @@ public class AttributeModelImpl implements AttributeModel {
         this.sortable = sortable;
     }
 
-    /**
-     * @param styles the styles to set
-     */
     public void setStyles(String styles) {
         this.styles = styles;
     }

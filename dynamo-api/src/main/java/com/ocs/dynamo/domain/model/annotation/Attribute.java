@@ -121,6 +121,13 @@ public @interface Attribute {
     String[] groupTogetherWith() default {};
 
     /**
+     * The component to use in grid mode
+     * 
+     * @return
+     */
+    AttributeSelectMode gridSelectMode() default AttributeSelectMode.INHERIT;
+
+    /**
      * Whether to ignore this attribute when constructing a search filter
      */
     boolean ignoreInSearchFilter() default false;

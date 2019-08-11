@@ -470,21 +470,23 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
     public void testSelectMode() {
         final EntityModel<Entity7> model = factory.getModel(Entity7.class);
 
-        // overridden
+        // default
         final AttributeModel am = model.getAttributeModel("entity6");
         Assert.assertEquals(AttributeSelectMode.LOOKUP, am.getSelectMode());
         Assert.assertEquals(AttributeSelectMode.LOOKUP, am.getSearchSelectMode());
+        Assert.assertEquals(AttributeSelectMode.LOOKUP, am.getGridSelectMode());
 
-        // default
+        // multiple search defaults to token
         final AttributeModel am2 = model.getAttributeModel("entity5");
         Assert.assertEquals(AttributeSelectMode.COMBO, am2.getSelectMode());
-        // multiple search, defaults to token
         Assert.assertEquals(AttributeSelectMode.TOKEN, am2.getSearchSelectMode());
+        Assert.assertEquals(AttributeSelectMode.COMBO, am2.getGridSelectMode());
 
-        // overwritten search mode
+        // overwritten attribute modes
         final AttributeModel am3 = model.getAttributeModel("entity52");
         Assert.assertEquals(AttributeSelectMode.COMBO, am3.getSelectMode());
         Assert.assertEquals(AttributeSelectMode.TOKEN, am3.getSearchSelectMode());
+        Assert.assertEquals(AttributeSelectMode.LIST, am3.getGridSelectMode());
     }
 
     @Test
@@ -855,7 +857,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
         @Attribute(multipleSearch = true)
         private Entity5 entity5;
 
-        @Attribute(multipleSearch = true, searchSelectMode = AttributeSelectMode.TOKEN)
+        @Attribute(multipleSearch = true, searchSelectMode = AttributeSelectMode.TOKEN, gridSelectMode = AttributeSelectMode.LIST)
         private Entity5 entity52;
 
         public Entity6 getEntity6() {

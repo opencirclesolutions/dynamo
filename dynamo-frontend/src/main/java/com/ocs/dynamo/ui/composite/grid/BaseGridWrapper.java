@@ -209,14 +209,13 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
             private static final long serialVersionUID = -4559181057050230055L;
 
             @Override
-            protected BindingBuilder<T, ?> doBind(T t, AbstractComponent field) {
-                return BaseGridWrapper.this.doBind(t, field);
+            protected BindingBuilder<T, ?> doBind(T t, AbstractComponent field, String attributeName) {
+                return BaseGridWrapper.this.doBind(t, field, attributeName);
             }
         };
-
     }
 
-    protected BindingBuilder<T, ?> doBind(T t, AbstractComponent field) {
+    protected BindingBuilder<T, ?> doBind(T t, AbstractComponent field, String attributeName) {
         return null;
     }
 

@@ -76,8 +76,8 @@ import com.vaadin.ui.VerticalLayout;
  * @param <ID> the type of the ID of the entities that are being displayed
  * @param <T> the type of the entities that are being displayed
  */
-public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends AbstractEntity<ID>>
-        extends CustomField<U> implements NestedComponent, UseInViewMode {
+public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends AbstractEntity<ID>> extends CustomField<U>
+        implements NestedComponent, UseInViewMode {
 
     private static final long serialVersionUID = 997617632007985450L;
 
@@ -210,8 +210,8 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
      * @param formOptions
      * @param joins
      */
-    public BaseDetailsEditGrid(BaseService<ID, T> service, EntityModel<T> entityModel, AttributeModel attributeModel,
-            boolean viewMode, boolean serviceBasedEditMode, FormOptions formOptions, FetchJoinInformation... joins) {
+    public BaseDetailsEditGrid(BaseService<ID, T> service, EntityModel<T> entityModel, AttributeModel attributeModel, boolean viewMode,
+            boolean serviceBasedEditMode, FormOptions formOptions, FetchJoinInformation... joins) {
         this.service = service;
         this.entityModel = entityModel;
         this.messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
@@ -247,8 +247,7 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
         addButton = new Button(messageService.getMessage("ocs.add", VaadinUtils.getLocale()));
         addButton.setIcon(VaadinIcons.PLUS);
         addButton.addClickListener(event -> doAdd());
-        addButton.setVisible((isGridEditEnabled()
-                || (!isViewMode() && serviceBasedEditMode && !formOptions.isDetailsGridSearchMode()))
+        addButton.setVisible((isGridEditEnabled() || (!isViewMode() && serviceBasedEditMode && !formOptions.isDetailsGridSearchMode()))
                 && !formOptions.isHideAddButton());
         buttonBar.addComponent(addButton);
     }
@@ -287,8 +286,7 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
      * @param viewMode       whether the form is in view mode
      * @return
      */
-    protected AbstractComponent constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel,
-            boolean viewMode) {
+    protected AbstractComponent constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel, boolean viewMode) {
         // overwrite in subclasses
         return null;
     }
@@ -307,13 +305,11 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 
             // service must be specified
             if (service == null) {
-                throw new OCSRuntimeException(
-                        messageService.getMessage("ocs.no.service.specified", VaadinUtils.getLocale()));
+                throw new OCSRuntimeException(messageService.getMessage("ocs.no.service.specified", VaadinUtils.getLocale()));
             }
 
-            dialog = new ModelBasedSearchDialog<ID, T>(service,
-                    searchDialogEntityModel != null ? searchDialogEntityModel : entityModel, searchDialogFilters,
-                    searchDialogSortOrder == null ? null : Lists.newArrayList(searchDialogSortOrder), true, true) {
+            dialog = new ModelBasedSearchDialog<ID, T>(service, searchDialogEntityModel != null ? searchDialogEntityModel : entityModel,
+                    searchDialogFilters, searchDialogSortOrder == null ? null : Lists.newArrayList(searchDialogSortOrder), true, true) {
 
                 private static final long serialVersionUID = 1512969437992973122L;
 
@@ -440,7 +436,7 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
             }
 
             @Override
-            protected BindingBuilder<T, ?> doBind(T t, AbstractComponent field) {
+            protected BindingBuilder<T, ?> doBind(T t, AbstractComponent field, String attributeName) {
                 if (!binders.containsKey(t)) {
                     binders.put(t, new BeanValidationBinder<>(entityModel.getEntityClass()));
                     binders.get(t).setBean(t);
@@ -520,8 +516,7 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
      * @return
      */
     private boolean isGridEditEnabled() {
-        return !viewMode && !formOptions.isDetailsGridSearchMode() && !formOptions.isReadOnly()
-                && !serviceBasedEditMode;
+        return !viewMode && !formOptions.isDetailsGridSearchMode() && !formOptions.isReadOnly() && !serviceBasedEditMode;
     }
 
     /**

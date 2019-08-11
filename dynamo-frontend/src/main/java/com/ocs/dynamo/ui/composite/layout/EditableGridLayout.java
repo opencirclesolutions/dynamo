@@ -279,9 +279,10 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
         Editor<T> editor = wrapper.getGrid().getEditor();
         editor.setEnabled(!isViewmode());
         editor.addSaveListener(event -> {
+
             try {
                 T t = getService().save((T) event.getBean());
-                // reassign to avoid optimistic lock
+                // reassign to avoid optimistic locking exception
                 wrapper.getGrid().getEditor().getBinder().setBean(t);
                 wrapper.getGrid().getDataProvider().refreshAll();
             } catch (OCSValidationException ex) {
@@ -327,7 +328,8 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
                 getFormOptions(), filter, getFieldFilters(), getSortOrders(), !viewmode, getJoins()) {
 
             @Override
-            protected BindingBuilder<T, ?> doBind(T t, AbstractComponent field) {
+            protected BindingBuilder<T, ?> doBind(T t, AbstractComponent field, String attributeName) {
+
                 if (!binders.containsKey(t)) {
                     binders.put(t, new BeanValidationBinder<>(getEntityModel().getEntityClass()));
                     binders.get(t).setBean(t);

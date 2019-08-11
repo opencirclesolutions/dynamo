@@ -72,9 +72,13 @@ public class FieldFactoryImplTest extends FrontendIntegrationTest {
     }
 
     private AbstractComponent constructField2(String name, boolean search, boolean viewMode) {
+        return constructField2(name, search, viewMode, false);
+    }
+
+    private AbstractComponent constructField2(String name, boolean search, boolean viewMode, boolean grid) {
         EntityModel<TestEntity2> em = factory.getModel(TestEntity2.class);
         FieldFactoryContext context = FieldFactoryContext.create().setAttributeModel(em.getAttributeModel(name)).setSearch(search)
-                .setViewMode(viewMode);
+                .setViewMode(viewMode).setEditableGrid(grid);
         return fieldFactory.constructField(context);
     }
 
@@ -408,6 +412,15 @@ public class FieldFactoryImplTest extends FrontendIntegrationTest {
         QuickAddListSingleSelect<Integer, TestEntity> ls = (QuickAddListSingleSelect<Integer, TestEntity>) ac;
         Assert.assertNull(ls.getFilter());
         Assert.assertEquals(6, ls.getListSelect().getVisibleItemCount());
+    }
+
+    /**
+     * Test that the "gridSelectMode" is used inside a grid
+     */
+    @Test
+    public void testConstructInGrid() {
+        AbstractComponent ac = constructField2("testEntityAlt2", false, false, true);
+        Assert.assertTrue(ac instanceof FancyListSelect);
     }
 
     @Test
