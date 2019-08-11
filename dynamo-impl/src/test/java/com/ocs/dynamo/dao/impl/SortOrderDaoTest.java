@@ -32,7 +32,7 @@ public class SortOrderDaoTest {
 
     @Test
     public void testPropertyAndDirection() {
-        SortOrder order = new SortOrder(Direction.DESC, "property");
+        SortOrder order = new SortOrder("property", Direction.DESC);
 
         Assert.assertEquals(Direction.DESC, order.getDirection());
         Assert.assertEquals("property", order.getProperty());
@@ -40,7 +40,7 @@ public class SortOrderDaoTest {
 
     @Test
     public void testPropertyAndDirectionFromString() {
-        SortOrder order = new SortOrder(Direction.fromString("ASC"), "property");
+        SortOrder order = new SortOrder("property", Direction.fromString("ASC"));
 
         Assert.assertEquals(Direction.ASC, order.getDirection());
         Assert.assertEquals("property", order.getProperty());
@@ -48,7 +48,7 @@ public class SortOrderDaoTest {
 
     @Test
     public void testPropertyAndDirectionFromString2() {
-        SortOrder order = new SortOrder(Direction.fromString("DESC"), "property");
+        SortOrder order = new SortOrder("property", Direction.fromString("DESC"));
 
         Assert.assertEquals(Direction.DESC, order.getDirection());
         Assert.assertEquals("property", order.getProperty());
@@ -56,14 +56,14 @@ public class SortOrderDaoTest {
 
     @Test(expected = OCSRuntimeException.class)
     public void testPropertyAndDirectionFromString_Wrong() {
-        new SortOrder(Direction.fromString("AS"), "property");
+        new SortOrder("property", Direction.fromString("AS"));
     }
 
     @Test
     public void testEquals() {
         SortOrder order = new SortOrder("property");
         SortOrder order2 = new SortOrder("property");
-        SortOrder order3 = new SortOrder(Direction.DESC, "property");
+        SortOrder order3 = new SortOrder("property", Direction.DESC);
 
         Assert.assertFalse(order.equals(null));
         Assert.assertFalse(order.equals(new Object()));

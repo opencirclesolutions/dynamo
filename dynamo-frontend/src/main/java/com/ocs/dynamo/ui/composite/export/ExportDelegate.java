@@ -21,29 +21,28 @@ import com.vaadin.ui.UI;
  */
 public interface ExportDelegate {
 
-	/**
-	 * Exports a variable set of data
-	 * 
-	 * @param ui the Vaadin UI
-	 * @param entityModel
-	 * @param mode
-	 * @param predicate
-	 * @param sortOrders
-	 * @param joins
-	 */
-	<ID extends Serializable, T extends AbstractEntity<ID>> void export(UI ui, EntityModel<T> entityModel,
-			ExportMode mode, SerializablePredicate<T> predicate, List<SortOrder<?>> sortOrders,
-			FetchJoinInformation... joins);
+    /**
+     * Exports a non-fixed set of data (e.g. the data in a grid)
+     * 
+     * @param ui          the Vaadin UI
+     * @param entityModel the entity model of the entity that is being exported
+     * @param mode        the export mode
+     * @param predicate   filter predicate to limit the results
+     * @param sortOrders  sort orders to used to order the results
+     * @param joins the fetch joins to apply when fetching data
+     */
+    <ID extends Serializable, T extends AbstractEntity<ID>> void export(UI ui, EntityModel<T> entityModel, ExportMode mode,
+            SerializablePredicate<T> predicate, List<SortOrder<?>> sortOrders, FetchJoinInformation... joins);
 
-	/**
-	 * Exports a fixed set of data
-	 * 
-	 * @param ui the Vaadin UI
-	 * @param entityModel the entity model
-	 * @param mode        the export mode
-	 * @param items       the entities to export
-	 */
-	<ID extends Serializable, T extends AbstractEntity<ID>> void exportFixed(UI ui, EntityModel<T> entityModel,
-			ExportMode mode, Collection<T> items);
+    /**
+     * Exports a fixed set of data
+     * 
+     * @param ui          the Vaadin UI
+     * @param entityModel the entity model
+     * @param mode        the export mode
+     * @param items       the entities to export
+     */
+    <ID extends Serializable, T extends AbstractEntity<ID>> void exportFixed(UI ui, EntityModel<T> entityModel, ExportMode mode,
+            Collection<T> items);
 
 }

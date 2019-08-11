@@ -42,8 +42,7 @@ public class SortOrder implements Serializable {
         /**
          * Translates the provided String into the corresponding Direction enum
          * 
-         * @param value
-         *            the String representation of the Direction
+         * @param value the String representation of the Direction
          * @return
          */
         public static Direction fromString(String value) {
@@ -58,12 +57,10 @@ public class SortOrder implements Serializable {
     /**
      * Constructor
      * 
-     * @param direction
-     *            the desired sort direction
-     * @param property
-     *            the property to sort on
+     * @param direction the desired sort direction
+     * @param property  the property to sort on
      */
-    public SortOrder(Direction direction, String property) {
+    public SortOrder(String property, Direction direction) {
         this.direction = direction == null ? DEFAULT_DIRECTION : direction;
         this.property = property;
     }
@@ -71,11 +68,10 @@ public class SortOrder implements Serializable {
     /**
      * Constructor
      * 
-     * @param property
-     *            the property to sort on (in ascending direction)
+     * @param property the property to sort on (in ascending direction)
      */
     public SortOrder(String property) {
-        this(DEFAULT_DIRECTION, property);
+        this(property, DEFAULT_DIRECTION);
     }
 
     public Direction getDirection() {
@@ -90,8 +86,8 @@ public class SortOrder implements Serializable {
         return this.direction.equals(Direction.ASC);
     }
 
-    public SortOrder with(Direction order) {
-        return new SortOrder(order, this.property);
+    public SortOrder withDirection(Direction direction) {
+        return new SortOrder(this.property, direction);
     }
 
     @Override

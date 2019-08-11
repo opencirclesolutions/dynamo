@@ -18,28 +18,36 @@ import java.util.List;
 
 import com.ocs.dynamo.domain.AbstractEntity;
 
-public class FixedDataSetIterator<ID extends Serializable, T extends AbstractEntity<ID>>
-		implements DataSetIterator<ID, T> {
+/**
+ * A simple iterator for iterating over a fixed set of data - this basically
+ * just delegates to the underlying collection
+ * 
+ * @author Bas Rutten
+ *
+ * @param <ID>
+ * @param <T>
+ */
+public class FixedDataSetIterator<ID extends Serializable, T extends AbstractEntity<ID>> implements DataSetIterator<ID, T> {
 
-	private List<T> items;
+    private List<T> items;
 
-	private int index = 0;
+    private int index = 0;
 
-	public FixedDataSetIterator(List<T> items) {
-		this.items = items;
-	}
+    public FixedDataSetIterator(List<T> items) {
+        this.items = items;
+    }
 
-	@Override
-	public T next() {
-		if (index < items.size()) {
-			return items.get(index++);
-		}
-		return null;
-	}
+    @Override
+    public T next() {
+        if (index < items.size()) {
+            return items.get(index++);
+        }
+        return null;
+    }
 
-	@Override
-	public int size() {
-		return items.size();
-	}
+    @Override
+    public int size() {
+        return items.size();
+    }
 
 }

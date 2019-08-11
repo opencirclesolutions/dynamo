@@ -111,19 +111,19 @@ public abstract class BaseDataProvider<ID extends Serializable, T extends Abstra
 
         if (!orders.isEmpty()) {
             for (QuerySortOrder order : orders) {
-                so.addSortOrder(new SortOrder(SortDirection.ASCENDING.equals(order.getDirection()) ? Direction.ASC : Direction.DESC,
-                        order.getSorted().toString()));
+                so.addSortOrder(new SortOrder(order.getSorted().toString(),
+                        SortDirection.ASCENDING.equals(order.getDirection()) ? Direction.ASC : Direction.DESC));
             }
         } else if (fallBackSortOrders != null && !fallBackSortOrders.isEmpty()) {
             for (com.vaadin.data.provider.SortOrder<?> order : fallBackSortOrders) {
-                so.addSortOrder(new SortOrder(SortDirection.ASCENDING.equals(order.getDirection()) ? Direction.ASC : Direction.DESC,
-                        order.getSorted().toString()));
+                so.addSortOrder(new SortOrder(order.getSorted().toString(),
+                        SortDirection.ASCENDING.equals(order.getDirection()) ? Direction.ASC : Direction.DESC));
             }
         }
 
         // if not sort order defined, order descending on ID
         if (so.getNrOfSortOrders() == 0) {
-            so.addSortOrder(new SortOrder(Direction.DESC, DynamoConstants.ID));
+            so.addSortOrder(new SortOrder(DynamoConstants.ID, Direction.DESC));
         }
 
         return so;

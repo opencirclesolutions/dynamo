@@ -175,9 +175,7 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
                         BindingBuilder<T, ?> builder = doBind(t, (AbstractComponent) comp, am.getPath());
                         fieldFactory.addConvertersAndValidators(builder, am, constructCustomConverter(am));
                         builder.bind(am.getPath());
-
                         postProcessComponent(am, comp);
-
                         return (AbstractComponent) comp;
                     });
                 } else {

@@ -16,6 +16,8 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import com.ocs.dynamo.dao.SortOrder;
+import com.ocs.dynamo.dao.SortOrder.Direction;
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.TestEntity.TestEnum;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
@@ -71,8 +73,8 @@ public class ModelBasedExportTemplateTest extends FrontendIntegrationTest {
     @Test
     public void testExcel() throws IOException {
         ModelBasedExcelExportTemplate<Integer, TestEntity> template = new ModelBasedExcelExportTemplate<Integer, TestEntity>(
-                testEntityService, entityModelFactory.getModel(TestEntity.class), ExportMode.ONLY_VISIBLE_IN_GRID, null, null, "Sheet name",
-                null);
+                testEntityService, entityModelFactory.getModel(TestEntity.class), ExportMode.ONLY_VISIBLE_IN_GRID,
+                new SortOrder[] { new SortOrder("name", Direction.ASC) }, null, "Sheet name", null);
         byte[] bytes = template.process();
 
         try (Workbook wb = new XSSFWorkbook(new ByteArrayInputStream(bytes))) {
@@ -124,7 +126,8 @@ public class ModelBasedExportTemplateTest extends FrontendIntegrationTest {
     @Test
     public void testCsv() {
         ModelBasedCsvExportTemplate<Integer, TestEntity> template = new ModelBasedCsvExportTemplate<Integer, TestEntity>(testEntityService,
-                entityModelFactory.getModel(TestEntity.class), ExportMode.ONLY_VISIBLE_IN_GRID, null, null, "Sheet name", null);
+                entityModelFactory.getModel(TestEntity.class), ExportMode.ONLY_VISIBLE_IN_GRID,
+                new SortOrder[] { new SortOrder("name", Direction.ASC) }, null, null);
         byte[] bytes = template.process();
         String str = new String(bytes);
         String[] lines = str.split("\n");

@@ -26,7 +26,7 @@ import com.vaadin.server.VaadinResponse;
 import com.vaadin.ui.Button;
 
 /**
- * A button that starts a file download process when clicked
+ * A button that starts a file download when clicked. 
  * 
  * @author bas.rutten
  */
@@ -78,7 +78,7 @@ public class DownloadButton extends Button {
 	}
 
 	/**
-	 * 
+	 * Updates the button after the content to download has been changed
 	 */
 	public void update() {
 

@@ -42,51 +42,48 @@ import com.vaadin.server.SerializablePredicate;
 @Service
 public class ExportServiceImpl implements ExportService {
 
-	@Override
-	@SuppressWarnings("unchecked")
-	public <ID extends Serializable, T extends AbstractEntity<ID>> byte[] exportCsv(EntityModel<T> entityModel,
-			ExportMode mode, SerializablePredicate<T> predicate, List<SortOrder<?>> sortOrders,
-			FetchJoinInformation... joins) {
-		BaseService<ID, T> service = (BaseService<ID, T>) ServiceLocatorFactory.getServiceLocator()
-				.getServiceForEntity(entityModel.getEntityClass());
-		FilterConverter<T> converter = new FilterConverter<T>(entityModel);
-		Filter filter = converter.convert(predicate);
+    @Override
+    @SuppressWarnings("unchecked")
+    public <ID extends Serializable, T extends AbstractEntity<ID>> byte[] exportCsv(EntityModel<T> entityModel, ExportMode mode,
+            SerializablePredicate<T> predicate, List<SortOrder<?>> sortOrders, FetchJoinInformation... joins) {
+        BaseService<ID, T> service = (BaseService<ID, T>) ServiceLocatorFactory.getServiceLocator()
+                .getServiceForEntity(entityModel.getEntityClass());
+        FilterConverter<T> converter = new FilterConverter<T>(entityModel);
+        Filter filter = converter.convert(predicate);
 
-		ModelBasedCsvExportTemplate<ID, T> template = new ModelBasedCsvExportTemplate<ID, T>(service, entityModel, mode,
-				SortUtils.translateSortOrders(sortOrders), filter,
-				entityModel.getDisplayNamePlural(VaadinUtils.getLocale()), null, joins);
-		return template.process();
-	}
+        ModelBasedCsvExportTemplate<ID, T> template = new ModelBasedCsvExportTemplate<ID, T>(service, entityModel, mode,
+                SortUtils.translateSortOrders(sortOrders), filter, null, joins);
+        return template.process();
+    }
 
-	@Override
-	public <ID extends Serializable, T extends AbstractEntity<ID>> byte[] exportCsvFixed(EntityModel<T> entityModel,
-			ExportMode mode, List<T> items) {
-		ModelBasedCsvExportTemplate<ID, T> template = new ModelBasedCsvExportTemplate<ID, T>(null, entityModel, mode,
-				null, null, entityModel.getDisplayNamePlural(VaadinUtils.getLocale()), null);
-		return template.processFixed(items);
-	}
+    @Override
+    public <ID extends Serializable, T extends AbstractEntity<ID>> byte[] exportCsvFixed(EntityModel<T> entityModel, ExportMode mode,
+            List<T> items) {
+        ModelBasedCsvExportTemplate<ID, T> template = new ModelBasedCsvExportTemplate<ID, T>(null, entityModel, mode, null, null, null);
+        return template.processFixed(items);
+    }
 
-	@Override
-	@SuppressWarnings("unchecked")
-	public <ID extends Serializable, T extends AbstractEntity<ID>> byte[] exportExcel(EntityModel<T> entityModel,
-			ExportMode mode, SerializablePredicate<T> predicate, List<SortOrder<?>> sortOrders,
-			CustomXlsStyleGenerator<ID, T> customGenerator, FetchJoinInformation... joins) {
-		BaseService<ID, T> service = (BaseService<ID, T>) ServiceLocatorFactory.getServiceLocator()
-				.getServiceForEntity(entityModel.getEntityClass());
-		FilterConverter<T> converter = new FilterConverter<T>(entityModel);
-		Filter filter = converter.convert(predicate);
-		ModelBasedExcelExportTemplate<ID, T> template = new ModelBasedExcelExportTemplate<ID, T>(service, entityModel,
-				mode, SortUtils.translateSortOrders(sortOrders), filter,
-				entityModel.getDisplayNamePlural(VaadinUtils.getLocale()), customGenerator, joins);
-		return template.process();
-	}
+    @Override
+    @SuppressWarnings("unchecked")
+    public <ID extends Serializable, T extends AbstractEntity<ID>> byte[] exportExcel(EntityModel<T> entityModel, ExportMode mode,
+            SerializablePredicate<T> predicate, List<SortOrder<?>> sortOrders, CustomXlsStyleGenerator<ID, T> customGenerator,
+            FetchJoinInformation... joins) {
+        BaseService<ID, T> service = (BaseService<ID, T>) ServiceLocatorFactory.getServiceLocator()
+                .getServiceForEntity(entityModel.getEntityClass());
+        FilterConverter<T> converter = new FilterConverter<T>(entityModel);
+        Filter filter = converter.convert(predicate);
+        ModelBasedExcelExportTemplate<ID, T> template = new ModelBasedExcelExportTemplate<ID, T>(service, entityModel, mode,
+                SortUtils.translateSortOrders(sortOrders), filter, entityModel.getDisplayNamePlural(VaadinUtils.getLocale()),
+                customGenerator, joins);
+        return template.process();
+    }
 
-	@Override
-	public <ID extends Serializable, T extends AbstractEntity<ID>> byte[] exportExcelFixed(EntityModel<T> entityModel,
-			ExportMode mode, CustomXlsStyleGenerator<ID, T> customGenerator, List<T> items) {
-		ModelBasedExcelExportTemplate<ID, T> template = new ModelBasedExcelExportTemplate<ID, T>(null, entityModel,
-				mode, null, null, entityModel.getDisplayNamePlural(VaadinUtils.getLocale()), customGenerator);
-		return template.processFixed(items);
-	}
+    @Override
+    public <ID extends Serializable, T extends AbstractEntity<ID>> byte[] exportExcelFixed(EntityModel<T> entityModel, ExportMode mode,
+            CustomXlsStyleGenerator<ID, T> customGenerator, List<T> items) {
+        ModelBasedExcelExportTemplate<ID, T> template = new ModelBasedExcelExportTemplate<ID, T>(null, entityModel, mode, null, null,
+                entityModel.getDisplayNamePlural(VaadinUtils.getLocale()), customGenerator);
+        return template.processFixed(items);
+    }
 
 }

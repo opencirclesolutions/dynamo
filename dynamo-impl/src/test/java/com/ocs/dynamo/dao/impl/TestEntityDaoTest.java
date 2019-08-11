@@ -195,7 +195,7 @@ public class TestEntityDaoTest extends BackendIntegrationTest {
 
         and = new And(filter, new Compare.Equal("age", 11L));
 
-        SortOrder order = new SortOrder(Direction.ASC, "name");
+        SortOrder order = new SortOrder("name", Direction.ASC);
         list = dao.find(and, order);
         assertEquals(1, list.size());
 
@@ -216,19 +216,19 @@ public class TestEntityDaoTest extends BackendIntegrationTest {
         save("Klaas", 13L);
 
         // retrieve the IDs (sorted by name)
-        List<Integer> ids = dao.findIds(null, new SortOrder(Direction.ASC, "name"));
+        List<Integer> ids = dao.findIds(null, new SortOrder("name", Direction.ASC));
         Assert.assertEquals(3, ids.size());
 
         TestEntity entity = dao.fetchById(ids.get(0));
         Assert.assertEquals("Jan", entity.getName());
 
-        ids = dao.findIds(null, new SortOrder(Direction.DESC, "name"));
+        ids = dao.findIds(null, new SortOrder("name", Direction.DESC));
         Assert.assertEquals(3, ids.size());
 
         entity = dao.fetchById(ids.get(0));
         Assert.assertEquals("Piet", entity.getName());
 
-        List<TestEntity> list = dao.fetchByIds(ids, new SortOrders(new SortOrder(Direction.ASC, "name")));
+        List<TestEntity> list = dao.fetchByIds(ids, new SortOrders(new SortOrder("name", Direction.ASC)));
         Assert.assertEquals("Jan", list.get(0).getName());
         Assert.assertEquals("Klaas", list.get(1).getName());
         Assert.assertEquals("Piet", list.get(2).getName());

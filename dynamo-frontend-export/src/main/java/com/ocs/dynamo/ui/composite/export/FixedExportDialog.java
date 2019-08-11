@@ -37,50 +37,47 @@ import com.vaadin.ui.Button;
  */
 public class FixedExportDialog<ID extends Serializable, T extends AbstractEntity<ID>> extends BaseExportDialog<ID, T> {
 
-	private static final long serialVersionUID = -7559490010581729532L;
+    private static final long serialVersionUID = -7559490010581729532L;
 
-	/**
-	 * The supplier method for retrieving the list of items
-	 */
-	private Supplier<List<T>> itemsSupplier;
+    /**
+     * The supplier method for retrieving the list of items
+     */
+    private Supplier<List<T>> itemsSupplier;
 
-	/**
-	 * The custom style generator
-	 */
-	private CustomXlsStyleGenerator<ID, T> customGenerator;
+    /**
+     * The custom style generator
+     */
+    private CustomXlsStyleGenerator<ID, T> customGenerator;
 
-	/**
-	 * Constructor
-	 * 
-	 * @param exportService
-	 * @param entityModel
-	 * @param exportMode
-	 * @param customGenerator
-	 * @param itemsSupplier
-	 */
-	public FixedExportDialog(ExportService exportService, EntityModel<T> entityModel, ExportMode exportMode,
-			CustomXlsStyleGenerator<ID, T> customGenerator, Supplier<List<T>> itemsSupplier) {
-		super(exportService, entityModel, exportMode);
-		this.itemsSupplier = itemsSupplier;
-		this.customGenerator = customGenerator;
-	}
+    /**
+     * Constructor
+     * 
+     * @param exportService
+     * @param entityModel
+     * @param exportMode
+     * @param customGenerator
+     * @param itemsSupplier
+     */
+    public FixedExportDialog(ExportService exportService, EntityModel<T> entityModel, ExportMode exportMode,
+            CustomXlsStyleGenerator<ID, T> customGenerator, Supplier<List<T>> itemsSupplier) {
+        super(exportService, entityModel, exportMode);
+        this.itemsSupplier = itemsSupplier;
+        this.customGenerator = customGenerator;
+    }
 
-	@Override
-	protected Button createDownloadCSVButton() {
-		return new DownloadButton(message("ocs.export.csv"),
-				() -> new ByteArrayInputStream(
-						getExportService().exportCsvFixed(getEntityModel(), getExportMode(), itemsSupplier.get())),
-				() -> getEntityModel().getDisplayNamePlural(VaadinUtils.getLocale()) + "_" + LocalDateTime.now()
-						+ EXTENSION_CSV);
-	}
+    @Override
+    protected Button createDownloadCSVButton() {
+        return new DownloadButton(message("ocs.export.csv"),
+                () -> new ByteArrayInputStream(getExportService().exportCsvFixed(getEntityModel(), getExportMode(), itemsSupplier.get())),
+                () -> getEntityModel().getDisplayNamePlural(VaadinUtils.getLocale()) + "_" + LocalDateTime.now() + EXTENSION_CSV);
+    }
 
-	@Override
-	protected Button createDownloadExcelButton() {
-		return new DownloadButton(message("ocs.export.excel"),
-				() -> new ByteArrayInputStream(getExportService().exportExcelFixed(getEntityModel(), getExportMode(),
-						customGenerator, itemsSupplier.get())),
-				() -> getEntityModel().getDisplayNamePlural(VaadinUtils.getLocale()) + "_" + LocalDateTime.now()
-						+ EXTENSION_XLS);
-	}
+    @Override
+    protected Button createDownloadExcelButton() {
+        return new DownloadButton(message("ocs.export.excel"),
+                () -> new ByteArrayInputStream(
+                        getExportService().exportExcelFixed(getEntityModel(), getExportMode(), customGenerator, itemsSupplier.get())),
+                () -> getEntityModel().getDisplayNamePlural(VaadinUtils.getLocale()) + "_" + LocalDateTime.now() + EXTENSION_XLS);
+    }
 
 }

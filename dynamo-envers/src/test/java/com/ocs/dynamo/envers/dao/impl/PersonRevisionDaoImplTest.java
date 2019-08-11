@@ -83,17 +83,17 @@ public class PersonRevisionDaoImplTest extends BackendIntegrationTest {
         Assert.assertEquals(RevisionType.DEL, list.get(2).getRevisionType());
 
         // try with sorting
-        Pageable p = new PageableImpl(0, 10, new SortOrders(new SortOrder(Direction.ASC, "name")));
+        Pageable p = new PageableImpl(0, 10, new SortOrders(new SortOrder("name", Direction.ASC)));
         list = personRevisionDao.fetch(new Compare.Equal("id", person.getId()), p);
         Assert.assertEquals(3, list.size());
 
         // sort on revision type
-        p = new PageableImpl(0, 10, new SortOrders(new SortOrder(Direction.ASC, "revisionType")));
+        p = new PageableImpl(0, 10, new SortOrders(new SortOrder("revisionType", Direction.ASC)));
         list = personRevisionDao.fetch(new Compare.Equal("id", person.getId()), p);
         Assert.assertEquals(3, list.size());
 
         // sort on revision property
-        p = new PageableImpl(0, 10, new SortOrders(new SortOrder(Direction.ASC, "revision")));
+        p = new PageableImpl(0, 10, new SortOrders(new SortOrder("revision", Direction.ASC)));
         list = personRevisionDao.fetch(new Compare.Equal("id", person.getId()), p);
         Assert.assertEquals(3, list.size());
 

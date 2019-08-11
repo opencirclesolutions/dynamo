@@ -30,39 +30,41 @@ import com.vaadin.ui.UI;
  */
 public class ExportDelegateImpl implements ExportDelegate {
 
-	@Autowired
-	private ExportService exportService;
+    @Autowired
+    private ExportService exportService;
 
-	private Map<EntityModel<?>, CustomXlsStyleGenerator<?, ?>> customStyleMap = new HashMap<>();
+    /**
+     * Map for keeping track of custom style generators
+     */
+    private Map<EntityModel<?>, CustomXlsStyleGenerator<?, ?>> customStyleMap = new HashMap<>();
 
-	@Override
-	@SuppressWarnings("unchecked")
-	public <ID extends Serializable, T extends AbstractEntity<ID>> void export(UI ui, EntityModel<T> entityModel,
-			ExportMode mode, SerializablePredicate<T> predicate, List<SortOrder<?>> sortOrders,
-			FetchJoinInformation... joins) {
-		ExportDialog<ID, T> dialog = new ExportDialog<ID, T>(exportService, entityModel, mode, predicate, sortOrders,
-				(CustomXlsStyleGenerator<ID, T>) customStyleMap.get(entityModel), joins);
-		dialog.build();
-		ui.addWindow(dialog);
-	}
+    @Override
+    @SuppressWarnings("unchecked")
+    public <ID extends Serializable, T extends AbstractEntity<ID>> void export(UI ui, EntityModel<T> entityModel, ExportMode mode,
+            SerializablePredicate<T> predicate, List<SortOrder<?>> sortOrders, FetchJoinInformation... joins) {
+        ExportDialog<ID, T> dialog = new ExportDialog<ID, T>(exportService, entityModel, mode, predicate, sortOrders,
+                (CustomXlsStyleGenerator<ID, T>) customStyleMap.get(entityModel), joins);
+        dialog.build();
+        ui.addWindow(dialog);
+    }
 
-	@Override
-	@SuppressWarnings("unchecked")
-	public <ID extends Serializable, T extends AbstractEntity<ID>> void exportFixed(UI ui, EntityModel<T> entityModel,
-			ExportMode mode, Collection<T> items) {
-		FixedExportDialog<ID, T> dialog = new FixedExportDialog<ID, T>(exportService, entityModel, mode,
-				(CustomXlsStyleGenerator<ID, T>) customStyleMap.get(entityModel), () -> Lists.newArrayList(items));
-		dialog.build();
-		ui.addWindow(dialog);
-	}
+    @Override
+    @SuppressWarnings("unchecked")
+    public <ID extends Serializable, T extends AbstractEntity<ID>> void exportFixed(UI ui, EntityModel<T> entityModel, ExportMode mode,
+            Collection<T> items) {
+        FixedExportDialog<ID, T> dialog = new FixedExportDialog<ID, T>(exportService, entityModel, mode,
+                (CustomXlsStyleGenerator<ID, T>) customStyleMap.get(entityModel), () -> Lists.newArrayList(items));
+        dialog.build();
+        ui.addWindow(dialog);
+    }
 
-	/**
-	 * Adds a mapping between an entity model and a custom style generator
-	 * 
-	 * @param entityModel
-	 * @param generator
-	 */
-	public void addCustomStyleGenerator(EntityModel<?> entityModel, CustomXlsStyleGenerator<?, ?> generator) {
-		customStyleMap.put(entityModel, generator);
-	}
+    /**
+     * Adds a mapping between an entity model and a custom style generator
+     * 
+     * @param entityModel the entity model of the entity
+     * @param generator   the custom style generator
+     */
+    public void addCustomStyleGenerator(EntityModel<?> entityModel, CustomXlsStyleGenerator<?, ?> generator) {
+        customStyleMap.put(entityModel, generator);
+    }
 }

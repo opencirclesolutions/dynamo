@@ -33,7 +33,7 @@ import com.vaadin.ui.UI;
 
 /**
  * A grid component that is meant for use inside an edit form. It manages a
- * lazily loaded 1-to-N or N-to-N collection
+ * lazily loaded 1-to-N or N-to-N detail collection
  * 
  * @author Bas Rutten
  *
@@ -43,135 +43,137 @@ import com.vaadin.ui.UI;
  * @param <U> the type of the parent attribute
  */
 public class ServiceBasedDetailsEditGrid<ID extends Serializable, T extends AbstractEntity<ID>, ID2 extends Serializable, U extends AbstractEntity<ID2>>
-		extends BaseDetailsEditGrid<U, ID, T> implements CanAssignEntity<ID2, U> {
+        extends BaseDetailsEditGrid<U, ID, T> implements CanAssignEntity<ID2, U> {
 
-	private static final long serialVersionUID = -1203245694503350276L;
+    private static final long serialVersionUID = -1203245694503350276L;
 
-	/**
-	 * The data provider
-	 */
-	private IdBasedDataProvider<ID, T> provider;
+    /**
+     * The data provider
+     */
+    private IdBasedDataProvider<ID, T> provider;
 
-	/**
-	 * The currently selected entity in the edit form that this component is part of
-	 */
-	private U parent;
+    /**
+     * The currently selected entity in the edit form that this component is part of
+     */
+    private U parent;
 
-	/**
-	 * The supplier for constructing the search filter used to restrict the
-	 * displayed items
-	 */
-	private Function<U, SerializablePredicate<T>> filterSupplier;
+    /**
+     * The supplier for constructing the search filter used to restrict the
+     * displayed items
+     */
+    private Function<U, SerializablePredicate<T>> filterSupplier;
 
-	/**
-	 * Constructor
-	 * 
-	 * @param service        the service for retrieving data from the database
-	 * @param entityModel    the entity model
-	 * @param attributeModel the attribute model
-	 * @param viewMode       whether the component is in view mode
-	 * @param formOptions    the form options that govern how the component behaves
-	 * @param joins          the joins to apply when fetching data
-	 */
-	public ServiceBasedDetailsEditGrid(BaseService<ID, T> service, EntityModel<T> entityModel,
-			AttributeModel attributeModel, boolean viewMode, FormOptions formOptions, FetchJoinInformation... joins) {
-		super(service, entityModel, attributeModel, viewMode, true, formOptions, joins);
-		this.provider = new IdBasedDataProvider<>(service, entityModel, joins);
-		provider.setAfterCountCompleted(x -> getGrid().updateCaption(x));
-	}
+    /**
+     * Constructor
+     * 
+     * @param service        the service for retrieving data from the database
+     * @param entityModel    the entity model
+     * @param attributeModel the attribute model
+     * @param viewMode       whether the component is in view mode
+     * @param formOptions    the form options that govern how the component behaves
+     * @param joins          the joins to apply when fetching data
+     */
+    public ServiceBasedDetailsEditGrid(BaseService<ID, T> service, EntityModel<T> entityModel, AttributeModel attributeModel,
+            boolean viewMode, FormOptions formOptions, FetchJoinInformation... joins) {
+        super(service, entityModel, attributeModel, viewMode, true, formOptions, joins);
+        this.provider = new IdBasedDataProvider<>(service, entityModel, joins);
+        provider.setAfterCountCompleted(x -> getGrid().updateCaption(x));
+    }
 
-	@Override
-	protected void applyFilter() {
-		SerializablePredicate<T> filter = (filterSupplier == null || parent == null) ? null
-				: filterSupplier.apply(parent);
-		getGrid().getDataCommunicator().setDataProvider(provider, filter);
-	}
+    /**
+     * Applies the search filter to the data provider
+     */
+    @Override
+    protected void applyFilter() {
+        SerializablePredicate<T> filter = (filterSupplier == null || parent == null) ? null : filterSupplier.apply(parent);
+        getGrid().getDataCommunicator().setDataProvider(provider, filter);
+    }
 
-	@Override
-	public void assignEntity(U u) {
-		this.parent = u;
-		if (getGrid() != null) {
-			applyFilter();
-		}
-	}
+    @Override
+    public void assignEntity(U u) {
+        this.parent = u;
+        if (getGrid() != null) {
+            applyFilter();
+        }
+    }
 
-	@Override
-	protected void doAdd() {
-		showPopup(null);
-	}
+    @Override
+    protected void doAdd() {
+        showPopup(null);
+    }
 
-	@Override
-	protected void doEdit(T entity) {
-		showPopup(entity);
-	}
+    @Override
+    protected void doEdit(T entity) {
+        showPopup(entity);
+    }
 
-	@Override
-	protected void doSetValue(U value) {
-		this.parent = value;
-		if (getGrid() != null) {
-			applyFilter();
-		}
-	}
+    @Override
+    protected void doSetValue(U value) {
+        this.parent = value;
+        if (getGrid() != null) {
+            applyFilter();
+        }
+    }
 
-	@Override
-	protected DataProvider<T, SerializablePredicate<T>> getDataProvider() {
-		return provider;
-	}
+    @Override
+    protected DataProvider<T, SerializablePredicate<T>> getDataProvider() {
+        return provider;
+    }
 
-	public Function<U, SerializablePredicate<T>> getFilterSupplier() {
-		return filterSupplier;
-	}
+    public Function<U, SerializablePredicate<T>> getFilterSupplier() {
+        return filterSupplier;
+    }
 
-	public int getItemCount() {
-		return provider.getSize();
-	}
+    public int getItemCount() {
+        return provider.getSize();
+    }
 
-	@Override
-	public U getValue() {
-		return parent;
-	}
+    @Override
+    public U getValue() {
+        return parent;
+    }
 
-	@Override
-	protected void handleDialogSelection(Collection<T> selected) {
-		if (getLinkEntityConsumer() == null) {
-			throw new OCSRuntimeException("No linkEntityConsumer specified!");
-		}
+    @Override
+    protected void handleDialogSelection(Collection<T> selected) {
+        if (getLinkEntityConsumer() == null) {
+            throw new OCSRuntimeException("No linkEntityConsumer specified!");
+        }
 
-		for (T t : selected) {
-			getLinkEntityConsumer().accept(t);
-		}
-	}
+        for (T t : selected) {
+            getLinkEntityConsumer().accept(t);
+        }
+    }
 
-	public void setFilterSupplier(Function<U, SerializablePredicate<T>> filterSupplier) {
-		this.filterSupplier = filterSupplier;
-	}
+    public void setFilterSupplier(Function<U, SerializablePredicate<T>> filterSupplier) {
+        this.filterSupplier = filterSupplier;
+    }
 
-	/**
-	 * Shows a pop-up for editing/creating the specified entity
-	 * 
-	 * @param entity the entity - this is empty in case a new entity is being
-	 *               created
-	 */
-	private void showPopup(T entity) {
-		EntityPopupDialog<ID, T> dialog = new EntityPopupDialog<ID, T>(getService(), entity, getEntityModel(),
-				getFieldFilters(), new FormOptions()) {
+    /**
+     * Shows a pop-up for editing/creating the specified entity
+     * 
+     * @param entity the entity - this is empty in case a new entity is being
+     *               created
+     */
+    private void showPopup(T entity) {
+        EntityPopupDialog<ID, T> dialog = new EntityPopupDialog<ID, T>(getService(), entity, getEntityModel(), getFieldFilters(),
+                new FormOptions()) {
 
-			private static final long serialVersionUID = 3660359220933653009L;
+            private static final long serialVersionUID = 3660359220933653009L;
 
-			@Override
-			public void afterEditDone(boolean cancel, boolean newEntity, T entity) {
-				// reload so that the newly created entity shows up
-				provider.refreshAll();
-			}
+            @Override
+            public void afterEditDone(boolean cancel, boolean newEntity, T entity) {
+                // reload so that the newly created entity shows up
+                provider.refreshAll();
+            }
 
-			@Override
-			protected T createEntity() {
-				return getCreateEntitySupplier().get();
-			}
+            @Override
+            protected T createEntity() {
+                return getCreateEntitySupplier().get();
+            }
 
-		};
-		dialog.build();
-		UI.getCurrent().addWindow(dialog);
-	}
+        };
+        dialog.build();
+        UI.getCurrent().addWindow(dialog);
+    }
 
 }

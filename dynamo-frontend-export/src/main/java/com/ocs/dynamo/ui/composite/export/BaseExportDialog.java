@@ -29,71 +29,71 @@ import com.vaadin.ui.Layout;
  * 
  * @author Bas Rutten
  *
- * @param <ID>
- * @param <T>
+ * @param <ID> the type of the ID of the entity to export
+ * @param <T> the type of the entity to export
  */
 public abstract class BaseExportDialog<ID extends Serializable, T extends AbstractEntity<ID>> extends BaseModalDialog {
 
-	private static final long serialVersionUID = 2066899457738401866L;
+    private static final long serialVersionUID = 2066899457738401866L;
 
-	protected static final String EXTENSION_CSV = ".csv";
+    protected static final String EXTENSION_CSV = ".csv";
 
-	protected static final String EXTENSION_XLS = ".xlsx";
+    protected static final String EXTENSION_XLS = ".xlsx";
 
-	private final ExportService exportService;
+    private final ExportService exportService;
 
-	private final ExportMode exportMode;
+    private final ExportMode exportMode;
 
-	private final EntityModel<T> entityModel;
+    private final EntityModel<T> entityModel;
 
-	/**
-	 * Constructor
-	 * 
-	 * @param exportService the export button
-	 * @param entityModel   the entity model of the entity to export
-	 * @param exportMode    the export mode
-	 */
-	public BaseExportDialog(ExportService exportService, EntityModel<T> entityModel, ExportMode exportMode) {
-		this.entityModel = entityModel;
-		this.exportService = exportService;
-		this.exportMode = exportMode;
-	}
+    /**
+     * Constructor
+     * 
+     * @param exportService the export button
+     * @param entityModel   the entity model of the entity to export
+     * @param exportMode    the export mode
+     */
+    public BaseExportDialog(ExportService exportService, EntityModel<T> entityModel, ExportMode exportMode) {
+        this.entityModel = entityModel;
+        this.exportService = exportService;
+        this.exportMode = exportMode;
+    }
 
-	protected abstract Button createDownloadCSVButton();
+    protected abstract Button createDownloadCSVButton();
 
-	protected abstract Button createDownloadExcelButton();
+    protected abstract Button createDownloadExcelButton();
 
-	@Override
-	protected void doBuild(Layout parent) {
-		Button exportExcelButton = createDownloadExcelButton();
-		parent.addComponent(exportExcelButton);
-		Button exportCsvButton = createDownloadCSVButton();
-		parent.addComponent(exportCsvButton);
-	}
+    @Override
+    protected void doBuild(Layout parent) {
+        Button exportExcelButton = createDownloadExcelButton();
+        parent.addComponent(exportExcelButton);
+        Button exportCsvButton = createDownloadCSVButton();
+        parent.addComponent(exportCsvButton);
+    }
 
-	@Override
-	protected void doBuildButtonBar(HorizontalLayout buttonBar) {
-		Button cancelButton = new Button(message("ocs.cancel"));
-		cancelButton.addClickListener(event -> close());
-		cancelButton.setIcon(VaadinIcons.BAN);
-		buttonBar.addComponent(cancelButton);
-	}
+    @Override
+    protected void doBuildButtonBar(HorizontalLayout buttonBar) {
+        Button cancelButton = new Button(message("ocs.cancel"));
+        cancelButton.addClickListener(event -> close());
+        cancelButton.setIcon(VaadinIcons.BAN);
+        buttonBar.addComponent(cancelButton);
+    }
 
-	public EntityModel<T> getEntityModel() {
-		return entityModel;
-	}
+    public EntityModel<T> getEntityModel() {
+        return entityModel;
+    }
 
-	public ExportMode getExportMode() {
-		return exportMode;
-	}
+    public ExportMode getExportMode() {
+        return exportMode;
+    }
 
-	public ExportService getExportService() {
-		return exportService;
-	}
+    public ExportService getExportService() {
+        return exportService;
+    }
 
-	@Override
-	protected String getTitle() {
-		return message("ocs.export");
-	}
+    @Override
+    protected String getTitle() {
+        return message("ocs.export");
+    }
 
 }

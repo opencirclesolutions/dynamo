@@ -136,8 +136,8 @@ public class BaseServiceImplTest extends BaseMockitoTest {
     public void testCreatePageable() {
         Filter filter = new Compare.Equal("name", "Piet");
 
-        SortOrder order = new SortOrder(Direction.ASC, "name");
-        SortOrder order2 = new SortOrder(Direction.DESC, "age");
+        SortOrder order = new SortOrder("name", Direction.ASC);
+        SortOrder order2 = new SortOrder("age", Direction.DESC);
         service.fetch(filter, 2, 10, new SortOrders(order, order2));
 
         ArgumentCaptor<Pageable> captor = ArgumentCaptor.forClass(Pageable.class);
@@ -165,8 +165,8 @@ public class BaseServiceImplTest extends BaseMockitoTest {
         List<Integer> ids = new ArrayList<>();
         ids.add(ID);
 
-        SortOrder order = new SortOrder(Direction.ASC, "name");
-        SortOrder order2 = new SortOrder(Direction.DESC, "age");
+        SortOrder order = new SortOrder("name", Direction.ASC);
+        SortOrder order2 = new SortOrder("age", Direction.DESC);
 
         service.fetchByIds(ids, new SortOrders(order, order2), new FetchJoinInformation("test"));
 
@@ -279,10 +279,10 @@ public class BaseServiceImplTest extends BaseMockitoTest {
         Mockito.verify(dao).findAll();
 
         service.findAll(new SortOrder("property1"));
-        Mockito.verify(dao).findAll(new SortOrder(Direction.ASC, "property1"));
+        Mockito.verify(dao).findAll(new SortOrder("property1", Direction.ASC));
 
-        service.findAll(new SortOrder(Direction.DESC, "property1"));
-        Mockito.verify(dao).findAll(new SortOrder(Direction.DESC, "property1"));
+        service.findAll(new SortOrder("property1", Direction.DESC));
+        Mockito.verify(dao).findAll(new SortOrder("property1", Direction.DESC));
     }
 
     @Test
@@ -307,7 +307,7 @@ public class BaseServiceImplTest extends BaseMockitoTest {
     @Test
     public void testFindIds() {
         service.findIds(new Compare.Equal("property1", 12), new SortOrder("property1"));
-        Mockito.verify(dao).findIds(new Compare.Equal("property1", 12), new SortOrder(Direction.ASC, "property1"));
+        Mockito.verify(dao).findIds(new Compare.Equal("property1", 12), new SortOrder("property1", Direction.ASC));
     }
 
     @Test
