@@ -39,92 +39,85 @@ import com.vaadin.server.SerializablePredicate;
  * @param <ID> the type of the primary key
  * @param <T> the type of the entity
  */
-public class IdBasedDataProvider<ID extends Serializable, T extends AbstractEntity<ID>>
-		extends BaseDataProvider<ID, T> {
+public class IdBasedDataProvider<ID extends Serializable, T extends AbstractEntity<ID>> extends BaseDataProvider<ID, T> {
 
-	private static final long serialVersionUID = -5693366456446998962L;
+    private static final long serialVersionUID = -5693366456446998962L;
 
-	private SortOrders oldSortOrder = null;
+    /**
+     * Constructor
+     * 
+     * @param service     the service
+     * @param entityModel the entity model
+     * @param joins       the joins to apply
+     */
+    public IdBasedDataProvider(BaseService<ID, T> service, EntityModel<T> entityModel, FetchJoinInformation... joins) {
+        super(service, entityModel, joins);
+    }
 
-	/**
-	 * Constructor
-	 * 
-	 * @param service     the service
-	 * @param entityModel the entity model
-	 * @param joins       the joins to apply
-	 */
-	public IdBasedDataProvider(BaseService<ID, T> service, EntityModel<T> entityModel, FetchJoinInformation... joins) {
-		super(service, entityModel, joins);
-	}
+    @Override
+    public Stream<T> fetch(Query<T, SerializablePredicate<T>> query) {
 
-	@Override
-	public Stream<T> fetch(Query<T, SerializablePredicate<T>> query) {
+        // when sort order changes, ID have to be fetched again
+        SortOrders so = createSortOrder(query);
+        size(query);
 
-		// when sort order changes, ID have to be fetched again
-		SortOrders so = createSortOrder(query);
-		if (!Objects.equals(so, oldSortOrder)) {
-			size(query);
-		}
-		oldSortOrder = so;
+        List<ID> results = new ArrayList<>();
+        int index = query.getOffset();
 
-		List<ID> results = new ArrayList<>();
-		int index = query.getOffset();
+        // Try to load the IDs when they have not been loaded yet
+        if (ids == null) {
+            size(query);
+        }
+        // construct a page worth of IDs
+        if (ids != null && !ids.isEmpty()) {
+            while (index < ids.size() && results.size() < query.getLimit()) {
+                ID id = ids.get(index);
+                results.add(id);
+                index++;
+            }
+        }
+        List<T> result = getService().fetchByIds(results, so, getJoins());
+        return result.stream();
+    }
 
-		// Try to load the IDs when they have not been loaded yet
-		if (ids == null) {
-			size(query);
-		}
-		// construct a page worth of IDs
-		if (ids != null && !ids.isEmpty()) {
-			while (index < ids.size() && results.size() < query.getLimit()) {
-				ID id = ids.get(index);
-				results.add(id);
-				index++;
-			}
-		}
-		List<T> result = getService().fetchByIds(results, so, getJoins());
-		return result.stream();
-	}
+    @Override
+    public int getSize() {
+        return ids == null ? 0 : ids.size();
+    }
 
-	@Override
-	public int getSize() {
-		return ids == null ? 0 : ids.size();
-	}
+    @Override
+    public int size(Query<T, SerializablePredicate<T>> query) {
+        SortOrders so = createSortOrder(query);
 
-	@Override
-	public int size(Query<T, SerializablePredicate<T>> query) {
-		SortOrders so = createSortOrder(query);
+        FilterConverter<T> converter = getFilterConverter();
+        final Filter filter = converter.convert(query.getFilter().orElse(null));
 
-		FilterConverter<T> converter = getFilterConverter();
-		final Filter filter = converter.convert(query.getFilter().orElse(null));
+        if (getMaxResults() != null) {
+            Long count = getService().count(filter, false);
+            if (count >= getMaxResults()) {
+                showNotification(getMessageService().getMessage("ocs.too.many.results", VaadinUtils.getLocale(), getMaxResults()));
+            }
+        }
+        ids = getService().findIds(filter, getMaxResults(), so.toArray());
+        if (getAfterCountCompleted() != null) {
+            getAfterCountCompleted().accept(ids.size());
+        }
+        return ids.size();
+    }
 
-		if (getMaxResults() != null) {
-			Long count = getService().count(filter, false);
-			if (count >= getMaxResults()) {
-				showNotification(getMessageService().getMessage("ocs.too.many.results", VaadinUtils.getLocale(),
-						getMaxResults()));
-			}
-		}
-		ids = getService().findIds(filter, getMaxResults(), so.toArray());
-		if (getAfterCountCompleted() != null) {
-			getAfterCountCompleted().accept(ids.size());
-		}
-		return ids.size();
-	}
+    @Override
+    public ID firstItemId() {
+        return ids.get(0);
+    }
 
-	@Override
-	public ID firstItemId() {
-		return ids.get(0);
-	}
+    @Override
+    public int indexOf(ID id) {
+        return ids.indexOf(id);
+    }
 
-	@Override
-	public int indexOf(ID id) {
-		return ids.indexOf(id);
-	}
-
-	@Override
-	public T getItem(ID id) {
-		return null;
-	}
+    @Override
+    public T getItem(ID id) {
+        return null;
+    }
 
 }

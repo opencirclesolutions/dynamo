@@ -57,8 +57,8 @@ public class SortOrder implements Serializable {
     /**
      * Constructor
      * 
-     * @param direction the desired sort direction
      * @param property  the property to sort on
+     * @param direction the desired sort direction
      */
     public SortOrder(String property, Direction direction) {
         this.direction = direction == null ? DEFAULT_DIRECTION : direction;

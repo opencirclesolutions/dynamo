@@ -31,7 +31,7 @@ import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Layout;
 
 /**
- * A search layout that allows a user to click together the search criteria
+ * A search layout that allows a user to dynamically add and remove search criteria
  *
  * @author bas.rutten
  *
