@@ -36,77 +36,78 @@ import com.vaadin.server.SerializablePredicate;
  */
 public class PagingDataProvider<ID extends Serializable, T extends AbstractEntity<ID>> extends BaseDataProvider<ID, T> {
 
-	private static final long serialVersionUID = 8238057223431007376L;
+    private static final long serialVersionUID = 8238057223431007376L;
 
-	/**
-	 * The number of items in the provider. This is set by doing a count query
-	 */
-	private int size;
+    /**
+     * The number of items in the provider. This is set by doing a count query
+     */
+    private int size;
 
-	/**
-	 * Constructor
-	 * 
-	 * @param service     the service
-	 * @param entityModel the entity model
-	 * @param joins       the joins to use when querying
-	 */
-	public PagingDataProvider(BaseService<ID, T> service, EntityModel<T> entityModel, FetchJoinInformation... joins) {
-		super(service, entityModel, joins);
-	}
+    /**
+     * Whether iteration through the data set is required
+     */
+    private boolean iterationRequired;
 
-	@Override
-	public Stream<T> fetch(Query<T, SerializablePredicate<T>> query) {
-		FilterConverter<T> converter = getFilterConverter();
-		int offset = query.getOffset();
-		int page = offset / query.getLimit();
-		int pageSize = getMaxResults() != null && offset + query.getLimit() > getMaxResults() ? getMaxResults() - offset
-				: query.getLimit();
-		SortOrders sortOrders = createSortOrder(query);
-		Filter filter = converter.convert(query.getFilter().orElse(null));
-		return getService().fetch(filter, page, pageSize, sortOrders, getJoins()).stream();
-	}
+    /**
+     * Constructor
+     * 
+     * @param service     the service
+     * @param entityModel the entity model
+     * @param joins       the joins to use when querying
+     */
+    public PagingDataProvider(BaseService<ID, T> service, EntityModel<T> entityModel, boolean iterationRequired,
+            FetchJoinInformation... joins) {
+        super(service, entityModel, joins);
+        this.iterationRequired = iterationRequired;
+    }
 
-	@Override
-	public int getSize() {
-		return size;
-	}
+    @Override
+    public Stream<T> fetch(Query<T, SerializablePredicate<T>> query) {
+        FilterConverter<T> converter = getFilterConverter();
+        int offset = query.getOffset();
+        int page = offset / query.getLimit();
+        int pageSize = getMaxResults() != null && offset + query.getLimit() > getMaxResults() ? getMaxResults() - offset : query.getLimit();
+        SortOrders sortOrders = createSortOrder(query);
+        Filter filter = converter.convert(query.getFilter().orElse(null));
+        return getService().fetch(filter, page, pageSize, sortOrders, getJoins()).stream();
+    }
 
-	@Override
-	public int size(Query<T, SerializablePredicate<T>> query) {
-		FilterConverter<T> converter = new FilterConverter<>(getEntityModel());
-		size = (int) getService().count(converter.convert(query.getFilter().orElse(null)), false);
-		if (getMaxResults() != null && size >= getMaxResults()) {
-			showNotification(
-					getMessageService().getMessage("ocs.too.many.results", VaadinUtils.getLocale(), getMaxResults()));
-			size = getMaxResults();
-		}
-		if (getAfterCountCompleted() != null) {
-			getAfterCountCompleted().accept(size);
-		}
-		return size;
-	}
+    @Override
+    public int getSize() {
+        return size;
+    }
 
-	public ID getNextItemId() {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public int size(Query<T, SerializablePredicate<T>> query) {
+        FilterConverter<T> converter = new FilterConverter<>(getEntityModel());
+        Filter filter = converter.convert(query.getFilter().orElse(null));
 
-	@Override
-	public ID getPreviousItemId() {
-		throw new UnsupportedOperationException();
-	}
+        size = (int) getService().count(filter, false);
+        if (getMaxResults() != null && size >= getMaxResults()) {
+            showNotification(getMessageService().getMessage("ocs.too.many.results", VaadinUtils.getLocale(), getMaxResults()));
+            size = getMaxResults();
+        }
 
-	@Override
-	public ID firstItemId() {
-		throw new UnsupportedOperationException();
-	}
+        // retrieve IDs as well (needed for iteration)
+        if (iterationRequired) {
+            SortOrders so = createSortOrder(query);
+            ids = getService().findIds(filter, getMaxResults(), so.toArray());
+        }
 
-	@Override
-	public int indexOf(ID id) {
-		throw new UnsupportedOperationException();
-	}
+        if (getAfterCountCompleted() != null) {
+            getAfterCountCompleted().accept(size);
+        }
+        return size;
+    }
 
-	@Override
-	public T getItem(ID id) {
-		throw new UnsupportedOperationException();
-	}
+    @Override
+    public ID firstItemId() {
+        return ids == null ? null : ids.get(0);
+    }
+
+    @Override
+    public int indexOf(ID id) {
+        return ids == null ? -1 : ids.indexOf(id);
+    }
+
 }

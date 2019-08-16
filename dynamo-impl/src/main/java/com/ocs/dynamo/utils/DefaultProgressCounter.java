@@ -1,6 +1,8 @@
-package com.ocs.dynamo.ui.composite.form.process;
+package com.ocs.dynamo.utils;
 
 import java.util.concurrent.atomic.AtomicInteger;
+
+import com.ocs.dynamo.util.ProgressCounter;
 
 public class DefaultProgressCounter implements ProgressCounter {
 

@@ -20,6 +20,8 @@ import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.composite.layout.BaseCustomComponent;
+import com.ocs.dynamo.util.ProgressCounter;
+import com.ocs.dynamo.utils.DefaultProgressCounter;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;

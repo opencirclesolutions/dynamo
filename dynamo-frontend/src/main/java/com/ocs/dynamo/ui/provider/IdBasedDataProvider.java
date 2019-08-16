@@ -16,7 +16,6 @@ package com.ocs.dynamo.ui.provider;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Stream;
 
 import com.ocs.dynamo.dao.FetchJoinInformation;
@@ -90,7 +89,7 @@ public class IdBasedDataProvider<ID extends Serializable, T extends AbstractEnti
         SortOrders so = createSortOrder(query);
 
         FilterConverter<T> converter = getFilterConverter();
-        final Filter filter = converter.convert(query.getFilter().orElse(null));
+        Filter filter = converter.convert(query.getFilter().orElse(null));
 
         if (getMaxResults() != null) {
             Long count = getService().count(filter, false);
@@ -114,10 +113,4 @@ public class IdBasedDataProvider<ID extends Serializable, T extends AbstractEnti
     public int indexOf(ID id) {
         return ids.indexOf(id);
     }
-
-    @Override
-    public T getItem(ID id) {
-        return null;
-    }
-
 }

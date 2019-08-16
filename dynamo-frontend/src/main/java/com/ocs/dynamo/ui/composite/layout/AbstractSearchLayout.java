@@ -1131,6 +1131,12 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
         // communicate selected item ID to provider
         BaseDataProvider<ID, T> provider = (BaseDataProvider<ID, T>) getGridWrapper().getDataProvider();
         provider.setCurrentlySelectedId(selectedItem == null ? null : selectedItem.getId());
+        if (prevButton != null) {
+            prevButton.setEnabled(hasPrevEntity());
+        }
+        if (nextButton != null) {
+            nextButton.setEnabled(hasNextEntity());
+        }
     }
 
     /**

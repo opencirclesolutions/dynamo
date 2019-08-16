@@ -74,7 +74,8 @@ public class ServiceBasedGridWrapper<ID extends Serializable, T extends Abstract
     protected DataProvider<T, SerializablePredicate<T>> constructDataProvider() {
         BaseDataProvider<ID, T> provider;
         if (QueryType.PAGING.equals(getQueryType())) {
-            provider = new PagingDataProvider<>(getService(), getEntityModel(), getJoins());
+            provider = new PagingDataProvider<>(getService(), getEntityModel(),
+                    getFormOptions().isShowNextButton() || getFormOptions().isShowPrevButton(), getJoins());
         } else {
             provider = new IdBasedDataProvider<>(getService(), getEntityModel(), getJoins());
         }

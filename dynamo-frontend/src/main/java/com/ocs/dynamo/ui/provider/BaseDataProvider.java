@@ -61,8 +61,14 @@ public abstract class BaseDataProvider<ID extends Serializable, T extends Abstra
      */
     private Integer maxResults;
 
+    /**
+     * The message service
+     */
     private MessageService messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
 
+    /**
+     * The service used to query the DB
+     */
     private final BaseService<ID, T> service;
 
     /**
@@ -127,6 +133,12 @@ public abstract class BaseDataProvider<ID extends Serializable, T extends Abstra
         }
 
         return so;
+    }
+
+    public abstract ID firstItemId();
+
+    public Consumer<Integer> getAfterCountCompleted() {
+        return afterCountCompleted;
     }
 
     protected ID getCurrentlySelectedId() {
@@ -214,9 +226,21 @@ public abstract class BaseDataProvider<ID extends Serializable, T extends Abstra
         return index > 0;
     }
 
+    /**
+     * Returns the index of the item identified by the specified ID
+     * 
+     * @param id
+     * @return
+     */
+    public abstract int indexOf(ID id);
+
     @Override
     public boolean isInMemory() {
         return false;
+    }
+
+    public void setAfterCountCompleted(Consumer<Integer> afterCountCompleted) {
+        this.afterCountCompleted = afterCountCompleted;
     }
 
     public void setCurrentlySelectedId(ID id) {
@@ -231,14 +255,6 @@ public abstract class BaseDataProvider<ID extends Serializable, T extends Abstra
         this.maxResults = maxResults;
     }
 
-    public Consumer<Integer> getAfterCountCompleted() {
-        return afterCountCompleted;
-    }
-
-    public void setAfterCountCompleted(Consumer<Integer> afterCountCompleted) {
-        this.afterCountCompleted = afterCountCompleted;
-    }
-
     /**
      * Shows a notification message
      * 
@@ -249,10 +265,4 @@ public abstract class BaseDataProvider<ID extends Serializable, T extends Abstra
             Notification.show(message, Notification.Type.ERROR_MESSAGE);
         }
     }
-
-    public abstract ID firstItemId();
-
-    public abstract int indexOf(ID id);
-
-    public abstract T getItem(ID id);
 }
