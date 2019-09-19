@@ -105,7 +105,6 @@
 			<groupId>com.vaadin</groupId>
 			<artifactId>vaadin-spring</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-core</artifactId>
@@ -249,7 +248,7 @@
 											vaadin-maven-plugin
 										</artifactId>
 										<versionRange>
-											[8.6.2,)
+											[8.7.2,)
 										</versionRange>
 										<goals>
 											<goal>update-widgetset</goal>
