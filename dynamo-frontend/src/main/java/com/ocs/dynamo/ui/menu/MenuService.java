@@ -75,9 +75,9 @@ public class MenuService {
     /**
      * Constructs a menu item and its children
      * 
-     * @param parent    the parent component (either a menu bar or menu item) to add
-     *                  the menu to
-     * @param key       the message key
+     * @param parent the parent component (either a menu bar or menu item) to add
+     *               the menu to
+     * @param key    the message key
      * @return the constructed menu item
      */
     private MenuItem constructMenu(MenuBar bar, Object parent, String key) {
@@ -94,7 +94,7 @@ public class MenuService {
             // create navigation command
             NavigateCommand command = null;
             if (!StringUtils.isEmpty(destination)) {
-                command = new NavigateCommand(bar, destination, tabIndex, mode);
+                command = new NavigateCommand(destination, tabIndex, mode);
             }
 
             if (parent instanceof MenuBar) {
@@ -131,8 +131,8 @@ public class MenuService {
     /**
      * Constructs a menu
      * 
-     * @param rootName  the root name (prefix) of the messages that are used to
-     *                  populate the menu
+     * @param rootName the root name (prefix) of the messages that are used to
+     *                 populate the menu
      * @return
      */
     public MenuBar constructMenu(String rootName) {

@@ -34,7 +34,6 @@ import com.ocs.dynamo.ui.composite.grid.GridUtils;
 import com.ocs.dynamo.utils.ClassUtils;
 import com.ocs.dynamo.utils.DateUtils;
 import com.ocs.dynamo.utils.NumberUtils;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.grid.Grid;
 
 /**

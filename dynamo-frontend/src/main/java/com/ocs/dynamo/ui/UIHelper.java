@@ -17,8 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import org.springframework.web.context.annotation.SessionScope;
-
+import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.notification.Notification;
 
@@ -29,28 +28,18 @@ import com.vaadin.flow.component.notification.Notification;
  * @author Bas Rutten
  *
  */
-@SessionScope
 public class UIHelper {
 
+    private static final String SELECTED_ENTITY = "selectedEntity";
+    
+    private static final String SCREEN_MODE = "screenMode";
+    
+    private static final String SELECTED_TAB = "selectedTab";
+    
     /**
      * Mapping for navigating to pages after clicking on a link
      */
     private Map<Class<?>, Consumer<?>> entityOnViewMapping = new HashMap<>();
-
-    /**
-     * A string describing the desired screen mode to set after opening a screen
-     */
-    private String screenMode;
-
-    /**
-     * The selected entity (e.g. when navigating)
-     */
-    private Object selectedEntity;
-
-    /**
-     * Index of the tab to select directly after opening a screen
-     */
-    private Integer selectedTab;
 
     /**
      * Adds a mapping for carrying out navigation within the application
@@ -63,15 +52,15 @@ public class UIHelper {
     }
 
     public String getScreenMode() {
-        return screenMode;
+        return (String) VaadinUtils.getFromSession(SCREEN_MODE);
     }
 
     public Object getSelectedEntity() {
-        return selectedEntity;
+        return VaadinUtils.getFromSession(SELECTED_ENTITY);
     }
 
     public Integer getSelectedTab() {
-        return selectedTab;
+        return (Integer) VaadinUtils.getFromSession(SELECTED_TAB);
     }
 
     /**
@@ -108,15 +97,15 @@ public class UIHelper {
     }
 
     public void setScreenMode(String screenMode) {
-        this.screenMode = screenMode;
+        VaadinUtils.storeInSession(SCREEN_MODE, screenMode);
     }
 
     public void setSelectedEntity(Object selectedEntity) {
-        this.selectedEntity = selectedEntity;
+        VaadinUtils.storeInSession(SELECTED_ENTITY, selectedEntity);
     }
 
     public void setSelectedTab(Integer selectedTab) {
-        this.selectedTab = selectedTab;
+        VaadinUtils.storeInSession(SELECTED_TAB, selectedTab);
     }
 
 }

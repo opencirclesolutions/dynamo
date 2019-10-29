@@ -444,6 +444,21 @@ public final class VaadinUtils {
         VaadinSession.getCurrent().setLocale(locale);
     }
 
+    public static void storeInSession(String name, Object value) {
+        VaadinSession current = VaadinSession.getCurrent();
+        if (current != null) {
+            current.setAttribute(name, value);
+        }
+    }
+
+    public static Object getFromSession(String name) {
+        VaadinSession current = VaadinSession.getCurrent();
+        if (current != null) {
+            return current.getAttribute(name);
+        }
+        return null;
+    }
+
     /**
      * Converts a String to a BigDecimal
      * 

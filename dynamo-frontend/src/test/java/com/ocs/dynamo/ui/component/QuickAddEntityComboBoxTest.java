@@ -3,7 +3,6 @@ package com.ocs.dynamo.ui.component;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
@@ -19,7 +18,6 @@ import com.ocs.dynamo.service.TestEntityService;
 import com.ocs.dynamo.test.BaseMockitoTest;
 import com.ocs.dynamo.test.MockUtil;
 import com.ocs.dynamo.ui.component.EntityComboBox.SelectMode;
-import com.vaadin.flow.component.UI;
 
 public class QuickAddEntityComboBoxTest extends BaseMockitoTest {
 
@@ -52,7 +50,6 @@ public class QuickAddEntityComboBoxTest extends BaseMockitoTest {
      * Test the creation of the component and a simple selection
      */
     @Test
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     public void testCreateAndSelect() {
         EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
         AttributeModel am = em.getAttributeModel("testDomain");

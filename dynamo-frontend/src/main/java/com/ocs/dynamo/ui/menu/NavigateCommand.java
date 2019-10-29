@@ -17,9 +17,7 @@ import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.UIHelper;
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.ComponentEventListener;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.contextmenu.MenuItem;
-import com.vaadin.flow.component.menubar.MenuBar;
 
 /**
  * Command for navigating to a certain view
@@ -30,8 +28,6 @@ public class NavigateCommand implements ComponentEventListener<ClickEvent<MenuIt
 
     private static final long serialVersionUID = 5192333331107840255L;
 
-    private MenuBar menuBar;
-
     private final String destination;
 
     private final String selectedTab;
@@ -41,14 +37,11 @@ public class NavigateCommand implements ComponentEventListener<ClickEvent<MenuIt
     /**
      * Constructor
      * 
-     * @param navigator   the Vaadin navigator
      * @param destination the destination to navigate to
      * @param selectedTab the index of the tab to select
      * @param mode        an optional screen mode
      */
-    public NavigateCommand(MenuBar menuBar, String destination, String selectedTab, String mode) {
-        this.menuBar = menuBar;
-        // this.navigator = navigator;
+    public NavigateCommand(String destination, String selectedTab, String mode) {
         this.destination = destination;
         this.selectedTab = selectedTab;
         this.mode = mode;
@@ -68,27 +61,15 @@ public class NavigateCommand implements ComponentEventListener<ClickEvent<MenuIt
 
     @Override
     public void onComponentEvent(ClickEvent<MenuItem> event) {
-        UIHelper ui = ServiceLocatorFactory.getServiceLocator().getService(UIHelper.class);
+        UIHelper helper = ServiceLocatorFactory.getServiceLocator().getService(UIHelper.class);
 
         if (selectedTab != null) {
-            ui.setSelectedTab(Integer.valueOf(selectedTab));
+            helper.setSelectedTab(Integer.valueOf(selectedTab));
         } else {
-            ui.setSelectedTab(null);
+            helper.setSelectedTab(null);
         }
-        ui.setScreenMode(mode);
-
-        // reset style names
-        for (MenuItem item : menuBar.getItems()) {
-            // item.setStyleName(null);
-        }
-
-        // mark top level menu
-        MenuItem selectedItem = event.getSource();
-//        while (selectedItem.getParent() != null) {
-//            selectedItem = (MenuItem) selectedItem.getParent().orElse(null);
-//        }
-        // selectedItem.setStyleName(DynamoConstants.CSS_LAST_VISITED);
-        UI.getCurrent().navigate(destination);
+        helper.setScreenMode(mode);
+        helper.navigate(destination);
     }
 
 }
