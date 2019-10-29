@@ -33,13 +33,12 @@ import com.ocs.dynamo.filter.listener.FilterChangeEvent;
 import com.ocs.dynamo.filter.listener.FilterListener;
 import com.ocs.dynamo.ui.composite.form.ModelBasedSearchForm.FilterType;
 import com.ocs.dynamo.ui.utils.ConvertUtils;
-import com.vaadin.data.HasValue;
-import com.vaadin.data.Result;
-import com.vaadin.server.SerializablePredicate;
-import com.vaadin.server.UserError;
-import com.vaadin.ui.AbstractComponent;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.Slider;
+import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.HasEnabled;
+import com.vaadin.flow.component.HasValidation;
+import com.vaadin.flow.component.HasValue;
+import com.vaadin.flow.data.binder.Result;
+import com.vaadin.flow.function.SerializablePredicate;
 
 /**
  * Represents one or more search fields used to filter on a single property
@@ -48,235 +47,260 @@ import com.vaadin.ui.Slider;
  */
 public class FilterGroup<T> {
 
-	// the attribute model that this region is based on
-	private final AttributeModel attributeModel;
+    /**
+     * The attribute model that this group is based on
+     */
+    private final AttributeModel attributeModel;
 
-	// the name of the property to filter on
-	private final String propertyId;
+    /**
+     * The name of the property to filter on
+     */
+    private final String propertyId;
 
-	// the type of the filter
-	private final FilterType filterType;
+    /**
+     * The type of the filter
+     */
+    private final FilterType filterType;
 
-	// the component that contains the field(s) to filter on
-	private final Component filterComponent;
+    /**
+     * The top level component that contains the filter UI components
+     */
+    private final Component filterComponent;
 
-	// the main search field
-	private final AbstractComponent field;
+    /**
+     * The main UI component
+     */
+    private final Component field;
 
-	// the currently active filter - constructing by composing the main filter
-	// and the aux filter
-	private SerializablePredicate<T> fieldFilter;
+    /**
+     * The actual search filter
+     */
+    private SerializablePredicate<T> fieldFilter;
 
-	// the main filter - only used in case of a main/aux combination
-	private SerializablePredicate<T> mainFilter;
+    /**
+     * The main filter component
+     */
+    private SerializablePredicate<T> mainFilter;
 
-	// auxiliary field (in case of range searches)
-	private final AbstractComponent auxField;
+    /**
+     * The auxiliary UI component
+     */
+    private final Component auxField;
 
-	// filter on the auxiliary field
-	private SerializablePredicate<T> auxFieldFilter;
+    /**
+     * The search filter for the auxiliary field
+     */
+    private SerializablePredicate<T> auxFieldFilter;
 
-	// listener that responds to any changes
-	private List<FilterListener<T>> listeners = new ArrayList<>();
+    /**
+     * Filter listeners to fire when the input changes
+     */
+    private List<FilterListener<T>> listeners = new ArrayList<>();
 
-	/**
-	 * Constructor
-	 * 
-	 * @param attributeModel  the attribute model
-	 * @param propertyId      the property to bind
-	 * @param filterType      the type of the filter
-	 * @param filterComponent the layout component that contains the filter
-	 *                        components
-	 * @param field           the main filter field
-	 * @param auxField        the auxiliary filter field
-	 */
-	public FilterGroup(AttributeModel attributeModel, FilterType filterType, Component filterComponent,
-			AbstractComponent field, AbstractComponent auxField) {
-		this.attributeModel = attributeModel;
-		this.propertyId = attributeModel.getPath();
-		this.filterType = filterType;
-		this.filterComponent = filterComponent;
-		this.field = field;
-		this.auxField = auxField;
+    /**
+     * Constructor
+     * 
+     * @param attributeModel  the attribute model
+     * @param propertyId      the property to bind
+     * @param filterType      the type of the filter
+     * @param filterComponent the layout component that contains the filter
+     *                        components
+     * @param field           the main filter field
+     * @param auxField        the auxiliary filter field
+     */
+    public FilterGroup(AttributeModel attributeModel, FilterType filterType, Component filterComponent, Component field,
+            Component auxField) {
+        this.attributeModel = attributeModel;
+        this.propertyId = attributeModel.getPath();
+        this.filterType = filterType;
+        this.filterComponent = filterComponent;
+        this.field = field;
+        this.auxField = auxField;
 
-		// respond to a change of the main field
-		if (field instanceof HasValue) {
-			((HasValue<?>) field).addValueChangeListener(event -> {
-				Result<?> result = ConvertUtils.convertToModelValue(FilterGroup.this.attributeModel, event.getValue());
-				result.ifError(r -> field.setComponentError(new UserError(r)));
-				result.ifOk(r -> FilterGroup.this.valueChange(FilterGroup.this.field, r));
-			});
-		}
+        // respond to a change of the main field
+        if (field instanceof HasValue) {
+            ((HasValue<?, ?>) field).addValueChangeListener(event -> {
+                Result<?> result = ConvertUtils.convertToModelValue(FilterGroup.this.attributeModel, event.getValue());
+                result.ifError(r -> ((HasValidation) field).setErrorMessage(r));
+                result.ifOk(r -> FilterGroup.this.valueChange(FilterGroup.this.field, r));
+            });
+        }
 
-		// respond to a change of the auxiliary field
-		if (auxField != null && auxField instanceof HasValue) {
-			((HasValue<?>) auxField).addValueChangeListener(event -> {
-				Result<?> result = ConvertUtils.convertToModelValue(FilterGroup.this.attributeModel, event.getValue());
-				result.ifError(r -> auxField.setComponentError(new UserError(r)));
-				result.ifOk(r -> FilterGroup.this.valueChange(FilterGroup.this.auxField, r));
+        // respond to a change of the auxiliary field
+        if (auxField != null && auxField instanceof HasValue) {
+            ((HasValue<?, ?>) auxField).addValueChangeListener(event -> {
+                Result<?> result = ConvertUtils.convertToModelValue(FilterGroup.this.attributeModel, event.getValue());
+                result.ifError(r -> ((HasValidation) auxField).setErrorMessage(r));
+                result.ifOk(r -> FilterGroup.this.valueChange(FilterGroup.this.auxField, r));
 
-			});
-		}
-	}
+            });
+        }
+    }
 
-	/**
-	 * Adds a listener that responds to a filter change
-	 * 
-	 * @param listener
-	 */
-	public void addListener(FilterListener<T> listener) {
-		this.listeners.add(listener);
-	}
+    /**
+     * Adds a listener that responds to a filter change
+     * 
+     * @param listener
+     */
+    public void addListener(FilterListener<T> listener) {
+        this.listeners.add(listener);
+    }
 
-	/**
-	 * Broadcast a change to all listeners
-	 * 
-	 * @param event the change event
-	 */
-	protected void broadcast(FilterChangeEvent<T> event) {
-		for (FilterListener<T> listener : listeners) {
-			listener.onFilterChange(event);
-		}
-	}
+    /**
+     * Broadcast a change to all listeners
+     * 
+     * @param event the change event
+     */
+    protected void broadcast(FilterChangeEvent<T> event) {
+        for (FilterListener<T> listener : listeners) {
+            listener.onFilterChange(event);
+        }
+    }
 
-	public AbstractComponent getAuxField() {
-		return (AbstractComponent) auxField;
-	}
+    public Component getAuxField() {
+        return (Component) auxField;
+    }
 
-	public AbstractComponent getField() {
-		return (AbstractComponent) field;
-	}
+    public Component getField() {
+        return (Component) field;
+    }
 
-	public Component getFilterComponent() {
-		return filterComponent;
-	}
+    public Component getFilterComponent() {
+        return filterComponent;
+    }
 
-	public List<FilterListener<T>> getListeners() {
-		return listeners;
-	}
+    public List<FilterListener<T>> getListeners() {
+        return listeners;
+    }
 
-	public String getPropertyId() {
-		return propertyId;
-	}
+    public String getPropertyId() {
+        return propertyId;
+    }
 
-	/**
-	 * Resets the search filters for both fields
-	 */
-	public void reset() {
-		if (field instanceof Slider) {
-			// slider does not support null value
-			Slider slider = (Slider) field;
-			slider.setValue(slider.getMin());
-			slider.setComponentError(null);
-		} else if (field instanceof HasValue) {
-			((HasValue<?>) field).clear();
-			((AbstractComponent) field).setComponentError(null);
-		}
+    /**
+     * Resets the search filters for both fields
+     */
+    public void reset() {
+//        if (field instanceof Slider) {
+//            // slider does not support null value
+//            Slider slider = (Slider) field;
+//            slider.setValue(slider.getMin());
+//            slider.setComponentError(null);
+//        } 
+        if (field instanceof HasValue) {
+            ((HasValue<?, ?>) field).clear();
+            if (field instanceof HasValidation) {
+                ((HasValidation) field).setErrorMessage(null);
+            }
+        }
 
-		if (auxField != null) {
-			if (auxField instanceof Slider) {
-				// slider does not support null value
-				Slider slider = (Slider) auxField;
-				slider.setValue(slider.getMin());
-				slider.setComponentError(null);
-			} else if (auxField instanceof HasValue) {
-				((HasValue<?>) auxField).clear();
-				((AbstractComponent) auxField).setComponentError(null);
-			}
-		}
-	}
+        if (auxField != null) {
+            // if (auxField instanceof Slider) {
+            // // slider does not support null value
+            // Slider slider = (Slider) auxField;
+            // slider.setValue(slider.getMin());
+            // slider.setComponentError(null);
+            // }
+            if (auxField instanceof HasValue) {
+                ((HasValue<?, ?>) auxField).clear();
+                if (auxField instanceof HasValidation) {
+                    ((HasValidation) auxField).setErrorMessage(null);
+                }
+            }
+        }
+    }
 
-	public void setEnabled(boolean enabled) {
-		field.setEnabled(enabled);
-		if (auxField != null) {
-			auxField.setEnabled(enabled);
-		}
-	}
+    public void setEnabled(boolean enabled) {
+        HasEnabled he = (HasEnabled) field;
+        he.setEnabled(enabled);
+        if (auxField instanceof HasEnabled) {
+            ((HasEnabled) auxField).setEnabled(enabled);
+        }
+    }
 
-	public void setListeners(List<FilterListener<T>> listeners) {
-		this.listeners = listeners;
-	}
+    public void setListeners(List<FilterListener<T>> listeners) {
+        this.listeners = listeners;
+    }
 
-	/**
-	 * Respond to a value change
-	 * 
-	 * @param field the changed field (can either be the main field or the auxiliary
-	 *              field)
-	 * @param value the new field value
-	 */
-	public void valueChange(AbstractComponent field, Object value) {
-		// store the current filter
-		SerializablePredicate<T> oldFilter = fieldFilter;
-		SerializablePredicate<T> filter = null;
+    /**
+     * Respond to a value change
+     * 
+     * @param field the changed field (can either be the main field or the auxiliary
+     *              field)
+     * @param value the new field value
+     */
+    public void valueChange(Component field, Object value) {
+        // store the current filter
+        SerializablePredicate<T> oldFilter = fieldFilter;
+        SerializablePredicate<T> filter = null;
 
-		switch (filterType) {
-		case BETWEEN:
+        switch (filterType) {
+        case BETWEEN:
 
-			// construct new filter for the selected field (or clear it)
-			if (field == this.auxField) {
-				// filter for the auxiliary field
-				if (value != null) {
-					auxFieldFilter = new LessOrEqualPredicate<>(propertyId, value);
-				} else {
-					auxFieldFilter = null;
-				}
-			} else {
-				// filter for the main field
-				if (value != null) {
-					mainFilter = new GreaterOrEqualPredicate<>(propertyId, value);
-				} else {
-					mainFilter = null;
-				}
-			}
+            // construct new filter for the selected field (or clear it)
+            if (field == this.auxField) {
+                // filter for the auxiliary field
+                if (value != null) {
+                    auxFieldFilter = new LessOrEqualPredicate<>(propertyId, value);
+                } else {
+                    auxFieldFilter = null;
+                }
+            } else {
+                // filter for the main field
+                if (value != null) {
+                    mainFilter = new GreaterOrEqualPredicate<>(propertyId, value);
+                } else {
+                    mainFilter = null;
+                }
+            }
 
-			// construct the aggregate filter
-			if (auxFieldFilter != null && mainFilter != null) {
-				filter = new AndPredicate<>(mainFilter, auxFieldFilter);
-			} else if (auxFieldFilter != null) {
-				filter = auxFieldFilter;
-			} else {
-				filter = mainFilter;
-			}
+            // construct the aggregate filter
+            if (auxFieldFilter != null && mainFilter != null) {
+                filter = new AndPredicate<>(mainFilter, auxFieldFilter);
+            } else if (auxFieldFilter != null) {
+                filter = auxFieldFilter;
+            } else {
+                filter = mainFilter;
+            }
 
-			break;
-		case LIKE:
-			// like filter for comparing string fields
-			if (value != null) {
-				if (value instanceof Collection<?>) {
-					filter = new EqualsPredicate<>(propertyId, value);
-				} else {
-					String valueStr = value.toString();
-					if (StringUtils.isNotEmpty(valueStr)) {
-						filter = new SimpleStringPredicate<>(propertyId, valueStr, attributeModel.isSearchPrefixOnly(),
-								attributeModel.isSearchCaseSensitive());
-					}
-				}
-			}
-			break;
-		default:
-			if (attributeModel.isSearchDateOnly() && value != null) {
-				LocalDate ldt = (LocalDate) value;
-				if (LocalDateTime.class.equals(attributeModel.getType())) {
-					filter = new BetweenPredicate<>(propertyId, ldt.atStartOfDay(),
-							ldt.atStartOfDay().plusDays(1).minusSeconds(1));
-				} else {
-					// zoned date time
-					filter = new BetweenPredicate<>(propertyId, ldt.atStartOfDay(ZoneId.systemDefault()),
-							ldt.atStartOfDay(ZoneId.systemDefault()).plusDays(1).minusSeconds(1));
-				}
-			} else if (value != null && (!(value instanceof Collection) || !((Collection<?>) value).isEmpty())) {
-				filter = new EqualsPredicate<>(propertyId, value);
-			}
-			break;
-		}
+            break;
+        case LIKE:
+            // like filter for comparing string fields
+            if (value != null) {
+                if (value instanceof Collection<?>) {
+                    filter = new EqualsPredicate<>(propertyId, value);
+                } else {
+                    String valueStr = value.toString();
+                    if (StringUtils.isNotEmpty(valueStr)) {
+                        filter = new SimpleStringPredicate<>(propertyId, valueStr, attributeModel.isSearchPrefixOnly(),
+                                attributeModel.isSearchCaseSensitive());
+                    }
+                }
+            }
+            break;
+        default:
+            if (attributeModel.isSearchDateOnly() && value != null) {
+                LocalDate ldt = (LocalDate) value;
+                if (LocalDateTime.class.equals(attributeModel.getType())) {
+                    filter = new BetweenPredicate<>(propertyId, ldt.atStartOfDay(), ldt.atStartOfDay().plusDays(1).minusSeconds(1));
+                } else {
+                    // zoned date time
+                    filter = new BetweenPredicate<>(propertyId, ldt.atStartOfDay(ZoneId.systemDefault()),
+                            ldt.atStartOfDay(ZoneId.systemDefault()).plusDays(1).minusSeconds(1));
+                }
+            } else if (value != null && (!(value instanceof Collection) || !((Collection<?>) value).isEmpty())) {
+                filter = new EqualsPredicate<>(propertyId, value);
+            }
+            break;
+        }
 
-		// store the current filter
-		this.fieldFilter = filter;
+        // store the current filter
+        this.fieldFilter = filter;
 
-		// propagate the change (this will trigger the actual search action)
-		if (!listeners.isEmpty()) {
-			broadcast(new FilterChangeEvent<T>(propertyId, oldFilter, filter));
-		}
-	}
+        // propagate the change (this will trigger the actual search action)
+        if (!listeners.isEmpty()) {
+            broadcast(new FilterChangeEvent<T>(propertyId, oldFilter, filter));
+        }
+    }
 
 }

@@ -19,9 +19,9 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.utils.DateUtils;
-import com.vaadin.data.Converter;
-import com.vaadin.data.Result;
-import com.vaadin.data.ValueContext;
+import com.vaadin.flow.data.binder.Result;
+import com.vaadin.flow.data.binder.ValueContext;
+import com.vaadin.flow.data.converter.Converter;
 
 /**
  * Converter for converting between a String (representing a week code) and a

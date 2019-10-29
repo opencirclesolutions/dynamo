@@ -3,7 +3,7 @@ package com.ocs.dynamo.filter;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.vaadin.server.SerializablePredicate;
+import com.vaadin.flow.function.SerializablePredicate;
 
 /**
  * A predicate that joins multiple other predicates together

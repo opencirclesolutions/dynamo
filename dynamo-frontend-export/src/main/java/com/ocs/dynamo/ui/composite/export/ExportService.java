@@ -20,8 +20,8 @@ import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.ui.composite.type.ExportMode;
-import com.vaadin.data.provider.SortOrder;
-import com.vaadin.server.SerializablePredicate;
+import com.vaadin.flow.data.provider.SortOrder;
+import com.vaadin.flow.function.SerializablePredicate;
 
 /**
  * Service for exporting grid contents to XLSX or CSV
@@ -31,53 +31,52 @@ import com.vaadin.server.SerializablePredicate;
  */
 public interface ExportService {
 
-	/**
-	 * Exports to CSV
-	 * 
-	 * @param entityModel the entity model of the entity to export
-	 * @param predicate   the predicate
-	 * @param sortOrders  the list of sort orders
-	 * @param joins       the joins to use when fetching data
-	 * @return
-	 */
-	public <ID extends Serializable, T extends AbstractEntity<ID>> byte[] exportCsv(EntityModel<T> entityModel,
-			ExportMode mode, SerializablePredicate<T> predicate, List<SortOrder<?>> sortOrders,
-			FetchJoinInformation... joins);
+    /**
+     * Exports to CSV
+     * 
+     * @param entityModel the entity model of the entity to export
+     * @param predicate   the predicate
+     * @param sortOrders  the list of sort orders
+     * @param joins       the joins to use when fetching data
+     * @return
+     */
+    <ID extends Serializable, T extends AbstractEntity<ID>> byte[] exportCsv(EntityModel<T> entityModel, ExportMode mode,
+            SerializablePredicate<T> predicate, List<SortOrder<?>> sortOrders, FetchJoinInformation... joins);
 
-	/**
-	 * Exports to Excel
-	 * 
-	 * @param entityModel     the entity model of the entity to export
-	 * @param predicate       the predicate
-	 * @param mode            the desired export mode
-	 * @param sortOrders      the list of sort orders
-	 * @param customGenerator the custom style generator *
-	 * @param joins           the joins to use when fetching data
-	 * @return
-	 */
-	public <ID extends Serializable, T extends AbstractEntity<ID>> byte[] exportExcel(EntityModel<T> entityModel,
-			ExportMode mode, SerializablePredicate<T> predicate, List<SortOrder<?>> sortOrders,
-			CustomXlsStyleGenerator<ID, T> customGenerator, FetchJoinInformation... joins);
+    /**
+     * Exports to Excel
+     * 
+     * @param entityModel     the entity model of the entity to export
+     * @param predicate       the predicate
+     * @param mode            the desired export mode
+     * @param sortOrders      the list of sort orders
+     * @param customGenerator the custom style generator *
+     * @param joins           the joins to use when fetching data
+     * @return
+     */
+    <ID extends Serializable, T extends AbstractEntity<ID>> byte[] exportExcel(EntityModel<T> entityModel, ExportMode mode,
+            SerializablePredicate<T> predicate, List<SortOrder<?>> sortOrders, CustomXlsStyleGenerator<ID, T> customGenerator,
+            FetchJoinInformation... joins);
 
-	/**
-	 * Exports a fixed set to Excel
-	 * 
-	 * @param entityModel the entity model
-	 * @param mode        the export mode
-	 * @param items       the set of items to export
-	 * @return
-	 */
-	public <ID extends Serializable, T extends AbstractEntity<ID>> byte[] exportExcelFixed(EntityModel<T> entityModel,
-			ExportMode mode, CustomXlsStyleGenerator<ID, T> customGenerator, List<T> items);
+    /**
+     * Exports a fixed set to Excel
+     * 
+     * @param entityModel the entity model
+     * @param mode        the export mode
+     * @param items       the set of items to export
+     * @return
+     */
+    <ID extends Serializable, T extends AbstractEntity<ID>> byte[] exportExcelFixed(EntityModel<T> entityModel, ExportMode mode,
+            CustomXlsStyleGenerator<ID, T> customGenerator, List<T> items);
 
-	/**
-	 * Exports a fixed set to CSV
-	 * 
-	 * @param entityModel the entity model
-	 * @param mode        the export mode
-	 * @param itemsthe    set of items to export
-	 * @return
-	 */
-	public <ID extends Serializable, T extends AbstractEntity<ID>> byte[] exportCsvFixed(EntityModel<T> entityModel,
-			ExportMode mode, List<T> items);
+    /**
+     * Exports a fixed set to CSV
+     * 
+     * @param entityModel the entity model
+     * @param mode        the export mode
+     * @param itemsthe    set of items to export
+     * @return
+     */
+    <ID extends Serializable, T extends AbstractEntity<ID>> byte[] exportCsvFixed(EntityModel<T> entityModel, ExportMode mode,
+            List<T> items);
 }

@@ -15,7 +15,7 @@ package com.ocs.dynamo.filter;
 
 import java.util.function.Predicate;
 
-import com.vaadin.server.SerializablePredicate;
+import com.vaadin.flow.function.SerializablePredicate;
 
 /**
  * A predicate for joining multiple predicates based on the logical AND

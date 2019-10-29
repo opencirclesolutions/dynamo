@@ -18,10 +18,12 @@ import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.ocs.dynamo.exception.OCSRuntimeException;
 
+@Ignore
 public class CurrencyBigDecimalConverterTest extends BaseConverterTest {
 
 	private DecimalFormatSymbols symbols = DecimalFormatSymbols.getInstance(new Locale("nl"));

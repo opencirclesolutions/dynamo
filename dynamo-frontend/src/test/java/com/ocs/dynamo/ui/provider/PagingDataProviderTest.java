@@ -19,10 +19,10 @@ import com.ocs.dynamo.filter.EqualsPredicate;
 import com.ocs.dynamo.filter.Filter;
 import com.ocs.dynamo.service.TestEntityService;
 import com.ocs.dynamo.test.BaseMockitoTest;
-import com.vaadin.data.provider.Query;
-import com.vaadin.data.provider.QuerySortOrder;
-import com.vaadin.server.SerializablePredicate;
-import com.vaadin.shared.data.sort.SortDirection;
+import com.vaadin.flow.data.provider.Query;
+import com.vaadin.flow.data.provider.QuerySortOrder;
+import com.vaadin.flow.data.provider.SortDirection;
+import com.vaadin.flow.function.SerializablePredicate;
 
 public class PagingDataProviderTest extends BaseMockitoTest {
 

@@ -6,11 +6,13 @@ import java.util.Map;
 import org.hibernate.annotations.Check;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.vaadin.teemu.switchui.Switch;
 
+import com.github.mvysny.kaributesting.v10.MockVaadin;
+import com.github.mvysny.kaributesting.v10.Routes;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.TestEntity.TestEnum;
@@ -25,64 +27,67 @@ import com.ocs.dynamo.filter.EqualsPredicate;
 import com.ocs.dynamo.ui.FrontendIntegrationTest;
 import com.ocs.dynamo.ui.component.ElementCollectionGrid;
 import com.ocs.dynamo.ui.component.EntityLookupField;
-import com.ocs.dynamo.ui.component.FancyListSelect;
 import com.ocs.dynamo.ui.component.InternalLinkField;
 import com.ocs.dynamo.ui.component.QuickAddEntityComboBox;
-import com.ocs.dynamo.ui.component.QuickAddListSelect;
 import com.ocs.dynamo.ui.component.QuickAddListSingleSelect;
+import com.ocs.dynamo.ui.component.QuickAddTokenSelect;
 import com.ocs.dynamo.ui.component.SimpleTokenFieldSelect;
-import com.ocs.dynamo.ui.component.TimeField;
-import com.ocs.dynamo.ui.component.TokenFieldSelect;
 import com.ocs.dynamo.ui.component.URLField;
-import com.vaadin.data.BeanValidationBinder;
-import com.vaadin.data.Binder;
-import com.vaadin.data.provider.ListDataProvider;
-import com.vaadin.event.FieldEvents.BlurEvent;
-import com.vaadin.server.SerializablePredicate;
-import com.vaadin.ui.AbstractComponent;
-import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.DateField;
-import com.vaadin.ui.DateTimeField;
-import com.vaadin.ui.Slider;
-import com.vaadin.ui.TextArea;
-import com.vaadin.ui.TextField;
+import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.datepicker.DatePicker;
+import com.vaadin.flow.component.textfield.TextArea;
+import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.component.timepicker.TimePicker;
+import com.vaadin.flow.data.provider.ListDataProvider;
+import com.vaadin.flow.function.SerializablePredicate;
 
 public class FieldFactoryImplTest extends FrontendIntegrationTest {
+
+    private static Routes routes;
 
     @Autowired
     private EntityModelFactory factory;
 
     private FieldFactory fieldFactory;
 
+    @BeforeClass
+    public static void createRoutes() {
+        // initialize routes only once, to avoid view auto-detection before every test
+        // and to speed up the tests
+        routes = new Routes().autoDiscoverViews("com.ocs.dynamo");
+    }
+
     @Before
     public void setUp() {
+        MockVaadin.setup(routes);
         fieldFactory = FieldFactory.getInstance();
     }
 
-    private AbstractComponent constructField(String name, boolean search) {
+    private Component constructField(String name, boolean search) {
         EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
         FieldFactoryContext context = FieldFactoryContext.create().setAttributeModel(em.getAttributeModel(name)).setSearch(search);
         return fieldFactory.constructField(context);
     }
 
-    private AbstractComponent constructField(String name, String entityModelRef) {
+    private Component constructField(String name, String entityModelRef) {
         EntityModel<TestEntity> em = factory.getModel(entityModelRef, TestEntity.class);
         FieldFactoryContext context = FieldFactoryContext.create().setAttributeModel(em.getAttributeModel(name)).setSearch(false);
         return fieldFactory.constructField(context);
     }
 
-    private AbstractComponent constructField2(String name, boolean search, boolean viewMode) {
+    private Component constructField2(String name, boolean search, boolean viewMode) {
         return constructField2(name, search, viewMode, false);
     }
 
-    private AbstractComponent constructField2(String name, boolean search, boolean viewMode, boolean grid) {
+    private Component constructField2(String name, boolean search, boolean viewMode, boolean grid) {
         EntityModel<TestEntity2> em = factory.getModel(TestEntity2.class);
         FieldFactoryContext context = FieldFactoryContext.create().setAttributeModel(em.getAttributeModel(name)).setSearch(search)
                 .setViewMode(viewMode).setEditableGrid(grid);
         return fieldFactory.constructField(context);
     }
 
-    private AbstractComponent constructField2(String name, Map<String, SerializablePredicate<?>> fieldFilters) {
+    private Component constructField2(String name, Map<String, SerializablePredicate<?>> fieldFilters) {
         EntityModel<TestEntity2> em = factory.getModel(TestEntity2.class);
         FieldFactoryContext context = FieldFactoryContext.create().setAttributeModel(em.getAttributeModel(name))
                 .setFieldFilters(fieldFilters);
@@ -95,11 +100,11 @@ public class FieldFactoryImplTest extends FrontendIntegrationTest {
     @Test
     public void testTextField() {
 
-        AbstractComponent ac = constructField("name", false);
+        Component ac = constructField("name", false);
         Assert.assertTrue(ac instanceof TextField);
 
         TextField tf = (TextField) ac;
-        Assert.assertEquals("Name", tf.getCaption());
+        Assert.assertEquals("Name", tf.getLabel());
     }
 
     /**
@@ -107,7 +112,7 @@ public class FieldFactoryImplTest extends FrontendIntegrationTest {
      */
     @Test
     public void testURLField() {
-        AbstractComponent ac = constructField("url", false);
+        Component ac = constructField("url", false);
         Assert.assertTrue(ac instanceof URLField);
     }
 
@@ -116,10 +121,8 @@ public class FieldFactoryImplTest extends FrontendIntegrationTest {
      */
     @Test
     public void testTextArea() {
-        AbstractComponent ac = constructField("someTextArea", false);
+        Component ac = constructField("someTextArea", false);
         Assert.assertTrue(ac instanceof TextArea);
-        TextArea ta = (TextArea) ac;
-        Assert.assertEquals(4, ta.getRows());
     }
 
     /**
@@ -127,7 +130,7 @@ public class FieldFactoryImplTest extends FrontendIntegrationTest {
      */
     @Test
     public void testLongField() {
-        AbstractComponent ac = constructField("age", false);
+        Component ac = constructField("age", false);
         Assert.assertTrue(ac instanceof TextField);
     }
 
@@ -136,40 +139,39 @@ public class FieldFactoryImplTest extends FrontendIntegrationTest {
      */
     @Test
     public void testIntegerField() {
-        AbstractComponent ac = constructField("age", false);
+        Component ac = constructField("age", false);
         Assert.assertTrue(ac instanceof TextField);
     }
 
-    @Test
-    public void testIntegerSlider() {
-        AbstractComponent ac = constructField("someIntSlider", false);
-        Assert.assertTrue(ac instanceof Slider);
+//    @Test
+//    public void testIntegerSlider() {
+//        Component ac = constructField("someIntSlider", false);
+//        Assert.assertTrue(ac instanceof Slider);
+//
+//        Slider slider = (Slider) ac;
+//        Assert.assertEquals(99, slider.getMin(), 0.001);
+//        Assert.assertEquals(175, slider.getMax(), 0.001);
+//
+//        Binder<TestEntity> binder = new BeanValidationBinder<>(TestEntity.class);
+//        TestEntity t1 = new TestEntity();
+//        binder.setBean(t1);
+//
+//        EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
+//        fieldFactory.addConvertersAndValidators(binder.forField(slider), em.getAttributeModel("someIntSlider"), null);
+//    }
 
-        Slider slider = (Slider) ac;
-        Assert.assertEquals(99, slider.getMin(), 0.001);
-        Assert.assertEquals(175, slider.getMax(), 0.001);
-
-        Binder<TestEntity> binder = new BeanValidationBinder<>(TestEntity.class);
-        TestEntity t1 = new TestEntity();
-        binder.setBean(t1);
-
-        EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
-        fieldFactory.addConvertersAndValidators(binder.forField(slider), em.getAttributeModel("someIntSlider"), null);
-
-    }
-
-    @Test
-    public void testLongSlider() {
-        AbstractComponent ac = constructField("someLongSlider", false);
-        Assert.assertTrue(ac instanceof Slider);
-    }
+//    @Test
+//    public void testLongSlider() {
+//        Component ac = constructField("someLongSlider", false);
+//        Assert.assertTrue(ac instanceof Slider);
+//    }
 
     /**
      * Test an "element collection" field
      */
     @Test
     public void testCollectionField() {
-        AbstractComponent ac = constructField("tags", false);
+        Component ac = constructField("tags", false);
         Assert.assertTrue(ac instanceof ElementCollectionGrid);
 
         ElementCollectionGrid<?, ?, ?> ct = (ElementCollectionGrid<?, ?, ?>) ac;
@@ -182,7 +184,7 @@ public class FieldFactoryImplTest extends FrontendIntegrationTest {
     @Test
     @Ignore
     public void testCollectionFieldSearch() {
-        AbstractComponent ac = constructField("tags", true);
+        Component ac = constructField("tags", true);
         Assert.assertTrue(ac instanceof SimpleTokenFieldSelect);
     }
 
@@ -191,7 +193,7 @@ public class FieldFactoryImplTest extends FrontendIntegrationTest {
      */
     @Test
     public void testBigDecimalField() {
-        AbstractComponent ac = constructField("discount", false);
+        Component ac = constructField("discount", false);
         Assert.assertTrue(ac instanceof TextField);
     }
 
@@ -200,22 +202,14 @@ public class FieldFactoryImplTest extends FrontendIntegrationTest {
      */
     @Test
     public void testBigDecimalPercentageField() {
-        AbstractComponent ac = constructField("rate", false);
+        Component ac = constructField("rate", false);
         Assert.assertTrue(ac instanceof TextField);
-
-        // check that a blur listener is added
-        TextField tf = (TextField) ac;
-        Assert.assertEquals(1, tf.getListeners(BlurEvent.class).size());
     }
 
     @Test
     public void testBigDecimalCurrencyField() {
-        AbstractComponent ac = constructField2("currency", false, false);
+        Component ac = constructField2("currency", false, false);
         Assert.assertTrue(ac instanceof TextField);
-
-        // check that a blur listener is added
-        TextField tf = (TextField) ac;
-        Assert.assertEquals(1, tf.getListeners(BlurEvent.class).size());
     }
 
     /**
@@ -223,32 +217,18 @@ public class FieldFactoryImplTest extends FrontendIntegrationTest {
      */
     @Test
     public void testDateField() {
-        AbstractComponent ac = constructField("birthDate", false);
-        Assert.assertTrue(ac instanceof DateField);
-
-        DateField df = (DateField) ac;
-        Assert.assertEquals("dd/MM/yyyy", df.getDateFormat());
-    }
-
-    /**
-     * Test the creation of a time field
-     */
-    @Test
-    public void testTimeField() {
-        AbstractComponent ac = constructField("someTime", false);
-        Assert.assertTrue(ac instanceof TimeField);
+        Component ac = constructField("birthDate", false);
+        Assert.assertTrue(ac instanceof DatePicker);
     }
 
     /**
      * Test the creation of a zoned date time field
      */
     @Test
+    @Ignore
     public void testZonedDateTimeField() {
-        AbstractComponent ac = constructField("zoned", false);
-        Assert.assertTrue(ac instanceof DateTimeField);
-
-        DateTimeField tf = (DateTimeField) ac;
-        Assert.assertEquals("dd-MM-yyyy HH:mm:ssZ", tf.getDateFormat());
+        Component ac = constructField("zoned", false);
+        Assert.assertTrue(ac instanceof TimePicker);
     }
 
     /**
@@ -256,11 +236,8 @@ public class FieldFactoryImplTest extends FrontendIntegrationTest {
      */
     @Test
     public void testSearchDateOnly() {
-        AbstractComponent ac = constructField2("searchDateOnly", true, false);
-        Assert.assertTrue(ac instanceof DateField);
-
-        DateField tf = (DateField) ac;
-        Assert.assertEquals("dd-MM-yyyy", tf.getDateFormat());
+        Component ac = constructField2("searchDateOnly", true, false);
+        Assert.assertTrue(ac instanceof DatePicker);
     }
 
     /**
@@ -268,8 +245,8 @@ public class FieldFactoryImplTest extends FrontendIntegrationTest {
      */
     @Test
     public void testLocalDateTimeField() {
-        AbstractComponent ac = constructField("registrationTime", false);
-        Assert.assertTrue(ac instanceof DateTimeField);
+        Component ac = constructField("registrationTime", false);
+        Assert.assertTrue(ac instanceof TimePicker);
     }
 
     /**
@@ -277,7 +254,7 @@ public class FieldFactoryImplTest extends FrontendIntegrationTest {
      */
     @Test
     public void testWeekField() {
-        AbstractComponent ac = constructField("birthWeek", false);
+        Component ac = constructField("birthWeek", false);
         Assert.assertTrue(ac instanceof TextField);
     }
 
@@ -287,7 +264,7 @@ public class FieldFactoryImplTest extends FrontendIntegrationTest {
     @Test
     @SuppressWarnings("unchecked")
     public void testEnumField() {
-        AbstractComponent ac = constructField("someEnum", false);
+        Component ac = constructField("someEnum", false);
         Assert.assertTrue(ac instanceof ComboBox);
 
         ComboBox<TestEnum> cb = (ComboBox<TestEnum>) ac;
@@ -303,7 +280,7 @@ public class FieldFactoryImplTest extends FrontendIntegrationTest {
      */
     @Test
     public void testEmail() {
-        AbstractComponent ac = constructField2("email", false, false);
+        Component ac = constructField2("email", false, false);
         Assert.assertTrue(ac instanceof TextField);
     }
 
@@ -312,7 +289,7 @@ public class FieldFactoryImplTest extends FrontendIntegrationTest {
      */
     @Test
     public void testReadOnlyNoField() {
-        AbstractComponent ac = constructField2("readOnly", false, false);
+        Component ac = constructField2("readOnly", false, false);
         Assert.assertNull(ac);
     }
 
@@ -321,7 +298,7 @@ public class FieldFactoryImplTest extends FrontendIntegrationTest {
      */
     @Test
     public void testReadOnlySearch() {
-        AbstractComponent ac = constructField2("readOnly", true, false);
+        Component ac = constructField2("readOnly", true, false);
         Assert.assertTrue(ac instanceof TextField);
     }
 
@@ -330,7 +307,7 @@ public class FieldFactoryImplTest extends FrontendIntegrationTest {
      */
     @Test
     public void testReadOnlyUrl() {
-        AbstractComponent ac = constructField2("url", false, false);
+        Component ac = constructField2("url", false, false);
         Assert.assertTrue(ac instanceof URLField);
     }
 
@@ -339,8 +316,8 @@ public class FieldFactoryImplTest extends FrontendIntegrationTest {
      */
     @Test
     @SuppressWarnings("unchecked")
-    public void tesSearchBooleanField() {
-        AbstractComponent ac = constructField("someBoolean", true);
+    public void testSearchBooleanField() {
+        Component ac = constructField("someBoolean", true);
         Assert.assertTrue(ac instanceof ComboBox);
 
         ComboBox<Boolean> cb = (ComboBox<Boolean>) ac;
@@ -351,14 +328,14 @@ public class FieldFactoryImplTest extends FrontendIntegrationTest {
     }
 
     public void testNormalBooleanField() {
-        AbstractComponent ac = constructField("someBoolean", false);
+        Component ac = constructField("someBoolean", false);
         Assert.assertTrue(ac instanceof Check);
     }
 
     @Test
     @SuppressWarnings("unchecked")
     public void testConstructEntityLookupField() {
-        AbstractComponent ac = constructField2("testEntity", false, false);
+        Component ac = constructField2("testEntity", false, false);
         Assert.assertTrue(ac instanceof EntityLookupField);
 
         EntityLookupField<Integer, TestEntity> lf = (EntityLookupField<Integer, TestEntity>) ac;
@@ -370,7 +347,7 @@ public class FieldFactoryImplTest extends FrontendIntegrationTest {
     public void testConstructEntityLookupFieldWithFieldFilter() {
         Map<String, SerializablePredicate<?>> fieldFilters = new HashMap<>();
         fieldFilters.put("testEntity", new EqualsPredicate<>("name", "Bob"));
-        AbstractComponent ac = constructField2("testEntity", fieldFilters);
+        Component ac = constructField2("testEntity", fieldFilters);
         Assert.assertTrue(ac instanceof EntityLookupField);
 
         EntityLookupField<Integer, TestEntity> lf = (EntityLookupField<Integer, TestEntity>) ac;
@@ -380,7 +357,7 @@ public class FieldFactoryImplTest extends FrontendIntegrationTest {
     @Test
     @SuppressWarnings("unchecked")
     public void testConstructEntityComboBox() {
-        AbstractComponent ac = constructField2("testEntityAlt", false, false);
+        Component ac = constructField2("testEntityAlt", false, false);
         Assert.assertTrue(ac instanceof QuickAddEntityComboBox);
 
         QuickAddEntityComboBox<Integer, TestEntity> cb = (QuickAddEntityComboBox<Integer, TestEntity>) ac;
@@ -388,7 +365,7 @@ public class FieldFactoryImplTest extends FrontendIntegrationTest {
     }
 
     /**
-     * Test that in search mode a token field is selected if multipe search is
+     * Test that in search mode a token field is selected if multiple search is
      * specified
      */
     @Test
@@ -396,8 +373,8 @@ public class FieldFactoryImplTest extends FrontendIntegrationTest {
         EntityModel<TestEntity2> em = factory.getModel("TestEntity2Multi", TestEntity2.class);
         FieldFactoryContext context = FieldFactoryContext.create().setAttributeModel(em.getAttributeModel("testEntityAlt")).setSearch(true);
 
-        AbstractComponent ac = fieldFactory.constructField(context);
-        Assert.assertTrue(ac instanceof TokenFieldSelect);
+        Component ac = fieldFactory.constructField(context);
+        Assert.assertTrue(ac instanceof QuickAddTokenSelect);
     }
 
     /**
@@ -406,21 +383,10 @@ public class FieldFactoryImplTest extends FrontendIntegrationTest {
     @Test
     @SuppressWarnings("unchecked")
     public void testConstructListSingleSelect() {
-        AbstractComponent ac = constructField2("testEntityAlt2", false, false);
+        Component ac = constructField2("testEntityAlt2", false, false);
         Assert.assertTrue(ac instanceof QuickAddListSingleSelect);
-
         QuickAddListSingleSelect<Integer, TestEntity> ls = (QuickAddListSingleSelect<Integer, TestEntity>) ac;
         Assert.assertNull(ls.getFilter());
-        Assert.assertEquals(6, ls.getListSelect().getVisibleItemCount());
-    }
-
-    /**
-     * Test that the "gridSelectMode" is used inside a grid
-     */
-    @Test
-    public void testConstructInGrid() {
-        AbstractComponent ac = constructField2("testEntityAlt2", false, false, true);
-        Assert.assertTrue(ac instanceof FancyListSelect);
     }
 
     @Test
@@ -428,7 +394,7 @@ public class FieldFactoryImplTest extends FrontendIntegrationTest {
     public void testConstructListSingleSelectWithFilter() {
         Map<String, SerializablePredicate<?>> fieldFilters = new HashMap<>();
         fieldFilters.put("testEntityAlt2", new EqualsPredicate<>("name", "Bob"));
-        AbstractComponent ac = constructField2("testEntityAlt2", fieldFilters);
+        Component ac = constructField2("testEntityAlt2", fieldFilters);
         Assert.assertTrue(ac instanceof QuickAddListSingleSelect);
 
         QuickAddListSingleSelect<Integer, TestEntity> ls = (QuickAddListSingleSelect<Integer, TestEntity>) ac;
@@ -441,7 +407,7 @@ public class FieldFactoryImplTest extends FrontendIntegrationTest {
 
         Map<String, SerializablePredicate<?>> fieldFilters = new HashMap<>();
         fieldFilters.put("testEntityAlt", new EqualsPredicate<>("name", "Bob"));
-        AbstractComponent ac = constructField2("testEntityAlt", fieldFilters);
+        Component ac = constructField2("testEntityAlt", fieldFilters);
         Assert.assertTrue(ac instanceof QuickAddEntityComboBox);
 
         QuickAddEntityComboBox<Integer, TestEntity> cb = (QuickAddEntityComboBox<Integer, TestEntity>) ac;
@@ -453,35 +419,26 @@ public class FieldFactoryImplTest extends FrontendIntegrationTest {
      */
     @Test
     public void testConstructLinkField() {
-        AbstractComponent ac = constructField2("testEntity", false, true);
+        Component ac = constructField2("testEntity", false, true);
         Assert.assertTrue(ac instanceof InternalLinkField);
     }
 
     /**
      * Test that a simple token field select component is rendered in search mode
      */
-    @Test
-    public void testConstructSimpleTokenField() {
-        AbstractComponent ac = constructField2("basicToken", true, false);
-        Assert.assertTrue(ac instanceof SimpleTokenFieldSelect);
-    }
+//    @Test
+//    public void testConstructSimpleTokenField() {
+//        Component ac = constructField2("basicToken", true, false);
+//        Assert.assertTrue(ac instanceof SimpleTokenFieldSelect);
+//    }
 
     /**
      * Test that in edit mode just a text field is constructed
      */
     @Test
     public void testConstructSimpleTokenField2() {
-        AbstractComponent ac = constructField2("basicToken", false, false);
+        Component ac = constructField2("basicToken", false, false);
         Assert.assertTrue(ac instanceof TextField);
-    }
-
-    /**
-     * Test that a switch field is constructed
-     */
-    @Test
-    public void testConstructSwitch() {
-        AbstractComponent ac = constructField2("switchBool", false, false);
-        Assert.assertTrue(ac instanceof Switch);
     }
 
     /**
@@ -489,39 +446,10 @@ public class FieldFactoryImplTest extends FrontendIntegrationTest {
      */
     @Test
     public void testDetailTokenFieldSelect() {
-        AbstractComponent ac = constructField("testEntities", false);
-        Assert.assertTrue(ac instanceof TokenFieldSelect);
-
-        TokenFieldSelect<?, ?> tf = (TokenFieldSelect<?, ?>) ac;
+        Component ac = constructField("testEntities", false);
+        Assert.assertTrue(ac instanceof QuickAddTokenSelect<?, ?>);
+        QuickAddTokenSelect<?, ?> tf = (QuickAddTokenSelect<?, ?>) ac;
         Assert.assertNull(tf.getFilter());
-    }
-
-    /**
-     * Fancy list select for detail collection
-     */
-    @Test
-    public void testDetailFancyList() {
-        AbstractComponent ac = constructField("testEntities", "TestEntityFancyList");
-        Assert.assertTrue(ac instanceof FancyListSelect);
-
-        FancyListSelect<?, ?> fl = (FancyListSelect<?, ?>) ac;
-        Assert.assertNull(fl.getFilter());
-        Assert.assertEquals("Test Entities", fl.getCaption());
-        Assert.assertNull(fl.getAddButton());
-    }
-
-    /**
-     * List select for detail collection
-     */
-    @Test
-    public void testDetailList() {
-        AbstractComponent ac = constructField("testEntities", "TestEntityListSelect");
-        Assert.assertTrue(ac instanceof QuickAddListSelect);
-
-        QuickAddListSelect<?, ?> fl = (QuickAddListSelect<?, ?>) ac;
-        Assert.assertNull(fl.getFilter());
-        Assert.assertEquals("Test Entities", fl.getCaption());
-        Assert.assertNull(fl.getAddButton());
     }
 
     /**
@@ -529,12 +457,12 @@ public class FieldFactoryImplTest extends FrontendIntegrationTest {
      */
     @Test
     public void testDetailLookup() {
-        AbstractComponent ac = constructField("testEntities", "TestEntityLookup");
+        Component ac = constructField("testEntities", "TestEntityLookup");
         Assert.assertTrue(ac instanceof EntityLookupField);
 
         EntityLookupField<?, ?> fl = (EntityLookupField<?, ?>) ac;
         Assert.assertNull(fl.getFilter());
-        Assert.assertEquals("Test Entities", fl.getCaption());
+        Assert.assertEquals("Test Entities", fl.getLabel());
         Assert.assertNull(fl.getAddButton());
     }
 

@@ -34,7 +34,6 @@ import com.ocs.dynamo.domain.model.AttributeSelectMode;
 import com.ocs.dynamo.domain.model.AttributeTextFieldMode;
 import com.ocs.dynamo.domain.model.AttributeType;
 import com.ocs.dynamo.domain.model.CascadeMode;
-import com.ocs.dynamo.domain.model.CheckboxMode;
 import com.ocs.dynamo.domain.model.EditableType;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.NumberSelectMode;
@@ -57,8 +56,6 @@ public class AttributeModelImpl implements AttributeModel {
     private final Map<String, String> cascadeAttributes = new HashMap<>();
 
     private Map<String, CascadeMode> cascadeModes = new HashMap<>();
-
-    private CheckboxMode checkboxMode;
 
     private String collectionTableFieldName;
 
@@ -89,8 +86,6 @@ public class AttributeModelImpl implements AttributeModel {
     private boolean email;
 
     private EntityModel<?> entityModel;
-
-    private float expansionFactor;
 
     private String fileNameProperty;
 
@@ -143,8 +138,6 @@ public class AttributeModelImpl implements AttributeModel {
     private boolean required;
 
     private boolean requiredForSearching;
-
-    private Integer rows;
 
     private boolean searchable;
 
@@ -235,11 +228,6 @@ public class AttributeModelImpl implements AttributeModel {
     }
 
     @Override
-    public CheckboxMode getCheckboxMode() {
-        return checkboxMode;
-    }
-
-    @Override
     public String getCollectionTableFieldName() {
         return collectionTableFieldName;
     }
@@ -297,11 +285,6 @@ public class AttributeModelImpl implements AttributeModel {
     @Override
     public EntityModel<?> getEntityModel() {
         return entityModel;
-    }
-
-    @Override
-    public float getExpansionFactor() {
-        return expansionFactor;
     }
 
     @Override
@@ -403,8 +386,8 @@ public class AttributeModelImpl implements AttributeModel {
         }
 
         // look up prompt. If not defined, look up display name
-        String displayNameNoDefafult = lookupNoDefault(displayNames, locale, EntityModel.DISPLAY_NAME);
-        return lookup(prompts, locale, EntityModel.PROMPT, displayNameNoDefafult, defaultPrompt);
+        String displayNameNoDefault = lookupNoDefault(displayNames, locale, EntityModel.DISPLAY_NAME);
+        return lookup(prompts, locale, EntityModel.PROMPT, displayNameNoDefault, defaultPrompt);
     }
 
     @Override
@@ -419,10 +402,6 @@ public class AttributeModelImpl implements AttributeModel {
 
     public String getReplacementSortPath() {
         return replacementSortPath;
-    }
-
-    public Integer getRows() {
-        return rows;
     }
 
     @Override
@@ -594,8 +573,8 @@ public class AttributeModelImpl implements AttributeModel {
      * @param source
      * @param locale
      * @param key
-     * @param fallBack
-     * @param secondFallBack
+     * @param fallBack       the first fallback value
+     * @param secondFallBack the seconf fallback value
      * @return
      */
     private String lookup(Map<String, Optional<String>> source, Locale locale, String key, String fallback, String secondFallBack) {
@@ -652,10 +631,6 @@ public class AttributeModelImpl implements AttributeModel {
 
     public void setAttributeType(AttributeType attributeType) {
         this.attributeType = attributeType;
-    }
-
-    public void setCheckboxMode(CheckboxMode checkboxMode) {
-        this.checkboxMode = checkboxMode;
     }
 
     public void setCollectionTableFieldName(String collectionTableFieldName) {
@@ -716,10 +691,6 @@ public class AttributeModelImpl implements AttributeModel {
 
     public void setEntityModel(EntityModel<?> entityModel) {
         this.entityModel = entityModel;
-    }
-
-    public void setExpansionFactor(float expansionFactor) {
-        this.expansionFactor = expansionFactor;
     }
 
     public void setFileNameProperty(String fileNameProperty) {
@@ -821,10 +792,6 @@ public class AttributeModelImpl implements AttributeModel {
 
     public void setRequiredForSearching(boolean requiredForSearching) {
         this.requiredForSearching = requiredForSearching;
-    }
-
-    public void setRows(Integer rows) {
-        this.rows = rows;
     }
 
     public void setSearchable(boolean searchable) {

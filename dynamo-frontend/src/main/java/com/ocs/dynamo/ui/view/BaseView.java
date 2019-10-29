@@ -13,18 +13,18 @@
  */
 package com.ocs.dynamo.ui.view;
 
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.service.MessageService;
-import com.ocs.dynamo.ui.BaseUI;
+import com.ocs.dynamo.ui.UIHelper;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
-import com.vaadin.navigator.View;
-import com.vaadin.ui.CustomComponent;
-import com.vaadin.ui.Layout;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
 /**
  * A base class for Views. Provides easy access to the entity model factory and
@@ -32,92 +32,94 @@ import com.vaadin.ui.VerticalLayout;
  * 
  * @author bas.rutten
  */
-public abstract class BaseView extends CustomComponent implements View {
+@Component
+public abstract class BaseView extends VerticalLayout {
 
-	public static final String SELECTED_ID = "selectedId";
+    public static final String SELECTED_ID = "selectedId";
 
-	private static final long serialVersionUID = 8340448520371840427L;
+    private static final long serialVersionUID = 8340448520371840427L;
 
-	private UI ui = UI.getCurrent();
+    @Autowired
+    private EntityModelFactory modelFactory;
 
-	@Autowired
-	private EntityModelFactory modelFactory;
+    @Autowired
+    private MessageService messageService;
 
-	@Autowired
-	private MessageService messageService;
+    @Autowired
+    private UIHelper uiHelper;
 
-	/**
-	 * Clears the current screen mode
-	 */
-	protected void clearScreenMode() {
-		if (ui instanceof BaseUI) {
-			BaseUI b = (BaseUI) ui;
-			b.setScreenMode(null);
-		}
-	}
+    @PostConstruct
+    public final void init() {
+        doInit();
+    }
 
-	public MessageService getMessageService() {
-		return messageService;
-	}
+    protected abstract void doInit();
 
-	public EntityModelFactory getModelFactory() {
-		return modelFactory;
-	}
+    /**
+     * Clears the current screen mode
+     */
+    protected void clearScreenMode() {
+        uiHelper.setScreenMode(null);
+    }
 
-	/**
-	 * Returns the current screen mode
-	 */
-	protected String getScreenMode() {
-		if (ui instanceof BaseUI) {
-			BaseUI b = (BaseUI) ui;
-			return b.getScreenMode();
-		}
-		return null;
-	}
+    public MessageService getMessageService() {
+        return messageService;
+    }
 
-	/**
-	 * Sets up the outermost layout
-	 * 
-	 * @return
-	 */
-	protected Layout initLayout() {
-		VerticalLayout container = new DefaultVerticalLayout(true, true);
-		setCompositionRoot(container);
-		return container;
-	}
+    public EntityModelFactory getModelFactory() {
+        return modelFactory;
+    }
 
-	/**
-	 * Retrieves a message based on its key
-	 * 
-	 * @param key
-	 *            the key of the message
-	 * @return
-	 */
-	protected String message(String key) {
-		return messageService.getMessage(key, VaadinUtils.getLocale());
-	}
+    /**
+     * Returns the current screen mode
+     */
+    protected String getScreenMode() {
+        return uiHelper.getScreenMode();
+    }
 
-	/**
-	 * Retrieves a message based on its key
-	 * 
-	 * @param key
-	 *            the key of the message
-	 * @param args
-	 *            any arguments to pass to the message
-	 * @return
-	 */
-	protected String message(String key, Object... args) {
-		return messageService.getMessage(key, VaadinUtils.getLocale(), args);
-	}
+    /**
+     * Sets up the outermost layout
+     * 
+     * @return
+     */
+    protected VerticalLayout initLayout() {
+        VerticalLayout container = new DefaultVerticalLayout(false, true);
+        add(container);
+        return container;
+    }
 
-	/**
-	 * Navigates to the selected view
-	 * 
-	 * @param viewId
-	 *            the ID of the desired view
-	 */
-	protected void navigate(String viewId) {
-		ui.getNavigator().navigateTo(viewId);
-	}
+    /**
+     * Retrieves a message based on its key
+     * 
+     * @param key the key of the message
+     * @return
+     */
+    protected String message(String key) {
+        return messageService.getMessage(key, VaadinUtils.getLocale());
+    }
+
+    /**
+     * Retrieves a message based on its key
+     * 
+     * @param key  the key of the message
+     * @param args any arguments to pass to the message
+     * @return
+     */
+    protected String message(String key, Object... args) {
+        return messageService.getMessage(key, VaadinUtils.getLocale(), args);
+    }
+
+    /**
+     * Navigates to the selected view
+     * 
+     * @param viewId the ID of the desired view
+     */
+    protected void navigate(String viewId) {
+        UI.getCurrent().navigate(viewId);
+    }
+
+    public UIHelper getUiHelper() {
+        return uiHelper;
+    }
 
 }

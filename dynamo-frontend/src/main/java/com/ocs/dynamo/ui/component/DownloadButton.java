@@ -13,85 +13,50 @@
  */
 package com.ocs.dynamo.ui.component;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.function.Supplier;
 
-import com.vaadin.icons.VaadinIcons;
-import com.vaadin.server.FileDownloader;
-import com.vaadin.server.StreamResource;
-import com.vaadin.server.StreamResource.StreamSource;
-import com.vaadin.server.VaadinRequest;
-import com.vaadin.server.VaadinResponse;
-import com.vaadin.ui.Button;
+import com.vaadin.flow.component.html.Anchor;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.server.StreamResource;
 
 /**
- * A button that starts a file download when clicked. 
+ * A button that starts a file download when clicked.
  * 
  * @author bas.rutten
  */
-public class DownloadButton extends Button {
+public class DownloadButton extends VerticalLayout {
 
-	private static final long serialVersionUID = -7163648327567831406L;
+    private static final long serialVersionUID = -7163648327567831406L;
 
-	private StreamResource resource;
+    private Anchor anchor;
 
-	private FileDownloader downloader;
+    /**
+     * Constructor
+     * 
+     * @param caption the caption of the button
+     */
+    public DownloadButton(String caption, Supplier<InputStream> createContent, Supplier<String> createFileName) {
+        anchor = new Anchor(new StreamResource(caption, () -> createContent.get()), createFileName.get());
+        anchor.getElement().setAttribute("download", true);
+        add(anchor);
+    }
 
-	private Supplier<InputStream> createContent;
+    /**
+     * Updates the button after the content to download has been changed
+     */
+    public void update() {
 
-	private Supplier<String> createFileName;
-
-	/**
-	 * Constructor
-	 * 
-	 * @param caption the caption of the button
-	 */
-	public DownloadButton(String caption, Supplier<InputStream> createContent, Supplier<String> createFileName) {
-		super(caption);
-		this.createContent = createContent;
-		this.createFileName = createFileName;
-		this.setIcon(VaadinIcons.DOWNLOAD);
-
-		resource = new StreamResource(new StreamSource() {
-
-			private static final long serialVersionUID = -4870779918745663459L;
-
-			@Override
-			public InputStream getStream() {
-				return createContent.get();
-			}
-
-		}, createFileName.get());
-
-		downloader = new FileDownloader(resource) {
-
-			private static final long serialVersionUID = -5072481083052841701L;
-
-			public boolean handleConnectorRequest(VaadinRequest request, VaadinResponse response, String path)
-					throws IOException {
-				((StreamResource) getFileDownloadResource()).setFilename(createFileName.get());
-				return super.handleConnectorRequest(request, response, path);
-			}
-		};
-		downloader.extend(this);
-	}
-
-	/**
-	 * Updates the button after the content to download has been changed
-	 */
-	public void update() {
-
-		downloader.setFileDownloadResource(new StreamResource(new StreamSource() {
-
-			private static final long serialVersionUID = -4870779918745663459L;
-
-			@Override
-			public InputStream getStream() {
-				return createContent.get();
-			}
-
-		}, createFileName.get()));
-	}
+//		downloader.setFileDownloadResource(new StreamResource(new StreamSource() {
+//
+//			private static final long serialVersionUID = -4870779918745663459L;
+//
+//			@Override
+//			public InputStream getStream() {
+//				return createContent.get();
+//			}
+//
+//		}, createFileName.get()));
+    }
 
 }

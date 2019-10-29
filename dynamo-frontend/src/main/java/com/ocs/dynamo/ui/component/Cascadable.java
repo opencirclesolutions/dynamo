@@ -13,7 +13,7 @@
  */
 package com.ocs.dynamo.ui.component;
 
-import com.vaadin.server.SerializablePredicate;
+import com.vaadin.flow.function.SerializablePredicate;
 
 /**
  * Interface for selection fields that support cascading search (i.e. they
@@ -25,22 +25,22 @@ import com.vaadin.server.SerializablePredicate;
  */
 public interface Cascadable<T> {
 
-	/**
-	 * Add the provided filter to the current filter for the component. Used for
-	 * cascading
-	 * 
-	 * @param additionalFilter the additional filter to set
-	 */
-	void setAdditionalFilter(SerializablePredicate<T> additionalFilter);
+    /**
+     * Add the provided filter to the current filter for the component. Used for
+     * cascading
+     * 
+     * @param additionalFilter the additional filter to set
+     */
+    void setAdditionalFilter(SerializablePredicate<T> additionalFilter);
 
-	/**
-	 * Removes the additional filter
-	 */
-	void clearAdditionalFilter();
+    /**
+     * Removes the additional filter
+     */
+    void clearAdditionalFilter();
 
-	/**
-	 * 
-	 * @return
-	 */
-	SerializablePredicate<T> getAdditionalFilter();
+    /**
+     * 
+     * @return the additional filter
+     */
+    SerializablePredicate<T> getAdditionalFilter();
 }

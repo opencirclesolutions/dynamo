@@ -25,9 +25,9 @@ import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.utils.ConvertUtils;
-import com.vaadin.data.provider.DataProvider;
-import com.vaadin.data.provider.ListDataProvider;
-import com.vaadin.server.SerializablePredicate;
+import com.vaadin.flow.data.provider.DataProvider;
+import com.vaadin.flow.data.provider.ListDataProvider;
+import com.vaadin.flow.function.SerializablePredicate;
 
 /**
  * A complex grid component for the in-place editing of a one-to-many relation.
@@ -46,113 +46,115 @@ import com.vaadin.server.SerializablePredicate;
  * @param <ID> the type of the primary key
  * @param <T> the type of the entity
  */
-public class DetailsEditGrid<ID extends Serializable, T extends AbstractEntity<ID>>
-		extends BaseDetailsEditGrid<Collection<T>, ID, T> {
+public class DetailsEditGrid<ID extends Serializable, T extends AbstractEntity<ID>> extends BaseDetailsEditGrid<Collection<T>, ID, T> {
 
-	private static final long serialVersionUID = -1203245694503350276L;
+    private static final long serialVersionUID = -1203245694503350276L;
 
-	/**
-	 * The comparator (will be used to sort the items)
-	 */
-	private Comparator<T> comparator;
+    /**
+     * The comparator (will be used to sort the items)
+     */
+    private Comparator<T> comparator;
 
-	/**
-	 * The data provider
-	 */
-	private ListDataProvider<T> provider;
+    /**
+     * The data provider
+     */
+    private ListDataProvider<T> provider;
 
-	/**
-	 * Constructor
-	 *
-	 * @param entityModel    the entity model of the entities to display
-	 * @param attributeModel the attribute model of the attribute to display
-	 * @param viewMode       the view mode
-	 * @param formOptions    the form options that determine how the grid behaves
-	 */
-	public DetailsEditGrid(EntityModel<T> entityModel, AttributeModel attributeModel, boolean viewMode,
-			FormOptions formOptions) {
-		super(null, entityModel, attributeModel, viewMode, false, formOptions);
-		this.provider = new ListDataProvider<>(new ArrayList<>());
-	}
+    /**
+     * Constructor
+     *
+     * @param entityModel    the entity model of the entities to display
+     * @param attributeModel the attribute model of the attribute to display
+     * @param viewMode       the view mode
+     * @param formOptions    the form options that determine how the grid behaves
+     */
+    public DetailsEditGrid(EntityModel<T> entityModel, AttributeModel attributeModel, boolean viewMode, FormOptions formOptions) {
+        super(null, entityModel, attributeModel, viewMode, false, formOptions);
+        this.provider = new ListDataProvider<>(new ArrayList<>());
+        initContent();
+    }
 
-	@Override
-	protected void applyFilter() {
-		// not needed
-	}
+    @Override
+    protected void applyFilter() {
+        // not needed
+    }
 
-	@Override
-	protected void doAdd() {
-		T t = getCreateEntitySupplier().get();
-		provider.getItems().add(t);
-		provider.refreshAll();
-	}
+    @Override
+    protected void doAdd() {
+        T t = getCreateEntitySupplier().get();
+        provider.getItems().add(t);
+        provider.refreshAll();
+    }
 
-	@Override
-	protected void doSetValue(Collection<T> value) {
-		List<T> list = new ArrayList<>();
-		list.addAll(value);
-		if (comparator != null) {
-			list.sort(comparator);
-		}
+    public Comparator<T> getComparator() {
+        return comparator;
+    }
 
-		getBinders().clear();
-		if (provider != null) {
-			provider.getItems().clear();
-			provider.getItems().addAll(list);
-			provider.refreshAll();
-		}
+    @Override
+    protected DataProvider<T, SerializablePredicate<T>> getDataProvider() {
+        return provider;
+    }
 
-		// clear the selection
-		setSelectedItem(null);
-	}
+    public int getItemCount() {
+        return provider.getItems().size();
+    }
 
-	public Comparator<T> getComparator() {
-		return comparator;
-	}
+    @Override
+    public Collection<T> getValue() {
+        return provider == null ? new ArrayList<>() : ConvertUtils.convertCollection(provider.getItems(), getAttributeModel());
+    }
 
-	@Override
-	protected DataProvider<T, SerializablePredicate<T>> getDataProvider() {
-		return provider;
-	}
+    @Override
+    protected void handleDialogSelection(Collection<T> selected) {
+        if (getLinkEntityConsumer() == null) {
+            throw new OCSRuntimeException("No linkEntityConsumer specified!");
+        }
 
-	public int getItemCount() {
-		return provider.getItems().size();
-	}
+        // add to data provider
+        for (T t : selected) {
+            if (!provider.getItems().contains(t)) {
+                provider.getItems().add(t);
+            }
+        }
 
-	@Override
-	public Collection<T> getValue() {
-		return provider == null ? new ArrayList<>()
-				: ConvertUtils.convertCollection(provider.getItems(), getAttributeModel());
-	}
+        // link to parent entity
+        for (T t : selected) {
+            getLinkEntityConsumer().accept(t);
+        }
+    }
 
-	@Override
-	protected void handleDialogSelection(Collection<T> selected) {
-		if (getLinkEntityConsumer() == null) {
-			throw new OCSRuntimeException("No linkEntityConsumer specified!");
-		}
+    /**
+     * Respond to a selection of an item in the grid
+     */
+    protected void onSelect(Object selected) {
+        // overwrite when needed
+    }
 
-		// add to data provider
-		for (T t : selected) {
-			if (!provider.getItems().contains(t)) {
-				provider.getItems().add(t);
-			}
-		}
+    public void setComparator(Comparator<T> comparator) {
+        this.comparator = comparator;
+    }
 
-		// link to parent entity 
-		for (T t : selected) {
-			getLinkEntityConsumer().accept(t);
-		}
-	}
+    @Override
+    protected Collection<T> generateModelValue() {
+        return provider == null ? new ArrayList<>() : ConvertUtils.convertCollection(provider.getItems(), getAttributeModel());
+    }
 
-	/**
-	 * Respond to a selection of an item in the grid
-	 */
-	protected void onSelect(Object selected) {
-		// overwrite when needed
-	}
+    @Override
+    protected void setPresentationValue(Collection<T> value) {
+        List<T> list = new ArrayList<>();
+        list.addAll(value);
+        if (comparator != null) {
+            list.sort(comparator);
+        }
 
-	public void setComparator(Comparator<T> comparator) {
-		this.comparator = comparator;
-	}
+        getBinders().clear();
+        if (provider != null) {
+            provider.getItems().clear();
+            provider.getItems().addAll(list);
+            provider.refreshAll();
+        }
 
+        // clear the selection
+        setSelectedItem(null);
+    }
 }

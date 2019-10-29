@@ -14,12 +14,10 @@
 package com.ocs.dynamo.ui.composite.form;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.AttributeType;
@@ -33,19 +31,16 @@ import com.ocs.dynamo.ui.Searchable;
 import com.ocs.dynamo.ui.component.Cascadable;
 import com.ocs.dynamo.ui.component.CustomEntityField;
 import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
-import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
-import com.vaadin.data.HasValue;
-import com.vaadin.data.HasValue.ValueChangeEvent;
-import com.vaadin.server.SerializablePredicate;
-import com.vaadin.ui.AbstractComponent;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.FormLayout;
-import com.vaadin.ui.GridLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Layout;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.HasComponents;
+import com.vaadin.flow.component.HasValue;
+import com.vaadin.flow.component.HasValue.ValueChangeEvent;
+import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.function.SerializablePredicate;
 
 /**
  * A search form that is constructed based on the metadata model
@@ -71,22 +66,12 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
     /**
      * The main form layout
      */
-    private Layout form;
+    private FormLayout form;
 
     /**
      * The various filter groups
      */
     private Map<String, FilterGroup<T>> groups = new HashMap<>();
-
-    /**
-     * The number of columns over which the field are distributed
-     */
-    private int nrOfColumns = 1;
-
-    /**
-     * Sub form layouts that are used in case of multiple column layout
-     */
-    private List<FormLayout> subForms = new ArrayList<>();
 
     /**
      * Constructor
@@ -126,11 +111,11 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
      * Constructs the button bar for the search form
      */
     @Override
-    protected void constructButtonBar(Layout buttonBar) {
-        buttonBar.addComponent(constructSearchButton());
-        buttonBar.addComponent(constructSearchAnyButton());
-        buttonBar.addComponent(constructClearButton());
-        buttonBar.addComponent(constructToggleButton());
+    protected void constructButtonBar(HorizontalLayout buttonBar) {
+        buttonBar.add(constructSearchButton());
+        buttonBar.add(constructSearchAnyButton());
+        buttonBar.add(constructClearButton());
+        buttonBar.add(constructToggleButton());
     }
 
     /**
@@ -139,9 +124,9 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
     protected void constructCascadeListeners() {
         for (final AttributeModel am : getEntityModel().getCascadeAttributeModels()) {
             if (am.isSearchable()) {
-                AbstractComponent field = groups.get(am.getPath()).getField();
+                Component field = groups.get(am.getPath()).getField();
                 if (field instanceof HasValue) {
-                    ((HasValue<?>) field).addValueChangeListener(event -> {
+                    ((HasValue<?, ?>) field).addValueChangeListener(event -> {
                         for (String cascadePath : am.getCascadeAttributes()) {
                             handleCascade(event, am, cascadePath);
                         }
@@ -159,8 +144,8 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
      *                       that is bound to the field
      * @return
      */
-    protected AbstractComponent constructField(EntityModel<T> entityModel, AttributeModel attributeModel) {
-        AbstractComponent field = constructCustomField(entityModel, attributeModel);
+    protected Component constructField(EntityModel<T> entityModel, AttributeModel attributeModel) {
+        Component field = constructCustomField(entityModel, attributeModel);
         if (field == null) {
             EntityModel<?> em = getFieldEntityModel(attributeModel);
             FieldFactoryContext ctx = FieldFactoryContext.create().setAttributeModel(attributeModel).setFieldEntityModel(em)
@@ -169,7 +154,7 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
         }
 
         if (field != null) {
-            field.setSizeFull();
+            // field.setSizeFull();
         } else {
             throw new OCSRuntimeException("No field could be constructed for " + attributeModel.getPath());
         }
@@ -185,7 +170,7 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
      * @return
      */
     protected FilterGroup<T> constructFilterGroup(EntityModel<T> entityModel, AttributeModel attributeModel) {
-        AbstractComponent field = this.constructField(entityModel, attributeModel);
+        Component field = this.constructField(entityModel, attributeModel);
         if (field != null) {
             FilterType filterType = FilterType.BETWEEN;
             if (String.class.isAssignableFrom(attributeModel.getType())) {
@@ -206,21 +191,21 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
             }
 
             Component comp = field;
-            AbstractComponent auxField = null;
+            Component auxField = null;
             if (FilterType.BETWEEN.equals(filterType)) {
                 // in case of a between value, construct two fields for the
                 // lower
                 // and upper bounds
                 String from = message("ocs.from");
-                field.setCaption(attributeModel.getDisplayName(VaadinUtils.getLocale()) + " " + from);
+                VaadinUtils.setLabel(field, attributeModel.getDisplayName(VaadinUtils.getLocale()) + " " + from);
+
                 auxField = constructField(entityModel, attributeModel);
                 String to = message("ocs.to");
-                auxField.setCaption(attributeModel.getDisplayName(VaadinUtils.getLocale()) + " " + to);
+                VaadinUtils.setLabel(auxField, attributeModel.getDisplayName(VaadinUtils.getLocale()) + " " + to);
                 auxField.setVisible(true);
-                HorizontalLayout layout = new DefaultHorizontalLayout();
-                layout.setSizeFull();
-                layout.addComponent(field);
-                layout.addComponent(auxField);
+                FormLayout layout = new FormLayout();
+                layout.add(field);
+                layout.add(auxField);
                 comp = layout;
             }
             return new FilterGroup<>(attributeModel, filterType, comp, field, auxField);
@@ -235,39 +220,19 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
      * @return
      */
     @Override
-    protected Layout constructFilterLayout() {
-        if (nrOfColumns == 1) {
-            form = new FormLayout();
-            // don't use all the space unless it's a popup window
-            if (!getFormOptions().isPopup()) {
-                form.setStyleName(DynamoConstants.CSS_CLASS_HALFSCREEN);
-            }
-        } else {
-            // create a number of form layouts next to each others
-            form = new GridLayout(nrOfColumns, 1);
-            form.setSizeFull();
-
-            for (int i = 0; i < nrOfColumns; i++) {
-                FormLayout column = new FormLayout();
-                column.setMargin(true);
-                subForms.add(column);
-                form.addComponent(column);
-            }
-        }
+    protected HasComponents constructFilterLayout() {
+        form = new FormLayout();
 
         // iterate over the searchable attributes and add a field for each
         iterate(getEntityModel().getAttributeModels());
         constructCascadeListeners();
 
-        DefaultVerticalLayout margin = new DefaultVerticalLayout(true, false);
-        margin.addComponent(form);
-
         // hide the search form if there are no search criteria (and no extra search
         // fields)
         if (groups.isEmpty()) {
-            margin.setVisible(false);
+            form.setVisible(false);
         }
-        return margin;
+        return form;
     }
 
     /**
@@ -302,10 +267,6 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
         return groups;
     }
 
-    public int getNrOfColumns() {
-        return nrOfColumns;
-    }
-
     /**
      * Handles a cascade event
      * 
@@ -318,7 +279,7 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
     private <S> void handleCascade(ValueChangeEvent<?> event, AttributeModel am, String cascadePath) {
         CascadeMode cm = am.getCascadeMode(cascadePath);
         if (CascadeMode.BOTH.equals(cm) || CascadeMode.SEARCH.equals(cm)) {
-            HasValue<?> cascadeField = (HasValue<?>) groups.get(cascadePath).getField();
+            HasValue<?, ?> cascadeField = (HasValue<?, ?>) groups.get(cascadePath).getField();
             if (cascadeField instanceof Cascadable) {
                 Cascadable<S> ca = (Cascadable<S>) cascadeField;
                 if (event.getValue() == null) {
@@ -342,16 +303,8 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
     private void iterate(List<AttributeModel> attributeModels) {
         for (AttributeModel attributeModel : attributeModels) {
             if (attributeModel.isSearchable()) {
-
                 FilterGroup<T> group = constructFilterGroup(getEntityModel(), attributeModel);
-                group.getFilterComponent().setSizeFull();
-
-                if (nrOfColumns == 1) {
-                    form.addComponent(group.getFilterComponent());
-                } else {
-                    int index = fieldsAdded % nrOfColumns;
-                    subForms.get(index).addComponent(group.getFilterComponent());
-                }
+                form.add(group.getFilterComponent());
 
                 // register with the form and set the listener
                 group.addListener(this);
@@ -407,15 +360,6 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
     }
 
     /**
-     * Sets the desired number of columns
-     * 
-     * @param nrOfColumns the number of columns
-     */
-    public void setNrOfColumns(int nrOfColumns) {
-        this.nrOfColumns = nrOfColumns;
-    }
-
-    /**
      * Manually set the value for a certain search field (and clear the value of the
      * auxiliary search field if present)
      * 
@@ -438,16 +382,16 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
         FilterGroup<T> group = groups.get(propertyId);
 
         if (value != null) {
-            ((HasValue<R>) group.getField()).setValue(value);
+            ((HasValue<?, R>) group.getField()).setValue(value);
         } else {
-            ((HasValue<R>) group.getField()).clear();
+            ((HasValue<?, R>) group.getField()).clear();
         }
 
         if (group.getAuxField() != null) {
             if (auxValue != null) {
-                ((HasValue<R>) group.getAuxField()).setValue(auxValue);
+                ((HasValue<?, R>) group.getAuxField()).setValue(auxValue);
             } else {
-                ((HasValue<R>) group.getAuxField()).clear();
+                ((HasValue<?, R>) group.getAuxField()).clear();
             }
         }
     }

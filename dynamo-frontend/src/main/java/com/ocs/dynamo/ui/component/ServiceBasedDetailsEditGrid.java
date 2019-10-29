@@ -27,9 +27,9 @@ import com.ocs.dynamo.ui.CanAssignEntity;
 import com.ocs.dynamo.ui.composite.dialog.EntityPopupDialog;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.provider.IdBasedDataProvider;
-import com.vaadin.data.provider.DataProvider;
-import com.vaadin.server.SerializablePredicate;
-import com.vaadin.ui.UI;
+import com.vaadin.flow.component.UI;
+import com.vaadin.flow.data.provider.DataProvider;
+import com.vaadin.flow.function.SerializablePredicate;
 
 /**
  * A grid component that is meant for use inside an edit form. It manages a
@@ -77,7 +77,8 @@ public class ServiceBasedDetailsEditGrid<ID extends Serializable, T extends Abst
             boolean viewMode, FormOptions formOptions, FetchJoinInformation... joins) {
         super(service, entityModel, attributeModel, viewMode, true, formOptions, joins);
         this.provider = new IdBasedDataProvider<>(service, entityModel, joins);
-        provider.setAfterCountCompleted(x -> getGrid().updateCaption(x));
+        //provider.setAfterCountCompleted(x -> updateCaption(x));
+        initContent();
     }
 
     /**
@@ -105,14 +106,6 @@ public class ServiceBasedDetailsEditGrid<ID extends Serializable, T extends Abst
     @Override
     protected void doEdit(T entity) {
         showPopup(entity);
-    }
-
-    @Override
-    protected void doSetValue(U value) {
-        this.parent = value;
-        if (getGrid() != null) {
-            applyFilter();
-        }
     }
 
     @Override
@@ -173,7 +166,20 @@ public class ServiceBasedDetailsEditGrid<ID extends Serializable, T extends Abst
 
         };
         dialog.build();
-        UI.getCurrent().addWindow(dialog);
+        UI.getCurrent().add(dialog);
+    }
+
+    @Override
+    protected U generateModelValue() {
+        return parent;
+    }
+
+    @Override
+    protected void setPresentationValue(U value) {
+        this.parent = value;
+        if (getGrid() != null) {
+            applyFilter();
+        }
     }
 
 }

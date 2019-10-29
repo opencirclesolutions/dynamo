@@ -30,8 +30,8 @@ import com.ocs.dynamo.ui.composite.export.ExportService;
 import com.ocs.dynamo.ui.composite.type.ExportMode;
 import com.ocs.dynamo.ui.utils.SortUtils;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
-import com.vaadin.data.provider.SortOrder;
-import com.vaadin.server.SerializablePredicate;
+import com.vaadin.flow.data.provider.SortOrder;
+import com.vaadin.flow.function.SerializablePredicate;
 
 /**
  * Implementation of the export service

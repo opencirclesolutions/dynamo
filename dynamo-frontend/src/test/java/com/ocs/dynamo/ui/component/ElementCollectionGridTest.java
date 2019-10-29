@@ -17,6 +17,7 @@ import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -28,95 +29,89 @@ import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.service.TestEntityService;
 import com.ocs.dynamo.ui.FrontendIntegrationTest;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
-import com.vaadin.data.provider.ListDataProvider;
+import com.vaadin.flow.data.provider.ListDataProvider;
 
 public class ElementCollectionGridTest extends FrontendIntegrationTest {
 
-	@Autowired
-	private TestEntityService testEntityService;
+    @Autowired
+    private TestEntityService testEntityService;
 
-	@Autowired
-	private EntityModelFactory emf;
+    @Autowired
+    private EntityModelFactory emf;
 
-	@Before
-	public void setUp() {
-		TestEntity e1 = new TestEntity("Bob", 12L);
-		testEntityService.save(e1);
-	}
+    @Before
+    public void setUp() {
+        TestEntity e1 = new TestEntity("Bob", 12L);
+        testEntityService.save(e1);
+    }
 
-	@Test
-	@SuppressWarnings("unchecked")
-	public void testTableOfStrings() {
-		EntityModel<TestEntity> em = emf.getModel(TestEntity.class);
+    @Test
+    @SuppressWarnings("unchecked")
+    public void testTableOfStrings() {
+        EntityModel<TestEntity> em = emf.getModel(TestEntity.class);
 
-		FormOptions fo = new FormOptions();
-		ElementCollectionGrid<Integer, TestEntity, String> grid = new ElementCollectionGrid<>(
-				em.getAttributeModel("tags"), fo);
-		grid.initContent();
+        FormOptions fo = new FormOptions();
+        ElementCollectionGrid<Integer, TestEntity, String> grid = new ElementCollectionGrid<>(em.getAttributeModel("tags"), fo);
+        grid.initContent();
 
-		grid.setValue(Lists.newArrayList("tag1", "tag2"));
+        grid.setValue(Lists.newArrayList("tag1", "tag2"));
+        grid.getAddButton().click();
 
-		grid.getAddButton().click();
+        ListDataProvider<ValueHolder<String>> provider = (ListDataProvider<ValueHolder<String>>) grid.getGrid().getDataProvider();
+        Assert.assertEquals(3, provider.getItems().size());
+    }
 
-		ListDataProvider<ValueHolder<String>> provider = (ListDataProvider<ValueHolder<String>>) grid.getGrid()
-				.getDataProvider();
-		Assert.assertEquals(3, provider.getItems().size());
-	}
+    /**
+     * Test the creation of a table for integers
+     */
+    @Test
+    public void testTableOfIntegers() {
+        ElementCollectionGrid<Integer, TestEntity, Integer> grid = null;
 
-	/**
-	 * Test the creation of a table for integers
-	 */
-	@Test
-	public void testTableOfIntegers() {
-		ElementCollectionGrid<Integer, TestEntity, Integer> grid = null;
+        EntityModel<TestEntity> em = emf.getModel(TestEntity.class);
 
-		EntityModel<TestEntity> em = emf.getModel(TestEntity.class);
+        FormOptions fo = new FormOptions();
 
-		FormOptions fo = new FormOptions();
+        grid = new ElementCollectionGrid<>(em.getAttributeModel("intTags"), fo);
+        grid.initContent();
+        grid.setValue(Sets.newHashSet(4, 5));
 
-		grid = new ElementCollectionGrid<>(em.getAttributeModel("intTags"), fo);
-		grid.initContent();
-		grid.setValue(Sets.newHashSet(4, 5));
+        grid.getGrid().select(new ValueHolder<Integer>(4));
 
-		grid.getGrid().select(new ValueHolder<Integer>(4));
+        Assert.assertEquals(1, grid.getGrid().getColumns().size());
+    }
 
-		Assert.assertEquals(1, grid.getGrid().getColumns().size());
-	}
+    @Test
+    public void testTableOfLongs() {
+        EntityModel<TestEntity> em = emf.getModel(TestEntity.class);
 
-	@Test
-	public void testTableOfLongs() {
-		EntityModel<TestEntity> em = emf.getModel(TestEntity.class);
+        FormOptions fo = new FormOptions();
+        ElementCollectionGrid<Integer, TestEntity, Long> grid = new ElementCollectionGrid<>(em.getAttributeModel("longTags"), fo);
 
-		FormOptions fo = new FormOptions();
-		ElementCollectionGrid<Integer, TestEntity, Long> grid = new ElementCollectionGrid<>(
-				em.getAttributeModel("longTags"), fo);
+        grid.setValue(Sets.newHashSet(4L, 5L));
+    }
 
-		grid.setValue(Sets.newHashSet(4L, 5L));
-	}
+    @Test
+    @SuppressWarnings("unchecked")
+    public void testEditMode() {
+        EntityModel<TestEntity> em = emf.getModel(TestEntity.class);
 
-	@Test
-	@SuppressWarnings("unchecked")
-	public void testEditMode() {
-		EntityModel<TestEntity> em = emf.getModel(TestEntity.class);
+        FormOptions fo = new FormOptions().setShowRemoveButton(true);
+        ElementCollectionGrid<Integer, TestEntity, String> grid = new ElementCollectionGrid<>(em.getAttributeModel("tags"), fo);
 
-		FormOptions fo = new FormOptions().setShowRemoveButton(true);
-		ElementCollectionGrid<Integer, TestEntity, String> grid = new ElementCollectionGrid<>(
-				em.getAttributeModel("tags"), fo);
+        grid.initContent();
 
-		grid.initContent();
+        // set the values and check that they properly end up in the table
+        Set<String> values = Sets.newHashSet("a", "b", "c");
+        grid.setValue(values);
 
-		// set the values and check that they properly end up in the table
-		Set<String> values = Sets.newHashSet("a", "b", "c");
-		grid.setValue(values);
+        ListDataProvider<ValueHolder<String>> list = (ListDataProvider<ValueHolder<String>>) grid.getGrid().getDataProvider();
+        Assert.assertEquals(3, list.getItems().size());
 
-		ListDataProvider<ValueHolder<String>> list = (ListDataProvider<ValueHolder<String>>) grid.getGrid()
-				.getDataProvider();
-		Assert.assertEquals(3, list.getItems().size());
+        // click the add button and verify that an extra item is added
+        grid.getAddButton().click();
+        list = (ListDataProvider<ValueHolder<String>>) grid.getGrid().getDataProvider();
+        Assert.assertEquals(4, list.getItems().size());
 
-		// click the add button and verify that an extra item is added
-		grid.getAddButton().click();
-		list = (ListDataProvider<ValueHolder<String>>) grid.getGrid().getDataProvider();
-		Assert.assertEquals(4, list.getItems().size());
-
-	}
+    }
 }

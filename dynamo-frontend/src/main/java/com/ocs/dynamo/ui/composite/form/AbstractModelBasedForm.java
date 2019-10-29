@@ -22,7 +22,7 @@ import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.ui.composite.layout.BaseCustomComponent;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
-import com.vaadin.server.SerializablePredicate;
+import com.vaadin.flow.function.SerializablePredicate;
 
 /**
  * Abstract base class for model-based forms - this includes both search forms

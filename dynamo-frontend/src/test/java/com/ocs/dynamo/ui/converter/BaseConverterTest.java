@@ -2,7 +2,7 @@ package com.ocs.dynamo.ui.converter;
 
 import java.util.Locale;
 
-import com.vaadin.data.ValueContext;
+import com.vaadin.flow.data.binder.ValueContext;
 
 public abstract class BaseConverterTest {
 

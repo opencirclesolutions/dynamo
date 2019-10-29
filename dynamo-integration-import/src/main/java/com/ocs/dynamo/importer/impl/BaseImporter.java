@@ -13,20 +13,21 @@
  */
 package com.ocs.dynamo.importer.impl;
 
-import com.ocs.dynamo.exception.OCSImportException;
-import com.ocs.dynamo.importer.ImportField;
-import com.ocs.dynamo.importer.dto.AbstractDTO;
-import com.ocs.dynamo.utils.ClassUtils;
-import com.ocs.dynamo.utils.NumberUtils;
-import org.springframework.beans.BeanUtils;
-import org.springframework.util.StringUtils;
+import static java.lang.Float.valueOf;
 
 import java.beans.PropertyDescriptor;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 
-import static java.lang.Float.valueOf;
+import org.springframework.beans.BeanUtils;
+import org.springframework.util.StringUtils;
+
+import com.ocs.dynamo.exception.OCSImportException;
+import com.ocs.dynamo.importer.ImportField;
+import com.ocs.dynamo.importer.dto.AbstractDTO;
+import com.ocs.dynamo.utils.ClassUtils;
+import com.ocs.dynamo.utils.NumberUtils;
 
 /**
  * Base class for smart upload functionality

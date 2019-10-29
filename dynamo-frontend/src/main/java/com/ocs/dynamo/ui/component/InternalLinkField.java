@@ -18,13 +18,12 @@ import java.io.Serializable;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
-import com.ocs.dynamo.ui.BaseUI;
+import com.ocs.dynamo.service.ServiceLocatorFactory;
+import com.ocs.dynamo.ui.UIHelper;
 import com.ocs.dynamo.ui.utils.FormatUtils;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.CustomField;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.customfield.CustomField;
 
 /**
  * A field for displaying an internal link
@@ -36,71 +35,75 @@ import com.vaadin.ui.themes.ValoTheme;
  */
 public class InternalLinkField<ID extends Serializable, T extends AbstractEntity<ID>> extends CustomField<T> {
 
-	private static final long serialVersionUID = -4586184051577153289L;
+    private static final long serialVersionUID = -4586184051577153289L;
 
-	private Button linkButton;
+    private Button linkButton;
 
-	private T value;
+    private T value;
 
-	private AttributeModel attributeModel;
+    private AttributeModel attributeModel;
 
-	private EntityModel<T> entityModel;
+    private EntityModel<T> entityModel;
 
-	public InternalLinkField(AttributeModel attributeModel, EntityModel<T> entityModel) {
-		this(attributeModel, entityModel, null);
-	}
+    public InternalLinkField(AttributeModel attributeModel, EntityModel<T> entityModel) {
+        this(attributeModel, entityModel, null);
+    }
 
-	/**
-	 * 
-	 * @param attributeModel
-	 * @param entityModel
-	 * @param value
-	 */
-	public InternalLinkField(AttributeModel attributeModel, EntityModel<T> entityModel, T value) {
-		this.value = value;
-		this.attributeModel = attributeModel;
-		this.entityModel = entityModel;
-	}
+    /**
+     * 
+     * @param attributeModel
+     * @param entityModel
+     * @param value
+     */
+    public InternalLinkField(AttributeModel attributeModel, EntityModel<T> entityModel, T value) {
+        this.value = value;
+        this.attributeModel = attributeModel;
+        this.entityModel = entityModel;
+        initContent();
+    }
 
-	@Override
-	protected Component initContent() {
+    protected void initContent() {
 
-		T t = getValue();
-		String str = FormatUtils.formatEntity(entityModel != null ? entityModel : attributeModel.getNestedEntityModel(),
-				t);
-		linkButton = new Button(str);
-		linkButton.setSizeFull();
-		linkButton.setStyleName(ValoTheme.BUTTON_LINK);
-		linkButton.addClickListener(event -> {
-			BaseUI ui = (BaseUI) UI.getCurrent();
-			ui.navigateToEntityScreen(getValue());
-		});
+        T t = getValue();
+        String str = FormatUtils.formatEntity(entityModel != null ? entityModel : attributeModel.getNestedEntityModel(), t);
+        linkButton = new Button(str);
+        linkButton.setSizeFull();
+        linkButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
+        linkButton.addClickListener(event -> {
+            UIHelper ui = ServiceLocatorFactory.getServiceLocator().getService(UIHelper.class);
+            ui.navigateToEntityScreen(getValue());
+        });
 
-		return linkButton;
-	}
+        add(linkButton);
+    }
 
-	@Override
-	protected void doSetValue(T value) {
-		this.value = value;
-		if (linkButton != null) {
-			String str = FormatUtils.formatEntity(attributeModel.getNestedEntityModel(), value);
-			linkButton.setCaption(str);
-		}
-	}
+    @Override
+    public void setEnabled(boolean enabled) {
+        // field is always enabled
+        super.setEnabled(true);
+    }
 
-	@Override
-	public void setEnabled(boolean enabled) {
-		// field is always enabled
-		super.setEnabled(true);
-	}
+    @Override
+    public T getValue() {
+        return value;
+    }
 
-	@Override
-	public T getValue() {
-		return value;
-	}
+    public Button getLinkButton() {
+        return linkButton;
+    }
 
-	public Button getLinkButton() {
-		return linkButton;
-	}
+    @Override
+    protected T generateModelValue() {
+        return value;
+    }
+
+    @Override
+    protected void setPresentationValue(T newPresentationValue) {
+        this.value = newPresentationValue;
+        if (linkButton != null) {
+            String str = FormatUtils.formatEntity(attributeModel.getNestedEntityModel(), value);
+            linkButton.setText(str);
+        }
+    }
 
 }

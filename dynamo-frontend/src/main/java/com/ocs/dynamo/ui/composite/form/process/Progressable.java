@@ -13,8 +13,8 @@
  */
 package com.ocs.dynamo.ui.composite.form.process;
 
-import com.vaadin.ui.Label;
-import com.vaadin.ui.ProgressBar;
+import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.progressbar.ProgressBar;
 
 /**
  * Interface for a component that supports the display of a progress bar. This

@@ -1,12 +1,14 @@
 package com.ocs.dynamo.ui.composite.layout;
 
-
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.github.mvysny.kaributesting.v10.MockVaadin;
+import com.github.mvysny.kaributesting.v10.Routes;
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.TestEntity2;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
@@ -15,9 +17,13 @@ import com.ocs.dynamo.service.TestEntity2Service;
 import com.ocs.dynamo.service.TestEntityService;
 import com.ocs.dynamo.ui.FrontendIntegrationTest;
 import com.ocs.dynamo.ui.composite.type.GridEditMode;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.data.provider.Query;
+import com.vaadin.flow.function.SerializablePredicate;
 
 public class EditableGridLayoutTest extends FrontendIntegrationTest {
+
+    private static Routes routes;
 
     @Autowired
     private EntityModelFactory entityModelFactory;
@@ -36,8 +42,16 @@ public class EditableGridLayoutTest extends FrontendIntegrationTest {
 
     private TestEntity2 child2;
 
+    @BeforeClass
+    public static void createRoutes() {
+        // initialize routes only once, to avoid view auto-detection before every test
+        // and to speed up the tests
+        routes = new Routes().autoDiscoverViews("com.ocs.dynamo");
+    }
+
     @Before
     public void setup() {
+        MockVaadin.setup(routes);
         e1 = new TestEntity("Bob", 11L);
         e1 = testEntityService.save(e1);
 
@@ -53,14 +67,14 @@ public class EditableGridLayoutTest extends FrontendIntegrationTest {
 
     @Test
     @Transactional
-    public void testCreateSimulatenous() {
+    public void testCreateSimultaneous() {
         FormOptions fo = new FormOptions().setGridEditMode(GridEditMode.SIMULTANEOUS);
         EditableGridLayout<Integer, TestEntity> layout = new EditableGridLayout<>(testEntityService,
-                entityModelFactory.getModel(TestEntity.class), fo, null);
+                entityModelFactory.getModel("TestEntityGrid", TestEntity.class), fo, null);
         layout.build();
 
         VerticalLayout parent = new VerticalLayout();
-        parent.addComponent(layout);
+        parent.add(layout);
 
         // open in edit mode by default
         Assert.assertFalse(layout.isViewmode());
@@ -69,10 +83,11 @@ public class EditableGridLayoutTest extends FrontendIntegrationTest {
         Assert.assertTrue(layout.getAddButton().isVisible());
         Assert.assertTrue(layout.getSaveButton().isVisible());
 
+        layout.getGridWrapper().getDataProvider().size(new Query<TestEntity, SerializablePredicate<TestEntity>>());
         Assert.assertEquals(2, layout.getGridWrapper().getDataProviderSize());
 
         // no remove button
-        Assert.assertTrue(layout.getGridWrapper().getGrid().getColumn("remove") == null);
+        Assert.assertTrue(layout.getGridWrapper().getGrid().getColumnByKey("remove") == null);
 
         // try selecting an item
         layout.getGridWrapper().getGrid().select(e1);
@@ -84,11 +99,11 @@ public class EditableGridLayoutTest extends FrontendIntegrationTest {
     public void testCreate() {
         FormOptions fo = new FormOptions();
         EditableGridLayout<Integer, TestEntity> layout = new EditableGridLayout<>(testEntityService,
-                entityModelFactory.getModel(TestEntity.class), fo, null);
+                entityModelFactory.getModel("TestEntityGrid", TestEntity.class), fo, null);
         layout.build();
 
         VerticalLayout parent = new VerticalLayout();
-        parent.addComponent(layout);
+        parent.add(layout);
 
         // open in edit mode by default
         Assert.assertFalse(layout.isViewmode());
@@ -99,8 +114,9 @@ public class EditableGridLayoutTest extends FrontendIntegrationTest {
         // no save button in "row by row" mode
         Assert.assertFalse(layout.getSaveButton().isVisible());
 
+        layout.getGridWrapper().forceSearch();
         Assert.assertEquals(2, layout.getGridWrapper().getDataProviderSize());
-        Assert.assertTrue(layout.getGridWrapper().getGrid().getColumn("remove") == null);
+        Assert.assertTrue(layout.getGridWrapper().getGrid().getColumnByKey("remove") == null);
 
         // try selecting an item
         layout.getGridWrapper().getGrid().select(e1);
@@ -108,29 +124,15 @@ public class EditableGridLayoutTest extends FrontendIntegrationTest {
 
     }
 
-    /**
-     * Test that a remove button is created when appropriate
-     */
-    @Test
-    @Transactional
-    public void testCreateWithRemoveButton() {
-        FormOptions fo = new FormOptions().setShowRemoveButton(true);
-        EditableGridLayout<Integer, TestEntity> layout = new EditableGridLayout<>(testEntityService,
-                entityModelFactory.getModel(TestEntity.class), fo, null);
-        layout.build();
-
-        // check that a remove button is created
-        Assert.assertTrue(layout.getGridWrapper().getGrid().getColumn("remove") != null);
-    }
-
     @Test
     @Transactional
     public void testCreateDetailLayout() {
         FormOptions fo = new FormOptions();
         EditableGridDetailLayout<Integer, TestEntity2, Integer, TestEntity> layout = new EditableGridDetailLayout<>(testEntity2Service, e1,
-                testEntityService, entityModelFactory.getModel(TestEntity2.class), fo, null);
+                testEntityService, entityModelFactory.getModel("TestEntityGrid", TestEntity2.class), fo, null);
 
         layout.build();
+        layout.getGridWrapper().forceSearch();
 
         Assert.assertEquals(2, layout.getGridWrapper().getDataProviderSize());
         Assert.assertEquals(e1, layout.getParentEntity());
@@ -145,12 +147,12 @@ public class EditableGridLayoutTest extends FrontendIntegrationTest {
     public void testCreateWithFilter() {
         FormOptions fo = new FormOptions();
         EditableGridLayout<Integer, TestEntity> layout = new EditableGridLayout<Integer, TestEntity>(testEntityService,
-                entityModelFactory.getModel(TestEntity.class), fo, null);
+                entityModelFactory.getModel("TestEntityGrid", TestEntity.class), fo, null);
         layout.setFilterSupplier(() -> new EqualsPredicate<>("name", "Bob"));
         layout.build();
+        layout.getGridWrapper().forceSearch();
 
         Assert.assertEquals(1, layout.getGridWrapper().getDataProviderSize());
-
     }
 
     @Test
@@ -158,7 +160,7 @@ public class EditableGridLayoutTest extends FrontendIntegrationTest {
     public void testCreateInViewMode() {
         FormOptions fo = new FormOptions().setOpenInViewMode(true).setEditAllowed(true);
         EditableGridLayout<Integer, TestEntity> layout = new EditableGridLayout<>(testEntityService,
-                entityModelFactory.getModel(TestEntity.class), fo, null);
+                entityModelFactory.getModel("TestEntityGrid", TestEntity.class), fo, null);
         layout.build();
 
         // open in view mode
@@ -168,6 +170,7 @@ public class EditableGridLayoutTest extends FrontendIntegrationTest {
         Assert.assertFalse(layout.getAddButton().isVisible());
         Assert.assertFalse(layout.getSaveButton().isVisible());
 
+        layout.getGridWrapper().getDataProvider().size(new Query<TestEntity, SerializablePredicate<TestEntity>>());
         Assert.assertEquals(2, layout.getGridWrapper().getDataProviderSize());
 
         // switch to edit mode

@@ -182,21 +182,6 @@ public final class SystemPropertyUtils {
     }
 
     /**
-     * 
-     * @return the default field width of edit fields within a form
-     */
-    public static Integer getDefaultFieldWidth() {
-        return getIntProperty(DynamoConstants.SP_DEFAULT_FIELD_WIDTH, null);
-    }
-
-    /**
-     * @return the default width (in pixels) of the title label above an edit from
-     */
-    public static int getDefaultFormTitleWidth() {
-        return getIntProperty(DynamoConstants.SP_DEFAULT_FORM_TITLE_WIDTH, 0);
-    }
-
-    /**
      * @return the default number of rows in a list select component. Also used as
      *         the default for collection tables
      */

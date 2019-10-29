@@ -13,7 +13,7 @@
  */
 package com.ocs.dynamo.ui;
 
-import com.vaadin.server.SerializablePredicate;
+import com.vaadin.flow.function.SerializablePredicate;
 
 /**
  * An interface for objects that can receive search requests

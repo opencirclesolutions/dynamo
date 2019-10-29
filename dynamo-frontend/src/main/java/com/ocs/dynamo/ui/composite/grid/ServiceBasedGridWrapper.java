@@ -28,11 +28,13 @@ import com.ocs.dynamo.ui.provider.BaseDataProvider;
 import com.ocs.dynamo.ui.provider.IdBasedDataProvider;
 import com.ocs.dynamo.ui.provider.PagingDataProvider;
 import com.ocs.dynamo.ui.provider.QueryType;
-import com.vaadin.data.provider.DataProvider;
-import com.vaadin.data.provider.GridSortOrder;
-import com.vaadin.data.provider.SortOrder;
-import com.vaadin.server.SerializablePredicate;
-import com.vaadin.ui.UI;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.grid.GridSortOrder;
+import com.vaadin.flow.component.grid.contextmenu.GridContextMenu;
+import com.vaadin.flow.data.provider.DataProvider;
+import com.vaadin.flow.data.provider.Query;
+import com.vaadin.flow.data.provider.SortOrder;
+import com.vaadin.flow.function.SerializablePredicate;
 
 /**
  * A wrapper for a grid that retrieves its data directly from the database
@@ -80,8 +82,7 @@ public class ServiceBasedGridWrapper<ID extends Serializable, T extends Abstract
             provider = new IdBasedDataProvider<>(getService(), getEntityModel(), getJoins());
         }
         provider.setMaxResults(maxResults);
-        provider.setAfterCountCompleted(x -> getGrid().updateCaption(x));
-
+        provider.setAfterCountCompleted(x -> updateCaption(x));
         postProcessDataProvider(provider);
 
         return provider;
@@ -104,19 +105,21 @@ public class ServiceBasedGridWrapper<ID extends Serializable, T extends Abstract
 
         // right click to download
         if (getFormOptions().isExportAllowed() && getExportDelegate() != null) {
-            getGrid().addContextClickListener(event -> {
-                // translate grid sort order to actual sort order and fall back to the default
-                // orders
-                // if nothing specified
+
+            GridContextMenu<T> contextMenu = getGrid().addContextMenu();
+            Button downloadButton = new Button(message("ocs.download"));
+            downloadButton.addClickListener(event -> {
                 List<SortOrder<?>> orders = new ArrayList<>();
                 List<GridSortOrder<T>> so = getGrid().getSortOrder();
                 for (GridSortOrder<T> gso : so) {
-                    orders.add(new SortOrder<String>(gso.getSorted().getId(), gso.getDirection()));
+                    orders.add(new SortOrder<String>(gso.getSorted().getKey(), gso.getDirection()));
                 }
-                getExportDelegate().export(UI.getCurrent(), getExportEntityModel() != null ? getExportEntityModel() : getEntityModel(),
+                getExportDelegate().export(getExportEntityModel() != null ? getExportEntityModel() : getEntityModel(),
                         getFormOptions().getExportMode(), getFilter(), !orders.isEmpty() ? orders : getSortOrders(),
                         getExportJoins() != null ? getExportJoins() : getJoins());
             });
+            contextMenu.add(downloadButton);
+
         }
     }
 
@@ -145,6 +148,13 @@ public class ServiceBasedGridWrapper<ID extends Serializable, T extends Abstract
 
     public void setMaxResults(Integer maxResults) {
         this.maxResults = maxResults;
+    }
+
+    /**
+     * Forces a search
+     */
+    public void forceSearch() {
+        getDataProvider().size(new Query<T, SerializablePredicate<T>>(getFilter()));
     }
 
 }

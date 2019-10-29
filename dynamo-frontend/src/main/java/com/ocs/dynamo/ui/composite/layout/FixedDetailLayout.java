@@ -19,7 +19,7 @@ import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.CanAssignEntity;
-import com.vaadin.data.provider.SortOrder;
+import com.vaadin.flow.data.provider.SortOrder;
 
 /**
  * Split layout that displays a fixed set of items related to a parent entity

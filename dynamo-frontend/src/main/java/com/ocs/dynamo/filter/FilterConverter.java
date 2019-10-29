@@ -16,7 +16,7 @@ package com.ocs.dynamo.filter;
 import org.springframework.core.convert.converter.Converter;
 
 import com.ocs.dynamo.domain.model.EntityModel;
-import com.vaadin.server.SerializablePredicate;
+import com.vaadin.flow.function.SerializablePredicate;
 
 /**
  * Converts a Vaadin filter into an Open Circle filter

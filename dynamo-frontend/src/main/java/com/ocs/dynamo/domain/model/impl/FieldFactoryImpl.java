@@ -14,7 +14,6 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.vaadin.teemu.switchui.Switch;
 
 import com.google.common.collect.Lists;
 import com.ocs.dynamo.domain.AbstractEntity;
@@ -22,7 +21,6 @@ import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.AttributeSelectMode;
 import com.ocs.dynamo.domain.model.AttributeTextFieldMode;
 import com.ocs.dynamo.domain.model.AttributeType;
-import com.ocs.dynamo.domain.model.CheckboxMode;
 import com.ocs.dynamo.domain.model.EditableType;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.FieldFactory;
@@ -37,42 +35,35 @@ import com.ocs.dynamo.ui.component.CustomEntityField;
 import com.ocs.dynamo.ui.component.ElementCollectionGrid;
 import com.ocs.dynamo.ui.component.EntityComboBox.SelectMode;
 import com.ocs.dynamo.ui.component.EntityLookupField;
-import com.ocs.dynamo.ui.component.FancyListSelect;
 import com.ocs.dynamo.ui.component.InternalLinkField;
 import com.ocs.dynamo.ui.component.QuickAddEntityComboBox;
-import com.ocs.dynamo.ui.component.QuickAddListSelect;
 import com.ocs.dynamo.ui.component.QuickAddListSingleSelect;
+import com.ocs.dynamo.ui.component.QuickAddTokenSelect;
 import com.ocs.dynamo.ui.component.SimpleTokenFieldSelect;
-import com.ocs.dynamo.ui.component.TimeField;
-import com.ocs.dynamo.ui.component.TokenFieldSelect;
 import com.ocs.dynamo.ui.component.URLField;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.converter.ConverterFactory;
-import com.ocs.dynamo.ui.converter.IntToDoubleConverter;
 import com.ocs.dynamo.ui.converter.LocalDateWeekCodeConverter;
-import com.ocs.dynamo.ui.converter.LongToDoubleConverter;
 import com.ocs.dynamo.ui.converter.ZonedDateTimeToLocalDateTimeConverter;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.ui.validator.EmailValidator;
 import com.ocs.dynamo.ui.validator.URLValidator;
 import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.ocs.dynamo.utils.NumberUtils;
-import com.vaadin.data.Binder.BindingBuilder;
-import com.vaadin.data.Converter;
-import com.vaadin.data.provider.ListDataProvider;
-import com.vaadin.data.provider.SortOrder;
-import com.vaadin.server.SerializablePredicate;
-import com.vaadin.shared.data.sort.SortDirection;
-import com.vaadin.ui.AbstractComponent;
-import com.vaadin.ui.AbstractField;
-import com.vaadin.ui.AbstractTextField;
-import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.DateField;
-import com.vaadin.ui.DateTimeField;
-import com.vaadin.ui.Slider;
-import com.vaadin.ui.TextArea;
-import com.vaadin.ui.TextField;
+import com.vaadin.flow.component.AbstractField;
+import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.checkbox.Checkbox;
+import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.datepicker.DatePicker;
+import com.vaadin.flow.component.textfield.TextArea;
+import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.component.timepicker.TimePicker;
+import com.vaadin.flow.data.binder.Binder.BindingBuilder;
+import com.vaadin.flow.data.converter.Converter;
+import com.vaadin.flow.data.provider.ListDataProvider;
+import com.vaadin.flow.data.provider.SortDirection;
+import com.vaadin.flow.data.provider.SortOrder;
+import com.vaadin.flow.function.SerializablePredicate;
 
 /**
  * 
@@ -104,7 +95,7 @@ public class FieldFactoryImpl implements FieldFactory {
         } else if (am.isWeek()) {
             BindingBuilder<U, String> sBuilder = (BindingBuilder<U, String>) builder;
             sBuilder.withConverter(new LocalDateWeekCodeConverter());
-        } else if (builder.getField() instanceof AbstractTextField) {
+        } else if (builder.getField() instanceof TextField) {
             BindingBuilder<U, String> sBuilder = (BindingBuilder<U, String>) builder;
             sBuilder.withNullRepresentation("");
             if (customConverter == null) {
@@ -126,20 +117,11 @@ public class FieldFactoryImpl implements FieldFactory {
                 // add a custom converter defined in the component itself
                 sBuilder.withConverter(customConverter);
             }
-        } else if (builder.getField() instanceof Slider) {
-            // custom converters since the Slider component uses doubles internally
-            BindingBuilder<U, Double> sBuilder = (BindingBuilder<U, Double>) builder;
-            sBuilder.withNullRepresentation(0.0);
-            if (NumberUtils.isInteger(am.getType())) {
-                sBuilder.withConverter(new IntToDoubleConverter());
-            } else if (NumberUtils.isLong(am.getType())) {
-                sBuilder.withConverter(new LongToDoubleConverter());
-            }
         } else if (builder.getField() instanceof URLField) {
             BindingBuilder<U, String> sBuilder = (BindingBuilder<U, String>) builder;
             sBuilder.withNullRepresentation("")
                     .withValidator(new URLValidator(messageService.getMessage("ocs.no.valid.url", VaadinUtils.getLocale())));
-        } else if (builder.getField() instanceof DateTimeField && ZonedDateTime.class.equals(am.getType())) {
+        } else if (builder.getField() instanceof TimePicker && ZonedDateTime.class.equals(am.getType())) {
             BindingBuilder<U, LocalDateTime> sBuilder = (BindingBuilder<U, LocalDateTime>) builder;
             sBuilder.withConverter(new ZonedDateTimeToLocalDateTimeConverter(ZoneId.systemDefault()));
         }
@@ -157,7 +139,7 @@ public class FieldFactoryImpl implements FieldFactory {
      * @return
      */
     @SuppressWarnings("unchecked")
-    private <ID extends Serializable, S extends AbstractEntity<ID>> AbstractComponent constructCollectionSelect(AttributeModel am,
+    private <ID extends Serializable, S extends AbstractEntity<ID>> Component constructCollectionSelect(AttributeModel am,
             EntityModel<?> fieldEntityModel, SerializablePredicate<?> fieldFilter, ListDataProvider<?> sharedProvider, boolean search,
             boolean grid, boolean multipleSelect) {
         EntityModel<?> em = resolveEntityModel(fieldEntityModel, am, search);
@@ -171,25 +153,12 @@ public class FieldFactoryImpl implements FieldFactory {
         if (AttributeSelectMode.LOOKUP.equals(mode)) {
             // lookup field
             return constructLookupField(am, fieldEntityModel, fieldFilter, search, true);
-        } else if (AttributeSelectMode.FANCY_LIST.equals(mode)) {
-            // fancy list select
-            FancyListSelect<ID, S> listSelect = new FancyListSelect<>(service, (EntityModel<S>) em, am,
-                    (SerializablePredicate<S>) fieldFilter, search, sos);
-            listSelect.setRows(am.getRows() != null ? am.getRows() : SystemPropertyUtils.getDefaultListSelectRows());
-            return listSelect;
         } else if (AttributeSelectMode.LIST.equals(mode)) {
-            // simple list select if everything else fails or is not applicable
-            if (multipleSelect || Collection.class.isAssignableFrom(am.getType())) {
-                return new QuickAddListSelect<ID, S>((EntityModel<S>) em, am, service, (SerializablePredicate<S>) fieldFilter, search,
-                        am.getRows() != null ? am.getRows() : SystemPropertyUtils.getDefaultListSelectRows(), sos);
-            } else {
-                return new QuickAddListSingleSelect<>((EntityModel<S>) em, am, service, (SerializablePredicate<S>) fieldFilter, search,
-                        am.getRows() != null ? am.getRows() : SystemPropertyUtils.getDefaultListSelectRows(), sos);
-            }
+            // list box for selecting single item
+            return new QuickAddListSingleSelect<>((EntityModel<S>) em, am, service, (SerializablePredicate<S>) fieldFilter, search, sos);
         } else {
             // by default, use a token field
-            return new TokenFieldSelect<ID, S>((EntityModel<S>) em, am, service, (SerializablePredicate<S>) fieldFilter,
-                    (ListDataProvider<S>) sharedProvider, search, sos);
+            return new QuickAddTokenSelect<ID, S>((EntityModel<S>) em, am, service, (SerializablePredicate<S>) fieldFilter, search, sos);
         }
     }
 
@@ -197,27 +166,27 @@ public class FieldFactoryImpl implements FieldFactory {
     private <ID extends Serializable, S extends AbstractEntity<ID>> QuickAddEntityComboBox<ID, S> constructComboBox(AttributeModel am,
             EntityModel<?> entityModel, SerializablePredicate<?> fieldFilter, ListDataProvider<?> sharedProvider, boolean search) {
         entityModel = resolveEntityModel(entityModel, am, search);
-        final BaseService<ID, S> service = (BaseService<ID, S>) serviceLocator.getServiceForEntity(entityModel.getEntityClass());
-        final SortOrder<?>[] sos = constructSortOrder(entityModel);
+        BaseService<ID, S> service = (BaseService<ID, S>) serviceLocator.getServiceForEntity(entityModel.getEntityClass());
+        SortOrder<?>[] sos = constructSortOrder(entityModel);
         return new QuickAddEntityComboBox<>((EntityModel<S>) entityModel, am, service, SelectMode.FILTERED,
                 (SerializablePredicate<S>) fieldFilter, search, (ListDataProvider<S>) sharedProvider, null, sos);
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    private <E extends Enum> ComboBox constructEnumComboBox(final Class<E> enumClass) {
+    private <E extends Enum> ComboBox constructEnumComboBox(Class<E> enumClass) {
         ComboBox cb = new ComboBox<>();
 
         // sort on the description
-        final List<E> list = Arrays.asList(enumClass.getEnumConstants());
+        List<E> list = Arrays.asList(enumClass.getEnumConstants());
         list.sort((a, b) -> {
-            final String msg1 = messageService.getEnumMessage(enumClass, a, VaadinUtils.getLocale());
-            final String msg2 = messageService.getEnumMessage(enumClass, b, VaadinUtils.getLocale());
+            String msg1 = messageService.getEnumMessage(enumClass, a, VaadinUtils.getLocale());
+            String msg2 = messageService.getEnumMessage(enumClass, b, VaadinUtils.getLocale());
             return msg1.compareToIgnoreCase(msg2);
         });
 
         // set data provider and caption generator
         cb.setDataProvider(new ListDataProvider<E>(list));
-        cb.setItemCaptionGenerator(e -> messageService.getEnumMessage(enumClass, (E) e, VaadinUtils.getLocale()));
+        cb.setItemLabelGenerator(e -> messageService.getEnumMessage(enumClass, (E) e, VaadinUtils.getLocale()));
         return cb;
     }
 
@@ -228,7 +197,7 @@ public class FieldFactoryImpl implements FieldFactory {
      * @return
      */
     @Override
-    public AbstractComponent constructField(AttributeModel am) {
+    public Component constructField(AttributeModel am) {
         return constructField(FieldFactoryContext.createDefault(am));
     }
 
@@ -237,8 +206,8 @@ public class FieldFactoryImpl implements FieldFactory {
      * 
      * @param context the context that governs how the field must be created
      */
-    public AbstractComponent constructField(FieldFactoryContext context) {
-        AbstractComponent field = null;
+    public Component constructField(FieldFactoryContext context) {
+        Component field = null;
 
         // delegate to managed field factory
         if (delegate != null) {
@@ -281,7 +250,7 @@ public class FieldFactoryImpl implements FieldFactory {
             field = constructCollectionSelect(am, fieldEntityModel, fieldFilter, sharedProvider, search, grid, true);
         } else if (AttributeTextFieldMode.TEXTAREA.equals(am.getTextFieldMode()) && !search && !grid) {
             field = new TextArea();
-            ((TextArea) field).setRows(am.getRows() == null ? SystemPropertyUtils.getDefaultTextAreaRows() : am.getRows());
+            ((TextArea) field).setHeight("100px");
         } else if (Enum.class.isAssignableFrom(am.getType())) {
             field = constructEnumComboBox(am.getType().asSubclass(Enum.class));
         } else if (search && (am.getType().equals(Boolean.class) || am.getType().equals(boolean.class))) {
@@ -290,11 +259,12 @@ public class FieldFactoryImpl implements FieldFactory {
             field = constructSearchBooleanComboBox(am, search);
         } else if (Boolean.class.equals(am.getType()) || boolean.class.equals(am.getType())) {
             // regular boolean (not search mode)
-            if (CheckboxMode.SWITCH.equals(am.getCheckboxMode())) {
-                field = new Switch();
-            } else {
-                field = new CheckBox();
-            }
+//            if (CheckboxMode.SWITCH.equals(am.getCheckboxMode())) {
+//                field = new Switch();
+//            } else {
+//                field = new CheckBox();
+//            }
+            field = new Checkbox();
         } else if (am.isWeek()) {
             field = new TextField();
         } else if (search && AttributeSelectMode.TOKEN.equals(am.getSearchSelectMode())
@@ -304,31 +274,32 @@ public class FieldFactoryImpl implements FieldFactory {
                     am.getPath().substring(am.getPath().lastIndexOf('.') + 1), false, null);
         } else if ((NumberUtils.isLong(am.getType()) || NumberUtils.isInteger(am.getType()) || NumberUtils.isDouble(am.getType())
                 || BigDecimal.class.equals(am.getType())) && NumberSelectMode.SLIDER.equals(am.getNumberSelectMode())) {
-            Slider slider = new Slider(am.getDisplayName(VaadinUtils.getLocale()));
-            if (am.getMinValue() != null) {
-                slider.setMin(am.getMinValue());
-            }
-            if (am.getMaxValue() != null) {
-                slider.setMax(am.getMaxValue());
-            }
-            field = slider;
+            // TODO: slider not currently supported
+//            Slider slider = new Slider(am.getDisplayName(VaadinUtils.getLocale()));
+//            if (am.getMinValue() != null) {
+//                slider.setMin(am.getMinValue());
+//            }
+//            if (am.getMaxValue() != null) {
+//                slider.setMax(am.getMaxValue());
+//            }
+//            field = slider;
         } else if (LocalDate.class.equals(am.getType()) || (search && am.isSearchDateOnly())) {
             // date field
-            DateField df = new DateField();
-            df.setDateFormat(SystemPropertyUtils.getDefaultDateFormat());
+            DatePicker df = new DatePicker();
             df.setLocale(dateLoc);
             field = df;
         } else if (LocalDateTime.class.equals(am.getType()) || ZonedDateTime.class.equals(am.getType())) {
-            DateTimeField df = new DateTimeField();
-            df.setDateFormat(am.getDisplayFormat());
+            // TODO: must be a date/time field
+            DatePicker df = new DatePicker();
             df.setLocale(dateLoc);
             field = df;
         } else if (LocalTime.class.equals(am.getType())) {
-            TimeField tf = new TimeField(am);
+            TimePicker tf = new TimePicker();
+            tf.setLocale(dateLoc);
             field = tf;
         } else if (String.class.equals(am.getType()) || NumberUtils.isNumeric(am.getType())) {
             if (am.isUrl()) {
-                final TextField textField = new TextField();
+                TextField textField = new TextField();
                 textField.setSizeFull();
                 field = new URLField(textField, am, false);
             } else {
@@ -336,7 +307,7 @@ public class FieldFactoryImpl implements FieldFactory {
             }
         }
         if (field != null) {
-            postProcessField(field, am, search);
+            postProcessField(field, am, search, grid);
         }
         return field;
     }
@@ -349,9 +320,8 @@ public class FieldFactoryImpl implements FieldFactory {
      * @param fieldEntityModel the field entity model
      * @return
      */
-    private AbstractComponent constructForElementCollection(FieldFactoryContext context, AttributeModel am,
-            EntityModel<?> fieldEntityModel) {
-        AbstractComponent field = null;
+    private Component constructForElementCollection(FieldFactoryContext context, AttributeModel am, EntityModel<?> fieldEntityModel) {
+        Component field = null;
         if (!context.isSearch()) {
             // use a "collection grid" for an element collection
             final FormOptions fo = new FormOptions().setShowRemoveButton(true);
@@ -371,9 +341,7 @@ public class FieldFactoryImpl implements FieldFactory {
                 // other types not supported for now
                 throw new OCSRuntimeException("Element collections of this type are currently not supported");
             }
-        } else
-
-        {
+        } else {
             // token search field
             field = constructSimpleTokenField(fieldEntityModel != null ? fieldEntityModel : am.getEntityModel(), am,
                     am.getPath().substring(am.getPath().lastIndexOf('.') + 1), true, null);
@@ -389,7 +357,7 @@ public class FieldFactoryImpl implements FieldFactory {
      * @return
      */
     @SuppressWarnings("unchecked")
-    public <ID extends Serializable, S extends AbstractEntity<ID>> AbstractComponent constructInternalLinkField(AttributeModel am,
+    public <ID extends Serializable, S extends AbstractEntity<ID>> Component constructInternalLinkField(AttributeModel am,
             EntityModel<?> entityModel) {
         EntityModel<?> em = resolveEntityModel(entityModel, am, true);
         return new InternalLinkField<>(am, (EntityModel<S>) em);
@@ -424,7 +392,7 @@ public class FieldFactoryImpl implements FieldFactory {
         ComboBox<Boolean> cb = new ComboBox<>();
         ListDataProvider<Boolean> provider = new ListDataProvider<>(Lists.newArrayList(Boolean.TRUE, Boolean.FALSE));
         cb.setDataProvider(provider);
-        cb.setItemCaptionGenerator(b -> Boolean.TRUE.equals(b) ? am.getTrueRepresentation(VaadinUtils.getLocale())
+        cb.setItemLabelGenerator(b -> Boolean.TRUE.equals(b) ? am.getTrueRepresentation(VaadinUtils.getLocale())
                 : am.getFalseRepresentation(VaadinUtils.getLocale()));
         cb.setRequiredIndicatorVisible(searching ? am.isRequiredForSearching() : am.isRequired());
         return cb;
@@ -441,9 +409,9 @@ public class FieldFactoryImpl implements FieldFactory {
      * @param search
      * @return
      */
-    private AbstractComponent constructSelect(AttributeModel am, EntityModel<?> fieldEntityModel, SerializablePredicate<?> fieldFilter,
+    private Component constructSelect(AttributeModel am, EntityModel<?> fieldEntityModel, SerializablePredicate<?> fieldFilter,
             ListDataProvider<?> sharedProvider, boolean search, boolean grid) {
-        AbstractComponent field = null;
+        Component field = null;
         AttributeSelectMode selectMode = search ? am.getSearchSelectMode() : am.getSelectMode();
         if (grid) {
             selectMode = am.getGridSelectMode();
@@ -498,26 +466,23 @@ public class FieldFactoryImpl implements FieldFactory {
         return sos;
     }
 
-    private void postProcessField(final AbstractComponent field, final AttributeModel am, boolean search) {
-        field.setCaption(am.getDisplayName(VaadinUtils.getLocale()));
-        field.setDescription(am.getDescription(VaadinUtils.getLocale()));
+    private void postProcessField(Component field, AttributeModel am, boolean search, boolean editableGrid) {
+        String displayName = am.getDisplayName(VaadinUtils.getLocale());
 
-        if (field instanceof AbstractTextField) {
-            final AbstractTextField textField = (AbstractTextField) field;
+        VaadinUtils.setLabel(field, editableGrid ? "" : displayName);
+
+        if (field instanceof TextField) {
+            TextField textField = (TextField) field;
             textField.setPlaceholder(am.getPrompt(VaadinUtils.getLocale()));
-        } else if (field instanceof DateField) {
+        } else if (field instanceof DatePicker) {
             // set a separate format for a date field
-            DateField dateField = (DateField) field;
-            if (am.getDisplayFormat() != null && !am.isSearchDateOnly()) {
-                dateField.setDateFormat(am.getDisplayFormat());
-            }
+            DatePicker dateField = (DatePicker) field;
             dateField.setPlaceholder(am.getPrompt(VaadinUtils.getLocale()));
         }
 
         if (field instanceof AbstractField) {
-            AbstractField<?> af = (AbstractField<?>) field;
+            AbstractField<?, ?> af = (AbstractField<?, ?>) field;
             af.setRequiredIndicatorVisible(search ? am.isRequiredForSearching() : am.isRequired());
-            af.setDescription(am.getDescription(VaadinUtils.getLocale()));
         }
 
         if (field instanceof CustomEntityField) {
@@ -525,8 +490,8 @@ public class FieldFactoryImpl implements FieldFactory {
         }
 
         // add percentage sign
-        if (am.isPercentage() && field instanceof AbstractTextField) {
-            AbstractTextField atf = (AbstractTextField) field;
+        if (am.isPercentage() && field instanceof TextField) {
+            TextField atf = (TextField) field;
             atf.addBlurListener(event -> {
                 String value = atf.getValue();
                 if (value != null && value.indexOf('%') < 0) {
@@ -537,8 +502,8 @@ public class FieldFactoryImpl implements FieldFactory {
         }
 
         // add currency sign
-        if (am.isCurrency() && field instanceof AbstractTextField) {
-            AbstractTextField atf = (AbstractTextField) field;
+        if (am.isCurrency() && field instanceof TextField) {
+            TextField atf = (TextField) field;
             atf.addBlurListener(event -> {
                 String value = atf.getValue();
                 if (value != null && value.indexOf(VaadinUtils.getCurrencySymbol()) < 0) {

@@ -29,13 +29,13 @@ import com.ocs.dynamo.filter.FilterConverter;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
-import com.vaadin.data.provider.AbstractDataProvider;
-import com.vaadin.data.provider.Query;
-import com.vaadin.data.provider.QuerySortOrder;
-import com.vaadin.server.SerializablePredicate;
-import com.vaadin.shared.data.sort.SortDirection;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.UI;
+import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.data.provider.AbstractDataProvider;
+import com.vaadin.flow.data.provider.Query;
+import com.vaadin.flow.data.provider.QuerySortOrder;
+import com.vaadin.flow.data.provider.SortDirection;
+import com.vaadin.flow.function.SerializablePredicate;
 
 /**
  * Abstract class for data providers
@@ -80,7 +80,7 @@ public abstract class BaseDataProvider<ID extends Serializable, T extends Abstra
      * Sort orders to fall back to when no sort orders are defined directly on the
      * grid
      */
-    private List<com.vaadin.data.provider.SortOrder<?>> fallBackSortOrders;
+    private List<com.vaadin.flow.data.provider.SortOrder<?>> fallBackSortOrders;
 
     /**
      * The IDs of the entities to display
@@ -121,7 +121,7 @@ public abstract class BaseDataProvider<ID extends Serializable, T extends Abstra
                         SortDirection.ASCENDING.equals(order.getDirection()) ? Direction.ASC : Direction.DESC));
             }
         } else if (fallBackSortOrders != null && !fallBackSortOrders.isEmpty()) {
-            for (com.vaadin.data.provider.SortOrder<?> order : fallBackSortOrders) {
+            for (com.vaadin.flow.data.provider.SortOrder<?> order : fallBackSortOrders) {
                 so.addSortOrder(new SortOrder(order.getSorted().toString(),
                         SortDirection.ASCENDING.equals(order.getDirection()) ? Direction.ASC : Direction.DESC));
             }
@@ -149,7 +149,7 @@ public abstract class BaseDataProvider<ID extends Serializable, T extends Abstra
         return entityModel;
     }
 
-    public List<com.vaadin.data.provider.SortOrder<?>> getFallBackSortOrders() {
+    public List<com.vaadin.flow.data.provider.SortOrder<?>> getFallBackSortOrders() {
         return fallBackSortOrders;
     }
 
@@ -247,7 +247,7 @@ public abstract class BaseDataProvider<ID extends Serializable, T extends Abstra
         this.currentlySelectedId = id;
     }
 
-    public void setFallBackSortOrders(List<com.vaadin.data.provider.SortOrder<?>> fallBackSortOrders) {
+    public void setFallBackSortOrders(List<com.vaadin.flow.data.provider.SortOrder<?>> fallBackSortOrders) {
         this.fallBackSortOrders = fallBackSortOrders;
     }
 
@@ -262,7 +262,7 @@ public abstract class BaseDataProvider<ID extends Serializable, T extends Abstra
      */
     protected void showNotification(String message) {
         if (UI.getCurrent() != null) {
-            Notification.show(message, Notification.Type.ERROR_MESSAGE);
+            Notification.show(message);
         }
     }
 }

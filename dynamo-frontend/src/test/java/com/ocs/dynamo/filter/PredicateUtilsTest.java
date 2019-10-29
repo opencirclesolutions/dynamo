@@ -7,7 +7,7 @@ import org.junit.Test;
 
 import com.google.common.collect.Sets;
 import com.ocs.dynamo.domain.TestEntity;
-import com.vaadin.server.SerializablePredicate;
+import com.vaadin.flow.function.SerializablePredicate;
 
 public class PredicateUtilsTest {
 

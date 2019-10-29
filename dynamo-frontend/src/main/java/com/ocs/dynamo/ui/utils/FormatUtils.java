@@ -34,8 +34,8 @@ import com.ocs.dynamo.ui.composite.grid.GridUtils;
 import com.ocs.dynamo.utils.ClassUtils;
 import com.ocs.dynamo.utils.DateUtils;
 import com.ocs.dynamo.utils.NumberUtils;
-import com.vaadin.ui.Grid;
-import com.vaadin.ui.UI;
+import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.grid.Grid;
 
 /**
  * 
@@ -158,7 +158,7 @@ public final class FormatUtils {
 
                 // set time zone for a time stamp field
                 if (AttributeDateType.TIMESTAMP.equals(model.getDateType())) {
-                    dateTimeFormatter = dateTimeFormatter.withZone(VaadinUtils.getTimeZone(UI.getCurrent()));
+                    //dateTimeFormatter = dateTimeFormatter.withZone(VaadinUtils.getTimeZone(UI.getCurrent()));
                 }
                 return dateTimeFormatter.format((LocalDate) value);
             } else if (DateUtils.isJava8DateType(model.getType())) {

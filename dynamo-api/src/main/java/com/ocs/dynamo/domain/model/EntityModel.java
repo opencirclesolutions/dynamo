@@ -66,11 +66,6 @@ public interface EntityModel<T> {
     String CASCADE_OFF = "cascadeOff";
 
     /**
-     * The "check box mode" for a boolean (either a check box or a toggle)
-     */
-    String CHECKBOX_MODE = "checkboxMode";
-
-    /**
      * Whether the attribute (of type MASTER, DETAIL or ELEMENT_TABLE) can be edited
      * in an edit form
      */
@@ -251,11 +246,6 @@ public interface EntityModel<T> {
      * Whether this attribute is required when performing a search
      */
     String REQUIRED_FOR_SEARCHING = "requiredForSearching";
-
-    /**
-     * The number of rows in a text area or list select
-     */
-    String ROWS = "rows";
 
     /**
      * Whether searching is case sensitive

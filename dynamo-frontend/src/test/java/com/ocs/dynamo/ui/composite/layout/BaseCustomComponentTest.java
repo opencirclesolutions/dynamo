@@ -39,7 +39,7 @@ import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.test.BaseMockitoTest;
 import com.ocs.dynamo.test.MockUtil;
 import com.ocs.dynamo.utils.DateUtils;
-import com.vaadin.ui.Label;
+import com.vaadin.flow.component.Text;
 
 public class BaseCustomComponentTest extends BaseMockitoTest {
 
@@ -92,48 +92,48 @@ public class BaseCustomComponentTest extends BaseMockitoTest {
 		te3.setId(3);
 		e.addTestEntity2(te3);
 
-		Label label = (Label) component.constructLabel(e, model.getAttributeModel("name"));
-		Assert.assertEquals("Kevin", label.getValue());
+		Text text = (Text) component.constructLabel(e, model.getAttributeModel("name"));
+		Assert.assertEquals("Kevin", text.getText());
 
 		// integer
-		label = (Label) component.constructLabel(e, model.getAttributeModel("someInt"));
-		Assert.assertEquals("1" + sym.getGroupingSeparator() + "234", label.getValue());
+		text = (Text) component.constructLabel(e, model.getAttributeModel("someInt"));
+		Assert.assertEquals("1" + sym.getGroupingSeparator() + "234", text.getText());
 
 		// long
-		label = (Label) component.constructLabel(e, model.getAttributeModel("age"));
-		Assert.assertEquals("12", label.getValue());
+		text = (Text) component.constructLabel(e, model.getAttributeModel("age"));
+		Assert.assertEquals("12", text.getText());
 
 		// BigDecimal
-		label = (Label) component.constructLabel(e, model.getAttributeModel("discount"));
-		Assert.assertEquals("12" + sym.getDecimalSeparator() + "34", label.getValue());
+		text = (Text) component.constructLabel(e, model.getAttributeModel("discount"));
+		Assert.assertEquals("12" + sym.getDecimalSeparator() + "34", text.getText());
 
 		// date
-		label = (Label) component.constructLabel(e, model.getAttributeModel("birthDate"));
-		Assert.assertEquals("04/05/2016", label.getValue());
+		text = (Text) component.constructLabel(e, model.getAttributeModel("birthDate"));
+		Assert.assertEquals("04/05/2016", text.getText());
 
 		// week
-		label = (Label) component.constructLabel(e, model.getAttributeModel("birthWeek"));
-		Assert.assertEquals("2016-18", label.getValue());
+		text = (Text) component.constructLabel(e, model.getAttributeModel("birthWeek"));
+		Assert.assertEquals("2016-18", text.getText());
 
 		// time
-		label = (Label) component.constructLabel(e, model.getAttributeModel("someTime"));
-		Assert.assertEquals("14:25:37", label.getValue());
+		text = (Text) component.constructLabel(e, model.getAttributeModel("someTime"));
+		Assert.assertEquals("14:25:37", text.getText());
 
 		// enum
-		label = (Label) component.constructLabel(e, model.getAttributeModel("someEnum"));
-		Assert.assertEquals("Value A", label.getValue());
+		text = (Text) component.constructLabel(e, model.getAttributeModel("someEnum"));
+		Assert.assertEquals("Value A", text.getText());
 
 		// entity collection
-		label = (Label) component.constructLabel(e, model.getAttributeModel("testEntities"));
-		Assert.assertEquals("Bob<br/>Stuart", label.getValue());
+		text = (Text) component.constructLabel(e, model.getAttributeModel("testEntities"));
+		Assert.assertEquals("Bob, Stuart", text.getText());
 
 		// boolean
-		label = (Label) component.constructLabel(e, model.getAttributeModel("someBoolean"));
-		Assert.assertEquals("true", label.getValue());
+		text = (Text) component.constructLabel(e, model.getAttributeModel("someBoolean"));
+		Assert.assertEquals("true", text.getText());
 
 		// boolean with overwritten value
-		label = (Label) component.constructLabel(e, model.getAttributeModel("someBoolean2"));
-		Assert.assertEquals("On", label.getValue());
+		text = (Text) component.constructLabel(e, model.getAttributeModel("someBoolean2"));
+		Assert.assertEquals("On", text.getText());
 	}
 
 	@Test

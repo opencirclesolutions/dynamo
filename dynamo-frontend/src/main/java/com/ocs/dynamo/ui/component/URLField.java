@@ -16,17 +16,12 @@ package com.ocs.dynamo.ui.component;
 import org.apache.commons.lang3.StringUtils;
 
 import com.ocs.dynamo.domain.model.AttributeModel;
-import com.ocs.dynamo.ui.utils.VaadinUtils;
-import com.vaadin.server.ErrorMessage;
-import com.vaadin.server.ExternalResource;
-import com.vaadin.shared.Registration;
-import com.vaadin.shared.ui.BorderStyle;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.CustomField;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Layout;
-import com.vaadin.ui.Link;
-import com.vaadin.ui.TextField;
+import com.vaadin.flow.component.customfield.CustomField;
+import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.html.Anchor;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.shared.Registration;
 
 /**
  * A custom field for displaying a clickable URL
@@ -39,14 +34,14 @@ public class URLField extends CustomField<String> {
     private static final long serialVersionUID = -1899451186343723434L;
 
     /**
-     * The attribute model
+     * The underlying attribute model
      */
     private AttributeModel attributeModel;
 
     /**
      * Horizontal wrapper layout
      */
-    private HorizontalLayout bar;
+    private FormLayout bar;
 
     /**
      * Whether the field is in editable mode
@@ -56,9 +51,12 @@ public class URLField extends CustomField<String> {
     /**
      * The clickable link
      */
-    private Link link;
+    private Anchor link;
 
-    private Layout main;
+    /**
+     * The main layout
+     */
+    private HorizontalLayout main;
 
     /**
      * The text field for editing
@@ -73,13 +71,27 @@ public class URLField extends CustomField<String> {
      * @param editable       whether to display the field in editable mode
      */
     public URLField(TextField textField, AttributeModel attributeModel, boolean editable) {
+        setSizeFull();
         this.attributeModel = attributeModel;
         this.textField = textField;
+        this.textField.setSizeFull();
         this.editable = editable;
         textField.addValueChangeListener(event -> setValue(event.getValue()));
+        initContent();
     }
 
-    protected Link getLink() {
+    @Override
+    public Registration addValueChangeListener(
+            ValueChangeListener<? super ComponentValueChangeEvent<CustomField<String>, String>> listener) {
+        return super.addValueChangeListener(listener);
+    }
+
+    @Override
+    protected String generateModelValue() {
+        return textField.getValue();
+    }
+
+    protected Anchor getLink() {
         return link;
     }
 
@@ -88,15 +100,19 @@ public class URLField extends CustomField<String> {
     }
 
     @Override
-    protected Component initContent() {
-        main = new DefaultHorizontalLayout(false, false, true);
-        main.setSizeFull();
-        setCaption(attributeModel.getDisplayName(VaadinUtils.getLocale()));
+    public String getValue() {
+        return textField.getValue();
+    }
 
-        bar = new DefaultHorizontalLayout(false, true, true);
+    protected void initContent() {
+        main = new DefaultHorizontalLayout(false, false);
+        main.setSizeFull();
+
+        bar = new FormLayout();
+        bar.setSizeFull();
         updateLink(getValue());
         setMode();
-        return main;
+        add(main);
     }
 
     public boolean isEditable() {
@@ -109,12 +125,9 @@ public class URLField extends CustomField<String> {
     }
 
     @Override
-    protected void doSetValue(String value) {
-        updateLink(value);
-        if (value == null) {
-            textField.clear();
-        } else {
-            textField.setValue(value);
+    public void setErrorMessage(String errorMessage) {
+        if (textField != null) {
+            textField.setErrorMessage(errorMessage);
         }
     }
 
@@ -125,10 +138,20 @@ public class URLField extends CustomField<String> {
         if (main != null) {
             // display different component depending on mode
             if (editable) {
-                main.replaceComponent(bar, textField);
+                main.replace(bar, textField);
             } else {
-                main.replaceComponent(textField, bar);
+                main.replace(textField, bar);
             }
+        }
+    }
+
+    @Override
+    protected void setPresentationValue(String value) {
+        updateLink(value);
+        if (value == null) {
+            textField.clear();
+        } else {
+            textField.setValue(value);
         }
     }
 
@@ -147,32 +170,19 @@ public class URLField extends CustomField<String> {
      */
     private void updateLink(String value) {
         if (bar != null) {
-            bar.removeAllComponents();
+            bar.removeAll();
             if (!StringUtils.isEmpty(value)) {
                 String temp = com.ocs.dynamo.utils.StringUtils.prependProtocol(value);
-                link = new Link(temp, new ExternalResource(temp), "_blank", 0, 0, BorderStyle.DEFAULT);
-                bar.addComponent(link);
+                link = new Anchor(temp, temp);
+                bar.add(link);
             } else {
                 link = null;
             }
         }
     }
 
-    @Override
-    public String getValue() {
-        return textField.getValue();
-    }
-
-    @Override
-    public Registration addValueChangeListener(final ValueChangeListener<String> listener) {
-        return textField.addValueChangeListener(listener);
-    }
-
-    @Override
-    public void setComponentError(ErrorMessage componentError) {
-        if (textField != null) {
-            textField.setComponentError(componentError);
-        }
+    public AttributeModel getAttributeModel() {
+        return attributeModel;
     }
 
 }

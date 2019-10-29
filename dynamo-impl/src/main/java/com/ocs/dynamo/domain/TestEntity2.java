@@ -23,7 +23,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import com.ocs.dynamo.domain.model.AttributeSelectMode;
-import com.ocs.dynamo.domain.model.CheckboxMode;
 import com.ocs.dynamo.domain.model.EditableType;
 import com.ocs.dynamo.domain.model.annotation.Attribute;
 import com.ocs.dynamo.domain.model.annotation.Model;
@@ -49,9 +48,6 @@ public class TestEntity2 extends AbstractEntity<Integer> {
 
     private Integer valueSum;
 
-    @Attribute(checkboxMode = CheckboxMode.SWITCH)
-    private Boolean switchBool;
-
     @ManyToOne
     @Attribute(selectMode = AttributeSelectMode.LOOKUP, multipleSearch = true, navigable = true)
     private TestEntity testEntity;
@@ -61,7 +57,7 @@ public class TestEntity2 extends AbstractEntity<Integer> {
     private TestEntity testEntityAlt;
 
     @ManyToOne
-    @Attribute(selectMode = AttributeSelectMode.LIST, rows = 6, gridSelectMode = AttributeSelectMode.FANCY_LIST)
+    @Attribute(selectMode = AttributeSelectMode.LIST, gridSelectMode = AttributeSelectMode.LIST)
     private TestEntity testEntityAlt2;
 
     @Attribute(selectMode = AttributeSelectMode.TOKEN)
@@ -157,14 +153,6 @@ public class TestEntity2 extends AbstractEntity<Integer> {
 
     public void setBasicToken(String basicToken) {
         this.basicToken = basicToken;
-    }
-
-    public Boolean getSwitchBool() {
-        return switchBool;
-    }
-
-    public void setSwitchBool(Boolean switchBool) {
-        this.switchBool = switchBool;
     }
 
     public BigDecimal getCurrency() {

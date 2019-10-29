@@ -20,8 +20,8 @@ import java.util.Locale;
 import org.apache.commons.lang3.StringUtils;
 
 import com.ocs.dynamo.ui.utils.VaadinUtils;
-import com.vaadin.data.Result;
-import com.vaadin.data.ValueContext;
+import com.vaadin.flow.data.binder.Result;
+import com.vaadin.flow.data.binder.ValueContext;
 
 /**
  * A converter for a Double field that includes a currency symbol.

@@ -51,7 +51,6 @@ import com.ocs.dynamo.domain.model.AttributeSelectMode;
 import com.ocs.dynamo.domain.model.AttributeTextFieldMode;
 import com.ocs.dynamo.domain.model.AttributeType;
 import com.ocs.dynamo.domain.model.CascadeMode;
-import com.ocs.dynamo.domain.model.CheckboxMode;
 import com.ocs.dynamo.domain.model.EditableType;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.VisibilityType;
@@ -93,7 +92,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
      */
     @Test
     public void testDefaults() {
-        final EntityModel<Entity1> model = factory.getModel(Entity1.class);
+        EntityModel<Entity1> model = factory.getModel(Entity1.class);
         Assert.assertNotNull(model);
 
         Assert.assertEquals("Entity1", model.getDisplayName(locale));
@@ -101,7 +100,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
         Assert.assertEquals("Entity1", model.getDescription(locale));
         Assert.assertNull(model.getDisplayProperty());
 
-        final AttributeModel nameModel = model.getAttributeModel("name");
+        AttributeModel nameModel = model.getAttributeModel("name");
         Assert.assertNotNull(nameModel);
 
         Assert.assertNull(nameModel.getDefaultValue());
@@ -115,13 +114,12 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
         Assert.assertTrue(nameModel.isVisible());
         Assert.assertEquals(55, nameModel.getMaxLength().intValue());
         Assert.assertEquals(AttributeTextFieldMode.TEXTAREA, nameModel.getTextFieldMode());
-        Assert.assertEquals(4, nameModel.getRows().intValue());
-
+ 
         Assert.assertTrue(nameModel.isSortable());
         Assert.assertTrue(nameModel.isMainAttribute());
         Assert.assertEquals(EditableType.EDITABLE, nameModel.getEditableType());
 
-        final AttributeModel ageModel = model.getAttributeModel("age");
+        AttributeModel ageModel = model.getAttributeModel("age");
         Assert.assertNull(ageModel.getDefaultValue());
         Assert.assertEquals("Age", ageModel.getDisplayName(locale));
         Assert.assertEquals(0, ageModel.getOrder().intValue());
@@ -131,7 +129,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
         Assert.assertTrue(ageModel.isRequired());
         Assert.assertTrue(ageModel.isThousandsGrouping());
 
-        final AttributeModel birthDateModel = model.getAttributeModel("birthDate");
+        AttributeModel birthDateModel = model.getAttributeModel("birthDate");
         Assert.assertNull(birthDateModel.getDefaultValue());
         Assert.assertEquals("Birth Date", birthDateModel.getDisplayName(locale));
         Assert.assertEquals(1, birthDateModel.getOrder().intValue());
@@ -141,18 +139,17 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 
         Assert.assertTrue(model.usesDefaultGroupOnly());
 
-        final AttributeModel weightModel = model.getAttributeModel("weight");
+        AttributeModel weightModel = model.getAttributeModel("weight");
         Assert.assertEquals(2, weightModel.getPrecision());
 
-        final AttributeModel boolModel = model.getAttributeModel("bool");
+        AttributeModel boolModel = model.getAttributeModel("bool");
         Assert.assertEquals("Yes", boolModel.getTrueRepresentation(locale));
         Assert.assertEquals("No", boolModel.getFalseRepresentation(locale));
-        Assert.assertEquals(CheckboxMode.SWITCH, boolModel.getCheckboxMode());
 
-        final AttributeModel mailModel = model.getAttributeModel("email");
+        AttributeModel mailModel = model.getAttributeModel("email");
         Assert.assertTrue(mailModel.isEmail());
 
-        final AttributeModel urlModel = model.getAttributeModel("url");
+        AttributeModel urlModel = model.getAttributeModel("url");
         Assert.assertTrue(urlModel.isUrl());
 
         // test the total size
@@ -161,41 +158,41 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 
     @Test
     public void testPropertyOrder() {
-        final EntityModel<Entity2> model = factory.getModel(Entity2.class);
+        EntityModel<Entity2> model = factory.getModel(Entity2.class);
         Assert.assertNotNull(model);
 
-        final AttributeModel nameModel = model.getAttributeModel("name");
+        AttributeModel nameModel = model.getAttributeModel("name");
         Assert.assertEquals(0, nameModel.getOrder().intValue());
 
-        final AttributeModel birthDateModel = model.getAttributeModel("birthDate");
+        AttributeModel birthDateModel = model.getAttributeModel("birthDate");
         Assert.assertEquals(1, birthDateModel.getOrder().intValue());
 
-        final AttributeModel age = model.getAttributeModel("age");
+        AttributeModel age = model.getAttributeModel("age");
         Assert.assertEquals(2, age.getOrder().intValue());
     }
 
     @Test
     public void testAttributeGroups() {
-        final EntityModel<Entity3> model = factory.getModel(Entity3.class);
+        EntityModel<Entity3> model = factory.getModel(Entity3.class);
         Assert.assertNotNull(model);
 
         Assert.assertEquals(3, model.getAttributeGroups().size());
-        final String group1 = model.getAttributeGroups().get(0);
+        String group1 = model.getAttributeGroups().get(0);
         Assert.assertEquals("group1.key", group1);
 
-        final List<AttributeModel> models = model.getAttributeModelsForGroup(group1);
+        List<AttributeModel> models = model.getAttributeModelsForGroup(group1);
         Assert.assertEquals("name", models.get(0).getName());
 
-        final String group2 = model.getAttributeGroups().get(1);
+        String group2 = model.getAttributeGroups().get(1);
         Assert.assertEquals("group2.key", group2);
 
-        final List<AttributeModel> models2 = model.getAttributeModelsForGroup(group2);
+        List<AttributeModel> models2 = model.getAttributeModelsForGroup(group2);
         Assert.assertEquals("age", models2.get(0).getName());
         Assert.assertTrue(models2.get(0).isRequiredForSearching());
 
         Assert.assertEquals(1, model.getRequiredForSearchingAttributeModels().size());
 
-        final List<AttributeModel> models3 = model.getAttributeModelsForGroup(EntityModel.DEFAULT_GROUP);
+        List<AttributeModel> models3 = model.getAttributeModelsForGroup(EntityModel.DEFAULT_GROUP);
         Assert.assertEquals("birthDate", models3.get(0).getName());
 
         Assert.assertTrue(model.isAttributeGroupVisible(EntityModel.DEFAULT_GROUP, true));
@@ -207,7 +204,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
      */
     @Test
     public void testAnnotationOverrides() {
-        final EntityModel<Entity3> model = factory.getModel(Entity3.class);
+        EntityModel<Entity3> model = factory.getModel(Entity3.class);
         Assert.assertNotNull(model);
 
         // the following are overwritten using the annotation
@@ -216,7 +213,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
         Assert.assertEquals("desc", model.getDescription(locale));
         Assert.assertEquals("prop", model.getDisplayProperty());
 
-        final AttributeModel nameModel = model.getAttributeModel("name");
+        AttributeModel nameModel = model.getAttributeModel("name");
         Assert.assertNotNull(nameModel);
 
         Assert.assertEquals("Bas", nameModel.getDefaultValue());
@@ -235,29 +232,29 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
         Assert.assertTrue(nameModel.isMainAttribute());
         Assert.assertEquals(EditableType.READ_ONLY, nameModel.getEditableType());
 
-        final AttributeModel ageModel = model.getAttributeModel("age");
+        AttributeModel ageModel = model.getAttributeModel("age");
         Assert.assertNotNull(ageModel);
         Assert.assertTrue(ageModel.isSearchCaseSensitive());
         Assert.assertTrue(ageModel.isSearchPrefixOnly());
         Assert.assertFalse(ageModel.isThousandsGrouping());
 
-        final AttributeModel entityModel = model.getAttributeModel("entity2");
+        AttributeModel entityModel = model.getAttributeModel("entity2");
         Assert.assertEquals(AttributeType.MASTER, entityModel.getAttributeType());
         Assert.assertTrue(entityModel.isComplexEditable());
         Assert.assertTrue(entityModel.isNavigable());
 
-        final AttributeModel entityListModel = model.getAttributeModel("entityList");
+        AttributeModel entityListModel = model.getAttributeModel("entityList");
         Assert.assertEquals(AttributeType.DETAIL, entityListModel.getAttributeType());
 
-        final AttributeModel birthDateModel = model.getAttributeModel("birthDate");
+        AttributeModel birthDateModel = model.getAttributeModel("birthDate");
         Assert.assertEquals("dd/MM/yyyy", birthDateModel.getDisplayFormat());
 
         // test that attribute annotations on getters are also picked up
-        final AttributeModel derivedModel = model.getAttributeModel("derived");
+        AttributeModel derivedModel = model.getAttributeModel("derived");
         Assert.assertNotNull(derivedModel);
         Assert.assertEquals("deri", derivedModel.getDisplayName(locale));
 
-        final AttributeModel weightModel = model.getAttributeModel("weight");
+        AttributeModel weightModel = model.getAttributeModel("weight");
         Assert.assertNotNull(weightModel);
         Assert.assertEquals(4, weightModel.getPrecision());
         Assert.assertTrue(weightModel.isCurrency());
@@ -265,7 +262,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 
     @Test
     public void testReference() {
-        final EntityModel<Entity6> model = factory.getModel("Special", Entity6.class);
+        EntityModel<Entity6> model = factory.getModel("Special", Entity6.class);
         Assert.assertEquals("Special", model.getDisplayName(locale));
         Assert.assertEquals("SpecialPlural", model.getDisplayNamePlural(locale));
     }
@@ -620,7 +617,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
     public class Entity1 {
 
         @Size(max = 55)
-        @Attribute(main = true, textFieldMode = AttributeTextFieldMode.TEXTAREA, rows = 4)
+        @Attribute(main = true, textFieldMode = AttributeTextFieldMode.TEXTAREA)
         private String name;
 
         @NotNull
@@ -630,7 +627,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 
         private LocalDate birthDate;
 
-        @Attribute(trueRepresentation = "Yes", falseRepresentation = "No", checkboxMode = CheckboxMode.SWITCH)
+        @Attribute(trueRepresentation = "Yes", falseRepresentation = "No")
         private Boolean bool;
 
         @Email

@@ -40,14 +40,10 @@ public class PermissionCheckerTest extends BaseMockitoTest {
 
     @Test
     public void testFindViews() {
-        checker.postConstruct();
 
-        // there are two views, but one of them does not have any roles and is
-        // therefore skipped
         List<String> viewNames = checker.getViewNames();
         Assert.assertEquals(2, viewNames.size());
 
-        // there are two view
         Assert.assertTrue(viewNames.contains("TestView"));
         Assert.assertTrue(viewNames.contains("Destination 1.1"));
     }

@@ -12,16 +12,11 @@ import org.springframework.test.util.ReflectionTestUtils;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.test.BaseMockitoTest;
-import com.ocs.dynamo.test.MockUtil;
-import com.ocs.dynamo.ui.BaseUI;
-import com.ocs.dynamo.ui.navigator.CustomNavigator;
-import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.ocs.dynamo.ui.UIHelper;
 
 public class BaseViewTest extends BaseMockitoTest {
 
     private static final String MODE = "mode";
-
-    private static final String VIEW_ID = "view_id";
 
     private BaseView view;
 
@@ -32,27 +27,23 @@ public class BaseViewTest extends BaseMockitoTest {
     private MessageService messageService;
 
     @Mock
-    private BaseUI ui;
-
-    @Mock
-    private CustomNavigator navigator;
+    private UIHelper ui;
 
     @Before
     public void setUp() {
-        Mockito.when(ui.getNavigator()).thenReturn(navigator);
 
         view = new BaseView() {
 
-            private static final long serialVersionUID = 8026762254250096616L;
+            private static final long serialVersionUID = 3811868898666414611L;
 
             @Override
-            public void enter(ViewChangeEvent event) {
+            protected void doInit() {
 
             }
-        };
-        MockUtil.injectUI(view, ui);
-        ReflectionTestUtils.setField(view, "messageService", messageService);
 
+        };
+        ReflectionTestUtils.setField(view, "uiHelper", ui);
+        ReflectionTestUtils.setField(view, "messageService", messageService);
     }
 
     @Test
@@ -67,12 +58,6 @@ public class BaseViewTest extends BaseMockitoTest {
 
         view.clearScreenMode();
         Mockito.verify(ui).setScreenMode(null);
-    }
-
-    @Test
-    public void testNavigate() {
-        view.navigate(VIEW_ID);
-        Mockito.verify(navigator).navigateTo(VIEW_ID);
     }
 
     @Test

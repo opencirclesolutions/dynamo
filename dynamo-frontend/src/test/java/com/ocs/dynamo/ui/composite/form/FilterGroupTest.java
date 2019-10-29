@@ -17,9 +17,8 @@ import com.ocs.dynamo.filter.GreaterOrEqualPredicate;
 import com.ocs.dynamo.filter.SimpleStringPredicate;
 import com.ocs.dynamo.ui.FrontendIntegrationTest;
 import com.ocs.dynamo.ui.composite.form.ModelBasedSearchForm.FilterType;
-import com.vaadin.ui.AbstractComponent;
-import com.vaadin.ui.Slider;
-import com.vaadin.ui.TextField;
+import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.textfield.TextField;
 
 public class FilterGroupTest extends FrontendIntegrationTest {
 
@@ -38,7 +37,7 @@ public class FilterGroupTest extends FrontendIntegrationTest {
 		listened = false;
 	}
 
-	private AbstractComponent constructField(String name) {
+	private Component constructField(String name) {
 		AttributeModel am = model.getAttributeModel(name);
 		FieldFactoryContext context = FieldFactoryContext.create().setSearch(true).setAttributeModel(am);
 		return factory.constructField(context);
@@ -96,25 +95,25 @@ public class FilterGroupTest extends FrontendIntegrationTest {
 		aux.setValue("10");
 	}
 
-	@Test
-	public void testIntSlider() {
-		Slider main = (Slider) constructField("someIntSlider");
-		Slider aux = (Slider) constructField("someIntSlider");
-
-		FilterGroup<TestEntity> fg = new FilterGroup<>(model.getAttributeModel("someIntSlider"), FilterType.BETWEEN,
-				null, main, aux);
-		fg.addListener(event -> {
-			listened = true;
-		});
-
-		main.setValue(100.);
-		Assert.assertTrue(listened);
-
-		// check that value is reset to minimum
-		fg.reset();
-		Assert.assertEquals(main.getMin(), main.getValue(), 0.01);
-		Assert.assertEquals(aux.getMin(), main.getValue(), 0.01);
-	}
+//	@Test
+//	public void testIntSlider() {
+//		Slider main = (Slider) constructField("someIntSlider");
+//		Slider aux = (Slider) constructField("someIntSlider");
+//
+//		FilterGroup<TestEntity> fg = new FilterGroup<>(model.getAttributeModel("someIntSlider"), FilterType.BETWEEN,
+//				null, main, aux);
+//		fg.addListener(event -> {
+//			listened = true;
+//		});
+//
+//		main.setValue(100.);
+//		Assert.assertTrue(listened);
+//
+//		// check that value is reset to minimum
+//		fg.reset();
+//		Assert.assertEquals(main.getMin(), main.getValue(), 0.01);
+//		Assert.assertEquals(aux.getMin(), main.getValue(), 0.01);
+//	}
 
 	@Test
 	public void testTextFieldStringEqual() {

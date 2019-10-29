@@ -18,9 +18,9 @@ import java.text.NumberFormat;
 import java.util.Locale;
 
 import com.ocs.dynamo.ui.utils.VaadinUtils;
-import com.vaadin.data.Result;
-import com.vaadin.data.ValueContext;
-import com.vaadin.data.converter.StringToDoubleConverter;
+import com.vaadin.flow.data.binder.Result;
+import com.vaadin.flow.data.binder.ValueContext;
+import com.vaadin.flow.data.converter.StringToDoubleConverter;
 
 /**
  * A converter for converting between Strings and Doubles

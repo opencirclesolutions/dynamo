@@ -13,12 +13,11 @@
  */
 package com.ocs.dynamo.ui.component;
 
-import com.vaadin.icons.VaadinIcons;
-import com.vaadin.server.FontIcon;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
 /**
  * A collapsible panel for grouping attributes
@@ -28,70 +27,68 @@ import com.vaadin.ui.themes.ValoTheme;
  */
 public class CollapsiblePanel extends VerticalLayout {
 
-	private static final long serialVersionUID = -7979238391035057707L;
+    private static final long serialVersionUID = -7979238391035057707L;
 
-	private FontIcon closedIcon = VaadinIcons.PLUS_CIRCLE;
+    private Icon closedIcon = VaadinIcon.PLUS_CIRCLE.create();
 
-	private FontIcon openIcon = VaadinIcons.MINUS_CIRCLE;
+    private Icon openIcon = VaadinIcon.MINUS_CIRCLE.create();
 
-	private Button toggle = new Button(openIcon);
+    private Button toggle = new Button(openIcon);
 
-	private VerticalLayout contentWrapper = new VerticalLayout();
+    private VerticalLayout contentWrapper = new VerticalLayout();
 
-	public CollapsiblePanel() {
-		toggle.setStyleName(ValoTheme.BUTTON_BORDERLESS + " " + "leftAlign");
-		toggle.setSizeFull();
-		contentWrapper.setMargin(false);
-		contentWrapper.setVisible(true);
-		addComponents(toggle, contentWrapper);
-		toggle.addClickListener(event -> setOpen(!isOpen()));
-	}
+    public CollapsiblePanel() {
+        setMargin(false);
 
-	public CollapsiblePanel(String caption, Component content) {
-		this();
-		setCaption(caption);
-		contentWrapper.addComponent(content);
-	}
+        // toggle.setStyleName(.BUTTON_BORDERLESS + " " + "leftAlign");
+        toggle.setSizeFull();
+        contentWrapper.setMargin(false);
+        contentWrapper.setVisible(true);
+        add(toggle, contentWrapper);
+        toggle.addClickListener(event -> setOpen(!isOpen()));
+    }
 
-	public boolean isOpen() {
-		return toggle.getIcon() == openIcon;
-	}
+    public CollapsiblePanel(String caption, Component content) {
+        this();
+        toggle.setText(caption);
+        contentWrapper.add(content);
+    }
 
-	public CollapsiblePanel setOpen(boolean open) {
-		contentWrapper.setVisible(open);
-		toggle.setIcon(open ? getOpenIcon() : getClosedIcon());
-		return this;
-	}
+    public boolean isOpen() {
+        return toggle.getIcon() == openIcon;
+    }
 
-	public CollapsiblePanel setContent(Component content) {
-		this.contentWrapper.removeAllComponents();
-		this.contentWrapper.addComponent(content);
-		return this;
-	}
+    public CollapsiblePanel setOpen(boolean open) {
+        contentWrapper.setVisible(open);
+        contentWrapper.getChildren().forEach(c -> c.setVisible(open));
+        toggle.setIcon(open ? getOpenIcon() : getClosedIcon());
+        return this;
+    }
 
-	@Override
-	public void setCaption(String caption) {
-		toggle.setCaption(caption);
-	}
+    public CollapsiblePanel setContent(Component content) {
+        this.contentWrapper.removeAll();
+        this.contentWrapper.add(content);
+        return this;
+    }
 
-	public VerticalLayout getContentWrapper() {
-		return contentWrapper;
-	}
+    public VerticalLayout getContentWrapper() {
+        return contentWrapper;
+    }
 
-	public FontIcon getClosedIcon() {
-		return closedIcon;
-	}
+    public Icon getClosedIcon() {
+        return closedIcon;
+    }
 
-	public void setClosedIcon(FontIcon closedIcon) {
-		this.closedIcon = closedIcon;
-	}
+    public void setClosedIcon(Icon closedIcon) {
+        this.closedIcon = closedIcon;
+    }
 
-	public FontIcon getOpenIcon() {
-		return openIcon;
-	}
+    public Icon getOpenIcon() {
+        return openIcon;
+    }
 
-	public void setOpenIcon(FontIcon openIcon) {
-		this.openIcon = openIcon;
-	}
+    public void setOpenIcon(Icon openIcon) {
+        this.openIcon = openIcon;
+    }
 
 }

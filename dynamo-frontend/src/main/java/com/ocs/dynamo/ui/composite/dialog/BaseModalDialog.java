@@ -16,20 +16,17 @@ package com.ocs.dynamo.ui.composite.dialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.Buildable;
 import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
-import com.vaadin.server.Page;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Layout;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
+import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.dialog.Dialog;
+import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
 /**
  * Base class for modal dialogs. This class has an empty button bar and no
@@ -38,103 +35,94 @@ import com.vaadin.ui.Window;
  * 
  * @author bas.rutten
  */
-public abstract class BaseModalDialog extends Window implements Buildable {
+public abstract class BaseModalDialog extends Dialog implements Buildable {
 
-	private static final Logger LOG = LoggerFactory.getLogger(BaseModalDialog.class);
+    private static final Logger LOG = LoggerFactory.getLogger(BaseModalDialog.class);
 
-	private static final long serialVersionUID = -2265149201475495504L;
+    private static final long serialVersionUID = -2265149201475495504L;
 
-	private MessageService messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
+    private MessageService messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
 
-	@Override
-	public void build() {
-		constructLayout();
-	}
+    public BaseModalDialog() {
 
-	/**
-	 * Constructs the layout
-	 */
-	private void constructLayout() {
-		this.setModal(true);
-		this.setResizable(false);
+    }
 
-		Panel panel = new Panel();
-		panel.setCaptionAsHtml(true);
-		panel.setCaption(getTitle());
+    @Override
+    public void build() {
+        constructLayout();
+    }
 
-		this.setContent(panel);
+    /**
+     * Constructs the layout
+     */
+    private void constructLayout() {
+        // TODO: solve this properly with styling
+        setWidth("800px");
 
-		VerticalLayout main = new DefaultVerticalLayout();
-		main.setStyleName(DynamoConstants.CSS_OCS_DIALOG);
-		panel.setContent(main);
+        VerticalLayout main = new DefaultVerticalLayout(false, true);
 
-		doBuild(main);
+        add(main);
+        doBuild(main);
 
-		DefaultHorizontalLayout buttonBar = new DefaultHorizontalLayout();
-		main.addComponent(buttonBar);
+        DefaultHorizontalLayout buttonBar = new DefaultHorizontalLayout(false, true);
+        main.add(buttonBar);
 
-		doBuildButtonBar(buttonBar);
-	}
+        doBuildButtonBar(buttonBar);
+    }
 
-	/**
-	 * Constructs the actual contents of the window
-	 * 
-	 * @param parent
-	 *            the parent layout to which to add the specific components
-	 */
-	protected abstract void doBuild(Layout parent);
+    /**
+     * Constructs the actual contents of the window
+     * 
+     * @param parent the parent layout to which to add the specific components
+     */
+    protected abstract void doBuild(VerticalLayout parent);
 
-	/**
-	 * Constructs the button bar
-	 * 
-	 * @param buttonBar
-	 *            the button bar
-	 */
-	protected abstract void doBuildButtonBar(HorizontalLayout buttonBar);
+    /**
+     * Constructs the button bar
+     * 
+     * @param buttonBar the button bar
+     */
+    protected abstract void doBuildButtonBar(HorizontalLayout buttonBar);
 
-	/**
-	 * Returns the title of the dialog
-	 * 
-	 * @return
-	 */
-	protected abstract String getTitle();
+    /**
+     * Returns the title of the dialog
+     * 
+     * @return
+     */
+    protected abstract String getTitle();
 
-	/**
-	 * Shows a notification message - this method will check for the availability of
-	 * a Vaadin Page object and if this is not present, write the notification to
-	 * the log instead
-	 * 
-	 * @param message
-	 *            the message
-	 * @param type
-	 *            the type of the message
-	 */
-	protected void showNotification(String message, Notification.Type type) {
-		if (Page.getCurrent() != null) {
-			Notification.show(message, type);
-		} else {
-			LOG.info(message);
-		}
-	}
-	
-	protected String message(String key) {
-		return messageService.getMessage(key, VaadinUtils.getLocale());
-	}
-	
-	/**
-	 * Retrieves a message based on its key
-	 * 
-	 * @param key
-	 *            the key of the message
-	 * @param args
-	 *            any arguments to pass to the message
-	 * @return
-	 */
-	protected String message(String key, Object... args) {
-		return messageService.getMessage(key, VaadinUtils.getLocale(), args);
-	}
+    /**
+     * Shows a notification message - this method will check for the availability of
+     * a Vaadin Page object and if this is not present, write the notification to
+     * the log instead
+     * 
+     * @param message the message
+     * @param type    the type of the message
+     */
+    protected void showNotification(String message) {
+        if (UI.getCurrent() != null && UI.getCurrent().getPage() != null) {
+            Notification.show(message);
+        } else {
+            LOG.info(message);
+        }
+    }
 
-	public MessageService getMessageService() {
-		return messageService;
-	}
+    protected String message(String key) {
+        return messageService.getMessage(key, VaadinUtils.getLocale());
+    }
+
+    /**
+     * Retrieves a message based on its key
+     * 
+     * @param key  the key of the message
+     * @param args any arguments to pass to the message
+     * @return
+     */
+    protected String message(String key, Object... args) {
+        return messageService.getMessage(key, VaadinUtils.getLocale(), args);
+    }
+
+    public MessageService getMessageService() {
+        return messageService;
+    }
 }

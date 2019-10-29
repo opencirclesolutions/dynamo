@@ -18,9 +18,8 @@ import com.ocs.dynamo.ui.composite.export.ExportDialog;
 import com.ocs.dynamo.ui.composite.export.ExportService;
 import com.ocs.dynamo.ui.composite.export.FixedExportDialog;
 import com.ocs.dynamo.ui.composite.type.ExportMode;
-import com.vaadin.data.provider.SortOrder;
-import com.vaadin.server.SerializablePredicate;
-import com.vaadin.ui.UI;
+import com.vaadin.flow.data.provider.SortOrder;
+import com.vaadin.flow.function.SerializablePredicate;
 
 /**
  * Implementation of the export delegate
@@ -40,22 +39,22 @@ public class ExportDelegateImpl implements ExportDelegate {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <ID extends Serializable, T extends AbstractEntity<ID>> void export(UI ui, EntityModel<T> entityModel, ExportMode mode,
+    public <ID extends Serializable, T extends AbstractEntity<ID>> void export(EntityModel<T> entityModel, ExportMode mode,
             SerializablePredicate<T> predicate, List<SortOrder<?>> sortOrders, FetchJoinInformation... joins) {
         ExportDialog<ID, T> dialog = new ExportDialog<ID, T>(exportService, entityModel, mode, predicate, sortOrders,
                 (CustomXlsStyleGenerator<ID, T>) customStyleMap.get(entityModel), joins);
         dialog.build();
-        ui.addWindow(dialog);
+        dialog.open();
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public <ID extends Serializable, T extends AbstractEntity<ID>> void exportFixed(UI ui, EntityModel<T> entityModel, ExportMode mode,
+    public <ID extends Serializable, T extends AbstractEntity<ID>> void exportFixed(EntityModel<T> entityModel, ExportMode mode,
             Collection<T> items) {
         FixedExportDialog<ID, T> dialog = new FixedExportDialog<ID, T>(exportService, entityModel, mode,
                 (CustomXlsStyleGenerator<ID, T>) customStyleMap.get(entityModel), () -> Lists.newArrayList(items));
         dialog.build();
-        ui.addWindow(dialog);
+        dialog.open();
     }
 
     /**

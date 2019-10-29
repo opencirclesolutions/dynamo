@@ -23,11 +23,12 @@ import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.provider.QueryType;
-import com.vaadin.data.provider.DataProvider;
-import com.vaadin.data.provider.ListDataProvider;
-import com.vaadin.data.provider.SortOrder;
-import com.vaadin.server.SerializablePredicate;
-import com.vaadin.ui.UI;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.grid.contextmenu.GridContextMenu;
+import com.vaadin.flow.data.provider.DataProvider;
+import com.vaadin.flow.data.provider.ListDataProvider;
+import com.vaadin.flow.data.provider.SortOrder;
+import com.vaadin.flow.function.SerializablePredicate;
 
 /**
  * A wrapper for a grid that displays a fixed number of in-memory entities
@@ -38,54 +39,61 @@ import com.vaadin.ui.UI;
  */
 public class FixedGridWrapper<ID extends Serializable, T extends AbstractEntity<ID>> extends BaseGridWrapper<ID, T> {
 
-	private static final long serialVersionUID = -6711832174203817230L;
+    private static final long serialVersionUID = -6711832174203817230L;
 
-	/**
-	 * The items to display in the grid
-	 */
-	private Collection<T> items;
+    /**
+     * The items to display in the grid
+     */
+    private Collection<T> items;
 
-	/**
-	 * Constructor
-	 * 
-	 * @param service      the service used for retrieving data from the database
-	 * @param entityModel  the entity model
-	 * @param formOptions  the form options
-	 * @param fieldFilters the field
-	 * @param items        the entities to display
-	 * @param sortOrders   the sort orders
-	 */
-	public FixedGridWrapper(BaseService<ID, T> service, EntityModel<T> entityModel, FormOptions formOptions,
-			Map<String, SerializablePredicate<?>> fieldFilters, Collection<T> items, List<SortOrder<?>> sortOrders) {
-		super(service, entityModel, QueryType.NONE, formOptions, fieldFilters, sortOrders, false);
-		this.items = items;
-	}
+    /**
+     * Constructor
+     * 
+     * @param service      the service used for retrieving data from the database
+     * @param entityModel  the entity model
+     * @param formOptions  the form options
+     * @param fieldFilters the field
+     * @param items        the entities to display
+     * @param sortOrders   the sort orders
+     */
+    public FixedGridWrapper(BaseService<ID, T> service, EntityModel<T> entityModel, FormOptions formOptions,
+            Map<String, SerializablePredicate<?>> fieldFilters, Collection<T> items, List<SortOrder<?>> sortOrders) {
+        super(service, entityModel, QueryType.NONE, formOptions, fieldFilters, sortOrders, false);
+        this.items = items;
+    }
 
-	@Override
-	protected DataProvider<T, SerializablePredicate<T>> constructDataProvider() {
-		return new ListDataProvider<>(items);
-	}
+    @Override
+    protected DataProvider<T, SerializablePredicate<T>> constructDataProvider() {
+        return new ListDataProvider<>(items);
+    }
 
-	@Override
-	public void reloadDataProvider() {
-		// do nothing
-	}
+    @Override
+    public void reloadDataProvider() {
+        // do nothing
+    }
 
-	@Override
-	public void search(SerializablePredicate<T> filter) {
-		// do nothing (collection of items is fixed)
-	}
+    @Override
+    public void search(SerializablePredicate<T> filter) {
+        // do nothing (collection of items is fixed)
+    }
 
-	@Override
-	protected void initSortingAndFiltering() {
-		// right click to download
-		if (getFormOptions().isExportAllowed() && getExportDelegate() != null) {
-			getGrid().addContextClickListener(event -> {
-				ListDataProvider<T> provider = (ListDataProvider<T>) getDataProvider();
-				getExportDelegate().exportFixed(UI.getCurrent(),
-						getExportEntityModel() != null ? getExportEntityModel() : getEntityModel(),
-						getFormOptions().getExportMode(), provider.getItems());
-			});
-		}
-	}
+    @Override
+    protected void initSortingAndFiltering() {
+        // right click to download
+        if (getFormOptions().isExportAllowed() && getExportDelegate() != null) {
+            GridContextMenu<T> contextMenu = getGrid().addContextMenu();
+            Button downloadButton = new Button(message("ocs.download"));
+            downloadButton.addClickListener(event -> {
+                ListDataProvider<T> provider = (ListDataProvider<T>) getDataProvider();
+                getExportDelegate().exportFixed(getExportEntityModel() != null ? getExportEntityModel() : getEntityModel(),
+                        getFormOptions().getExportMode(), provider.getItems());
+            });
+            contextMenu.add(downloadButton);
+        }
+    }
+
+    @Override
+    public void forceSearch() {
+        // TODO: does this do anything useful?
+    }
 }

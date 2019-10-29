@@ -18,7 +18,7 @@ import org.junit.Test;
 
 import com.ocs.dynamo.ui.FrontendIntegrationTest;
 import com.ocs.dynamo.ui.composite.dialog.SimpleModalDialog;
-import com.vaadin.ui.Layout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
 public class SimpleModalDialogTest extends FrontendIntegrationTest {
 
@@ -29,7 +29,7 @@ public class SimpleModalDialogTest extends FrontendIntegrationTest {
             private static final long serialVersionUID = 87021849566418546L;
 
             @Override
-            protected void doBuild(Layout parent) {
+            protected void doBuild(VerticalLayout parent) {
 
             }
 
@@ -57,7 +57,7 @@ public class SimpleModalDialogTest extends FrontendIntegrationTest {
             private static final long serialVersionUID = 87021849566418546L;
 
             @Override
-            protected void doBuild(Layout parent) {
+            protected void doBuild(VerticalLayout parent) {
 
             }
 

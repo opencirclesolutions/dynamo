@@ -17,19 +17,16 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.springframework.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.ui.CanAssignEntity;
 import com.ocs.dynamo.ui.Reloadable;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
-import com.vaadin.server.Resource;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.Layout;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.TabSheet;
-import com.vaadin.ui.TabSheet.Tab;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.flow.component.AttachEvent;
+import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
 /**
  * A layout that contains a tab sheet with tabs that are lazily loaded. Use the
@@ -42,232 +39,217 @@ import com.vaadin.ui.VerticalLayout;
  * @param <T> type of the entity
  */
 public abstract class LazyTabLayout<ID extends Serializable, T extends AbstractEntity<ID>> extends BaseCustomComponent
-		implements Reloadable {
+        implements Reloadable {
 
-	private static final long serialVersionUID = 3788799136302802727L;
+    private static final long serialVersionUID = 3788799136302802727L;
 
-	/**
-	 * The captions of the tabs that have already been constructed
-	 */
-	private Set<String> constructedTabs = new HashSet<>();
+    /**
+     * 
+     */
+    private Label caption;
 
-	/**
-	 * The entity that is being shown
-	 */
-	private T entity;
+    /**
+     * The captions of the tabs that have already been constructed
+     */
+    private Set<Integer> constructedTabs = new HashSet<>();
 
-	/**
-	 * The panel that surrounds the tab sheet
-	 */
-	private Panel panel;
+    /**
+     * The entity that is being shown
+     */
+    private T entity;
 
-	/**
-	 * The tab sheet component
-	 */
-	private TabSheet tabs;
+    /**
+     * The tab sheet component
+     */
+    private TabWrapper tabs;
 
-	/**
-	 * Constructor
-	 * 
-	 * @param entity
-	 */
-	public LazyTabLayout(T entity) {
-		this.entity = entity;
-	}
+    /**
+     * Constructor
+     * 
+     * @param entity
+     */
+    public LazyTabLayout(T entity) {
+        this.entity = entity;
+    }
 
-	@Override
-	public void attach() {
-		super.attach();
-		build();
-	}
+    /**
+     * Callback method that is called before a tab is reloaded - use this to make
+     * sure the correct data is available in the tab
+     * 
+     * @param index     the index of the selected tab
+     * @param component
+     */
+    protected void beforeReload(int index, Component component) {
+        // overwrite in subclasses
+    }
 
-	/**
-	 * Callback method that is called before a tab is reloaded - use this to make
-	 * sure the correct data is available in the tab
-	 * 
-	 * @param index     the index of the selected tab
-	 * @param component
-	 */
-	protected void beforeReload(int index, Component component) {
-		// overwrite in subclasses
-	}
+    @Override
+    public void build() {
+        if (tabs == null) {
+            VerticalLayout main = new VerticalLayout();
+            add(main);
 
-	@Override
-	public void build() {
-		if (tabs == null) {
-			tabs = new TabSheet();
-			tabs.setSizeFull();
+            String title = createTitle();
+            if (!StringUtils.isEmpty(title)) {
+                caption = new Label(createTitle());
+                main.add(caption);
+            }
 
-			String title = createTitle();
-			if (!StringUtils.isEmpty(title)) {
-				panel = new Panel();
-				panel.setCaptionAsHtml(true);
-				panel.setCaption(createTitle());
+            tabs = new TabWrapper();
+            tabs.setSizeFull();
 
-				VerticalLayout main = new DefaultVerticalLayout(true, true);
-				panel.setContent(main);
-				main.addComponent(tabs);
-				setCompositionRoot(panel);
-			} else {
-				setCompositionRoot(tabs);
-			}
-			setupLazySheet(tabs);
-		}
-	}
+            main.add(tabs);
 
-	/**
-	 * Constructs the title of the page. If this method returns null then no title
-	 * will be displayed
-	 * 
-	 * @return
-	 */
-	protected abstract String createTitle();
+            setupLazySheet(tabs);
+        }
+    }
 
-	public T getEntity() {
-		return entity;
-	}
+    /**
+     * Constructs the title of the page. If this method returns null then no title
+     * will be displayed
+     * 
+     * @return
+     */
+    protected abstract String createTitle();
 
-	/**
-	 * Returns the icon to use inside a certain tab
-	 * 
-	 * @param index the zero-based index of the tab
-	 * @return
-	 */
-	protected abstract Resource getIconForTab(int index);
+    /**
+     * Returns the tab identified by a certain index
+     * 
+     * @param index the index
+     * @return
+     */
+    public Component getComponentAt(int index) {
+        return tabs.getComponentAt(index);
+    }
 
-	/**
-	 * Returns the tab identified by a certain index
-	 * 
-	 * @param index the index
-	 * @return
-	 */
-	public Tab getTab(int index) {
-		return tabs.getTab(index);
-	}
+    public T getEntity() {
+        return entity;
+    }
 
-	/**
-	 * Returns the captions of the tabs
-	 * 
-	 * @return
-	 */
-	protected abstract String[] getTabCaptions();
+    /**
+     * Returns the captions of the tabs
+     * 
+     * @return
+     */
+    protected abstract String[] getTabCaptions();
 
-	/**
-	 * Returns the description (tool tip) for a certain tab
-	 * 
-	 * @param index the index of the tab
-	 * @return
-	 */
-	protected String getTabDescription(int index) {
-		return null;
-	}
+    /**
+     * Returns the description (tool tip) for a certain tab
+     * 
+     * @param index the index of the tab
+     * @return
+     */
+    protected String getTabDescription(int index) {
+        return null;
+    }
 
-	/**
-	 * Returns the index of a tab given its caption
-	 * 
-	 * @param caption the caption
-	 * @return
-	 */
-	private int getTabIndex(String caption) {
-		int index = 0;
-		for (int i = 0; i < tabs.getComponentCount(); i++) {
-			Tab t = tabs.getTab(i);
-			if (t.getCaption().equals(caption)) {
-				index = i;
-				break;
-			}
-		}
-		return index;
-	}
+    /**
+     * Constructs or reloads a tab
+     * 
+     * @param selectedTab the currently selected tab
+     */
+    @SuppressWarnings("unchecked")
+    protected void initOrReload(int index) {
 
-	/**
-	 * Constructs or reloads a tab
-	 * 
-	 * @param selectedTab the currently selected tab
-	 */
-	@SuppressWarnings("unchecked")
-	protected void initOrReload(Component selectedTab) {
-		Tab tab = tabs.getTab(selectedTab);
+        // lazily load a tab
+        if (!constructedTabs.contains(index)) {
+            constructedTabs.add(index);
+            // look up the tab in the copies
 
-		// lazily load a tab
-		if (!constructedTabs.contains(tab.getCaption())) {
-			constructedTabs.add(tab.getCaption());
+            // paste the real tab into the placeholder
+            Component constructed = initTab(index);
+            tabs.setComponent(index, constructed);
+        } else {
+            // reload the tab if needed
+            Component component = tabs.getComponentAt(index + 1);
+            if (component instanceof Reloadable) {
+                if (component instanceof CanAssignEntity) {
+                    ((CanAssignEntity<?, T>) component).assignEntity(getEntity());
+                }
+                beforeReload(index, component);
+                ((Reloadable) component).reload();
+            }
+        }
+    }
 
-			// look up the tab in the copies
-			int index = getTabIndex(tab.getCaption());
+    /**
+     * Lazily creates a certain tab
+     * 
+     * @param index the zero-based index of the tab to create
+     * @return
+     */
+    protected abstract Component initTab(int index);
 
-			// paste the real tab into the placeholder
-			Component realTab = initTab(index);
-			((Layout) selectedTab).addComponent(realTab);
-		} else {
-			// reload the tab if needed
-			Layout layout = (Layout) selectedTab;
-			Component next = layout.iterator().next();
-			if (next instanceof Reloadable) {
+    @Override
+    protected void onAttach(AttachEvent attachEvent) {
+        super.onAttach(attachEvent);
+        build();
+    }
 
-				if (next instanceof CanAssignEntity) {
-					((CanAssignEntity<?, T>) next).assignEntity(getEntity());
-				}
-				beforeReload(getTabIndex(tab.getCaption()), next);
-				((Reloadable) next).reload();
-			}
-		}
-	}
+    @Override
+    public void reload() {
+        initOrReload(tabs.getSelectedIndex());
+    }
 
-	protected Tab getTab(Component selectedTab) {
-		return tabs.getTab(selectedTab);
-	}
+    /**
+     * 
+     * @param index
+     */
+    public void selectTab(int index) {
+        tabs.setSelectedIndex(index);
+    }
 
-	/**
-	 * Lazily creates a certain tab
-	 * 
-	 * @param index the zero-based index of the tab to create
-	 * @return
-	 */
-	protected abstract Component initTab(int index);
+    /**
+     * 
+     * @param entity
+     * @param preserveTab
+     */
+    public void setEntity(T entity, boolean preserveTab) {
+        this.entity = entity;
+        if (!preserveTab) {
+            selectTab(0);
+        }
 
-	@Override
-	public void reload() {
-		initOrReload(tabs.getSelectedTab());
-	}
+        reload();
 
-	public void selectTab(int index) {
-		tabs.setSelectedTab(index);
-	}
+        // update title
+        if (caption != null) {
+            caption.setText(createTitle());
+        }
+    }
 
-	public void setEntity(T entity, boolean preserveTab) {
-		this.entity = entity;
-		if (!preserveTab) {
-			selectTab(0);
-		}
-		if (panel != null) {
-			panel.setCaption(createTitle());
-		}
-	}
+    /**
+     * Sets the visibility of a tab
+     * 
+     * @param index   the index of the tab
+     * @param visible the desired visibility
+     */
+    public void setTabVisible(int index, boolean visible) {
+        tabs.getTabByIndex(index).setVisible(visible);
+    }
 
-	/**
-	 * Constructs the lazy tab sheet by setting up empty dummy tabs
-	 * 
-	 * @param tabs the tab sheet
-	 */
-	private void setupLazySheet(final TabSheet tabs) {
+    /**
+     * Constructs the lazy tab sheet by setting up empty dummy tabs
+     * 
+     * @param tabs the tab sheet
+     */
+    private void setupLazySheet(TabWrapper tabs) {
 
-		// build up placeholder tabs that only contain an empty layout
-		int i = 0;
-		for (String caption : getTabCaptions()) {
-			Tab t = tabs.addTab(new DefaultVerticalLayout(false, false), caption);
-			t.setIcon(getIconForTab(i));
-			t.setDescription(getTabDescription(i++));
-		}
+        // build up placeholder tabs that only contain an empty layout
+        for (String caption : getTabCaptions()) {
+            VerticalLayout dummy = new DefaultVerticalLayout(false, false);
+            tabs.addTab(caption, dummy);
+        }
 
-		// load the first tab
-		((Layout) tabs.getTab(0).getComponent()).addComponent(initTab(0));
-		constructedTabs.add(tabs.getTab(0).getCaption());
+        // construct first tab
+        Component component = initTab(0);
+        constructedTabs.add(0);
+        tabs.setComponent(0, component);
 
-		// respond to a tab change by actually loading the sheet
-		tabs.addSelectedTabChangeListener(event -> {
-			Component component = event.getTabSheet().getSelectedTab();
-			initOrReload(component);
-		});
-	}
+        // respond to a tab change by actually loading the sheet
+        tabs.addSelectedChangeListener(event -> {
+            initOrReload(event.getSource().getSelectedIndex());
+        });
+
+    }
 }

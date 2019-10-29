@@ -39,27 +39,24 @@ import com.ocs.dynamo.ui.composite.grid.ModelBasedGrid;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.composite.type.GridEditMode;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
-import com.ocs.dynamo.util.SystemPropertyUtils;
-import com.vaadin.data.BeanValidationBinder;
-import com.vaadin.data.Binder;
-import com.vaadin.data.Binder.BindingBuilder;
-import com.vaadin.data.BinderValidationStatus;
-import com.vaadin.data.Converter;
-import com.vaadin.data.HasValue;
-import com.vaadin.data.ValueProvider;
-import com.vaadin.data.provider.DataProvider;
-import com.vaadin.data.provider.ListDataProvider;
-import com.vaadin.data.provider.SortOrder;
-import com.vaadin.icons.VaadinIcons;
-import com.vaadin.server.SerializablePredicate;
-import com.vaadin.ui.AbstractComponent;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.CustomField;
-import com.vaadin.ui.Grid.SelectionMode;
-import com.vaadin.ui.Layout;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.HasValue;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.customfield.CustomField;
+import com.vaadin.flow.component.grid.Grid.SelectionMode;
+import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.data.binder.BeanValidationBinder;
+import com.vaadin.flow.data.binder.Binder;
+import com.vaadin.flow.data.binder.Binder.BindingBuilder;
+import com.vaadin.flow.data.binder.BinderValidationStatus;
+import com.vaadin.flow.data.converter.Converter;
+import com.vaadin.flow.data.provider.DataProvider;
+import com.vaadin.flow.data.provider.ListDataProvider;
+import com.vaadin.flow.data.provider.SortOrder;
+import com.vaadin.flow.function.SerializablePredicate;
+import com.vaadin.flow.function.ValueProvider;
 
 /**
  * Base class for grid components that are displayed inside an edit form. These
@@ -80,11 +77,6 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
         implements NestedComponent, UseInViewMode {
 
     private static final long serialVersionUID = 997617632007985450L;
-
-    /**
-     * The number of rows to display - this default to 3 but can be overwritten
-     */
-    private int pageLength = SystemPropertyUtils.getDefaultListSelectRows();
 
     /**
      * Optional field filters for restricting the contents of combo boxes
@@ -163,11 +155,6 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
     private SortOrder<T> searchDialogSortOrder;
 
     /**
-     * The UI
-     */
-    private UI ui = UI.getCurrent();
-
-    /**
      * Search dialog
      */
     private ModelBasedSearchDialog<ID, T> dialog;
@@ -219,6 +206,7 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
         this.formOptions = formOptions;
         this.attributeModel = attributeModel;
         this.serviceBasedEditMode = serviceBasedEditMode;
+        setWidth("400px");
     }
 
     /**
@@ -243,13 +231,13 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
      *
      * @param buttonBar the button bar
      */
-    protected void constructAddButton(Layout buttonBar) {
+    protected void constructAddButton(HorizontalLayout buttonBar) {
         addButton = new Button(messageService.getMessage("ocs.add", VaadinUtils.getLocale()));
-        addButton.setIcon(VaadinIcons.PLUS);
+        addButton.setIcon(VaadinIcon.PLUS.create());
         addButton.addClickListener(event -> doAdd());
         addButton.setVisible((isGridEditEnabled() || (!isViewMode() && serviceBasedEditMode && !formOptions.isDetailsGridSearchMode()))
                 && !formOptions.isHideAddButton());
-        buttonBar.addComponent(addButton);
+        buttonBar.add(addButton);
     }
 
     /**
@@ -257,9 +245,9 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
      *
      * @param parent the layout to which to add the button bar
      */
-    protected void constructButtonBar(Layout parent) {
-        Layout buttonBar = new DefaultHorizontalLayout();
-        parent.addComponent(buttonBar);
+    protected void constructButtonBar(VerticalLayout parent) {
+        HorizontalLayout buttonBar = new DefaultHorizontalLayout();
+        parent.add(buttonBar);
         constructAddButton(buttonBar);
         constructSearchButton(buttonBar);
         postProcessButtonBar(buttonBar, viewMode);
@@ -286,7 +274,7 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
      * @param viewMode       whether the form is in view mode
      * @return
      */
-    protected AbstractComponent constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel, boolean viewMode) {
+    protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel, boolean viewMode) {
         // overwrite in subclasses
         return null;
     }
@@ -296,11 +284,12 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
      *
      * @param buttonBar
      */
-    protected void constructSearchButton(Layout buttonBar) {
+    protected void constructSearchButton(HorizontalLayout buttonBar) {
 
         searchDialogButton = new Button(messageService.getMessage("ocs.search", VaadinUtils.getLocale()));
-        searchDialogButton.setIcon(VaadinIcons.SEARCH);
-        searchDialogButton.setDescription(messageService.getMessage("ocs.search.description", VaadinUtils.getLocale()));
+        searchDialogButton.setIcon(VaadinIcon.SEARCH.create());
+        // searchDialogButton.setDescription(messageService.getMessage("ocs.search.description",
+        // VaadinUtils.getLocale()));
         searchDialogButton.addClickListener(event -> {
 
             // service must be specified
@@ -325,10 +314,10 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
                 }
             };
             dialog.build();
-            ui.addWindow(dialog);
+            dialog.open();
         });
         searchDialogButton.setVisible(!viewMode && formOptions.isDetailsGridSearchMode());
-        buttonBar.addComponent(searchDialogButton);
+        buttonBar.add(searchDialogButton);
     }
 
     /**
@@ -418,8 +407,7 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
     /**
      * Constructs the actual component
      */
-    @Override
-    protected Component initContent() {
+    protected void initContent() {
         grid = new ModelBasedGrid<ID, T>(getDataProvider(), entityModel, getFieldFilters(), isGridEditEnabled(),
                 GridEditMode.SIMULTANEOUS) {
 
@@ -431,22 +419,22 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
             }
 
             @Override
-            protected AbstractComponent constructCustomField(EntityModel<T> entityModel, AttributeModel am) {
+            protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel am) {
                 return BaseDetailsEditGrid.this.constructCustomField(entityModel, am, false);
             }
 
             @Override
-            protected BindingBuilder<T, ?> doBind(T t, AbstractComponent field, String attributeName) {
+            protected BindingBuilder<T, ?> doBind(T t, Component field, String attributeName) {
                 if (!binders.containsKey(t)) {
                     binders.put(t, new BeanValidationBinder<>(entityModel.getEntityClass()));
                     binders.get(t).setBean(t);
                 }
                 Binder<T> binder = binders.get(t);
-                return binder.forField((HasValue<?>) field);
+                return binder.forField((HasValue<?, ?>) field);
             }
 
             @Override
-            protected void postProcessComponent(AttributeModel am, AbstractComponent comp) {
+            protected void postProcessComponent(AttributeModel am, Component comp) {
                 BaseDetailsEditGrid.this.postProcessComponent(am, comp);
             }
         };
@@ -455,7 +443,7 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
         if (serviceBasedEditMode && !formOptions.isDetailsGridSearchMode() && !isViewMode()) {
             getGrid().addComponentColumn((ValueProvider<T, Component>) t -> {
                 Button edit = new Button();
-                edit.setIcon(VaadinIcons.PENCIL);
+                edit.setIcon(VaadinIcon.PENCIL.create());
                 edit.addClickListener(event -> doEdit(getService().fetchById(t.getId())));
                 return edit;
             });
@@ -465,7 +453,7 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
         if (!isViewMode() && formOptions.isShowRemoveButton()) {
             getGrid().addComponentColumn((ValueProvider<T, Component>) t -> {
                 Button remove = new Button();
-                remove.setIcon(VaadinIcons.TRASH);
+                remove.setIcon(VaadinIcon.TRASH.create());
                 remove.addClickListener(event -> {
                     binders.remove(t);
                     // callback method so the entity can be removed from its
@@ -482,11 +470,14 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
             });
         }
 
-        grid.setHeightByRows(pageLength);
+        // TODO: make configurable
+        grid.setHeight("200px");
+        grid.setWidth("500px");
         grid.setSelectionMode(SelectionMode.SINGLE);
 
         VerticalLayout layout = new DefaultVerticalLayout(false, true);
-        layout.addComponent(grid);
+        layout.setSizeFull();
+        layout.add(grid);
 
         // add a change listener (to make sure the buttons are correctly
         // enabled/disabled)
@@ -497,8 +488,8 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
                 checkButtonState(selectedItem);
             }
         });
-        grid.getDataProvider().addDataProviderListener(event -> grid.updateCaption());
-        grid.updateCaption();
+        //grid.getDataProvider().addDataProviderListener(event -> grid.updateCaption());
+        //grid.updateCaption();
 
         // apply filter
         applyFilter();
@@ -507,7 +498,8 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
         constructButtonBar(layout);
 
         postConstruct();
-        return layout;
+        add(layout);
+
     }
 
     /**
@@ -559,7 +551,7 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
      *
      * @param buttonBar the button bar
      */
-    protected void postProcessButtonBar(Layout buttonBar, boolean viewMode) {
+    protected void postProcessButtonBar(HorizontalLayout buttonBar, boolean viewMode) {
         // overwrite in subclass if needed
     }
 
@@ -569,7 +561,7 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
      * @param am   the attribute model for the component
      * @param comp the component
      */
-    protected void postProcessComponent(AttributeModel am, AbstractComponent comp) {
+    protected void postProcessComponent(AttributeModel am, Component comp) {
         // overwrite in subclass if needed
     }
 
@@ -601,10 +593,6 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 
     public void setLinkEntityConsumer(Consumer<T> linkEntityConsumer) {
         this.linkEntityConsumer = linkEntityConsumer;
-    }
-
-    public void setPageLength(int pageLength) {
-        this.pageLength = pageLength;
     }
 
     public void setRemoveEntityConsumer(Consumer<T> removeEntityConsumer) {

@@ -24,6 +24,7 @@ import com.google.common.collect.Lists;
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
+import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.exception.OCSValidationException;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
@@ -34,25 +35,24 @@ import com.ocs.dynamo.ui.composite.type.GridEditMode;
 import com.ocs.dynamo.ui.provider.QueryType;
 import com.ocs.dynamo.ui.utils.FormatUtils;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
-import com.vaadin.data.BeanValidationBinder;
-import com.vaadin.data.Binder;
-import com.vaadin.data.Binder.BindingBuilder;
-import com.vaadin.data.HasValue;
-import com.vaadin.data.ValueProvider;
-import com.vaadin.data.provider.DataProvider;
-import com.vaadin.data.provider.SortOrder;
-import com.vaadin.icons.VaadinIcons;
-import com.vaadin.server.Resource;
-import com.vaadin.server.SerializablePredicate;
-import com.vaadin.ui.AbstractComponent;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.Grid;
-import com.vaadin.ui.Grid.Column;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.components.grid.Editor;
+import com.vaadin.flow.component.AttachEvent;
+import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.HasValue;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.Grid.Column;
+import com.vaadin.flow.component.grid.editor.Editor;
+import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.data.binder.BeanValidationBinder;
+import com.vaadin.flow.data.binder.Binder;
+import com.vaadin.flow.data.binder.Binder.BindingBuilder;
+import com.vaadin.flow.data.provider.DataProvider;
+import com.vaadin.flow.data.provider.SortOrder;
+import com.vaadin.flow.function.SerializablePredicate;
+import com.vaadin.flow.function.ValueProvider;
 
 /**
  * A layout for editing entities directly inside a grid. This layout supports
@@ -114,7 +114,7 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
     /**
      * The icon to use inside the remove button
      */
-    private Resource removeIcon = VaadinIcons.TRASH;
+    private Icon removeIcon = VaadinIcon.TRASH.create();
 
     /**
      * The message to display inside the "remove" button
@@ -156,8 +156,8 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
     }
 
     @Override
-    public void attach() {
-        super.attach();
+    protected void onAttach(AttachEvent attachEvent) {
+        super.onAttach(attachEvent);
         build();
     }
 
@@ -170,10 +170,10 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 
             constructGrid();
 
-            mainLayout.addComponent(getButtonBar());
+            mainLayout.add(getButtonBar());
 
             addButton = new Button(message("ocs.add"));
-            addButton.setIcon(VaadinIcons.PLUS);
+            addButton.setIcon(VaadinIcon.PLUS.create());
             addButton.addClickListener(event -> {
                 // create new entry by means of pop-up dialog
                 EntityPopupDialog<ID, T> dialog = new EntityPopupDialog<ID, T>(getService(), null, getEntityModel(), getFieldFilters(),
@@ -192,21 +192,21 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 
                 };
                 dialog.build();
-                UI.getCurrent().addWindow(dialog);
+                dialog.open();
             });
-            getButtonBar().addComponent(addButton);
+            getButtonBar().add(addButton);
             addButton.setVisible(!getFormOptions().isHideAddButton() && isEditAllowed() && !isViewmode());
 
             // button for switching to edit mode
             editButton = new Button(message("ocs.edit"));
-            editButton.setIcon(VaadinIcons.EDIT);
+            editButton.setIcon(VaadinIcon.EDIT.create());
             editButton.addClickListener(event -> toggleViewMode(false));
             editButton.setVisible(getFormOptions().isEditAllowed() && isEditAllowed() && isViewmode());
-            getButtonBar().addComponent(editButton);
+            getButtonBar().add(editButton);
 
             // button for canceling edit mode
             cancelButton = new Button(message("ocs.cancel"));
-            cancelButton.setIcon(VaadinIcons.BAN);
+            cancelButton.setIcon(VaadinIcon.BAN.create());
             cancelButton.addClickListener(event -> {
                 // cancel the editor if it is open
                 if (getGridWrapper().getGrid().getEditor().isOpen()) {
@@ -215,7 +215,7 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
                 toggleViewMode(true);
             });
             cancelButton.setVisible(isEditAllowed() && !isViewmode() && getFormOptions().isOpenInViewMode());
-            getButtonBar().addComponent(cancelButton);
+            getButtonBar().add(cancelButton);
 
             // button for saving changes
             saveButton = new Button(message("ocs.save"));
@@ -254,13 +254,13 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
                 }
             });
             saveButton.setVisible(isEditAllowed() && !isViewmode() && GridEditMode.SIMULTANEOUS.equals(getFormOptions().getGridEditMode()));
-            getButtonBar().addComponent(saveButton);
+            getButtonBar().add(saveButton);
 
             postProcessButtonBar(getButtonBar());
             constructGridDividers();
             postProcessLayout(mainLayout);
         }
-        setCompositionRoot(mainLayout);
+        add(mainLayout);
     }
 
     /**
@@ -277,47 +277,79 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
         BaseGridWrapper<ID, T> wrapper = getGridWrapper();
         // make sure the grid can be edited
         Editor<T> editor = wrapper.getGrid().getEditor();
-        editor.setEnabled(!isViewmode());
         editor.addSaveListener(event -> {
-
             try {
-                T t = getService().save((T) event.getBean());
+                T t = getService().save((T) event.getItem());
                 // reassign to avoid optimistic locking exception
                 wrapper.getGrid().getEditor().getBinder().setBean(t);
                 wrapper.getGrid().getDataProvider().refreshAll();
             } catch (OCSValidationException ex) {
-                Notification.show(ex.getMessage(), Notification.Type.ERROR_MESSAGE);
+                Notification.show(ex.getMessage());
             }
         });
         // make sure changes are not persisted right away
-        editor.setBuffered(true);
         wrapper.getGrid().setSelectionMode(Grid.SelectionMode.SINGLE);
-        wrapper.getGrid().setHeightByRows(getPageLength());
+        wrapper.getGrid().getEditor().setBuffered(false);
+        // TODO: properly set grid height
+        wrapper.getGrid().setHeight("400px");
         wrapper.getGrid().addSelectionListener(event -> setSelectedItems(event.getAllSelectedItems()));
 
         if (currentWrapper == null) {
-            mainLayout.addComponent(wrapper);
+            mainLayout.add(wrapper);
         } else {
-            mainLayout.replaceComponent(currentWrapper, wrapper);
+            mainLayout.replace(currentWrapper, wrapper);
+        }
+
+        // editor needs to be explicitly opened in Vaadin Flow
+        if (isEditAllowed() && !isViewmode() && GridEditMode.SINGLE_ROW.equals(getFormOptions().getGridEditMode())) {
+            Column<T> editColumn = getGridWrapper().getGrid().addComponentColumn((ValueProvider<T, Component>) t -> {
+                Button editButton = new Button("");
+                editButton.setIcon(VaadinIcon.EDIT.create());
+                editButton.addClickListener(event -> {
+                    if (!editor.isOpen()) {
+                        // change to save button
+                        event.getSource().setIcon(VaadinIcon.SAFE.create());
+                        editor.editItem(t);
+                    } else {
+                        // save changes then rebuild grid
+                        try {
+                            getService().save(editor.getItem());
+                            // save and recreate grid to avoid optimistic locks
+                            binders.clear();
+                            clearGridWrapper();
+                            constructGrid();
+                        } catch (RuntimeException ex) {
+                            handleSaveException(ex);
+                        }
+                    }
+                });
+                return editButton;
+            });
+            editColumn.setHeader(message("ocs.edit")).setId("edit");
         }
 
         // remove button at the end of the row
         if (getFormOptions().isShowRemoveButton() && isEditAllowed() && !isViewmode()) {
             String defaultMsg = message("ocs.remove");
-            Column<T, Component> removeColumn = getGridWrapper().getGrid().addComponentColumn(
-                    (ValueProvider<T, Component>) t -> isViewmode() ? null : new RemoveButton(removeMessage, removeIcon) {
-                        @Override
-                        protected void doDelete() {
+            Column<T> removeColumn = getGridWrapper().getGrid().addComponentColumn(t -> {
+                Button button = new Button("");
+                button.setIcon(removeIcon);
+                button.addClickListener(event -> {
+                    Runnable r = () -> {
+                        try {
                             binders.remove(t);
                             doRemove(t);
+                        } catch (OCSRuntimeException ex) {
+                            showNotifification(ex.getMessage());
                         }
+                    };
+                    VaadinUtils.showConfirmDialog(getMessageService(),
+                            message("ocs.delete.confirm", FormatUtils.formatEntity(getEntityModel(), t)), r);
+                });
+                return button;
+            });
 
-                        @Override
-                        protected String getItemToDelete() {
-                            return FormatUtils.formatEntity(getEntityModel(), t);
-                        }
-                    });
-            removeColumn.setCaption(defaultMsg).setId("remove");
+            removeColumn.setHeader(defaultMsg).setId("remove");
         }
         currentWrapper = wrapper;
     }
@@ -328,14 +360,14 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
                 getFormOptions(), filter, getFieldFilters(), getSortOrders(), !viewmode, getJoins()) {
 
             @Override
-            protected BindingBuilder<T, ?> doBind(T t, AbstractComponent field, String attributeName) {
+            protected BindingBuilder<T, ?> doBind(T t, Component field, String attributeName) {
 
                 if (!binders.containsKey(t)) {
                     binders.put(t, new BeanValidationBinder<>(getEntityModel().getEntityClass()));
                     binders.get(t).setBean(t);
                 }
                 Binder<T> binder = binders.get(t);
-                return binder.forField((HasValue<?>) field);
+                return binder.forField((HasValue<?, ?>) field);
             }
 
             @Override
@@ -399,7 +431,7 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
         return pageLength;
     }
 
-    public Resource getRemoveIcon() {
+    public Icon getRemoveIcon() {
         return removeIcon;
     }
 
@@ -435,7 +467,7 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
         this.pageLength = pageLength;
     }
 
-    public void setRemoveIcon(Resource removeIcon) {
+    public void setRemoveIcon(Icon removeIcon) {
         this.removeIcon = removeIcon;
     }
 
@@ -484,7 +516,8 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
         constructGrid();
 
         // check the button statuses
-        getGridWrapper().getGrid().getEditor().setEnabled(!isViewmode() && isEditAllowed());
+        // getGridWrapper().getGrid().getEditor().setEnabled(!isViewmode() &&
+        // isEditAllowed());
         saveButton.setVisible(GridEditMode.SIMULTANEOUS.equals(getFormOptions().getGridEditMode()) && !isViewmode() && isEditAllowed());
         editButton.setVisible(isViewmode() && getFormOptions().isEditAllowed() && isEditAllowed());
         cancelButton.setVisible(!isViewmode() && isEditAllowed() && getFormOptions().isOpenInViewMode());

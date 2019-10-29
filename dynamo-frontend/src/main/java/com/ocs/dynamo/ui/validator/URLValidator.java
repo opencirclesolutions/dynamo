@@ -17,9 +17,9 @@ import java.net.MalformedURLException;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.vaadin.data.ValidationResult;
-import com.vaadin.data.Validator;
-import com.vaadin.data.ValueContext;
+import com.vaadin.flow.data.binder.ValidationResult;
+import com.vaadin.flow.data.binder.Validator;
+import com.vaadin.flow.data.binder.ValueContext;
 
 /**
  * Vaadin validator for checking if an field value is a valid URL

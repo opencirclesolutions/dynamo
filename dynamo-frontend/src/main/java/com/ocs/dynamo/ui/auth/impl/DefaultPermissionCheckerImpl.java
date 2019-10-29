@@ -35,7 +35,7 @@ import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.service.UserDetailsService;
 import com.ocs.dynamo.ui.auth.Authorized;
 import com.ocs.dynamo.ui.auth.PermissionChecker;
-import com.vaadin.spring.annotation.SpringView;
+import com.vaadin.flow.router.Route;
 
 /**
  * Default permission checker - checks if the user has the correct role to
@@ -118,7 +118,7 @@ public class DefaultPermissionCheckerImpl implements PermissionChecker {
 
         // scan the class path for all classes annotated with @SpringView
         ClassPathScanningCandidateComponentProvider provider = new ClassPathScanningCandidateComponentProvider(true);
-        provider.addIncludeFilter(new AnnotationTypeFilter(SpringView.class));
+        provider.addIncludeFilter(new AnnotationTypeFilter(Route.class));
 
         Set<BeanDefinition> views = provider.findCandidateComponents(basePackage);
         for (BeanDefinition d : views) {
@@ -126,7 +126,7 @@ public class DefaultPermissionCheckerImpl implements PermissionChecker {
                 final String beanClassName = d.getBeanClassName();
                 Class<?> clazz = Class.forName(beanClassName);
 
-                SpringView view = clazz.getAnnotation(SpringView.class);
+                Route route = clazz.getAnnotation(Route.class);
 
                 // store the permissions both under the bean name and the view
                 // name - unfortunately these
@@ -139,8 +139,8 @@ public class DefaultPermissionCheckerImpl implements PermissionChecker {
                         permissions.put(beanClassName.substring(p + 1), Arrays.asList(auth.roles()));
                         editOnly.put(beanClassName.substring(p + 1), auth.editOnly());
                     }
-                    permissions.put(view.name(), Arrays.asList(auth.roles()));
-                    editOnly.put(view.name(), auth.editOnly());
+                    permissions.put(route.value(), Arrays.asList(auth.roles()));
+                    editOnly.put(route.value(), auth.editOnly());
                 }
             } catch (ClassNotFoundException e) {
                 LOG.error(e.getMessage(), e);

@@ -13,9 +13,9 @@
  */
 package com.ocs.dynamo.ui.converter;
 
-import com.vaadin.data.Converter;
-import com.vaadin.data.Result;
-import com.vaadin.data.ValueContext;
+import com.vaadin.flow.data.binder.Result;
+import com.vaadin.flow.data.binder.ValueContext;
+import com.vaadin.flow.data.converter.Converter;
 
 /**
  * Converter for converting between integers and doubles

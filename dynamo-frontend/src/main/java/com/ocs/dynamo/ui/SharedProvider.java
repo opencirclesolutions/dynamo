@@ -13,11 +13,7 @@
  */
 package com.ocs.dynamo.ui;
 
-/**
- * An interface for user interface components that support the use of a data provider
- * that is shared between multiple instances of a component
- */
-import com.vaadin.data.provider.ListDataProvider;
+import com.vaadin.flow.data.provider.ListDataProvider;
 
 public interface SharedProvider<T> {
 

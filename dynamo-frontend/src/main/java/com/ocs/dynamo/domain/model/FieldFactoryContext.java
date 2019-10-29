@@ -16,8 +16,8 @@ package com.ocs.dynamo.domain.model;
 import java.util.Map;
 
 import com.ocs.dynamo.domain.AbstractEntity;
-import com.vaadin.data.provider.ListDataProvider;
-import com.vaadin.server.SerializablePredicate;
+import com.vaadin.flow.data.provider.ListDataProvider;
+import com.vaadin.flow.function.SerializablePredicate;
 
 /**
  * Field factory context that can be used to specify how the FieldFactory must

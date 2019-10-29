@@ -22,8 +22,8 @@ import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.CanAssignEntity;
-import com.vaadin.data.provider.SortOrder;
-import com.vaadin.server.SerializablePredicate;
+import com.vaadin.flow.data.provider.SortOrder;
+import com.vaadin.flow.function.SerializablePredicate;
 
 /**
  * A tabular edit layout that keeps a reference to a parent object of the

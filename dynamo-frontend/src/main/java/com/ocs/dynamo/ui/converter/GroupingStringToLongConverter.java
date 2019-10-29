@@ -17,7 +17,7 @@ import java.text.NumberFormat;
 import java.util.Locale;
 
 import com.ocs.dynamo.ui.utils.VaadinUtils;
-import com.vaadin.data.converter.StringToLongConverter;
+import com.vaadin.flow.data.converter.StringToLongConverter;
 
 /**
  * A converter from String to Long that allows the user to specify whether a

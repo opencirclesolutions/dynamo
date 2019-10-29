@@ -10,8 +10,8 @@ import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.service.TestEntityService;
 import com.ocs.dynamo.ui.FrontendIntegrationTest;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 
 public class HorizontalDisplayLayoutTest extends FrontendIntegrationTest {
 
@@ -35,7 +35,7 @@ public class HorizontalDisplayLayoutTest extends FrontendIntegrationTest {
                 entityModelFactory.getModel(TestEntity.class), e1);
         layout.build();
 
-        Component comp = layout.iterator().next();
+        Component comp = layout.getChildren().iterator().next();
         Assert.assertTrue(comp instanceof HorizontalLayout);
     }
 

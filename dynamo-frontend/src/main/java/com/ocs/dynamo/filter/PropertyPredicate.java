@@ -15,7 +15,7 @@ package com.ocs.dynamo.filter;
 
 import java.util.function.Predicate;
 
-import com.vaadin.server.SerializablePredicate;
+import com.vaadin.flow.function.SerializablePredicate;
 
 /**
  * Base class for a predicate that is used for checking a property against a

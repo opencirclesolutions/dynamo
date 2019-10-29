@@ -59,7 +59,7 @@ public class ModelBasedExportTemplateTest extends FrontendIntegrationTest {
         e1.setSomeTime(DateUtils.createLocalTime("121314"));
         e1.setUrl("http://www.google.nl");
         e1 = testEntityService.save(e1);
-        e1.setRegistrationTime(DateUtils.createLocalDateTime("14082015 111213"));
+        e1.setRegistrationTime(DateUtils.createLocalTime("111213"));
         e1.setZoned(ZonedDateTime.of(DateUtils.createLocalDateTime("14082015 111213"), ZoneId.of("CET")));
         e1.setSomeDouble(44.44);
 
@@ -136,7 +136,7 @@ public class ModelBasedExportTemplateTest extends FrontendIntegrationTest {
                 "\"Age\";\"Birth Date\";\"Birth Week\";\"Discount\";\"Name\";\"Rate\";\"Registration Time\";\"Some Boolean\";\"Some Boolean2\";\"Some Double\";\"Some Enum\";\"Some Int\";\"Some String\";\"Some Text Area\";\"Some Time\";\"Url\";\"Zoned\"",
                 lines[0].trim());
         Assert.assertEquals(
-                "\"11\";\"01/04/2014\";\"2014-14\";\"34,00\";\"Bob\";\"4,00%\";\"14-08-2015 11:12:13\";\"false\";\"On\";\"44,44\";\"Value A\";\"1.234\";\"some\";\"abab\";\"12:13:14\";\"http://www.google.nl\";\"14-08-2015 11:12:13+0200\"",
+                "\"11\";\"01/04/2014\";\"2014-14\";\"34,00\";\"Bob\";\"4,00%\";\"11:12:13\";\"false\";\"On\";\"44,44\";\"Value A\";\"1.234\";\"some\";\"abab\";\"12:13:14\";\"http://www.google.nl\";\"14-08-2015 11:12:13+0200\"",
                 lines[1].trim());
     }
 }

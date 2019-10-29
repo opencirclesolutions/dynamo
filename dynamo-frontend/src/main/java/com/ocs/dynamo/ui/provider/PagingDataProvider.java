@@ -24,8 +24,8 @@ import com.ocs.dynamo.filter.Filter;
 import com.ocs.dynamo.filter.FilterConverter;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
-import com.vaadin.data.provider.Query;
-import com.vaadin.server.SerializablePredicate;
+import com.vaadin.flow.data.provider.Query;
+import com.vaadin.flow.function.SerializablePredicate;
 
 /**
  * 

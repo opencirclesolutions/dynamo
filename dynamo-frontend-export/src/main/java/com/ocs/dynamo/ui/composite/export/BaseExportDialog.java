@@ -17,12 +17,14 @@ import java.io.Serializable;
 
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
+import com.ocs.dynamo.ui.component.DownloadButton;
 import com.ocs.dynamo.ui.composite.dialog.BaseModalDialog;
 import com.ocs.dynamo.ui.composite.type.ExportMode;
-import com.vaadin.icons.VaadinIcons;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Layout;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+
 
 /**
  * Base class for export dialogs
@@ -59,24 +61,24 @@ public abstract class BaseExportDialog<ID extends Serializable, T extends Abstra
         this.exportMode = exportMode;
     }
 
-    protected abstract Button createDownloadCSVButton();
+    protected abstract DownloadButton createDownloadCSVButton();
 
-    protected abstract Button createDownloadExcelButton();
+    protected abstract DownloadButton createDownloadExcelButton();
 
     @Override
-    protected void doBuild(Layout parent) {
-        Button exportExcelButton = createDownloadExcelButton();
-        parent.addComponent(exportExcelButton);
-        Button exportCsvButton = createDownloadCSVButton();
-        parent.addComponent(exportCsvButton);
+    protected void doBuild(VerticalLayout parent) {
+        DownloadButton exportExcelButton = createDownloadExcelButton();
+        parent.add(exportExcelButton);
+        DownloadButton exportCsvButton = createDownloadCSVButton();
+        parent.add(exportCsvButton);
     }
 
     @Override
     protected void doBuildButtonBar(HorizontalLayout buttonBar) {
         Button cancelButton = new Button(message("ocs.cancel"));
         cancelButton.addClickListener(event -> close());
-        cancelButton.setIcon(VaadinIcons.BAN);
-        buttonBar.addComponent(cancelButton);
+        cancelButton.setIcon(VaadinIcon.BAN.create());
+        buttonBar.add(cancelButton);
     }
 
     public EntityModel<T> getEntityModel() {

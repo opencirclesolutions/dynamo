@@ -35,19 +35,17 @@ import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
-import com.vaadin.event.Action;
-import com.vaadin.event.Action.Handler;
-import com.vaadin.event.ShortcutAction;
-import com.vaadin.icons.VaadinIcons;
-import com.vaadin.server.SerializablePredicate;
-import com.vaadin.ui.AbstractComponent;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Layout;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.flow.component.AttachEvent;
+import com.vaadin.flow.component.ClickEvent;
+import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.ComponentEventListener;
+import com.vaadin.flow.component.HasComponents;
+import com.vaadin.flow.component.Key;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.function.SerializablePredicate;
 
 /**
  * An abstract model search form that servers as the basis for other model based
@@ -59,7 +57,7 @@ import com.vaadin.ui.VerticalLayout;
  * @param <T> the type of the entity
  */
 public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T extends AbstractEntity<ID>>
-        extends AbstractModelBasedForm<ID, T> implements FilterListener<T>, Button.ClickListener, Refreshable {
+        extends AbstractModelBasedForm<ID, T> implements FilterListener<T>, Refreshable, ComponentEventListener<ClickEvent<Button>> {
 
     private static final long serialVersionUID = 2146875385041665280L;
 
@@ -82,7 +80,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
     /**
      * The layout that holds the various filters
      */
-    private Layout filterLayout;
+    private HasComponents filterLayout;
 
     /**
      * The component on which the search will be carried out after the user presses
@@ -108,7 +106,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
     /**
      * The panel that wraps around the filter form
      */
-    private Panel wrapperPanel;
+    private VerticalLayout wrapperPanel;
 
     /**
      * The button bar
@@ -123,7 +121,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
     /**
      * Additional code to execute after the clear button is pressed
      */
-    private Consumer<ClickEvent> afterClearConsumer;
+    private Consumer<ClickEvent<Button>> afterClearConsumer;
 
     /**
      * Field factory singleton for constructing fields
@@ -165,8 +163,8 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
     }
 
     @Override
-    public void attach() {
-        super.attach();
+    protected void onAttach(AttachEvent attachEvent) {
+        super.onAttach(attachEvent);
         build();
     }
 
@@ -178,37 +176,17 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 
             // create the search form
             filterLayout = constructFilterLayout();
-            if (filterLayout.isVisible()) {
+            if (((Component) filterLayout).isVisible()) {
 
                 // add a wrapper for adding an action handlers
-                wrapperPanel = new Panel();
-                main.addComponent(wrapperPanel);
+                wrapperPanel = new DefaultVerticalLayout(false, true);
+                main.add(wrapperPanel);
 
-                wrapperPanel.setContent(filterLayout);
-
-                // action handlers for carrying out a search after an Enter press
-                wrapperPanel.addActionHandler(new Handler() {
-
-                    private static final long serialVersionUID = -2136828212405809213L;
-
-                    private Action enter = new ShortcutAction(null, ShortcutAction.KeyCode.ENTER, null);
-
-                    @Override
-                    public Action[] getActions(Object target, Object sender) {
-                        return new Action[] { enter };
-                    }
-
-                    @Override
-                    public void handleAction(Action action, Object sender, Object target) {
-                        if (action == enter) {
-                            search();
-                        }
-                    }
-                });
+                wrapperPanel.add((Component) filterLayout);
 
                 // create the button bar
-                buttonBar = new DefaultHorizontalLayout();
-                main.addComponent(buttonBar);
+                buttonBar = new DefaultHorizontalLayout(false, true);
+                main.add(buttonBar);
                 constructButtonBar(buttonBar);
                 // add custom buttons
                 postProcessButtonBar(buttonBar);
@@ -218,22 +196,17 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 
             // add any custom functionality
             postProcessLayout(main);
-            setCompositionRoot(main);
+            add(main);
         }
     }
 
-    /**
-     * Responds to a click on any of the standard buttons in the search bar
-     * 
-     * @param event the event to respond to
-     */
     @Override
-    public void buttonClick(ClickEvent event) {
-        if (event.getButton() == searchButton) {
+    public void onComponentEvent(ClickEvent<Button> event) {
+        if (event.getSource() == searchButton) {
             search();
-        } else if (event.getButton() == searchAnyButton) {
+        } else if (event.getSource() == searchAnyButton) {
             searchAny();
-        } else if (event.getButton() == clearButton) {
+        } else if (event.getSource() == clearButton) {
             if (getFormOptions().isConfirmClear()) {
                 VaadinUtils.showConfirmDialog(getMessageService(), message("ocs.confirm.clear"), () -> {
                     clear();
@@ -252,7 +225,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
                     search(true);
                 }
             }
-        } else if (event.getButton() == toggleButton) {
+        } else if (event.getSource() == toggleButton) {
             toggle(!wrapperPanel.isVisible());
         }
     }
@@ -270,7 +243,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
      *
      * @param buttonBar the button bar
      */
-    protected abstract void constructButtonBar(Layout buttonBar);
+    protected abstract void constructButtonBar(HorizontalLayout buttonBar);
 
     /**
      * Constructs the "clear" button
@@ -279,7 +252,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
      */
     protected Button constructClearButton() {
         clearButton = new Button(message("ocs.clear"));
-        clearButton.setIcon(VaadinIcons.ERASER);
+        clearButton.setIcon(VaadinIcon.ERASER.create());
         clearButton.addClickListener(this);
         clearButton.setVisible(!getFormOptions().isHideClearButton());
         return clearButton;
@@ -293,7 +266,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
      *                       that is bound to the field
      * @return
      */
-    protected AbstractComponent constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel) {
+    protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel) {
         return null;
     }
 
@@ -302,7 +275,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
      *
      * @return
      */
-    protected abstract Layout constructFilterLayout();
+    protected abstract HasComponents constructFilterLayout();
 
     /**
      * Construct the "search any" button which allows the user to search on entities
@@ -312,21 +285,22 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
      */
     protected final Button constructSearchAnyButton() {
         searchAnyButton = new Button(message("ocs.search.any"));
-        searchAnyButton.setIcon(VaadinIcons.SEARCH);
+        searchAnyButton.setIcon(VaadinIcon.SEARCH.create());
         searchAnyButton.setVisible(getFormOptions().isShowSearchAnyButton());
         searchAnyButton.addClickListener(this);
         return searchAnyButton;
     }
 
     /**
-     * Constructs the "search" button
+     * Constructs the Search button
      * 
      * @return
      */
     protected final Button constructSearchButton() {
         searchButton = new Button(message("ocs.search"));
-        searchButton.setIcon(VaadinIcons.SEARCH);
+        searchButton.setIcon(VaadinIcon.SEARCH.create());
         searchButton.addClickListener(this);
+        searchButton.addClickShortcut(Key.ENTER);
         return searchButton;
     }
 
@@ -337,7 +311,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
      */
     protected final Button constructToggleButton() {
         toggleButton = new Button(message("ocs.hide"));
-        toggleButton.setIcon(VaadinIcons.ARROWS);
+        toggleButton.setIcon(VaadinIcon.ARROWS.create());
         toggleButton.addClickListener(this);
         toggleButton.setVisible(getFormOptions().isShowToggleButton());
         return toggleButton;
@@ -369,8 +343,12 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
         return null;
     }
 
-    public Consumer<ClickEvent> getAfterClearConsumer() {
+    public Consumer<ClickEvent<Button>> getAfterClearConsumer() {
         return afterClearConsumer;
+    }
+
+    public void setAfterClearConsumer(Consumer<ClickEvent<Button>> afterClearConsumer) {
+        this.afterClearConsumer = afterClearConsumer;
     }
 
     public HorizontalLayout getButtonBar() {
@@ -401,7 +379,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
         return currentFilters.size();
     }
 
-    public Layout getFilterLayout() {
+    public HasComponents getFilterLayout() {
         return filterLayout;
     }
 
@@ -478,7 +456,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
      *
      * @param groups
      */
-    protected void postProcessButtonBar(Layout buttonBar) {
+    protected void postProcessButtonBar(HorizontalLayout buttonBar) {
         // Use in subclass to add additional buttons
     }
 
@@ -542,7 +520,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
                 try {
                     validateBeforeSearch();
                 } catch (OCSValidationException ex) {
-                    showNotifification(ex.getErrors().get(0), Notification.Type.ERROR_MESSAGE);
+                    showNotifification(ex.getErrors().get(0));
                     return false;
                 }
             }
@@ -564,15 +542,6 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
      */
     public boolean searchAny() {
         return search(false, true);
-    }
-
-    /**
-     * Sets the consumer that will be carried out after the Clear button is clicked
-     * 
-     * @param afterClearConsumer
-     */
-    public void setAfterClearConsumer(Consumer<ClickEvent> afterClearConsumer) {
-        this.afterClearConsumer = afterClearConsumer;
     }
 
     /**
@@ -600,9 +569,9 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
      */
     protected void toggle(boolean show) {
         if (!show) {
-            toggleButton.setCaption(message("ocs.show.search.fields"));
+            toggleButton.setText(message("ocs.show.search.fields"));
         } else {
-            toggleButton.setCaption(message("ocs.hide.search.fields"));
+            toggleButton.setText(message("ocs.hide.search.fields"));
         }
         wrapperPanel.setVisible(show);
         afterSearchFieldToggle(wrapperPanel.isVisible());

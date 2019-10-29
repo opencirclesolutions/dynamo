@@ -22,13 +22,13 @@ public class InternalLinkFieldTest extends BaseMockitoTest {
 		field.initContent();
 
 		Assert.assertNotNull(field.getLinkButton());
-		Assert.assertNull(field.getLinkButton().getCaption());
+		Assert.assertEquals("", field.getLinkButton().getText());
 
 		TestEntity t2 = new TestEntity();
 		t2.setName("Bob");
 		field.setValue(t2);
 
-		Assert.assertEquals("Bob", field.getLinkButton().getCaption());
+		Assert.assertEquals("Bob", field.getLinkButton().getText());
 
 	}
 }

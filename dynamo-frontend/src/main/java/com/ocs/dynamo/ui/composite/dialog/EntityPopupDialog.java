@@ -27,10 +27,10 @@ import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.composite.layout.SimpleEditLayout;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
-import com.vaadin.server.SerializablePredicate;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Layout;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.function.SerializablePredicate;
 
 /**
  * A pop-up dialog for adding a new entity or viewing the details of an existing
@@ -117,7 +117,7 @@ public class EntityPopupDialog<ID extends Serializable, T extends AbstractEntity
 	}
 
 	@Override
-	protected void doBuild(Layout parent) {
+	protected void doBuild(VerticalLayout parent) {
 
 		// cancel button makes no sense in a popup
 		formOptions.setHideCancelButton(false);
@@ -139,7 +139,7 @@ public class EntityPopupDialog<ID extends Serializable, T extends AbstractEntity
 			}
 
 			@Override
-			protected void postProcessButtonBar(Layout buttonBar, boolean viewMode) {
+			protected void postProcessButtonBar(HorizontalLayout buttonBar, boolean viewMode) {
 				EntityPopupDialog.this.postProcessButtonBar(buttonBar, viewMode);
 			}
 
@@ -150,7 +150,7 @@ public class EntityPopupDialog<ID extends Serializable, T extends AbstractEntity
 
 		};
 		layout.setFieldFilters(fieldFilters);
-		parent.addComponent(layout);
+		parent.add(layout);
 	}
 
 	@Override
@@ -160,7 +160,7 @@ public class EntityPopupDialog<ID extends Serializable, T extends AbstractEntity
 		if (formOptions.isReadOnly()) {
 			okButton = new Button(messageService.getMessage("ocs.ok", VaadinUtils.getLocale()));
 			okButton.addClickListener(event -> close());
-			buttonBar.addComponent(okButton);
+			buttonBar.add(okButton);
 		}
 	}
 
@@ -185,7 +185,7 @@ public class EntityPopupDialog<ID extends Serializable, T extends AbstractEntity
 		return entityModel.getDisplayName(VaadinUtils.getLocale());
 	}
 
-	protected void postProcessButtonBar(Layout buttonBar, boolean viewMode) {
+	protected void postProcessButtonBar(HorizontalLayout buttonBar, boolean viewMode) {
 		// overwrite in subclasses when needed
 	}
 

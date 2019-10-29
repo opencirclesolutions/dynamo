@@ -13,7 +13,7 @@
  */
 package com.ocs.dynamo.filter;
 
-import com.vaadin.server.SerializablePredicate;
+import com.vaadin.flow.function.SerializablePredicate;
 
 /**
  * A predicate that can be used for negating another predicate

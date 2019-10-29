@@ -13,8 +13,8 @@
  */
 package com.ocs.dynamo.ui.converter;
 
-import com.vaadin.data.Result;
-import com.vaadin.data.ValueContext;
+import com.vaadin.flow.data.binder.Result;
+import com.vaadin.flow.data.binder.ValueContext;
 
 /**
  * 

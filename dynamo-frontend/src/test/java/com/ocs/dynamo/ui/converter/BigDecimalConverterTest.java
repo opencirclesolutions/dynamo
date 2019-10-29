@@ -20,7 +20,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.ocs.dynamo.exception.OCSRuntimeException;
-import com.vaadin.data.Result;
+import com.vaadin.flow.data.binder.Result;
 
 public class BigDecimalConverterTest extends BaseConverterTest {
 

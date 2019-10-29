@@ -15,9 +15,9 @@ package com.ocs.dynamo.ui.converter;
 
 import java.math.BigDecimal;
 
-import com.vaadin.data.Converter;
-import com.vaadin.data.Result;
-import com.vaadin.data.ValueContext;
+import com.vaadin.flow.data.binder.Result;
+import com.vaadin.flow.data.binder.ValueContext;
+import com.vaadin.flow.data.converter.Converter;
 
 /**
  * Converter for converting between double and BigDecimal Description of

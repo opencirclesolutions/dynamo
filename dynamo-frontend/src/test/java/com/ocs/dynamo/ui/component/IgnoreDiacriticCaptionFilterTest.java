@@ -7,7 +7,7 @@ public class IgnoreDiacriticCaptionFilterTest {
 
 	@Test
 	public void testIgnoreCaseContains() {
-		IgnoreDiacriticsCaptionFilter filter = new IgnoreDiacriticsCaptionFilter(true, false);
+		IgnoreDiacriticsCaptionFilter<String> filter = new IgnoreDiacriticsCaptionFilter<>(true, false);
 
 		Assert.assertTrue(filter.test("Albert", "ber"));
 		Assert.assertTrue(filter.test("Albërt", "ber"));
@@ -17,7 +17,7 @@ public class IgnoreDiacriticCaptionFilterTest {
 
 	@Test
 	public void testIgnoreCaseStartsWith() {
-		IgnoreDiacriticsCaptionFilter filter = new IgnoreDiacriticsCaptionFilter(true, true);
+		IgnoreDiacriticsCaptionFilter<String> filter = new IgnoreDiacriticsCaptionFilter<>(true, true);
 
 		Assert.assertFalse(filter.test("Albert", "ber"));
 		Assert.assertFalse(filter.test("Albërt", "ber"));
@@ -27,7 +27,7 @@ public class IgnoreDiacriticCaptionFilterTest {
 
 	@Test
 	public void testMatchCaseContains() {
-		IgnoreDiacriticsCaptionFilter filter = new IgnoreDiacriticsCaptionFilter(false, false);
+		IgnoreDiacriticsCaptionFilter<String> filter = new IgnoreDiacriticsCaptionFilter<>(false, false);
 
 		Assert.assertTrue(filter.test("Albert", "ber"));
 		Assert.assertTrue(filter.test("Albërt", "ber"));
@@ -37,7 +37,7 @@ public class IgnoreDiacriticCaptionFilterTest {
 
 	@Test
 	public void testMatchCaseStartsWith() {
-		IgnoreDiacriticsCaptionFilter filter = new IgnoreDiacriticsCaptionFilter(false, true);
+		IgnoreDiacriticsCaptionFilter<String> filter = new IgnoreDiacriticsCaptionFilter<>(false, true);
 
 		Assert.assertTrue(filter.test("Albert", "Alb"));
 		Assert.assertFalse(filter.test("albert", "Alb"));
@@ -49,14 +49,14 @@ public class IgnoreDiacriticCaptionFilterTest {
 	@Test
 	public void testEquals() {
 
-		IgnoreDiacriticsCaptionFilter filter1 = new IgnoreDiacriticsCaptionFilter(false, false);
+		IgnoreDiacriticsCaptionFilter<String> filter1 = new IgnoreDiacriticsCaptionFilter<>(false, false);
 		Assert.assertFalse(filter1.equals(null));
 		Assert.assertFalse(filter1.equals(new Object()));
 
-		IgnoreDiacriticsCaptionFilter filter2 = new IgnoreDiacriticsCaptionFilter(false, false);
+		IgnoreDiacriticsCaptionFilter<String> filter2 = new IgnoreDiacriticsCaptionFilter<>(false, false);
 		Assert.assertTrue(filter1.equals(filter2));
 
-		IgnoreDiacriticsCaptionFilter filter3 = new IgnoreDiacriticsCaptionFilter(false, true);
+		IgnoreDiacriticsCaptionFilter<String> filter3 = new IgnoreDiacriticsCaptionFilter<>(false, true);
 		Assert.assertFalse(filter1.equals(filter3));
 	}
 }

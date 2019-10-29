@@ -15,8 +15,8 @@ package com.ocs.dynamo.ui.converter;
 
 import java.math.BigDecimal;
 
-import com.vaadin.data.Result;
-import com.vaadin.data.ValueContext;
+import com.vaadin.flow.data.binder.Result;
+import com.vaadin.flow.data.binder.ValueContext;
 
 /**
  * A BigDecimal converter that adds or removes a percentage sign

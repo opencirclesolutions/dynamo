@@ -24,8 +24,8 @@ import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.ui.component.DownloadButton;
 import com.ocs.dynamo.ui.composite.type.ExportMode;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
-import com.vaadin.data.provider.SortOrder;
-import com.vaadin.server.SerializablePredicate;
+import com.vaadin.flow.data.provider.SortOrder;
+import com.vaadin.flow.function.SerializablePredicate;
 
 /**
  * A simple dialog window that offers several buttons for exporting data to

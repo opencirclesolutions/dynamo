@@ -17,7 +17,7 @@ import java.text.NumberFormat;
 import java.util.Locale;
 
 import com.ocs.dynamo.ui.utils.VaadinUtils;
-import com.vaadin.data.converter.StringToIntegerConverter;
+import com.vaadin.flow.data.converter.StringToIntegerConverter;
 
 /**
  * A string to integer converter that allows support the user to specify whether

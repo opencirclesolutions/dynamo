@@ -34,11 +34,11 @@ import com.ocs.dynamo.ui.converter.LocalDateWeekCodeConverter;
 import com.ocs.dynamo.ui.converter.LongToDoubleConverter;
 import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.ocs.dynamo.utils.NumberUtils;
-import com.vaadin.data.Result;
-import com.vaadin.data.ValueContext;
-import com.vaadin.data.converter.StringToDoubleConverter;
-import com.vaadin.data.converter.StringToIntegerConverter;
-import com.vaadin.data.converter.StringToLongConverter;
+import com.vaadin.flow.data.binder.Result;
+import com.vaadin.flow.data.binder.ValueContext;
+import com.vaadin.flow.data.converter.StringToDoubleConverter;
+import com.vaadin.flow.data.converter.StringToIntegerConverter;
+import com.vaadin.flow.data.converter.StringToLongConverter;
 
 /**
  * Utility for converting between data types
@@ -48,108 +48,107 @@ import com.vaadin.data.converter.StringToLongConverter;
  */
 public final class ConvertUtils {
 
-	private ConvertUtils() {
-		// hidden constructor
-	}
+    private ConvertUtils() {
+        // hidden constructor
+    }
 
-	/**
-	 * Converts a value to its presentation value
-	 * 
-	 * @param am    the attribute model
-	 * @param input the input value
-	 * @return
-	 */
-	public static Object convertToPresentationValue(AttributeModel am, Object input) {
-		if (input == null) {
-			return null;
-		}
+    /**
+     * Converts a value to its presentation value
+     * 
+     * @param am    the attribute model
+     * @param input the input value
+     * @return
+     */
+    public static Object convertToPresentationValue(AttributeModel am, Object input) {
+        if (input == null) {
+            return null;
+        }
 
-		Locale locale = VaadinUtils.getLocale();
-		boolean grouping = SystemPropertyUtils.useThousandsGroupingInEditMode();
-		boolean percentage = am.isPercentage();
+        Locale locale = VaadinUtils.getLocale();
+        boolean grouping = SystemPropertyUtils.useThousandsGroupingInEditMode();
+        boolean percentage = am.isPercentage();
 
-		if (am.isWeek()) {
-			LocalDateWeekCodeConverter converter = new LocalDateWeekCodeConverter();
-			return converter.convertToPresentation((LocalDate) input, new ValueContext(locale));
-		} else if (NumberUtils.isInteger(am.getType())) {
-			return VaadinUtils.integerToString(grouping, percentage, (Integer) input);
-		} else if (NumberUtils.isLong(am.getType())) {
-			return VaadinUtils.longToString(grouping, percentage, (Long) input);
-		} else if (NumberUtils.isDouble(am.getType())) {
-			return VaadinUtils.doubleToString(am.isCurrency(), am.isPercentage(), grouping, am.getPrecision(),
-					(Double) input, locale);
-		} else if (BigDecimal.class.equals(am.getType())) {
-			return VaadinUtils.bigDecimalToString(am.isCurrency(), am.isPercentage(), grouping, am.getPrecision(),
-					(BigDecimal) input, locale);
-		} else if (ZonedDateTime.class.equals(am.getType())) {
-			ZonedDateTime zdt = (ZonedDateTime) input;
-			return zdt.toLocalDateTime();
-		}
-		return input;
-	}
+        if (am.isWeek()) {
+            LocalDateWeekCodeConverter converter = new LocalDateWeekCodeConverter();
+            return converter.convertToPresentation((LocalDate) input, new ValueContext(locale));
+        } else if (NumberUtils.isInteger(am.getType())) {
+            return VaadinUtils.integerToString(grouping, percentage, (Integer) input);
+        } else if (NumberUtils.isLong(am.getType())) {
+            return VaadinUtils.longToString(grouping, percentage, (Long) input);
+        } else if (NumberUtils.isDouble(am.getType())) {
+            return VaadinUtils.doubleToString(am.isCurrency(), am.isPercentage(), grouping, am.getPrecision(), (Double) input, locale);
+        } else if (BigDecimal.class.equals(am.getType())) {
+            return VaadinUtils.bigDecimalToString(am.isCurrency(), am.isPercentage(), grouping, am.getPrecision(), (BigDecimal) input,
+                    locale);
+        } else if (ZonedDateTime.class.equals(am.getType())) {
+            ZonedDateTime zdt = (ZonedDateTime) input;
+            return zdt.toLocalDateTime();
+        }
+        return input;
+    }
 
-	/**
-	 * Converts the search value from the presentation to the model
-	 * 
-	 * @param am    the attribute model that governs the conversion
-	 * @param input the search value to convert
-	 * @return
-	 */
-	public static Result<? extends Object> convertToModelValue(AttributeModel am, Object value) {
-		if (value == null) {
-			return Result.ok(null);
-		}
+    /**
+     * Converts the search value from the presentation to the model
+     * 
+     * @param am    the attribute model that governs the conversion
+     * @param input the search value to convert
+     * @return
+     */
+    public static Result<? extends Object> convertToModelValue(AttributeModel am, Object value) {
+        if (value == null) {
+            return Result.ok(null);
+        }
 
-		boolean grouping = SystemPropertyUtils.useThousandsGroupingInEditMode();
-		Locale locale = VaadinUtils.getLocale();
+        boolean grouping = SystemPropertyUtils.useThousandsGroupingInEditMode();
+        Locale locale = VaadinUtils.getLocale();
 
-		if (am.isWeek()) {
-			LocalDateWeekCodeConverter converter = new LocalDateWeekCodeConverter();
-			return converter.convertToModel((String) value, new ValueContext(locale));
-		} else if (NumberUtils.isInteger(am.getType())) {
-			if (value instanceof String) {
-				StringToIntegerConverter converter = ConverterFactory.createIntegerConverter(grouping, false);
-				return converter.convertToModel((String) value, new ValueContext(locale));
-			} else if (value instanceof Double) {
-				return new IntToDoubleConverter().convertToModel((Double) value, new ValueContext(locale));
-			}
-		} else if (NumberUtils.isLong(am.getType())) {
-			if (value instanceof String) {
-				StringToLongConverter converter = ConverterFactory.createLongConverter(grouping, false);
-				return converter.convertToModel((String) value, new ValueContext(locale));
-			} else if (value instanceof Double) {
-				return new LongToDoubleConverter().convertToModel((Double) value, new ValueContext(locale));
-			}
-		} else if (NumberUtils.isDouble(am.getType())) {
-			if (NumberSelectMode.TEXTFIELD.equals(am.getNumberSelectMode())) {
-				StringToDoubleConverter converter = ConverterFactory.createDoubleConverter(am.isCurrency(),
-						am.isPercentage(), grouping, am.getPrecision(), SystemPropertyUtils.getDefaultCurrencySymbol());
-				return converter.convertToModel((String) value, new ValueContext(locale));
-			}
-		} else if (BigDecimal.class.equals(am.getType())) {
-			if (NumberSelectMode.TEXTFIELD.equals(am.getNumberSelectMode())) {
-				BigDecimalConverter converter = ConverterFactory.createBigDecimalConverter(am.isCurrency(),
-						am.isPercentage(), grouping, am.getPrecision(), SystemPropertyUtils.getDefaultCurrencySymbol());
-				return converter.convertToModel((String) value, new ValueContext(locale));
-			}
-		} else if (ZonedDateTime.class.equals(am.getType()) && !am.isSearchDateOnly()) {
-			LocalDateTime ldt = (LocalDateTime) value;
-			return Result.ok(ldt.atZone(ZoneId.systemDefault()));
-		}
-		return Result.ok(value);
-	}
+        if (am.isWeek()) {
+            LocalDateWeekCodeConverter converter = new LocalDateWeekCodeConverter();
+            return converter.convertToModel((String) value, new ValueContext(locale));
+        } else if (NumberUtils.isInteger(am.getType())) {
+            if (value instanceof String) {
+                StringToIntegerConverter converter = ConverterFactory.createIntegerConverter(grouping, false);
+                return converter.convertToModel((String) value, new ValueContext(locale));
+            } else if (value instanceof Double) {
+                return new IntToDoubleConverter().convertToModel((Double) value, new ValueContext(locale));
+            }
+        } else if (NumberUtils.isLong(am.getType())) {
+            if (value instanceof String) {
+                StringToLongConverter converter = ConverterFactory.createLongConverter(grouping, false);
+                return converter.convertToModel((String) value, new ValueContext(locale));
+            } else if (value instanceof Double) {
+                return new LongToDoubleConverter().convertToModel((Double) value, new ValueContext(locale));
+            }
+        } else if (NumberUtils.isDouble(am.getType())) {
+            if (NumberSelectMode.TEXTFIELD.equals(am.getNumberSelectMode())) {
+                StringToDoubleConverter converter = ConverterFactory.createDoubleConverter(am.isCurrency(), am.isPercentage(), grouping,
+                        am.getPrecision(), SystemPropertyUtils.getDefaultCurrencySymbol());
+                return converter.convertToModel((String) value, new ValueContext(locale));
+            }
+        } else if (BigDecimal.class.equals(am.getType())) {
+            if (NumberSelectMode.TEXTFIELD.equals(am.getNumberSelectMode())) {
+                BigDecimalConverter converter = ConverterFactory.createBigDecimalConverter(am.isCurrency(), am.isPercentage(), grouping,
+                        am.getPrecision(), SystemPropertyUtils.getDefaultCurrencySymbol());
+                return converter.convertToModel((String) value, new ValueContext(locale));
+            }
+        } else if (ZonedDateTime.class.equals(am.getType()) && !am.isSearchDateOnly()) {
+            LocalDateTime ldt = (LocalDateTime) value;
+            return Result.ok(ldt.atZone(ZoneId.systemDefault()));
+        }
+        return Result.ok(value);
+    }
 
-	@SuppressWarnings("unchecked")
-	public static <T> Collection<T> convertCollection(Object value, AttributeModel am) {
-		if (value == null) {
-			return null;
-		} else if (Set.class.isAssignableFrom(am.getType())) {
-			Collection<T> col = (Collection<T>) value;
-			return Sets.newHashSet(col);
-		} else if (List.class.isAssignableFrom(am.getType())) {
-			Collection<T> col = (Collection<T>) value;
-			return Lists.newArrayList(col);
-		}
-		return null;
-	}
+    @SuppressWarnings("unchecked")
+    public static <T> Collection<T> convertCollection(Object value, AttributeModel am) {
+        if (value == null) {
+            return null;
+        } else if (Set.class.isAssignableFrom(am.getType())) {
+            Collection<T> col = (Collection<T>) value;
+            return Sets.newHashSet(col);
+        } else if (List.class.isAssignableFrom(am.getType())) {
+            Collection<T> col = (Collection<T>) value;
+            return Lists.newArrayList(col);
+        }
+        return null;
+    }
 }

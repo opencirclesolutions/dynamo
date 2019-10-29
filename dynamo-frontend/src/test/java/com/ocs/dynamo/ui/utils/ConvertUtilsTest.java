@@ -15,7 +15,7 @@ import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.domain.model.impl.EntityModelFactoryImpl;
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.utils.DateUtils;
-import com.vaadin.data.Result;
+import com.vaadin.flow.data.binder.Result;
 
 public class ConvertUtilsTest {
 

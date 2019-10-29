@@ -30,17 +30,18 @@ import com.ocs.dynamo.ui.composite.layout.BaseCustomComponent;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.provider.BaseDataProvider;
 import com.ocs.dynamo.ui.provider.QueryType;
-import com.vaadin.data.Binder.BindingBuilder;
-import com.vaadin.data.provider.DataProvider;
-import com.vaadin.data.provider.GridSortOrderBuilder;
-import com.vaadin.data.provider.ListDataProvider;
-import com.vaadin.data.provider.SortOrder;
-import com.vaadin.server.SerializablePredicate;
-import com.vaadin.shared.data.sort.SortDirection;
-import com.vaadin.ui.AbstractComponent;
-import com.vaadin.ui.Grid.SelectionMode;
-import com.vaadin.ui.Layout;
-import com.vaadin.ui.VerticalLayout;
+import com.ocs.dynamo.ui.utils.VaadinUtils;
+import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.grid.Grid.SelectionMode;
+import com.vaadin.flow.component.grid.GridSortOrderBuilder;
+import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.data.binder.Binder.BindingBuilder;
+import com.vaadin.flow.data.provider.DataProvider;
+import com.vaadin.flow.data.provider.ListDataProvider;
+import com.vaadin.flow.data.provider.SortDirection;
+import com.vaadin.flow.data.provider.SortOrder;
+import com.vaadin.flow.function.SerializablePredicate;
 
 /**
  * A base class for objects that wrap around a ModelBasedTable
@@ -125,6 +126,11 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
     private List<SortOrder<?>> sortOrders = new ArrayList<>();
 
     /**
+     * The label that displays the table caption
+     */
+    private Label caption = new Label();
+
+    /**
      * Constructor
      * 
      * @param service     the service used to query the repository
@@ -179,15 +185,18 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
     public void build() {
         layout = new VerticalLayout();
 
+        layout.add(caption);
+        caption.setText(getEntityModel().getDisplayNamePlural(VaadinUtils.getLocale()));
+
         this.dataProvider = constructDataProvider();
         grid = getGrid();
-        layout.addComponent(grid);
+        layout.add(grid);
         initSortingAndFiltering();
 
         grid.setSelectionMode(SelectionMode.SINGLE);
         addGridSelectionListener();
 
-        setCompositionRoot(layout);
+        add(layout);
     }
 
     /**
@@ -209,15 +218,17 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
             private static final long serialVersionUID = -4559181057050230055L;
 
             @Override
-            protected BindingBuilder<T, ?> doBind(T t, AbstractComponent field, String attributeName) {
+            protected BindingBuilder<T, ?> doBind(T t, Component field, String attributeName) {
                 return BaseGridWrapper.this.doBind(t, field, attributeName);
             }
         };
     }
 
-    protected BindingBuilder<T, ?> doBind(T t, AbstractComponent field, String attributeName) {
+    protected BindingBuilder<T, ?> doBind(T t, Component field, String attributeName) {
         return null;
     }
+    
+    public abstract void forceSearch();
 
     /**
      * Callback method used to modify data provider creation
@@ -232,9 +243,10 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
         return dataProvider;
     }
 
+    @SuppressWarnings("unchecked")
     public int getDataProviderSize() {
         if (dataProvider instanceof BaseDataProvider) {
-            return grid.getDataCommunicator().getDataProviderSize();
+            return ((BaseDataProvider<ID, T>) grid.getDataCommunicator().getDataProvider()).getSize();
         } else if (dataProvider instanceof ListDataProvider) {
             ListDataProvider<T> lp = (ListDataProvider<T>) dataProvider;
             return lp.getItems().size();
@@ -277,7 +289,7 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
         return joins;
     }
 
-    public Layout getLayout() {
+    public VerticalLayout getLayout() {
         return layout;
     }
 
@@ -318,36 +330,36 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
         if (getSortOrders() != null && !getSortOrders().isEmpty()) {
             GridSortOrderBuilder<T> builder = new GridSortOrderBuilder<>();
             for (SortOrder<?> o : getSortOrders()) {
-                if (getGrid().getColumn((String) o.getSorted()) != null) {
+                if (getGrid().getColumnByKey((String) o.getSorted()) != null) {
                     // only include column in sort order if it is present in the grid
                     if (SortDirection.ASCENDING.equals(o.getDirection())) {
-                        builder.thenAsc(grid.getColumn(o.getSorted().toString()));
+                        builder.thenAsc(grid.getColumnByKey(o.getSorted().toString()));
                     } else {
-                        builder.thenDesc(grid.getColumn(o.getSorted().toString()));
+                        builder.thenDesc(grid.getColumnByKey(o.getSorted().toString()));
                     }
                 } else {
                     // not present in grid, add to backup
                     fallBackOrders.add(o);
                 }
             }
-            grid.setSortOrder(builder);
+            // grid.setSortOrder(builder);
         } else if (getEntityModel().getSortOrder() != null && !getEntityModel().getSortOrder().keySet().isEmpty()) {
             // sort based on the entity model
             GridSortOrderBuilder<T> builder = new GridSortOrderBuilder<>();
             for (AttributeModel am : entityModel.getSortOrder().keySet()) {
                 boolean asc = entityModel.getSortOrder().get(am);
-                if (getGrid().getColumn(am.getPath()) != null) {
+                if (getGrid().getColumnByKey(am.getPath()) != null) {
                     if (asc) {
-                        builder.thenAsc(grid.getColumn(am.getPath()));
+                        builder.thenAsc(grid.getColumnByKey(am.getPath()));
                     } else {
-                        builder.thenDesc(grid.getColumn(am.getPath()));
+                        builder.thenDesc(grid.getColumnByKey(am.getPath()));
                     }
                 } else {
                     fallBackOrders
                             .add(new SortOrder<String>(am.getActualSortPath(), asc ? SortDirection.ASCENDING : SortDirection.DESCENDING));
                 }
             }
-            grid.setSortOrder(builder);
+            grid.sort(builder.build());
         }
 
         // set fall back sort orders
@@ -386,6 +398,32 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 
     public void setSortOrders(List<SortOrder<?>> sortOrders) {
         this.sortOrders = sortOrders;
+    }
+
+    /**
+     * Updates the grid caption in response to a change of the data set
+     */
+    @SuppressWarnings("unchecked")
+    protected void updateCaption() {
+        int size = 0;
+        DataProvider<?, ?> dp = getGrid().getDataCommunicator().getDataProvider();
+        if (dp instanceof ListDataProvider) {
+            size = ((ListDataProvider<T>) dp).getItems().size();
+        } else {
+            size = ((BaseDataProvider<ID, T>) dp).getSize();
+        }
+        caption.setText(entityModel.getDisplayNamePlural(VaadinUtils.getLocale()) + " "
+                + getMessageService().getMessage("ocs.showing.results", VaadinUtils.getLocale(), size));
+    }
+
+    /**
+     * Updates the caption above the grid that shows the number of items
+     * 
+     * @param size
+     */
+    protected void updateCaption(int size) {
+        caption.setText(entityModel.getDisplayNamePlural(VaadinUtils.getLocale()) + " "
+                + getMessageService().getMessage("ocs.showing.results", VaadinUtils.getLocale(), size));
     }
 
 }

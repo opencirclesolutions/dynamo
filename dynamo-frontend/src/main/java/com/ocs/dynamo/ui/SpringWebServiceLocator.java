@@ -19,18 +19,18 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import com.ocs.dynamo.service.impl.BaseSpringServiceLocator;
-import com.vaadin.spring.server.SpringVaadinServlet;
+import com.vaadin.flow.server.VaadinServlet;
 
 public class SpringWebServiceLocator extends BaseSpringServiceLocator {
 
-	/**
-	 * Lazily loads the context
-	 */
-	protected ApplicationContext loadCtx() {
-		if (SpringVaadinServlet.getCurrent() != null) {
-			ServletContext sc = SpringVaadinServlet.getCurrent().getServletContext();
-			return WebApplicationContextUtils.getWebApplicationContext(sc);
-		}
-		return null;
-	}
+    /**
+     * Lazily loads the context
+     */
+    protected ApplicationContext loadCtx() {
+        if (VaadinServlet.getCurrent() != null) {
+            ServletContext sc = VaadinServlet.getCurrent().getServletContext();
+            return WebApplicationContextUtils.getWebApplicationContext(sc);
+        }
+        return null;
+    }
 }

@@ -24,7 +24,6 @@ import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.ui.component.DownloadButton;
 import com.ocs.dynamo.ui.composite.type.ExportMode;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
-import com.vaadin.ui.Button;
 
 /**
  * A simple dialog window that offers several buttons for exporting data to
@@ -66,14 +65,14 @@ public class FixedExportDialog<ID extends Serializable, T extends AbstractEntity
     }
 
     @Override
-    protected Button createDownloadCSVButton() {
+    protected DownloadButton createDownloadCSVButton() {
         return new DownloadButton(message("ocs.export.csv"),
                 () -> new ByteArrayInputStream(getExportService().exportCsvFixed(getEntityModel(), getExportMode(), itemsSupplier.get())),
                 () -> getEntityModel().getDisplayNamePlural(VaadinUtils.getLocale()) + "_" + LocalDateTime.now() + EXTENSION_CSV);
     }
 
     @Override
-    protected Button createDownloadExcelButton() {
+    protected DownloadButton createDownloadExcelButton() {
         return new DownloadButton(message("ocs.export.excel"),
                 () -> new ByteArrayInputStream(
                         getExportService().exportExcelFixed(getEntityModel(), getExportMode(), customGenerator, itemsSupplier.get())),

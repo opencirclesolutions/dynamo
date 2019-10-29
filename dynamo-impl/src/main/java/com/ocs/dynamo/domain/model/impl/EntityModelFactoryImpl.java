@@ -60,7 +60,6 @@ import com.ocs.dynamo.domain.model.AttributeSelectMode;
 import com.ocs.dynamo.domain.model.AttributeTextFieldMode;
 import com.ocs.dynamo.domain.model.AttributeType;
 import com.ocs.dynamo.domain.model.CascadeMode;
-import com.ocs.dynamo.domain.model.CheckboxMode;
 import com.ocs.dynamo.domain.model.EditableType;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
@@ -174,7 +173,6 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
             model.setSearchable(descriptor.isPreferred());
             model.setName((prefix == null ? "" : (prefix + ".")) + fieldName);
             model.setImage(false);
-            model.setExpansionFactor(1.0f);
 
             model.setEditableType(descriptor.isHidden() ? EditableType.READ_ONLY : EditableType.EDITABLE);
             model.setSortable(true);
@@ -264,11 +262,15 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
                 }
             }
 
-            // exception if using a multiple select field type for a single
-            // select field
-            if ((AttributeSelectMode.TOKEN.equals(model.getSelectMode()) || AttributeSelectMode.FANCY_LIST.equals(model.getSelectMode()))
-                    && !AttributeType.DETAIL.equals(model.getAttributeType()) && !AttributeType.BASIC.equals(model.getAttributeType())) {
+            // multiple select fields not allowed for all attribute types
+            if (AttributeSelectMode.TOKEN.equals(model.getSelectMode()) && !AttributeType.DETAIL.equals(model.getAttributeType())
+                    && !AttributeType.BASIC.equals(model.getAttributeType())) {
                 throw new OCSRuntimeException("Token or Fancy List field not allowed for attribute " + model.getName());
+            }
+
+            // list select field only allowed for "master" attribute types
+            if ((AttributeSelectMode.LIST.equals(model.getSelectMode()) && !AttributeType.MASTER.equals(model.getAttributeType()))) {
+                throw new OCSRuntimeException("List field is not allowed for attribute " + model.getName());
             }
 
             // navigating only allowed in case of a many to one relation
@@ -844,12 +846,13 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
             if (!StringUtils.isEmpty(attribute.displayName())) {
                 model.setDefaultDisplayName(attribute.displayName());
                 model.setDefaultDescription(attribute.displayName());
-                model.setDefaultPrompt(attribute.prompt());
+                model.setDefaultPrompt(attribute.displayName());
             }
 
             if (!StringUtils.isEmpty(attribute.description())) {
                 model.setDefaultDescription(attribute.description());
             }
+
             if (!StringUtils.isEmpty(attribute.prompt())) {
                 model.setDefaultPrompt(attribute.prompt());
             }
@@ -1049,23 +1052,14 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
                 setDefaultValue(model, defaultValue);
             }
 
-            if (attribute.expansionFactor() > 1.0f) {
-                model.setExpansionFactor(attribute.expansionFactor());
-            }
-
             if (!StringUtils.isEmpty(attribute.styles())) {
                 model.setStyles(attribute.styles());
             }
 
-            model.setCheckboxMode(attribute.checkboxMode());
             model.setNavigable(attribute.navigable());
 
             if (!StringUtils.isEmpty(attribute.styles())) {
                 model.setStyles(attribute.styles());
-            }
-
-            if (attribute.rows() > -1) {
-                model.setRows(attribute.rows());
             }
 
             model.setIgnoreInSearchFilter(attribute.ignoreInSearchFilter());
@@ -1377,19 +1371,9 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
             model.setNavigable(Boolean.valueOf(msg));
         }
 
-        msg = getAttributeMessage(entityModel, model, EntityModel.CHECKBOX_MODE);
-        if (!StringUtils.isEmpty(msg)) {
-            model.setCheckboxMode(CheckboxMode.valueOf(msg));
-        }
-
         msg = getAttributeMessage(entityModel, model, EntityModel.STYLES);
         if (!StringUtils.isEmpty(msg)) {
             model.setStyles(msg);
-        }
-
-        msg = getAttributeMessage(entityModel, model, EntityModel.ROWS);
-        if (!StringUtils.isEmpty(msg)) {
-            model.setRows(Integer.parseInt(msg));
         }
 
         msg = getAttributeMessage(entityModel, model, EntityModel.SEARCH_DATE_ONLY);

@@ -19,7 +19,7 @@ import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.utils.MathUtils;
-import com.vaadin.ui.UI;
+import com.vaadin.flow.component.UI;
 
 /**
  * A Runnable that is used to update a progress bar during a long running process
@@ -87,7 +87,7 @@ public class ProgressBarUpdater implements Runnable {
 
                 MessageService ms = ServiceLocatorFactory.getServiceLocator().getMessageService();
                 progressable.getStatusLabel()
-                        .setValue(ms.getMessage("ocs.progress.done", VaadinUtils.getLocale(), progressString));
+                        .setText(ms.getMessage("ocs.progress.done", VaadinUtils.getLocale(), progressString));
             });
 
         }

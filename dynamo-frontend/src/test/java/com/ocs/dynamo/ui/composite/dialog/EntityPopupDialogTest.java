@@ -6,103 +6,115 @@ import javax.inject.Inject;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
+import com.github.mvysny.kaributesting.v10.MockVaadin;
+import com.github.mvysny.kaributesting.v10.Routes;
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
+import com.ocs.dynamo.domain.model.FieldFactory;
 import com.ocs.dynamo.service.TestEntityService;
 import com.ocs.dynamo.ui.FrontendIntegrationTest;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 
 public class EntityPopupDialogTest extends FrontendIntegrationTest {
 
-	@Inject
-	private EntityModelFactory entityModelFactory;
+    private static Routes routes;
 
-	@Inject
-	private TestEntityService testEntityService;
+    @Inject
+    private EntityModelFactory entityModelFactory;
 
-	private TestEntity e1;
+    @Inject
+    private TestEntityService testEntityService;
 
-	private TestEntity e2;
+    private TestEntity e1;
 
-	@Before
-	public void setup() {
-		e1 = new TestEntity("Bob", 11L);
-		e1 = testEntityService.save(e1);
+    private TestEntity e2;
 
-		e2 = new TestEntity("Harry", 12L);
-		e2 = testEntityService.save(e2);
-	}
+    @BeforeClass
+    public static void createRoutes() {
+        // initialize routes only once, to avoid view auto-detection before every test
+        // and to speed up the tests
+        routes = new Routes().autoDiscoverViews("com.ocs.dynamo");
+    }
 
-	/**
-	 * 
-	 */
-	@Test
-	public void testCreateNewEntity() {
-		FormOptions fo = new FormOptions();
-		EntityPopupDialog<Integer, TestEntity> dialog = new EntityPopupDialog<Integer, TestEntity>(testEntityService,
-				null, entityModelFactory.getModel(TestEntity.class), new HashMap<>(), fo) {
+    @Before
+    public void setup() {
+        MockVaadin.setup(routes);
 
-			private static final long serialVersionUID = 485491706786708563L;
+        e1 = new TestEntity("Bob", 11L);
+        e1 = testEntityService.save(e1);
 
-			@Override
-			protected TestEntity createEntity() {
-				TestEntity e1 = super.createEntity();
-				e1.setName("Pete");
-				return e1;
-			}
-		};
-		dialog.build();
-		dialog.getLayout().build();
+        e2 = new TestEntity("Harry", 12L);
+        e2 = testEntityService.save(e2);
+    }
 
-		// OK button is only for read-only mode
-		Assert.assertNull(dialog.getOkButton());
+    @Test
+    public void testCreateNewEntity() {
+        FormOptions fo = new FormOptions();
+        EntityPopupDialog<Integer, TestEntity> dialog = new EntityPopupDialog<Integer, TestEntity>(testEntityService, null,
+                entityModelFactory.getModel(TestEntity.class), new HashMap<>(), fo) {
 
-		TestEntity newEntity = dialog.getEntity();
-		Assert.assertEquals("Pete", newEntity.getName());
+            private static final long serialVersionUID = 485491706786708563L;
 
-		// save the new entity
-		dialog.getSaveButtons().get(0).click();
-		Assert.assertEquals(3, testEntityService.count());
-	}
+            @Override
+            protected TestEntity createEntity() {
+                TestEntity e1 = super.createEntity();
+                e1.setName("Pete");
+                return e1;
+            }
+        };
+        dialog.build();
+        dialog.getLayout().build();
 
-	@Test
-	public void testUpdateExistingEntity() {
-		FormOptions fo = new FormOptions();
-		EntityPopupDialog<Integer, TestEntity> dialog = new EntityPopupDialog<Integer, TestEntity>(testEntityService,
-				e1, entityModelFactory.getModel(TestEntity.class), new HashMap<>(), fo) {
+        // OK button is only for read-only mode
+        Assert.assertNull(dialog.getOkButton());
 
-			private static final long serialVersionUID = 485491706786708563L;
+        TestEntity newEntity = dialog.getEntity();
+        Assert.assertEquals("Pete", newEntity.getName());
 
-		};
-		dialog.build();
-		dialog.getLayout().build();
+        // save the new entity
+        dialog.getSaveButtons().get(0).click();
+        Assert.assertEquals(3, testEntityService.count());
+    }
 
-		dialog.getEntity().setName("BobChanged");
+    @Test
+    public void testUpdateExistingEntity() {
+        FormOptions fo = new FormOptions();
+        EntityPopupDialog<Integer, TestEntity> dialog = new EntityPopupDialog<Integer, TestEntity>(testEntityService, e1,
+                entityModelFactory.getModel(TestEntity.class), new HashMap<>(), fo) {
 
-		// save the existing entity
-		dialog.getSaveButtons().get(0).click();
-		Assert.assertEquals(2, testEntityService.count());
+            private static final long serialVersionUID = 485491706786708563L;
 
-		TestEntity saved = testEntityService.findById(e1.getId());
-		Assert.assertEquals("BobChanged", saved.getName());
-	}
+        };
+        dialog.build();
+        dialog.getLayout().build();
 
-	@Test
-	public void testReadOnlyMode() {
-		FormOptions fo = new FormOptions().setReadOnly(true);
-		EntityPopupDialog<Integer, TestEntity> dialog = new EntityPopupDialog<Integer, TestEntity>(testEntityService,
-				e1, entityModelFactory.getModel(TestEntity.class), new HashMap<>(), fo) {
+        dialog.getEntity().setName("BobChanged");
 
-			private static final long serialVersionUID = 485491706786708563L;
+        // save the existing entity
+        dialog.getSaveButtons().get(0).click();
+        Assert.assertEquals(2, testEntityService.count());
 
-		};
-		dialog.build();
-		dialog.getLayout().build();
+        TestEntity saved = testEntityService.findById(e1.getId());
+        Assert.assertEquals("BobChanged", saved.getName());
+    }
 
-		// no save buttons present
-		Assert.assertTrue(dialog.getSaveButtons().isEmpty());
-		Assert.assertNotNull(dialog.getOkButton());
-	}
+    @Test
+    public void testReadOnlyMode() {
+        FormOptions fo = new FormOptions().setReadOnly(true);
+        EntityPopupDialog<Integer, TestEntity> dialog = new EntityPopupDialog<Integer, TestEntity>(testEntityService, e1,
+                entityModelFactory.getModel(TestEntity.class), new HashMap<>(), fo) {
+
+            private static final long serialVersionUID = 485491706786708563L;
+
+        };
+        dialog.build();
+        dialog.getLayout().build();
+
+        // no save buttons present
+        Assert.assertTrue(dialog.getSaveButtons().isEmpty());
+        Assert.assertNotNull(dialog.getOkButton());
+    }
 }

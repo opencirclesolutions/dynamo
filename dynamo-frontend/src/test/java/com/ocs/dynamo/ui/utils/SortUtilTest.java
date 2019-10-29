@@ -17,8 +17,8 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.ocs.dynamo.dao.SortOrder.Direction;
-import com.vaadin.data.provider.SortOrder;
-import com.vaadin.shared.data.sort.SortDirection;
+import com.vaadin.flow.data.provider.SortDirection;
+import com.vaadin.flow.data.provider.SortOrder;
 
 public class SortUtilTest {
 

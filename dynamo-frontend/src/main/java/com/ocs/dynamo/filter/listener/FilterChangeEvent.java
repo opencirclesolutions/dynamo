@@ -15,7 +15,7 @@ package com.ocs.dynamo.filter.listener;
 
 import java.io.Serializable;
 
-import com.vaadin.server.SerializablePredicate;
+import com.vaadin.flow.function.SerializablePredicate;
 
 /**
  * An event used to indicate that the value of a filter in a search form has

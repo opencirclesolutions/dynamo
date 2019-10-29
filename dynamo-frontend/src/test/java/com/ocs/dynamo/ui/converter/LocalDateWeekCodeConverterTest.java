@@ -7,8 +7,8 @@ import org.junit.Test;
 
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.utils.DateUtils;
-import com.vaadin.data.Result;
-import com.vaadin.data.ValueContext;
+import com.vaadin.flow.data.binder.Result;
+import com.vaadin.flow.data.binder.ValueContext;
 
 public class LocalDateWeekCodeConverterTest {
 

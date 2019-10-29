@@ -13,9 +13,7 @@
  */
 package com.ocs.dynamo.ui.component;
 
-import com.vaadin.server.ThemeResource;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Image;
+import com.vaadin.flow.component.html.Image;
 
 /**
  * Base class for the application banner that contains an image to the left
@@ -40,20 +38,19 @@ public class BaseBanner extends DefaultHorizontalLayout {
     /**
      * Constructor
      * 
-     * @param imagePath
-     *            the path to the image
+     * @param imagePath the path to the image
      */
     public BaseBanner(String imagePath) {
-        super(true, false, false);
+        super(true, false);
         this.imagePath = imagePath;
 
         setId("banner");
         setSizeFull();
 
-        image = new Image(null, new ThemeResource(imagePath));
-        image.setWidth(null);
-        addComponent(image);
-        setComponentAlignment(image, Alignment.MIDDLE_CENTER);
+        image = new Image(imagePath, "Image");
+        // image.setWidth(null);
+        // add(image);
+        setAlignItems(Alignment.CENTER);
     }
 
     public Image getImage() {

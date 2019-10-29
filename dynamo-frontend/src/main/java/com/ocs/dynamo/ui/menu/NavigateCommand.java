@@ -13,91 +13,82 @@
  */
 package com.ocs.dynamo.ui.menu;
 
-import com.ocs.dynamo.constants.DynamoConstants;
-import com.ocs.dynamo.ui.BaseUI;
-import com.vaadin.navigator.Navigator;
-import com.vaadin.ui.MenuBar;
-import com.vaadin.ui.MenuBar.Command;
-import com.vaadin.ui.MenuBar.MenuItem;
-import com.vaadin.ui.UI;
+import com.ocs.dynamo.service.ServiceLocatorFactory;
+import com.ocs.dynamo.ui.UIHelper;
+import com.vaadin.flow.component.ClickEvent;
+import com.vaadin.flow.component.ComponentEventListener;
+import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.contextmenu.MenuItem;
+import com.vaadin.flow.component.menubar.MenuBar;
 
 /**
  * Command for navigating to a certain view
  * 
  * @author bas.rutten
  */
-public class NavigateCommand implements Command {
+public class NavigateCommand implements ComponentEventListener<ClickEvent<MenuItem>> {
 
-	private static final long serialVersionUID = 5192333331107840255L;
+    private static final long serialVersionUID = 5192333331107840255L;
 
-	private final Navigator navigator;
+    private MenuBar menuBar;
 
-	private MenuBar menuBar;
+    private final String destination;
 
-	private final String destination;
+    private final String selectedTab;
 
-	private final String selectedTab;
+    private final String mode;
 
-	private final String mode;
+    /**
+     * Constructor
+     * 
+     * @param navigator   the Vaadin navigator
+     * @param destination the destination to navigate to
+     * @param selectedTab the index of the tab to select
+     * @param mode        an optional screen mode
+     */
+    public NavigateCommand(MenuBar menuBar, String destination, String selectedTab, String mode) {
+        this.menuBar = menuBar;
+        // this.navigator = navigator;
+        this.destination = destination;
+        this.selectedTab = selectedTab;
+        this.mode = mode;
+    }
 
-	/**
-	 * Constructor
-	 * 
-	 * @param navigator
-	 *            the Vaadin navigator
-	 * @param destination
-	 *            the destination to navigate to
-	 * @param selectedTab
-	 *            the index of the tab to select
-	 * @param mode
-	 *            an optional screen mode
-	 */
-	public NavigateCommand(Navigator navigator, MenuBar menuBar, String destination, String selectedTab, String mode) {
-		this.menuBar = menuBar;
-		this.navigator = navigator;
-		this.destination = destination;
-		this.selectedTab = selectedTab;
-		this.mode = mode;
-	}
+    public String getDestination() {
+        return destination;
+    }
 
-	@Override
-	public void menuSelected(MenuItem selectedItem) {
-		UI ui = UI.getCurrent();
-		if (ui instanceof BaseUI) {
-			BaseUI b = (BaseUI) ui;
+    public String getSelectedTab() {
+        return selectedTab;
+    }
 
-			if (selectedTab != null) {
-				b.setSelectedTab(Integer.valueOf(selectedTab));
-			} else {
-				b.setSelectedTab(null);
-			}
-			b.setScreenMode(mode);
-		}
+    public String getMode() {
+        return mode;
+    }
 
-		// reset style names
-		for (MenuItem item : menuBar.getItems()) {
-			item.setStyleName(null);
-		}
+    @Override
+    public void onComponentEvent(ClickEvent<MenuItem> event) {
+        UIHelper ui = ServiceLocatorFactory.getServiceLocator().getService(UIHelper.class);
 
-		// mark top level menu
-		while (selectedItem.getParent() != null) {
-			selectedItem = selectedItem.getParent();
-		}
-		selectedItem.setStyleName(DynamoConstants.CSS_LAST_VISITED);
+        if (selectedTab != null) {
+            ui.setSelectedTab(Integer.valueOf(selectedTab));
+        } else {
+            ui.setSelectedTab(null);
+        }
+        ui.setScreenMode(mode);
 
-		navigator.navigateTo(destination);
-	}
+        // reset style names
+        for (MenuItem item : menuBar.getItems()) {
+            // item.setStyleName(null);
+        }
 
-	public String getDestination() {
-		return destination;
-	}
-
-	public String getSelectedTab() {
-		return selectedTab;
-	}
-
-	public String getMode() {
-		return mode;
-	}
+        // mark top level menu
+        MenuItem selectedItem = event.getSource();
+//        while (selectedItem.getParent() != null) {
+//            selectedItem = (MenuItem) selectedItem.getParent().orElse(null);
+//        }
+        // selectedItem.setStyleName(DynamoConstants.CSS_LAST_VISITED);
+        UI.getCurrent().navigate(destination);
+    }
 
 }

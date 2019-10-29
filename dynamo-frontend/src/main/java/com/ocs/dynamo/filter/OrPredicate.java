@@ -15,7 +15,7 @@ package com.ocs.dynamo.filter;
 
 import java.util.function.Predicate;
 
-import com.vaadin.server.SerializablePredicate;
+import com.vaadin.flow.function.SerializablePredicate;
 
 /**
  * A predicate for joining multiple predicates based on the logical OR
@@ -44,7 +44,7 @@ public class OrPredicate<T> extends CompositePredicate<T> {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public Predicate<T> or(Predicate<? super T> other) {
+	public SerializablePredicate<T> or(Predicate<? super T> other) {
 		getOperands().add((SerializablePredicate<T>) other);
 		return this;
 	}

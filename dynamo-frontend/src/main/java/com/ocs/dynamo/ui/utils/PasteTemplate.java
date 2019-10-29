@@ -18,8 +18,8 @@ import java.util.Locale;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.vaadin.data.HasValue.ValueChangeEvent;
-import com.vaadin.ui.Grid;
+import com.vaadin.flow.component.HasValue.ValueChangeEvent;
+import com.vaadin.flow.component.grid.Grid;
 
 /**
  * A template for handling a paste into a text field. The template will try to
@@ -72,7 +72,7 @@ public abstract class PasteTemplate<T> {
 					}
 				}
 				if (grid != null) {
-					grid.markAsDirty();
+					//grid.markAsDirty();
 				}
 			}
 		}

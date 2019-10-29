@@ -86,12 +86,6 @@ public interface AttributeModel extends Comparable<AttributeModel> {
     CascadeMode getCascadeMode(String cascadeTo);
 
     /**
-     * 
-     * @return the desired check box mode (defaults to simply a check box)
-     */
-    CheckboxMode getCheckboxMode();
-
-    /**
      *
      * @return the name of the field in the collection table that is used to search
      *         on when building a token search field for values in a collection
@@ -148,13 +142,6 @@ public interface AttributeModel extends Comparable<AttributeModel> {
      * @return The EntityModel for the entity that contains this attribute
      */
     EntityModel<?> getEntityModel();
-
-    /**
-     * The expansion factor for sizing components that are rendered on the same row
-     *
-     * @return
-     */
-    float getExpansionFactor();
 
     /**
      * 
@@ -294,12 +281,6 @@ public interface AttributeModel extends Comparable<AttributeModel> {
      *         normally support sorting
      */
     String getReplacementSortPath();
-
-    /**
-     * 
-     * @return The number of rows for a list select or text area component
-     */
-    Integer getRows();
 
     /**
      * @return The search select mode (determines which component to render in

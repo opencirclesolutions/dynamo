@@ -106,7 +106,7 @@ public final class EntityModelUtils {
 	 * @return
 	 */
 	public static <T> String getDisplayPropertyValue(T entity, EntityModel<T> model) {
-		if (entity == null || model.getDisplayProperty() == null) {
+		if (entity == null) {
 			return null;
 		}
 		String property = model.getDisplayProperty();

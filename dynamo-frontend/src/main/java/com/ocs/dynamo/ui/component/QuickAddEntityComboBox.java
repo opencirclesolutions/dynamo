@@ -25,13 +25,13 @@ import com.ocs.dynamo.ui.Refreshable;
 import com.ocs.dynamo.ui.SharedProvider;
 import com.ocs.dynamo.ui.component.EntityComboBox.SelectMode;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
-import com.vaadin.data.provider.ListDataProvider;
-import com.vaadin.data.provider.SortOrder;
-import com.vaadin.server.SerializablePredicate;
-import com.vaadin.shared.Registration;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.customfield.CustomField;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.data.provider.ListDataProvider;
+import com.vaadin.flow.data.provider.SortOrder;
+import com.vaadin.flow.function.SerializablePredicate;
+import com.vaadin.flow.shared.Registration;
 
 /**
  * A component that contains a combo box for selecting an entity, plus the
@@ -46,8 +46,6 @@ public class QuickAddEntityComboBox<ID extends Serializable, T extends AbstractE
         implements Refreshable, SharedProvider<T> {
 
     private static final long serialVersionUID = 4246187881499965296L;
-
-    private static final float BUTTON_EXPAND_RATIO = 0.25f;
 
     private final boolean quickAddAllowed;
 
@@ -73,12 +71,14 @@ public class QuickAddEntityComboBox<ID extends Serializable, T extends AbstractE
         this.comboBox = new EntityComboBox<>(entityModel, attributeModel, service, mode, filter, sharedProvider, items, sortOrder);
         this.quickAddAllowed = attributeModel != null && attributeModel.isQuickAddAllowed() && !search;
         this.directNavigationAllowed = attributeModel != null && attributeModel.isNavigable() && !search;
+        initContent();
     }
 
     @Override
-    public Registration addValueChangeListener(ValueChangeListener<T> listener) {
+    public Registration addValueChangeListener(ValueChangeListener<? super ComponentValueChangeEvent<CustomField<T>, T>> listener) {
         if (comboBox != null) {
-            return comboBox.addValueChangeListener(listener);
+            comboBox.addValueChangeListener(event -> listener
+                    .valueChanged(new ComponentValueChangeEvent<>(this, event.getHasValue(), event.getValue(), event.isFromClient())));
         }
         return null;
     }
@@ -96,13 +96,6 @@ public class QuickAddEntityComboBox<ID extends Serializable, T extends AbstractE
         super.clearAdditionalFilter();
         if (comboBox != null) {
             comboBox.refresh(getFilter());
-        }
-    }
-
-    @Override
-    protected void doSetValue(T value) {
-        if (comboBox != null) {
-            comboBox.setValue(value);
         }
     }
 
@@ -128,42 +121,29 @@ public class QuickAddEntityComboBox<ID extends Serializable, T extends AbstractE
         return comboBox.getValue();
     }
 
-    @Override
-    protected Component initContent() {
-        HorizontalLayout bar = new DefaultHorizontalLayout(false, true, true);
+    protected void initContent() {
+        HorizontalLayout bar = new HorizontalLayout();
         bar.setSizeFull();
 
         if (this.getAttributeModel() != null) {
-            this.setCaption(getAttributeModel().getDisplayName(VaadinUtils.getLocale()));
+            this.setLabel(getAttributeModel().getDisplayName(VaadinUtils.getLocale()));
         }
 
         // no caption needed (the wrapping component has the caption)
-        comboBox.setCaption(null);
+        comboBox.setLabel(null);
         comboBox.setSizeFull();
 
-        bar.addComponent(comboBox);
-        float comboBoxExpandRatio = 1f;
-        if (quickAddAllowed) {
-            comboBoxExpandRatio -= BUTTON_EXPAND_RATIO;
-        }
-        if (directNavigationAllowed) {
-            comboBoxExpandRatio -= 0.10f;
-        }
-
-        bar.setExpandRatio(comboBox, comboBoxExpandRatio);
-
+        bar.add(comboBox);
         if (quickAddAllowed) {
             Button addButton = constructAddButton();
-            addButton.setSizeFull();
-            bar.addComponent(addButton);
-            bar.setExpandRatio(addButton, BUTTON_EXPAND_RATIO);
+            bar.add(addButton);
         }
         if (directNavigationAllowed) {
             Button directNavigationButton = constructDirectNavigationButton();
-            bar.addComponent(directNavigationButton);
-            bar.setExpandRatio(directNavigationButton, 0.10f);
+            bar.add(directNavigationButton);
         }
-        return bar;
+
+        add(bar);
     }
 
     @Override
@@ -200,6 +180,19 @@ public class QuickAddEntityComboBox<ID extends Serializable, T extends AbstractE
     public void setValue(T newFieldValue) {
         if (comboBox != null) {
             comboBox.setValue(newFieldValue);
+        }
+    }
+
+    @Override
+    protected T generateModelValue() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    protected void setPresentationValue(T value) {
+        if (comboBox != null) {
+            comboBox.setValue(value);
         }
     }
 

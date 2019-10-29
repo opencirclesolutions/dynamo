@@ -9,8 +9,12 @@ import javax.inject.Inject;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
+import com.github.mvysny.kaributesting.v10.MockVaadin;
+import com.github.mvysny.kaributesting.v10.Routes;
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.TestEntity.TestEnum;
 import com.ocs.dynamo.domain.model.AttributeModel;
@@ -23,224 +27,235 @@ import com.ocs.dynamo.ui.FrontendIntegrationTest;
 import com.ocs.dynamo.ui.composite.grid.ServiceBasedGridWrapper;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.provider.QueryType;
-import com.vaadin.server.SerializablePredicate;
+import com.vaadin.flow.function.SerializablePredicate;
 
 public class ModelBasedFlexibleSearchFormTest extends FrontendIntegrationTest {
 
-	@Inject
-	private TestEntityService testEntityService;
+    private static Routes routes;
 
-	@Inject
-	private EntityModelFactory entityModelFactory;
+    @BeforeClass
+    public static void createRoutes() {
+        // initialize routes only once, to avoid view auto-detection before every test
+        // and to speed up the tests
+        routes = new Routes().autoDiscoverViews("com.ocs.dynamo");
+    }
 
-	private TestEntity e1;
+    @Inject
+    private TestEntityService testEntityService;
 
-	private TestEntity e2;
+    @Inject
+    private EntityModelFactory entityModelFactory;
 
-	private ServiceBasedGridWrapper<Integer, TestEntity> wrapper;
+    private TestEntity e1;
 
-	private ModelBasedFlexibleSearchForm<Integer, TestEntity> form;
+    private TestEntity e2;
 
-	private EntityModel<TestEntity> em;
+    private ServiceBasedGridWrapper<Integer, TestEntity> wrapper;
 
-	private AttributeModel am;
+    private ModelBasedFlexibleSearchForm<Integer, TestEntity> form;
 
-	@Before
-	public void setup() {
-		e1 = new TestEntity("Bob", 11L);
-		e1.setRate(BigDecimal.valueOf(4));
-		e1 = testEntityService.save(e1);
+    private EntityModel<TestEntity> em;
 
-		e2 = new TestEntity("Harry", 12L);
-		e2.setRate(BigDecimal.valueOf(3));
-		e2 = testEntityService.save(e2);
+    private AttributeModel am;
 
-		entityModelFactory.getModel(TestEntity.class);
+    @Before
+    public void setup() {
+        MockVaadin.setup(routes);
+        e1 = new TestEntity("Bob", 11L);
+        e1.setRate(BigDecimal.valueOf(4));
+        e1 = testEntityService.save(e1);
 
-		em = entityModelFactory.getModel(TestEntity.class);
-		am = em.getAttributeModel("name");
-		build(em);
-	}
+        e2 = new TestEntity("Harry", 12L);
+        e2.setRate(BigDecimal.valueOf(3));
+        e2 = testEntityService.save(e2);
 
-	private void search() {
-		form.search();
-		wrapper.getGrid().getDataCommunicator().getDataProviderSize();
-	}
+        entityModelFactory.getModel(TestEntity.class);
 
-	private void clear() {
-		form.getClearButton().click();
-		wrapper.getGrid().getDataCommunicator().getDataProviderSize();
-	}
+        em = entityModelFactory.getModel(TestEntity.class);
+        am = em.getAttributeModel("name");
+        build(em);
+    }
 
-	@Test
-	public void testSearchAndClear() {
-		EntityModel<TestEntity> em = entityModelFactory.getModel(TestEntity.class);
-		AttributeModel am = em.getAttributeModel("name");
+    private void search() {
+        form.search();
+        wrapper.forceSearch();
+    }
 
-		search();
+    private void clear() {
+        form.getClearButton().click();
+        // wrapper.getGrid().getDataCommunicator().getDataProviderSize();
+    }
 
-		// unfiltered search, returns two items
-		Assert.assertEquals(2, wrapper.getDataProviderSize());
+    @Test
+    public void testSearchAndClear() {
+        EntityModel<TestEntity> em = entityModelFactory.getModel(TestEntity.class);
+        AttributeModel am = em.getAttributeModel("name");
 
-		// "equals" search
-		form.addFilter(am, FlexibleFilterType.EQUALS, "Harry", null);
-		search();
+        search();
 
-		Assert.assertEquals(1, wrapper.getDataProviderSize());
+        // unfiltered search, returns two items
+        Assert.assertEquals(2, wrapper.getDataProviderSize());
 
-		// clear the search filters
-		clear();
-		Assert.assertEquals(2, wrapper.getDataProviderSize());
-	}
+        // "equals" search
+        form.addFilter(am, FlexibleFilterType.EQUALS, "Harry", null);
+        search();
 
-	@Test
-	public void testStringContains() {
-		form.addFilter(am, FlexibleFilterType.CONTAINS, "a", null);
-		search();
-		Assert.assertEquals(1, wrapper.getDataProviderSize());
-	}
+        Assert.assertEquals(1, wrapper.getDataProviderSize());
 
-	@Test
-	public void testStringNotEquals() {
-		form.addFilter(am, FlexibleFilterType.NOT_EQUAL, "Bob", null);
-		search();
-		Assert.assertEquals(1, wrapper.getDataProviderSize());
-	}
+        // clear the search filters (verify that 2 items are once again returned)
+        clear();
+        wrapper.forceSearch();
+        Assert.assertEquals(2, wrapper.getDataProviderSize());
+    }
 
-	@Test
-	public void testStringNotContains() {
-		form.addFilter(am, FlexibleFilterType.NOT_CONTAINS, "x", null);
-		search();
-		Assert.assertEquals(2, wrapper.getDataProviderSize());
-	}
+    @Test
+    public void testStringContains() {
+        form.addFilter(am, FlexibleFilterType.CONTAINS, "a", null);
+        search();
+        Assert.assertEquals(1, wrapper.getDataProviderSize());
+    }
 
-	@Test
-	public void testStringStartsWith() {
-		form.addFilter(am, FlexibleFilterType.STARTS_WITH, "a", null);
-		search();
-		Assert.assertEquals(0, wrapper.getDataProviderSize());
-	}
+    @Test
+    public void testStringNotEquals() {
+        form.addFilter(am, FlexibleFilterType.NOT_EQUAL, "Bob", null);
+        search();
+        Assert.assertEquals(1, wrapper.getDataProviderSize());
+    }
 
-	@Test
-	public void testNotStringStartsWith() {
-		form.addFilter(am, FlexibleFilterType.NOT_STARTS_WITH, "a", null);
-		search();
-		Assert.assertEquals(2, wrapper.getDataProviderSize());
-	}
+    @Test
+    public void testStringNotContains() {
+        form.addFilter(am, FlexibleFilterType.NOT_CONTAINS, "x", null);
+        search();
+        Assert.assertEquals(2, wrapper.getDataProviderSize());
+    }
 
-	@Test
-	public void testNumeric() {
-		am = em.getAttributeModel("age");
-		form.addFilter(am, FlexibleFilterType.EQUALS, "11", null);
-		search();
-		Assert.assertEquals(1, wrapper.getDataProviderSize());
+    @Test
+    public void testStringStartsWith() {
+        form.addFilter(am, FlexibleFilterType.STARTS_WITH, "a", null);
+        search();
+        Assert.assertEquals(0, wrapper.getDataProviderSize());
+    }
 
-		// replace by a "between" filter
-		form.addFilter(am, FlexibleFilterType.BETWEEN, "11", "14");
-		search();
-		Assert.assertEquals(2, wrapper.getDataProviderSize());
+    @Test
+    public void testNotStringStartsWith() {
+        form.addFilter(am, FlexibleFilterType.NOT_STARTS_WITH, "a", null);
+        search();
+        Assert.assertEquals(2, wrapper.getDataProviderSize());
+    }
 
-		// replace by a "greater than" filter
-		form.addFilter(am, FlexibleFilterType.GREATER_THAN, "12", null);
-		search();
-		Assert.assertEquals(0, wrapper.getDataProviderSize());
+    @Test
+    public void testNumeric() {
+        am = em.getAttributeModel("age");
+        form.addFilter(am, FlexibleFilterType.EQUALS, "11", null);
+        search();
+        Assert.assertEquals(1, wrapper.getDataProviderSize());
 
-		// replace by a "less than" filter
-		form.addFilter(am, FlexibleFilterType.LESS_THAN, "12", null);
-		search();
-		Assert.assertEquals(1, wrapper.getDataProviderSize());
+        // replace by a "between" filter
+        form.addFilter(am, FlexibleFilterType.BETWEEN, "11", "14");
+        search();
+        Assert.assertEquals(2, wrapper.getDataProviderSize());
 
-		// replace by a "less than or equal" filter
-		form.addFilter(am, FlexibleFilterType.LESS_OR_EQUAL, "12", null);
-		search();
-		Assert.assertEquals(2, wrapper.getDataProviderSize());
+        // replace by a "greater than" filter
+        form.addFilter(am, FlexibleFilterType.GREATER_THAN, "12", null);
+        search();
+        Assert.assertEquals(0, wrapper.getDataProviderSize());
 
-		// replace by a "greater or equal" filter
-		form.addFilter(am, FlexibleFilterType.GREATER_OR_EQUAL, "13", null);
-		search();
-		Assert.assertEquals(0, wrapper.getDataProviderSize());
+        // replace by a "less than" filter
+        form.addFilter(am, FlexibleFilterType.LESS_THAN, "12", null);
+        search();
+        Assert.assertEquals(1, wrapper.getDataProviderSize());
 
-	}
+        // replace by a "less than or equal" filter
+        form.addFilter(am, FlexibleFilterType.LESS_OR_EQUAL, "12", null);
+        search();
+        Assert.assertEquals(2, wrapper.getDataProviderSize());
 
-	@Test
-	public void testEnum() {
-		am = em.getAttributeModel("someEnum");
-		form.addFilter(am, FlexibleFilterType.EQUALS, TestEnum.A, null);
-		search();
-		Assert.assertEquals(0, wrapper.getDataProviderSize());
-	}
+        // replace by a "greater or equal" filter
+        form.addFilter(am, FlexibleFilterType.GREATER_OR_EQUAL, "13", null);
+        search();
+        Assert.assertEquals(0, wrapper.getDataProviderSize());
 
-	@Test
-	public void testBoolean() {
-		am = em.getAttributeModel("someBoolean");
-		form.addFilter(am, FlexibleFilterType.EQUALS, true, null);
-		search();
-		Assert.assertEquals(0, wrapper.getDataProviderSize());
-	}
+    }
 
-	@Test
-	public void testBigDecimal() {
-		am = em.getAttributeModel("rate");
-		form.addFilter(am, FlexibleFilterType.EQUALS, "4", null);
-		search();
-		Assert.assertEquals(1, wrapper.getDataProviderSize());
+    @Test
+    public void testEnum() {
+        am = em.getAttributeModel("someEnum");
+        form.addFilter(am, FlexibleFilterType.EQUALS, TestEnum.A, null);
+        search();
+        Assert.assertEquals(0, wrapper.getDataProviderSize());
+    }
 
-		// replace by a "between" filter
-		form.addFilter(am, FlexibleFilterType.BETWEEN, "1", "5");
-		search();
-		Assert.assertEquals(2, wrapper.getDataProviderSize());
+    @Test
+    public void testBoolean() {
+        am = em.getAttributeModel("someBoolean");
+        form.addFilter(am, FlexibleFilterType.EQUALS, true, null);
+        search();
+        Assert.assertEquals(0, wrapper.getDataProviderSize());
+    }
 
-		// replace by a "greater than" filter
-		form.addFilter(am, FlexibleFilterType.GREATER_THAN, "3", null);
-		search();
-		Assert.assertEquals(1, wrapper.getDataProviderSize());
+    @Test
+    public void testBigDecimal() {
+        am = em.getAttributeModel("rate");
+        form.addFilter(am, FlexibleFilterType.EQUALS, "4", null);
+        search();
+        Assert.assertEquals(1, wrapper.getDataProviderSize());
 
-		// replace by a "less than" filter
-		form.addFilter(am, FlexibleFilterType.LESS_THAN, "2", null);
-		search();
-		Assert.assertEquals(0, wrapper.getDataProviderSize());
+        // replace by a "between" filter
+        form.addFilter(am, FlexibleFilterType.BETWEEN, "1", "5");
+        search();
+        Assert.assertEquals(2, wrapper.getDataProviderSize());
 
-		// replace by a "less than or equal" filter
-		form.addFilter(am, FlexibleFilterType.LESS_OR_EQUAL, "3", null);
-		search();
-		Assert.assertEquals(1, wrapper.getDataProviderSize());
+        // replace by a "greater than" filter
+        form.addFilter(am, FlexibleFilterType.GREATER_THAN, "3", null);
+        search();
+        Assert.assertEquals(1, wrapper.getDataProviderSize());
 
-		// replace by a "greater or equal" filter
-		form.addFilter(am, FlexibleFilterType.GREATER_OR_EQUAL, "4", null);
-		search();
-		Assert.assertEquals(1, wrapper.getDataProviderSize());
-	}
+        // replace by a "less than" filter
+        form.addFilter(am, FlexibleFilterType.LESS_THAN, "2", null);
+        search();
+        Assert.assertEquals(0, wrapper.getDataProviderSize());
 
-	@Test
-	public void testRestoreDefinitions() {
+        // replace by a "less than or equal" filter
+        form.addFilter(am, FlexibleFilterType.LESS_OR_EQUAL, "3", null);
+        search();
+        Assert.assertEquals(1, wrapper.getDataProviderSize());
 
-		List<FlexibleFilterDefinition> definitions = new ArrayList<>();
+        // replace by a "greater or equal" filter
+        form.addFilter(am, FlexibleFilterType.GREATER_OR_EQUAL, "4", null);
+        search();
+        Assert.assertEquals(1, wrapper.getDataProviderSize());
+    }
 
-		FlexibleFilterDefinition def1 = new FlexibleFilterDefinition();
-		def1.setAttributeModel(em.getAttributeModel("rate"));
-		def1.setFlexibleFilterType(FlexibleFilterType.EQUALS);
-		def1.setValue(BigDecimal.valueOf(45));
-		definitions.add(def1);
+    @Test
+    public void testRestoreDefinitions() {
 
-		FlexibleFilterDefinition def2 = new FlexibleFilterDefinition();
-		def2.setAttributeModel(em.getAttributeModel("age"));
-		def2.setFlexibleFilterType(FlexibleFilterType.BETWEEN);
-		def2.setValue(77L);
-		def2.setValueTo(80L);
-		definitions.add(def2);
+        List<FlexibleFilterDefinition> definitions = new ArrayList<>();
 
-		form.restoreFilterDefinitions(definitions);
+        FlexibleFilterDefinition def1 = new FlexibleFilterDefinition();
+        def1.setAttributeModel(em.getAttributeModel("rate"));
+        def1.setFlexibleFilterType(FlexibleFilterType.EQUALS);
+        def1.setValue(BigDecimal.valueOf(45));
+        definitions.add(def1);
 
-		Assert.assertTrue(form.hasFilter(em.getAttributeModel("rate")));
-		Assert.assertTrue(form.hasFilter(em.getAttributeModel("age")));
-	}
+        FlexibleFilterDefinition def2 = new FlexibleFilterDefinition();
+        def2.setAttributeModel(em.getAttributeModel("age"));
+        def2.setFlexibleFilterType(FlexibleFilterType.BETWEEN);
+        def2.setValue(77L);
+        def2.setValueTo(80L);
+        definitions.add(def2);
 
-	private void build(EntityModel<TestEntity> em) {
-		wrapper = new ServiceBasedGridWrapper<>(testEntityService, em, QueryType.ID_BASED, new FormOptions(), null,
-				new HashMap<String, SerializablePredicate<?>>(), null, true);
-		wrapper.build();
+        form.restoreFilterDefinitions(definitions);
 
-		form = new ModelBasedFlexibleSearchForm<>(wrapper, em, new FormOptions());
-		form.build();
-	}
+        Assert.assertTrue(form.hasFilter(em.getAttributeModel("rate")));
+        Assert.assertTrue(form.hasFilter(em.getAttributeModel("age")));
+    }
+
+    private void build(EntityModel<TestEntity> em) {
+        wrapper = new ServiceBasedGridWrapper<>(testEntityService, em, QueryType.ID_BASED, new FormOptions(), null,
+                new HashMap<String, SerializablePredicate<?>>(), null, true);
+        wrapper.build();
+
+        form = new ModelBasedFlexibleSearchForm<>(wrapper, em, new FormOptions());
+        form.build();
+    }
 }

@@ -14,7 +14,6 @@
 package com.ocs.dynamo.ui.composite.grid;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,24 +31,20 @@ import com.ocs.dynamo.ui.SharedProvider;
 import com.ocs.dynamo.ui.component.InternalLinkField;
 import com.ocs.dynamo.ui.component.URLField;
 import com.ocs.dynamo.ui.composite.type.GridEditMode;
-import com.ocs.dynamo.ui.provider.BaseDataProvider;
 import com.ocs.dynamo.ui.utils.FormatUtils;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.utils.ClassUtils;
-import com.vaadin.data.BeanPropertySet;
-import com.vaadin.data.Binder;
-import com.vaadin.data.Binder.BindingBuilder;
-import com.vaadin.data.Converter;
-import com.vaadin.data.HasValue;
-import com.vaadin.data.PropertyFilterDefinition;
-import com.vaadin.data.PropertySet;
-import com.vaadin.data.provider.DataProvider;
-import com.vaadin.data.provider.ListDataProvider;
-import com.vaadin.server.SerializablePredicate;
-import com.vaadin.ui.AbstractComponent;
-import com.vaadin.ui.Grid;
-import com.vaadin.ui.TextField;
-import com.vaadin.ui.renderers.ComponentRenderer;
+import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.HasValue;
+import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.binder.BeanValidationBinder;
+import com.vaadin.flow.data.binder.Binder;
+import com.vaadin.flow.data.binder.Binder.BindingBuilder;
+import com.vaadin.flow.data.converter.Converter;
+import com.vaadin.flow.data.provider.DataProvider;
+import com.vaadin.flow.data.provider.ListDataProvider;
+import com.vaadin.flow.function.SerializablePredicate;
 
 /**
  * A Grid that bases its columns on the meta model of an entity
@@ -72,11 +67,6 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
      */
     private EntityModel<T> entityModel;
 
-    /***
-     * Indicate whether to update the caption with the number of items in the grid
-     */
-    private boolean updateCaption = true;
-
     /**
      * Whether the grid is editable
      */
@@ -98,7 +88,7 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
     private FieldFactory fieldFactory;
 
     /**
-     * 
+     * The field filter mapping
      */
     private Map<String, SerializablePredicate<?>> fieldFilters;
 
@@ -127,14 +117,14 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
         this.messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
         this.fieldFactory = FieldFactory.getInstance();
 
-        // we need to pre-populate the grid with the available properties
-        PropertySet<T> ps = BeanPropertySet.get(model.getEntityClass(), true, new PropertyFilterDefinition(3, new ArrayList<>()));
-        setPropertySet(ps);
-        getEditor().setEnabled(editable && GridEditMode.SINGLE_ROW.equals(gridEditMode));
-
         setSizeFull();
         setColumnReorderingAllowed(true);
         setSelectionMode(SelectionMode.SINGLE);
+
+        // in Vaadin 14, we explicitly need to set the binder
+        Binder<T> binder = new BeanValidationBinder<T>(entityModel.getEntityClass());
+        getEditor().setBinder(binder);
+        getEditor().setBuffered(false);
 
         generateColumns(model);
     }
@@ -146,25 +136,29 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
      */
     private void addColumn(AttributeModel am) {
         if (am.isVisibleInGrid()) {
-            Column<T, ?> column;
+            Column<T> column;
             if (am.isUrl()) {
                 // URL field
-                column = addColumn(t -> new URLField(new TextField("", ClassUtils.getFieldValueAsString(t, am.getPath(), "")), am,
-                        editable && GridEditMode.SIMULTANEOUS.equals(gridEditMode)), new ComponentRenderer());
+                column = addComponentColumn(t -> {
+                    URLField urlField = new URLField(new TextField("", ClassUtils.getFieldValueAsString(t, am.getPath(), "")), am,
+                            editable && GridEditMode.SIMULTANEOUS.equals(gridEditMode));
+                    urlField.setValue(ClassUtils.getFieldValueAsString(t, am.getPath(), ""));
+                    return urlField;
+                });
             } else if (am.isNavigable() && AttributeType.MASTER.equals(am.getAttributeType())) {
                 // generate internal link field
-                column = addColumn(t -> generateInternalLinkField(am, ClassUtils.getFieldValue(t, am.getPath())), new ComponentRenderer());
+                column = addComponentColumn(t -> generateInternalLinkField(am, ClassUtils.getFieldValue(t, am.getPath())));
             } else {
                 if (editable && GridEditMode.SIMULTANEOUS.equals(gridEditMode) && EditableType.EDITABLE.equals(am.getEditableType())) {
                     // edit all columns at once
                     column = addComponentColumn(t -> {
-                        AbstractComponent comp = constructCustomField(entityModel, am);
+                        Component comp = constructCustomField(entityModel, am);
                         if (comp == null) {
                             FieldFactoryContext ctx = FieldFactoryContext.create().setAttributeModel(am).setFieldFilters(fieldFilters)
                                     .setViewMode(false).setSharedProviders(sharedProviders).setEditableGrid(true);
                             comp = fieldFactory.constructField(ctx);
                         }
-                        comp.setSizeFull();
+                        
 
                         // store shared date provider so it can be used by multiple components
                         if (comp instanceof SharedProvider) {
@@ -172,14 +166,15 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
                         }
 
                         // delegate the binding to the enveloping component
-                        BindingBuilder<T, ?> builder = doBind(t, (AbstractComponent) comp, am.getPath());
+                        BindingBuilder<T, ?> builder = doBind(t, comp, am.getPath());
                         fieldFactory.addConvertersAndValidators(builder, am, constructCustomConverter(am));
                         builder.bind(am.getPath());
                         postProcessComponent(am, comp);
-                        return (AbstractComponent) comp;
+                        return comp;
                     });
+                    column.setKey(am.getPath());
                 } else {
-                    column = addColumn(t -> FormatUtils.extractAndFormat(this, am, t));
+                    column = addColumn(t -> FormatUtils.extractAndFormat(this, am, t)).setKey(am.getPath());
                 }
             }
 
@@ -188,19 +183,21 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
                 Binder<T> binder = getEditor().getBinder();
                 FieldFactoryContext context = FieldFactoryContext.create().setAttributeModel(am).setViewMode(false)
                         .setFieldFilters(fieldFilters).setEditableGrid(true);
-                AbstractComponent comp = fieldFactory.constructField(context);
+                Component comp = fieldFactory.constructField(context);
                 if (comp != null) {
-                    comp.setSizeFull();
-                    Binder.BindingBuilder<T, ?> builder = binder.forField((HasValue<?>) comp);
+                    Binder.BindingBuilder<T, ?> builder = binder.forField((HasValue<?, ?>) comp);
                     if (am.isRequired()) {
                         builder.asRequired();
                     }
                     fieldFactory.addConvertersAndValidators(builder, am, null);
-                    column.setEditorBinding(builder.bind(am.getPath()));
+                    builder.bind(am.getPath());
                 }
+                column.setEditorComponent(comp);
             }
-            column.setCaption(am.getDisplayName(VaadinUtils.getLocale())).setSortable(am.isSortable()).setId(am.getPath())
-                    .setSortProperty(am.getActualSortPath()).setStyleGenerator(item -> am.isNumerical() ? "v-align-right" : "");
+
+            column.setHeader(am.getDisplayName(VaadinUtils.getLocale())).setSortable(am.isSortable())
+                    .setSortProperty(am.getActualSortPath()).setClassNameGenerator(item -> am.isNumerical() ? "v-align-right" : "")
+                    .setId(am.getPath());
         }
 
     }
@@ -222,7 +219,7 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
      * @param attributeModel the attribute model to base the field on
      * @return
      */
-    protected AbstractComponent constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel) {
+    protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel) {
         return null;
     }
 
@@ -234,7 +231,7 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
      * @param field the field to bind
      * @return
      */
-    protected BindingBuilder<T, ?> doBind(T t, AbstractComponent field, String attributeName) {
+    protected BindingBuilder<T, ?> doBind(T t, Component field, String attributeName) {
         return null;
     }
 
@@ -246,8 +243,8 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
      */
     protected void generateColumns(EntityModel<T> model) {
         generateColumnsRecursive(model.getAttributeModels());
-        this.setCaption(model.getDisplayNamePlural(VaadinUtils.getLocale()));
-        this.setDescription(model.getDescription(VaadinUtils.getLocale()));
+        // this.setCaption(model.getDisplayNamePlural(VaadinUtils.getLocale()));
+        // this.setDescription(model.getDescription(VaadinUtils.getLocale()));
     }
 
     /**
@@ -282,11 +279,7 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
         return messageService;
     }
 
-    public boolean isUpdateCaption() {
-        return updateCaption;
-    }
-
-    protected void postProcessComponent(AttributeModel am, AbstractComponent comp) {
+    protected void postProcessComponent(AttributeModel am, Component comp) {
         // override in subclass
     }
 
@@ -298,45 +291,11 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
      * @param visible    whether the column must be visible
      */
     public void setColumnVisible(Object propertyId, boolean visible) {
-        getColumn((String) propertyId).setHidden(!visible);
+        getColumnByKey((String) propertyId).setVisible(visible);
     }
 
     public void setCurrencySymbol(String currencySymbol) {
         this.currencySymbol = currencySymbol;
-    }
-
-    public void setUpdateCaption(boolean updateCaption) {
-        this.updateCaption = updateCaption;
-    }
-
-    /**
-     * Updates the grid caption in response to a change of the data set
-     */
-    @SuppressWarnings("unchecked")
-    public void updateCaption() {
-        if (updateCaption) {
-            int size = 0;
-            DataProvider<?, ?> dp = getDataCommunicator().getDataProvider();
-            if (dp instanceof ListDataProvider) {
-                size = ((ListDataProvider<T>) dp).getItems().size();
-            } else {
-                size = ((BaseDataProvider<ID, T>) dp).getSize();
-            }
-            setCaption(entityModel.getDisplayNamePlural(VaadinUtils.getLocale()) + " "
-                    + messageService.getMessage("ocs.showing.results", VaadinUtils.getLocale(), size));
-        }
-    }
-
-    /**
-     * Updates the caption above the grid that shows the number of items
-     * 
-     * @param size
-     */
-    public void updateCaption(int size) {
-        if (updateCaption) {
-            setCaption(entityModel.getDisplayNamePlural(VaadinUtils.getLocale()) + " "
-                    + messageService.getMessage("ocs.showing.results", VaadinUtils.getLocale(), size));
-        }
     }
 
 }

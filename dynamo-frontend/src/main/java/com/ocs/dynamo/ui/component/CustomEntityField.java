@@ -21,8 +21,8 @@ import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
-import com.vaadin.server.SerializablePredicate;
-import com.vaadin.ui.CustomField;
+import com.vaadin.flow.component.customfield.CustomField;
+import com.vaadin.flow.function.SerializablePredicate;
 
 /**
  * A custom field that can be used to edit an AbstractEntity or collection

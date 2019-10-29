@@ -14,9 +14,9 @@
 package com.ocs.dynamo.domain.model;
 
 import com.ocs.dynamo.service.ServiceLocatorFactory;
-import com.vaadin.data.Binder.BindingBuilder;
-import com.vaadin.data.Converter;
-import com.vaadin.ui.AbstractComponent;
+import com.vaadin.flow.component.Component;
+import com.vaadin.flow.data.binder.Binder.BindingBuilder;
+import com.vaadin.flow.data.converter.Converter;
 
 /**
  * Interface for model based component factories
@@ -51,7 +51,7 @@ public interface FieldFactory {
      * @param am the attribute model
      * @return
      */
-    public AbstractComponent constructField(AttributeModel am);
+    public Component constructField(AttributeModel am);
 
     /**
      * Constructs a field based on the provided context
@@ -59,5 +59,5 @@ public interface FieldFactory {
      * @param context the context
      * @return
      */
-    AbstractComponent constructField(FieldFactoryContext context);
+    Component constructField(FieldFactoryContext context);
 }

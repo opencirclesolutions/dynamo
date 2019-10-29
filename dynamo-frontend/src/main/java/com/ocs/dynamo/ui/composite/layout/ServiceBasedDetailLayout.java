@@ -23,8 +23,8 @@ import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.CanAssignEntity;
 import com.ocs.dynamo.ui.provider.QueryType;
-import com.vaadin.data.provider.SortOrder;
-import com.vaadin.server.SerializablePredicate;
+import com.vaadin.flow.data.provider.SortOrder;
+import com.vaadin.flow.function.SerializablePredicate;
 
 /**
  * A split layout that contains a reference to the parent object

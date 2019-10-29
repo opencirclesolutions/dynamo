@@ -21,7 +21,6 @@ import java.lang.annotation.Target;
 import com.ocs.dynamo.domain.model.AttributeDateType;
 import com.ocs.dynamo.domain.model.AttributeSelectMode;
 import com.ocs.dynamo.domain.model.AttributeTextFieldMode;
-import com.ocs.dynamo.domain.model.CheckboxMode;
 import com.ocs.dynamo.domain.model.EditableType;
 import com.ocs.dynamo.domain.model.NumberSelectMode;
 import com.ocs.dynamo.domain.model.VisibilityType;
@@ -47,13 +46,6 @@ public @interface Attribute {
      * @return the attributes to cascade to when the value of this attribute changes
      */
     Cascade[] cascade() default {};
-
-    /**
-     *
-     * @return the desired check box mode. Defaults to a checkbox but can be changed
-     *         to a switch
-     */
-    CheckboxMode checkboxMode() default CheckboxMode.CHECKBOX;
 
     /**
      * 
@@ -121,7 +113,7 @@ public @interface Attribute {
     String[] groupTogetherWith() default {};
 
     /**
-     * The component to use in grid mode
+     * The selection mode to use when displaying the component in an editable grid
      * 
      * @return
      */
@@ -225,12 +217,6 @@ public @interface Attribute {
      * @return whether the attribute is required when performing a search
      */
     boolean requiredForSearching() default false;
-
-    /**
-     * 
-     * @return the number of rows for a list select or text area component
-     */
-    int rows() default -1;
 
     /**
      * 

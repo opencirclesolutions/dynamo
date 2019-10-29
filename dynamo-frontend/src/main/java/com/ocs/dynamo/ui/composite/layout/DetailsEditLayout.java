@@ -35,15 +35,15 @@ import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
-import com.vaadin.icons.VaadinIcons;
-import com.vaadin.server.SerializablePredicate;
-import com.vaadin.ui.AbstractComponent;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.CustomField;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Layout;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.HasComponents;
+import com.vaadin.flow.component.HasEnabled;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.customfield.CustomField;
+import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.function.SerializablePredicate;
 
 /**
  * A layout for displaying various nested forms below each other
@@ -92,24 +92,24 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
             this.form = form;
 
             if (!viewMode && getFormOptions().isShowRemoveButton()) {
-                buttonBar = new DefaultHorizontalLayout(false, true, true);
+                buttonBar = new DefaultHorizontalLayout(false, true);
 
-                addComponent(form);
-                addComponent(buttonBar);
+                add(form);
+                add(buttonBar);
 
                 removeButton = new Button(messageService.getMessage("ocs.remove", VaadinUtils.getLocale()));
-                removeButton.setIcon(VaadinIcons.TRASH);
+                removeButton.setIcon(VaadinIcon.TRASH.create());
                 removeButton.addClickListener(event -> {
                     removeEntityConsumer.accept(this.form.getEntity());
                     items.remove(this.form.getEntity());
-                    mainFormContainer.removeComponent(this);
+                    mainFormContainer.remove(this);
                     forms.remove(this);
                 });
-                buttonBar.addComponent(removeButton);
+                buttonBar.add(removeButton);
                 postProcessButtonBar(buttonBar);
             } else {
                 // read only mode
-                addComponent(form);
+                add(form);
             }
         }
 
@@ -121,7 +121,7 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
             return form.getEntity();
         }
 
-        public void postProcessButtonBar(Layout buttonBar) {
+        public void postProcessButtonBar(HorizontalLayout buttonBar) {
             // overwrite in subclasses
         }
 
@@ -142,7 +142,7 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
         }
 
         public void setFieldEnabled(String path, boolean enabled) {
-            form.getFieldOptional(path).ifPresent(f -> f.setEnabled(enabled));
+            form.getFieldOptional(path).ifPresent(f -> ((HasEnabled) f).setEnabled(enabled));
         }
 
         public void setFieldVisible(String path, boolean visible) {
@@ -222,7 +222,7 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
     /**
      * Container that holds all the sub forms
      */
-    private Layout mainFormContainer;
+    private VerticalLayout mainFormContainer;
 
     /**
      * Supplier for creating a new entity
@@ -268,7 +268,7 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
             private static final long serialVersionUID = -7229109969816505927L;
 
             @Override
-            protected void afterLayoutBuilt(Layout layout, boolean viewMode) {
+            protected void afterLayoutBuilt(HasComponents layout, boolean viewMode) {
                 DetailsEditLayout.this.afterLayoutBuilt(this, viewMode);
             }
 
@@ -278,7 +278,7 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
             }
 
             @Override
-            protected AbstractComponent constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel, boolean viewMode) {
+            protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel, boolean viewMode) {
                 return DetailsEditLayout.this.constructCustomField(entityModel, attributeModel, viewMode);
             }
 
@@ -299,12 +299,12 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
             private static final long serialVersionUID = 6186428121967857827L;
 
             @Override
-            public void postProcessButtonBar(Layout buttonBar) {
+            public void postProcessButtonBar(HorizontalLayout buttonBar) {
                 DetailsEditLayout.this.postProcessDetailButtonBar(forms.size(), buttonBar, viewMode);
             }
         };
         forms.add(fc);
-        mainFormContainer.addComponent(fc);
+        mainFormContainer.add(fc);
     }
 
     /**
@@ -346,7 +346,7 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
      */
     protected void constructAddButton(HorizontalLayout buttonBar) {
         addButton = new Button(messageService.getMessage("ocs.add", VaadinUtils.getLocale()));
-        addButton.setIcon(VaadinIcons.PLUS);
+        addButton.setIcon(VaadinIcon.PLUS.create());
         addButton.addClickListener(event -> {
             T t = createEntitySupplier.get();
             items.add(t);
@@ -354,7 +354,7 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
         });
 
         addButton.setVisible(!viewMode && !formOptions.isHideAddButton());
-        buttonBar.addComponent(addButton);
+        buttonBar.add(addButton);
 
     }
 
@@ -363,11 +363,11 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
      * 
      * @param parent the layout to which to add the button bar
      */
-    protected void constructButtonBar(Layout parent) {
+    protected void constructButtonBar(VerticalLayout parent) {
         HorizontalLayout buttonBar = new DefaultHorizontalLayout();
 
         buttonBar.setVisible(!viewMode);
-        parent.addComponent(buttonBar);
+        parent.add(buttonBar);
 
         constructAddButton(buttonBar);
         postProcessButtonBar(buttonBar);
@@ -384,14 +384,14 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
      * @param viewMode       whether the form is in view mode
      * @return
      */
-    protected AbstractComponent constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel, boolean viewMode) {
+    protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel, boolean viewMode) {
         return null;
     }
 
-    @Override
-    protected void doSetValue(Collection<T> value) {
-        setItems(value);
-    }
+//    @Override
+//    protected void doSetValue(Collection<T> value) {
+//        setItems(value);
+//    }
 
     public Button getAddButton() {
         return addButton;
@@ -463,15 +463,14 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
     /**
      * Constructs the actual component
      */
-    @Override
     protected Component initContent() {
 
         VerticalLayout layout = new DefaultVerticalLayout(false, true);
 
-        setCaption(attributeModel.getDisplayName(VaadinUtils.getLocale()));
+        setLabel(attributeModel.getDisplayName(VaadinUtils.getLocale()));
 
         mainFormContainer = new DefaultVerticalLayout(false, false);
-        layout.addComponent(mainFormContainer);
+        layout.add(mainFormContainer);
 
         // add the buttons
         constructButtonBar(layout);
@@ -492,7 +491,7 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
      * 
      * @param buttonBar the button bar
      */
-    protected void postProcessButtonBar(Layout buttonBar) {
+    protected void postProcessButtonBar(HorizontalLayout buttonBar) {
         // overwrite in subclass if needed
     }
 
@@ -504,7 +503,7 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
      * @param buttonBar the button bar
      * @param viewMode  whether the component is in view mode
      */
-    protected void postProcessDetailButtonBar(int index, Layout buttonBar, boolean viewMode) {
+    protected void postProcessDetailButtonBar(int index, HorizontalLayout buttonBar, boolean viewMode) {
         // overwrite in subclass if needed
     }
 
@@ -621,7 +620,7 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
         this.items = list;
 
         if (mainFormContainer != null) {
-            mainFormContainer.removeAllComponents();
+            mainFormContainer.removeAll();
             forms.clear();
             for (T t : items) {
                 addDetailEditForm(t);
@@ -651,5 +650,16 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
             error |= f.validateAllFields();
         }
         return error;
+    }
+
+    @Override
+    protected Collection<T> generateModelValue() {
+        // not needed
+        return null;
+    }
+
+    @Override
+    protected void setPresentationValue(Collection<T> value) {
+        setItems(value);
     }
 }

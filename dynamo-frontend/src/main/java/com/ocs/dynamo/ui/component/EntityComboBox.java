@@ -26,10 +26,10 @@ import com.ocs.dynamo.ui.Refreshable;
 import com.ocs.dynamo.ui.utils.SortUtils;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.utils.EntityModelUtils;
-import com.vaadin.data.provider.ListDataProvider;
-import com.vaadin.data.provider.SortOrder;
-import com.vaadin.server.SerializablePredicate;
-import com.vaadin.ui.ComboBox;
+import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.data.provider.ListDataProvider;
+import com.vaadin.flow.data.provider.SortOrder;
+import com.vaadin.flow.function.SerializablePredicate;
 
 /**
  * Combo box for displaying a list of entities.
@@ -108,7 +108,7 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
         this.filter = filter;
         this.targetEntityModel = targetEntityModel;
         if (attributeModel != null) {
-            this.setCaption(attributeModel.getDisplayName(VaadinUtils.getLocale()));
+            this.setLabel(attributeModel.getDisplayName(VaadinUtils.getLocale()));
         }
 
         setFilter(filter);
@@ -125,11 +125,9 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
                 provider = new ListDataProvider<>(items);
             }
         }
-        setDataProvider(new IgnoreDiacriticsCaptionFilter(true, false), provider);
-
-        setItemCaptionGenerator(t -> EntityModelUtils.getDisplayPropertyValue(t, targetEntityModel));
+        setDataProvider(new IgnoreDiacriticsCaptionFilter<T>(true, false), provider);
+        setItemLabelGenerator(t -> EntityModelUtils.getDisplayPropertyValue(t, targetEntityModel));
         setSizeFull();
-
     }
 
     /**

@@ -24,8 +24,8 @@ import org.mockito.Mockito;
 
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.test.BaseMockitoTest;
-import com.vaadin.data.HasValue.ValueChangeEvent;
-import com.vaadin.ui.Grid;
+import com.vaadin.flow.component.HasValue.ValueChangeEvent;
+import com.vaadin.flow.component.grid.Grid;
 
 public class PasteTemplateTest extends BaseMockitoTest {
 

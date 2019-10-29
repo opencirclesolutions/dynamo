@@ -14,7 +14,7 @@
 package com.ocs.dynamo.ui.composite.grid;
 
 import com.ocs.dynamo.ui.utils.VaadinUtils;
-import com.vaadin.ui.Grid;
+import com.vaadin.flow.component.grid.Grid;
 
 /**
  * Utilities for dealing with the grid
