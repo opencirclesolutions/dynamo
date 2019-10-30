@@ -14,18 +14,20 @@
 package com.ocs.dynamo.domain.model.annotation;
 
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * An annotation that can be used to indicate that certain attribute should be grouped together on
- * the screen
+ * An annotation that can be used to indicate that certain attribute should be
+ * grouped together on the screen
  * 
  * @author bas.rutten
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
+@Repeatable(AttributeGroups.class)
 public @interface AttributeGroup {
 
     /**

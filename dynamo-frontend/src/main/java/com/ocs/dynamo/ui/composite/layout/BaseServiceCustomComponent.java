@@ -248,7 +248,10 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
      */
     public final void registerComponent(Component comp) {
         if (comp != null) {
-            // comp.setEnabled(false);
+            // disable the component because by default no row has been selected
+            if (comp instanceof HasEnabled) {
+                ((HasEnabled) comp).setEnabled(false);
+            }
             componentsToUpdate.add(comp);
         }
     }

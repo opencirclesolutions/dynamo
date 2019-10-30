@@ -269,10 +269,10 @@ public class ElementCollectionGrid<ID extends Serializable, U extends AbstractEn
 
         VerticalLayout main = new VerticalLayout();
 
-        grid = new Grid<ValueHolder<T>>();
+        grid = new Grid<>();
         grid.setDataProvider(provider);
 
-        // TODO: propery setting width for grid inside custom field
+        // TODO: properly setting width for grid inside custom field
         grid.setWidth("350px");
         main.add(grid);
 

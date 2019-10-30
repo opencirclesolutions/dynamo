@@ -1,9 +1,7 @@
 package com.ocs.dynamo.ui.composite.layout;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
@@ -25,9 +23,9 @@ public class TabWrapper extends VerticalLayout {
     private static final long serialVersionUID = -3247803933862947954L;
 
     /**
-     * The components that are currently being shown
+     * The layout that serves as the container for the currently selected tab
      */
-    private Set<Component> shown = new HashSet<>();
+    private VerticalLayout displayedPage;
 
     /**
      * The tab component
@@ -42,18 +40,19 @@ public class TabWrapper extends VerticalLayout {
     public TabWrapper() {
         tabs = new Tabs();
         tabs.addSelectedChangeListener(event -> {
-            shown.forEach(page -> page.setVisible(false));
-            shown.clear();
             Component selectedPage = tabsToPages.get(tabs.getSelectedTab());
             if (selectedPage != null) {
-                selectedPage.setVisible(true);
-                shown.add(selectedPage);
+                displayedPage.removeAll();
+                displayedPage.add(selectedPage);
             }
         });
         add(tabs);
+        displayedPage = new VerticalLayout();
+        add(displayedPage);
     }
 
     /**
+     * Adds a selection change listener
      * 
      * @param listener
      * @return
@@ -73,7 +72,10 @@ public class TabWrapper extends VerticalLayout {
         Tab tab = new Tab(label);
         tabsToPages.put(tab, component);
         tabs.add(tab);
-        add(component);
+        if (displayedPage.getChildren().count() == 0L) {
+            displayedPage.add(component);
+        }
+
         return tab;
     }
 
@@ -93,19 +95,13 @@ public class TabWrapper extends VerticalLayout {
      */
     public void setComponent(int index, Component component) {
 
-        // hide all tabs
-        shown.forEach(page -> page.setVisible(false));
-        shown.clear();
-
         Tab tab = getTabByIndex(index);
-        Component old = tabsToPages.get(tab);
         tabsToPages.put(tab, component);
-        replace(old, component);
 
         // show just this tab
         if (component != null) {
-            component.setVisible(true);
-            shown.add(component);
+            displayedPage.removeAll();
+            displayedPage.add(component);
         }
     }
 

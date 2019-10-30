@@ -63,24 +63,14 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
     private String currencySymbol;
 
     /**
-     * The entity model of the entities to display in the grid
-     */
-    private EntityModel<T> entityModel;
-
-    /**
      * Whether the grid is editable
      */
     private boolean editable;
 
     /**
-     * The edit mode (row by row or all rows at once)
+     * The entity model of the entities to display in the grid
      */
-    private GridEditMode gridEditMode;
-
-    /**
-     * The message service
-     */
-    private MessageService messageService;
+    private EntityModel<T> entityModel;
 
     /**
      * The field factory
@@ -91,6 +81,16 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
      * The field filter mapping
      */
     private Map<String, SerializablePredicate<?>> fieldFilters;
+
+    /**
+     * The edit mode (row by row or all rows at once)
+     */
+    private GridEditMode gridEditMode;
+
+    /**
+     * The message service
+     */
+    private MessageService messageService;
 
     /**
      * Map from attribute path to "shared provider" that can be shared by all
@@ -122,7 +122,7 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
         setSelectionMode(SelectionMode.SINGLE);
 
         // in Vaadin 14, we explicitly need to set the binder
-        Binder<T> binder = new BeanValidationBinder<T>(entityModel.getEntityClass());
+        Binder<T> binder = new BeanValidationBinder<>(entityModel.getEntityClass());
         getEditor().setBinder(binder);
         getEditor().setBuffered(false);
 
@@ -158,7 +158,6 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
                                     .setViewMode(false).setSharedProviders(sharedProviders).setEditableGrid(true);
                             comp = fieldFactory.constructField(ctx);
                         }
-                        
 
                         // store shared date provider so it can be used by multiple components
                         if (comp instanceof SharedProvider) {
@@ -243,20 +242,18 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
      */
     protected void generateColumns(EntityModel<T> model) {
         generateColumnsRecursive(model.getAttributeModels());
-        // this.setCaption(model.getDisplayNamePlural(VaadinUtils.getLocale()));
-        // this.setDescription(model.getDescription(VaadinUtils.getLocale()));
     }
 
     /**
      * Recursively generate columns for the provided attribute models
      * 
-     * @param attributeModels
+     * @param ams the attribute models
      */
-    private void generateColumnsRecursive(List<AttributeModel> attributeModels) {
-        for (AttributeModel attributeModel : attributeModels) {
-            addColumn(attributeModel);
-            if (attributeModel.getNestedEntityModel() != null) {
-                generateColumnsRecursive(attributeModel.getNestedEntityModel().getAttributeModels());
+    private void generateColumnsRecursive(List<AttributeModel> ams) {
+        for (AttributeModel am : ams) {
+            addColumn(am);
+            if (am.getNestedEntityModel() != null) {
+                generateColumnsRecursive(am.getNestedEntityModel().getAttributeModels());
             }
         }
     }
@@ -279,6 +276,13 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
         return messageService;
     }
 
+    /**
+     * Post process the component. Callback method that can be used from a component
+     * that includes the grid
+     * 
+     * @param am
+     * @param comp
+     */
     protected void postProcessComponent(AttributeModel am, Component comp) {
         // override in subclass
     }

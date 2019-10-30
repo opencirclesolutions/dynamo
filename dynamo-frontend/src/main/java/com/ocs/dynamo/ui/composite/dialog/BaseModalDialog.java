@@ -25,6 +25,8 @@ import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.Notification.Position;
+import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
@@ -101,12 +103,18 @@ public abstract class BaseModalDialog extends Dialog implements Buildable {
      */
     protected void showNotification(String message) {
         if (UI.getCurrent() != null && UI.getCurrent().getPage() != null) {
-            Notification.show(message);
+            Notification.show(message, 3000, Position.MIDDLE).addThemeVariants(NotificationVariant.LUMO_ERROR);
         } else {
             LOG.info(message);
         }
     }
 
+    /**
+     * Retrieves a localized message
+     * 
+     * @param key the message key
+     * @return
+     */
     protected String message(String key) {
         return messageService.getMessage(key, VaadinUtils.getLocale());
     }

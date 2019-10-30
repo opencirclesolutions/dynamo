@@ -25,27 +25,27 @@ import com.vaadin.flow.data.binder.ValueContext;
  */
 public class PercentageBigDecimalConverter extends BigDecimalConverter {
 
-	private static final long serialVersionUID = 5566274434473612396L;
+    private static final long serialVersionUID = 5566274434473612396L;
 
-	/**
-	 * Constructor
-	 * 
-	 * @param precision   the desired precision
-	 * @param useGrouping whether to use thousands grouping
-	 */
-	public PercentageBigDecimalConverter(String message, int precision, boolean useGrouping) {
-		super(message, precision, useGrouping);
-	}
+    /**
+     * Constructor
+     * 
+     * @param precision   the desired precision
+     * @param useGrouping whether to use thousands grouping
+     */
+    public PercentageBigDecimalConverter(String message, int precision, boolean useGrouping) {
+        super(message, precision, useGrouping);
+    }
 
-	@Override
-	public String convertToPresentation(BigDecimal value, ValueContext context) {
-		String result = super.convertToPresentation(value, context);
-		return result == null ? null : result + "%";
-	}
+    @Override
+    public String convertToPresentation(BigDecimal value, ValueContext context) {
+        String result = super.convertToPresentation(value, context);
+        return result == null ? null : result + "%";
+    }
 
-	@Override
-	public Result<BigDecimal> convertToModel(String value, ValueContext context) {
-		value = value == null ? null : value.replaceAll("%", "");
-		return super.convertToModel(value, context);
-	}
+    @Override
+    public Result<BigDecimal> convertToModel(String value, ValueContext context) {
+        value = value == null ? null : value.replace("%", "");
+        return super.convertToModel(value, context);
+    }
 }

@@ -31,6 +31,6 @@ public @interface AttributeGroups {
      * 
      * @return the attribute groups
      */
-    AttributeGroup[] attributeGroups() default {};
+    AttributeGroup[] value() default {};
 
 }

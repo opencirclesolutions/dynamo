@@ -233,7 +233,7 @@ public final class DynamoFilterUtil {
 				|| ((AttributeType.MASTER.equals(am.getAttributeType())
 						|| AttributeType.BASIC.equals(am.getAttributeType())) && am.isMultipleSearch())) {
 			Filter detailFilter = extractFilter(filter, am.getPath());
-			if (detailFilter != null && detailFilter instanceof Compare.Equal) {
+			if (detailFilter instanceof Compare.Equal) {
 				// check which property to use in the query
 				String prop = am.getReplacementSearchPath() != null ? am.getReplacementSearchPath() : am.getPath();
 
@@ -289,6 +289,7 @@ public final class DynamoFilterUtil {
 	 * @param original   the original filter
 	 * @param newFilter  the new filter
 	 * @param propertyId the property id of the filter that must be replaced
+	 * @param firstOnly whether to only replace the first occurrence
 	 */
 	private static void replaceFilter(Filter parent, Filter original, Filter newFilter, String propertyId,
 			boolean firstOnly) {

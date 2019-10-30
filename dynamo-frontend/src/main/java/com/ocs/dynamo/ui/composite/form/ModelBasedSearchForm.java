@@ -152,13 +152,12 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
             field = getFieldFactory().constructField(ctx);
         }
 
-        if (field != null) {
-            // field.setSizeFull();
-        } else {
+        if (field == null) {
             throw new OCSRuntimeException("No field could be constructed for " + attributeModel.getPath());
         }
 
         return field;
+
     }
 
     /**

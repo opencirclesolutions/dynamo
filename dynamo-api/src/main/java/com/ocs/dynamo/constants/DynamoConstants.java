@@ -38,11 +38,6 @@ public final class DynamoConstants {
     public static final String CSS_DIVIDER = "divider";
 
     /**
-     * The CSS class for a field that must be marked as "required"
-     */
-    public static final String CSS_REQUIRED = "required";
-
-    /**
      * Currency symbol
      */
     public static final String CURRENCY_SYMBOL = "currencySymbol";
@@ -56,6 +51,11 @@ public final class DynamoConstants {
      * The default locale
      */
     public static final Locale DEFAULT_LOCALE = Locale.UK;
+    
+    /**
+     * 
+     */
+    public static final String ERROR_VIEW = "errorView";
 
     /**
      * The default ID field
@@ -71,11 +71,6 @@ public final class DynamoConstants {
      * Intermediate precision for floating point calculations
      */
     public static final int INTERMEDIATE_PRECISION = 10;
-
-    /**
-     * The default page size for the lazy query container.
-     */
-    public static final int PAGE_SIZE = 20;
 
     /**
      * The screen mode

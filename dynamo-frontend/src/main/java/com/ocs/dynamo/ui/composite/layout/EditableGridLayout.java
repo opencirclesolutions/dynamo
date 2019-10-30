@@ -257,7 +257,6 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
             getButtonBar().add(saveButton);
 
             postProcessButtonBar(getButtonBar());
-            constructGridDividers();
             postProcessLayout(mainLayout);
         }
         add(mainLayout);
@@ -516,8 +515,6 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
         constructGrid();
 
         // check the button statuses
-        // getGridWrapper().getGrid().getEditor().setEnabled(!isViewmode() &&
-        // isEditAllowed());
         saveButton.setVisible(GridEditMode.SIMULTANEOUS.equals(getFormOptions().getGridEditMode()) && !isViewmode() && isEditAllowed());
         editButton.setVisible(isViewmode() && getFormOptions().isEditAllowed() && isEditAllowed());
         cancelButton.setVisible(!isViewmode() && isEditAllowed() && getFormOptions().isOpenInViewMode());

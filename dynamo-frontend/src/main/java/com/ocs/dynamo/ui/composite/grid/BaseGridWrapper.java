@@ -186,7 +186,6 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
         layout = new VerticalLayout();
 
         layout.add(caption);
-        caption.setText(getEntityModel().getDisplayNamePlural(VaadinUtils.getLocale()));
 
         this.dataProvider = constructDataProvider();
         grid = getGrid();
@@ -195,6 +194,10 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 
         grid.setSelectionMode(SelectionMode.SINGLE);
         addGridSelectionListener();
+
+        caption.setText(entityModel.getDisplayNamePlural(VaadinUtils.getLocale()) + " "
+                + getMessageService().getMessage("ocs.showing.results", VaadinUtils.getLocale(), 
+                        getDataProviderSize()));
 
         add(layout);
     }
@@ -227,7 +230,7 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
     protected BindingBuilder<T, ?> doBind(T t, Component field, String attributeName) {
         return null;
     }
-    
+
     public abstract void forceSearch();
 
     /**
@@ -342,7 +345,7 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
                     fallBackOrders.add(o);
                 }
             }
-            // grid.setSortOrder(builder);
+            grid.sort(builder.build());
         } else if (getEntityModel().getSortOrder() != null && !getEntityModel().getSortOrder().keySet().isEmpty()) {
             // sort based on the entity model
             GridSortOrderBuilder<T> builder = new GridSortOrderBuilder<>();

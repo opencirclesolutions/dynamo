@@ -58,7 +58,6 @@ import com.ocs.dynamo.ui.component.URLField;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.composite.layout.TabWrapper;
 import com.ocs.dynamo.ui.composite.type.AttributeGroupMode;
-import com.ocs.dynamo.ui.composite.type.ScreenMode;
 import com.ocs.dynamo.ui.utils.FormatUtils;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.utils.ClassUtils;
@@ -76,6 +75,7 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.customfield.CustomField;
 import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.formlayout.FormLayout.FormItem;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -177,7 +177,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
                     // also set the file name if needed
                     if (am.getFileNameProperty() != null) {
                         ClassUtils.setFieldValue(getEntity(), am.getFileNameProperty(), event.getFileName());
-                        refreshLabel(am.getFileNameProperty(), event.getFileName());
+                        setLabelValue(am.getFileNameProperty(), event.getFileName());
                     }
 
                     if (afterUploadConsumer != null) {
@@ -198,7 +198,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
                     image.setVisible(false);
                     if (am.getFileNameProperty() != null) {
                         ClassUtils.clearFieldValue(getEntity(), am.getFileNameProperty(), String.class);
-                        refreshLabel(am.getFileNameProperty(), "");
+                        setLabelValue(am.getFileNameProperty(), "");
                     }
                 }
             });
@@ -212,7 +212,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
                     image.setVisible(false);
                     if (am.getFileNameProperty() != null) {
                         ClassUtils.clearFieldValue(getEntity(), am.getFileNameProperty(), String.class);
-                        refreshLabel(am.getFileNameProperty(), "");
+                        setLabelValue(am.getFileNameProperty(), "");
                     }
                 });
                 main.add(clearButton);
@@ -258,6 +258,9 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
      */
     private Map<Boolean, Map<String, Object>> attributeGroups = new HashMap<>();
 
+    /**
+     * Buttons per viewmode and functions (save, edit, etc)
+     */
     private Map<Boolean, Map<String, List<Button>>> buttons = new HashMap<>();
 
     /**
@@ -305,6 +308,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
      * values as the selected entity changes
      */
     private Map<Boolean, Map<AttributeModel, Text>> labels = new HashMap<>();
+
+    private Map<Boolean, Map<AttributeModel, FormItem>> formItems = new HashMap<>();
 
     private VerticalLayout mainEditLayout;
 
@@ -510,6 +515,9 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
                 Map<AttributeModel, Text> map = new HashMap<>();
                 labels.put(Boolean.TRUE, map);
 
+                Map<AttributeModel, FormItem> formItemMap = new HashMap<>();
+                formItems.put(Boolean.TRUE, formItemMap);
+
                 Map<AttributeModel, Component> uploadMap = new HashMap<>();
                 uploads.put(Boolean.TRUE, uploadMap);
 
@@ -524,6 +532,9 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
             if (mainEditLayout == null) {
                 Map<AttributeModel, Text> map = new HashMap<>();
                 labels.put(Boolean.FALSE, map);
+
+                Map<AttributeModel, FormItem> formItemMap = new HashMap<>();
+                formItems.put(Boolean.FALSE, formItemMap);
 
                 Map<AttributeModel, Component> uploadMap = new HashMap<>();
                 uploads.put(Boolean.FALSE, uploadMap);
@@ -580,14 +591,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
             form = new DefaultVerticalLayout(false, true);
         }
 
-        // in case of vertical layout (the default), don't use the entire screen
-        if (ScreenMode.VERTICAL.equals(getFormOptions().getScreenMode())) {
-            // form.setStyleName(DynamoConstants.CSS_CLASS_HALFSCREEN);
-        }
-
         if (!entityModel.usesDefaultGroupOnly()) {
             // display the attributes in groups
-
             boolean useTabs = AttributeGroupMode.TABSHEET.equals(getFormOptions().getAttributeGroupMode());
             if (useTabs) {
                 TabWrapper tabSheet = new TabWrapper();
@@ -625,10 +630,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
                     if (entityModel.isAttributeGroupVisible(attributeGroup, isViewMode())) {
                         HasComponents innerForm = constructAttributeGroupLayout(form, useTabs, tabs.get(isViewMode()), attributeGroup,
                                 true);
-                        if (ScreenMode.VERTICAL.equals(getFormOptions().getScreenMode())) {
-                            // innerForm.setStyleName(DynamoConstants.CSS_CLASS_HALFSCREEN);
-                        }
-
                         for (AttributeModel attributeModel : entityModel.getAttributeModelsForGroup(attributeGroup)) {
                             addField(innerForm, entityModel, attributeModel, tabIndex, false);
                         }
@@ -658,6 +659,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
             buttonBar.setSizeUndefined();
             layout.add(buttonBar);
         }
+
+        setDefaultValues();
         disableCreateOnlyFields();
         afterLayoutBuilt(form, isViewMode());
 
@@ -714,7 +717,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
             attributeGroups.get(isViewMode()).put(messageKey, innerTab);
         } else {
             CollapsiblePanel panel = new CollapsiblePanel(message(messageKey), innerLayout);
-            panel.setClassName("attributePanel");
             parent.add(panel);
             attributeGroups.get(isViewMode()).put(messageKey, panel);
         }
@@ -898,7 +900,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
                 // together
                 FormLayout rowLayout = new FormLayout();
                 parent.add(rowLayout);
-
                 rowLayout.add(field);
 
                 for (String path : attributeModel.getGroupTogetherWith()) {
@@ -910,23 +911,20 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
             } else {
                 parent.add((Component) field);
             }
+
+            // store a reference to the first field so we can give it focus
+            if (!isViewMode() && firstFields.get(tabIndex) == null && ((HasEnabled) field).isEnabled() && !(field instanceof Checkbox)
+                    && (field instanceof Focusable)) {
+                firstFields.put(tabIndex, (Focusable<?>) field);
+            }
+
+            // keep track of which child fields have to be updated
+            if (field instanceof CanAssignEntity) {
+                ((CanAssignEntity<ID, T>) field).assignEntity(entity);
+                assignEntityToFields.add((CanAssignEntity<ID, T>) field);
+            }
         }
 
-        // set the default value for new objects
-        if (entity.getId() == null && attributeModel.getDefaultValue() != null) {
-            setDefaultValue((HasValue<?, Object>) field, attributeModel.getDefaultValue().toString());
-        }
-
-        // store a reference to the first field so we can give it focus
-        if (!isViewMode() && firstFields.get(tabIndex) == null && ((HasEnabled) field).isEnabled() && !(field instanceof Checkbox)
-                && (field instanceof Focusable)) {
-            firstFields.put(tabIndex, (Focusable<?>) field);
-        }
-
-        if (field instanceof CanAssignEntity) {
-            ((CanAssignEntity<ID, T>) field).assignEntity(entity);
-            assignEntityToFields.add((CanAssignEntity<ID, T>) field);
-        }
     }
 
     /**
@@ -966,7 +964,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
             // group multiple labels on the same line
             FormLayout form = new FormLayout();
             parent.add(form);
-            form.addFormItem(label, attributeModel.getDisplayName(VaadinUtils.getLocale()));
+            FormItem formItem = form.addFormItem(label, attributeModel.getDisplayName(VaadinUtils.getLocale()));
+            formItems.get(isViewMode()).put(attributeModel, formItem);
 
             for (String path : attributeModel.getGroupTogetherWith()) {
                 AttributeModel am = entityModel.getAttributeModel(path);
@@ -977,7 +976,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
         } else {
             // attributes not grouped on the same row
             if (parent instanceof FormLayout) {
-                ((FormLayout) parent).addFormItem(label, attributeModel.getDisplayName(VaadinUtils.getLocale()));
+                FormItem formItem = ((FormLayout) parent).addFormItem(label, attributeModel.getDisplayName(VaadinUtils.getLocale()));
+                formItems.get(isViewMode()).put(attributeModel, formItem);
             } else {
                 parent.add(label);
             }
@@ -1085,6 +1085,19 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
                 Component field = getField(isViewMode(), am.getPath());
                 if (field != null && EditableType.CREATE_ONLY.equals(am.getEditableType())) {
                     ((HasEnabled) field).setEnabled(entity.getId() == null);
+                }
+            }
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private void setDefaultValues() {
+        if (!isViewMode() && entity.getId() == null) {
+            for (AttributeModel am : getEntityModel().getAttributeModels()) {
+                Component field = getField(isViewMode(), am.getPath());
+                if (field != null && am.getDefaultValue() != null) {
+                    // set the default value for new objects
+                    setDefaultValue((HasValue<?, Object>) field, am.getDefaultValue().toString());
                 }
             }
         }
@@ -1290,11 +1303,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
     }
 
     public int getSelectedTabIndex() {
-//        if (tabs.get(isViewMode()) != null) {
-//            Component c = tabs.get(isViewMode()).getSelectedTab();
-//            return VaadinUtils.getTabIndex(tabs.get(isViewMode()), tabs.get(isViewMode()).getTab(c).getCaption());
-//        }
-        return 0;
+        return tabs.get(isViewMode()).getSelectedIndex();
     }
 
     protected boolean handleCustomException(RuntimeException ex) {
@@ -1448,12 +1457,12 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
     }
 
     /**
-     * Replaces an existing label by a label with the provided value
-     *
-     * @param propertyName the name of the property for which to replace the label
-     * @param value        the name value
+     * Set a label value
+     * 
+     * @param propertyName the name of the property for which to set the label
+     * @param value        the value
      */
-    public void refreshLabel(String propertyName, String value) {
+    public void setLabelValue(String propertyName, String value) {
         AttributeModel am = getEntityModel().getAttributeModel(propertyName);
         if (am != null) {
             Text text = labels.get(isViewMode()).get(am);
@@ -1628,6 +1637,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
         // enable/disable fields for create only mode
         disableCreateOnlyFields();
+        setDefaultValues();
 
         // update the title label
         Label newTitleLabel = constructTitleLabel();
@@ -1640,37 +1650,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
         for (Button b : getCancelButtons()) {
             b.setVisible((!isViewMode() && !getFormOptions().isHideCancelButton())
                     || (getFormOptions().isFormNested() && entity.getId() == null));
-        }
-    }
-
-    /**
-     * Sets the "required" status for a field. Convenience method that also
-     * correctly handles the situation in which there are multiple fields behind
-     * each other on the same row
-     *
-     * @param propertyName the name of the property
-     * @param required     whether the property is required
-     */
-    public void setFieldRequired(String propertyName, boolean required) {
-        Component field = getField(isViewMode(), propertyName);
-        if (field != null) {
-
-            if (!required) {
-                ((HasValidation) field).setErrorMessage(null);
-            }
-
-            // if there are multiple fields in a row, we need to some additional tricks
-            // since
-            // to make sure the "required" asterisk is properly displayed
-            AttributeModel am = getEntityModel().getAttributeModel(propertyName);
-            if (am != null && !am.getGroupTogetherWith().isEmpty()) {
-                HorizontalLayout hz = (HorizontalLayout) field.getParent().get().getParent().orElse(null);
-                if (required) {
-                    hz.addClassName(DynamoConstants.CSS_REQUIRED);
-                } else {
-                    hz.removeClassName(DynamoConstants.CSS_REQUIRED);
-                }
-            }
         }
     }
 
@@ -1697,19 +1676,13 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
      * @param visible      whether to show the label
      */
     public void setLabelVisible(String propertyName, boolean visible) {
-//        AttributeModel am = getEntityModel().getAttributeModel(propertyName);
-//        if (am != null) {
-//            Label label = labels.get(isViewMode()).get(am);
-//            if (label != null) {
-//                if (ClassUtils.getFieldValue(entity, propertyName) != null) {
-//                    label.setVisible(visible);
-//                    label.setText(am.getDisplayName(VaadinUtils.getLocale()));
-//                } else {
-//                    label.setVisible(false);
-//                    label.setText(null);
-//                }
-//            }
-//        }
+        AttributeModel am = getEntityModel().getAttributeModel(propertyName);
+        if (am != null) {
+            FormItem item = formItems.get(isViewMode()).get(am);
+            if (item != null) {
+                item.setVisible(visible);
+            }
+        }
     }
 
     public void setNestedMode(boolean nestedMode) {
@@ -1796,27 +1769,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
         Map<String, List<Button>> map = buttons.get(isViewMode());
         map.putIfAbsent(data, new ArrayList<>());
         map.get(data).add(button);
-    }
-
-    /**
-     * Apply styling to a label
-     *
-     * @param propertyName the name of the property
-     * @param className    the name of the CSS class to add
-     */
-    public void styleLabel(String propertyName, String className) {
-//        AttributeModel am = getEntityModel().getAttributeModel(propertyName);
-//        if (am != null) {
-//            Label editLabel = labels.get(false) == null ? null : labels.get(false).get(am);
-//            Label viewLabel = labels.get(true) == null ? null : labels.get(true).get(am);
-//
-//            if (editLabel != null) {
-//                editLabel.setClassName(className);
-//            }
-//            if (viewLabel != null) {
-//                viewLabel.setClassName(className);
-//            }
-//        }
     }
 
     /**

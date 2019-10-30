@@ -93,7 +93,7 @@ public final class PredicateUtils {
 	 */
 	public static <T> boolean isTrue(SerializablePredicate<T> predicate, String propertyId) {
 		SerializablePredicate<T> extracted = extractPredicate(predicate, propertyId);
-		if (extracted != null && extracted instanceof EqualsPredicate) {
+		if (extracted instanceof EqualsPredicate) {
 			EqualsPredicate<T> equal = (EqualsPredicate<T>) extracted;
 			return Boolean.TRUE.equals(equal.getValue());
 		}

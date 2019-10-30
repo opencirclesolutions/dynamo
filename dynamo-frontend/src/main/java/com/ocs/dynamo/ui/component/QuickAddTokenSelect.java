@@ -25,7 +25,7 @@ import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.Refreshable;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.data.provider.SortOrder;
 import com.vaadin.flow.function.SerializablePredicate;
@@ -120,7 +120,7 @@ public class QuickAddTokenSelect<ID extends Serializable, T extends AbstractEnti
     }
 
     protected void initContent() {
-        FormLayout bar = new FormLayout();
+        HorizontalLayout bar = new HorizontalLayout();
 
         if (this.getAttributeModel() != null) {
             this.setLabel(getAttributeModel().getDisplayName(VaadinUtils.getLocale()));

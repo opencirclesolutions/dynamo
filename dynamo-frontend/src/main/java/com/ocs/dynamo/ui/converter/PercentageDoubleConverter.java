@@ -25,7 +25,7 @@ public class PercentageDoubleConverter extends GroupingStringToDoubleConverter {
 
 	@Override
 	public Result<Double> convertToModel(String value, ValueContext context) {
-		value = value == null ? null : value.replaceAll("%", "");
+		value = value == null ? null : value.replace("%", "");
 		return super.convertToModel(value, context);
 	}
 }

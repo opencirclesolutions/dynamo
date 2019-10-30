@@ -114,7 +114,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
         Assert.assertTrue(nameModel.isVisible());
         Assert.assertEquals(55, nameModel.getMaxLength().intValue());
         Assert.assertEquals(AttributeTextFieldMode.TEXTAREA, nameModel.getTextFieldMode());
- 
+
         Assert.assertTrue(nameModel.isSortable());
         Assert.assertTrue(nameModel.isMainAttribute());
         Assert.assertEquals(EditableType.EDITABLE, nameModel.getEditableType());
@@ -729,8 +729,8 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
     }
 
     @Model(description = "desc", displayName = "dis", displayNamePlural = "diss", displayProperty = "prop", sortOrder = "name asc")
-    @AttributeGroups(attributeGroups = { @AttributeGroup(messageKey = "group1.key", attributeNames = { "name" }),
-            @AttributeGroup(messageKey = "group2.key", attributeNames = { "age" }) })
+    @AttributeGroup(messageKey = "group1.key", attributeNames = { "name" })
+    @AttributeGroup(messageKey = "group2.key", attributeNames = { "age" })
     public class Entity3 {
 
         @Attribute(defaultValue = "Bas", description = "Test", displayName = "Naampje", editable = EditableType.READ_ONLY, prompt = "Prompt", searchable = true, main = true, sortable = false, styles = "myStyle")

@@ -16,6 +16,7 @@ package com.ocs.dynamo.ui.composite.layout;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.core.io.Resource;
 
@@ -152,7 +153,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
      * mode
      */
     private VerticalLayout tabContainerLayout;
-    
+
     /**
      * Tabbed layout for complex detail mode
      */
@@ -306,7 +307,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
             mainSearchLayout.add(getButtonBar());
 
             checkButtonState(null);
-            
+
             // post process the layout
             postProcessLayout(mainSearchLayout);
             add(mainSearchLayout);
@@ -676,7 +677,6 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
                 }
             });
         }
-        constructGridDividers();
     }
 
     /**
@@ -1001,8 +1001,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
      * @return
      */
     public boolean isInSearchMode() {
-        // return Objects.equals(getCompositionRoot(), mainSearchLayout);
-        return false;
+        return Objects.equals(getComponentAt(0), mainSearchLayout);
     }
 
     @Override
@@ -1020,16 +1019,16 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
         // overwrite in subclasses
     }
 
-//    /**
-//     * Refreshes the contents of a label inside the edit form
-//     * 
-//     * @param propertyName the name of the property for which to refresh the label
-//     */
-//    public void refreshLabel(String propertyName) {
-//        if (editForm != null) {
-//            editForm.refreshLabel(propertyName);
-//        }
-//    }
+    /**
+     * Refreshes the contents of a label inside the edit form
+     * 
+     * @param propertyName the name of the property for which to refresh the label
+     */
+    public void setLabelValue(String propertyName, String value) {
+        if (editForm != null) {
+            editForm.setLabelValue(propertyName, value);
+        }
+    }
 
     /**
      * Refreshes all lookup components but otherwise does not update the state of

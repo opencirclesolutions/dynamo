@@ -6,13 +6,11 @@ import java.util.Map;
 import org.hibernate.annotations.Check;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.github.mvysny.kaributesting.v10.MockVaadin;
-import com.github.mvysny.kaributesting.v10.Routes;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.TestEntity.TestEnum;
@@ -44,23 +42,14 @@ import com.vaadin.flow.function.SerializablePredicate;
 
 public class FieldFactoryImplTest extends FrontendIntegrationTest {
 
-    private static Routes routes;
-
     @Autowired
     private EntityModelFactory factory;
 
     private FieldFactory fieldFactory;
 
-    @BeforeClass
-    public static void createRoutes() {
-        // initialize routes only once, to avoid view auto-detection before every test
-        // and to speed up the tests
-        routes = new Routes().autoDiscoverViews("com.ocs.dynamo");
-    }
-
     @Before
     public void setUp() {
-        MockVaadin.setup(routes);
+        MockVaadin.setup();
         fieldFactory = FieldFactory.getInstance();
     }
 

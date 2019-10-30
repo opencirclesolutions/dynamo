@@ -288,8 +288,6 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 
         searchDialogButton = new Button(messageService.getMessage("ocs.search", VaadinUtils.getLocale()));
         searchDialogButton.setIcon(VaadinIcon.SEARCH.create());
-        // searchDialogButton.setDescription(messageService.getMessage("ocs.search.description",
-        // VaadinUtils.getLocale()));
         searchDialogButton.addClickListener(event -> {
 
             // service must be specified
@@ -488,8 +486,6 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
                 checkButtonState(selectedItem);
             }
         });
-        //grid.getDataProvider().addDataProviderListener(event -> grid.updateCaption());
-        //grid.updateCaption();
 
         // apply filter
         applyFilter();

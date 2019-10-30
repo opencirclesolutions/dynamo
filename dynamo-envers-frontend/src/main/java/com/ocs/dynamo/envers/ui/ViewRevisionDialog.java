@@ -72,7 +72,6 @@ public class ViewRevisionDialog<ID, T extends AbstractEntity<ID>, U extends Vers
         this.service = service;
         this.entityModel = entityModel;
         this.id = id;
-        // set("revisionDialog");
     }
 
     /**

@@ -28,6 +28,7 @@ import com.ocs.dynamo.ui.Refreshable;
 import com.ocs.dynamo.ui.utils.SortUtils;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.utils.EntityModelUtils;
+import com.vaadin.flow.component.dependency.JsModule;
 import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.data.provider.SortOrder;
 import com.vaadin.flow.function.SerializablePredicate;
@@ -40,6 +41,7 @@ import com.vaadin.flow.function.SerializablePredicate;
  * @param <ID> type of the primary key of the entity
  * @param <T> type of the entity
  */
+@JsModule("multiselect-combo-box.js")
 public class EntityTokenSelect<ID extends Serializable, T extends AbstractEntity<ID>> extends MultiselectComboBox<T>
         implements Refreshable, Cascadable<T> {
 

@@ -369,15 +369,17 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
     }
 
     /**
-     * Refreshes the contents of a label
+     * Replaces the contents of a label by its current value. Use in response to an
+     * automatic update if a field
      *
-     * @param propertyName the name of the property for which to refresh the label
+     * @param propertyName the name of the property for which to replace the label
+     * @param value        the name
      */
-//    public void refreshLabel(String propertyName) {
-//        if (editForm != null) {
-//            editForm.refreshLabel(propertyName);
-//        }
-//    }
+    public void setLabelValue(String propertyName, String value) {
+        if (editForm != null) {
+            editForm.setLabelValue(propertyName, value);
+        }
+    }
 
     @Override
     public void reload() {

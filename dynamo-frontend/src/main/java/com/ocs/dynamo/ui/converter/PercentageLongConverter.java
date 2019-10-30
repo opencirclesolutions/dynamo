@@ -37,7 +37,7 @@ public class PercentageLongConverter extends GroupingStringToLongConverter {
 
 	@Override
 	public Result<Long> convertToModel(String value, ValueContext context) {
-		value = value == null ? null : value.replaceAll("%", "");
+		value = value == null ? null : value.replace("%", "");
 		return super.convertToModel(value, context);
 	}
 

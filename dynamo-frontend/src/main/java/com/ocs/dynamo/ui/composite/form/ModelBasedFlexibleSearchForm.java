@@ -492,7 +492,6 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
                 ((HasValue<?, ?>) newComponent)
                         .addValueChangeListener(event -> handleValueChange((HasValue<?, ?>) newComponent, event.getValue()));
             }
-            // newComponent.setClassName("flexSearchField");
 
             // cascading search
             if (am.getCascadeAttributes() != null && !am.getCascadeAttributes().isEmpty()) {
@@ -510,15 +509,10 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
             mainValueComponent = (HasValue<?, Object>) newComponent;
 
             if (FlexibleFilterType.BETWEEN.equals(filterType)) {
-                // newComponent.setCaption(am.getDisplayName(VaadinUtils.getLocale()) + " " +
-                // message("ocs.from"));
 
                 Component newAuxComponent = factory.constructField(context);
                 ((HasValue<?, ?>) newAuxComponent)
                         .addValueChangeListener(event -> handleValueChange((HasValue<?, ?>) newAuxComponent, event.getValue()));
-                // newAuxComponent.setCaption(am.getDisplayName(VaadinUtils.getLocale()) + " " +
-                // message("ocs.to"));
-                // newAuxComponent.setStyleName("flexSearchField");
 
                 if (auxValueComponent == null) {
                     layout.add(newAuxComponent);
@@ -638,7 +632,6 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
     public ModelBasedFlexibleSearchForm(Searchable<T> searchable, EntityModel<T> entityModel, FormOptions formOptions,
             List<SerializablePredicate<T>> defaultFilters, Map<String, SerializablePredicate<?>> fieldFilters) {
         super(searchable, entityModel, formOptions, defaultFilters, fieldFilters);
-        // addStyleName("flexibleSearchLayout");
     }
 
     /**
@@ -851,7 +844,7 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
     @Override
     public void refresh() {
         for (FilterRegion r : regions) {
-            if (r.mainValueComponent != null && r.mainValueComponent instanceof Refreshable) {
+            if (r.mainValueComponent instanceof Refreshable) {
                 ((Refreshable) r.mainValueComponent).refresh();
             }
             // note: not needed to check aux component since only lookup fields

@@ -164,24 +164,6 @@ public final class StringUtils {
 	}
 
 	/**
-	 * Replaces all HTML line breaks by commas
-	 *
-	 * @param value
-	 *            the string in which to replace all line breaks
-	 * @return
-	 */
-	public static String replaceHtmlBreaks(String value) {
-		if (value == null) {
-			return null;
-		}
-		value = value.replaceAll("<br/>", ", ").trim();
-		if (value.endsWith(",")) {
-			value = value.substring(0, value.length() - 1);
-		}
-		return value;
-	}
-
-	/**
 	 * Restricts a string value to the maximum length of a certain field
 	 *
 	 * @param value

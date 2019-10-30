@@ -28,10 +28,8 @@ public class Contains extends AbstractFilter implements PropertyFilter {
     private final String propertyId;
 
     /**
-     * @param propertyId
-     *            the property that represents the collection
-     * @param value
-     *            the object that needs to be checked
+     * @param propertyId the property that represents the collection
+     * @param value      the object that needs to be checked
      */
     public Contains(String propertyId, Object value) {
         this.propertyId = propertyId;
@@ -68,13 +66,12 @@ public class Contains extends AbstractFilter implements PropertyFilter {
     @Override
     public boolean equals(Object obj) {
         // Only objects of the same class can be equal
-        if (obj == null || !(obj instanceof Contains)) {
+        if (!(obj instanceof Contains)) {
             return false;
         }
         Contains c = (Contains) obj;
 
-        return Objects.equals(propertyId, c.getPropertyId())
-                && Objects.equals(value, c.getValue());
+        return Objects.equals(propertyId, c.getPropertyId()) && Objects.equals(value, c.getValue());
     }
 
     @Override

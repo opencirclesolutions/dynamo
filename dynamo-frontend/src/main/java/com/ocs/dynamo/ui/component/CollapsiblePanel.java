@@ -33,6 +33,9 @@ public class CollapsiblePanel extends VerticalLayout {
 
     private Icon openIcon = VaadinIcon.MINUS_CIRCLE.create();
 
+    /**
+     * The button that serves as the "header" for the panel
+     */
     private Button toggle = new Button(openIcon);
 
     private VerticalLayout contentWrapper = new VerticalLayout();
@@ -40,8 +43,9 @@ public class CollapsiblePanel extends VerticalLayout {
     public CollapsiblePanel() {
         setMargin(false);
 
-        // toggle.setStyleName(.BUTTON_BORDERLESS + " " + "leftAlign");
         toggle.setSizeFull();
+        toggle.addClassName("collapsiblePanelButton");
+     
         contentWrapper.setMargin(false);
         contentWrapper.setVisible(true);
         add(toggle, contentWrapper);

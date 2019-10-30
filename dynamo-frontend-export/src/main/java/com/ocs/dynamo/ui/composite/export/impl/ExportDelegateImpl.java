@@ -41,7 +41,7 @@ public class ExportDelegateImpl implements ExportDelegate {
     @SuppressWarnings("unchecked")
     public <ID extends Serializable, T extends AbstractEntity<ID>> void export(EntityModel<T> entityModel, ExportMode mode,
             SerializablePredicate<T> predicate, List<SortOrder<?>> sortOrders, FetchJoinInformation... joins) {
-        ExportDialog<ID, T> dialog = new ExportDialog<ID, T>(exportService, entityModel, mode, predicate, sortOrders,
+        ExportDialog<ID, T> dialog = new ExportDialog<>(exportService, entityModel, mode, predicate, sortOrders,
                 (CustomXlsStyleGenerator<ID, T>) customStyleMap.get(entityModel), joins);
         dialog.build();
         dialog.open();
@@ -51,7 +51,7 @@ public class ExportDelegateImpl implements ExportDelegate {
     @SuppressWarnings("unchecked")
     public <ID extends Serializable, T extends AbstractEntity<ID>> void exportFixed(EntityModel<T> entityModel, ExportMode mode,
             Collection<T> items) {
-        FixedExportDialog<ID, T> dialog = new FixedExportDialog<ID, T>(exportService, entityModel, mode,
+        FixedExportDialog<ID, T> dialog = new FixedExportDialog<>(exportService, entityModel, mode,
                 (CustomXlsStyleGenerator<ID, T>) customStyleMap.get(entityModel), () -> Lists.newArrayList(items));
         dialog.build();
         dialog.open();

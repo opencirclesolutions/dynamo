@@ -265,7 +265,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
             // multiple select fields not allowed for all attribute types
             if (AttributeSelectMode.TOKEN.equals(model.getSelectMode()) && !AttributeType.DETAIL.equals(model.getAttributeType())
                     && !AttributeType.BASIC.equals(model.getAttributeType())) {
-                throw new OCSRuntimeException("Token or Fancy List field not allowed for attribute " + model.getName());
+                throw new OCSRuntimeException("Token field not allowed for attribute " + model.getName());
             }
 
             // list select field only allowed for "master" attribute types
@@ -495,9 +495,10 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
     protected <T> Map<String, String> determineAttributeGroupMapping(EntityModel<T> model, Class<T> entityClass) {
         Map<String, String> result = new HashMap<>();
         AttributeGroups groups = entityClass.getAnnotation(AttributeGroups.class);
+
         if (groups != null) {
             // multiple attribute groups
-            for (AttributeGroup g : groups.attributeGroups()) {
+            for (AttributeGroup g : groups.value()) {
                 model.addAttributeGroup(g.messageKey());
                 for (String s : g.attributeNames()) {
                     result.put(s, g.messageKey());

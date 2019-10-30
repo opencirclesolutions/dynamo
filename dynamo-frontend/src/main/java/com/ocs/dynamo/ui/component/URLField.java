@@ -174,6 +174,7 @@ public class URLField extends CustomField<String> {
             if (!StringUtils.isEmpty(value)) {
                 String temp = com.ocs.dynamo.utils.StringUtils.prependProtocol(value);
                 link = new Anchor(temp, temp);
+                link.setTarget("_blank");
                 bar.add(link);
             } else {
                 link = null;

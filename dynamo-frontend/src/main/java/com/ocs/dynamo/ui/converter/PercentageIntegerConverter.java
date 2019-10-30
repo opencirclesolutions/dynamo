@@ -39,7 +39,7 @@ public class PercentageIntegerConverter extends GroupingStringToIntegerConverter
 
 	@Override
 	public Result<Integer> convertToModel(String value, ValueContext context) {
-		value = value == null ? null : value.replaceAll("%", "");
+		value = value == null ? null : value.replace("%", "");
 		return super.convertToModel(value, context);
 	}
 }

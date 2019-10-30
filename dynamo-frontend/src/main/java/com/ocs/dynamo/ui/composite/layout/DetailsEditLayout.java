@@ -68,6 +68,11 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
         private static final long serialVersionUID = 3507638736422806589L;
 
         /**
+         * Button bar
+         */
+        private HorizontalLayout buttonBar;
+
+        /**
          * The actual edit form
          */
         private ModelBasedEditForm<ID, T> form;
@@ -76,11 +81,6 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
          * Button for deleting the form
          */
         private Button removeButton;
-
-        /**
-         * Button bar
-         */
-        private HorizontalLayout buttonBar;
 
         /**
          * Constructor
@@ -163,11 +163,6 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
     private Button addButton;
 
     /**
-     * The entity model of the entity to display
-     */
-    private final EntityModel<T> entityModel;
-
-    /**
      * The entity models used for rendering the individual fields (mostly useful for
      * lookup components)
      */
@@ -184,6 +179,16 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
     private Comparator<T> comparator;
 
     /**
+     * Supplier for creating a new entity
+     */
+    private Supplier<T> createEntitySupplier;
+
+    /**
+     * The entity model of the entity to display
+     */
+    private final EntityModel<T> entityModel;
+
+    /**
      * Optional field filters for restricting the contents of combo boxes
      */
     private Map<String, SerializablePredicate<?>> fieldFilters = new HashMap<>();
@@ -194,30 +199,14 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
     private FormOptions formOptions;
 
     /**
-     * The list of items to display
-     */
-    private List<T> items;
-
-    /**
-     * The message service
-     */
-    private final MessageService messageService;
-
-    /**
-     * Whether the component is in view mode. If this is the case, editing is not
-     * allowed and no buttons will be displayed
-     */
-    private boolean viewMode;
-
-    /**
-     * Service for interacting with the database
-     */
-    private BaseService<ID, T> service;
-
-    /**
      * The individual edit forms
      */
     private List<FormContainer> forms = new ArrayList<>();
+
+    /**
+     * The list of items to display
+     */
+    private List<T> items;
 
     /**
      * Container that holds all the sub forms
@@ -225,14 +214,25 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
     private VerticalLayout mainFormContainer;
 
     /**
-     * Supplier for creating a new entity
+     * The message service
      */
-    private Supplier<T> createEntitySupplier;
+    private final MessageService messageService;
 
     /**
      * Consumer for removing an entity
      */
     private Consumer<T> removeEntityConsumer;
+
+    /**
+     * Service for interacting with the database
+     */
+    private BaseService<ID, T> service;
+
+    /**
+     * Whether the component is in view mode. If this is the case, editing is not
+     * allowed and no buttons will be displayed
+     */
+    private boolean viewMode;
 
     /**
      * Constructor
@@ -254,6 +254,18 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
         this.items = new ArrayList<>();
         this.viewMode = viewMode;
         this.formOptions = formOptions;
+    }
+
+    /**
+     * Adds an attribute entity model - this can be used to overwrite the default
+     * entity model that is used for rendering complex selection components (lookup
+     * dialogs)
+     * 
+     * @param path      the path to the field
+     * @param reference the unique ID of the entity model
+     */
+    public final void addAttributeEntityModel(String path, String reference) {
+        attributeEntityModels.put(path, reference);
     }
 
     /**
@@ -305,18 +317,6 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
         };
         forms.add(fc);
         mainFormContainer.add(fc);
-    }
-
-    /**
-     * Adds an attribute entity model - this can be used to overwrite the default
-     * entity model that is used for rendering complex selection components (lookup
-     * dialogs)
-     * 
-     * @param path      the path to the field
-     * @param reference the unique ID of the entity model
-     */
-    public final void addAttributeEntityModel(String path, String reference) {
-        attributeEntityModels.put(path, reference);
     }
 
     /**
@@ -388,10 +388,11 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
         return null;
     }
 
-//    @Override
-//    protected void doSetValue(Collection<T> value) {
-//        setItems(value);
-//    }
+    @Override
+    protected Collection<T> generateModelValue() {
+        // not needed
+        return null;
+    }
 
     public Button getAddButton() {
         return addButton;
@@ -628,6 +629,11 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
         }
     }
 
+    @Override
+    protected void setPresentationValue(Collection<T> value) {
+        setItems(value);
+    }
+
     /**
      * Sets the Consumer to be carried out for decoupling/removing an entity
      * 
@@ -650,16 +656,5 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
             error |= f.validateAllFields();
         }
         return error;
-    }
-
-    @Override
-    protected Collection<T> generateModelValue() {
-        // not needed
-        return null;
-    }
-
-    @Override
-    protected void setPresentationValue(Collection<T> value) {
-        setItems(value);
     }
 }

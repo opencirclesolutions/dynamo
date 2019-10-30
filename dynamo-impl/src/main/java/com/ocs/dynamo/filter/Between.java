@@ -74,7 +74,7 @@ public class Between extends AbstractFilter implements PropertyFilter {
 	@Override
 	public boolean equals(Object obj) {
 		// Only objects of the same class can be equal
-		if (obj == null || !(obj instanceof Between)) {
+		if (!(obj instanceof Between)) {
 			return false;
 		}
 		final Between o = (Between) obj;

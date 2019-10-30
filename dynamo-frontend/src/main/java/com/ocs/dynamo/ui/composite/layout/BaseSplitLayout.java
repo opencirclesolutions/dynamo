@@ -147,7 +147,6 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
             // initialize the grid - TODO figure out a nice way to deal with grid height
             getGridWrapper().getGrid().setHeight("400px");
             disableGridSorting();
-            constructGridDividers();
 
             // extra splitter (for horizontal mode)
             if (isHorizontalMode()) {
@@ -437,12 +436,13 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
      * automatic update if a field
      *
      * @param propertyName the name of the property for which to replace the label
+     * @param value        the name
      */
-//    public void refreshLabel(String propertyName) {
-//        if (editForm != null) {
-//            editForm.refreshLabel(propertyName);
-//        }
-//    }
+    public void setLabelValue(String propertyName, String value) {
+        if (editForm != null) {
+            editForm.setLabelValue(propertyName, value);
+        }
+    }
 
     /**
      * Reloads the component

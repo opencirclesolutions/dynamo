@@ -141,7 +141,7 @@ public class FieldFactoryImpl implements FieldFactory {
     @SuppressWarnings("unchecked")
     private <ID extends Serializable, S extends AbstractEntity<ID>> Component constructCollectionSelect(AttributeModel am,
             EntityModel<?> fieldEntityModel, SerializablePredicate<?> fieldFilter, ListDataProvider<?> sharedProvider, boolean search,
-            boolean grid, boolean multipleSelect) {
+            boolean grid) {
         EntityModel<?> em = resolveEntityModel(fieldEntityModel, am, search);
 
         BaseService<ID, S> service = (BaseService<ID, S>) serviceLocator.getServiceForEntity(em.getEntityClass());
@@ -153,13 +153,29 @@ public class FieldFactoryImpl implements FieldFactory {
         if (AttributeSelectMode.LOOKUP.equals(mode)) {
             // lookup field
             return constructLookupField(am, fieldEntityModel, fieldFilter, search, true);
-        } else if (AttributeSelectMode.LIST.equals(mode)) {
-            // list box for selecting single item
-            return new QuickAddListSingleSelect<>((EntityModel<S>) em, am, service, (SerializablePredicate<S>) fieldFilter, search, sos);
         } else {
             // by default, use a token field
             return new QuickAddTokenSelect<ID, S>((EntityModel<S>) em, am, service, (SerializablePredicate<S>) fieldFilter, search, sos);
         }
+    }
+
+    /**
+     * Constructs a field for selecting multiple values from a collection
+     * 
+     * @param am               the attribute model
+     * @param fieldEntityModel the entity model
+     * @param fieldFilter      the field filter to apply
+     * @param search           whether the field is in search mode
+     * @param multipleSelect   whether multiple select is allowed
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    private <ID extends Serializable, S extends AbstractEntity<ID>> Component constructListSelect(AttributeModel am,
+            EntityModel<?> fieldEntityModel, SerializablePredicate<?> fieldFilter, ListDataProvider<?> sharedProvider, boolean search) {
+        EntityModel<?> em = resolveEntityModel(fieldEntityModel, am, search);
+        BaseService<ID, S> service = (BaseService<ID, S>) serviceLocator.getServiceForEntity(em.getEntityClass());
+        SortOrder<?>[] sos = constructSortOrder(em);
+        return new QuickAddListSingleSelect<>((EntityModel<S>) em, am, service, (SerializablePredicate<S>) fieldFilter, search, sos);
     }
 
     @SuppressWarnings("unchecked")
@@ -247,7 +263,7 @@ public class FieldFactoryImpl implements FieldFactory {
             field = constructSelect(am, fieldEntityModel, fieldFilter, sharedProvider, search, grid);
         } else if (Collection.class.isAssignableFrom(am.getType())) {
             // render a multiple select component for a collection
-            field = constructCollectionSelect(am, fieldEntityModel, fieldFilter, sharedProvider, search, grid, true);
+            field = constructCollectionSelect(am, fieldEntityModel, fieldFilter, sharedProvider, search, grid);
         } else if (AttributeTextFieldMode.TEXTAREA.equals(am.getTextFieldMode()) && !search && !grid) {
             field = new TextArea();
             ((TextArea) field).setHeight("100px");
@@ -258,12 +274,6 @@ public class FieldFactoryImpl implements FieldFactory {
             // undefined options
             field = constructSearchBooleanComboBox(am, search);
         } else if (Boolean.class.equals(am.getType()) || boolean.class.equals(am.getType())) {
-            // regular boolean (not search mode)
-//            if (CheckboxMode.SWITCH.equals(am.getCheckboxMode())) {
-//                field = new Switch();
-//            } else {
-//                field = new CheckBox();
-//            }
             field = new Checkbox();
         } else if (am.isWeek()) {
             field = new TextField();
@@ -289,7 +299,7 @@ public class FieldFactoryImpl implements FieldFactory {
             df.setLocale(dateLoc);
             field = df;
         } else if (LocalDateTime.class.equals(am.getType()) || ZonedDateTime.class.equals(am.getType())) {
-            // TODO: must be a date/time field
+            // TODO: must be a date/time field but this currently is not supported
             DatePicker df = new DatePicker();
             df.setLocale(dateLoc);
             field = df;
@@ -372,11 +382,11 @@ public class FieldFactoryImpl implements FieldFactory {
         // because the search in the pop-up screen is conducted on a "clean",
         // non-nested entity list so
         // using a path from the parent entity makes no sense here
-        final EntityModel<?> entityModel = overruled != null ? overruled
+        EntityModel<?> entityModel = overruled != null ? overruled
                 : serviceLocator.getEntityModelFactory().getModel(am.getNormalizedType());
-        final BaseService<ID, S> service = (BaseService<ID, S>) serviceLocator
+        BaseService<ID, S> service = (BaseService<ID, S>) serviceLocator
                 .getServiceForEntity(am.getMemberType() != null ? am.getMemberType() : entityModel.getEntityClass());
-        final SortOrder<?>[] sos = constructSortOrder(entityModel);
+        SortOrder<?>[] sos = constructSortOrder(entityModel);
         return new EntityLookupField<>(service, (EntityModel<S>) entityModel, am, (SerializablePredicate<S>) fieldFilter, search,
                 multiSelect, sos.length == 0 ? null : Lists.newArrayList(sos));
     }
@@ -420,7 +430,7 @@ public class FieldFactoryImpl implements FieldFactory {
         if (search && am.isMultipleSearch()) {
             // in case of multiple search, defer to the
             // "constructCollectionSelect" method
-            field = this.constructCollectionSelect(am, fieldEntityModel, fieldFilter, sharedProvider, search, grid, true);
+            field = this.constructCollectionSelect(am, fieldEntityModel, fieldFilter, sharedProvider, search, grid);
         } else if (AttributeSelectMode.COMBO.equals(selectMode)) {
             // combo box
             field = constructComboBox(am, fieldEntityModel, fieldFilter, sharedProvider, search);
@@ -429,7 +439,7 @@ public class FieldFactoryImpl implements FieldFactory {
             field = constructLookupField(am, fieldEntityModel, fieldFilter, search, false);
         } else {
             // list select (single select)
-            field = this.constructCollectionSelect(am, fieldEntityModel, fieldFilter, sharedProvider, search, grid, false);
+            field = this.constructListSelect(am, fieldEntityModel, fieldFilter, sharedProvider, search);
         }
         return field;
     }

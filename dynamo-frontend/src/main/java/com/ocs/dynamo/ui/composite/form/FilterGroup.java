@@ -127,7 +127,7 @@ public class FilterGroup<T> {
         }
 
         // respond to a change of the auxiliary field
-        if (auxField != null && auxField instanceof HasValue) {
+        if (auxField instanceof HasValue) {
             ((HasValue<?, ?>) auxField).addValueChangeListener(event -> {
                 Result<?> result = ConvertUtils.convertToModelValue(FilterGroup.this.attributeModel, event.getValue());
                 result.ifError(r -> ((HasValidation) auxField).setErrorMessage(r));
@@ -181,12 +181,6 @@ public class FilterGroup<T> {
      * Resets the search filters for both fields
      */
     public void reset() {
-//        if (field instanceof Slider) {
-//            // slider does not support null value
-//            Slider slider = (Slider) field;
-//            slider.setValue(slider.getMin());
-//            slider.setComponentError(null);
-//        } 
         if (field instanceof HasValue) {
             ((HasValue<?, ?>) field).clear();
             if (field instanceof HasValidation) {
@@ -195,12 +189,6 @@ public class FilterGroup<T> {
         }
 
         if (auxField != null) {
-            // if (auxField instanceof Slider) {
-            // // slider does not support null value
-            // Slider slider = (Slider) auxField;
-            // slider.setValue(slider.getMin());
-            // slider.setComponentError(null);
-            // }
             if (auxField instanceof HasValue) {
                 ((HasValue<?, ?>) auxField).clear();
                 if (auxField instanceof HasValidation) {

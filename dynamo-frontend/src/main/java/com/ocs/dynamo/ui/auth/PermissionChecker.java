@@ -16,7 +16,8 @@ package com.ocs.dynamo.ui.auth;
 import java.util.List;
 
 /**
- * Permission checker for determining which views and menu items are available for which user
+ * Permission checker for determining which views and menu items are available
+ * for which user
  * 
  * @author bas.rutten
  *
@@ -26,7 +27,7 @@ public interface PermissionChecker {
     /**
      * Checks if the user is allowed to access a certain view
      * 
-     * @param viewName
+     * @param viewName the name of the view
      * @return
      */
     boolean isAccessAllowed(String viewName);

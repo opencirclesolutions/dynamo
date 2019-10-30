@@ -77,7 +77,6 @@ public class ServiceBasedDetailsEditGrid<ID extends Serializable, T extends Abst
             boolean viewMode, FormOptions formOptions, FetchJoinInformation... joins) {
         super(service, entityModel, attributeModel, viewMode, true, formOptions, joins);
         this.provider = new IdBasedDataProvider<>(service, entityModel, joins);
-        //provider.setAfterCountCompleted(x -> updateCaption(x));
         initContent();
     }
 

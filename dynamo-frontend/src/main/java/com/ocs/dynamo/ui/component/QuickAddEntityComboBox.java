@@ -47,10 +47,20 @@ public class QuickAddEntityComboBox<ID extends Serializable, T extends AbstractE
 
     private static final long serialVersionUID = 4246187881499965296L;
 
+    /**
+     * Whether quick addition of new domain values is allowed
+     */
     private final boolean quickAddAllowed;
 
+    /**
+     * Whether direct navigation from edit screen or grid to another screen is
+     * allowed
+     */
     private final boolean directNavigationAllowed;
 
+    /**
+     * The combo box that holds the actual values
+     */
     private EntityComboBox<ID, T> comboBox;
 
     /**
@@ -122,6 +132,7 @@ public class QuickAddEntityComboBox<ID extends Serializable, T extends AbstractE
     }
 
     protected void initContent() {
+
         HorizontalLayout bar = new HorizontalLayout();
         bar.setSizeFull();
 

@@ -32,6 +32,8 @@ import com.ocs.dynamo.utils.ClassUtils;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.NotificationVariant;
+import com.vaadin.flow.component.notification.Notification.Position;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
 /**
@@ -141,7 +143,7 @@ public abstract class BaseCustomComponent extends VerticalLayout implements Buil
      */
     protected void showNotifification(String message) {
         if (UI.getCurrent() != null && UI.getCurrent().getPage() != null) {
-            Notification.show(message);
+            Notification.show(message, 2000, Position.MIDDLE).addThemeVariants(NotificationVariant.LUMO_ERROR);
         } else {
             LOG.info(message);
         }

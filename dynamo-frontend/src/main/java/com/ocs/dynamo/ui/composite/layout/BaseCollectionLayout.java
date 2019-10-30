@@ -19,10 +19,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.function.Consumer;
 
-import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
@@ -32,7 +30,6 @@ import com.ocs.dynamo.ui.Reloadable;
 import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
 import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
 import com.ocs.dynamo.ui.composite.grid.BaseGridWrapper;
-import com.ocs.dynamo.utils.ClassUtils;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid.Column;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -76,11 +73,6 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
     private FetchJoinInformation[] exportJoins;
 
     /**
-     * The property used to decide whether to include a divider row border
-     */
-    private String dividerProperty;
-
-    /**
      * The entity model to use when exporting to CSV or Excel. Defaults to the
      * regular model if not set
      */
@@ -115,12 +107,6 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
      * The number of rows to display in the grid
      */
     private int pageLength = PAGE_LENGTH;
-
-    /**
-     * The property used for determining whether to draw divider rows between rows
-     * in the grid
-     */
-    private Object previousDividerValue;
 
     /**
      * The currently selected item (in the grid)
@@ -213,28 +199,6 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
     }
 
     /**
-     * Add divider rows to the grid based on the value of the "dividerProperty"
-     */
-    protected final void constructGridDividers() {
-        if (dividerProperty != null) {
-            getGridWrapper().getGrid().setClassName(DynamoConstants.CSS_DIVIDER);
-            getGridWrapper().getGrid().setClassNameGenerator(item -> {
-                String result = null;
-                if (item != null) {
-                    Object value = ClassUtils.getFieldValue(item, dividerProperty);
-                    if (value != null) {
-                        if (!Objects.equals(value, previousDividerValue)) {
-                            result = DynamoConstants.CSS_DIVIDER;
-                        }
-                        previousDividerValue = value;
-                    }
-                }
-                return result;
-            });
-        }
-    }
-
-    /**
      * Lazily constructs the grid wrapper - subclassed by the framework in order to
      * construct the appropriate grid wrapper
      * 
@@ -289,10 +253,6 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 
     public FetchJoinInformation[] getDetailJoins() {
         return detailJoins;
-    }
-
-    public String getDividerProperty() {
-        return dividerProperty;
     }
 
     public EntityModel<T> getExportEntityModel() {

@@ -259,7 +259,7 @@ public final class VaadinUtils {
     public static <T> T getParentOfClass(Component component, Class<T> clazz) {
         while (component.getParent().isPresent()) {
             component = component.getParent().orElse(null);
-            if (clazz.isAssignableFrom(component.getClass())) {
+            if (component != null && clazz.isAssignableFrom(component.getClass())) {
                 return (T) component;
             }
         }

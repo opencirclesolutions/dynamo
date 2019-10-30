@@ -1,0 +1,12 @@
+
+vaadin-vertical-layout {
+	margin: 0px;
+	padding-left: 4px;
+	padding-bottom: 4px;
+}
+
+img.imagePreview {
+	max-width: 100px;
+	max-height: 100px;
+}
+
