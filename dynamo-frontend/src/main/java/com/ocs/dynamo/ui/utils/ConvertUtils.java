@@ -15,7 +15,6 @@ package com.ocs.dynamo.ui.utils;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Collection;
@@ -80,9 +79,6 @@ public final class ConvertUtils {
         } else if (BigDecimal.class.equals(am.getType())) {
             return VaadinUtils.bigDecimalToString(am.isCurrency(), am.isPercentage(), grouping, am.getPrecision(), (BigDecimal) input,
                     locale);
-        } else if (ZonedDateTime.class.equals(am.getType())) {
-            ZonedDateTime zdt = (ZonedDateTime) input;
-            return zdt.toLocalDateTime();
         }
         return input;
     }
@@ -131,9 +127,6 @@ public final class ConvertUtils {
                         am.getPrecision(), SystemPropertyUtils.getDefaultCurrencySymbol());
                 return converter.convertToModel((String) value, new ValueContext(locale));
             }
-        } else if (ZonedDateTime.class.equals(am.getType()) && !am.isSearchDateOnly()) {
-            LocalDateTime ldt = (LocalDateTime) value;
-            return Result.ok(ldt.atZone(ZoneId.systemDefault()));
         }
         return Result.ok(value);
     }

@@ -32,6 +32,7 @@ import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.service.ServiceLocator;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.component.CustomEntityField;
+import com.ocs.dynamo.ui.component.DateTimePicker;
 import com.ocs.dynamo.ui.component.ElementCollectionGrid;
 import com.ocs.dynamo.ui.component.EntityComboBox.SelectMode;
 import com.ocs.dynamo.ui.component.EntityLookupField;
@@ -41,6 +42,7 @@ import com.ocs.dynamo.ui.component.QuickAddListSingleSelect;
 import com.ocs.dynamo.ui.component.QuickAddTokenSelect;
 import com.ocs.dynamo.ui.component.SimpleTokenFieldSelect;
 import com.ocs.dynamo.ui.component.URLField;
+import com.ocs.dynamo.ui.component.ZonedDateTimePicker;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.converter.ConverterFactory;
 import com.ocs.dynamo.ui.converter.LocalDateWeekCodeConverter;
@@ -299,10 +301,12 @@ public class FieldFactoryImpl implements FieldFactory {
             DatePicker df = new DatePicker();
             df.setLocale(dateLoc);
             field = df;
-        } else if (LocalDateTime.class.equals(am.getType()) || ZonedDateTime.class.equals(am.getType())) {
+        } else if (LocalDateTime.class.equals(am.getType())) {
             // TODO: must be a date/time field but this currently is not supported
-            DatePicker df = new DatePicker();
-            df.setLocale(dateLoc);
+            DateTimePicker df = new DateTimePicker(dateLoc);
+            field = df;
+        } else if (ZonedDateTime.class.equals(am.getType())) {
+            ZonedDateTimePicker df = new ZonedDateTimePicker(dateLoc);
             field = df;
         } else if (LocalTime.class.equals(am.getType())) {
             TimePicker tf = new TimePicker();

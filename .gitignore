@@ -38,4 +38,5 @@ dynamo-envers/.checkstyle
 dynamo-showcase/target
 .travis.yml
 .idea
+*.log
 
