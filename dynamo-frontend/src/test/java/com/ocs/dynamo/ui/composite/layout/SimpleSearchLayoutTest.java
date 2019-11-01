@@ -36,15 +36,6 @@ import com.vaadin.flow.function.SerializablePredicate;
 
 public class SimpleSearchLayoutTest extends FrontendIntegrationTest {
 
-    private static Routes routes;
-
-    @BeforeClass
-    public static void createRoutes() {
-        // initialize routes only once, to avoid view auto-detection before every test
-        // and to speed up the tests
-        routes = new Routes().autoDiscoverViews("com.ocs.dynamo");
-    }
-    
     @Inject
     private EntityModelFactory entityModelFactory;
 
@@ -72,8 +63,8 @@ public class SimpleSearchLayoutTest extends FrontendIntegrationTest {
 
         e3 = new TestEntity("Stewart", 14L);
         e3 = testEntityService.save(e3);
-        
-        MockVaadin.setup(routes);
+
+        MockVaadin.setup();
     }
 
     @Test

@@ -15,14 +15,12 @@ package com.ocs.dynamo.ui.component;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.Spy;
 
 import com.github.mvysny.kaributesting.v10.MockVaadin;
-import com.github.mvysny.kaributesting.v10.Routes;
 import com.google.common.collect.Lists;
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.TestEntity2;
@@ -35,15 +33,6 @@ import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.data.provider.SortOrder;
 
 public class EntityLookupFieldTest extends BaseMockitoTest {
-
-    private static Routes routes;
-
-    @BeforeClass
-    public static void createRoutes() {
-        // initialize routes only once, to avoid view auto-detection before every test
-        // and to speed up the tests
-        routes = new Routes().autoDiscoverViews("com.ocs.dynamo");
-    }
 
     @Mock
     private TestEntityService service;
@@ -62,7 +51,7 @@ public class EntityLookupFieldTest extends BaseMockitoTest {
 
         Mockito.when(service.createNewEntity()).thenReturn(new TestEntity());
         MockUtil.mockServiceSave(service, TestEntity.class);
-        MockVaadin.setup(routes);
+        MockVaadin.setup();
     }
 
     @Test

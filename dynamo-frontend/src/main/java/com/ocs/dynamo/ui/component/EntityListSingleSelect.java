@@ -101,7 +101,8 @@ public class EntityListSingleSelect<ID extends Serializable, T extends AbstractE
      */
     @SafeVarargs
     public EntityListSingleSelect(EntityModel<T> targetEntityModel, AttributeModel attributeModel, BaseService<ID, T> service,
-            SelectMode mode, SerializablePredicate<T> filter, List<T> items, SortOrder<?>... sortOrders) {
+            SelectMode mode, SerializablePredicate<T> filter, ListDataProvider<T> sharedProvider, List<T> items,
+            SortOrder<?>... sortOrders) {
         this.targetEntityModel = targetEntityModel;
         this.service = service;
         this.selectMode = mode;
@@ -110,19 +111,21 @@ public class EntityListSingleSelect<ID extends Serializable, T extends AbstractE
         this.filter = filter;
         setHeight("100px");
 
-        ListDataProvider<T> provider = null;
-        if (SelectMode.ALL.equals(mode)) {
-            // add all items (but sorted)
-            provider = new ListDataProvider<>(service.findAll(SortUtils.translateSortOrders(sortOrders)));
-        } else if (SelectMode.FILTERED.equals(mode)) {
-            // add a filtered selection of items
-            items = service.find(new FilterConverter<T>(targetEntityModel).convert(filter), SortUtils.translateSortOrders(sortOrders));
-            provider = new ListDataProvider<>(items);
-        } else if (SelectMode.FIXED.equals(mode)) {
-            provider = new ListDataProvider<>(items);
+        ListDataProvider<T> provider = sharedProvider;
+        if (provider == null) {
+            if (SelectMode.ALL.equals(mode)) {
+                // add all items (but sorted)
+                provider = new ListDataProvider<>(service.findAll(SortUtils.translateSortOrders(sortOrders)));
+            } else if (SelectMode.FILTERED.equals(mode)) {
+                // add a filtered selection of items
+                items = service.find(new FilterConverter<T>(targetEntityModel).convert(filter), SortUtils.translateSortOrders(sortOrders));
+                provider = new ListDataProvider<>(items);
+            } else if (SelectMode.FIXED.equals(mode)) {
+                provider = new ListDataProvider<>(items);
+            }
         }
         setDataProvider(provider);
-
+        
         // non-standard way of setting captions
         setRenderer(new ComponentRenderer<Label, T>(t -> {
             String label = EntityModelUtils.getDisplayPropertyValue(t, targetEntityModel);
@@ -143,8 +146,8 @@ public class EntityListSingleSelect<ID extends Serializable, T extends AbstractE
      */
     @SafeVarargs
     public EntityListSingleSelect(EntityModel<T> targetEntityModel, AttributeModel attributeModel, BaseService<ID, T> service,
-            SerializablePredicate<T> filter, SortOrder<?>... sortOrder) {
-        this(targetEntityModel, attributeModel, service, SelectMode.FILTERED, filter, null, sortOrder);
+            SerializablePredicate<T> filter, ListDataProvider<T> sharedProvider, SortOrder<?>... sortOrder) {
+        this(targetEntityModel, attributeModel, service, SelectMode.FILTERED, filter, sharedProvider, null, sortOrder);
     }
 
     /**
@@ -159,7 +162,7 @@ public class EntityListSingleSelect<ID extends Serializable, T extends AbstractE
     @SafeVarargs
     public EntityListSingleSelect(EntityModel<T> targetEntityModel, AttributeModel attributeModel, BaseService<ID, T> service,
             SortOrder<?>... sortOrder) {
-        this(targetEntityModel, attributeModel, service, SelectMode.ALL, null, null, sortOrder);
+        this(targetEntityModel, attributeModel, service, SelectMode.ALL, null, null, null, sortOrder);
     }
 
     /**
@@ -172,7 +175,7 @@ public class EntityListSingleSelect<ID extends Serializable, T extends AbstractE
      * @param items             the list of entities to display
      */
     public EntityListSingleSelect(EntityModel<T> targetEntityModel, AttributeModel attributeModel, List<T> items) {
-        this(targetEntityModel, attributeModel, null, SelectMode.FIXED, null, items);
+        this(targetEntityModel, attributeModel, null, SelectMode.FIXED, null, null, items);
     }
 
     @Override

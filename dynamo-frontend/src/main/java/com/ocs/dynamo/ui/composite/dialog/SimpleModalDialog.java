@@ -15,7 +15,6 @@ package com.ocs.dynamo.ui.composite.dialog;
 
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
-import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -76,7 +75,7 @@ public abstract class SimpleModalDialog extends BaseModalDialog {
     }
 
     /**
-     *
+     * The method that is called when the dialog is canceled
      */
     protected void doCancel() {
         // overwrite in subclass
@@ -88,21 +87,6 @@ public abstract class SimpleModalDialog extends BaseModalDialog {
 
     public Button getOkButton() {
         return okButton;
-    }
-
-    protected String message(String key) {
-        return messageService.getMessage(key, VaadinUtils.getLocale());
-    }
-
-    /**
-     * Retrieves a message based on its key
-     *
-     * @param key  the key of the message
-     * @param args any arguments to pass to the message
-     * @return
-     */
-    protected String message(String key, Object... args) {
-        return messageService.getMessage(key, VaadinUtils.getLocale(), args);
     }
 
     public MessageService getMessageService() {

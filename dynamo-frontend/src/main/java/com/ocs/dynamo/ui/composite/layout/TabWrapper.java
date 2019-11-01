@@ -5,6 +5,9 @@ import java.util.Map;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.tabs.Tabs;
@@ -68,8 +71,16 @@ public class TabWrapper extends VerticalLayout {
      * @param component
      * @return
      */
-    public Tab addTab(String label, Component component) {
-        Tab tab = new Tab(label);
+    public Tab addTab(String label, Component component, Icon icon) {
+        Button button = new Button(label);
+        
+        button.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
+        if (icon != null) {
+            button.setIcon(icon);
+        }
+        Tab tab = new Tab(button);
+        tab.setLabel(label);
+        
         tabsToPages.put(tab, component);
         tabs.add(tab);
         if (displayedPage.getChildren().count() == 0L) {
@@ -77,6 +88,13 @@ public class TabWrapper extends VerticalLayout {
         }
 
         return tab;
+    }
+
+    
+    @Override
+    public Component getComponentAt(int index) {
+        Tab tab = getTabByIndex(index);
+        return tabsToPages.get(tab);
     }
 
     public int getSelectedIndex() {

@@ -26,7 +26,9 @@ import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.tabs.Tab;
 
 /**
  * A layout that contains a tab sheet with tabs that are lazily loaded. Use the
@@ -44,12 +46,12 @@ public abstract class LazyTabLayout<ID extends Serializable, T extends AbstractE
     private static final long serialVersionUID = 3788799136302802727L;
 
     /**
-     * 
+     * The caption to display above the tabs
      */
     private Label caption;
 
     /**
-     * The captions of the tabs that have already been constructed
+     * The indices of the tabs that have already been constructed
      */
     private Set<Integer> constructedTabs = new HashSet<>();
 
@@ -66,7 +68,7 @@ public abstract class LazyTabLayout<ID extends Serializable, T extends AbstractE
     /**
      * Constructor
      * 
-     * @param entity
+     * @param entity the entity to display
      */
     public LazyTabLayout(T entity) {
         this.entity = entity;
@@ -118,6 +120,7 @@ public abstract class LazyTabLayout<ID extends Serializable, T extends AbstractE
      * @param index the index
      * @return
      */
+    @Override
     public Component getComponentAt(int index) {
         return tabs.getComponentAt(index);
     }
@@ -126,22 +129,14 @@ public abstract class LazyTabLayout<ID extends Serializable, T extends AbstractE
         return entity;
     }
 
+    protected abstract Icon getIconForTab(int index);
+
     /**
      * Returns the captions of the tabs
      * 
      * @return
      */
     protected abstract String[] getTabCaptions();
-
-    /**
-     * Returns the description (tool tip) for a certain tab
-     * 
-     * @param index the index of the tab
-     * @return
-     */
-    protected String getTabDescription(int index) {
-        return null;
-    }
 
     /**
      * Constructs or reloads a tab
@@ -154,14 +149,12 @@ public abstract class LazyTabLayout<ID extends Serializable, T extends AbstractE
         // lazily load a tab
         if (!constructedTabs.contains(index)) {
             constructedTabs.add(index);
-            // look up the tab in the copies
-
             // paste the real tab into the placeholder
             Component constructed = initTab(index);
             tabs.setComponent(index, constructed);
         } else {
             // reload the tab if needed
-            Component component = tabs.getComponentAt(index + 1);
+            Component component = tabs.getComponentAt(index);
             if (component instanceof Reloadable) {
                 if (component instanceof CanAssignEntity) {
                     ((CanAssignEntity<?, T>) component).assignEntity(getEntity());
@@ -200,6 +193,7 @@ public abstract class LazyTabLayout<ID extends Serializable, T extends AbstractE
     }
 
     /**
+     * Sets the specified entity as the entity displayed in this component
      * 
      * @param entity
      * @param preserveTab
@@ -236,9 +230,10 @@ public abstract class LazyTabLayout<ID extends Serializable, T extends AbstractE
     private void setupLazySheet(TabWrapper tabs) {
 
         // build up placeholder tabs that only contain an empty layout
+        int index = 0;
         for (String caption : getTabCaptions()) {
             VerticalLayout dummy = new DefaultVerticalLayout(false, false);
-            tabs.addTab(caption, dummy);
+            tabs.addTab(caption, dummy, getIconForTab(index++));
         }
 
         // construct first tab
@@ -252,4 +247,10 @@ public abstract class LazyTabLayout<ID extends Serializable, T extends AbstractE
         });
 
     }
+
+    public Tab getTabByIndex(int index) {
+        return tabs.getTabByIndex(index);
+    }
+    
+    
 }

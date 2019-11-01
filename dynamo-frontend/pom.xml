@@ -180,28 +180,6 @@
 				</executions>
 			</plugin>
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jar-plugin</artifactId>
-				<configuration>
-					<archive>
-						<index>true</index>
-						<manifest>
-							<addClasspath>true</addClasspath>
-							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-						</manifest>
-						<manifestEntries>
-							<!-- Package format version - do not change -->
-							<Vaadin-Package-Version>1</Vaadin-Package-Version>
-							<Vaadin-License-Title>${vaadin.license.title}</Vaadin-License-Title>
-							<Vaadin-Widgetsets>com.ocs.dynamo.DynamoWidgetSet</Vaadin-Widgetsets>
-						</manifestEntries>
-					</archive>
-					<!-- Exclude useless rubbish from JAR (saves 20MB) -->
-					<!--<excludes> <exclude>VAADIN/gwt-unitCache/**</exclude> &lt;!&ndash;<exclude>VAADIN/widgetsets/WEB-INF/**</exclude>&ndash;&gt; 
-						</excludes> -->
-				</configuration>
-			</plugin>
-			<plugin>
 				<groupId>com.vaadin</groupId>
 				<artifactId>vaadin-maven-plugin</artifactId>
 			</plugin>
@@ -220,7 +198,7 @@
 			<plugins>
 				<!--This plugin's configuration is used to store Eclipse m2e settings 
 					only. It has no influence on the Maven build itself. -->
-				<plugin>
+				<!--  <plugin>
 					<groupId>org.eclipse.m2e</groupId>
 					<artifactId>lifecycle-mapping</artifactId>
 					<version>1.0.0</version>
@@ -249,7 +227,7 @@
 							</pluginExecutions>
 						</lifecycleMappingMetadata>
 					</configuration>
-				</plugin>
+				</plugin>-->
 			</plugins>
 		</pluginManagement>
 	</build>

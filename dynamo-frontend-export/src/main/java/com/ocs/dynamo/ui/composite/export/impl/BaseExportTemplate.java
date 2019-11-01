@@ -155,14 +155,11 @@ public abstract class BaseExportTemplate<ID extends Serializable, T extends Abst
      *         <code>false</code> otherwise
      */
     protected boolean show(AttributeModel am) {
-
         boolean visible = ExportMode.FULL.equals(exportMode) ? am.isVisible() : am.isVisibleInGrid();
 
         // never show invisible or LOB attributes
-        if (!visible || AttributeType.LOB.equals(am.getAttributeType())) {
-            return false;
-        }
-        return true;
+        return visible && !AttributeType.LOB.equals(am.getAttributeType());
+
     }
 
     public Filter getFilter() {

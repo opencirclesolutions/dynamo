@@ -23,8 +23,6 @@ import com.vaadin.flow.function.SerializablePredicate;
 
 public class EditableGridLayoutTest extends FrontendIntegrationTest {
 
-    private static Routes routes;
-
     @Autowired
     private EntityModelFactory entityModelFactory;
 
@@ -42,16 +40,9 @@ public class EditableGridLayoutTest extends FrontendIntegrationTest {
 
     private TestEntity2 child2;
 
-    @BeforeClass
-    public static void createRoutes() {
-        // initialize routes only once, to avoid view auto-detection before every test
-        // and to speed up the tests
-        routes = new Routes().autoDiscoverViews("com.ocs.dynamo");
-    }
-
     @Before
     public void setup() {
-        MockVaadin.setup(routes);
+        MockVaadin.setup();
         e1 = new TestEntity("Bob", 11L);
         e1 = testEntityService.save(e1);
 

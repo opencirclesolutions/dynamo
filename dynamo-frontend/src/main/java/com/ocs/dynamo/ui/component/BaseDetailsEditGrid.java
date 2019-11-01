@@ -24,7 +24,6 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import com.google.common.collect.Lists;
-import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
@@ -198,7 +197,7 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
      * @param joins
      */
     public BaseDetailsEditGrid(BaseService<ID, T> service, EntityModel<T> entityModel, AttributeModel attributeModel, boolean viewMode,
-            boolean serviceBasedEditMode, FormOptions formOptions, FetchJoinInformation... joins) {
+            boolean serviceBasedEditMode, FormOptions formOptions) {
         this.service = service;
         this.entityModel = entityModel;
         this.messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
@@ -206,6 +205,8 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
         this.formOptions = formOptions;
         this.attributeModel = attributeModel;
         this.serviceBasedEditMode = serviceBasedEditMode;
+
+        // TODO: is this still needed
         setWidth("400px");
     }
 

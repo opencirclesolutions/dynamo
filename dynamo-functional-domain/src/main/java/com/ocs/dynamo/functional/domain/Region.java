@@ -53,6 +53,6 @@ public class Region extends DomainParent<Country, Region> {
 
     @Override
     public String toString() {
-        return ReflectionToStringBuilder.toStringExclude(this, new String[] { "countries", "children" });
+        return ReflectionToStringBuilder.toStringExclude(this, "countries", "children");
     }
 }

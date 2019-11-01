@@ -175,7 +175,8 @@ public class FieldFactoryImpl implements FieldFactory {
         EntityModel<?> em = resolveEntityModel(fieldEntityModel, am, search);
         BaseService<ID, S> service = (BaseService<ID, S>) serviceLocator.getServiceForEntity(em.getEntityClass());
         SortOrder<?>[] sos = constructSortOrder(em);
-        return new QuickAddListSingleSelect<>((EntityModel<S>) em, am, service, (SerializablePredicate<S>) fieldFilter, search, sos);
+        return new QuickAddListSingleSelect<>((EntityModel<S>) em, am, service, (SerializablePredicate<S>) fieldFilter,
+                (ListDataProvider<S>) sharedProvider, search, sos);
     }
 
     @SuppressWarnings("unchecked")

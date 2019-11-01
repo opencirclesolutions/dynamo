@@ -86,6 +86,11 @@ public class DetailsEditGrid<ID extends Serializable, T extends AbstractEntity<I
         provider.refreshAll();
     }
 
+    @Override
+    protected Collection<T> generateModelValue() {
+        return provider == null ? new ArrayList<>() : ConvertUtils.convertCollection(provider.getItems(), getAttributeModel());
+    }
+
     public Comparator<T> getComparator() {
         return comparator;
     }
@@ -126,17 +131,13 @@ public class DetailsEditGrid<ID extends Serializable, T extends AbstractEntity<I
     /**
      * Respond to a selection of an item in the grid
      */
+    @Override
     protected void onSelect(Object selected) {
         // overwrite when needed
     }
 
     public void setComparator(Comparator<T> comparator) {
         this.comparator = comparator;
-    }
-
-    @Override
-    protected Collection<T> generateModelValue() {
-        return provider == null ? new ArrayList<>() : ConvertUtils.convertCollection(provider.getItems(), getAttributeModel());
     }
 
     @Override

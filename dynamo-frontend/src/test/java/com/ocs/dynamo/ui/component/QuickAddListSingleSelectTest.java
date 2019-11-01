@@ -56,7 +56,7 @@ public class QuickAddListSingleSelectTest extends BaseMockitoTest {
         EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
         AttributeModel am = em.getAttributeModel("testDomain");
 
-        QuickAddListSingleSelect<Integer, TestEntity> select = new QuickAddListSingleSelect<>(em, am, service, null, false);
+        QuickAddListSingleSelect<Integer, TestEntity> select = new QuickAddListSingleSelect<>(em, am, service, null, null, false);
         select.initContent();
 
         // list must contain 3 items
@@ -78,7 +78,7 @@ public class QuickAddListSingleSelectTest extends BaseMockitoTest {
         EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
         AttributeModel am = em.getAttributeModel("testDomain");
 
-        QuickAddListSingleSelect<Integer, TestEntity> select = new QuickAddListSingleSelect<>(em, am, service, null, false);
+        QuickAddListSingleSelect<Integer, TestEntity> select = new QuickAddListSingleSelect<>(em, am, service, null, null, false);
         select.initContent();
 
         // list must contain 3 items

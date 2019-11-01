@@ -7,12 +7,10 @@ import javax.inject.Inject;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
 import com.github.mvysny.kaributesting.v10.MockVaadin;
-import com.github.mvysny.kaributesting.v10.Routes;
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.filter.EqualsPredicate;
@@ -24,15 +22,6 @@ import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.function.SerializablePredicate;
 
 public class SimpleEditLayoutTest extends FrontendIntegrationTest {
-
-    private static Routes routes;
-
-    @BeforeClass
-    public static void createRoutes() {
-        // initialize routes only once, to avoid view auto-detection before every test
-        // and to speed up the tests
-        routes = new Routes().autoDiscoverViews("com.ocs.dynamo");
-    }
 
     @Inject
     private EntityModelFactory entityModelFactory;
@@ -48,7 +37,7 @@ public class SimpleEditLayoutTest extends FrontendIntegrationTest {
 
     @Before
     public void setup() {
-        MockVaadin.setup(routes);
+        MockVaadin.setup();
         e1 = new TestEntity("Bob", 11L);
         e1 = testEntityService.save(e1);
 

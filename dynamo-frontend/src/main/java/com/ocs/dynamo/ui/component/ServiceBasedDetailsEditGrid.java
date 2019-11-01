@@ -75,7 +75,7 @@ public class ServiceBasedDetailsEditGrid<ID extends Serializable, T extends Abst
      */
     public ServiceBasedDetailsEditGrid(BaseService<ID, T> service, EntityModel<T> entityModel, AttributeModel attributeModel,
             boolean viewMode, FormOptions formOptions, FetchJoinInformation... joins) {
-        super(service, entityModel, attributeModel, viewMode, true, formOptions, joins);
+        super(service, entityModel, attributeModel, viewMode, true, formOptions);
         this.provider = new IdBasedDataProvider<>(service, entityModel, joins);
         initContent();
     }

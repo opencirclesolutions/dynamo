@@ -20,6 +20,7 @@ import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.Refreshable;
+import com.ocs.dynamo.ui.SharedProvider;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.customfield.CustomField;
@@ -38,9 +39,14 @@ import com.vaadin.flow.shared.Registration;
  * @param <T> the type of the entity that is being displayed
  */
 public class QuickAddListSingleSelect<ID extends Serializable, T extends AbstractEntity<ID>> extends QuickAddEntityField<ID, T, T>
-        implements Refreshable {
+        implements Refreshable, SharedProvider<T> {
 
     private static final long serialVersionUID = 4246187881499965296L;
+
+    /**
+     * Whether direct navigation is allowed
+     */
+    private boolean directNavigationAllowed;
 
     /**
      * The list select component
@@ -51,11 +57,6 @@ public class QuickAddListSingleSelect<ID extends Serializable, T extends Abstrac
      * Whether quick adding is allowed
      */
     private boolean quickAddAllowed;
-
-    /**
-     * Whether direct navigation is allowed
-     */
-    private boolean directNavigationAllowed;
 
     /**
      * Constructor
@@ -70,9 +71,9 @@ public class QuickAddListSingleSelect<ID extends Serializable, T extends Abstrac
      */
     @SafeVarargs
     public QuickAddListSingleSelect(EntityModel<T> entityModel, AttributeModel attributeModel, BaseService<ID, T> service,
-            SerializablePredicate<T> filter, boolean search, SortOrder<?>... sortOrder) {
+            SerializablePredicate<T> filter, ListDataProvider<T> sharedProvider, boolean search, SortOrder<?>... sortOrder) {
         super(service, entityModel, attributeModel, filter);
-        listSelect = new EntityListSingleSelect<>(entityModel, attributeModel, service, filter, sortOrder);
+        listSelect = new EntityListSingleSelect<>(entityModel, attributeModel, service, filter, sharedProvider, sortOrder);
         this.quickAddAllowed = !search && attributeModel != null && attributeModel.isQuickAddAllowed();
         this.directNavigationAllowed = !search && attributeModel != null && attributeModel.isNavigable();
         initContent();
@@ -97,6 +98,13 @@ public class QuickAddListSingleSelect<ID extends Serializable, T extends Abstrac
     }
 
     @Override
+    public void clear() {
+        if (listSelect != null) {
+            listSelect.clear();
+        }
+    }
+
+    @Override
     public void clearAdditionalFilter() {
         super.clearAdditionalFilter();
         if (listSelect != null) {
@@ -104,8 +112,22 @@ public class QuickAddListSingleSelect<ID extends Serializable, T extends Abstrac
         }
     }
 
+    @Override
+    protected T generateModelValue() {
+        if (listSelect != null) {
+            return listSelect.getValue();
+        }
+        return null;
+    }
+
     public EntityListSingleSelect<ID, T> getListSelect() {
         return listSelect;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public ListDataProvider<T> getSharedProvider() {
+        return (ListDataProvider<T>) listSelect.getDataProvider();
     }
 
     @Override
@@ -176,14 +198,6 @@ public class QuickAddListSingleSelect<ID extends Serializable, T extends Abstrac
     }
 
     @Override
-    protected T generateModelValue() {
-        if (listSelect != null) {
-            return listSelect.getValue();
-        }
-        return null;
-    }
-
-    @Override
     @SuppressWarnings("unchecked")
     protected void setPresentationValue(T value) {
         if (listSelect != null) {
@@ -192,13 +206,6 @@ public class QuickAddListSingleSelect<ID extends Serializable, T extends Abstrac
             if (provider.getItems().contains(value)) {
                 listSelect.setValue(value);
             }
-        }
-    }
-
-    @Override
-    public void clear() {
-        if (listSelect != null) {
-            listSelect.clear();
         }
     }
 

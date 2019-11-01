@@ -18,8 +18,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
-import org.springframework.core.io.Resource;
-
 import com.google.common.collect.Lists;
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
@@ -41,6 +39,7 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid.SelectionMode;
 import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -387,6 +386,11 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
                 // displayed above
                 // the tabs)
                 return AbstractSearchLayout.this.constructComplexDetailModeTab(getEntity(), index, formOptions, false);
+            }
+            
+            @Override
+            protected Icon getIconForTab(int index) {
+                return AbstractSearchLayout.this.getIconForTab(index);
             }
         };
         tabLayout.build();
@@ -889,7 +893,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
      * @param index the index of the tab
      * @return
      */
-    protected Resource getIconForTab(int index) {
+    protected Icon getIconForTab(int index) {
         // overwrite in subclasses
         return null;
     }

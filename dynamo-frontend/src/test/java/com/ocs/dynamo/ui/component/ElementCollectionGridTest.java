@@ -88,6 +88,7 @@ public class ElementCollectionGridTest extends FrontendIntegrationTest {
         ElementCollectionGrid<Integer, TestEntity, Long> grid = new ElementCollectionGrid<>(em.getAttributeModel("longTags"), fo);
 
         grid.setValue(Sets.newHashSet(4L, 5L));
+        Assert.assertEquals(1, grid.getGrid().getColumns().size());
     }
 
     @Test

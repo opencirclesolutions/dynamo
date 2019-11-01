@@ -42,7 +42,6 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.Grid.Column;
 import com.vaadin.flow.component.grid.editor.Editor;
-import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -52,7 +51,6 @@ import com.vaadin.flow.data.binder.Binder.BindingBuilder;
 import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.SortOrder;
 import com.vaadin.flow.function.SerializablePredicate;
-import com.vaadin.flow.function.ValueProvider;
 
 /**
  * A layout for editing entities directly inside a grid. This layout supports
@@ -70,11 +68,6 @@ import com.vaadin.flow.function.ValueProvider;
 public class EditableGridLayout<ID extends Serializable, T extends AbstractEntity<ID>> extends BaseCollectionLayout<ID, T> {
 
     private static final long serialVersionUID = 4606800218149558500L;
-
-    /**
-     * The default page length (number of rows in the grid)
-     */
-    private static final int PAGE_LENGTH = 12;
 
     /**
      * The add button
@@ -105,16 +98,6 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
      * The main layout
      */
     private VerticalLayout mainLayout;
-
-    /**
-     * The page length (number of visible rows)
-     */
-    private int pageLength = PAGE_LENGTH;
-
-    /**
-     * The icon to use inside the remove button
-     */
-    private Icon removeIcon = VaadinIcon.TRASH.create();
 
     /**
      * The message to display inside the "remove" button
@@ -301,16 +284,17 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 
         // editor needs to be explicitly opened in Vaadin Flow
         if (isEditAllowed() && !isViewmode() && GridEditMode.SINGLE_ROW.equals(getFormOptions().getGridEditMode())) {
-            Column<T> editColumn = getGridWrapper().getGrid().addComponentColumn((ValueProvider<T, Component>) t -> {
+            Column<T> editColumn = getGridWrapper().getGrid().addComponentColumn(t -> {
                 Button editButton = new Button("");
                 editButton.setIcon(VaadinIcon.EDIT.create());
                 editButton.addClickListener(event -> {
                     if (!editor.isOpen()) {
                         // change to save button
-                        event.getSource().setIcon(VaadinIcon.SAFE.create());
                         editor.editItem(t);
+                        event.getSource().setIcon(VaadinIcon.SAFE.create());
                     } else {
                         // save changes then rebuild grid
+                        event.getSource().setIcon(VaadinIcon.EDIT.create());
                         try {
                             getService().save(editor.getItem());
                             // save and recreate grid to avoid optimistic locks
@@ -332,7 +316,7 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
             String defaultMsg = message("ocs.remove");
             Column<T> removeColumn = getGridWrapper().getGrid().addComponentColumn(t -> {
                 Button button = new Button("");
-                button.setIcon(removeIcon);
+                button.setIcon(VaadinIcon.TRASH.create());
                 button.addClickListener(event -> {
                     Runnable r = () -> {
                         try {
@@ -425,15 +409,6 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
         return (ServiceBasedGridWrapper<ID, T>) super.getGridWrapper();
     }
 
-    @Override
-    public int getPageLength() {
-        return pageLength;
-    }
-
-    public Icon getRemoveIcon() {
-        return removeIcon;
-    }
-
     public String getRemoveMessage() {
         return removeMessage;
     }
@@ -459,15 +434,6 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 
     public void setFilterSupplier(Supplier<SerializablePredicate<T>> filterSupplier) {
         this.filterSupplier = filterSupplier;
-    }
-
-    @Override
-    public void setPageLength(int pageLength) {
-        this.pageLength = pageLength;
-    }
-
-    public void setRemoveIcon(Icon removeIcon) {
-        this.removeIcon = removeIcon;
     }
 
     public void setRemoveMessage(String removeMessage) {

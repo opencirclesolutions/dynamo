@@ -7,12 +7,9 @@ import javax.inject.Inject;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.github.mvysny.kaributesting.v10.MockVaadin;
-import com.github.mvysny.kaributesting.v10.Routes;
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.filter.EqualsPredicate;
@@ -25,8 +22,6 @@ import com.vaadin.flow.function.SerializablePredicate;
 
 public class FlexibleSearchLayoutTest extends FrontendIntegrationTest {
 
-    private static Routes routes;
-    
     @Inject
     private EntityModelFactory entityModelFactory;
 
@@ -35,16 +30,9 @@ public class FlexibleSearchLayoutTest extends FrontendIntegrationTest {
 
     private TestEntity e1;
 
-    @BeforeClass
-    public static void createRoutes() {
-        // initialize routes only once, to avoid view auto-detection before every test
-        // and to speed up the tests
-        routes = new Routes().autoDiscoverViews("com.ocs.dynamo");
-    }
-    
     @Before
     public void setup() {
-        MockVaadin.setup(routes);
+        MockVaadin.setup();
         e1 = new TestEntity("Bob", 11L);
         e1 = testEntityService.save(e1);
 
@@ -139,30 +127,6 @@ public class FlexibleSearchLayoutTest extends FrontendIntegrationTest {
         layout.build();
         layout.select(e1);
         Assert.assertEquals(e1, layout.getSelectedItem());
-    }
-
-    /**
-     * Test the selection of an item (single item)
-     */
-    @Test
-    @Ignore
-    public void testFlexibleSearchLayout_Remove() {
-        FormOptions options = new FormOptions();
-        options.setShowRemoveButton(true);
-
-        FlexibleSearchLayout<Integer, TestEntity> layout = createLayout(options);
-        layout.build();
-
-        Assert.assertTrue(layout.getRemoveButton().isVisible());
-
-        layout.setSelectedItem(e1);
-        layout.checkButtonState(layout.getSelectedItem());
-        layout.getRemoveButton().click();
-
-        // check that nothing is selected any more and the item has been removed
-        Assert.assertNull(layout.getSelectedItem());
-        layout.getGridWrapper().forceSearch();
-        Assert.assertEquals(2, layout.getGridWrapper().getDataProviderSize());
     }
 
     /**

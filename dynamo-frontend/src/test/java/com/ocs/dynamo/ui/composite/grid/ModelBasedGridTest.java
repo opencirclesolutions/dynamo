@@ -42,15 +42,6 @@ import com.vaadin.flow.function.SerializablePredicate;
 
 public class ModelBasedGridTest extends BaseMockitoTest {
 
-    private static Routes routes;
-
-    @BeforeClass
-    public static void createRoutes() {
-        // initialize routes only once, to avoid view auto-detection before every test
-        // and to speed up the tests
-        routes = new Routes().autoDiscoverViews("com.ocs.dynamo");
-    }
-
     private EntityModelFactory entityModelFactory = new EntityModelFactoryImpl();
 
     @Mock
@@ -62,7 +53,7 @@ public class ModelBasedGridTest extends BaseMockitoTest {
     @Before
     public void setUp() {
         ReflectionTestUtils.setField(entityModelFactory, "messageService", messageService);
-        MockVaadin.setup(routes);
+        MockVaadin.setup();
     }
 
     @Test
