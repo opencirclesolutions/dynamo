@@ -123,7 +123,7 @@ public abstract class CustomEntityField<ID extends Serializable, T extends Abstr
 	 * @param placeholder
 	 */
 	public void setPlaceholder(String placeholder) {
-		// do nothing
+		// do nothing - override when subclass if needed
 	}
 
 }

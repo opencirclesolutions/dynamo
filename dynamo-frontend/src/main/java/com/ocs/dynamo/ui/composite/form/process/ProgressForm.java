@@ -286,7 +286,7 @@ public abstract class ProgressForm<T> extends BaseCustomComponent implements Pro
     protected void showNotification(String message) {
         ui.getSession().lock();
         try {
-            super.showNotifification(message);
+            showErrorNotification(message);
         } finally {
             ui.getSession().unlock();
         }

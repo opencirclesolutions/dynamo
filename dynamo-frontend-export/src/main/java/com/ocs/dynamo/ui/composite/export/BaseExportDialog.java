@@ -25,7 +25,6 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
-
 /**
  * Base class for export dialogs
  * 
@@ -96,6 +95,11 @@ public abstract class BaseExportDialog<ID extends Serializable, T extends Abstra
     @Override
     protected String getTitle() {
         return message("ocs.export");
+    }
+
+    @Override
+    protected String getStyleName() {
+        return "ocsDownloadDialog";
     }
 
 }

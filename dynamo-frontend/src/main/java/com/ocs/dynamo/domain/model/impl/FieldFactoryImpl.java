@@ -34,6 +34,7 @@ import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.component.CustomEntityField;
 import com.ocs.dynamo.ui.component.DateTimePicker;
 import com.ocs.dynamo.ui.component.ElementCollectionGrid;
+import com.ocs.dynamo.ui.component.EntityComboBox;
 import com.ocs.dynamo.ui.component.EntityComboBox.SelectMode;
 import com.ocs.dynamo.ui.component.EntityLookupField;
 import com.ocs.dynamo.ui.component.InternalLinkField;
@@ -485,14 +486,23 @@ public class FieldFactoryImpl implements FieldFactory {
         String displayName = am.getDisplayName(VaadinUtils.getLocale());
 
         VaadinUtils.setLabel(field, editableGrid ? "" : displayName);
+        String placeHolder = am.getPrompt(VaadinUtils.getLocale());
 
         if (field instanceof TextField) {
             TextField textField = (TextField) field;
-            textField.setPlaceholder(am.getPrompt(VaadinUtils.getLocale()));
+            textField.setPlaceholder(placeHolder);
         } else if (field instanceof DatePicker) {
             // set a separate format for a date field
             DatePicker dateField = (DatePicker) field;
-            dateField.setPlaceholder(am.getPrompt(VaadinUtils.getLocale()));
+            dateField.setPlaceholder(placeHolder);
+        } else if (field instanceof TimePicker) {
+            ((TimePicker) field).setPlaceholder(placeHolder);
+        } else if (field instanceof EntityComboBox) {
+            ((EntityComboBox<?, ?>) field).setPlaceholder(placeHolder);
+        } else if (field instanceof TextArea) {
+            ((TextArea) field).setPlaceholder(placeHolder);
+        } else if (field instanceof CustomEntityField) {
+            ((CustomEntityField<?, ?, ?>) field).setPlaceholder(am.getPrompt(VaadinUtils.getLocale()));
         }
 
         if (field instanceof AbstractField) {
@@ -500,9 +510,7 @@ public class FieldFactoryImpl implements FieldFactory {
             af.setRequiredIndicatorVisible(search ? am.isRequiredForSearching() : am.isRequired());
         }
 
-        if (field instanceof CustomEntityField) {
-            ((CustomEntityField<?, ?, ?>) field).setPlaceholder(am.getPrompt(VaadinUtils.getLocale()));
-        }
+
 
         // add percentage sign
         if (am.isPercentage() && field instanceof TextField) {

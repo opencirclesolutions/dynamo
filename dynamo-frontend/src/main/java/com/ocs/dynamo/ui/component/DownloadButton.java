@@ -37,7 +37,7 @@ public class DownloadButton extends VerticalLayout {
      * @param caption the caption of the button
      */
     public DownloadButton(String caption, Supplier<InputStream> createContent, Supplier<String> createFileName) {
-        anchor = new Anchor(new StreamResource(caption, () -> createContent.get()), createFileName.get());
+        anchor = new Anchor(new StreamResource(createFileName.get(), () -> createContent.get()), caption);
         anchor.getElement().setAttribute("download", true);
         add(anchor);
     }

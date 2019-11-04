@@ -42,6 +42,7 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.customfield.CustomField;
+import com.vaadin.flow.component.grid.Grid.Column;
 import com.vaadin.flow.component.grid.Grid.SelectionMode;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -205,9 +206,6 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
         this.formOptions = formOptions;
         this.attributeModel = attributeModel;
         this.serviceBasedEditMode = serviceBasedEditMode;
-
-        // TODO: is this still needed
-        setWidth("400px");
     }
 
     /**
@@ -255,7 +253,7 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
     }
 
     /**
-     * Callback method for inserting custom converter
+     * Callback method for creating a custom converter
      * 
      * @param am the attribute model
      * @return
@@ -283,7 +281,7 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
     /**
      * Constructs a button that brings up a search dialog
      *
-     * @param buttonBar
+     * @param buttonBar the button bar to which to add the button
      */
     protected void constructSearchButton(HorizontalLayout buttonBar) {
 
@@ -471,8 +469,11 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 
         // TODO: make configurable
         grid.setHeight("200px");
-        grid.setWidth("500px");
         grid.setSelectionMode(SelectionMode.SINGLE);
+        
+        for (Column<?> c : grid.getColumns()) {
+            c.setSortable(false);
+        }
 
         VerticalLayout layout = new DefaultVerticalLayout(false, true);
         layout.setSizeFull();

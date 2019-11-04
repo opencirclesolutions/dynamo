@@ -88,7 +88,7 @@ public class DetailsEditGrid<ID extends Serializable, T extends AbstractEntity<I
 
     @Override
     protected Collection<T> generateModelValue() {
-        return provider == null ? new ArrayList<>() : ConvertUtils.convertCollection(provider.getItems(), getAttributeModel());
+        return ConvertUtils.convertCollection(provider == null ? new ArrayList<>() : provider.getItems(), getAttributeModel());
     }
 
     public Comparator<T> getComparator() {
@@ -106,7 +106,7 @@ public class DetailsEditGrid<ID extends Serializable, T extends AbstractEntity<I
 
     @Override
     public Collection<T> getValue() {
-        return provider == null ? new ArrayList<>() : ConvertUtils.convertCollection(provider.getItems(), getAttributeModel());
+        return ConvertUtils.convertCollection(provider == null ? new ArrayList<>() : provider.getItems(), getAttributeModel());
     }
 
     @Override

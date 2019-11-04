@@ -29,8 +29,11 @@ import com.ocs.dynamo.filter.FilterConverter;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
+import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.NotificationVariant;
+import com.vaadin.flow.component.notification.Notification.Position;
 import com.vaadin.flow.data.provider.AbstractDataProvider;
 import com.vaadin.flow.data.provider.Query;
 import com.vaadin.flow.data.provider.QuerySortOrder;
@@ -262,7 +265,8 @@ public abstract class BaseDataProvider<ID extends Serializable, T extends Abstra
      */
     protected void showNotification(String message) {
         if (UI.getCurrent() != null) {
-            Notification.show(message);
+            Notification.show(message, SystemPropertyUtils.getDefaultMessageDisplayTime(), Position.MIDDLE)
+                    .addThemeVariants(NotificationVariant.LUMO_ERROR);
         }
     }
 }

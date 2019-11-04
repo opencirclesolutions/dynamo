@@ -136,7 +136,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
         protected void initContent() {
             byte[] bytes = ClassUtils.getBytes(getEntity(), am.getName());
 
-            VerticalLayout main = new VerticalLayout();
+            HorizontalLayout main = new HorizontalLayout();
             Image image = new Image();
             image.setClassName(DynamoConstants.CSS_IMAGE_PREVIEW);
 
@@ -186,7 +186,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
                         afterUploadConsumer.accept(event.getFileName(), content);
                     }
                 } else {
-                    showNotifification(message("ocs.modelbasededitform.upload.format.invalid"));
+                    showErrorNotification(message("ocs.modelbasededitform.upload.format.invalid"));
                 }
                 clearButton.setVisible(false);
             });
@@ -216,6 +216,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
                     ClassUtils.clearFieldValue(getEntity(), am.getFileNameProperty(), String.class);
                     setLabelValue(am.getFileNameProperty(), "");
                 }
+                // clear button is no longer needed since the component itself can be used
+                clearButton.setVisible(false);
             });
             main.add(clearButton);
             clearButton.setVisible(bytes != null);
@@ -1111,7 +1113,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
         boolean isNew = entity.getId() == null;
         entity = service.save(entity);
         setEntity(service.fetchById(entity.getId(), getDetailJoins()));
-        showNotifification(message("ocs.changes.saved"));
+        showTrayNotification(message("ocs.changes.saved"));
 
         // set to view mode, load the view mode screen, and fill the
         // details

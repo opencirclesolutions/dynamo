@@ -13,7 +13,6 @@ public class SystemPropertyUtilsTest {
         Assert.assertEquals("dd-MM-yyyy", SystemPropertyUtils.getDefaultDateFormat());
         Assert.assertEquals("dd-MM-yyyy HH:mm:ss", SystemPropertyUtils.getDefaultDateTimeFormat());
         Assert.assertEquals(2, SystemPropertyUtils.getDefaultDecimalPrecision());
-        Assert.assertEquals(3, SystemPropertyUtils.getDefaultListSelectRows());
         Assert.assertEquals("HH:mm:ss", SystemPropertyUtils.getDefaultTimeFormat());
 
         Assert.assertEquals(false, SystemPropertyUtils.allowListExport());

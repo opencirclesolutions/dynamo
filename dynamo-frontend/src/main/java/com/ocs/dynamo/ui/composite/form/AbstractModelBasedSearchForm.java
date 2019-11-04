@@ -520,7 +520,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
                 try {
                     validateBeforeSearch();
                 } catch (OCSValidationException ex) {
-                    showNotifification(ex.getErrors().get(0));
+                    showErrorNotification(ex.getErrors().get(0));
                     return false;
                 }
             }

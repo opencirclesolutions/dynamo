@@ -22,7 +22,6 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 
 public class DetailsEditLayoutTest extends BaseMockitoTest {
-
  
     private EntityModelFactory factory = new EntityModelFactoryImpl();
 
@@ -83,9 +82,9 @@ public class DetailsEditLayoutTest extends BaseMockitoTest {
         // disable field
         layout.setFieldEnabled(0, "age", false);
 
-        // get entity
+        // get first entity (sorted by name, some "Bob" comes first)
         TestEntity t1 = layout.getEntity(0);
-        Assert.assertEquals(e1, t1);
+        Assert.assertEquals(e2, t1);
 
         Assert.assertTrue(layout.validateAllFields());
     }

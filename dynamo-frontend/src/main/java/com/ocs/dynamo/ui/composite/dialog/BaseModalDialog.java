@@ -22,6 +22,8 @@ import com.ocs.dynamo.ui.Buildable;
 import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
+import com.ocs.dynamo.util.SystemPropertyUtils;
+import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.notification.Notification;
@@ -46,7 +48,6 @@ public abstract class BaseModalDialog extends Dialog implements Buildable {
     private MessageService messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
 
     public BaseModalDialog() {
-
     }
 
     @Override
@@ -58,10 +59,14 @@ public abstract class BaseModalDialog extends Dialog implements Buildable {
      * Constructs the layout
      */
     private void constructLayout() {
-        // TODO: solve this properly with styling
-        setWidth("800px");
-
         VerticalLayout main = new DefaultVerticalLayout(false, true);
+        main.addClassName(getStyleName());
+
+        // differently colored title layout
+        VerticalLayout titleLayout = new VerticalLayout();
+        titleLayout.add(new Text(getTitle()));
+        titleLayout.addClassName("dialogTitle");
+        main.add(titleLayout);
 
         add(main);
         doBuild(main);
@@ -103,7 +108,8 @@ public abstract class BaseModalDialog extends Dialog implements Buildable {
      */
     protected void showNotification(String message) {
         if (UI.getCurrent() != null && UI.getCurrent().getPage() != null) {
-            Notification.show(message, 3000, Position.MIDDLE).addThemeVariants(NotificationVariant.LUMO_ERROR);
+            Notification.show(message, SystemPropertyUtils.getDefaultMessageDisplayTime(), Position.MIDDLE)
+                    .addThemeVariants(NotificationVariant.LUMO_ERROR);
         } else {
             LOG.info(message);
         }
@@ -132,5 +138,9 @@ public abstract class BaseModalDialog extends Dialog implements Buildable {
 
     public MessageService getMessageService() {
         return messageService;
+    }
+
+    protected String getStyleName() {
+        return "ocsDialog";
     }
 }

@@ -187,4 +187,11 @@ public class QuickAddTokenSelect<ID extends Serializable, T extends AbstractEnti
             tokenSelect.setValue(Sets.newHashSet(value));
         }
     }
+
+    @Override
+    public void setPlaceholder(String placeholder) {
+        if (tokenSelect != null) {
+            tokenSelect.setPlaceholder(placeholder);
+        }
+    }
 }

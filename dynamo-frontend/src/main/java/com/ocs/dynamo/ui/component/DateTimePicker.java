@@ -19,6 +19,7 @@ import java.util.Locale;
 
 import com.vaadin.flow.component.customfield.CustomField;
 import com.vaadin.flow.component.datepicker.DatePicker;
+import com.vaadin.flow.component.datepicker.DatePicker.DatePickerI18n;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.timepicker.TimePicker;
 
@@ -75,6 +76,10 @@ public class DateTimePicker extends CustomField<LocalDateTime> {
     public void clear() {
         datePicker.clear();
         timePicker.clear();
+    }
+
+    public void setI18n(DatePickerI18n i18n) {
+        datePicker.setI18n(i18n);
     }
 
 }

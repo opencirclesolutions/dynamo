@@ -59,7 +59,7 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
                     try {
                         doDelete();
                     } catch (OCSRuntimeException ex) {
-                        showNotifification(ex.getMessage());
+                        showErrorNotification(ex.getMessage());
                     }
                 };
                 VaadinUtils.showConfirmDialog(getMessageService(), message("ocs.delete.confirm", getItemToDelete()), r);

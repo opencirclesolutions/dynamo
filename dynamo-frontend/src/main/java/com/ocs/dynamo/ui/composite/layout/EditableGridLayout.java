@@ -323,7 +323,7 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
                             binders.remove(t);
                             doRemove(t);
                         } catch (OCSRuntimeException ex) {
-                            showNotifification(ex.getMessage());
+                            showErrorNotification(ex.getMessage());
                         }
                     };
                     VaadinUtils.showConfirmDialog(getMessageService(),

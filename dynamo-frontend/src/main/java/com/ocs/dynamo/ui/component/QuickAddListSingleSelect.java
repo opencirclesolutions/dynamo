@@ -208,5 +208,4 @@ public class QuickAddListSingleSelect<ID extends Serializable, T extends Abstrac
             }
         }
     }
-
 }

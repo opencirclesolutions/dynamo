@@ -616,7 +616,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
                 searchLayoutConstructed = true;
                 afterSearchPerformed();
             } catch (OCSValidationException ex) {
-                showNotifification(ex.getErrors().get(0));
+                showErrorNotification(ex.getErrors().get(0));
             }
         }
     }

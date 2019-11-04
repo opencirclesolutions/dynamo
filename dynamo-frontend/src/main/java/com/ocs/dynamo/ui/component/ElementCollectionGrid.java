@@ -105,12 +105,6 @@ public class ElementCollectionGrid<ID extends Serializable, U extends AbstractEn
 
     /**
      * 
-     * The number of rows to display
-     */
-    private int pageLength = SystemPropertyUtils.getDefaultListSelectRows();
-
-    /**
-     * 
      * The currently selected item in the grid
      */
     private Object selectedItem;
@@ -242,10 +236,6 @@ public class ElementCollectionGrid<ID extends Serializable, U extends AbstractEn
 
     public Long getMinValue() {
         return attributeModel.getMinValue();
-    }
-
-    public int getPageLength() {
-        return pageLength;
     }
 
     public Object getSelectedItem() {
@@ -396,10 +386,6 @@ public class ElementCollectionGrid<ID extends Serializable, U extends AbstractEn
 
     public void setFormOptions(final FormOptions formOptions) {
         this.formOptions = formOptions;
-    }
-
-    public void setPageLength(final int pageLength) {
-        this.pageLength = pageLength;
     }
 
     public void setSelectedItem(final String selectedItem) {

@@ -34,6 +34,7 @@ import com.ocs.dynamo.ui.UseInViewMode;
 import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
+import com.ocs.dynamo.ui.utils.ConvertUtils;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasComponents;
@@ -254,6 +255,7 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
         this.items = new ArrayList<>();
         this.viewMode = viewMode;
         this.formOptions = formOptions;
+        initContent();
     }
 
     /**
@@ -390,8 +392,7 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 
     @Override
     protected Collection<T> generateModelValue() {
-        // not needed
-        return null;
+        return ConvertUtils.convertCollection(items == null ? new ArrayList<>() : items, attributeModel);
     }
 
     public Button getAddButton() {
@@ -457,14 +458,13 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 
     @Override
     public Collection<T> getValue() {
-        // does not actually have to return anything
-        return null;
+        return ConvertUtils.convertCollection(items == null ? new ArrayList<>() : items, attributeModel);
     }
 
     /**
      * Constructs the actual component
      */
-    protected Component initContent() {
+    protected void initContent() {
 
         VerticalLayout layout = new DefaultVerticalLayout(false, true);
 
@@ -479,7 +479,7 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
         // initial filling
         setItems(items);
 
-        return layout;
+        add(layout);
     }
 
     public boolean isViewMode() {
@@ -613,7 +613,9 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
     public void setItems(Collection<T> items) {
 
         List<T> list = new ArrayList<>();
-        list.addAll(items);
+        if (items != null) {
+            list.addAll(items);
+        }
         if (comparator != null) {
             list.sort(comparator);
         }
@@ -623,7 +625,7 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
         if (mainFormContainer != null) {
             mainFormContainer.removeAll();
             forms.clear();
-            for (T t : items) {
+            for (T t : this.items) {
                 addDetailEditForm(t);
             }
         }

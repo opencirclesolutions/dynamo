@@ -31,19 +31,17 @@ import com.ocs.dynamo.constants.DynamoConstants;
  */
 public final class SystemPropertyUtils {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SystemPropertyUtils.class);
-
     private static final int DEFAULT_DECIMAL_PRECISION = 2;
 
     private static final String DEFAULT_FALSE_REPRESENTATION = "false";
 
-    private static final int DEFAULT_LISTSELECT_ROWS = 3;
-
     private static final int DEFAULT_LOOKUP_FIELD_MAX_ITEMS = 3;
 
-    private static final int DEFAULT_TEXTAREA_ROWS = 3;
-
     private static final String DEFAULT_TRUE_REPRESENTATION = "true";
+    
+    private static final int DEFAULT_MESSAGE_DISPLAY_TIME = 2000;
+
+    private static final Logger LOG = LoggerFactory.getLogger(SystemPropertyUtils.class);
 
     private static Properties properties = new Properties();
 
@@ -182,19 +180,20 @@ public final class SystemPropertyUtils {
     }
 
     /**
-     * @return the default number of rows in a list select component. Also used as
-     *         the default for collection tables
-     */
-    public static int getDefaultListSelectRows() {
-        return getIntProperty(DynamoConstants.SP_DEFAULT_LISTSELECT_ROWS, DEFAULT_LISTSELECT_ROWS);
-    }
-
-    /**
      *
      * @return the default locale used for e.g. the decimal and thousands separators
      */
     public static String getDefaultLocale() {
         return getStringProperty(DynamoConstants.SP_DEFAULT_LOCALE, DynamoConstants.DEFAULT_LOCALE.toString());
+    }
+
+    /**
+     * 
+     * @return the amount of time (in milliseconds) that an error or information
+     *         message will be displayed
+     */
+    public static Integer getDefaultMessageDisplayTime() {
+        return getIntProperty(DynamoConstants.SP_DEFAULT_MESSAGE_DISPLAY_TIME, DEFAULT_MESSAGE_DISPLAY_TIME);
     }
 
     /**
@@ -212,18 +211,10 @@ public final class SystemPropertyUtils {
     }
 
     /**
-     * 
-     * @return the default number of rows for a textarea component
-     */
-    public static int getDefaultTextAreaRows() {
-        return getIntProperty(DynamoConstants.SP_DEFAULT_TEXTAREA_ROWS, DEFAULT_TEXTAREA_ROWS);
-    }
-
-    /**
      *
      *
      * @return the default format for formatting attributes of type LocalTime or
-     *         Java 7 dates that only consist of a time stamp
+     *         Java 8 dates that only consist of a time stamp
      */
     public static String getDefaultTimeFormat() {
         return getStringProperty(DynamoConstants.SP_DEFAULT_TIME_FORMAT, "HH:mm:ss");

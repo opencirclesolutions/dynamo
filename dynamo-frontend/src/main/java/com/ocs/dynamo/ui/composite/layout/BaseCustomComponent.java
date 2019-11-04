@@ -28,6 +28,7 @@ import com.ocs.dynamo.ui.UIHelper;
 import com.ocs.dynamo.ui.Buildable;
 import com.ocs.dynamo.ui.utils.FormatUtils;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
+import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.ocs.dynamo.utils.ClassUtils;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.UI;
@@ -87,19 +88,19 @@ public abstract class BaseCustomComponent extends VerticalLayout implements Buil
         if (ex instanceof OCSValidationException) {
             // validation exception
             LOG.warn(ex.getMessage(), ex);
-            showNotifification(((OCSValidationException) ex).getErrors().get(0));
+            showErrorNotification(((OCSValidationException) ex).getErrors().get(0));
         } else if (ex instanceof OCSRuntimeException) {
             // any other OCS runtime exception
             LOG.error(ex.getMessage(), ex);
-            showNotifification(ex.getMessage());
+            showErrorNotification(ex.getMessage());
         } else if (ex instanceof OptimisticLockException) {
             // optimistic lock
             LOG.error(ex.getMessage(), ex);
-            showNotifification(message("ocs.optimistic.lock"));
+            showErrorNotification(message("ocs.optimistic.lock"));
         } else {
             // any other save exception
             LOG.error(ex.getMessage(), ex);
-            showNotifification(message("ocs.error.occurred"));
+            showErrorNotification(message("ocs.error.occurred"));
         }
     }
 
@@ -141,12 +142,20 @@ public abstract class BaseCustomComponent extends VerticalLayout implements Buil
      * @param message the message
      * @param type    the type of the message (error, warning, tray etc.)
      */
-    protected void showNotifification(String message) {
+    protected void showNotifification(String message, Position position, NotificationVariant variant) {
         if (UI.getCurrent() != null && UI.getCurrent().getPage() != null) {
-            Notification.show(message, 2000, Position.MIDDLE).addThemeVariants(NotificationVariant.LUMO_ERROR);
+            Notification.show(message, SystemPropertyUtils.getDefaultMessageDisplayTime(), position).addThemeVariants(variant);
         } else {
             LOG.info(message);
         }
+    }
+
+    protected void showErrorNotification(String message) {
+        showNotifification(message, Position.MIDDLE, NotificationVariant.LUMO_ERROR);
+    }
+
+    protected void showTrayNotification(String message) {
+        showNotifification(message, Position.BOTTOM_END, NotificationVariant.LUMO_SUCCESS);
     }
 
 }

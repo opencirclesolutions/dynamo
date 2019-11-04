@@ -51,7 +51,7 @@ public final class DynamoConstants {
      * The default locale
      */
     public static final Locale DEFAULT_LOCALE = Locale.UK;
-    
+
     /**
      * 
      */
@@ -141,15 +141,15 @@ public final class DynamoConstants {
     public static final String SP_DEFAULT_FALSE_REPRESENTATION = "ocs.default.false.representation";
 
     /**
-     * Name of the system property that is used to determine the amount of rows in a
-     * list select
-     */
-    public static final String SP_DEFAULT_LISTSELECT_ROWS = "ocs.default.listselect.rows";
-
-    /**
      * Name of the system property that is used to set the default locale
      */
     public static final String SP_DEFAULT_LOCALE = "ocs.default.locale";
+
+    /**
+     * Name of the system property that determines how long a message will remain
+     * visible (in milliseconds)
+     */
+    public static final String SP_DEFAULT_MESSAGE_DISPLAY_TIME = "ocs.default.message.display.time";
 
     /**
      * Name of the system property that is used to determine the default case
@@ -162,12 +162,6 @@ public final class DynamoConstants {
      * prefix only
      */
     public static final String SP_DEFAULT_SEARCH_PREFIX_ONLY = "ocs.default.search.prefix.only";
-
-    /**
-     * Name of the system property that is used to determine the amount of rows in a
-     * text area
-     */
-    public static final String SP_DEFAULT_TEXTAREA_ROWS = "ocs.default.textarea.rows";
 
     /**
      * Name of the system property that is used to determine the default time format
