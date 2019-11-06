@@ -88,11 +88,6 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
     private boolean multiSelect;
 
     /**
-     * The page length of the grid in the search dialog
-     */
-    private Integer pageLength;
-
-    /**
      * The button that brings up the search dialog
      */
     private Button selectButton;
@@ -201,10 +196,6 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
         return caption;
     }
 
-    public Integer getPageLength() {
-        return pageLength;
-    }
-
     public Button getSelectButton() {
         return selectButton;
     }
@@ -228,7 +219,7 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
         label = new Label();
         updateLabel(getValue());
         bar.add(label);
-        
+
         // button for selecting an entity - brings up the search dialog
         selectButton = new Button(getMessageService().getMessage("ocs.select", VaadinUtils.getLocale()));
         selectButton.setIcon(VaadinIcon.SEARCH.create());
@@ -257,7 +248,6 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
                     return true;
                 }
             };
-            dialog.setPageLength(pageLength);
             dialog.build();
             selectValuesInDialog(dialog);
             dialog.open();
@@ -349,10 +339,6 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
                 getAddButton().setEnabled(enabled);
             }
         }
-    }
-
-    public void setPageLength(Integer pageLength) {
-        this.pageLength = pageLength;
     }
 
     public void clearValue() {

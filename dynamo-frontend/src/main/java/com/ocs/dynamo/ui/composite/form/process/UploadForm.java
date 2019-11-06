@@ -31,10 +31,14 @@ public abstract class UploadForm extends ProgressForm<byte[]> {
 
     private static final long serialVersionUID = -4717815709838453902L;
 
-    private String fileName;
-
+    /**
+     * Whether to display a cancel button
+     */
     private boolean showCancelButton;
 
+    /**
+     * The upload component
+     */
     private Upload upload;
 
     /**
@@ -96,10 +100,6 @@ public abstract class UploadForm extends ProgressForm<byte[]> {
             cancelButton.addClickListener(event -> cancel());
             main.add(cancelButton);
         }
-    }
-
-    public String getFileName() {
-        return fileName;
     }
 
     public Upload getUpload() {

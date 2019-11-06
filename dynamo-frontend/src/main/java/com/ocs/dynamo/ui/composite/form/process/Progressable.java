@@ -13,7 +13,7 @@
  */
 package com.ocs.dynamo.ui.composite.form.process;
 
-import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.progressbar.ProgressBar;
 
 /**
@@ -43,5 +43,5 @@ public interface Progressable {
 	 * 
 	 * @return
 	 */
-	Label getStatusLabel();
+	Text getStatusLabel();
 }

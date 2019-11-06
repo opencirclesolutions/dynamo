@@ -53,11 +53,6 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
     private static final long serialVersionUID = -2864711994829582000L;
 
     /**
-     * The default page length
-     */
-    private static final int PAGE_LENGTH = 12;
-
-    /**
      * The main button bar that appears below the search results grid
      */
     private HorizontalLayout buttonBar = new DefaultHorizontalLayout();
@@ -102,11 +97,6 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
      * Whether selecting more than one component is allowed
      */
     private boolean multiSelect = false;
-
-    /**
-     * The number of rows to display in the grid
-     */
-    private int pageLength = PAGE_LENGTH;
 
     /**
      * The currently selected item (in the grid)
@@ -286,10 +276,6 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 
     public Integer getMaxResults() {
         return maxResults;
-    }
-
-    public int getPageLength() {
-        return pageLength;
     }
 
     /**
@@ -473,15 +459,6 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 
     public void setMultiSelect(boolean multiSelect) {
         this.multiSelect = multiSelect;
-    }
-
-    /**
-     * Sets the page length (number of rows to display in the search results grid)
-     * 
-     * @param pageLength the desired page length
-     */
-    public void setPageLength(int pageLength) {
-        this.pageLength = pageLength;
     }
 
     /**

@@ -23,6 +23,7 @@ import com.ocs.dynamo.ui.composite.layout.BaseCustomComponent;
 import com.ocs.dynamo.util.ProgressCounter;
 import com.ocs.dynamo.utils.DefaultProgressCounter;
 import com.vaadin.flow.component.AttachEvent;
+import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Label;
@@ -74,7 +75,7 @@ public abstract class ProgressForm<T> extends BaseCustomComponent implements Pro
     private ProgressMode progressMode;
 
     // the label that displays the status (which percentage is complete?)
-    private Label status;
+    private Text status;
 
     // the UI from which the process was started
     private UI ui;
@@ -194,7 +195,13 @@ public abstract class ProgressForm<T> extends BaseCustomComponent implements Pro
 
         // disable polling
         ui.setPollInterval(-1);
+        removeAll();
         add(mainLayout);
+        afterFormModeEntered();
+    }
+
+    protected void afterFormModeEntered() {
+        // overwrite in subclasses
     }
 
     public ProgressCounter getCounter() {
@@ -207,7 +214,7 @@ public abstract class ProgressForm<T> extends BaseCustomComponent implements Pro
     }
 
     @Override
-    public Label getStatusLabel() {
+    public Text getStatusLabel() {
         return status;
     }
 
@@ -265,15 +272,16 @@ public abstract class ProgressForm<T> extends BaseCustomComponent implements Pro
             progressLayout = new DefaultVerticalLayout(true, true);
 
             progressBar = new ProgressBar();
-            progressBar.setSizeFull();
+            progressBar.setHeight("100px");
             progressLayout.add(progressBar);
 
-            status = new Label();
+            status = new Text("");
             progressLayout.add(status);
         }
         progressBar.setValue(0.0f);
         status.setText("");
 
+        removeAll();
         add(progressLayout);
     }
 
@@ -284,25 +292,19 @@ public abstract class ProgressForm<T> extends BaseCustomComponent implements Pro
      * @param type    the type of the notification
      */
     protected void showNotification(String message) {
-        ui.getSession().lock();
-        try {
-            showErrorNotification(message);
-        } finally {
-            ui.getSession().unlock();
+        if (ui != null) {
+            ui.access(() -> showErrorNotification(message));
         }
     }
 
     /**
-     * Tries to lock the session and then declares the job as completed
+     * Marks the process as completed
+     * 
+     * @param exceptionOccurred whether an exception occurred
      */
     private void signalDone(boolean exceptionOccurred) {
         if (ui != null) {
-            ui.getSession().lock();
-            try {
-                done(exceptionOccurred);
-            } finally {
-                ui.getSession().unlock();
-            }
+            ui.access(() -> done(exceptionOccurred));
         } else {
             done(exceptionOccurred);
         }
@@ -333,12 +335,12 @@ public abstract class ProgressForm<T> extends BaseCustomComponent implements Pro
 
                 // start a thread to update the progress
                 try {
-                    final int estimatedSize = estimateSize(t);
+                    int estimatedSize = estimateSize(t);
 
                     counter.reset();
                     ui.setPollInterval(POLL_INTERVAL);
 
-                    final ProgressBarUpdater updater = new ProgressBarUpdater(ui, this, estimatedSize);
+                    ProgressBarUpdater updater = new ProgressBarUpdater(ui, this, estimatedSize);
 
                     // the thread that updates the progress bar
                     Thread updateThread = new Thread(updater);

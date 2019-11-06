@@ -162,13 +162,6 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
     }
 
     /**
-     * Adds a grid selection listener
-     */
-    private void addGridSelectionListener() {
-        grid.addSelectionListener(event -> onSelect(grid.getSelectedItems()));
-    }
-
-    /**
      * Perform any actions that are necessary before carrying out a search
      * 
      * @param filter
@@ -193,11 +186,8 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
         initSortingAndFiltering();
 
         grid.setSelectionMode(SelectionMode.SINGLE);
-        addGridSelectionListener();
-
         caption.setText(entityModel.getDisplayNamePlural(VaadinUtils.getLocale()) + " "
-                + getMessageService().getMessage("ocs.showing.results", VaadinUtils.getLocale(), 
-                        getDataProviderSize()));
+                + getMessageService().getMessage("ocs.showing.results", VaadinUtils.getLocale(), getDataProviderSize()));
 
         add(layout);
     }

@@ -30,12 +30,12 @@ import com.vaadin.flow.component.notification.Notification;
  */
 public class UIHelper {
 
-    private static final String SELECTED_ENTITY = "selectedEntity";
-    
     private static final String SCREEN_MODE = "screenMode";
-    
+
+    private static final String SELECTED_ENTITY = "selectedEntity";
+
     private static final String SELECTED_TAB = "selectedTab";
-    
+
     /**
      * Mapping for navigating to pages after clicking on a link
      */
@@ -94,6 +94,11 @@ public class UIHelper {
                 }
             }
         }
+    }
+
+    public void selectAndNavigate(Object selectedEntity, String viewName) {
+        setSelectedEntity(selectedEntity);
+        navigate(viewName);
     }
 
     public void setScreenMode(String screenMode) {

@@ -87,12 +87,9 @@ public class EntityLookupFieldTest extends BaseMockitoTest {
     public void testPageLength() {
         EntityLookupField<Integer, TestEntity> field = new EntityLookupField<>(service, factory.getModel(TestEntity.class), null, null,
                 false, false, Lists.newArrayList(new SortOrder<String>("name", SortDirection.ASCENDING)));
-        field.setPageLength(10);
         field.initContent();
-        // MockUtil.injectUI(field, ui);
 
         Assert.assertEquals("name", field.getSortOrders().get(0).getSorted());
-        Assert.assertEquals(10, field.getPageLength().intValue());
 
     }
 

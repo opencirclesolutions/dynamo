@@ -22,7 +22,8 @@ import com.ocs.dynamo.utils.MathUtils;
 import com.vaadin.flow.component.UI;
 
 /**
- * A Runnable that is used to update a progress bar during a long running process
+ * A Runnable that is used to update a progress bar during a long running
+ * process
  * 
  * @author bas.rutten
  */
@@ -46,10 +47,8 @@ public class ProgressBarUpdater implements Runnable {
     /**
      * Constructor
      * 
-     * @param progressable
-     *            the component that must be updated
-     * @param estimatedSize
-     *            the estimated size of the process
+     * @param progressable  the component that must be updated
+     * @param estimatedSize the estimated size of the process
      */
     public ProgressBarUpdater(UI ui, Progressable progressable, int estimatedSize) {
         this.ui = ui;
@@ -86,8 +85,7 @@ public class ProgressBarUpdater implements Runnable {
                         BigDecimal.valueOf(progress).multiply(MathUtils.HUNDRED));
 
                 MessageService ms = ServiceLocatorFactory.getServiceLocator().getMessageService();
-                progressable.getStatusLabel()
-                        .setText(ms.getMessage("ocs.progress.done", VaadinUtils.getLocale(), progressString));
+                progressable.getStatusLabel().setText(ms.getMessage("ocs.progress.done", VaadinUtils.getLocale(), progressString));
             });
 
         }

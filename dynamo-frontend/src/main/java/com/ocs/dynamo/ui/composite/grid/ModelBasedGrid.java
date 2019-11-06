@@ -194,8 +194,8 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
                 column.setEditorComponent(comp);
             }
 
-            column.setHeader(am.getDisplayName(VaadinUtils.getLocale())).setSortable(am.isSortable())
-                    .setSortProperty(am.getActualSortPath()).setClassNameGenerator(item -> am.isNumerical() ? "v-align-right" : "")
+            column.setHeader(am.getDisplayName(VaadinUtils.getLocale())).setSortProperty(am.getActualSortPath())
+                    .setSortable(am.isSortable()).setClassNameGenerator(item -> am.isNumerical() ? "v-align-right" : "")
                     .setId(am.getPath());
         }
 

@@ -230,8 +230,8 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
                 }
             };
             layout.setQuickSearchFilterSupplier(
-                    value -> new OrPredicate<>(new SimpleStringPredicate<>(Domain.ATTRIBUTE_NAME, value, true, false),
-                            new SimpleStringPredicate<>(Domain.ATTRIBUTE_CODE, value, true, false)));
+                    value -> new OrPredicate<>(new SimpleStringPredicate<>(Domain.ATTRIBUTE_NAME, value, false, false),
+                            new SimpleStringPredicate<>(Domain.ATTRIBUTE_CODE, value, false, false)));
             return layout;
         } else {
             throw new OCSRuntimeException(message("ocs.no.service.class.found", domainClass));

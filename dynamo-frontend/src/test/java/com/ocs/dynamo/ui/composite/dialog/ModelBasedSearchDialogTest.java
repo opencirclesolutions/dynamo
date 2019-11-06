@@ -44,11 +44,7 @@ public class ModelBasedSearchDialogTest extends FrontendIntegrationTest {
     public void testCreateSingleSelect() {
         ModelBasedSearchDialog<Integer, TestEntity> dialog = new ModelBasedSearchDialog<>(testEntityService,
                 entityModelFactory.getModel(TestEntity.class), new ArrayList<>(), null, false, true);
-        dialog.setPageLength(4);
         dialog.build();
-
-        Assert.assertEquals(4, dialog.getSearchLayout().getPageLength());
-
         dialog.select(e1);
     }
 

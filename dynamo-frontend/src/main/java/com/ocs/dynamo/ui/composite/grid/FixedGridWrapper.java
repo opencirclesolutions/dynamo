@@ -79,6 +79,8 @@ public class FixedGridWrapper<ID extends Serializable, T extends AbstractEntity<
 
     @Override
     protected void initSortingAndFiltering() {
+        getGrid().addSelectionListener(event -> onSelect(getGrid().getSelectedItems()));
+        
         // right click to download
         if (getFormOptions().isExportAllowed() && getExportDelegate() != null) {
             GridContextMenu<T> contextMenu = getGrid().addContextMenu();

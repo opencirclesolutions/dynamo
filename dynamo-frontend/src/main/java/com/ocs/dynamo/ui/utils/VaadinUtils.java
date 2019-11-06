@@ -38,6 +38,9 @@ import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.customfield.CustomField;
 import com.vaadin.flow.component.datepicker.DatePicker;
+import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.NotificationVariant;
+import com.vaadin.flow.component.notification.Notification.Position;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.timepicker.TimePicker;
@@ -383,6 +386,21 @@ public final class VaadinUtils {
         } else if (field instanceof TimePicker) {
             ((TimePicker) field).setLabel(label);
         }
+    }
+
+    public static void setTooltip(Component field, String tooltip) {
+        field.getElement().setProperty("title", tooltip);
+    }
+
+    /**
+     * Shows a notification message
+     * 
+     * @param message  the message
+     * @param position the desired position
+     * @param variant  the variant (indicates the style, e.g. error or warning)
+     */
+    public static void showNotification(String message, Position position, NotificationVariant variant) {
+        Notification.show(message, SystemPropertyUtils.getDefaultMessageDisplayTime(), position).addThemeVariants(variant);
     }
 
     /**

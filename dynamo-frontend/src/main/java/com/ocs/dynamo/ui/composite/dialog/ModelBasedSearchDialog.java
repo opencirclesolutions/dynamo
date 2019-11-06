@@ -69,11 +69,6 @@ public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractE
     private boolean searchImmediately;
 
     /**
-     * the (optional) page length. If set it will override the default page length
-     */
-    private Integer pageLength;
-
-    /**
      * The actual search layout
      */
     private SimpleSearchLayout<ID, T> searchLayout;
@@ -126,9 +121,6 @@ public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractE
         for (SortOrder<?> order : sortOrders) {
             searchLayout.addSortOrder(order);
         }
-        if (pageLength != null) {
-            searchLayout.setPageLength(pageLength);
-        }
         searchLayout.setMultiSelect(multiSelect);
 
         // add double click listener for quickly selecting item and closing the
@@ -144,10 +136,6 @@ public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractE
 
     public List<SerializablePredicate<T>> getFilters() {
         return filters;
-    }
-
-    public Integer getPageLength() {
-        return pageLength;
     }
 
     public SimpleSearchLayout<ID, T> getSearchLayout() {
@@ -191,10 +179,6 @@ public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractE
         if (searchLayout != null) {
             searchLayout.setDefaultFilters(filters);
         }
-    }
-
-    public void setPageLength(Integer pageLength) {
-        this.pageLength = pageLength;
     }
 
 }

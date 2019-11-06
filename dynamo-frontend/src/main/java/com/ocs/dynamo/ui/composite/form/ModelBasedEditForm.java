@@ -472,6 +472,10 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
     protected void afterEntitySet(T entity) {
         // override in subclass
     }
+    
+    protected void afterEntitySelected(T entity) {
+        
+    }
 
     /**
      * Method that is called after a layout is built for the first time
@@ -1469,8 +1473,9 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
         AttributeModel am = getEntityModel().getAttributeModel(propertyName);
         if (am != null) {
             Text text = labels.get(isViewMode()).get(am);
-            text.setText(value);
+            text.setText(value == null ? "" : value);
         }
+        
     }
 
     /**
@@ -1654,6 +1659,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
             b.setVisible((!isViewMode() && !getFormOptions().isHideCancelButton())
                     || (getFormOptions().isFormNested() && entity.getId() == null));
         }
+        
+        afterEntitySelected(entity);
     }
 
     /**

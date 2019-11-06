@@ -81,6 +81,16 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
     private static final long serialVersionUID = 6015180039863418544L;
 
     /**
+     * The list of components to update after an entity is selected
+     */
+    private List<Component> componentsToUpdate = new ArrayList<>();
+
+    /**
+     * Custom button mapping
+     */
+    private Map<String, List<Component>> customButtonMap = new HashMap<>();
+
+    /**
      * The entity model of the entity or entities to display
      */
     private EntityModel<T> entityModel;
@@ -100,11 +110,6 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
      * The service used for retrieving data
      */
     private BaseService<ID, T> service;
-
-    /**
-     * The list of components to update after an entity is selected
-     */
-    private List<Component> componentsToUpdate = new ArrayList<>();
 
     /**
      * Constructor
@@ -197,6 +202,14 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
         return null;
     }
 
+    public List<Component> getCustomComponents(String key) {
+        return customButtonMap.get(key);
+    }
+
+    public boolean isCustomComponent(String key, Component toCheck) {
+        return customButtonMap.get(key) != null && customButtonMap.get(key).contains(toCheck);
+    }
+
     public EntityModel<T> getEntityModel() {
         return entityModel;
     }
@@ -269,4 +282,8 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
         this.service = service;
     }
 
+    public void storeCustomComponent(String key, Button button) {
+        customButtonMap.putIfAbsent(key, new ArrayList<>());
+        customButtonMap.get(key).add(button);
+    }
 }

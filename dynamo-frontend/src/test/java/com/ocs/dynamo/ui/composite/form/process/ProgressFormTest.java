@@ -85,6 +85,12 @@ public class ProgressFormTest extends BaseMockitoTest {
 
     @Test
     public void testCreateProgressBar() throws InterruptedException {
+        Mockito.when(ui.access(Mockito.any())).thenAnswer(a -> {
+            Command c = (Command) a.getArgument(0);
+            c.execute();
+            return null;
+        });
+
         called = 0;
         afterWorkCalled = false;
         ProgressForm<Object> pf = new ProgressForm<Object>(UI.getCurrent(), ProgressMode.PROGRESSBAR) {
@@ -139,6 +145,13 @@ public class ProgressFormTest extends BaseMockitoTest {
 
     @Test
     public void testException() throws InterruptedException {
+
+        Mockito.when(ui.access(Mockito.any())).thenAnswer(a -> {
+            Command c = (Command) a.getArgument(0);
+            c.execute();
+            return null;
+        });
+
         called = 0;
         afterWorkCalled = false;
         ProgressForm<Object> pf = new ProgressForm<Object>(UI.getCurrent(), ProgressMode.SIMPLE) {

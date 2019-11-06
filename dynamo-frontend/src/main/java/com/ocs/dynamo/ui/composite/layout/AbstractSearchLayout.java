@@ -387,7 +387,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
                 // the tabs)
                 return AbstractSearchLayout.this.constructComplexDetailModeTab(getEntity(), index, formOptions, false);
             }
-            
+
             @Override
             protected Icon getIconForTab(int index) {
                 return AbstractSearchLayout.this.getIconForTab(index);
@@ -430,6 +430,11 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
             @Override
             protected void afterEntitySet(T entity) {
                 AbstractSearchLayout.this.afterEntitySet(entity);
+            }
+
+            @Override
+            protected void afterEntitySelected(T entity) {
+                AbstractSearchLayout.this.afterEntitySelected(editForm, entity);
             }
 
             @Override
@@ -661,7 +666,6 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
     public final void constructSearchLayout() {
         // construct grid and set properties
         disableGridSorting();
-        getGridWrapper().getGrid().setPageSize(getPageLength());
         getGridWrapper().getGrid().setHeight(gridHeight + "px");
         getGridWrapper().getGrid().setSelectionMode(isMultiSelect() ? SelectionMode.MULTI : SelectionMode.SINGLE);
 
@@ -674,11 +678,9 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
         // select item by double clicking on row (disable this inside pop-up
         // windows)
         if (getFormOptions().isDetailsModeEnabled() && getFormOptions().isDoubleClickSelectAllowed()) {
-            getGridWrapper().getGrid().addItemClickListener(event -> {
-                if (event.getClickCount() > 1) {
-                    select(event.getItem());
-                    doEdit();
-                }
+            getGridWrapper().getGrid().addItemDoubleClickListener(event -> {
+                select(event.getItem());
+                doEdit();
             });
         }
     }
@@ -915,7 +917,6 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
         if (nextId != null) {
             next = getService().fetchById(nextId, getDetailJoins());
             getGridWrapper().getGrid().select(next);
-            afterEntitySelected(getEditForm(), next);
         }
         return next;
     }
@@ -933,7 +934,6 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
         if (prevId != null) {
             prev = getService().fetchById(prevId, getDetailJoins());
             getGridWrapper().getGrid().select(prev);
-            afterEntitySelected(getEditForm(), prev);
         }
         return prev;
     }

@@ -48,8 +48,6 @@ public class ViewRevisionDialog<ID, T extends AbstractEntity<ID>, U extends Vers
 
     private static final long serialVersionUID = -8950374678949377884L;
 
-    private static final int PAGE_SIZE = 5;
-
     private BaseService<RevisionKey<ID>, U> service;
 
     private EntityModel<U> entityModel;
@@ -102,7 +100,6 @@ public class ViewRevisionDialog<ID, T extends AbstractEntity<ID>, U extends Vers
             }
         };
         layout.setFilterSupplier(() -> new EqualsPredicate<>(DynamoConstants.ID, id));
-        layout.setPageLength(PAGE_SIZE);
         parent.add(layout);
     }
 
