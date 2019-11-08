@@ -20,7 +20,7 @@ import java.util.Locale;
 import com.vaadin.flow.component.customfield.CustomField;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.datepicker.DatePicker.DatePickerI18n;
-import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.timepicker.TimePicker;
 
 /**
@@ -45,7 +45,7 @@ public class DateTimePicker extends CustomField<LocalDateTime> {
         timePicker = new TimePicker();
         timePicker.setLocale(locale);
 
-        FormLayout hor = new FormLayout();
+        HorizontalLayout hor = new HorizontalLayout();
         hor.add(datePicker);
         hor.add(timePicker);
         add(hor);

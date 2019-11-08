@@ -21,7 +21,6 @@ import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
-import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.customfield.CustomField;
 import com.vaadin.flow.function.SerializablePredicate;
 

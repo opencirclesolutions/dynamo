@@ -17,11 +17,15 @@ import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Locale;
+import java.util.TimeZone;
 
+import com.google.common.collect.Lists;
+import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.customfield.CustomField;
 import com.vaadin.flow.component.datepicker.DatePicker;
-import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.timepicker.TimePicker;
+import com.vaadin.flow.data.provider.ListDataProvider;
 
 /**
  * A simple component for entering a date with a time stamp. This is a very bare
@@ -39,15 +43,22 @@ public class ZonedDateTimePicker extends CustomField<ZonedDateTime> {
 
     private TimePicker timePicker;
 
+    private ComboBox<String> timeZone;
+
     public ZonedDateTimePicker(Locale locale) {
         datePicker = new DatePicker();
         datePicker.setLocale(locale);
         timePicker = new TimePicker();
         timePicker.setLocale(locale);
 
-        FormLayout hor = new FormLayout();
+        timeZone = new ComboBox<>();
+        ListDataProvider<String> provider = new ListDataProvider<>(Lists.newArrayList(TimeZone.getAvailableIDs()));
+        timeZone.setDataProvider(provider);
+
+        HorizontalLayout hor = new HorizontalLayout();
         hor.add(datePicker);
         hor.add(timePicker);
+        hor.add(timeZone);
         add(hor);
     }
 
@@ -57,7 +68,8 @@ public class ZonedDateTimePicker extends CustomField<ZonedDateTime> {
             return null;
         } else {
             LocalTime time = timePicker.getValue() == null ? LocalTime.of(0, 0) : timePicker.getValue();
-            return ZonedDateTime.of(datePicker.getValue(), time, ZoneId.systemDefault());
+            ZoneId zone = timeZone.getValue() == null ? ZoneId.systemDefault() : ZoneId.of(timeZone.getValue());
+            return ZonedDateTime.of(datePicker.getValue(), time, zone);
         }
     }
 
@@ -66,9 +78,11 @@ public class ZonedDateTimePicker extends CustomField<ZonedDateTime> {
         if (value == null) {
             datePicker.setValue(null);
             timePicker.setValue(null);
+            timeZone.setValue(ZoneId.systemDefault().toString());
         } else {
             datePicker.setValue(value.toLocalDate());
             timePicker.setValue(value.toLocalTime());
+            timeZone.setValue(value.getZone().toString());
         }
     }
 
@@ -76,6 +90,7 @@ public class ZonedDateTimePicker extends CustomField<ZonedDateTime> {
     public void clear() {
         datePicker.clear();
         timePicker.clear();
+        timeZone.setValue(ZoneId.systemDefault().toString());
     }
 
 }
