@@ -38,6 +38,7 @@ import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.customfield.CustomField;
 import com.vaadin.flow.component.datepicker.DatePicker;
+import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.notification.Notification.Position;
@@ -48,6 +49,7 @@ import com.vaadin.flow.data.binder.ValueContext;
 import com.vaadin.flow.data.converter.StringToDoubleConverter;
 import com.vaadin.flow.data.converter.StringToIntegerConverter;
 import com.vaadin.flow.data.converter.StringToLongConverter;
+import com.vaadin.flow.server.VaadinServletService;
 import com.vaadin.flow.server.VaadinSession;
 
 /**
@@ -121,6 +123,19 @@ public final class VaadinUtils {
     public static String bigDecimalToString(boolean currency, boolean percentage, boolean useGrouping, int precision, BigDecimal value,
             Locale locale, String currencySymbol) {
         return fractionalToString(currency, percentage, useGrouping, precision, value, locale, currencySymbol);
+    }
+
+    /**
+     * Creates an image based on an image named stored in the "frontend/images"
+     * directory
+     * 
+     * @param imageName the name of the file
+     * @return
+     */
+    public static Image createImage(String imageName) {
+        String resolvedImage = VaadinServletService.getCurrent().resolveResource("frontend://images/" + imageName,
+                VaadinSession.getCurrent().getBrowser());
+        return new Image(resolvedImage, "");
     }
 
     /**
@@ -234,6 +249,14 @@ public final class VaadinUtils {
             if (col != null) {
                 return col.iterator().next().toString();
             }
+        }
+        return null;
+    }
+
+    public static Object getFromSession(String name) {
+        VaadinSession current = VaadinSession.getCurrent();
+        if (current != null) {
+            return current.getAttribute(name);
         }
         return null;
     }
@@ -388,19 +411,14 @@ public final class VaadinUtils {
         }
     }
 
+    /**
+     * Sets a tooltip on a field
+     * 
+     * @param field   the field
+     * @param tooltip the tooltip to set
+     */
     public static void setTooltip(Component field, String tooltip) {
         field.getElement().setProperty("title", tooltip);
-    }
-
-    /**
-     * Shows a notification message
-     * 
-     * @param message  the message
-     * @param position the desired position
-     * @param variant  the variant (indicates the style, e.g. error or warning)
-     */
-    public static void showNotification(String message, Position position, NotificationVariant variant) {
-        Notification.show(message, SystemPropertyUtils.getDefaultMessageDisplayTime(), position).addThemeVariants(variant);
     }
 
     /**
@@ -446,20 +464,23 @@ public final class VaadinUtils {
     }
 
     /**
+     * Shows a notification message
+     * 
+     * @param message  the message
+     * @param position the desired position
+     * @param variant  the variant (indicates the style, e.g. error or warning)
+     */
+    public static void showNotification(String message, Position position, NotificationVariant variant) {
+        Notification.show(message, SystemPropertyUtils.getDefaultMessageDisplayTime(), position).addThemeVariants(variant);
+    }
+
+    /**
      * Stores the desired date locale in the session
      * 
      * @param locale the locale
      */
     public static void storeDateLocale(Locale locale) {
         VaadinSession.getCurrent().setAttribute(DynamoConstants.DATE_LOCALE, locale);
-    }
-
-    /**
-     * Stores the default locale configured in the system properties in the Vaadin
-     * session
-     */
-    public static void storeLocale(Locale locale) {
-        VaadinSession.getCurrent().setLocale(locale);
     }
 
     public static void storeInSession(String name, Object value) {
@@ -469,12 +490,12 @@ public final class VaadinUtils {
         }
     }
 
-    public static Object getFromSession(String name) {
-        VaadinSession current = VaadinSession.getCurrent();
-        if (current != null) {
-            return current.getAttribute(name);
-        }
-        return null;
+    /**
+     * Stores the default locale configured in the system properties in the Vaadin
+     * session
+     */
+    public static void storeLocale(Locale locale) {
+        VaadinSession.getCurrent().setLocale(locale);
     }
 
     /**

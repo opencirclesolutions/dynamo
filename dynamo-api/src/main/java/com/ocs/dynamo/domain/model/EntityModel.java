@@ -202,11 +202,6 @@ public interface EntityModel<T> {
     String NAVIGABLE = "navigable";
 
     /**
-     * Type of number input field to use instead of a text field
-     */
-    String NUMBER_SELECT_MODE = "numberSelectMode";
-
-    /**
      * Whether to include a percentage sign to a numerical field (cosmetic only)
      */
     String PERCENTAGE = "percentage";

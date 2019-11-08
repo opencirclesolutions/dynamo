@@ -219,7 +219,9 @@ public abstract class LazyTabLayout<ID extends Serializable, T extends AbstractE
      * @param visible the desired visibility
      */
     public void setTabVisible(int index, boolean visible) {
-        tabs.getTabByIndex(index).setVisible(visible);
+        if (tabs.getTabByIndex(index) != null) {
+            tabs.getTabByIndex(index).setVisible(visible);
+        }
     }
 
     /**
@@ -251,6 +253,5 @@ public abstract class LazyTabLayout<ID extends Serializable, T extends AbstractE
     public Tab getTabByIndex(int index) {
         return tabs.getTabByIndex(index);
     }
-    
-    
+
 }

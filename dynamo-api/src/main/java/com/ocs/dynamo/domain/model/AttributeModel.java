@@ -230,14 +230,6 @@ public interface AttributeModel extends Comparable<AttributeModel> {
     Class<?> getNormalizedType();
 
     /**
-     * Returns the number select mode
-     * 
-     * @return the number select mode (can be used to switch between text field and
-     *         slider)
-     */
-    NumberSelectMode getNumberSelectMode();
-
-    /**
      * 
      * 
      * @return The order number (used to internally order the attribute models)

@@ -36,7 +36,6 @@ import com.ocs.dynamo.domain.model.AttributeType;
 import com.ocs.dynamo.domain.model.CascadeMode;
 import com.ocs.dynamo.domain.model.EditableType;
 import com.ocs.dynamo.domain.model.EntityModel;
-import com.ocs.dynamo.domain.model.NumberSelectMode;
 import com.ocs.dynamo.util.SystemPropertyUtils;
 
 /**
@@ -118,8 +117,6 @@ public class AttributeModelImpl implements AttributeModel {
     private boolean navigable;
 
     private EntityModel<?> nestedEntityModel;
-
-    private NumberSelectMode numberSelectMode = NumberSelectMode.TEXTFIELD;
 
     private Integer order;
 
@@ -350,11 +347,6 @@ public class AttributeModelImpl implements AttributeModel {
     @Override
     public Class<?> getNormalizedType() {
         return getMemberType() != null ? getMemberType() : getType();
-    }
-
-    @Override
-    public NumberSelectMode getNumberSelectMode() {
-        return numberSelectMode;
     }
 
     @Override
@@ -752,10 +744,6 @@ public class AttributeModelImpl implements AttributeModel {
 
     public void setNestedEntityModel(EntityModel<?> nestedEntityModel) {
         this.nestedEntityModel = nestedEntityModel;
-    }
-
-    public void setNumberSelectMode(NumberSelectMode numberSelectMode) {
-        this.numberSelectMode = numberSelectMode;
     }
 
     public void setOrder(Integer order) {

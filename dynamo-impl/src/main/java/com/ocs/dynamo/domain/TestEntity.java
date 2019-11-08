@@ -35,7 +35,6 @@ import javax.validation.constraints.Size;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 import com.ocs.dynamo.domain.model.AttributeTextFieldMode;
-import com.ocs.dynamo.domain.model.NumberSelectMode;
 import com.ocs.dynamo.domain.model.VisibilityType;
 import com.ocs.dynamo.domain.model.annotation.Attribute;
 import com.ocs.dynamo.domain.model.annotation.Model;
@@ -94,9 +93,6 @@ public class TestEntity extends AbstractTreeEntity<Integer, TestEntity> {
     private String someString;
 
     private Integer someInt;
-
-    @Attribute(numberSelectMode = NumberSelectMode.SLIDER, visible = VisibilityType.HIDE)
-    private Long someLongSlider;
 
     @Attribute(textFieldMode = AttributeTextFieldMode.TEXTAREA)
     private String someTextArea;
@@ -330,14 +326,6 @@ public class TestEntity extends AbstractTreeEntity<Integer, TestEntity> {
 
     public void setLongTags(Set<Long> longTags) {
         this.longTags = longTags;
-    }
-
-    public Long getSomeLongSlider() {
-        return someLongSlider;
-    }
-
-    public void setSomeLongSlider(Long someLongSlider) {
-        this.someLongSlider = someLongSlider;
     }
 
     public LocalTime getRegistrationTime() {

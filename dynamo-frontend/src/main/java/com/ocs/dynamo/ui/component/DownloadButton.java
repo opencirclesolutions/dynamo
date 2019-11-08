@@ -17,7 +17,7 @@ import java.io.InputStream;
 import java.util.function.Supplier;
 
 import com.vaadin.flow.component.html.Anchor;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.server.StreamResource;
 
 /**
@@ -25,11 +25,24 @@ import com.vaadin.flow.server.StreamResource;
  * 
  * @author bas.rutten
  */
-public class DownloadButton extends VerticalLayout {
+public class DownloadButton extends HorizontalLayout {
 
     private static final long serialVersionUID = -7163648327567831406L;
 
+    /**
+     * The actual link
+     */
     private Anchor anchor;
+
+    /**
+     * Supplier for creating the file name
+     */
+    private Supplier<String> createFileName;
+
+    /**
+     * Supplier for creating the file content
+     */
+    private Supplier<InputStream> createContent;
 
     /**
      * Constructor
@@ -37,6 +50,9 @@ public class DownloadButton extends VerticalLayout {
      * @param caption the caption of the button
      */
     public DownloadButton(String caption, Supplier<InputStream> createContent, Supplier<String> createFileName) {
+        setMargin(true);
+        this.createFileName = createFileName;
+        this.createContent = createContent;
         anchor = new Anchor(new StreamResource(createFileName.get(), () -> createContent.get()), caption);
         anchor.getElement().setAttribute("download", true);
         add(anchor);
@@ -46,17 +62,7 @@ public class DownloadButton extends VerticalLayout {
      * Updates the button after the content to download has been changed
      */
     public void update() {
-
-//		downloader.setFileDownloadResource(new StreamResource(new StreamSource() {
-//
-//			private static final long serialVersionUID = -4870779918745663459L;
-//
-//			@Override
-//			public InputStream getStream() {
-//				return createContent.get();
-//			}
-//
-//		}, createFileName.get()));
+        anchor.setHref(new StreamResource(createFileName.get(), () -> createContent.get()));
     }
 
 }

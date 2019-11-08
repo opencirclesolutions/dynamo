@@ -63,7 +63,6 @@ import com.ocs.dynamo.domain.model.CascadeMode;
 import com.ocs.dynamo.domain.model.EditableType;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
-import com.ocs.dynamo.domain.model.NumberSelectMode;
 import com.ocs.dynamo.domain.model.VisibilityType;
 import com.ocs.dynamo.domain.model.annotation.Attribute;
 import com.ocs.dynamo.domain.model.annotation.AttributeGroup;
@@ -1040,10 +1039,6 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
                 model.setFileNameProperty(attribute.fileNameProperty());
             }
 
-            if (attribute.numberSelectMode() != null) {
-                model.setNumberSelectMode(attribute.numberSelectMode());
-            }
-
             if (!StringUtils.isEmpty(attribute.defaultValue())) {
                 if (!AttributeType.BASIC.equals(model.getAttributeType())) {
                     throw new OCSRuntimeException(model.getName() + ": setting a default value is only allowed for BASIC attributes");
@@ -1270,11 +1265,6 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
             model.setSelectMode(mode);
             model.setSearchSelectMode(mode);
             model.setGridSelectMode(mode);
-        }
-
-        msg = getAttributeMessage(entityModel, model, EntityModel.NUMBER_SELECT_MODE);
-        if (msg != null && !StringUtils.isEmpty(msg) && NumberSelectMode.valueOf(msg) != null) {
-            model.setNumberSelectMode(NumberSelectMode.valueOf(msg));
         }
 
         msg = getAttributeMessage(entityModel, model, EntityModel.SEARCH_SELECT_MODE);

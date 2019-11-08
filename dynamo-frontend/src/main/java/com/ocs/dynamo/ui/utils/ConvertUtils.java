@@ -15,8 +15,6 @@ package com.ocs.dynamo.ui.utils;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
@@ -25,7 +23,6 @@ import java.util.Set;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.ocs.dynamo.domain.model.AttributeModel;
-import com.ocs.dynamo.domain.model.NumberSelectMode;
 import com.ocs.dynamo.ui.converter.BigDecimalConverter;
 import com.ocs.dynamo.ui.converter.ConverterFactory;
 import com.ocs.dynamo.ui.converter.IntToDoubleConverter;
@@ -116,17 +113,15 @@ public final class ConvertUtils {
                 return new LongToDoubleConverter().convertToModel((Double) value, new ValueContext(locale));
             }
         } else if (NumberUtils.isDouble(am.getType())) {
-            if (NumberSelectMode.TEXTFIELD.equals(am.getNumberSelectMode())) {
-                StringToDoubleConverter converter = ConverterFactory.createDoubleConverter(am.isCurrency(), am.isPercentage(), grouping,
-                        am.getPrecision(), SystemPropertyUtils.getDefaultCurrencySymbol());
-                return converter.convertToModel((String) value, new ValueContext(locale));
-            }
+            StringToDoubleConverter converter = ConverterFactory.createDoubleConverter(am.isCurrency(), am.isPercentage(), grouping,
+                    am.getPrecision(), SystemPropertyUtils.getDefaultCurrencySymbol());
+            return converter.convertToModel((String) value, new ValueContext(locale));
+
         } else if (BigDecimal.class.equals(am.getType())) {
-            if (NumberSelectMode.TEXTFIELD.equals(am.getNumberSelectMode())) {
-                BigDecimalConverter converter = ConverterFactory.createBigDecimalConverter(am.isCurrency(), am.isPercentage(), grouping,
-                        am.getPrecision(), SystemPropertyUtils.getDefaultCurrencySymbol());
-                return converter.convertToModel((String) value, new ValueContext(locale));
-            }
+
+            BigDecimalConverter converter = ConverterFactory.createBigDecimalConverter(am.isCurrency(), am.isPercentage(), grouping,
+                    am.getPrecision(), SystemPropertyUtils.getDefaultCurrencySymbol());
+            return converter.convertToModel((String) value, new ValueContext(locale));
         }
         return Result.ok(value);
     }

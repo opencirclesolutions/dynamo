@@ -25,7 +25,6 @@ import com.ocs.dynamo.domain.model.EditableType;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.FieldFactory;
 import com.ocs.dynamo.domain.model.FieldFactoryContext;
-import com.ocs.dynamo.domain.model.NumberSelectMode;
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.MessageService;
@@ -286,17 +285,6 @@ public class FieldFactoryImpl implements FieldFactory {
             // token field for searching distinct values
             field = constructSimpleTokenField(fieldEntityModel != null ? fieldEntityModel : am.getEntityModel(), am,
                     am.getPath().substring(am.getPath().lastIndexOf('.') + 1), false, null);
-        } else if ((NumberUtils.isLong(am.getType()) || NumberUtils.isInteger(am.getType()) || NumberUtils.isDouble(am.getType())
-                || BigDecimal.class.equals(am.getType())) && NumberSelectMode.SLIDER.equals(am.getNumberSelectMode())) {
-            // TODO: slider not currently supported
-//            Slider slider = new Slider(am.getDisplayName(VaadinUtils.getLocale()));
-//            if (am.getMinValue() != null) {
-//                slider.setMin(am.getMinValue());
-//            }
-//            if (am.getMaxValue() != null) {
-//                slider.setMax(am.getMaxValue());
-//            }
-//            field = slider;
         } else if (LocalDate.class.equals(am.getType()) || (search && am.isSearchDateOnly())) {
             // date field
             DatePicker df = new DatePicker();
@@ -486,6 +474,7 @@ public class FieldFactoryImpl implements FieldFactory {
         String displayName = am.getDisplayName(VaadinUtils.getLocale());
 
         VaadinUtils.setLabel(field, editableGrid ? "" : displayName);
+        VaadinUtils.setTooltip(field, am.getDescription(VaadinUtils.getLocale()));
         String placeHolder = am.getPrompt(VaadinUtils.getLocale());
 
         if (field instanceof TextField) {
@@ -509,8 +498,6 @@ public class FieldFactoryImpl implements FieldFactory {
             AbstractField<?, ?> af = (AbstractField<?, ?>) field;
             af.setRequiredIndicatorVisible(search ? am.isRequiredForSearching() : am.isRequired());
         }
-
-
 
         // add percentage sign
         if (am.isPercentage() && field instanceof TextField) {

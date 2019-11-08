@@ -472,9 +472,9 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
     protected void afterEntitySet(T entity) {
         // override in subclass
     }
-    
+
     protected void afterEntitySelected(T entity) {
-        
+
     }
 
     /**
@@ -1313,6 +1313,12 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
         return tabs.get(isViewMode()).getSelectedIndex();
     }
 
+    /**
+     * Overwrite this method to add custom exception handling
+     * 
+     * @param ex the exception to handle
+     * @return
+     */
     protected boolean handleCustomException(RuntimeException ex) {
         return false;
     }
@@ -1475,7 +1481,21 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
             Text text = labels.get(isViewMode()).get(am);
             text.setText(value == null ? "" : value);
         }
-        
+    }
+
+    /**
+     * Refreshes the label for the specified property
+     * 
+     * @param propertyName
+     */
+    public void refreshLabel(String propertyName) {
+        AttributeModel am = getEntityModel().getAttributeModel(propertyName);
+        if (am != null && labels.get(isViewMode()) != null) {
+            Text text = labels.get(isViewMode()).get(am);
+            Object value = ClassUtils.getFieldValue(entity, propertyName);
+            String formatted = FormatUtils.formatPropertyValue(getEntityModelFactory(), am, value, ", ");
+            text.setText(formatted == null ? "" : formatted);
+        }
     }
 
     /**
@@ -1517,7 +1537,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
         // refresh preview components
         for (Entry<AttributeModel, Component> e : previews.get(isViewMode()).entrySet()) {
             Component pc = e.getValue().getParent().orElse(null);
-            if (pc instanceof HasOrderedComponents) {
+            if (pc instanceof HasOrderedComponents && e.getKey().isImage()) {
                 Component pv = constructImagePreview(e.getKey());
                 ((HasOrderedComponents<?>) pc).replace(e.getValue(), pv);
                 previews.get(isViewMode()).put(e.getKey(), pv);
@@ -1659,7 +1679,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
             b.setVisible((!isViewMode() && !getFormOptions().isHideCancelButton())
                     || (getFormOptions().isFormNested() && entity.getId() == null));
         }
-        
+
         afterEntitySelected(entity);
     }
 

@@ -21,6 +21,7 @@ import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
+import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.customfield.CustomField;
 import com.vaadin.flow.function.SerializablePredicate;
 
@@ -36,94 +37,94 @@ import com.vaadin.flow.function.SerializablePredicate;
  *        or a collection of entities)
  */
 public abstract class CustomEntityField<ID extends Serializable, T extends AbstractEntity<ID>, U> extends CustomField<U>
-		implements Cascadable<T> {
+        implements Cascadable<T> {
 
-	private static final long serialVersionUID = 8898382056620026384L;
+    private static final long serialVersionUID = 8898382056620026384L;
 
-	/**
-	 * The filter used to limit the entities to choose from
-	 */
-	private SerializablePredicate<T> filter;
+    /**
+     * The filter used to limit the entities to choose from
+     */
+    private SerializablePredicate<T> filter;
 
-	/**
-	 * The service
-	 */
-	private final BaseService<ID, T> service;
+    /**
+     * The service
+     */
+    private final BaseService<ID, T> service;
 
-	/**
-	 * The message service
-	 */
-	private final MessageService messageService;
+    /**
+     * The message service
+     */
+    private final MessageService messageService;
 
-	/**
-	 * The entity model of the entities that are displayed in the component
-	 */
-	private final EntityModel<T> entityModel;
+    /**
+     * The entity model of the entities that are displayed in the component
+     */
+    private final EntityModel<T> entityModel;
 
-	/**
-	 * The attribute model used to define the behaviour of the component
-	 */
-	private final AttributeModel attributeModel;
+    /**
+     * The attribute model used to define the behaviour of the component
+     */
+    private final AttributeModel attributeModel;
 
-	/**
-	 * Constructor
-	 * 
-	 * @param service
-	 * @param entityModel
-	 * @param attributeModel
-	 * @param filter
-	 */
-	public CustomEntityField(BaseService<ID, T> service, EntityModel<T> entityModel, AttributeModel attributeModel,
-			SerializablePredicate<T> filter) {
-		this.service = service;
-		this.entityModel = entityModel;
-		this.attributeModel = attributeModel;
-		this.messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
-		setFilter(filter);
-	}
+    /**
+     * Constructor
+     * 
+     * @param service
+     * @param entityModel
+     * @param attributeModel
+     * @param filter
+     */
+    public CustomEntityField(BaseService<ID, T> service, EntityModel<T> entityModel, AttributeModel attributeModel,
+            SerializablePredicate<T> filter) {
+        this.service = service;
+        this.entityModel = entityModel;
+        this.attributeModel = attributeModel;
+        this.messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
+        setFilter(filter);
+    }
 
-	public AttributeModel getAttributeModel() {
-		return attributeModel;
-	}
+    public AttributeModel getAttributeModel() {
+        return attributeModel;
+    }
 
-	public EntityModel<T> getEntityModel() {
-		return entityModel;
-	}
+    public EntityModel<T> getEntityModel() {
+        return entityModel;
+    }
 
-	public SerializablePredicate<T> getFilter() {
-		return filter;
-	}
+    public SerializablePredicate<T> getFilter() {
+        return filter;
+    }
 
-	public MessageService getMessageService() {
-		return messageService;
-	}
+    public MessageService getMessageService() {
+        return messageService;
+    }
 
-	public BaseService<ID, T> getService() {
-		return service;
-	}
+    public BaseService<ID, T> getService() {
+        return service;
+    }
 
-	/**
-	 * Sets the search filter to the provided filter then updates the lookup list
-	 * 
-	 * @param filter the new filter
-	 */
-	public abstract void refresh(SerializablePredicate<T> filter);
+    /**
+     * Sets the search filter to the provided filter then updates the lookup list
+     * 
+     * @param filter the new filter
+     */
+    public abstract void refresh(SerializablePredicate<T> filter);
 
-	/**
-	 * 
-	 * @param filter
-	 */
-	public void setFilter(SerializablePredicate<T> filter) {
-		this.filter = filter;
-	}
+    /**
+     * 
+     * @param filter
+     */
+    public void setFilter(SerializablePredicate<T> filter) {
+        this.filter = filter;
+    }
 
-	/**
-	 * Sets the placeholder/prompt text
-	 * 
-	 * @param placeholder
-	 */
-	public void setPlaceholder(String placeholder) {
-		// do nothing - override when subclass if needed
-	}
+    /**
+     * Sets the placeholder/prompt text
+     * 
+     * @param placeholder
+     */
+    public void setPlaceholder(String placeholder) {
+        // do nothing - override when subclass if needed
+    }
 
 }

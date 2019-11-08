@@ -22,7 +22,6 @@ import com.ocs.dynamo.domain.model.AttributeDateType;
 import com.ocs.dynamo.domain.model.AttributeSelectMode;
 import com.ocs.dynamo.domain.model.AttributeTextFieldMode;
 import com.ocs.dynamo.domain.model.EditableType;
-import com.ocs.dynamo.domain.model.NumberSelectMode;
 import com.ocs.dynamo.domain.model.VisibilityType;
 
 /**
@@ -90,12 +89,6 @@ public @interface Attribute {
      * @return whether the attribute is embedded
      */
     boolean embedded() default false;
-
-    /**
-     * @return the expansion factor to use when placing multiple components in the
-     *         same row
-     */
-    float expansionFactor() default 1.0f;
 
     /** @return the representation to use instead of "false" */
     String falseRepresentation() default "";
@@ -173,13 +166,6 @@ public @interface Attribute {
      * @return whether this attribute is navigable when inside a table
      */
     boolean navigable() default false;
-
-    /**
-     *
-     * @return the number select mode (indicates which component to use for editing
-     *         numbers)
-     */
-    NumberSelectMode numberSelectMode() default NumberSelectMode.TEXTFIELD;
 
     /** @return is the numeric field a percentage */
     boolean percentage() default false;

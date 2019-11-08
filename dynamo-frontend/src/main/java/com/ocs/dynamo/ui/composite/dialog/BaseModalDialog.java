@@ -47,11 +47,9 @@ public abstract class BaseModalDialog extends Dialog implements Buildable {
 
     private MessageService messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
 
-    public BaseModalDialog() {
-    }
-
     @Override
     public void build() {
+        
         constructLayout();
     }
 
