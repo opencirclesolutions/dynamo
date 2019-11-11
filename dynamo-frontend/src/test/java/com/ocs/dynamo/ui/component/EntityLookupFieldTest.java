@@ -83,16 +83,6 @@ public class EntityLookupFieldTest extends BaseMockitoTest {
         field.getSelectButton().click();
     }
 
-    @Test
-    public void testPageLength() {
-        EntityLookupField<Integer, TestEntity> field = new EntityLookupField<>(service, factory.getModel(TestEntity.class), null, null,
-                false, false, Lists.newArrayList(new SortOrder<String>("name", SortDirection.ASCENDING)));
-        field.initContent();
-
-        Assert.assertEquals("name", field.getSortOrders().get(0).getSorted());
-
-    }
-
     /**
      * Test that the clear button has the desired effect
      */

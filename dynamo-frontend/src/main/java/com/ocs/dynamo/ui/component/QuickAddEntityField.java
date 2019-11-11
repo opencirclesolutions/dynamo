@@ -27,7 +27,6 @@ import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.UIHelper;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
-import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.function.SerializablePredicate;
@@ -95,7 +94,7 @@ public abstract class QuickAddEntityField<ID extends Serializable, T extends Abs
      * @return
      */
     protected Button constructAddButton() {
-        addButton = new Button(getMessageService().getMessage("ocs.add", VaadinUtils.getLocale()));
+        addButton = new Button("");
         addButton.setIcon(VaadinIcon.PLUS.create());
         addButton.addClickListener(event -> {
             AddNewValueDialog<ID, T> dialog = new AddNewValueDialog<ID, T>(getEntityModel(), getAttributeModel(), getService(),

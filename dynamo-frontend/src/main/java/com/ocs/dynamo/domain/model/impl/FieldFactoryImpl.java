@@ -247,7 +247,7 @@ public class FieldFactoryImpl implements FieldFactory {
 
         // for read-only attributes, do not render a field unless it's a link field
         if (EditableType.READ_ONLY.equals(am.getEditableType())
-                && (!am.isUrl() && !am.isNavigable() && !AttributeType.DETAIL.equals(am.getAttributeType())) && !context.isSearch()) {
+                && (/*!am.isUrl() && */ !am.isNavigable() && !AttributeType.DETAIL.equals(am.getAttributeType())) && !context.isSearch()) {
             return null;
         }
 
@@ -291,7 +291,6 @@ public class FieldFactoryImpl implements FieldFactory {
             df.setLocale(dateLoc);
             field = df;
         } else if (LocalDateTime.class.equals(am.getType())) {
-            // TODO: must be a date/time field but this currently is not supported
             DateTimePicker df = new DateTimePicker(dateLoc);
             field = df;
         } else if (ZonedDateTime.class.equals(am.getType())) {

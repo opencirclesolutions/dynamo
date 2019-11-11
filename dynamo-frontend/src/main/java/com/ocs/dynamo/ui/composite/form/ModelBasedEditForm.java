@@ -51,6 +51,7 @@ import com.ocs.dynamo.ui.UseInViewMode;
 import com.ocs.dynamo.ui.component.Cascadable;
 import com.ocs.dynamo.ui.component.CollapsiblePanel;
 import com.ocs.dynamo.ui.component.CustomEntityField;
+import com.ocs.dynamo.ui.component.DefaultFlexLayout;
 import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.component.ServiceBasedDetailsEditGrid;
@@ -62,6 +63,7 @@ import com.ocs.dynamo.ui.utils.FormatUtils;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.utils.ClassUtils;
 import com.ocs.dynamo.utils.EntityModelUtils;
+import com.ocs.dynamo.utils.StringUtils;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Focusable;
 import com.vaadin.flow.component.HasComponents;
@@ -76,9 +78,11 @@ import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.customfield.CustomField;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.formlayout.FormLayout.FormItem;
+import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.tabs.Tab;
@@ -311,7 +315,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
      * A map containing all the labels that were added - used to replace the label
      * values as the selected entity changes
      */
-    private Map<Boolean, Map<AttributeModel, Text>> labels = new HashMap<>();
+    private Map<Boolean, Map<AttributeModel, Component>> labels = new HashMap<>();
 
     private Map<Boolean, Map<AttributeModel, FormItem>> formItems = new HashMap<>();
 
@@ -398,7 +402,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
         if (!alreadyBound.get(isViewMode()).contains(attributeModel.getPath()) && attributeModel.isVisible()
                 && (AttributeType.BASIC.equals(type) || AttributeType.LOB.equals(type) || attributeModel.isComplexEditable())) {
             if (EditableType.READ_ONLY.equals(attributeModel.getEditableType()) || isViewMode()) {
-                if (attributeModel.isUrl() || attributeModel.isNavigable()) {
+                if (attributeModel.isNavigable()) {
                     // display a complex component even in read-only mode
                     constructField(parent, entityModel, attributeModel, true, tabIndex);
                 } else if (AttributeType.LOB.equals(type)) {
@@ -520,7 +524,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
     public void build() {
         if (isViewMode()) {
             if (mainViewLayout == null) {
-                Map<AttributeModel, Text> map = new HashMap<>();
+                Map<AttributeModel, Component> map = new HashMap<>();
                 labels.put(Boolean.TRUE, map);
 
                 Map<AttributeModel, FormItem> formItemMap = new HashMap<>();
@@ -538,7 +542,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
             add(mainViewLayout);
         } else {
             if (mainEditLayout == null) {
-                Map<AttributeModel, Text> map = new HashMap<>();
+                Map<AttributeModel, Component> map = new HashMap<>();
                 labels.put(Boolean.FALSE, map);
 
                 Map<AttributeModel, FormItem> formItemMap = new HashMap<>();
@@ -579,7 +583,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
         titleBars.put(isViewMode(), new DefaultHorizontalLayout(false, true));
         titleBars.get(isViewMode()).add(titleLabels.get(isViewMode()));
 
-        HorizontalLayout buttonBar = null;
+        FlexLayout buttonBar = null;
         if (!nestedMode) {
             buttonBar = constructButtonBar(false);
             buttonBar.setSizeUndefined();
@@ -731,8 +735,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
         return (HasComponents) innerLayout;
     }
 
-    private HorizontalLayout constructButtonBar(boolean bottom) {
-        HorizontalLayout buttonBar = new DefaultHorizontalLayout();
+    private FlexLayout constructButtonBar(boolean bottom) {
+        FlexLayout buttonBar = new DefaultFlexLayout();
 
         // button to go back to the main screen when in view mode
         Button backButton = new Button(message("ocs.back"));
@@ -964,14 +968,27 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
      * @param tabIndex       the number of components added so far
      */
     private void constructLabel(HasComponents parent, EntityModel<T> entityModel, AttributeModel attributeModel, int tabIndex) {
-        Text label = constructLabel(entity, attributeModel);
-        labels.get(isViewMode()).put(attributeModel, label);
+
+        Component comp = null;
+        if (attributeModel.isUrl()) {
+            // read-only URL field
+            String value = (String) ClassUtils.getFieldValue(entity, attributeModel.getName());
+            value = StringUtils.prependProtocol(value);
+            Anchor anchor = new Anchor(value == null ? "" : value, value);
+            anchor.setTarget("_blank");
+            labels.get(isViewMode()).put(attributeModel, anchor);
+            comp = anchor;
+        } else {
+            Text label = constructLabel(entity, attributeModel);
+            labels.get(isViewMode()).put(attributeModel, label);
+            comp = label;
+        }
 
         if (!attributeModel.getGroupTogetherWith().isEmpty()) {
             // group multiple labels on the same line
             FormLayout form = new FormLayout();
             parent.add(form);
-            FormItem formItem = form.addFormItem(label, attributeModel.getDisplayName(VaadinUtils.getLocale()));
+            FormItem formItem = form.addFormItem(comp, attributeModel.getDisplayName(VaadinUtils.getLocale()));
             formItems.get(isViewMode()).put(attributeModel, formItem);
 
             for (String path : attributeModel.getGroupTogetherWith()) {
@@ -983,10 +1000,10 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
         } else {
             // attributes not grouped on the same row
             if (parent instanceof FormLayout) {
-                FormItem formItem = ((FormLayout) parent).addFormItem(label, attributeModel.getDisplayName(VaadinUtils.getLocale()));
+                FormItem formItem = ((FormLayout) parent).addFormItem(comp, attributeModel.getDisplayName(VaadinUtils.getLocale()));
                 formItems.get(isViewMode()).put(attributeModel, formItem);
             } else {
-                parent.add(label);
+                parent.add(comp);
             }
         }
     }
@@ -1238,14 +1255,19 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
     /**
      * Returns the collection of all input fields for the specified mode
      * 
-     * @param viewMode the view mode
+     * @param viewMode whether to returns the components for the view mode
      * @return
      */
     public Collection<HasValue<?, ?>> getFields(boolean viewMode) {
         return groups.get(viewMode).getFields().collect(Collectors.toList());
     }
 
-    public Text getLabel(String propertyName) {
+    /**
+     * 
+     * @param propertyName
+     * @return
+     */
+    public Component getLabel(String propertyName) {
         AttributeModel am = getEntityModel().getAttributeModel(propertyName);
         if (am != null) {
             return labels.get(isViewMode()).get(am);
@@ -1394,10 +1416,10 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
     /**
      * Post-processes the button bar that is displayed above/below the edit form
      *
-     * @param buttonBar
+     * @param buttonBar the button bar
      * @param viewMode
      */
-    protected void postProcessButtonBar(HorizontalLayout buttonBar, boolean viewMode) {
+    protected void postProcessButtonBar(FlexLayout buttonBar, boolean viewMode) {
         // overwrite in subclasses
     }
 
@@ -1478,36 +1500,49 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
     public void setLabelValue(String propertyName, String value) {
         AttributeModel am = getEntityModel().getAttributeModel(propertyName);
         if (am != null) {
-            Text text = labels.get(isViewMode()).get(am);
-            text.setText(value == null ? "" : value);
+            Component comp = labels.get(isViewMode()).get(am);
+            if (comp instanceof Text) {
+                ((Text) comp).setText(value == null ? "" : value);
+            }
         }
     }
 
     /**
      * Refreshes the label for the specified property
      * 
-     * @param propertyName
+     * @param propertyName the name of the property
      */
     public void refreshLabel(String propertyName) {
         AttributeModel am = getEntityModel().getAttributeModel(propertyName);
         if (am != null && labels.get(isViewMode()) != null) {
-            Text text = labels.get(isViewMode()).get(am);
+            Component comp = labels.get(isViewMode()).get(am);
             Object value = ClassUtils.getFieldValue(entity, propertyName);
             String formatted = FormatUtils.formatPropertyValue(getEntityModelFactory(), am, value, ", ");
-            text.setText(formatted == null ? "" : formatted);
+            if (comp instanceof Text) {
+                ((Text) comp).setText(formatted == null ? "" : formatted);
+            }
         }
     }
 
     /**
-     * Refreshes the contents of all labels
+     * Refreshes the contents of all labels and URL fields
      */
-    private void refreshLabels() {
+    private void refreshLabelsAndUrls() {
         if (labels.get(isViewMode()) != null) {
-            for (Entry<AttributeModel, Text> e : labels.get(isViewMode()).entrySet()) {
-                Text text = e.getValue();
+            for (Entry<AttributeModel, Component> e : labels.get(isViewMode()).entrySet()) {
+                Component c = e.getValue();
                 Object value = ClassUtils.getFieldValue(entity, e.getKey().getName());
                 String formatted = FormatUtils.formatPropertyValue(getEntityModelFactory(), e.getKey(), value, ", ");
-                text.setText(formatted == null ? "" : formatted);
+
+                if (c instanceof Text) {
+                    Text text = (Text) c;
+                    text.setText(formatted == null ? "" : formatted);
+                } else {
+                    Anchor a = (Anchor) c;
+                    formatted = StringUtils.prependProtocol(formatted);
+                    a.setHref(formatted == null ? "" : formatted);
+                    a.setText(formatted);
+                }
             }
         }
 
@@ -1659,7 +1694,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
         // "rebuild" so that the correct layout is displayed
         build();
-        refreshLabels();
+        refreshLabelsAndUrls();
         resetTabsheetIfNeeded();
         refreshUploadComponents();
 
@@ -1755,7 +1790,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
         groups.get(isViewMode()).setBean(entity);
 
         constructTitleLabel();
-        refreshLabels();
+        refreshLabelsAndUrls();
         build();
 
         checkIterationButtonState(checkIterationButtons);

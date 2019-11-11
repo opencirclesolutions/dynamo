@@ -4,12 +4,10 @@ import javax.inject.Inject;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
 import com.github.mvysny.kaributesting.v10.MockVaadin;
-import com.github.mvysny.kaributesting.v10.Routes;
 import com.google.common.collect.Lists;
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.TestEntity2;
@@ -138,7 +136,6 @@ public class ServiceBasedSplitLayoutTest extends FrontendIntegrationTest {
     }
 
     @Test
-    @Ignore
     public void testCreateInViewMode() {
         FormOptions fo = new FormOptions().setOpenInViewMode(true);
         ServiceBasedSplitLayout<Integer, TestEntity> layout = new ServiceBasedSplitLayout<Integer, TestEntity>(testEntityService,

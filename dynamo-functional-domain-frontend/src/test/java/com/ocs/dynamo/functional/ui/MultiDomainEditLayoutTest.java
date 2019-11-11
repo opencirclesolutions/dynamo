@@ -15,7 +15,7 @@ import com.ocs.dynamo.ui.FrontendIntegrationTest;
 import com.ocs.dynamo.ui.composite.layout.BaseSplitLayout;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.FlexLayout;
 
 
 /**
@@ -69,7 +69,7 @@ public class MultiDomainEditLayoutTest extends FrontendIntegrationTest {
             }
 
             @Override
-            protected void postProcessButtonBar(HorizontalLayout buttonBar) {
+            protected void postProcessButtonBar(FlexLayout buttonBar) {
                 Button button = new Button("testButton");
                 buttonBar.add(button);
                 registerComponent(button);

@@ -28,6 +28,7 @@ import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.composite.layout.SimpleEditLayout;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.function.SerializablePredicate;
@@ -139,7 +140,7 @@ public class EntityPopupDialog<ID extends Serializable, T extends AbstractEntity
             }
 
             @Override
-            protected void postProcessButtonBar(HorizontalLayout buttonBar, boolean viewMode) {
+            protected void postProcessButtonBar(FlexLayout buttonBar, boolean viewMode) {
                 EntityPopupDialog.this.postProcessButtonBar(buttonBar, viewMode);
             }
 
@@ -185,7 +186,7 @@ public class EntityPopupDialog<ID extends Serializable, T extends AbstractEntity
         return entityModel.getDisplayName(VaadinUtils.getLocale());
     }
 
-    protected void postProcessButtonBar(HorizontalLayout buttonBar, boolean viewMode) {
+    protected void postProcessButtonBar(FlexLayout buttonBar, boolean viewMode) {
         // overwrite in subclasses when needed
     }
 

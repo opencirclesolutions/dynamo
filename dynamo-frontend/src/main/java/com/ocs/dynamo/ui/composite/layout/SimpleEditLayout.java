@@ -31,7 +31,7 @@ import com.ocs.dynamo.ui.composite.type.ScreenMode;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasComponents;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.converter.Converter;
 import com.vaadin.flow.function.SerializablePredicate;
@@ -240,7 +240,7 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
                 }
 
                 @Override
-                protected void postProcessButtonBar(HorizontalLayout buttonBar, boolean viewMode) {
+                protected void postProcessButtonBar(FlexLayout buttonBar, boolean viewMode) {
                     SimpleEditLayout.this.postProcessButtonBar(buttonBar, viewMode);
                 }
 
@@ -345,7 +345,7 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
      * @param buttonBar the button bar
      * @param viewMode  the view mode
      */
-    protected void postProcessButtonBar(HorizontalLayout buttonBar, boolean viewMode) {
+    protected void postProcessButtonBar(FlexLayout buttonBar, boolean viewMode) {
         // overwrite in subclasses
     }
 

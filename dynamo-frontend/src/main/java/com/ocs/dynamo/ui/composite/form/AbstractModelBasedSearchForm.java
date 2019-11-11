@@ -31,7 +31,7 @@ import com.ocs.dynamo.filter.listener.FilterChangeEvent;
 import com.ocs.dynamo.filter.listener.FilterListener;
 import com.ocs.dynamo.ui.Refreshable;
 import com.ocs.dynamo.ui.Searchable;
-import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
+import com.ocs.dynamo.ui.component.DefaultFlexLayout;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
@@ -43,7 +43,7 @@ import com.vaadin.flow.component.HasComponents;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.function.SerializablePredicate;
 
@@ -111,7 +111,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
     /**
      * The button bar
      */
-    private HorizontalLayout buttonBar;
+    private FlexLayout buttonBar;
 
     /**
      * The main layout (constructed only once)
@@ -185,7 +185,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
                 wrapperPanel.add((Component) filterLayout);
 
                 // create the button bar
-                buttonBar = new DefaultHorizontalLayout(false, true);
+                buttonBar = new DefaultFlexLayout();
                 main.add(buttonBar);
                 constructButtonBar(buttonBar);
                 // add custom buttons
@@ -243,7 +243,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
      *
      * @param buttonBar the button bar
      */
-    protected abstract void constructButtonBar(HorizontalLayout buttonBar);
+    protected abstract void constructButtonBar(FlexLayout buttonBar);
 
     /**
      * Constructs the "clear" button
@@ -351,7 +351,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
         this.afterClearConsumer = afterClearConsumer;
     }
 
-    public HorizontalLayout getButtonBar() {
+    public FlexLayout getButtonBar() {
         return buttonBar;
     }
 
@@ -456,7 +456,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
      *
      * @param groups
      */
-    protected void postProcessButtonBar(HorizontalLayout buttonBar) {
+    protected void postProcessButtonBar(FlexLayout buttonBar) {
         // Use in subclass to add additional buttons
     }
 

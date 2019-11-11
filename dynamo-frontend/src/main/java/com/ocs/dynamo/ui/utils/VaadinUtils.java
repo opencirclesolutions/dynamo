@@ -59,6 +59,13 @@ import com.vaadin.flow.server.VaadinSession;
  */
 public final class VaadinUtils {
 
+    /**
+     * Appends a percentage sing to the provided string if needed
+     * 
+     * @param s          the string
+     * @param percentage whether to append the sign
+     * @return
+     */
     private static String appendPercentage(String s, boolean percentage) {
         if (s == null) {
             return null;
@@ -234,6 +241,18 @@ public final class VaadinUtils {
             return (Locale) VaadinSession.getCurrent().getAttribute(DynamoConstants.DATE_LOCALE);
         }
         return new Locale(SystemPropertyUtils.getDefaultDateLocale());
+    }
+
+    /**
+     * Returns the first child of the provide component that is of the specified class (or is a subclass
+     * of the specified class)
+     * @param component 
+     * @param clazz
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> T getFirstChildOfClass(Component component, Class<T> clazz) {
+        return (T) component.getChildren().filter(c -> clazz.isAssignableFrom(c.getClass())).findFirst().orElse(null);
     }
 
     /**

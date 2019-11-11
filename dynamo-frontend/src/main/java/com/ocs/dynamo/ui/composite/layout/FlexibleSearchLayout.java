@@ -27,7 +27,7 @@ import com.ocs.dynamo.ui.composite.form.AbstractModelBasedSearchForm;
 import com.ocs.dynamo.ui.composite.form.ModelBasedFlexibleSearchForm;
 import com.ocs.dynamo.ui.provider.QueryType;
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.data.provider.SortOrder;
 
 /**
@@ -95,7 +95,7 @@ public class FlexibleSearchLayout<ID extends Serializable, T extends AbstractEnt
             }
 
             @Override
-            protected void postProcessButtonBar(HorizontalLayout buttonBar) {
+            protected void postProcessButtonBar(FlexLayout buttonBar) {
                 FlexibleSearchLayout.this.postProcessSearchButtonBar(buttonBar);
             }
 

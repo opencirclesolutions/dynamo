@@ -73,7 +73,6 @@ public class SimpleEditLayoutTest extends FrontendIntegrationTest {
      * Test opening the screen in view mode
      */
     @Test
-    @Ignore
     public void testSimpleEditLayout_ViewMode() {
         SimpleEditLayout<Integer, TestEntity> layout = createLayout(e1, "TestEntity",
                 new FormOptions().setOpenInViewMode(true).setEditAllowed(true));

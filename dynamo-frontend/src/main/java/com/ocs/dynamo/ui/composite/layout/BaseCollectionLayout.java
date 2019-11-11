@@ -27,13 +27,13 @@ import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.Refreshable;
 import com.ocs.dynamo.ui.Reloadable;
-import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
+import com.ocs.dynamo.ui.component.DefaultFlexLayout;
 import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
 import com.ocs.dynamo.ui.composite.grid.BaseGridWrapper;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid.Column;
 import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.SortOrder;
@@ -55,7 +55,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
     /**
      * The main button bar that appears below the search results grid
      */
-    private HorizontalLayout buttonBar = new DefaultHorizontalLayout();
+    private FlexLayout buttonBar = new DefaultFlexLayout();
 
     /**
      * The relations to fetch when retrieving a single entity
@@ -233,7 +233,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
         detailsMode(getSelectedItem());
     }
 
-    public HorizontalLayout getButtonBar() {
+    public FlexLayout getButtonBar() {
         return buttonBar;
     }
 
@@ -351,7 +351,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
      * 
      * @param buttonBar the button bar
      */
-    protected void postProcessButtonBar(HorizontalLayout buttonBar) {
+    protected void postProcessButtonBar(FlexLayout buttonBar) {
         // overwrite in subclass if needed
     }
 
@@ -371,7 +371,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
      * @param buttonBar the detail button bar
      * @param viewMode  indicates whether the form is in view mode
      */
-    protected void postProcessDetailButtonBar(HorizontalLayout buttonBar, boolean viewMode) {
+    protected void postProcessDetailButtonBar(FlexLayout buttonBar, boolean viewMode) {
         // overwrite in subclass if needed
     }
 

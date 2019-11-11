@@ -134,7 +134,7 @@ public class QuickAddEntityComboBox<ID extends Serializable, T extends AbstractE
     protected void initContent() {
 
         HorizontalLayout bar = new HorizontalLayout();
-        bar.setSizeFull();
+        //bar.setWrapMode(WrapMode.WRAP);
 
         if (this.getAttributeModel() != null) {
             this.setLabel(getAttributeModel().getDisplayName(VaadinUtils.getLocale()));
@@ -142,16 +142,19 @@ public class QuickAddEntityComboBox<ID extends Serializable, T extends AbstractE
 
         // no caption needed (the wrapping component has the caption)
         comboBox.setLabel(null);
-        comboBox.setSizeFull();
+        //comboBox.setSizeFull();
 
         bar.add(comboBox);
+        bar.setFlexGrow(2,  comboBox);
         if (quickAddAllowed) {
             Button addButton = constructAddButton();
             bar.add(addButton);
+            bar.setFlexGrow(1, addButton);
         }
         if (directNavigationAllowed) {
             Button directNavigationButton = constructDirectNavigationButton();
             bar.add(directNavigationButton);
+            bar.setFlexGrow(1, directNavigationButton);
         }
 
         add(bar);

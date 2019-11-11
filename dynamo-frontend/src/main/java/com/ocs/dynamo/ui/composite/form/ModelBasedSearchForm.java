@@ -37,7 +37,7 @@ import com.vaadin.flow.component.HasComponents;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.HasValue.ValueChangeEvent;
 import com.vaadin.flow.component.formlayout.FormLayout;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.function.SerializablePredicate;
 
@@ -110,7 +110,7 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
      * Constructs the button bar for the search form
      */
     @Override
-    protected void constructButtonBar(HorizontalLayout buttonBar) {
+    protected void constructButtonBar(FlexLayout buttonBar) {
         buttonBar.add(constructSearchButton());
         buttonBar.add(constructSearchAnyButton());
         buttonBar.add(constructClearButton());

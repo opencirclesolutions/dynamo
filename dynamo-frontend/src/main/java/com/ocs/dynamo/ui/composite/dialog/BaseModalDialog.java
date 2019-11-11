@@ -49,7 +49,6 @@ public abstract class BaseModalDialog extends Dialog implements Buildable {
 
     @Override
     public void build() {
-        
         constructLayout();
     }
 

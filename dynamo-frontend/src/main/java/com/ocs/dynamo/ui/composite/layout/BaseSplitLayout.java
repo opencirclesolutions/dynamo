@@ -30,7 +30,7 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.component.textfield.TextField;
@@ -350,7 +350,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
                 }
 
                 @Override
-                protected void postProcessButtonBar(HorizontalLayout buttonBar, boolean viewMode) {
+                protected void postProcessButtonBar(FlexLayout buttonBar, boolean viewMode) {
                     BaseSplitLayout.this.postProcessDetailButtonBar(buttonBar, viewMode);
                 }
 

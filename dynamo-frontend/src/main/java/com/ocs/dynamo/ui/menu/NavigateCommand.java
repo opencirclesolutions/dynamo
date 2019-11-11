@@ -18,6 +18,7 @@ import com.ocs.dynamo.ui.UIHelper;
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.contextmenu.MenuItem;
+import com.vaadin.flow.component.menubar.MenuBar;
 
 /**
  * Command for navigating to a certain view
@@ -27,6 +28,10 @@ import com.vaadin.flow.component.contextmenu.MenuItem;
 public class NavigateCommand implements ComponentEventListener<ClickEvent<MenuItem>> {
 
     private static final long serialVersionUID = 5192333331107840255L;
+
+    private final MenuBar menuBar;
+
+    private final MenuService menuService;
 
     private final String destination;
 
@@ -41,9 +46,11 @@ public class NavigateCommand implements ComponentEventListener<ClickEvent<MenuIt
      * @param selectedTab the index of the tab to select
      * @param mode        an optional screen mode
      */
-    public NavigateCommand(String destination, String selectedTab, String mode) {
+    public NavigateCommand(MenuService menuService, MenuBar menuBar, String destination, String selectedTab, String mode) {
+        this.menuService = menuService;
         this.destination = destination;
         this.selectedTab = selectedTab;
+        this.menuBar = menuBar;
         this.mode = mode;
     }
 
@@ -70,6 +77,8 @@ public class NavigateCommand implements ComponentEventListener<ClickEvent<MenuIt
         }
         helper.setScreenMode(mode);
         helper.navigate(destination);
+
+        menuService.setLastVisited(menuBar, destination);
     }
 
 }

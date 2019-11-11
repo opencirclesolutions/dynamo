@@ -36,11 +36,12 @@ import com.ocs.dynamo.ui.provider.QueryType;
 import com.ocs.dynamo.ui.utils.FormatUtils;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid.SelectionMode;
-import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.converter.Converter;
@@ -270,7 +271,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
                 searchResultsLayout.add(getGridWrapper());
             } else {
                 // do not construct the search results grid yet
-                Label noSearchYetLabel = new Label(message("ocs.no.search.yet"));
+                Text noSearchYetLabel = new Text(message("ocs.no.search.yet"));
                 searchResultsLayout.add(noSearchYetLabel);
 
                 // click listener that will construct search results grid on demand
@@ -503,7 +504,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
             }
 
             @Override
-            protected void postProcessButtonBar(HorizontalLayout buttonBar, boolean viewMode) {
+            protected void postProcessButtonBar(FlexLayout buttonBar, boolean viewMode) {
                 AbstractSearchLayout.this.postProcessDetailButtonBar(buttonBar, viewMode);
             }
 
@@ -524,7 +525,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
      * Respond to a click on the Clear button when not in "search immediately" mode
      */
     private void clearIfNotSearchingImmediately() {
-        Label noSearchYetLabel = new Label(message("ocs.no.search.yet"));
+        Text noSearchYetLabel = new Text(message("ocs.no.search.yet"));
         searchResultsLayout.removeAll();
         searchResultsLayout.add(noSearchYetLabel);
         getSearchForm().setSearchable(null);
@@ -607,7 +608,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
      * @param noSearchYetLabel the label used to indicate that there are no search
      *                         results yet
      */
-    private final void constructLayoutIfNeeded(Label noSearchYetLabel) {
+    private final void constructLayoutIfNeeded(Text noSearchYetLabel) {
         if (!searchLayoutConstructed) {
             // construct search screen if it is not there yet
             try {
@@ -1019,7 +1020,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
      * 
      * @param buttonBar the button bar
      */
-    public void postProcessSearchButtonBar(HorizontalLayout buttonBar) {
+    public void postProcessSearchButtonBar(FlexLayout buttonBar) {
         // overwrite in subclasses
     }
 

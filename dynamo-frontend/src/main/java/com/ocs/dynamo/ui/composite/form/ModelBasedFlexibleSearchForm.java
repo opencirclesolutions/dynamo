@@ -66,6 +66,7 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.binder.Result;
@@ -728,7 +729,7 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
      * Constructs the main button bar
      */
     @Override
-    protected void constructButtonBar(HorizontalLayout buttonBar) {
+    protected void constructButtonBar(FlexLayout buttonBar) {
 
         // construct button for adding a new filter
         addFilterButton = new Button(message("ocs.add.filter"));

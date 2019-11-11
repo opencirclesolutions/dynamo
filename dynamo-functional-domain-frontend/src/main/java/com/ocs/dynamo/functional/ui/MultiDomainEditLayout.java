@@ -36,7 +36,7 @@ import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.formlayout.FormLayout;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.data.provider.SortOrder;
@@ -220,7 +220,7 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
                 }
 
                 @Override
-                protected void postProcessButtonBar(HorizontalLayout buttonBar) {
+                protected void postProcessButtonBar(FlexLayout buttonBar) {
                     MultiDomainEditLayout.this.postProcessButtonBar(buttonBar);
                 }
 
@@ -294,7 +294,7 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
     /**
      * @param buttonBar
      */
-    protected void postProcessButtonBar(HorizontalLayout buttonBar) {
+    protected void postProcessButtonBar(FlexLayout buttonBar) {
         // overwrite in subclasses
     }
 

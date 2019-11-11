@@ -19,7 +19,8 @@ import java.util.function.Consumer;
 
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.flow.component.UI;
-import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.Notification.Position;
+import com.vaadin.flow.component.notification.NotificationVariant;
 
 /**
  * Helper class for the UI, mainly concerned with handling navigation and
@@ -83,13 +84,14 @@ public class UIHelper {
     public void navigateToEntityScreen(Object o) {
         if (o != null) {
             Consumer navigateToView = entityOnViewMapping.getOrDefault(o.getClass(),
-                    err -> Notification.show("No view mapping registered for class: " + o.getClass()));
+                    err -> VaadinUtils.showNotification("No view mapping registered for class: " + o.getClass(), Position.MIDDLE,
+                            NotificationVariant.LUMO_ERROR));
             if (navigateToView != null) {
                 try {
                     navigateToView.accept(o);
                 } catch (Exception e) {
-                    Notification.show("An exception occurred while executing the mapped action for class: " + o.getClass()
-                            + " with message: " + e.getMessage());
+                    VaadinUtils.showNotification("An exception occurred while executing the mapped action for class: " + o.getClass()
+                            + " with message: " + e.getMessage(), Position.MIDDLE, NotificationVariant.LUMO_ERROR);
                     throw e;
                 }
             }

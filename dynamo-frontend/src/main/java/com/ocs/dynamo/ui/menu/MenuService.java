@@ -16,6 +16,9 @@ package com.ocs.dynamo.ui.menu;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -94,7 +97,7 @@ public class MenuService {
             // create navigation command
             NavigateCommand command = null;
             if (!StringUtils.isEmpty(destination)) {
-                command = new NavigateCommand(destination, tabIndex, mode);
+                command = new NavigateCommand(this, bar, destination, tabIndex, mode);
             }
 
             if (parent instanceof MenuBar) {
@@ -153,6 +156,22 @@ public class MenuService {
         return mainMenu;
     }
 
+    private boolean hasChildWithDestination(MenuItem item, String destination) {
+        if (item.getSubMenu() != null && !item.getSubMenu().getItems().isEmpty()) {
+            boolean found = false;
+            for (MenuItem child : item.getSubMenu().getItems()) {
+                boolean t = hasChildWithDestination(child, destination);
+                found |= t;
+            }
+            return found;
+        } else {
+            // look in the destination map for any match
+            Set<Entry<String, MenuItem>> possibleDestinations = destinationMap.entrySet().stream()
+                    .filter(e -> e.getKey().startsWith(destination)).collect(Collectors.toSet());
+            return possibleDestinations.stream().anyMatch(e -> e.getValue().equals(item));
+        }
+    }
+
     /**
      * Hides a menu item if all its children are hidden
      * 
@@ -189,6 +208,21 @@ public class MenuService {
     private void hideRecursively(MenuBar bar) {
         for (MenuItem item : bar.getItems()) {
             hideIfAllChildrenHidden(item);
+        }
+    }
+
+    /**
+     * Marks the last visited menu item in the menu bar
+     * 
+     * @param menuBar     the menu bar
+     * @param destination the destination that was last visited
+     */
+    public void setLastVisited(MenuBar menuBar, String destination) {
+        for (MenuItem item : menuBar.getItems()) {
+            item.getElement().removeAttribute("style");
+            if (hasChildWithDestination(item, destination)) {
+                item.getElement().setAttribute("style", "color: red;");
+            }
         }
     }
 

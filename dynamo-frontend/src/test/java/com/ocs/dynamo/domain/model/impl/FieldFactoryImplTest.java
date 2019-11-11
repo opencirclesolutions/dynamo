@@ -6,7 +6,6 @@ import java.util.Map;
 import org.hibernate.annotations.Check;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -29,8 +28,8 @@ import com.ocs.dynamo.ui.component.InternalLinkField;
 import com.ocs.dynamo.ui.component.QuickAddEntityComboBox;
 import com.ocs.dynamo.ui.component.QuickAddListSingleSelect;
 import com.ocs.dynamo.ui.component.QuickAddTokenSelect;
-import com.ocs.dynamo.ui.component.SimpleTokenFieldSelect;
 import com.ocs.dynamo.ui.component.URLField;
+import com.ocs.dynamo.ui.component.ZonedDateTimePicker;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.datepicker.DatePicker;
@@ -168,16 +167,6 @@ public class FieldFactoryImplTest extends FrontendIntegrationTest {
     }
 
     /**
-     * element collection field in search mode (fails due to h2 problem?)
-     */
-    @Test
-    @Ignore
-    public void testCollectionFieldSearch() {
-        Component ac = constructField("tags", true);
-        Assert.assertTrue(ac instanceof SimpleTokenFieldSelect);
-    }
-
-    /**
      * Test a text field that displays a BigDecimal
      */
     @Test
@@ -214,10 +203,9 @@ public class FieldFactoryImplTest extends FrontendIntegrationTest {
      * Test the creation of a zoned date time field
      */
     @Test
-    @Ignore
     public void testZonedDateTimeField() {
         Component ac = constructField("zoned", false);
-        Assert.assertTrue(ac instanceof TimePicker);
+        Assert.assertTrue(ac instanceof ZonedDateTimePicker);
     }
 
     /**
@@ -292,12 +280,12 @@ public class FieldFactoryImplTest extends FrontendIntegrationTest {
     }
 
     /**
-     * Test that even in read only mode, an URL field is created
+     * Test that in read only mode, no field is created any more
      */
     @Test
     public void testReadOnlyUrl() {
         Component ac = constructField2("url", false, false);
-        Assert.assertTrue(ac instanceof URLField);
+        Assert.assertNull(ac);
     }
 
     /**

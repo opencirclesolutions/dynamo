@@ -14,7 +14,6 @@
 package com.ocs.dynamo.ui.menu;
 
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -36,28 +35,22 @@ public class MenuServiceTest extends FrontendIntegrationTest {
     /**
      * Test the basic menu building
      */
-//    @Test
-//    public void testMenuStructure() {
-//        MenuBar bar = menuService.constructMenu("ocs.menu");
-//        Assert.assertEquals(2, bar.getItems().size());
-//
-//        MenuItem first = bar.getItems().get(0);
-//        Assert.assertEquals("Menu 1", first.getText());
-//        Assert.assertNull(first.getCommand());
-//
-//        Assert.assertEquals(2, first.getChildren().size());
-//        MenuItem firstSub = first.getChildren().get(0);
-//        Assert.assertEquals("Menu 1.1", firstSub.getText());
-//        Assert.assertEquals("Description 1.1", firstSub.getDescription());
-//
-//        NavigateCommand command = (NavigateCommand) firstSub.getCommand();
-//        Assert.assertEquals("Destination 1.1", command.getDestination());
-//        Assert.assertEquals("3", command.getSelectedTab());
-//
-//        // check that the last visited item becomes highlighted
-//        menuService.setLastVisited(bar, "Destination 1.1");
-//        Assert.assertEquals(DynamoConstants.CSS_LAST_VISITED, first.getStyleName());
-//    }
+    @Test
+    public void testMenuStructure() {
+        MenuBar bar = menuService.constructMenu("ocs.menu");
+        Assert.assertEquals(2, bar.getItems().size());
+
+        MenuItem first = bar.getItems().get(0);
+        Assert.assertEquals("Menu 1", first.getText());
+
+        Assert.assertEquals(2, first.getSubMenu().getItems().size());
+        MenuItem firstSub = first.getSubMenu().getItems().get(0);
+        Assert.assertEquals("Menu 1.1", firstSub.getText());
+
+        MenuItem second = bar.getItems().get(1);
+        Assert.assertEquals("Menu 2", second.getText());
+
+    }
 
     /**
      * Test that an item is disabled if the user does not have the correct role (the
@@ -65,7 +58,6 @@ public class MenuServiceTest extends FrontendIntegrationTest {
      * with @SpringView)
      */
     @Test
-    @Ignore("Authorization not working yet")
     public void testDisableItem() {
         MenuBar bar = menuService.constructMenu("ocs.menu");
 
@@ -81,7 +73,6 @@ public class MenuServiceTest extends FrontendIntegrationTest {
      * Test that a parent item is hidden if all its children are hidden as well
      */
     @Test
-    @Ignore("Authorization not working yet")
     public void testDisableItemAndParent() {
         MenuBar bar = menuService.constructMenu("ocs.menu2");
 
