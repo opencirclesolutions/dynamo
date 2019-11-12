@@ -134,15 +134,12 @@ public class QuickAddEntityComboBox<ID extends Serializable, T extends AbstractE
     protected void initContent() {
 
         HorizontalLayout bar = new HorizontalLayout();
-        //bar.setWrapMode(WrapMode.WRAP);
-
         if (this.getAttributeModel() != null) {
             this.setLabel(getAttributeModel().getDisplayName(VaadinUtils.getLocale()));
         }
 
         // no caption needed (the wrapping component has the caption)
         comboBox.setLabel(null);
-        //comboBox.setSizeFull();
 
         bar.add(comboBox);
         bar.setFlexGrow(2,  comboBox);

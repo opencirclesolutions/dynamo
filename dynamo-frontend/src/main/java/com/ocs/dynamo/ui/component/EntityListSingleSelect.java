@@ -25,7 +25,7 @@ import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.Refreshable;
 import com.ocs.dynamo.ui.utils.SortUtils;
 import com.ocs.dynamo.utils.EntityModelUtils;
-import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.listbox.ListBox;
 import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.data.provider.SortOrder;
@@ -125,11 +125,11 @@ public class EntityListSingleSelect<ID extends Serializable, T extends AbstractE
             }
         }
         setDataProvider(provider);
-        
+
         // non-standard way of setting captions
-        setRenderer(new ComponentRenderer<Label, T>(t -> {
+        setRenderer(new ComponentRenderer<Text, T>(t -> {
             String label = EntityModelUtils.getDisplayPropertyValue(t, targetEntityModel);
-            return new Label(label);
+            return new Text(label == null ? "" : label);
         }));
     }
 

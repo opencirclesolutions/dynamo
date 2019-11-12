@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
 
+import com.google.common.collect.Lists;
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
@@ -78,6 +79,7 @@ import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.customfield.CustomField;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.formlayout.FormLayout.FormItem;
+import com.vaadin.flow.component.formlayout.FormLayout.ResponsiveStep;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Label;
@@ -306,6 +308,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
      */
     private Map<Integer, Focusable<?>> firstFields = new HashMap<>();
 
+    private Map<Boolean, Map<AttributeModel, FormItem>> formItems = new HashMap<>();
+
     /**
      * Groups for data binding (one for each view mode)
      */
@@ -316,8 +320,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
      * values as the selected entity changes
      */
     private Map<Boolean, Map<AttributeModel, Component>> labels = new HashMap<>();
-
-    private Map<Boolean, Map<AttributeModel, FormItem>> formItems = new HashMap<>();
 
     private VerticalLayout mainEditLayout;
 
@@ -467,6 +469,10 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
         // override in subclass
     }
 
+    protected void afterEntitySelected(T entity) {
+
+    }
+
     /**
      * Respond to the setting of a new entity as the selected entity. This can be
      * used to fetch any additionally required data
@@ -475,10 +481,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
      */
     protected void afterEntitySet(T entity) {
         // override in subclass
-    }
-
-    protected void afterEntitySelected(T entity) {
-
     }
 
     /**
@@ -599,6 +601,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
         HasComponents form = null;
         if (entityModel.usesDefaultGroupOnly()) {
             form = new FormLayout();
+            setResponsiveSteps(form);
         } else {
             form = new DefaultVerticalLayout(false, true);
         }
@@ -719,6 +722,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
         Component innerLayout = null;
         if (lowest) {
             innerLayout = new FormLayout();
+            setResponsiveSteps((HasComponents) innerLayout);
         } else {
             innerLayout = new DefaultVerticalLayout(false, false);
         }
@@ -1114,19 +1118,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
         }
     }
 
-    @SuppressWarnings("unchecked")
-    private void setDefaultValues() {
-        if (!isViewMode() && entity.getId() == null) {
-            for (AttributeModel am : getEntityModel().getAttributeModels()) {
-                Component field = getField(isViewMode(), am.getPath());
-                if (field != null && am.getDefaultValue() != null) {
-                    // set the default value for new objects
-                    setDefaultValue((HasValue<?, Object>) field, am.getDefaultValue().toString());
-                }
-            }
-        }
-    }
-
     /**
      * Perform the actual save action
      */
@@ -1492,22 +1483,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
     }
 
     /**
-     * Set a label value
-     * 
-     * @param propertyName the name of the property for which to set the label
-     * @param value        the value
-     */
-    public void setLabelValue(String propertyName, String value) {
-        AttributeModel am = getEntityModel().getAttributeModel(propertyName);
-        if (am != null) {
-            Component comp = labels.get(isViewMode()).get(am);
-            if (comp instanceof Text) {
-                ((Text) comp).setText(value == null ? "" : value);
-            }
-        }
-    }
-
-    /**
      * Refreshes the label for the specified property
      * 
      * @param propertyName the name of the property
@@ -1668,6 +1643,19 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
         field.setValue(value);
     }
 
+    @SuppressWarnings("unchecked")
+    private void setDefaultValues() {
+        if (!isViewMode() && entity.getId() == null) {
+            for (AttributeModel am : getEntityModel().getAttributeModels()) {
+                Component field = getField(isViewMode(), am.getPath());
+                if (field != null && am.getDefaultValue() != null) {
+                    // set the default value for new objects
+                    setDefaultValue((HasValue<?, Object>) field, am.getDefaultValue().toString());
+                }
+            }
+        }
+    }
+
     public void setDetailJoins(FetchJoinInformation[] detailJoins) {
         this.detailJoins = detailJoins;
     }
@@ -1735,6 +1723,22 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
     }
 
     /**
+     * Set a label value
+     * 
+     * @param propertyName the name of the property for which to set the label
+     * @param value        the value
+     */
+    public void setLabelValue(String propertyName, String value) {
+        AttributeModel am = getEntityModel().getAttributeModel(propertyName);
+        if (am != null) {
+            Component comp = labels.get(isViewMode()).get(am);
+            if (comp instanceof Text) {
+                ((Text) comp).setText(value == null ? "" : value);
+            }
+        }
+    }
+
+    /**
      * Shows or hides a label
      *
      * @param propertyName the name of the property for which to show/hide the label
@@ -1752,6 +1756,20 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
     public void setNestedMode(boolean nestedMode) {
         this.nestedMode = nestedMode;
+    }
+
+    /**
+     * Sets the responsive steps on the form layout. This determines when a second
+     * column will be shown
+     * 
+     * @param comp the component
+     */
+    private void setResponsiveSteps(HasComponents comp) {
+        if (comp instanceof FormLayout) {
+            FormLayout fl = (FormLayout) comp;
+            String min = getFormOptions().getMinimumTwoColumnWidth();
+            fl.setResponsiveSteps(Lists.newArrayList(new ResponsiveStep("0px", 1), new ResponsiveStep(min, 2)));
+        }
     }
 
     public void setSupportsIteration(boolean supportsIteration) {

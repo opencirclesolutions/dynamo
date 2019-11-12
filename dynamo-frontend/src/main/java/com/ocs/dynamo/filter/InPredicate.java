@@ -26,27 +26,27 @@ import com.ocs.dynamo.utils.ClassUtils;
  */
 public class InPredicate<T> extends PropertyPredicate<T> {
 
-	private static final long serialVersionUID = -9049178479062352245L;
+    private static final long serialVersionUID = -9049178479062352245L;
 
-	public InPredicate(String property, Collection<?> values) {
-		super(property, values);
-	}
+    public InPredicate(String property, Collection<?> values) {
+        super(property, values);
+    }
 
-	@Override
-	public Collection<?> getValue() {
-		return (Collection<?>) super.getValue();
-	}
+    @Override
+    public Collection<?> getValue() {
+        return (Collection<?>) super.getValue();
+    }
 
-	@Override
-	public boolean test(final T t) {
-		if (t == null) {
-			return false;
-		}
-		Object v = ClassUtils.getFieldValue(t, getProperty());
-		if (v == null) {
-			return false;
-		}
-		Collection<?> values = (Collection<?>) getValue();
-		return values.contains(v);
-	}
+    @Override
+    public boolean test(final T t) {
+        if (t == null) {
+            return false;
+        }
+        Object v = ClassUtils.getFieldValue(t, getProperty());
+        if (v == null) {
+            return false;
+        }
+        Collection<?> values = getValue();
+        return values.contains(v);
+    }
 }

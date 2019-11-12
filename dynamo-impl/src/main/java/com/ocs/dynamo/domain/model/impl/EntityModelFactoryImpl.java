@@ -94,7 +94,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 
     private static final int RECURSIVE_MODEL_DEPTH = 3;
 
-    private static Logger LOG = LoggerFactory.getLogger(EntityModelFactoryImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(EntityModelFactoryImpl.class);
 
     @Autowired(required = false)
     private MessageService messageService;

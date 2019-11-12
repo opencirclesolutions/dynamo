@@ -52,7 +52,6 @@ import com.ocs.dynamo.filter.listener.FilterListener;
 import com.ocs.dynamo.ui.Refreshable;
 import com.ocs.dynamo.ui.Searchable;
 import com.ocs.dynamo.ui.component.Cascadable;
-import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.utils.ConvertUtils;
@@ -67,7 +66,7 @@ import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.FlexLayout.WrapMode;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.binder.Result;
 import com.vaadin.flow.function.SerializablePredicate;
@@ -139,7 +138,7 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
         /**
          * The main layout
          */
-        private HorizontalLayout layout;
+        private FlexLayout layout;
 
         /**
          * The FilterListener that listens for filter changes
@@ -173,10 +172,11 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
          */
         FilterRegion(FilterListener<T> listener) {
             this.listener = listener;
-            layout = new DefaultHorizontalLayout(false, true);
-            layout.setSizeFull();
+            layout = new FlexLayout();
+            layout.setWrapMode(WrapMode.WRAP);
+            layout.addClassName("dynamoFlexRow");
 
-            removeButton = new Button(message("ocs.remove"));
+            removeButton = new Button("");
             removeButton.setIcon(VaadinIcon.TRASH.create());
             removeButton.addClickListener(e -> {
                 VerticalLayout parent = (VerticalLayout) layout.getParent().orElse(null);
@@ -425,7 +425,7 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
             return result;
         }
 
-        public HorizontalLayout getLayout() {
+        public FlexLayout getLayout() {
             return layout;
         }
 

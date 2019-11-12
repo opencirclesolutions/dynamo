@@ -261,9 +261,6 @@ public class ElementCollectionGrid<ID extends Serializable, U extends AbstractEn
 
         grid = new Grid<>();
         grid.setDataProvider(provider);
-
-        // TODO: properly setting width for grid inside custom field
-        grid.setWidth("350px");
         main.add(grid);
 
         Column<ValueHolder<T>> column = grid.addComponentColumn(vh -> {

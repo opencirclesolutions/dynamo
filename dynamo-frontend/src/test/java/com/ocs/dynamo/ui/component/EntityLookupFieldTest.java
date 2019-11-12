@@ -13,6 +13,8 @@
  */
 package com.ocs.dynamo.ui.component;
 
+import java.util.Collection;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -66,14 +68,6 @@ public class EntityLookupFieldTest extends BaseMockitoTest {
 
     @Test
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public void testMultipleSelect() {
-        EntityLookupField<Integer, TestEntity> field = new EntityLookupField<>(service, factory.getModel(TestEntity.class), null, null,
-                false, true, Lists.newArrayList(new SortOrder("name", SortDirection.ASCENDING)));
-        field.initContent();
-    }
-
-    @Test
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     public void testMultipleSelectWithPreviousValue() {
         EntityLookupField<Integer, TestEntity> field = new EntityLookupField<>(service, factory.getModel(TestEntity.class),
                 factory.getModel(TestEntity2.class).getAttributeModel("testEntity"), null, false, true,
@@ -81,6 +75,8 @@ public class EntityLookupFieldTest extends BaseMockitoTest {
         field.initContent();
         field.setValue(Lists.newArrayList(e1));
         field.getSelectButton().click();
+        Collection<TestEntity> col = (Collection<TestEntity>) field.getValue();
+        Assert.assertTrue(col.contains(e1));
     }
 
     /**

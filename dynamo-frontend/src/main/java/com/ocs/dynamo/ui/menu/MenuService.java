@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.ui.auth.PermissionChecker;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
@@ -219,9 +220,9 @@ public class MenuService {
      */
     public void setLastVisited(MenuBar menuBar, String destination) {
         for (MenuItem item : menuBar.getItems()) {
-            item.getElement().removeAttribute("style");
+            item.getElement().getClassList().remove(DynamoConstants.CSS_LAST_VISITED);
             if (hasChildWithDestination(item, destination)) {
-                item.getElement().setAttribute("style", "color: red;");
+                item.getElement().getClassList().add(DynamoConstants.CSS_LAST_VISITED);
             }
         }
     }

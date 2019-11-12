@@ -130,12 +130,6 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
             detailLayout = new DefaultVerticalLayout(false, false);
             emptyDetailView();
 
-            // optional header
-            headerLayout = constructHeaderLayout();
-            if (headerLayout != null) {
-                mainLayout.add(headerLayout);
-            }
-
             // construct option quick search field
             quickSearchField = constructSearchField();
 
@@ -155,6 +149,13 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
                 mainLayout.add(splitter);
 
                 splitterLayout = new DefaultVerticalLayout(false, true);
+
+                // optional header
+                headerLayout = constructHeaderLayout();
+                if (headerLayout != null) {
+                    splitterLayout.add(headerLayout);
+                }
+
                 if (quickSearchField != null) {
                     splitterLayout.add(quickSearchField);
                 }

@@ -31,11 +31,11 @@ public final class DynamoConstants {
      * CSS style for image previews
      */
     public static final String CSS_IMAGE_PREVIEW = "imagePreview";
-
+    
     /**
-     * The CSS class used to indicate a divider row in a grid
+     * CSS class for last visited menu item
      */
-    public static final String CSS_DIVIDER = "divider";
+    public static final String CSS_LAST_VISITED = "lastVisited";
 
     /**
      * Currency symbol
@@ -194,6 +194,12 @@ public final class DynamoConstants {
      * Name of the property that is used to enable view authentication
      */
     public static final String SP_ENABLE_VIEW_AUTHENTICATION = "ocs.enable.view.authentication";
+
+    /**
+     * The minimum screen width (e.g. in pixels) that there must be for two columns
+     * to be displayed in forms
+     */
+    public static final String SP_MINIMUM_TWO_COLUMN_WIDTH = "ocs.minimum.two.column.width";
 
     /**
      * Name of the system property that indicates the maximum number of items to

@@ -158,11 +158,11 @@ public class FilterGroup<T> {
     }
 
     public Component getAuxField() {
-        return (Component) auxField;
+        return auxField;
     }
 
     public Component getField() {
-        return (Component) field;
+        return field;
     }
 
     public Component getFilterComponent() {

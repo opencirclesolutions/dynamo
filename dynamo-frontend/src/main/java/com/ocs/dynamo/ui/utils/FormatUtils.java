@@ -14,7 +14,6 @@
 package com.ocs.dynamo.ui.utils;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -23,7 +22,6 @@ import java.util.stream.Collectors;
 import org.springframework.util.StringUtils;
 
 import com.ocs.dynamo.domain.AbstractEntity;
-import com.ocs.dynamo.domain.model.AttributeDateType;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
@@ -151,19 +149,10 @@ public final class FormatUtils {
                     return model.getFalseRepresentation(locale);
                 }
                 return Boolean.toString(Boolean.TRUE.equals(value));
-            } else if (LocalDate.class.equals(model.getType())) {
-                // in case of a date field, use the entered display format
-                DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(model.getDisplayFormat());
-
-                // set time zone for a time stamp field
-                if (AttributeDateType.TIMESTAMP.equals(model.getDateType())) {
-                    //dateTimeFormatter = dateTimeFormatter.withZone(VaadinUtils.getTimeZone(UI.getCurrent()));
-                }
-                return dateTimeFormatter.format((LocalDate) value);
             } else if (DateUtils.isJava8DateType(model.getType())) {
+                // other Java 8 dates
                 return DateUtils.formatJava8Date(model.getType(), value, model.getDisplayFormat());
-            }
-            if (NumberUtils.isNumeric(model.getType())) {
+            } else if (NumberUtils.isNumeric(model.getType())) {
                 String cs = GridUtils.getCurrencySymbol(grid);
                 // generic functionality for all other numbers
                 return VaadinUtils.numberToString(model, value, model.isThousandsGrouping(), locale, cs);

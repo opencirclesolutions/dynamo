@@ -262,6 +262,14 @@ public final class SystemPropertyUtils {
     public static int getLookupFieldMaxItems() {
         return getIntProperty(DynamoConstants.SP_LOOKUP_FIELD_MAX_ITEMS, DEFAULT_LOOKUP_FIELD_MAX_ITEMS);
     }
+    
+    /**
+     * 
+     * @return the minimum screen width
+     */
+    public static String getMinimumTwoColumnWidth() {
+        return getStringProperty(DynamoConstants.SP_MINIMUM_TWO_COLUMN_WIDTH, "1200px");
+    }
 
     /**
      *

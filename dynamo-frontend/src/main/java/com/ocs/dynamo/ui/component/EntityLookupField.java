@@ -33,8 +33,8 @@ import com.ocs.dynamo.ui.composite.dialog.ModelBasedSearchDialog;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.ocs.dynamo.utils.EntityModelUtils;
+import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.data.provider.SortOrder;
@@ -80,7 +80,7 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
     /**
      * The label that displays the currently selected item
      */
-    private Label label;
+    private Text label;
 
     /**
      * Whether the component allows multiple select
@@ -128,11 +128,12 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
     }
 
     /**
+     * Adds additional fetch joins
      * 
      * @param fetchJoinInformation
      */
     public void addFetchJoinInformation(FetchJoinInformation... fetchJoinInformation) {
-        joins = (FetchJoinInformation[]) ArrayUtils.addAll(joins, fetchJoinInformation);
+        joins = ArrayUtils.addAll(joins, fetchJoinInformation);
     }
 
     /**
@@ -178,7 +179,7 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
      * @return
      */
     @SuppressWarnings("unchecked")
-    protected String getLabel(Object newValue) {
+    protected String constructLabelValue(Object newValue) {
         String caption = getMessageService().getMessage("ocs.no.item.selected", VaadinUtils.getLocale());
         if (newValue instanceof Collection<?>) {
             Collection<T> col = (Collection<T>) newValue;
@@ -216,7 +217,7 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
         }
 
         // label for displaying selected values
-        label = new Label();
+        label = new Text("");
         updateLabel(getValue());
         bar.add(label);
 
@@ -375,7 +376,7 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
      */
     private void updateLabel(Object newValue) {
         if (label != null) {
-            String caption = getLabel(newValue);
+            String caption = constructLabelValue(newValue);
             label.setText(caption);
         }
     }

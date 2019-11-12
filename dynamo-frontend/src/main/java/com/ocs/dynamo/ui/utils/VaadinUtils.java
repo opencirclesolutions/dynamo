@@ -244,9 +244,10 @@ public final class VaadinUtils {
     }
 
     /**
-     * Returns the first child of the provide component that is of the specified class (or is a subclass
-     * of the specified class)
-     * @param component 
+     * Returns the first child of the provide component that is of the specified
+     * class (or is a subclass of the specified class)
+     * 
+     * @param component
      * @param clazz
      * @return
      */
