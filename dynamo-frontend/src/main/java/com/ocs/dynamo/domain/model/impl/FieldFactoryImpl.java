@@ -238,7 +238,6 @@ public class FieldFactoryImpl implements FieldFactory {
 
         AttributeModel am = context.getAttributeModel();
         Map<String, SerializablePredicate<?>> fieldFilters = context.getFieldFilters();
-        boolean viewMode = context.getViewMode();
         EntityModel<?> fieldEntityModel = context.getFieldEntityModel();
         boolean search = context.isSearch();
         boolean grid = context.isEditableGrid();
@@ -246,20 +245,15 @@ public class FieldFactoryImpl implements FieldFactory {
         ListDataProvider<?> sharedProvider = context.getSharedProvider(am.getPath());
 
         // for read-only attributes, do not render a field unless it's a link field
-        if (EditableType.READ_ONLY.equals(am.getEditableType())
-                && (/*!am.isUrl() && */ !am.isNavigable() && !AttributeType.DETAIL.equals(am.getAttributeType())) && !context.isSearch()) {
+        if (EditableType.READ_ONLY.equals(am.getEditableType()) && !AttributeType.DETAIL.equals(am.getAttributeType())
+                && !context.isSearch()) {
             return null;
         }
 
         SerializablePredicate<?> fieldFilter = fieldFilters == null ? null : fieldFilters.get(am.getPath());
         Locale dateLoc = VaadinUtils.getDateLocale();
 
-        if (am.isNavigable() && viewMode) {
-            // navigable link (note: place this BEFORE checking for an entity or entity
-            // collections, the link
-            // (in view mode) beats any selection components
-            field = constructInternalLinkField(am, fieldEntityModel);
-        } else if (AttributeType.ELEMENT_COLLECTION.equals(am.getAttributeType())) {
+        if (AttributeType.ELEMENT_COLLECTION.equals(am.getAttributeType())) {
             field = constructForElementCollection(context, am, fieldEntityModel);
         } else if (AbstractEntity.class.isAssignableFrom(am.getType())) {
             // lookup or combo field for an entity

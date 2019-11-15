@@ -24,7 +24,6 @@ import com.ocs.dynamo.filter.EqualsPredicate;
 import com.ocs.dynamo.ui.FrontendIntegrationTest;
 import com.ocs.dynamo.ui.component.ElementCollectionGrid;
 import com.ocs.dynamo.ui.component.EntityLookupField;
-import com.ocs.dynamo.ui.component.InternalLinkField;
 import com.ocs.dynamo.ui.component.QuickAddEntityComboBox;
 import com.ocs.dynamo.ui.component.QuickAddListSingleSelect;
 import com.ocs.dynamo.ui.component.QuickAddTokenSelect;
@@ -390,24 +389,6 @@ public class FieldFactoryImplTest extends FrontendIntegrationTest {
         QuickAddEntityComboBox<Integer, TestEntity> cb = (QuickAddEntityComboBox<Integer, TestEntity>) ac;
         Assert.assertNotNull(cb.getFilter());
     }
-
-    /**
-     * Test that a link field is constructed for a navigable property in view mode
-     */
-    @Test
-    public void testConstructLinkField() {
-        Component ac = constructField2("testEntity", false, true);
-        Assert.assertTrue(ac instanceof InternalLinkField);
-    }
-
-    /**
-     * Test that a simple token field select component is rendered in search mode
-     */
-//    @Test
-//    public void testConstructSimpleTokenField() {
-//        Component ac = constructField2("basicToken", true, false);
-//        Assert.assertTrue(ac instanceof SimpleTokenFieldSelect);
-//    }
 
     /**
      * Test that in edit mode just a text field is constructed

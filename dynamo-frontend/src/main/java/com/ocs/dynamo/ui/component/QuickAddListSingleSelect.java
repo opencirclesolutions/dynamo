@@ -82,7 +82,7 @@ public class QuickAddListSingleSelect<ID extends Serializable, T extends Abstrac
     @Override
     public Registration addValueChangeListener(ValueChangeListener<? super ComponentValueChangeEvent<CustomField<T>, T>> listener) {
         if (listSelect != null) {
-            listSelect.addValueChangeListener(event -> listener
+            return listSelect.addValueChangeListener(event -> listener
                     .valueChanged(new ComponentValueChangeEvent<>(this, event.getHasValue(), event.getValue(), event.isFromClient())));
         }
         return null;
@@ -139,7 +139,6 @@ public class QuickAddListSingleSelect<ID extends Serializable, T extends Abstrac
     }
 
     protected void initContent() {
-
         if (!quickAddAllowed && !directNavigationAllowed) {
             // just add the list select, no need for any buttons
             listSelect.setWidthFull();

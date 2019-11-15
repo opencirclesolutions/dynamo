@@ -25,9 +25,7 @@ import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.Refreshable;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.orderedlayout.FlexLayout.WrapMode;
 import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.data.provider.SortOrder;
 import com.vaadin.flow.function.SerializablePredicate;
@@ -53,14 +51,14 @@ public class QuickAddTokenSelect<ID extends Serializable, T extends AbstractEnti
     private boolean directNavigationAllowed;
 
     /**
-     * The list select component
-     */
-    private EntityTokenSelect<ID, T> tokenSelect;
-
-    /**
      * Whether quick adding is allowed
      */
     private boolean quickAddAllowed;
+
+    /**
+     * The list select component
+     */
+    private EntityTokenSelect<ID, T> tokenSelect;
 
     /**
      * Constructor
@@ -89,6 +87,13 @@ public class QuickAddTokenSelect<ID extends Serializable, T extends AbstractEnti
         ListDataProvider<T> provider = (ListDataProvider<T>) tokenSelect.getDataProvider();
         provider.getItems().add(entity);
         tokenSelect.select(entity);
+    }
+
+    @Override
+    public void clear() {
+        if (tokenSelect != null) {
+            tokenSelect.clear();
+        }
     }
 
     @Override
@@ -123,6 +128,7 @@ public class QuickAddTokenSelect<ID extends Serializable, T extends AbstractEnti
 
     protected void initContent() {
         HorizontalLayout bar = new HorizontalLayout();
+        bar.setSizeFull();
 
         if (this.getAttributeModel() != null) {
             this.setLabel(getAttributeModel().getDisplayName(VaadinUtils.getLocale()));
@@ -131,7 +137,8 @@ public class QuickAddTokenSelect<ID extends Serializable, T extends AbstractEnti
         // no caption needed (the wrapping component has the caption)
         tokenSelect.setLabel(null);
         tokenSelect.setSizeFull();
-        tokenSelect.addValueChangeListener(event -> setValue(event.getValue()));
+        // tokenSelect.addValueChangeListener(event -> setValue(event.getValue()));
+
         bar.add(tokenSelect);
 
         if (quickAddAllowed) {
@@ -181,6 +188,13 @@ public class QuickAddTokenSelect<ID extends Serializable, T extends AbstractEnti
     }
 
     @Override
+    public void setPlaceholder(String placeholder) {
+        if (tokenSelect != null) {
+            tokenSelect.setPlaceholder(placeholder);
+        }
+    }
+
+    @Override
     protected void setPresentationValue(Collection<T> value) {
         if (tokenSelect != null) {
             if (value == null) {
@@ -191,9 +205,13 @@ public class QuickAddTokenSelect<ID extends Serializable, T extends AbstractEnti
     }
 
     @Override
-    public void setPlaceholder(String placeholder) {
+    public void setValue(Collection<T> value) {
         if (tokenSelect != null) {
-            tokenSelect.setPlaceholder(placeholder);
+            if (value == null) {
+                value = Collections.emptyList();
+            }
+            tokenSelect.setValue(Sets.newHashSet(value));
         }
     }
+
 }

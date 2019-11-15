@@ -89,11 +89,6 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
     private ModelBasedEditForm<ID, T> editForm;
 
     /**
-     * The height of the grid in pixels
-     */
-    private int gridHeight = 300;
-
-    /**
      * The main layout (in edit mode)
      */
     private VerticalLayout mainEditLayout;
@@ -667,7 +662,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
     public final void constructSearchLayout() {
         // construct grid and set properties
         disableGridSorting();
-        getGridWrapper().getGrid().setHeight(gridHeight + "px");
+        getGridWrapper().getGrid().setHeight(getGridHeight() + "px");
         getGridWrapper().getGrid().setSelectionMode(isMultiSelect() ? SelectionMode.MULTI : SelectionMode.SINGLE);
 
         // add a listener to respond to the selection of an item
@@ -884,10 +879,6 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
      */
     public int getFilterCount() {
         return getSearchForm().getFilterCount();
-    }
-
-    public int getGridHeight() {
-        return gridHeight;
     }
 
     /**
@@ -1157,10 +1148,6 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
         if (tabLayout != null) {
             tabLayout.setTabVisible(index, visible);
         }
-    }
-
-    public void setGridHeight(int gridHeight) {
-        this.gridHeight = gridHeight;
     }
 
     /**

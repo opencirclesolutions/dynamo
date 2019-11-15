@@ -13,8 +13,6 @@
  */
 package com.ocs.dynamo.ui.composite.dialog;
 
-import com.ocs.dynamo.service.MessageService;
-import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -34,8 +32,6 @@ public abstract class SimpleModalDialog extends BaseModalDialog {
     private Button okButton;
 
     private boolean showCancelButton;
-
-    private MessageService messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
 
     /**
      * Constructor
@@ -67,7 +63,9 @@ public abstract class SimpleModalDialog extends BaseModalDialog {
     }
 
     /**
-     * The method that is called just before closing the dialog
+     * Callback method that is fired when the user presses the OK button.
+     * 
+     * @return true if the dialog can be closed, false otherwise
      */
     protected boolean doClose() {
         // overwrite in subclass
@@ -75,7 +73,7 @@ public abstract class SimpleModalDialog extends BaseModalDialog {
     }
 
     /**
-     * The method that is called when the dialog is canceled
+     * Callback method that is fired when the user presses the cancel button
      */
     protected void doCancel() {
         // overwrite in subclass
@@ -89,7 +87,4 @@ public abstract class SimpleModalDialog extends BaseModalDialog {
         return okButton;
     }
 
-    public MessageService getMessageService() {
-        return messageService;
-    }
 }

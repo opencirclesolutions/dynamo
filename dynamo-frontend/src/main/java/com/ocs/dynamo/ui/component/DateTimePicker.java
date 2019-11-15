@@ -21,7 +21,6 @@ import com.vaadin.flow.component.customfield.CustomField;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.datepicker.DatePicker.DatePickerI18n;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
-import com.vaadin.flow.component.orderedlayout.FlexLayout.WrapMode;
 import com.vaadin.flow.component.timepicker.TimePicker;
 
 /**
@@ -46,11 +45,16 @@ public class DateTimePicker extends CustomField<LocalDateTime> {
         timePicker = new TimePicker();
         timePicker.setLocale(locale);
 
-        FlexLayout hor = new FlexLayout();
-        hor.setWrapMode(WrapMode.WRAP);
+        FlexLayout hor = new DefaultFlexLayout();
         hor.add(datePicker);
         hor.add(timePicker);
         add(hor);
+    }
+
+    @Override
+    public void clear() {
+        datePicker.clear();
+        timePicker.clear();
     }
 
     @Override
@@ -63,6 +67,18 @@ public class DateTimePicker extends CustomField<LocalDateTime> {
         }
     }
 
+    public DatePicker getDatePicker() {
+        return datePicker;
+    }
+
+    public TimePicker getTimePicker() {
+        return timePicker;
+    }
+
+    public void setI18n(DatePickerI18n i18n) {
+        datePicker.setI18n(i18n);
+    }
+
     @Override
     protected void setPresentationValue(LocalDateTime value) {
         if (value == null) {
@@ -72,16 +88,6 @@ public class DateTimePicker extends CustomField<LocalDateTime> {
             datePicker.setValue(value.toLocalDate());
             timePicker.setValue(value.toLocalTime());
         }
-    }
-
-    @Override
-    public void clear() {
-        datePicker.clear();
-        timePicker.clear();
-    }
-
-    public void setI18n(DatePickerI18n i18n) {
-        datePicker.setI18n(i18n);
     }
 
 }

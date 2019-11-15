@@ -72,6 +72,14 @@ public class ElementCollectionGrid<ID extends Serializable, U extends AbstractEn
 
     private static final long serialVersionUID = -1203245694503350276L;
 
+    private static final String VALUE_TOO_LONG = "ocs.value.too.long";
+
+    private static final String VALUE_TOO_SHORT = "ocs.value.too.short";
+
+    private static final String VALUE_TOO_LOW = "ocs.value.too.low";
+
+    private static final String VALUE_TOO_HIGH = "ocs.value.too.high";
+
     /**
      * The attribute model
      */
@@ -283,33 +291,33 @@ public class ElementCollectionGrid<ID extends Serializable, U extends AbstractEn
             if (String.class.equals(attributeModel.getMemberType())) {
                 // string length validation
                 if (attributeModel.getMaxLength() != null) {
-                    builder.withValidator(new StringLengthValidator(message("ocs.value.too.long", attributeModel.getMaxLength()), null,
+                    builder.withValidator(new StringLengthValidator(message(VALUE_TOO_LONG, attributeModel.getMaxLength()), null,
                             attributeModel.getMaxLength()));
                 }
                 if (attributeModel.getMinLength() != null) {
-                    builder.withValidator(new StringLengthValidator(message("ocs.value.too.short", attributeModel.getMinLength()),
+                    builder.withValidator(new StringLengthValidator(message(VALUE_TOO_SHORT, attributeModel.getMinLength()),
                             attributeModel.getMinLength(), null));
                 }
             } else if (NumberUtils.isInteger(attributeModel.getMemberType())) {
                 BindingBuilder<ValueHolder<T>, Integer> iBuilder = builder.withConverter(ConverterFactory
                         .createIntegerConverter(SystemPropertyUtils.useThousandsGroupingInEditMode(), attributeModel.isPercentage()));
                 if (attributeModel.getMaxValue() != null) {
-                    iBuilder.withValidator(new IntegerRangeValidator(message("ocs.value.too.high", attributeModel.getMaxValue()), null,
+                    iBuilder.withValidator(new IntegerRangeValidator(message(VALUE_TOO_HIGH, attributeModel.getMaxValue()), null,
                             attributeModel.getMaxValue().intValue()));
                 }
                 if (attributeModel.getMinValue() != null) {
-                    iBuilder.withValidator(new IntegerRangeValidator(message("ocs.value.too.low", attributeModel.getMinValue()),
+                    iBuilder.withValidator(new IntegerRangeValidator(message(VALUE_TOO_LOW, attributeModel.getMinValue()),
                             attributeModel.getMinValue().intValue(), null));
                 }
             } else if (NumberUtils.isLong(attributeModel.getMemberType())) {
                 BindingBuilder<ValueHolder<T>, Long> iBuilder = builder.withConverter(ConverterFactory
                         .createLongConverter(SystemPropertyUtils.useThousandsGroupingInEditMode(), attributeModel.isPercentage()));
                 if (attributeModel.getMaxValue() != null) {
-                    iBuilder.withValidator(new LongRangeValidator(message("ocs.value.too.high", attributeModel.getMaxValue()), null,
+                    iBuilder.withValidator(new LongRangeValidator(message(VALUE_TOO_HIGH, attributeModel.getMaxValue()), null,
                             attributeModel.getMaxValue()));
                 }
                 if (attributeModel.getMinValue() != null) {
-                    iBuilder.withValidator(new LongRangeValidator(message("ocs.value.too.low", attributeModel.getMinValue()),
+                    iBuilder.withValidator(new LongRangeValidator(message(VALUE_TOO_LOW, attributeModel.getMinValue()),
                             attributeModel.getMinValue(), null));
                 }
             } else if (BigDecimal.class.equals(attributeModel.getMemberType())) {
@@ -317,17 +325,15 @@ public class ElementCollectionGrid<ID extends Serializable, U extends AbstractEn
                         attributeModel.isCurrency(), attributeModel.isPercentage(), SystemPropertyUtils.useThousandsGroupingInEditMode(),
                         attributeModel.getPrecision(), SystemPropertyUtils.getDefaultCurrencySymbol()));
                 if (attributeModel.getMaxValue() != null) {
-                    iBuilder.withValidator(new BigDecimalRangeValidator(message("ocs.value.too.high"), null,
-                            BigDecimal.valueOf(attributeModel.getMaxValue())));
+                    iBuilder.withValidator(
+                            new BigDecimalRangeValidator(message(VALUE_TOO_HIGH), null, BigDecimal.valueOf(attributeModel.getMaxValue())));
                 }
                 if (attributeModel.getMinValue() != null) {
-                    iBuilder.withValidator(new BigDecimalRangeValidator(message("ocs.value.too.low"),
-                            BigDecimal.valueOf(attributeModel.getMinValue()), null));
+                    iBuilder.withValidator(
+                            new BigDecimalRangeValidator(message(VALUE_TOO_LOW), BigDecimal.valueOf(attributeModel.getMinValue()), null));
                 }
             }
-
             builder.bind("value");
-
             tf.setSizeFull();
             return tf;
         });

@@ -142,7 +142,7 @@ public class QuickAddEntityComboBox<ID extends Serializable, T extends AbstractE
         comboBox.setLabel(null);
 
         bar.add(comboBox);
-        bar.setFlexGrow(2,  comboBox);
+        bar.setFlexGrow(2, comboBox);
         if (quickAddAllowed) {
             Button addButton = constructAddButton();
             bar.add(addButton);
@@ -196,8 +196,7 @@ public class QuickAddEntityComboBox<ID extends Serializable, T extends AbstractE
 
     @Override
     protected T generateModelValue() {
-        // TODO Auto-generated method stub
-        return null;
+        return comboBox.getValue();
     }
 
     @Override

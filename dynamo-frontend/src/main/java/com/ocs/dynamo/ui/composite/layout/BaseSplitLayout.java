@@ -139,7 +139,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
             }
 
             // initialize the grid - TODO figure out a nice way to deal with grid height
-            getGridWrapper().getGrid().setHeight("400px");
+            getGridWrapper().getGrid().setHeight(getGridHeight() + "px");
             disableGridSorting();
 
             // extra splitter (for horizontal mode)

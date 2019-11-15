@@ -44,6 +44,7 @@ import com.ocs.dynamo.domain.model.FieldFactory;
 import com.ocs.dynamo.domain.model.FieldFactoryContext;
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.filter.EqualsPredicate;
+import com.ocs.dynamo.filter.InPredicate;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.CanAssignEntity;
 import com.ocs.dynamo.ui.NestedComponent;
@@ -55,6 +56,7 @@ import com.ocs.dynamo.ui.component.CustomEntityField;
 import com.ocs.dynamo.ui.component.DefaultFlexLayout;
 import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
+import com.ocs.dynamo.ui.component.InternalLinkButton;
 import com.ocs.dynamo.ui.component.ServiceBasedDetailsEditGrid;
 import com.ocs.dynamo.ui.component.URLField;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
@@ -73,6 +75,7 @@ import com.vaadin.flow.component.HasOrderedComponents;
 import com.vaadin.flow.component.HasSize;
 import com.vaadin.flow.component.HasValidation;
 import com.vaadin.flow.component.HasValue;
+import com.vaadin.flow.component.HasValue.ValueChangeEvent;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.checkbox.Checkbox;
@@ -96,7 +99,6 @@ import com.vaadin.flow.data.binder.Binder.Binding;
 import com.vaadin.flow.data.binder.Binder.BindingBuilder;
 import com.vaadin.flow.data.binder.BinderValidationStatus;
 import com.vaadin.flow.data.converter.Converter;
-import com.vaadin.flow.dom.DomEventListener;
 import com.vaadin.flow.function.SerializablePredicate;
 import com.vaadin.flow.server.StreamResource;
 
@@ -198,18 +200,14 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
             });
 
             // clear content and file name after file upload is removed
-            upload.getElement().addEventListener("file-remove", new DomEventListener() {
-
-                @Override
-                public void handleEvent(com.vaadin.flow.dom.DomEvent event) {
-                    ClassUtils.clearFieldValue(getEntity(), am.getName(), byte[].class);
-                    image.setVisible(false);
-                    if (am.getFileNameProperty() != null) {
-                        ClassUtils.clearFieldValue(getEntity(), am.getFileNameProperty(), String.class);
-                        setLabelValue(am.getFileNameProperty(), "");
-                    }
-                    clearButton.setVisible(false);
+            upload.getElement().addEventListener("file-remove", event -> {
+                ClassUtils.clearFieldValue(getEntity(), am.getName(), byte[].class);
+                image.setVisible(false);
+                if (am.getFileNameProperty() != null) {
+                    ClassUtils.clearFieldValue(getEntity(), am.getFileNameProperty(), String.class);
+                    setLabelValue(am.getFileNameProperty(), "");
                 }
+                clearButton.setVisible(false);
             });
 
             // if there is an initial value, provide a clear button
@@ -404,10 +402,10 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
         if (!alreadyBound.get(isViewMode()).contains(attributeModel.getPath()) && attributeModel.isVisible()
                 && (AttributeType.BASIC.equals(type) || AttributeType.LOB.equals(type) || attributeModel.isComplexEditable())) {
             if (EditableType.READ_ONLY.equals(attributeModel.getEditableType()) || isViewMode()) {
-                if (attributeModel.isNavigable()) {
-                    // display a complex component even in read-only mode
-                    constructField(parent, entityModel, attributeModel, true, tabIndex);
-                } else if (AttributeType.LOB.equals(type)) {
+                // if (attributeModel.isNavigable()) {
+                // display a complex component even in read-only mode
+                // constructField(parent, entityModel, attributeModel, true, tabIndex);
+                if (AttributeType.LOB.equals(type)) {
                     // image preview (or label if no preview is available)
                     Component c = constructImagePreview(attributeModel);
                     VerticalLayout container = new VerticalLayout();
@@ -459,7 +457,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
     }
 
     /**
-     * Method that is called after the user is done editing an entity
+     * Callback method that is fired after the user is done editing an entity
      *
      * @param cancel    whether the user cancelled the editing
      * @param newObject whether the object is a new object
@@ -469,8 +467,13 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
         // override in subclass
     }
 
+    /**
+     * Callback method that is fired after an entity is selected
+     * 
+     * @param entity the selected entity
+     */
     protected void afterEntitySelected(T entity) {
-
+        // override in subclass
     }
 
     /**
@@ -825,28 +828,42 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
      */
     @SuppressWarnings("unchecked")
     private <S> void constructCascadeListeners() {
-        for (final AttributeModel am : getEntityModel().getCascadeAttributeModels()) {
+        for (AttributeModel am : getEntityModel().getCascadeAttributeModels()) {
             HasValue<?, S> field = (HasValue<?, S>) getField(isViewMode(), am.getPath());
             if (field != null) {
-                field.addValueChangeListener(event -> {
-                    for (String cascadePath : am.getCascadeAttributes()) {
-                        CascadeMode cm = am.getCascadeMode(cascadePath);
-                        if (CascadeMode.BOTH.equals(cm) || CascadeMode.EDIT.equals(cm)) {
-                            Component cascadeField = getField(isViewMode(), cascadePath);
-                            if (cascadeField instanceof Cascadable) {
-                                Cascadable<S> ca = (Cascadable<S>) cascadeField;
-                                if (event.getValue() == null) {
-                                    ca.clearAdditionalFilter();
-                                } else {
-                                    ca.setAdditionalFilter(new EqualsPredicate<S>(am.getCascadeFilterPath(cascadePath), event.getValue()));
-                                }
-                            } else {
-                                // field not found or does not support cascading
-                                throw new OCSRuntimeException("Cannot setup cascading from " + am.getPath() + " to " + cascadePath);
-                            }
+                field.addValueChangeListener(event -> addCascadeListener(am, event));
+            }
+        }
+    }
+
+    /**
+     * Adds a cascade listener to the input field for an attribute
+     * 
+     * @param am    the attribute
+     * @param event the value change event for the input field
+     */
+    @SuppressWarnings("unchecked")
+    private <S> void addCascadeListener(AttributeModel am, ValueChangeEvent<S> event) {
+        for (String cascadePath : am.getCascadeAttributes()) {
+            CascadeMode cm = am.getCascadeMode(cascadePath);
+            if (CascadeMode.BOTH.equals(cm) || CascadeMode.EDIT.equals(cm)) {
+                Component cascadeField = getField(isViewMode(), cascadePath);
+                if (cascadeField instanceof Cascadable) {
+                    Cascadable<S> ca = (Cascadable<S>) cascadeField;
+                    if (event.getValue() == null) {
+                        ca.clearAdditionalFilter();
+                    } else {
+                        if (event.getValue() instanceof Collection) {
+                            ca.setAdditionalFilter(
+                                    new InPredicate<S>(am.getCascadeFilterPath(cascadePath), (Collection<S>) event.getValue()));
+                        } else {
+                            ca.setAdditionalFilter(new EqualsPredicate<S>(am.getCascadeFilterPath(cascadePath), event.getValue()));
                         }
                     }
-                });
+                } else {
+                    // field not found or does not support cascading
+                    throw new OCSRuntimeException("Cannot setup cascading from " + am.getPath() + " to " + cascadePath);
+                }
             }
         }
     }
@@ -963,6 +980,20 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
     }
 
     /**
+     * 
+     * @param entity
+     * @param entityModel
+     * @param attributeModel
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    private <ID2 extends Serializable, S extends AbstractEntity<ID2>> InternalLinkButton<ID2, S> createInternalLinkButton(
+            AttributeModel attributeModel) {
+        S value = (S) ClassUtils.getFieldValue(entity, attributeModel.getName());
+        return new InternalLinkButton<ID2, S>(value, (EntityModel<S>) getFieldEntityModel(attributeModel), attributeModel);
+    }
+
+    /**
      * Constructs a label and adds it to the form
      *
      * @param parent         the parent component to which the label must be added
@@ -972,7 +1003,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
      * @param tabIndex       the number of components added so far
      */
     private void constructLabel(HasComponents parent, EntityModel<T> entityModel, AttributeModel attributeModel, int tabIndex) {
-
         Component comp = null;
         if (attributeModel.isUrl()) {
             // read-only URL field
@@ -982,6 +1012,11 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
             anchor.setTarget("_blank");
             labels.get(isViewMode()).put(attributeModel, anchor);
             comp = anchor;
+        } else if (attributeModel.isNavigable()) {
+            // read only internal link
+            InternalLinkButton<?, ?> linkButton = createInternalLinkButton(attributeModel);
+            labels.get(isViewMode()).put(attributeModel, linkButton);
+            comp = linkButton;
         } else {
             Text label = constructLabel(entity, attributeModel);
             labels.get(isViewMode()).put(attributeModel, label);
@@ -1013,6 +1048,26 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
     }
 
     /**
+     * Shows a confirm dialog that asks the user to confirm before saving changes
+     */
+    private void showSaveConfirmDialog() {
+        VaadinUtils.showConfirmDialog(getMessageService(), getMessageService().getMessage("ocs.confirm.save", VaadinUtils.getLocale(),
+                getEntityModel().getDisplayName(VaadinUtils.getLocale())), () -> {
+                    try {
+                        if (customSaveConsumer != null) {
+                            customSaveConsumer.accept(entity);
+                        } else {
+                            doSave();
+                        }
+                    } catch (RuntimeException ex) {
+                        if (!handleCustomException(ex)) {
+                            handleSaveException(ex);
+                        }
+                    }
+                });
+    }
+
+    /**
      * Constructs the save button
      *
      * @param bottom indicates whether this is the button at the bottom of the
@@ -1029,20 +1084,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
                     if (getFormOptions().isConfirmSave()) {
                         // ask for confirmation before saving
                         service.validate(entity);
-                        VaadinUtils.showConfirmDialog(getMessageService(), getMessageService().getMessage("ocs.confirm.save",
-                                VaadinUtils.getLocale(), getEntityModel().getDisplayName(VaadinUtils.getLocale())), () -> {
-                                    try {
-                                        if (customSaveConsumer != null) {
-                                            customSaveConsumer.accept(entity);
-                                        } else {
-                                            doSave();
-                                        }
-                                    } catch (RuntimeException ex) {
-                                        if (!handleCustomException(ex)) {
-                                            handleSaveException(ex);
-                                        }
-                                    }
-                                });
+                        showSaveConfirmDialog();
                     } else {
                         if (customSaveConsumer != null) {
                             customSaveConsumer.accept(entity);
@@ -1352,7 +1394,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
      */
     public boolean isAttributeGroupVisible(String key) {
         Object c = attributeGroups.get(false).get(key);
-        return c == null ? false : isGroupVisible(c);
+        return c != null && isGroupVisible(c);
     }
 
     /**
@@ -1495,6 +1537,15 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
             String formatted = FormatUtils.formatPropertyValue(getEntityModelFactory(), am, value, ", ");
             if (comp instanceof Text) {
                 ((Text) comp).setText(formatted == null ? "" : formatted);
+            } else if (comp instanceof Anchor) {
+                Anchor a = (Anchor) comp;
+                formatted = StringUtils.prependProtocol(formatted);
+                a.setHref(formatted == null ? "" : formatted);
+                a.setText(formatted);
+            } else if (comp instanceof InternalLinkButton) {
+                InternalLinkButton<?, ?> ib = (InternalLinkButton<?, ?>) comp;
+                ib.setText(formatted);
+                ib.setValue(value);
             }
         }
     }
@@ -1505,19 +1556,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
     private void refreshLabelsAndUrls() {
         if (labels.get(isViewMode()) != null) {
             for (Entry<AttributeModel, Component> e : labels.get(isViewMode()).entrySet()) {
-                Component c = e.getValue();
-                Object value = ClassUtils.getFieldValue(entity, e.getKey().getName());
-                String formatted = FormatUtils.formatPropertyValue(getEntityModelFactory(), e.getKey(), value, ", ");
-
-                if (c instanceof Text) {
-                    Text text = (Text) c;
-                    text.setText(formatted == null ? "" : formatted);
-                } else {
-                    Anchor a = (Anchor) c;
-                    formatted = StringUtils.prependProtocol(formatted);
-                    a.setHref(formatted == null ? "" : formatted);
-                    a.setText(formatted);
-                }
+                refreshLabel(e.getKey().getPath());
             }
         }
 

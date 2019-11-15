@@ -21,7 +21,6 @@ import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.shared.Registration;
 
 /**
  * A custom field for displaying a clickable URL
@@ -78,12 +77,6 @@ public class URLField extends CustomField<String> {
         this.editable = editable;
         textField.addValueChangeListener(event -> setValue(event.getValue()));
         initContent();
-    }
-
-    @Override
-    public Registration addValueChangeListener(
-            ValueChangeListener<? super ComponentValueChangeEvent<CustomField<String>, String>> listener) {
-        return super.addValueChangeListener(listener);
     }
 
     @Override

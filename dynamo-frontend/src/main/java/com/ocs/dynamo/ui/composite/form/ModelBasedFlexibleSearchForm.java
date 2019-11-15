@@ -43,6 +43,7 @@ import com.ocs.dynamo.filter.FlexibleFilterDefinition;
 import com.ocs.dynamo.filter.FlexibleFilterType;
 import com.ocs.dynamo.filter.GreaterOrEqualPredicate;
 import com.ocs.dynamo.filter.GreaterThanPredicate;
+import com.ocs.dynamo.filter.InPredicate;
 import com.ocs.dynamo.filter.LessOrEqualPredicate;
 import com.ocs.dynamo.filter.LessThanPredicate;
 import com.ocs.dynamo.filter.NotPredicate;
@@ -448,7 +449,12 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
                         if (event.getValue() == null) {
                             ca.clearAdditionalFilter();
                         } else {
-                            ca.setAdditionalFilter(new EqualsPredicate<S>(am.getCascadeFilterPath(cascadePath), event.getValue()));
+                            if (event.getValue() instanceof Collection) {
+                                ca.setAdditionalFilter(
+                                        new InPredicate<S>(am.getCascadeFilterPath(cascadePath), (Collection<S>) event.getValue()));
+                            } else {
+                                ca.setAdditionalFilter(new EqualsPredicate<S>(am.getCascadeFilterPath(cascadePath), event.getValue()));
+                            }
                         }
                     } else {
                         // field not found or does not support cascading

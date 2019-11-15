@@ -68,7 +68,7 @@ public abstract class AddNewValueDialog<ID extends Serializable, T extends Abstr
     }
 
     /**
-     * Method that is called after a new entity has been added
+     * Callback method that fires after the user has created a new entity
      * 
      * @param entity the newly added entity
      */
@@ -77,10 +77,14 @@ public abstract class AddNewValueDialog<ID extends Serializable, T extends Abstr
     @Override
     protected void doBuild(VerticalLayout parent) {
         // add a text field that hold the new value
+
+        VerticalLayout container = new DefaultVerticalLayout(true, true);
+        parent.add(container);
+
         valueField = new TextField(messageService.getMessage("ocs.enter.new.value", VaadinUtils.getLocale()));
         valueField.setSizeFull();
         valueField.focus();
-        parent.add(valueField);
+        container.add(valueField);
     }
 
     @Override

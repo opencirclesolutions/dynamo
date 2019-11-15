@@ -58,14 +58,14 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
     private FlexLayout buttonBar = new DefaultFlexLayout();
 
     /**
+     * Custom code to invoke instead of the regular save logic
+     */
+    private Consumer<T> customSaveConsumer;
+
+    /**
      * The relations to fetch when retrieving a single entity
      */
     private FetchJoinInformation[] detailJoins;
-
-    /**
-     * The relations to fetch when doing an export with export mode FULL
-     */
-    private FetchJoinInformation[] exportJoins;
 
     /**
      * The entity model to use when exporting to CSV or Excel. Defaults to the
@@ -74,9 +74,19 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
     private EntityModel<T> exportEntityModel;
 
     /**
+     * The relations to fetch when doing an export with export mode FULL
+     */
+    private FetchJoinInformation[] exportJoins;
+
+    /**
      * The search filters to apply to the individual fields
      */
     private Map<String, SerializablePredicate<?>> fieldFilters = new HashMap<>();
+
+    /**
+     * The default height of the grid in pixels
+     */
+    private int gridHeight = 300;
 
     /**
      * The grid wrapper
@@ -112,11 +122,6 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
      * The list of sort orders to apply by default
      */
     private List<SortOrder<?>> sortOrders = new ArrayList<>();
-
-    /**
-     * Custom code to invoke instead of the regular save logic
-     */
-    private Consumer<T> customSaveConsumer;
 
     /**
      * Constructor
@@ -255,6 +260,10 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 
     public Map<String, SerializablePredicate<?>> getFieldFilters() {
         return fieldFilters;
+    }
+
+    public int getGridHeight() {
+        return gridHeight;
     }
 
     /**
@@ -445,6 +454,10 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
      */
     public void setFieldFilters(Map<String, SerializablePredicate<?>> fieldFilters) {
         this.fieldFilters = fieldFilters;
+    }
+
+    public void setGridHeight(int gridHeight) {
+        this.gridHeight = gridHeight;
     }
 
     /**

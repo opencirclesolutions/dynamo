@@ -14,6 +14,7 @@
 package com.ocs.dynamo.ui.composite.form;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +29,7 @@ import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.FieldFactoryContext;
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.filter.EqualsPredicate;
+import com.ocs.dynamo.filter.InPredicate;
 import com.ocs.dynamo.ui.Refreshable;
 import com.ocs.dynamo.ui.Searchable;
 import com.ocs.dynamo.ui.component.Cascadable;
@@ -289,7 +291,11 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
                 if (event.getValue() == null) {
                     ca.clearAdditionalFilter();
                 } else {
-                    ca.setAdditionalFilter(new EqualsPredicate<S>(am.getCascadeFilterPath(cascadePath), event.getValue()));
+                    if (event.getValue() instanceof Collection) {
+                        ca.setAdditionalFilter(new InPredicate<S>(am.getCascadeFilterPath(cascadePath), (Collection<S>) event.getValue()));
+                    } else {
+                        ca.setAdditionalFilter(new EqualsPredicate<S>(am.getCascadeFilterPath(cascadePath), event.getValue()));
+                    }
                 }
             } else {
                 // field not found or does not support cascading

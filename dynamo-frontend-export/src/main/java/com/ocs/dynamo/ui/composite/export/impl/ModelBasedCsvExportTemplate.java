@@ -17,10 +17,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Serializable;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.dao.SortOrder;
 import com.ocs.dynamo.domain.AbstractEntity;
@@ -67,7 +67,7 @@ public class ModelBasedCsvExportTemplate<ID extends Serializable, T extends Abst
     @Override
     protected byte[] generate(DataSetIterator<ID, T> iterator) throws IOException {
         try (ByteArrayOutputStream out = new ByteArrayOutputStream();
-                CSVWriter writer = new CSVWriter(new OutputStreamWriter(out, DynamoConstants.UTF_8),
+                CSVWriter writer = new CSVWriter(new OutputStreamWriter(out, StandardCharsets.UTF_8),
                         SystemPropertyUtils.getCsvSeparator().charAt(0), SystemPropertyUtils.getCsvQuoteChar().charAt(0),
                         SystemPropertyUtils.getCsvEscapeChar().charAt(0), String.format("%n"))) {
 

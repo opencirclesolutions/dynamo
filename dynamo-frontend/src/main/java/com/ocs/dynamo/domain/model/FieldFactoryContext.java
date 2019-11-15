@@ -79,7 +79,7 @@ public class FieldFactoryContext {
         return fieldFilters;
     }
 
-    public boolean getViewMode() {
+    public boolean isViewMode() {
         return viewMode;
     }
 

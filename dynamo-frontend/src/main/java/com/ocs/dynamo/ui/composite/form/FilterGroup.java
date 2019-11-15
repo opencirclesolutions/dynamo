@@ -53,19 +53,14 @@ public class FilterGroup<T> {
     private final AttributeModel attributeModel;
 
     /**
-     * The name of the property to filter on
+     * The auxiliary UI component
      */
-    private final String propertyId;
+    private final Component auxField;
 
     /**
-     * The type of the filter
+     * The search filter for the auxiliary field
      */
-    private final FilterType filterType;
-
-    /**
-     * The top level component that contains the filter UI components
-     */
-    private final Component filterComponent;
+    private SerializablePredicate<T> auxFieldFilter;
 
     /**
      * The main UI component
@@ -78,24 +73,29 @@ public class FilterGroup<T> {
     private SerializablePredicate<T> fieldFilter;
 
     /**
-     * The main filter component
+     * The top level component that contains the filter UI components
      */
-    private SerializablePredicate<T> mainFilter;
+    private final Component filterComponent;
 
     /**
-     * The auxiliary UI component
+     * The type of the filter
      */
-    private final Component auxField;
-
-    /**
-     * The search filter for the auxiliary field
-     */
-    private SerializablePredicate<T> auxFieldFilter;
+    private final FilterType filterType;
 
     /**
      * Filter listeners to fire when the input changes
      */
     private List<FilterListener<T>> listeners = new ArrayList<>();
+
+    /**
+     * The main filter component
+     */
+    private SerializablePredicate<T> mainFilter;
+
+    /**
+     * The name of the property to filter on
+     */
+    private final String propertyId;
 
     /**
      * Constructor
@@ -157,6 +157,28 @@ public class FilterGroup<T> {
         }
     }
 
+    /**
+     * 
+     * @param value
+     * @return
+     */
+    private SerializablePredicate<T> createSearchDateOnlyFilter(Object value) {
+        SerializablePredicate<T> filter = null;
+        if (attributeModel.isSearchDateOnly() && value != null) {
+            LocalDate ldt = (LocalDate) value;
+            if (LocalDateTime.class.equals(attributeModel.getType())) {
+                filter = new BetweenPredicate<>(propertyId, ldt.atStartOfDay(), ldt.atStartOfDay().plusDays(1).minusSeconds(1));
+            } else {
+                // zoned date time
+                filter = new BetweenPredicate<>(propertyId, ldt.atStartOfDay(ZoneId.systemDefault()),
+                        ldt.atStartOfDay(ZoneId.systemDefault()).plusDays(1).minusSeconds(1));
+            }
+        } else if (value != null && (!(value instanceof Collection) || !((Collection<?>) value).isEmpty())) {
+            filter = new EqualsPredicate<>(propertyId, value);
+        }
+        return filter;
+    }
+
     public Component getAuxField() {
         return auxField;
     }
@@ -198,6 +220,11 @@ public class FilterGroup<T> {
         }
     }
 
+    /**
+     * Sets the input component(s) as enabled or disabled
+     * 
+     * @param enabled
+     */
     public void setEnabled(boolean enabled) {
         HasEnabled he = (HasEnabled) field;
         he.setEnabled(enabled);
@@ -224,7 +251,6 @@ public class FilterGroup<T> {
 
         switch (filterType) {
         case BETWEEN:
-
             // construct new filter for the selected field (or clear it)
             if (field == this.auxField) {
                 // filter for the auxiliary field
@@ -267,18 +293,8 @@ public class FilterGroup<T> {
             }
             break;
         default:
-            if (attributeModel.isSearchDateOnly() && value != null) {
-                LocalDate ldt = (LocalDate) value;
-                if (LocalDateTime.class.equals(attributeModel.getType())) {
-                    filter = new BetweenPredicate<>(propertyId, ldt.atStartOfDay(), ldt.atStartOfDay().plusDays(1).minusSeconds(1));
-                } else {
-                    // zoned date time
-                    filter = new BetweenPredicate<>(propertyId, ldt.atStartOfDay(ZoneId.systemDefault()),
-                            ldt.atStartOfDay(ZoneId.systemDefault()).plusDays(1).minusSeconds(1));
-                }
-            } else if (value != null && (!(value instanceof Collection) || !((Collection<?>) value).isEmpty())) {
-                filter = new EqualsPredicate<>(propertyId, value);
-            }
+            // special handling for "search for date only"
+            filter = createSearchDateOnlyFilter(value);
             break;
         }
 

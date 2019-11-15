@@ -18,11 +18,8 @@ import java.io.Serializable;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
-import com.ocs.dynamo.service.ServiceLocatorFactory;
-import com.ocs.dynamo.ui.UIHelper;
 import com.ocs.dynamo.ui.utils.FormatUtils;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.customfield.CustomField;
 
 /**
@@ -37,7 +34,7 @@ public class InternalLinkField<ID extends Serializable, T extends AbstractEntity
 
     private static final long serialVersionUID = -4586184051577153289L;
 
-    private Button linkButton;
+    private InternalLinkButton<ID, T> linkButton;
 
     private T value;
 
@@ -45,11 +42,18 @@ public class InternalLinkField<ID extends Serializable, T extends AbstractEntity
 
     private EntityModel<T> entityModel;
 
+    /**
+     * Constructor
+     * 
+     * @param attributeModel
+     * @param entityModel
+     */
     public InternalLinkField(AttributeModel attributeModel, EntityModel<T> entityModel) {
         this(attributeModel, entityModel, null);
     }
 
     /**
+     * Constructor
      * 
      * @param attributeModel
      * @param entityModel
@@ -63,17 +67,7 @@ public class InternalLinkField<ID extends Serializable, T extends AbstractEntity
     }
 
     protected void initContent() {
-
-        T t = getValue();
-        String str = FormatUtils.formatEntity(entityModel != null ? entityModel : attributeModel.getNestedEntityModel(), t);
-        linkButton = new Button(str);
-        linkButton.setSizeFull();
-        linkButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
-        linkButton.addClickListener(event -> {
-            UIHelper ui = ServiceLocatorFactory.getServiceLocator().getService(UIHelper.class);
-            ui.navigateToEntityScreen(getValue());
-        });
-
+        linkButton = new InternalLinkButton<ID, T>(value, entityModel, attributeModel);
         add(linkButton);
     }
 
@@ -103,6 +97,7 @@ public class InternalLinkField<ID extends Serializable, T extends AbstractEntity
         if (linkButton != null) {
             String str = FormatUtils.formatEntity(attributeModel.getNestedEntityModel(), value);
             linkButton.setText(str);
+            linkButton.setValue(value);
         }
     }
 

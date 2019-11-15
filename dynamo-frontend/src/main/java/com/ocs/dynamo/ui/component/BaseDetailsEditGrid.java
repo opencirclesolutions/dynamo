@@ -470,7 +470,7 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
         // TODO: make configurable
         grid.setHeight("200px");
         grid.setSelectionMode(SelectionMode.SINGLE);
-        
+
         for (Column<?> c : grid.getColumns()) {
             c.setSortable(false);
         }
@@ -483,7 +483,7 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
         // enabled/disabled)
         grid.addSelectionListener(event -> {
             if (grid.getSelectedItems().iterator().hasNext()) {
-                selectedItem = (T) grid.getSelectedItems().iterator().next();
+                selectedItem = grid.getSelectedItems().iterator().next();
                 onSelect(selectedItem);
                 checkButtonState(selectedItem);
             }
