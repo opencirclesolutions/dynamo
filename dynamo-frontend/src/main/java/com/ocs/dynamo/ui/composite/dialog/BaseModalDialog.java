@@ -16,6 +16,7 @@ package com.ocs.dynamo.ui.composite.dialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.Buildable;
@@ -62,13 +63,13 @@ public abstract class BaseModalDialog extends Dialog implements Buildable {
         // differently colored title layout
         VerticalLayout titleLayout = new VerticalLayout();
         titleLayout.add(new Text(getTitle()));
-        titleLayout.addClassName("dialogTitle");
+        titleLayout.addClassName(DynamoConstants.CSS_DIALOG_TITLE);
         main.add(titleLayout);
 
         add(main);
         doBuild(main);
 
-        DefaultHorizontalLayout buttonBar = new DefaultHorizontalLayout(false, true);
+        DefaultHorizontalLayout buttonBar = new DefaultHorizontalLayout(true, true);
         main.add(buttonBar);
 
         doBuildButtonBar(buttonBar);
@@ -88,29 +89,25 @@ public abstract class BaseModalDialog extends Dialog implements Buildable {
      */
     protected abstract void doBuildButtonBar(HorizontalLayout buttonBar);
 
+    public MessageService getMessageService() {
+        return messageService;
+    }
+
+    /**
+     * Returns the CSS style name. Can be overridden in subclass to modify styling
+     * 
+     * @return
+     */
+    protected String getStyleName() {
+        return DynamoConstants.CSS_DIALOG;
+    }
+
     /**
      * Returns the title of the dialog
      * 
      * @return
      */
     protected abstract String getTitle();
-
-    /**
-     * Shows a notification message - this method will check for the availability of
-     * a Vaadin Page object and if this is not present, write the notification to
-     * the log instead
-     * 
-     * @param message the message
-     * @param type    the type of the message
-     */
-    protected void showNotification(String message) {
-        if (UI.getCurrent() != null && UI.getCurrent().getPage() != null) {
-            Notification.show(message, SystemPropertyUtils.getDefaultMessageDisplayTime(), Position.MIDDLE)
-                    .addThemeVariants(NotificationVariant.LUMO_ERROR);
-        } else {
-            LOG.info(message);
-        }
-    }
 
     /**
      * Retrieves a localized message
@@ -133,11 +130,20 @@ public abstract class BaseModalDialog extends Dialog implements Buildable {
         return messageService.getMessage(key, VaadinUtils.getLocale(), args);
     }
 
-    public MessageService getMessageService() {
-        return messageService;
-    }
-
-    protected String getStyleName() {
-        return "ocsDialog";
+    /**
+     * Shows a notification message - this method will check for the availability of
+     * a Vaadin Page object and if this is not present, write the notification to
+     * the log instead
+     * 
+     * @param message the message
+     * @param type    the type of the message
+     */
+    protected void showNotification(String message) {
+        if (UI.getCurrent() != null && UI.getCurrent().getPage() != null) {
+            Notification.show(message, SystemPropertyUtils.getDefaultMessageDisplayTime(), Position.MIDDLE)
+                    .addThemeVariants(NotificationVariant.LUMO_ERROR);
+        } else {
+            LOG.info(message);
+        }
     }
 }

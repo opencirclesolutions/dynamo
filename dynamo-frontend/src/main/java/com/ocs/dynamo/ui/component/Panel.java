@@ -1,5 +1,6 @@
 package com.ocs.dynamo.ui.component;
 
+import com.ocs.dynamo.constants.DynamoConstants;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -22,11 +23,11 @@ public class Panel extends VerticalLayout {
 
     public Panel(String caption) {
         super();
-        addClassName("dynamoPanel");
+        addClassName(DynamoConstants.CSS_PANEL);
         VerticalLayout titleLayout = new VerticalLayout();
         captionText = new Text(caption);
         titleLayout.add(captionText);
-        titleLayout.addClassName("dialogTitle");
+        titleLayout.addClassName(DynamoConstants.CSS_DIALOG_TITLE);
         add(titleLayout);
     }
 

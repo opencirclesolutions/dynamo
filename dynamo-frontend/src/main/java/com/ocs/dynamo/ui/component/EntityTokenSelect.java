@@ -41,7 +41,6 @@ import com.vaadin.flow.function.SerializablePredicate;
  * @param <ID> type of the primary key of the entity
  * @param <T> type of the entity
  */
-@JsModule("multiselect-combo-box.js")
 public class EntityTokenSelect<ID extends Serializable, T extends AbstractEntity<ID>> extends MultiselectComboBox<T>
         implements Refreshable, Cascadable<T> {
 

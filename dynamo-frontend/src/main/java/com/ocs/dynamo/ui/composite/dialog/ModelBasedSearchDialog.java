@@ -23,7 +23,6 @@ import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
-import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.composite.layout.SimpleSearchLayout;
 import com.ocs.dynamo.ui.provider.QueryType;
@@ -112,10 +111,6 @@ public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractE
         FormOptions formOptions = new FormOptions().setReadOnly(true).setPopup(true).setDetailsModeEnabled(false)
                 .setSearchImmediately(searchImmediately);
 
-        VerticalLayout wrapper = new DefaultVerticalLayout(false, false);
-        wrapper.setClassName("searchDialogWrapper");
-        parent.add(wrapper);
-
         searchLayout = new SimpleSearchLayout<>(service, entityModel, QueryType.ID_BASED, formOptions, null, joins);
         searchLayout.setDefaultFilters(filters);
         for (SortOrder<?> order : sortOrders) {
@@ -131,7 +126,7 @@ public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractE
                 getOkButton().click();
             }
         });
-        wrapper.add(searchLayout);
+        parent.add(searchLayout);
     }
 
     public List<SerializablePredicate<T>> getFilters() {

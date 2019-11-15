@@ -28,14 +28,39 @@ public final class DynamoConstants {
     public static final int CACHE_SIZE = 10000;
 
     /**
+     * CSS style for flex layouts
+     */
+    public static final String CSS_DYNAMO_FLEX_ROW = "dynamoFlexRow";
+
+    /**
+     * CSS style for dialog
+     */
+    public static final String CSS_DIALOG = "dynamoDialog";
+
+    /**
+     * CSs style for dialog title
+     */
+    public static final String CSS_DIALOG_TITLE = "dynamoDialogTitle";
+
+    /**
+     * 
+     */
+    public static final String CSS_PANEL = "dynamoPanel";
+
+    /**
      * CSS style for image previews
      */
-    public static final String CSS_IMAGE_PREVIEW = "imagePreview";
-    
+    public static final String CSS_IMAGE_PREVIEW = "dynamoImagePreview";
+
     /**
      * CSS class for last visited menu item
      */
     public static final String CSS_LAST_VISITED = "lastVisited";
+    
+    /**
+     * 
+     */
+    public static final String CSS_PARENT_ROW = "dynamoParentRow";
 
     /**
      * Currency symbol

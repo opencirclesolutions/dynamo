@@ -71,16 +71,16 @@ public class TabWrapper extends VerticalLayout {
      * @param component
      * @return
      */
-    public Tab addTab(String label, Component component, Icon icon) {
-        Button button = new Button(label);
-        
+    public Tab addTab(String caption, Component component, Icon icon) {
+        Button button = new Button(caption);
+
         button.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
+
         if (icon != null) {
             button.setIcon(icon);
         }
         Tab tab = new Tab(button);
-        tab.setLabel(label);
-        
+
         tabsToPages.put(tab, component);
         tabs.add(tab);
         if (displayedPage.getChildren().count() == 0L) {
@@ -90,7 +90,6 @@ public class TabWrapper extends VerticalLayout {
         return tab;
     }
 
-    
     @Override
     public Component getComponentAt(int index) {
         Tab tab = getTabByIndex(index);

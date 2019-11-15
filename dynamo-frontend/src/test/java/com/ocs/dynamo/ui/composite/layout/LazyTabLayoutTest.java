@@ -83,7 +83,6 @@ public class LazyTabLayoutTest extends FrontendIntegrationTest {
         layout.build();
 
         Assert.assertTrue(layout.getComponentAt(0) instanceof MyLayout);
-        Assert.assertEquals("tab1", layout.getTabByIndex(0).getLabel());
 
         // second tab has not been created yet
         Assert.assertTrue(layout.getComponentAt(1) instanceof VerticalLayout);
@@ -91,7 +90,6 @@ public class LazyTabLayoutTest extends FrontendIntegrationTest {
         // select the second tab, this will lazily create it
         layout.selectTab(1);
         Assert.assertTrue(layout.getComponentAt(1) instanceof HorizontalLayout);
-        Assert.assertEquals("tab2", layout.getTabByIndex(1).getLabel());
 
         // select first tab again and trigger a reload
         reloaded = false;

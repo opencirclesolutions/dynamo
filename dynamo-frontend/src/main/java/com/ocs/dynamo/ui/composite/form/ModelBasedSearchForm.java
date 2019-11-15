@@ -18,6 +18,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.common.collect.Lists;
+import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.AttributeType;
@@ -37,6 +39,7 @@ import com.vaadin.flow.component.HasComponents;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.HasValue.ValueChangeEvent;
 import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.formlayout.FormLayout.ResponsiveStep;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.function.SerializablePredicate;
@@ -201,7 +204,8 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
                 String to = message("ocs.to");
                 VaadinUtils.setLabel(auxField, attributeModel.getDisplayName(VaadinUtils.getLocale()) + " " + to);
                 auxField.setVisible(true);
-                FormLayout layout = new FormLayout();
+                FlexLayout layout = new FlexLayout();
+                layout.addClassName(DynamoConstants.CSS_DYNAMO_FLEX_ROW);
                 layout.add(field);
                 layout.add(auxField);
                 comp = layout;
@@ -220,6 +224,8 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
     @Override
     protected HasComponents constructFilterLayout() {
         form = new FormLayout();
+        form.setResponsiveSteps(
+                Lists.newArrayList(new ResponsiveStep("0px", 1), new ResponsiveStep("650px", 2), new ResponsiveStep("1300px", 3)));
 
         // iterate over the searchable attributes and add a field for each
         iterate(getEntityModel().getAttributeModels());

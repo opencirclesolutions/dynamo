@@ -294,8 +294,8 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
      * @param propertyId the ID of the column.
      * @param visible    whether the column must be visible
      */
-    public void setColumnVisible(Object propertyId, boolean visible) {
-        getColumnByKey((String) propertyId).setVisible(visible);
+    public void setColumnVisible(String propertyId, boolean visible) {
+        getColumnByKey(propertyId).setVisible(visible);
     }
 
     public void setCurrencySymbol(String currencySymbol) {
