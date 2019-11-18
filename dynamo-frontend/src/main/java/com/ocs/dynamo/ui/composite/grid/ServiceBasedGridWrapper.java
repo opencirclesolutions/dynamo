@@ -117,9 +117,9 @@ public class ServiceBasedGridWrapper<ID extends Serializable, T extends Abstract
                 getExportDelegate().export(getExportEntityModel() != null ? getExportEntityModel() : getEntityModel(),
                         getFormOptions().getExportMode(), getFilter(), !orders.isEmpty() ? orders : getSortOrders(),
                         getExportJoins() != null ? getExportJoins() : getJoins());
+
             });
             contextMenu.add(downloadButton);
-
         }
     }
 

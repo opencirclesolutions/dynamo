@@ -24,61 +24,58 @@ import java.util.Objects;
  */
 public class In extends AbstractFilter implements PropertyFilter {
 
-	private final Collection<?> values;
+    private final Collection<?> values;
 
-	private final String propertyId;
+    private final String propertyId;
 
-	/**
-	 * @param propertyId
-	 *            the property that represents the collection
-	 * @param values
-	 *            the objects that needs to be checked
-	 */
-	public In(String propertyId, Collection<?> values) {
-		this.propertyId = propertyId;
-		this.values = values;
-	}
+    /**
+     * @param propertyId the property that represents the collection
+     * @param values     the objects that needs to be checked
+     */
+    public In(String propertyId, Collection<?> values) {
+        this.propertyId = propertyId;
+        this.values = values;
+    }
 
-	@Override
-	public String getPropertyId() {
-		return propertyId;
-	}
+    @Override
+    public String getPropertyId() {
+        return propertyId;
+    }
 
-	public Collection<?> getValues() {
-		return values;
-	}
+    public Collection<?> getValues() {
+        return values;
+    }
 
-	@Override
-	public boolean evaluate(Object that) {
-		if (that == null) {
-			return false;
-		}
-		Object other = getProperty(that, getPropertyId());
-		if (other == null) {
-			return false;
-		}
+    @Override
+    public boolean evaluate(Object that) {
+        if (that == null) {
+            return false;
+        }
+        Object other = getProperty(that, getPropertyId());
+        if (other == null) {
+            return false;
+        }
 
-		return values.contains(other);
-	}
+        return values.contains(other);
+    }
 
-	@Override
-	public int hashCode() {
-		return Objects.hashCode(values) + Objects.hashCode(propertyId);
-	}
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(values) + Objects.hashCode(propertyId);
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		// Only objects of the same class can be equal
-		if (obj == null || !(obj instanceof In)) {
-			return false;
-		}
-		In c = (In) obj;
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof In)) {
+            return false;
+        }
+        In c = (In) obj;
 
-		return Objects.equals(propertyId, c.getPropertyId()) && Objects.equals(values, c.getValues());
-	}
+        return Objects.equals(propertyId, c.getPropertyId()) && Objects.equals(values, c.getValues());
+    }
 
-	@Override
-	public String toString() {
-		return getPropertyId() + " " + super.toString() + " " + getValues();
-	}
+    @Override
+    public String toString() {
+        return getPropertyId() + " " + super.toString() + " " + getValues();
+    }
 }

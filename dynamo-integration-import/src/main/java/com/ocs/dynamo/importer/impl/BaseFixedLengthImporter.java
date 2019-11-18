@@ -17,12 +17,12 @@ import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.input.CharSequenceReader;
 
-import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.exception.OCSImportException;
 
 /**
@@ -90,7 +90,7 @@ public class BaseFixedLengthImporter extends BaseTextImporter {
 	 */
 	protected List<String[]> readFixedLengthFile(byte[] bytes, List<Integer> fieldLengths) {
 		try (BufferedReader reader = new BufferedReader(
-		        new CharSequenceReader(new String(bytes, DynamoConstants.UTF_8)))) {
+		        new CharSequenceReader(new String(bytes, StandardCharsets.UTF_8)))) {
 			List<String[]> result = new ArrayList<>();
 
 			String line = reader.readLine();

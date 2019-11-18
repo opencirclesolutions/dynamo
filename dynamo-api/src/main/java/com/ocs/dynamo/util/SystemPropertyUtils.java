@@ -38,7 +38,7 @@ public final class SystemPropertyUtils {
     private static final int DEFAULT_LOOKUP_FIELD_MAX_ITEMS = 3;
 
     private static final String DEFAULT_TRUE_REPRESENTATION = "true";
-    
+
     private static final int DEFAULT_MESSAGE_DISPLAY_TIME = 2000;
 
     private static final Logger LOG = LoggerFactory.getLogger(SystemPropertyUtils.class);
@@ -161,6 +161,22 @@ public final class SystemPropertyUtils {
     }
 
     /**
+     * 
+     * @return the default grid height in pixels
+     */
+    public static String getDefaultGridHeight() {
+        return getStringProperty(DynamoConstants.SP_DEFAULT_GRID_HEIGHT, "400px");
+    }
+
+    /**
+     * 
+     * @return the default grid height in pixels
+     */
+    public static String getDefaultSearchDialogGridHeight() {
+        return getStringProperty(DynamoConstants.SP_DEFAULT_SEARCH_DIALOG_GRID_HEIGHT, "300px");
+    }
+
+    /**
      * @return the default false representation
      */
     public static String getDefaultFalseRepresentation() {
@@ -262,7 +278,7 @@ public final class SystemPropertyUtils {
     public static int getLookupFieldMaxItems() {
         return getIntProperty(DynamoConstants.SP_LOOKUP_FIELD_MAX_ITEMS, DEFAULT_LOOKUP_FIELD_MAX_ITEMS);
     }
-    
+
     /**
      * 
      * @return the minimum screen width

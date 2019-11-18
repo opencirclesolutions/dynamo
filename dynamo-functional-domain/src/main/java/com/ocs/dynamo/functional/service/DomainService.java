@@ -28,20 +28,30 @@ import com.ocs.dynamo.service.BaseService;
  */
 public interface DomainService extends BaseService<Integer, Domain> {
 
-	/**
-	 * Query the children for a given parent
-	 * 
-	 * @param parent
-	 * @return the children for the given parent
-	 */
-	<C extends DomainChild<C, P>, P extends DomainParent<C, P>> List<C> findChildren(P parent);
+    /**
+     * Query all entities for a specific type (subclass)
+     * 
+     * @param type The subclass
+     * @return All entities of given type
+     */
+    <D extends Domain> List<D> findAllByType(Class<D> type);
 
-	/**
-	 * Query all entities for a specific type (subclass)
-	 * 
-	 * @param type
-	 *            The subclass
-	 * @return All entities of given type
-	 */
-	<D extends Domain> List<D> findAllByType(Class<D> type);
+    /**
+     * Find a domain based on type and unique property value
+     * 
+     * @param type
+     * @param propertyName
+     * @param value
+     * @param caseSensitive
+     * @return
+     */
+    <D extends Domain> D findByTypeAndUniqueProperty(Class<D> type, String propertyName, Object value, boolean caseSensitive);
+
+    /**
+     * Query the children for a given parent
+     * 
+     * @param parent
+     * @return the children for the given parent
+     */
+    <C extends DomainChild<C, P>, P extends DomainParent<C, P>> List<C> findChildren(P parent);
 }

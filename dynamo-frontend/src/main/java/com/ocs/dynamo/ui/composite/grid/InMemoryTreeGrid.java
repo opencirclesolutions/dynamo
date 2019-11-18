@@ -24,6 +24,7 @@ import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.Buildable;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
+import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.ocs.dynamo.utils.ClassUtils;
 import com.ocs.dynamo.utils.NumberUtils;
 import com.vaadin.flow.component.AttachEvent;
@@ -48,14 +49,10 @@ import com.vaadin.flow.data.provider.hierarchy.TreeDataProvider;
 public abstract class InMemoryTreeGrid<T, ID, C extends AbstractEntity<ID>, ID2, P extends AbstractEntity<ID2>> extends TreeGrid<T>
         implements Buildable {
 
-    // the message service
+    private String gridHeight = SystemPropertyUtils.getDefaultGridHeight();
+
     private MessageService messageService;
 
-    /**
-     * Constructor
-     * 
-     * @param exportAllowed
-     */
     public InMemoryTreeGrid() {
         this.messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
     }
@@ -85,20 +82,15 @@ public abstract class InMemoryTreeGrid<T, ID, C extends AbstractEntity<ID>, ID2,
         col.getElement().setAttribute("title", caption);
         if (alignRight) {
             // col.setStyleGenerator(item -> "v-align-right");
+            col.setClassNameGenerator(c -> "alignRight");
         }
         return col;
     }
 
     @Override
-    protected void onAttach(AttachEvent attachEvent) {
-        super.onAttach(attachEvent);
-        build();
-    }
-
-    @Override
     public void build() {
         setWidthFull();
-        setHeight("400px");
+        setHeight(gridHeight);
 
         TreeDataProvider<T> provider = (TreeDataProvider<T>) getDataProvider();
         TreeData<T> data = provider.getTreeData();
@@ -171,25 +163,6 @@ public abstract class InMemoryTreeGrid<T, ID, C extends AbstractEntity<ID>, ID2,
     }
 
     /**
-     * Extracts the sum cell value
-     * 
-     * @param t
-     * @param columnName
-     * @return
-     */
-    protected abstract Number extractSumCellValue(T t, int index, String columnName);
-
-    /**
-     * Sets the sum cell value
-     * 
-     * @param t
-     * @param index
-     * @param columnName
-     * @param value
-     */
-    protected abstract void setSumCellValue(T t, int index, String columnName, BigDecimal value);
-
-    /**
      * Converts a numeric value from its BigDecimal representation to its native
      * form
      * 
@@ -250,6 +223,15 @@ public abstract class InMemoryTreeGrid<T, ID, C extends AbstractEntity<ID>, ID2,
     protected abstract T createParentRow(P entity);
 
     /**
+     * Extracts the sum cell value
+     * 
+     * @param t
+     * @param columnName
+     * @return
+     */
+    protected abstract Number extractSumCellValue(T t, int index, String columnName);
+
+    /**
      * Returns the children of the provided parent entity
      * 
      * @return
@@ -275,6 +257,10 @@ public abstract class InMemoryTreeGrid<T, ID, C extends AbstractEntity<ID>, ID2,
      */
     protected abstract Class<?> getEditablePropertyClass(String propertyName);
 
+    public String getGridHeight() {
+        return gridHeight;
+    }
+
     /**
      * 
      * @return
@@ -297,6 +283,26 @@ public abstract class InMemoryTreeGrid<T, ID, C extends AbstractEntity<ID>, ID2,
      * @return
      */
     protected abstract String[] getSumColumns();
+
+    @Override
+    protected void onAttach(AttachEvent attachEvent) {
+        super.onAttach(attachEvent);
+        build();
+    }
+
+    public void setGridHeight(String gridHeight) {
+        this.gridHeight = gridHeight;
+    }
+
+    /**
+     * Sets the sum cell value
+     * 
+     * @param t
+     * @param index
+     * @param columnName
+     * @param value
+     */
+    protected abstract void setSumCellValue(T t, int index, String columnName, BigDecimal value);
 
     /**
      * Converts a numeric value to a BigDecimal

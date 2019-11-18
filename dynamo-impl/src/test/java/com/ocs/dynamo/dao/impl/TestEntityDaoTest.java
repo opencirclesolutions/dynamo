@@ -22,10 +22,10 @@ import javax.inject.Inject;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.collect.Lists;
+import com.ocs.dynamo.BackendIntegrationTest;
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.dao.PageableImpl;
 import com.ocs.dynamo.dao.SortOrder;
@@ -36,7 +36,6 @@ import com.ocs.dynamo.filter.And;
 import com.ocs.dynamo.filter.Compare;
 import com.ocs.dynamo.filter.Filter;
 import com.ocs.dynamo.filter.In;
-import com.ocs.dynamo.test.BackendIntegrationTest;
 import com.ocs.dynamo.utils.DateUtils;
 
 /**
@@ -44,7 +43,6 @@ import com.ocs.dynamo.utils.DateUtils;
  * 
  * @author bas.rutten
  */
-@DataJpaTest
 public class TestEntityDaoTest extends BackendIntegrationTest {
 
     @Inject

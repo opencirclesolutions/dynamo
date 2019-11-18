@@ -17,7 +17,6 @@ import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -50,6 +49,7 @@ public class DomainServiceTest extends BaseIntegrationTest {
     private BaseService<Integer, Currency> currencyService;
 
     Region europa;
+
     Region asia;
 
     @Before
@@ -102,15 +102,12 @@ public class DomainServiceTest extends BaseIntegrationTest {
     }
 
     @Test
-    @Ignore
     public void testFindChildren() {
-        Domain deu = regionService.findByUniqueProperty("code", "EU", false);
-        Assert.assertTrue(deu instanceof Region);
-        Region eu = (Region) deu;
-        Assert.assertEquals(4, eu.getChildren().size());
-        List<Country> countries = domainService.findChildren(eu);
+        Region deu = regionService.findByTypeAndUniqueProperty(Region.class, "code", "EU", false);
+        Assert.assertEquals(4, deu.getChildren().size());
+        List<Country> countries = domainService.findChildren(deu);
         Assert.assertEquals(4, countries.size());
-        countries = regionService.findChildren(eu);
+        countries = regionService.findChildren(deu);
         Assert.assertEquals(4, countries.size());
     }
 }

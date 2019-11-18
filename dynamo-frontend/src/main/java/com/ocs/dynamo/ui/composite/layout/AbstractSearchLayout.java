@@ -231,14 +231,10 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
                     // use a consumer since the action might have to be deferred until after the
                     // user confirms the clear
                     if (getFormOptions().isConfirmClear()) {
-                        getSearchForm().setAfterClearConsumer(e -> {
-                            clearIfNotSearchingImmediately();
-                        });
+                        getSearchForm().setAfterClearConsumer(e -> clearIfNotSearchingImmediately());
                     } else {
                         // clear right away
-                        getSearchForm().getClearButton().addClickListener(e -> {
-                            clearIfNotSearchingImmediately();
-                        });
+                        getSearchForm().getClearButton().addClickListener(e -> clearIfNotSearchingImmediately());
                     }
                 } else {
                     // clear current selection and update buttons
@@ -662,7 +658,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
     public final void constructSearchLayout() {
         // construct grid and set properties
         disableGridSorting();
-        getGridWrapper().getGrid().setHeight(getGridHeight() + "px");
+        getGridWrapper().getGrid().setHeight(getGridHeight());
         getGridWrapper().getGrid().setSelectionMode(isMultiSelect() ? SelectionMode.MULTI : SelectionMode.SINGLE);
 
         // add a listener to respond to the selection of an item

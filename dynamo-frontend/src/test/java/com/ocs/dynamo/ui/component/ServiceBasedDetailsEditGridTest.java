@@ -19,102 +19,90 @@ import com.vaadin.flow.component.UI;
 
 public class ServiceBasedDetailsEditGridTest extends BaseMockitoTest {
 
-	private EntityModelFactory factory = new EntityModelFactoryImpl();
+    private EntityModelFactory factory = new EntityModelFactoryImpl();
 
-	@Mock
-	private UI ui;
+    @Mock
+    private UI ui;
 
-	private TestEntity e1;
+    private TestEntity e1;
 
-	private TestEntity e2;
+    private TestEntity e2;
 
-	private TestEntity2 parent;
+    private TestEntity2 parent;
 
-	@Mock
-	private TestEntityService service;
+    @Mock
+    private TestEntityService service;
 
-	@Before
-	public void setUp() {
-		e1 = new TestEntity(1, "Kevin", 12L);
-		e1.setId(1);
-		e2 = new TestEntity(2, "Bob", 14L);
-		e2.setId(2);
-		parent = new TestEntity2();
-	}
+    @Before
+    public void setUp() {
+        e1 = new TestEntity(1, "Kevin", 12L);
+        e1.setId(1);
+        e2 = new TestEntity(2, "Bob", 14L);
+        e2.setId(2);
+        parent = new TestEntity2();
+    }
 
-	/**
-	 * Test a grid in editable mode
-	 */
-	@Test
-	public void testEditable() {
-		EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
+    /**
+     * Test a grid in editable mode
+     */
+    @Test
+    public void testEditable() {
+        EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
 
-		ServiceBasedDetailsEditGrid<Integer, TestEntity, Integer, TestEntity2> grid = createGrid(em,
-				em.getAttributeModel("testEntities"), false, false, new FormOptions().setShowRemoveButton(true));
-		Assert.assertTrue(grid.getAddButton().isVisible());
-		Assert.assertFalse(grid.getSearchDialogButton().isVisible());
+        ServiceBasedDetailsEditGrid<Integer, TestEntity, Integer, TestEntity2> grid = createGrid(em, em.getAttributeModel("testEntities"),
+                false, false, new FormOptions().setShowRemoveButton(true));
+        Assert.assertTrue(grid.getAddButton().isVisible());
+        Assert.assertFalse(grid.getSearchDialogButton().isVisible());
 
-		grid.setValue(parent);
+        grid.setValue(parent);
 
-	}
+    }
 
-	/**
-	 * Test read only with search functionality
-	 */
-	@Test
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public void testReadOnlyWithSearch() {
-		EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
+    /**
+     * Test read only with search functionality
+     */
+    @Test
+    @SuppressWarnings({ "unchecked" })
+    public void testReadOnlyWithSearch() {
+        EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
 
-		ServiceBasedDetailsEditGrid<Integer, TestEntity, Integer, TestEntity2> grid = createGrid(em, null, false, true,
-				new FormOptions().setDetailsGridSearchMode(true));
-		grid.setService(service);
+        ServiceBasedDetailsEditGrid<Integer, TestEntity, Integer, TestEntity2> grid = createGrid(em, null, false, true,
+                new FormOptions().setDetailsGridSearchMode(true));
+        grid.setService(service);
 
-		IdBasedDataProvider<Integer, TestEntity> provider = (IdBasedDataProvider<Integer, TestEntity>) grid.getGrid()
-				.getDataProvider();
-		Assert.assertEquals(0, provider.getSize());
+        IdBasedDataProvider<Integer, TestEntity> provider = (IdBasedDataProvider<Integer, TestEntity>) grid.getGrid().getDataProvider();
+        Assert.assertEquals(0, provider.getSize());
 
-		// adding is not possible
-		Assert.assertFalse(grid.getAddButton().isVisible());
-		// but bringing up the search dialog is
-		Assert.assertTrue(grid.getSearchDialogButton().isVisible());
+        // adding is not possible
+        Assert.assertFalse(grid.getAddButton().isVisible());
+        // but bringing up the search dialog is
+        Assert.assertTrue(grid.getSearchDialogButton().isVisible());
+    }
 
-//		grid.getSearchDialogButton().click();
-//		ArgumentCaptor<ModelBasedSearchDialog> captor = ArgumentCaptor.forClass(ModelBasedSearchDialog.class);
-//		Mockito.verify(ui).add(captor.capture());
-//
-//		ModelBasedSearchDialog dialog = captor.getValue();
-//
-//		// select item and close dialog
-//		dialog.select(e1);
-//		dialog.getOkButton().click();
+    @Test
+    public void testReadOnly() {
+        EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
 
-	}
+        ServiceBasedDetailsEditGrid<Integer, TestEntity, Integer, TestEntity2> grid = createGrid(em, em.getAttributeModel("testEntities"),
+                true, false, new FormOptions());
+        Assert.assertFalse(grid.getAddButton().isVisible());
+        Assert.assertFalse(grid.getSearchDialogButton().isVisible());
+    }
 
-	@Test
-	public void testReadOnly() {
-		EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
+    private ServiceBasedDetailsEditGrid<Integer, TestEntity, Integer, TestEntity2> createGrid(EntityModel<TestEntity> em, AttributeModel am,
+            boolean viewMode, boolean readOnly, FormOptions fo) {
 
-		ServiceBasedDetailsEditGrid<Integer, TestEntity, Integer, TestEntity2> grid = createGrid(em,
-				em.getAttributeModel("testEntities"), true, false, new FormOptions());
-		Assert.assertFalse(grid.getAddButton().isVisible());
-		Assert.assertFalse(grid.getSearchDialogButton().isVisible());
-	}
+        if (readOnly) {
+            fo.setReadOnly(true);
+        }
 
-	private ServiceBasedDetailsEditGrid<Integer, TestEntity, Integer, TestEntity2> createGrid(
-			EntityModel<TestEntity> em, AttributeModel am, boolean viewMode, boolean readOnly, FormOptions fo) {
+        ServiceBasedDetailsEditGrid<Integer, TestEntity, Integer, TestEntity2> table = new ServiceBasedDetailsEditGrid<Integer, TestEntity, Integer, TestEntity2>(
+                service, em, am, viewMode, fo);
 
-		if (readOnly) {
-			fo.setReadOnly(true);
-		}
+        table.setCreateEntitySupplier(() -> new TestEntity());
+        // MockUtil.injectUI(table, ui);
+        table.initContent();
 
-		ServiceBasedDetailsEditGrid<Integer, TestEntity, Integer, TestEntity2> table = new ServiceBasedDetailsEditGrid<Integer, TestEntity, Integer, TestEntity2>(
-				service, em, am, viewMode, fo);
-
-		table.setCreateEntitySupplier(() -> new TestEntity());
-		//MockUtil.injectUI(table, ui);
-		table.initContent();
-
-		return table;
-	}
+        return table;
+    }
 }

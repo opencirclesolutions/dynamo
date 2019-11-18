@@ -402,9 +402,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
         if (!alreadyBound.get(isViewMode()).contains(attributeModel.getPath()) && attributeModel.isVisible()
                 && (AttributeType.BASIC.equals(type) || AttributeType.LOB.equals(type) || attributeModel.isComplexEditable())) {
             if (EditableType.READ_ONLY.equals(attributeModel.getEditableType()) || isViewMode()) {
-                // if (attributeModel.isNavigable()) {
-                // display a complex component even in read-only mode
-                // constructField(parent, entityModel, attributeModel, true, tabIndex);
                 if (AttributeType.LOB.equals(type)) {
                     // image preview (or label if no preview is available)
                     Component c = constructImagePreview(attributeModel);
@@ -990,7 +987,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
     private <ID2 extends Serializable, S extends AbstractEntity<ID2>> InternalLinkButton<ID2, S> createInternalLinkButton(
             AttributeModel attributeModel) {
         S value = (S) ClassUtils.getFieldValue(entity, attributeModel.getName());
-        return new InternalLinkButton<ID2, S>(value, (EntityModel<S>) getFieldEntityModel(attributeModel), attributeModel);
+        return new InternalLinkButton<>(value, (EntityModel<S>) getFieldEntityModel(attributeModel), attributeModel);
     }
 
     /**

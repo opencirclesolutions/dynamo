@@ -63,11 +63,6 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
     }
 
     /**
-     * The number of search fields that were added so far
-     */
-    private int fieldsAdded = 0;
-
-    /**
      * The main form layout
      */
     private FormLayout form;
@@ -319,7 +314,6 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
                 // register with the form and set the listener
                 group.addListener(this);
                 groups.put(group.getPropertyId(), group);
-                fieldsAdded++;
             }
 
             // also support search on nested attributes

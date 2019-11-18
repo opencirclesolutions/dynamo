@@ -3,6 +3,8 @@ package com.ocs.dynamo;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.orm.jpa.JpaTransactionManager;
@@ -15,7 +17,16 @@ import com.ocs.dynamo.service.UserDetailsService;
 import com.ocs.dynamo.service.impl.UserDetailsServiceMockImpl;
 import com.ocs.dynamo.test.BaseIntegrationTestConfig;
 
+/**
+ * Integration test config for backend tests. Sets up in memory database and
+ * transaction manager
+ * 
+ * @author Bas Rutten
+ *
+ */
+@TestConfiguration
 @ComponentScan(basePackages = "com.ocs.dynamo")
+@SpringBootApplication
 public class IntegrationTestConfig extends BaseIntegrationTestConfig {
 
     @Bean

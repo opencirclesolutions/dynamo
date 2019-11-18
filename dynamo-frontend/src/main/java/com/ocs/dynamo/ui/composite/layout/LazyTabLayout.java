@@ -244,10 +244,7 @@ public abstract class LazyTabLayout<ID extends Serializable, T extends AbstractE
         tabs.setComponent(0, component);
 
         // respond to a tab change by actually loading the sheet
-        tabs.addSelectedChangeListener(event -> {
-            initOrReload(event.getSource().getSelectedIndex());
-        });
-
+        tabs.addSelectedChangeListener(event -> initOrReload(event.getSource().getSelectedIndex()));
     }
 
     public Tab getTabByIndex(int index) {

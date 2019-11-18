@@ -67,7 +67,7 @@ public class InternalLinkField<ID extends Serializable, T extends AbstractEntity
     }
 
     protected void initContent() {
-        linkButton = new InternalLinkButton<ID, T>(value, entityModel, attributeModel);
+        linkButton = new InternalLinkButton<>(value, entityModel, attributeModel);
         add(linkButton);
     }
 

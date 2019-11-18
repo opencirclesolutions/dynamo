@@ -26,6 +26,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.google.common.collect.Lists;
+import com.ocs.dynamo.BackendIntegrationTest;
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.dao.QueryFunction;
 import com.ocs.dynamo.dao.SortOrder;
@@ -43,7 +44,6 @@ import com.ocs.dynamo.filter.Like;
 import com.ocs.dynamo.filter.Modulo;
 import com.ocs.dynamo.filter.Not;
 import com.ocs.dynamo.filter.Or;
-import com.ocs.dynamo.test.BackendIntegrationTest;
 
 public class JpaQueryBuilderTest extends BackendIntegrationTest {
 

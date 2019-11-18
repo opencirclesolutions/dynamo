@@ -137,8 +137,6 @@ public class QuickAddTokenSelect<ID extends Serializable, T extends AbstractEnti
         // no caption needed (the wrapping component has the caption)
         tokenSelect.setLabel(null);
         tokenSelect.setSizeFull();
-        // tokenSelect.addValueChangeListener(event -> setValue(event.getValue()));
-
         bar.add(tokenSelect);
 
         if (quickAddAllowed) {

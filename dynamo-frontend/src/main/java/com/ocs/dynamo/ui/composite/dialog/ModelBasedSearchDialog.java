@@ -27,6 +27,7 @@ import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.composite.layout.SimpleSearchLayout;
 import com.ocs.dynamo.ui.provider.QueryType;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
+import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.provider.SortOrder;
 import com.vaadin.flow.function.SerializablePredicate;
@@ -113,6 +114,7 @@ public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractE
 
         searchLayout = new SimpleSearchLayout<>(service, entityModel, QueryType.ID_BASED, formOptions, null, joins);
         searchLayout.setDefaultFilters(filters);
+        searchLayout.setGridHeight(SystemPropertyUtils.getDefaultSearchDialogGridHeight());
         for (SortOrder<?> order : sortOrders) {
             searchLayout.addSortOrder(order);
         }

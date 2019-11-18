@@ -53,6 +53,7 @@ public class DownloadButton extends HorizontalLayout {
         setMargin(true);
         this.createFileName = createFileName;
         this.createContent = createContent;
+
         anchor = new Anchor(new StreamResource(createFileName.get(), () -> createContent.get()), caption);
         anchor.getElement().setAttribute("download", true);
         add(anchor);
@@ -63,6 +64,10 @@ public class DownloadButton extends HorizontalLayout {
      */
     public void update() {
         anchor.setHref(new StreamResource(createFileName.get(), () -> createContent.get()));
+    }
+
+    public Anchor getAnchor() {
+        return anchor;
     }
 
 }

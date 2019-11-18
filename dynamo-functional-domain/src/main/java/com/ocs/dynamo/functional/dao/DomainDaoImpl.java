@@ -77,4 +77,5 @@ public class DomainDaoImpl extends DefaultDaoImpl<Integer, Domain> implements Do
         query.where(QDomainChild.domainChild.parent.eq(parent));
         return query.from(QDomainChild.domainChild).fetch();
     }
+
 }

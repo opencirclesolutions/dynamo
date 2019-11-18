@@ -22,50 +22,49 @@ import java.util.Objects;
  */
 public final class IsNull extends AbstractFilter implements PropertyFilter {
 
-	private final String propertyId;
+    private final String propertyId;
 
-	/**
-	 * Constructor
-	 * 
-	 * @param propertyId
-	 */
-	public IsNull(String propertyId) {
-		this.propertyId = propertyId;
-	}
+    /**
+     * Constructor
+     * 
+     * @param propertyId
+     */
+    public IsNull(String propertyId) {
+        this.propertyId = propertyId;
+    }
 
-	@Override
-	public boolean evaluate(Object that) {
-		if (null == that) {
-			return false;
-		}
-		return null == getProperty(that, getPropertyId());
-	}
+    @Override
+    public boolean evaluate(Object that) {
+        if (null == that) {
+            return false;
+        }
+        return null == getProperty(that, getPropertyId());
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		// Only objects of the same class can be equal
-		if (obj == null || !(obj instanceof IsNull)) {
-			return false;
-		}
-		final IsNull o = (IsNull) obj;
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof IsNull)) {
+            return false;
+        }
+        IsNull o = (IsNull) obj;
 
-		// Checks the properties one by one
-		return Objects.equals(this.propertyId, o.propertyId);
-	}
+        // Checks the properties one by one
+        return Objects.equals(this.propertyId, o.propertyId);
+    }
 
-	@Override
-	public int hashCode() {
-		return Objects.hashCode(propertyId);
-	}
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(propertyId);
+    }
 
-	@Override
-	public String getPropertyId() {
-		return propertyId;
-	}
+    @Override
+    public String getPropertyId() {
+        return propertyId;
+    }
 
-	@Override
-	public String toString() {
-		return getPropertyId() + " " + super.toString();
-	}
+    @Override
+    public String toString() {
+        return getPropertyId() + " " + super.toString();
+    }
 
 }

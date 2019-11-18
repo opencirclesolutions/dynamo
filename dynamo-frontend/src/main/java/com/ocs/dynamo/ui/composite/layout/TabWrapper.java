@@ -73,7 +73,6 @@ public class TabWrapper extends VerticalLayout {
      */
     public Tab addTab(String caption, Component component, Icon icon) {
         Button button = new Button(caption);
-
         button.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
 
         if (icon != null) {

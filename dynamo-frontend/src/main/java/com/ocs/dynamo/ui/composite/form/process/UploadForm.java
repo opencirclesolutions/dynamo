@@ -71,7 +71,6 @@ public abstract class UploadForm extends ProgressForm<byte[]> {
     @Override
     protected void doBuildLayout(VerticalLayout main) {
         FormLayout form = new FormLayout();
-
         main.add(form);
 
         // add custom components

@@ -45,7 +45,7 @@ public class CollapsiblePanel extends VerticalLayout {
 
         toggle.setSizeFull();
         toggle.addClassName("collapsiblePanelButton");
-     
+
         contentWrapper.setMargin(false);
         contentWrapper.setVisible(true);
         add(toggle, contentWrapper);

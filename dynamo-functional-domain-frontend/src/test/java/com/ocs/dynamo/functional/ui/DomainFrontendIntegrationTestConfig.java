@@ -1,7 +1,8 @@
 package com.ocs.dynamo.functional.ui;
 
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 import com.ocs.dynamo.dao.BaseDao;
 import com.ocs.dynamo.dao.impl.DefaultDaoImpl;
@@ -13,7 +14,8 @@ import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.impl.DefaultServiceImpl;
 import com.ocs.dynamo.ui.FrontendIntegrationTestConfig;
 
-@Configuration
+@TestConfiguration
+@SpringBootApplication
 public class DomainFrontendIntegrationTestConfig extends FrontendIntegrationTestConfig {
 
     @Bean

@@ -68,4 +68,9 @@ public class DomainServiceImpl extends DefaultServiceImpl<Integer, Domain> imple
 		return domainDao.findAllByType(type);
 	}
 
+    @Override
+    public <D extends Domain> D findByTypeAndUniqueProperty(Class<D> type, String propertyName, Object value, boolean caseSensitive) {
+        return domainDao.findByTypeAndUniqueProperty(type, propertyName, value, caseSensitive);
+    }
+
 }

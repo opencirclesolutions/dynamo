@@ -63,8 +63,7 @@ public abstract class BaseCustomComponent extends VerticalLayout implements Buil
     protected Text constructLabel(Object entity, AttributeModel attributeModel) {
         Object value = ClassUtils.getFieldValue(entity, attributeModel.getName());
         String formatted = FormatUtils.formatPropertyValue(getEntityModelFactory(), attributeModel, value, ", ");
-        Text text = new Text(formatted == null ? "" : formatted);
-        return text;
+        return new Text(formatted == null ? "" : formatted);
     }
 
     protected EntityModelFactory getEntityModelFactory() {

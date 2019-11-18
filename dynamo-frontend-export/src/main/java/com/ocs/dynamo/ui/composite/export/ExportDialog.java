@@ -38,50 +38,50 @@ import com.vaadin.flow.function.SerializablePredicate;
  */
 public class ExportDialog<ID extends Serializable, T extends AbstractEntity<ID>> extends BaseExportDialog<ID, T> {
 
-	private static final long serialVersionUID = -7559490010581729532L;
+    private static final long serialVersionUID = -7559490010581729532L;
 
-	private final SerializablePredicate<T> predicate;
+    private final SerializablePredicate<T> predicate;
 
-	private final List<SortOrder<?>> sortOrders;
+    private final List<SortOrder<?>> sortOrders;
 
-	private final FetchJoinInformation[] joins;
+    private final FetchJoinInformation[] joins;
 
-	private CustomXlsStyleGenerator<ID, T> customGenerator;
+    private CustomXlsStyleGenerator<ID, T> customGenerator;
 
-	/**
-	 * Constructor
-	 * 
-	 * @param entityModel
-	 * @param predicate
-	 * @param sortOrders
-	 * @param joins
-	 */
-	public ExportDialog(ExportService exportService, EntityModel<T> entityModel, ExportMode exportMode,
-			SerializablePredicate<T> predicate, List<SortOrder<?>> sortOrders,
-			CustomXlsStyleGenerator<ID, T> customGenerator, FetchJoinInformation... joins) {
-		super(exportService, entityModel, exportMode);
-		this.predicate = predicate;
-		this.sortOrders = sortOrders;
-		this.customGenerator = customGenerator;
-		this.joins = joins;
-	}
+    /**
+     * Constructor
+     * 
+     * @param exportService   the export service
+     * @param entityModel     the entity model of the entity to export
+     * @param exportMode      the export mode
+     * @param predicate       predicated used to filter the results
+     * @param sortOrders      sort orders to apply to the results
+     * @param customGenerator custom style generator
+     * @param joins
+     */
+    public ExportDialog(ExportService exportService, EntityModel<T> entityModel, ExportMode exportMode, SerializablePredicate<T> predicate,
+            List<SortOrder<?>> sortOrders, CustomXlsStyleGenerator<ID, T> customGenerator, FetchJoinInformation... joins) {
+        super(exportService, entityModel, exportMode);
+        this.predicate = predicate;
+        this.sortOrders = sortOrders;
+        this.customGenerator = customGenerator;
+        this.joins = joins;
+    }
 
-	@Override
-	protected DownloadButton createDownloadCSVButton() {
-		return new DownloadButton(message("ocs.export.csv"),
-				() -> new ByteArrayInputStream(
-						getExportService().exportCsv(getEntityModel(), getExportMode(), predicate, sortOrders, joins)),
-				() -> getEntityModel().getDisplayNamePlural(VaadinUtils.getLocale()) + "_" + LocalDateTime.now()
-						+ EXTENSION_CSV);
-	}
+    @Override
+    protected DownloadButton createDownloadCSVButton() {
+        return new DownloadButton(message("ocs.export.csv"),
+                () -> new ByteArrayInputStream(
+                        getExportService().exportCsv(getEntityModel(), getExportMode(), predicate, sortOrders, joins)),
+                () -> getEntityModel().getDisplayNamePlural(VaadinUtils.getLocale()) + "_" + LocalDateTime.now() + EXTENSION_CSV);
+    }
 
-	@Override
-	protected DownloadButton createDownloadExcelButton() {
-		return new DownloadButton(message("ocs.export.excel"),
-				() -> new ByteArrayInputStream(getExportService().exportExcel(getEntityModel(), getExportMode(),
-						predicate, sortOrders, customGenerator, joins)),
-				() -> getEntityModel().getDisplayNamePlural(VaadinUtils.getLocale()) + "_" + LocalDateTime.now()
-						+ EXTENSION_XLS);
-	}
+    @Override
+    protected DownloadButton createDownloadExcelButton() {
+        return new DownloadButton(message("ocs.export.excel"),
+                () -> new ByteArrayInputStream(
+                        getExportService().exportExcel(getEntityModel(), getExportMode(), predicate, sortOrders, customGenerator, joins)),
+                () -> getEntityModel().getDisplayNamePlural(VaadinUtils.getLocale()) + "_" + LocalDateTime.now() + EXTENSION_XLS);
+    }
 
 }

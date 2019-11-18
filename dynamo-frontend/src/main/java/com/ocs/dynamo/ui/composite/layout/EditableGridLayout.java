@@ -272,8 +272,7 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
         // make sure changes are not persisted right away
         wrapper.getGrid().setSelectionMode(Grid.SelectionMode.SINGLE);
         wrapper.getGrid().getEditor().setBuffered(false);
-        // TODO: properly set grid height
-        wrapper.getGrid().setHeight("400px");
+        wrapper.getGrid().setHeight(getGridHeight());
         wrapper.getGrid().addSelectionListener(event -> setSelectedItems(event.getAllSelectedItems()));
 
         if (currentWrapper == null) {

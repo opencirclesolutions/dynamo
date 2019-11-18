@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.TransactionStatus;
 
+import com.ocs.dynamo.BackendIntegrationTest;
 import com.ocs.dynamo.dao.Pageable;
 import com.ocs.dynamo.dao.PageableImpl;
 import com.ocs.dynamo.dao.SortOrder;
@@ -22,7 +23,6 @@ import com.ocs.dynamo.filter.And;
 import com.ocs.dynamo.filter.Compare;
 import com.ocs.dynamo.filter.Not;
 import com.ocs.dynamo.filter.Or;
-import com.ocs.dynamo.test.BackendIntegrationTest;
 
 public class PersonRevisionDaoImplTest extends BackendIntegrationTest {
 

@@ -66,4 +66,5 @@ public class ExportDelegateImpl implements ExportDelegate {
     public void addCustomStyleGenerator(EntityModel<?> entityModel, CustomXlsStyleGenerator<?, ?> generator) {
         customStyleMap.put(entityModel, generator);
     }
+
 }

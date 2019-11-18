@@ -30,6 +30,7 @@ import com.ocs.dynamo.ui.Reloadable;
 import com.ocs.dynamo.ui.component.DefaultFlexLayout;
 import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
 import com.ocs.dynamo.ui.composite.grid.BaseGridWrapper;
+import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid.Column;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -86,7 +87,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
     /**
      * The default height of the grid in pixels
      */
-    private int gridHeight = 300;
+    private String gridHeight = SystemPropertyUtils.getDefaultGridHeight();
 
     /**
      * The grid wrapper
@@ -262,7 +263,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
         return fieldFilters;
     }
 
-    public int getGridHeight() {
+    public String getGridHeight() {
         return gridHeight;
     }
 
@@ -456,7 +457,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
         this.fieldFilters = fieldFilters;
     }
 
-    public void setGridHeight(int gridHeight) {
+    public void setGridHeight(String gridHeight) {
         this.gridHeight = gridHeight;
     }
 

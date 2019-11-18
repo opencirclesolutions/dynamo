@@ -138,8 +138,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
                 mainLayout.add(quickSearchField);
             }
 
-            // initialize the grid - TODO figure out a nice way to deal with grid height
-            getGridWrapper().getGrid().setHeight(getGridHeight() + "px");
+            getGridWrapper().getGrid().setHeight(getGridHeight());
             disableGridSorting();
 
             // extra splitter (for horizontal mode)

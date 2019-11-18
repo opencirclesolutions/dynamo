@@ -74,7 +74,7 @@ public interface ExportService {
      * 
      * @param entityModel the entity model
      * @param mode        the export mode
-     * @param itemsthe    set of items to export
+     * @param items       the set of items to export
      * @return
      */
     <ID extends Serializable, T extends AbstractEntity<ID>> byte[] exportCsvFixed(EntityModel<T> entityModel, ExportMode mode,

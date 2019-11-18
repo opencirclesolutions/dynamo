@@ -47,6 +47,10 @@ public abstract class BaseExportDialog<ID extends Serializable, T extends Abstra
 
     private final EntityModel<T> entityModel;
 
+    private DownloadButton exportCsvButton;
+
+    private DownloadButton exportExcelButton;
+
     /**
      * Constructor
      * 
@@ -66,9 +70,10 @@ public abstract class BaseExportDialog<ID extends Serializable, T extends Abstra
 
     @Override
     protected void doBuild(VerticalLayout parent) {
-        DownloadButton exportExcelButton = createDownloadExcelButton();
+        exportExcelButton = createDownloadExcelButton();
         parent.add(exportExcelButton);
-        DownloadButton exportCsvButton = createDownloadCSVButton();
+
+        exportCsvButton = createDownloadCSVButton();
         parent.add(exportCsvButton);
     }
 
@@ -100,6 +105,14 @@ public abstract class BaseExportDialog<ID extends Serializable, T extends Abstra
     @Override
     protected String getStyleName() {
         return "ocsDownloadDialog";
+    }
+
+    public DownloadButton getExportCsvButton() {
+        return exportCsvButton;
+    }
+
+    public DownloadButton getExportExcelButton() {
+        return exportExcelButton;
     }
 
 }

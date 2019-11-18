@@ -132,12 +132,12 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
 
                     // if no custom filter is defined, filter on main attribute
                     if (quickFilter == null && getEntityModel().getMainAttributeModel() != null) {
-                        quickFilter = new LikePredicate<T>(getEntityModel().getMainAttributeModel().getPath(), "%" + text + "%", false);
+                        quickFilter = new LikePredicate<>(getEntityModel().getMainAttributeModel().getPath(), "%" + text + "%", false);
                     }
 
                     SerializablePredicate<T> temp = quickFilter;
                     if (getFilter() != null) {
-                        temp = new AndPredicate<T>(quickFilter, getFilter());
+                        temp = new AndPredicate<>(quickFilter, getFilter());
                     }
                     getGridWrapper().search(temp);
                 } else {

@@ -20,17 +20,20 @@ import javax.inject.Inject;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.boot.test.context.SpringBootTest;
 
+import com.ocs.dynamo.BackendIntegrationTest;
+import com.ocs.dynamo.functional.FunctionalDomainIntegrationTestConfig;
 import com.ocs.dynamo.functional.domain.Country;
 import com.ocs.dynamo.functional.domain.Currency;
 import com.ocs.dynamo.functional.domain.Domain;
 import com.ocs.dynamo.functional.domain.Region;
-import com.ocs.dynamo.test.BackendIntegrationTest;
 
 /**
  * @author Patrick Deenen (patrick@opencircle.solutions)
  *
  */
+@SpringBootTest(classes = FunctionalDomainIntegrationTestConfig.class)
 public class DomainDaoTest extends BackendIntegrationTest {
 
     @Inject
