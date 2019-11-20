@@ -408,6 +408,18 @@ public final class VaadinUtils {
     }
 
     /**
+     * Removes an object from the Vaadin session
+     * 
+     * @param name the name of the attribute to clear
+     */
+    public static void removeFromSession(String name) {
+        VaadinSession current = VaadinSession.getCurrent();
+        if (current != null) {
+            current.setAttribute(name, null);
+        }
+    }
+
+    /**
      * Sets the label on the provided field
      * 
      * @param field the field
@@ -503,6 +515,12 @@ public final class VaadinUtils {
         VaadinSession.getCurrent().setAttribute(DynamoConstants.DATE_LOCALE, locale);
     }
 
+    /**
+     * Stores an object in the Vaadin session
+     * 
+     * @param name  the name under which to store
+     * @param value the value to store
+     */
     public static void storeInSession(String name, Object value) {
         VaadinSession current = VaadinSession.getCurrent();
         if (current != null) {

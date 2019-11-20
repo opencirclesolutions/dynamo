@@ -115,13 +115,12 @@ public abstract class QuickAddEntityField<ID extends Serializable, T extends Abs
     }
 
     /**
-     * Constructs the button that navigates directly to
+     * Constructs the button that navigates directly to a detail screen for an entity
      *
      * @return
      */
     protected Button constructDirectNavigationButton() {
         directNavigationButton = new Button(getMessageService().getMessage("ocs.direct.navigate", VaadinUtils.getLocale()));
-
         UIHelper helper = ServiceLocatorFactory.getServiceLocator().getService(UIHelper.class);
         directNavigationButton.addClickListener(event -> helper.navigateToEntityScreen(getValue()));
         return directNavigationButton;

@@ -560,13 +560,13 @@ public class AttributeModelImpl implements AttributeModel {
     }
 
     /**
-     * Looks up the translations for a specified locale
+     * Looks up the translations of a value for a certain locale
      * 
-     * @param source
-     * @param locale
-     * @param key
+     * @param source the translation cache
+     * @param locale the locale 
+     * @param key the message key
      * @param fallBack       the first fallback value
-     * @param secondFallBack the seconf fallback value
+     * @param secondFallBack the second fallback value
      * @return
      */
     private String lookup(Map<String, Optional<String>> source, Locale locale, String key, String fallback, String secondFallBack) {
@@ -596,14 +596,17 @@ public class AttributeModelImpl implements AttributeModel {
     private String lookupNoDefault(Map<String, Optional<String>> source, Locale locale, String key) {
         if (!source.containsKey(locale.toString())) {
             try {
+                // resource bundle has not been checked yet, check it now
                 ResourceBundle rb = ResourceBundle.getBundle("META-INF/entitymodel", locale);
                 String str = rb.getString(getEntityModel().getReference() + "." + getPath() + "." + key);
                 source.put(locale.toString(), Optional.ofNullable(str));
             } catch (MissingResourceException ex) {
+                // nothing in resource bundle, store empty value
                 source.put(locale.toString(), Optional.empty());
             }
         }
 
+        // look up from cached
         Optional<String> optional = source.get(locale.toString());
         return optional.orElse(null);
     }

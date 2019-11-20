@@ -26,7 +26,6 @@ import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.progressbar.ProgressBar;
@@ -186,7 +185,7 @@ public abstract class ProgressForm<T> extends BaseCustomComponent implements Pro
         if (mainLayout == null) {
             mainLayout = new DefaultVerticalLayout(false, true);
 
-            Label label = new Label(getTitle());
+            Text label = new Text(getTitle() == null ? "" : getTitle());
             mainLayout.add(label);
 
             // add the screen-specific content

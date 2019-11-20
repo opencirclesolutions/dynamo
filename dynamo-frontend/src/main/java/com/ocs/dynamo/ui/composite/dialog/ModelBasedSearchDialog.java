@@ -22,7 +22,6 @@ import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
-import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.composite.layout.SimpleSearchLayout;
 import com.ocs.dynamo.ui.provider.QueryType;
@@ -93,7 +92,7 @@ public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractE
      * @param multiSelect       whether multiple selection is allowed
      * @param searchImmediately whether to search immediately after the screen is
      *                          opened
-     * @param joins
+     * @param joins             the fetch joins
      */
     public ModelBasedSearchDialog(BaseService<ID, T> service, EntityModel<T> entityModel, List<SerializablePredicate<T>> filters,
             List<SortOrder<?>> sortOrders, boolean multiSelect, boolean searchImmediately, FetchJoinInformation... joins) {
@@ -122,11 +121,9 @@ public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractE
 
         // add double click listener for quickly selecting item and closing the
         // dialog
-        searchLayout.getGridWrapper().getGrid().addItemClickListener(event -> {
-            if (event.getClickCount() > 1) {
-                select(event.getItem());
-                getOkButton().click();
-            }
+        searchLayout.getGridWrapper().getGrid().addItemDoubleClickListener(event -> {
+            select(event.getItem());
+            getOkButton().click();
         });
         parent.add(searchLayout);
     }
@@ -149,8 +146,7 @@ public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractE
 
     @Override
     protected String getTitle() {
-        return ServiceLocatorFactory.getServiceLocator().getMessageService().getMessage("ocs.search.title", VaadinUtils.getLocale(),
-                entityModel.getDisplayNamePlural(VaadinUtils.getLocale()));
+        return message("ocs.search.title", entityModel.getDisplayNamePlural(VaadinUtils.getLocale()));
     }
 
     /**

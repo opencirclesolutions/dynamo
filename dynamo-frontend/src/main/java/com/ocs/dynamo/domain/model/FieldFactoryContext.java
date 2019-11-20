@@ -49,22 +49,26 @@ public class FieldFactoryContext {
 
     private AttributeModel attributeModel;
 
-    private Map<String, SerializablePredicate<?>> fieldFilters;
+    private boolean editableGrid;
 
     private EntityModel<?> fieldEntityModel;
 
-    private boolean viewMode;
+    private Map<String, SerializablePredicate<?>> fieldFilters;
+
+    private AbstractEntity<?> parentEntity;
 
     private boolean search;
 
     private Map<String, ListDataProvider<?>> sharedProviders;
 
-    private AbstractEntity<?> parentEntity;
-
-    private boolean editableGrid;
+    private boolean viewMode;
 
     private FieldFactoryContext() {
         // hidden
+    }
+
+    public void addSharedProvider(String attribute, ListDataProvider<?> sharedProvider) {
+        sharedProviders.put(attribute, sharedProvider);
     }
 
     public AttributeModel getAttributeModel() {
@@ -79,8 +83,20 @@ public class FieldFactoryContext {
         return fieldFilters;
     }
 
-    public boolean isViewMode() {
-        return viewMode;
+    public AbstractEntity<?> getParentEntity() {
+        return parentEntity;
+    }
+
+    public ListDataProvider<?> getSharedProvider(String attribute) {
+        return sharedProviders == null ? null : sharedProviders.get(attribute);
+    }
+
+    public Map<String, ListDataProvider<?>> getSharedProviders() {
+        return sharedProviders;
+    }
+
+    public boolean isEditableGrid() {
+        return editableGrid;
     }
 
     /**
@@ -88,6 +104,10 @@ public class FieldFactoryContext {
      */
     public boolean isSearch() {
         return search;
+    }
+
+    public boolean isViewMode() {
+        return viewMode;
     }
 
     /**
@@ -98,6 +118,11 @@ public class FieldFactoryContext {
      */
     public FieldFactoryContext setAttributeModel(AttributeModel attributeModel) {
         this.attributeModel = attributeModel;
+        return this;
+    }
+
+    public FieldFactoryContext setEditableGrid(boolean editableGrid) {
+        this.editableGrid = editableGrid;
         return this;
     }
 
@@ -123,6 +148,11 @@ public class FieldFactoryContext {
         return this;
     }
 
+    public FieldFactoryContext setParentEntity(AbstractEntity<?> parentEntity) {
+        this.parentEntity = parentEntity;
+        return this;
+    }
+
     /**
      * Sets whether to construct the field for search mode
      * 
@@ -134,6 +164,11 @@ public class FieldFactoryContext {
         return this;
     }
 
+    public FieldFactoryContext setSharedProviders(Map<String, ListDataProvider<?>> sharedProviders) {
+        this.sharedProviders = sharedProviders;
+        return this;
+    }
+
     /**
      * Sets whether to construct the field for view mode
      * 
@@ -142,41 +177,6 @@ public class FieldFactoryContext {
      */
     public FieldFactoryContext setViewMode(boolean viewMode) {
         this.viewMode = viewMode;
-        return this;
-    }
-
-    public Map<String, ListDataProvider<?>> getSharedProviders() {
-        return sharedProviders;
-    }
-
-    public FieldFactoryContext setSharedProviders(Map<String, ListDataProvider<?>> sharedProviders) {
-        this.sharedProviders = sharedProviders;
-        return this;
-    }
-
-    public void addSharedProvider(String attribute, ListDataProvider<?> sharedProvider) {
-        sharedProviders.put(attribute, sharedProvider);
-    }
-
-    public ListDataProvider<?> getSharedProvider(String attribute) {
-        return sharedProviders == null ? null : sharedProviders.get(attribute);
-    }
-
-    public AbstractEntity<?> getParentEntity() {
-        return parentEntity;
-    }
-
-    public FieldFactoryContext setParentEntity(AbstractEntity<?> parentEntity) {
-        this.parentEntity = parentEntity;
-        return this;
-    }
-
-    public boolean isEditableGrid() {
-        return editableGrid;
-    }
-
-    public FieldFactoryContext setEditableGrid(boolean editableGrid) {
-        this.editableGrid = editableGrid;
         return this;
     }
 

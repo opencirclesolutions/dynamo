@@ -242,5 +242,11 @@ public class EntityTokenSelect<ID extends Serializable, T extends AbstractEntity
         this.filter = originalFilter == null ? additionalFilter : new AndPredicate<>(originalFilter, additionalFilter);
         refresh();
     }
+    
+    @Override
+    public void select(T... items) {
+        System.out.println("Selecting");
+        super.select(items);
+    }
 
 }

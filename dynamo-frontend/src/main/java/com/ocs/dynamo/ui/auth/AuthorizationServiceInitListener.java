@@ -23,11 +23,11 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.server.ServiceInitEvent;
 import com.vaadin.flow.server.VaadinServiceInitListener;
 
-public class AuthenticationServiceInitListener implements VaadinServiceInitListener {
+public class AuthorizationServiceInitListener implements VaadinServiceInitListener {
 
     private static final long serialVersionUID = -6625937066463454631L;
 
-    private static final Logger LOG = LoggerFactory.getLogger(AuthenticationServiceInitListener.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AuthorizationServiceInitListener.class);
 
     @Autowired
     private PermissionChecker permissionChecker;

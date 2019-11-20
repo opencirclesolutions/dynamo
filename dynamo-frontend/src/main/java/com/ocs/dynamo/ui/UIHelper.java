@@ -52,6 +52,12 @@ public class UIHelper {
         entityOnViewMapping.put(entityClass, navigateAction);
     }
 
+    public void clearState() {
+        VaadinUtils.removeFromSession(SCREEN_MODE);
+        VaadinUtils.removeFromSession(SELECTED_TAB);
+        VaadinUtils.removeFromSession(SELECTED_ENTITY);
+    }
+
     public String getScreenMode() {
         return (String) VaadinUtils.getFromSession(SCREEN_MODE);
     }
@@ -114,5 +120,4 @@ public class UIHelper {
     public void setSelectedTab(Integer selectedTab) {
         VaadinUtils.storeInSession(SELECTED_TAB, selectedTab);
     }
-
 }

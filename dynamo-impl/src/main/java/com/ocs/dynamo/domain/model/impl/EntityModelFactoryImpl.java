@@ -956,9 +956,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
             if (attribute.multipleSearch()) {
                 model.setMultipleSearch(true);
                 // by default, use a token for multiple select
-                if (AttributeSelectMode.COMBO.equals(model.getSearchSelectMode())) {
-                    model.setSearchSelectMode(AttributeSelectMode.TOKEN);
-                }
+                model.setSearchSelectMode(AttributeSelectMode.LOOKUP);
             }
 
             if (!AttributeSelectMode.INHERIT.equals(attribute.searchSelectMode())) {

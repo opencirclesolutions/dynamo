@@ -81,7 +81,6 @@ public abstract class InMemoryTreeGrid<T, ID, C extends AbstractEntity<ID>, ID2,
         col.setHeader(caption);
         col.getElement().setAttribute("title", caption);
         if (alignRight) {
-            // col.setStyleGenerator(item -> "v-align-right");
             col.setClassNameGenerator(c -> "alignRight");
         }
         return col;

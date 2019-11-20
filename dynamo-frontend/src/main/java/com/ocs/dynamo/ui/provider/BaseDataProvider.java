@@ -130,7 +130,7 @@ public abstract class BaseDataProvider<ID extends Serializable, T extends Abstra
             }
         }
 
-        // if not sort order defined, order descending on ID
+        // if no sort order defined, order descending on ID
         if (so.getNrOfSortOrders() == 0) {
             so.addSortOrder(new SortOrder(DynamoConstants.ID, Direction.DESC));
         }

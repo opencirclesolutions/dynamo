@@ -50,38 +50,32 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 
     private static final long serialVersionUID = 4606800218149558500L;
 
-    /**
-     * The add button
-     */
     private Button addButton;
 
-    /**
-     * The detail form
-     */
     private VerticalLayout detailFormLayout;
 
     /**
-     * The layout that hold the selected detail layout
+     * The standard detail layout
      */
     private VerticalLayout detailLayout;
 
-    // the edit form
     private ModelBasedEditForm<ID, T> editForm;
 
-    // layout that is placed above the grid view
+    /**
+     * Additional layout that is placed above the grid
+     */
     private Component headerLayout;
 
-    // the main layout
     private VerticalLayout mainLayout;
 
-    // quick search filed for filtering the grid
     private TextField quickSearchField;
 
-    // the remove button
     private Button removeButton;
 
-    // the currently selected detail layout (can be either edit mode or
-    // read-only mode)
+    /**
+     * The currently active detail layout. Can be the default edit form or a custom
+     * component
+     */
     private Component selectedDetailLayout;
 
     /**
@@ -99,8 +93,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
     }
 
     /**
-     * Perform any actions after the screen reloads after an entity was saved.
-     * Override in subclasses if needed
+     * Callback method that fires after the detail screen has been reloaded
      *
      * @param entity
      */
@@ -132,8 +125,6 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 
             // construct option quick search field
             quickSearchField = constructSearchField();
-
-            // additional quick search field
             if (!isHorizontalMode() && quickSearchField != null) {
                 mainLayout.add(quickSearchField);
             }
@@ -149,7 +140,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 
                 splitterLayout = new DefaultVerticalLayout(false, true);
 
-                // optional header
+                // optional header layout
                 headerLayout = constructHeaderLayout();
                 if (headerLayout != null) {
                     splitterLayout.add(headerLayout);
@@ -163,6 +154,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
                 splitter.addToPrimary(splitterLayout);
 
             } else {
+                // vertical mode, just add component at bottom
                 mainLayout.add(getGridWrapper());
             }
 
@@ -267,7 +259,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
     /**
      * Fills the detail part of the screen with a custom component
      *
-     * @param component the custom component
+     * @param component the custom component that will serve as the detail view
      */
     protected void customDetailView(Component component) {
         detailLayout.replace(selectedDetailLayout, component);
@@ -277,7 +269,6 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
     /**
      * Shows the details of a selected entity
      *
-     * @param parent the parent of the entity
      * @param entity the entity
      */
     @Override
@@ -358,7 +349,6 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
                 protected void postProcessEditFields() {
                     BaseSplitLayout.this.postProcessEditFields(editForm);
                 }
-
             };
 
             editForm.setCustomSaveConsumer(getCustomSaveConsumer());
@@ -432,15 +422,14 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
     }
 
     /**
-     * Replaces the contents of a label by its current value. Use in response to an
-     * automatic update if a field
+     * Replaces the contents of a label by the specified value
      *
-     * @param propertyName the name of the property for which to replace the label
-     * @param value        the name
+     * @param path  the path of the property to update
+     * @param value the value the new value
      */
-    public void setLabelValue(String propertyName, String value) {
+    public void setLabelValue(String path, String value) {
         if (editForm != null) {
-            editForm.setLabelValue(propertyName, value);
+            editForm.setLabelValue(path, value);
         }
     }
 
@@ -484,8 +473,8 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
     }
 
     /**
-     * Remove the item and clean up the screen afterwards. Do not override. Use
-     * "doRemove" if you need to do some custom functionality
+     * Remove the item and clean up the screen afterwards. Use "doRemove" if you
+     * need to do some custom functionality
      */
     protected final void removeEntity() {
         doRemove();
@@ -495,7 +484,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
     }
 
     /**
-     * Reselects the entity
+     * Reselects the specified entity
      *
      * @param t entity to reselect
      */

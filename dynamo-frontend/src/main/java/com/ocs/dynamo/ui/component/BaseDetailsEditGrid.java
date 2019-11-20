@@ -79,14 +79,35 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
     private static final long serialVersionUID = 997617632007985450L;
 
     /**
-     * Optional field filters for restricting the contents of combo boxes
-     */
-    private Map<String, SerializablePredicate<?>> fieldFilters = new HashMap<>();
-
-    /**
      * The button that can be used to add rows to the grid
      */
     private Button addButton;
+
+    /**
+     * The attribute model of the attribute that is managed by this component
+     */
+    private AttributeModel attributeModel;
+
+    /**
+     * Map with a binder for every row
+     */
+    private Map<T, Binder<T>> binders = new HashMap<>();
+
+    /**
+     * List of buttons to update after a detail is selected
+     */
+    private List<Button> componentsToUpdate = new ArrayList<>();
+
+    /**
+     * The supplier that is used for creating a new entity in response to a click on
+     * the Add button
+     */
+    private Supplier<T> createEntitySupplier;
+
+    /**
+     * Search dialog
+     */
+    private ModelBasedSearchDialog<ID, T> dialog;
 
     /**
      * The entity model of the entity to display
@@ -94,20 +115,9 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
     private final EntityModel<T> entityModel;
 
     /**
-     * The service that is used to communicate with the database
+     * Optional field filters for restricting the contents of combo boxes
      */
-    private BaseService<ID, T> service;
-
-    /**
-     * The message service
-     */
-    private final MessageService messageService;
-
-    /**
-     * Whether the component is in view mode. If this is the case, editing is not
-     * allowed and no buttons will be displayed
-     */
-    private boolean viewMode;
+    private Map<String, SerializablePredicate<?>> fieldFilters = new HashMap<>();
 
     /**
      * Form options that determine which buttons and functionalities are available
@@ -120,19 +130,20 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
     private ModelBasedGrid<ID, T> grid;
 
     /**
-     * List of buttons to update after a detail is selected
+     * Code to execute after selecting one or more items in the pop-up (link the
+     * selected item to the parent)
      */
-    private List<Button> componentsToUpdate = new ArrayList<>();
+    private Consumer<T> linkEntityConsumer;
 
     /**
-     * The currently selected item
+     * The message service
      */
-    private T selectedItem;
+    private final MessageService messageService;
 
     /**
-     * Map with a binder for every row
+     * Consumer that is used to remove an entity
      */
-    private Map<T, Binder<T>> binders = new HashMap<>();
+    private Consumer<T> removeEntityConsumer;
 
     /**
      * Button used to open the search dialog
@@ -155,25 +166,14 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
     private SortOrder<T> searchDialogSortOrder;
 
     /**
-     * Search dialog
+     * The currently selected item
      */
-    private ModelBasedSearchDialog<ID, T> dialog;
+    private T selectedItem;
 
     /**
-     * Consumer that is used to remove an entity
+     * The service that is used to communicate with the database
      */
-    private Consumer<T> removeEntityConsumer;
-
-    /**
-     * The supplier that is used for creating a new entity in response to a click on
-     * the Add button
-     */
-    private Supplier<T> createEntitySupplier;
-
-    /**
-     * The attribute model of the attribute that is managed by this component
-     */
-    private AttributeModel attributeModel;
+    private BaseService<ID, T> service;
 
     /**
      * Indicates whether the component is used in service-based mode, in this case
@@ -182,10 +182,10 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
     private boolean serviceBasedEditMode;
 
     /**
-     * Code to execute after selecting one or more items in the pop-up (link the
-     * selected item to the parent)
+     * Whether the component is in view mode. If this is the case, editing is not
+     * allowed and no buttons will be displayed
      */
-    private Consumer<T> linkEntityConsumer;
+    private boolean viewMode;
 
     /**
      * Constructor
@@ -206,6 +206,10 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
         this.formOptions = formOptions;
         this.attributeModel = attributeModel;
         this.serviceBasedEditMode = serviceBasedEditMode;
+    }
+
+    public void addFieldFilter(String property, SerializablePredicate<?> filter) {
+        this.fieldFilters.put(property, filter);
     }
 
     /**
@@ -579,10 +583,6 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 
     public void setCreateEntitySupplier(Supplier<T> createEntitySupplier) {
         this.createEntitySupplier = createEntitySupplier;
-    }
-
-    public void setFieldFilters(Map<String, SerializablePredicate<?>> fieldFilters) {
-        this.fieldFilters = fieldFilters;
     }
 
     public void setFormOptions(FormOptions formOptions) {

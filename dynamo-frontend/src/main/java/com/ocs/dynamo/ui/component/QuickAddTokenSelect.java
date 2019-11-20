@@ -105,12 +105,8 @@ public class QuickAddTokenSelect<ID extends Serializable, T extends AbstractEnti
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     protected Collection<T> generateModelValue() {
-        if (tokenSelect != null) {
-            return (Collection<T>) convertToCorrectCollection(tokenSelect.getValue());
-        }
-        return null;
+        return retrieveValue();
     }
 
     public EntityTokenSelect<ID, T> getTokenSelect() {
@@ -118,12 +114,8 @@ public class QuickAddTokenSelect<ID extends Serializable, T extends AbstractEnti
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public Collection<T> getValue() {
-        if (tokenSelect != null) {
-            return (Collection<T>) convertToCorrectCollection(tokenSelect.getValue());
-        }
-        return null;
+        return retrieveValue();
     }
 
     protected void initContent() {
@@ -148,6 +140,7 @@ public class QuickAddTokenSelect<ID extends Serializable, T extends AbstractEnti
             Button directNavigationButton = constructDirectNavigationButton();
             bar.add(directNavigationButton);
         }
+
         add(bar);
     }
 
@@ -167,6 +160,14 @@ public class QuickAddTokenSelect<ID extends Serializable, T extends AbstractEnti
         if (tokenSelect != null) {
             tokenSelect.refresh(filter);
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    private Collection<T> retrieveValue() {
+        if (tokenSelect != null) {
+            return (Collection<T>) convertToCorrectCollection(tokenSelect.getValue());
+        }
+        return null;
     }
 
     @Override

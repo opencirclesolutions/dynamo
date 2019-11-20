@@ -206,6 +206,12 @@ public final class DynamoConstants {
     public static final String SP_DEFAULT_TIME_FORMAT = "ocs.default.time.format";
 
     /**
+     * Name of the system property that is used to determine the default text area
+     * height
+     */
+    public static final String SP_DEFAULT_TEXT_AREA_HEIGHT = "ocs.default.text.area.height";
+
+    /**
      * Name of the system property that is used to determine the representation of
      * the value true
      */
@@ -228,9 +234,9 @@ public final class DynamoConstants {
     public static final String SP_EXPORT_CSV_SEPARATOR = "ocs.export.csv.separator";
 
     /**
-     * Name of the property that is used to enable view authentication
+     * Name of the property that is used to enable view authorization
      */
-    public static final String SP_ENABLE_VIEW_AUTHENTICATION = "ocs.enable.view.authentication";
+    public static final String SP_ENABLE_VIEW_AUTHORIZATION = "ocs.enable.view.authorization";
 
     /**
      * The minimum screen width (e.g. in pixels) that there must be for two columns

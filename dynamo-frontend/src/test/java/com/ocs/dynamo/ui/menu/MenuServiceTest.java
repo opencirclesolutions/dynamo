@@ -55,7 +55,7 @@ public class MenuServiceTest extends FrontendIntegrationTest {
     /**
      * Test that an item is disabled if the user does not have the correct role (the
      * "destination" in the menu has to match a view name in a view annotated
-     * with @SpringView)
+     * with @Route)
      */
     @Test
     public void testDisableItem() {

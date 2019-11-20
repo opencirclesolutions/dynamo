@@ -43,6 +43,12 @@ public class IdBasedDataProvider<ID extends Serializable, T extends AbstractEnti
     private static final long serialVersionUID = -5693366456446998962L;
 
     /**
+     * Indicates whether to show notification in case of too many results. Can be
+     * temporarily set to false to prevent duplicate messages
+     */
+    private boolean showNotification = true;
+
+    /**
      * Constructor
      * 
      * @param service     the service
@@ -56,9 +62,11 @@ public class IdBasedDataProvider<ID extends Serializable, T extends AbstractEnti
     @Override
     public Stream<T> fetch(Query<T, SerializablePredicate<T>> query) {
 
-        // when sort order changes, ID have to be fetched again
+        // when sort order changes, IDs have to be fetched again
         SortOrders so = createSortOrder(query);
+        showNotification = false;
         size(query);
+        showNotification = true;
 
         List<ID> results = new ArrayList<>();
         int index = query.getOffset();
@@ -93,7 +101,7 @@ public class IdBasedDataProvider<ID extends Serializable, T extends AbstractEnti
 
         if (getMaxResults() != null) {
             Long count = getService().count(filter, false);
-            if (count >= getMaxResults()) {
+            if (showNotification && count >= getMaxResults()) {
                 showNotification(getMessageService().getMessage("ocs.too.many.results", VaadinUtils.getLocale(), getMaxResults()));
             }
         }

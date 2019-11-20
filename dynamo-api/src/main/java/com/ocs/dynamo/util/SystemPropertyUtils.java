@@ -37,9 +37,9 @@ public final class SystemPropertyUtils {
 
     private static final int DEFAULT_LOOKUP_FIELD_MAX_ITEMS = 3;
 
-    private static final String DEFAULT_TRUE_REPRESENTATION = "true";
-
     private static final int DEFAULT_MESSAGE_DISPLAY_TIME = 2000;
+
+    private static final String DEFAULT_TRUE_REPRESENTATION = "true";
 
     private static final Logger LOG = LoggerFactory.getLogger(SystemPropertyUtils.class);
 
@@ -146,7 +146,7 @@ public final class SystemPropertyUtils {
 
     /**
      * 
-     * @return the default date/time format with time zone
+     * @return the default date/time format with time zone (dd-MM-yyyy HH:mm:ssZ)
      */
     public static String getDefaultDateTimeWithTimezoneFormat() {
         return getStringProperty(DynamoConstants.SP_DEFAULT_DATETIME_ZONE_FORMAT, "dd-MM-yyyy HH:mm:ssZ");
@@ -158,22 +158,6 @@ public final class SystemPropertyUtils {
      */
     public static int getDefaultDecimalPrecision() {
         return getIntProperty(DynamoConstants.SP_DECIMAL_PRECISION, DEFAULT_DECIMAL_PRECISION);
-    }
-
-    /**
-     * 
-     * @return the default grid height in pixels
-     */
-    public static String getDefaultGridHeight() {
-        return getStringProperty(DynamoConstants.SP_DEFAULT_GRID_HEIGHT, "400px");
-    }
-
-    /**
-     * 
-     * @return the default grid height in pixels
-     */
-    public static String getDefaultSearchDialogGridHeight() {
-        return getStringProperty(DynamoConstants.SP_DEFAULT_SEARCH_DIALOG_GRID_HEIGHT, "300px");
     }
 
     /**
@@ -193,6 +177,14 @@ public final class SystemPropertyUtils {
      */
     public static String getDefaultFalseRepresentation(Locale locale) {
         return getStringProperty(DynamoConstants.SP_DEFAULT_FALSE_REPRESENTATION + "." + locale.getLanguage(), null);
+    }
+
+    /**
+     * 
+     * @return the default grid height in pixels
+     */
+    public static String getDefaultGridHeight() {
+        return getStringProperty(DynamoConstants.SP_DEFAULT_GRID_HEIGHT, "400px");
     }
 
     /**
@@ -220,6 +212,14 @@ public final class SystemPropertyUtils {
     }
 
     /**
+     * 
+     * @return the default grid height in pixels
+     */
+    public static String getDefaultSearchDialogGridHeight() {
+        return getStringProperty(DynamoConstants.SP_DEFAULT_SEARCH_DIALOG_GRID_HEIGHT, "300px");
+    }
+
+    /**
      * @return default search prefix only. False if not specified
      */
     public static boolean getDefaultSearchPrefixOnly() {
@@ -227,8 +227,13 @@ public final class SystemPropertyUtils {
     }
 
     /**
-     *
-     *
+     * @return the default height of a text area (e.g. "150px")
+     */
+    public static String getDefaultTextAreaHeight() {
+        return getStringProperty(DynamoConstants.SP_DEFAULT_TIME_FORMAT, "200px");
+    }
+    
+    /**
      * @return the default format for formatting attributes of type LocalTime or
      *         Java 8 dates that only consist of a time stamp
      */
@@ -281,7 +286,7 @@ public final class SystemPropertyUtils {
 
     /**
      * 
-     * @return the minimum screen width
+     * @return the minimum width that must be available before two results columns will be displayed
      */
     public static String getMinimumTwoColumnWidth() {
         return getStringProperty(DynamoConstants.SP_MINIMUM_TWO_COLUMN_WIDTH, "1200px");

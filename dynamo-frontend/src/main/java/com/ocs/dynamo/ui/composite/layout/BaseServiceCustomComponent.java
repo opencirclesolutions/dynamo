@@ -125,14 +125,12 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
     }
 
     /**
-     * Adds an attribute entity model - this can be used to overwrite the default
-     * entity model that is used for rendering complex selection components (lookup
-     * dialogs)
+     * Sets a custom entity model to use for a certain field/property
      *
-     * @param path      the path to the field
+     * @param path      the path of the property
      * @param reference the unique ID of the entity model
      */
-    public final void addAttributeEntityModel(String path, String reference) {
+    public final void addFieldEntityModel(String path, String reference) {
         fieldEntityModels.put(path, reference);
     }
 
@@ -206,10 +204,6 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
         return customButtonMap.get(key);
     }
 
-    public boolean isCustomComponent(String key, Component toCheck) {
-        return customButtonMap.get(key) != null && customButtonMap.get(key).contains(toCheck);
-    }
-
     public EntityModel<T> getEntityModel() {
         return entityModel;
     }
@@ -237,6 +231,18 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
      */
     protected boolean handleCustomException(RuntimeException ex) {
         return false;
+    }
+
+    /**
+     * Check whether the provided component is a custom component stored under the
+     * provided key
+     * 
+     * @param key     the key
+     * @param toCheck the component to check
+     * @return
+     */
+    public boolean isCustomComponent(String key, Component toCheck) {
+        return customButtonMap.get(key) != null && customButtonMap.get(key).contains(toCheck);
     }
 
     /**
@@ -282,8 +288,15 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
         this.service = service;
     }
 
-    public void storeCustomComponent(String key, Button button) {
+    /**
+     * Stores a custom component. This can e.g. be used for checking whether extra
+     * components you added to the button bar must be enabled
+     * 
+     * @param key       the key under which to store the custom component
+     * @param component the component to store
+     */
+    public void storeCustomComponent(String key, Component component) {
         customButtonMap.putIfAbsent(key, new ArrayList<>());
-        customButtonMap.get(key).add(button);
+        customButtonMap.get(key).add(component);
     }
 }

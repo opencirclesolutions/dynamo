@@ -50,19 +50,10 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 
     private static final long serialVersionUID = -7935358582100755140L;
 
-    /**
-     * The edit form
-     */
     private ModelBasedEditForm<ID, T> editForm;
 
-    /**
-     * The entity to display or edit
-     */
     private T entity;
 
-    /**
-     * Map of additional field filters
-     */
     private Map<String, SerializablePredicate<?>> fieldFilters = new HashMap<>();
 
     /**
@@ -71,14 +62,8 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
      */
     private FetchJoinInformation[] joins;
 
-    /**
-     * The main layout
-     */
     private VerticalLayout main;
 
-    /**
-     * Custom save consumer. Use this to override the default save behaviour
-     */
     private Consumer<T> customSaveConsumer;
 
     /**
@@ -118,13 +103,19 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
         }
     }
 
+    /**
+     * Callback method that fires directly after the entity is set and before any
+     * data binding occurs
+     * 
+     * @param entity the entity that was just set
+     */
     public void afterEntitySet(T entity) {
         // overwrite in entity
     }
 
     /**
-     * Callback method that is called after one of the layouts of the underlying
-     * edit form is built for the first time
+     * Callback method that fires after one of the layouts of the underlying edit
+     * form is built for the first time
      *
      * @param layout   the layout
      * @param viewMode whether the layout is in view mode
@@ -134,7 +125,7 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
     }
 
     /**
-     * Callback method that is called after a tab has been selected in the tab sheet
+     * Callback method that first after a tab has been selected in the tab sheet
      * that is used in a detail form when the attribute group mode has been set to
      * TABSHEET
      *
@@ -159,7 +150,7 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
     }
 
     /**
-     * Code to carry out after navigating "back" to the main screen
+     * Callback method that fires after the "back" button is pressed
      */
     protected void back() {
         // overwrite in subclasses
@@ -248,7 +239,6 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
                 protected void postProcessEditFields() {
                     SimpleEditLayout.this.postProcessEditFields(editForm);
                 }
-
             };
 
             editForm.setCustomSaveConsumer(customSaveConsumer);
@@ -266,7 +256,7 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
     }
 
     /**
-     * Creates a new entity - override in subclass if needed
+     * Callback method that fires when the new entity is being created
      *
      * @return
      */
@@ -372,12 +362,12 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
      * Replaces the contents of a label by its current value. Use in response to an
      * automatic update if a field
      *
-     * @param propertyName the name of the property for which to replace the label
-     * @param value        the name
+     * @param path  the path of the property
+     * @param value the name
      */
-    public void setLabelValue(String propertyName, String value) {
+    public void setLabelValue(String path, String value) {
         if (editForm != null) {
-            editForm.setLabelValue(propertyName, value);
+            editForm.setLabelValue(path, value);
         }
     }
 

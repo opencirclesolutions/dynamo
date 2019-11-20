@@ -101,7 +101,6 @@ public abstract class LazyTabLayout<ID extends Serializable, T extends AbstractE
             tabs.setSizeFull();
 
             main.add(tabs);
-
             setupLazySheet(tabs);
         }
     }

@@ -121,6 +121,7 @@ public class URLField extends CustomField<String> {
     public void setErrorMessage(String errorMessage) {
         if (textField != null) {
             textField.setErrorMessage(errorMessage);
+            textField.addClassName("dynamoError");
         }
     }
 

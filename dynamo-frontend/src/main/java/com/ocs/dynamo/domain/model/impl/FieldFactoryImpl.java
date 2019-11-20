@@ -263,7 +263,7 @@ public class FieldFactoryImpl implements FieldFactory {
             field = constructCollectionSelect(am, fieldEntityModel, fieldFilter, sharedProvider, search, grid);
         } else if (AttributeTextFieldMode.TEXTAREA.equals(am.getTextFieldMode()) && !search && !grid) {
             field = new TextArea();
-            ((TextArea) field).setHeight("100px");
+            ((TextArea) field).setHeight(SystemPropertyUtils.getDefaultTextAreaHeight());
         } else if (Enum.class.isAssignableFrom(am.getType())) {
             field = constructEnumComboBox(am.getType().asSubclass(Enum.class));
         } else if (search && (am.getType().equals(Boolean.class) || am.getType().equals(boolean.class))) {
@@ -415,6 +415,10 @@ public class FieldFactoryImpl implements FieldFactory {
         }
 
         if (search && am.isMultipleSearch()) {
+            if (!AttributeSelectMode.LOOKUP.equals(selectMode)) {
+                throw new OCSRuntimeException("Only LOOKUP mode is allowed for multiple searvh fields");
+            }
+
             // in case of multiple search, defer to the
             // "constructCollectionSelect" method
             field = this.constructCollectionSelect(am, fieldEntityModel, fieldFilter, sharedProvider, search, grid);

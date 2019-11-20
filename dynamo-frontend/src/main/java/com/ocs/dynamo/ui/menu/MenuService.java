@@ -94,6 +94,7 @@ public class MenuService {
             String destination = messageService.getMessageNoDefault(key + "." + DESTINATION, VaadinUtils.getLocale());
             String tabIndex = messageService.getMessageNoDefault(key + "." + TAB_INDEX, VaadinUtils.getLocale());
             String mode = messageService.getMessageNoDefault(key + "." + MODE, VaadinUtils.getLocale());
+            String description = messageService.getMessageNoDefault(key + "." + DESCRIPTION, VaadinUtils.getLocale());
 
             // create navigation command
             NavigateCommand command = null;
@@ -108,6 +109,12 @@ public class MenuService {
                 // sub menu
                 menuItem = ((SubMenu) parent).addItem(caption, command);
             }
+
+            // set description
+            if (description != null) {
+                VaadinUtils.setTooltip(menuItem, description);
+            }
+
             parent = menuItem.getSubMenu();
 
             if (!StringUtils.isEmpty(destination)) {

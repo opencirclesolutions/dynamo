@@ -476,7 +476,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
         // multiple search defaults to token
         final AttributeModel am2 = model.getAttributeModel("entity5");
         Assert.assertEquals(AttributeSelectMode.COMBO, am2.getSelectMode());
-        Assert.assertEquals(AttributeSelectMode.TOKEN, am2.getSearchSelectMode());
+        Assert.assertEquals(AttributeSelectMode.LOOKUP, am2.getSearchSelectMode());
         Assert.assertEquals(AttributeSelectMode.COMBO, am2.getGridSelectMode());
 
         // overwritten attribute modes

@@ -85,7 +85,6 @@ import com.vaadin.flow.component.formlayout.FormLayout.FormItem;
 import com.vaadin.flow.component.formlayout.FormLayout.ResponsiveStep;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Image;
-import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -144,7 +143,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
         protected void initContent() {
             byte[] bytes = ClassUtils.getBytes(getEntity(), am.getName());
 
-            HorizontalLayout main = new HorizontalLayout();
+            FlexLayout main = new DefaultFlexLayout();
             Image image = new Image();
             image.setClassName(DynamoConstants.CSS_IMAGE_PREVIEW);
 
@@ -157,8 +156,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
                 }
                 main.add(image);
             } else {
-                Text label = new Text(message("ocs.no.preview.available"));
-                main.add(label);
+                Text text = new Text(message("ocs.no.preview.available"));
+                main.add(text);
             }
 
             MemoryBuffer buffer = new MemoryBuffer();
@@ -341,7 +340,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
     private Map<Boolean, HorizontalLayout> titleBars = new HashMap<>();
 
-    private Map<Boolean, Label> titleLabels = new HashMap<>();
+    private Map<Boolean, Text> titleLabels = new HashMap<>();
 
     private Map<Boolean, Map<AttributeModel, Component>> uploads = new HashMap<>();
 
@@ -582,11 +581,12 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
         titleLabels.put(isViewMode(), constructTitleLabel());
 
-        titleBars.put(isViewMode(), new DefaultHorizontalLayout(false, true));
+        titleBars.put(isViewMode(), new DefaultHorizontalLayout(true, true));
         titleBars.get(isViewMode()).add(titleLabels.get(isViewMode()));
 
         FlexLayout buttonBar = null;
         if (!nestedMode) {
+            // no button bar in "nested mode", i.e. when part of a DetailsEditLayout
             buttonBar = constructButtonBar(false);
             buttonBar.setSizeUndefined();
             if (getFormOptions().isPlaceButtonBarAtTop()) {
@@ -1108,30 +1108,24 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
         return saveButton;
     }
 
-    private Label constructTitleLabel() {
-        Label label = null;
+    private Text constructTitleLabel() {
+        String value = getTitleLabelValue();
+        return new Text(value);
+    }
 
-        // add title label
+    private String getTitleLabelValue() {
         String mainValue = EntityModelUtils.getDisplayPropertyValue(entity, getEntityModel());
         if (isViewMode()) {
-            label = new Label();
-            label.getElement().setProperty("innerHTML",
-                    message("ocs.modelbasededitform.title.view", getEntityModel().getDisplayName(VaadinUtils.getLocale()), mainValue));
+            return message("ocs.modelbasededitform.title.view", getEntityModel().getDisplayName(VaadinUtils.getLocale()), mainValue);
         } else {
             if (entity.getId() == null) {
                 // create a new entity
-                label = new Label();
-                label.getElement().setProperty("innerHTML",
-                        message("ocs.modelbasededitform.title.create", getEntityModel().getDisplayName(VaadinUtils.getLocale())));
+                return message("ocs.modelbasededitform.title.create", getEntityModel().getDisplayName(VaadinUtils.getLocale()));
             } else {
                 // update an existing entity
-                label = new Label();
-                label.getElement().setProperty("innerHMTL", message("ocs.modelbasededitform.title.update",
-                        getEntityModel().getDisplayName(VaadinUtils.getLocale()), mainValue));
+                return message("ocs.modelbasededitform.title.update", getEntityModel().getDisplayName(VaadinUtils.getLocale()), mainValue);
             }
         }
-
-        return label;
     }
 
     /**
@@ -1558,11 +1552,9 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
         }
 
         // also replace the title labels
-        Label titleLabel = titleLabels.get(isViewMode());
+        Text titleLabel = titleLabels.get(isViewMode());
         if (titleLabel != null) {
-            Label newLabel = constructTitleLabel();
-            titleLabels.put(isViewMode(), newLabel);
-            titleBars.get(isViewMode()).replace(titleLabel, newLabel);
+            titleLabel.setText(getTitleLabelValue());
         }
     }
 
@@ -1726,11 +1718,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
         disableCreateOnlyFields();
         setDefaultValues();
 
-        // update the title label
-        Label newTitleLabel = constructTitleLabel();
-        titleBars.get(isViewMode()).replace(titleLabels.get(isViewMode()), newTitleLabel);
-        titleLabels.put(isViewMode(), newTitleLabel);
-
         // change caption depending on entity state
         updateSaveButtonCaptions();
 
@@ -1843,7 +1830,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
         groups.get(isViewMode()).setBean(entity);
 
-        constructTitleLabel();
         refreshLabelsAndUrls();
         build();
 

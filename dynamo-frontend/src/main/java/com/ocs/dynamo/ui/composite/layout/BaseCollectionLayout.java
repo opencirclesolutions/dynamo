@@ -143,6 +143,16 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
     }
 
     /**
+     * Adds a field filter
+     * 
+     * @param property the property for which to add a field filter
+     * @param filter   the field filter
+     */
+    public void addFieldFilter(String property, SerializablePredicate<?> filter) {
+        this.fieldFilters.put(property, filter);
+    }
+
+    /**
      * Adds an additional sort order
      * 
      * @param sortOrder the sort order to add
@@ -323,7 +333,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
      * 
      * @return the currently configured sort orders
      */
-    public List<SortOrder<?>> getSortOrders() {
+    public final List<SortOrder<?>> getSortOrders() {
         return Collections.unmodifiableList(sortOrders);
     }
 
@@ -447,16 +457,9 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
     }
 
     /**
-     * Sets the field filters to use. Field filters are used to limit the search
-     * results when rendering lookup components for complex attributes (e.g. combo
-     * boxes, lookup fields)
-     * 
-     * @param fieldFilters
+     * Sets the desired height of the search results grid
+     * @param gridHeight the height, e.g. "600px"
      */
-    public void setFieldFilters(Map<String, SerializablePredicate<?>> fieldFilters) {
-        this.fieldFilters = fieldFilters;
-    }
-
     public void setGridHeight(String gridHeight) {
         this.gridHeight = gridHeight;
     }
@@ -465,7 +468,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
      * Sets the maximum number of search results. If a search results in more hits,
      * the result set will be truncated
      * 
-     * @param maxResults
+     * @param maxResults the maximum results
      */
     public void setMaxResults(Integer maxResults) {
         this.maxResults = maxResults;

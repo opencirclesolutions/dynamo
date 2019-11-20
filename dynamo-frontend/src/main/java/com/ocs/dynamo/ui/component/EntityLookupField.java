@@ -241,7 +241,15 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
                 @Override
                 protected boolean doClose() {
                     if (multiSelect) {
-                        EntityLookupField.this.setValue(getSelectedItems());
+                        if (EntityLookupField.this.getValue() == null) {
+                            EntityLookupField.this.setValue(getSelectedItems());
+                        } else {
+                            // add selected items to already selected items
+                            @SuppressWarnings("unchecked")
+                            Collection<T> cumulative = (Collection<T>) EntityLookupField.this.getValue();
+                            cumulative.addAll(getSelectedItems());
+                            EntityLookupField.this.setValue(cumulative);
+                        }
                     } else {
                         // single value select
                         EntityLookupField.this.setValue(getSelectedItem());
