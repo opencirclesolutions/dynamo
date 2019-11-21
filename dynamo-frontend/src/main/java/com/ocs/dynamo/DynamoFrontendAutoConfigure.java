@@ -24,7 +24,6 @@ import com.ocs.dynamo.domain.model.FieldFactory;
 import com.ocs.dynamo.domain.model.impl.FieldFactoryImpl;
 import com.ocs.dynamo.service.UserDetailsService;
 import com.ocs.dynamo.service.impl.DefaultUserDetailsServiceImpl;
-import com.ocs.dynamo.ui.UIHelper;
 import com.ocs.dynamo.ui.auth.AuthorizationServiceInitListener;
 import com.ocs.dynamo.ui.auth.PermissionChecker;
 import com.ocs.dynamo.ui.auth.impl.DefaultPermissionCheckerImpl;
@@ -49,12 +48,6 @@ public class DynamoFrontendAutoConfigure {
     @ConditionalOnMissingBean(value = MenuService.class)
     public MenuService menuService() {
         return new MenuService();
-    }
-
-    @Bean
-    @ConditionalOnMissingBean(value = UIHelper.class)
-    public UIHelper uiHelper() {
-        return new UIHelper();
     }
 
     @Bean

@@ -14,6 +14,7 @@
 package com.ocs.dynamo.ui.menu;
 
 import com.ocs.dynamo.ui.view.BaseView;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
 
 @Route("someDest")
@@ -22,7 +23,7 @@ public class UnsecuredTestView extends BaseView {
     private static final long serialVersionUID = 922414016634172918L;
 
     @Override
-    protected void doInit() {
+    protected void doInit(VerticalLayout layout) {
 
     }
 

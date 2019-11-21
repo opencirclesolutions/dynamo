@@ -19,6 +19,7 @@ import java.util.function.Consumer;
 
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.menubar.MenuBar;
 import com.vaadin.flow.component.notification.Notification.Position;
 import com.vaadin.flow.component.notification.NotificationVariant;
 
@@ -31,16 +32,18 @@ import com.vaadin.flow.component.notification.NotificationVariant;
  */
 public class UIHelper {
 
-    private static final String SCREEN_MODE = "screenMode";
-
-    private static final String SELECTED_ENTITY = "selectedEntity";
-
-    private static final String SELECTED_TAB = "selectedTab";
-
     /**
      * Mapping for navigating to pages after clicking on a link
      */
     private Map<Class<?>, Consumer<?>> entityOnViewMapping = new HashMap<>();
+
+    private MenuBar menuBar;
+
+    private String screenMode;
+
+    private Object selectedEntity;
+
+    private Integer selectedTab;
 
     /**
      * Adds a mapping for carrying out navigation within the application
@@ -52,22 +55,29 @@ public class UIHelper {
         entityOnViewMapping.put(entityClass, navigateAction);
     }
 
+    /**
+     * Clears the session state
+     */
     public void clearState() {
-        VaadinUtils.removeFromSession(SCREEN_MODE);
-        VaadinUtils.removeFromSession(SELECTED_TAB);
-        VaadinUtils.removeFromSession(SELECTED_ENTITY);
+        setScreenMode(null);
+        setSelectedEntity(null);
+        setSelectedTab(null);
+    }
+
+    public MenuBar getMenuBar() {
+        return menuBar;
     }
 
     public String getScreenMode() {
-        return (String) VaadinUtils.getFromSession(SCREEN_MODE);
+        return screenMode;
     }
 
     public Object getSelectedEntity() {
-        return VaadinUtils.getFromSession(SELECTED_ENTITY);
+        return selectedEntity;
     }
 
     public Integer getSelectedTab() {
-        return (Integer) VaadinUtils.getFromSession(SELECTED_TAB);
+        return selectedTab;
     }
 
     /**
@@ -109,15 +119,20 @@ public class UIHelper {
         navigate(viewName);
     }
 
+    public void setMenuBar(MenuBar menuBar) {
+        this.menuBar = menuBar;
+    }
+
     public void setScreenMode(String screenMode) {
-        VaadinUtils.storeInSession(SCREEN_MODE, screenMode);
+        this.screenMode = screenMode;
     }
 
     public void setSelectedEntity(Object selectedEntity) {
-        VaadinUtils.storeInSession(SELECTED_ENTITY, selectedEntity);
+        this.selectedEntity = selectedEntity;
     }
 
     public void setSelectedTab(Integer selectedTab) {
-        VaadinUtils.storeInSession(SELECTED_TAB, selectedTab);
+        this.selectedTab = selectedTab;
     }
+
 }

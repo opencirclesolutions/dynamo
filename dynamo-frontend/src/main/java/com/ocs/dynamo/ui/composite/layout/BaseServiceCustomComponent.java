@@ -162,7 +162,7 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
      *
      * @param selectedItem the selected item
      */
-    protected void checkButtonState(T selectedItem) {
+    protected void checkComponentState(T selectedItem) {
         for (Component b : componentsToUpdate) {
             if (b instanceof DownloadButton) {
                 ((DownloadButton) b).update();
@@ -298,5 +298,16 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
     public void storeCustomComponent(String key, Component component) {
         customButtonMap.putIfAbsent(key, new ArrayList<>());
         customButtonMap.get(key).add(component);
+    }
+
+    /**
+     * Stores and registers a custom comonent
+     * 
+     * @param key       the key under which to store the component
+     * @param component the component
+     */
+    public void storeAndRegisterCustomComponent(String key, Component component) {
+        registerComponent(component);
+        storeCustomComponent(key, component);
     }
 }

@@ -355,7 +355,7 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
             @Override
             protected void onSelect(Object selected) {
                 setSelectedItems(selected);
-                checkButtonState(getSelectedItem());
+                checkComponentState(getSelectedItem());
             }
 
             @Override

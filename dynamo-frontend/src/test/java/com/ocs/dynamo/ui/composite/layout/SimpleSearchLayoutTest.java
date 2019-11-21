@@ -261,7 +261,7 @@ public class SimpleSearchLayoutTest extends FrontendIntegrationTest {
         Assert.assertTrue(layout.getRemoveButton().isVisible());
 
         layout.setSelectedItem(e1);
-        layout.checkButtonState(layout.getSelectedItem());
+        layout.checkComponentState(layout.getSelectedItem());
         layout.getRemoveButton().click();
     }
 

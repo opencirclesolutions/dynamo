@@ -16,15 +16,20 @@ package com.ocs.dynamo.ui.view;
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.ui.UIHelper;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
+import com.ocs.dynamo.ui.menu.MenuService;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.menubar.MenuBar;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.router.BeforeLeaveEvent;
+import com.vaadin.flow.router.BeforeLeaveEvent.ContinueNavigationAction;
+import com.vaadin.flow.router.BeforeLeaveObserver;
 
 /**
  * A base class for Views. Provides easy access to the entity model factory and
@@ -32,8 +37,8 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
  * 
  * @author bas.rutten
  */
-@Component
-public abstract class BaseView extends VerticalLayout {
+@org.springframework.stereotype.Component
+public abstract class BaseView extends VerticalLayout implements BeforeLeaveObserver {
 
     public static final String SELECTED_ID = "selectedId";
 
@@ -48,12 +53,29 @@ public abstract class BaseView extends VerticalLayout {
     @Autowired
     private UIHelper uiHelper;
 
-    @PostConstruct
-    public final void init() {
-        doInit();
+    @Autowired
+    private MenuService menuService;
+
+    private boolean confirmBeforeLeave;
+
+    public BaseView(boolean confirmBeforeLeave) {
+        this.confirmBeforeLeave = confirmBeforeLeave;
     }
 
-    protected abstract void doInit();
+    public BaseView() {
+        this(false);
+    }
+
+    @PostConstruct
+    public final void init() {
+        VerticalLayout main = initLayout();
+        doInit(main);
+    }
+
+    /**
+     * Performs the actual initialization
+     */
+    protected abstract void doInit(VerticalLayout main);
 
     /**
      * Clears the current screen mode
@@ -120,6 +142,31 @@ public abstract class BaseView extends VerticalLayout {
 
     public UIHelper getUiHelper() {
         return uiHelper;
+    }
+
+    @Override
+    public void beforeLeave(BeforeLeaveEvent event) {
+        if (confirmBeforeLeave && isEditing()) {
+            MenuBar menuBar = uiHelper.getMenuBar();
+            String lastVisited = menuBar == null ? null : menuService.getLastVisited();
+
+            ContinueNavigationAction postpone = event.postpone();
+            VaadinUtils.showConfirmDialog(getMessageService(), message("ocs.confirm.navigate"), () -> postpone.proceed(), () -> {
+                if (lastVisited != null) {
+                    menuService.setLastVisited(menuBar, lastVisited);
+                }
+            });
+        }
+    }
+
+    /**
+     * Callback method that is called when the user wants to navigate away from a
+     * page that is being edited
+     * 
+     * @return
+     */
+    protected boolean isEditing() {
+        return false;
     }
 
 }

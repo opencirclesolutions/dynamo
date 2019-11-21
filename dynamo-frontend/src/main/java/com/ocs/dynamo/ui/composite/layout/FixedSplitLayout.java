@@ -29,7 +29,7 @@ import com.vaadin.flow.function.SerializablePredicate;
 
 /**
  * A layout for displaying a fixed collection of items, that contains both a
- * table view and a details view
+ * grid view and a details view
  * 
  * @author bas.rutten
  * @param <ID> the type of the primary key
@@ -86,7 +86,7 @@ public abstract class FixedSplitLayout<ID extends Serializable, T extends Abstra
             @Override
             protected void onSelect(Object selected) {
                 setSelectedItems(selected);
-                checkButtonState(getSelectedItem());
+                checkComponentState(getSelectedItem());
                 if (getSelectedItem() != null) {
                     detailsMode(getSelectedItem());
                 }

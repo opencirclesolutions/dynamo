@@ -40,6 +40,11 @@ import com.vaadin.flow.component.menubar.MenuBar;
 public class MenuService {
 
     /**
+     * The last visited menu item
+     */
+    private String lastVisited;
+
+    /**
      * Optional tool tip that appears for the menu item
      */
     public static final String DESCRIPTION = "description";
@@ -226,12 +231,17 @@ public class MenuService {
      * @param destination the destination that was last visited
      */
     public void setLastVisited(MenuBar menuBar, String destination) {
+        this.lastVisited = destination;
         for (MenuItem item : menuBar.getItems()) {
             item.getElement().getClassList().remove(DynamoConstants.CSS_LAST_VISITED);
             if (hasChildWithDestination(item, destination)) {
                 item.getElement().getClassList().add(DynamoConstants.CSS_LAST_VISITED);
             }
         }
+    }
+
+    public String getLastVisited() {
+        return lastVisited;
     }
 
     /**

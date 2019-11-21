@@ -150,7 +150,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
     private VerticalLayout tabContainerLayout;
 
     /**
-     * Tabbed layout for complex detail mode
+     * Tab layout for complex detail mode
      */
     private LazyTabLayout<ID, T> tabLayout;
 
@@ -172,40 +172,37 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
     }
 
     /**
-     * Method that is called after the user clicks the Clear button to empty the
-     * search form
+     * Callback method that fires after all search filters have been cleared
      */
     protected void afterClear() {
         // overwrite in subclasses
     }
 
     /**
-     * Method that is called after the user clicks the "show/hide" button to
-     * show/hide the search form
-     * 
-     * @param visible whether the search fields are visible after the toggle
+     * Callback method that fires after the visibility of the search form has been toggled
+     * @param visible whether the search form is currently visible
      */
     protected void afterSearchFieldToggle(boolean visible) {
         // overwrite in subclasses
     }
 
     /**
-     * Method that is called after a successful search has been carried out
+     * Callback method that fires after a search has been performed
      */
     protected void afterSearchPerformed() {
         // overwrite in subclasses
     }
 
     /**
-     * Perform any actions that are necessary before carrying out a search. Can be
-     * used to interfere with the search process
+     * Callback method that fires just before performing a search. 
+     * Can be used to perform any actions that are necessary before carrying out a search. 
      * 
      * @param filter the current search filter
      * @return the modified search filter. If not null, then this filter will be
      *         used for the search instead of the current filter
      */
     protected SerializablePredicate<T> beforeSearchPerformed(SerializablePredicate<T> filter) {
-        // overwrite in subclasses if needed
+        // overwrite in subclasses
         return null;
     }
 
@@ -241,13 +238,13 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
                     if (getFormOptions().isConfirmClear()) {
                         getSearchForm().setAfterClearConsumer(e -> {
                             setSelectedItem(null);
-                            checkButtonState(getSelectedItem());
+                            checkComponentState(getSelectedItem());
                             afterClear();
                         });
                     } else {
                         getSearchForm().getClearButton().addClickListener(e -> {
                             setSelectedItem(null);
-                            checkButtonState(getSelectedItem());
+                            checkComponentState(getSelectedItem());
                             afterClear();
                         });
                     }
@@ -275,7 +272,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
             if (getSearchForm().getSearchButton() != null) {
                 getSearchForm().getSearchButton().addClickListener(e -> {
                     setSelectedItem(null);
-                    checkButtonState(getSelectedItem());
+                    checkComponentState(getSelectedItem());
                 });
             }
 
@@ -297,7 +294,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
             postProcessButtonBar(getButtonBar());
             mainSearchLayout.add(getButtonBar());
 
-            checkButtonState(null);
+            checkComponentState(null);
 
             // post process the layout
             postProcessLayout(mainSearchLayout);
@@ -311,7 +308,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
      * 
      * @param entity the currently selected entity
      */
-    protected final void buildDetailsTabLayout(T entity, FormOptions formOptions) {
+    private final void buildDetailsTabLayout(T entity, FormOptions formOptions) {
         tabContainerLayout = new DefaultVerticalLayout(false, true);
 
         HorizontalLayout buttonBar = new DefaultHorizontalLayout(false, true);
@@ -395,7 +392,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
      * @param entity  the currently selected entity
      * @param options the form options
      */
-    protected final void buildEditForm(T entity, FormOptions options) {
+    private final void buildEditForm(T entity, FormOptions options) {
         editForm = new ModelBasedEditForm<ID, T>(entity, getService(), getEntityModel(), options, getFieldFilters()) {
 
             private static final long serialVersionUID = 6485097089659928131L;
@@ -522,7 +519,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
         getSearchForm().setSearchable(null);
         searchLayoutConstructed = false;
         setSelectedItem(null);
-        checkButtonState(getSelectedItem());
+        checkComponentState(getSelectedItem());
         afterClear();
     }
 
@@ -541,11 +538,8 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
         return null;
     }
 
-    /*
-     * Constructs the button that will switch the screen to the detail view.
-     * Depending on the "open in view mode" setting the caption will read either
-     * "view" or "edit"
-     * 
+    /**
+     * Constructs the edit button
      * @return
      */
     protected final Button constructEditButton() {
@@ -564,7 +558,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
      * Lazily constructs the grid wrapper
      */
     @Override
-    public ServiceBasedGridWrapper<ID, T> constructGridWrapper() {
+    public final ServiceBasedGridWrapper<ID, T> constructGridWrapper() {
         ServiceBasedGridWrapper<ID, T> wrapper = new ServiceBasedGridWrapper<ID, T>(this.getService(), getEntityModel(), getQueryType(),
                 getFormOptions(), getSearchForm().extractFilter(), getFieldFilters(), getSortOrders(), false, getJoins()) {
 
@@ -664,7 +658,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
         // add a listener to respond to the selection of an item
         getGridWrapper().getGrid().addSelectionListener(e -> {
             select(getGridWrapper().getGrid().getSelectedItems());
-            checkButtonState(getSelectedItem());
+            checkComponentState(getSelectedItem());
         });
 
         // select item by double clicking on row (disable this inside pop-up
@@ -678,7 +672,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
     }
 
     /**
-     * Opens a custom detail view
+     * Sets the provided component as the current detail view
      * 
      * @param root the root component of the custom detail view
      */
@@ -767,7 +761,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
             selectedDetailLayout = comp;
         }
 
-        checkButtonState(getSelectedItem());
+        checkComponentState(getSelectedItem());
         removeAll();
         add(mainEditLayout);
     }
@@ -878,7 +872,8 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
     }
 
     /**
-     * Returns the resource that is to be used as an icon for a tab in a tab sheet
+     * Callback method that is used to set the icon for a tab if complex detail mode is
+     * enabled
      * 
      * @param index the index of the tab
      * @return
@@ -994,6 +989,20 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
      */
     public boolean isInSearchMode() {
         return Objects.equals(getComponentAt(0), mainSearchLayout);
+    }
+
+    /**
+     * 
+     * @return whether the user is currently editing/adding an item
+     */
+    public boolean isEditing() {
+       if (isInSearchMode()) {
+           return false;
+       }
+       if (!getFormOptions().isComplexDetailsMode()) {
+           return getEditForm() != null && !getEditForm().isViewMode();
+       }
+       return false;
     }
 
     @Override
@@ -1124,7 +1133,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
      * Sets the default filters that are always applied to a search query (even
      * after all search fields have been cleared)
      *
-     * @param defaultFilters
+     * @param defaultFilters the default filters
      */
     public void setDefaultFilters(List<SerializablePredicate<T>> defaultFilters) {
         this.defaultFilters = defaultFilters;

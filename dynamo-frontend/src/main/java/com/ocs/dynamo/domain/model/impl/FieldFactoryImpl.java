@@ -416,7 +416,7 @@ public class FieldFactoryImpl implements FieldFactory {
 
         if (search && am.isMultipleSearch()) {
             if (!AttributeSelectMode.LOOKUP.equals(selectMode)) {
-                throw new OCSRuntimeException("Only LOOKUP mode is allowed for multiple searvh fields");
+                throw new OCSRuntimeException("Only LOOKUP mode is allowed for multiple search field " + am.getPath());
             }
 
             // in case of multiple search, defer to the

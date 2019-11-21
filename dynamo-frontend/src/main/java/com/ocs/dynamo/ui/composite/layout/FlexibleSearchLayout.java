@@ -72,6 +72,17 @@ public class FlexibleSearchLayout<ID extends Serializable, T extends AbstractEnt
         super(service, entityModel, queryType, formOptions, sortOrder, joins);
     }
 
+    /**
+     * Adds a property to the set of properties for which only basic String filters will be
+     * supported
+     *
+     * @param property
+     *            the property
+     */
+    public void addBasicStringFilterProperty(String property) {
+        basicStringFilterProperties.add(property);
+    }
+
     @Override
     protected AbstractModelBasedSearchForm<ID, T> constructSearchForm() {
         ModelBasedFlexibleSearchForm<ID, T> result = new ModelBasedFlexibleSearchForm<ID, T>(null, getEntityModel(),
@@ -114,17 +125,6 @@ public class FlexibleSearchLayout<ID extends Serializable, T extends AbstractEnt
         }
 
         return result;
-    }
-
-    /**
-     * Adds a property to the set of properties for which only basic String filters will be
-     * supported
-     *
-     * @param property
-     *            the property
-     */
-    public void addBasicStringFilterProperty(String property) {
-        basicStringFilterProperties.add(property);
     }
 
     @Override

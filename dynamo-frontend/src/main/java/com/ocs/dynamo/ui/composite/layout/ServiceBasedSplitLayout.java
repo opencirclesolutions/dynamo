@@ -101,7 +101,7 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
             @Override
             protected void onSelect(Object selected) {
                 setSelectedItems(selected);
-                checkButtonState(getSelectedItem());
+                checkComponentState(getSelectedItem());
                 if (getSelectedItem() != null) {
                     detailsMode(getSelectedItem());
                 }

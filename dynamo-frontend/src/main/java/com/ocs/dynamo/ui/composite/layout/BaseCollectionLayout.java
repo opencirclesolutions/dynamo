@@ -205,7 +205,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
     }
 
     /**
-     * Lazily constructs the grid wrapper - subclassed by the framework in order to
+     * Lazily constructs the grid wrapper - used by the framework in order to
      * construct the appropriate grid wrapper
      * 
      * @return
@@ -372,47 +372,49 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
      * @param buttonBar the button bar
      */
     protected void postProcessButtonBar(FlexLayout buttonBar) {
-        // overwrite in subclass if needed
+        // override in subclasses
     }
 
     /**
-     * Callback method that is called after the search results container has been
-     * constructed. Use this to modify the container if needed
+     * Callback method that fires after the provider has been created. Override this
+     * to modify data provider construction. This should rarely be needed.
      * 
-     * @param container
+     * @param provider the provider
      */
     protected void postProcessDataProvider(DataProvider<T, SerializablePredicate<T>> provider) {
-        // overwrite in subclasses
+        // override in subclasses
     }
 
     /**
-     * Adds additional buttons to the button bar above/below the detail edit screen.
+     * Callback method that fires after the detail button bar that is placed
+     * above/below the edit form has been constructed. Can be used to add extra
+     * components to the button bar
      * 
      * @param buttonBar the detail button bar
      * @param viewMode  indicates whether the form is in view mode
      */
     protected void postProcessDetailButtonBar(FlexLayout buttonBar, boolean viewMode) {
-        // overwrite in subclass if needed
+        // override in subclasses
     }
 
     /**
-     * Post processes the edit fields. This method is called once, just before the
-     * screen is displayed in edit mode for the first time. Use this method to e.g.
-     * set up change listeners
+     * Callback method that fires after the edit form has been created. Can be used
+     * to add extra validations or cross-field functionality. This method will only
+     * be called once
      * 
-     * @param editForm
+     * @param editForm the edit form
      */
     protected void postProcessEditFields(ModelBasedEditForm<ID, T> editForm) {
         // override in subclasses
     }
 
     /**
-     * Callback method that is called after the grip wrapper has been constructed
+     * Callback method that fires after the search results grid wrapper
      * 
      * @param wrapper
      */
     protected void postProcessGridWrapper(BaseGridWrapper<ID, T> wrapper) {
-        // overwrite in subclasses when needed
+        // override in subclasses
     }
 
     /**
@@ -446,18 +448,25 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
      * Specifies the entity model to use when performing an export to Excel or CSV.
      * Use this method if you need to deviate from the regular export functionality
      * 
-     * @param exportEntityModel
+     * @param exportEntityModel the desired model
      */
     public void setExportEntityModel(EntityModel<T> exportEntityModel) {
         this.exportEntityModel = exportEntityModel;
     }
 
+    /**
+     * Specifies the joins to use when performing a data export. These will override
+     * the default joins that are used when fetching data to fill the grid
+     * 
+     * @param exportJoins the desired joins
+     */
     public void setExportJoins(FetchJoinInformation[] exportJoins) {
         this.exportJoins = exportJoins;
     }
 
     /**
      * Sets the desired height of the search results grid
+     * 
      * @param gridHeight the height, e.g. "600px"
      */
     public void setGridHeight(String gridHeight) {
@@ -485,7 +494,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
      */
     public void setSelectedItem(T selectedItem) {
         this.selectedItem = selectedItem;
-        checkButtonState(selectedItem);
+        checkComponentState(selectedItem);
     }
 
     /**

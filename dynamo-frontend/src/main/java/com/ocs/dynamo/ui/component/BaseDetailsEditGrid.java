@@ -39,6 +39,7 @@ import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.composite.type.GridEditMode;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.HasEnabled;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.customfield.CustomField;
@@ -94,9 +95,9 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
     private Map<T, Binder<T>> binders = new HashMap<>();
 
     /**
-     * List of buttons to update after a detail is selected
+     * List of components to update after a detail is selected
      */
-    private List<Button> componentsToUpdate = new ArrayList<>();
+    private List<Component> componentsToUpdate = new ArrayList<>();
 
     /**
      * The supplier that is used for creating a new entity in response to a click on
@@ -223,9 +224,12 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
      *
      * @param selectedItem the selected item
      */
-    protected void checkButtonState(T selectedItem) {
-        for (Button b : componentsToUpdate) {
-            b.setEnabled(selectedItem != null && mustEnableButton(b, selectedItem));
+    protected void checkComponentState(T selectedItem) {
+        for (Component b : componentsToUpdate) {
+            boolean enabled = selectedItem != null && mustEnableComponent(b, selectedItem);
+            if (b instanceof HasEnabled) {
+                ((HasEnabled) b).setEnabled(enabled);
+            }
         }
     }
 
@@ -489,7 +493,7 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
             if (grid.getSelectedItems().iterator().hasNext()) {
                 selectedItem = grid.getSelectedItems().iterator().next();
                 onSelect(selectedItem);
-                checkButtonState(selectedItem);
+                checkComponentState(selectedItem);
             }
         });
 
@@ -528,7 +532,7 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
      * @param button
      * @return
      */
-    protected boolean mustEnableButton(Button button, T selectedItem) {
+    protected boolean mustEnableComponent(Component component, T selectedItem) {
         // overwrite in subclasses if needed
         return true;
     }
@@ -574,10 +578,12 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
      *
      * @param button the button to register
      */
-    public void registerButton(Button button) {
-        if (button != null) {
-            button.setEnabled(false);
-            componentsToUpdate.add(button);
+    public void registerComponent(Component component) {
+        if (component != null) {
+            if (component instanceof HasEnabled) {
+                ((HasEnabled) component).setEnabled(false);
+            }
+            componentsToUpdate.add(component);
         }
     }
 
@@ -614,7 +620,7 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 
     public void setSelectedItem(T selectedItem) {
         this.selectedItem = selectedItem;
-        checkButtonState(selectedItem);
+        checkComponentState(selectedItem);
     }
 
     public void setService(BaseService<ID, T> service) {

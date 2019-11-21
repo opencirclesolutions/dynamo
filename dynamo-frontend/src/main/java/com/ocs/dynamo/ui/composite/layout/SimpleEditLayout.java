@@ -50,6 +50,8 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 
     private static final long serialVersionUID = -7935358582100755140L;
 
+    private Consumer<T> customSaveConsumer;
+
     private ModelBasedEditForm<ID, T> editForm;
 
     private T entity;
@@ -63,8 +65,6 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
     private FetchJoinInformation[] joins;
 
     private VerticalLayout main;
-
-    private Consumer<T> customSaveConsumer;
 
     /**
      * Constructor
@@ -141,12 +141,6 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
         if (editForm != null) {
             editForm.resetTabsheetIfNeeded();
         }
-    }
-
-    @Override
-    protected void onAttach(AttachEvent attachEvent) {
-        super.onAttach(attachEvent);
-        build();
     }
 
     /**
@@ -251,7 +245,7 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
             postProcessLayout(main);
             add(main);
             afterEntitySelected(editForm, getEntity());
-            checkButtonState(getEntity());
+            checkComponentState(getEntity());
         }
     }
 
@@ -328,6 +322,12 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
         return editForm.isViewMode();
     }
 
+    @Override
+    protected void onAttach(AttachEvent attachEvent) {
+        super.onAttach(attachEvent);
+        build();
+    }
+
     /**
      * Callback method that can be used to add additional buttons to the button bar
      * (at both the top and the bottom of the screen)
@@ -356,19 +356,6 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
      */
     protected void postProcessLayout(VerticalLayout main) {
         // overwrite in subclass
-    }
-
-    /**
-     * Replaces the contents of a label by its current value. Use in response to an
-     * automatic update if a field
-     *
-     * @param path  the path of the property
-     * @param value the name
-     */
-    public void setLabelValue(String path, String value) {
-        if (editForm != null) {
-            editForm.setLabelValue(path, value);
-        }
     }
 
     @Override
@@ -412,7 +399,7 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
         }
         editForm.setEntity(this.entity);
         afterEntitySelected(editForm, this.entity);
-        checkButtonState(getEntity());
+        checkComponentState(getEntity());
     }
 
     public void setFieldFilters(Map<String, SerializablePredicate<?>> fieldFilters) {
@@ -421,6 +408,19 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 
     public void setJoins(FetchJoinInformation[] joins) {
         this.joins = joins;
+    }
+
+    /**
+     * Replaces the contents of a label by its current value. Use in response to an
+     * automatic update if a field
+     *
+     * @param path  the path of the property
+     * @param value the name
+     */
+    public void setLabelValue(String path, String value) {
+        if (editForm != null) {
+            editForm.setLabelValue(path, value);
+        }
     }
 
 }

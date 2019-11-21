@@ -29,6 +29,8 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import javax.persistence.CollectionTable;
+
 import org.apache.commons.io.FilenameUtils;
 
 import com.google.common.collect.Lists;
@@ -56,9 +58,11 @@ import com.ocs.dynamo.ui.component.CustomEntityField;
 import com.ocs.dynamo.ui.component.DefaultFlexLayout;
 import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
+import com.ocs.dynamo.ui.component.DetailsEditGrid;
 import com.ocs.dynamo.ui.component.InternalLinkButton;
 import com.ocs.dynamo.ui.component.ServiceBasedDetailsEditGrid;
 import com.ocs.dynamo.ui.component.URLField;
+import com.ocs.dynamo.ui.composite.layout.DetailsEditLayout;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.composite.layout.TabWrapper;
 import com.ocs.dynamo.ui.composite.type.AttributeGroupMode;
@@ -85,6 +89,7 @@ import com.vaadin.flow.component.formlayout.FormLayout.FormItem;
 import com.vaadin.flow.component.formlayout.FormLayout.ResponsiveStep;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Image;
+import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -939,7 +944,17 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
                     }
                 }
             } else {
-                parent.add((Component) field);
+                if (parent instanceof FormLayout) {
+                    FormLayout form = (FormLayout) parent;
+                    FormItem fi = form.addFormItem(field, new Label(attributeModel.getDisplayName(VaadinUtils.getLocale())));
+                    
+                    // extra column span for bigger grid-like components
+                    if (field instanceof DetailsEditGrid || field instanceof CollectionTable || field instanceof DetailsEditLayout) {
+                        fi.getElement().setAttribute("colspan", "2");
+                    }
+                } else {
+                    parent.add((Component) field);
+                }
             }
 
             // store a reference to the first field so we can give it focus

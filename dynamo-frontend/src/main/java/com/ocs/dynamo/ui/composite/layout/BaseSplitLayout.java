@@ -101,12 +101,6 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
         // override in subclass
     }
 
-    @Override
-    protected void onAttach(AttachEvent attachEvent) {
-        super.onAttach(attachEvent);
-        build();
-    }
-
     /**
      * Builds the component
      */
@@ -188,7 +182,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
             postProcessButtonBar(getButtonBar());
             postProcessLayout(mainLayout);
 
-            checkButtonState(null);
+            checkComponentState(null);
             add(mainLayout);
         }
     }
@@ -363,7 +357,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
         }
 
         setSelectedItem(entity);
-        checkButtonState(getSelectedItem());
+        checkComponentState(getSelectedItem());
         afterEntitySelected(editForm, entity);
 
         detailLayout.replace(selectedDetailLayout, detailFormLayout);
@@ -408,6 +402,14 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
     }
 
     /**
+     * 
+     * @return whether the screen is currently in edit mode
+     */
+    public boolean isEditing() {
+        return getEditForm() != null && !getEditForm().isViewMode() && getSelectedItem() != null;
+    }
+
+    /**
      * Indicates whether the panel is in horizontal mode
      *
      * @return
@@ -417,20 +419,14 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
     }
 
     @Override
-    public void refresh() {
-        // override in subclasses
+    protected void onAttach(AttachEvent attachEvent) {
+        super.onAttach(attachEvent);
+        build();
     }
 
-    /**
-     * Replaces the contents of a label by the specified value
-     *
-     * @param path  the path of the property to update
-     * @param value the value the new value
-     */
-    public void setLabelValue(String path, String value) {
-        if (editForm != null) {
-            editForm.setLabelValue(path, value);
-        }
+    @Override
+    public void refresh() {
+        // override in subclasses
     }
 
     /**
@@ -498,6 +494,19 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
     }
 
     /**
+     * Replaces the contents of a label by the specified value
+     *
+     * @param path  the path of the property to update
+     * @param value the value the new value
+     */
+    public void setLabelValue(String path, String value) {
+        if (editForm != null) {
+            editForm.setLabelValue(path, value);
+        }
+    }
+
+    /**
+     * Sets the provided items as the currently selected itmes
      * 
      * @param selectedItems
      */

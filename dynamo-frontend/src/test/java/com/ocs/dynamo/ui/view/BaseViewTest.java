@@ -13,6 +13,7 @@ import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.test.BaseMockitoTest;
 import com.ocs.dynamo.ui.UIHelper;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
 public class BaseViewTest extends BaseMockitoTest {
 
@@ -37,7 +38,7 @@ public class BaseViewTest extends BaseMockitoTest {
             private static final long serialVersionUID = 3811868898666414611L;
 
             @Override
-            protected void doInit() {
+            protected void doInit(VerticalLayout layout) {
 
             }
 
