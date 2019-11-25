@@ -38,6 +38,7 @@ import com.ocs.dynamo.ui.composite.grid.ModelBasedGrid;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.composite.type.GridEditMode;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
+import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasEnabled;
 import com.vaadin.flow.component.HasValue;
@@ -129,6 +130,11 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
      * The grid for displaying the actual items
      */
     private ModelBasedGrid<ID, T> grid;
+
+    /**
+     * The grid height
+     */
+    private String gridHeight = SystemPropertyUtils.getDefaultEditGridHeight();
 
     /**
      * Code to execute after selecting one or more items in the pop-up (link the
@@ -373,6 +379,10 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
         return grid;
     }
 
+    public String getGridHeight() {
+        return gridHeight;
+    }
+
     public Consumer<T> getLinkEntityConsumer() {
         return linkEntityConsumer;
     }
@@ -475,8 +485,7 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
             });
         }
 
-        // TODO: make configurable
-        grid.setHeight("200px");
+        grid.setHeight(gridHeight);
         grid.setSelectionMode(SelectionMode.SINGLE);
 
         for (Column<?> c : grid.getColumns()) {
@@ -593,6 +602,10 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 
     public void setFormOptions(FormOptions formOptions) {
         this.formOptions = formOptions;
+    }
+
+    public void setGridHeight(String gridHeight) {
+        this.gridHeight = gridHeight;
     }
 
     public void setLinkEntityConsumer(Consumer<T> linkEntityConsumer) {

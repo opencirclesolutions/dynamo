@@ -135,6 +135,11 @@ public final class DynamoConstants {
      * height
      */
     public static final String SP_DEFAULT_GRID_HEIGHT = "ocs.default.grid.height";
+    
+    /**
+     * Name of the system property that is used to determine the default edit grid height
+     */
+    public static final String SP_DEFAULT_EDIT_GRID_HEIGHT = "ocs.default.edit.grid.height";
 
     /**
      * Name of the system property that is used to determined the default grid

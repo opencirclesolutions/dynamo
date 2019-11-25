@@ -28,6 +28,9 @@ import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.service.MessageService;
+import com.ocs.dynamo.ui.component.CustomEntityField;
+import com.ocs.dynamo.ui.component.EntityComboBox;
+import com.ocs.dynamo.ui.component.URLField;
 import com.ocs.dynamo.ui.converter.BigDecimalConverter;
 import com.ocs.dynamo.ui.converter.ConverterFactory;
 import com.ocs.dynamo.util.SystemPropertyUtils;
@@ -422,35 +425,64 @@ public final class VaadinUtils {
     /**
      * Sets the label on the provided field
      * 
-     * @param field the field
+     * @param component the field
      * @param label the text of the label
      */
-    public static void setLabel(Component field, String label) {
-        if (field instanceof TextField) {
-            ((TextField) field).setLabel(label);
-        } else if (field instanceof Checkbox) {
-            ((Checkbox) field).setLabel(label);
-        } else if (field instanceof CustomField) {
-            ((CustomField<?>) field).setLabel(label);
-        } else if (field instanceof ComboBox) {
-            ((ComboBox<?>) field).setLabel(label);
-        } else if (field instanceof TextArea) {
-            ((TextArea) field).setLabel(label);
-        } else if (field instanceof DatePicker) {
-            ((DatePicker) field).setLabel(label);
-        } else if (field instanceof TimePicker) {
-            ((TimePicker) field).setLabel(label);
+    public static void setLabel(Component component, String label) {
+        if (component instanceof TextField) {
+            ((TextField) component).setLabel(label);
+        } else if (component instanceof Checkbox) {
+            ((Checkbox) component).setLabel(label);
+        } else if (component instanceof CustomField) {
+            ((CustomField<?>) component).setLabel(label);
+        } else if (component instanceof ComboBox) {
+            ((ComboBox<?>) component).setLabel(label);
+        } else if (component instanceof TextArea) {
+            ((TextArea) component).setLabel(label);
+        } else if (component instanceof DatePicker) {
+            ((DatePicker) component).setLabel(label);
+        } else if (component instanceof TimePicker) {
+            ((TimePicker) component).setLabel(label);
         }
     }
 
     /**
-     * Sets a tooltip on a field
+     * Sets the placeholder for the specified component
      * 
-     * @param field   the field
-     * @param tooltip the tooltip to set
+     * @param component
+     * @param placeHolder
      */
-    public static void setTooltip(Component field, String tooltip) {
-        field.getElement().setProperty("title", tooltip);
+    public static void setPlaceHolder(Component component, String placeHolder) {
+        if (component instanceof TextField) {
+            TextField textField = (TextField) component;
+            textField.setPlaceholder(placeHolder);
+        } else if (component instanceof DatePicker) {
+            // set a separate format for a date field
+            DatePicker dateField = (DatePicker) component;
+            dateField.setPlaceholder(placeHolder);
+        } else if (component instanceof TimePicker) {
+            ((TimePicker) component).setPlaceholder(placeHolder);
+        } else if (component instanceof EntityComboBox) {
+            ((EntityComboBox<?, ?>) component).setPlaceholder(placeHolder);
+        } else if (component instanceof TextArea) {
+            ((TextArea) component).setPlaceholder(placeHolder);
+        } else if (component instanceof CustomEntityField) {
+            ((CustomEntityField<?, ?, ?>) component).setPlaceholder(placeHolder);
+        } else if (component instanceof URLField) {
+            ((URLField) component).setPlaceholder(placeHolder);
+        } else if (component instanceof ComboBox) {
+            ((ComboBox<?>) component).setPlaceholder(placeHolder);
+        }
+    }
+
+    /**
+     * Sets a tool tip on a component
+     * 
+     * @param field   the component
+     * @param tooltip the tool tip to set
+     */
+    public static void setTooltip(Component component, String tooltip) {
+        component.getElement().setProperty("title", tooltip);
     }
 
     /**

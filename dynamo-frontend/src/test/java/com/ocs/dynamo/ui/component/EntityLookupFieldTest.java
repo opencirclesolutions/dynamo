@@ -56,7 +56,7 @@ public class EntityLookupFieldTest extends BaseMockitoTest {
     @Test
     public void test() {
         EntityLookupField<Integer, TestEntity> field = new EntityLookupField<>(service, factory.getModel(TestEntity.class), null, null,
-                false, false, Lists.newArrayList(new SortOrder<String>("name", SortDirection.ASCENDING)));
+                false, false, false, Lists.newArrayList(new SortOrder<String>("name", SortDirection.ASCENDING)));
 
         field.initContent();
 
@@ -67,7 +67,7 @@ public class EntityLookupFieldTest extends BaseMockitoTest {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public void testMultipleSelectWithPreviousValue() {
         EntityLookupField<Integer, TestEntity> field = new EntityLookupField<>(service, factory.getModel(TestEntity.class),
-                factory.getModel(TestEntity2.class).getAttributeModel("testEntity"), null, false, true,
+                factory.getModel(TestEntity2.class).getAttributeModel("testEntity"), null, false, true, false,
                 Lists.newArrayList(new SortOrder("name", SortDirection.ASCENDING)));
         field.initContent();
         field.setValue(Lists.newArrayList(e1));
@@ -82,7 +82,7 @@ public class EntityLookupFieldTest extends BaseMockitoTest {
     @Test
     public void testClear() {
         EntityLookupField<Integer, TestEntity> field = new EntityLookupField<>(service, factory.getModel(TestEntity.class),
-                factory.getModel(TestEntity2.class).getAttributeModel("testEntity"), null, false, false,
+                factory.getModel(TestEntity2.class).getAttributeModel("testEntity"), null, false, false, false,
                 Lists.newArrayList(new SortOrder<String>("name", SortDirection.ASCENDING)));
         field.initContent();
         field.setValue(new TestEntity("Kevin", 47L));

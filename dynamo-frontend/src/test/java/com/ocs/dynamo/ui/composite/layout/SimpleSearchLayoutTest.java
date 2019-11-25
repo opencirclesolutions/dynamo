@@ -116,7 +116,7 @@ public class SimpleSearchLayoutTest extends FrontendIntegrationTest {
             }
 
             @Override
-            protected Component constructComplexDetailModeTab(TestEntity entity, int index, FormOptions fo, boolean newEntity) {
+            protected Component constructComplexDetailModeTab(int index, FormOptions fo, boolean newEntity) {
                 detailsTabCreated = true;
                 return new VerticalLayout();
             }

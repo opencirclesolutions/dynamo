@@ -174,8 +174,7 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
                     }
 
                 };
-                dialog.build();
-                dialog.open();
+                dialog.buildAndopen();
             });
             getButtonBar().add(addButton);
             addButton.setVisible(!getFormOptions().isHideAddButton() && isEditAllowed() && !isViewmode());
@@ -281,7 +280,7 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
             mainLayout.replace(currentWrapper, wrapper);
         }
 
-        // editor needs to be explicitly opened in Vaadin Flow
+        // add an edit button when the grid is in "single row" mode
         if (isEditAllowed() && !isViewmode() && GridEditMode.SINGLE_ROW.equals(getFormOptions().getGridEditMode())) {
             Column<T> editColumn = getGridWrapper().getGrid().addComponentColumn(t -> {
                 Button editButton = new Button("");
@@ -290,10 +289,20 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
                     if (!editor.isOpen()) {
                         // change to save button
                         editor.editItem(t);
-                        event.getSource().setIcon(VaadinIcon.SAFE.create());
-                    } else {
+                        getGridWrapper().getGrid().getColumnByKey("edit").setVisible(false);
+                        getGridWrapper().getGrid().getColumnByKey("save").setVisible(true);
+                    }
+                });
+                return editButton;
+            });
+            editColumn.setHeader(message("ocs.edit")).setKey("edit");
+
+            Column<T> saveColumn = getGridWrapper().getGrid().addComponentColumn(t -> {
+                Button saveButton = new Button("");
+                saveButton.setIcon(VaadinIcon.SAFE.create());
+                saveButton.addClickListener(event -> {
+                    if (editor.isOpen()) {
                         // save changes then rebuild grid
-                        event.getSource().setIcon(VaadinIcon.EDIT.create());
                         try {
                             getService().save(editor.getItem());
                             // save and recreate grid to avoid optimistic locks
@@ -305,9 +314,11 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
                         }
                     }
                 });
-                return editButton;
+                return saveButton;
             });
-            editColumn.setHeader(message("ocs.edit")).setId("edit");
+
+            saveColumn.setHeader(message("ocs.save")).setKey("save");
+            getGridWrapper().getGrid().getColumnByKey("save").setVisible(false);
         }
 
         // remove button at the end of the row

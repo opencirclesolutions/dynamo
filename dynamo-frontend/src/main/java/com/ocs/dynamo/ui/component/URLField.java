@@ -180,4 +180,10 @@ public class URLField extends CustomField<String> {
         return attributeModel;
     }
 
+    public void setPlaceholder(String placeHolder) {
+        if (textField != null) {
+            textField.setPlaceholder(placeHolder);
+        }
+    }
+
 }

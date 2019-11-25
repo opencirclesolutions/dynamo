@@ -30,57 +30,53 @@ import com.vaadin.flow.data.binder.ValueContext;
  */
 public class CurrencyDoubleConverter extends GroupingStringToDoubleConverter {
 
-	private static final long serialVersionUID = -8785156070280947096L;
+    private static final long serialVersionUID = -8785156070280947096L;
 
-	private String currencySymbol;
+    private String currencySymbol;
 
-	/**
-	 * 
-	 * Constructor
-	 * 
-	 * @param message        the validation message
-	 * @param precision
-	 * @param useGrouping
-	 * @param currencySymbol
-	 */
-	public CurrencyDoubleConverter(String message, int precision, boolean useGrouping, String currencySymbol) {
-		super(message, precision, useGrouping);
-		this.currencySymbol = currencySymbol;
-	}
+    /**
+     * 
+     * Constructor
+     * 
+     * @param message        the validation message
+     * @param precision
+     * @param useGrouping
+     * @param currencySymbol
+     */
+    public CurrencyDoubleConverter(String message, int precision, boolean useGrouping, String currencySymbol) {
+        super(message, precision, useGrouping);
+        this.currencySymbol = currencySymbol;
+    }
 
-	@Override
-	public Result<Double> convertToModel(String value, ValueContext context) {
-		if (value == null) {
-			return Result.ok(null);
-		}
+    @Override
+    public Result<Double> convertToModel(String value, ValueContext context) {
+        if (value == null) {
+            return Result.ok(null);
+        }
 
-		if (!StringUtils.isEmpty(value) && !value.startsWith(currencySymbol)) {
-			String oldValue = value.trim();
-			value = currencySymbol;
-			value += this.getDecimalFormat(context.getLocale().orElse(VaadinUtils.getLocale())).getPositivePrefix()
-					.length() > 1 ? " " : "";
-			value += oldValue;
-		}
-		return super.convertToModel(value, context);
-	}
+        value = value.replace(" ", "");
+        if (!StringUtils.isEmpty(value) && !value.startsWith(currencySymbol)) {
+            value = currencySymbol + value;
+        }
+        return super.convertToModel(value, context);
+    }
 
-	@Override
-	protected DecimalFormat constructFormat(Locale locale) {
-		// ignore the locale that is passed as a parameter, and use the default
-		// locale instead so
-		// that the number formatting is always the same
-		DecimalFormat nf = (DecimalFormat) DecimalFormat.getCurrencyInstance(locale);
-		DecimalFormatSymbols s = nf.getDecimalFormatSymbols();
-		s.setCurrencySymbol(currencySymbol);
-		nf.setDecimalFormatSymbols(s);
-		return nf;
-	}
+    @Override
+    protected DecimalFormat constructFormat(Locale locale) {
+        DecimalFormat nf = (DecimalFormat) DecimalFormat.getCurrencyInstance(locale);
+        nf.applyPattern("¤####,###,###,###.##");
 
-	public String getCurrencySymbol() {
-		return currencySymbol;
-	}
+        DecimalFormatSymbols s = nf.getDecimalFormatSymbols();
+        s.setCurrencySymbol(currencySymbol);
+        nf.setDecimalFormatSymbols(s);
+        return nf;
+    }
 
-	public void setCurrencySymbol(String currencySymbol) {
-		this.currencySymbol = currencySymbol;
-	}
+    public String getCurrencySymbol() {
+        return currencySymbol;
+    }
+
+    public void setCurrencySymbol(String currencySymbol) {
+        this.currencySymbol = currencySymbol;
+    }
 }

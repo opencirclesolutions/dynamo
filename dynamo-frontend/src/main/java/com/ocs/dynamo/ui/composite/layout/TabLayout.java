@@ -40,7 +40,7 @@ import com.vaadin.flow.component.tabs.Tab;
  * @param <ID> type of the primary key
  * @param <T> type of the entity
  */
-public abstract class LazyTabLayout<ID extends Serializable, T extends AbstractEntity<ID>> extends BaseCustomComponent
+public abstract class TabLayout<ID extends Serializable, T extends AbstractEntity<ID>> extends BaseCustomComponent
         implements Reloadable {
 
     private static final long serialVersionUID = 3788799136302802727L;
@@ -70,7 +70,7 @@ public abstract class LazyTabLayout<ID extends Serializable, T extends AbstractE
      * 
      * @param entity the entity to display
      */
-    public LazyTabLayout(T entity) {
+    public TabLayout(T entity) {
         this.entity = entity;
     }
 
@@ -101,7 +101,7 @@ public abstract class LazyTabLayout<ID extends Serializable, T extends AbstractE
             tabs.setSizeFull();
 
             main.add(tabs);
-            setupLazySheet(tabs);
+            setupSheets(tabs);
         }
     }
 
@@ -224,11 +224,10 @@ public abstract class LazyTabLayout<ID extends Serializable, T extends AbstractE
     }
 
     /**
-     * Constructs the lazy tab sheet by setting up empty dummy tabs
-     * 
-     * @param tabs the tab sheet
+     * Sets up 
+     * @param tabs
      */
-    private void setupLazySheet(TabWrapper tabs) {
+    private void setupSheets(TabWrapper tabs) {
 
         // build up placeholder tabs that only contain an empty layout
         int index = 0;

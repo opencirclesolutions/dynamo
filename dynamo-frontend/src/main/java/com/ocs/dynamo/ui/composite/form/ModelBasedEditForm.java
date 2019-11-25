@@ -29,8 +29,6 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import javax.persistence.CollectionTable;
-
 import org.apache.commons.io.FilenameUtils;
 
 import com.google.common.collect.Lists;
@@ -52,13 +50,14 @@ import com.ocs.dynamo.ui.CanAssignEntity;
 import com.ocs.dynamo.ui.NestedComponent;
 import com.ocs.dynamo.ui.Refreshable;
 import com.ocs.dynamo.ui.UseInViewMode;
+import com.ocs.dynamo.ui.component.BaseDetailsEditGrid;
 import com.ocs.dynamo.ui.component.Cascadable;
 import com.ocs.dynamo.ui.component.CollapsiblePanel;
 import com.ocs.dynamo.ui.component.CustomEntityField;
 import com.ocs.dynamo.ui.component.DefaultFlexLayout;
 import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
-import com.ocs.dynamo.ui.component.DetailsEditGrid;
+import com.ocs.dynamo.ui.component.ElementCollectionGrid;
 import com.ocs.dynamo.ui.component.InternalLinkButton;
 import com.ocs.dynamo.ui.component.ServiceBasedDetailsEditGrid;
 import com.ocs.dynamo.ui.component.URLField;
@@ -107,7 +106,7 @@ import com.vaadin.flow.function.SerializablePredicate;
 import com.vaadin.flow.server.StreamResource;
 
 /**
- * An edit form that is constructed based on an entity model s
+ * An edit form that is constructed based on an entity model
  * 
  * @param <ID> the type of the primary key
  * @param <T> the type of the entity
@@ -458,7 +457,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
     }
 
     /**
-     * Callback method that is fired after the user is done editing an entity
+     * Callback method that fires after the user is done editing an entity
      *
      * @param cancel    whether the user cancelled the editing
      * @param newObject whether the object is a new object
@@ -469,7 +468,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
     }
 
     /**
-     * Callback method that is fired after an entity is selected
+     * Callback method that fires after the provided entity is set as the active
+     * entity and after data binding has occurred
      * 
      * @param entity the selected entity
      */
@@ -478,9 +478,9 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
     }
 
     /**
-     * Respond to the setting of a new entity as the selected entity. This can be
-     * used to fetch any additionally required data
-     *
+     * Callback method that fires after the provided entity is set as the active
+     * entity but before any data binding occurs
+     * 
      * @param entity the entity
      */
     protected void afterEntitySet(T entity) {
@@ -488,36 +488,37 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
     }
 
     /**
-     * Method that is called after a layout is built for the first time
+     * Callback method that fires after the layout has been built for the first
+     * time.
      * 
-     * @param layout   the layout that has just been built
-     * @param viewMode whether the form is currently in view mode
+     * @param layout   the layout
+     * @param viewMode whether the layout is currently is view mode
      */
     protected void afterLayoutBuilt(HasComponents layout, boolean viewMode) {
         // after the layout
     }
 
     /**
-     * Callback method that is called after the mode has changed from or to view
-     * mode
+     * Callback method that fires after the view mode has been changed
+     * 
+     * @param viewMode the view mode
      */
     protected void afterModeChanged(boolean viewMode) {
         // overwrite in subclasses
     }
 
     /**
-     * Callback method that is called after a tab has been selected
-     *
-     * @param tabIndex the zero-based index of the selected tab
+     * Callback method that fires after a tab has been selected (when multiple tabs
+     * are displayed when attribute group mode TABSHEET is used)
+     * 
+     * @param tabIndex the index of the selected tab
      */
     protected void afterTabSelected(int tabIndex) {
         // overwrite in subclasses
     }
 
     /**
-     * Called after the user navigates back to a search screen using the back button
-     *
-     * @return
+     * Callback method that fires after the user presses the Back button
      */
     protected void back() {
         // overwrite in subclasses
@@ -578,7 +579,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
     /**
      * Constructs the main layout of the screen
      *
-     * @param entityModel
+     * @param entityModel the entity model to base the layout on
      * @return
      */
     protected VerticalLayout buildMainLayout(EntityModel<T> entityModel) {
@@ -744,6 +745,12 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
         return (HasComponents) innerLayout;
     }
 
+    /**
+     * Constructs the button bar
+     * 
+     * @param bottom whether this is the bottom button bar
+     * @return
+     */
     private FlexLayout constructButtonBar(boolean bottom) {
         FlexLayout buttonBar = new DefaultFlexLayout();
 
@@ -871,9 +878,11 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
     }
 
     /**
-     * Callback method for inserting custom converter
+     * Callback method that can be used to construct a custom converter for a
+     * certain field
      * 
-     * @param am
+     * @param am the attribute model of the attribute for which the field is
+     *           constructed
      * @return
      */
     protected Converter<String, ?> constructCustomConverter(AttributeModel am) {
@@ -881,10 +890,11 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
     }
 
     /**
-     * Creates a custom field
+     * Callback method that can be used to create a custom field
      *
      * @param entityModel    the entity model to base the field on
      * @param attributeModel the attribute model to base the field on
+     * @param viewMode       whether the form is currently in view mode
      * @return
      */
     protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel, boolean viewMode) {
@@ -944,14 +954,14 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
                     }
                 }
             } else {
-                if (parent instanceof FormLayout) {
+                boolean colspan = field instanceof BaseDetailsEditGrid || field instanceof ElementCollectionGrid
+                        || field instanceof DetailsEditLayout;
+                if (parent instanceof FormLayout && colspan) {
+
                     FormLayout form = (FormLayout) parent;
                     FormItem fi = form.addFormItem(field, new Label(attributeModel.getDisplayName(VaadinUtils.getLocale())));
-                    
                     // extra column span for bigger grid-like components
-                    if (field instanceof DetailsEditGrid || field instanceof CollectionTable || field instanceof DetailsEditLayout) {
-                        fi.getElement().setAttribute("colspan", "2");
-                    }
+                    fi.getElement().setAttribute("colspan", "2");
                 } else {
                     parent.add((Component) field);
                 }
@@ -992,21 +1002,22 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
     }
 
     /**
+     * Constructs an internal link button. This is used for displaying a clickable
+     * link in view mode
      * 
-     * @param entity
-     * @param entityModel
-     * @param attributeModel
+     * @param entityModel    the entity model
+     * @param attributeModel the attribute model
      * @return
      */
     @SuppressWarnings("unchecked")
-    private <ID2 extends Serializable, S extends AbstractEntity<ID2>> InternalLinkButton<ID2, S> createInternalLinkButton(
+    private <ID2 extends Serializable, S extends AbstractEntity<ID2>> InternalLinkButton<ID2, S> constructInternalLinkButton(
             AttributeModel attributeModel) {
         S value = (S) ClassUtils.getFieldValue(entity, attributeModel.getName());
         return new InternalLinkButton<>(value, (EntityModel<S>) getFieldEntityModel(attributeModel), attributeModel);
     }
 
     /**
-     * Constructs a label and adds it to the form
+     * Constructs a label (or other read-only component) and adds it to the form
      *
      * @param parent         the parent component to which the label must be added
      * @param entityModel    the entity model
@@ -1026,7 +1037,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
             comp = anchor;
         } else if (attributeModel.isNavigable()) {
             // read only internal link
-            InternalLinkButton<?, ?> linkButton = createInternalLinkButton(attributeModel);
+            InternalLinkButton<?, ?> linkButton = constructInternalLinkButton(attributeModel);
             labels.get(isViewMode()).put(attributeModel, linkButton);
             comp = linkButton;
         } else {
@@ -1214,11 +1225,11 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
     /**
      * Returns the binding for a field
      * 
-     * @param fieldName
+     * @param path the the path of the property
      * @return
      */
-    public Binding<T, ?> getBinding(String fieldName) {
-        Optional<Binding<T, ?>> binding = groups.get(viewMode).getBinding(fieldName);
+    public Binding<T, ?> getBinding(String path) {
+        Optional<Binding<T, ?>> binding = groups.get(viewMode).getBinding(path);
         if (binding.isPresent()) {
             return binding.get();
         }
@@ -1263,15 +1274,15 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
     /**
      * Returns the field with the given name, if it exists
      * 
-     * @param fieldName the name of the field
+     * @param path the path of the property
      * @return
      */
-    public Component getField(String fieldName) {
-        return getField(isViewMode(), fieldName);
+    public Component getField(String path) {
+        return getField(isViewMode(), path);
     }
 
     /**
-     * Returns an the field with the given name, if it exists, cast to a HasValue
+     * Returns the field with the given name, if it exists, cast to a HasValue
      * 
      * @param fieldName the name of the field
      * @return
@@ -1302,12 +1313,13 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
     }
 
     /**
+     * Returns a label for a property
      * 
-     * @param propertyName
+     * @param path the path to the property
      * @return
      */
-    public Component getLabel(String propertyName) {
-        AttributeModel am = getEntityModel().getAttributeModel(propertyName);
+    public Component getLabel(String path) {
+        AttributeModel am = getEntityModel().getAttributeModel(path);
         if (am != null) {
             return labels.get(isViewMode()).get(am);
         }

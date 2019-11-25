@@ -23,7 +23,6 @@ import com.ocs.dynamo.ui.UIHelper;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.menu.MenuService;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
-import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.menubar.MenuBar;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -56,6 +55,10 @@ public abstract class BaseView extends VerticalLayout implements BeforeLeaveObse
     @Autowired
     private MenuService menuService;
 
+    /**
+     * Indicates whether the application must ask for confirmation before navigating to a 
+     * different view
+     */
     private boolean confirmBeforeLeave;
 
     public BaseView(boolean confirmBeforeLeave) {

@@ -1,5 +1,7 @@
 package com.ocs.dynamo.ui.view;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.Locale;
 
 import org.junit.Assert;
@@ -71,5 +73,11 @@ public class BaseViewTest extends BaseMockitoTest {
     public void testMessageWithPars() {
         view.message("key", "bob");
         Mockito.verify(messageService).getMessage(Mockito.eq("key"), Mockito.any(Locale.class), Mockito.eq("bob"));
+    }
+
+    @Test
+    public void testInit() {
+        view.init();
+        assertEquals(1, view.getComponentCount());
     }
 }

@@ -188,6 +188,14 @@ public final class SystemPropertyUtils {
     }
 
     /**
+     * 
+     * @return the default edit grid height in pixels
+     */
+    public static String getDefaultEditGridHeight() {
+        return getStringProperty(DynamoConstants.SP_DEFAULT_EDIT_GRID_HEIGHT, "200px");
+    }
+
+    /**
      *
      * @return the default locale used for e.g. the decimal and thousands separators
      */
@@ -230,9 +238,9 @@ public final class SystemPropertyUtils {
      * @return the default height of a text area (e.g. "150px")
      */
     public static String getDefaultTextAreaHeight() {
-        return getStringProperty(DynamoConstants.SP_DEFAULT_TIME_FORMAT, "200px");
+        return getStringProperty(DynamoConstants.SP_DEFAULT_TEXT_AREA_HEIGHT, "200px");
     }
-    
+
     /**
      * @return the default format for formatting attributes of type LocalTime or
      *         Java 8 dates that only consist of a time stamp
@@ -262,9 +270,10 @@ public final class SystemPropertyUtils {
     }
 
     /**
+     * Looks up the value for an integer property
      * 
-     * @param propertyName
-     * @param defaultValue
+     * @param propertyName the name of the property
+     * @param defaultValue the default value
      * @return
      */
     private static Integer getIntProperty(String propertyName, Integer defaultValue) {
@@ -286,7 +295,8 @@ public final class SystemPropertyUtils {
 
     /**
      * 
-     * @return the minimum width that must be available before two results columns will be displayed
+     * @return the minimum width that must be available before two results columns
+     *         will be displayed
      */
     public static String getMinimumTwoColumnWidth() {
         return getStringProperty(DynamoConstants.SP_MINIMUM_TWO_COLUMN_WIDTH, "1200px");
@@ -305,8 +315,8 @@ public final class SystemPropertyUtils {
      * Looks up the value of a String property by scanning the system properties
      * first and falling back to application.properties
      * 
-     * @param propertyName
-     * @param defaultValue
+     * @param propertyName the name of the property
+     * @param defaultValue the default value
      * @return
      */
     private static String getStringProperty(String propertyName, String defaultValue) {
@@ -333,7 +343,7 @@ public final class SystemPropertyUtils {
      *         (hint/placeholder) inside the component
      */
     public static boolean useDefaultPromptValue() {
-        return getBooleanProperty(DynamoConstants.SP_USE_DEFAULT_PROMPT_VALUE, null);
+        return getBooleanProperty(DynamoConstants.SP_USE_DEFAULT_PROMPT_VALUE, true);
     }
 
     /**

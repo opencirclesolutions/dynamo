@@ -15,7 +15,7 @@ import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
-public class LazyTabLayoutTest extends FrontendIntegrationTest {
+public class TabLayoutTest extends FrontendIntegrationTest {
 
     @Inject
     private TestEntityService testEntityService;
@@ -48,7 +48,7 @@ public class LazyTabLayoutTest extends FrontendIntegrationTest {
 
     @Test
     public void test() {
-        LazyTabLayout<Integer, TestEntity> layout = new LazyTabLayout<Integer, TestEntity>(e1) {
+        TabLayout<Integer, TestEntity> layout = new TabLayout<Integer, TestEntity>(e1) {
 
             private static final long serialVersionUID = 1L;
 

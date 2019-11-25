@@ -78,7 +78,6 @@ public class BigDecimalConverter extends StringToBigDecimalConverter {
     public DecimalFormat getDecimalFormat(Locale locale) {
         locale = locale != null ? locale : VaadinUtils.getLocale();
         DecimalFormat decimalFormat = constructFormat(locale);
-
         decimalFormat.setGroupingUsed(useGrouping);
         decimalFormat.setMaximumFractionDigits(precision);
         decimalFormat.setMinimumFractionDigits(precision);

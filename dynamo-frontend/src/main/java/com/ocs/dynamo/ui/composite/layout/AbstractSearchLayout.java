@@ -152,7 +152,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
     /**
      * Tab layout for complex detail mode
      */
-    private LazyTabLayout<ID, T> tabLayout;
+    private TabLayout<ID, T> tabLayout;
 
     /**
      * Constructor
@@ -179,7 +179,9 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
     }
 
     /**
-     * Callback method that fires after the visibility of the search form has been toggled
+     * Callback method that fires after the visibility of the search form has been
+     * toggled
+     * 
      * @param visible whether the search form is currently visible
      */
     protected void afterSearchFieldToggle(boolean visible) {
@@ -194,8 +196,8 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
     }
 
     /**
-     * Callback method that fires just before performing a search. 
-     * Can be used to perform any actions that are necessary before carrying out a search. 
+     * Callback method that fires just before performing a search. Can be used to
+     * perform any actions that are necessary before carrying out a search.
      * 
      * @param filter the current search filter
      * @return the modified search filter. If not null, then this filter will be
@@ -298,7 +300,10 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 
             // post process the layout
             postProcessLayout(mainSearchLayout);
-            add(mainSearchLayout);
+
+            if (getComponentCount() == 0) {
+                add(mainSearchLayout);
+            }
         }
     }
 
@@ -321,6 +326,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 
         if (getFormOptions().isShowPrevButton()) {
             prevButton = new Button(message("ocs.previous"));
+            prevButton.setIcon(VaadinIcon.ARROW_LEFT.create());
             prevButton.addClickListener(e -> {
                 T prev = getPreviousEntity();
                 if (prev != null) {
@@ -339,6 +345,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 
         if (getFormOptions().isShowNextButton()) {
             nextButton = new Button(message("ocs.next"));
+            nextButton.setIcon(VaadinIcon.ARROW_RIGHT.create());
             nextButton.addClickListener(e -> {
                 T next = getNextEntity();
                 if (next != null) {
@@ -355,7 +362,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
             buttonBar.add(nextButton);
         }
 
-        tabLayout = new LazyTabLayout<ID, T>(entity) {
+        tabLayout = new TabLayout<ID, T>(entity) {
 
             private static final long serialVersionUID = 1278134557026074688L;
 
@@ -374,7 +381,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
                 // back button and iteration buttons not needed (they are
                 // displayed above
                 // the tabs)
-                return AbstractSearchLayout.this.constructComplexDetailModeTab(getEntity(), index, formOptions, false);
+                return AbstractSearchLayout.this.constructComplexDetailModeTab(index, formOptions, false);
             }
 
             @Override
@@ -533,13 +540,14 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
      * @param newEntity whether we are in the process of creating a new entity
      * @return
      */
-    protected Component constructComplexDetailModeTab(T entity, int index, FormOptions fo, boolean newEntity) {
+    protected Component constructComplexDetailModeTab(int index, FormOptions fo, boolean newEntity) {
         // overwrite is subclasses
         return null;
     }
 
     /**
      * Constructs the edit button
+     * 
      * @return
      */
     protected final Button constructEditButton() {
@@ -751,7 +759,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
             selectedDetailLayout = editForm;
         } else {
             // complex details mode for creating a new entity, re-use the first tab
-            Component comp = constructComplexDetailModeTab(entity, 0, getFormOptions(), true);
+            Component comp = constructComplexDetailModeTab(0, getFormOptions(), true);
 
             if (selectedDetailLayout == null) {
                 mainEditLayout.add(comp);
@@ -802,6 +810,9 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
      * @param entity
      */
     public final void edit(T entity) {
+//        if (mainSearchLayout == null) {
+//            build();
+//        }
         setSelectedItem(entity);
         doEdit();
     }
@@ -872,8 +883,8 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
     }
 
     /**
-     * Callback method that is used to set the icon for a tab if complex detail mode is
-     * enabled
+     * Callback method that is used to set the icon for a tab if complex detail mode
+     * is enabled
      * 
      * @param index the index of the tab
      * @return
@@ -996,13 +1007,13 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
      * @return whether the user is currently editing/adding an item
      */
     public boolean isEditing() {
-       if (isInSearchMode()) {
-           return false;
-       }
-       if (!getFormOptions().isComplexDetailsMode()) {
-           return getEditForm() != null && !getEditForm().isViewMode();
-       }
-       return false;
+        if (isInSearchMode()) {
+            return false;
+        }
+        if (!getFormOptions().isComplexDetailsMode()) {
+            return getEditForm() != null && !getEditForm().isViewMode();
+        }
+        return false;
     }
 
     @Override

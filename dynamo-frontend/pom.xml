@@ -144,11 +144,6 @@
 			<artifactId>karibu-testing-v10</artifactId>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.vaadin.olli</groupId>
-			<artifactId>file-download-wrapper</artifactId>
-			<version>3.0.0</version>
-		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
@@ -192,7 +187,6 @@
 			<plugin>
 				<groupId>com.vaadin</groupId>
 				<artifactId>vaadin-maven-plugin</artifactId>
-				<version>${vaadin.plugin.version}</version>
 				<executions>
 					<execution>
 						<goals>
@@ -202,11 +196,5 @@
 				</executions>
 			</plugin>
 		</plugins>
-		<pluginManagement>
-			<plugins>
-				<!--This plugin's configuration is used to store Eclipse m2e settings 
-					only. It has no influence on the Maven build itself. -->
-			</plugins>
-		</pluginManagement>
 	</build>
 </project>

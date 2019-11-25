@@ -178,7 +178,7 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
      * Callback method for constructing a custom converter - currently only
      * supported for text fields
      * 
-     * @param am the attribute model to base the field on
+     * @param am the attribute model to base the converter on
      * @return
      */
     protected Converter<String, ?> constructCustomConverter(AttributeModel am) {

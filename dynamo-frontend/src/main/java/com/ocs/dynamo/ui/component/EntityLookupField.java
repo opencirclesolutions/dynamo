@@ -53,6 +53,11 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
     private static final long serialVersionUID = 5377765863515463622L;
 
     /**
+     * Whether the component is inside a grid
+     */
+    private boolean grid;
+
+    /**
      * Whether direct navigation via internal link is allowed
      */
     private boolean directNavigationAllowed;
@@ -115,7 +120,7 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
      *                       pop-up dialog
      */
     public EntityLookupField(BaseService<ID, T> service, EntityModel<T> entityModel, AttributeModel attributeModel,
-            SerializablePredicate<T> filter, boolean search, boolean multiSelect, List<SortOrder<?>> sortOrders,
+            SerializablePredicate<T> filter, boolean search, boolean multiSelect, boolean grid, List<SortOrder<?>> sortOrders,
             FetchJoinInformation... joins) {
         super(service, entityModel, attributeModel, filter);
         this.sortOrders = sortOrders != null ? sortOrders : new ArrayList<>();
@@ -124,6 +129,7 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
         this.clearAllowed = true;
         this.addAllowed = !search && (attributeModel != null && attributeModel.isQuickAddAllowed());
         this.directNavigationAllowed = !search && (attributeModel != null && attributeModel.isNavigable());
+        this.grid = grid;
         initContent();
     }
 
@@ -175,7 +181,7 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
      * Gets the value that must be displayed on the label that shows which items are
      * currently selected
      * 
-     * @param newValue
+     * @param newValue the new value
      * @return
      */
     @SuppressWarnings("unchecked")
@@ -222,7 +228,7 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
         bar.add(label);
 
         // button for selecting an entity - brings up the search dialog
-        selectButton = new Button(getMessageService().getMessage("ocs.select", VaadinUtils.getLocale()));
+        selectButton = new Button(grid ? "" : getMessageService().getMessage("ocs.select", VaadinUtils.getLocale()));
         selectButton.setIcon(VaadinIcon.SEARCH.create());
         selectButton.addClickListener(event -> {
             List<SerializablePredicate<T>> filterList = new ArrayList<>();
@@ -265,7 +271,7 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 
         // button for clearing the current selection
         if (clearAllowed) {
-            clearButton = new Button(getMessageService().getMessage("ocs.clear", VaadinUtils.getLocale()));
+            clearButton = new Button(grid ? "" : getMessageService().getMessage("ocs.clear", VaadinUtils.getLocale()));
             clearButton.setIcon(VaadinIcon.ERASER.create());
             clearButton.addClickListener(event -> clearValue());
             bar.add(clearButton);

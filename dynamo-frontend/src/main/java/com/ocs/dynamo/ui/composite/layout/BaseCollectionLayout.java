@@ -460,7 +460,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
      * 
      * @param exportJoins the desired joins
      */
-    public void setExportJoins(FetchJoinInformation[] exportJoins) {
+    public void setExportJoins(FetchJoinInformation... exportJoins) {
         this.exportJoins = exportJoins;
     }
 

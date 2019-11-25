@@ -18,7 +18,8 @@ public class SystemPropertyUtilsTest {
         Assert.assertEquals(false, SystemPropertyUtils.allowListExport());
         Assert.assertEquals("\"", SystemPropertyUtils.getCsvQuoteChar());
         Assert.assertEquals(";", SystemPropertyUtils.getCsvSeparator());
-
+        Assert.assertEquals("\"\"", SystemPropertyUtils.getCsvEscapeChar());
+        
         Assert.assertEquals(false, SystemPropertyUtils.useThousandsGroupingInEditMode());
 
         Assert.assertEquals("en_GB", SystemPropertyUtils.getDefaultLocale());
@@ -28,5 +29,18 @@ public class SystemPropertyUtilsTest {
 
         Assert.assertEquals("true", SystemPropertyUtils.getDefaultTrueRepresentation());
         Assert.assertEquals("false", SystemPropertyUtils.getDefaultFalseRepresentation());
+        
+        Assert.assertEquals("400px", SystemPropertyUtils.getDefaultGridHeight());
+        Assert.assertEquals("300px", SystemPropertyUtils.getDefaultSearchDialogGridHeight());
+        Assert.assertEquals(2000, SystemPropertyUtils.getDefaultMessageDisplayTime().intValue());
+        
+        Assert.assertEquals("200px", SystemPropertyUtils.getDefaultTextAreaHeight());
+        
+        Assert.assertEquals(3,  SystemPropertyUtils.getLookupFieldMaxItems());
+        
+        Assert.assertEquals("1200px", SystemPropertyUtils.getMinimumTwoColumnWidth());
+        Assert.assertTrue(SystemPropertyUtils.isCapitalizeWords());
+        
+        Assert.assertTrue(SystemPropertyUtils.useDefaultPromptValue());
     }
 }

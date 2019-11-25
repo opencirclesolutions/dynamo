@@ -30,10 +30,8 @@ import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.service.ServiceLocator;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
-import com.ocs.dynamo.ui.component.CustomEntityField;
 import com.ocs.dynamo.ui.component.DateTimePicker;
 import com.ocs.dynamo.ui.component.ElementCollectionGrid;
-import com.ocs.dynamo.ui.component.EntityComboBox;
 import com.ocs.dynamo.ui.component.EntityComboBox.SelectMode;
 import com.ocs.dynamo.ui.component.EntityLookupField;
 import com.ocs.dynamo.ui.component.InternalLinkField;
@@ -154,7 +152,7 @@ public class FieldFactoryImpl implements FieldFactory {
 
         if (AttributeSelectMode.LOOKUP.equals(mode)) {
             // lookup field
-            return constructLookupField(am, fieldEntityModel, fieldFilter, search, true);
+            return constructLookupField(am, fieldEntityModel, fieldFilter, search, true, grid);
         } else {
             // by default, use a token field
             return new QuickAddTokenSelect<ID, S>((EntityModel<S>) em, am, service, (SerializablePredicate<S>) fieldFilter, search, sos);
@@ -362,7 +360,7 @@ public class FieldFactoryImpl implements FieldFactory {
 
     @SuppressWarnings("unchecked")
     private <ID extends Serializable, S extends AbstractEntity<ID>> EntityLookupField<ID, S> constructLookupField(AttributeModel am,
-            EntityModel<?> overruled, SerializablePredicate<?> fieldFilter, boolean search, boolean multiSelect) {
+            EntityModel<?> overruled, SerializablePredicate<?> fieldFilter, boolean search, boolean multiSelect, boolean grid) {
 
         // for a lookup field, don't use the nested model but the base model -
         // this is
@@ -375,7 +373,7 @@ public class FieldFactoryImpl implements FieldFactory {
                 .getServiceForEntity(am.getMemberType() != null ? am.getMemberType() : entityModel.getEntityClass());
         SortOrder<?>[] sos = constructSortOrder(entityModel);
         return new EntityLookupField<>(service, (EntityModel<S>) entityModel, am, (SerializablePredicate<S>) fieldFilter, search,
-                multiSelect, sos.length == 0 ? null : Lists.newArrayList(sos));
+                multiSelect, grid, sos.length == 0 ? null : Lists.newArrayList(sos));
     }
 
     /**
@@ -427,7 +425,7 @@ public class FieldFactoryImpl implements FieldFactory {
             field = constructComboBox(am, fieldEntityModel, fieldFilter, sharedProvider, search);
         } else if (AttributeSelectMode.LOOKUP.equals(selectMode)) {
             // single select lookup field
-            field = constructLookupField(am, fieldEntityModel, fieldFilter, search, false);
+            field = constructLookupField(am, fieldEntityModel, fieldFilter, search, false, grid);
         } else {
             // list select (single select)
             field = this.constructListSelect(am, fieldEntityModel, fieldFilter, sharedProvider, search);
@@ -472,25 +470,8 @@ public class FieldFactoryImpl implements FieldFactory {
 
         VaadinUtils.setLabel(field, editableGrid ? "" : displayName);
         VaadinUtils.setTooltip(field, am.getDescription(VaadinUtils.getLocale()));
-        String placeHolder = am.getPrompt(VaadinUtils.getLocale());
-
-        if (field instanceof TextField) {
-            TextField textField = (TextField) field;
-            textField.setPlaceholder(placeHolder);
-        } else if (field instanceof DatePicker) {
-            // set a separate format for a date field
-            DatePicker dateField = (DatePicker) field;
-            dateField.setPlaceholder(placeHolder);
-        } else if (field instanceof TimePicker) {
-            ((TimePicker) field).setPlaceholder(placeHolder);
-        } else if (field instanceof EntityComboBox) {
-            ((EntityComboBox<?, ?>) field).setPlaceholder(placeHolder);
-        } else if (field instanceof TextArea) {
-            ((TextArea) field).setPlaceholder(placeHolder);
-        } else if (field instanceof CustomEntityField) {
-            ((CustomEntityField<?, ?, ?>) field).setPlaceholder(am.getPrompt(VaadinUtils.getLocale()));
-        }
-
+        VaadinUtils.setPlaceHolder(field, am.getPrompt(VaadinUtils.getLocale()));
+        
         if (field instanceof AbstractField) {
             AbstractField<?, ?> af = (AbstractField<?, ?>) field;
             af.setRequiredIndicatorVisible(search ? am.isRequiredForSearching() : am.isRequired());

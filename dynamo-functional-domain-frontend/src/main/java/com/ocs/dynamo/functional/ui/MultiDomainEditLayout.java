@@ -13,6 +13,7 @@
  */
 package com.ocs.dynamo.functional.ui;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -86,6 +87,8 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
      * The split layout that displays the currently selected domain
      */
     private ServiceBasedSplitLayout<?, ?> splitLayout;
+
+    private List<Component> toRegister = new ArrayList<>();
 
     /**
      * Constructor
@@ -189,6 +192,7 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
         BaseService<Integer, T> baseService = (BaseService<Integer, T>) ServiceLocatorFactory.getServiceLocator()
                 .getServiceForEntity(domainClass);
         if (baseService != null) {
+            toRegister.clear();
             ServiceBasedSplitLayout<Integer, T> layout = new ServiceBasedSplitLayout<Integer, T>(baseService,
                     getEntityModelFactory().getModel(domainClass), QueryType.ID_BASED, formOptions,
                     new SortOrder<String>(Domain.ATTRIBUTE_NAME, SortDirection.ASCENDING)) {
@@ -232,6 +236,14 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
             layout.setQuickSearchFilterSupplier(
                     value -> new OrPredicate<>(new SimpleStringPredicate<>(Domain.ATTRIBUTE_NAME, value, false, false),
                             new SimpleStringPredicate<>(Domain.ATTRIBUTE_CODE, value, false, false)));
+
+            // register afterwards so that we actually register for the current layout
+            // rather than the previous one
+            layout.build();
+            for (Component c : toRegister) {
+                layout.registerComponent(c);
+            }
+
             return layout;
         } else {
             throw new OCSRuntimeException(message("ocs.no.service.class.found", domainClass));
@@ -292,6 +304,8 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
     }
 
     /**
+     * Post processes the button bar that appears below the search screen
+     * 
      * @param buttonBar
      */
     protected void postProcessButtonBar(FlexLayout buttonBar) {
@@ -314,9 +328,7 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
      * @param button the button to register
      */
     public void registerComponent(Component comp) {
-        if (splitLayout != null) {
-            splitLayout.registerComponent(comp);
-        }
+        toRegister.add(comp);
     }
 
     /**

@@ -28,5 +28,5 @@ public interface SharedProvider<T> {
 	 * 
 	 * @return the shared data provider
 	 */
-	public ListDataProvider<T> getSharedProvider();
+	ListDataProvider<T> getSharedProvider();
 }
