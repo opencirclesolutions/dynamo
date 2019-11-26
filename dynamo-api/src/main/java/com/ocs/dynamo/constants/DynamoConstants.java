@@ -27,6 +27,8 @@ public final class DynamoConstants {
      */
     public static final int CACHE_SIZE = 10000;
 
+    public static final String CSS_COLLAPSIBLE_PANEL_BUTTON = "collapsiblePanelButton";
+    
     /**
      * CSS style for flex layouts
      */

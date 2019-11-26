@@ -426,7 +426,7 @@ public final class VaadinUtils {
      * Sets the label on the provided field
      * 
      * @param component the field
-     * @param label the text of the label
+     * @param label     the text of the label
      */
     public static void setLabel(Component component, String label) {
         if (component instanceof TextField) {
@@ -528,6 +528,15 @@ public final class VaadinUtils {
     }
 
     /**
+     * Shows an error message
+     * 
+     * @param message the message to show
+     */
+    public static void showErrorNotification(String message) {
+        showNotification(message, Position.MIDDLE, NotificationVariant.LUMO_ERROR);
+    }
+
+    /**
      * Shows a notification message
      * 
      * @param message  the message
@@ -536,6 +545,15 @@ public final class VaadinUtils {
      */
     public static void showNotification(String message, Position position, NotificationVariant variant) {
         Notification.show(message, SystemPropertyUtils.getDefaultMessageDisplayTime(), position).addThemeVariants(variant);
+    }
+
+    /**
+     * Shows a tray message
+     * 
+     * @param message the message to show
+     */
+    public static void showTrayNotification(String message) {
+        showNotification(message, Position.BOTTOM_END, NotificationVariant.LUMO_SUCCESS);
     }
 
     /**

@@ -54,7 +54,7 @@ public abstract class BaseModalDialog extends Dialog implements Buildable {
         constructLayout();
     }
 
-    public void buildAndopen() {
+    public void buildAndOpen() {
         build();
         open();
     }

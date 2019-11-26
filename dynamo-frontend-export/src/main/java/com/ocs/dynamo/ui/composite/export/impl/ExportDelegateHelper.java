@@ -11,7 +11,7 @@ import com.ocs.dynamo.ui.composite.export.ExportDelegate;
  * @author Bas Rutten
  *
  */
-public class ExportDelegateHelper {
+public final class ExportDelegateHelper {
 
     private ExportDelegateHelper() {
         // hidden constructor
@@ -20,8 +20,8 @@ public class ExportDelegateHelper {
     /**
      * Adds a custom style generator
      * 
-     * @param entityModel
-     * @param generator
+     * @param entityModel the entity model for which to add the generator
+     * @param generator   the generator
      */
     public static void addCustomStyleGenerator(EntityModel<?> entityModel, CustomXlsStyleGenerator<?, ?> generator) {
         ExportDelegateImpl delegate = (ExportDelegateImpl) ServiceLocatorFactory.getServiceLocator().getService(ExportDelegate.class);

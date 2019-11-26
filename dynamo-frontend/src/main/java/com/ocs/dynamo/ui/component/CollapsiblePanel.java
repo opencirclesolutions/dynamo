@@ -13,6 +13,7 @@
  */
 package com.ocs.dynamo.ui.component;
 
+import com.ocs.dynamo.constants.DynamoConstants;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.icon.Icon;
@@ -43,8 +44,10 @@ public class CollapsiblePanel extends VerticalLayout {
     public CollapsiblePanel() {
         setMargin(false);
 
+        // addClassName(DynamoConstants.CSS_PANEL);
+
         toggle.setSizeFull();
-        toggle.addClassName("collapsiblePanelButton");
+        toggle.addClassName(DynamoConstants.CSS_COLLAPSIBLE_PANEL_BUTTON);
 
         contentWrapper.setMargin(false);
         contentWrapper.setVisible(true);

@@ -174,7 +174,7 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
                     }
 
                 };
-                dialog.buildAndopen();
+                dialog.buildAndOpen();
             });
             getButtonBar().add(addButton);
             addButton.setVisible(!getFormOptions().isHideAddButton() && isEditAllowed() && !isViewmode());

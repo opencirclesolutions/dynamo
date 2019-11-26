@@ -214,7 +214,7 @@ public class ElementCollectionGrid<ID extends Serializable, U extends AbstractEn
                     provider.refreshAll();
                 });
                 return remove;
-            }).setHeader(removeMsg);
+            }).setHeader(removeMsg).setKey(removeMsg);
         }
     }
 

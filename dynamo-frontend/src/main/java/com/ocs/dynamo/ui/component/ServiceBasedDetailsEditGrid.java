@@ -163,7 +163,7 @@ public class ServiceBasedDetailsEditGrid<ID extends Serializable, T extends Abst
             }
 
         };
-        dialog.buildAndopen();
+        dialog.buildAndOpen();
     }
 
     @Override

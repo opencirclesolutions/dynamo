@@ -43,7 +43,7 @@ public class ExportDelegateImpl implements ExportDelegate {
             SerializablePredicate<T> predicate, List<SortOrder<?>> sortOrders, FetchJoinInformation... joins) {
         ExportDialog<ID, T> dialog = new ExportDialog<>(exportService, entityModel, mode, predicate, sortOrders,
                 (CustomXlsStyleGenerator<ID, T>) customStyleMap.get(entityModel), joins);
-        dialog.buildAndopen();
+        dialog.buildAndOpen();
     }
 
     @Override
@@ -52,7 +52,7 @@ public class ExportDelegateImpl implements ExportDelegate {
             Collection<T> items) {
         FixedExportDialog<ID, T> dialog = new FixedExportDialog<>(exportService, entityModel, mode,
                 (CustomXlsStyleGenerator<ID, T>) customStyleMap.get(entityModel), () -> Lists.newArrayList(items));
-        dialog.buildAndopen();
+        dialog.buildAndOpen();
     }
 
     /**

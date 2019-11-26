@@ -129,6 +129,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
             // extra splitter (for horizontal mode)
             if (isHorizontalMode()) {
                 splitter = new SplitLayout();
+
                 splitter.setSizeFull();
                 mainLayout.add(splitter);
 
