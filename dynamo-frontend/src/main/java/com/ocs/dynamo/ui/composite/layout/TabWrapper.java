@@ -3,6 +3,7 @@ package com.ocs.dynamo.ui.composite.layout;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.button.Button;
@@ -67,17 +68,23 @@ public class TabWrapper extends VerticalLayout {
     /**
      * Adds a new tab
      * 
-     * @param caption
-     * @param component
+     * @param caption     the caption of the tab
+     * @param description the tool tip/description of the tab
+     * @param component   the component to display inside the tab
+     * @param icon        the icon (optional)
      * @return
      */
-    public Tab addTab(String caption, Component component, Icon icon) {
+    public Tab addTab(String caption, String description, Component component, Icon icon) {
         Button button = new Button(caption);
         button.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
 
         if (icon != null) {
             button.setIcon(icon);
         }
+        if (description != null) {
+            VaadinUtils.setTooltip(button, description);
+        }
+
         Tab tab = new Tab(button);
 
         tabsToPages.put(tab, component);

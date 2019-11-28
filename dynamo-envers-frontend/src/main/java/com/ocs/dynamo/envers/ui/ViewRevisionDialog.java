@@ -26,8 +26,6 @@ import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.composite.dialog.BaseModalDialog;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.composite.layout.ServiceBasedSplitLayout;
-import com.ocs.dynamo.ui.composite.type.AttributeGroupMode;
-import com.ocs.dynamo.ui.composite.type.ScreenMode;
 import com.ocs.dynamo.ui.provider.QueryType;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.flow.component.Component;
@@ -60,16 +58,22 @@ public class ViewRevisionDialog<ID, T extends AbstractEntity<ID>, U extends Vers
     private ID id;
 
     /**
+     * The form options
+     */
+    private FormOptions formOptions;
+
+    /**
      * Constructor
      * 
      * @param service     the service used to access the database
      * @param entityModel the entity model
      * @param id          the ID of the entity
      */
-    public ViewRevisionDialog(BaseService<RevisionKey<ID>, U> service, EntityModel<U> entityModel, ID id) {
+    public ViewRevisionDialog(BaseService<RevisionKey<ID>, U> service, EntityModel<U> entityModel, FormOptions formOptions, ID id) {
         this.service = service;
         this.entityModel = entityModel;
         this.id = id;
+        this.formOptions = formOptions;
     }
 
     /**
@@ -86,8 +90,8 @@ public class ViewRevisionDialog<ID, T extends AbstractEntity<ID>, U extends Vers
 
     @Override
     protected void doBuild(VerticalLayout parent) {
-        FormOptions fo = new FormOptions().setReadOnly(true).setScreenMode(ScreenMode.VERTICAL)
-                .setAttributeGroupMode(AttributeGroupMode.TABSHEET).setExportAllowed(true);
+        FormOptions fo = new FormOptions().setReadOnly(true).setScreenMode(formOptions.getScreenMode())
+                .setAttributeGroupMode(formOptions.getAttributeGroupMode()).setExportAllowed(true);
         ServiceBasedSplitLayout<RevisionKey<ID>, U> layout = new ServiceBasedSplitLayout<RevisionKey<ID>, U>(service, entityModel,
                 QueryType.PAGING, fo, null) {
 

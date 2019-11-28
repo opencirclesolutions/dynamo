@@ -283,9 +283,9 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
         // add an edit button when the grid is in "single row" mode
         if (isEditAllowed() && !isViewmode() && GridEditMode.SINGLE_ROW.equals(getFormOptions().getGridEditMode())) {
             Column<T> editColumn = getGridWrapper().getGrid().addComponentColumn(t -> {
-                Button editButton = new Button("");
-                editButton.setIcon(VaadinIcon.EDIT.create());
-                editButton.addClickListener(event -> {
+                Button eb = new Button("");
+                eb.setIcon(VaadinIcon.EDIT.create());
+                eb.addClickListener(event -> {
                     if (!editor.isOpen()) {
                         // change to save button
                         editor.editItem(t);
@@ -293,14 +293,14 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
                         getGridWrapper().getGrid().getColumnByKey("save").setVisible(true);
                     }
                 });
-                return editButton;
+                return eb;
             });
             editColumn.setHeader(message("ocs.edit")).setKey("edit");
 
             Column<T> saveColumn = getGridWrapper().getGrid().addComponentColumn(t -> {
-                Button saveButton = new Button("");
-                saveButton.setIcon(VaadinIcon.SAFE.create());
-                saveButton.addClickListener(event -> {
+                Button sb = new Button("");
+                sb.setIcon(VaadinIcon.SAFE.create());
+                sb.addClickListener(event -> {
                     if (editor.isOpen()) {
                         // save changes then rebuild grid
                         try {

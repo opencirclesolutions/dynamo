@@ -40,8 +40,7 @@ import com.vaadin.flow.component.tabs.Tab;
  * @param <ID> type of the primary key
  * @param <T> type of the entity
  */
-public abstract class TabLayout<ID extends Serializable, T extends AbstractEntity<ID>> extends BaseCustomComponent
-        implements Reloadable {
+public abstract class TabLayout<ID extends Serializable, T extends AbstractEntity<ID>> extends BaseCustomComponent implements Reloadable {
 
     private static final long serialVersionUID = 3788799136302802727L;
 
@@ -224,16 +223,18 @@ public abstract class TabLayout<ID extends Serializable, T extends AbstractEntit
     }
 
     /**
-     * Sets up 
+     * Sets up
+     * 
      * @param tabs
      */
     private void setupSheets(TabWrapper tabs) {
 
         // build up placeholder tabs that only contain an empty layout
         int index = 0;
-        for (String caption : getTabCaptions()) {
+        for (String cap : getTabCaptions()) {
             VerticalLayout dummy = new DefaultVerticalLayout(false, false);
-            tabs.addTab(caption, dummy, getIconForTab(index++));
+            String description = getTabDescription(index);
+            tabs.addTab(cap, description, dummy, getIconForTab(index++));
         }
 
         // construct first tab
@@ -243,6 +244,10 @@ public abstract class TabLayout<ID extends Serializable, T extends AbstractEntit
 
         // respond to a tab change by actually loading the sheet
         tabs.addSelectedChangeListener(event -> initOrReload(event.getSource().getSelectedIndex()));
+    }
+
+    protected String getTabDescription(int index) {
+        return null;
     }
 
     public Tab getTabByIndex(int index) {

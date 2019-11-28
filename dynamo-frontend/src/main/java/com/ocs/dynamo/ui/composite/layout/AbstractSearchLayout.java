@@ -301,6 +301,10 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
             // post process the layout
             postProcessLayout(mainSearchLayout);
 
+            // there is a small chance that the user navigates directly 
+            // to the detail screen without the search layout having been
+            // created before. This check is there to ensure that the 
+            // searcy layout is not appended below the detail layout
             if (getComponentCount() == 0) {
                 add(mainSearchLayout);
             }
@@ -810,9 +814,6 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
      * @param entity
      */
     public final void edit(T entity) {
-//        if (mainSearchLayout == null) {
-//            build();
-//        }
         setSelectedItem(entity);
         doEdit();
     }

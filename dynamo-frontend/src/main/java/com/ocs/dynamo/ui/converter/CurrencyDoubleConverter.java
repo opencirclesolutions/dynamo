@@ -19,7 +19,6 @@ import java.util.Locale;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.flow.data.binder.Result;
 import com.vaadin.flow.data.binder.ValueContext;
 

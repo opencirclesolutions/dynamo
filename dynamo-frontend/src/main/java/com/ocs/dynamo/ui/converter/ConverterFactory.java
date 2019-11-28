@@ -31,6 +31,8 @@ public final class ConverterFactory {
 
 	private static MessageService messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
 
+	private static final String CANNOT_CONVERT = "ocs.cannot.convert";
+	
 	private ConverterFactory() {
 		// hidden constructor
 	}
@@ -47,7 +49,7 @@ public final class ConverterFactory {
 	 */
 	public static BigDecimalConverter createBigDecimalConverter(boolean currency, boolean percentage,
 			boolean useGrouping, int precision, String currencySymbol) {
-		String msg = messageService.getMessage("ocs.cannot.convert", VaadinUtils.getLocale());
+		String msg = messageService.getMessage(CANNOT_CONVERT, VaadinUtils.getLocale());
 		if (currency) {
 			return new CurrencyBigDecimalConverter(msg, precision, useGrouping, currencySymbol);
 		} else if (percentage) {
@@ -90,7 +92,7 @@ public final class ConverterFactory {
 	 * @return
 	 */
 	public static StringToIntegerConverter createIntegerConverter(boolean useGrouping, boolean percentage) {
-		String msg = messageService.getMessage("ocs.cannot.convert", VaadinUtils.getLocale());
+		String msg = messageService.getMessage(CANNOT_CONVERT, VaadinUtils.getLocale());
 		return percentage ? new PercentageIntegerConverter(msg, useGrouping)
 				: new GroupingStringToIntegerConverter(msg, useGrouping);
 	}
@@ -103,7 +105,7 @@ public final class ConverterFactory {
 	 * @return
 	 */
 	public static StringToLongConverter createLongConverter(boolean useGrouping, boolean percentage) {
-		String msg = messageService.getMessage("ocs.cannot.convert", VaadinUtils.getLocale());
+		String msg = messageService.getMessage(CANNOT_CONVERT, VaadinUtils.getLocale());
 		return percentage ? new PercentageLongConverter(msg, useGrouping)
 				: new GroupingStringToLongConverter(msg, useGrouping);
 	}
@@ -119,7 +121,7 @@ public final class ConverterFactory {
 	 */
 	public static StringToDoubleConverter createDoubleConverter(boolean currency, boolean percentage,
 			boolean useGrouping, int precision, String currencySymbol) {
-		String msg = messageService.getMessage("ocs.cannot.convert", VaadinUtils.getLocale());
+		String msg = messageService.getMessage(CANNOT_CONVERT, VaadinUtils.getLocale());
 		if (currency) {
 			return new CurrencyDoubleConverter(msg, precision, useGrouping, currencySymbol);
 		} else if (percentage) {

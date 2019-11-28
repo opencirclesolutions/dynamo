@@ -44,8 +44,6 @@ public class CollapsiblePanel extends VerticalLayout {
     public CollapsiblePanel() {
         setMargin(false);
 
-        // addClassName(DynamoConstants.CSS_PANEL);
-
         toggle.setSizeFull();
         toggle.addClassName(DynamoConstants.CSS_COLLAPSIBLE_PANEL_BUTTON);
 

@@ -129,7 +129,6 @@ public class VaadinUtilsTest extends BaseMockitoTest {
     }
 
     @Test
-    @Ignore
     public void testStringToBigDecimal() {
         // test defaults (European locale and 2 decimals)
         Assert.assertEquals(1234.34, VaadinUtils.stringToBigDecimal(false, false, false, "1234,341").doubleValue(), 0.001);
@@ -150,7 +149,6 @@ public class VaadinUtilsTest extends BaseMockitoTest {
     }
 
     @Test
-    @Ignore
     public void testStringToDouble() {
         Assert.assertEquals(1234.34, VaadinUtils.stringToDouble(false, false, false, 2, "1234,34", LOCALE), 0.001);
         Assert.assertEquals(1234.3415, VaadinUtils.stringToDouble(false, false, false, 4, "1234,3415", LOCALE), 0.001);

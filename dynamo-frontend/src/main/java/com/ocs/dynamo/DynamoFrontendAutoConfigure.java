@@ -69,4 +69,6 @@ public class DynamoFrontendAutoConfigure {
     public UserDetailsService userDetailsService() {
         return new DefaultUserDetailsServiceImpl();
     }
+    
+    
 }

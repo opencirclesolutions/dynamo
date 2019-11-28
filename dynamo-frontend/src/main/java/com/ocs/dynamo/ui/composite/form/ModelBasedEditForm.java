@@ -735,7 +735,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
         if (useTabs) {
             // create a new tab and add it to the tab sheet
-            Tab innerTab = tabs.addTab(message(messageKey), innerLayout, null);
+            Tab innerTab = tabs.addTab(message(messageKey), null, innerLayout, null);
             attributeGroups.get(isViewMode()).put(messageKey, innerTab);
         } else {
             CollapsiblePanel panel = new CollapsiblePanel(message(messageKey), innerLayout);
