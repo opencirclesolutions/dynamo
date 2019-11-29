@@ -171,9 +171,8 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
                         postProcessComponent(am, comp);
                         return comp;
                     });
-                    column.setKey(am.getPath());
                 } else {
-                    column = addColumn(t -> FormatUtils.extractAndFormat(this, am, t)).setKey(am.getPath());
+                    column = addColumn(t -> FormatUtils.extractAndFormat(this, am, t));
                 }
             }
 
@@ -196,7 +195,7 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 
             column.setHeader(am.getDisplayName(VaadinUtils.getLocale())).setSortProperty(am.getActualSortPath())
                     .setSortable(am.isSortable()).setClassNameGenerator(item -> am.isNumerical() ? "v-align-right" : "")
-                    .setId(am.getPath());
+                    .setKey(am.getPath()).setAutoWidth(true).setId(am.getPath());
         }
 
     }
