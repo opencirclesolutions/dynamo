@@ -22,6 +22,7 @@ import javax.persistence.Id;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.annotation.Attribute;
 import com.ocs.dynamo.domain.model.annotation.Model;
+import com.ocs.dynamo.domain.model.annotation.SearchMode;
 
 @Entity
 @Model(displayProperty = "name")
@@ -33,7 +34,7 @@ public class Person extends AbstractEntity<Integer> {
     @GeneratedValue
     private Integer id;
 
-    @Attribute(searchable = true)
+    @Attribute(searchable = SearchMode.ALWAYS)
     private String name;
 
     private Integer age;

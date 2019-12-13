@@ -37,6 +37,7 @@ import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import com.ocs.dynamo.domain.model.AttributeTextFieldMode;
 import com.ocs.dynamo.domain.model.annotation.Attribute;
 import com.ocs.dynamo.domain.model.annotation.Model;
+import com.ocs.dynamo.domain.model.annotation.SearchMode;
 
 /**
  * Entity used for testing purposes - has to be included in src/main/java
@@ -60,20 +61,20 @@ public class TestEntity extends AbstractTreeEntity<Integer, TestEntity> {
     private Integer id;
 
     @Size(max = 25)
-    @Attribute(main = true, searchable = true)
+    @Attribute(main = true, searchable = SearchMode.ALWAYS)
     @NotNull
     private String name;
 
-    @Attribute(searchable = true)
+    @Attribute(searchable = SearchMode.ALWAYS)
     private Long age;
 
-    @Attribute(searchable = true)
+    @Attribute(searchable = SearchMode.ALWAYS)
     private BigDecimal discount;
 
-    @Attribute(percentage = true, searchable = true)
+    @Attribute(percentage = true, searchable = SearchMode.ALWAYS)
     private BigDecimal rate;
 
-    @Attribute(displayFormat = "dd/MM/yyyy", searchable = true)
+    @Attribute(displayFormat = "dd/MM/yyyy", searchable = SearchMode.ALWAYS)
     private LocalDate birthDate;
 
     private LocalTime registrationTime;
@@ -81,7 +82,7 @@ public class TestEntity extends AbstractTreeEntity<Integer, TestEntity> {
     @Attribute(week = true)
     private LocalDate birthWeek;
 
-    @Attribute(searchable = true)
+    @Attribute(searchable = SearchMode.ALWAYS)
     private TestEnum someEnum;
 
     @Lob
@@ -100,7 +101,7 @@ public class TestEntity extends AbstractTreeEntity<Integer, TestEntity> {
     private Boolean someBoolean2;
 
     @OneToMany(mappedBy = "testEntity", cascade = CascadeType.ALL)
-    @Attribute(searchable = true)
+    @Attribute(searchable = SearchMode.ALWAYS)
     private Set<TestEntity2> testEntities = new HashSet<>();
 
     @Attribute(displayFormat = "HH:mm:ss")

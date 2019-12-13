@@ -18,6 +18,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import com.google.common.collect.Lists;
 import com.ocs.dynamo.constants.DynamoConstants;
@@ -27,6 +28,7 @@ import com.ocs.dynamo.domain.model.AttributeType;
 import com.ocs.dynamo.domain.model.CascadeMode;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.FieldFactoryContext;
+import com.ocs.dynamo.domain.model.annotation.SearchMode;
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.filter.EqualsPredicate;
 import com.ocs.dynamo.filter.InPredicate;
@@ -55,12 +57,12 @@ import com.vaadin.flow.function.SerializablePredicate;
  */
 public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEntity<ID>> extends AbstractModelBasedSearchForm<ID, T> {
 
-    private static final long serialVersionUID = -7226808613882934559L;
-
     // the types of search field
     protected enum FilterType {
         BETWEEN, BOOLEAN, ENTITY, ENUM, EQUAL, LIKE
     }
+
+    private static final long serialVersionUID = -7226808613882934559L;
 
     /**
      * The main form layout
@@ -95,6 +97,7 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
     public ModelBasedSearchForm(Searchable<T> searchable, EntityModel<T> entityModel, FormOptions formOptions,
             List<SerializablePredicate<T>> defaultFilters, Map<String, SerializablePredicate<?>> fieldFilters) {
         super(searchable, entityModel, formOptions, defaultFilters, fieldFilters);
+        setAdvancedSearchMode(formOptions.isStartInAdvancedMode());
     }
 
     /**
@@ -115,6 +118,43 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
         buttonBar.add(constructSearchAnyButton());
         buttonBar.add(constructClearButton());
         buttonBar.add(constructToggleButton());
+        buttonBar.add(constructAdvancedSearchModeButton());
+    }
+
+    @Override
+    public void toggleAdvancedMode() {
+
+        Map<String, Object> oldValues = new HashMap<>();
+
+        // store groups
+        for (Entry<String, FilterGroup<T>> fg : groups.entrySet()) {
+            HasValue<?, ?> hv = (HasValue<?, ?>) fg.getValue().getField();
+            if (hv.getValue() != null) {
+                oldValues.put(fg.getKey(), hv.getValue());
+            }
+        }
+
+        clear();
+        setAdvancedSearchMode(!isAdvancedSearchMode());
+
+        if (isAdvancedSearchMode()) {
+            getToggleAdvancedModeButton().setText(message("ocs.to.advanced.search.mode"));
+        } else {
+            getToggleAdvancedModeButton().setText(message("ocs.to.simple.search.mode"));
+        }
+
+        // empty the search form and rebuild it
+        form.removeAll();
+        groups.clear();
+        iterate(getEntityModel().getAttributeModels());
+
+        // restore search values (note that maybe not all fields are there)
+        for (Entry<String, Object> entry : oldValues.entrySet()) {
+            FilterGroup<T> filterGroup = groups.get(entry.getKey());
+            if (filterGroup != null) {
+                setSearchValue(entry.getKey(), entry.getValue());
+            }
+        }
     }
 
     /**
@@ -307,7 +347,7 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
      */
     private void iterate(List<AttributeModel> attributeModels) {
         for (AttributeModel attributeModel : attributeModels) {
-            if (attributeModel.isSearchable()) {
+            if (mustShowSearchField(attributeModel)) {
                 FilterGroup<T> group = constructFilterGroup(getEntityModel(), attributeModel);
                 form.add(group.getFilterComponent());
 
@@ -322,6 +362,22 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
                 iterate(nested.getAttributeModels());
             }
         }
+    }
+
+    /**
+     * Indicates whether a search field for the attribute model must be shown
+     * 
+     * @param attributeModel the attribute model
+     * @return
+     */
+    private boolean mustShowSearchField(AttributeModel attributeModel) {
+        boolean mustShow = false;
+        if (!isAdvancedSearchMode()) {
+            mustShow = attributeModel.isSearchable();
+        } else {
+            mustShow = SearchMode.ALWAYS.equals(attributeModel.getSearchMode());
+        }
+        return mustShow;
     }
 
     /**
@@ -398,6 +454,11 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
                 ((HasValue<?, R>) group.getAuxField()).clear();
             }
         }
+    }
+
+    @Override
+    protected boolean supportsAdvancedSearchMode() {
+        return true;
     }
 
 }

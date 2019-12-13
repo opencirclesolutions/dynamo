@@ -21,6 +21,7 @@ import javax.persistence.ManyToOne;
 import com.ocs.dynamo.domain.model.CascadeMode;
 import com.ocs.dynamo.domain.model.annotation.Attribute;
 import com.ocs.dynamo.domain.model.annotation.Cascade;
+import com.ocs.dynamo.domain.model.annotation.SearchMode;
 
 @Entity
 public class CascadeEntity extends AbstractEntity<Integer> {
@@ -32,11 +33,11 @@ public class CascadeEntity extends AbstractEntity<Integer> {
     private Integer id;
 
     @ManyToOne
-    @Attribute(cascade = @Cascade(cascadeTo = "testEntity2", filterPath = "testEntity", mode = CascadeMode.BOTH), searchable = true)
+    @Attribute(cascade = @Cascade(cascadeTo = "testEntity2", filterPath = "testEntity", mode = CascadeMode.BOTH), searchable = SearchMode.ALWAYS)
     private TestEntity testEntity;
 
     @ManyToOne
-    @Attribute(searchable = true)
+    @Attribute(searchable = SearchMode.ALWAYS)
     private TestEntity2 testEntity2;
 
     @Override

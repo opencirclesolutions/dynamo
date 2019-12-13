@@ -77,6 +77,11 @@ public class FormOptions implements Serializable {
     private boolean editAllowed = true;
 
     /**
+     * Whether to enabled advanced search mode
+     */
+    private boolean enableAdvancedSearchMode;
+
+    /**
      * Indicates whether export is allowed (read from system property)
      */
     private boolean exportAllowed = SystemPropertyUtils.allowListExport();
@@ -198,6 +203,11 @@ public class FormOptions implements Serializable {
      */
     private boolean showToggleButton;
 
+    /**
+     * Whether to start the search screen in advanced mode
+     */
+    private boolean startInAdvancedMode;
+
     public FormOptions createCopy() {
         FormOptions fo = new FormOptions();
         fo.setAttributeGroupMode(getAttributeGroupMode());
@@ -229,6 +239,8 @@ public class FormOptions implements Serializable {
         fo.setExportMode(getExportMode());
         fo.setGridEditMode(getGridEditMode());
         fo.setDetailsModeEnabled(isDetailsModeEnabled());
+        fo.setEnableAdvancedSearchMode(isEnableAdvancedSearchMode());
+        fo.setStartInAdvancedMode(isStartInAdvancedMode());
         return fo;
     }
 
@@ -278,6 +290,10 @@ public class FormOptions implements Serializable {
 
     public boolean isEditAllowed() {
         return editAllowed;
+    }
+
+    public boolean isEnableAdvancedSearchMode() {
+        return enableAdvancedSearchMode;
     }
 
     public boolean isExportAllowed() {
@@ -350,6 +366,10 @@ public class FormOptions implements Serializable {
 
     public boolean isShowToggleButton() {
         return showToggleButton;
+    }
+
+    public boolean isStartInAdvancedMode() {
+        return startInAdvancedMode;
     }
 
     /**
@@ -444,6 +464,17 @@ public class FormOptions implements Serializable {
      */
     public FormOptions setEditAllowed(boolean editAllowed) {
         this.editAllowed = editAllowed;
+        return this;
+    }
+
+    /**
+     * Whether to enable advanced search mode
+     * 
+     * @param enableAdvancedSearchMode
+     * @return
+     */
+    public FormOptions setEnableAdvancedSearchMode(boolean enableAdvancedSearchMode) {
+        this.enableAdvancedSearchMode = enableAdvancedSearchMode;
         return this;
     }
 
@@ -676,6 +707,11 @@ public class FormOptions implements Serializable {
 
     public FormOptions setShowToggleButton(boolean showToggleButton) {
         this.showToggleButton = showToggleButton;
+        return this;
+    }
+
+    public FormOptions setStartInAdvancedMode(boolean startInAdvancedMode) {
+        this.startInAdvancedMode = startInAdvancedMode;
         return this;
     }
 

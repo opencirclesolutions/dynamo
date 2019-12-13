@@ -56,10 +56,10 @@ import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.VisibilityType;
 import com.ocs.dynamo.domain.model.annotation.Attribute;
 import com.ocs.dynamo.domain.model.annotation.AttributeGroup;
-import com.ocs.dynamo.domain.model.annotation.AttributeGroups;
 import com.ocs.dynamo.domain.model.annotation.AttributeOrder;
 import com.ocs.dynamo.domain.model.annotation.Cascade;
 import com.ocs.dynamo.domain.model.annotation.Model;
+import com.ocs.dynamo.domain.model.annotation.SearchMode;
 import com.ocs.dynamo.domain.model.validator.Email;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.service.impl.MessageServiceImpl;
@@ -182,6 +182,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 
         List<AttributeModel> models = model.getAttributeModelsForGroup(group1);
         Assert.assertEquals("name", models.get(0).getName());
+        Assert.assertEquals(SearchMode.ALWAYS, models.get(0).getSearchMode());
 
         String group2 = model.getAttributeGroups().get(1);
         Assert.assertEquals("group2.key", group2);
@@ -193,10 +194,13 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
         Assert.assertEquals(1, model.getRequiredForSearchingAttributeModels().size());
 
         List<AttributeModel> models3 = model.getAttributeModelsForGroup(EntityModel.DEFAULT_GROUP);
-        Assert.assertEquals("birthDate", models3.get(0).getName());
+        Assert.assertEquals("advancedAge", models3.get(0).getName());
 
         Assert.assertTrue(model.isAttributeGroupVisible(EntityModel.DEFAULT_GROUP, true));
         Assert.assertTrue(model.isAttributeGroupVisible(EntityModel.DEFAULT_GROUP, false));
+
+        AttributeModel advancedAgeModel = model.getAttributeModel("advancedAge");
+        Assert.assertEquals(SearchMode.ADVANCED, advancedAgeModel.getSearchMode());
     }
 
     /**
@@ -733,10 +737,10 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
     @AttributeGroup(messageKey = "group2.key", attributeNames = { "age" })
     public class Entity3 {
 
-        @Attribute(defaultValue = "Bas", description = "Test", displayName = "Naampje", editable = EditableType.READ_ONLY, prompt = "Prompt", searchable = true, main = true, sortable = false, styles = "myStyle")
+        @Attribute(defaultValue = "Bas", description = "Test", displayName = "Naampje", editable = EditableType.READ_ONLY, prompt = "Prompt", searchable = SearchMode.ALWAYS, main = true, sortable = false, styles = "myStyle")
         private String name;
 
-        @Attribute(searchCaseSensitive = true, searchPrefixOnly = true, thousandsGrouping = false, requiredForSearching = true, searchable = true)
+        @Attribute(searchCaseSensitive = true, searchPrefixOnly = true, thousandsGrouping = false, requiredForSearching = true, searchable = SearchMode.ALWAYS)
         private Integer age;
 
         @Attribute(displayFormat = "dd/MM/yyyy")
@@ -751,6 +755,9 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 
         @Attribute(precision = 4, currency = true)
         private BigDecimal weight;
+
+        @Attribute(searchable = SearchMode.ADVANCED)
+        private Integer advancedAge;
 
         public String getName() {
             return name;
@@ -803,6 +810,14 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 
         public void setWeight(final BigDecimal weight) {
             this.weight = weight;
+        }
+
+        public Integer getAdvancedAge() {
+            return advancedAge;
+        }
+
+        public void setAdvancedAge(Integer advancedAge) {
+            this.advancedAge = advancedAge;
         }
 
     }
@@ -1167,7 +1182,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
         @Id
         private int id;
 
-        @Attribute(searchable = true)
+        @Attribute(searchable = SearchMode.ALWAYS)
         private String name;
 
         @OneToMany
@@ -1305,7 +1320,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
         @Attribute(visible = VisibilityType.HIDE)
         private String embedded1;
 
-        @Attribute(searchable = true)
+        @Attribute(searchable = SearchMode.ALWAYS)
         private String embedded2;
 
         @Embedded

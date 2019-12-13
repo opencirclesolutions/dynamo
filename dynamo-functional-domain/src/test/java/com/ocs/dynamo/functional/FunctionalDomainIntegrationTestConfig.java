@@ -1,7 +1,9 @@
 package com.ocs.dynamo.functional;
 
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 
 import com.ocs.dynamo.IntegrationTestConfig;
 import com.ocs.dynamo.dao.BaseDao;
@@ -22,6 +24,8 @@ import com.ocs.dynamo.service.impl.DefaultServiceImpl;
  *
  */
 @TestConfiguration
+@ComponentScan(basePackages = "com.ocs.dynamo")
+@SpringBootApplication
 public class FunctionalDomainIntegrationTestConfig extends IntegrationTestConfig {
 
     @Bean

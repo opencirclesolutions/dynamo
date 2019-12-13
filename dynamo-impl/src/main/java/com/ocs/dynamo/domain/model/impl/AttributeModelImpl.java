@@ -36,6 +36,7 @@ import com.ocs.dynamo.domain.model.AttributeType;
 import com.ocs.dynamo.domain.model.CascadeMode;
 import com.ocs.dynamo.domain.model.EditableType;
 import com.ocs.dynamo.domain.model.EntityModel;
+import com.ocs.dynamo.domain.model.annotation.SearchMode;
 import com.ocs.dynamo.util.SystemPropertyUtils;
 
 /**
@@ -66,19 +67,23 @@ public class AttributeModelImpl implements AttributeModel {
 
     private AttributeDateType dateType;
 
-    private Object defaultValue;
-
     private String defaultDescription;
+
+    private String defaultDisplayName;
 
     private String defaultFalseRepresentation;
 
+    private String defaultPrompt;
+
     private String defaultTrueRepresentation;
 
-    private String defaultPrompt;
+    private Object defaultValue;
+
+    private Map<String, Optional<String>> descriptions = new ConcurrentHashMap<>();
 
     private String displayFormat;
 
-    private String defaultDisplayName;
+    private Map<String, Optional<String>> displayNames = new ConcurrentHashMap<>();
 
     private EditableType editableType;
 
@@ -86,13 +91,15 @@ public class AttributeModelImpl implements AttributeModel {
 
     private EntityModel<?> entityModel;
 
+    private Map<String, Optional<String>> falseRepresentations = new ConcurrentHashMap<>();
+
     private String fileNameProperty;
 
     private AttributeSelectMode gridSelectMode;
 
-    private boolean ignoreInSearchFilter;
-
     private final List<String> groupTogetherWith = new ArrayList<>();
+
+    private boolean ignoreInSearchFilter;
 
     private boolean image;
 
@@ -124,6 +131,8 @@ public class AttributeModelImpl implements AttributeModel {
 
     private int precision;
 
+    private Map<String, Optional<String>> prompts = new ConcurrentHashMap<>();
+
     private boolean quickAddAllowed;
 
     private String quickAddPropertyName;
@@ -136,13 +145,13 @@ public class AttributeModelImpl implements AttributeModel {
 
     private boolean requiredForSearching;
 
-    private boolean searchable;
-
     private boolean searchCaseSensitive;
 
     private boolean searchDateOnly;
 
     private boolean searchForExactValue;
+
+    private SearchMode searchMode;
 
     private boolean searchPrefixOnly;
 
@@ -158,6 +167,8 @@ public class AttributeModelImpl implements AttributeModel {
 
     private boolean thousandsGrouping;
 
+    private Map<String, Optional<String>> trueRepresentations = new ConcurrentHashMap<>();
+
     private Class<?> type;
 
     private boolean url;
@@ -167,16 +178,6 @@ public class AttributeModelImpl implements AttributeModel {
     private boolean visibleInGrid;
 
     private boolean week;
-
-    private Map<String, Optional<String>> displayNames = new ConcurrentHashMap<>();
-
-    private Map<String, Optional<String>> prompts = new ConcurrentHashMap<>();
-
-    private Map<String, Optional<String>> descriptions = new ConcurrentHashMap<>();
-
-    private Map<String, Optional<String>> trueRepresentations = new ConcurrentHashMap<>();
-
-    private Map<String, Optional<String>> falseRepresentations = new ConcurrentHashMap<>();
 
     @Override
     public void addCascade(final String cascadeTo, final String filterPath, final CascadeMode mode) {
@@ -396,6 +397,10 @@ public class AttributeModelImpl implements AttributeModel {
         return replacementSortPath;
     }
 
+    public SearchMode getSearchMode() {
+        return searchMode;
+    }
+
     @Override
     public AttributeSelectMode getSearchSelectMode() {
         return searchSelectMode;
@@ -504,9 +509,8 @@ public class AttributeModelImpl implements AttributeModel {
         return requiredForSearching;
     }
 
-    @Override
     public boolean isSearchable() {
-        return searchable;
+        return SearchMode.ADVANCED.equals(searchMode) || SearchMode.ALWAYS.equals(searchMode);
     }
 
     @Override
@@ -562,9 +566,9 @@ public class AttributeModelImpl implements AttributeModel {
     /**
      * Looks up the translations of a value for a certain locale
      * 
-     * @param source the translation cache
-     * @param locale the locale 
-     * @param key the message key
+     * @param source         the translation cache
+     * @param locale         the locale
+     * @param key            the message key
      * @param fallBack       the first fallback value
      * @param secondFallBack the second fallback value
      * @return
@@ -785,10 +789,6 @@ public class AttributeModelImpl implements AttributeModel {
         this.requiredForSearching = requiredForSearching;
     }
 
-    public void setSearchable(boolean searchable) {
-        this.searchable = searchable;
-    }
-
     public void setSearchCaseSensitive(boolean searchCaseSensitive) {
         this.searchCaseSensitive = searchCaseSensitive;
     }
@@ -799,6 +799,10 @@ public class AttributeModelImpl implements AttributeModel {
 
     public void setSearchForExactValue(boolean searchForExactValue) {
         this.searchForExactValue = searchForExactValue;
+    }
+
+    public void setSearchMode(SearchMode searchMode) {
+        this.searchMode = searchMode;
     }
 
     public void setSearchPrefixOnly(boolean searchPrefixOnly) {
@@ -853,5 +857,4 @@ public class AttributeModelImpl implements AttributeModel {
     public String toString() {
         return ReflectionToStringBuilder.toStringExclude(this, "entityModel");
     }
-
 }

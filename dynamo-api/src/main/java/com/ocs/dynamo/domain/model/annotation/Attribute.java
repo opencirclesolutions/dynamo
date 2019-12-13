@@ -208,7 +208,7 @@ public @interface Attribute {
      * 
      * @return whether the attribute is searchable
      */
-    boolean searchable() default false;
+    SearchMode searchable() default SearchMode.NONE;
 
     /**
      * 

@@ -17,6 +17,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
+import com.ocs.dynamo.domain.model.annotation.SearchMode;
+
 /**
  * An attribute model represents how a certain attribute of an entity will be
  * behave in the user interface. This includes e.g. whether the attribute is
@@ -275,6 +277,11 @@ public interface AttributeModel extends Comparable<AttributeModel> {
     String getReplacementSortPath();
 
     /**
+     * @return the search mode
+     */
+    SearchMode getSearchMode();
+
+    /**
      * @return The search select mode (determines which component to render in
      *         search screens)
      */
@@ -401,9 +408,10 @@ public interface AttributeModel extends Comparable<AttributeModel> {
      *         you can carry out a search
      */
     boolean isRequiredForSearching();
-
+    
     /**
-     * @return whether it is possible to search on this attribute
+     * 
+     * @return
      */
     boolean isSearchable();
 

@@ -30,6 +30,7 @@ import com.ocs.dynamo.domain.model.EditableType;
 import com.ocs.dynamo.domain.model.VisibilityType;
 import com.ocs.dynamo.domain.model.annotation.Attribute;
 import com.ocs.dynamo.domain.model.annotation.Model;
+import com.ocs.dynamo.domain.model.annotation.SearchMode;
 import com.ocs.dynamo.functional.DomainConstants;
 
 /**
@@ -66,7 +67,7 @@ public abstract class Domain extends AbstractEntity<Integer> {
 
 	@Size(max = 255)
 	@NotNull
-	@Attribute(main = true, maxLength = DomainConstants.MAX_NAME_LENGTH, searchable = true)
+	@Attribute(main = true, maxLength = DomainConstants.MAX_NAME_LENGTH, searchable = SearchMode.ALWAYS)
 	private String name;
 
 	public Domain() {

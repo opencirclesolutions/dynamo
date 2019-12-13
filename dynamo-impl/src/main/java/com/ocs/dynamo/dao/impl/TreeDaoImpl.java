@@ -41,14 +41,14 @@ public abstract class TreeDaoImpl<ID, T extends AbstractEntity<ID>> extends Base
     public List<T> findByParentIsNull() {
         JPAQuery<T> query = createQuery();
         query.where(getParentPath().isNull());
-        return query.from(getDslRoot()).fetch();
+        return query.fetch();
     }
 
     @Override
     public List<T> findByParent(T parent) {
         JPAQuery<T> query = createQuery();
         query.where(getParentPath().eq(parent));
-        return query.from(getDslRoot()).fetch();
+        return query.fetch();
     }
 
 }

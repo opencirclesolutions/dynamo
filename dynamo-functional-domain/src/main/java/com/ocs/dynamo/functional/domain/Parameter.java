@@ -28,6 +28,7 @@ import com.ocs.dynamo.domain.model.EditableType;
 import com.ocs.dynamo.domain.model.annotation.Attribute;
 import com.ocs.dynamo.domain.model.annotation.AttributeOrder;
 import com.ocs.dynamo.domain.model.annotation.Model;
+import com.ocs.dynamo.domain.model.annotation.SearchMode;
 
 /**
  * Base class for reference information.
@@ -48,11 +49,11 @@ public class Parameter extends AbstractAuditableEntity<Integer> {
     private Integer id;
 
 	@NotNull
-	@Attribute(main = true, maxLength = 100, searchable = true, editable = EditableType.READ_ONLY)
+	@Attribute(main = true, maxLength = 100, searchable = SearchMode.ALWAYS, editable = EditableType.READ_ONLY)
 	private String name;
 
 	@NotNull
-	@Attribute(searchable = true, editable = EditableType.READ_ONLY)
+	@Attribute(searchable = SearchMode.ALWAYS, editable = EditableType.READ_ONLY)
 	@Column(name = "type")
 	private ParameterType parameterType;
 

@@ -95,15 +95,14 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
     private class FilterRegion {
 
         /**
-         * Indicates whether we are restoring an existing definition - if this is the
-         * case the we do not need to set a default filter value
-         */
-        private boolean restoring;
-
-        /**
          * The attribute model
          */
         private AttributeModel am;
+
+        /**
+         * The combo box that contains the attributes to filter on
+         */
+        private ComboBox<AttributeModel> attributeFilterComboBox;
 
         /**
          * The filter for the auxiliary field
@@ -120,16 +119,6 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
          * the mainFilter and the auxFieldFilter)
          */
         private SerializablePredicate<T> fieldFilter;
-
-        /**
-         * The combo box that contains the attributes to filter on
-         */
-        private ComboBox<AttributeModel> attributeFilterComboBox;
-
-        /**
-         * Label to display when no filter has been selected
-         */
-        private Label noFilterLabel;
 
         /**
          * The filter type
@@ -157,9 +146,20 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
         private HasValue<?, Object> mainValueComponent;
 
         /**
+         * Label to display when no filter has been selected
+         */
+        private Label noFilterLabel;
+
+        /**
          * The button used to remove the filter
          */
         private Button removeButton;
+
+        /**
+         * Indicates whether we are restoring an existing definition - if this is the
+         * case the we do not need to set a default filter value
+         */
+        private boolean restoring;
 
         /**
          * The combo box that contains the available filter types
@@ -601,11 +601,6 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
     private Button addFilterButton;
 
     /**
-     * The filter regions
-     */
-    private List<FilterRegion> regions = new ArrayList<>();
-
-    /**
      * Path of the properties for which to offer only basic String search
      * capabilities
      */
@@ -615,6 +610,11 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
      * The field factory
      */
     private FieldFactory factory = FieldFactory.getInstance();
+
+    /**
+     * The filter regions
+     */
+    private List<FilterRegion> regions = new ArrayList<>();
 
     /**
      * Constructor
@@ -901,6 +901,16 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
      */
     public void setBasicStringFilterProperties(Set<String> basicStringFilterProperties) {
         this.basicStringFilterProperties = basicStringFilterProperties;
+    }
+
+    @Override
+    protected boolean supportsAdvancedSearchMode() {
+        return false;
+    }
+
+    @Override
+    public void toggleAdvancedMode() {
+        // not needed
     }
 
 }

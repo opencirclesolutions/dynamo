@@ -24,6 +24,7 @@ import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
+import com.opencsv.exceptions.CsvException;
 
 /**
  * Base class for importing CSV files
@@ -55,7 +56,7 @@ public class BaseCsvImporter extends BaseTextImporter {
                         .withCSVParser(new CSVParserBuilder().withSeparator(separator.charAt(0)).withQuoteChar(quote.charAt(0)).build())
                         .build()) {
             return reader.readAll();
-        } catch (IOException ex) {
+        } catch (IOException | CsvException ex) {
             throw new OCSImportException(ex.getMessage(), ex);
         }
     }

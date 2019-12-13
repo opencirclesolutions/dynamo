@@ -70,6 +70,7 @@ import com.ocs.dynamo.domain.model.annotation.AttributeGroups;
 import com.ocs.dynamo.domain.model.annotation.AttributeOrder;
 import com.ocs.dynamo.domain.model.annotation.Cascade;
 import com.ocs.dynamo.domain.model.annotation.Model;
+import com.ocs.dynamo.domain.model.annotation.SearchMode;
 import com.ocs.dynamo.domain.model.validator.Email;
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.service.MessageService;
@@ -169,7 +170,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
             model.setDefaultPrompt(displayName);
 
             model.setMainAttribute(descriptor.isPreferred());
-            model.setSearchable(descriptor.isPreferred());
+            model.setSearchMode(SearchMode.NONE);
             model.setName((prefix == null ? "" : (prefix + ".")) + fieldName);
             model.setImage(false);
 
@@ -870,8 +871,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
                 model.setVisibleInGrid(model.isVisible());
             }
 
-            if (attribute.searchable() && !nested) {
-                model.setSearchable(true);
+            if ((SearchMode.ADVANCED.equals(attribute.searchable()) || SearchMode.ALWAYS.equals(attribute.searchable())) && !nested) {
+                model.setSearchMode(attribute.searchable());
             }
 
             if (attribute.requiredForSearching() && !nested) {
@@ -1164,7 +1165,13 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 
         msg = getAttributeMessage(entityModel, model, EntityModel.SEARCHABLE);
         if (!StringUtils.isEmpty(msg)) {
-            model.setSearchable(Boolean.valueOf(msg));
+            if ("true".equals(msg)) {
+                model.setSearchMode(SearchMode.ALWAYS);
+            } else if ("false".equals(msg)) {
+                model.setSearchMode(SearchMode.NONE);
+            } else {
+                model.setSearchMode(SearchMode.valueOf(msg));
+            }
         }
 
         msg = getAttributeMessage(entityModel, model, EntityModel.REQUIRED_FOR_SEARCHING);
