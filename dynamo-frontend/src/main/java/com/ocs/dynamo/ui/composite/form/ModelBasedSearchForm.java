@@ -130,7 +130,10 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
         for (Entry<String, FilterGroup<T>> fg : groups.entrySet()) {
             HasValue<?, ?> hv = (HasValue<?, ?>) fg.getValue().getField();
             if (hv.getValue() != null) {
-                oldValues.put(fg.getKey(), hv.getValue());
+                boolean emptyCollection = hv.getValue() instanceof Collection && ((Collection<?>) hv.getValue()).isEmpty();
+                if (!emptyCollection) {
+                    oldValues.put(fg.getKey(), hv.getValue());
+                }
             }
         }
 
@@ -138,9 +141,9 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
         setAdvancedSearchMode(!isAdvancedSearchMode());
 
         if (isAdvancedSearchMode()) {
-            getToggleAdvancedModeButton().setText(message("ocs.to.advanced.search.mode"));
-        } else {
             getToggleAdvancedModeButton().setText(message("ocs.to.simple.search.mode"));
+        } else {
+            getToggleAdvancedModeButton().setText(message("ocs.to.advanced.search.mode"));
         }
 
         // empty the search form and rebuild it
@@ -372,9 +375,11 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
      */
     private boolean mustShowSearchField(AttributeModel attributeModel) {
         boolean mustShow = false;
-        if (!isAdvancedSearchMode()) {
+        if (isAdvancedSearchMode()) {
+            // in advanced search mode, show all searchable fields
             mustShow = attributeModel.isSearchable();
         } else {
+            // in basic mode, only show fields that are always searchable
             mustShow = SearchMode.ALWAYS.equals(attributeModel.getSearchMode());
         }
         return mustShow;

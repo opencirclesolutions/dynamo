@@ -150,6 +150,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
     public AbstractModelBasedSearchForm(Searchable<T> searchable, EntityModel<T> entityModel, FormOptions formOptions,
             List<SerializablePredicate<T>> defaultFilters, Map<String, SerializablePredicate<?>> fieldFilters) {
         super(formOptions, fieldFilters, entityModel);
+        this.advancedSearchMode = formOptions.isStartInAdvancedMode();
         this.defaultFilters = defaultFilters == null ? new ArrayList<>() : defaultFilters;
         this.currentFilters.addAll(this.defaultFilters);
         this.searchable = searchable;
