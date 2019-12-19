@@ -79,7 +79,7 @@
 	<properties>
 		<!-- Build settings. -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<project.build.compiler.version>1.8</project.build.compiler.version>
+		<project.build.compiler.version>11</project.build.compiler.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<!-- Dependency versions. -->
