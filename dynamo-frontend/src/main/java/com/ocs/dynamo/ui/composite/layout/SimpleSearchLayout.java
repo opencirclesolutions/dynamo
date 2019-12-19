@@ -36,7 +36,7 @@ import com.vaadin.flow.data.provider.SortOrder;
  * @param <ID> type of the primary key of the entity to search for
  * @param <T> type of the entity to search for
  */
-public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntity<ID>> extends AbstractSearchLayout<ID, T> {
+public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntity<ID>> extends AbstractModelSearchLayout<ID, T> {
 
     private static final long serialVersionUID = 4606800218149558500L;
 

@@ -65,7 +65,7 @@ import com.vaadin.flow.function.SerializablePredicate;
  * @param <T> the type of the entity
  */
 @SuppressWarnings("serial")
-public class EditableGridLayout<ID extends Serializable, T extends AbstractEntity<ID>> extends BaseCollectionLayout<ID, T> {
+public class EditableGridLayout<ID extends Serializable, T extends AbstractEntity<ID>> extends BaseCollectionLayout<ID, T, T> {
 
     private static final long serialVersionUID = 4606800218149558500L;
 

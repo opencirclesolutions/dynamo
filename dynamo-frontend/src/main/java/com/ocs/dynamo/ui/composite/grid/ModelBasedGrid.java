@@ -51,7 +51,7 @@ import com.vaadin.flow.function.SerializablePredicate;
  * 
  * @author bas.rutten
  * @param <ID> type of the primary key
- * @param <T> type of the entity
+ * @param <T>  type of the entity
  */
 public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID>> extends Grid<T> {
 

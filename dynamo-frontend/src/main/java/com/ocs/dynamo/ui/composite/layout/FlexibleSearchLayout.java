@@ -41,7 +41,7 @@ import com.vaadin.flow.data.provider.SortOrder;
  *            the entity to search for
  */
 public class FlexibleSearchLayout<ID extends Serializable, T extends AbstractEntity<ID>>
-        extends AbstractSearchLayout<ID, T> {
+        extends AbstractModelSearchLayout<ID, T> {
 
     private static final long serialVersionUID = -6179979286298244161L;
 

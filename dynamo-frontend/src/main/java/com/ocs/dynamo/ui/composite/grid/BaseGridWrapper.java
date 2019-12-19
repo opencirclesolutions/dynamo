@@ -14,31 +14,23 @@
 package com.ocs.dynamo.ui.composite.grid;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
-import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
-import com.ocs.dynamo.ui.Searchable;
-import com.ocs.dynamo.ui.composite.export.ExportDelegate;
-import com.ocs.dynamo.ui.composite.layout.BaseCustomComponent;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.provider.BaseDataProvider;
 import com.ocs.dynamo.ui.provider.QueryType;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.grid.Grid.SelectionMode;
-import com.vaadin.flow.component.grid.GridSortOrderBuilder;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.binder.Binder.BindingBuilder;
 import com.vaadin.flow.data.provider.DataProvider;
-import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.data.provider.SortOrder;
 import com.vaadin.flow.function.SerializablePredicate;
@@ -48,12 +40,16 @@ import com.vaadin.flow.function.SerializablePredicate;
  * 
  * @author bas.rutten
  * @param <ID> type of the primary key
- * @param <T> type of the entity
+ * @param <T>  type of the entity
  */
-public abstract class BaseGridWrapper<ID extends Serializable, T extends AbstractEntity<ID>> extends BaseCustomComponent
-        implements Searchable<T> {
+public abstract class BaseGridWrapper<ID extends Serializable, T extends AbstractEntity<ID>> extends GridWrapper<ID, T, T> {
 
     private static final long serialVersionUID = -4691108261565306844L;
+
+    /**
+     * The label that displays the table caption
+     */
+    private Label caption = new Label();
 
     /**
      * The data provider
@@ -66,29 +62,9 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
     private boolean editable;
 
     /**
-     * The entity model used to create the container
-     */
-    private EntityModel<T> entityModel;
-
-    /**
-     * The entity model to use when exporting
-     */
-    private EntityModel<T> exportEntityModel;
-
-    /**
-     * The export service used for generating XLS and CSV exports
-     */
-    private ExportDelegate exportDelegate = getService(ExportDelegate.class);
-
-    /**
      * Field filter map
      */
     private Map<String, SerializablePredicate<?>> fieldFilters;
-
-    /**
-     * The form options
-     */
-    private FormOptions formOptions;
 
     /**
      * The wrapped grid component
@@ -96,39 +72,9 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
     private ModelBasedGrid<ID, T> grid;
 
     /**
-     * The fetch joins to use when querying
-     */
-    private FetchJoinInformation[] joins;
-
-    /**
-     * The joins to use when exporting (needed when using exportmode FULL)
-     */
-    private FetchJoinInformation[] exportJoins;
-
-    /**
      * The layout that contains the grid
      */
     private VerticalLayout layout;
-
-    /**
-     * The type of the query
-     */
-    private final QueryType queryType;
-
-    /**
-     * The service used to query the database
-     */
-    private final BaseService<ID, T> service;
-
-    /**
-     * The sort orders
-     */
-    private List<SortOrder<?>> sortOrders = new ArrayList<>();
-
-    /**
-     * The label that displays the table caption
-     */
-    private Label caption = new Label();
 
     /**
      * Constructor
@@ -141,34 +87,10 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
      * @param joins       the fetch joins to use when executing the query
      */
     public BaseGridWrapper(BaseService<ID, T> service, EntityModel<T> entityModel, QueryType queryType, FormOptions formOptions,
-            Map<String, SerializablePredicate<?>> fieldFilters, List<SortOrder<?>> sortOrders, boolean editable,
-            FetchJoinInformation... joins) {
-        this.service = service;
-        this.fieldFilters = fieldFilters;
-        this.entityModel = entityModel;
-        this.queryType = queryType;
-        this.formOptions = formOptions;
-        this.sortOrders = sortOrders != null ? sortOrders : new ArrayList<>();
-        this.joins = joins;
+            SerializablePredicate<T> filter, Map<String, SerializablePredicate<?>> fieldFilters, List<SortOrder<?>> sortOrders,
+            boolean editable, FetchJoinInformation... joins) {
+        super(service, entityModel, queryType, formOptions, filter, sortOrders, joins);
         this.editable = editable;
-    }
-
-    public FetchJoinInformation[] getExportJoins() {
-        return exportJoins;
-    }
-
-    public void setExportJoins(FetchJoinInformation[] exportJoins) {
-        this.exportJoins = exportJoins;
-    }
-
-    /**
-     * Perform any actions that are necessary before carrying out a search
-     * 
-     * @param filter
-     */
-    protected SerializablePredicate<T> beforeSearchPerformed(SerializablePredicate<T> filter) {
-        // overwrite in subclasses
-        return null;
     }
 
     /**
@@ -186,9 +108,6 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
         initSortingAndFiltering();
 
         grid.setSelectionMode(SelectionMode.SINGLE);
-        caption.setText(entityModel.getDisplayNamePlural(VaadinUtils.getLocale()) + " "
-                + getMessageService().getMessage("ocs.showing.results", VaadinUtils.getLocale(), getDataProviderSize()));
-
         add(layout);
     }
 
@@ -206,7 +125,7 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
      * @return
      */
     protected ModelBasedGrid<ID, T> constructGrid() {
-        return new ModelBasedGrid<ID, T>(dataProvider, entityModel, fieldFilters, editable, getFormOptions().getGridEditMode()) {
+        return new ModelBasedGrid<ID, T>(dataProvider, getEntityModel(), fieldFilters, editable, getFormOptions().getGridEditMode()) {
 
             private static final long serialVersionUID = -4559181057050230055L;
 
@@ -221,49 +140,13 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
         return null;
     }
 
-    public abstract void forceSearch();
-
     /**
-     * Callback method used to modify data provider creation
-     * 
-     * @param container
+     * Forces a search
      */
-    protected void postProcessDataProvider(DataProvider<T, SerializablePredicate<T>> provider) {
-        // overwrite in subclasses
-    }
+    public abstract void forceSearch();
 
     public DataProvider<T, SerializablePredicate<T>> getDataProvider() {
         return dataProvider;
-    }
-
-    @SuppressWarnings("unchecked")
-    public int getDataProviderSize() {
-        if (dataProvider instanceof BaseDataProvider) {
-            return ((BaseDataProvider<ID, T>) grid.getDataCommunicator().getDataProvider()).getSize();
-        } else if (dataProvider instanceof ListDataProvider) {
-            ListDataProvider<T> lp = (ListDataProvider<T>) dataProvider;
-            return lp.getItems().size();
-        }
-        return 0;
-    }
-
-    /**
-     * @return the entityModel
-     */
-    public EntityModel<T> getEntityModel() {
-        return entityModel;
-    }
-
-    public EntityModel<T> getExportEntityModel() {
-        return exportEntityModel;
-    }
-
-    public ExportDelegate getExportDelegate() {
-        return exportDelegate;
-    }
-
-    public FormOptions getFormOptions() {
-        return formOptions;
     }
 
     /**
@@ -278,20 +161,8 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
         return grid;
     }
 
-    public FetchJoinInformation[] getJoins() {
-        return joins;
-    }
-
     public VerticalLayout getLayout() {
         return layout;
-    }
-
-    public QueryType getQueryType() {
-        return queryType;
-    }
-
-    public BaseService<ID, T> getService() {
-        return service;
     }
 
     /**
@@ -306,65 +177,34 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
     }
 
     /**
-     * 
-     * @return the sort orders
-     */
-    public List<SortOrder<?>> getSortOrders() {
-        return Collections.unmodifiableList(sortOrders);
-    }
-
-    /**
      * Initializes the sorting and filtering for the grid
      */
     @SuppressWarnings("unchecked")
-    protected void initSortingAndFiltering() {
+    @Override
+    protected List<SortOrder<?>> initSortingAndFiltering() {
 
-        List<SortOrder<?>> fallBackOrders = new ArrayList<>();
-        if (getSortOrders() != null && !getSortOrders().isEmpty()) {
-            GridSortOrderBuilder<T> builder = new GridSortOrderBuilder<>();
-            for (SortOrder<?> o : getSortOrders()) {
-                if (getGrid().getColumnByKey((String) o.getSorted()) != null) {
-                    // only include column in sort order if it is present in the grid
-                    if (SortDirection.ASCENDING.equals(o.getDirection())) {
-                        builder.thenAsc(grid.getColumnByKey(o.getSorted().toString()));
-                    } else {
-                        builder.thenDesc(grid.getColumnByKey(o.getSorted().toString()));
-                    }
-                } else {
-                    // not present in grid, add to backup
-                    fallBackOrders.add(o);
-                }
-            }
-            grid.sort(builder.build());
-        } else if (getEntityModel().getSortOrder() != null && !getEntityModel().getSortOrder().keySet().isEmpty()) {
-            // sort based on the entity model
-            GridSortOrderBuilder<T> builder = new GridSortOrderBuilder<>();
-            for (AttributeModel am : entityModel.getSortOrder().keySet()) {
-                boolean asc = entityModel.getSortOrder().get(am);
-                if (getGrid().getColumnByKey(am.getPath()) != null) {
-                    if (asc) {
-                        builder.thenAsc(grid.getColumnByKey(am.getPath()));
-                    } else {
-                        builder.thenDesc(grid.getColumnByKey(am.getPath()));
-                    }
-                } else {
-                    fallBackOrders
-                            .add(new SortOrder<String>(am.getActualSortPath(), asc ? SortDirection.ASCENDING : SortDirection.DESCENDING));
-                }
-            }
-            grid.sort(builder.build());
-        }
+        List<SortOrder<?>> fallBackOrders = super.initSortingAndFiltering();
 
         // set fall back sort orders
         if (dataProvider instanceof BaseDataProvider) {
             ((BaseDataProvider<ID, T>) dataProvider).setFallBackSortOrders(fallBackOrders);
         }
+        return fallBackOrders;
     }
 
     /**
      * Respond to a selection of an item in the grid
      */
     protected void onSelect(Object selected) {
+        // overwrite in subclasses
+    }
+
+    /**
+     * Callback method used to modify data provider creation
+     * 
+     * @param container
+     */
+    protected void postProcessDataProvider(DataProvider<T, SerializablePredicate<T>> provider) {
         // overwrite in subclasses
     }
 
@@ -377,36 +217,8 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
         this.dataProvider = dataProvider;
     }
 
-    public void setExportEntityModel(EntityModel<T> exportEntityModel) {
-        this.exportEntityModel = exportEntityModel;
-    }
-
     protected void setGrid(ModelBasedGrid<ID, T> grid) {
         this.grid = grid;
-    }
-
-    public void setJoins(FetchJoinInformation[] joins) {
-        this.joins = joins;
-    }
-
-    public void setSortOrders(List<SortOrder<?>> sortOrders) {
-        this.sortOrders = sortOrders;
-    }
-
-    /**
-     * Updates the grid caption in response to a change of the data set
-     */
-    @SuppressWarnings("unchecked")
-    protected void updateCaption() {
-        int size = 0;
-        DataProvider<?, ?> dp = getGrid().getDataCommunicator().getDataProvider();
-        if (dp instanceof ListDataProvider) {
-            size = ((ListDataProvider<T>) dp).getItems().size();
-        } else {
-            size = ((BaseDataProvider<ID, T>) dp).getSize();
-        }
-        caption.setText(entityModel.getDisplayNamePlural(VaadinUtils.getLocale()) + " "
-                + getMessageService().getMessage("ocs.showing.results", VaadinUtils.getLocale(), size));
     }
 
     /**
@@ -415,7 +227,7 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
      * @param size
      */
     protected void updateCaption(int size) {
-        caption.setText(entityModel.getDisplayNamePlural(VaadinUtils.getLocale()) + " "
+        caption.setText(getEntityModel().getDisplayNamePlural(VaadinUtils.getLocale()) + " "
                 + getMessageService().getMessage("ocs.showing.results", VaadinUtils.getLocale(), size));
     }
 

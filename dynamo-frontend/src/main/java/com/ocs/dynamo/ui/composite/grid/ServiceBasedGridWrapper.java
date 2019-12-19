@@ -41,17 +41,12 @@ import com.vaadin.flow.function.SerializablePredicate;
  * 
  * @author bas.rutten
  * @param <ID> type of the primary key of the entity
- * @param <T> type of the entity
+ * @param <T>  type of the entity
  */
 public class ServiceBasedGridWrapper<ID extends Serializable, T extends AbstractEntity<ID>> extends BaseGridWrapper<ID, T>
         implements Searchable<T> {
 
     private static final long serialVersionUID = -4691108261565306844L;
-
-    /**
-     * The search filter that is applied to the grid
-     */
-    private SerializablePredicate<T> filter;
 
     /**
      * The maximum number of results
@@ -68,8 +63,7 @@ public class ServiceBasedGridWrapper<ID extends Serializable, T extends Abstract
     public ServiceBasedGridWrapper(BaseService<ID, T> service, EntityModel<T> entityModel, QueryType queryType, FormOptions formOptions,
             SerializablePredicate<T> filter, Map<String, SerializablePredicate<?>> fieldFilters, List<SortOrder<?>> sortOrders,
             boolean editable, FetchJoinInformation... joins) {
-        super(service, entityModel, queryType, formOptions, fieldFilters, sortOrders, editable, joins);
-        this.filter = filter;
+        super(service, entityModel, queryType, formOptions, filter, fieldFilters, sortOrders, editable, joins);
     }
 
     @Override
@@ -88,8 +82,11 @@ public class ServiceBasedGridWrapper<ID extends Serializable, T extends Abstract
         return provider;
     }
 
-    protected SerializablePredicate<T> getFilter() {
-        return filter;
+    /**
+     * Forces a search
+     */
+    public void forceSearch() {
+        getDataProvider().size(new Query<T, SerializablePredicate<T>>(getFilter()));
     }
 
     public Integer getMaxResults() {
@@ -97,10 +94,10 @@ public class ServiceBasedGridWrapper<ID extends Serializable, T extends Abstract
     }
 
     @Override
-    protected void initSortingAndFiltering() {
-        super.initSortingAndFiltering();
+    protected List<SortOrder<?>> initSortingAndFiltering() {
+        List<SortOrder<?>> fallBacks = super.initSortingAndFiltering();
         // sets the initial filter
-        getGrid().getDataCommunicator().setDataProvider(getDataProvider(), filter);
+        getGrid().getDataCommunicator().setDataProvider(getDataProvider(), getFilter());
         getGrid().addSelectionListener(event -> onSelect(getGrid().getSelectedItems()));
 
         // right click to download
@@ -121,6 +118,7 @@ public class ServiceBasedGridWrapper<ID extends Serializable, T extends Abstract
             });
             contextMenu.add(downloadButton);
         }
+        return fallBacks;
     }
 
     @Override
@@ -128,33 +126,14 @@ public class ServiceBasedGridWrapper<ID extends Serializable, T extends Abstract
         search(getFilter());
     }
 
-    @Override
-    public void search(SerializablePredicate<T> filter) {
-        SerializablePredicate<T> temp = beforeSearchPerformed(filter);
-        this.filter = temp != null ? temp : filter;
-        getGrid().getDataCommunicator().setDataProvider(getDataProvider(), temp != null ? temp : filter);
-    }
-
-    /**
-     * Sets the provided filter as the component filter and then refreshes the
-     * container
-     * 
-     * @param filter
-     */
-    public void setFilter(SerializablePredicate<T> filter) {
-        this.filter = filter;
-        search(filter);
-    }
-
     public void setMaxResults(Integer maxResults) {
         this.maxResults = maxResults;
     }
 
-    /**
-     * Forces a search
-     */
-    public void forceSearch() {
-        getDataProvider().size(new Query<T, SerializablePredicate<T>>(getFilter()));
+    @Override
+    @SuppressWarnings("unchecked")
+    public int getDataProviderSize() {
+        return ((BaseDataProvider<ID, T>) getGrid().getDataCommunicator().getDataProvider()).getSize();
     }
 
 }

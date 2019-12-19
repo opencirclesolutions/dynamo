@@ -1,5 +1,3 @@
-package com.ocs.dynamo.ui.composite.export.impl;
-
 /*
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -13,6 +11,8 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+package com.ocs.dynamo.ui.composite.export.impl;
+
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.composite.export.CustomXlsStyleGenerator;

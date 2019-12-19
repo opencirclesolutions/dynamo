@@ -44,9 +44,9 @@ import com.vaadin.flow.data.provider.SortOrder;
  * 
  * @author bas.rutten
  * @param <ID> type of the primary key
- * @param <T> type of the entity
+ * @param <T>  type of the entity
  */
-public abstract class BaseSplitLayout<ID extends Serializable, T extends AbstractEntity<ID>> extends BaseCollectionLayout<ID, T> {
+public abstract class BaseSplitLayout<ID extends Serializable, T extends AbstractEntity<ID>> extends BaseCollectionLayout<ID, T, T> {
 
     private static final long serialVersionUID = 4606800218149558500L;
 

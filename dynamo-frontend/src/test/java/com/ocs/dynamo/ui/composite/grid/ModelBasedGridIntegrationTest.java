@@ -39,7 +39,6 @@ public class ModelBasedGridIntegrationTest extends FrontendIntegrationTest {
     public void setup() {
         entity = new TestEntity("Bob", 45L);
         entity = testEntityService.save(entity);
-
     }
 
     /**

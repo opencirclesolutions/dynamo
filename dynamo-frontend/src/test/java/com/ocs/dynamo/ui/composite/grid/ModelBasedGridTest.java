@@ -64,9 +64,6 @@ public class ModelBasedGridTest extends BaseMockitoTest {
 
         ModelBasedGrid<Integer, Person> grid = new ModelBasedGrid<>(provider, model, new HashMap<String, SerializablePredicate<?>>(), false,
                 GridEditMode.SINGLE_ROW);
-
-        // Assert.assertEquals("Persons", grid.getCaption());
-        // Assert.assertEquals("Person", grid.getDescription());
     }
 
     @Test

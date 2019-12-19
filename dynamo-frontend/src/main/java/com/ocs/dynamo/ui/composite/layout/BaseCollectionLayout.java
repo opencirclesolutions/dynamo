@@ -29,7 +29,7 @@ import com.ocs.dynamo.ui.Refreshable;
 import com.ocs.dynamo.ui.Reloadable;
 import com.ocs.dynamo.ui.component.DefaultFlexLayout;
 import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
-import com.ocs.dynamo.ui.composite.grid.BaseGridWrapper;
+import com.ocs.dynamo.ui.composite.grid.GridWrapper;
 import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid.Column;
@@ -46,10 +46,10 @@ import com.vaadin.flow.function.SerializablePredicate;
  * 
  * @author bas.rutten
  * @param <ID> the type of the primary key
- * @param <T> the type of the entity
+ * @param <T>  the type of the entity
  */
-public abstract class BaseCollectionLayout<ID extends Serializable, T extends AbstractEntity<ID>> extends BaseServiceCustomComponent<ID, T>
-        implements Reloadable, Refreshable {
+public abstract class BaseCollectionLayout<ID extends Serializable, T extends AbstractEntity<ID>, U>
+        extends BaseServiceCustomComponent<ID, T> implements Reloadable, Refreshable {
 
     private static final long serialVersionUID = -2864711994829582000L;
 
@@ -92,7 +92,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
     /**
      * The grid wrapper
      */
-    private BaseGridWrapper<ID, T> gridWrapper;
+    private GridWrapper<ID, T, U> gridWrapper;
 
     /**
      * The joins to use when retrieving data for the grid
@@ -210,7 +210,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
      * 
      * @return
      */
-    protected abstract BaseGridWrapper<ID, T> constructGridWrapper();
+    protected abstract GridWrapper<ID, T, U> constructGridWrapper();
 
     /**
      * Creates a new entity - override in subclass if needed
@@ -278,11 +278,11 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
     }
 
     /**
-     * Lazily fetches the grid wrapper
+     * Returns the grid wrapper, lazily constructing it if needed
      * 
      * @return
      */
-    public BaseGridWrapper<ID, T> getGridWrapper() {
+    public GridWrapper<ID, T, U> getGridWrapper() {
         if (gridWrapper == null) {
             gridWrapper = constructGridWrapper();
             postProcessGridWrapper(gridWrapper);
@@ -360,7 +360,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
      * 
      * @param wrapper the wrapper
      */
-    protected final void postConfigureGridWrapper(BaseGridWrapper<ID, T> wrapper) {
+    protected final void postConfigureGridWrapper(GridWrapper<ID, T, U> wrapper) {
         wrapper.setExportEntityModel(getExportEntityModel());
         wrapper.setExportJoins(getExportJoins());
     }
@@ -381,7 +381,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
      * 
      * @param provider the provider
      */
-    protected void postProcessDataProvider(DataProvider<T, SerializablePredicate<T>> provider) {
+    protected void postProcessDataProvider(DataProvider<U, SerializablePredicate<U>> provider) {
         // override in subclasses
     }
 
@@ -413,7 +413,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
      * 
      * @param wrapper
      */
-    protected void postProcessGridWrapper(BaseGridWrapper<ID, T> wrapper) {
+    protected void postProcessGridWrapper(GridWrapper<ID, T, U> wrapper) {
         // override in subclasses
     }
 
