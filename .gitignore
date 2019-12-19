@@ -40,3 +40,12 @@ dynamo-showcase/target
 .idea
 *.log
 
+dynamo-archetype-modules/target
+dynamo-archetype/target
+dynamo-core/target
+.*.swp
+dynamo-impl/bin
+dynamo-jasperreports-fixes/target
+dynamo-jpa/target
+dynamo-spring/target
+dynamo-vaadin/target
