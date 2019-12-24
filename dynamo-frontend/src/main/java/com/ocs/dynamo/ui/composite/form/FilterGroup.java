@@ -37,6 +37,8 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasEnabled;
 import com.vaadin.flow.component.HasValidation;
 import com.vaadin.flow.component.HasValue;
+import com.vaadin.flow.component.HasValue.ValueChangeEvent;
+import com.vaadin.flow.component.HasValue.ValueChangeListener;
 import com.vaadin.flow.data.binder.Result;
 import com.vaadin.flow.function.SerializablePredicate;
 
@@ -119,21 +121,22 @@ public class FilterGroup<T> {
 
         // respond to a change of the main field
         if (field instanceof HasValue) {
-            ((HasValue<?, ?>) field).addValueChangeListener(event -> {
+            ValueChangeListener<ValueChangeEvent<?>> listener = event -> {
                 Result<?> result = ConvertUtils.convertToModelValue(FilterGroup.this.attributeModel, event.getValue());
                 result.ifError(r -> ((HasValidation) field).setErrorMessage(r));
                 result.ifOk(r -> FilterGroup.this.valueChange(FilterGroup.this.field, r));
-            });
+            };
+            ((HasValue<?, ?>) field).addValueChangeListener(listener);
         }
 
         // respond to a change of the auxiliary field
         if (auxField instanceof HasValue) {
-            ((HasValue<?, ?>) auxField).addValueChangeListener(event -> {
+            ValueChangeListener<ValueChangeEvent<?>> auxListener = event -> {
                 Result<?> result = ConvertUtils.convertToModelValue(FilterGroup.this.attributeModel, event.getValue());
                 result.ifError(r -> ((HasValidation) auxField).setErrorMessage(r));
                 result.ifOk(r -> FilterGroup.this.valueChange(FilterGroup.this.auxField, r));
-
-            });
+            };
+            ((HasValue<?, ?>) auxField).addValueChangeListener(auxListener);
         }
     }
 

@@ -42,6 +42,7 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasComponents;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.HasValue.ValueChangeEvent;
+import com.vaadin.flow.component.HasValue.ValueChangeListener;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.formlayout.FormLayout.ResponsiveStep;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
@@ -53,7 +54,7 @@ import com.vaadin.flow.function.SerializablePredicate;
  * 
  * @author bas.rutten
  * @param <ID> The type of the primary key of the entity
- * @param <T> The type of the entity
+ * @param <T>  The type of the entity
  */
 public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEntity<ID>> extends AbstractModelBasedSearchForm<ID, T> {
 
@@ -168,11 +169,12 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
             if (am.isSearchable()) {
                 Component field = groups.get(am.getPath()).getField();
                 if (field instanceof HasValue) {
-                    ((HasValue<?, ?>) field).addValueChangeListener(event -> {
+                    ValueChangeListener<ValueChangeEvent<?>> cascadeListener = event -> {
                         for (String cascadePath : am.getCascadeAttributes()) {
                             handleCascade(event, am, cascadePath);
                         }
-                    });
+                    };
+                    ((HasValue<?, ?>) field).addValueChangeListener(cascadeListener);
                 }
             }
         }

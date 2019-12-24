@@ -79,6 +79,7 @@ import com.vaadin.flow.component.HasSize;
 import com.vaadin.flow.component.HasValidation;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.HasValue.ValueChangeEvent;
+import com.vaadin.flow.component.HasValue.ValueChangeListener;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.checkbox.Checkbox;
@@ -109,7 +110,7 @@ import com.vaadin.flow.server.StreamResource;
  * An edit form that is constructed based on an entity model
  * 
  * @param <ID> the type of the primary key
- * @param <T> the type of the entity
+ * @param <T>  the type of the entity
  * @author bas.rutten
  */
 @SuppressWarnings("serial")
@@ -840,7 +841,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
         for (AttributeModel am : getEntityModel().getCascadeAttributeModels()) {
             HasValue<?, S> field = (HasValue<?, S>) getField(isViewMode(), am.getPath());
             if (field != null) {
-                field.addValueChangeListener(event -> addCascadeListener(am, event));
+                ValueChangeListener<ValueChangeEvent<?>> cascadeListener = event -> addCascadeListener(am, event);
+                field.addValueChangeListener(cascadeListener);
             }
         }
     }
@@ -1127,7 +1129,9 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
         if (bottom) {
             groups.get(isViewMode()).getFields().forEach(f -> {
                 if (f instanceof HasValidation) {
-                    f.addValueChangeListener(event -> ((HasValidation) f).setErrorMessage(null));
+                    HasValidation hv = (HasValidation) f;
+                    ValueChangeListener<ValueChangeEvent<?>> listener = event -> hv.setErrorMessage(null);
+                    f.addValueChangeListener(listener);
                 }
             });
         }
