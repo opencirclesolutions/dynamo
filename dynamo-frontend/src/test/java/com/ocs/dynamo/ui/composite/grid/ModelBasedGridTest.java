@@ -62,8 +62,7 @@ public class ModelBasedGridTest extends BaseMockitoTest {
         Person person = new Person(1, "Bob", 50, BigDecimal.valueOf(76.4), BigDecimal.valueOf(44.4));
         provider.getItems().add(person);
 
-        ModelBasedGrid<Integer, Person> grid = new ModelBasedGrid<>(provider, model, new HashMap<String, SerializablePredicate<?>>(), false,
-                GridEditMode.SINGLE_ROW);
+        new ModelBasedGrid<>(provider, model, new HashMap<String, SerializablePredicate<?>>(), false, GridEditMode.SINGLE_ROW);
     }
 
     @Test
@@ -74,11 +73,7 @@ public class ModelBasedGridTest extends BaseMockitoTest {
         Person person = new Person(1, "Bob", 50, BigDecimal.valueOf(76.4), BigDecimal.valueOf(44.4));
         provider.getItems().add(person);
 
-        ModelBasedGrid<Integer, Person> grid = new ModelBasedGrid<>(provider, model, new HashMap<String, SerializablePredicate<?>>(), true,
-                GridEditMode.SIMULTANEOUS);
-
-        // Assert.assertEquals("Persons", grid.getCaption());
-        // Assert.assertEquals("Person", grid.getDescription());
+        new ModelBasedGrid<>(provider, model, new HashMap<String, SerializablePredicate<?>>(), true, GridEditMode.SIMULTANEOUS);
     }
 
     @Test

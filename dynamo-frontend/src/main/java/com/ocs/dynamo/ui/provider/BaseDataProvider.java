@@ -46,7 +46,7 @@ import com.vaadin.flow.function.SerializablePredicate;
  * @author Bas Rutten
  *
  * @param <ID> the type of the primary key
- * @param <T> the type of the entity
+ * @param <T>  the type of the entity
  */
 public abstract class BaseDataProvider<ID extends Serializable, T extends AbstractEntity<ID>>
         extends AbstractDataProvider<T, SerializablePredicate<T>> {
@@ -120,7 +120,7 @@ public abstract class BaseDataProvider<ID extends Serializable, T extends Abstra
 
         if (!orders.isEmpty()) {
             for (QuerySortOrder order : orders) {
-                so.addSortOrder(new SortOrder(order.getSorted().toString(),
+                so.addSortOrder(new SortOrder(order.getSorted(),
                         SortDirection.ASCENDING.equals(order.getDirection()) ? Direction.ASC : Direction.DESC));
             }
         } else if (fallBackSortOrders != null && !fallBackSortOrders.isEmpty()) {

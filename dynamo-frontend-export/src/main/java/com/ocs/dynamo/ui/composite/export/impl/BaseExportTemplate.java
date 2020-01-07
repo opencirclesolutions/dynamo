@@ -42,7 +42,7 @@ import com.ocs.dynamo.ui.composite.type.ExportMode;
  * @author bas.rutten
  *
  * @param <ID> the type of the primary key of the entity
- * @param <T> the type of the entity
+ * @param <T>  the type of the entity
  */
 public abstract class BaseExportTemplate<ID extends Serializable, T extends AbstractEntity<ID>> {
 
@@ -222,4 +222,5 @@ public abstract class BaseExportTemplate<ID extends Serializable, T extends Abst
             throw new OCSRuntimeException(ex.getMessage(), ex);
         }
     }
+
 }

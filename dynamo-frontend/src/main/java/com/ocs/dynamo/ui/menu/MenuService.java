@@ -84,6 +84,7 @@ public class MenuService {
     /**
      * Constructs a menu item and its children
      * 
+     * @param bar    the main menu bar
      * @param parent the parent component (either a menu bar or menu item) to add
      *               the menu to
      * @param key    the message key

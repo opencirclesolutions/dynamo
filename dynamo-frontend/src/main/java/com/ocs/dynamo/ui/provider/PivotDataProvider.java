@@ -1,3 +1,16 @@
+/*
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
 package com.ocs.dynamo.ui.provider;
 
 import java.io.Serializable;
@@ -143,7 +156,7 @@ public class PivotDataProvider<ID extends Serializable, T extends AbstractEntity
             // fetch next page
             if (dataCache.isEmpty()) {
                 offsetMap.put(requestedOffset, lastPivotOffset);
-                Query<T, SerializablePredicate<T>> newQuery = new Query<T, SerializablePredicate<T>>(lastPivotOffset, PAGE_SIZE,
+                Query<T, SerializablePredicate<T>> newQuery = new Query<>(lastPivotOffset, PAGE_SIZE,
                         query.getSortOrders(), null, sp.isPresent() ? sp.get() : null);
                 provider.fetch(newQuery).forEach(t -> dataCache.add(t));
                 lastPivotOffset = lastPivotOffset + PAGE_SIZE;
@@ -237,7 +250,7 @@ public class PivotDataProvider<ID extends Serializable, T extends AbstractEntity
 
         // query the underlying provider
         Optional<SerializablePredicate<T>> sp = (Optional) query.getFilter();
-        Query<T, SerializablePredicate<T>> newQuery = new Query<T, SerializablePredicate<T>>(query.getOffset(), query.getLimit(),
+        Query<T, SerializablePredicate<T>> newQuery = new Query<>(query.getOffset(), query.getLimit(),
                 query.getSortOrders(), null, sp.isPresent() ? sp.get() : null);
         provider.size(newQuery);
 

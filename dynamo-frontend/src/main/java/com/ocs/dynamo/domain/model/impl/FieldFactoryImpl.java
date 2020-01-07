@@ -5,7 +5,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Collection;
@@ -44,7 +43,6 @@ import com.ocs.dynamo.ui.component.ZonedDateTimePicker;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.converter.ConverterFactory;
 import com.ocs.dynamo.ui.converter.LocalDateWeekCodeConverter;
-import com.ocs.dynamo.ui.converter.ZonedDateTimeToLocalDateTimeConverter;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.ui.validator.EmailValidator;
 import com.ocs.dynamo.ui.validator.URLValidator;
@@ -121,11 +119,7 @@ public class FieldFactoryImpl implements FieldFactory {
             BindingBuilder<U, String> sBuilder = (BindingBuilder<U, String>) builder;
             sBuilder.withNullRepresentation("")
                     .withValidator(new URLValidator(messageService.getMessage("ocs.no.valid.url", VaadinUtils.getLocale())));
-        } else if (builder.getField() instanceof TimePicker && ZonedDateTime.class.equals(am.getType())) {
-            BindingBuilder<U, LocalDateTime> sBuilder = (BindingBuilder<U, LocalDateTime>) builder;
-            sBuilder.withConverter(new ZonedDateTimeToLocalDateTimeConverter(ZoneId.systemDefault()));
         }
-
     }
 
     /**
@@ -471,7 +465,7 @@ public class FieldFactoryImpl implements FieldFactory {
         VaadinUtils.setLabel(field, editableGrid ? "" : displayName);
         VaadinUtils.setTooltip(field, am.getDescription(VaadinUtils.getLocale()));
         VaadinUtils.setPlaceHolder(field, am.getPrompt(VaadinUtils.getLocale()));
-        
+
         if (field instanceof AbstractField) {
             AbstractField<?, ?> af = (AbstractField<?, ?>) field;
             af.setRequiredIndicatorVisible(search ? am.isRequiredForSearching() : am.isRequired());

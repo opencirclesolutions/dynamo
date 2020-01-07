@@ -47,7 +47,7 @@ import com.opencsv.CSVWriter;
  * @param <ID> the type of the primary key of the entity to export
  * @param <T> the type of the entity to export
  */
-public class ModelBasedCsvExportTemplate<ID extends Serializable, T extends AbstractEntity<ID>> extends BaseExportTemplate<ID, T> {
+public class ModelBasedCsvExportTemplate<ID extends Serializable, T extends AbstractEntity<ID>> extends BaseCsvExportTemplate<ID, T> {
 
     /**
      * Constructor

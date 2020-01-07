@@ -14,6 +14,7 @@
 package com.ocs.dynamo.ui.composite.grid;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -23,6 +24,7 @@ import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
+import com.ocs.dynamo.ui.composite.export.PivotParameters;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.provider.BaseDataProvider;
 import com.ocs.dynamo.ui.provider.IdBasedDataProvider;
@@ -31,7 +33,10 @@ import com.ocs.dynamo.ui.provider.PivotDataProvider;
 import com.ocs.dynamo.ui.provider.PivotedItem;
 import com.ocs.dynamo.ui.provider.QueryType;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.grid.GridSortOrder;
 import com.vaadin.flow.component.grid.Grid.SelectionMode;
+import com.vaadin.flow.component.grid.contextmenu.GridContextMenu;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.provider.DataProvider;
@@ -169,7 +174,7 @@ public class PivotGridWrapper<ID extends Serializable, T extends AbstractEntity<
      * @return
      */
     protected PivotGrid<ID, T> constructGrid() {
-        return new PivotGrid<ID,T>(dataProvider, possibleColumnKeys, fixedHeaderMapper, headerMapper);
+        return new PivotGrid<>(dataProvider, possibleColumnKeys, fixedHeaderMapper, headerMapper);
     }
 
     public String getColumnKeyProperty() {
@@ -252,6 +257,35 @@ public class PivotGridWrapper<ID extends Serializable, T extends AbstractEntity<
         if (wrappedProvider instanceof BaseDataProvider) {
             ((BaseDataProvider<ID, T>) wrappedProvider).setFallBackSortOrders(fallbackOrders);
         }
+
+        if (getFormOptions().isExportAllowed() && getExportDelegate() != null) {
+
+            GridContextMenu<PivotedItem> contextMenu = getGrid().addContextMenu();
+            Button downloadButton = new Button(message("ocs.download"));
+            downloadButton.addClickListener(event -> {
+                List<SortOrder<?>> orders = new ArrayList<>();
+                List<GridSortOrder<PivotedItem>> so = getGrid().getSortOrder();
+                for (GridSortOrder<PivotedItem> gso : so) {
+                    orders.add(new SortOrder<String>(gso.getSorted().getKey(), gso.getDirection()));
+                }
+
+                PivotParameters pars = new PivotParameters();
+                pars.setColumnKeyProperty(columnKeyProperty);
+                pars.setFixedColumnKeys(fixedColumnKeys);
+                pars.setHeaderMapper(headerMapper);
+                pars.setFixedHeaderMapper(fixedHeaderMapper);
+                pars.setPivotedProperties(pivotedProperties);
+                pars.setPossibleColumnKeys(possibleColumnKeys);
+                pars.setRowKeyProperty(rowKeyProperty);
+
+                // use the fallback sort orders here
+                getExportDelegate().exportPivoted(getExportEntityModel() != null ? getExportEntityModel() : getEntityModel(), getFilter(),
+                        fallbackOrders, pars, getExportJoins() != null ? getExportJoins() : getJoins());
+
+            });
+            contextMenu.add(downloadButton);
+        }
+
         return fallbackOrders;
     }
 

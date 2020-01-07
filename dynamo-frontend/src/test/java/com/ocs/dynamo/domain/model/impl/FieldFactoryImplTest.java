@@ -36,6 +36,8 @@ import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.timepicker.TimePicker;
+import com.vaadin.flow.data.binder.BeanValidationBinder;
+import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.function.SerializablePredicate;
 
@@ -221,7 +223,7 @@ public class FieldFactoryImplTest extends FrontendIntegrationTest {
      * Test the creation of a local date time field
      */
     @Test
-    public void testLocalDateTimeField() {
+    public void testLocalTimeField() {
         Component ac = constructField("registrationTime", false);
         Assert.assertTrue(ac instanceof TimePicker);
     }
@@ -259,6 +261,15 @@ public class FieldFactoryImplTest extends FrontendIntegrationTest {
     public void testEmail() {
         Component ac = constructField2("email", false, false);
         Assert.assertTrue(ac instanceof TextField);
+
+        TextField tf = (TextField) ac;
+
+        Binder<TestEntity2> binder = new BeanValidationBinder<>(TestEntity2.class);
+        TestEntity2 t2 = new TestEntity2();
+        binder.setBean(t2);
+        EntityModel<TestEntity2> em = factory.getModel(TestEntity2.class);
+
+        fieldFactory.addConvertersAndValidators(binder.forField(tf), em.getAttributeModel("email"), null);
     }
 
     /**
@@ -453,4 +464,5 @@ public class FieldFactoryImplTest extends FrontendIntegrationTest {
         }
 
     }
+
 }

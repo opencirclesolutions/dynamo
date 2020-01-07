@@ -44,6 +44,34 @@ public interface ExportService {
             SerializablePredicate<T> predicate, List<SortOrder<?>> sortOrders, FetchJoinInformation... joins);
 
     /**
+     * Exports a fixed set to CSV
+     * 
+     * @param entityModel the entity model
+     * @param mode        the export mode
+     * @param items       the set of items to export
+     * @return
+     */
+    <ID extends Serializable, T extends AbstractEntity<ID>> byte[] exportCsvFixed(EntityModel<T> entityModel, ExportMode mode,
+            List<T> items);
+
+    /**
+     * Exports pivoted data to CSV
+     * 
+     * @param <ID>
+     * @param <T>
+     * @param entityModel
+     * @param mode
+     * @param predicate
+     * @param sortOrders
+     * @param pivotParameters
+     * @param joins
+     * @return
+     */
+    <ID extends Serializable, T extends AbstractEntity<ID>> byte[] exportCsvPivot(EntityModel<T> entityModel,
+            SerializablePredicate<T> predicate, List<SortOrder<?>> sortOrders, PivotParameters pivotParameters,
+            FetchJoinInformation... joins);
+
+    /**
      * Exports to Excel
      * 
      * @param entityModel     the entity model of the entity to export
@@ -70,13 +98,19 @@ public interface ExportService {
             CustomXlsStyleGenerator<ID, T> customGenerator, List<T> items);
 
     /**
-     * Exports a fixed set to CSV
      * 
-     * @param entityModel the entity model
-     * @param mode        the export mode
-     * @param items       the set of items to export
+     * @param <ID>
+     * @param <T>
+     * @param entityModel
+     * @param mode
+     * @param predicate
+     * @param sortOrders
+     * @param customGenerator
+     * @param pivotParameters
+     * @param joins
      * @return
      */
-    <ID extends Serializable, T extends AbstractEntity<ID>> byte[] exportCsvFixed(EntityModel<T> entityModel, ExportMode mode,
-            List<T> items);
+    <ID extends Serializable, T extends AbstractEntity<ID>> byte[] exportExcelPivot(EntityModel<T> entityModel,
+            SerializablePredicate<T> predicate, List<SortOrder<?>> sortOrders, CustomXlsStyleGenerator<ID, T> customGenerator,
+            PivotParameters pivotParameters, FetchJoinInformation... joins);
 }

@@ -45,7 +45,7 @@ public class PivotGrid<ID extends Serializable, T extends AbstractEntity<ID>> ex
     /**
      * 
      * @param provider           the pivot data provider
-     * @param possibleColumnKeys the column data
+     * @param possibleColumnKeys the possible column key data
      * @param fixedHeaderMapper  function used to map from fixed column property to
      *                           grid header
      * @param headerMapper       function used to map from variable column property
@@ -58,17 +58,15 @@ public class PivotGrid<ID extends Serializable, T extends AbstractEntity<ID>> ex
 
         for (int i = 0; i < provider.getFixedColumnKeys().size(); i++) {
             String fk = provider.getFixedColumnKeys().get(i);
-            addColumn(t -> {
-                return t.getFixedValue(fk);
-            }).setHeader(fixedHeaderMapper.apply(fk)).setFrozen(true).setAutoWidth(true).setKey(fk).setId(fk);
+            addColumn(t -> t.getFixedValue(fk)).setHeader(fixedHeaderMapper.apply(fk)).setFrozen(true).setAutoWidth(true).setKey(fk)
+                    .setId(fk);
         }
 
         for (int i = 0; i < possibleColumnKeys.size(); i++) {
             Object pk = possibleColumnKeys.get(i);
             for (String property : provider.getPivotedProperties()) {
-                addColumn(t -> {
-                    return t.getValue(pk, property);
-                }).setHeader(headerMapper.apply(pk, property)).setAutoWidth(true).setKey(pk + "_" + property).setId(pk + "_" + property);
+                addColumn(t -> t.getValue(pk, property)).setHeader(headerMapper.apply(pk, property)).setAutoWidth(true)
+                        .setKey(pk + "_" + property).setId(pk + "_" + property);
             }
         }
     }

@@ -27,6 +27,7 @@ import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.composite.export.CustomXlsStyleGenerator;
 import com.ocs.dynamo.ui.composite.export.ExportService;
+import com.ocs.dynamo.ui.composite.export.PivotParameters;
 import com.ocs.dynamo.ui.composite.type.ExportMode;
 import com.ocs.dynamo.ui.utils.SortUtils;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
@@ -84,6 +85,36 @@ public class ExportServiceImpl implements ExportService {
         ModelBasedExcelExportTemplate<ID, T> template = new ModelBasedExcelExportTemplate<>(null, entityModel, mode, null, null,
                 entityModel.getDisplayNamePlural(VaadinUtils.getLocale()), customGenerator);
         return template.processFixed(items);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <ID extends Serializable, T extends AbstractEntity<ID>> byte[] exportExcelPivot(EntityModel<T> entityModel,
+            SerializablePredicate<T> predicate, List<SortOrder<?>> sortOrders, CustomXlsStyleGenerator<ID, T> customGenerator,
+            PivotParameters pivotParameters, FetchJoinInformation... joins) {
+        BaseService<ID, T> service = (BaseService<ID, T>) ServiceLocatorFactory.getServiceLocator()
+                .getServiceForEntity(entityModel.getEntityClass());
+        FilterConverter<T> converter = new FilterConverter<>(entityModel);
+        Filter filter = converter.convert(predicate);
+        ModelBasedExcelPivotExportTemplate<ID, T> template = new ModelBasedExcelPivotExportTemplate<>(service, entityModel,
+                SortUtils.translateSortOrders(sortOrders), filter, entityModel.getDisplayNamePlural(VaadinUtils.getLocale()),
+                customGenerator, pivotParameters, joins);
+        return template.process();
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <ID extends Serializable, T extends AbstractEntity<ID>> byte[] exportCsvPivot(EntityModel<T> entityModel,
+            SerializablePredicate<T> predicate, List<SortOrder<?>> sortOrders, PivotParameters pivotParameters,
+            FetchJoinInformation... joins) {
+        BaseService<ID, T> service = (BaseService<ID, T>) ServiceLocatorFactory.getServiceLocator()
+                .getServiceForEntity(entityModel.getEntityClass());
+        FilterConverter<T> converter = new FilterConverter<>(entityModel);
+        Filter filter = converter.convert(predicate);
+        ModelBasedCsvPivotExportTemplate<ID, T> template = new ModelBasedCsvPivotExportTemplate<>(service, entityModel,
+                SortUtils.translateSortOrders(sortOrders), filter, entityModel.getDisplayNamePlural(VaadinUtils.getLocale()),
+                pivotParameters, joins);
+        return template.process();
     }
 
 }
