@@ -1,5 +1,7 @@
 package com.ocs.dynamo.ui.component;
 
+import static org.junit.Assert.assertEquals;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -22,13 +24,13 @@ public class InternalLinkFieldTest extends BaseMockitoTest {
 		field.initContent();
 
 		Assert.assertNotNull(field.getLinkButton());
-		Assert.assertEquals("", field.getLinkButton().getText());
+		assertEquals("", field.getLinkButton().getText());
 
 		TestEntity t2 = new TestEntity();
 		t2.setName("Bob");
 		field.setValue(t2);
 
-		Assert.assertEquals("Bob", field.getLinkButton().getText());
+		assertEquals("Bob", field.getLinkButton().getText());
 
 	}
 }

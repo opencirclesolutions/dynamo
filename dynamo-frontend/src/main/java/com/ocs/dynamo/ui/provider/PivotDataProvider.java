@@ -118,10 +118,12 @@ public class PivotDataProvider<ID extends Serializable, T extends AbstractEntity
 
     /**
      * 
-     * @param provider     the data provider to wrap
-     * @param rowProperty  the property to check to see if a new row must be created
-     * @param columnKey    the property to check for distinct pivot column values
-     * @param pivotColumns the properties to take from every row
+     * @param provider          the wrapped data provider
+     * @param rowKeyProperty    the property to check for unique row values
+     * @param columnKeyProperty the property to check for the column key
+     * @param fixedColumnKeys   the fixed columns
+     * @param pivotedProperties the pivoted properties
+     * @param sizeSupplier
      */
     public PivotDataProvider(BaseDataProvider<ID, T> provider, String rowKeyProperty, String columnKeyProperty,
             List<String> fixedColumnKeys, List<String> pivotedProperties, Supplier<Integer> sizeSupplier) {
@@ -156,8 +158,8 @@ public class PivotDataProvider<ID extends Serializable, T extends AbstractEntity
             // fetch next page
             if (dataCache.isEmpty()) {
                 offsetMap.put(requestedOffset, lastPivotOffset);
-                Query<T, SerializablePredicate<T>> newQuery = new Query<>(lastPivotOffset, PAGE_SIZE,
-                        query.getSortOrders(), null, sp.isPresent() ? sp.get() : null);
+                Query<T, SerializablePredicate<T>> newQuery = new Query<>(lastPivotOffset, PAGE_SIZE, query.getSortOrders(), null,
+                        sp.orElse(null));
                 provider.fetch(newQuery).forEach(t -> dataCache.add(t));
                 lastPivotOffset = lastPivotOffset + PAGE_SIZE;
             }
@@ -180,6 +182,7 @@ public class PivotDataProvider<ID extends Serializable, T extends AbstractEntity
                     lastRowPropertyValue = rowPropertyValue;
                 }
 
+                // add fixed columns
                 for (int i = 0; i < fixedColumnKeys.size(); i++) {
                     String fk = fixedColumnKeys.get(i);
                     Object value = ClassUtils.getFieldValue(t, fk);
@@ -203,7 +206,6 @@ public class PivotDataProvider<ID extends Serializable, T extends AbstractEntity
         }
 
         return result.stream();
-
     }
 
     public Consumer<Integer> getAfterCountCompleted() {
@@ -250,8 +252,8 @@ public class PivotDataProvider<ID extends Serializable, T extends AbstractEntity
 
         // query the underlying provider
         Optional<SerializablePredicate<T>> sp = (Optional) query.getFilter();
-        Query<T, SerializablePredicate<T>> newQuery = new Query<>(query.getOffset(), query.getLimit(),
-                query.getSortOrders(), null, sp.isPresent() ? sp.get() : null);
+        Query<T, SerializablePredicate<T>> newQuery = new Query<>(query.getOffset(), query.getLimit(), query.getSortOrders(), null,
+                sp.isPresent() ? sp.get() : null);
         provider.size(newQuery);
 
         // get the number of pivoted rows

@@ -1,10 +1,12 @@
 package com.ocs.dynamo.ui.component;
 
-import org.junit.Assert;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.when;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 
 import com.github.mvysny.kaributesting.v10.MockVaadin;
 import com.ocs.dynamo.domain.TestDomain;
@@ -33,7 +35,7 @@ public class AddNewValueDialogTest extends BaseMockitoTest {
     public void setup() {
         MockVaadin.setup();
         MockUtil.mockMessageService(messageService);
-        Mockito.when(baseService.createNewEntity()).thenReturn(new TestDomain());
+        when(baseService.createNewEntity()).thenReturn(new TestDomain());
     }
 
     @Test
@@ -58,7 +60,7 @@ public class AddNewValueDialogTest extends BaseMockitoTest {
 
         dialog.getValueField().setValue("value");
         dialog.getOkButton().click();
-        Assert.assertTrue(afterEntity);
+        assertTrue(afterEntity);
     }
     
     @Test
@@ -78,11 +80,10 @@ public class AddNewValueDialogTest extends BaseMockitoTest {
             }
 
         };
-        dialog.build();
-        dialog.open();
+        dialog.buildAndOpen();
 
         // no value set
         dialog.getOkButton().click();
-        Assert.assertFalse(afterEntity);
+        assertFalse(afterEntity);
     }
 }

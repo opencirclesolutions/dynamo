@@ -13,11 +13,13 @@
  */
 package com.ocs.dynamo.functional.dao;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.util.List;
 
 import javax.inject.Inject;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -77,25 +79,25 @@ public class DomainDaoTest extends BackendIntegrationTest {
     @Test
     public void testAll() {
         List<Domain> all = domainDao.findAll();
-        Assert.assertEquals(12, all.size());
+        assertEquals(12, all.size());
     }
 
     @Test
     public void testFindAllByType() {
         List<? extends Domain> all = domainDao.findAllByType(Currency.class);
-        Assert.assertEquals(3, all.size());
+        assertEquals(3, all.size());
     }
 
     @Test
     public void testFindChildren() {
-        List<Domain> list = domainDao.findAll();
+        domainDao.findAll();
         Domain deu = domainDao.findByTypeAndUniqueProperty(Region.class, "code", "EU", false);
-        Assert.assertTrue(deu instanceof Region);
+        assertTrue(deu instanceof Region);
         Region eu = (Region) deu;
-        Assert.assertEquals(4, eu.getChildren().size());
+        assertEquals(4, eu.getChildren().size());
         List<Country> countries = domainDao.findChildren(eu);
-        Assert.assertEquals(4, countries.size());
+        assertEquals(4, countries.size());
         countries = domainDao.findChildren(eu);
-        Assert.assertEquals(4, countries.size());
+        assertEquals(4, countries.size());
     }
 }

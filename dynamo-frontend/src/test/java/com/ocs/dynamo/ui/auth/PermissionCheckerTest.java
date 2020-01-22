@@ -13,9 +13,11 @@
  */
 package com.ocs.dynamo.ui.auth;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.util.List;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -42,10 +44,9 @@ public class PermissionCheckerTest extends BaseMockitoTest {
     public void testFindViews() {
 
         List<String> viewNames = checker.getViewNames();
-        Assert.assertEquals(2, viewNames.size());
-
-        Assert.assertTrue(viewNames.contains("TestView"));
-        Assert.assertTrue(viewNames.contains("Destination 1.1"));
+        assertEquals(2, viewNames.size());
+        assertTrue(viewNames.contains("TestView"));
+        assertTrue(viewNames.contains("Destination 1.1"));
     }
 
     /**
@@ -53,7 +54,7 @@ public class PermissionCheckerTest extends BaseMockitoTest {
      */
     @Test
     public void testEditOnly() {
-        Assert.assertTrue(checker.isEditOnly("TestView"));
-        Assert.assertTrue(checker.isEditOnly("Destination 1.1"));
+        assertTrue(checker.isEditOnly("TestView"));
+        assertTrue(checker.isEditOnly("Destination 1.1"));
     }
 }

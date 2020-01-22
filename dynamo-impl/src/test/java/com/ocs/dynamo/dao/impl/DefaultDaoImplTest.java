@@ -13,7 +13,8 @@
  */
 package com.ocs.dynamo.dao.impl;
 
-import org.junit.Assert;
+import static org.junit.Assert.assertEquals;
+
 import org.junit.Test;
 
 import com.ocs.dynamo.domain.QTestEntity;
@@ -26,23 +27,23 @@ public class DefaultDaoImplTest {
     @Test
     public void testCreateWithout() {
         dao = new DefaultDaoImpl<>(QTestEntity.testEntity, TestEntity.class);
-        Assert.assertEquals(QTestEntity.testEntity, dao.getDslRoot());
-        Assert.assertEquals(TestEntity.class, dao.getEntityClass());
+        assertEquals(QTestEntity.testEntity, dao.getDslRoot());
+        assertEquals(TestEntity.class, dao.getEntityClass());
 
         // no fetch joins
-        Assert.assertEquals(0, dao.getFetchJoins().length);
+        assertEquals(0, dao.getFetchJoins().length);
     }
 
     @Test
     public void testCreateWithFetch() {
         dao = new DefaultDaoImpl<>(QTestEntity.testEntity, TestEntity.class,
                 "testEntities");
-        Assert.assertEquals(QTestEntity.testEntity, dao.getDslRoot());
-        Assert.assertEquals(TestEntity.class, dao.getEntityClass());
+        assertEquals(QTestEntity.testEntity, dao.getDslRoot());
+        assertEquals(TestEntity.class, dao.getEntityClass());
 
         // check that the fetch joins are properly set
-        Assert.assertEquals(1, dao.getFetchJoins().length);
-        Assert.assertEquals("testEntities", dao.getFetchJoins()[0].getProperty());
+        assertEquals(1, dao.getFetchJoins().length);
+        assertEquals("testEntities", dao.getFetchJoins()[0].getProperty());
     }
 
 }

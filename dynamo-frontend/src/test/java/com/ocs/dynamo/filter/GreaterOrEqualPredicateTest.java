@@ -1,5 +1,7 @@
 package com.ocs.dynamo.filter;
 
+import static org.junit.Assert.assertFalse;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -11,7 +13,7 @@ public class GreaterOrEqualPredicateTest {
 	public void test() {
 		GreaterOrEqualPredicate<TestEntity> p1 = new GreaterOrEqualPredicate<>("age", 20L);
 		
-		Assert.assertFalse(p1.test(null));
+		assertFalse(p1.test(null));
 		
 		TestEntity t1 = new TestEntity();
 		t1.setAge(20L);
@@ -21,6 +23,6 @@ public class GreaterOrEqualPredicateTest {
 		Assert.assertTrue(p1.test(t1));
 		
 		t1.setAge(18L);
-		Assert.assertFalse(p1.test(t1));
+		assertFalse(p1.test(t1));
 	}
 }

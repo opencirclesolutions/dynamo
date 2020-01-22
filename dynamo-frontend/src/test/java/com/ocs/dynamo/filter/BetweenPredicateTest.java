@@ -1,5 +1,7 @@
 package com.ocs.dynamo.filter;
 
+import static org.junit.Assert.assertFalse;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -11,12 +13,12 @@ public class BetweenPredicateTest {
 	public void test() {
 		BetweenPredicate<TestEntity> p1 = new BetweenPredicate<>("age", 10L, 20L);
 
-		Assert.assertFalse(p1.test(null));
+		assertFalse(p1.test(null));
 
 		// too low
 		TestEntity t1 = new TestEntity();
 		t1.setAge(4L);
-		Assert.assertFalse(p1.test(t1));
+		assertFalse(p1.test(t1));
 
 		// lower boundary
 		t1.setAge(10L);
@@ -32,6 +34,6 @@ public class BetweenPredicateTest {
 
 		// too high
 		t1.setAge(21L);
-		Assert.assertFalse(p1.test(t1));
+		assertFalse(p1.test(t1));
 	}
 }

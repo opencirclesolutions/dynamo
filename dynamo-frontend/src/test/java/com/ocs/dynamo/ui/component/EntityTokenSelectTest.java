@@ -13,10 +13,14 @@
  */
 package com.ocs.dynamo.ui.component;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 
 import com.google.common.collect.Lists;
 import com.ocs.dynamo.dao.SortOrder;
@@ -39,7 +43,7 @@ public class EntityTokenSelectTest extends BaseMockitoTest {
 		EntityTokenSelect<Integer, TestEntity> select = new EntityTokenSelect<>(factory.getModel(TestEntity.class), null,
 				service);
 		Assert.assertEquals(EntityTokenSelect.SelectMode.ALL, select.getSelectMode());
-		Mockito.verify(service).findAll((SortOrder[]) null);
+		verify(service).findAll((SortOrder[]) null);
 	}
 
 	@Test
@@ -47,7 +51,7 @@ public class EntityTokenSelectTest extends BaseMockitoTest {
 		EntityTokenSelect<Integer, TestEntity> select = new EntityTokenSelect<>(factory.getModel(TestEntity.class), null,
 				Lists.newArrayList(new TestEntity()));
 		Assert.assertEquals(EntityTokenSelect.SelectMode.FIXED, select.getSelectMode());
-		Mockito.verifyZeroInteractions(service);
+		verifyNoInteractions(service);
 	}
 
 	@Test
@@ -57,7 +61,7 @@ public class EntityTokenSelectTest extends BaseMockitoTest {
 				service, new EqualsPredicate<TestEntity>("name", "Bob"));
 		Assert.assertEquals(EntityTokenSelect.SelectMode.FILTERED, select.getSelectMode());
 
-		Mockito.verify(service).find(Mockito.any(com.ocs.dynamo.filter.Filter.class), Mockito.isNull());
+		verify(service).find(any(com.ocs.dynamo.filter.Filter.class), isNull());
 	}
 
 	@Test
@@ -69,7 +73,7 @@ public class EntityTokenSelectTest extends BaseMockitoTest {
 
 		select.refresh();
 
-		Mockito.verify(service).find(Mockito.any(com.ocs.dynamo.filter.Filter.class), Mockito.isNull());
+		verify(service).find(any(com.ocs.dynamo.filter.Filter.class), isNull());
 	}
 
 	@Test
@@ -81,6 +85,6 @@ public class EntityTokenSelectTest extends BaseMockitoTest {
 
 		select.refresh();
 
-		Mockito.verify(service).find(Mockito.any(com.ocs.dynamo.filter.Filter.class), Mockito.isNull());
+		verify(service).find(any(com.ocs.dynamo.filter.Filter.class), isNull());
 	}
 }

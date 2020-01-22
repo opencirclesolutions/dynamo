@@ -1,9 +1,11 @@
 package com.ocs.dynamo.service.impl;
 
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 
 import com.ocs.dynamo.dao.BaseDao;
 import com.ocs.dynamo.domain.QTestEntity;
@@ -27,7 +29,7 @@ public class DefaultServiceImplTest extends BaseMockitoTest {
 		service.findIdenticalEntity(te);
 
 		// no unique property known, no query for unique entity
-		Mockito.verifyZeroInteractions(dao);
+		verifyNoInteractions(dao);
 	}
 
 	@Test
@@ -40,7 +42,7 @@ public class DefaultServiceImplTest extends BaseMockitoTest {
 		te.setName("Kevin");
 		service.findIdenticalEntity(te);
 
-		Mockito.verify(dao).findByUniqueProperty("name", "Kevin", false);
+		verify(dao).findByUniqueProperty("name", "Kevin", false);
 	}
 
 	@Test
@@ -53,7 +55,7 @@ public class DefaultServiceImplTest extends BaseMockitoTest {
 		te.setName("Kevin");
 		service.findIdenticalEntity(te);
 
-		Mockito.verify(dao).findByUniqueProperty("name", "Kevin", true);
+		verify(dao).findByUniqueProperty("name", "Kevin", true);
 	}
 
 	@Test

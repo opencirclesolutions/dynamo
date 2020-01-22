@@ -13,6 +13,12 @@
  */
 package com.ocs.dynamo.utils;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
@@ -21,7 +27,6 @@ import java.util.Map;
 import javax.persistence.Entity;
 import javax.validation.constraints.Size;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 import com.ocs.dynamo.domain.TestEntity;
@@ -126,16 +131,16 @@ public class ClassUtilsTest {
         entity.setAge(44L);
 
         ClassUtils.clearFieldValue(entity, "someBytes", byte[].class);
-        Assert.assertNull(entity.getSomeBytes());
+        assertNull(entity.getSomeBytes());
 
         ClassUtils.clearFieldValue(entity, "name", String.class);
-        Assert.assertNull(entity.getName());
+        assertNull(entity.getName());
 
         TestEntity2 entity2 = new TestEntity2();
         entity2.setTestEntity(entity);
 
         ClassUtils.clearFieldValue(entity2, "testEntity.age", Long.class);
-        Assert.assertNull(entity.getAge());
+        assertNull(entity.getAge());
     }
 
     @Test
@@ -144,36 +149,36 @@ public class ClassUtilsTest {
         TestEntity2 entity2 = new TestEntity2();
 
         // non-nested
-        Assert.assertTrue(ClassUtils.canSetProperty(entity2, "name"));
-        Assert.assertFalse(ClassUtils.canSetProperty(entity2, "phone"));
+        assertTrue(ClassUtils.canSetProperty(entity2, "name"));
+        assertFalse(ClassUtils.canSetProperty(entity2, "phone"));
 
         // nested property - cannot be set since the reference to testEntity is
         // empty
-        Assert.assertFalse(ClassUtils.canSetProperty(entity2, "testEntity.name"));
+        assertFalse(ClassUtils.canSetProperty(entity2, "testEntity.name"));
 
         // the reference is now non-empty and the property can be set
         entity2.setTestEntity(new TestEntity());
-        Assert.assertTrue(ClassUtils.canSetProperty(entity2, "testEntity.name"));
+        assertTrue(ClassUtils.canSetProperty(entity2, "testEntity.name"));
         // neste property that does not exist
-        Assert.assertFalse(ClassUtils.canSetProperty(entity2, "testEntity.phone"));
+        assertFalse(ClassUtils.canSetProperty(entity2, "testEntity.phone"));
     }
 
     @Test
     public void testForClass() {
         Class<?> clazz = ClassUtils.forClass("com.ocs.dynamo.domain.TestEntity");
-        Assert.assertNotNull(clazz);
+        assertNotNull(clazz);
     }
 
     @Test
     public void testForClassBogus() {
         Class<?> clazz = ClassUtils.forClass("com.ocs.dynamo.domain.TestEntityZ");
-        Assert.assertNull(clazz);
+        assertNull(clazz);
     }
 
     @Test
     public void testForClassNull() {
         Class<?> clazz = ClassUtils.forClass("");
-        Assert.assertNull(clazz);
+        assertNull(clazz);
     }
 
     @Test
@@ -182,20 +187,19 @@ public class ClassUtilsTest {
 
         // retrieve an annotation from a field
         Attribute attribute = ClassUtils.getAnnotationOnField(fieldOne, Attribute.class);
-        Assert.assertNotNull(attribute);
-        Assert.assertEquals("desc", attribute.description());
+        assertNotNull(attribute);
+        assertEquals("desc", attribute.description());
 
         // retrieve the annotation from the class and the field name
         attribute = ClassUtils.getAnnotationOnField(TestObject.class, "fieldOne", Attribute.class);
-        Assert.assertEquals("desc", attribute.description());
+        assertEquals("desc", attribute.description());
 
-        String desc = ClassUtils.getAnnotationAttributeValue(fieldOne, Attribute.class,
-                "description");
-        Assert.assertEquals("desc", desc);
+        String desc = ClassUtils.getAnnotationAttributeValue(fieldOne, Attribute.class, "description");
+        assertEquals("desc", desc);
 
         // check for null
         Entity entity = ClassUtils.getAnnotationOnField(fieldOne, Entity.class);
-        Assert.assertNull(entity);
+        assertNull(entity);
     }
 
     /**
@@ -203,10 +207,9 @@ public class ClassUtilsTest {
      */
     @Test
     public void testGetAnnotationOnMethod() {
-        Attribute attribute = ClassUtils.getAnnotationOnMethod(TestObject.class, "fieldThree",
-                Attribute.class);
-        Assert.assertNotNull(attribute);
-        Assert.assertEquals("Bert", attribute.displayName());
+        Attribute attribute = ClassUtils.getAnnotationOnMethod(TestObject.class, "fieldThree", Attribute.class);
+        assertNotNull(attribute);
+        assertEquals("Bert", attribute.displayName());
     }
 
     @Test
@@ -215,17 +218,17 @@ public class ClassUtilsTest {
         entity.setSomeBytes(new byte[] { 1, 2, 3 });
 
         byte[] bytes = ClassUtils.getBytes(entity, "someBytes");
-        Assert.assertNotNull(bytes);
-        Assert.assertEquals(3, bytes.length);
+        assertNotNull(bytes);
+        assertEquals(3, bytes.length);
 
         ClassUtils.setBytes(new byte[] { 2, 3, 4 }, entity, "someBytes");
         bytes = entity.getSomeBytes();
-        Assert.assertEquals(2, bytes[0]);
-        Assert.assertEquals(3, bytes[1]);
-        Assert.assertEquals(4, bytes[2]);
+        assertEquals(2, bytes[0]);
+        assertEquals(3, bytes[1]);
+        assertEquals(4, bytes[2]);
 
         ClassUtils.setBytes(null, entity, "someBytes");
-        Assert.assertNull(entity.getSomeBytes());
+        assertNull(entity.getSomeBytes());
     }
 
     /**
@@ -234,13 +237,13 @@ public class ClassUtilsTest {
     @Test
     public void testGetField() {
 
-        Assert.assertNull(ClassUtils.getField(TestObject.class, "bogus"));
+        assertNull(ClassUtils.getField(TestObject.class, "bogus"));
 
         Field fieldOne = ClassUtils.getField(TestObject.class, "fieldOne");
-        Assert.assertEquals(Integer.class, fieldOne.getType());
+        assertEquals(Integer.class, fieldOne.getType());
 
         Field fieldTwo = ClassUtils.getField(TestObject.class, "fieldTwo");
-        Assert.assertEquals(String.class, fieldTwo.getType());
+        assertEquals(String.class, fieldTwo.getType());
     }
 
     /**
@@ -249,14 +252,14 @@ public class ClassUtilsTest {
     @Test
     public void testGetFieldRecursive() {
         Field fieldOne = ClassUtils.getField(TestObject2.class, "fieldOne");
-        Assert.assertEquals(Integer.class, fieldOne.getType());
+        assertEquals(Integer.class, fieldOne.getType());
     }
 
     @Test
     public void testGetFieldValue() {
         TestEntity entity = new TestEntity();
         entity.setAge(12L);
-        Assert.assertEquals(12L, ClassUtils.getFieldValue(entity, "age"));
+        assertEquals(12L, ClassUtils.getFieldValue(entity, "age"));
     }
 
     @Test
@@ -264,10 +267,10 @@ public class ClassUtilsTest {
         TestEntity entity = new TestEntity();
         entity.setAge(12L);
 
-        Assert.assertEquals("12", ClassUtils.getFieldValueAsString(entity, "age"));
+        assertEquals("12", ClassUtils.getFieldValueAsString(entity, "age"));
 
         entity.setAge(null);
-        Assert.assertNull(ClassUtils.getFieldValueAsString(entity, "age"));
+        assertNull(ClassUtils.getFieldValueAsString(entity, "age"));
     }
 
     @Test(expected = OCSRuntimeException.class)
@@ -285,25 +288,25 @@ public class ClassUtilsTest {
         TestEntity2 entity2 = new TestEntity2();
         entity2.setTestEntity(entity);
 
-        Assert.assertEquals(12L, ClassUtils.getFieldValue(entity2, "testEntity.age"));
+        assertEquals(12L, ClassUtils.getFieldValue(entity2, "testEntity.age"));
     }
 
     @Test
     public void testGetGetterMethod() {
 
         Method method = ClassUtils.getGetterMethod(TestEntity.class, "age");
-        Assert.assertNotNull(method);
+        assertNotNull(method);
 
         // non existing method
         Method method3 = ClassUtils.getGetterMethod(TestEntity.class, "age2");
-        Assert.assertNull(method3);
+        assertNull(method3);
 
     }
 
     @Test
     public void testGetMaxLength() {
-        Assert.assertEquals(-1, ClassUtils.getMaxLength(TestObject.class, "fieldOne"));
-        Assert.assertEquals(123, ClassUtils.getMaxLength(TestObject.class, "fieldTwo"));
+        assertEquals(-1, ClassUtils.getMaxLength(TestObject.class, "fieldOne"));
+        assertEquals(123, ClassUtils.getMaxLength(TestObject.class, "fieldTwo"));
     }
 
     /**
@@ -312,39 +315,39 @@ public class ClassUtilsTest {
     @Test
     public void testGetMethod() {
 
-        Assert.assertNull(ClassUtils.getGetterMethod(TestObject.class, "bogus"));
+        assertNull(ClassUtils.getGetterMethod(TestObject.class, "bogus"));
 
         Method method = ClassUtils.getGetterMethod(TestObject.class, "fieldOne");
-        Assert.assertEquals(Integer.class, method.getReturnType());
+        assertEquals(Integer.class, method.getReturnType());
 
         method = ClassUtils.getGetterMethod(TestObject.class, "fieldTwo");
-        Assert.assertEquals(String.class, method.getReturnType());
+        assertEquals(String.class, method.getReturnType());
     }
 
     @Test
     public void testGetResolvedType() {
         Class<?> type = ClassUtils.getResolvedType(TestObject3.class, "objects", 0);
-        Assert.assertNotNull(type);
-        Assert.assertEquals(TestObject.class, type);
+        assertNotNull(type);
+        assertEquals(TestObject.class, type);
 
         type = ClassUtils.getResolvedType(TestObject3.class, "indexedObjects", 0);
-        Assert.assertNotNull(type);
-        Assert.assertEquals(Integer.class, type);
+        assertNotNull(type);
+        assertEquals(Integer.class, type);
         type = ClassUtils.getResolvedType(TestObject3.class, "indexedObjects", 1, 0);
-        Assert.assertNotNull(type);
-        Assert.assertEquals(TestObject.class, type);
+        assertNotNull(type);
+        assertEquals(TestObject.class, type);
     }
 
     @Test
     public void testHasMethod() {
         TestEntity entity = new TestEntity();
-        Assert.assertTrue(ClassUtils.hasMethod(entity, "getAge"));
-        Assert.assertTrue(ClassUtils.hasMethod(entity, "getSomeBoolean"));
+        assertTrue(ClassUtils.hasMethod(entity, "getAge"));
+        assertTrue(ClassUtils.hasMethod(entity, "getSomeBoolean"));
 
         // check is case sensitive
-        Assert.assertFalse(ClassUtils.hasMethod(entity, "getAGe"));
+        assertFalse(ClassUtils.hasMethod(entity, "getAGe"));
         // must provide the full method name
-        Assert.assertFalse(ClassUtils.hasMethod(entity, "age"));
+        assertFalse(ClassUtils.hasMethod(entity, "age"));
     }
 
     @Test
@@ -352,7 +355,7 @@ public class ClassUtilsTest {
         TestEntity entity = new TestEntity();
         ClassUtils.setFieldValue(entity, "age", 12L);
 
-        Assert.assertEquals(12L, entity.getAge().longValue());
+        assertEquals(12L, entity.getAge().longValue());
     }
 
     @Test(expected = OCSRuntimeException.class)
@@ -369,6 +372,6 @@ public class ClassUtilsTest {
 
         ClassUtils.setFieldValue(entity2, "testEntity.age", 12L);
 
-        Assert.assertEquals(12L, entity.getAge().longValue());
+        assertEquals(12L, entity.getAge().longValue());
     }
 }

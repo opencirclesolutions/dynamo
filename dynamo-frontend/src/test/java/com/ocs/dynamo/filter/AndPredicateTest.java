@@ -1,5 +1,7 @@
 package com.ocs.dynamo.filter;
 
+import static org.junit.Assert.assertTrue;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -18,12 +20,12 @@ public class AndPredicateTest {
 		TestEntity t1 = new TestEntity();
 		t1.setName("Bob");
 		t1.setAge(45L);
-		Assert.assertTrue(and.test(t1));
+		assertTrue(and.test(t1));
 
 		and = new AndPredicate<>(p1, p2);
 		Assert.assertFalse(and.test(t1));
 
 		t1.setAge(44L);
-		Assert.assertTrue(and.test(t1));
+		assertTrue(and.test(t1));
 	}
 }

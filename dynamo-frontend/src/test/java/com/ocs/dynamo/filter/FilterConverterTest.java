@@ -13,9 +13,12 @@
  */
 package com.ocs.dynamo.filter;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import java.util.List;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -46,102 +49,102 @@ public class FilterConverterTest extends BaseMockitoTest {
 	@Test
 	public void testAnd() {
 		Filter result = converter.convert(new AndPredicate<TestEntity>(f1, f2));
-		Assert.assertTrue(result instanceof And);
+		assertTrue(result instanceof And);
 	}
 
 	@Test
 	public void testBetween() {
 		Filter result = converter.convert(new BetweenPredicate<TestEntity>("test", 1, 10));
-		Assert.assertTrue(result instanceof Between);
+		assertTrue(result instanceof Between);
 	}
 
 	@Test
 	public void testCompareEqual() {
 		Filter result = converter.convert(new EqualsPredicate<TestEntity>("test", "test"));
-		Assert.assertTrue(result instanceof Compare.Equal);
+		assertTrue(result instanceof Compare.Equal);
 	}
 
 	@Test
 	public void testCompareGreater() {
 		Filter result = converter.convert(new GreaterThanPredicate<TestEntity>("test", "test"));
-		Assert.assertTrue(result instanceof Compare.Greater);
+		assertTrue(result instanceof Compare.Greater);
 	}
 
 	@Test
 	public void testCompareGreaterOrEqual() {
 		Filter result = converter.convert(new GreaterOrEqualPredicate<TestEntity>("test", "test"));
-		Assert.assertTrue(result instanceof Compare.GreaterOrEqual);
+		assertTrue(result instanceof Compare.GreaterOrEqual);
 	}
 
 	@Test
 	public void testCompareLess() {
 		Filter result = converter.convert(new LessThanPredicate<TestEntity>("test", "test"));
-		Assert.assertTrue(result instanceof Compare.Less);
+		assertTrue(result instanceof Compare.Less);
 	}
 
 	@Test
 	public void testIn() {
 		Filter result = converter.convert(new InPredicate<TestEntity>("test", Lists.newArrayList("v1", "v2")));
-		Assert.assertTrue(result instanceof In);
+		assertTrue(result instanceof In);
 	}
 
 	@Test
 	public void testContains() {
 		Filter result = converter.convert(new ContainsPredicate<TestEntity>("test", "test"));
-		Assert.assertTrue(result instanceof Contains);
+		assertTrue(result instanceof Contains);
 	}
 
 	@Test
 	public void testModulo1() {
 		Filter result = converter.convert(new ModuloPredicate<TestEntity>("test", 4, 2));
-		Assert.assertTrue(result instanceof Modulo);
+		assertTrue(result instanceof Modulo);
 
 		Modulo mod = (Modulo) result;
 
-		Assert.assertEquals(4, mod.getModValue());
-		Assert.assertEquals(2, mod.getResult());
+		assertEquals(4, mod.getModValue());
+		assertEquals(2, mod.getResult());
 	}
 
 	@Test
 	public void testModulo2() {
 		Filter result = converter.convert(new ModuloPredicate<TestEntity>("test", "test2", 2));
-		Assert.assertTrue(result instanceof Modulo);
+		assertTrue(result instanceof Modulo);
 
 		Modulo mod = (Modulo) result;
-		Assert.assertEquals("test2", mod.getModExpression());
-		Assert.assertEquals(2, mod.getResult());
+		assertEquals("test2", mod.getModExpression());
+		assertEquals(2, mod.getResult());
 	}
 
 	@Test
 	public void testCompareLessOrEqual() {
 		Filter result = converter.convert(new LessOrEqualPredicate<TestEntity>("test", "test"));
-		Assert.assertTrue(result instanceof Compare.LessOrEqual);
+		assertTrue(result instanceof Compare.LessOrEqual);
 	}
 
 	@Test
 	public void testIsNull() {
 		Filter result = converter.convert(new IsNullPredicate<TestEntity>("test"));
-		Assert.assertTrue(result instanceof IsNull);
+		assertTrue(result instanceof IsNull);
 	}
 
 	@Test
 	public void testLike() {
 		Filter result = converter.convert(new LikePredicate<TestEntity>("test", "%test%", false));
-		Assert.assertTrue(result instanceof Like);
+		assertTrue(result instanceof Like);
 		Like like = (Like) result;
-		Assert.assertFalse(like.isCaseSensitive());
+		assertFalse(like.isCaseSensitive());
 	}
 
 	@Test
 	public void testNot() {
 		Filter result = converter.convert(new NotPredicate<TestEntity>(f1));
-		Assert.assertTrue(result instanceof Not);
+		assertTrue(result instanceof Not);
 	}
 
 	@Test
 	public void testOr() {
 		Filter result = converter.convert(new OrPredicate<TestEntity>(f1, f2));
-		Assert.assertTrue(result instanceof Or);
+		assertTrue(result instanceof Or);
 	}
 
 	/**
@@ -152,9 +155,9 @@ public class FilterConverterTest extends BaseMockitoTest {
 		Filter result = modelConverter.convert(
 				new AndPredicate<TestEntity>(new EqualsPredicate<TestEntity>("testEntities", new TestEntity2())));
 
-		Assert.assertTrue(result instanceof And);
+		assertTrue(result instanceof And);
 		Filter first = ((And) result).getFilters().iterator().next();
-		Assert.assertTrue(first instanceof Contains);
+		assertTrue(first instanceof Contains);
 	}
 
 	/**
@@ -167,12 +170,12 @@ public class FilterConverterTest extends BaseMockitoTest {
 		Filter result = modelConverter
 				.convert(new AndPredicate<TestEntity>(new EqualsPredicate<TestEntity>("testEntities", entities)));
 
-		Assert.assertTrue(result instanceof And);
+		assertTrue(result instanceof And);
 		Filter first = ((And) result).getFilters().iterator().next();
-		Assert.assertTrue(first instanceof Or);
+		assertTrue(first instanceof Or);
 
 		for (Filter f : ((Or) first).getFilters()) {
-			Assert.assertTrue(f instanceof Contains);
+			assertTrue(f instanceof Contains);
 		}
 	}
 
@@ -182,10 +185,10 @@ public class FilterConverterTest extends BaseMockitoTest {
 	@Test
 	public void testSimpleStringFilter1() {
 		Filter result = converter.convert(new SimpleStringPredicate<TestEntity>("test", "test", false, true));
-		Assert.assertTrue(result instanceof Like);
+		assertTrue(result instanceof Like);
 		Like like = (Like) result;
-		Assert.assertTrue(like.isCaseSensitive());
-		Assert.assertEquals("%test%", like.getValue());
+		assertTrue(like.isCaseSensitive());
+		assertEquals("%test%", like.getValue());
 	}
 
 	/**
@@ -194,9 +197,9 @@ public class FilterConverterTest extends BaseMockitoTest {
 	@Test
 	public void testSimpleStringFilter2() {
 		Filter result = converter.convert(new SimpleStringPredicate<TestEntity>("test", "test", true, false));
-		Assert.assertTrue(result instanceof Like);
+		assertTrue(result instanceof Like);
 		Like like = (Like) result;
-		Assert.assertFalse(like.isCaseSensitive());
-		Assert.assertEquals("test%", like.getValue());
+		assertFalse(like.isCaseSensitive());
+		assertEquals("test%", like.getValue());
 	}
 }

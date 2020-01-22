@@ -1,6 +1,8 @@
 package com.ocs.dynamo.filter;
 
-import org.junit.Assert;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import org.junit.Test;
 
 import com.ocs.dynamo.domain.TestEntity;
@@ -15,9 +17,9 @@ public class NotPredicateTest {
 
 		TestEntity t1 = new TestEntity();
 		t1.setName("Bob");
-		Assert.assertFalse(not.test(t1));
+		assertFalse(not.test(t1));
 
 		t1.setName("Rob");
-		Assert.assertTrue(not.test(t1));
+		assertTrue(not.test(t1));
 	}
 }

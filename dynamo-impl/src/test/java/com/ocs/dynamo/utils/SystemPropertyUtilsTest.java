@@ -1,6 +1,9 @@
 package com.ocs.dynamo.utils;
 
-import org.junit.Assert;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import org.junit.Test;
 
 import com.ocs.dynamo.util.SystemPropertyUtils;
@@ -9,38 +12,38 @@ public class SystemPropertyUtilsTest {
 
     @Test
     public void testDefaults() {
-        Assert.assertEquals("€", SystemPropertyUtils.getDefaultCurrencySymbol());
-        Assert.assertEquals("dd-MM-yyyy", SystemPropertyUtils.getDefaultDateFormat());
-        Assert.assertEquals("dd-MM-yyyy HH:mm:ss", SystemPropertyUtils.getDefaultDateTimeFormat());
-        Assert.assertEquals(2, SystemPropertyUtils.getDefaultDecimalPrecision());
-        Assert.assertEquals("HH:mm:ss", SystemPropertyUtils.getDefaultTimeFormat());
+        assertEquals("€", SystemPropertyUtils.getDefaultCurrencySymbol());
+        assertEquals("dd-MM-yyyy", SystemPropertyUtils.getDefaultDateFormat());
+        assertEquals("dd-MM-yyyy HH:mm:ss", SystemPropertyUtils.getDefaultDateTimeFormat());
+        assertEquals(2, SystemPropertyUtils.getDefaultDecimalPrecision());
+        assertEquals("HH:mm:ss", SystemPropertyUtils.getDefaultTimeFormat());
 
-        Assert.assertEquals(false, SystemPropertyUtils.allowListExport());
-        Assert.assertEquals("\"", SystemPropertyUtils.getCsvQuoteChar());
-        Assert.assertEquals(";", SystemPropertyUtils.getCsvSeparator());
-        Assert.assertEquals("\"\"", SystemPropertyUtils.getCsvEscapeChar());
-        
-        Assert.assertEquals(false, SystemPropertyUtils.useThousandsGroupingInEditMode());
+        assertEquals(false, SystemPropertyUtils.allowListExport());
+        assertEquals("\"", SystemPropertyUtils.getCsvQuoteChar());
+        assertEquals(";", SystemPropertyUtils.getCsvSeparator());
+        assertEquals("\"\"", SystemPropertyUtils.getCsvEscapeChar());
 
-        Assert.assertEquals("en_GB", SystemPropertyUtils.getDefaultLocale());
+        assertEquals(false, SystemPropertyUtils.useThousandsGroupingInEditMode());
 
-        Assert.assertFalse(SystemPropertyUtils.getDefaultSearchCaseSensitive());
-        Assert.assertFalse(SystemPropertyUtils.getDefaultSearchPrefixOnly());
+        assertEquals("en_GB", SystemPropertyUtils.getDefaultLocale());
 
-        Assert.assertEquals("true", SystemPropertyUtils.getDefaultTrueRepresentation());
-        Assert.assertEquals("false", SystemPropertyUtils.getDefaultFalseRepresentation());
-        
-        Assert.assertEquals("400px", SystemPropertyUtils.getDefaultGridHeight());
-        Assert.assertEquals("300px", SystemPropertyUtils.getDefaultSearchDialogGridHeight());
-        Assert.assertEquals(2000, SystemPropertyUtils.getDefaultMessageDisplayTime().intValue());
-        
-        Assert.assertEquals("200px", SystemPropertyUtils.getDefaultTextAreaHeight());
-        
-        Assert.assertEquals(3,  SystemPropertyUtils.getLookupFieldMaxItems());
-        
-        Assert.assertEquals("1200px", SystemPropertyUtils.getMinimumTwoColumnWidth());
-        Assert.assertTrue(SystemPropertyUtils.isCapitalizeWords());
-        
-        Assert.assertTrue(SystemPropertyUtils.useDefaultPromptValue());
+        assertFalse(SystemPropertyUtils.getDefaultSearchCaseSensitive());
+        assertFalse(SystemPropertyUtils.getDefaultSearchPrefixOnly());
+
+        assertEquals("true", SystemPropertyUtils.getDefaultTrueRepresentation());
+        assertEquals("false", SystemPropertyUtils.getDefaultFalseRepresentation());
+
+        assertEquals("400px", SystemPropertyUtils.getDefaultGridHeight());
+        assertEquals("300px", SystemPropertyUtils.getDefaultSearchDialogGridHeight());
+        assertEquals(2000, SystemPropertyUtils.getDefaultMessageDisplayTime().intValue());
+
+        assertEquals("200px", SystemPropertyUtils.getDefaultTextAreaHeight());
+
+        assertEquals(3, SystemPropertyUtils.getLookupFieldMaxItems());
+
+        assertEquals("1200px", SystemPropertyUtils.getMinimumTwoColumnWidth());
+        assertTrue(SystemPropertyUtils.isCapitalizeWords());
+
+        assertTrue(SystemPropertyUtils.useDefaultPromptValue());
     }
 }

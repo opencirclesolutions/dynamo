@@ -13,13 +13,13 @@
  */
 package com.ocs.dynamo.dao.impl;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Assert;
 import org.junit.Test;
 
-import com.google.common.collect.Lists;
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.query.PagingDataSetIterator;
 
@@ -27,9 +27,9 @@ public class DataSetIteratorTest {
 
     private PagingDataSetIterator<Integer, TestEntity> iterator;
 
-    private List<Integer> ids = Lists.newArrayList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+    private List<Integer> ids = List.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
 
-    private List<Integer> ids2 = Lists.newArrayList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
+    private List<Integer> ids2 = List.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
 
     private int pagesRead = 0;
 
@@ -59,8 +59,8 @@ public class DataSetIteratorTest {
             }
         } while (entity != null);
 
-        Assert.assertEquals(10, i);
-        Assert.assertEquals(2, pagesRead);
+        assertEquals(10, i);
+        assertEquals(2, pagesRead);
     }
 
     @Test
@@ -89,7 +89,7 @@ public class DataSetIteratorTest {
             }
         } while (entity != null);
 
-        Assert.assertEquals(12, i);
-        Assert.assertEquals(3, pagesRead);
+        assertEquals(12, i);
+        assertEquals(3, pagesRead);
     }
 }

@@ -1,13 +1,15 @@
 package com.ocs.dynamo.aop;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.when;
+
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.ocs.dynamo.domain.AbstractAuditableEntity;
@@ -27,7 +29,7 @@ public class AuditAspectTest {
 
     @Before
     public void setUp() {
-        Mockito.when(userDetailsService.getCurrentUserName()).thenReturn("Kevin");
+        when(userDetailsService.getCurrentUserName()).thenReturn("Kevin");
     }
 
     @Test
@@ -35,10 +37,10 @@ public class AuditAspectTest {
         MyAuditableEntity entity = new MyAuditableEntity();
         aspect.auditSave(joinPoint, entity);
 
-        Assert.assertEquals("Kevin", entity.getCreatedBy());
-        Assert.assertEquals("Kevin", entity.getChangedBy());
-        Assert.assertNotNull(entity.getCreatedBy());
-        Assert.assertNotNull(entity.getChangedOn());
+        assertEquals("Kevin", entity.getCreatedBy());
+        assertEquals("Kevin", entity.getChangedBy());
+        assertNotNull(entity.getCreatedBy());
+        assertNotNull(entity.getChangedOn());
     }
 
     @Test
@@ -50,10 +52,10 @@ public class AuditAspectTest {
 
         aspect.auditSave(joinPoint, entity);
 
-        Assert.assertEquals("Stuart", entity.getCreatedBy());
-        Assert.assertEquals("Kevin", entity.getChangedBy());
-        Assert.assertNotNull(entity.getCreatedBy());
-        Assert.assertNotNull(entity.getChangedOn());
+        assertEquals("Stuart", entity.getCreatedBy());
+        assertEquals("Kevin", entity.getChangedBy());
+        assertNotNull(entity.getCreatedBy());
+        assertNotNull(entity.getChangedOn());
     }
 
     private class MyAuditableEntity extends AbstractAuditableEntity<Integer> {

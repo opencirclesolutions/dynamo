@@ -13,15 +13,15 @@
  */
 package com.ocs.dynamo.ui.component;
 
+import static org.junit.Assert.assertEquals;
+
+import java.util.List;
 import java.util.Set;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
@@ -53,11 +53,11 @@ public class ElementCollectionGridTest extends FrontendIntegrationTest {
         ElementCollectionGrid<Integer, TestEntity, String> grid = new ElementCollectionGrid<>(em.getAttributeModel("tags"), fo);
         grid.initContent();
 
-        grid.setValue(Lists.newArrayList("tag1", "tag2"));
+        grid.setValue(List.of("tag1", "tag2"));
         grid.getAddButton().click();
 
         ListDataProvider<ValueHolder<String>> provider = (ListDataProvider<ValueHolder<String>>) grid.getGrid().getDataProvider();
-        Assert.assertEquals(3, provider.getItems().size());
+        assertEquals(3, provider.getItems().size());
     }
 
     /**
@@ -73,11 +73,11 @@ public class ElementCollectionGridTest extends FrontendIntegrationTest {
 
         grid = new ElementCollectionGrid<>(em.getAttributeModel("intTags"), fo);
         grid.initContent();
-        grid.setValue(Sets.newHashSet(4, 5));
+        grid.setValue(Set.of(4, 5));
 
         grid.getGrid().select(new ValueHolder<Integer>(4));
 
-        Assert.assertEquals(1, grid.getGrid().getColumns().size());
+        assertEquals(1, grid.getGrid().getColumns().size());
     }
 
     @Test
@@ -87,8 +87,8 @@ public class ElementCollectionGridTest extends FrontendIntegrationTest {
         FormOptions fo = new FormOptions();
         ElementCollectionGrid<Integer, TestEntity, Long> grid = new ElementCollectionGrid<>(em.getAttributeModel("longTags"), fo);
 
-        grid.setValue(Sets.newHashSet(4L, 5L));
-        Assert.assertEquals(1, grid.getGrid().getColumns().size());
+        grid.setValue(Set.of(4L, 5L));
+        assertEquals(1, grid.getGrid().getColumns().size());
     }
 
     @Test
@@ -102,16 +102,16 @@ public class ElementCollectionGridTest extends FrontendIntegrationTest {
         grid.initContent();
 
         // set the values and check that they properly end up in the table
-        Set<String> values = Sets.newHashSet("a", "b", "c");
+        Set<String> values = Set.of("a", "b", "c");
         grid.setValue(values);
 
         ListDataProvider<ValueHolder<String>> list = (ListDataProvider<ValueHolder<String>>) grid.getGrid().getDataProvider();
-        Assert.assertEquals(3, list.getItems().size());
+        assertEquals(3, list.getItems().size());
 
         // click the add button and verify that an extra item is added
         grid.getAddButton().click();
         list = (ListDataProvider<ValueHolder<String>>) grid.getGrid().getDataProvider();
-        Assert.assertEquals(4, list.getItems().size());
+        assertEquals(4, list.getItems().size());
 
     }
 }

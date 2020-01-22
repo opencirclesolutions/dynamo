@@ -13,13 +13,16 @@
  */
 package com.ocs.dynamo.ui.component;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.when;
+
 import java.util.Collection;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.Spy;
 
 import com.github.mvysny.kaributesting.v10.MockVaadin;
@@ -48,7 +51,7 @@ public class EntityLookupFieldTest extends BaseMockitoTest {
     public void setUp() {
         e1 = new TestEntity(1, "Bob", 14L);
 
-        Mockito.when(service.createNewEntity()).thenReturn(new TestEntity());
+        when(service.createNewEntity()).thenReturn(new TestEntity());
         MockUtil.mockServiceSave(service, TestEntity.class);
         MockVaadin.setup();
     }
@@ -57,10 +60,8 @@ public class EntityLookupFieldTest extends BaseMockitoTest {
     public void test() {
         EntityLookupField<Integer, TestEntity> field = new EntityLookupField<>(service, factory.getModel(TestEntity.class), null, null,
                 false, false, false, Lists.newArrayList(new SortOrder<String>("name", SortDirection.ASCENDING)));
-
         field.initContent();
-
-        Assert.assertEquals("name", field.getSortOrders().get(0).getSorted().toString());
+        assertEquals("name", field.getSortOrders().get(0).getSorted().toString());
     }
 
     @Test
@@ -73,7 +74,7 @@ public class EntityLookupFieldTest extends BaseMockitoTest {
         field.setValue(Lists.newArrayList(e1));
         field.getSelectButton().click();
         Collection<TestEntity> col = (Collection<TestEntity>) field.getValue();
-        Assert.assertTrue(col.contains(e1));
+        assertTrue(col.contains(e1));
     }
 
     /**
@@ -88,6 +89,6 @@ public class EntityLookupFieldTest extends BaseMockitoTest {
         field.setValue(new TestEntity("Kevin", 47L));
 
         field.getClearButton().click();
-        Assert.assertNull(field.getValue());
+        assertNull(field.getValue());
     }
 }

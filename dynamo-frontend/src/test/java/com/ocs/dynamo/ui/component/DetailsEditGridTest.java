@@ -1,6 +1,9 @@
 package com.ocs.dynamo.ui.component;
 
-import org.junit.Assert;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -49,20 +52,20 @@ public class DetailsEditGridTest extends BaseMockitoTest {
 
         DetailsEditGrid<Integer, TestEntity> grid = createGrid(em, em.getAttributeModel("testEntities"), false, false,
                 new FormOptions().setShowRemoveButton(true));
-        Assert.assertTrue(grid.getAddButton().isVisible());
-        Assert.assertFalse(grid.getSearchDialogButton().isVisible());
+        assertTrue(grid.getAddButton().isVisible());
+        assertFalse(grid.getSearchDialogButton().isVisible());
 
         grid.setValue(Lists.newArrayList(e1, e2));
 
-        Assert.assertEquals(2, grid.getItemCount());
+        assertEquals(2, grid.getItemCount());
 
         // test that the add button will add a row
         grid.getAddButton().click();
-        Assert.assertEquals(3, grid.getItemCount());
+        assertEquals(3, grid.getItemCount());
 
         // explicitly set field value
         grid.setValue(Lists.newArrayList(e1));
-        Assert.assertEquals(1, grid.getItemCount());
+        assertEquals(1, grid.getItemCount());
     }
 
     /**
@@ -77,12 +80,12 @@ public class DetailsEditGridTest extends BaseMockitoTest {
         grid.setService(service);
 
         ListDataProvider<TestEntity> lep = (ListDataProvider<TestEntity>) grid.getGrid().getDataProvider();
-        Assert.assertEquals(0, lep.getItems().size());
+        assertEquals(0, lep.getItems().size());
 
         // adding is not possible
-        Assert.assertFalse(grid.getAddButton().isVisible());
+        assertFalse(grid.getAddButton().isVisible());
         // but bringing up the search dialog is
-        Assert.assertTrue(grid.getSearchDialogButton().isVisible());
+        assertTrue(grid.getSearchDialogButton().isVisible());
     }
 
     @Test
@@ -90,11 +93,11 @@ public class DetailsEditGridTest extends BaseMockitoTest {
         EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
 
         DetailsEditGrid<Integer, TestEntity> grid = createGrid(em, em.getAttributeModel("testEntities"), true, false, new FormOptions());
-        Assert.assertFalse(grid.getAddButton().isVisible());
-        Assert.assertFalse(grid.getSearchDialogButton().isVisible());
+        assertFalse(grid.getAddButton().isVisible());
+        assertFalse(grid.getSearchDialogButton().isVisible());
 
         grid.setValue(Lists.newArrayList(e1, e2));
-        Assert.assertEquals(2, grid.getItemCount());
+        assertEquals(2, grid.getItemCount());
     }
 
     private DetailsEditGrid<Integer, TestEntity> createGrid(EntityModel<TestEntity> em, AttributeModel am, boolean viewMode,
